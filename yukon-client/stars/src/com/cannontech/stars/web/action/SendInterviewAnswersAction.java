@@ -82,25 +82,23 @@ public class SendInterviewAnswersAction implements ActionBase {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             
-            LiteStarsCustAccountInformation liteAcctInfo = null;
-            int energyCompanyID = 0;
-            
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-            if (user != null) {
-            	liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-            	energyCompanyID = user.getEnergyCompanyID();
-            }
-            else {
+            if (user == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
+            LiteStarsCustAccountInformation  liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+            
+            int energyCompanyID = user.getEnergyCompanyID();
+            LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+            
             StringBuffer text = new StringBuffer("======================================================\r\n");
             text.append("Account #").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append("\r\n");
-            LiteCustomerContact cont = SOAPServer.getCustomerContact( energyCompanyID, liteAcctInfo.getCustomerBase().getPrimaryContactID() );
+            LiteCustomerContact cont = energyCompany.getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
             text.append(cont.getFirstName()).append(" ").append(cont.getLastName()).append("\r\n");
-            LiteCustomerAddress addr = SOAPServer.getCustomerAddress( energyCompanyID, liteAcctInfo.getAccountSite().getStreetAddressID() );
+            LiteAddress addr = energyCompany.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
             text.append(addr.getLocationAddress1()).append(", ").append(addr.getLocationAddress2()).append("\r\n");
             text.append(addr.getCityName()).append(", ").append(addr.getStateCode()).append(" ").append(addr.getZipCode()).append("\r\n");
             text.append(cont.getHomePhone()).append("\r\n");
@@ -112,19 +110,15 @@ public class SendInterviewAnswersAction implements ActionBase {
 	            text.append("Reenable Time: ").append(ServerUtils.formatDate( optout.getReenableDateTime() )).append("\r\n\r\n");
 	            text.append("Program/Group/Serial #: \r\n");
 	            
-	            List devices = com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllDevices();
 	            for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
 	            	LiteStarsLMProgram program = (LiteStarsLMProgram)liteAcctInfo.getLmPrograms().get(i);
             		text.append("    ").append(program.getLmProgram().getProgramName()).append(" / ");
 	            	
 	            	String groupName = "(N/A)";
-		            for (int j = 0; j < devices.size(); j++) {
-		            	com.cannontech.database.data.lite.LiteYukonPAObject device = (com.cannontech.database.data.lite.LiteYukonPAObject) devices.get(j);
-		            	if (device.getLiteID() == program.getGroupID() && device.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.GROUP) {
-		            		groupName = device.getPaoName();
-		            		break;
-		            	}
-		            }
+	            	com.cannontech.database.data.lite.LiteYukonPAObject device =
+	            			com.cannontech.database.cache.functions.PAOFuncs.getLiteYukonPAO( program.getGroupID() );
+	            	if (device != null)
+	            		groupName = device.getPaoName();
             		text.append(groupName).append(" / ");
 	            	
 	            	String serialNo = "(N/A)";
@@ -132,7 +126,7 @@ public class SendInterviewAnswersAction implements ActionBase {
 	            		LiteStarsAppliance app = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
 	            		if (app.getLmProgramID() == program.getLmProgram().getProgramID()) {
 	            			for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
-	            				LiteLMHardwareBase hw = SOAPServer.getLMHardware( energyCompanyID, ((Integer) liteAcctInfo.getInventories().get(k)).intValue(), true );
+	            				LiteLMHardwareBase hw = energyCompany.getLMHardware( ((Integer) liteAcctInfo.getInventories().get(k)).intValue(), true );
 	            				if (hw.getInventoryID() == app.getInventoryID()) {
 	            					serialNo = hw.getManufactureSerialNumber();
 	            					break;

@@ -54,7 +54,7 @@ public class DailyTimerTask extends StarsTimerTask {
 			for (int i = 0; i < companies.length; i++) {
 				if (companies[i].getEnergyCompanyID().intValue() < 0) continue;
 				
-				Hashtable selectionLists = SOAPServer.getAllSelectionLists( companies[i].getLiteID() );
+				Hashtable selectionLists = companies[i].getAllSelectionLists();
 				if (selectionLists == null || selectionLists.size() == 0) continue;
 				
 				int reenableActionID = StarsCustListEntryFactory.getStarsCustListEntry(
@@ -110,7 +110,7 @@ public class DailyTimerTask extends StarsTimerTask {
 								Transaction.createTransaction( Transaction.INSERT, event2 ).execute();
 						
 						// Update the lite object
-						LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( companies[i].getLiteID(), hw.getInventoryID().intValue(), false );
+						LiteLMHardwareBase liteHw = companies[i].getLMHardware( hw.getInventoryID().intValue(), false );
 						if (liteHw != null) {
 							ArrayList hwHist = liteHw.getLmHardwareHistory();
 							if (hwHist != null) {
@@ -135,7 +135,7 @@ public class DailyTimerTask extends StarsTimerTask {
 						progEvent = (com.cannontech.database.db.stars.event.LMProgramEvent)
 								Transaction.createTransaction( Transaction.RETRIEVE, progEvent ).execute();
 								
-						ArrayList liteAcctInfoList = SOAPServer.getAllCustAccountInformation( companies[i].getLiteID() );
+						ArrayList liteAcctInfoList = companies[i].getAllCustAccountInformation();
 						for (int k = 0; k < liteAcctInfoList.size(); k++) {
 							LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) liteAcctInfoList.get(k);
 							if (liteAcctInfo.getCustomerAccount().getAccountID() != progEvent.getAccountID().intValue()) continue;

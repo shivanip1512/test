@@ -19,7 +19,7 @@ public class AccountSite extends DBPersistent {
     private Integer accountSiteID = null;
     private Integer siteInformationID = new Integer( SiteInformation.NONE_INT );
     private String siteNumber = "";
-    private Integer streetAddressID = new Integer( com.cannontech.database.db.customer.CustomerAddress.NONE_INT );
+    private Integer streetAddressID = new Integer( 0 );
     private String propertyNotes = "";
 
     public static final String[] SETTER_COLUMNS = {

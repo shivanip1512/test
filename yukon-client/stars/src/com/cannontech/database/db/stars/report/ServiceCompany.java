@@ -20,7 +20,7 @@ public class ServiceCompany extends DBPersistent {
 
     private Integer companyID = null;
     private String companyName = "";
-    private Integer addressID = new Integer( com.cannontech.database.db.customer.CustomerAddress.NONE_INT );
+    private Integer addressID = new Integer( 0 );
     private String mainPhoneNumber = "";
     private String mainFaxNumber = "";
     private Integer primaryContactID = new Integer( NONE_INT );

@@ -90,7 +90,8 @@ public class DeleteApplianceAction implements ActionBase {
         	
         	if (liteApp.getLmProgramID() > 0) {
 				// Add "termination" event to the enrolled program
-				Hashtable selectionLists = SOAPServer.getAllSelectionLists( user.getEnergyCompanyID() );
+				LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+				Hashtable selectionLists = energyCompany.getAllSelectionLists();
 				
 				com.cannontech.database.data.stars.event.LMProgramEvent event =
 						new com.cannontech.database.data.stars.event.LMProgramEvent();

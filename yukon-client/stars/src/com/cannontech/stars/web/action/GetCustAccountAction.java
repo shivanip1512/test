@@ -8,6 +8,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.data.stars.customer.CustomerAccount;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -77,6 +78,7 @@ public class GetCustAccountAction implements ActionBase {
             }
             
         	int energyCompanyID = user.getEnergyCompanyID();
+        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
 
             StarsGetCustomerAccount getAccount = reqOper.getStarsGetCustomerAccount();
             LiteStarsCustAccountInformation liteAcctInfo = null;
@@ -90,10 +92,10 @@ public class GetCustAccountAction implements ActionBase {
 	                return SOAPUtil.buildSOAPMessage( respOper );
 				}
 				
-				liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, accountIDs[0], true );
+				liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[0], true );
             }
             else
-	            liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, getAccount.getAccountID(), true );
+	            liteAcctInfo = energyCompany.getCustAccountInformation( getAccount.getAccountID(), true );
             
             if (liteAcctInfo == null) {
                 respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(

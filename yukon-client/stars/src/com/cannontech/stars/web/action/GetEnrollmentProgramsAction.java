@@ -8,9 +8,11 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteLMProgram;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsWebConfigFactory;
 import com.cannontech.stars.xml.StarsGetEnrollmentProgramsResponseFactory;
 import com.cannontech.stars.xml.StarsFailureFactory;
@@ -87,7 +89,8 @@ public class GetEnrollmentProgramsAction implements ActionBase {
 	            }
             }
             
-            ArrayList liteAppCats = com.cannontech.stars.web.servlet.SOAPServer.getAllApplianceCategories( energyCompanyID );
+        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+            ArrayList liteAppCats = energyCompany.getAllApplianceCategories();
             StarsGetEnrollmentProgramsResponse resp = new StarsGetEnrollmentProgramsResponse();
             
             // Generate the category name, example values: "LMPrograms", "LMPrograms-Switch", "LMPrograms-Thermostat"

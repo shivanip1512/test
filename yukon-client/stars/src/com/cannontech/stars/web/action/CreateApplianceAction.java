@@ -112,6 +112,7 @@ public class CreateApplianceAction implements ActionBase {
         	}
         	
         	int energyCompanyID = user.getEnergyCompanyID();
+        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
             StarsCreateAppliance newApp = reqOper.getStarsCreateAppliance();
             com.cannontech.database.data.stars.appliance.ApplianceBase app = new com.cannontech.database.data.stars.appliance.ApplianceBase();
@@ -125,7 +126,7 @@ public class CreateApplianceAction implements ActionBase {
             appDB.setManufacturerID( new Integer(newApp.getManufacturer().getEntryID()) );
             appDB.setLocationID( new Integer(newApp.getLocation().getEntryID()) );
             
-            java.util.ArrayList appCats = SOAPServer.getAllApplianceCategories(	energyCompanyID );
+            java.util.ArrayList appCats = energyCompany.getAllApplianceCategories();
             if (appCats == null || appCats.size() == 0)
             	appDB.setApplianceCategoryID( new Integer(com.cannontech.database.db.stars.appliance.ApplianceCategory.NONE_INT) );
             else {

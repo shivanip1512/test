@@ -15,8 +15,8 @@ public class LiteCustomerAccount extends LiteBase {
 
 	private int accountSiteID = com.cannontech.database.db.stars.customer.AccountSite.NONE_INT;
 	private String accountNumber = null;
-	private int customerID = com.cannontech.database.db.stars.customer.CustomerBase.NONE_INT;
-	private int billingAddressID = com.cannontech.database.db.customer.CustomerAddress.NONE_INT;
+	private int customerID = 0;
+	private int billingAddressID = 0;
 	private String accountNotes = null;
 	
 	public LiteCustomerAccount() {

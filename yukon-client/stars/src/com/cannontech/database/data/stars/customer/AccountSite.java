@@ -15,7 +15,7 @@ import com.cannontech.database.db.DBPersistent;
 public class AccountSite extends DBPersistent {
 
     private com.cannontech.database.db.stars.customer.AccountSite accountSite = null;
-    private com.cannontech.database.db.customer.CustomerAddress streetAddress = null;
+    private com.cannontech.database.db.customer.Address streetAddress = null;
 
     private com.cannontech.database.data.stars.customer.SiteInformation siteInformation = null;
 
@@ -71,13 +71,13 @@ public class AccountSite extends DBPersistent {
         getSiteInformation().retrieve();
     }
 
-    public com.cannontech.database.db.customer.CustomerAddress getStreetAddress() {
+    public com.cannontech.database.db.customer.Address getStreetAddress() {
         if (streetAddress == null)
-            streetAddress = new com.cannontech.database.db.customer.CustomerAddress();
+            streetAddress = new com.cannontech.database.db.customer.Address();
         return streetAddress;
     }
 
-    public void setStreetAddress(com.cannontech.database.db.customer.CustomerAddress newStreetAddress) {
+    public void setStreetAddress(com.cannontech.database.db.customer.Address newStreetAddress) {
         streetAddress = newStreetAddress;
     }
 	/**

@@ -6,6 +6,7 @@ import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
 import com.cannontech.stars.xml.serialize.CallType;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.database.data.lite.stars.LiteCustomerSelectionList;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.report.CallReportBase;
 
@@ -52,7 +53,8 @@ public class StarsCallReportFactory {
         		com.cannontech.database.db.stars.report.CallReportBase.getAllAccountCallReports( accountID );
         if (calls == null) return null;
         
-        java.util.Hashtable selectionListTable = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( energyCompanyID.intValue() );
+        LiteStarsEnergyCompany energyCompany = com.cannontech.stars.web.servlet.SOAPServer.getEnergyCompany( energyCompanyID.intValue() );
+        java.util.Hashtable selectionListTable = energyCompany.getAllSelectionLists();
         LiteCustomerSelectionList callTypeList = (LiteCustomerSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CALLTYPE );
         
         StarsCallReport[] callRprts = new StarsCallReport[ calls.length ];

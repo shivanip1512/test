@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSearchByType.java,v 1.21 2003/02/12 19:25:22 zyao Exp $
+ * $Id: StarsSearchByType.java,v 1.22 2003/02/14 01:25:15 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize.types;
@@ -19,7 +19,7 @@ import org.exolab.castor.xml.*;
 /**
  * 
  * 
- * @version $Revision: 1.21 $ $Date: 2003/02/12 19:25:22 $
+ * @version $Revision: 1.22 $ $Date: 2003/02/14 01:25:15 $
 **/
 public class StarsSearchByType implements java.io.Serializable {
 

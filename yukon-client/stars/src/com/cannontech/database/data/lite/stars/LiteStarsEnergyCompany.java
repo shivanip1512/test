@@ -5,11 +5,10 @@ import java.util.*;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteTypes;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.*;
 import com.cannontech.database.db.stars.CustomerListEntry;
 import com.cannontech.database.db.stars.CustomerSelectionList;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -32,8 +31,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private int routeID = 0;
 	
 	private ArrayList custAccountInfos = null;	// List of LiteStarsCustAccountInformation
-	private ArrayList custContacts = null;		// List of LiteCustomerContact
-	private ArrayList custAddresses = null;		// List of LiteCustomerAddress
+	private ArrayList customerContacts = null;			// List of LiteCustomerContact
+	private ArrayList addresses = null;			// List of LiteAddress
 	private ArrayList lmPrograms = null;			// List of LiteLMProgram
 	private ArrayList lmHardwares = null;			// List of LiteLMHardwareBase
 	private ArrayList lmCtrlHists = null;			// List of LiteStarsLMControlHistory
@@ -114,8 +113,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public void clear() {
 		custAccountInfos = null;
-		custContacts = null;
-		custAddresses = null;
+		customerContacts = null;
+		addresses = null;
 		lmPrograms = null;
 		lmHardwares = null;
 		lmCtrlHists = null;
@@ -134,19 +133,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
     	if (lmPrograms == null) {
     		lmPrograms = new ArrayList();
     		
-    		List lmProgList = com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllLMPrograms();
     		com.cannontech.database.db.stars.ECToGenericMapping[] items =
     				com.cannontech.database.db.stars.ECToGenericMapping.getAllMappingItems( getEnergyCompanyID(), "LMPrograms" );
     				
     		for (int i = 0; i < items.length; i++) {
-    			com.cannontech.database.data.lite.LiteYukonPAObject progPao = null;
-    			for (int j = 0; j < lmProgList.size(); j++) {
-    				if (((com.cannontech.database.data.lite.LiteYukonPAObject) lmProgList.get(j)).getYukonID() == items[i].getItemID().intValue()
-    					&& ((com.cannontech.database.data.lite.LiteYukonPAObject) lmProgList.get(j)).getType() == com.cannontech.database.data.pao.PAOGroups.LM_DIRECT_PROGRAM) {
-    					progPao = (com.cannontech.database.data.lite.LiteYukonPAObject) lmProgList.get(j);
-    					break;
-    				}
-    			}
+    			com.cannontech.database.data.lite.LiteYukonPAObject progPao =
+    					com.cannontech.database.cache.functions.PAOFuncs.getLiteYukonPAO( items[i].getItemID().intValue() );
     			if (progPao == null) continue;
 				
 				com.cannontech.database.db.stars.LMProgramWebPublishing pubProgram =
@@ -467,17 +459,17 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public ArrayList getAllCustomerContacts() {
-		if (custContacts == null)
-			custContacts = new ArrayList();
+		if (customerContacts == null)
+			customerContacts = new ArrayList();
 		
-		return custContacts;
+		return customerContacts;
 	}
 	
-	public ArrayList getAllCustomerAddresses() {
-		if (custAddresses == null)
-			custAddresses = new ArrayList();
+	public ArrayList getAllAddresses() {
+		if (addresses == null)
+			addresses = new ArrayList();
 		
-		return custAddresses;
+		return addresses;
 	}
 	
 	public ArrayList getAllLMHardwares() {
@@ -559,54 +551,97 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public LiteCustomerContact getCustomerContact(int contactID) {
-		ArrayList custContactList = getAllCustomerContacts();
-		LiteCustomerContact liteContact = null;
-		
-		synchronized (custContactList) {
-			for (int i = 0; i < custContactList.size(); i++) {
-				liteContact = (LiteCustomerContact) custContactList.get(i);
+		ArrayList contactList = getAllCustomerContacts();
+		synchronized (contactList) {
+			for (int i = 0; i < contactList.size(); i++) {
+				LiteCustomerContact liteContact = (LiteCustomerContact) contactList.get(i);
 				if (liteContact.getContactID() == contactID)
 					return liteContact;
 			}
 		}
 		
-		try {
-			com.cannontech.database.db.customer.CustomerContact contact = new com.cannontech.database.db.customer.CustomerContact();
-			contact.setContactID( new Integer(contactID) );
-			contact = (com.cannontech.database.db.customer.CustomerContact)
-					Transaction.createTransaction( Transaction.RETRIEVE, contact ).execute();
-			liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( contact );
+		LiteContact lContact = com.cannontech.database.cache.functions.CustomerContactFuncs.getCustomerContact( contactID );
+		if (lContact != null) {
+			LiteCustomerContact liteContact = new LiteCustomerContact();
+			liteContact.setContactID( lContact.getContactID() );
+			liteContact.setLastName( lContact.getContLastName() );
+			liteContact.setFirstName( lContact.getContFirstName() );
+			for (int i = 0; i < lContact.getLiteContactNotifications().size(); i++) {
+				LiteContactNotification lNotif = (LiteContactNotification) lContact.getLiteContactNotifications().get(i);
+				if (lNotif.getNotificationCategoryID() == com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_HOME_PHONE)
+					liteContact.setHomePhone( lNotif.getNotification() );
+				else if (lNotif.getNotificationCategoryID() == com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_WORK_PHONE)
+					liteContact.setWorkPhone( lNotif.getNotification() );
+				else if (lNotif.getNotificationCategoryID() == com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_EMAIL)
+					liteContact.setEmail( lNotif.getNotification() );
+			}
 			
-			custContactList.add( liteContact );
+			synchronized (contactList) { contactList.add( liteContact ); }
+			return liteContact;
+		}
+/*		
+		try {
+			com.cannontech.database.db.contact.Contact contact = new com.cannontech.database.db.contact.Contact();
+			contact.setContactID( new Integer(contactID) );
+			contact = (com.cannontech.database.db.contact.Contact)
+					Transaction.createTransaction( Transaction.RETRIEVE, contact ).execute();
+			LiteCustomerContact liteContact = (LiteContact) StarsLiteFactory.createLite( contact );
+			
+			synchronized (contactList) { contactList.add( liteContact ); }
 			return liteContact;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+*/		
+		return null;
+	}
+	
+	public LiteCustomerContact addCustomerContact(com.cannontech.database.data.customer.Contact contact) {
+		LiteCustomerContact liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( contact );
+		ArrayList contactList = getAllCustomerContacts();
+		synchronized (contactList) { contactList.add( liteContact ); }
+		ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
+		
+		return liteContact;
+	}
+	
+	public LiteCustomerContact deleteCustomerContact(int contactID) {
+		ArrayList contactList = getAllCustomerContacts();
+		synchronized (contactList) {
+			for (int i = 0; i < contactList.size(); i++) {
+				LiteCustomerContact liteContact = (LiteCustomerContact) contactList.get(i);
+				if (liteContact.getContactID() == contactID) {
+					contactList.remove(i);
+					ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
+					return liteContact;
+				}
+			}
+		}
 		
 		return null;
 	}
 	
-	public LiteCustomerAddress getCustomerAddress(int addressID) {
-		ArrayList custAddressList = getAllCustomerAddresses();
-		LiteCustomerAddress liteAddr = null;
+	public LiteAddress getAddress(int addressID) {
+		ArrayList addressList = getAllAddresses();
+		LiteAddress liteAddr = null;
 		
-		synchronized (custAddressList) {
-			for (int i = 0; i < custAddressList.size(); i++) {
-				liteAddr = (LiteCustomerAddress) custAddressList.get(i);
+		synchronized (addressList) {
+			for (int i = 0; i < addressList.size(); i++) {
+				liteAddr = (LiteAddress) addressList.get(i);
 				if (liteAddr.getAddressID() == addressID)
 					return liteAddr;
 			}
 		}
 		
 		try {
-			com.cannontech.database.db.customer.CustomerAddress addr = new com.cannontech.database.db.customer.CustomerAddress();
+			com.cannontech.database.db.customer.Address addr = new com.cannontech.database.db.customer.Address();
 			addr.setAddressID( new Integer(addressID) );
-			addr = (com.cannontech.database.db.customer.CustomerAddress)
+			addr = (com.cannontech.database.db.customer.Address)
 					Transaction.createTransaction( Transaction.RETRIEVE, addr ).execute();
-			liteAddr = (LiteCustomerAddress) StarsLiteFactory.createLite( addr );
+			liteAddr = (LiteAddress) StarsLiteFactory.createLite( addr );
 			
-			synchronized (custAddressList) { custAddressList.add( liteAddr ); }
+			synchronized (addressList) { addressList.add( liteAddr ); }
 			return liteAddr;
 		}
 		catch (Exception e) {
@@ -616,11 +651,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
-	public LiteCustomerAddress addCustomerAddress(com.cannontech.database.db.customer.CustomerAddress addr) {
-		ArrayList custAddressList = getAllCustomerAddresses();
+	public LiteAddress addAddress(com.cannontech.database.db.customer.Address addr) {
+		ArrayList addressList = getAllAddresses();
 		
-		LiteCustomerAddress liteAddr = (LiteCustomerAddress) StarsLiteFactory.createLite( addr );
-		synchronized (custAddressList) { custAddressList.add( liteAddr ); }
+		LiteAddress liteAddr = (LiteAddress) StarsLiteFactory.createLite( addr );
+		synchronized (addressList) { addressList.add( liteAddr ); }
 		return liteAddr;
 	}
 	
@@ -831,34 +866,23 @@ public class LiteStarsEnergyCompany extends LiteBase {
             LiteStarsCustAccountInformation accountInfo = new LiteStarsCustAccountInformation();
 
             com.cannontech.database.db.stars.customer.CustomerAccount accountDB = account.getCustomerAccount();
-            com.cannontech.database.data.stars.customer.CustomerBase customer = account.getCustomerBase();
-            com.cannontech.database.db.stars.customer.CustomerBase customerDB = customer.getCustomerBase();
+            com.cannontech.database.data.customer.Customer customer = account.getCustomer();
+            com.cannontech.database.db.customer.Customer customerDB = customer.getCustomer();
             com.cannontech.database.data.stars.customer.AccountSite site = account.getAccountSite();
             com.cannontech.database.db.stars.customer.AccountSite siteDB = site.getAccountSite();
             com.cannontech.database.data.stars.customer.SiteInformation siteInfo = site.getSiteInformation();
             com.cannontech.database.db.stars.customer.SiteInformation siteInfoDB = siteInfo.getSiteInformation();
             
             accountInfo.setCustomerAccount( (LiteCustomerAccount) StarsLiteFactory.createLite(accountDB) );
-            accountInfo.setCustomerBase( (LiteCustomerBase) StarsLiteFactory.createLite(customer) );
+            accountInfo.setCustomer( (LiteCustomer) StarsLiteFactory.createLite(customer) );
             accountInfo.setAccountSite( (LiteAccountSite) StarsLiteFactory.createLite(siteDB) );
             accountInfo.setSiteInformation( (LiteSiteInformation) StarsLiteFactory.createLite(siteInfoDB) );
                 
-            com.cannontech.database.db.customer.CustomerAddress streetAddr = site.getStreetAddress();
-            addCustomerAddress( streetAddr );
+            com.cannontech.database.db.customer.Address streetAddr = site.getStreetAddress();
+            addAddress( streetAddr );
 
-            com.cannontech.database.db.customer.CustomerAddress billAddr = account.getBillingAddress();
-            addCustomerAddress( billAddr );
-
-            com.cannontech.database.db.customer.CustomerContact primContact = customer.getPrimaryContact();
-			LiteCustomerContact litePrimContact = (LiteCustomerContact) StarsLiteFactory.createLite( primContact );
-            getAllCustomerContacts().add( litePrimContact );
-
-            Vector contactList = customer.getCustomerContactVector();
-            for (int i = 0; i < contactList.size(); i++) {
-                com.cannontech.database.db.customer.CustomerContact contact = (com.cannontech.database.db.customer.CustomerContact) contactList.elementAt(i);
-				LiteCustomerContact liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( contact );
-                getAllCustomerContacts().add( liteContact );
-            }
+            com.cannontech.database.db.customer.Address billAddr = account.getBillingAddress();
+            addAddress( billAddr );
 			
             Vector applianceVector = account.getApplianceVector();            
             accountInfo.setAppliances( new ArrayList() );
@@ -947,22 +971,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	        	}
 	        }
 	        
-	        int userID = primContact.getLogInID().intValue();
-	        if (userID >= 0) {
-				DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-				
-				synchronized(cache) {
-					Iterator i = cache.getAllYukonUsers().iterator();
-					while(i.hasNext()) {
-						LiteYukonUser user = (LiteYukonUser) i.next();
-						if (user.getUserID() == userID) {
-					        accountInfo.setYukonUser( user );
-							break;
-						}
-					}
-				}		
-	        	
-	        }
+	        LiteContact primContact = com.cannontech.database.cache.functions.CustomerContactFuncs.getCustomerContact( customerDB.getPrimaryContactID().intValue() );
+	        accountInfo.setLoginID( primContact.getLoginID() );
 
             synchronized (custAcctInfoList) { custAcctInfoList.add( accountInfo ); }
             return accountInfo;

@@ -127,7 +127,8 @@ public class CreateServiceRequestAction implements ActionBase {
             }
             
             int energyCompanyID = user.getEnergyCompanyID();
-            Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
+            LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+            Hashtable selectionLists = energyCompany.getAllSelectionLists();
             
             com.cannontech.database.data.stars.report.WorkOrderBase workOrder = new com.cannontech.database.data.stars.report.WorkOrderBase();
             com.cannontech.database.db.stars.report.WorkOrderBase workOrderDB = workOrder.getWorkOrderBase();
@@ -140,7 +141,8 @@ public class CreateServiceRequestAction implements ActionBase {
             workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)transaction.execute();
             
             LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( workOrderDB );
-            com.cannontech.stars.web.servlet.SOAPServer.getAllWorkOrders( energyCompanyID ).add( liteOrder );
+            ArrayList workOrderList = energyCompany.getAllWorkOrders();
+            synchronized (workOrderList) { workOrderList.add( liteOrder ); }
             accountInfo.getServiceRequestHistory().add( 0, new Integer(liteOrder.getOrderID()) );
             
             StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, selectionLists );
@@ -159,7 +161,7 @@ public class CreateServiceRequestAction implements ActionBase {
             }
             
             if (newServiceCompany) {
-            	LiteServiceCompany liteCompany = SOAPServer.getServiceCompany( energyCompanyID, liteOrder.getServiceCompanyID() );
+            	LiteServiceCompany liteCompany = energyCompany.getServiceCompany( liteOrder.getServiceCompanyID() );
             	StarsServiceCompany starsCompany = StarsLiteFactory.createStarsServiceCompany( liteCompany, energyCompanyID );
             	resp.setStarsServiceCompany( starsCompany );
             	ServerUtils.updateServiceCompanies( accountInfo, energyCompanyID );

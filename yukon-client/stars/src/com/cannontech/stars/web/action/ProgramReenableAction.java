@@ -76,7 +76,8 @@ public class ProgramReenableAction implements ActionBase {
 			
             // Get list entry IDs
             int energyCompanyID = user.getEnergyCompanyID();
-            Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
+        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+            Hashtable selectionLists = energyCompany.getAllSelectionLists();
             
             Integer hwEventEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
             		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT),
@@ -116,7 +117,7 @@ public class ProgramReenableAction implements ActionBase {
 
             for (int i = 0; i < hwIDList.size(); i++) {
             	Integer invID = (Integer) hwIDList.get(i);
-            	LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID.intValue(), true );
+            	LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
 
                 String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber() + routeStr;
                 ServerUtils.sendCommand( cmd );

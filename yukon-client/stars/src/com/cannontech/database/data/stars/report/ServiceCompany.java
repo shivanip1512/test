@@ -15,8 +15,8 @@ import com.cannontech.database.db.DBPersistent;
 public class ServiceCompany extends DBPersistent {
 
     private com.cannontech.database.db.stars.report.ServiceCompany serviceCompany = null;
-    private com.cannontech.database.db.customer.CustomerAddress address = null;
-    private com.cannontech.database.db.customer.CustomerContact primaryContact = null;
+    private com.cannontech.database.db.customer.Address address = null;
+    private com.cannontech.database.db.contact.Contact primaryContact = null;
     
     private com.cannontech.database.data.company.EnergyCompanyBase energyCompanyBase = null;
 
@@ -101,9 +101,9 @@ public class ServiceCompany extends DBPersistent {
 	 * Returns the address.
 	 * @return com.cannontech.database.db.customer.CustomerAddress
 	 */
-	public com.cannontech.database.db.customer.CustomerAddress getAddress() {
+	public com.cannontech.database.db.customer.Address getAddress() {
 		if (address == null)
-			address = new com.cannontech.database.db.customer.CustomerAddress();
+			address = new com.cannontech.database.db.customer.Address();
 		return address;
 	}
 
@@ -111,9 +111,9 @@ public class ServiceCompany extends DBPersistent {
 	 * Returns the primaryContact.
 	 * @return com.cannontech.database.db.customer.CustomerContact
 	 */
-	public com.cannontech.database.db.customer.CustomerContact getPrimaryContact() {
+	public com.cannontech.database.db.contact.Contact getPrimaryContact() {
 		if (primaryContact == null)
-			primaryContact = new com.cannontech.database.db.customer.CustomerContact();
+			primaryContact = new com.cannontech.database.db.contact.Contact();
 		return primaryContact;
 	}
 
@@ -122,7 +122,7 @@ public class ServiceCompany extends DBPersistent {
 	 * @param address The address to set
 	 */
 	public void setAddress(
-		com.cannontech.database.db.customer.CustomerAddress address) {
+		com.cannontech.database.db.customer.Address address) {
 		this.address = address;
 	}
 
@@ -131,7 +131,7 @@ public class ServiceCompany extends DBPersistent {
 	 * @param primaryContact The primaryContact to set
 	 */
 	public void setPrimaryContact(
-		com.cannontech.database.db.customer.CustomerContact primaryContact) {
+		com.cannontech.database.db.contact.Contact primaryContact) {
 		this.primaryContact = primaryContact;
 	}
 

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerContact.java,v 1.21 2003/02/12 19:25:07 zyao Exp $
+ * $Id: StarsCustomerContact.java,v 1.22 2003/02/14 01:25:04 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.21 $ $Date: 2003/02/12 19:25:07 $
+ * @version $Revision: 1.22 $ $Date: 2003/02/14 01:25:04 $
 **/
 public abstract class StarsCustomerContact implements java.io.Serializable {
 
@@ -46,6 +46,8 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
     private java.lang.String _homePhone;
 
     private java.lang.String _workPhone;
+
+    private java.lang.String _email;
 
 
       //----------------/
@@ -77,6 +79,16 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
     {
         return this._contactID;
     } //-- int getContactID() 
+
+    /**
+     * Returns the value of field 'email'.
+     * 
+     * @return the value of field 'email'.
+    **/
+    public java.lang.String getEmail()
+    {
+        return this._email;
+    } //-- java.lang.String getEmail() 
 
     /**
      * Returns the value of field 'firstName'.
@@ -164,6 +176,16 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
         this._contactID = contactID;
         this._has_contactID = true;
     } //-- void setContactID(int) 
+
+    /**
+     * Sets the value of field 'email'.
+     * 
+     * @param email the value of field 'email'.
+    **/
+    public void setEmail(java.lang.String email)
+    {
+        this._email = email;
+    } //-- void setEmail(java.lang.String) 
 
     /**
      * Sets the value of field 'firstName'.

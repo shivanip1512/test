@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class LiteStarsCustAccountInformation {
 
 	private LiteCustomerAccount customerAccount = null;
-	private LiteCustomerBase customerBase = null;
+	private LiteCustomer customer = null;
 	private LiteAccountSite accountSite = null;
 	private LiteSiteInformation siteInformation = null;
 	private ArrayList lmPrograms = null;	// List of LiteStarsLMProgram
@@ -23,7 +23,7 @@ public class LiteStarsCustAccountInformation {
 	private ArrayList callReportHistory = null;	// List of StarsCallReport
 	private ArrayList serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
 	private LiteStarsThermostatSettings thermostatSettings = null;
-	private com.cannontech.database.data.lite.LiteYukonUser yukonUser = null;
+	private int loginID = com.cannontech.user.UserUtils.USER_YUKON_ID;
 	
 	public LiteStarsCustAccountInformation() {
 	}
@@ -147,8 +147,8 @@ public class LiteStarsCustAccountInformation {
 	 * Returns the customerBase.
 	 * @return LiteCustomerBase
 	 */
-	public LiteCustomerBase getCustomerBase() {
-		return customerBase;
+	public LiteCustomer getCustomer() {
+		return customer;
 	}
 
 	/**
@@ -171,8 +171,8 @@ public class LiteStarsCustAccountInformation {
 	 * Sets the customerBase.
 	 * @param customerBase The customerBase to set
 	 */
-	public void setCustomerBase(LiteCustomerBase customerBase) {
-		this.customerBase = customerBase;
+	public void setCustomer(LiteCustomer customer) {
+		this.customer = customer;
 	}
 
 	/**
@@ -202,22 +202,6 @@ public class LiteStarsCustAccountInformation {
 	}
 
 	/**
-	 * Returns the yukonUser.
-	 * @return com.cannontech.database.data.lite.LiteYukonUser
-	 */
-	public com.cannontech.database.data.lite.LiteYukonUser getYukonUser() {
-		return yukonUser;
-	}
-
-	/**
-	 * Sets the yukonUser.
-	 * @param yukonUser The yukonUser to set
-	 */
-	public void setYukonUser(com.cannontech.database.data.lite.LiteYukonUser yukonUser) {
-		this.yukonUser = yukonUser;
-	}
-
-	/**
 	 * Returns the thermostatSettings.
 	 * @return LiteStarsThermostatSettings
 	 */
@@ -231,6 +215,22 @@ public class LiteStarsCustAccountInformation {
 	 */
 	public void setThermostatSettings(LiteStarsThermostatSettings thermostatSettings) {
 		this.thermostatSettings = thermostatSettings;
+	}
+
+	/**
+	 * Returns the logInID.
+	 * @return int
+	 */
+	public int getLoginID() {
+		return loginID;
+	}
+
+	/**
+	 * Sets the logInID.
+	 * @param logInID The logInID to set
+	 */
+	public void setLoginID(int loginID) {
+		this.loginID = loginID;
 	}
 
 }

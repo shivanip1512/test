@@ -1,6 +1,6 @@
 package com.cannontech.stars.xml;
 
-import com.cannontech.database.db.customer.CustomerAddress;
+import com.cannontech.database.db.customer.Address;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 
 /**
@@ -26,6 +26,7 @@ public class StarsCustomerAddressFactory {
             newAddr.setCity( addr.getCity() );
             newAddr.setState( addr.getState() );
             newAddr.setZip( addr.getZip() );
+            newAddr.setCounty( addr.getCounty() );
 
             return newAddr;
         }
@@ -36,11 +37,12 @@ public class StarsCustomerAddressFactory {
         return null;
     }
     
-    public static void setCustomerAddress(CustomerAddress addr, StarsCustomerAddress starsAddr) {
+    public static void setCustomerAddress(Address addr, StarsCustomerAddress starsAddr) {
     	addr.setLocationAddress1( starsAddr.getStreetAddr1() );
     	addr.setLocationAddress2( starsAddr.getStreetAddr2() );
     	addr.setCityName( starsAddr.getCity() );
     	addr.setStateCode( starsAddr.getState() );
     	addr.setZipCode( starsAddr.getZip() );
+    	addr.setCounty( starsAddr.getCounty() );
     }
 }

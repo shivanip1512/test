@@ -18,11 +18,11 @@ import com.cannontech.database.Transaction;
 public class CustomerAccount extends DBPersistent {
 
     private com.cannontech.database.db.stars.customer.CustomerAccount customerAccount = null;
-    private com.cannontech.database.db.customer.CustomerAddress billingAddress = null;
+    private com.cannontech.database.db.customer.Address billingAddress = null;
     private com.cannontech.database.db.customer.CustomerLogin customerLogin = null;		// Put it here temporarily
 
     private com.cannontech.database.data.stars.customer.AccountSite accountSite = null;
-    private com.cannontech.database.data.stars.customer.CustomerBase customerBase = null;
+    private com.cannontech.database.data.customer.Customer customer = null;
     private Integer energyCompanyID = null;
 
     private Vector applianceVector = null;
@@ -41,7 +41,7 @@ public class CustomerAccount extends DBPersistent {
         getCustomerAccount().setDbConnection(conn);
         getAccountSite().setDbConnection(conn);
         getBillingAddress().setDbConnection(conn);
-        if (getCustomerBase() != null) getCustomerBase().setDbConnection(conn);
+        if (getCustomer() != null) getCustomer().setDbConnection(conn);
     }
 
     public void delete() throws java.sql.SQLException {
@@ -72,7 +72,7 @@ public class CustomerAccount extends DBPersistent {
         getCustomerAccount().delete();
         getAccountSite().delete();
         getBillingAddress().delete();
-        if (getCustomerBase() != null) getCustomerBase().delete();
+        if (getCustomer() != null) getCustomer().delete();
 
         setDbConnection(null);
     }
@@ -81,7 +81,7 @@ public class CustomerAccount extends DBPersistent {
     	if (energyCompanyID == null)
     		throw new java.sql.SQLException( "setEnergyCompanyID() must be called before this function" );
     		
-    	getBillingAddress().setAddressID( getBillingAddress().getNextAddressID2() );
+    	getBillingAddress().setAddressID( com.cannontech.database.db.customer.Address.getNextAddressID(getDbConnection()) );
         getBillingAddress().add();
         
         getCustomerAccount().setBillingAddressID( getBillingAddress().getAddressID() );
@@ -90,9 +90,9 @@ public class CustomerAccount extends DBPersistent {
         //getCustomerLogin().add();
         //getCustomerBase().getPrimaryContact().setLogInID( getCustomerLogin().getLoginID() );
         
-    	if (getCustomerAccount().getCustomerID().intValue() == com.cannontech.database.db.stars.customer.CustomerBase.NONE_INT) {
-    		getCustomerBase().add();
-    		getCustomerAccount().setCustomerID( getCustomerBase().getCustomerBase().getCustomerID() );
+    	if (getCustomerAccount().getCustomerID().intValue() == 0) {
+    		getCustomer().add();
+    		getCustomerAccount().setCustomerID( getCustomer().getCustomer().getCustomerID() );
     	}
 
 		if (getCustomerAccount().getAccountSiteID().intValue() == com.cannontech.database.db.stars.customer.AccountSite.NONE_INT) {
@@ -116,8 +116,8 @@ public class CustomerAccount extends DBPersistent {
     public void update() throws java.sql.SQLException {
         getCustomerAccount().update();
 
-		if (getCustomerBase() != null)
-			getCustomerBase().update();
+		if (getCustomer() != null)
+			getCustomer().update();
 		
         getAccountSite().update();
         getBillingAddress().update();
@@ -134,11 +134,11 @@ public class CustomerAccount extends DBPersistent {
         getAccountSite().setAccountSiteID( getCustomerAccount().getAccountSiteID() );
         getAccountSite().retrieve();
 
-        if (getCustomerBase() == null) {
-            customerBase = new com.cannontech.database.data.stars.customer.CustomerBase();
-            customerBase.setCustomerID( getCustomerAccount().getCustomerID() );
-            customerBase.setDbConnection( getDbConnection() );
-            customerBase.retrieve();
+        if (getCustomer() == null) {
+            customer = new com.cannontech.database.data.customer.Customer();
+            customer.setCustomerID( getCustomerAccount().getCustomerID() );
+            customer.setDbConnection( getDbConnection() );
+            customer.retrieve();
         }
 
         com.cannontech.database.db.stars.appliance.ApplianceBase[] appliances =
@@ -203,22 +203,22 @@ public class CustomerAccount extends DBPersistent {
         accountSite = newAccountSite;
     }
 
-    public com.cannontech.database.db.customer.CustomerAddress getBillingAddress() {
+    public com.cannontech.database.db.customer.Address getBillingAddress() {
         if (billingAddress == null)
-            billingAddress = new com.cannontech.database.db.customer.CustomerAddress();
+            billingAddress = new com.cannontech.database.db.customer.Address();
         return billingAddress;
     }
 
-    public void setBillingAddress(com.cannontech.database.db.customer.CustomerAddress newBillingAddress) {
+    public void setBillingAddress(com.cannontech.database.db.customer.Address newBillingAddress) {
         billingAddress = newBillingAddress;
     }
 
-    public com.cannontech.database.data.stars.customer.CustomerBase getCustomerBase() {
-        return customerBase;
+    public com.cannontech.database.data.customer.Customer getCustomer() {
+        return customer;
     }
 
-    public void setCustomerBase(com.cannontech.database.data.stars.customer.CustomerBase newCustomerBase) {
-        customerBase = newCustomerBase;
+    public void setCustomer(com.cannontech.database.data.customer.Customer newCustomer) {
+        customer = newCustomer;
     }
 
     public Vector getApplianceVector() {

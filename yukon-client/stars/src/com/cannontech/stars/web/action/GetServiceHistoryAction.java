@@ -8,10 +8,12 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.CurrentState;
 import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.ServiceType;
@@ -81,6 +83,7 @@ public class GetServiceHistoryAction implements ActionBase {
         	}
         	
         	int energyCompanyID = user.getEnergyCompanyID();
+        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
         	
         	if (accountInfo.getServiceRequestHistory() == null) {
 		        com.cannontech.database.db.stars.report.WorkOrderBase[] orders =
@@ -93,15 +96,14 @@ public class GetServiceHistoryAction implements ActionBase {
 		        
 	        	accountInfo.setServiceRequestHistory( new ArrayList() );
 	        	for (int i = 0; i < orders.length; i++)
-	        		com.cannontech.stars.web.servlet.SOAPServer.addWorkOrderBase( energyCompanyID, orders[i] );
+	        		energyCompany.addWorkOrderBase( orders[i] );
         	}
         	
-        	Hashtable selectionLists = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( energyCompanyID );
+        	Hashtable selectionLists = energyCompany.getAllSelectionLists();
         	
         	StarsServiceRequestHistory orderHist = new StarsServiceRequestHistory();
         	for (int i = 0; i < accountInfo.getServiceRequestHistory().size(); i++) {
-        		LiteWorkOrderBase liteOrder = com.cannontech.stars.web.servlet.SOAPServer.getWorkOrderBase(
-        				energyCompanyID, ((Integer) accountInfo.getServiceRequestHistory().get(i)).intValue() );
+        		LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( ((Integer) accountInfo.getServiceRequestHistory().get(i)).intValue() );
         		orderHist.addStarsServiceRequest( StarsLiteFactory.createStarsServiceRequest( liteOrder, selectionLists ) );
         	}
         	

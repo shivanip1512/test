@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerAddressDescriptor.java,v 1.21 2003/02/12 19:25:07 zyao Exp $
+ * $Id: StarsCustomerAddressDescriptor.java,v 1.22 2003/02/14 01:25:04 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.21 $ $Date: 2003/02/12 19:25:07 $
+ * @version $Revision: 1.22 $ $Date: 2003/02/14 01:25:04 $
 **/
 public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -295,6 +295,44 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
         //-- validation code for: _zip
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _county
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_county", "County", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustomerAddress target = (StarsCustomerAddress) object;
+                return target.getCounty();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustomerAddress target = (StarsCustomerAddress) object;
+                    target.setCounty( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _county
+        fieldValidator = new FieldValidator();
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");

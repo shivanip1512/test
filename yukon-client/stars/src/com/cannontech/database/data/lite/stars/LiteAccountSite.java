@@ -15,7 +15,7 @@ public class LiteAccountSite extends LiteBase {
 	
 	private int siteInformationID = com.cannontech.database.db.stars.customer.SiteInformation.NONE_INT;
 	private String siteNumber = null;
-	private int streetAddressID = com.cannontech.database.db.customer.CustomerAddress.NONE_INT;
+	private int streetAddressID = 0;
 	private String propertyNotes = null;
 	
 	public LiteAccountSite() {

@@ -115,10 +115,11 @@ public class UpdateLMHardwareAction implements ActionBase {
         	}
         	
         	int energyCompanyID = user.getEnergyCompanyID();
-            Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
+        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+            Hashtable selectionLists = energyCompany.getAllSelectionLists();
             
             StarsUpdateLMHardware updateHw = reqOper.getStarsUpdateLMHardware();
-            LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, updateHw.getInventoryID(), true );
+            LiteLMHardwareBase liteHw = energyCompany.getLMHardware( updateHw.getInventoryID(), true );
             
             com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
             		(com.cannontech.database.data.stars.hardware.LMHardwareBase) StarsLiteFactory.createDBPersistent( liteHw );
@@ -197,7 +198,7 @@ public class UpdateLMHardwareAction implements ActionBase {
             }
             
             if (newServiceCompany) {
-            	LiteServiceCompany liteCompany = SOAPServer.getServiceCompany( energyCompanyID, liteHw.getInstallationCompanyID() );
+            	LiteServiceCompany liteCompany = energyCompany.getServiceCompany( liteHw.getInstallationCompanyID() );
             	StarsServiceCompany starsCompany = StarsLiteFactory.createStarsServiceCompany( liteCompany, energyCompanyID );
             	resp.setStarsServiceCompany( starsCompany );
             	ServerUtils.updateServiceCompanies( liteAcctInfo, energyCompanyID );

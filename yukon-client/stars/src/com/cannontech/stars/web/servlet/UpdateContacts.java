@@ -56,6 +56,7 @@ public class UpdateContacts extends HttpServlet {
             primContact.setFirstName( firstName );
             primContact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone")) );
             primContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone")) );
+            primContact.setEmail( req.getParameter("Email") );
             account.setPrimaryContact( primContact );
         }
 
@@ -73,6 +74,7 @@ public class UpdateContacts extends HttpServlet {
                 contact.setFirstName( firstName );
                 contact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone" + i)) );
                 contact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone" + i)) );
+                contact.setEmail( req.getParameter("Email" + i) );
                 account.addAdditionalContact( contact );
             }
         }

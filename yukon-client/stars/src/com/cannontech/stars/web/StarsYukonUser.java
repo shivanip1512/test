@@ -1,7 +1,6 @@
 package com.cannontech.stars.web;
 
 import java.util.*;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.ServerUtils;
@@ -33,21 +32,9 @@ public class StarsYukonUser {
 	}
 	
 	public LiteYukonUser getYukonUser() {
-		if (yukonUser != null) return yukonUser;
-		
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		synchronized(cache) {
-			Iterator i = cache.getAllYukonUsers().iterator();
-			while(i.hasNext()) {
-				LiteYukonUser user = (LiteYukonUser) i.next();
-				if (user.getUserID() == userID) {
-					yukonUser = user;
-					return yukonUser;
-				}
-			}
-		}
-		
-		return null;
+		if (yukonUser == null)
+			yukonUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( userID );
+		return yukonUser;
 	}
 	
 	public void resetYukonUser() {

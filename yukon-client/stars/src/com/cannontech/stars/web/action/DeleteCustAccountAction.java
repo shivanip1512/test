@@ -76,7 +76,7 @@ public class DeleteCustAccountAction implements ActionBase {
         	
         	if (ServerUtils.isResidentialCustomer(user)) {
         		com.cannontech.database.data.user.YukonUser yukonUser = new com.cannontech.database.data.user.YukonUser();
-        		yukonUser.setUserID( new Integer(liteAcctInfo.getYukonUser().getUserID()) );
+        		yukonUser.setUserID( new Integer(liteAcctInfo.getLoginID()) );
         		Transaction.createTransaction(Transaction.DELETE, yukonUser).execute();
         	}
         	

@@ -11,26 +11,27 @@ import com.cannontech.database.data.lite.LiteTypes;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class LiteCustomerAddress extends LiteBase {
+public class LiteAddress extends LiteBase {
 
 	private String locationAddress1 = null;
 	private String locationAddress2 = null;
 	private String cityName = null;
 	private String stateCode = null;
 	private String zipCode = null;
+	private String county = null;
 	
-	public LiteCustomerAddress() {
+	public LiteAddress() {
 		super();
-		setLiteType( LiteTypes.STARS_CUSTOMER_ADDRESS );
+		setLiteType( LiteTypes.STARS_ADDRESS );
 	}
 	
-	public LiteCustomerAddress(int addressID) {
+	public LiteAddress(int addressID) {
 		super();
 		setAddressID( addressID );
-		setLiteType( LiteTypes.STARS_CUSTOMER_ADDRESS );
+		setLiteType( LiteTypes.STARS_ADDRESS );
 	}
 	
-	public LiteCustomerAddress(int addressID, String locationAddr1, String locationAddr2, String city, String state, String zip) {
+	public LiteAddress(int addressID, String locationAddr1, String locationAddr2, String city, String state, String zip) {
 		super();
 		setAddressID( addressID );
 		locationAddress1 = locationAddr1;
@@ -38,7 +39,7 @@ public class LiteCustomerAddress extends LiteBase {
 		cityName = city;
 		stateCode = state;
 		zipCode = zip;
-		setLiteType( LiteTypes.STARS_CUSTOMER_ADDRESS );
+		setLiteType( LiteTypes.STARS_ADDRESS );
 	}
 	
 	public int getAddressID() {
@@ -127,6 +128,22 @@ public class LiteCustomerAddress extends LiteBase {
 	 */
 	public void setZipCode(String zipCode) {
 		this.zipCode = zipCode;
+	}
+
+	/**
+	 * Returns the county.
+	 * @return String
+	 */
+	public String getCounty() {
+		return county;
+	}
+
+	/**
+	 * Sets the county.
+	 * @param county The county to set
+	 */
+	public void setCounty(String county) {
+		this.county = county;
 	}
 
 }

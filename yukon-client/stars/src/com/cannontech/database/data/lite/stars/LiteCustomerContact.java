@@ -17,6 +17,7 @@ public class LiteCustomerContact extends LiteBase {
 	private String firstName = null;
 	private String homePhone = null;
 	private String workPhone = null;
+	private String email = null;
 	
 	public LiteCustomerContact() {
 		super();
@@ -29,13 +30,14 @@ public class LiteCustomerContact extends LiteBase {
 		setLiteType( LiteTypes.STARS_CUSTOMER_CONTACT );
 	}
 	
-	public LiteCustomerContact(int contactID, String lastName, String firstName, String homePhone, String workPhone) {
+	public LiteCustomerContact(int contactID, String lastName, String firstName, String homePhone, String workPhone, String email) {
 		super();
 		setContactID( contactID );
 		this.lastName = lastName;
 		this.firstName = firstName;
 		this.homePhone = homePhone;
 		this.workPhone = workPhone;
+		this.email = email;
 		setLiteType( LiteTypes.STARS_CUSTOMER_CONTACT );
 	}
 	
@@ -109,6 +111,22 @@ public class LiteCustomerContact extends LiteBase {
 	 */
 	public void setWorkPhone(String workPhone) {
 		this.workPhone = workPhone;
+	}
+
+	/**
+	 * Returns the email.
+	 * @return String
+	 */
+	public String getEmail() {
+		return email;
+	}
+
+	/**
+	 * Sets the email.
+	 * @param email The email to set
+	 */
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 }

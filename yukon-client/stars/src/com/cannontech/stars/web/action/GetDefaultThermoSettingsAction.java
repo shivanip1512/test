@@ -71,9 +71,10 @@ public class GetDefaultThermoSettingsAction implements ActionBase {
             	energyCompanyID = user.getEnergyCompanyID();
             }
             
-            java.util.Hashtable selectionLists = (java.util.Hashtable) SOAPServer.getAllSelectionLists( energyCompanyID );
+        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+            java.util.Hashtable selectionLists = energyCompany.getAllSelectionLists();
             
-            LiteStarsThermostatSettings liteSettings = SOAPServer.getDefaultThermostatSettings( energyCompanyID );
+            LiteStarsThermostatSettings liteSettings = energyCompany.getDefaultThermostatSettings();
             if (liteSettings == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot get default thermostat settings") );

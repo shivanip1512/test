@@ -100,9 +100,9 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		
 		com.cannontech.clientutils.CTILogger.debug(" ## DBChangeMsg ##\n" + msg);
 		
-		if( msg.getDatabase() == msg.CHANGE_CUSTOMER_CONTACT_DB )
+		if( msg.getDatabase() == msg.CHANGE_CONTACT_DB )
 		{
-			com.cannontech.database.data.lite.LiteCustomerContact obj = (com.cannontech.database.data.lite.LiteCustomerContact) lBase;
+			com.cannontech.database.data.lite.LiteContact obj = (com.cannontech.database.data.lite.LiteContact) lBase;
 		}
 	}
 
@@ -318,84 +318,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	
     	return null;
     }
-    
-    public static ArrayList getAllLMPrograms(int energyCompanyID) {
-    	LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-    	if (company == null) return null;
-    	
-		return company.getAllLMPrograms();
-    }
-    
-    public static ArrayList getAllApplianceCategories(int energyCompanyID) {
-    	LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-    	if (company == null) return null;
-    	
-    	return company.getAllApplianceCategories();
-    }
-
-	public static Hashtable getAllSelectionLists(int energyCompanyID) {
-    	LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-    	if (company == null) return null;
-    	
-    	return company.getAllSelectionLists();
-	}
-	
-	public static ArrayList getAllServiceCompanies(int energyCompanyID) {
-    	LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-    	if (company == null) return null;
-    	
-    	return company.getAllServiceCompanies();
-	}
-	
-	public static LiteStarsThermostatSettings getDefaultThermostatSettings(int energyCompanyID) {
-    	LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-    	if (company == null) return null;
-    	
-    	return company.getDefaultThermostatSettings();
-	}
-	
-	public static ArrayList getAllCustomerContacts(int energyCompanyID) {
-    	LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-    	if (company == null) return null;
-    	
-    	return company.getAllCustomerContacts();
-	}
-	
-	public static ArrayList getAllCustomerAddresses(int energyCompanyID) {
-    	LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-    	if (company == null) return null;
-    	
-    	return company.getAllCustomerAddresses();
-	}
-	
-	public static ArrayList getAllLMHardwares(int energyCompanyID) {
-    	LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-    	if (company == null) return null;
-    	
-    	return company.getAllLMHardwares();
-	}
-	
-	public static ArrayList getAllWorkOrders(int energyCompanyID) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.getAllWorkOrders();
-	}
-	
-	public static ArrayList getAllCustAccountInformation(int energyCompanyID) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.getAllCustAccountInformation();
-	}
-	
-	public static ArrayList getAllLMControlHistory(int energyCompanyID) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.getAllLMControlHistory();
-	}
-	
 	
 	public static LiteWebConfiguration getWebConfiguration(int configID) {
 		ArrayList webConfigList = getAllWebConfigurations();
@@ -428,110 +350,17 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		synchronized (userList) { userList.add( user ); }
 	}
 	
-	public static LiteInterviewQuestion[] getInterviewQuestions(int energyCompanyID, int questionType) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.getInterviewQuestions( questionType );
-	}
-	
-	
-	public static LiteApplianceCategory getApplianceCategory(int energyCompanyID, int applianceCategoryID) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.getApplianceCategory( applianceCategoryID );
-	}
-	
-	public static LiteServiceCompany getServiceCompany(int energyCompanyID, int serviceCompanyID) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.getServiceCompany( serviceCompanyID );
-	}
-	
-	public static LiteCustomerContact getCustomerContact(int energyCompanyID, int contactID) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.getCustomerContact( contactID );
-	}
-	
-	public static LiteCustomerAddress getCustomerAddress(int energyCompanyID, int addressID) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.getCustomerAddress( addressID );
-	}
-	
-	public static LiteCustomerAddress addCustomerAddress(int energyCompanyID, com.cannontech.database.db.customer.CustomerAddress addr) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.addCustomerAddress( addr );
-	}
-	
-	public static LiteLMProgram getLMProgram(int energyCompanyID, int programID) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.getLMProgram( programID );
-	}
-	
-	public static LiteLMHardwareBase getLMHardware(int energyCompanyID, int inventoryID, boolean autoLoad) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.getLMHardware( inventoryID, autoLoad );
-	}
-	
-	public static LiteLMHardwareBase addLMHardware(int energyCompanyID, com.cannontech.database.data.stars.hardware.LMHardwareBase hw) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.addLMHardware( hw );
-	}
-	
-	public static LiteStarsLMControlHistory getLMControlHistory(int energyCompanyID, int groupID) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.getLMControlHistory( groupID );
-	}
-	
-	public static LiteWorkOrderBase getWorkOrderBase(int energyCompanyID, int orderID) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.getWorkOrderBase( orderID );
-	}
-	
-	public static LiteWorkOrderBase addWorkOrderBase(int energyCompanyID, com.cannontech.database.db.stars.report.WorkOrderBase order) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.addWorkOrderBase( order );
-	}
-	
-	public static LiteStarsCustAccountInformation getCustAccountInformation(int energyCompanyID, int accountID, boolean autoLoad) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.getCustAccountInformation( accountID, autoLoad );
-	}
-	
-	public static LiteStarsCustAccountInformation addCustAccountInformation(int energyCompanyID, com.cannontech.database.data.stars.customer.CustomerAccount account) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.addCustAccountInformation( account );
-	}
-	
-	public static LiteStarsCustAccountInformation searchByAccountNumber(int energyCompanyID, String accountNo) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company == null) return null;
-		
-		return company.searchByAccountNumber( accountNo );
+	public static void updateStarsYukonUser(LiteYukonUser yukonUser) {
+		ArrayList userList = getAllStarsYukonUsers();
+		synchronized (userList) {
+			for (int i = 0; i < userList.size(); i++) {
+				StarsYukonUser user = (StarsYukonUser) userList.get(i);
+				if (user.getUserID() == yukonUser.getUserID()) {
+					user.resetYukonUser();
+					break;
+				}
+			}
+		}
 	}
 	
 	public static void updateLMControlHistory(LiteStarsLMControlHistory liteCtrlHist) {

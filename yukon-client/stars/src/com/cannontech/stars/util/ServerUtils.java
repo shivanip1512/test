@@ -9,6 +9,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.db.stars.CustomerSelectionList;
 import com.cannontech.database.db.stars.CustomerListEntry;
@@ -132,7 +133,7 @@ public class ServerUtils {
 		
 		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
 			Integer invID = (Integer) liteAcctInfo.getInventories().get(i);
-			LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID.intValue(), true );
+			LiteLMHardwareBase liteHw = SOAPServer.getEnergyCompany(energyCompanyID).getLMHardware( invID.intValue(), true );
 			Integer companyID = new Integer( liteHw.getInstallationCompanyID() );
 			if (!companyList.contains( companyID ))
 				companyList.add( companyID );
@@ -269,7 +270,7 @@ public class ServerUtils {
 	public static void handleDBChange(com.cannontech.database.data.lite.LiteBase lite, int typeOfChange) {
 		DBChangeMsg msg = null;
 		
-		if (lite instanceof com.cannontech.database.data.lite.LiteYukonUser) {
+		if (lite.getLiteType() == LiteTypes.YUKON_USER) {
 	    	msg = new DBChangeMsg(
 	    		lite.getLiteID(),
 	    		DBChangeMsg.CHANGE_YUKON_USER_DB,
@@ -277,6 +278,15 @@ public class ServerUtils {
 	    		DBChangeMsg.CAT_YUKON_USER,
 	    		typeOfChange
 	    		);
+		}
+		else if (lite.getLiteType() == LiteTypes.CONTACT || lite.getLiteType() == LiteTypes.STARS_CUSTOMER_CONTACT) {
+			msg = new DBChangeMsg(
+				lite.getLiteID(),
+				DBChangeMsg.CHANGE_CONTACT_DB,
+				DBChangeMsg.CAT_CUSTOMERCONTACT,
+				DBChangeMsg.CAT_CUSTOMERCONTACT,
+				typeOfChange
+				);
 		}
 		
 		DefaultDatabaseCache.getInstance().handleDBChangeMessage( msg );

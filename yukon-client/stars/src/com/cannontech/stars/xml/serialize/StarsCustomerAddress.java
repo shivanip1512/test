@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerAddress.java,v 1.21 2003/02/12 19:25:15 zyao Exp $
+ * $Id: StarsCustomerAddress.java,v 1.22 2003/02/14 01:25:09 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.21 $ $Date: 2003/02/12 19:25:15 $
+ * @version $Revision: 1.22 $ $Date: 2003/02/14 01:25:09 $
 **/
 public abstract class StarsCustomerAddress implements java.io.Serializable {
 
@@ -48,6 +48,8 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
     private java.lang.String _state;
 
     private java.lang.String _zip;
+
+    private java.lang.String _county;
 
 
       //----------------/
@@ -89,6 +91,16 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
     {
         return this._city;
     } //-- java.lang.String getCity() 
+
+    /**
+     * Returns the value of field 'county'.
+     * 
+     * @return the value of field 'county'.
+    **/
+    public java.lang.String getCounty()
+    {
+        return this._county;
+    } //-- java.lang.String getCounty() 
 
     /**
      * Returns the value of field 'state'.
@@ -186,6 +198,16 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
     {
         this._city = city;
     } //-- void setCity(java.lang.String) 
+
+    /**
+     * Sets the value of field 'county'.
+     * 
+     * @param county the value of field 'county'.
+    **/
+    public void setCounty(java.lang.String county)
+    {
+        this._county = county;
+    } //-- void setCounty(java.lang.String) 
 
     /**
      * Sets the value of field 'state'.

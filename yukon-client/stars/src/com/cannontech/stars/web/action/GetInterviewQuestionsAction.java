@@ -7,6 +7,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.data.lite.stars.LiteCustomerSelectionList;
 import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -83,12 +84,13 @@ public class GetInterviewQuestionsAction implements ActionBase {
 	            }
             }
             
-            Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
+        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+            Hashtable selectionLists = energyCompany.getAllSelectionLists();
             
             int exitQType = StarsCustListEntryFactory.getStarsCustListEntry(
             		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_QUESTIONTYPE),
             		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_QUESTIONTYPE_EXIT ).getEntryID();
-            LiteInterviewQuestion[] liteQuestions = SOAPServer.getInterviewQuestions( energyCompanyID, exitQType );
+            LiteInterviewQuestion[] liteQuestions = energyCompany.getInterviewQuestions( exitQType );
             		
             StarsGetExitInterviewQuestionsResponse resp = new StarsGetExitInterviewQuestionsResponse();
             for (int i = 0; i < liteQuestions.length; i++) {

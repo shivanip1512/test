@@ -11,22 +11,22 @@ import com.cannontech.database.data.lite.LiteTypes;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class LiteCustomerBase extends LiteBase {
+public class LiteCustomer extends LiteBase {
 	
 	private int primaryContactID = 0;
-	private int customerTypeID = com.cannontech.database.db.stars.CustomerListEntry.NONE_INT;
+	private int customerTypeID = com.cannontech.database.data.customer.CustomerTypes.INVALID;
 	private String timeZone = null;
-	private java.util.ArrayList additionalContacts = null;
+	private java.util.ArrayList additionalContacts = null;	// List of customer contact IDs
 
-	public LiteCustomerBase() {
+	public LiteCustomer() {
 		super();
-		setLiteType( LiteTypes.STARS_CUSTOMER_BASE );
+		setLiteType( LiteTypes.STARS_CUSTOMER );
 	}
 	
-	public LiteCustomerBase(int customerID) {
+	public LiteCustomer(int customerID) {
 		super();
 		setCustomerID( customerID );
-		setLiteType( LiteTypes.STARS_CUSTOMER_BASE );
+		setLiteType( LiteTypes.STARS_CUSTOMER );
 	}
 	
 	public int getCustomerID() {
@@ -41,6 +41,8 @@ public class LiteCustomerBase extends LiteBase {
 	 * @return java.util.ArrayList
 	 */
 	public java.util.ArrayList getAdditionalContacts() {
+		if (additionalContacts == null)
+			additionalContacts = new java.util.ArrayList(4);
 		return additionalContacts;
 	}
 

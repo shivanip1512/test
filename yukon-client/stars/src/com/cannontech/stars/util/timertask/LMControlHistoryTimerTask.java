@@ -48,7 +48,7 @@ public class LMControlHistoryTimerTask extends StarsTimerTask {
 		for (int i = 0; i < companies.length; i++) {
 			if (companies[i].getEnergyCompanyID().intValue() < 0) continue;
 			
-			ArrayList ctrlHistList = SOAPServer.getAllLMControlHistory( companies[i].getLiteID() );
+			ArrayList ctrlHistList = companies[i].getAllLMControlHistory();
 			if (ctrlHistList.size() == 0) continue;
 
 			for (int j = 0; j < ctrlHistList.size(); j++) {

@@ -126,15 +126,13 @@ public class YukonSwitchCommandAction implements ActionBase {
         	}
                 
 			int energyCompanyID = user.getEnergyCompanyID();
-			
-			LiteStarsEnergyCompany company = SOAPServer.getEnergyCompany( energyCompanyID );
-			String routeStr = (company == null) ? "" : " select route id " + String.valueOf(company.getRouteID());
+			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
             StarsYukonSwitchCommand command = reqOper.getStarsYukonSwitchCommand();
             StarsYukonSwitchCommandResponse cmdResp = new StarsYukonSwitchCommandResponse();
             
             // Get list entry IDs
-            Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
+            Hashtable selectionLists = energyCompany.getAllSelectionLists();
             
             Integer hwEventEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
             		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT),
@@ -156,11 +154,13 @@ public class YukonSwitchCommandAction implements ActionBase {
             		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
             		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_CONFIG)
             		.getEntryID() );
+            		
+			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getRouteID());
             
             if (command.getStarsDisableService() != null) {
                 StarsDisableService service = command.getStarsDisableService();
                 Integer invID = new Integer( service.getInventoryID() );
-        		LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID.intValue(), true );
+        		LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
         		
         		if (liteHw == null) {
 	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
@@ -202,7 +202,7 @@ public class YukonSwitchCommandAction implements ActionBase {
             else if (command.getStarsEnableService() != null) {
                 StarsEnableService service = command.getStarsEnableService();
                 Integer invID = new Integer( service.getInventoryID() );
-        		LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID.intValue(), true );
+        		LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
         		
         		if (liteHw == null) {
 	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
@@ -244,7 +244,7 @@ public class YukonSwitchCommandAction implements ActionBase {
             else if (command.getStarsConfig() != null) {
                 StarsConfig service = command.getStarsConfig();
                 Integer invID = new Integer( service.getInventoryID() );
-        		LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID.intValue(), true );
+        		LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
         		
         		if (liteHw == null) {
 	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(

@@ -134,6 +134,8 @@ public class UpdateServiceRequestAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
         	
+        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+        	
         	ArrayList orderHist = accountInfo.getServiceRequestHistory();
         	StarsUpdateServiceRequest updateOrders = reqOper.getStarsUpdateServiceRequest();
         	StarsUpdateServiceRequestResponse resp = new StarsUpdateServiceRequestResponse();
@@ -143,7 +145,7 @@ public class UpdateServiceRequestAction implements ActionBase {
         		for (int j = 0; j < orderHist.size(); j++) {
         			int orderID = ((Integer) orderHist.get(j)).intValue();
         			if (orderID == newOrder.getOrderID()) {
-        				LiteWorkOrderBase liteOrder = SOAPServer.getWorkOrderBase( user.getEnergyCompanyID(), orderID );
+        				LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( orderID );
         				
         				if (newOrder.getServiceType() != null)
         					liteOrder.setWorkTypeID( newOrder.getServiceType().getEntryID() );
@@ -180,7 +182,7 @@ public class UpdateServiceRequestAction implements ActionBase {
 			            }
 			            
 			            if (newServiceCompany) {
-			            	LiteServiceCompany liteCompany = SOAPServer.getServiceCompany( user.getEnergyCompanyID(), liteOrder.getServiceCompanyID() );
+			            	LiteServiceCompany liteCompany = energyCompany.getServiceCompany( liteOrder.getServiceCompanyID() );
 			            	StarsServiceCompany starsCompany = StarsLiteFactory.createStarsServiceCompany( liteCompany, user.getEnergyCompanyID() );
 			            	resp.addStarsServiceCompany( starsCompany );
 			            	ServerUtils.updateServiceCompanies( accountInfo, user.getEnergyCompanyID() );

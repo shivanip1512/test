@@ -7,9 +7,11 @@ import javax.xml.soap.SOAPMessage;
 import java.util.*;
 
 import com.cannontech.database.data.lite.stars.LiteCustomerSelectionList;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.util.*;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.StarsFailureFactory;
@@ -77,7 +79,8 @@ public class GetCustSelListsAction implements ActionBase {
             	energyCompanyID = user.getEnergyCompanyID();
             }
             
-            Hashtable selectionListTable = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( energyCompanyID );
+        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+            Hashtable selectionListTable = energyCompany.getAllSelectionLists();
             StarsGetCustSelectionListsResponse response = new StarsGetCustSelectionListsResponse();
             
             Iterator it = selectionListTable.values().iterator();

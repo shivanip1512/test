@@ -58,7 +58,7 @@
 			<xs:element name="FirstName" type="xs:string"/>
 			<xs:element name="HomePhone" type="xs:string"/>
 			<xs:element name="WorkPhone" type="xs:string"/>
-		</xs:sequence>
+		<xs:element name="Email" type="xs:string" minOccurs="0"/></xs:sequence>
 		<xs:attribute name="contactID" type="xs:int"/>
 	</xs:complexType>
 	<xs:complexType name="stars-CustomerAddress">
@@ -68,7 +68,7 @@
 			<xs:element name="City" type="xs:string"/>
 			<xs:element name="State" type="xs:string"/>
 			<xs:element name="Zip" type="xs:string"/>
-		</xs:sequence>
+		<xs:element name="County" type="xs:string" minOccurs="0"/></xs:sequence>
 		<xs:attribute name="addressID" type="xs:int"/>
 	</xs:complexType>
 	<xs:complexType name="stars-CustAccount">

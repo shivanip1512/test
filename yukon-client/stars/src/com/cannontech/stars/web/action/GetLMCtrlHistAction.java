@@ -6,11 +6,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.*;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.*;
 import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -81,10 +83,11 @@ public class GetLMCtrlHistAction implements ActionBase {
             }
             
             int energyCompanyID = user.getEnergyCompanyID();
+        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
 
             StarsGetLMControlHistory getHist = reqOper.getStarsGetLMControlHistory();
 
-            LiteStarsLMControlHistory liteCtrlHist = com.cannontech.stars.web.servlet.SOAPServer.getLMControlHistory( energyCompanyID, getHist.getGroupID() );
+            LiteStarsLMControlHistory liteCtrlHist = energyCompany.getLMControlHistory( getHist.getGroupID() );
             StarsLMControlHistory starsCtrlHist = StarsLiteFactory.createStarsLMControlHistory(
             		liteCtrlHist, getHist.getPeriod(), getHist.getGetSummary() );
                 

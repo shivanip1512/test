@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerContactDescriptor.java,v 1.21 2003/02/12 19:25:18 zyao Exp $
+ * $Id: StarsCustomerContactDescriptor.java,v 1.22 2003/02/14 01:25:11 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.21 $ $Date: 2003/02/12 19:25:18 $
+ * @version $Revision: 1.22 $ $Date: 2003/02/14 01:25:11 $
 **/
 public class StarsCustomerContactDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -255,6 +255,44 @@ public class StarsCustomerContactDescriptor extends org.exolab.castor.xml.util.X
         //-- validation code for: _workPhone
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _email
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_email", "Email", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustomerContact target = (StarsCustomerContact) object;
+                return target.getEmail();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustomerContact target = (StarsCustomerContact) object;
+                    target.setEmail( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _email
+        fieldValidator = new FieldValidator();
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");
