@@ -1,20 +1,10 @@
 <html>
+<%@ include file="billing_header.jsp" %>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
-
-<%java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");%>
-
-<jsp:useBean id="billingBean" class="com.cannontech.billing.mainprograms.BillingBean" scope="session">
-	<%-- this body is executed only if the bean is created --%>
-<jsp:setProperty name="billingBean" property="endDateStr" value="<%=datePart.format(com.cannontech.util.ServletUtil.getToday())%>"/>
-<jsp:setProperty name="billingBean" property="demandDaysPrev" value="30"/>
-<jsp:setProperty name="billingBean" property="energyDaysPrev" value="7"/>
-<jsp:setProperty name="billingBean" property="fileFormat" value="1"/>
-    <%-- intialize bean properties --%>
-</jsp:useBean>
 
 <SCRIPT  LANGUAGE="JavaScript1.2" SRC="../../JavaScript/Calendar1-82.js"></SCRIPT>
 </head>
@@ -33,6 +23,10 @@ function update()
 	document.MForm.submit();
 }
 
+function updateDemandDate()
+{
+ document.getElementById('DEMANDSTART').innerHTML = "xx";
+}
 </SCRIPT>
 
 <body class="Background" text="#000000" leftmargin="0" topmargin="0">
@@ -45,7 +39,7 @@ function update()
 				<td valign="bottom" height="102"> 
 					<table width="657" cellspacing="0"  cellpadding="0" border="0">
 						<tr> 
-							<td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
+							<td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
 						</tr>
 						<tr> 
 							<td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Commercial Metering&nbsp;&nbsp;</td>
@@ -82,16 +76,15 @@ function update()
 
 					<form name = "MForm">
 <jsp:setProperty name="billingBean" property="fileFormat" param="format"/>
-<jsp:setProperty name="billingBean" property="billingGroupType" param="gType"/>
-<jsp:setProperty name="billingBean" property="billingGroup" param="grp"/>
+<jsp:setProperty name="billingBean" property="billGroupType" param="gType"/>
+<jsp:setProperty name="billingBean" property="billGroup" param="grp"/>
 <jsp:setProperty name="billingBean" property="appendToFile" param="append"/>
 <jsp:setProperty name="billingBean" property="removeMult" param="mult"/>
 <jsp:setProperty name="billingBean" property="demandDaysPrev" param="dDays"/>
 <jsp:setProperty name="billingBean" property="energyDaysPrev" param="eDays"/>
 <jsp:setProperty name="billingBean" property="endDateStr" param="end"/>
-								
-					
-						<table width="55%" border="0" cellspacing="0" cellpadding="4" height="209" align = "center">
+							
+						<table width="65%" border="0" cellspacing="0" cellpadding="4" height="209" align = "center">
 							<tr> 
 								<td height="162" colspan = "3"> 
 									<table width="100%" border="1" cellspacing="0" cellpadding="3" height="148" align = "center">
@@ -103,14 +96,14 @@ function update()
 														<td width="50%"> 
 															<select name = "format" onchange="update()">
 																<% /* Fill in the possible file format types*/
-																int [] formats = com.cannontech.billing.FileFormatTypes.getValidFormatIDs();	
+																int [] formats = FileFormatTypes.getValidFormatIDs();	
 																int selectedFormat = billingBean.getFileFormat();
 																for( int i = 0; i < formats.length; i++ )
 																{
 																	if( formats[i] == selectedFormat)
-																		out.println("<OPTION VALUE=" + formats[i] + " SELECTED>" + com.cannontech.billing.FileFormatTypes.getFormatType(selectedFormat));
+																		out.println("<OPTION VALUE=" + formats[i] + " SELECTED>" + FileFormatTypes.getFormatType(selectedFormat));
 																	else
-																		out.println("<OPTION VALUE=" + formats[i] + ">" + com.cannontech.billing.FileFormatTypes.getFormatType(formats[i]));
+																		out.println("<OPTION VALUE=" + formats[i] + ">" + FileFormatTypes.getFormatType(formats[i]));
 																}%>
 															</select>
 														</td>
@@ -120,21 +113,22 @@ function update()
 													<tr> 
 														<td width="50%" align = "right">Billing End Date:</td>
 														<td width="50%">
-															<input type="text" name="end" value="<%=datePart.format(billingBean.getEndDate())%>" size = "10">
+															<input type="text" name="end" value="<%=datePart.format(billingBean.getEndDate())%>" size = "10" onChange="update()">
 																<a href="javascript:show_calendar('MForm.end')"
-																	onMouseOver="window.status='Pop Calendar';return true;"
+																	onMouseOver="window.status='End Date Calendar';return true;"
 																	onMouseOut="window.status='';return true;">
 																	<img src="../../Images/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0">
 																</a> 
 														</td>
 													</tr>
 												</table>
-												<table width="100%" border="0" cellspacing="0" cellpadding="2" class = "TableCell">
+												<table width="100%" border="0" cellspacing="0" cellpadding="3" class = "TableCell">
 													<tr> 
 														<td width="50%" align = "right">Demand Days Previous:</td>
-														<td width="50%"> 
-															<input type="text" name="dDays" value="<%=billingBean.getDemandDaysPrev()%>" size = "5">
+														<td width="20%"> 
+															<input type="text" name="dDays" value="<%=billingBean.getDemandDaysPrev()%>" size = "5" onChange="update()">
 														</td>
+<!--														<td id="DEMANDSTART" width="30%" align="left"><%=datePart.format(billingBean.getDemandStartDate())%></td>-->
 													</tr>
 												</table>
 												<table width="100%" border="0" cellspacing="0" cellpadding="2" class = "TableCell" height="9">
@@ -188,15 +182,16 @@ function update()
 																	<td width="50%"> 
 																		<select name = "gType" onchange="update()">
 																			<% /* Fill in the possible file format types*/
-																			int [] groupTypes = com.cannontech.billing.mainprograms.BillingFileDefaults.getValidBillGroupTypeIDs();
-																			int selectedGrpType = billingBean.getBillingGroupType();
+																			int [] groupTypes = BillingFileDefaults.getValidBillGroupTypeIDs();
+																			
+																			int selectedGrpType = billingBean.getBillGroupType();
 																																					
 																			for( int i = 0; i < groupTypes.length; i++ )
 																			{
 																				if( groupTypes[i] == selectedGrpType)
-																					out.println("<OPTION VALUE=" + groupTypes[i] + " SELECTED>" + com.cannontech.billing.mainprograms.BillingFileDefaults.getBillGroupTypeString(selectedGrpType));
+																					out.println("<OPTION VALUE=" + groupTypes[i] + " SELECTED>" + BillingFileDefaults.getBillGroupTypeDisplayString(groupTypes[i]));
 																				else
-																					out.println("<OPTION VALUE=" + groupTypes[i] + ">" + com.cannontech.billing.mainprograms.BillingFileDefaults.getBillGroupTypeString(groupTypes[i]));
+																					out.println("<OPTION VALUE=" + groupTypes[i] + ">" + BillingFileDefaults.getBillGroupTypeDisplayString(groupTypes[i]));
 																			}%>
 																		</select>
 																	</td>
@@ -205,8 +200,8 @@ function update()
 																	<td width="50%" align="right">Billing Group:</td>
 																	<td width="50%"> 
 																		<%
-																		String [] groups = billingBean.getValidBillingGroups();	
-																		String selectedGrp = billingBean.getBillingGroup();
+																		String [] groups = billingBean.getValidBillGroups();	
+																		String selectedGrp = billingBean.getBillGroup();
 																		%>
 																		<select name = "grp" size="3" width="50%">
 																			<% /* Fill in the possible file format types*/
@@ -234,7 +229,7 @@ function update()
 									<table width="100%" border="1" cellspacing="0" cellpadding="8" height = "100%">
 										<tr>
 											<td bgcolor ="#CCCCCC">
-												<input type="submit" name="generate_submit" value="Generate" onclick = "jumpPage()">
+												<input type="submit" name="generate" value="Generate" onclick = "jumpPage()">
 											</td>
 										</tr>
 									</table>
