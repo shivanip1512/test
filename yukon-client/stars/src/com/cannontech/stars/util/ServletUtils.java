@@ -1,4 +1,4 @@
-package com.cannontech.stars.web.util;
+package com.cannontech.stars.util;
 
 import java.util.*;
 import com.cannontech.stars.xml.serialize.*;
@@ -12,7 +12,7 @@ import com.cannontech.stars.xml.serialize.*;
  * @version 1.0
  */
 
-public class CommonUtils {
+public class ServletUtils {
 	
 	public static class ProgramHistory {
 		private Date date = null;
@@ -46,7 +46,7 @@ public class CommonUtils {
     
     private static GregorianCalendar veryEarlyDate = new GregorianCalendar(1970, Calendar.JANUARY, 2);
 
-    public CommonUtils() {
+    public ServletUtils() {
     }
 
     public static String getDurationString(int sec) {

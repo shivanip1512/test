@@ -77,7 +77,7 @@ public class GetCustSelListsAction implements ActionBase {
 	            	energyCompanyID = user.getEnergyCompanyID();
             }
             
-            Hashtable selectionListTable = com.cannontech.stars.util.CommonUtils.getSelectionListTable( new Integer(energyCompanyID) );
+            Hashtable selectionListTable = com.cannontech.stars.util.ServerUtils.getSelectionListTable( new Integer(energyCompanyID) );
             StarsGetCustSelectionListsResponse response = new StarsGetCustSelectionListsResponse();
             
             Iterator it = selectionListTable.values().iterator();

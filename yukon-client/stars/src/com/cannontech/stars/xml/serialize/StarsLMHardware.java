@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMHardware.java,v 1.11 2002/10/03 15:55:48 zyao Exp $
+ * $Id: StarsLMHardware.java,v 1.12 2002/10/11 21:44:25 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,22 +23,11 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.11 $ $Date: 2002/10/03 15:55:48 $
+ * @version $Revision: 1.12 $ $Date: 2002/10/11 21:44:25 $
 **/
-public class StarsLMHardware extends com.cannontech.stars.xml.serialize.StarsInventory 
+public class StarsLMHardware extends StarsLMHw 
 implements java.io.Serializable
 {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    private java.lang.String _manufactureSerialNumber;
-
-    private java.lang.String _LMDeviceType;
-
-    private StarsLMHardwareHistory _starsLMHardwareHistory;
 
 
       //----------------/
@@ -53,36 +42,6 @@ implements java.io.Serializable
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-     * Returns the value of field 'LMDeviceType'.
-     * 
-     * @return the value of field 'LMDeviceType'.
-    **/
-    public java.lang.String getLMDeviceType()
-    {
-        return this._LMDeviceType;
-    } //-- java.lang.String getLMDeviceType() 
-
-    /**
-     * Returns the value of field 'manufactureSerialNumber'.
-     * 
-     * @return the value of field 'manufactureSerialNumber'.
-    **/
-    public java.lang.String getManufactureSerialNumber()
-    {
-        return this._manufactureSerialNumber;
-    } //-- java.lang.String getManufactureSerialNumber() 
-
-    /**
-     * Returns the value of field 'starsLMHardwareHistory'.
-     * 
-     * @return the value of field 'starsLMHardwareHistory'.
-    **/
-    public StarsLMHardwareHistory getStarsLMHardwareHistory()
-    {
-        return this._starsLMHardwareHistory;
-    } //-- StarsLMHardwareHistory getStarsLMHardwareHistory() 
 
     /**
     **/
@@ -120,38 +79,6 @@ implements java.io.Serializable
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-     * Sets the value of field 'LMDeviceType'.
-     * 
-     * @param LMDeviceType the value of field 'LMDeviceType'.
-    **/
-    public void setLMDeviceType(java.lang.String LMDeviceType)
-    {
-        this._LMDeviceType = LMDeviceType;
-    } //-- void setLMDeviceType(java.lang.String) 
-
-    /**
-     * Sets the value of field 'manufactureSerialNumber'.
-     * 
-     * @param manufactureSerialNumber the value of field
-     * 'manufactureSerialNumber'.
-    **/
-    public void setManufactureSerialNumber(java.lang.String manufactureSerialNumber)
-    {
-        this._manufactureSerialNumber = manufactureSerialNumber;
-    } //-- void setManufactureSerialNumber(java.lang.String) 
-
-    /**
-     * Sets the value of field 'starsLMHardwareHistory'.
-     * 
-     * @param starsLMHardwareHistory the value of field
-     * 'starsLMHardwareHistory'.
-    **/
-    public void setStarsLMHardwareHistory(StarsLMHardwareHistory starsLMHardwareHistory)
-    {
-        this._starsLMHardwareHistory = starsLMHardwareHistory;
-    } //-- void setStarsLMHardwareHistory(StarsLMHardwareHistory) 
 
     /**
      * 

@@ -42,8 +42,6 @@ public class InventoryBase extends DBPersistent {
         delete( "ECToInventoryMapping", "InventoryID", getInventoryBase().getInventoryID() );
 
         getInventoryBase().delete();
-
-        setDbConnection(null);
     }
 
     public void add() throws java.sql.SQLException {
@@ -58,8 +56,6 @@ public class InventoryBase extends DBPersistent {
             };
             add( "ECToInventoryMapping", addValues );
         }
-
-        setDbConnection(null);
     }
 
     public void update() throws java.sql.SQLException {

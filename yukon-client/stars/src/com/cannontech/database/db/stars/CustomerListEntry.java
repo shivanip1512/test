@@ -22,14 +22,26 @@ public class CustomerListEntry extends DBPersistent {
     public static final String YUKONDEF_ACT_TERMINATION = "ACT_TERMINATION";
     public static final String YUKONDEF_ACT_TEMPTERMINATION = "ACT_TEMPTERMINATION";
     public static final String YUKONDEF_ACT_FUTUREACTIVATION = "ACT_FUTUREACTIVATION";
+    public static final String YUKONDEF_ACT_INSTALL = "ACT_INSTALL";
+    public static final String YUKONDEF_ACT_RECONFIG = "ACT_RECONFIG";
+    public static final String YUKONDEF_ACT_REPAIR = "ACT_REPAIR";
     public static final String YUKONDEF_CUSTTYPE_RES = "CUSTTYPE_RES";
     public static final String YUKONDEF_CUSTTYPE_COMM = "CUSTTYPE_COMM";
     public static final String YUKONDEF_INVCAT_ONEWAYREC = "INVCAT_ONEWAYREC";
     public static final String YUKONDEF_APPCAT_AC = "APPCAT_AC";
     public static final String YUKONDEF_APPCAT_WH = "APPCAT_WH";
+    public static final String YUKONDEF_APPCAT_HS = "APPCAT_HS";
+    public static final String YUKONDEF_APPCAT_PP = "APPCAT_PP";
+    public static final String YUKONDEF_APPCAT_HT = "APPCAT_HT";
+    public static final String YUKONDEF_SERVSTAT_TOBESCHED = "SERVSTAT_TOBESCHED";
+    public static final String YUKONDEF_SERVSTAT_SCHEDULED = "SERVSTAT_SCHEDULED";
+    public static final String YUKONDEF_SERVSTAT_COMPLETED = "SERVSTAT_COMPLETED";
     public static final String YUKONDEF_SEARCHBY_ACCTNO = "SEARCHBY_ACCTNO";
     public static final String YUKONDEF_SEARCHBY_PHONENO = "SEARCHBY_PHONENO";
     public static final String YUKONDEF_SEARCHBY_NAME = "SEARCHBY_NAME";
+    public static final String YUKONDEF_DEVSTAT_AVAIL = "DEVSTAT_AVAIL";
+    public static final String YUKONDEF_DEVSTAT_TEMPUNAVAIL = "DEVSTAT_TEMPUNAVAIL";
+    public static final String YUKONDEF_DEVSTAT_UNAVAIL = "DEVSTAT_UNAVAIL";
 
     private Integer entryID = null;
     private Integer listID = null;

@@ -7,8 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
-import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.StarsCustAccountInfoFactory;
 import com.cannontech.stars.xml.serialize.SearchBy;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInfo;
@@ -45,7 +45,7 @@ public class SearchCustAccountAction implements ActionBase {
             Enumeration enum = (operator == null) ? session.getAttributeNames() : operator.getAttributeNames();
             while (enum.hasMoreElements()) {
             	String attName = (String) enum.nextElement();
-            	if (attName.startsWith( CommonUtils.TRANSIENT_ATT_LEADING ))
+            	if (attName.startsWith( ServletUtils.TRANSIENT_ATT_LEADING ))
         			operator.removeAttribute(attName);
             }
 
@@ -84,7 +84,7 @@ public class SearchCustAccountAction implements ActionBase {
             StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
             com.cannontech.database.data.stars.customer.CustomerAccount account = null;
 
-            Hashtable selectionLists = com.cannontech.stars.util.CommonUtils.getSelectionListTable(
+            Hashtable selectionLists = com.cannontech.stars.util.ServerUtils.getSelectionListTable(
             		new Integer((int) operator.getEnergyCompanyID()) );
             		
             StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY );
@@ -136,7 +136,7 @@ public class SearchCustAccountAction implements ActionBase {
             if (accountInfo == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            operator.setAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION", accountInfo);
+            operator.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION", accountInfo);
             
             return 0;
         }

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsAppliance.java,v 1.11 2002/10/03 15:55:48 zyao Exp $
+ * $Id: StarsAppliance.java,v 1.12 2002/10/11 21:44:20 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,30 +23,11 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.11 $ $Date: 2002/10/03 15:55:48 $
+ * @version $Revision: 1.12 $ $Date: 2002/10/11 21:44:20 $
 **/
-public class StarsAppliance extends com.cannontech.stars.xml.serialize.StarsApp 
+public class StarsAppliance extends StarsApp 
 implements java.io.Serializable
 {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    private int _inventoryID;
-
-    /**
-     * keeps track of state for field: _inventoryID
-    **/
-    private boolean _has_inventoryID;
-
-    private int _lmProgramID;
-
-    /**
-     * keeps track of state for field: _lmProgramID
-    **/
-    private boolean _has_lmProgramID;
 
 
       //----------------/
@@ -61,54 +42,6 @@ implements java.io.Serializable
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-    **/
-    public void deleteInventoryID()
-    {
-        this._has_inventoryID= false;
-    } //-- void deleteInventoryID() 
-
-    /**
-    **/
-    public void deleteLmProgramID()
-    {
-        this._has_lmProgramID= false;
-    } //-- void deleteLmProgramID() 
-
-    /**
-     * Returns the value of field 'inventoryID'.
-     * 
-     * @return the value of field 'inventoryID'.
-    **/
-    public int getInventoryID()
-    {
-        return this._inventoryID;
-    } //-- int getInventoryID() 
-
-    /**
-     * Returns the value of field 'lmProgramID'.
-     * 
-     * @return the value of field 'lmProgramID'.
-    **/
-    public int getLmProgramID()
-    {
-        return this._lmProgramID;
-    } //-- int getLmProgramID() 
-
-    /**
-    **/
-    public boolean hasInventoryID()
-    {
-        return this._has_inventoryID;
-    } //-- boolean hasInventoryID() 
-
-    /**
-    **/
-    public boolean hasLmProgramID()
-    {
-        return this._has_lmProgramID;
-    } //-- boolean hasLmProgramID() 
 
     /**
     **/
@@ -146,28 +79,6 @@ implements java.io.Serializable
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-     * Sets the value of field 'inventoryID'.
-     * 
-     * @param inventoryID the value of field 'inventoryID'.
-    **/
-    public void setInventoryID(int inventoryID)
-    {
-        this._inventoryID = inventoryID;
-        this._has_inventoryID = true;
-    } //-- void setInventoryID(int) 
-
-    /**
-     * Sets the value of field 'lmProgramID'.
-     * 
-     * @param lmProgramID the value of field 'lmProgramID'.
-    **/
-    public void setLmProgramID(int lmProgramID)
-    {
-        this._lmProgramID = lmProgramID;
-        this._has_lmProgramID = true;
-    } //-- void setLmProgramID(int) 
 
     /**
      * 

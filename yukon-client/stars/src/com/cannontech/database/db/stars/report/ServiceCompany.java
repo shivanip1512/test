@@ -15,6 +15,8 @@ import com.cannontech.database.db.DBPersistent;
 public class ServiceCompany extends DBPersistent {
 
     public static final int NONE_INT = 0;
+    
+    public static final String LISTNAME_SERVICECOMPANY = "ServiceCompany";
 
     private Integer companyID = null;
     private String companyName = "";
@@ -111,6 +113,39 @@ public class ServiceCompany extends DBPersistent {
         }
 
         return new Integer( nextCompanyID );
+    }
+    
+    public static ServiceCompany[] getAllServiceCompanies(Integer energyCompanyID) {
+    	String sql = "SELECT company.* FROM " + TABLE_NAME + " company, ECToGenericMapping map "
+    			   + "WHERE map.MappingCategory = '" + TABLE_NAME + "' AND map.EnergyCompanyID = " + energyCompanyID.toString()
+    			   + " AND map.ItemID = company.CompanyID";
+    			   
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    			
+    	try {
+    		stmt.execute();
+    		
+    		ServiceCompany[] companies = new ServiceCompany[ stmt.getRowCount() ];
+    		for (int i = 0; i < stmt.getRowCount(); i++) {
+    			companies[i] = new ServiceCompany();
+    			Object[] row = stmt.getRow(i);
+    			companies[i].setCompanyID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+    			companies[i].setCompanyName( (String) row[1] );
+    			companies[i].setAddressID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+    			companies[i].setMainPhoneNumber( (String) row[3] );
+    			companies[i].setMainFaxNumber( (String) row[4] );
+    			companies[i].setPrimaryContactID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
+    			companies[i].setHIType( (String) row[6] );
+    		}
+    		
+    		return companies;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return null;
     }
 
     public Integer getCompanyID() {

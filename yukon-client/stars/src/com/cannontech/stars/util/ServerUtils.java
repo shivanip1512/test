@@ -11,7 +11,7 @@ import com.cannontech.stars.xml.serialize.*;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class CommonUtils {
+public class ServerUtils {
 	// Map of energy company to selection list table
 	// key: Integer energyCompanyID, value: java.util.Hashtable selectionListTable
     private static Hashtable selectionListTables = new Hashtable();
@@ -52,17 +52,32 @@ public class CommonUtils {
         // Get substation list
         com.cannontech.database.db.stars.Substation[] subs =
         		com.cannontech.database.data.stars.Substation.getAllSubstations( energyCompanyID );
-        StarsCustSelectionList starsList = new StarsCustSelectionList();
-        starsList.setListID( -1 );
-        starsList.setListName( "Substation" );
+        StarsCustSelectionList subList = new StarsCustSelectionList();
+        subList.setListID( -1 );
+        subList.setListName( "Substation" );
         
         for (int i = 0; i < subs.length; i++) {
         	StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
         	starsEntry.setEntryID( subs[i].getSubstationID().intValue() );
         	starsEntry.setContent( subs[i].getSubstationName() );
-        	starsList.addStarsSelectionListEntry( starsEntry );
+        	subList.addStarsSelectionListEntry( starsEntry );
         }
-        selectionListTable.put( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION, starsList );
+        selectionListTable.put( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION, subList );
+        
+        // Get service company list
+        com.cannontech.database.db.stars.report.ServiceCompany[] companies =
+        		com.cannontech.database.db.stars.report.ServiceCompany.getAllServiceCompanies( energyCompanyID );
+        StarsCustSelectionList companyList = new StarsCustSelectionList();
+        companyList.setListID( -1 );
+        companyList.setListName( "ServiceCompany" );
+        
+        for (int i = 0; i < companies.length; i++) {
+        	StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
+        	starsEntry.setEntryID( companies[i].getCompanyID().intValue() );
+        	starsEntry.setContent( companies[i].getCompanyName() );
+        	companyList.addStarsSelectionListEntry( starsEntry );
+        }
+        selectionListTable.put( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY, companyList );
         
 		selectionListTables.put( energyCompanyID, selectionListTable );
 		return selectionListTable;

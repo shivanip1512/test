@@ -7,8 +7,8 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
-import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.StarsCustAccountFactory;
 import com.cannontech.stars.xml.StarsCustomerAddressFactory;
 import com.cannontech.stars.xml.StarsCustomerContactFactory;
@@ -45,9 +45,9 @@ public class UpdateCustAccountAction implements ActionBase {
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			StarsCustAccountInfo accountInfo = null;
 			if (operator != null)
-				accountInfo = (StarsCustAccountInfo) operator.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInfo) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
 			else
-				accountInfo = (StarsCustAccountInfo) session.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInfo) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
             if (accountInfo == null) return null;
 
             StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();

@@ -4,6 +4,7 @@ import java.util.*;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.xml.util.*;
 import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.stars.xml.StarsCustListEntryFactory;
 import com.cannontech.database.data.stars.customer.CustomerAccount;
 import com.cannontech.database.db.stars.*;
 
@@ -17,7 +18,7 @@ import com.cannontech.database.db.stars.*;
  */
 public class StarsCustAccountInfoFactory {
 
-	public static StarsCustAccountInfo getStarsCustAccountInfo(CustomerAccount account, Hashtable selectionList, Class type) {
+	public static StarsCustAccountInfo getStarsCustAccountInfo(CustomerAccount account, Hashtable selectionLists, Class type) {
 		try {
             StarsCustAccountInfo accountInfo = (StarsCustAccountInfo) type.newInstance();
 
@@ -25,7 +26,7 @@ public class StarsCustAccountInfoFactory {
             com.cannontech.database.data.stars.customer.CustomerBase customer = account.getCustomerBase();
             com.cannontech.database.db.stars.customer.CustomerBase customerDB = customer.getCustomerBase();
             
-            StarsCustSelectionList custTypeList = (StarsCustSelectionList) selectionList.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE );            
+            StarsCustSelectionList custTypeList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE );            
             int custTypeCommID = 0;
             for (int i = 0; i < custTypeList.getStarsSelectionListEntryCount(); i++) {
             	StarsSelectionListEntry entry = custTypeList.getStarsSelectionListEntry(i);
@@ -114,7 +115,7 @@ public class StarsCustAccountInfoFactory {
 
             StarsAppliances appliances = new StarsAppliances();
             Vector applianceVector = account.getApplianceVector();            
-            StarsCustSelectionList appCatList = (StarsCustSelectionList) selectionList.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_APPLIANCECATEGORY );
+            StarsCustSelectionList appCatList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_APPLIANCECATEGORY );
 
             for (int i = 0; i < applianceVector.size(); i++) {
                 com.cannontech.database.data.stars.appliance.ApplianceBase appliance =
@@ -170,23 +171,67 @@ public class StarsCustAccountInfoFactory {
                     StarsLMHardware starsHW = new StarsLMHardware();
                     starsHW.setInventoryID( hardware.getInventoryBase().getInventoryID().intValue() );
                     starsHW.setCategory( hardware.getCategory().getEntryText() );
-                    starsHW.setInstallationCompany( hardware.getInstallationCompany().getCompanyName() );
                     starsHW.setReceiveDate( hardware.getInventoryBase().getReceiveDate() );
                     starsHW.setInstallDate( hardware.getInventoryBase().getInstallDate() );
                     starsHW.setRemoveDate( hardware.getInventoryBase().getRemoveDate() );
-                    if (hardware.getInventoryBase().getAlternateTrackingNumber() != null)
-                        starsHW.setAltTrackingNumber( hardware.getInventoryBase().getAlternateTrackingNumber() );
-                    else
-                        starsHW.setAltTrackingNumber( "" );
-                    starsHW.setVoltage( hardware.getVoltage().getEntryText() );
-                    if (hardware.getInventoryBase().getNotes() != null)
-                        starsHW.setNotes( hardware.getInventoryBase().getNotes() );
-                    else
-                        starsHW.setNotes( "" );
+                    starsHW.setAltTrackingNumber( hardware.getInventoryBase().getAlternateTrackingNumber() );
+                    starsHW.setNotes( hardware.getInventoryBase().getNotes() );
                     starsHW.setManufactureSerialNumber( hardware.getLMHardwareBase().getManufacturerSerialNumber() );
-                    starsHW.setLMDeviceType( hardware.getLMHardwareType().getEntryText() );
+                    
+                    InstallationCompany company = new InstallationCompany();
+                    company.setEntryID( hardware.getInstallationCompany().getCompanyID().intValue() );
+                    company.setContent( hardware.getInstallationCompany().getCompanyName() );
+                    starsHW.setInstallationCompany( company );
+                    
+                    Voltage volt = new Voltage();
+                    volt.setEntryID( hardware.getVoltage().getEntryID().intValue() );
+                    volt.setContent( hardware.getVoltage().getEntryText() );
+                    starsHW.setVoltage( volt );
+                    
+                    LMDeviceType devType = new LMDeviceType();
+                    devType.setEntryID( hardware.getLMHardwareType().getEntryID().intValue() );
+                    devType.setContent( hardware.getLMHardwareType().getEntryText() );
+                    starsHW.setLMDeviceType( devType );
+                    
                     starsHW.setStarsLMHardwareHistory( com.cannontech.database.data.stars.event.LMHardwareEvent.getStarsLMHardwareHistory(
                     			hardware.getInventoryBase().getInventoryID()) );
+                    
+                    // Set hardware status and installation notes based on hardware history
+                    StarsCustListEntry entry = StarsCustListEntryFactory.getStarsCustListEntry(
+                    		selectionLists, com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_UNAVAIL );
+                    DeviceStatus status = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry( entry, DeviceStatus.class );
+                    starsHW.setInstallationNotes( "" );
+                    
+                    StarsLMHardwareHistory hwHist = starsHW.getStarsLMHardwareHistory();
+                    if (hwHist != null) {
+                    	for (int j = 0; j < hwHist.getLMHardwareEventCount(); j++) {
+	                    	LMHardwareEvent event = hwHist.getLMHardwareEvent(j);
+    	                	if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TERMINATION ))
+    	                		break;
+    	                	else if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED )) {
+    	                		entry = StarsCustListEntryFactory.getStarsCustListEntry(
+                    					selectionLists, com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_AVAIL );
+                    			status = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry( entry, DeviceStatus.class );
+                    			break;
+    	                	}
+    	                	else if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TEMPTERMINATION )) {
+    	                		entry = StarsCustListEntryFactory.getStarsCustListEntry(
+                    					selectionLists, com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_TEMPUNAVAIL );
+                    			status = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry( entry, DeviceStatus.class );
+                    			break;
+    	                	}
+                    	}
+                    	
+                    	for (int j = hwHist.getLMHardwareEventCount() - 1; j >= 0; j--) {
+	                    	LMHardwareEvent event = hwHist.getLMHardwareEvent(j);
+	                    	if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_INSTALL )) {
+	                    		starsHW.setInstallationNotes( event.getNotes() );
+	                    		break;
+	                    	}
+                    	}
+                    }
+                    
+                    starsHW.setDeviceStatus( status );
 
                     inventories.addStarsLMHardware( starsHW );
                 }

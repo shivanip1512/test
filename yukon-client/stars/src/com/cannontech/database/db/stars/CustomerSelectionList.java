@@ -29,7 +29,7 @@ public class CustomerSelectionList extends DBPersistent {
     public static final String LISTNAME_SERVICETYPE = "ServiceType";
     public static final String LISTNAME_SERVICESTATUS = "ServiceStatus";
     public static final String LISTNAME_SEARCHBY = "SearchBy";
-    public static final String LISTNAME_SERVICECOMPANY = "ServiceCompany";
+    public static final String LISTNAME_DEVICESTATUS = "DeviceStatus";
 
     private Integer listID = null;
     private String ordering = ORDERING_NATURAL;

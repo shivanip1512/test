@@ -22,6 +22,8 @@ import com.cannontech.stars.honeywell.serialize.LMAppliance;
 import com.cannontech.stars.honeywell.serialize.LMHardware;
 import com.cannontech.stars.web.action.ActionBase;
 import com.cannontech.stars.xml.serialize.BillingAddress;
+import com.cannontech.stars.xml.serialize.InstallationCompany;
+import com.cannontech.stars.xml.serialize.LMDeviceType;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsAppliances;
@@ -35,6 +37,7 @@ import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsSearchCustomerAccountResponse;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
 import com.cannontech.stars.xml.serialize.StreetAddress;
+import com.cannontech.stars.xml.serialize.Voltage;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 import com.cannontech.stars.xml.util.SOAPMessenger;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -305,10 +308,8 @@ public class SearchCustAccountAction implements ActionBase {
 						invID = new Integer( invCnt++ );
 						invTable.put( hnwlHw.getINVENTORYID(), invID );
 					}
-					
 					lmHw.setInventoryID( invID.intValue() );
 					lmHw.setCategory( "OneWayReceiver" );
-					lmHw.setInstallationCompany( hnwlHw.getINSTALLATIONCOMPANYNAME() );
 					if ( hnwlHw.getRECEIVEDATE() != null )
 						lmHw.setReceiveDate( hnwlHw.getRECEIVEDATE() );
 					else if ( hnwlHw.getINSTALLDATE() != null )
@@ -316,10 +317,20 @@ public class SearchCustAccountAction implements ActionBase {
 					else if ( hnwlHw.getREMOVEDATE() != null )
 						lmHw.setRemoveDate( hnwlHw.getREMOVEDATE() );
 					lmHw.setAltTrackingNumber( hnwlHw.getALTERNATETRACKINGNUMBER() );
-					lmHw.setVoltage( hnwlHw.getVOLTAGE() );
 					lmHw.setNotes( hnwlHw.getNOTES() );
 					lmHw.setManufactureSerialNumber( hnwlHw.getMANUFACTURERSERIALNUMBER() );
-					lmHw.setLMDeviceType( hnwlHw.getLMDEVICETYPE() );
+					
+					InstallationCompany company = new InstallationCompany();
+					company.setContent( hnwlHw.getINSTALLATIONCOMPANYNAME() );
+					lmHw.setInstallationCompany( company );
+					
+					Voltage volt = new Voltage();
+					volt.setContent( hnwlHw.getVOLTAGE() );
+					lmHw.setVoltage( volt );
+					
+					LMDeviceType type = new LMDeviceType();
+					type.setContent( hnwlHw.getLMDEVICETYPE() );
+					lmHw.setLMDeviceType( type );
 					
 					StarsInventories inventories = acctInfo.getStarsInventories();
 					inventories.addStarsLMHardware( lmHw );

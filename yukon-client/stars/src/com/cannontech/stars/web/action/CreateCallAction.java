@@ -8,8 +8,8 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
-import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.StarsCallReportFactory;
 import com.cannontech.stars.xml.serialize.CallType;
 import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
@@ -135,10 +135,10 @@ public class CreateCallAction implements ActionBase {
 			StarsCallReportHistory callHist = (StarsCallReportHistory) StarsCallReportFactory.newStarsCallReport( createCall, StarsCallReportHistory.class );
 			
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsGetCallReportHistoryResponse callHists = (StarsGetCallReportHistoryResponse) operator.getAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING" );
+			StarsGetCallReportHistoryResponse callHists = (StarsGetCallReportHistoryResponse) operator.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING" );
 			if (callHists == null) {
 				callHists = new StarsGetCallReportHistoryResponse();
-				operator.setAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING", callHists );
+				operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING", callHists );
 			}
 			callHists.addStarsCallReportHistory( 0, callHist );
 			

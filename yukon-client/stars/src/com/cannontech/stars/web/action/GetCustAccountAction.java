@@ -7,8 +7,8 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.data.stars.customer.CustomerAccount;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsUser;
-import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.StarsCustAccountInfoFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInfo;
 import com.cannontech.stars.xml.serialize.StarsFailure;
@@ -79,7 +79,7 @@ public class GetCustAccountAction implements ActionBase {
             }
 
         	user.setAttribute("CUSTOMER_ACCOUNT", account);
-            Hashtable selectionLists = com.cannontech.stars.util.CommonUtils.getSelectionListTable(
+            Hashtable selectionLists = com.cannontech.stars.util.ServerUtils.getSelectionListTable(
             		new Integer(user.getEnergyCompanyID()) );
             
 			StarsCustAccountInfo accountInfo = StarsCustAccountInfoFactory.getStarsCustAccountInfo(
@@ -109,7 +109,7 @@ public class GetCustAccountAction implements ActionBase {
             if (accountInfo == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
 			StarsUser user = (StarsUser) session.getAttribute("USER");
-            user.setAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION", accountInfo);
+            user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION", accountInfo);
             
             return 0;
         }

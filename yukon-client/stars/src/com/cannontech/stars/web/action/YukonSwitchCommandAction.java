@@ -13,9 +13,9 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.servlet.PILConnectionServlet;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.web.StarsUser;
-import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInfo;
 import com.cannontech.stars.xml.serialize.StarsDisableService;
 import com.cannontech.stars.xml.serialize.StarsEnableService;
@@ -61,9 +61,9 @@ public class YukonSwitchCommandAction implements ActionBase {
 			
 			StarsCustAccountInfo accountInfo = null;
 			if (operator != null)
-				accountInfo = (StarsCustAccountInfo) operator.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInfo) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
 			else
-				accountInfo = (StarsCustAccountInfo) user.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInfo) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
             if (accountInfo == null) return null;
 
             String action = req.getParameter("action");
@@ -136,9 +136,9 @@ public class YukonSwitchCommandAction implements ActionBase {
 			StarsUser user = (StarsUser) session.getAttribute("USER");
 			StarsCustAccountInfo accountInfo = null;
 			if (operator != null)
-				accountInfo = (StarsCustAccountInfo) operator.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInfo) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
 			else
-				accountInfo = (StarsCustAccountInfo) user.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInfo) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
 				
 			StarsInventories inventories = accountInfo.getStarsInventories();
 			StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
@@ -166,9 +166,9 @@ public class YukonSwitchCommandAction implements ActionBase {
             }
             
             if (operator != null)
-	            operator.removeAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY" );
+	            operator.removeAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY" );
 	        else
-	        	user.removeAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY" );
+	        	user.removeAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY" );
 			
             return 0;
         }
@@ -233,7 +233,7 @@ public class YukonSwitchCommandAction implements ActionBase {
             StarsSwitchCommandResponse cmdResp = new StarsSwitchCommandResponse();
             
             // Get list entry IDs
-            Hashtable selectionLists = com.cannontech.stars.util.CommonUtils.getSelectionListTable(
+            Hashtable selectionLists = com.cannontech.stars.util.ServerUtils.getSelectionListTable(
             		energyCompany.getEnergyCompany().getEnergyCompanyID() );
             
             Integer hwEventEntryID = null;

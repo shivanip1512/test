@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.11 2002/10/03 15:55:52 zyao Exp $
+ * $Id: StarsOperation.java,v 1.12 2002/10/11 21:44:23 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.11 $ $Date: 2002/10/03 15:55:52 $
+ * @version $Revision: 1.12 $ $Date: 2002/10/11 21:44:23 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -98,6 +98,12 @@ public class StarsOperation implements java.io.Serializable {
 
     private StarsCreateAppliance _starsCreateAppliance;
 
+    private StarsCreateApplianceResponse _starsCreateApplianceResponse;
+
+    private StarsCreateLMHardware _starsCreateLMHardware;
+
+    private StarsCreateLMHardwareResponse _starsCreateLMHardwareResponse;
+
 
       //----------------/
      //- Constructors -/
@@ -123,6 +129,16 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsCreateAppliance getStarsCreateAppliance() 
 
     /**
+     * Returns the value of field 'starsCreateApplianceResponse'.
+     * 
+     * @return the value of field 'starsCreateApplianceResponse'.
+    **/
+    public StarsCreateApplianceResponse getStarsCreateApplianceResponse()
+    {
+        return this._starsCreateApplianceResponse;
+    } //-- StarsCreateApplianceResponse getStarsCreateApplianceResponse() 
+
+    /**
      * Returns the value of field 'starsCreateCallReport'.
      * 
      * @return the value of field 'starsCreateCallReport'.
@@ -131,6 +147,26 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsCreateCallReport;
     } //-- StarsCreateCallReport getStarsCreateCallReport() 
+
+    /**
+     * Returns the value of field 'starsCreateLMHardware'.
+     * 
+     * @return the value of field 'starsCreateLMHardware'.
+    **/
+    public StarsCreateLMHardware getStarsCreateLMHardware()
+    {
+        return this._starsCreateLMHardware;
+    } //-- StarsCreateLMHardware getStarsCreateLMHardware() 
+
+    /**
+     * Returns the value of field 'starsCreateLMHardwareResponse'.
+     * 
+     * @return the value of field 'starsCreateLMHardwareResponse'.
+    **/
+    public StarsCreateLMHardwareResponse getStarsCreateLMHardwareResponse()
+    {
+        return this._starsCreateLMHardwareResponse;
+    } //-- StarsCreateLMHardwareResponse getStarsCreateLMHardwareResponse() 
 
     /**
      * Returns the value of field 'starsCreateServiceRequest'.
@@ -451,6 +487,17 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsCreateAppliance(StarsCreateAppliance) 
 
     /**
+     * Sets the value of field 'starsCreateApplianceResponse'.
+     * 
+     * @param starsCreateApplianceResponse the value of field
+     * 'starsCreateApplianceResponse'.
+    **/
+    public void setStarsCreateApplianceResponse(StarsCreateApplianceResponse starsCreateApplianceResponse)
+    {
+        this._starsCreateApplianceResponse = starsCreateApplianceResponse;
+    } //-- void setStarsCreateApplianceResponse(StarsCreateApplianceResponse) 
+
+    /**
      * Sets the value of field 'starsCreateCallReport'.
      * 
      * @param starsCreateCallReport the value of field
@@ -460,6 +507,28 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsCreateCallReport = starsCreateCallReport;
     } //-- void setStarsCreateCallReport(StarsCreateCallReport) 
+
+    /**
+     * Sets the value of field 'starsCreateLMHardware'.
+     * 
+     * @param starsCreateLMHardware the value of field
+     * 'starsCreateLMHardware'.
+    **/
+    public void setStarsCreateLMHardware(StarsCreateLMHardware starsCreateLMHardware)
+    {
+        this._starsCreateLMHardware = starsCreateLMHardware;
+    } //-- void setStarsCreateLMHardware(StarsCreateLMHardware) 
+
+    /**
+     * Sets the value of field 'starsCreateLMHardwareResponse'.
+     * 
+     * @param starsCreateLMHardwareResponse the value of field
+     * 'starsCreateLMHardwareResponse'.
+    **/
+    public void setStarsCreateLMHardwareResponse(StarsCreateLMHardwareResponse starsCreateLMHardwareResponse)
+    {
+        this._starsCreateLMHardwareResponse = starsCreateLMHardwareResponse;
+    } //-- void setStarsCreateLMHardwareResponse(StarsCreateLMHardwareResponse) 
 
     /**
      * Sets the value of field 'starsCreateServiceRequest'.

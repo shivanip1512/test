@@ -126,7 +126,7 @@ public class ProgramSignUpAction implements ActionBase {
 	        	}
 	        	
 	        	// Get "Signup" action & event type ID
-            	java.util.Hashtable selectionLists = com.cannontech.stars.util.CommonUtils.getSelectionListTable(
+            	java.util.Hashtable selectionLists = com.cannontech.stars.util.ServerUtils.getSelectionListTable(
             			new Integer(energyCompanyID) );
             			
             	Integer progEventEntryID = null;

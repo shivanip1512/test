@@ -8,8 +8,8 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
-import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.StarsServiceRequestFactory;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
 import com.cannontech.stars.xml.serialize.CurrentState;
@@ -64,7 +64,7 @@ public class CreateServiceRequestAction implements ActionBase {
 			
 			ServiceCompany company = new ServiceCompany();
 			company.setEntryID( Integer.parseInt(req.getParameter("ServiceCompany")) );
-			StarsCustSelectionList companyList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICECOMPANY );
+			StarsCustSelectionList companyList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
 			for (int i = 0; i < companyList.getStarsSelectionListEntryCount(); i++) {
 				StarsSelectionListEntry entry = companyList.getStarsSelectionListEntry(i);
 				if (entry.getEntryID() == company.getEntryID()) {
@@ -80,7 +80,7 @@ public class CreateServiceRequestAction implements ActionBase {
             StarsCustSelectionList statusList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICESTATUS );
             for (int i = 0; i < statusList.getStarsSelectionListEntryCount(); i++) {
             	StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(i);
-            	if (entry.getContent().equalsIgnoreCase( "To be scheduled" )) {
+            	if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SERVSTAT_TOBESCHED )) {
             		CurrentState status = (CurrentState) StarsCustListEntryFactory.newStarsCustListEntry( entry, CurrentState.class );
             		createOrder.setCurrentState( status );
             		break;
@@ -161,10 +161,10 @@ public class CreateServiceRequestAction implements ActionBase {
 			StarsServiceRequestHistory orderHist = (StarsServiceRequestHistory) StarsServiceRequestFactory.newStarsServiceRequest( createOrder, StarsServiceRequestHistory.class );
 			
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsGetServiceRequestHistoryResponse orderHists = (StarsGetServiceRequestHistoryResponse) operator.getAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY" );
+			StarsGetServiceRequestHistoryResponse orderHists = (StarsGetServiceRequestHistoryResponse) operator.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY" );
 			if (orderHists == null) {
 				orderHists = new StarsGetServiceRequestHistoryResponse();
-				operator.setAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY", orderHists );
+				operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY", orderHists );
 			}
 			orderHists.addStarsServiceRequestHistory( 0, orderHist );
 			

@@ -7,9 +7,9 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.db.stars.*;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.web.StarsUser;
-import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.*;
 import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInfo;
@@ -94,9 +94,9 @@ public class GetLMCtrlHistAction implements ActionBase {
 			StarsCustAccountInfo accountInfo = null;
 			
 			if (operator != null)
-				accountInfo = (StarsCustAccountInfo) operator.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInfo) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
 			else
-				accountInfo = (StarsCustAccountInfo) user.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInfo) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
 				
 			StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
 			for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
@@ -106,9 +106,9 @@ public class GetLMCtrlHistAction implements ActionBase {
 			}
 
 			if (operator != null)
-	            operator.setAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "LM_CONTROL_HISTORY", ctrlHist );
+	            operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "LM_CONTROL_HISTORY", ctrlHist );
 	        else
-	        	user.setAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "LM_CONTROL_HISTORY", ctrlHist );
+	        	user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "LM_CONTROL_HISTORY", ctrlHist );
             
             return 0;
         }

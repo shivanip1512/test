@@ -44,6 +44,8 @@ public class LMHardwareBase extends InventoryBase {
 
     public void add() throws java.sql.SQLException {
         super.add();
+        
+        getLMHardwareBase().setInventoryID( getInventoryBase().getInventoryID() );
         getLMHardwareBase().add();
     }
 

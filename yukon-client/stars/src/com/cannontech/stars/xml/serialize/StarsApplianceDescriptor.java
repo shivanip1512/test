@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsApplianceDescriptor.java,v 1.11 2002/10/03 15:55:47 zyao Exp $
+ * $Id: StarsApplianceDescriptor.java,v 1.12 2002/10/11 21:44:20 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.11 $ $Date: 2002/10/03 15:55:47 $
+ * @version $Revision: 1.12 $ $Date: 2002/10/11 21:44:20 $
 **/
-public class StarsApplianceDescriptor extends com.cannontech.stars.xml.serialize.StarsAppDescriptor {
+public class StarsApplianceDescriptor extends StarsAppDescriptor {
 
 
       //--------------------------/
@@ -49,96 +49,12 @@ public class StarsApplianceDescriptor extends com.cannontech.stars.xml.serialize
 
     public StarsApplianceDescriptor() {
         super();
-        setExtendsWithoutFlatten(new com.cannontech.stars.xml.serialize.StarsAppDescriptor());
+        setExtendsWithoutFlatten(new StarsAppDescriptor());
         xmlName = "stars-Appliance";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
         //-- initialize attribute descriptors
-        
-        //-- _inventoryID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_inventoryID", "inventoryID", NodeType.Attribute);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsAppliance target = (StarsAppliance) object;
-                if(!target.hasInventoryID())
-                    return null;
-                return new Integer(target.getInventoryID());
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsAppliance target = (StarsAppliance) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteInventoryID();
-                        return;
-                    }
-                    target.setInventoryID( ((Integer)value).intValue());
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _inventoryID
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
-        }
-        desc.setValidator(fieldValidator);
-        
-        //-- _lmProgramID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_lmProgramID", "lmProgramID", NodeType.Attribute);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsAppliance target = (StarsAppliance) object;
-                if(!target.hasLmProgramID())
-                    return null;
-                return new Integer(target.getLmProgramID());
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsAppliance target = (StarsAppliance) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteLmProgramID();
-                        return;
-                    }
-                    target.setLmProgramID( ((Integer)value).intValue());
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _lmProgramID
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
-        }
-        desc.setValidator(fieldValidator);
         
         //-- initialize element descriptors
         

@@ -46,6 +46,20 @@ public abstract class StarsApp implements java.io.Serializable {
     **/
     private boolean _has_applianceCategoryID;
 
+    private int _inventoryID;
+
+    /**
+     * keeps track of state for field: _inventoryID
+    **/
+    private boolean _has_inventoryID;
+
+    private int _lmProgramID;
+
+    /**
+     * keeps track of state for field: _lmProgramID
+    **/
+    private boolean _has_lmProgramID;
+
     private java.lang.String _categoryName;
 
     private java.lang.String _manufacturer;
@@ -87,6 +101,20 @@ public abstract class StarsApp implements java.io.Serializable {
     } //-- void deleteApplianceID() 
 
     /**
+    **/
+    public void deleteInventoryID()
+    {
+        this._has_inventoryID= false;
+    } //-- void deleteInventoryID() 
+
+    /**
+    **/
+    public void deleteLmProgramID()
+    {
+        this._has_lmProgramID= false;
+    } //-- void deleteLmProgramID() 
+
+    /**
      * Returns the value of field 'applianceCategoryID'.
      * 
      * @return the value of field 'applianceCategoryID'.
@@ -115,6 +143,26 @@ public abstract class StarsApp implements java.io.Serializable {
     {
         return this._categoryName;
     } //-- java.lang.String getCategoryName() 
+
+    /**
+     * Returns the value of field 'inventoryID'.
+     * 
+     * @return the value of field 'inventoryID'.
+    **/
+    public int getInventoryID()
+    {
+        return this._inventoryID;
+    } //-- int getInventoryID() 
+
+    /**
+     * Returns the value of field 'lmProgramID'.
+     * 
+     * @return the value of field 'lmProgramID'.
+    **/
+    public int getLmProgramID()
+    {
+        return this._lmProgramID;
+    } //-- int getLmProgramID() 
 
     /**
      * Returns the value of field 'location'.
@@ -182,6 +230,20 @@ public abstract class StarsApp implements java.io.Serializable {
 
     /**
     **/
+    public boolean hasInventoryID()
+    {
+        return this._has_inventoryID;
+    } //-- boolean hasInventoryID() 
+
+    /**
+    **/
+    public boolean hasLmProgramID()
+    {
+        return this._has_lmProgramID;
+    } //-- boolean hasLmProgramID() 
+
+    /**
+    **/
     public boolean isValid()
     {
         try {
@@ -241,6 +303,28 @@ public abstract class StarsApp implements java.io.Serializable {
     {
         this._categoryName = categoryName;
     } //-- void setCategoryName(java.lang.String) 
+
+    /**
+     * Sets the value of field 'inventoryID'.
+     * 
+     * @param inventoryID the value of field 'inventoryID'.
+    **/
+    public void setInventoryID(int inventoryID)
+    {
+        this._inventoryID = inventoryID;
+        this._has_inventoryID = true;
+    } //-- void setInventoryID(int) 
+
+    /**
+     * Sets the value of field 'lmProgramID'.
+     * 
+     * @param lmProgramID the value of field 'lmProgramID'.
+    **/
+    public void setLmProgramID(int lmProgramID)
+    {
+        this._lmProgramID = lmProgramID;
+        this._has_lmProgramID = true;
+    } //-- void setLmProgramID(int) 
 
     /**
      * Sets the value of field 'location'.

@@ -1,6 +1,8 @@
 package com.cannontech.stars.xml;
 
 import com.cannontech.stars.xml.serialize.StarsCustListEntry;
+import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
+import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 
 /**
  * <p>Title: StarsCustListEntryFactory.java</p>
@@ -23,6 +25,18 @@ public class StarsCustListEntryFactory {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public static StarsCustListEntry getStarsCustListEntry(
+		java.util.Hashtable selectionLists, String listName, String yukonDef) {
+		StarsCustSelectionList list = (StarsCustSelectionList) selectionLists.get( listName );
+		for (int i = 0; i < list.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = list.getStarsSelectionListEntry(i);
+			if (entry.getYukonDefinition().equalsIgnoreCase( yukonDef ))
+				return entry;
 		}
 		
 		return null;

@@ -5,8 +5,8 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
-import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.StarsAppFactory;
 import com.cannontech.stars.xml.util.*;
 import com.cannontech.stars.xml.serialize.*;
@@ -49,7 +49,7 @@ public class CreateApplianceAction implements ActionBase {
 			
 			ServiceCompany company = new ServiceCompany();
 			company.setEntryID( Integer.parseInt(req.getParameter("Company")) );
-			StarsCustSelectionList companyList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICECOMPANY );
+			StarsCustSelectionList companyList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
 			for (int i = 0; i < companyList.getStarsSelectionListEntryCount(); i++) {
 				StarsSelectionListEntry entry = companyList.getStarsSelectionListEntry(i);
 				if (entry.getEntryID() == company.getEntryID()) {
@@ -92,7 +92,6 @@ public class CreateApplianceAction implements ActionBase {
             
             com.cannontech.database.data.stars.customer.CustomerAccount account =
             		(com.cannontech.database.data.stars.customer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
-            StarsUpdateCustomerAccount starsAccount = reqOper.getStarsUpdateCustomerAccount();
             
             com.cannontech.database.data.stars.appliance.ApplianceBase app = new com.cannontech.database.data.stars.appliance.ApplianceBase();
             com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
@@ -108,11 +107,13 @@ public class CreateApplianceAction implements ActionBase {
             appDB.setLMProgramID( new Integer(0) );
             appDB.setNotes( newApp.getNotes() );
             
-            Transaction.createTransaction( Transaction.INSERT, app ).execute();
-
-			StarsSuccess success = new StarsSuccess();
-			success.setDescription( "Customer account information updated successfully" );
-            respOper.setStarsSuccess( success );
+            app = (com.cannontech.database.data.stars.appliance.ApplianceBase) Transaction.createTransaction( Transaction.INSERT, app ).execute();
+            
+            StarsCreateApplianceResponse resp = (StarsCreateApplianceResponse) StarsAppFactory.newStarsApp( newApp, StarsCreateApplianceResponse.class );
+            resp.setApplianceID( app.getApplianceBase().getApplianceID().intValue() );
+            resp.setLmProgramID( -1 );
+            resp.setInventoryID( -1 );
+            respOper.setStarsCreateApplianceResponse( resp );
 
             return SOAPUtil.buildSOAPMessage( respOper );
         }
@@ -133,22 +134,16 @@ public class CreateApplianceAction implements ActionBase {
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) return failure.getStatusCode();
 			
-            if (operation.getStarsSuccess() == null)
-            	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-			
-			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-			StarsCreateAppliance newApp = reqOper.getStarsCreateAppliance();
-			StarsAppliance starsApp = (StarsAppliance) StarsAppFactory.newStarsApp( (StarsApp)newApp, StarsAppliance.class );
-			starsApp.setLmProgramID( -1 );
-			starsApp.setInventoryID( -1 );
+			StarsCreateApplianceResponse resp = operation.getStarsCreateApplianceResponse();
+			StarsAppliance app = (StarsAppliance) StarsAppFactory.newStarsApp( resp, StarsAppliance.class );
 			
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsCustAccountInfo accountInfo = (StarsCustAccountInfo) operator.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+			StarsCustAccountInfo accountInfo = (StarsCustAccountInfo) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
             if (accountInfo == null)
-            	return StarsConstants.FAILURE_CODE_RESPONSE_NULL;
+            	return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
             	
 			StarsAppliances appliances = accountInfo.getStarsAppliances();
-			appliances.addStarsAppliance( starsApp );
+			appliances.addStarsAppliance( app );
 			
             return 0;
         }

@@ -6,8 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
-import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.serialize.CurrentState;
 import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.ServiceType;
@@ -82,14 +82,14 @@ public class GetServiceHistoryAction implements ActionBase {
             			account.getAccountSite().getAccountSite().getAccountSiteID(), conn );
             if (orders == null) return null;
         	
-        	Hashtable selectionLists = com.cannontech.stars.util.CommonUtils.getSelectionListTable(
+        	Hashtable selectionLists = com.cannontech.stars.util.ServerUtils.getSelectionListTable(
         			new Integer((int) operator.getEnergyCompanyID()) );        			
         	StarsCustSelectionList servTypeList = (StarsCustSelectionList)
         			selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICETYPE );
         	StarsCustSelectionList statusList = (StarsCustSelectionList)
         			selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICESTATUS );
         	StarsCustSelectionList servCompanyList = (StarsCustSelectionList)
-        			selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICECOMPANY );
+        			selectionLists.get( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
             
             StarsGetServiceRequestHistoryResponse getServHistResp = new StarsGetServiceRequestHistoryResponse();
             for (int i = 0; i < orders.length; i++) {
@@ -165,7 +165,7 @@ public class GetServiceHistoryAction implements ActionBase {
             if (getServHistResp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            operator.setAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY", getServHistResp);
+            operator.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY", getServHistResp);
             
 			return 0;
         }

@@ -6,8 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
-import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.serialize.CallType;
 import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
 import com.cannontech.stars.xml.serialize.StarsFailure;
@@ -80,7 +80,7 @@ public class CallTrackingAction implements ActionBase {
             			account.getCustomerAccount().getAccountID(), conn );
             if (calls == null) return null;
             
-            Hashtable selectionListTable = com.cannontech.stars.util.CommonUtils.getSelectionListTable(
+            Hashtable selectionListTable = com.cannontech.stars.util.ServerUtils.getSelectionListTable(
             		new Integer((int) operator.getEnergyCompanyID()) );
             StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CALLTYPE );
             
@@ -137,7 +137,7 @@ public class CallTrackingAction implements ActionBase {
             if (callTrackingResp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            operator.setAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING", callTrackingResp);
+            operator.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING", callTrackingResp);
             
 			return 0;
         }

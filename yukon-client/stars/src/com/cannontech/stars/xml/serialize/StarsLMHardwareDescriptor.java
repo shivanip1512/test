@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMHardwareDescriptor.java,v 1.11 2002/10/03 15:55:47 zyao Exp $
+ * $Id: StarsLMHardwareDescriptor.java,v 1.12 2002/10/11 21:44:25 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.11 $ $Date: 2002/10/03 15:55:47 $
+ * @version $Revision: 1.12 $ $Date: 2002/10/11 21:44:25 $
 **/
-public class StarsLMHardwareDescriptor extends com.cannontech.stars.xml.serialize.StarsInventoryDescriptor {
+public class StarsLMHardwareDescriptor extends StarsLMHwDescriptor {
 
 
       //--------------------------/
@@ -49,129 +49,14 @@ public class StarsLMHardwareDescriptor extends com.cannontech.stars.xml.serializ
 
     public StarsLMHardwareDescriptor() {
         super();
-        setExtendsWithoutFlatten(new com.cannontech.stars.xml.serialize.StarsInventoryDescriptor());
+        setExtendsWithoutFlatten(new StarsLMHwDescriptor());
         xmlName = "stars-LMHardware";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
-        
-        //-- _manufactureSerialNumber
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_manufactureSerialNumber", "ManufactureSerialNumber", NodeType.Element);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsLMHardware target = (StarsLMHardware) object;
-                return target.getManufactureSerialNumber();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsLMHardware target = (StarsLMHardware) object;
-                    target.setManufactureSerialNumber( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _manufactureSerialNumber
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
-        
-        //-- _LMDeviceType
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_LMDeviceType", "LMDeviceType", NodeType.Element);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsLMHardware target = (StarsLMHardware) object;
-                return target.getLMDeviceType();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsLMHardware target = (StarsLMHardware) object;
-                    target.setLMDeviceType( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _LMDeviceType
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsLMHardwareHistory
-        desc = new XMLFieldDescriptorImpl(StarsLMHardwareHistory.class, "_starsLMHardwareHistory", "stars-LMHardwareHistory", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsLMHardware target = (StarsLMHardware) object;
-                return target.getStarsLMHardwareHistory();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsLMHardware target = (StarsLMHardware) object;
-                    target.setStarsLMHardwareHistory( (StarsLMHardwareHistory) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsLMHardwareHistory();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsLMHardwareHistory
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsLMHardwareDescriptor()
 

@@ -11,11 +11,13 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.servlet.PILConnectionServlet;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.web.action.ActionBase;
 import com.cannontech.stars.web.action.CallTrackingAction;
 import com.cannontech.stars.web.action.CreateApplianceAction;
 import com.cannontech.stars.web.action.CreateCallAction;
+import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
 import com.cannontech.stars.web.action.GetCustAccountAction;
 import com.cannontech.stars.web.action.GetCustSelListsAction;
@@ -29,7 +31,6 @@ import com.cannontech.stars.web.action.ProgramSignUpAction;
 import com.cannontech.stars.web.action.SearchCustAccountAction;
 import com.cannontech.stars.web.action.UpdateCustAccountAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
-import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.util.SOAPMessenger;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -129,7 +130,7 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("CreateCall")) {
         	StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );
-        	if (operator.getAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING" ) != null)
+        	if (operator.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING" ) != null)
 	        	clientAction = new CreateCallAction();
 	        else {
 	        	MultiAction actions = new MultiAction();
@@ -145,7 +146,7 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("CreateOrder")) {
         	StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );
-        	if (operator.getAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY" ) != null)
+        	if (operator.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY" ) != null)
 	        	clientAction = new CreateServiceRequestAction();
 	        else {
 	        	MultiAction actions = new MultiAction();
@@ -167,6 +168,10 @@ public class SOAPClient extends HttpServlet {
         else if (action.equalsIgnoreCase("CreateAppliance")) {
         	clientAction = new CreateApplianceAction();
         	destURL = "/OperatorDemos/Consumer/Appliance.jsp?AppNo=" + req.getParameter("AppNo");
+        }
+        else if (action.equalsIgnoreCase("CreateLMHardware")) {
+        	clientAction = new CreateLMHardwareAction();
+        	destURL = "/OperatorDemos/Consumer/Inventory.jsp?InvNo=" + req.getParameter("InvNo");
         }
         else if (action.equalsIgnoreCase("OperatorLogin")) {
         	session.removeAttribute("OPERATOR");
