@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/06/02 18:14:57 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/09/01 19:21:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -279,7 +279,7 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
 
 bool CtiDNPTransport::isTransactionComplete( void )
 {
-    return _ioState == Complete || _ioState == Failed;
+    return _ioState == Complete || _ioState == Failed || _ioState == Uninitialized;
 }
 
 
