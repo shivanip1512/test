@@ -34,8 +34,14 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		if (session == null)
 			resp.sendRedirect("/login.jsp");
 
-		resp.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-		resp.setHeader("Pragma", "no-cache"); //HTTP 1.0
+		// Try to defeat caching
+		 /* These are commented out because IE 5/6 has a bug where sometimes images won't appear when using SSL **
+		 I'm pretty sure it isn't a webserver issue since mozilla has no trouble with this
+		 Hopefully the Expires header will do what we want.
+		 -Aaron
+		 resp.setHeader("Cache-Control","no-store"); //HTTP 1.1 
+		 resp.setHeader("Pragma","no-cache"); 		//HTTP 1.0
+		*/
 		resp.setDateHeader("Expires", 0); //prevents caching at the proxy server
 
 

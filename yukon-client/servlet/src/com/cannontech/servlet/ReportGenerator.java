@@ -74,7 +74,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			if( param != null)
 				page = Integer.valueOf(param).intValue();
 
-			param = req.getParameter("reportType");
+			param = req.getParameter("type");
 			if( param != null)
 				reportType = Integer.valueOf(param).intValue();
 
@@ -88,6 +88,12 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 				fileName = param.toString();
 
 			fileName += "." + ext;
+
+			java.util.Enumeration enum1 = req.getParameterNames();
+			  while (enum1.hasMoreElements()) {
+				String ele = enum1.nextElement().toString();
+				 System.out.println(" --" + ele + "  " + req.getParameter(ele));
+			 }
 
 			param = req.getParameter("action");
 			if( param != null && param.equalsIgnoreCase("download"))
