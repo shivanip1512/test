@@ -196,6 +196,16 @@ ERRSTRUCT CTIErrors[] = {
     { ErrorPageRS,  "Invalid transaction, typ. bad pager id or password", ERRTYPESYSTEM                , " N/A"},
     { ErrorPageNAK, "TAP Repeat Requested, but retries exhausted", ERRTYPESYSTEM                , " N/A"},
     { ErrorPageNoResponse, "No response from TAP terminal", ERRTYPESYSTEM                , " N/A"},
+
+    { ErrorHttpResponse,    "Invalid or unsuccessful HTTP response", ERRTYPESYSTEM                , " N/A"},
+    { ErrorXMLParser,       "XML parser initialization failed", ERRTYPESYSTEM                , " N/A"},
+    { ErrorWctpResponse,    "Invalid WCTP response format", ERRTYPESYSTEM                , " N/A"},
+    { ErrorWctpTimeout,     "Time out when receiving WCTP response", ERRTYPESYSTEM                , " N/A"},
+    { ErrorWctp300Series,   "Protocol Error 300 Series", ERRTYPESYSTEM                , " N/A"},
+    { ErrorWctp400Series,   "Protocol Error 400 Series", ERRTYPESYSTEM                , " N/A"},
+    { ErrorWctp500Series,   "Protocol Error 500 Series", ERRTYPESYSTEM                , " N/A"},
+    { ErrorWctp600Series,   "Protocol Error 600 Series", ERRTYPESYSTEM                , " N/A"},
+
     { CtiInvalidRequest,    "Invalid/Incomplete Request",    ERRTYPESYSTEM                , " N/A"},
     { UnknownError,         "Unknown Error",           ERRTYPESYSTEM                , " N/A"},
 
