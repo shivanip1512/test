@@ -9,14 +9,15 @@ import com.roguewave.vsj.DefineCollectable;
 public class CollectableMappings {
 
 	private static DefineCollectable[] mappings =
-	{
+	{		
 		new com.cannontech.message.dispatch.message.DefineCollectableCommand(),
 		new com.cannontech.message.dispatch.message.DefineCollectableMulti(),
 		new com.cannontech.message.dispatch.message.DefineCollectablePointRegistration(),
 		new com.cannontech.message.dispatch.message.DefineCollectableRegistration(),
 		new com.cannontech.message.dispatch.message.DefineCollectablePointData(),
 		new com.cannontech.message.dispatch.message.DefineCollectableDBChangeMsg(),
-		new com.cannontech.message.dispatch.message.DefineCollectableSignal()
+		new com.cannontech.message.dispatch.message.DefineCollectableSignal(),
+		new com.cannontech.message.dispatch.message.DefineCollectableTagMsg()
 	};
 /**
  * This method was created in VisualAge.
