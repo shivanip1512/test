@@ -81,10 +81,8 @@ function confirmSubmit(form) { //v1.0
               <%@ include file="InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-             <div align="center">
-                <p class="TableCell">This customer would like to be notified of 
-                  control by<br>
-                  e-mail at info@cannontech.com</p>
+              <div align="center">
+                <p class="Main"><cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_OPT_OUT_DESC %>"/></p>
               </div>
               <table width="200" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" align="center">
                 <tr> 

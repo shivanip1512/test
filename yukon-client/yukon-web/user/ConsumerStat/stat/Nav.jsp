@@ -9,7 +9,7 @@
 						  {"OptOut.jsp", ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_OPT_OUT_LINK)},
 						  {"Thermostat.jsp", "Manual"},
 						  {"ThermSchedule.jsp", "Schedule"},
-						  {"Password.jsp", "Change Password"}
+						  {"Password.jsp", "Change Login"}
 						 };
 						   
 	String bulletImg = ServletUtils.getECProperty( ecWebSettings.getURL(), ServletUtils.WEB_NAV_BULLET );
@@ -107,7 +107,7 @@
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">Administration</span><br>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ADMIN_CHANGE_PASSWORD %>">
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ADMIN_CHANGE_LOGIN %>">
         <%= links.get("Password.jsp") %><br>
 </cti:checkRole>
 	  </div>

@@ -87,7 +87,7 @@ function checkPasswords(form) {
                       <div align="right">New User Name:</div>
                     </td>
                     <td width="200"> 
-                      <input type="text" name="Username" maxlength="20" size="20">
+                      <input type="text" name="Username" maxlength="20" size="20" value="<%= userLogin.getUsername() %>">
                     </td>
                   </tr>
                   <tr> 

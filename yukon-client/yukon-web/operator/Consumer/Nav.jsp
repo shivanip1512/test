@@ -12,7 +12,7 @@
 						  {"CreateCalls.jsp", "Create Call"},
 						  {"Service.jsp", "Service Request"},
 						  {"ServiceSummary.jsp", "Service History"},
-						  {"Password.jsp", "Change Password"},
+						  {"Password.jsp", "Change Login"},
 						  {"Privileges.jsp", "Privileges"},
 						  {"CreateWizard.jsp", "Create"},
 						  {"PrintExport.jsp", "Print/Export"},
@@ -200,7 +200,7 @@
   <tr> 
     <td> 
       <div align="left"><span class="Header2">Administration</span><br>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ADMIN_CHANGE_PASSWORD %>">
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ADMIN_CHANGE_LOGIN %>">
         <%= links.get("Password.jsp") %><br>
 </cti:checkRole>
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_NOT_IMPLEMENTED %>">
