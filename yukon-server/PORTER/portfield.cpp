@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2002/07/03 20:20:38 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2002/07/03 21:36:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2243,18 +2243,19 @@ INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS
 
             if(OutMessage->EventCode & RCONT)
             {
-                CCUResponseDecode (InMessage, Device, OutMessage->Retry);
+                status = CCUResponseDecode (InMessage, Device, OutMessage);
             }
             else
             {
                 j = InMessage->InLength;
                 InMessage->InLength = 0;
-                CCUResponseDecode (InMessage, Device, OutMessage->Retry);
+                status = CCUResponseDecode (InMessage, Device, OutMessage);
                 InMessage->InLength = j;
             }
 
             /* Only break if this is not DTRAN */
-            if(!(OutMessage->EventCode & DTRAN))     break;
+            if(!(OutMessage->EventCode & DTRAN))
+                break;
 
         }
     case TYPE_CCU700:
