@@ -42,6 +42,11 @@ public class YukonServerResource implements com.cannontech.yukon.IYukon
       getDBPersistent().delete( tableName, columnNames, columnValues );
    };
    
+	public void setSQLFileName( String fileName )
+	{
+		getDBPersistent().setSQLFileName( fileName );
+	};
+	   
    public void delete( String tableName, String columnName, String columnValue ) throws SQLException
    {
       getDBPersistent().delete( tableName, columnName, columnValue );

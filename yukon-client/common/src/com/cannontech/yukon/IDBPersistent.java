@@ -15,7 +15,9 @@ public interface IDBPersistent
    public static final int DELETE = Transaction.DELETE;
    public static final int DELETE_PARTIAL = Transaction.DELETE_PARTIAL;
    public static final int ADD_PARTIAL = Transaction.ADD_PARTIAL;
-   
+
+
+   /* Methods that need defining */
 	public void add( String tableName, Object[] values ) throws SQLException;
 	
    public void delete( String tableName, String columnNames[], String columnValues[] ) throws SQLException;
@@ -33,4 +35,7 @@ public interface IDBPersistent
                         
    public com.cannontech.database.db.DBPersistent
           execute( int operation, com.cannontech.database.db.DBPersistent obj ) throws com.cannontech.database.TransactionException;
+
+	public void setSQLFileName( String fileName ); 
+	//com.cannontech.common.util.CtiUtilities.getLogDirPath() + "/" + printSQLfile );
 }

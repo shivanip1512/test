@@ -19,26 +19,7 @@ public PortDialupModem() {
 	super();
 	initialize( null, null, null, null,null );
 }
-/**
- * This method was created in VisualAge.
- * @param portNumber java.lang.Integer
- */
-public PortDialupModem(Integer portNumber) {
-	super();
-	initialize( portNumber, null, null, null, null );
-}
-/**
- * This method was created in VisualAge.
- * @param portNumber java.lang.Integer
- * @param modemType java.lang.String
- * @param initializationString java.lang.String
- * @param prefixNumber java.lang.String
- * @param suffixNumber java.lang.String
- */
-public PortDialupModem( Integer portNumber, String modemType, String initializationString, String prefixNumber, String suffixNumber) {
-	super();
-	initialize( portNumber, modemType, initializationString, prefixNumber, suffixNumber);
-}
+
 /**
  * add method comment.
  */

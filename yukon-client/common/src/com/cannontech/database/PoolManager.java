@@ -13,6 +13,8 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.yukon.IDBPersistent;
+import com.cannontech.yukon.concrete.ResourceFactory;
 
 public class PoolManager
 {
@@ -226,8 +228,9 @@ public String[] getAllPoolsStrings()
 	  {		 
 		 try
 		 {
-			 com.cannontech.database.db.DBPersistent.setSQLFileName( com.cannontech.common.util.CtiUtilities.getLogDirPath() + "/" + printSQLfile );
-			 com.cannontech.database.db.DBPersistent.setPrintSQL( true );
+			ResourceFactory.getIYukon().setSQLFileName( printSQLfile );
+			//com.cannontech.database.db.DBPersistent.setSQLFileName( com.cannontech.common.util.CtiUtilities.getLogDirPath() + "/" + printSQLfile );
+			//com.cannontech.database.db.DBPersistent.setPrintSQL( true );
 		 }
 		 catch (Exception e)
 		 {

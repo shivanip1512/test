@@ -7,6 +7,9 @@ import javax.ejb.SessionContext;
 import com.cannontech.yukon.IDBPersistent;
 
 import java.sql.SQLException;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.TransactionException;
 
 /**
@@ -16,11 +19,10 @@ import com.cannontech.database.TransactionException;
 **/
 public class DBPersistentBean implements SessionBean, IDBPersistent
 {
-   public static boolean printSQL = false;
-   public static String SQLFileName = com.cannontech.common.util.CtiUtilities.getLogDirPath() + "DatabaseSQL.sql";
+   public static String sqlFileName = null; 
+   //com.cannontech.common.util.CtiUtilities.getLogDirPath() + "DatabaseSQL.sql";
 
    private java.sql.Connection dbConnection = null;   
-
 
  	public void ejbActivate() throws EJBException, RemoteException {}
 	public void ejbPassivate() throws EJBException, RemoteException{}
@@ -160,6 +162,14 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
    }
 
 
+	public void setSQLFileName( String fileName )
+	{
+		sqlFileName = 
+			com.cannontech.common.util.CtiUtilities.getLogDirPath() + 
+			System.getProperty("file.separator") +
+			fileName;
+	}
+	
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -603,11 +613,21 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
    private Object substituteObject(Object o) 
    {
       if( o == null )
+      {
          return null;
+      }
       else
       if( o instanceof Character )
       {
-         return com.cannontech.common.util.StringUtils.trimSpaces(o.toString());
+      	String str = com.cannontech.common.util.StringUtils.trimSpaces(o.toString());
+      	if( str == null || str.length() <= 0 )
+      	{
+      		CTILogger.warn("A null value as found in a DBPersistent object, using a default value of 0 (zero)");
+      		CTILogger.warn( CtiUtilities.getSTACK_TRACE() ); 
+      		str = "0";
+      	}
+      	
+         return str;
       }
       else
       if( o instanceof java.util.GregorianCalendar )
@@ -630,7 +650,15 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
       else
       if( o instanceof String )
       {
-         return com.cannontech.common.util.StringUtils.trimSpaces(o.toString());
+      	String str = com.cannontech.common.util.StringUtils.trimSpaces(o.toString());
+      	if( str == null || str.length() <= 0 )
+      	{
+      		CTILogger.warn("A null value as found in a DBPersistent object, using a default value of 0 (zero)");
+      		CTILogger.warn( CtiUtilities.getSTACK_TRACE() );
+      		str = "0";
+      	}
+      	
+         return str;
       }
       else
          return o;
@@ -644,11 +672,15 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
     * @return boolean
     */
    public static boolean isPrintSQL() {
-      return printSQL;
+      return (sqlFileName != null);
    }
    
    private void printSQLToFile(String line, Object[] columnValues, SQLException exception )
    {
+   	
+   	if( !isPrintSQL() )
+   		return;
+
       // Here we want to print all SQL to a file, creating a
       // script file that could be run later.
       java.io.PrintWriter pw = null;
@@ -674,14 +706,14 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
          if( missingColumnValue )
             buffer.insert(0, "/*** MISSING COLUMN VALUE FOUND IN THE BELOW STATEMENT */\n");
             
-         pw = new java.io.PrintWriter(new java.io.FileWriter( getSQLFileName(), true), true);
+         pw = new java.io.PrintWriter(new java.io.FileWriter( sqlFileName, true), true);
          pw.write(buffer + "; \r\n");
          pw.close();
       }
       catch (Exception e) //catch everything and write the Exception to the log file
       {
          if( e instanceof java.io.IOException )
-            com.cannontech.clientutils.CTILogger.info("*** Cant find SQL Log file named : " + getSQLFileName() +
+            com.cannontech.clientutils.CTILogger.info("*** Cant find SQL Log file named : " + sqlFileName +
                   " : " + e.getMessage() );
          else
          {
@@ -737,12 +769,6 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
       
    }
    
-
-   public static java.lang.String getSQLFileName() 
-   {
-      return SQLFileName;
-   }
-
 
    public void setDbConnection(java.sql.Connection newValue) 
    {

@@ -15,15 +15,11 @@ import com.cannontech.yukon.concrete.ResourceFactory;
  
 public abstract class DBPersistent implements java.io.Serializable 
 {
-   public static boolean printSQL = false;
-   public static String SQLFileName = com.cannontech.common.util.CtiUtilities.getLogDirPath() + "DBeditorSQL.sql";
+//   public static boolean printSQL = false;
+//   public static String SQLFileName = com.cannontech.common.util.CtiUtilities.getLogDirPath() + "DBeditorSQL.sql";
    
    private com.cannontech.yukon.IDBPersistent db = null;
    
-// private transient Connection dbConnection = null;
-   
-   
-         
 /**
  * DBPersistent constructor comment.
  */
@@ -135,23 +131,7 @@ public Connection getDbConnection() throws SQLException
 {
 	return getDB().getDbConnection();
 }
-/**
- * Insert the method's description here.
- * Creation date: (5/21/2001 11:45:41 AM)
- * @return java.lang.String
- */
-public static java.lang.String getSQLFileName() 
-{
-	return SQLFileName;
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/21/2001 11:20:05 AM)
- * @return boolean
- */
-public static boolean isPrintSQL() {
-	return printSQL;
-}
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.String
@@ -191,62 +171,6 @@ private static String prepareObjectForSQLStatement( Object o )
 		return o.toString();
 	}
 	
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/30/2001 11:23:20 AM)
- * @param line java.lang.String
- */
-private void printSQLToFile(String line, Object[] columnValues, SQLException exception )
-{
-	// Here we want to print all SQL to a file, creating a
-	// script file that could be run later.
-	java.io.PrintWriter pw = null;
-
-	try
-	{
-		StringBuffer buffer = new StringBuffer(line);
-		boolean missingColumnValue = false;
-		
-		if( columnValues != null )
-		{
-			buffer = new StringBuffer(line);
-			for( int i = 0; i < columnValues.length; i++ )
-			{
-				int index = buffer.toString().indexOf("?");
-				if( index != -1 )
-					buffer = buffer.replace( index, index+1, prepareObjectForSQLStatement(columnValues[i]).toString() );
-				else
-					missingColumnValue = true;
-			}
-		}
-
-		if( missingColumnValue )
-			buffer.insert(0, "/*** MISSING COLUMN VALUE FOUND IN THE BELOW STATEMENT */\n");
-			
-		pw = new java.io.PrintWriter(new java.io.FileWriter( getSQLFileName(), true), true);
-		pw.write(buffer + "; \r\n");
-		pw.close();
-	}
-	catch (Exception e) //catch everything and write the Exception to the log file
-	{
-		if( e instanceof java.io.IOException )
-			com.cannontech.clientutils.CTILogger.info("*** Cant find SQL Log file named : " + getSQLFileName() +
-	   			" : " + e.getMessage() );
-		else
-		{
-			if( pw != null )
-				pw.write("/**** Caught EXCEPTION while trying to write to SQLFile : " +
-	   			" : " + e.getMessage() + "*/" );
-		}
-		
- 	}
-	finally
-	{
-		if( pw != null )
-			pw.close();
-	}
-
 }
 
 private com.cannontech.yukon.IDBPersistent getDB()
@@ -338,61 +262,9 @@ public void setDbConnection(Connection newValue)
 {
    getDB().setDbConnection( newValue );
 }
-/**
- * Insert the method's description here.
- * Creation date: (5/21/2001 11:20:05 AM)
- * @param newPrintSQL boolean
- */
-public static void setPrintSQL(boolean newPrintSQL) {
-	printSQL = newPrintSQL;
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/21/2001 11:45:41 AM)
- * @param newSQLFileName java.lang.String
- */
-public static void setSQLFileName(java.lang.String newSQLFileName) {
-	SQLFileName = newSQLFileName;
-}
-/**
- * Insert the method's description here.
- * Creation date: (7/28/00 1:46:45 PM)
- * @return java.lang.Object
- * @param o java.lang.Object
- */
-private Object substituteObject(Object o) 
-{
-	if( o == null )
-		return null;
-	else
-	if( o instanceof Character )
-	{
-		return com.cannontech.common.util.StringUtils.trimSpaces(o.toString());
-	}
-	else
-	if( o instanceof java.util.GregorianCalendar )
-	{
-		java.sql.Timestamp ts = new Timestamp(((GregorianCalendar)o).getTime().getTime());
-		return ts;
-	}
-	else if( o instanceof java.util.Date )
-	{
-		Timestamp ts = new Timestamp( ((java.util.Date)o).getTime() );
-		return ts;
-	}
-	else
-	if( o instanceof Long )
-	{
-		return new java.math.BigDecimal( ((Long) o).longValue() );
-	}
-	else
-	if( o instanceof String )
-	{
-		return com.cannontech.common.util.StringUtils.trimSpaces(o.toString());
-	}
-	else
-		return o;
-}
+
+
+
 /**
  * This method was created by a SmartGuide.
  * @exception java.sql.SQLException The exception description.

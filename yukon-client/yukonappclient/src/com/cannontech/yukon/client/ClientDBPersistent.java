@@ -163,6 +163,11 @@ public class ClientDBPersistent implements IDBPersistent
    };
 
 
+	public void setSQLFileName( String fileName )
+	{
+		//do no thing
+	};
+
    public void setDbConnection( java.sql.Connection conn )
    {
       //no affect
