@@ -437,6 +437,7 @@ private javax.swing.JTextField getJTextFieldHolidayScName() {
 			ivjJTextFieldHolidayScName.setHighlighter(new javax.swing.plaf.basic.BasicTextUI.BasicHighlighter());
 			ivjJTextFieldHolidayScName.setMinimumSize(new java.awt.Dimension(150, 21));
 			// user code begin {1}
+			ivjJTextFieldHolidayScName.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_HOLIDAY_SCHEDULE_NAME_LENGTH));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
