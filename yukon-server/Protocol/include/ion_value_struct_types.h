@@ -1,11 +1,11 @@
 #pragma warning( disable : 4786 )
 
-#ifndef __ION_STRUCTTYPES_H__
-#define __ION_STRUCTTYPES_H__
+#ifndef __ION_VALUE_STRUCT_TYPES_H__
+#define __ION_VALUE_STRUCT_TYPES_H__
 
 /*-----------------------------------------------------------------------------*
  *
- * File:   ion_structtypes.h
+ * File:   ion_value_struct_types.h
  *
  * Class:  CtiIONLogRecord, CtiIONAlarm, CtiIONEvent, CtiIONRange, CtiIONList,
  *           CtiIONException, CtiIONWaveform, CtiIONDate, CtiIONCalendar,
@@ -20,14 +20,17 @@
  *-----------------------------------------------------------------------------*/
 
 
-#include "ion_valuearraytypes.h"
-#include "ion_value_basic_intunsigned.h"
-#include "ion_value_basic_time.h"
+#include "ion_value_struct.h"
 
+#include "ion_value_fixed_intunsigned.h"
+#include "ion_value_fixed_time.h"
+#include "ion_value_variable_fixedarray.h"
 
 
 class CtiIONLogRecord : public CtiIONStruct
 {
+private:
+
 public:
 
     CtiIONLogRecord( vector< CtiIONValue * > structValues );
@@ -41,15 +44,14 @@ public:
         Timestamp,
         LogValues
     };
-
-private:
-
 };
 
 
 
 class CtiIONAlarm : public CtiIONStruct
 {
+private:
+
 public:
 
     CtiIONAlarm( vector< CtiIONValue * > structValues );
@@ -63,15 +65,14 @@ public:
         Transitions,
         Priority
     };
-
-private:
-
 };
 
 
 
 class CtiIONEvent : public CtiIONStruct
 {
+private:
+
 public:
 
     CtiIONEvent( vector< CtiIONValue * > structValues );
@@ -91,15 +92,14 @@ public:
         EffectHandle,
         EffectValue
     };
-
-private:
-
 };
 
 
 
 class CtiIONRange : public CtiIONStruct
 {
+private:
+
 public:
 
     CtiIONRange( vector< CtiIONValue * > structValues );
@@ -111,32 +111,32 @@ public:
         RangeStart,
         RangeEnd
     };
-
-private:
-
 };
 
 
 
 class CtiIONList : public CtiIONStruct
 {
+private:
+
 public:
 
     CtiIONList( vector< CtiIONValue * > structValues );
 
-    CtiIONValue *operator[]( unsigned long index )  { return getArrayElement( index ); };
-
-private:
-
+/*    CtiIONValue *operator[]( unsigned long index )  { return getArrayElement( index ); };*/
 };
 
 
 
 class CtiIONException : public CtiIONStruct
 {
+private:
+
 public:
 
     CtiIONException( vector< CtiIONValue * > structValues );
+    CtiIONException( CtiIONValue *v1, CtiIONValue *v2, CtiIONValue *v3 );
+
     CtiIONException( CtiIONUnsignedInt *exceptionCode,
                      CtiIONValue       *exceptionValue,
                      CtiIONCharArray   *reason );
@@ -147,15 +147,14 @@ public:
         ExceptionValue,
         Reason
     };
-
-private:
-
 };
 
 
 
 class CtiIONWaveform : public CtiIONStruct
 {
+private:
+
 public:
 
     CtiIONWaveform( vector< CtiIONValue * > structValues );
@@ -171,15 +170,14 @@ public:
         TimeOfFirstPoint,
         SamplePoints
     };
-
-private:
-
 };
 
 
 
 class CtiIONDate : public CtiIONStruct
 {
+private:
+
 public:
 
     CtiIONDate( vector< CtiIONValue * > structValues );
@@ -193,15 +191,14 @@ public:
         Month,
         DayOfTheMonth
     };
-
-private:
-
 };
 
 
 
 class CtiIONCalendar : public CtiIONStruct
 {
+private:
+
 public:
 
     CtiIONCalendar( vector< CtiIONValue * > structValues );
@@ -213,15 +210,14 @@ public:
         StartDate,
         ListOfDays
     };
-
-private:
-
 };
 
 
 
 class CtiIONProfile : public CtiIONStruct
 {
+private:
+
 public:
 
     CtiIONProfile( vector< CtiIONValue * > structValues );
@@ -233,21 +229,18 @@ public:
         IndexTable,
         ActivityList
     };
-
-private:
-
 };
 
 
 class CtiIONStringArray : public CtiIONStruct
 {
+private:
+
 public:
 
     CtiIONStringArray( vector< CtiIONValue * > structValues );
 
-private:
-
 };
 
-#endif  //  #ifndef __ION_STRUCTTYPES_H__
+#endif  //  #ifndef __ION_VALUE_STRUCT_TYPES_H__
 

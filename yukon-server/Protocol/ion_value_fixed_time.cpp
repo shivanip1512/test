@@ -1,28 +1,25 @@
 
 /*-----------------------------------------------------------------------------*
  *
- * File:   ion_basictypes.cpp
+ * File:   ion_value_fixed_time.cpp
  *
- * Class:  CtiIONChar, CtiIONNumeric, CtiIONFloat, CtiIONSignedInt, CtiIONUnsignedInt,
- *           CtiIONBoolean, CtiIONTime, CtiIONArray
+ * Class:  CtiIONTime
  * Date:   07/13/2001
  *
  * Author: Matthew Fisher
- *
- *         Implementation for ION basic value types
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
 
 #include "ctidbgmem.h" // defines CTIDBG_new
 
-#include "ion_value_basic_time.h"
+#include "ion_value_fixed_time.h"
 
 #include "logger.h"
 
 
 CtiIONTime::CtiIONTime( unsigned char *byteStream, unsigned long streamLength ) :
-    CtiIONValue(IONTime)
+    CtiIONValueFixed(Fixed_Time)
 {
     //  all i know about is 8-byte times
     if( streamLength == 8 )
@@ -56,8 +53,8 @@ CtiIONTime::CtiIONTime( unsigned char *byteStream, unsigned long streamLength ) 
 }
 
 
-CtiIONTime::CtiIONTime( unsigned long seconds = 0, unsigned long fractionalSeconds = 0 ) :
-    CtiIONValue(IONTime)
+CtiIONTime::CtiIONTime( unsigned long seconds, unsigned long fractionalSeconds ) :
+    CtiIONValueFixed(Fixed_Time)
 {
     setSeconds(seconds);
     setFractionalSeconds(fractionalSeconds);
@@ -66,6 +63,7 @@ CtiIONTime::CtiIONTime( unsigned long seconds = 0, unsigned long fractionalSecon
 
 CtiIONTime::~CtiIONTime( )
 {
+
 }
 
 
@@ -100,6 +98,7 @@ unsigned int CtiIONTime::getSerializedValueLength( void ) const
 {
     return 8;
 }
+
 
 void CtiIONTime::putSerializedValue( unsigned char *buf ) const
 {

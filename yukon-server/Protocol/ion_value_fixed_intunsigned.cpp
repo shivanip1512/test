@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------------------*
  *
- * File:   ion_valuebasic_intunsigned.cpp
+ * File:   ion_value_fixed_intunsigned.cpp
  *
  * Class:  CtiIONUnsignedInt
  * Date:   07/13/2001
@@ -14,13 +14,13 @@
 
 #include "ctidbgmem.h" // defines CTIDBG_new
 
-#include "ion_value_basic_intunsigned.h"
+#include "ion_value_fixed_intunsigned.h"
 
 #include "logger.h"
 
 
 CtiIONUnsignedInt::CtiIONUnsignedInt( unsigned char *byteStream, unsigned long streamLength ) :
-    CtiIONNumeric(IONUnsignedInt)
+    CtiIONValueFixed(Fixed_UnsignedInt)
 {
     //  all i know about is 4-byte unsigned ints
     if( streamLength <= 4 )
@@ -55,15 +55,17 @@ CtiIONUnsignedInt::CtiIONUnsignedInt( unsigned char *byteStream, unsigned long s
 
 
 
-CtiIONUnsignedInt::CtiIONUnsignedInt( unsigned int initialValue=0 ) :
-    CtiIONNumeric(IONUnsignedInt),
+CtiIONUnsignedInt::CtiIONUnsignedInt( unsigned long initialValue ) :
+    CtiIONValueFixed(Fixed_UnsignedInt),
     _unsignedInt(initialValue)
 {
+
 }
 
 
 CtiIONUnsignedInt::~CtiIONUnsignedInt( )
 {
+
 }
 
 
@@ -79,21 +81,33 @@ void CtiIONUnsignedInt::putSerializedValue( unsigned char *buf ) const
 }
 
 
-CtiIONUnsignedInt &CtiIONUnsignedInt::setValue( unsigned int value )
+void CtiIONUnsignedInt::putElement( unsigned char *buf ) const
+{
+    putSerializedValue(buf);
+}
+
+
+unsigned int CtiIONUnsignedInt::getElementLength( void ) const
+{
+    return getSerializedValueLength();
+}
+
+
+CtiIONUnsignedInt &CtiIONUnsignedInt::setValue( unsigned long value )
 {
     _unsignedInt = value;
     return *this;
 }
 
 
-unsigned int CtiIONUnsignedInt::getValue( void )
+unsigned long CtiIONUnsignedInt::getValue( void ) const
 {
     return _unsignedInt;
 }
 
 
-double CtiIONUnsignedInt::getNumericValue( void )
+double CtiIONUnsignedInt::getNumericValue( void ) const
 {
-    return _unsignedInt;
+    return getValue();
 }
 

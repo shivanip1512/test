@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/01/07 21:17:28 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/02/12 01:14:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,8 +27,7 @@ using namespace std;
 
 #include "prot_base.h"
 
-#include "ion_rootclasses.h"
-#include "ion_value_datastream.h"
+#include "ion_datastream.h"
 #include "ion_net_application.h"
 
 
@@ -47,10 +46,20 @@ private:
 
     struct ion_protocol_command_struct
     {
-        IONCommand command;
+        IONCommand    command;
     } _currentCommand;
 
-    CtiIONUnsignedIntArray *_setup_handles;
+    struct ion_outmess_struct
+    {
+        ion_protocol_command_struct cmd_struct;
+        unsigned long event_log_last_position;
+    };
+
+    unsigned long _eventLogLastPosition,
+                  _eventLogCurrentPosition,  //  really only used on porter-side when requesting logs
+                  _eventLogDepth;
+
+    vector< unsigned long > _setup_handles;
 
     unsigned long _handleManagerPowerMeter,
                   _handleManagerDataRecorder,
@@ -94,6 +103,8 @@ private:
         unsigned long numEvents;
     };
 
+    void resetEventLogInfo( void );
+
     bool _configRead;
 
     bool hasConfigBeenRead( void );
@@ -108,13 +119,13 @@ private:
     void generateIntegrityScan( void );
     void decodeIntegrityScan( void );
 
+    void generateEventLogRead( void );
+    void decodeEventLogRead( void );
+
     unsigned long resultSize( void );
     void putResult( unsigned char *buf );
 
 protected:
-
-    int commOut( OUTMESS *&OutMessage );
-    int commIn ( INMESS   *InMessage  );
 
     enum IONModuleHandles
     {
@@ -123,6 +134,10 @@ protected:
 
     enum IONRegisterHandles
     {
+        Register_EventLogController_EventLog = 0x1000,
+        Register_EventLogController_ELDepth  = 0x71e6,
+        Register_EventLogController_Cutoff   = 0x7305,
+
         Register_PowerMeter1S_Va          = 0x5800,
         Register_PowerMeter1S_Vb          = 0x5801,
         Register_PowerMeter1S_Vc          = 0x5802,
@@ -202,8 +217,16 @@ protected:
         State_ReceivePowerMeterData,
 
         //  reading load profile
-        State_RequestDataRecorderLogs,
-        State_ReceiveDataRecorderLogs,
+        /*State_RequestDataRecorderLogs,
+        State_ReceiveDataRecorderLogs,*/
+
+        //  reading event logs
+        State_RequestEventLogDepth,
+        State_ReceiveEventLogDepth,
+        State_RequestEventLogPosition,
+        State_ReceiveEventLogPosition,
+        State_RequestEventLogRecords,
+        State_ReceiveEventLogRecords,
 
         State_Complete,
         State_Abort
@@ -283,6 +306,8 @@ public:
     void setAddresses( unsigned short masterAddress, unsigned short slaveAddress );
 
     void setCommand( IONCommand command, ion_output_point *points = NULL, int numPoints = 0 );
+    void setEventLogLastPosition( unsigned long lastRecord );
+    unsigned long getEventLogLastPosition( void );
 
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
@@ -341,7 +366,8 @@ public:
         Command_IntegrityScan,
         Command_ScanLoadProfile,
         Command_SetAnalogOut,
-        Command_SetDigitalOut
+        Command_SetDigitalOut,
+        Command_EventLogRead
     };
 
     enum IONConstants

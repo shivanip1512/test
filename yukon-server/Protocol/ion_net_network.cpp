@@ -73,13 +73,13 @@ void CtiIONNetworkLayer::setToOutput( CtiIONSerializable &payload )
 {
     int payloadSize, netSize;
 
-    freeOutPacketMemory( );
+    freeOutPacketMemory();
 
-    initOutPacketReserved( );
+    initOutPacketReserved();
 
     _msgCount++;
 
-    payloadSize = payload.getSerializedLength( );
+    payloadSize = payload.getSerializedLength();
 
     netSize = payloadSize + sizeof( _netOut.header );
     _netOut.header.length.byte1 = (netSize & 0xFF00) >> 8;
@@ -106,7 +106,7 @@ void CtiIONNetworkLayer::setToOutput( CtiIONSerializable &payload )
 
     if( _netOut.data != NULL )
     {
-        payload.putSerialized( _netOut.data );
+        payload.putSerialized(_netOut.data);
 
         _ioState = Output;
 
@@ -115,8 +115,11 @@ void CtiIONNetworkLayer::setToOutput( CtiIONSerializable &payload )
     else
     {
         dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << payloadSize << " bytes in CtiIONNetworkLayer ctor;"
-                                                                 << "  setting zero-length data payload, valid = false" << endl;
+                                                                 << "  setting zero-length data payload, _ioState = Failed" << endl;
         netSize = sizeof( _netOut.header );
+
+        _ioState = Failed;
+
         _netOut.header.length.byte1 = (netSize & 0xFF00) >> 8;
         _netOut.header.length.byte0 =  netSize & 0x00FF;
     }
@@ -336,7 +339,7 @@ unsigned int CtiIONNetworkLayer::getSerializedLength( void ) const
 void CtiIONNetworkLayer::putPayload( unsigned char *buf )
 {
     //  copy the payload data
-    memcpy( buf, _netIn.data, getPayloadLength( ) );
+    memcpy(buf, _netIn.data, getPayloadLength());
 }
 
 

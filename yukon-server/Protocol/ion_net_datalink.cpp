@@ -53,7 +53,7 @@ bool CtiIONDatalinkLayer::errorCondition( void )
 
 void CtiIONDatalinkLayer::setToOutput( CtiIONSerializable &payload )
 {
-    freeMemory( );
+    freeMemory();
 
     _dataSent       = 0;
 
@@ -62,12 +62,12 @@ void CtiIONDatalinkLayer::setToOutput( CtiIONSerializable &payload )
     _commErrorCount     = 0;
     _protocolErrorCount = 0;
 
-    _dataLength = payload.getSerializedLength( );
+    _dataLength = payload.getSerializedLength();
     _data       = CTIDBG_new unsigned char[_dataLength];
 
     if( _data != NULL )
     {
-        payload.putSerialized( _data );
+        payload.putSerialized(_data);
     }
     else
     {
@@ -84,7 +84,7 @@ void CtiIONDatalinkLayer::setToOutput( CtiIONSerializable &payload )
 
 void CtiIONDatalinkLayer::setToInput( void )
 {
-    freeMemory( );
+    freeMemory();
 
     _dataLength         = 0;
     _data               = NULL;
@@ -103,7 +103,7 @@ void CtiIONDatalinkLayer::freeMemory( void )
 {
     int i;
 
-    while( !_inputFrameVector.empty( ) )
+    while( !_inputFrameVector.empty() )
     {
         //  delete all new'd instances
         delete _inputFrameVector.back();
@@ -127,11 +127,11 @@ void CtiIONDatalinkLayer::putPayload( unsigned char *buf )
 
     //  if this function is called during output mode, the payload will be empty and nothing will be copied.
 
-    for( i = 0; i < _inputFrameVector.size( ); i++ )
+    for( i = 0; i < _inputFrameVector.size(); i++ )
     {
         dataLen = (_inputFrameVector[i])->header.len - EmptyPacketLength;
 
-        memcpy( (buf + offset), (_inputFrameVector[i])->data, dataLen );
+        memcpy((buf + offset), (_inputFrameVector[i])->data, dataLen);
 
         offset += dataLen;
     }
@@ -142,7 +142,7 @@ int CtiIONDatalinkLayer::getPayloadLength( void )
 {
     int i, payloadLength = 0;
 
-    for( i = 0; i < _inputFrameVector.size( ); i++ )
+    for( i = 0; i < _inputFrameVector.size(); i++ )
     {
         payloadLength += (_inputFrameVector[i])->header.len - EmptyPacketLength;
     }
@@ -264,22 +264,6 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
             break;
         }
     }
-
-#if 0
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-        if( xfer.getOutCount() > 0 )
-        {
-            dout << "Datalink layer output (" << xfer.getOutCount() << " bytes)" << endl;
-            for( int i = 0; i < xfer.getOutCount(); i++ )
-            {
-                dout << CtiNumStr((xfer.getOutBuffer())[i]).hex().zpad(2) << " ";
-            }
-            dout << endl;
-        }
-    }
-#endif
 
     return retVal;
 }

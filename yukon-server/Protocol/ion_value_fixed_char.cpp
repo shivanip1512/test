@@ -1,7 +1,6 @@
-
 /*-----------------------------------------------------------------------------*
  *
- * File:   ion_basictypes.cpp
+ * File:   ion_value_fixed_char.cpp
  *
  * Class:  CtiIONChar
  * Date:   07/13/2001
@@ -12,20 +11,22 @@
  *-----------------------------------------------------------------------------*/
 
 #include "ctidbgmem.h" // defines CTIDBG_new
-#include "ion_value_basic_char.h"
 
 #include "logger.h"
 
+#include "ion_value_fixed_char.h"
+
 
 CtiIONChar::CtiIONChar( unsigned char initialValue='\0' ) :
-    CtiIONValue(IONChar),
+    CtiIONValueFixed(Fixed_Char),
     _char(initialValue & 0x7F)
 {
+
 }
 
 
 CtiIONChar::CtiIONChar( unsigned char *byteStream, unsigned long streamLength ) :
-    CtiIONValue(IONChar)
+    CtiIONValueFixed(Fixed_Char)
 {
     //  all i know about is 1-byte chars
     if( streamLength <= 1 )
@@ -55,7 +56,9 @@ CtiIONChar::CtiIONChar( unsigned char *byteStream, unsigned long streamLength ) 
 
 CtiIONChar::~CtiIONChar( )
 {
+
 }
+
 
 CtiIONChar &CtiIONChar::setValue( unsigned char value )
 {
@@ -63,18 +66,33 @@ CtiIONChar &CtiIONChar::setValue( unsigned char value )
     return *this;
 }
 
+
 unsigned char CtiIONChar::getValue( void )
 {
     return _char;
 }
+
 
 unsigned int CtiIONChar::getSerializedValueLength( void ) const
 {
     return 1;
 }
 
+
 void CtiIONChar::putSerializedValue( unsigned char *buf ) const
 {
     memcpy( buf, &_char, getSerializedValueLength( ) );
+}
+
+
+void CtiIONChar::putElement( unsigned char *buf ) const
+{
+    putSerializedValue(buf);
+}
+
+
+unsigned int CtiIONChar::getElementLength( void ) const
+{
+    return getSerializedValueLength();
 }
 

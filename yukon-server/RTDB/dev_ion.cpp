@@ -107,7 +107,9 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                 case ScanRateGeneral:
                 {
                     _ion.setCommand(CtiProtocolION::Command_ExceptionScan);
+
                     found = true;
+
                     break;
                 }
 
@@ -116,9 +118,65 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                 default:
                 {
                     _ion.setCommand(CtiProtocolION::Command_IntegrityScan);
+
                     found = true;
+
                     break;
                 }
+            }
+
+            break;
+        }
+
+        case GetStatusRequest:
+        {
+            if( parse.isKeyValid("eventlog") )
+            {
+                if( _ion.getEventLogLastPosition() == 0 )
+                {
+                    CtiPointAnalog *tmpPoint;
+                    unsigned long   lastRecordPosition;
+
+                    tmpPoint = (CtiPointAnalog *)getDevicePointOffsetTypeEqual(2600, AnalogPointType);
+
+                    if( tmpPoint != NULL )
+                    {
+                        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+                        RWDBConnection conn = getConnection();
+
+                        RWCString sql       = RWCString("select value from rawpointhistory ") +
+                                              "where pointid=" + CtiNumStr(tmpPoint->getPointID()) + " " +
+                                                    "and timestamp = (select max(timestamp) from rawpointhistory where pointid=" + CtiNumStr(tmpPoint->getPointID()) + ")";
+                        RWDBResult results  = conn.executeSql( sql );
+                        RWDBTable  resTable = results.table();
+
+                        if(!results.isValid())
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** ERROR **** RWDB Error #" << results.status().errorCode() << " in query:" << endl;
+                            dout << sql << endl << endl;
+                        }
+
+                        RWDBReader rdr = resTable.reader();
+
+                        if(rdr() && rdr.isValid())
+                        {
+                            rdr >> lastRecordPosition;
+                            _ion.setEventLogLastPosition(lastRecordPosition);
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+                    }
+                }
+
+                _ion.setCommand(CtiProtocolION::Command_EventLogRead);
+
+                found = true;
             }
 
             break;

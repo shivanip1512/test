@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------------------*
  *
- * File:   ion_basictypes.cpp
+ * File:   ion_value_variable_boolean.cpp
  *
  * Class:  CtiIONBoolean
  * Date:   07/13/2001
@@ -12,13 +12,13 @@
 
 #include "ctidbgmem.h" // defines CTIDBG_new
 
-#include "ion_value_basic_boolean.h"
-
 #include "logger.h"
+
+#include "ion_value_variable_boolean.h"
 
 
 CtiIONBoolean::CtiIONBoolean( unsigned char *byteStream, unsigned long streamLength ) :
-    CtiIONNumeric(IONBoolean)
+    CtiIONValueVariable(Variable_Boolean)
 {
     //  all i know about is 1-byte booleans
     if( streamLength == 1 )
@@ -41,7 +41,7 @@ CtiIONBoolean::CtiIONBoolean( unsigned char *byteStream, unsigned long streamLen
 
 
 CtiIONBoolean::CtiIONBoolean( bool initialValue=false ) :
-    CtiIONNumeric(IONBoolean),
+    CtiIONValueVariable(Variable_Boolean),
     _bool(initialValue)
 {
 }
@@ -49,6 +49,23 @@ CtiIONBoolean::CtiIONBoolean( bool initialValue=false ) :
 
 CtiIONBoolean::~CtiIONBoolean( )
 {
+}
+
+
+unsigned char CtiIONBoolean::getVariableClassDescriptor( void ) const
+{
+    VariableClassDescriptor retVal;
+
+    if( getValue() == true )
+    {
+        retVal = ClassDescriptor_BooleanTrue;
+    }
+    else
+    {
+        retVal = ClassDescriptor_BooleanFalse;
+    }
+
+    return retVal;
 }
 
 
@@ -65,6 +82,18 @@ void CtiIONBoolean::putSerializedValue( unsigned char *buf ) const
 }
 
 
+void CtiIONBoolean::putElement( unsigned char *buf ) const
+{
+    putSerialized(buf);
+}
+
+
+unsigned int CtiIONBoolean::getElementLength( void ) const
+{
+    return getSerializedLength();
+}
+
+
 CtiIONBoolean &CtiIONBoolean::setValue( bool value )
 {
     _bool = value;
@@ -72,14 +101,14 @@ CtiIONBoolean &CtiIONBoolean::setValue( bool value )
 }
 
 
-bool CtiIONBoolean::getValue( void )
+bool CtiIONBoolean::getValue( void ) const
 {
     return _bool;
 }
 
 
-double CtiIONBoolean::getNumericValue( void )
+double CtiIONBoolean::getNumericValue( void ) const
 {
-    return _bool;
+    return getValue();
 }
 

@@ -2,14 +2,12 @@
 
 /*-----------------------------------------------------------------------------*
  *
- * File:   ion_rootclasses.cpp
+ * File:   ion_datastream.cpp
  *
- * Class:  CtiIONSerializable, CtiIONValue, CtiIONClass, CtiIONDataStream
+ * Class:  CtiIONDataStream
  * Date:   07/13/2001
  *
  * Author: Matthew Fisher
- *
- *         Implementation for ION root classes
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
@@ -19,7 +17,7 @@
 #include "guard.h"
 #include "logger.h"
 
-#include "ion_value_datastream.h"
+#include "ion_datastream.h"
 
 
 CtiIONDataStream::CtiIONDataStream( unsigned char *buf, unsigned long len )
@@ -124,7 +122,11 @@ CtiIONValue *CtiIONDataStream::operator[]( int index ) const
 
 CtiIONDataStream &CtiIONDataStream::push_back( CtiIONValue *toInsert )
 {
-    _streamValues.push_back(toInsert);
+    if( toInsert != NULL )
+    {
+        _streamValues.push_back(toInsert);
+    }
+
     return *this;
 }
 
@@ -156,89 +158,67 @@ bool CtiIONDataStream::empty( void ) const
 }
 
 
-bool CtiIONDataStream::itemIs( int index, CtiIONValue::IONValueTypes type )
+bool CtiIONDataStream::itemIsType( int index, CtiIONValueFixed::FixedTypes type )
 {
     bool result = false;
 
-    if( _streamValues[index]->getType() == type )
+    if( index >= 0 && index < _streamValues.size() )
     {
-        result = true;
+        result = CtiIONValueFixed::isFixedType(_streamValues[index], type);
     }
 
     return result;
 }
 
 
-bool CtiIONDataStream::itemIs( int index, CtiIONArray::IONArrayTypes type )
+bool CtiIONDataStream::itemIsType( int index, CtiIONValueVariable::VariableTypes type )
 {
     bool result = false;
 
-    if( itemIs(index, CtiIONValue::IONArray) )
+    if( index >= 0 && index < _streamValues.size() )
     {
-        if( ((CtiIONArray *)_streamValues[index])->getArrayType() == type )
-        {
-            result = true;
-        }
+        result = CtiIONValueVariable::isVariableType(_streamValues[index], type);
     }
 
     return result;
 }
 
 
-bool CtiIONDataStream::itemIs( int index, CtiIONStruct::IONStructTypes type )
+bool CtiIONDataStream::itemIsType( int index, CtiIONFixedArray::FixedArrayTypes type )
 {
     bool result = false;
 
-    CtiIONStruct *tmpStruct;
-
-    if( itemIs(index, CtiIONValue::IONArray) )
+    if( index >= 0 && index < _streamValues.size() )
     {
-        if( itemIs(index, CtiIONArray::IONStruct) )
-        {
-            if( ((CtiIONStruct *)_streamValues[index])->getStructType() == type )
-            {
-                result = true;
-            }
-        }
+        result = CtiIONFixedArray::isFixedArrayType(_streamValues[index], type);
     }
 
     return result;
 }
 
 
-bool CtiIONDataStream::itemsAre( CtiIONValue::IONValueTypes type )
+bool CtiIONDataStream::itemIsType( int index, CtiIONStruct::StructTypes type )
 {
-    bool result = true;
+    bool result = false;
 
-    for( int i = 0; (i < _streamValues.size()) && result; i++ )
+    if( index >= 0 && index < _streamValues.size() )
     {
-        result &= itemIs(i, type);
+        result = CtiIONStruct::isStructType(_streamValues[index], type);
     }
 
     return result;
 }
 
 
-bool CtiIONDataStream::itemsAre( CtiIONArray::IONArrayTypes type )
+bool CtiIONDataStream::itemIsType( int index, CtiIONStructArray::StructArrayTypes type )
 {
-    bool result = true;
+    bool result = false;
 
-    for( int i = 0; (i < _streamValues.size()) && result; i++ )
+    CtiIONStructArray *tmpStructArray;
+
+    if( index >= 0 && index < _streamValues.size() )
     {
-        result &= itemIs(i, type);
-    }
-
-    return result;
-}
-
-
-bool CtiIONDataStream::itemsAre( CtiIONStruct::IONStructTypes type )
-{
-    bool result = true;
-
-    for( int i = 0; (i < _streamValues.size()) && result; i++ )
-    {
-        result &= itemIs(i, type);
+        result = CtiIONStructArray::isStructArrayType(_streamValues[index], type);
     }
 
     return result;

@@ -18,12 +18,10 @@
  *-----------------------------------------------------------------------------*/
 
 #include <vector>
-#include "ctitypes.h"
+
 #include "dlldefs.h"
 #include "xfer.h"
 
-//#include "ion_rootclasses.h"
-//#include "ion_valuebasictypes.h"
 #include "ion_net_network.h"
 
 
@@ -31,7 +29,7 @@
 #pragma pack(push, ion_packing, 1)
 
 
-class IM_EX_PROT CtiIONApplicationLayer : public CtiIONSerializable
+class CtiIONApplicationLayer : public CtiIONSerializable
 {
 private:
 

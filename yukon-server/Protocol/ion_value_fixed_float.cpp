@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------------------*
  *
- * File:   ion_valuebasic_float.cpp
+ * File:   ion_value_fixed_float.cpp
  *
  * Class:  CtiIONFloat
  * Date:   07/13/2001
@@ -10,20 +10,21 @@
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
 
-#include "ion_value_basic_float.h"
-
 #include "logger.h"
+
+#include "ion_value_fixed_float.h"
 
 
 CtiIONFloat::CtiIONFloat( float initialValue=0.0 ) :
-    CtiIONNumeric(IONFloat),
+    CtiIONValueFixed(Fixed_Float),
     _float(initialValue)
 {
+
 }
 
 
 CtiIONFloat::CtiIONFloat( unsigned char *byteStream, unsigned long streamLength ) :
-    CtiIONNumeric(IONFloat)
+    CtiIONValueFixed(Fixed_Float)
 {
     //  all i know about is 4-byte floats
     if( streamLength == 4 )
@@ -49,6 +50,7 @@ CtiIONFloat::CtiIONFloat( unsigned char *byteStream, unsigned long streamLength 
 
 CtiIONFloat::~CtiIONFloat( )
 {
+
 }
 
 
@@ -64,20 +66,32 @@ void CtiIONFloat::putSerializedValue( unsigned char *buf ) const
 }
 
 
+void CtiIONFloat::putElement( unsigned char *buf ) const
+{
+    putSerializedValue(buf);
+}
+
+
+unsigned int CtiIONFloat::getElementLength( void ) const
+{
+    return getSerializedValueLength();
+}
+
+
 CtiIONFloat &CtiIONFloat::setValue( float value )
 {
     _float = value;  return *this;
 }
 
 
-float CtiIONFloat::getValue( void )
+float CtiIONFloat::getValue( void ) const
 {
     return _float;
 }
 
 
-double CtiIONFloat::getNumericValue( void )
+double CtiIONFloat::getNumericValue( void ) const
 {
-    return _float;
+    return getValue();
 }
 

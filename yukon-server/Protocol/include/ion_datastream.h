@@ -1,11 +1,11 @@
 #pragma warning( disable : 4786 )
 
-#ifndef __ION_VALUE_DATASTREAM_H__
-#define __ION_VALUE_DATASTREAM_H__
+#ifndef __ION_DATASTREAM_H__
+#define __ION_DATASTREAM_H__
 
 /*-----------------------------------------------------------------------------*
  *
- * File:   ion_value_datastream.h
+ * File:   ion_datastream.h
  *
  * Class:  CtiIONDataStream
  * Date:   07/06/2001
@@ -18,10 +18,14 @@
 #include <vector>
 using namespace std;
 
-#include "ion_value_basic_array.h"
-#include "ion_valuestructtypes.h"
+#include "ion_value.h"
+#include "ion_value_fixed.h"
+#include "ion_value_variable.h"
+#include "ion_value_variable_fixedarray.h"
+#include "ion_value_struct.h"
+#include "ion_value_structarray.h"
 
-class IM_EX_PROT CtiIONDataStream : public CtiIONSerializable
+class CtiIONDataStream : public CtiIONSerializable
 {
 private:
 
@@ -41,11 +45,11 @@ public:
 
     CtiIONDataStream &initialize( unsigned char *buf, unsigned long len );
 
-    CtiIONDataStream  &push_back( CtiIONValue *toInsert );
+    CtiIONDataStream &push_back( CtiIONValue *toInsert );
 
     //  note that this function call does not delete the pointed-to object
     //    before it removes it from the vector - this is so you can grab things out of the list
-    CtiIONDataStream  &erase( int index );
+    CtiIONDataStream &erase( int index );
 
     //  this function, however, does delete all of the entries
     void clearAndDestroy( void );
@@ -56,13 +60,24 @@ public:
     int  size( void ) const;
     bool empty( void ) const;
 
-    bool itemIs( int index, CtiIONValue::IONValueTypes type );
-    bool itemIs( int index, CtiIONArray::IONArrayTypes type );
-    bool itemIs( int index, CtiIONStruct::IONStructTypes type );
+    bool itemIsType( int index, CtiIONValueFixed::FixedTypes        type );
+    bool itemIsType( int index, CtiIONValueVariable::VariableTypes  type );
+    bool itemIsType( int index, CtiIONFixedArray::FixedArrayTypes   type );
+    bool itemIsType( int index, CtiIONStruct::StructTypes           type );
+    bool itemIsType( int index, CtiIONStructArray::StructArrayTypes type );
 
-    bool itemsAre( CtiIONValue::IONValueTypes type );
-    bool itemsAre( CtiIONArray::IONArrayTypes type );
-    bool itemsAre( CtiIONStruct::IONStructTypes type );
+    template <class T>
+    bool itemsAreType( T type )
+    {
+        bool result = true;
+
+        for( int i = 0; (i < _streamValues.size()) && result; i++ )
+        {
+            result &= itemIsType(i, type);
+        }
+
+        return result;
+    }
 
     bool isValid( void );
 
@@ -71,5 +86,5 @@ public:
 };
 
 
-#endif  //  #ifndef __ION_VALUE_DATASTREAM_H__
+#endif  //  #ifndef __ION_DATASTREAM_H__
 

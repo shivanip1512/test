@@ -68,12 +68,12 @@ void CtiIONApplicationLayer::setToOutput( const CtiIONSerializable &payload )
 {
     int itemNum, dataOffset, dataLength;
 
-    freeOutPacketMemory( );
-    initOutPacketReserved( );
+    freeOutPacketMemory();
+    initOutPacketReserved();
 
     _ioState = Output;
 
-    dataLength = payload.getSerializedLength( );
+    dataLength = payload.getSerializedLength();
 
     //  fill up the header
     _appOut.header.service = 0x0F;  //  start, execute, and end the program in a single request
@@ -121,7 +121,7 @@ int CtiIONApplicationLayer::generate( CtiXfer &xfer )
         case Input:
         case Output:
         {
-            retVal = _networkLayer.generate( xfer );
+            retVal = _networkLayer.generate(xfer);
 
             break;
         }

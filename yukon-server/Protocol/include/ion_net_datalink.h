@@ -18,17 +18,17 @@
  *-----------------------------------------------------------------------------*/
 
 #include <vector>
-#include "ctitypes.h"
+
 #include "dlldefs.h"
 #include "xfer.h"
 
-#include "ion_rootclasses.h"
+#include "ion_serializable.h"
 
 
 //  necessary to preserve byte alignment;  makes for easy memcpy initialization and serialization
 #pragma pack(push, ion_packing, 1)
 
-class IM_EX_PROT CtiIONDatalinkLayer
+class CtiIONDatalinkLayer
 {
 private:
 

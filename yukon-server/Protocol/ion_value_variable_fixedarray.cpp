@@ -1,8 +1,8 @@
 /*-----------------------------------------------------------------------------*
  *
- * File:   ion_valuebasic_array.cpp
+ * File:   ion_value_variable_fixedarray.cpp
  *
- * Class:  CtiIONArray
+ * Class:  CtiIONFixedArray
  * Date:   07/13/2001
  *
  * Author: Matthew Fisher
@@ -10,148 +10,158 @@
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
 
-#include "ctidbgmem.h" // defines CTIDBG_new
-
-#include "ion_value_basic_array.h"
-#include "ion_valuestructtypes.h"
-
 #include "logger.h"
 
+#include "ctidbgmem.h" // defines CTIDBG_new
 
-CtiIONArray::CtiIONArray( IONArrayTypes arrayType ) :
-    CtiIONValue(IONArray),
-    _arrayType(arrayType)
+#include "ion_value_variable_fixedarray.h"
+
+
+CtiIONFixedArray::CtiIONFixedArray( ) :
+    CtiIONValueVariable(Variable_FixedArray)
 {
+
 }
 
 
-CtiIONArray::~CtiIONArray( )
+void CtiIONFixedArray::setFixedArrayType( FixedArrayTypes type )
 {
-    clearArrayElements( );
+    _arrayType = type;
 }
 
 
-CtiIONArray::IONArrayTypes CtiIONArray::getArrayType( void ) const
+CtiIONFixedArray::FixedArrayTypes CtiIONFixedArray::getFixedArrayType( void ) const
 {
     return _arrayType;
 }
 
 
-bool CtiIONArray::isNumericArray( void )
+bool CtiIONFixedArray::isFixedArrayType( CtiIONValue *toCheck, FixedArrayTypes arrayType )
 {
-    int retVal;
+    bool retVal = false;
 
-    switch( getArrayType( ) )
+    CtiIONFixedArray *tmpArray;
+
+    if( Variable::isVariableType(toCheck, Variable_FixedArray) )
     {
-        case IONBooleanArray:
-        case IONFloatArray:
-        case IONUnsignedIntArray:
-        case IONSignedIntArray:
-           retVal = true;
+        tmpArray = (CtiIONFixedArray *)toCheck;
 
-        default:
-            retVal = false;
+        retVal = tmpArray->isFixedArrayType(arrayType);
     }
 
     return retVal;
 }
 
 
-int CtiIONArray::size( void )
+bool CtiIONFixedArray::isFixedArrayType( FixedArrayTypes arrayType ) const
 {
-    return _array.size( );
+    return arrayType == _arrayType;
 }
 
 
-CtiIONArray &CtiIONArray::appendArrayElement( CtiIONValue *toAppend )
+bool CtiIONFixedArray::isNumericArray( void ) const
 {
-    _array.push_back( toAppend );
-    return *this;
-}
+    bool retVal;
 
-
-CtiIONValue *CtiIONArray::getArrayElement( unsigned long index )
-{
-    CtiIONValue *tmp = NULL;
-
-    if( index < _array.size( ) )
-        tmp = _array[index];
-
-    return tmp;
-}
-
-
-void CtiIONArray::clearArrayElements( void )
-{
-    CtiIONValue *tmp;
-
-    while( _array.size( ) > 0 )
+    switch( getFixedArrayType( ) )
     {
-        tmp = _array.back( );
-        delete tmp;
-        _array.pop_back( );
+        case FixedArray_Boolean:
+        case FixedArray_Float:
+        case FixedArray_UnsignedInt:
+        case FixedArray_SignedInt:
+        {
+            retVal = true;
+
+            break;
+        }
+
+        default:
+        {
+            retVal = false;
+
+            break;
+        }
     }
+
+    return retVal;
 }
 
 
+bool CtiIONFixedArray::isNumericArray( CtiIONValue *toCheck )
+{
+    bool retVal = false;
+    CtiIONFixedArray *tmpFixedArray;
 
-void CtiIONArray::putSerializedValue( unsigned char *buf ) const
+    if( Variable::isVariableType(toCheck, Variable_FixedArray) )
+    {
+        tmpFixedArray = (CtiIONFixedArray *)toCheck;
+
+        retVal = tmpFixedArray->isNumericArray();
+    }
+
+    return retVal;
+}
+
+
+void CtiIONFixedArray::putSerializedValue( unsigned char *buf ) const
 {
     int i, bytesWritten;
 
     bytesWritten = 0;
-    for( i = 0; i < _array.size( ); i++ )
+    for( i = 0; i < _array.size(); i++ )
     {
-        ((CtiIONValue *)_array[i])->putSerializedValue( buf + bytesWritten );
-        bytesWritten += ((CtiIONValue *)_array[i])->getSerializedLength( );
+        _array[i]->putElement(buf + bytesWritten);
+        bytesWritten += _array[i]->getElementLength();
     }
 }
 
 
-unsigned int CtiIONArray::getSerializedValueLength( void ) const
+unsigned int CtiIONFixedArray::getSerializedValueLength( void ) const
 {
-    int i,
-        totalLength;
+    int length;
 
-    totalLength = 0;
-    for( i = 0; i < _array.size( ); i++ )
+    length = _array.size();
+
+    //  to protect against accessing an invalid element
+    if( length > 0 )
     {
-        totalLength += ((CtiIONValue *)_array[i])->getSerializedLength( );
+        length *= _array[0]->getElementLength();
     }
 
-    return totalLength;
+    return length;
 }
 
 
-unsigned char CtiIONArray::getArrayKey( void )
+unsigned char CtiIONFixedArray::getVariableClassDescriptor( void ) const
 {
-    unsigned char key;
+    unsigned char desc;
 
-    switch( getArrayType( ) )
+    switch( getFixedArrayType() )
     {
-        case IONCharArray:
-        case IONBooleanArray:
-        case IONFloatArray:
-        case IONSignedIntArray:
-        case IONUnsignedIntArray:
-            key  = 0xF0;
-            key |= getArrayType( );
-            break;
+        case FixedArray_Boolean:        desc = ClassDescriptor_FixedArray_Boolean;       break;
+        case FixedArray_Char:           desc = ClassDescriptor_FixedArray_Char;          break;
+        case FixedArray_Float:          desc = ClassDescriptor_FixedArray_Float;         break;
+        case FixedArray_SignedInt:      desc = ClassDescriptor_FixedArray_SignedInt;     break;
+        case FixedArray_UnsignedInt:    desc = ClassDescriptor_FixedArray_UnsignedInt;   break;
 
-        case IONStruct:
-            key = ((CtiIONStruct *)this)->getStructKey( );
-            break;
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
 
-        case IONStructArray:
-            key = ((CtiIONStructArray *)this)->getStructArrayKey( );
+            desc = ClassDescriptor_FixedArray_Char;
+
             break;
+        }
     }
 
-    return key;
+    return desc;
 }
 
 
-unsigned int CtiIONArray::getSerializedHeaderLength( void ) const
+unsigned int CtiIONFixedArray::getSerializedHeaderLength( void ) const
 {
     unsigned int tmpHeaderLength;
     unsigned long tmpLength = getSerializedValueLength( );
@@ -159,24 +169,29 @@ unsigned int CtiIONArray::getSerializedHeaderLength( void ) const
 
     tmpHeaderLength = 1;
 
-    if( getArrayType( ) != IONStruct )
+    if( tmpItems > 13 )
     {
-        if( tmpItems > 13 )
-            tmpHeaderLength++;
-        else if( tmpItems > 255 )
-            tmpHeaderLength += 4;
+        tmpHeaderLength++;
+    }
+    else if( tmpItems > 255 )
+    {
+        tmpHeaderLength += 4;
+    }
 
-        if( tmpLength > 13 )
-            tmpHeaderLength++;
-        else if( tmpLength > 255 )
-            tmpHeaderLength += 4;
+    if( tmpLength > 13 )
+    {
+        tmpHeaderLength++;
+    }
+    else if( tmpLength > 255 )
+    {
+        tmpHeaderLength += 4;
     }
 
     return tmpHeaderLength;
 }
 
 
-void CtiIONArray::putSerializedHeader( unsigned char *buf ) const
+void CtiIONFixedArray::putSerializedHeader( unsigned char *buf ) const
 {
     unsigned long tmpLength = getSerializedValueLength( ),
                   streamPos;
@@ -254,27 +269,7 @@ void CtiIONArray::putSerializedHeader( unsigned char *buf ) const
 }
 
 
-CtiIONArray *CtiIONArray::restoreStruct( unsigned char classDescriptor, unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
-{
-    CtiIONArray *newVal = NULL;
-
-    newVal = CtiIONStruct::restoreObject( classDescriptor, buf, len, bytesUsed );
-
-    return newVal;
-}
-
-
-CtiIONArray *CtiIONArray::restoreStructArray( unsigned char classDescriptor, unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
-{
-    CtiIONArray *newVal = NULL;
-
-    newVal = CtiIONStructArray::restoreObject( classDescriptor, buf, len, bytesUsed );
-
-    return newVal;
-}
-
-
-CtiIONArray *CtiIONArray::restoreFixedArray( unsigned char classDescriptor, unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
+CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDescriptor, unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
 {
     unsigned char tmp4b,   //  temp 4 bit value
                   tmp8b;   //  temp 8 bit value
@@ -282,7 +277,7 @@ CtiIONArray *CtiIONArray::restoreFixedArray( unsigned char classDescriptor, unsi
 
     unsigned long pos, itemCount, arrayLength, itemLength, totalUsed;
 
-    CtiIONArray *newArray = NULL;
+    CtiIONValueVariable *newArray = NULL;
 
     pos = 0;
 
@@ -363,11 +358,11 @@ CtiIONArray *CtiIONArray::restoreFixedArray( unsigned char classDescriptor, unsi
 
         switch( classDescriptor )
         {
-            case IONCharArray:          newArray = CTIDBG_new CtiIONCharArray       ((buf + pos), (len - pos), itemCount, itemLength, &totalUsed);  break;
-            case IONBooleanArray:       newArray = CTIDBG_new CtiIONBooleanArray    ((buf + pos), (len - pos), itemCount, itemLength, &totalUsed);  break;
-            case IONFloatArray:         newArray = CTIDBG_new CtiIONFloatArray      ((buf + pos), (len - pos), itemCount, itemLength, &totalUsed);  break;
-            case IONSignedIntArray:     newArray = CTIDBG_new CtiIONSignedIntArray  ((buf + pos), (len - pos), itemCount, itemLength, &totalUsed);  break;
-            case IONUnsignedIntArray:   newArray = CTIDBG_new CtiIONUnsignedIntArray((buf + pos), (len - pos), itemCount, itemLength, &totalUsed);  break;
+            case ClassDescriptor_FixedArray_Char:          newArray = CTIDBG_new CtiIONCharArray       (itemCount, itemLength, (buf + pos), (len - pos), &totalUsed);  break;
+            case ClassDescriptor_FixedArray_Boolean:       newArray = CTIDBG_new CtiIONBooleanArray    (itemCount, itemLength, (buf + pos), (len - pos), &totalUsed);  break;
+            case ClassDescriptor_FixedArray_Float:         newArray = CTIDBG_new CtiIONFloatArray      (itemCount, itemLength, (buf + pos), (len - pos), &totalUsed);  break;
+            case ClassDescriptor_FixedArray_SignedInt:     newArray = CTIDBG_new CtiIONSignedIntArray  (itemCount, itemLength, (buf + pos), (len - pos), &totalUsed);  break;
+            case ClassDescriptor_FixedArray_UnsignedInt:   newArray = CTIDBG_new CtiIONUnsignedIntArray(itemCount, itemLength, (buf + pos), (len - pos), &totalUsed);  break;
 
             default:
             {
@@ -405,65 +400,6 @@ CtiIONArray *CtiIONArray::restoreFixedArray( unsigned char classDescriptor, unsi
 }
 
 
-unsigned char *CtiIONArray::putClassSize( unsigned char key, unsigned char *buf ) const
-{
-    unsigned long tmpLength = getSerializedValueLength( );
-    unsigned long tmpItems  = _array.size( );
 
-    //  if it's a fixed size array
-    if( getArrayType( ) != IONStruct )
-    {
-        if( tmpItems <= 13 )
-        {
-            key |= (tmpItems << 4) & 0xF0;
-        }
-        else if( tmpItems <= 255 )
-        {
-            key |= 0xE0;
-            key |= (tmpItems >> 4) & 0x0F;
-            *(buf++) = key;
-            key  = (tmpItems << 4) & 0xF0;
-        }
-        else
-        {
-            key |= 0xF0;
-            key |= (tmpItems) & 0x0F;
-            *(buf++) = key;
-            tmpItems >>= 4;
-            *(buf++) = tmpItems & 0xFF;
-            tmpItems >>= 8;
-            *(buf++) = tmpItems & 0xFF;
-            tmpItems >>= 8;
-            *(buf++) = tmpItems & 0xFF;
-            tmpItems >>= 4;
-            key  = tmpItems & 0xF0;
-        }
 
-        if( tmpLength <= 12 )
-        {
-            key |= tmpLength;
-            *(buf++) = key;
-        }
-        else if( tmpLength <= 255 )
-        {
-            key |= 0x0D;
-            *(buf++) = key;
-            *(buf++) = tmpLength & 0xFF;
-        }
-        else
-        {
-            key |= 0x0E;
-            *(buf++) = key;
-            *(buf++) = tmpLength & 0xFF;
-            tmpLength >>= 8;
-            *(buf++) = tmpLength & 0xFF;
-            tmpLength >>= 8;
-            *(buf++) = tmpLength & 0xFF;
-            tmpLength >>= 8;
-            *(buf++) = tmpLength & 0xFF;
-        }
-    }
-
-    return buf;
-}
 

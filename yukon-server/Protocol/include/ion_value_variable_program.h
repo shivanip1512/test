@@ -1,13 +1,13 @@
 #pragma warning( disable : 4786 )
 
-#ifndef __ION_VALUE_METHOD_H__
-#define __ION_VALUE_METHOD_H__
+#ifndef __ION_VALUE_VARIABLE_PROGRAM_H__
+#define __ION_VALUE_VARIABLE_PROGRAM_H__
 
 /*-----------------------------------------------------------------------------*
  *
- * File:   ion_value_method.h
+ * File:   ion_value_variable_program.h
  *
- * Class:  CtiIONStatement, CtiIONMethod
+ * Class:  CtiIONProgram
  * Date:   07/06/2001
  *
  * Author: Matthew Fisher
@@ -18,51 +18,105 @@
 #include <vector>
 using namespace std;
 
-#include "dlldefs.h"
+#include "ion_value_variable.h"
 
-#include "ion_rootclasses.h"
+class CtiIONStatement;
+class CtiIONMethod;
 
 
-class IM_EX_PROT CtiIONStatement
+class CtiIONProgram : public CtiIONValueVariable
 {
+private:
+
+    vector< CtiIONStatement * > _statements;
+
+protected:
+
+    unsigned char getVariableClassDescriptor( void ) const;
+
+    unsigned int getSerializedValueLength( void ) const;
+    void putSerializedValue( unsigned char *buf ) const;
+
+public:
+
+    CtiIONProgram( );
+    CtiIONProgram( CtiIONStatement *initial );
+    CtiIONProgram( unsigned char *byteStream, unsigned long streamLength );
+
+    ~CtiIONProgram( );
+
+    CtiIONProgram &addStatement( CtiIONStatement *toAdd );
+    CtiIONProgram &clearAndDestroy( void );
+};
+
+
+class CtiIONStatement
+{
+private:
+
+    bool _valid;
+    unsigned short _handle;
+    CtiIONMethod *_method;
+
+protected:
+
+    friend class CtiIONProgram;
+
+    CtiIONStatement( unsigned char *byteStream, unsigned long streamLength, unsigned long *bytesUsed );
+
+    unsigned int getLength( void ) const;
+    void write( unsigned char *buf ) const;
+
+    void setValid( bool valid );
+
 public:
 
     CtiIONStatement( );
     CtiIONStatement( unsigned int handle, CtiIONMethod *method );
     ~CtiIONStatement( );
 
+    bool isValid( void );
+
     void setHandle( unsigned long handle );
     int  getHandle( void );
 
     void setMethod( CtiIONMethod *method );
     CtiIONMethod getMethod( void );
-
-    unsigned int getSerializedValueLength( void ) const;
-    void putSerializedValue( unsigned char *buf ) const;
-
-private:
-
-    unsigned short _handle;
-    CtiIONMethod *_method;
 };
 
 
-class IM_EX_PROT CtiIONMethod
+class CtiIONMethod
 {
+private:
+
+    bool            _valid;
+    unsigned char   _methodNum;
+    unsigned short  _extendedMethodNum;
+    CtiIONValue    *_parameter;
+
+protected:
+
+    friend class CtiIONStatement;
+
+    CtiIONMethod( unsigned char *byteStream, unsigned long streamLength, unsigned long *bytesUsed );
+
+    unsigned int getLength( void ) const;
+    void write( unsigned char *buf ) const;
+
+    void setValid( bool valid );
+
 public:
+
     enum IONSimpleMethods;
     enum IONExtendedMethods;
 
     CtiIONMethod( );
     CtiIONMethod( IONSimpleMethods method, CtiIONValue *parameter=NULL );
     CtiIONMethod( IONExtendedMethods method, CtiIONValue *parameter=NULL );
-    CtiIONMethod( unsigned char *byteStream, unsigned long streamLength );
     ~CtiIONMethod( );
 
     int isValid( void );
 
-    unsigned int getSerializedValueLength( void ) const;
-    void putSerializedValue( unsigned char *buf ) const;
     enum IONSimpleMethods
     {
         ReadIONClass                  = 0x01,
@@ -126,20 +180,9 @@ public:
         WriteManagerSetupCounter     = 0x05DF,
         ReadCollectiveState          = 0x05E1
     };
-
-protected:
-
-    void setValid( bool valid );
-
-private:
-
-    bool            _valid;
-    unsigned char   _methodNum;
-    unsigned short  _extendedMethodNum;
-    CtiIONValue    *_parameter;
-
 };
 
 
-#endif  //  #ifndef __ION_VALUE_METHOD_H__
+#endif  //  #ifndef __ION_VALUE_VARIABLE_PROGRAM_H__
+
 

@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------------------*
  *
- * File:   ion_valuebasic_intsigned.cpp
+ * File:   ion_value_fixed_intsigned.cpp
  *
  * Class:  CtiIONSignedInt
  * Date:   07/13/2001
@@ -14,11 +14,11 @@
 
 #include "logger.h"
 
-#include "ion_value_basic_intsigned.h"
+#include "ion_value_fixed_intsigned.h"
 
 
 CtiIONSignedInt::CtiIONSignedInt( unsigned char *byteStream, unsigned long streamLength ) :
-    CtiIONNumeric(IONSignedInt)
+    CtiIONValueFixed(Fixed_SignedInt)
 {
     //  all i know about is 4-byte signed ints
     if( streamLength <= 4 )
@@ -52,15 +52,17 @@ CtiIONSignedInt::CtiIONSignedInt( unsigned char *byteStream, unsigned long strea
 }
 
 
-CtiIONSignedInt::CtiIONSignedInt( long initialValue=0 ) :
-    CtiIONNumeric(IONSignedInt),
+CtiIONSignedInt::CtiIONSignedInt( long initialValue ) :
+    CtiIONValueFixed(Fixed_SignedInt),
     _signedInt(initialValue)
 {
+
 }
 
 
 CtiIONSignedInt::~CtiIONSignedInt( )
 {
+
 }
 
 
@@ -76,6 +78,18 @@ void CtiIONSignedInt::putSerializedValue( unsigned char *buf ) const
 }
 
 
+void CtiIONSignedInt::putElement( unsigned char *buf ) const
+{
+    putSerializedValue(buf);
+}
+
+
+unsigned int CtiIONSignedInt::getElementLength( void ) const
+{
+    return getSerializedValueLength();
+}
+
+
 CtiIONSignedInt &CtiIONSignedInt::setValue( long value )
 {
     _signedInt = value;
@@ -83,14 +97,14 @@ CtiIONSignedInt &CtiIONSignedInt::setValue( long value )
 }
 
 
-long CtiIONSignedInt::getValue( void )
+long CtiIONSignedInt::getValue( void ) const
 {
     return _signedInt;
 }
 
 
-double CtiIONSignedInt::getNumericValue( void )
+double CtiIONSignedInt::getNumericValue( void ) const
 {
-    return _signedInt;
+    return getValue();
 }
 

@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------------------*
  *
- * File:   ion_valuestructtypes.cpp
+ * File:   ion_value_struct_types.cpp
  *
  * Class:
  * Date:   08/29/2001
@@ -12,18 +12,17 @@
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
 
-#include "ion_valuestructtypes.h"
+#include "ion_value_struct_types.h"
 
 
 CtiIONLogRecord::CtiIONLogRecord( vector< CtiIONValue * > structValues ) :
-    CtiIONStruct(IONLogRecord, 3)
+    CtiIONStruct(StructType_LogRecord, 3)
 {
     //  verify that the elements are of the correct type
     if( structValues.size() == _numElements &&
-        structValues[LogPosition]->getType() == IONUnsignedInt &&
-        structValues[Timestamp]->getType()   == IONTime        &&
-        structValues[LogValues]->getType()   == IONArray       &&
-            ((CtiIONArray *)structValues[LogValues])->getArrayType() == IONStruct )
+        Fixed::isFixedType(structValues[LogPosition], Fixed::Fixed_UnsignedInt) &&
+        Fixed::isFixedType(structValues[Timestamp],   Fixed::Fixed_Time)        &&
+        Value::isValueType(structValues[LogValues],   Value::ValueType_Struct) )
     {
         //  init calls setValid depending on the validity of the contained objects
         init(structValues);
@@ -38,7 +37,7 @@ CtiIONLogRecord::CtiIONLogRecord( vector< CtiIONValue * > structValues ) :
 CtiIONLogRecord::CtiIONLogRecord( CtiIONUnsignedInt *logPosition,
                                   CtiIONTime        *timestamp,
                                   CtiIONStruct      *logValues ) :
-    CtiIONStruct(IONLogRecord, 3)
+    CtiIONStruct(StructType_LogRecord, 3)
 {
     vector< CtiIONValue * > values;
 
@@ -53,13 +52,13 @@ CtiIONLogRecord::CtiIONLogRecord( CtiIONUnsignedInt *logPosition,
 
 
 CtiIONAlarm::CtiIONAlarm( vector< CtiIONValue * > structValues ) :
-    CtiIONStruct(IONAlarm, 3)
+    CtiIONStruct(StructType_Alarm, 3)
 {
     //  verify that the elements are of the correct type
     if( structValues.size() == _numElements &&
-        structValues[EffectHandle]->getType() == IONUnsignedInt &&
-        structValues[Transitions]->getType()  == IONUnsignedInt &&
-        structValues[Priority]->getType()     == IONUnsignedInt )
+        Fixed::isFixedType(structValues[EffectHandle], Fixed::Fixed_UnsignedInt) &&
+        Fixed::isFixedType(structValues[Transitions],  Fixed::Fixed_UnsignedInt) &&
+        Fixed::isFixedType(structValues[Priority],     Fixed::Fixed_UnsignedInt) )
     {
         //  init calls setValid depending on the validity of the contained objects
         init(structValues);
@@ -74,7 +73,7 @@ CtiIONAlarm::CtiIONAlarm( vector< CtiIONValue * > structValues ) :
 CtiIONAlarm::CtiIONAlarm( CtiIONUnsignedInt *effectHandle,
                           CtiIONUnsignedInt *transitions,
                           CtiIONUnsignedInt *priority ) :
-    CtiIONStruct(IONAlarm, 3)
+    CtiIONStruct(StructType_Alarm, 3)
 {
     vector< CtiIONValue * > values;
 
@@ -89,14 +88,14 @@ CtiIONAlarm::CtiIONAlarm( CtiIONUnsignedInt *effectHandle,
 
 
 CtiIONEvent::CtiIONEvent( vector< CtiIONValue * > structValues ) :
-    CtiIONStruct(IONEvent, 6)
+    CtiIONStruct(StructType_Event, 6)
 {
     //  verify that the elements are the correct type
     if( structValues.size( ) == _numElements &&
-        structValues[Priority]->getType( )     == IONUnsignedInt &&
-        structValues[EventState]->getType( )   == IONUnsignedInt &&
-        structValues[CauseHandle]->getType( )  == IONUnsignedInt &&
-        structValues[EffectHandle]->getType( ) == IONUnsignedInt )
+        Fixed::isFixedType(structValues[Priority],     Fixed::Fixed_UnsignedInt) &&
+        Fixed::isFixedType(structValues[EventState],   Fixed::Fixed_UnsignedInt) &&
+        Fixed::isFixedType(structValues[CauseHandle],  Fixed::Fixed_UnsignedInt) &&
+        Fixed::isFixedType(structValues[EffectHandle], Fixed::Fixed_UnsignedInt) )
     {
         //  init calls setValid depending on the validity of the contained objects
         init( structValues );
@@ -114,7 +113,7 @@ CtiIONEvent::CtiIONEvent( CtiIONUnsignedInt *priority,
                           CtiIONValue       *causeValue,
                           CtiIONUnsignedInt *effectHandle,
                           CtiIONValue       *effectValue ) :
-    CtiIONStruct(IONEvent, 6)
+    CtiIONStruct(StructType_Event, 6)
 {
     vector< CtiIONValue * > values;
 
@@ -131,12 +130,12 @@ CtiIONEvent::CtiIONEvent( CtiIONUnsignedInt *priority,
 
 
 CtiIONRange::CtiIONRange( vector< CtiIONValue * > structValues ) :
-    CtiIONStruct(IONRange, 2)
+    CtiIONStruct(StructType_Range, 2)
 {
     //  verify that the elements are the correct type
     if( structValues.size() == _numElements &&
-        structValues[RangeStart]->getType() == IONUnsignedInt &&
-        structValues[RangeEnd]->getType()   == IONUnsignedInt )
+        Fixed::isFixedType(structValues[RangeStart], Fixed::Fixed_UnsignedInt) &&
+        Fixed::isFixedType(structValues[RangeEnd],   Fixed::Fixed_UnsignedInt) )
     {
         //  init calls setValid depending on the validity of the contained objects
         init(structValues);
@@ -150,7 +149,7 @@ CtiIONRange::CtiIONRange( vector< CtiIONValue * > structValues ) :
 
 CtiIONRange::CtiIONRange( CtiIONUnsignedInt *rangeStart,
                           CtiIONUnsignedInt *rangeEnd ) :
-    CtiIONStruct(IONRange, 2)
+    CtiIONStruct(StructType_Range, 2)
 {
     vector< CtiIONValue * > values;
 
@@ -163,7 +162,7 @@ CtiIONRange::CtiIONRange( CtiIONUnsignedInt *rangeStart,
 
 
 CtiIONList::CtiIONList( vector< CtiIONValue * > structValues ) :
-    CtiIONStruct(IONList)
+    CtiIONStruct(StructType_List, 0)
 {
     //  an IONList can hold any combination of types - init will check the validity, but the
     //    only validity constraint is the sum validity of the elements
@@ -173,13 +172,12 @@ CtiIONList::CtiIONList( vector< CtiIONValue * > structValues ) :
 
 
 CtiIONException::CtiIONException( vector< CtiIONValue * > structValues ) :
-    CtiIONStruct(IONException, 3)
+    CtiIONStruct(StructType_Exception, 3)
 {
     //  verify that the elements are the correct type
     if( structValues.size() == _numElements &&
-        structValues[ExceptionCode]->getType() == IONUnsignedInt &&
-        structValues[Reason]->getType()        == IONArray &&
-             ((CtiIONArray *)structValues[Reason])->getArrayType() == IONCharArray )
+        Fixed::isFixedType(structValues[ExceptionCode],    Fixed::Fixed_UnsignedInt) &&
+        FixedArray::isFixedArrayType(structValues[Reason], FixedArray::FixedArray_Char) )
     {
         //  init calls setValid depending on the validity of the contained objects
         init(structValues);
@@ -194,7 +192,7 @@ CtiIONException::CtiIONException( vector< CtiIONValue * > structValues ) :
 CtiIONException::CtiIONException( CtiIONUnsignedInt *exceptionCode,
                                   CtiIONValue       *exceptionValue,
                                   CtiIONCharArray   *reason ) :
-    CtiIONStruct(IONException, 3)
+    CtiIONStruct(StructType_Exception, 3)
 {
     vector< CtiIONValue * > values;
 
@@ -206,18 +204,16 @@ CtiIONException::CtiIONException( CtiIONUnsignedInt *exceptionCode,
 }
 
 
-
 CtiIONWaveform::CtiIONWaveform( vector< CtiIONValue * > structValues ) :
-    CtiIONStruct(IONWaveform, 5)
+    CtiIONStruct(StructType_Waveform, 5)
 {
      //  verify that the elements are the correct type
     if( structValues.size( ) == _numElements &&
         structValues[SamplingFrequency]->isNumeric( ) &&
         structValues[Offset]->isNumeric( ) &&
         structValues[Scale]->isNumeric( ) &&
-        structValues[TimeOfFirstPoint]->getType( ) == IONTime &&
-        structValues[SamplePoints]->getType( )     == IONArray &&
-             ((CtiIONArray *)structValues[SamplePoints])->isNumericArray( ) )
+        Fixed::isFixedType(structValues[TimeOfFirstPoint], Fixed::Fixed_Time) &&
+        FixedArray::isNumericArray(structValues[SamplePoints]) )
     {
         //  init calls setValid depending on the validity of the contained objects
         init(structValues);
@@ -230,13 +226,13 @@ CtiIONWaveform::CtiIONWaveform( vector< CtiIONValue * > structValues ) :
 
 
 CtiIONDate::CtiIONDate( vector< CtiIONValue * > structValues ) :
-    CtiIONStruct(IONDate, 3)
+    CtiIONStruct(StructType_Date, 3)
 {
     //  verify that the elements are the correct type
     if( structValues.size() == _numElements &&
-        structValues[Year]->getType()          == IONUnsignedInt &&
-        structValues[Month]->getType()         == IONUnsignedInt &&
-        structValues[DayOfTheMonth]->getType() == IONUnsignedInt )
+        Fixed::isFixedType(structValues[Year],          Fixed::Fixed_UnsignedInt) &&
+        Fixed::isFixedType(structValues[Month],         Fixed::Fixed_UnsignedInt) &&
+        Fixed::isFixedType(structValues[DayOfTheMonth], Fixed::Fixed_UnsignedInt) )
     {
         //  init calls setValid depending on the validity of the contained objects
         init(structValues);
@@ -250,7 +246,7 @@ CtiIONDate::CtiIONDate( vector< CtiIONValue * > structValues ) :
 CtiIONDate::CtiIONDate( CtiIONUnsignedInt *year,
                         CtiIONUnsignedInt *month,
                         CtiIONUnsignedInt *dayOfTheMonth ) :
-    CtiIONStruct(IONDate, 3)
+    CtiIONStruct(StructType_Date, 3)
 {
     vector< CtiIONValue * > values;
 
@@ -264,13 +260,12 @@ CtiIONDate::CtiIONDate( CtiIONUnsignedInt *year,
 
 
 CtiIONCalendar::CtiIONCalendar( vector< CtiIONValue * > structValues ) :
-    CtiIONStruct(IONCalendar, 2)
+    CtiIONStruct(StructType_Calendar, 2)
 {
     //  verify that the elements are the correct type
     if( structValues.size() == _numElements &&
-        structValues[StartDate]->getType()  == IONUnsignedInt &&
-        structValues[ListOfDays]->getType() == IONArray &&
-        ((CtiIONArray *)structValues[ListOfDays])->getArrayType() == IONUnsignedIntArray )
+        Fixed::isFixedType(structValues[StartDate],            Fixed::Fixed_UnsignedInt) &&
+        FixedArray::isFixedArrayType(structValues[ListOfDays], FixedArray::FixedArray_UnsignedInt) )
     {
         //  init calls setValid depending on the validity of the contained objects
         init(structValues);
@@ -284,7 +279,7 @@ CtiIONCalendar::CtiIONCalendar( vector< CtiIONValue * > structValues ) :
 
 CtiIONCalendar::CtiIONCalendar( CtiIONDate             *startDate,
                                 CtiIONUnsignedIntArray *listOfDays ) :
-    CtiIONStruct(IONCalendar, 2)
+    CtiIONStruct(StructType_Calendar, 2)
 {
     vector< CtiIONValue * > values;
 
@@ -296,14 +291,12 @@ CtiIONCalendar::CtiIONCalendar( CtiIONDate             *startDate,
 
 
 CtiIONProfile::CtiIONProfile( vector< CtiIONValue * > structValues ) :
-    CtiIONStruct(IONProfile, 2)
+    CtiIONStruct(StructType_Profile, 2)
 {
     //  verify that the elements are the correct type
     if( structValues.size() == _numElements &&
-        structValues[IndexTable]->getType()   == IONArray &&
-        structValues[ActivityList]->getType() == IONArray &&
-        ((CtiIONArray *)structValues[IndexTable])->getArrayType()   == IONUnsignedIntArray &&
-        ((CtiIONArray *)structValues[ActivityList])->getArrayType() == IONUnsignedIntArray )
+        FixedArray::isFixedArrayType(structValues[IndexTable],   FixedArray::FixedArray_UnsignedInt) &&
+        FixedArray::isFixedArrayType(structValues[ActivityList], FixedArray::FixedArray_UnsignedInt) )
     {
         //  init calls setValid depending on the validity of the contained objects
         init(structValues);
@@ -317,7 +310,7 @@ CtiIONProfile::CtiIONProfile( vector< CtiIONValue * > structValues ) :
 
 CtiIONProfile::CtiIONProfile( CtiIONUnsignedIntArray *indexTable,
                               CtiIONUnsignedIntArray *activityList ) :
-    CtiIONStruct(IONProfile, 2)
+    CtiIONStruct(StructType_Profile, 2)
 {
     vector< CtiIONValue * > values;
 
@@ -329,14 +322,13 @@ CtiIONProfile::CtiIONProfile( CtiIONUnsignedIntArray *indexTable,
 
 
 CtiIONStringArray::CtiIONStringArray( vector< CtiIONValue * > structValues ) :
-    CtiIONStruct(IONStringArray, 0)
+    CtiIONStruct(StructType_StringArray, 0)
 {
     setValid(true);
 
     for( int i = 0; i < structValues.size() && isValid(); i++ )
     {
-        if( (structValues[i]->getType() == IONArray) &&
-            (((CtiIONArray *)structValues[i])->getArrayType() == IONCharArray) )
+        if( FixedArray::isFixedArrayType(structValues[i], FixedArray::FixedArray_Char) )
         {
             _numElements++;
         }
