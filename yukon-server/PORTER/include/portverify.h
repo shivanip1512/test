@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/07/27 15:43:23 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/07/27 16:41:57 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -45,7 +45,6 @@ private:
 
     association_map _associations;
 
-    bool _running;
     unsigned long _sequence;
 
     typedef vector< CtiVerificationWork * > pending_vector;  //  this could also be made to a map if iterating is too slow

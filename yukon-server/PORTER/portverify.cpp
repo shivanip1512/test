@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/07/27 15:43:23 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/07/27 16:41:57 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,7 +33,6 @@ const string CtiPorterVerification::_table_name = "DynamicVerification";
 
 
 CtiPorterVerification::CtiPorterVerification() :
-    _running(false),
     _sequence(0)
 {
 }
@@ -53,8 +52,6 @@ CtiPorterVerification::~CtiPorterVerification()
 
 void CtiPorterVerification::run( void )
 {
-    _running = true;  //  race condition is not possible, since Porter hasn't started the port threads yet
-
     verificationThread();
 }
 
@@ -236,7 +233,7 @@ void CtiPorterVerification::verificationThread( void )
 
 void CtiPorterVerification::push(CtiVerificationBase *entry)
 {
-    if( _running )
+    if( isRunning() )
     {
         if( entry )
         {
@@ -262,7 +259,7 @@ void CtiPorterVerification::push(CtiVerificationBase *entry)
 
 void CtiPorterVerification::push(queue< CtiVerificationBase * > &entries)
 {
-    if( _running )
+    if( isRunning() )
     {
         while( !entries.empty() )
         {
