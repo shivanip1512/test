@@ -28,6 +28,7 @@ import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.DrawingElement;
 import com.cannontech.esub.editor.element.DynamicGraphElement;
 import com.cannontech.esub.editor.element.DynamicText;
+import com.cannontech.esub.editor.element.PointAttributes;
 import com.cannontech.esub.editor.element.StateImage;
 import com.cannontech.esub.editor.element.StaticImage;
 import com.cannontech.esub.editor.element.StaticText;
@@ -175,10 +176,10 @@ public class SVGGenerator {
 		textElem.setAttributeNS(null, "y", Integer.toString(y));
 		textElem.setAttributeNS(null, "style", "fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";");
 		textElem.setAttributeNS(null, "xlink:href", "Javascript:editValue(evt)");
-		//if (text.isEditable()) { 
-		textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
-		//}
 		
+		if(text.isEditable()) {
+			textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
+		}
 		
 		Text theText = doc.createTextNode(text.getText());
 		textElem.insertBefore(theText, null);
