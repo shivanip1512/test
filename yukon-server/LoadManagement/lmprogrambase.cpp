@@ -1002,7 +1002,6 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
 
 
     RWDBNullIndicator isNull;
-    RWDBDateTime dynamicTimeStamp;
     RWCString tempBoolString;
     RWCString tempTypeString;
     _insertDynamicDataFlag = FALSE;
@@ -1017,9 +1016,13 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     rdr["disableflag"] >> tempBoolString;
     tempBoolString.toLower();
     setDisableFlag(tempBoolString=="y"?TRUE:FALSE);
-    rdr["userorder"] >> _userorder;
+    /*rdr["userorder"] >> _userorder;
     rdr["stoporder"] >> _stoporder;
-    rdr["defaultpriority"] >> _defaultpriority;
+    rdr["defaultpriority"] >> _defaultpriority;*/
+    _userorder = 0;
+    _stoporder = 0;
+    _defaultpriority = 0;
+
     rdr["controltype"] >> _controltype;
     rdr["availableseasons"] >> _availableseasons;
     rdr["availableweekdays"] >> _availableweekdays;
@@ -1040,7 +1043,6 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
         rdr["manualcontrolreceivedflag"] >> tempBoolString;
         tempBoolString.toLower();
         setManualControlReceivedFlag(tempBoolString=="y"?TRUE:FALSE);
-        rdr["timestamp"] >> dynamicTimeStamp;
 
         _insertDynamicDataFlag = FALSE;
     }

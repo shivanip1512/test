@@ -421,7 +421,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setAdditionalInfo(const RWCStr
 
     Sets the group selection method of the curtailment program
 ---------------------------------------------------------------------------*/
-DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
 
 
@@ -505,7 +505,7 @@ void CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
 
     Handles manual control messages for the curtailment program.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramCurtailment::handleManualControl(LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
 
 
@@ -612,7 +612,7 @@ void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiDispatchMsg)
             emailBody += (getCurtailmentStartTime().rwtime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += "Scheduled Duration:  ";
-            LONG durationInSeconds = getCurtailmentStopTime().seconds() - getCurtailmentStartTime().seconds();
+            ULONG durationInSeconds = getCurtailmentStopTime().seconds() - getCurtailmentStartTime().seconds();
             char tempchar[64];
             if( (durationInSeconds/3600) > 0 )
             {
@@ -688,7 +688,7 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiDispatchMs
             emailBody += (getCurtailmentStartTime().rwtime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += "Scheduled Duration:  ";
-            LONG durationInSeconds = getCurtailmentStopTime().seconds() - getCurtailmentStartTime().seconds();
+            ULONG durationInSeconds = getCurtailmentStopTime().seconds() - getCurtailmentStartTime().seconds();
             char tempchar[64];
             if( (durationInSeconds/3600) > 0 )
             {
@@ -1077,17 +1077,22 @@ CtiLMProgramBase* CtiLMProgramCurtailment::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::restore(RWDBReader& rdr)
 {
-
-
     CtiLMProgramBase::restore(rdr);
 
-    setMinNotifyTime(0);
+    rdr["minnotifytime"] >> _minnotifytime;
+    rdr["heading"] >> _heading;
+    rdr["messageheader"] >> _messageheader;
+    rdr["messagefooter"] >> _messagefooter;
+    rdr["acktimelimit"] >> _acktimelimit;
+    rdr["canceledmsg"] >> _canceledmsg;
+    rdr["stoppedearlymsg"] >> _stoppedearlymsg;
+    /*setMinNotifyTime(0);
     setHeading("Null");
     setMessageHeader("Null");
     setMessageFooter("Null");
     setAckTimeLimit(0);
     setCanceledMsg("Null");
-    setStoppedEarlyMsg("Null");
+    setStoppedEarlyMsg("Null");*/
     setCurtailReferenceId(0);
     setActionDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
     setNotificationDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
@@ -1103,12 +1108,8 @@ void CtiLMProgramCurtailment::restore(RWDBReader& rdr)
     Restores the database entries for a curtailment program that are not
     contained in the base table.
 ---------------------------------------------------------------------------*/
-void CtiLMProgramCurtailment::restoreCurtailmentSpecificDatabaseEntries(RWDBReader& rdr)
+/*void CtiLMProgramCurtailment::restoreCurtailmentSpecificDatabaseEntries(RWDBReader& rdr)
 {
-
-
-    RWCString tempBoolString;
-
     rdr["minnotifytime"] >> _minnotifytime;
     rdr["heading"] >> _heading;
     rdr["messageheader"] >> _messageheader;
@@ -1116,7 +1117,7 @@ void CtiLMProgramCurtailment::restoreCurtailmentSpecificDatabaseEntries(RWDBRead
     rdr["acktimelimit"] >> _acktimelimit;
     rdr["canceledmsg"] >> _canceledmsg;
     rdr["stoppedearlymsg"] >> _stoppedearlymsg;
-}
+}*/
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
