@@ -91,6 +91,11 @@
   	<servlet-name>GraphGenerator</servlet-name>
   	<servlet-class>com.cannontech.servlet.GraphGenerator</servlet-class>
   </servlet>
+  
+  <servlet>
+  	<servlet-name>UpdateAttribute</servlet-name>
+  	<servlet-class>com.cannontech.esub.web.servlet.UpdateAttribute</servlet-class>
+  </servlet>
        
   <servlet-mapping>
  	<servlet-name>svgGenerator</servlet-name>
@@ -118,6 +123,4 @@
   <mime-type>text/html</mime-type>
  </mime-mapping>
  <welcome-file-list><welcome-file>login.jsp</welcome-file></welcome-file-list>
-
-
 </web-app>
