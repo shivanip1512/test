@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:14 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 19:52:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -135,7 +135,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &),
             RWDBTable   keyTable;
 
             if(DebugLevel & 0x00080000)  cout  << "Looking for Direct and ModemDirect Ports" << endl;
-            CtiPortLocalModem::getSQL( db, keyTable, selector );
+            CtiPortLocalModem().getSQL( db, keyTable, selector );
             RWDBReader  rdr = selector.reader( conn );
             if(DebugLevel & 0x00080000 || selector.status().errorCode() != RWDBStatus::ok) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl; }
 
@@ -153,7 +153,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &),
             RWDBTable   keyTable;
 
             if(DebugLevel & 0x00080000)  cout  << "Looking for TCPIP Ports" << endl;
-            CtiPortTCPIPDirect::getSQL( db, keyTable, selector );
+            CtiPortTCPIPDirect().getSQL( db, keyTable, selector );
             RWDBReader  rdr = selector.reader( conn );
             if(DebugLevel & 0x00080000 || selector.status().errorCode() != RWDBStatus::ok) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl; }
 

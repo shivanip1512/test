@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:14 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 19:52:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -126,7 +126,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
 
             if(DebugLevel & 0x00010000) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for System Points" << endl; }
             /* Go after the system defined points! */
-            CtiPointBase::getSQL( db, keyTable, selector );
+            CtiPointBase().getSQL( db, keyTable, selector );
             // Make sure I pick up only those devices which are System devices.
             selector.where( keyTable["pointtype"] == RWDBExpr("System") && selector.where());
 
@@ -142,7 +142,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
 
             if(DebugLevel & 0x00010000) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Status/Control" << endl; }
             /* Go after the status points! */
-            CtiPointStatus::getSQL( db, keyTable, selector );
+            CtiPointStatus().getSQL( db, keyTable, selector );
             rdr = selector.reader(conn);
             if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)
             {
@@ -155,7 +155,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
 
             if(DebugLevel & 0x00010000) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Analogs" << endl; }
             /* Go after the analog points! */
-            CtiPointAnalog::getSQL( db, keyTable, selector );
+            CtiPointAnalog().getSQL( db, keyTable, selector );
             rdr = selector.reader(conn);
             if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)
             {
@@ -168,7 +168,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
 
             if(DebugLevel & 0x00010000) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Accum" << endl; }
             /* Go after the accumulator points! */
-            CtiPointAccumulator::getSQL( db, keyTable, selector );
+            CtiPointAccumulator().getSQL( db, keyTable, selector );
             rdr = selector.reader(conn);
             if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)
             {
@@ -181,7 +181,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
 
             if(DebugLevel & 0x00010000) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for CALC" << endl; }
             /* Go after the calc points! */
-            CtiPointNumeric::getSQL( db, keyTable, selector );
+            CtiPointNumeric().getSQL( db, keyTable, selector );
 
             selector.where( ( keyTable["pointtype"] == RWDBExpr("Calculated") ||
                               keyTable["pointtype"] == RWDBExpr("CalcAnalog")) && selector.where());
@@ -198,7 +198,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
 
             if(DebugLevel & 0x00010000) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Limits" << endl; }
             /* Go after the point limits! */
-            CtiTablePointLimit::getSQL( db, keyTable, selector );
+            CtiTablePointLimit().getSQL( db, keyTable, selector );
             rdr = selector.reader(conn);
             if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)
             {
@@ -273,7 +273,7 @@ void CtiPointManager::RefreshList(LONG paoID)
 
                 if(DebugLevel & 0x00010000) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Status/Control" << endl; }
                 /* Go after the status points! */
-                CtiPointStatus::getSQL( db, keyTable, selector );
+                CtiPointStatus().getSQL( db, keyTable, selector );
                 selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
                 rdr = selector.reader(conn);
@@ -288,7 +288,7 @@ void CtiPointManager::RefreshList(LONG paoID)
 
                 if(DebugLevel & 0x00010000) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Analogs" << endl; }
                 /* Go after the analog points! */
-                CtiPointAnalog::getSQL( db, keyTable, selector );
+                CtiPointAnalog().getSQL( db, keyTable, selector );
                 selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where());
                 rdr = selector.reader(conn);
                 if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)
@@ -302,7 +302,7 @@ void CtiPointManager::RefreshList(LONG paoID)
 
                 if(DebugLevel & 0x00010000) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Accum" << endl; }
                 /* Go after the accumulator points! */
-                CtiPointAccumulator::getSQL( db, keyTable, selector );
+                CtiPointAccumulator().getSQL( db, keyTable, selector );
                 selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where());
                 rdr = selector.reader(conn);
                 if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)

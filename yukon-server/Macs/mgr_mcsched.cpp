@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mgr_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:09 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 19:52:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -345,15 +345,15 @@ bool CtiMCScheduleManager::retrieveSimpleSchedules(
          RWDBTable      mc_simple_sched_table;
          RWDBReader     rdr;
          RWDBStatus     status;
-         
+
 
          //First grab the simple schedules
-         CtiTblPAO::getSQL( db, pao_table, selector );
+         CtiTblPAO().getSQL( db, pao_table, selector );
          CtiMCSchedule::getSQL( db, mc_sched_table, selector );
          CtiTableMCSimpleSchedule::getSQL( db, mc_simple_sched_table, selector );
          selector.where( selector.where() &&
                          pao_table["category"] == RWDBExpr("Schedule") &&
-                         pao_table["type"] == RWDBExpr("Simple") &&                         
+                         pao_table["type"] == RWDBExpr("Simple") &&
                          mc_sched_table["scheduleid"] == pao_table["paobjectid"] &&
                          mc_simple_sched_table["scheduleid"] == pao_table["paobjectid"] &&
                          mc_sched_table["scheduleid"] == mc_simple_sched_table["scheduleid"]);
@@ -445,16 +445,16 @@ bool CtiMCScheduleManager::retrieveScriptedSchedules(
          RWDBReader     rdr;
 
          RWDBStatus     status;
-        
-         CtiTblPAO::getSQL( db, pao_table, selector );
+
+         CtiTblPAO().getSQL( db, pao_table, selector );
          CtiMCSchedule::getSQL( db, mc_sched_table, selector );
          selector.where( pao_table["category"] == RWDBExpr("Schedule") &&
                          pao_table["type"] == RWDBExpr("Script") &&
                          mc_sched_table["scheduleid"] == pao_table["paobjectid"] );
-             
-             
+
+
          //    selector.where() &&  mc_sched_table["scheduletype"]==RWDBExpr("Script") );
-         
+
          rdr = selector.reader(conn);
 
          sql = selector.asString();
