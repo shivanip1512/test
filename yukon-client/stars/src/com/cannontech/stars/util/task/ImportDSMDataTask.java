@@ -47,6 +47,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -71,6 +72,7 @@ import com.cannontech.stars.xml.serialize.Manufacturer;
 import com.cannontech.stars.xml.serialize.NumberOfGallons;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.SA205;
+import com.cannontech.stars.xml.serialize.SASimple;
 import com.cannontech.stars.xml.serialize.SULMProgram;
 import com.cannontech.stars.xml.serialize.SecondaryEnergySource;
 import com.cannontech.stars.xml.serialize.StarsCreateAppliance;
@@ -187,11 +189,12 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 	private final String NEW_LINE = System.getProperty( "line.separator" );
 	private final Integer ZERO = new Integer(0);
 	
-	private static final int RESUME_FILE_COOP = 1;
-	private static final int RESUME_FILE_SUBSTATION = 2;
-	private static final int RESUME_FILE_CUSTOMER = 3;
-	private static final int RESUME_FILE_RECEIVER = 4;
-	private static final int RESUME_FILE_CONTROLLED_LOAD = 5;
+	private final int RESUME_FILE_COOP = 1;
+	private final int RESUME_FILE_SUBSTATION = 2;
+	private final int RESUME_FILE_CUSTOMER = 3;
+	private final int RESUME_FILE_RECEIVER = 4;
+	private final int RESUME_FILE_SELECTION_LIST = 5;
+	private final int RESUME_FILE_CONTROLLED_LOAD = 6;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
 	private File importDir = null;
@@ -216,11 +219,13 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 	private Hashtable coopMap = null;	// Map from DSM coop_id (Integer) to STARS EnergyCompanyID (Integer)
 	private Hashtable substationMap = null;	// Map from DSM cp_substation_id (Integer) to STARS SubstationID (Integer)
 	private Hashtable customerMap = null;	// Map from DSM customer (CustomerPK) to STARS CustomerID (Integer)
-	private Hashtable receiverMap = null;	// Map from DSM serial_no (String) to STARS InventoryID (Integer)
+	private Hashtable receiverMap = null;	// Map from DSM serial_no (String) to Integer[] {STARS Inventory ID, Slot #5 Code}
+	 
 	private Hashtable routeMap = null;	// Map from DSM coop_id (Integer) to STARS default route ID (Integer)
 	private Hashtable receiverTypeMap = null;	// Map from DSM receiver type (ReceiverType) to STARS device type ID (Integer)
-	private Hashtable controlTypeMap = null;	// Map from DSM control type (ControlType) to STARS LM program ID (Integer)
 	private Hashtable loadTypeMap = null;	// Map from DSM load_id (Integer) to Object[] {DSM load type (String), STARS appliance category ID (Integer)}
+	private Hashtable functionTable = null;	// Map from SA205 slot#5 code (Integer) to functions on each relay (String[])
+	private ArrayList programTable = null;	// Array of Object[] {SA205 function (String), STARS appliance category ID (Integer), STARS program ID (Integer)}
 	
 	public ImportDSMDataTask(LiteStarsEnergyCompany energyCompany, File importDir) {
 		this.energyCompany = energyCompany;
@@ -275,6 +280,9 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			
 			if (resumeFile <= RESUME_FILE_SUBSTATION) {
 				progressMsg = "Converting substations...";
+				errorLocation = null;
+				resumeLocation = "substation.out";
+				
 				importSubstation();
 				
 				if (isCanceled) {
@@ -285,26 +293,38 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			
 			if (resumeFile <= RESUME_FILE_CUSTOMER) {
 				progressMsg = "Converting customers...";
+				errorLocation = null;
+				resumeLocation = "customer.out";
+				
 				importCustomer();
 			}
 			
 			if (resumeFile <= RESUME_FILE_RECEIVER) {
 				progressMsg = "Converting receivers...";
+				errorLocation = null;
+				resumeLocation = "receiver.out";
+				
 				importReceiver();
 			}
 			
-			if (resumeFile <= RESUME_FILE_CONTROLLED_LOAD) {
-				if (resumeFile < RESUME_FILE_CONTROLLED_LOAD || resumeLine == 0) {
-					progressMsg = "Converting selection lists...";
-					importSelectionList();
-					
-					if (isCanceled) {
-						status = STATUS_CANCELED;
-						throw new WebClientException();
-					}
-				}
+			if (resumeFile <= RESUME_FILE_SELECTION_LIST) {
+				progressMsg = "Converting selection lists...";
+				errorLocation = null;
+				resumeLocation = "selectionlist";
 				
+				importSelectionList();
+				
+				if (isCanceled) {
+					status = STATUS_CANCELED;
+					throw new WebClientException();
+				}
+			}
+			
+			if (resumeFile <= RESUME_FILE_CONTROLLED_LOAD) {
 				progressMsg = "Converting controlled load...";
+				errorLocation = null;
+				resumeLocation = "controlledload.out";
+				
 				importControlledLoad();
 			}
 			
@@ -366,7 +386,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 	 * Generate config files used as input to the conversion program. The config files are populated with
 	 * data from the DSM database, as well as instructions on how to complete the rest of the file.
 	 * The following config files will be generated:
-	 *     "_route.map", "_receivertype.map", "_controltype.map", "_loadtype.map"
+	 *     "$route.map", "$receivertype.map", "$loadtype.map"
 	 */
 	public static void generateConfigFiles(File importDir) throws Exception {
 		File file = new File(importDir, "coop.out");
@@ -377,7 +397,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		PrintWriter fw = null;
 		
 		try {
-			fw = new PrintWriter(new FileWriter(new File(importDir, "_route.map")));
+			fw = new PrintWriter(new FileWriter(new File(importDir, "$route.map")));
 			fw.println("# This file defines the mapping from coops to their assigned route macros.");
 			fw.println("# Complete the file by adding the route name to the end of each line.");
 			
@@ -416,7 +436,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		
 		fw = null;
 		try {
-			fw = new PrintWriter(new FileWriter(new File(importDir, "_receivertype.map")));
+			fw = new PrintWriter(new FileWriter(new File(importDir, "$receivertype.map")));
 			fw.println("# This file defines the mapping from receiver types in DSM to device types in STARS.");
 			fw.println("# The existing data is in the form of: \"receiver_type,receiver_model,frequency,\"");
 			fw.println("# Complete the file by adding the corresponding device type to the end of each line.");
@@ -431,53 +451,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			if (fw != null) fw.close();
 		}
 		
-		file = new File(importDir, "controlledload.out");
-		if (!file.exists())
-			throw new WebClientException( "File \"controlledload.out\" not found!" );
-		
-		fr = null;
-		TreeSet ctrlTypeSet = new TreeSet();
-		
-		try {
-			fr = new BufferedReader(new FileReader(file));
-			String line = null;
-			
-			while ((line = fr.readLine()) != null) {
-				if (line.trim().length() == 0 || line.charAt(0) == '#')
-					continue;
-				
-				String[] fields = StarsUtils.splitString( line, DELIM );
-				if (fields[17].trim().length() > 0 && fields[16].trim().length() > 0) {
-					ControlType ct = new ControlType( "COOLING:" + fields[17].trim(), fields[16].trim() );
-					ctrlTypeSet.add( ct );
-				}
-				if (fields[26].trim().length() > 0 && fields[19].trim().length() > 0) {
-					ControlType ct = new ControlType( "WATERHEATER:" + fields[26].trim(), fields[19].trim() );
-					ctrlTypeSet.add( ct );
-				}
-			}
-		}
-		finally {
-			if (fr != null) fr.close();
-		}
-		
-		fw = null;
-		try {
-			fw = new PrintWriter(new FileWriter(new File(importDir, "_controltype.map")));
-			fw.println("# This file defines the mapping from control types in DSM to LM programs in STARS.");
-			fw.println("# The existing data is in the form of: \"cooltype/waterheater_type,control_type,\"");
-			fw.println("# Complete the file by adding the name of the LM program to the end of each line.");
-			
-			Iterator it = ctrlTypeSet.iterator();
-			while (it.hasNext()) {
-				ControlType ct = (ControlType) it.next();
-				fw.println( ct.toString() + "," );
-			}
-		}
-		finally {
-			if (fw != null) fw.close();
-		}
-		
 		file = new File(importDir, "load_type.out");
 		if (!file.exists())
 			throw new WebClientException( "File \"load_type.out\" not found!" );
@@ -486,7 +459,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		fw = null;
 		
 		try {
-			fw = new PrintWriter(new FileWriter(new File(importDir, "_loadtype.map")));
+			fw = new PrintWriter(new FileWriter(new File(importDir, "$loadtype.map")));
 			fw.println("# This file defines the mapping from load types in DSM to appliance categories in STARS.");
 			fw.println("# Complete the file by adding the corresponding appliance category to the end of each line.");
 			
@@ -521,6 +494,8 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 						resumeFile = RESUME_FILE_CUSTOMER;
 					else if (fileName.equalsIgnoreCase("receiver.out"))
 						resumeFile = RESUME_FILE_RECEIVER;
+					else if (fileName.equalsIgnoreCase("selectionlist"))
+						resumeFile = RESUME_FILE_SELECTION_LIST;
 					else if (fileName.equalsIgnoreCase("controlledload.out"))
 						resumeFile = RESUME_FILE_CONTROLLED_LOAD;
 				}
@@ -613,7 +588,9 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				String[] lines = StarsUtils.readFile( file, false );
 				for (int i = 0; i < lines.length; i++) {
 					String[] fields = StarsUtils.splitString( lines[i], "," );
-					receiverMap.put( fields[0], Integer.valueOf(fields[1]) );
+					Integer invID = Integer.valueOf(fields[1]);
+					Integer code = Integer.valueOf(fields[2]);
+					receiverMap.put( fields[0], new Integer[]{invID, code} );
 				}
 			}
 		}
@@ -625,7 +602,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			routeMap = new Hashtable();
 			LiteYukonPAObject[] liteRoutes = PAOFuncs.getAllLiteRoutes();
 			
-			File file = new File(importDir, "_route.map");
+			File file = new File(importDir, "$route.map");
 			String[] lines = StarsUtils.readFile( file, false );
 			
 			for (int i = 0; i < lines.length; i++) {
@@ -652,7 +629,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		if (receiverTypeMap == null) {
 			receiverTypeMap = new Hashtable();
 			
-			File file = new File(importDir, "_receivertype.map");
+			File file = new File(importDir, "$receivertype.map");
 			String[] lines = StarsUtils.readFile( file, false );
 			
 			for (int i = 0; i < lines.length; i++) {
@@ -662,7 +639,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					YukonSelectionList list = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 					int devTypeID = getListEntryID( list, fields[3] );
 					if (devTypeID == 0)
-						throw new WebClientException( "Device type \"" + fields[3] + "\" was undefined in STARS" );
+						throw new WebClientException( "Device type \"" + fields[3] + "\" was not defined in STARS" );
 					
 					ReceiverType rt = new ReceiverType( fields[0], fields[1], fields[2] );
 					receiverTypeMap.put( rt, new Integer(devTypeID) );
@@ -672,90 +649,96 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		return receiverTypeMap;
 	}
 	
-	private Hashtable getControlTypeMap() throws Exception {
-		if (controlTypeMap == null) {
-			controlTypeMap = new Hashtable();
-			
-			LiteApplianceCategory appCatAC = null;
-			LiteApplianceCategory appCatWH = null;
-			for (int i = 0; i < energyCompany.getApplianceCategories().size(); i++) {
-				LiteApplianceCategory appCat = (LiteApplianceCategory) energyCompany.getApplianceCategories().get(i);
-				int appCatDefID = YukonListFuncs.getYukonListEntry( appCat.getCategoryID() ).getYukonDefID();
-				if (appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER)
-					appCatAC = appCat;
-				else if (appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER)
-					appCatWH = appCat;
-			}
-			
-			File file = new File(importDir, "_controltype.map");
-			String[] lines = StarsUtils.readFile( file, false );
-			
-			for (int i = 0; i < lines.length; i++) {
-				String[] fields = StarsUtils.splitString( lines[i], "," );
-				ControlType ct = new ControlType( fields[0], fields[1] );
-				
-				if (fields[2].length() > 0) {
-					Integer progID = null;
-					if (fields[0].startsWith("COOLING:")) {
-						for (int j = 0; j < appCatAC.getPublishedPrograms().size(); j++) {
-							LiteLMProgramWebPublishing prog = (LiteLMProgramWebPublishing) appCatAC.getPublishedPrograms().get(j);
-							String progName = StarsUtils.getPublishedProgramName(prog);
-							if (progName.equalsIgnoreCase( fields[2] )) {
-								progID = new Integer( prog.getProgramID() );
-								controlTypeMap.put( ct, progID );
-								break;
-							}
-						}
-						if (progID == null)
-							throw new WebClientException("LM program \"" + fields[2] + "\" was undefined in the appliance category \"" + appCatAC.getDescription() + "\" in STARS");
-					}
-					else if (fields[0].startsWith("WATERHEATER:")) {
-						for (int j = 0; j < appCatWH.getPublishedPrograms().size(); j++) {
-							LiteLMProgramWebPublishing prog = (LiteLMProgramWebPublishing) appCatWH.getPublishedPrograms().get(j);
-							String progName = StarsUtils.getPublishedProgramName(prog);
-							if (progName.equalsIgnoreCase( fields[2] )) {
-								progID = new Integer( prog.getProgramID() );
-								controlTypeMap.put( ct, progID );
-								break;
-							}
-						}
-						if (progID == null)
-							throw new WebClientException("LM program \"" + fields[2] + "\" was undefined in the appliance category \"" + appCatWH.getDescription() + "\" in STARS");
-					}
-				}
-			}
-		}
-		return controlTypeMap;
-	}
-	
 	private Hashtable getLoadTypeMap() throws Exception {
 		if (loadTypeMap == null) {
 			loadTypeMap = new Hashtable();
 			
 			ArrayList appCats = energyCompany.getApplianceCategories();
-			File file = new File(importDir, "_loadtype.map");
+			File file = new File(importDir, "$loadtype.map");
 			String[] lines = StarsUtils.readFile( file, false );
 			
 			for (int i = 0; i < lines.length; i++) {
 				String[] fields = StarsUtils.splitString( lines[i], "," );
 				
-				Integer appCatID = null;
 				if (fields[2].length() > 0) {
+					Integer appCatID = null;
 					for (int j = 0; j < appCats.size(); j++) {
 						LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
 						if (liteAppCat.getDescription().equalsIgnoreCase( fields[2] )) {
 							appCatID = new Integer(liteAppCat.getApplianceCategoryID());
+							loadTypeMap.put( Integer.valueOf(fields[0]), new Object[] {fields[1], appCatID} );
 							break;
 						}
 					}
+					
 					if (appCatID == null)
-						throw new WebClientException( "Appliance category \"" + fields[2] + "\" was undefined in STARS" );
+						throw new WebClientException( "Appliance category \"" + fields[2] + "\" was not defined in STARS" );
 				}
-				
-				loadTypeMap.put( Integer.valueOf(fields[0]), new Object[] {fields[1], appCatID} );
 			}
 		}
 		return loadTypeMap;
+	}
+	
+	private Hashtable getFunctionTable() throws Exception {
+		if (functionTable == null) {
+			functionTable = new Hashtable();
+			
+			File file = new File(importDir, "$sa205coding.map");
+			if (!file.exists())
+				throw new WebClientException("File \"$sa205coding.map\" not found!");
+			
+			String[] lines = StarsUtils.readFile( file, false );
+			for (int i = 0; i < lines.length; i++) {
+				String[] fields = StarsUtils.splitString( lines[i], "," );
+				Integer code = Integer.valueOf( fields[0] );
+				String[] functions = new String[] {fields[1], fields[2], fields[3], fields[4]};
+				functionTable.put( code, functions );
+			}
+		}
+		return functionTable;
+	}
+	
+	private ArrayList getProgramTable() throws Exception {
+		if (programTable == null) {
+			programTable = new ArrayList();
+			ArrayList appCats = energyCompany.getApplianceCategories();
+			
+			File file = new File(importDir, "$program.map");
+			if (!file.exists())
+				throw new WebClientException("File \"$program.map\" not found!");
+			
+			String[] lines = StarsUtils.readFile( file, false );
+			for (int i = 0; i < lines.length; i++) {
+				String[] fields = StarsUtils.splitString( lines[i], "," );
+				Integer appCatID = null;
+				Integer programID = null;
+				
+				for (int j = 0; j < appCats.size(); j++) {
+					LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
+					if (liteAppCat.getDescription().equalsIgnoreCase( fields[1] )) {
+						appCatID = new Integer(liteAppCat.getApplianceCategoryID());
+						
+						for (int k = 0; k < liteAppCat.getPublishedPrograms().size(); k++) {
+							LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(k);
+							if (StarsUtils.getPublishedProgramName(liteProg).equalsIgnoreCase( fields[2] )) {
+								programID = new Integer(liteProg.getProgramID());
+								break;
+							}
+						}
+						
+						if (programID == null)
+							throw new WebClientException("LM program \"" + fields[2] + "\" was not defined in appliance category \"" + fields[1] + "\"");
+						break;
+					}
+				}
+				
+				if (appCatID == null)
+					throw new WebClientException( "Appliance category \"" + fields[1] + "\" was not defined in STARS" );
+				
+				programTable.add( new Object[] {fields[0], appCatID, programID} );
+			}
+		}
+		return programTable;
 	}
 	
 	private int getListEntryID(YukonSelectionList list, String entryText) {
@@ -765,6 +748,35 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				return entry.getEntryID();
 		}
 		return 0;
+	}
+	
+	private int[] getMatchingProgram(Integer code, int applianceCategoryID) throws Exception {
+		String[] functions = (String[]) getFunctionTable().get( code );
+		if (functions == null)
+			throw new WebClientException("no functions are defined for code \"" + code + "\", program enrollment skipped.");
+		
+		ArrayList programTable = getProgramTable();
+		for (int i = 0; i < functions.length; i++) {
+			String[] subFunctions = StarsUtils.splitString( functions[i], DELIM );
+			for (int j = 0; j < subFunctions.length; j++) {
+				for (int k = 0; k < programTable.size(); k++) {
+					Object[] program = (Object[]) programTable.get(k);
+					String funcName = (String) program[0];
+					int appCatID = ((Integer)program[1]).intValue();
+					int programID = ((Integer)program[2]).intValue();
+					
+					if (subFunctions[j].trim().startsWith( funcName )) {
+						if (appCatID == applianceCategoryID) {
+							int relayNo = i + 1;
+							return new int[] {programID, relayNo};
+						}
+						break;
+					}
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -879,9 +891,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				numCoopImported++;
 			}
-			
-			errorLocation = null;
-			resumeLocation = "substation.out";
 		}
 		finally {
 			if (fr != null) fr.close();
@@ -942,9 +951,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				numSubstationImported++;
 			}
-			
-			errorLocation = null;
-			resumeLocation = "customer.out";
 		}
 		finally {
 			if (fr != null) fr.close();
@@ -1148,9 +1154,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				numCustomerImported++;
 			}
-			
-			errorLocation = null;
-			resumeLocation = "receiver.out";
 		}
 		finally {
 			if (fr != null) fr.close();
@@ -1227,7 +1230,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				Integer coopID = Integer.valueOf( fields[6].trim() );
 				Integer memberID = (Integer) getCoopMap().get( coopID );
 				if (memberID == null) {
-					importLog.println(errorLocation + ": invalid member coop id \"" + coopID + "\", record ignored.");
+					importLog.println(errorLocation + ": invalid member coop id \"" + coopID + "\", receiver record ignored.");
 					continue;
 				}
 				
@@ -1236,7 +1239,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				ReceiverType rt = new ReceiverType( fields[18].trim(), fields[7].trim(), fields[23].trim() );
 				Integer deviceTypeID = (Integer) getReceiverTypeMap().get( rt );
 				if (deviceTypeID == null) {
-					importLog.println(errorLocation + ": cannot find a matching device type for \"" + rt.toString() + "\", receiver is skipped.");
+					importLog.println(errorLocation + ": cannot find a matching device type for \"" + rt.toString() + "\", receiver record ignored.");
 					continue;
 				}
 				
@@ -1266,9 +1269,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) CreateLMHardwareAction.addInventory( inv, liteAcctInfo, member );
 				
-				receiverMap.put( serialNo, new Integer(liteHw.getInventoryID()) );
-				fw.println( serialNo + "," + liteHw.getInventoryID() );
-				
 				int function = 1;
 				if (fields[11].trim().length() > 0)
 					function = Integer.parseInt( fields[11].trim() );
@@ -1291,28 +1291,39 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					starsCfg.setTamperDetect( td[0] + "," + td[1] + "," + td[2] + "," + td[3] );
 				}
 				
-				SA205 sa205 = new SA205();
-				if (fields[12].trim().length() > 0)
-					sa205.setSlot1( Integer.parseInt(fields[12].trim()) );
-				if (fields[13].trim().length() > 0)
-					sa205.setSlot2( Integer.parseInt(fields[13].trim()) );
-				if (fields[14].trim().length() > 0)
-					sa205.setSlot3( Integer.parseInt(fields[14].trim()) );
-				if (fields[15].trim().length() > 0)
-					sa205.setSlot4( Integer.parseInt(fields[15].trim()) );
-				if (fields[16].trim().length() > 0)
-					sa205.setSlot5( Integer.parseInt(fields[16].trim()) );
-				if (fields[17].trim().length() > 0)
-					sa205.setSlot6( Integer.parseInt(fields[17].trim()) );
-				starsCfg.setSA205( sa205 );
+				int hwConfigType = InventoryUtils.getHardwareConfigType( deviceTypeID.intValue() );
+				if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
+					SA205 sa205 = new SA205();
+					if (fields[12].trim().length() > 0)
+						sa205.setSlot1( Integer.parseInt(fields[12].trim()) );
+					if (fields[13].trim().length() > 0)
+						sa205.setSlot2( Integer.parseInt(fields[13].trim()) );
+					if (fields[14].trim().length() > 0)
+						sa205.setSlot3( Integer.parseInt(fields[14].trim()) );
+					if (fields[15].trim().length() > 0)
+						sa205.setSlot4( Integer.parseInt(fields[15].trim()) );
+					if (fields[16].trim().length() > 0)
+						sa205.setSlot5( Integer.parseInt(fields[16].trim()) );
+					if (fields[17].trim().length() > 0)
+						sa205.setSlot6( Integer.parseInt(fields[17].trim()) );
+					starsCfg.setSA205( sa205 );
+				}
+				else {
+					SASimple simple = new SASimple();
+					if (fields[12].trim().length() > 0)
+						simple.setOperationalAddress( fields[12].trim() );
+					starsCfg.setSASimple( simple );
+				}
 				
 				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, liteHw, member );
 				
+				int slotAddr5 = 0;
+				if (starsCfg.getSA205() != null) slotAddr5 = starsCfg.getSA205().getSlot5();
+				receiverMap.put( serialNo, new Integer[] {new Integer(liteHw.getInventoryID()), new Integer(slotAddr5)} );
+				fw.println( serialNo + "," + liteHw.getInventoryID() + "," + slotAddr5 );
+				
 				numReceiverImported++;
 			}
-			
-			errorLocation = null;
-			resumeLocation = "controlledload.out";
 		}
 		finally {
 			if (fr != null) fr.close();
@@ -1330,7 +1341,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		ArrayList coolTypeList = new ArrayList();
 		ArrayList primaryTypeList = new ArrayList();
 		ArrayList backupTypeList = new ArrayList();
-		ArrayList whCapacityList = new ArrayList();
 		
 		File file = new File(importDir, "cooltype.out");
 		if (file.exists()) {
@@ -1392,12 +1402,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 						if (!backupTypeList.contains( backupType ))
 							backupTypeList.add( backupType );
 					}
-					
-					if (fields[22].trim().length() > 0) {
-						Integer whCapacity = Integer.valueOf( fields[22].trim() );
-						if (!whCapacityList.contains( whCapacity ))
-							whCapacityList.add( whCapacity );
-					}
 				}
 			}
 			catch (Exception e) {
@@ -1413,7 +1417,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		Collections.sort( coolTypeList );
 		Collections.sort( primaryTypeList );
 		Collections.sort( backupTypeList );
-		Collections.sort( whCapacityList );
 		
 		Object[][] entryData = new Object[coolTypeList.size() + 1][3];
 		entryData[0][0] = ZERO;
@@ -1453,19 +1456,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		
 		list = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DF_SECONDARY_SOURCE );
 		StarsAdminUtil.updateYukonListEntries( list, entryData, energyCompany );
-		
-		entryData = new Object[whCapacityList.size() + 1][3];
-		entryData[0][0] = ZERO;
-		entryData[0][1] = "";
-		entryData[0][2] = ZERO;
-		for (int i = 0; i < whCapacityList.size(); i++) {
-			entryData[i+1][0] = ZERO;
-			entryData[i+1][1] = whCapacityList.get(i).toString();
-			entryData[i+1][2] = ZERO;
-		}
-		
-		list = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_WH_NUM_OF_GALLONS );
-		StarsAdminUtil.updateYukonListEntries( list, entryData, energyCompany );
 	}
 	
 	/**
@@ -1486,10 +1476,10 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 	 * 13 dualfuel_primarytype			char(20)	ApplianceBase->Notes (new field in ApplianceDualFuel)
 	 * 14 dualfuel_backuptype			char(12)	ApplianceDualFuel->SecondaryEnergySourceID
 	 * 15 dualfuel_backupcapacity		int			ApplianceDualFuel->SecondaryKWCapacity
-	 * 16 controltype					char(9)		Maps to LM programs
+	 * 16 controltype					char(9)
 	 * 17 cooltype						char(5)		ApplianceAirConditioner->TypeID
 	 * 18 heatgain						float
-	 * 19 waterheater_controltype		char(25)	Maps to LM programs
+	 * 19 waterheater_controltype		char(25)
 	 * 20 waterheater_insulationtype	char(12)	ApplianceBase->Notes
 	 * 21 waterheater_heattrap			char(1)
 	 * 22 waterheater_capacity			int			ApplianceWaterHeater->NumberofGallonsID
@@ -1569,7 +1559,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				Integer coopID = Integer.valueOf( fields[5].trim() );
 				Integer memberID = (Integer) getCoopMap().get( coopID );
 				if (memberID == null) {
-					importLog.println(errorLocation + ": invalid member coop id \"" + coopID + "\", record ignored.");
+					importLog.println(errorLocation + ": invalid member coop id \"" + coopID + "\", load record ignored.");
 					continue;
 				}
 				
@@ -1583,7 +1573,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				}
 				
 				LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo( acctID.intValue(), true );
-				int progID = 0;
 				
 				StarsCreateAppliance app = new StarsCreateAppliance();
 				app.setApplianceCategoryID( appCatDft.getApplianceCategoryID() );
@@ -1605,6 +1594,9 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				if (fields[8].trim().length() > 0)
 					notes += "Install date: " + dateFormat.format(dateParser.parse(fields[8].trim())) + NEW_LINE;
 				
+				Integer[] receiverInfo = (Integer[]) getReceiverMap().get( fields[0].trim() );
+				String loadType = null;
+				
 				if (coolType.length() > 0) {
 					AirConditioner ac = new AirConditioner();
 					ac.setTonnage( new Tonnage() );
@@ -1616,24 +1608,36 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					app.setAirConditioner( ac );
 					app.setApplianceCategoryID( appCatAC.getApplianceCategoryID() );
 					
-					if (fields[16].trim().length() > 0) {
-						ControlType ct = new ControlType( "COOLING:" + coolType, fields[16].trim() );
-						Integer programID = (Integer) getControlTypeMap().get( ct );
-						if (programID != null) progID = programID.intValue();
-					}
-					
-					if (progID == 0 && appCatAC.getPublishedPrograms().size() > 0)
-						progID = ((LiteLMProgramWebPublishing) appCatAC.getPublishedPrograms().get(0)).getProgramID();
+					if (fields[16].trim().length() > 0)
+						notes += "Control type: " + fields[16].trim();
+					loadType = "Cooling";
 				}
 				else if (primaryType.length() > 0) {
-					if (primaryType.equalsIgnoreCase("Storage")) {
+					int appCatID = primaryType.equalsIgnoreCase("Storage")?
+						appCatSH.getApplianceCategoryID() : appCatDF.getApplianceCategoryID();
+					if (receiverInfo != null) {
+						// Test if our "guessed" appliance category (SH or DF) is correct or not
+						// by looking for a matching program in the function table.
+						try {
+							if (getMatchingProgram(receiverInfo[1], appCatID) == null) {
+								int appCatID2 = (appCatID == appCatSH.getApplianceCategoryID())?
+									appCatDF.getApplianceCategoryID() : appCatSH.getApplianceCategoryID();
+								if (getMatchingProgram(receiverInfo[1], appCatID2) != null)
+									appCatID = appCatID2;
+							}
+						}
+						catch (WebClientException e) {}
+					}
+					
+					app.setApplianceCategoryID( appCatID );
+					notes += "Primary type: " + primaryType;
+					
+					if (appCatID == appCatSH.getApplianceCategoryID()) {
 						StorageHeat sh = new StorageHeat();
 						sh.setStorageType( new StorageType() );
 						app.setStorageHeat( sh );
-						app.setApplianceCategoryID( appCatSH.getApplianceCategoryID() );
 						
-						if (appCatSH.getPublishedPrograms().size() > 0)
-							progID = ((LiteLMProgramWebPublishing) appCatSH.getPublishedPrograms().get(0)).getProgramID();
+						loadType = "Space Heating (Storage Heat)";
 					}
 					else {
 						DualFuel df = new DualFuel();
@@ -1646,14 +1650,9 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 						
 						if (fields[15].trim().length() > 0)
 							df.setSecondaryKWCapacity( Integer.parseInt(fields[15].trim()) );
-						
 						app.setDualFuel( df );
-						app.setApplianceCategoryID( appCatDF.getApplianceCategoryID() );
 						
-						notes += "Primary type: " + primaryType;
-						
-						if (appCatDF.getPublishedPrograms().size() > 0)
-							progID = ((LiteLMProgramWebPublishing) appCatDF.getPublishedPrograms().get(0)).getProgramID();
+						loadType = "Space Heating (Dual Fuel)";
 					}
 				}
 				else if (whType.length() > 0) {
@@ -1661,79 +1660,98 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					wh.setEnergySource( new EnergySource() );
 					
 					NumberOfGallons numGal = new NumberOfGallons();
-					if (fields[22].trim().length() > 0)
-						numGal.setEntryID( getListEntryID(whCapacityList, fields[22].trim()) );
+					if (fields[22].trim().length() > 0) {
+						// Try to find the best matching in the WH capacity list. The list entries should look like:
+						// "", "Less than 30", "30", "40", "50", "85", "105", "Greater than 105"
+						int numGallons = Integer.parseInt( fields[22].trim() );
+						if (numGallons < 25)
+							numGal.setEntryID( ((YukonListEntry)whCapacityList.getYukonListEntries().get(1)).getEntryID() );
+						else if (numGallons >= 25 && numGallons < 35)
+							numGal.setEntryID( ((YukonListEntry)whCapacityList.getYukonListEntries().get(2)).getEntryID() );
+						else if (numGallons >= 35 && numGallons < 45)
+							numGal.setEntryID( ((YukonListEntry)whCapacityList.getYukonListEntries().get(3)).getEntryID() );
+						else if (numGallons >= 45 && numGallons < 73)
+							numGal.setEntryID( ((YukonListEntry)whCapacityList.getYukonListEntries().get(4)).getEntryID() );
+						else if (numGallons >= 73 && numGallons < 95)
+							numGal.setEntryID( ((YukonListEntry)whCapacityList.getYukonListEntries().get(5)).getEntryID() );
+						else if (numGallons >= 95 && numGallons < 120)
+							numGal.setEntryID( ((YukonListEntry)whCapacityList.getYukonListEntries().get(6)).getEntryID() );
+						else
+							numGal.setEntryID( ((YukonListEntry)whCapacityList.getYukonListEntries().get(7)).getEntryID() );
+					}
 					wh.setNumberOfGallons( numGal );
 					
 					app.setWaterHeater( wh );
 					app.setApplianceCategoryID( appCatWH.getApplianceCategoryID() );
 					
+					if (fields[19].trim().length() > 0)
+						notes += "Control type: " + fields[19].trim() + NEW_LINE;
 					if (fields[20].trim().length() > 0)
 						notes += "Insulation type: " + fields[20].trim();
-					
-					if (fields[19].trim().length() > 0) {
-						ControlType ct = new ControlType( "WATERHEATER:" + whType, fields[19].trim() );
-						Integer programID = (Integer) getControlTypeMap().get( ct );
-						if (programID != null) progID = programID.intValue();
-					}
-					
-					if (progID == 0 && appCatWH.getPublishedPrograms().size() > 0)
-						progID = ((LiteLMProgramWebPublishing) appCatWH.getPublishedPrograms().get(0)).getProgramID();
+					loadType = "Water Heater";
 				}
 				else {
-					int loadID = 0;
-					Object[] loadType = null;
+					Object[] loadTypeInfo = null;
 					try {
-						loadID = Integer.parseInt( fields[1].trim() );
-						loadType = (Object[]) getLoadTypeMap().get( new Integer(loadID) );
+						Integer loadID = Integer.valueOf( fields[1].trim() );
+						loadTypeInfo = (Object[]) getLoadTypeMap().get( loadID );
 					}
 					catch (NumberFormatException e) {}
 					
-					LiteApplianceCategory liteAppCat = null;
-					if (loadType != null) {
-						notes += "Load type: " + loadType[0];
-						
-						if (loadType[1] != null) {
-							int appCatID = ((Integer)loadType[1]).intValue();
-							app.setApplianceCategoryID( appCatID );
-							liteAppCat = energyCompany.getApplianceCategory( appCatID );
-						}
-						else
-							liteAppCat = appCatDft;
-					}
-					else {
-						liteAppCat = appCatDft;
-						if (loadID > 0)
-							importLog.println(errorLocation + ": unknown load type \"" + loadID + "\", assign to the generic appliance category.");
-					}
-					
-					if (liteAppCat.getPublishedPrograms().size() > 0)
-						progID = ((LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(0)).getProgramID();
-				}
-				
-				app.setNotes( notes );
-				
-				LiteStarsAppliance liteApp = CreateApplianceAction.createAppliance( app, liteAcctInfo, member );
-				
-				if (progID > 0) {
-					Integer invID = (Integer) getReceiverMap().get( fields[0].trim() );
-					if (invID == null) {
-						importLog.println(errorLocation + ": unable to find receiver \"" + fields[0].trim() + "\", program enrollment skipped.");
+					if (loadType == null) {
+						String msg = "unknown load type \"" + fields[1].trim() + "\" under receiver \"" + fields[0].trim() + "\"";
+						if (receiverInfo != null)
+							msg += ", code \"" + receiverInfo[1] + "\"";
+						importLog.println(errorLocation + ": " + msg + ", load record ignored.");
 						continue;
 					}
 					
-					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) member.getInventory( invID.intValue(), true );
+					int appCatID = ((Integer)loadTypeInfo[1]).intValue();
+					app.setApplianceCategoryID( appCatID );
+					LiteApplianceCategory liteAppCat = member.getApplianceCategory( appCatID );
 					
-					SULMProgram suProg = new SULMProgram();
-					suProg.setProgramID( progID );
-					suProg.setApplianceCategoryID( liteApp.getApplianceCategoryID() );
-					StarsSULMPrograms suPrograms = new StarsSULMPrograms();
-					suPrograms.addSULMProgram( suProg );
-					StarsProgramSignUp progSignUp = new StarsProgramSignUp();
-					progSignUp.setStarsSULMPrograms( suPrograms );
-					
-					ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteHw, member );
+					notes += "Load type: " + loadTypeInfo[0];
+					loadType = (String) loadTypeInfo[0];
 				}
+				
+				app.setNotes( notes );
+				LiteStarsAppliance liteApp = CreateApplianceAction.createAppliance( app, liteAcctInfo, member );
+				
+				if (receiverInfo == null) {
+					importLog.println(errorLocation + ": unable to find receiver \"" + fields[0].trim() + "\", program enrollment skipped.");
+					continue;
+				}
+				
+				int[] programInfo = null;
+				try {
+					programInfo = getMatchingProgram( receiverInfo[1], app.getApplianceCategoryID() );
+				}
+				catch (WebClientException e) {
+					importLog.println(errorLocation + ": " + e.getMessage());
+					continue;
+				}
+				
+				if (programInfo == null) {
+					importLog.println(errorLocation + ": load type \"" + loadType + "\" doesn't match any function under code \"" + receiverInfo[1] + "\"");
+					continue;
+				}
+				else {
+					String[] functions = (String[]) getFunctionTable().get( receiverInfo[1] );
+					importLog.println(errorLocation + ": load type \"" + loadType + "\" matches function #" + programInfo[1] + " \"" + functions[programInfo[1] - 1] + "\" under code \"" + receiverInfo[1] + "\"");
+				}
+				
+				SULMProgram suProg = new SULMProgram();
+				suProg.setProgramID( programInfo[0] );
+				suProg.setLoadNumber( programInfo[1] );
+				suProg.setApplianceCategoryID( liteApp.getApplianceCategoryID() );
+				
+				StarsSULMPrograms suPrograms = new StarsSULMPrograms();
+				suPrograms.addSULMProgram( suProg );
+				StarsProgramSignUp progSignUp = new StarsProgramSignUp();
+				progSignUp.setStarsSULMPrograms( suPrograms );
+				
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) member.getInventory( ((Integer)receiverInfo[0]).intValue(), true );
+				ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteHw, member );
 				
 				numCtrlLoadImported++;
 			}

@@ -57,10 +57,9 @@ function generateConfigFiles(form) {
                       <ol>
                         <li>Enter the directory for the DSM data files.</li>
                         <li>Click the &quot;Generate Config Files&quot; button 
-                          to generate configuration files &quot;_route.map&quot;, 
-                          &quot;_receivertype.map&quot;, &quot;_controltype.map&quot;, 
-                          and &quot;_loadtype.map&quot;. Follow the instructions 
-                          in these files to complete them.</li>
+                          to generate configuration files &quot;$route.map&quot;, 
+                          &quot;$receivertype.map&quot;, and &quot;$loadtype.map&quot;. 
+                          Follow the instructions in these files to complete them.</li>
                         <li>Click the &quot;Submit&quot; button to start the conversion 
                           program.</li>
                       </ol>
