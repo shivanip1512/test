@@ -65,6 +65,8 @@ public final class PointTypes implements IPointOffsets
 	public static final int CONTROLTYPE_SBO_LATCH = 41;
 	public static final int CONTROLTYPE_SBO_PULSE = 42;
 	
+	public static final int CALCULATED_STATUS_POINT = 43;
+	
 	//All the strings associated with points and the database
 	private static final String[] pointStrings = 
 	{
@@ -101,7 +103,8 @@ public final class PointTypes implements IPointOffsets
 		"Outage 5",
 		"Outage 6", //40		
 		"SBO Latch",
-		"SBO Pulse"
+		"SBO Pulse",
+		"CalcStatus"
 	};	
 /**
  * This method was created in VisualAge.
@@ -159,6 +162,7 @@ public final static boolean isValidPointType( int ptType )
 		 	 || ptType == com.cannontech.database.data.point.PointTypes.STATUS_POINT
 		 	 || ptType == com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT
 		 	 || ptType == com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT
-		 	 || ptType == com.cannontech.database.data.point.PointTypes.CALCULATED_POINT );
+		 	 || ptType == com.cannontech.database.data.point.PointTypes.CALCULATED_POINT 
+		 	 || ptType == com.cannontech.database.data.point.PointTypes.CALCULATED_STATUS_POINT);
 }
 }

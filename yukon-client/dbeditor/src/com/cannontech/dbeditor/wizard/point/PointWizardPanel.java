@@ -71,7 +71,6 @@ private java.lang.Integer getInitialPAOId() {
 protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	com.cannontech.common.gui.util.DataInputPanel currentInputPanel)
 {
-
 	if (currentInputPanel == null)
 	{
 		return getPointTypePanel();
@@ -94,13 +93,11 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		if (editPointID)
 		{
 			getPointIDSettingsPanel().setValueCore( null, getInitialPAOId() );
-
 			return getPointIDSettingsPanel();
 		}
 		else
 		{
 			getPointSettingsPanel().setValueCore( null, getInitialPAOId() );
-
 			return getPointSettingsPanel();
 		}
 	}
@@ -113,6 +110,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 				return getPointAnalogSettingsPanel();
 
 			case PointTypes.STATUS_POINT :
+			case PointTypes.CALCULATED_STATUS_POINT :
 				getPointStatusSettingsPanel().setValue(null);
 				return getPointStatusSettingsPanel();
 
@@ -123,7 +121,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			case PointTypes.CALCULATED_POINT :
 				getPointCalcBaseSettingsPanel().setValue(null);
 				return getPointCalcBaseSettingsPanel();
-
+				
 			default :
 				throw new Error(
 					getClass()
@@ -187,6 +185,13 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	}
 	else if (currentInputPanel == getPointStatusSettingsPanel())
 	{
+		
+		if(getPointTypePanel().getPointType() == PointTypes.CALCULATED_STATUS_POINT)
+		{
+			getPointCalcBaseSettingsPanel().setValue(null);
+			return getPointCalcBaseSettingsPanel();
+		}
+				
 		boolean editPointID = false;
 		try
 		{

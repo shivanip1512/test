@@ -37,6 +37,10 @@ public final static PointBase createPoint(int type) {
 			retPoint = new CalculatedPoint();
 			retPoint.getPoint().setPointType( PointTypes.getType( PointTypes.CALCULATED_POINT  ));
 			break;
+		case PointTypes.CALCULATED_STATUS_POINT:
+			retPoint = new CalcStatusPoint();
+			retPoint.getPoint().setPointType( PointTypes.getType( PointTypes.CALCULATED_STATUS_POINT ));
+			break;
 		default: //this is bad
 			throw new Error("PointFactory::createPoint - Unrecognized point type");
 	}

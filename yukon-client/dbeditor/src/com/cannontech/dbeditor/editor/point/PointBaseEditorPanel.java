@@ -12,6 +12,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.CalculatedPoint;
+import com.cannontech.database.data.point.CalcStatusPoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.point.StatusPoint;
@@ -751,6 +752,11 @@ public void setValue(Object val)
 	
 	DataInputPanel sp = null;
 	
+	if( val instanceof CalcStatusPoint )
+	{
+		sp = new CalcStatusBasePanel();
+	}
+	else
 	if( val instanceof StatusPoint )
 	{
 		sp = new PointStatusBasePanel();

@@ -14,6 +14,7 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.CalculatedPoint;
+import com.cannontech.database.data.point.CalcStatusPoint;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
@@ -1012,7 +1013,16 @@ private javax.swing.JCheckBox getUsePointCheckBox() {
  */
 public Object getValue(Object val)
 {
-	CalculatedPoint calcPoint = (CalculatedPoint) val;
+	com.cannontech.database.data.point.PointBase calcPoint;
+	
+	if(val instanceof CalcStatusPoint)
+	{
+		calcPoint = (CalcStatusPoint) val;
+	}
+	else
+	{
+		calcPoint = (CalculatedPoint) val;
+	}
 
 	Integer pointID = calcPoint.getPoint().getPointID();
 	com.cannontech.database.db.point.calculation.CalcComponent newCalcComponent = null;
@@ -1060,8 +1070,16 @@ public Object getValue(Object val)
 				
 				if( newCalcComponent.getFunctionName().equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) && currentlyMappedBaselineID != null )
 				{
-					calcPoint.getCalcBaselinePoint().setBaselineID(currentlyMappedBaselineID);
-					calcPoint.setBaselineAssigned(true);
+					if(val instanceof CalcStatusPoint)
+					{
+						((CalcStatusPoint)calcPoint).getCalcBaselinePoint().setBaselineID(currentlyMappedBaselineID);
+						((CalcStatusPoint)calcPoint).setBaselineAssigned(true);
+					}
+					else
+					{
+						((CalculatedPoint)calcPoint).getCalcBaselinePoint().setBaselineID(currentlyMappedBaselineID);
+						((CalculatedPoint)calcPoint).setBaselineAssigned(true);
+					}
 				}
 
 			}
@@ -1070,7 +1088,11 @@ public Object getValue(Object val)
 		}
 	}
 
-	calcPoint.setCalcComponentVector(calcComponentsVector);
+	if(calcPoint instanceof CalcStatusPoint)
+		((CalcStatusPoint)calcPoint).setCalcComponentVector(calcComponentsVector);
+	else
+		((CalculatedPoint)calcPoint).setCalcComponentVector(calcComponentsVector);
+	
 	return val;
 
 }
@@ -1266,8 +1288,17 @@ public void removeComponentButton_ActionPerformed(java.awt.event.ActionEvent act
  */
 public void setValue(Object val)
 {
-	CalculatedPoint calcPoint = (CalculatedPoint) val;
-
+	com.cannontech.database.data.point.PointBase calcPoint;
+	
+	if(val instanceof CalcStatusPoint)
+	{
+		calcPoint = (CalcStatusPoint) val;
+	}
+	else
+	{
+		calcPoint = (CalculatedPoint) val;
+	}
+	
 	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
@@ -1299,7 +1330,12 @@ public void setValue(Object val)
 //		}
 
 		//fill in the calc components of this point
-		java.util.Vector calcComponents = calcPoint.getCalcComponentVector();
+		java.util.Vector calcComponents = new java.util.Vector();
+		
+		if(calcPoint instanceof CalcStatusPoint)
+			calcComponents = ((CalcStatusPoint)calcPoint).getCalcComponentVector();
+		else
+			 calcComponents = ((CalculatedPoint)calcPoint).getCalcComponentVector();
 		com.cannontech.database.data.lite.LiteBaseline temp = new com.cannontech.database.data.lite.LiteBaseline();
 		basilHolder = temp.getAllBaselines();
  
@@ -1366,8 +1402,11 @@ public void setValue(Object val)
 							
 				if(singleCalcComponent.getFunctionName().equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION))
 				{
-					currentlyMappedBaselineID = calcPoint.getCalcBaselinePoint().getBaselineID();
-				}
+					if(calcPoint instanceof CalcStatusPoint)
+						currentlyMappedBaselineID = ((CalcStatusPoint)calcPoint).getCalcBaselinePoint().getBaselineID();
+					else
+						currentlyMappedBaselineID = ((CalculatedPoint)calcPoint).getCalcBaselinePoint().getBaselineID();
+				}	
 			}
 						
 			getTableModel().addRow(calcComponentEntry);

@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.point;
 
+import com.cannontech.database.data.point.CalcStatusPoint;
+
 /**
  * This type was created in VisualAge.
  */
@@ -198,24 +200,40 @@ private javax.swing.JLabel getUpdateTypeLabel() {
  * @param val java.lang.Object
  */
 public Object getValue(Object val) {
-	//Assuming commonObject is an CalculatedPoint
-	com.cannontech.database.data.point.CalculatedPoint point = (com.cannontech.database.data.point.CalculatedPoint) val;
-
-	point.getCalcBase().setUpdateType((String)getUpdateTypeComboBox().getSelectedItem());
-	point.getCalcBase().setPeriodicRate(com.cannontech.common.util.CtiUtilities.getIntervalComboBoxSecondsValue(getPeriodicRateComboBox()));
-	point.getPoint().setStateGroupID( new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_CALCULATED) );
-	//point.getPoint().setPseudoFlag(new Character('P'));
-	point.getPoint().setPointOffset(new Integer(0));
-
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized(cache)
+	
+	if(val instanceof com.cannontech.database.data.point.CalcStatusPoint)
 	{
-		java.util.List unitMeasures = cache.getAllUnitMeasures();
-		point.getPointUnit().setUomID( new Integer( ((com.cannontech.database.data.lite.LiteUnitMeasure)unitMeasures.get(0)).getUomID()) );
+		CalcStatusPoint point = (CalcStatusPoint)val;
+		
+		point.getCalcBase().setUpdateType((String)getUpdateTypeComboBox().getSelectedItem());
+		point.getCalcBase().setPeriodicRate(com.cannontech.common.util.CtiUtilities.getIntervalComboBoxSecondsValue(getPeriodicRateComboBox()));
+		point.getPoint().setStateGroupID( new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_CALCULATED) );
+		//point.getPoint().setPseudoFlag(new Character('P'));
+		point.getPoint().setPointOffset(new Integer(0));
 	}
-	point.getPointUnit().setDecimalPlaces(new Integer(com.cannontech.dbeditor.DatabaseEditor.getDecimalPlaces()));
+	
+	else
+	{
+		com.cannontech.database.data.point.CalculatedPoint point = (com.cannontech.database.data.point.CalculatedPoint) val;
+	
+		point.getCalcBase().setUpdateType((String)getUpdateTypeComboBox().getSelectedItem());
+		point.getCalcBase().setPeriodicRate(com.cannontech.common.util.CtiUtilities.getIntervalComboBoxSecondsValue(getPeriodicRateComboBox()));
+		point.getPoint().setStateGroupID( new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_CALCULATED) );
+		//point.getPoint().setPseudoFlag(new Character('P'));
+		point.getPoint().setPointOffset(new Integer(0));
+
+		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		synchronized(cache)
+		{
+			java.util.List unitMeasures = cache.getAllUnitMeasures();
+			point.getPointUnit().setUomID( new Integer( ((com.cannontech.database.data.lite.LiteUnitMeasure)unitMeasures.get(0)).getUomID()) );
+		}
+		point.getPointUnit().setDecimalPlaces(new Integer(com.cannontech.dbeditor.DatabaseEditor.getDecimalPlaces()));
+	}
 	
 	return val;
+	
+	
 }
 /**
  * Called whenever the part throws an exception.

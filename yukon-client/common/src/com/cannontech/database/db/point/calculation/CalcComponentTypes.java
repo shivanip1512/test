@@ -30,6 +30,11 @@ public class CalcComponentTypes
 	public static final String NOT_FUNCTION = "Logical NOT";
 	public static final String XOR_FUNCTION = "Logical XOR";
 	
+	public static final String GREATER_THAN_FUNCTION = "Greater than";
+	public static final String GREATER_THAN_EQUAL_TO_FUNCTION = "Geq than";
+	public static final String LESS_THAN_FUNCTION = "Less than";
+	public static final String LESS_THAN_EQUAL_TO_FUNCTION = "Leq than";
+	
 	public static final String MIN_FUNCTION= "Min";
 	public static final String MAX_FUNCTION = "Max";
 	public static final String BASELINE_FUNCTION = "Baseline";
@@ -66,6 +71,10 @@ public class CalcComponentTypes
 		MIN_FUNCTION,
 		MAX_FUNCTION,
 		MAX_DIFFERENCE,
+		GREATER_THAN_FUNCTION,
+		GREATER_THAN_EQUAL_TO_FUNCTION,
+		LESS_THAN_FUNCTION,
+		LESS_THAN_EQUAL_TO_FUNCTION,
 		AND_FUNCTION,
 		OR_FUNCTION,
 		NOT_FUNCTION,

@@ -134,7 +134,8 @@ private void addPoints(DBTreeNode deviceNode )
 		{
 			accDmndNode = addDummyTreeNode( lp, accDmndNode, "Demand Accumulator", deviceNode );
 		}
-		else if ( lp.getPointType() == com.cannontech.database.data.point.PointTypes.CALCULATED_POINT )
+		else if ( lp.getPointType() == com.cannontech.database.data.point.PointTypes.CALCULATED_POINT
+				|| lp.getPointType() == com.cannontech.database.data.point.PointTypes.CALCULATED_STATUS_POINT )
 		{
 			calcNode = addDummyTreeNode( lp, calcNode, "Calculated", deviceNode );
 		}

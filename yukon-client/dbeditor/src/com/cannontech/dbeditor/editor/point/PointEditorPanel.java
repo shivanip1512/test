@@ -16,7 +16,8 @@ public class PointEditorPanel extends com.cannontech.common.editor.PropertyPanel
 	private static final int[][] EDITOR_TYPES =
 	{
 		{  //0 - PointBaseEditorPanel
-			PointTypes.PULSE_ACCUMULATOR_POINT, PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.STATUS_POINT, PointTypes.DEMAND_ACCUMULATOR_POINT
+			PointTypes.PULSE_ACCUMULATOR_POINT, PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.STATUS_POINT, 
+			PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.CALCULATED_STATUS_POINT
 		},
 		{  //1 - PointStatusPhysicalSettingsEditorPanel
 			PointTypes.STATUS_POINT
@@ -31,13 +32,15 @@ public class PointEditorPanel extends com.cannontech.common.editor.PropertyPanel
 			PointTypes.PULSE_ACCUMULATOR_POINT, PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.DEMAND_ACCUMULATOR_POINT
 		},
 		{  //5 - PointDataOptionsEditorPanel
-			PointTypes.PULSE_ACCUMULATOR_POINT, PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.STATUS_POINT, PointTypes.DEMAND_ACCUMULATOR_POINT
+			PointTypes.PULSE_ACCUMULATOR_POINT, PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.STATUS_POINT, 
+			PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.CALCULATED_STATUS_POINT
 		},
 		{  //6 - PointAlarmOptionsEditorPanel
-			PointTypes.PULSE_ACCUMULATOR_POINT, PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.STATUS_POINT, PointTypes.DEMAND_ACCUMULATOR_POINT
+			PointTypes.PULSE_ACCUMULATOR_POINT, PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.STATUS_POINT, 
+			PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.CALCULATED_STATUS_POINT
 		}	,
 		{  //7 - PointCalcComponent
-			PointTypes.CALCULATED_POINT
+			PointTypes.CALCULATED_POINT, PointTypes.CALCULATED_STATUS_POINT
 		}	
 	};
 	private javax.swing.JTabbedPane ivjPointEditorTabbedPane = null;
