@@ -1268,10 +1268,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
                     if( currentFeeder->checkForAndProvideNeededIndividualControl(currentDateTime, pointChanges, pilMessages, getPeakTimeFlag(), getDecimalPlaces(), getControlUnits()) )
                     {
                         setLastOperationTime(currentDateTime);
-                        setBusUpdatedFlag(TRUE);
                         setRecentlyControlledFlag(TRUE);
                         setCurrentDailyOperations(getCurrentDailyOperations() + 1);
                     }
+                    setBusUpdatedFlag(TRUE);
                     //currentFeeder->setNewPointDataReceivedFlag(FALSE);
                 }
             }

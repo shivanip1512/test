@@ -1119,10 +1119,8 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
                         {
                             pointChanges.insert(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
                         }
+                        returnBoolean = TRUE;
                     }
-    
-                    //regardless what happened the substation bus should be should be sent to the client
-                    returnBoolean = TRUE;
                 }
                 catch(...)
                 {
