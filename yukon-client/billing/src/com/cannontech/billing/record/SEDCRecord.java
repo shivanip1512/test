@@ -1,5 +1,6 @@
 package com.cannontech.billing.record;
 
+import com.cannontech.billing.FileFormatTypes;
 /**
  * Insert the type's description here.
  * Creation date: (8/24/2001 5:32:56 PM)
@@ -22,6 +23,12 @@ public class SEDCRecord implements BillingRecordBase
 	private static java.text.SimpleDateFormat TIME_FORMAT = new java.text.SimpleDateFormat("HH:mm");
 	private static java.text.DecimalFormat KWH_FORMAT_NODECIMAL = new java.text.DecimalFormat("#####");
 	private static java.text.DecimalFormat KW_FORMAT_3v3 = new java.text.DecimalFormat("##0.000");
+
+	//Used to represent what version of SEDC is being used.
+	//'Old' SEDC5.4 version doesn't accept the extra commas and semicolon.
+	//Default is 'new' version.
+	private int version = FileFormatTypes.NEW_VERSION;
+
 /**
  * SEDCRecord constructor comment.
  */
@@ -91,6 +98,13 @@ public String dataToString()
 	writeToFile.append(getTime() + ",");
 
 	writeToFile.append(getDate() + ",");
+
+	if(getVersion() == FileFormatTypes.OLD_VERSION)
+	{
+		//quit now... forget peak crap!
+		writeToFile.append("\r\n");		
+		return writeToFile.toString();
+	}
 
 	//Peak
 	if( getReadingKW() != null)
@@ -213,6 +227,16 @@ public String getTimeKW()
 {
 	return timeKW;
 }
+
+private int getVersion()
+{
+	return version;
+}
+public void setVersion(int newVersionType)
+{
+	version = newVersionType;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/4/2002 4:02:16 PM)
