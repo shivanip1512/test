@@ -64,7 +64,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 		for( int k = 0; k < trendModel.getTrendSeries().length; k++ )
 		{
 			com.cannontech.graph.model.TrendSerie serie = trendModel.getTrendSeries()[k];
-			if(com.cannontech.database.db.graph.GraphDataSeries.isValidIntervalType( serie.getTypeMask()))
+			if(com.cannontech.database.db.graph.GraphDataSeries.isGraphType( serie.getTypeMask()))
 			{
 //				if( serie.getDataPairArray() != null)// With this check, null data is not represented with correct point
 				{
@@ -322,7 +322,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 			csvColumnLength = 0;
 			for( int i = 0; i < trendModel.getTrendSeries().length; i++)
 			{
-				if(com.cannontech.database.db.graph.GraphDataSeries.isValidIntervalType( trendModel.getTrendSeries()[i].getTypeMask() ))
+				if(com.cannontech.database.db.graph.GraphDataSeries.isGraphType( trendModel.getTrendSeries()[i].getTypeMask() ))
 				{
 					csvColumnLength++;
 				}
@@ -365,7 +365,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 			for( int z = 0; z < trendModel.getTrendSeries().length; z++ )
 			{
 				com.cannontech.graph.model.TrendSerie serie = trendModel.getTrendSeries()[z];
-				if( com.cannontech.database.db.graph.GraphDataSeries.isValidIntervalType(serie.getTypeMask()))
+				if( com.cannontech.database.db.graph.GraphDataSeries.isGraphType(serie.getTypeMask()))
 				{
 					valueFormat.setMaximumFractionDigits(3);//serie.getDecimalPlaces());
 					valueFormat.setMinimumFractionDigits(3);//serie.getDecimalPlaces());
