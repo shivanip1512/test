@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2002/12/12 01:03:11 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2002/12/19 20:31:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3208,7 +3208,7 @@ CtiVanGoghConnectionManager* CtiVanGogh::getScannerConnection()
         {
             if(!Mgr->getClientName().compareTo(SCANNER_REGISTRATION_NAME,RWCString::ignoreCase))
             {
-                break;      // The for has completed, we found the PIL.
+                break;      // The for has completed, we found the SCANNER.
             }
             else
             {
