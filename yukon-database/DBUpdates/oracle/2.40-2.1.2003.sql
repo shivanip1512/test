@@ -187,6 +187,9 @@ alter table Contact drop column LocationID;
 /* No big deal if this fails, just insure a row is there */
 insert into contact values ( 0, '(none)', '(none)', -1, 0 );
 
+/* No big deal if this fails, just insures a row is there */
+insert into address values ( 0, '(none)', '(none)', '(none)', 'MN', '(none)', '(none)' );
+
 alter table Contact
    add constraint FK_CON_REF__ADD foreign key (AddressID)
       references Address (AddressID);

@@ -167,8 +167,12 @@ go
 alter table Contact drop column LocationID
 go
 
-/* No big deal if this fails, just insure a row is there */
+/* No big deal if this fails, just insures a row is there */
 insert into contact values ( 0, '(none)', '(none)', -1, 0 )
+go
+
+/* No big deal if this fails, just insures a row is there */
+insert into address values ( 0, '(none)', '(none)', '(none)', 'MN', '(none)', '(none)' );
 go
 
 alter table Contact
