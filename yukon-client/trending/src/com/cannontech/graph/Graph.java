@@ -18,8 +18,10 @@ import org.w3c.dom.Element;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.graph.GraphDefinition;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
@@ -46,6 +48,7 @@ public class Graph implements GraphDefines
 	private JFreeChart freeChart = null;
 	private TrendModel trendModel = null;
 
+	private int [] pointIDs = null;
 	private GraphDefinition graphDefinition = null;
 	private String period = ServletUtil.ONEDAY;
 	private java.lang.String title = null;
@@ -59,6 +62,11 @@ public class Graph implements GraphDefines
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	private com.cannontech.graph.model.TrendProperties trendProperties;
 
+	//types of generations, GDEF is the original or default, POINT is for ad-hoc or no predefined gdef exists.
+	private static final int GDEF_GENERATION = 0;
+	private static final int POINT_GENERATION = 1;
+	
+	private int generationType = GDEF_GENERATION;
 /**
  * Graph constructor comment.
  */
@@ -247,9 +255,11 @@ public void encodeSVG(java.io.OutputStream out) throws java.io.IOException
 		getFreeChart().draw(svgGenerator, new Rectangle(getWidth(),getHeight()));
 		
 		Element svgRoot = svgGenerator.getRoot();
-		
-		svgRoot.setAttributeNS(null,"gdefid", String.valueOf(getGraphDefinition().getGraphDefinition().getGraphDefinitionID()));
-		
+		if( getGenerationType() == GDEF_GENERATION)
+			svgRoot.setAttributeNS(null,"gdefid", String.valueOf(getGraphDefinition().getGraphDefinition().getGraphDefinitionID()));
+		else if( getGenerationType() == POINT_GENERATION)
+			svgRoot.setAttributeNS(null,"pointid", String.valueOf(getPointIDs()[0]));	//use the first pointID as the attribute value? TODO
+			
 		// Finally, stream out SVG to the standard output 
 		// is this a good encoding to use?
 		java.io.Writer writer = new java.io.OutputStreamWriter(out,"ISO-8859-1");
@@ -354,6 +364,8 @@ public void setGraphDefinition(GraphDefinition newGraphDefinition)
 	{
 		System.out.println( "SAME GRAPH DEFs");
 	}
+	//ASSUMPTION!!! If you are setting the gDef, you must want to use it.  You can only use pointIDs -OR- graphDefinitionID...not both!
+	setGenerationType(GDEF_GENERATION);
 	graphDefinition = newGraphDefinition;
 	getTrendProperties().setGdefName(graphDefinition.getGraphDefinition().getName());
 }
@@ -698,51 +710,34 @@ public void setUpdateTrend(boolean update)
 }
 public void update()
 {
-//EXAMPLE OF USING A POINT TO GRAPH INSTEAD OF A GRAPHDEFINITION.
-/*	java.util.Date stop = new java.util.Date();
-	java.util.Date start = new java.util.Date(stop.getTime() - (86400000 * 2));
-	java.sql.Connection conn = null;
-	try
-	{
-		com.cannontech.database.db.point.Point[] pointArray = new com.cannontech.database.db.point.Point[2];
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-
-		com.cannontech.database.db.point.Point p = new com.cannontech.database.db.point.Point();
-		p.setPointID( new Integer(9) );
-
-		p.setDbConnection(conn);
-		p.retrieve();
-		pointArray[0] = p;
-		p.setDbConnection(null);
-
-		TrendModel newModel = new TrendModel(start, stop, "Point Chart Test",  pointArray);
-		setTrendModel( newModel );
-		freeChart = getTrendModel().setupFreeChart(getModelType());
-		
-	}
-	catch(java.sql.SQLException e)
-	{
-		e.printStackTrace();
-	}
-	finally
-	{
-		try {
-		if( conn != null ) conn.close();
-		} catch( java.sql.SQLException e2 ) { }
-	}
-*/////////////////////////////////////////////////////////////////////
-	
 	if( isUpdateTrend())
 	{
-		
-		TrendModel newModel = new TrendModel(getGraphDefinition(), getStartDate(), getStopDate(), getTrendProperties()); 
+		TrendModel newModel = null;
+		if( getGenerationType() == GDEF_GENERATION)
+		{
+			newModel = new TrendModel(getGraphDefinition(), getStartDate(), getStopDate(), getTrendProperties()); 
+		}
+		else if ( getGenerationType() == POINT_GENERATION)
+		{
+			String chartTitle = "";
+			LitePoint [] lps = new LitePoint[pointIDs.length];
+			for(int i = 0; i < pointIDs.length; i++)
+			{
+				LitePoint lp = PointFuncs.getLitePoint(pointIDs[i]);
+				lps[i] = lp;
+				if( i > 0)
+					chartTitle += ", ";
+				chartTitle += lp.getPointName();
+			}
+			chartTitle += " Trend";
+			newModel = new TrendModel(getStartDate(), getStopDate(), chartTitle, lps);
+		}
 		setTrendModel( newModel );
 		updateTrend = false;		
 	}
 	getTrendModel().setTrendProps( getTrendProperties());
 	freeChart = getTrendModel().refresh();
 }
-
 /** Send a command message to dispatch to scan paobjects (or all meters if paobjects is null)
  * at the alternate scan rate for duration of 0 secs (once).
  **/
@@ -887,5 +882,57 @@ public void getDataNow(java.util.List paobjects)
 		}
 		//force an update on the GDEF update
 		setUpdateTrend(true);
+	}
+	/**
+	 * @return
+	 */
+	public int getGenerationType()
+	{
+		return generationType;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setGenerationType(int i)
+	{
+		generationType = i;
+	}
+
+	/**
+	 * @return
+	 */
+	public int[] getPointIDs()
+	{
+		return pointIDs;
+	}
+
+	/**
+	 * @param points
+	 */
+	public void setPointIDs(int[] pointIDs)
+	{
+		if( getPointIDs() == null || !pointIDs.equals(getPointIDs()))	//will these ever be equal?
+		{
+			setUpdateTrend(true);
+		}
+		else
+		{
+			System.out.println( "SAME POINTS");
+		}
+		//ASSUMPTION!!! If you are setting the pointIDs, you must want to use them.  You can only use pointIDs -OR- graphDefinitionID...not both!
+		setGenerationType(POINT_GENERATION);
+		this.pointIDs = pointIDs;
+		getTrendProperties().setGdefName("AD HOC - Points");
+	}
+
+	/**
+	 * Creates an array on size 1.
+	 * @param points
+	 */
+	public void setPointIDs(int pointID)
+	{
+		int [] pointIDs = new int[]{pointID};
+		setPointIDs(pointIDs);
 	}
 }
