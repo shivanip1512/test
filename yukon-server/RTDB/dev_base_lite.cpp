@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base_lite.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/02 17:02:21 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/10/03 16:14:21 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -208,5 +208,19 @@ CtiDeviceBaseLite& CtiDeviceBaseLite::operator=(const CtiDeviceBaseLite& aRef)
         _controlInhibitFlag = aRef.getControlInhibitFlag();
     }
     return *this;
+}
+
+bool CtiDeviceBaseLite::isDisabled() const
+{
+    RWCString str(getDisableFlag());
+    str.toLower();
+    return (str == "Y");
+}
+
+bool CtiDeviceBaseLite::isControlInhibited() const
+{
+    RWCString str(getControlInhibitFlag());
+    str.toLower();
+    return (str == "Y");
 }
 
