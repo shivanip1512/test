@@ -56,7 +56,31 @@ public class SetupServlet extends HttpServlet
 {
 	static final String LF = System.getProperty("line.separator");
 	//jdbc:microsoft:sqlserver://dbserver:1433;SelectMethod=cursor;
-	//jdbc:oracle:thin:@10.100.1.76:1521:preprod			
+	//jdbc:oracle:thin:@10.100.1.76:1521:preprod
+	
+	static final String FOOTER_TEXT = LF + LF +
+		"---------------- Some Sample driver URL stringes ---------" + LF +
+		"#---------------------------------------------------------#" + LF +
+		"#- OpenSource SqlServer JDBC native driver URL           -#" + LF +
+		"#-   (Recommended driver if using SQLServer)             -#" + LF +
+		"#---------------------------------------------------------#" + LF +
+		"#yukon.url=jdbc:jtds:sqlserver://127.0.0.1:1433;APPNAME=yukon-client;TDS=8.0" + LF +
+		"" + LF +
+		"#---------------------------------------------------------#" + LF +
+		"#- Microsoft SqlServer 2000 native driver URL            -#" + LF +
+		"#---------------------------------------------------------#" + LF +
+		"#yukon.url=jdbc:microsoft:sqlserver://127.0.0.1:1433;SelectMethod=cursor" + LF +
+		"" + LF +	
+		"#---------------------------------------------------------#" + LF +
+		"#- Oracle 8.x native driver URL                          -#" + LF +
+		"#---------------------------------------------------------#" + LF +
+		"#yukon.url=jdbc:oracle:thin:@127.0.0.1:1521:yukon" + LF +
+		"" + LF +
+		"#---------------------------------------------------------#" + LF +
+		"#- ODBC SqlServer driver and URL                         -#" + LF +
+		"#-   (Only use if no other option is available)          -#" + LF +
+		"#---------------------------------------------------------#" + LF +
+		"#yukon.url=jdbc:odbc:sqlserver";
 			
 
 
@@ -296,6 +320,10 @@ public class SetupServlet extends HttpServlet
 			fw.write( dbal + PoolManager.MAXCONNS + "=" + maxConns + LF );
 
 
+
+			//print out some sample driver URL string just in case the user
+			// wants to edit the file directly
+			fw.write( FOOTER_TEXT );
 
 			fw.flush();
 			
