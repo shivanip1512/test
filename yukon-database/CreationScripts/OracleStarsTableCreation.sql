@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     4/1/2004 11:17:08 AM                         */
+/* Created on:     5/24/2004 4:00:19 PM                         */
 /*==============================================================*/
 
 
@@ -122,6 +122,10 @@ drop table LMProgramWebPublishing cascade constraints
 
 
 drop table LMThermostatManualEvent cascade constraints
+/
+
+
+drop table LMThermostatSchedule cascade constraints
 /
 
 
@@ -476,7 +480,7 @@ insert into CustomerFAQ values(3,1231,'Can I sign up for more than one program?'
 insert into CustomerFAQ values(4,1232,'Can I control my thermostat even if I do not know my current settings?','Yes. You may select the temperature change (up or down) in degrees without knowing the current temperature or simply set a new specific temperature. If pre-cooling, you may also select a new specific temperature or select the number of degress to decrease in temperature.');
 insert into CustomerFAQ values(5,1232,'What does the Fan setting do?','The fan setting controls the operation of the fan. <br>Auto - the fan runs only as necessary to maintain the current temperature settings. <br>On - the fan runs continuously. <br>Off - the fan does not run.');
 insert into CustomerFAQ values(6,1232,'Does the utility company have access to my thermostat?','The utility only has access to your thermostat for control based on the programs you have signed up for. When not being controlled, you have complete control of your thermostat.');
-insert into CustomerFAQ values(7,1233,'How much credit do I receive if I opt out while contolling?','You will receive credit for the protion of time you were controlled.');
+insert into CustomerFAQ values(7,1233,'How much credit do I receive if I opt out while controlling?','You will receive credit for the portion of time you were controlled.');
 
 alter table CustomerFAQ
    add constraint PK_CUSTOMERFAQ primary key (QuestionID)
@@ -784,7 +788,8 @@ alter table LMCustomerEventBase
 create table LMHardwareBase  (
    InventoryID          NUMBER                           not null,
    ManufacturerSerialNumber VARCHAR2(30),
-   LMHardwareTypeID     NUMBER                           not null
+   LMHardwareTypeID     NUMBER                           not null,
+   RouteID              NUMBER                           not null
 )
 /
 
@@ -876,7 +881,8 @@ create table LMProgramWebPublishing  (
    ApplianceCategoryID  NUMBER                           not null,
    LMProgramID          NUMBER                           not null,
    WebsettingsID        NUMBER,
-   ChanceOfControlID    NUMBER
+   ChanceOfControlID    NUMBER,
+   ProgramOrder         NUMBER
 )
 /
 
@@ -910,13 +916,33 @@ alter table LMThermostatManualEvent
 
 
 /*==============================================================*/
+/* Table : LMThermostatSchedule                                 */
+/*==============================================================*/
+
+
+create table LMThermostatSchedule  (
+   ScheduleID           NUMBER                           not null,
+   ScheduleName         VARCHAR2(60)                     not null,
+   ThermostatTypeID     NUMBER                           not null,
+   AccountID            NUMBER                           not null,
+   InventoryID          NUMBER                           not null
+)
+/
+
+
+alter table LMThermostatSchedule
+   add constraint PK_LMTHERMOSTATSCHEDULE primary key (ScheduleID)
+/
+
+
+/*==============================================================*/
 /* Table : LMThermostatSeason                                   */
 /*==============================================================*/
 
 
 create table LMThermostatSeason  (
    SeasonID             NUMBER                           not null,
-   InventoryID          NUMBER,
+   ScheduleID           NUMBER,
    WebConfigurationID   NUMBER,
    StartDate            DATE,
    DisplayOrder         NUMBER
@@ -1305,8 +1331,8 @@ alter table LMProgramWebPublishing
 /
 
 
-alter table LMThermostatSeasonEntry
-   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
+alter table ApplianceAirConditioner
+   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
       references YukonListEntry (EntryID)
 /
 
@@ -1317,8 +1343,8 @@ alter table LMCustomerEventBase
 /
 
 
-alter table ApplianceAirConditioner
-   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
+alter table LMThermostatSeasonEntry
+   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
       references YukonListEntry (EntryID)
 /
 
@@ -1341,6 +1367,12 @@ alter table LMThermostatManualEvent
 /
 
 
+alter table LMThermostatManualEvent
+   add constraint FK_CsLsE_LThMnO1 foreign key (FanOperationID)
+      references YukonListEntry (EntryID)
+/
+
+
 alter table WorkOrderBase
    add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
       references YukonListEntry (EntryID)
@@ -1349,12 +1381,6 @@ alter table WorkOrderBase
 
 alter table ApplianceAirConditioner
    add constraint FK_CsLsE_Ac foreign key (TonnageID)
-      references YukonListEntry (EntryID)
-/
-
-
-alter table LMThermostatManualEvent
-   add constraint FK_CsLsE_LThMnO1 foreign key (FanOperationID)
       references YukonListEntry (EntryID)
 /
 
@@ -1413,8 +1439,8 @@ alter table CallReportBase
 /
 
 
-alter table InventoryBase
-   add constraint FK_INV_REF__YUK foreign key (CategoryID)
+alter table ApplianceCategory
+   add constraint FK_CstLs_ApCt foreign key (CategoryID)
       references YukonListEntry (EntryID)
 /
 
@@ -1425,8 +1451,8 @@ alter table LMHardwareBase
 /
 
 
-alter table ApplianceCategory
-   add constraint FK_CstLs_ApCt foreign key (CategoryID)
+alter table InventoryBase
+   add constraint FK_INV_REF__YUK foreign key (CategoryID)
       references YukonListEntry (EntryID)
 /
 
@@ -1528,14 +1554,14 @@ alter table ECToGenericMapping
 
 
 alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
-      references InventoryBase (InventoryID)
+   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
 /
 
 
 alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
+      references InventoryBase (InventoryID)
 /
 
 
@@ -1588,7 +1614,7 @@ alter table InterviewQuestion
 
 
 alter table LMThermostatSeason
-   add constraint FK_InvB_LThSs foreign key (InventoryID)
+   add constraint FK_InvB_LThSs foreign key (ScheduleID)
       references InventoryBase (InventoryID)
 /
 
@@ -1605,6 +1631,12 @@ alter table ECToLMCustomerEventMapping
 /
 
 
+alter table LMHardwareBase
+   add constraint FK_LMHrdB_Rt foreign key (RouteID)
+      references Route (RouteID)
+/
+
+
 alter table LMHardwareConfiguration
    add constraint FK_LMHrd_LMGr foreign key (AddressingGroupID)
       references LMGroup (DeviceID)
@@ -1614,6 +1646,24 @@ alter table LMHardwareConfiguration
 alter table LMProgramEvent
    add constraint FK_LMPrg_LMPrEv foreign key (LMProgramID)
       references LMPROGRAM (DeviceID)
+/
+
+
+alter table LMThermostatSchedule
+   add constraint FK_LMThSc_CsAc foreign key (AccountID)
+      references CustomerAccount (AccountID)
+/
+
+
+alter table LMThermostatSchedule
+   add constraint FK_LMThSc_InvB foreign key (InventoryID)
+      references InventoryBase (InventoryID)
+/
+
+
+alter table LMThermostatSchedule
+   add constraint FK_LMThSc_YkLs foreign key (ThermostatTypeID)
+      references YukonListEntry (EntryID)
 /
 
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     4/1/2004 11:16:39 AM                         */
+/* Created on:     5/24/2004 3:59:54 PM                         */
 /*==============================================================*/
 
 
@@ -242,6 +242,14 @@ if exists (select 1
            where  id = object_id('LMThermostatManualEvent')
             and   type = 'U')
    drop table LMThermostatManualEvent
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMThermostatSchedule')
+            and   type = 'U')
+   drop table LMThermostatSchedule
 go
 
 
@@ -878,7 +886,8 @@ go
 create table LMHardwareBase (
 InventoryID          numeric              not null,
 ManufacturerSerialNumber varchar(30)          null,
-LMHardwareTypeID     numeric              not null
+LMHardwareTypeID     numeric              not null,
+RouteID              numeric              not null
 )
 go
 
@@ -962,7 +971,8 @@ create table LMProgramWebPublishing (
 ApplianceCategoryID  numeric              not null,
 LMProgramID          numeric              not null,
 WebsettingsID        numeric              null,
-ChanceOfControlID    numeric              null
+ChanceOfControlID    numeric              null,
+ProgramOrder         numeric              null
 )
 go
 
@@ -994,11 +1004,29 @@ go
 
 
 /*==============================================================*/
+/* Table : LMThermostatSchedule                                 */
+/*==============================================================*/
+create table LMThermostatSchedule (
+ScheduleID           numeric              not null,
+ScheduleName         varchar(60)          not null,
+ThermostatTypeID     numeric              not null,
+AccountID            numeric              not null,
+InventoryID          numeric              not null
+)
+go
+
+
+alter table LMThermostatSchedule
+   add constraint PK_LMTHERMOSTATSCHEDULE primary key  (ScheduleID)
+go
+
+
+/*==============================================================*/
 /* Table : LMThermostatSeason                                   */
 /*==============================================================*/
 create table LMThermostatSeason (
 SeasonID             numeric              not null,
-InventoryID          numeric              null,
+ScheduleID           numeric              null,
 WebConfigurationID   numeric              null,
 StartDate            datetime             null,
 DisplayOrder         numeric              null
@@ -1377,8 +1405,8 @@ alter table LMProgramWebPublishing
 go
 
 
-alter table LMThermostatSeasonEntry
-   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
+alter table ApplianceAirConditioner
+   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
       references YukonListEntry (EntryID)
 go
 
@@ -1389,8 +1417,8 @@ alter table LMCustomerEventBase
 go
 
 
-alter table ApplianceAirConditioner
-   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
+alter table LMThermostatSeasonEntry
+   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
       references YukonListEntry (EntryID)
 go
 
@@ -1413,6 +1441,12 @@ alter table LMThermostatManualEvent
 go
 
 
+alter table LMThermostatManualEvent
+   add constraint FK_CsLsE_LThMnO1 foreign key (FanOperationID)
+      references YukonListEntry (EntryID)
+go
+
+
 alter table WorkOrderBase
    add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
       references YukonListEntry (EntryID)
@@ -1421,12 +1455,6 @@ go
 
 alter table ApplianceAirConditioner
    add constraint FK_CsLsE_Ac foreign key (TonnageID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table LMThermostatManualEvent
-   add constraint FK_CsLsE_LThMnO1 foreign key (FanOperationID)
       references YukonListEntry (EntryID)
 go
 
@@ -1485,8 +1513,8 @@ alter table CallReportBase
 go
 
 
-alter table InventoryBase
-   add constraint FK_INV_REF__YUK foreign key (CategoryID)
+alter table ApplianceCategory
+   add constraint FK_CstLs_ApCt foreign key (CategoryID)
       references YukonListEntry (EntryID)
 go
 
@@ -1497,8 +1525,8 @@ alter table LMHardwareBase
 go
 
 
-alter table ApplianceCategory
-   add constraint FK_CstLs_ApCt foreign key (CategoryID)
+alter table InventoryBase
+   add constraint FK_INV_REF__YUK foreign key (CategoryID)
       references YukonListEntry (EntryID)
 go
 
@@ -1600,14 +1628,14 @@ go
 
 
 alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
-      references InventoryBase (InventoryID)
+   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
 alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
+      references InventoryBase (InventoryID)
 go
 
 
@@ -1660,7 +1688,7 @@ go
 
 
 alter table LMThermostatSeason
-   add constraint FK_InvB_LThSs foreign key (InventoryID)
+   add constraint FK_InvB_LThSs foreign key (ScheduleID)
       references InventoryBase (InventoryID)
 go
 
@@ -1677,6 +1705,12 @@ alter table ECToLMCustomerEventMapping
 go
 
 
+alter table LMHardwareBase
+   add constraint FK_LMHrdB_Rt foreign key (RouteID)
+      references Route (RouteID)
+go
+
+
 alter table LMHardwareConfiguration
    add constraint FK_LMHrd_LMGr foreign key (AddressingGroupID)
       references LMGroup (DeviceID)
@@ -1686,6 +1720,24 @@ go
 alter table LMProgramEvent
    add constraint FK_LMPrg_LMPrEv foreign key (LMProgramID)
       references LMPROGRAM (DeviceID)
+go
+
+
+alter table LMThermostatSchedule
+   add constraint FK_LMThSc_CsAc foreign key (AccountID)
+      references CustomerAccount (AccountID)
+go
+
+
+alter table LMThermostatSchedule
+   add constraint FK_LMThSc_InvB foreign key (InventoryID)
+      references InventoryBase (InventoryID)
+go
+
+
+alter table LMThermostatSchedule
+   add constraint FK_LMThSc_YkLs foreign key (ThermostatTypeID)
+      references YukonListEntry (EntryID)
 go
 
 

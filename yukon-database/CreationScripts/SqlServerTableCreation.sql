@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     5/19/2004 9:58:46 AM                         */
+/* Created on:     5/24/2004 4:00:58 PM                         */
 /*==============================================================*/
 
 
@@ -3546,7 +3546,7 @@ go
 create table LMControlScenarioProgram (
 ScenarioID           numeric              not null,
 ProgramID            numeric              not null,
-StartDelay           numeric              not null,
+StartOffset          numeric              not null,
 StopOffset           numeric              not null,
 StartGear            numeric              not null
 )

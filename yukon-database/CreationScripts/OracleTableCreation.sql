@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     5/19/2004 10:00:21 AM                        */
+/* Created on:     5/24/2004 4:02:01 PM                         */
 /*==============================================================*/
 
 
@@ -2980,7 +2980,7 @@ create index Indx_Start on LMControlHistory (
 create table LMControlScenarioProgram  (
    ScenarioID           NUMBER                           not null,
    ProgramID            NUMBER                           not null,
-   StartDelay           NUMBER                           not null,
+   StartOffset          NUMBER                           not null,
    StopOffset           NUMBER                           not null,
    StartGear            NUMBER                           not null
 )
