@@ -69,6 +69,7 @@
                           account number and password.</div>
                         <form name="form1" method="post" action="/servlet/SOAPClient">
                      	<input type="hidden" name="action" value="UserLogin">
+						<input type="hidden" name="CompanyID" value="1">
 						<input type="hidden" name="DATABASEALIAS" value="yukon">
 				  		<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerSwitch/switch/ProgramHist.jsp">
 				  		<input type="hidden" name="REFERRER" value="/UserDemos/ConsumerSwitch/login.jsp">
@@ -104,14 +105,29 @@
                     </tr>
                     <tr>
                       <td width="555" bgcolor="#FFFFFF" class = "TableCell3">
-					  <form method="get" action="ProgramsNew.jsp">
-<!--
-					  <form method="post" action="/servlet/SOAPClient">
+<%
+	String formMethod = null;
+	String formAction = null;
+	if (session.getAttribute("ENROLLMENT_PROGRAMS") != null) {
+		formMethod = "get";
+		formAction = "ProgramsNew.jsp";
+	}
+	else {
+		formMethod = "post";
+		formAction = "/servlet/SOAPClient";
+	}
+%>
+					  <form method="<%= formMethod %>" action="<%= formAction %>">
+<%
+	if (session.getAttribute("ENROLLMENT_PROGRAMS") == null) {
+%>
 					    <input type="hidden" name="action" value="GetEnrollmentPrograms">
 						<input type="hidden" name="CompanyID" value="1">
 						<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerSwitch/ProgramsNew.jsp">
 						<input type="hidden" name="REFERRER" value="/UserDemos/ConsumerSwitch/login.jsp">
--->
+<%
+	}
+%>
                         <table width="154" border="0" cellspacing="0" cellpadding="10" align="center" class = "Main" height="97">
                           <tr> 
                             <td> 

@@ -1,10 +1,3 @@
-<%@ page import="com.cannontech.stars.xml.serialize.StarsGetEnrollmentProgramsResponse" %>
-<%
-	session.removeAttribute("OPERATOR");
-	StarsGetEnrollmentProgramsResponse categories = (StarsGetEnrollmentProgramsResponse) session.getAttribute("ENROLLMENT_PROGRAMS");
-	if (categories == null)
-		response.sendRedirect("/servlet/SOAPClient?action=GetEnrollmentPrograms&CompanyID=1&REDIRECT=/UserDemos/ConsumerSwitch/ProgramsNew.jsp&REFERRER=/UserDemos/ConsumerSwitch/login.jsp");
-%>
 <html>
 <head>
 <title>Consumer Energy Services</title>

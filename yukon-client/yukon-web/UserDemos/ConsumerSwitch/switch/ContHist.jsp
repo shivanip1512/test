@@ -8,9 +8,9 @@
 		}
 		catch (NumberFormatException e) {}
 
-	String backURL = request.getParameter("BackURL");
+	String referrer = request.getParameter("REFERRER");
 	if (appNoStr != null)
-		backURL += "?AppNo=" + appNoStr;
+		referrer += "?AppNo=" + appNoStr;
 	
 	StarsAppliance appliance = appliances.getStarsAppliance(appNo);
 	
@@ -176,7 +176,7 @@
             </table>
             <div align="center"> 
 <%
-	if (backURL == null) {
+	if (referrer == null) {
 %>
               <form name="form1" method="get" action="ProgramHist.jsp">
                 <input type="submit" name="Back" value="Back">
@@ -185,7 +185,7 @@
 	}
 	else {
 %>
-			  <input type="button" name="Back" value="Back" onclick="document.URL='<%= backURL %>'">
+			  <input type="button" name="Back" value="Back" onclick="document.URL='<%= referrer %>'">
 <%
 	}
 %>

@@ -180,8 +180,8 @@
 					<input type="hidden" name="action" value="GetLMCtrlHist">
 					<input type="hidden" name="Group" value="<%= program.getGroupID() %>">
 					<input type="hidden" name="AppNo" value="<%= appNo %>">
-					<input type="hidden" name="DestURL" value="/OperatorDemos/Consumer/ContHist.jsp">
-					<input type="hidden" name="BackURL" value="ProgramHist.jsp">
+					<input type="hidden" name="REDIRECT" value="/OperatorDemos/Consumer/ContHist.jsp">
+					<input type="hidden" name="REFERRER" value="ProgramHist.jsp">
                     <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">
                       <tr> 
 					    <td width="180" valign="top" align="center"> 

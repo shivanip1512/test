@@ -116,9 +116,9 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("GetLMCtrlHist")) {
             clientAction = new GetLMCtrlHistAction();
-            destURL = req.getParameter("DestURL")
+            destURL = req.getParameter("REDIRECT")
             		+ "?AppNo=" + req.getParameter("AppNo")
-                    + "&BackURL=" + req.getParameter("BackURL");
+                    + "&REFERRER=" + req.getParameter("REFERRER");
         }
         else if (action.equalsIgnoreCase("CreateCall")) {
         	clientAction = new CreateCallAction();
@@ -160,6 +160,8 @@ public class SOAPClient extends HttpServlet {
             MultiAction actions = new MultiAction();
         	actions.getActionVector().addElement( new LoginAction() );
         	actions.getActionVector().addElement( new GetCustAccountAction() );
+        	if (session.getAttribute("ENROLLMENT_PROGRAMS") == null)
+        		actions.getActionVector().addElement( new GetEnrollmentProgramsAction() );
         	
         	clientAction = (ActionBase) actions;
         	destURL = req.getParameter("REDIRECT");

@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <%
 	String programStatus = "In Service";     
 		programStatus = (String) session.getAttribute("PROGRAM_STATUS");
@@ -76,6 +77,9 @@ function MM_popupMsg(msg) { //v1.0
               of the program:</span> </p>
             <hr width = "90%">
           
+			<form method="post" action="/servlet/SOAPClient">
+			  <input type="hidden" name="action" value="<%= request.getParameter("action") %>">
+			  <input type="hidden" name="OptOutPeriod" value="<%= request.getParameter("OptOutPeriod") %>">
                 <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
                   <tr> 
                     <td class="TableCell"> 
@@ -123,10 +127,9 @@ function MM_popupMsg(msg) { //v1.0
                     </td>
                   </tr>
                 </table>
-                <form method="post" action="OptOut.jsp">
               <p align="center"> 
                 <input type="submit" name="Submit" value="Submit">
-                <input type="Submit" name="Input" value="Cancel">
+                <input type="button" name="Cancel" value="Cancel" onclick="location='OptOut.jsp'">
               <p>&nbsp;</p></form>
           </td>
         <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
