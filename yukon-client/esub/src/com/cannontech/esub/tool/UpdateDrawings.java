@@ -25,6 +25,7 @@ public class UpdateDrawings implements Runnable {
 		UpdateDrawings ud = new UpdateDrawings(args[0]);
 		ud.run();
 		CTILogger.info("Done!");
+		System.exit(0);
 	}
 	
 	public void run() {
