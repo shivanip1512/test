@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/05/24 21:40:11 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/05/24 22:36:06 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -238,7 +238,7 @@ bool CtiProtocolLMI::hasCodes( void ) const
 }
 
 
-int CtiProtocolLMI::numCodes( void ) const
+int CtiProtocolLMI::getNumCodes( void ) const
 {
     return _codes.size();
 }
