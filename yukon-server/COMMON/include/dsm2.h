@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/03/13 19:35:27 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/03/26 20:32:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -651,14 +651,17 @@ typedef struct _VCONFIG
    BYTE Data[6];
 } VCONFIG;
 
+typedef struct
+{
+   BOOL     Cancel;     // If set, this command cancels a prior TOOS command
+   BOOL     LED_Off;    // If set, the LEDs are off during the TOOS.
+   USHORT   TOOS_Time;  // TOOS time in half seconds.
+
+} VESERVICE;
+
 typedef struct _VSTRUCT
 {
-   //LONG        PortID;                       // 083199 CGP
-   //LONG        DeviceID;                     // 083199 CGP
-
-   // USHORT   Priority;
    INT      Retry;
-
 
    USHORT   CommandType;
 
@@ -682,6 +685,7 @@ typedef struct _VSTRUCT
       VRELAY  Load[3];
       VERELAY ELoad;
       VCONFIG VConfig;
+      VESERVICE ExService;
    };
 
    USHORT  NumW;

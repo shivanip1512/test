@@ -63,6 +63,7 @@ class DEVICE;
 
 
 /* Versacom command types */
+#define VADDITIONAL     1       // Additional Message type specifier
 #define EXDATA          3
 #define VCONTROL        4
 #define VINITIATOR      5
@@ -76,6 +77,10 @@ class DEVICE;
 #define VECONTROL       14
 #define VSCRAM          15
 #define VCUOVERQUE      0x04
+
+/* Expanded messages from Versacom Protocol Rev 2.0 */
+#define VEX_SERVICE     0x89       // Termporary service with timeout.
+#define VEX_COUNTRESET  0x88       // Counter Reset/Freeze comand.
 
 /* Versacom Configuration Commands */
 #define VCONFIG_SECTION     0x2a
