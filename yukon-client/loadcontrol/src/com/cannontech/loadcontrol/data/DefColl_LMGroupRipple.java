@@ -54,6 +54,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	super.restoreGuts( obj, vstr, polystr );
 
 	LMGroupRipple lmGroupRipple = (LMGroupRipple) obj;
+	lmGroupRipple.setShedTime( new Integer( (int)vstr.extractUnsignedInt() ) );
 }
 /**
  * saveGuts method comment.
