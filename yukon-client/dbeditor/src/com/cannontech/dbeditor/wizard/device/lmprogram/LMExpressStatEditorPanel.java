@@ -1,10 +1,12 @@
-package com.cannontech.dbeditor.wizard.device.lmgroup;
+package com.cannontech.dbeditor.wizard.device.lmprogram;
 /**
  * This type was created in VisualAge.
  */
 import com.cannontech.common.gui.util.LineLabel;
+import com.cannontech.dbeditor.wizard.device.lmgroup.ExpressComCellRenderer;
+import com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupExpressComEditorPanel;
 
-public class LMGroupExpressStatEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener {
+public class LMExpressStatEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener {
 	private javax.swing.JButton ivjJButtonDeltasAbsolute = null;
 	private javax.swing.JButton ivjJButtonFahrenheitCelsius = null;
 	private javax.swing.JCheckBox ivjJCheckBoxCoolMode = null;
@@ -45,7 +47,7 @@ public class LMGroupExpressStatEditorPanel extends com.cannontech.common.gui.uti
  * Constructor
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-public LMGroupExpressStatEditorPanel() {
+public LMExpressStatEditorPanel() {
 	super();
 	initialize();
 }

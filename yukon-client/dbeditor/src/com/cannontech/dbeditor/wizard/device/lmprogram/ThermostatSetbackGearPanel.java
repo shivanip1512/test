@@ -26,7 +26,7 @@ public class ThermostatSetbackGearPanel extends GenericGearPanel implements com.
 	private javax.swing.JLabel ivjJLabelWhenChange = null;
 	private javax.swing.JPanel ivjJPanelChangeMethod = null;
 	private javax.swing.JTextField ivjJTextFieldChangeTriggerOffset = null;
-	private com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupExpressStatEditorPanel statEditorPanel = null;
+	private com.cannontech.dbeditor.wizard.device.lmprogram.LMExpressStatEditorPanel statEditorPanel = null;
 /**
  * ThermostatPreOperateGearPanel constructor comment.
  */
@@ -686,9 +686,9 @@ private javax.swing.JTextField getJTextFieldChangeTriggerOffset() {
  * Creation date: (7/15/2002 1:48:13 PM)
  * @return com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupExpressStatEditorPanel
  */
-public com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupExpressStatEditorPanel getStatEditorPanel() {
+public com.cannontech.dbeditor.wizard.device.lmprogram.LMExpressStatEditorPanel getStatEditorPanel() {
 	if(statEditorPanel == null)
-		statEditorPanel = new com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupExpressStatEditorPanel();
+		statEditorPanel = new com.cannontech.dbeditor.wizard.device.lmprogram.LMExpressStatEditorPanel();
 	
 	return statEditorPanel;
 }
@@ -1003,7 +1003,7 @@ private void setChangeCondition(String change)
  * Creation date: (7/15/2002 2:54:59 PM)
  * @param newStatEditorPanel javax.swing.JPanel
  */
-public void setStatEditorPanel(com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupExpressStatEditorPanel newStatEditorPanel) {
+public void setStatEditorPanel(com.cannontech.dbeditor.wizard.device.lmprogram.LMExpressStatEditorPanel newStatEditorPanel) {
 	statEditorPanel = newStatEditorPanel;
 }
 /**
