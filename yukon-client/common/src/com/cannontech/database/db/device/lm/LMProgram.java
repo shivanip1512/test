@@ -1,5 +1,7 @@
 package com.cannontech.database.db.device.lm;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * This type was created in VisualAge.
  */
@@ -17,12 +19,16 @@ public class LMProgram extends com.cannontech.database.db.DBPersistent
 	private Integer minActivateTime = null;
 	private Integer minRestartTime = null;
 
+	private Integer holidaySchedID = new Integer(CtiUtilities.NONE_ID);
+	private Integer seasonSchedID = new Integer(CtiUtilities.NONE_ID);
+
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"ControlType", "AvailableSeasons", "AvailableWeekDays", 
 		"maxHoursDaily", "maxHoursMonthly", "maxHoursSeasonal" ,
-		"maxHoursAnnually", "minActivateTime", "minRestartTime"
+		"maxHoursAnnually", "minActivateTime", "minRestartTime",
+		"HolidayScheduleID", "SeasonScheduleID"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
@@ -42,7 +48,8 @@ public void add() throws java.sql.SQLException
 {
 	Object addValues[] = { getDeviceID(), getControlType(), getAvailableSeasons(), getAvailableWeekDays(), 
 				getMaxHoursDaily(), getMaxHoursMonthly(), getMaxHoursSeasonal(),
-				getMaxHoursAnnually(), getMinActivateTime(), getMinRestartTime() };
+				getMaxHoursAnnually(), getMinActivateTime(), getMinRestartTime(),
+				getHolidaySchedID(), getSeasonSchedID() };
 
 	add( TABLE_NAME, addValues );
 }
@@ -217,7 +224,9 @@ public void retrieve() throws java.sql.SQLException
 		setMaxHoursSeasonal( (Integer) results[5] );
 		setMaxHoursAnnually( (Integer) results[6] );
 		setMinActivateTime( (Integer) results[7] );
-		setMinRestartTime( (Integer) results[8] );
+		setMinRestartTime( (Integer) results[8] );		
+		setHolidaySchedID( (Integer) results[9] );
+		setSeasonSchedID( (Integer) results[10] );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -309,10 +318,47 @@ public void update() throws java.sql.SQLException
 {
 	Object setValues[] = { getControlType(), getAvailableSeasons(), getAvailableWeekDays(), 
 				getMaxHoursDaily(), getMaxHoursMonthly(), getMaxHoursSeasonal(),
-				getMaxHoursAnnually(), getMinActivateTime(), getMinRestartTime() };
+				getMaxHoursAnnually(), getMinActivateTime(), getMinRestartTime(),
+				getHolidaySchedID(), getSeasonSchedID() };
 
 	Object constraintValues[] = { getDeviceID() };
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
+	/**
+	 * Returns the holidaySchedID.
+	 * @return Integer
+	 */
+	public Integer getHolidaySchedID()
+	{
+		return holidaySchedID;
+	}
+
+	/**
+	 * Returns the seasonSchedID.
+	 * @return Integer
+	 */
+	public Integer getSeasonSchedID()
+	{
+		return seasonSchedID;
+	}
+
+	/**
+	 * Sets the holidaySchedID.
+	 * @param holidaySchedID The holidaySchedID to set
+	 */
+	public void setHolidaySchedID(Integer holidaySchedID)
+	{
+		this.holidaySchedID = holidaySchedID;
+	}
+
+	/**
+	 * Sets the seasonSchedID.
+	 * @param seasonSchedID The seasonSchedID to set
+	 */
+	public void setSeasonSchedID(Integer seasonSchedID)
+	{
+		this.seasonSchedID = seasonSchedID;
+	}
+
 }
