@@ -5,12 +5,16 @@ package com.cannontech.yc.gui;
  */
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.sql.SQLException;
+import java.awt.print.Book;
+import java.awt.print.PageFormat;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.event.TreeSelectionEvent;
 
+import com.cannontech.common.gui.util.JTextPanePrintable;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.roles.application.CommanderRole;
@@ -52,10 +56,10 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	private ClearPrintButtonPanel ivjClearPrintButtons = null;
 	private AdvancedOptionsPanel advOptsPanel = null;
 	private LocateRouteDialog locRouteDialog = null;
-	private com.cannontech.yc.gui.menu.YCCommandMenu ivjYCCommandMenu = null;
-	private com.cannontech.yc.gui.menu.YCFileMenu ivjYCFileMenu = null;
-	private com.cannontech.yc.gui.menu.YCHelpMenu ivjYCHelpMenu = null;
-	private com.cannontech.yc.gui.menu.YCViewMenu ivjYCViewMenu = null;
+	private YCCommandMenu ivjYCCommandMenu = null;
+	private YCFileMenu ivjYCFileMenu = null;
+	private YCHelpMenu ivjYCHelpMenu = null;
+	private YCViewMenu ivjYCViewMenu = null;
 	private javax.swing.JMenuBar ivjYukonCommanderJMenuBar = null;
 	private javax.swing.JPanel ivjClearPrintPanel = null;
 	private javax.swing.JScrollPane ivjDebugOutputScrollPane = null;
@@ -63,12 +67,17 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	private javax.swing.JPanel ivjExecutionPanel = null;
 	private javax.swing.JPanel ivjNavigatorPanel = null;
 	private javax.swing.JSplitPane ivjOutputSplitPane = null;
-	private javax.swing.JTextPane ivjDebugOutputTextPane = null;
-	private javax.swing.JTextPane ivjDisplayOutputTextPane = null;
 	
+	private JTextPanePrintable ivjDebugOutputTextPane = null;
+	private JTextPanePrintable ivjDisplayOutputTextPane = null;
+
 	private String popupCommand = null;
-	private final String CLEAR_OUTPUT= "Clear Output";
-	private final String PRINT_OUTPUT = "Print Output";
+	private final String CLEAR_OUTPUT_DISPLAY = "Clear Display";
+	private final String PRINT_OUTPUT_DISPLAY = "Print Display";
+
+	private final String CLEAR_OUTPUT_DEBUG = "Clear Debug";
+	private final String PRINT_OUTPUT_DEBUG = "Print Debug";
+	
 	private final String VALID_TEXT = "Valid Text";
 	private final String INVALID_TEXT = "Invalid Text";
 	private final String DISPLAY_TEXT = "Display Text";
@@ -169,8 +178,17 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 
 		else if( event.getSource() == getYCFileMenu().printMenuItem || 
 			event.getSource() == getClearPrintButtons().getPrintButton() )
+		{
 			print(getDebugOutputTextPane());
-
+			print(getDisplayOutputTextPane());			
+		}
+		else if( event.getSource() == getClearPrintButtons().getClearButton() ||
+				event.getSource() == getYCViewMenu().clearMenuItem )
+		{
+			getDebugOutputTextPane().setText("");
+			getDisplayOutputTextPane().setText("");
+		} 
+		
 		else if( event.getSource() == getYCFileMenu().saveMenuItem )
 			save(getDebugOutputTextPane());
 	
@@ -206,11 +224,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				getCGPMode().setText("");
 			}
 		}
-	
-		else if( event.getSource() == getClearPrintButtons().getClearButton() ||
-				event.getSource() == getYCViewMenu().clearMenuItem )
-			getDebugOutputTextPane().setText("");
-	
+
 		else if( event.getSource() == getYCHelpMenu().aboutMenuItem)
 			about();
 	
@@ -234,13 +248,21 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		else if( event.getSource() == getYCFileMenu().exitMenuItem )
 			exit();
 		
-		else if (event.getActionCommand().equalsIgnoreCase(CLEAR_OUTPUT))
+		else if (event.getActionCommand().equalsIgnoreCase(CLEAR_OUTPUT_DISPLAY))
 		{
 			getDisplayOutputTextPane().setText("");
 		}
-		else if( event.getActionCommand().equalsIgnoreCase(PRINT_OUTPUT))
+		else if( event.getActionCommand().equalsIgnoreCase(PRINT_OUTPUT_DISPLAY))
 		{
 			print(getDisplayOutputTextPane());
+		}
+		else if (event.getActionCommand().equalsIgnoreCase(CLEAR_OUTPUT_DEBUG))
+		{
+			getDebugOutputTextPane().setText("");
+		}
+		else if( event.getActionCommand().equalsIgnoreCase(PRINT_OUTPUT_DEBUG))
+		{
+			print(getDebugOutputTextPane());
 		}
 	}
 
@@ -614,13 +636,14 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 * @return javax.swing.JTextPane
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
-	private javax.swing.JTextPane getDebugOutputTextPane() {
+	private JTextPanePrintable getDebugOutputTextPane() {		
 		if (ivjDebugOutputTextPane == null) {
 			try {
-				ivjDebugOutputTextPane = new javax.swing.JTextPane();
+				ivjDebugOutputTextPane = new JTextPanePrintable();
 				ivjDebugOutputTextPane.setName("DebugOutputTextPane");
 				ivjDebugOutputTextPane.setBounds(0, 0, 11, 6);
 				// user code begin {1}
+				ivjDebugOutputTextPane.addMouseListener(this);				
 				// user code end
 			} catch (java.lang.Throwable ivjExc) {
 				// user code begin {2}
@@ -659,10 +682,10 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 * @return javax.swing.JTextPane
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
-	private javax.swing.JTextPane getDisplayOutputTextPane() {
+	private JTextPanePrintable getDisplayOutputTextPane() {
 		if (ivjDisplayOutputTextPane == null) {
 			try {
-				ivjDisplayOutputTextPane = new javax.swing.JTextPane();
+				ivjDisplayOutputTextPane = new JTextPanePrintable();
 				ivjDisplayOutputTextPane.setName("DisplayOutputTextPane");
 				ivjDisplayOutputTextPane.setBounds(0, 0, 11, 6);
 				// user code begin {1}
@@ -1338,14 +1361,27 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	/**
 	 * Print the graphics from printTextPane.
 	 */
-	private void print(javax.swing.JTextPane printTextPane)
+	private void print(JTextPanePrintable printTextPane)
 	{
-		java.awt.Frame parent = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
-		java.awt.PrintJob pj = java.awt.Toolkit.getDefaultToolkit().getPrintJob(parent, "YC Output", null);
-		java.awt.Graphics printGraphics = pj.getGraphics();
-		printTextPane.printAll(printGraphics);
-		printGraphics.dispose();
-		pj.end();
+		PrinterJob pj = PrinterJob.getPrinterJob();
+		
+		java.awt.print.PageFormat pf = pj.defaultPage();
+		pf.setOrientation(PageFormat.PORTRAIT);
+		printTextPane.setPageFormat(pf);		
+		Book book = new Book();
+		book.append(printTextPane, pf, printTextPane.getNumberOfPages());
+
+		if( pj.printDialog())
+		{
+			try{
+				pj.setPageable(book);
+				pj.print();
+			}
+			catch(PrinterException ex)
+			{
+				ex.printStackTrace();
+			}
+		}		
 	}
 	/**
 	 * Forces a reload of databaseCache.
@@ -1465,7 +1501,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			boolean firstTime = true;
 			for (;;)
 			{
-				java.awt.Color textColor = java.awt.Color.black;
+				java.awt.Color textColor = ycClass.getYCDefaults().getDisplayTextColor();
 				Object in;
 				debugOutput = "";
 				displayOutput = "";
@@ -1486,7 +1522,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 								debugOutput = "";
 								prevUserID = ret.getUserMessageID();
 								
-								if( firstTime && ycClass.getLoopType() != ycClass.NOLOOP)
+								if( firstTime && ycClass.getLoopType() != YC.NOLOOP)
 								{
 									displayOutput = "\n\nROUTE\t\t\tVALID\t\tERROR";
 									javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDisplayOutputTextPane(), displayOutput, textColor, true) );
@@ -1548,18 +1584,20 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	
 								if( ret.getStatus() != 0)
 								{
-									textColor = java.awt.Color.red;
+									textColor = ycClass.getYCDefaults().getInvalidTextColor();
+//									textColor = java.awt.Color.red;
 									if( ret.getExpectMore() == 0)
 										displayOutput += "N\t\t" + ret.getStatus();
 								}
 								else
 								{
-									textColor = java.awt.Color.blue;
+									textColor = ycClass.getYCDefaults().getValidTextColor();
+//									textColor = java.awt.Color.blue;
 									if( ret.getExpectMore() == 0)
 										displayOutput += "Y\t\t---";
 								}
 			
-								if( ycClass.getLoopType() != ycClass.NOLOOP)
+								if( ycClass.getLoopType() != YC.NOLOOP)
 								{
 									javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDisplayOutputTextPane(), displayOutput, textColor) );							
 								}
@@ -1586,7 +1624,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 									else if ( ycClass.sendMore > 0)
 									{
 										ycClass.sendMore--;	//decrement the number of messages to send
-										if (ycClass.getLoopType() == ycClass.LOOPLOCATE)
+										if (ycClass.getLoopType() == YC.LOOPLOCATE)
 										{
 									 		if( ycClass.getAllRoutes()[ycClass.sendMore] instanceof com.cannontech.database.data.lite.LiteYukonPAObject)
 											{
@@ -1609,7 +1647,8 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 									else
 									{
 										debugOutput = "Command cancelled\n";
-										javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDebugOutputTextPane(), debugOutput, java.awt.Color.red));
+										textColor = ycClass.getYCDefaults().getInvalidTextColor();
+										javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDebugOutputTextPane(), debugOutput, textColor));
 										getCommandPanel().getRoundButton().setBackground(java.awt.Color.green);
 									}
 								}
@@ -1860,7 +1899,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		String savedCommandFileName = ycClass.getCommandFileName().toString();
 		
 		setModelType( treeModels[getTreeViewPanel().getSortByComboBox().getSelectedIndex()] );
-		
 		setTreeItem( getTreeViewPanel().getSelectedItem());
 	
 		if (getTreeItem() == null)
@@ -1952,22 +1990,63 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	{
 		if(event.isPopupTrigger())
 		{
+			String clearCommand = "";
+			String printCommand = "";
+			if( event.getComponent() == getDebugOutputTextPane())
+			{
+				clearCommand = CLEAR_OUTPUT_DEBUG;
+				printCommand = PRINT_OUTPUT_DEBUG;
+			}
+			else if( event.getComponent() == getDisplayOutputTextPane())
+			{
+				clearCommand = CLEAR_OUTPUT_DISPLAY;
+				printCommand = PRINT_OUTPUT_DISPLAY;
+			}
 			javax.swing.JPopupMenu popup = new javax.swing.JPopupMenu("Popup Menu Test");
 			javax.swing.JMenuItem clear = new javax.swing.JMenuItem("Clear Output");
 			clear.addActionListener(this);
-			clear.setActionCommand(CLEAR_OUTPUT);
+			clear.setActionCommand(clearCommand);
 			
 			javax.swing.JMenuItem print = new javax.swing.JMenuItem("Print Output");
 			print.addActionListener(this);
-			print.setActionCommand(PRINT_OUTPUT);
+			print.setActionCommand(printCommand);
 			
 			popup.add(clear);
 			popup.add(print);
-			
-			popup.show(getDisplayOutputTextPane(), event.getX(), event.getY());
+		
+			popup.show(event.getComponent(), event.getX(), event.getY());
 			System.out.println("show popup");
 		}
-		
+/*		else if (event.getSource() == getTreeViewPanel().getTree())
+		{
+			if( event.isPopupTrigger())
+			{
+				int numItems = getCommandPanel().getAvailableCommandsComboBox().getItemCount();
+				for (int i = 1; i < numItems; i++)
+				{
+				javax.swing.JPopupMenu popup = new javax.swing.JPopupMenu("Popup Menu Test");
+				popup.add(getCommandPanel().getAvailableCommandsComboBox());
+				
+//				javax.swing.JMenuItem clear = new javax.swing.JMenuItem("Clear Output");
+//				clear.addActionListener(this);
+//				clear.setActionCommand(CLEAR_OUTPUT);
+//				
+//				javax.swing.JMenuItem print = new javax.swing.JMenuItem("Print Output");
+//				print.addActionListener(this);
+//				print.setActionCommand(PRINT_OUTPUT);
+//				
+//				popup.add(clear);
+//				popup.add(print);
+				
+				javax.swing.tree.TreePath path = getTreeViewPanel().getTree().getPathForLocation(event.getX(), event.getY());
+				if (path == null)//Path not found because
+				   return;//right click does not occur on a node or a leaf
+				getTreeViewPanel().getTree().setSelectionPath(path);
+				
+				System.out.println("show popup");
+			}
+		}
+		*/
 	}
 	
 }
