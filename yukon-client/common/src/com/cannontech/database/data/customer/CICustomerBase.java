@@ -7,7 +7,6 @@ package com.cannontech.database.data.customer;
  */
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.customer.Address;
-import com.cannontech.database.db.customer.CustomerBaseLine;
 import com.cannontech.database.db.customer.CustomerBaseLinePoint;
 import com.cannontech.database.db.customer.DeviceCustomerList;
 
@@ -16,7 +15,6 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	private com.cannontech.database.db.customer.CICustomerBase ciCustomerBase = null;
 
 	private Address customerAddress = null;
-	private CustomerBaseLine customerBaseLine = null;
 	private CustomerBaseLinePoint customerBaseLinePoint = null;
 
 	//currently, 1 customer may only belong to 1 EnergyCompany. This is null
@@ -126,8 +124,7 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		getCiCustomerBase().setMainAddressID( getAddress().getAddressID() );
 		
 		getCiCustomerBase().add();
-		getCustomerBaseLine().add();
-		
+			
 		if( getCustomerBaseLinePoint().getPointID() != null )
 			getCustomerBaseLinePoint().add();
 
@@ -168,9 +165,6 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		delete("LMEnergyExchangeCustomerReply", "CustomerID", getCustomerID() );
 		delete("LMCurtailCustomerActivity", "CustomerID", getCustomerID() );
 			
-
-
-		getCustomerBaseLine().delete();
 		getCustomerBaseLinePoint().delete();
 
 		
@@ -220,18 +214,6 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	 * Creation date: (10/18/2001 3:34:40 PM)
 	 * @return com.cannontech.database.db.device.customer.CustomerBaseLine
 	 */
-	public CustomerBaseLine getCustomerBaseLine() 
-	{
-		if( customerBaseLine == null )
-			customerBaseLine = new CustomerBaseLine();
-	
-		return customerBaseLine;
-	}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (10/18/2001 3:34:40 PM)
-	 * @return com.cannontech.database.db.device.customer.CustomerBaseLine
-	 */
 	public CustomerBaseLinePoint getCustomerBaseLinePoint() 
 	{
 		if( customerBaseLinePoint == null )
@@ -271,11 +253,8 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		super.retrieve();
 	
 		getCiCustomerBase().retrieve();
-		
-		
-		getCustomerBaseLine().retrieve();
-		getCustomerBaseLinePoint().retrieve();
 
+		getCustomerBaseLinePoint().retrieve();
 	
 		getAddress().setAddressID( getCiCustomerBase().getMainAddressID() );
 		getAddress().retrieve();
@@ -344,14 +323,6 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	 * Creation date: (10/18/2001 3:34:40 PM)
 	 * @param newCustomerBaseLine com.cannontech.database.db.customer.CustomerBaseLine
 	 */
-	public void setCustomerBaseLine(com.cannontech.database.db.customer.CustomerBaseLine newCustomerBaseLine) {
-		customerBaseLine = newCustomerBaseLine;
-	}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (10/18/2001 3:34:40 PM)
-	 * @param newCustomerBaseLine com.cannontech.database.db.customer.CustomerBaseLine
-	 */
 	public void setCustomerBaseLinePoint(CustomerBaseLinePoint newCustomerBaseLinePoint) {
 		customerBaseLinePoint = newCustomerBaseLinePoint;
 	}
@@ -364,7 +335,6 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	{
 		super.setCustomerID( custID );
 		getCiCustomerBase().setCustomerID( custID );
-		getCustomerBaseLine().setCustomerID(custID);
 		getCustomerBaseLinePoint().setCustomerID( custID );
 	}
 	
@@ -378,7 +348,6 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		super.setDbConnection(conn);
 		getCiCustomerBase().setDbConnection(conn);
 		getAddress().setDbConnection(conn);	
-		getCustomerBaseLine().setDbConnection(conn);
 		getCustomerBaseLinePoint().setDbConnection( conn );
 
 	
@@ -421,8 +390,6 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		super.update();
 		getCiCustomerBase().update();
 	
-		getCustomerBaseLine().update();
-		
 		if( getCustomerBaseLinePoint().getPointID() != null )
 			getCustomerBaseLinePoint().update();
 	
