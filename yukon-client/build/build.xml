@@ -69,6 +69,7 @@
         <ant dir="${calchist}" target="${dotarget}" />
         <ant dir="${export}" target="${dotarget}" />
         <ant dir="${trending}" target="${dotarget}" />
+		<ant dir="${report}" target="${dotarget}"/>        
     	<ant dir="${esub}" target="${dotarget}"/>
         <ant dir="${tdc}" target="${dotarget}" />
         <ant dir="${monitor}" target="${dotarget}" />
@@ -85,7 +86,6 @@
         <ant dir="${tools}" target="${dotarget}" />
 		<ant dir="${servlet}" target="${dotarget}"/>
         <ant dir="${stars}" target="${dotarget}"/>
-		<ant dir="${report}" target="${dotarget}"/>
         <ant dir="${notification}" target="${dotarget}"/>
         <ant dir="${resource}" target="${dotarget}"/>
         <ant dir="${services}" target="${dotarget}"/>
