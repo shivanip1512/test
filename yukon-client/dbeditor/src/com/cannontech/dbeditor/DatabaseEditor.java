@@ -305,8 +305,7 @@ public void actionPerformed(ActionEvent event)
 			f.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 			
 			//refresh the cache and the connections state
-			//com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
-			com.cannontech.database.cache.DefaultDatabaseCache.getInstance().loadAllCache();
+			com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
 
 			if( getConnToDispatch().isValid() )
 			{

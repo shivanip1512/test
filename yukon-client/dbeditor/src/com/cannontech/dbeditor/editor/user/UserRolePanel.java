@@ -556,8 +556,10 @@ private void initConnections() throws java.lang.Exception {
 						getJTextPaneDescription().setText(
 							ly.getDescription() );
 
+/* ** FIX ME *
 						getJTextFieldDefaultValue().setText(
 							ly.getDefaultValue() );
+*/
 
 						getJTextFieldValue().setText(
 							( CtiUtilities.STRING_NONE.equals( ((RoleNode)node).getUserValue() )
@@ -706,6 +708,8 @@ public static void main(java.lang.String[] args) {
 	{
 		if( o == null )
 			return;
+
+/* ** FIX ME *
 	
 		YukonUser login = (YukonUser)o;
 	
@@ -760,7 +764,8 @@ public static void main(java.lang.String[] args) {
 			updateSelectionCountNodes();
 		}
 			
-			
+*/
+	
 	}
 	
 	
