@@ -12,7 +12,7 @@ package com.cannontech.database.db.tags;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class Tag extends com.cannontech.database.db.DBPersistent 
+public class Tag extends com.cannontech.database.db.DBPersistent implements com.cannontech.common.editor.EditorPanel
 {	
 	private Integer tagID = null;
 	private String tagName = null;
@@ -29,7 +29,7 @@ public class Tag extends com.cannontech.database.db.DBPersistent
 
    public static final String CONSTRAINT_COLUMNS[] = { "TagID" };
 
-   private static final String TABLE_NAME = "Tag";
+   private static final String TABLE_NAME = "Tags";
 /**
  * StateGroup constructor comment.
  */
@@ -138,11 +138,11 @@ public void retrieve()
 	
 		if( results.length == SETTER_COLUMNS.length )
 		{
-			setTagName( (String) results[1] );
-			setTagLevel( (Integer) results[2] );
-			setInhibit( (Character) results[3] );
-			setColorID( (Integer) results[4] );
-			setImageID( (Integer) results[5] );
+			setTagName( (String) results[0] );
+			setTagLevel( (Integer) results[1] );
+			setInhibit( (Character) results[2] );
+			setColorID( (Integer) results[3] );
+			setImageID( (Integer) results[4] );
 		}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
