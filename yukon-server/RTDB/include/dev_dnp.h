@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/04/14 16:39:01 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/05/04 21:38:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,10 +39,15 @@ private:
 
     dnp_accumulator_pointdata_map _lastIntervalAccumulatorData;
 
+    bool _scanGeneralPending, _scanIntegrityPending, _scanAccumulatorPending;
+
 protected:
 
     CtiProtocolDNP        _dnp;
     CtiTableDeviceAddress _dnpAddress;
+
+    void setDNPScanPending( int scantype, bool pending );
+    void resetDNPScansPending( void );
 
 public:
 
@@ -62,6 +67,9 @@ public:
 
     //  virtual in case devices need to form up different DNP requests for the same command ("control open", for example)
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+
+    virtual bool clearedForScan( int scantype );
+    virtual void resetForScan  ( int scantype );
 
     virtual INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
     virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);

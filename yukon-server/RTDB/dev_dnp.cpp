@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2004/04/14 16:39:00 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2004/05/04 21:38:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,10 @@ using namespace std;
 #include "cparms.h"
 
 
-CtiDeviceDNP::CtiDeviceDNP() {}
+CtiDeviceDNP::CtiDeviceDNP()
+{
+    resetDNPScansPending();
+}
 
 CtiDeviceDNP::CtiDeviceDNP(const CtiDeviceDNP &aRef)
 {
@@ -72,10 +75,114 @@ CtiProtocolBase *CtiDeviceDNP::getProtocol() const
 }
 
 
+void CtiDeviceDNP::resetDNPScansPending( void )
+{
+    _scanGeneralPending     = false;
+    _scanIntegrityPending   = false;
+    _scanAccumulatorPending = false;
+}
+
+
+void CtiDeviceDNP::setDNPScanPending(int scantype, bool pending)
+{
+    switch(scantype)
+    {
+        case ScanRateGeneral:   _scanGeneralPending     = pending;  break;
+        case ScanRateIntegrity: _scanIntegrityPending   = pending;  break;
+        case ScanRateAccum:     _scanAccumulatorPending = pending;  break;
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+}
+
+
+bool CtiDeviceDNP::clearedForScan(int scantype)
+{
+    bool status = false;
+
+    if( useScanFlags() )
+    {
+        switch(scantype)
+        {
+            case ScanRateGeneral:
+            {
+                status = !_scanGeneralPending;
+                break;
+            }
+            case ScanRateIntegrity:
+            {
+                status = !_scanIntegrityPending;
+                break;
+            }
+            case ScanRateAccum:
+            {
+                status = !_scanAccumulatorPending;  //  MSKF 2003-01-31 true; // CGP 032101  (!isScanFreezePending()  && !isScanResetting());
+                break;
+            }
+            case ScanRateLoadProfile:
+            {
+               status = true;
+               break;
+            }
+        }
+
+        status = validatePendingStatus(status, scantype);
+    }
+    else
+    {
+        status = true;
+    }
+
+    return status;
+}
+
+
+void CtiDeviceDNP::resetForScan(int scantype)
+{
+    // OK, it is five minutes past the time I expected to have scanned this bad boy..
+    switch(scantype)
+    {
+        case ScanRateGeneral:
+        case ScanRateIntegrity:
+        case ScanRateAccum:
+        {
+            setDNPScanPending(scantype, false);
+
+            if(isScanFreezePending())
+            {
+                resetScanFreezePending();
+                setScanFreezeFailed();
+            }
+
+            if(isScanPending())
+            {
+                resetScanPending();
+            }
+
+            if(isScanResetting())
+            {
+                resetScanResetting();
+                setScanResetFailed();
+            }
+            break;
+        }
+    }
+}
+
+
+
 INT CtiDeviceDNP::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
+
+    setDNPScanPending(ScanRateGeneral, true);
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
@@ -84,6 +191,7 @@ INT CtiDeviceDNP::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
     }
 
     pReq->setCommandString("scan general");
+    pReq->setMessagePriority(ScanPriority);
 
     status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
 
@@ -102,6 +210,8 @@ INT CtiDeviceDNP::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
     INT status = NORMAL;
     CtiCommandParser newParse("scan integrity");
 
+    setDNPScanPending(ScanRateIntegrity, true);
+
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -109,6 +219,7 @@ INT CtiDeviceDNP::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
     }
 
     pReq->setCommandString("scan integrity");
+    pReq->setMessagePriority(ScanPriority);
 
     status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
 
@@ -401,6 +512,7 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     OutMessage->Port     = getPortID();
     OutMessage->DeviceID = getID();
     OutMessage->TargetID = getID();
+    EstablishOutMessagePriority(OutMessage, pReq->getMessagePriority());
 
     if( nRet == NoError )
     {
@@ -423,7 +535,7 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         //  just to make sure the "sbo_operate" token isn't cropped off
         CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(*pReq);
 
-        //newReq->setMessagePriority(MAXPRIORITY - 1);
+        newReq->setMessagePriority(MAXPRIORITY - 1);
         newReq->setCommandString(newRequestStr);
 
         CtiCommandParser parse(newReq->CommandString());
@@ -457,13 +569,17 @@ INT CtiDeviceDNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         switch( _dnp.getCommand() )
         {
             case CtiProtocolDNP::DNP_Class0Read:
-            case CtiProtocolDNP::DNP_Class123Read:
             case CtiProtocolDNP::DNP_Class1230Read:
+            {
+                setDNPScanPending(ScanRateIntegrity, false);
+                break;
+            }
+            case CtiProtocolDNP::DNP_Class123Read:
             case CtiProtocolDNP::DNP_Class1Read:
             case CtiProtocolDNP::DNP_Class2Read:
             case CtiProtocolDNP::DNP_Class3Read:
             {
-                resetScanPending();
+                setDNPScanPending(ScanRateGeneral, false);
                 break;
             }
             case CtiProtocolDNP::DNP_SetDigitalOut_SBO_SelectOnly:
