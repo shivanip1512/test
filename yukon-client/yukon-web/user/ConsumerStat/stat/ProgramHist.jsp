@@ -53,10 +53,10 @@ function setRedirect(form) {
               <br>
               <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr bgcolor="#FFFFFF"> 
-                  <td width="110" class="HeaderCell"> 
+                  <td width="150" class="HeaderCell"> 
                     <div align="center">Enrolled Programs</div>
                   </td>
-                  <td width="302" class="HeaderCell"> 
+                  <td width="262" class="HeaderCell"> 
                     <div align="center">Today's <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROL %>" format="capital"/> History</div>
                   </td>
                   <td width="180" class="HeaderCell"> 
@@ -77,19 +77,19 @@ function setRedirect(form) {
 		}
 %>
                 <tr bgcolor="#FFFFFF"> 
-                  <td width="110"> 
+                  <td width="150"> 
                     <div align="center">
 <% if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
 					  <img src="../../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
-<% } %>
-                      <span class="TableCell"><%= program.getProgramName() %></span> 
+                      <% } %>
+                      <span class="TableCell"><%= program.getProgramName() %></span><br>
                     </div>
                   </td>
-                  <td width="302" valign="top"> 
-<%
+                  <td width="262" valign="top"> 
+                    <%
 		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
 %>
-					<div align="center" class="TableCell">Out of Service</div>
+                    <div align="center" class="TableCell">Out of Service</div>
 <%
 		}
 		else {

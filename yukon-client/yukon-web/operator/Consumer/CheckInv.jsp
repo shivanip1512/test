@@ -112,7 +112,19 @@
                   </tr>
                 </table>
 <%	}
-	else if (liteInv.getAccountID() != account.getAccountID()) {
+	else if (account != null && liteInv.getAccountID() == account.getAccountID()) {
+%>
+                <p class="ErrorMsg">The hardware or device is already assigned 
+                  to this account.</p>
+                <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
+                  <tr> 
+                    <td align="center"> 
+                      <input type="button" name="OK" value="OK" onclick="history.back()">
+                    </td>
+                  </tr>
+                </table>
+<%	}
+	else {
 		LiteStarsCustAccountInformation liteAcctInfo = ec.getBriefCustAccountInfo(liteInv.getAccountID(), true);
 		LiteContact liteContact = ec.getContact(liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo);
 		LiteAddress liteAddr = ec.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
@@ -140,18 +152,6 @@
                     </td>
                     <td width="100"> 
                       <input type="button" name="No" value="No" onclick="history.back()">
-                    </td>
-                  </tr>
-                </table>
-<%	}
-	else {
-%>
-                <p class="ErrorMsg">The hardware or device is already assigned 
-                  to this account.</p>
-                <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
-                  <tr> 
-                    <td align="center"> 
-                      <input type="button" name="OK" value="OK" onclick="history.back()">
                     </td>
                   </tr>
                 </table>

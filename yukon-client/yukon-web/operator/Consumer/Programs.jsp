@@ -74,8 +74,9 @@
 <% } %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
-			  <%@ include file="../../include/program_enrollment.jsp" %>
+              <%@ include file="../../include/program_enrollment.jsp" %>
 <% if (request.getParameter("Wizard") == null) { %>
+              <br>
               <div align="center" class="SubtitleHeader">Program History</div>
               <table width="366" border="1" cellspacing="0" align="center" cellpadding="3">
                 <tr> 

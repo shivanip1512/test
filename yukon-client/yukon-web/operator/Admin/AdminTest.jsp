@@ -246,7 +246,7 @@ function removeAllMembers(form) {
 <%
 		for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
 			StarsEnrLMProgram program = category.getStarsEnrLMProgram(j);
-			String[] dispNames = program.getStarsWebConfig().getAlternateDisplayName().split(",");
+			String[] dispNames = ServerUtils.splitString(program.getStarsWebConfig().getAlternateDisplayName(), ",");
 			String progAlias = "";
 			if (dispNames.length > 0) {
 				progAlias += "(";

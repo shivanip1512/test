@@ -1,5 +1,9 @@
 <%
+/* Required parameters:
+ * inWizard: boolean
+ */
 	boolean isOperator = ServerUtils.isOperator(user);
+	String inWizardStr = (inWizard)? "&Wizard=true" : "";
 %>
 
 <script language="JavaScript">
@@ -185,7 +189,7 @@ function confirmSubmit(form) {
                                     <td width="3%">&nbsp;</td>
                                     <td class="TableCell">&nbsp;</td>
                                     <td class="TableCell" width="17%" align="right" valign="top"> 
-                                      <input type="button" name="Details" value="Details" onclick="location.href='ProgramDetails.jsp?Cat=<%= i %>'">
+                                      <input type="button" name="Details" value="Details" onclick="location.href='ProgramDetails.jsp?Cat=<%= i %><%= inWizardStr %>'">
                                     </td>
                                   </tr>
 <%
@@ -237,7 +241,7 @@ function confirmSubmit(form) {
                                       </table>
                                     </td>
                                     <td class="TableCell" width="17%" align="right" valign="top"> 
-                                      <input type="button" name="Details" value="Details" onclick="location.href='ProgramDetails.jsp?Cat=<%= i %>&Prog=<%= j %>'">
+                                      <input type="button" name="Details" value="Details" onclick="location.href='ProgramDetails.jsp?Cat=<%= i %>&Prog=<%= j %><%= inWizardStr %>'">
                                     </td>
                                   </tr>
 <%
@@ -293,10 +297,18 @@ function confirmSubmit(form) {
                     <table width="50%" border="0">
                       <tr> 
                         <td align = "right"> 
+<% if (inWizard) { %>
+                          <input type="submit" name="Done" value="Done">
+<% } else { %>
                           <input type="submit" name="Submit" value="Submit">
+<% } %>
                         </td>
                         <td> 
+<% if (inWizard) { %>
+                          <input type="button" name="Cancel" value="Cancel" onclick="location.href='../Operations.jsp'">
+<% } else { %>
                           <input type="reset" name="Reset" value="Reset">
+<% } %>
                         </td>
                       </tr>
                     </table>

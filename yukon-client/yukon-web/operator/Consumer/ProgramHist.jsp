@@ -39,16 +39,16 @@
               <br>
               <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr bgcolor="#FFFFFF"> 
-                  <td width="162" class="HeaderCell"> 
+                  <td width="110" class="HeaderCell"> 
                     <div align="center">Enrolled Programs</div>
                   </td>
-                  <td width="332" class="HeaderCell"> 
+                  <td width="200" class="HeaderCell"> 
                     <div align="center">Today's <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/> History</div>
                   </td>
-                  <td width="332" class="HeaderCell"> 
+                  <td width="150" class="HeaderCell"> 
                     <div align="center"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/> History Summary</div>
                   </td>
-                  <td width="332" class="HeaderCell">
+                  <td width="130" class="HeaderCell"> 
                     <div align="center">Complete <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/> History</div>
                   </td>
                 </tr>
@@ -65,19 +65,19 @@
 		}
 %>
                 <tr bgcolor="#FFFFFF"> 
-                  <td width="162"> 
+                  <td width="110"> 
                     <div align="center">
 <% if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
 					  <img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
-<% } %>
-					  <span class="TableCell"><%= program.getProgramName() %></span>
-					</div>
+                      <% } %>
+                      <span class="TableCell"><%= program.getProgramName() %></span><br>
+                    </div>
                   </td>
-                  <td width="332" valign="top">
-<%
+                  <td width="200" valign="top"> 
+                    <%
 		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
 %>
-					<div align="center" class="TableCell">Out of Service</div>
+                    <div align="center" class="TableCell">Out of Service</div>
                     <%
 		}
 		else {
@@ -146,7 +146,7 @@
 		ControlSummary summary = program.getStarsLMControlHistory().getControlSummary();
 		if (summary == null) summary = new ControlSummary();
 %>
-                  <td width="332" valign="top"> 
+                  <td width="150" valign="top"> 
                     <table width="150" border="0" cellspacing="0" bgcolor="white" cellpadding="2" align="center">
                       <tr> 
                         <td height="23" class="TableCell" width="117">Today</td>
@@ -166,8 +166,8 @@
                       </tr>
                     </table>
                   </td>
-                  <td width="332"> 
-					<form method="POST" action="ContHist.jsp">
+                  <td width="130"> 
+                    <form method="POST" action="ContHist.jsp">
 					<input type="hidden" name="prog" value="<%= i %>">
                     <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">
                       <tr> 
