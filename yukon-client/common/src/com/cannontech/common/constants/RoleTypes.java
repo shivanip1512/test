@@ -82,6 +82,7 @@ public interface RoleTypes {
 	public static final int CONSUMERINFO_ADMIN_CHANGE_PASSWORD = -176;
 	public static final int CONSUMERINFO_THERMOSTAT = -177;
 	public static final int CONSUMERINFO_QUESTIONS = -178;
+	public static final int CONSUMERINFO_RESIDENCE = -179;
 
 	//Esub category
 	public static final int ESUBVIEW = -200;
