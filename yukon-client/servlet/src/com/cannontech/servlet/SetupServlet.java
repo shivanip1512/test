@@ -59,7 +59,7 @@ public class SetupServlet extends HttpServlet
 	//jdbc:oracle:thin:@10.100.1.76:1521:preprod
 	
 	static final String FOOTER_TEXT = LF + LF +
-		"---------------- Some Sample driver URL stringes ---------" + LF +
+		"---------------- Some Sample driver URL strings ----------" + LF +
 		"#---------------------------------------------------------#" + LF +
 		"#- OpenSource SqlServer JDBC native driver URL           -#" + LF +
 		"#-   (Recommended driver if using SQLServer)             -#" + LF +
@@ -120,15 +120,13 @@ public class SetupServlet extends HttpServlet
 				try
 				{
 					DefaultDatabaseCache.getInstance().releaseAllCache();
-		
-//					DefaultDatabaseCache.getInstance().getAllYukonUsers();
-//					DefaultDatabaseCache.getInstance().getAllYukonRoles();
-//					DefaultDatabaseCache.getInstance().getAllYukonRoleProperties();
-//					DefaultDatabaseCache.getInstance().getAllYukonGroups();
+
+					//restart tomcat servlets here maybe?
+					//This seems to happen automatically by modifying the resource (db.properties)
+					String server = "http://localhost:8080/mgr/reload?path=/";
 				}
 				catch( Exception ex) {}
 			
-				//restart tomcat servlets here maybe?
 			}
 			
 		}
@@ -191,7 +189,6 @@ public class SetupServlet extends HttpServlet
 				}				
 			}
 		}
-
 
 		resp.sendRedirect( retPage + urlParams.toString() );	
 	}
@@ -326,10 +323,7 @@ public class SetupServlet extends HttpServlet
 			// wants to edit the file directly
 			fw.write( FOOTER_TEXT );
 
-			fw.flush();
-			
-			//lets have the pool reset itself
-			PoolManager.getInstance().resetPool();			
+			fw.flush();			
 		}
 		finally
 		{
@@ -340,7 +334,10 @@ public class SetupServlet extends HttpServlet
 			catch ( IOException io )
 			{}
 		}
-					
+
+
+		//lets have the pool reset itself
+		PoolManager.getInstance().resetPool();					
 	
 		return true;  //wrote the file	
 	}
