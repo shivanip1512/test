@@ -1157,7 +1157,46 @@ public void operationalStateComboBox_ActionPerformed(java.awt.event.ActionEvent 
 		setDevicePointComboVisible( false );
 	}
 	else
+	{
 		setDevicePointComboVisible( true );
+		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		synchronized(cache)
+		{
+			java.util.List devices = cache.getAllUnusedCCDevices();
+		
+			ArrayList lstToAdd = new ArrayList( devices.size() );
+			java.util.List points = cache.getAllPoints();
+
+			int deviceID;
+			LiteYukonPAObject liteDevice = null;
+			LitePoint litePoint = null;
+
+			for( int i = 0; i < points.size(); i++ )
+			{
+				litePoint = (LitePoint)points.get(i);
+			
+				liteDevice = PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() );
+
+				if( litePoint.getPointType() == PointTypes.STATUS_POINT )
+				{
+					//expensive to call the contains() method, that is why we do this lastly
+					if( devices.contains(liteDevice) ) //only add this device if it is not already used
+						lstToAdd.add( liteDevice );
+				}
+			
+			}
+		
+			if( lstToAdd.size() > 0 )
+			{
+				java.util.Collections.sort( lstToAdd, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
+				for( int i = 0; i < lstToAdd.size(); i++ )
+					getControlDeviceComboBox().addItem( lstToAdd.get(i) );
+					
+				ArrayList pts = (ArrayList)
+					DeviceFuncs.getAllLiteDevicesWithPoints().get(getControlDeviceComboBox().getSelectedItem());
+			}
+		}
+	}
 		
 	return;
 }
