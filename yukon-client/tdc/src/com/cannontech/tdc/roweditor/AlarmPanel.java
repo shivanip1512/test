@@ -12,12 +12,12 @@ import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.tdc.commandevents.ClearAlarm;
 
+
 public class AlarmPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.util.Observer {
 	private JPanel parentPanel = null;
 	private java.util.Observable observingData = null;
 	private long pointID = -1;
 	private javax.swing.JButton ivjJButtonAck = null;
-	private javax.swing.JButton ivjJButtonClearAlarm = null;
 	private javax.swing.JLabel ivjJLabelDescription = null;
 	private javax.swing.JLabel ivjJLabelUser = null;
 	private javax.swing.JPanel ivjJPanelJButtons = null;
@@ -60,8 +60,6 @@ public AlarmPanel(boolean isDoubleBuffered) {
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
-	if (e.getSource() == getJButtonClearAlarm()) 
-		connEtoC1(e);
 	if (e.getSource() == getJButtonAck()) 
 		connEtoC2(e);
 	// user code begin {2}
@@ -134,28 +132,7 @@ private javax.swing.JButton getJButtonAck() {
 	}
 	return ivjJButtonAck;
 }
-/**
- * Return the JButtonClearAlarm property value.
- * @return javax.swing.JButton
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JButton getJButtonClearAlarm() {
-	if (ivjJButtonClearAlarm == null) {
-		try {
-			ivjJButtonClearAlarm = new javax.swing.JButton();
-			ivjJButtonClearAlarm.setName("JButtonClearAlarm");
-			ivjJButtonClearAlarm.setMnemonic('C');
-			ivjJButtonClearAlarm.setText("Clear");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJButtonClearAlarm;
-}
+
 /**
  * Return the JLabelDescription property value.
  * @return javax.swing.JLabel
@@ -254,11 +231,6 @@ private javax.swing.JPanel getJPanelJButtons() {
 			ivjJPanelJButtons.setName("JPanelJButtons");
 			ivjJPanelJButtons.setLayout(new java.awt.GridBagLayout());
 
-			java.awt.GridBagConstraints constraintsJButtonClearAlarm = new java.awt.GridBagConstraints();
-			constraintsJButtonClearAlarm.gridx = 1; constraintsJButtonClearAlarm.gridy = 1;
-			constraintsJButtonClearAlarm.ipadx = 6;
-			constraintsJButtonClearAlarm.insets = new java.awt.Insets(4, 4, 3, 2);
-			getJPanelJButtons().add(getJButtonClearAlarm(), constraintsJButtonClearAlarm);
 
 			java.awt.GridBagConstraints constraintsJButtonAck = new java.awt.GridBagConstraints();
 			constraintsJButtonAck.gridx = 2; constraintsJButtonAck.gridy = 1;
@@ -315,7 +287,6 @@ private void handleException(java.lang.Throwable exception) {
 private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 	// user code end
-	getJButtonClearAlarm().addActionListener(this);
 	getJButtonAck().addActionListener(this);
 }
 /**

@@ -90,13 +90,16 @@ public boolean equals(Object o)
 }
 
 
-/**
- * Insert the method's description here.
- * Creation date: (4/12/00 12:56:16 PM)
- * Version: <version>
- * @return boolean
- */
-public static boolean isReadOnlyDisplay( long displayNum ) 
+public static synchronized boolean isHistoryDisplay( long displayNum ) 
+{
+	return 
+		displayNum == Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER 
+		|| displayNum == Display.EVENT_VIEWER_DISPLAY_NUMBER
+		|| displayNum == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER
+		|| isAlarmDisplay(displayNum);
+}
+
+public static synchronized boolean isReadOnlyDisplay( long displayNum ) 
 {
 	return 
 		displayNum == Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER 
@@ -104,7 +107,7 @@ public static boolean isReadOnlyDisplay( long displayNum )
 		|| displayNum == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER;
 }
 
-public static boolean isTodaysDisplay( Date date_ )
+public static synchronized boolean isTodaysDisplay( Date date_ )
 {
 	GregorianCalendar newCal = new GregorianCalendar();
 	GregorianCalendar todayCal = new GregorianCalendar();
@@ -114,6 +117,38 @@ public static boolean isTodaysDisplay( Date date_ )
 	return 
 		 newCal.get(GregorianCalendar.DAY_OF_YEAR) == todayCal.get( GregorianCalendar.DAY_OF_YEAR )
 		 && newCal.get(GregorianCalendar.YEAR) == todayCal.get( GregorianCalendar.YEAR );
+}
+
+public static synchronized boolean isAlarmDisplay( long displayNum ) 
+{
+	return( displayNum >= Display.GLOBAL_ALARM_DISPLAY &&
+				displayNum <= Display.LAST_ALARM_DISPLAY );
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (4/18/00 1:44:35 PM)
+ * Version: <version>
+ */
+public static synchronized boolean isCoreType( String displayType )
+{
+	if( displayType == null )
+		return false;
+		
+	return ( Display.getDisplayTypeIndexByType(displayType) == Display.ALARMS_AND_EVENTS_TYPE_INDEX);
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (4/18/00 1:44:35 PM)
+ * Version: <version>
+ */
+public static synchronized boolean isUserDefinedType( String displayType ) 
+{
+	if( displayType == null )
+		return false;
+
+	return ( Display.getDisplayTypeIndexByType(displayType) == Display.CUSTOM_DISPLAYS_TYPE_INDEX );
 }
 
 /**

@@ -13,12 +13,14 @@ public class ObservedPointDataChange
 	private boolean rowAlarmed = false;
 	private int tags = -1;
 
+	//all possible values that may change and we want to observe
 	public final static int POINT_VALUE_TYPE = 1;
 	public final static int POINT_QUALITY_TYPE = 2;
 	public final static int POINT_TIMESTAMP_TYPE = 3;
 	public final static int POINT_TAG_TYPE = 4;
 	public final static int POINT_STATE = 5;
-	
+	public final static int POINT_IMAGE = 6;
+
 /**
  * ObservedChange constructor comment.
  */

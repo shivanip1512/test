@@ -37,7 +37,7 @@ class TDCDBChangeHandler
 				for( int i = 0; i < tdcPan.getTableDataModel().getRowCount(); i++ )
 				{
 					if( msg.getDatabase() == DBChangeMsg.CHANGE_POINT_DB )
-						found |= (tdcPan.getTableDataModel().getPointValue(i).getPointData().getId() 
+						found |= (tdcPan.getTableDataModel().getPointValue(i).getPointID() 
 									 == msg.getId());
 	
 					if( msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB )

@@ -5,21 +5,36 @@ package com.cannontech.tdc;
  * Creation date: (2/2/00 4:31:00 PM)
  * @author: 
  */
+import java.util.Date;
+
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 
 public class PointValues 
 {
+	//pointData can NOT be null
 	private PointData pointData = null;
 
-	private Object deviceName = null;
-	private Object pointState = null;
-	private Object deviceType = null;
-	private Object deviceCurrentState = null;
-	private int deviceID = 0;
-	private Integer decimalPlaces = null;
+	//signal can be null 
+	private Signal signal = null;
+
+	private int pointID = -1;
+	private Date timeStamp = null;
+	private int soeTag = 0;
+	private long tags = 0;
+	private String pointType = null;
 	
+
+	//device data
+	private String deviceName = null;
+	private String deviceType = null;
+	private int deviceID = 0;
+
+	//point data	
 	private String pointName = null;
+	private String pointState = null;
+	private Integer decimalPlaces = null;
 	private String[] foregroundColors = null;
 	private String[] pointMessages = null;
 	private String[] pointRawStates = null;
@@ -37,7 +52,6 @@ public class PointValues
 
 	private int originalBackgroundColor = 0;
 
-
 /**
  * PointValues constructor comment.
  * Used to make dummy pointValues ONLY
@@ -48,15 +62,15 @@ public PointValues( int pointid, int ptType, String ptName, String[] colors,
 	this( colors, messages, rawstate, bgColor, imgIDs, colorCount );
 
 	pointName = ptName;
-	pointData = new PointData();	
-	pointData.setId( pointid );
-	pointData.setType( ptType );
+	setPointData( new PointData() );	
+	getPointData().setId( pointid );
+	getPointData().setType( ptType );
 }
 
 /**
  * PointValues constructor comment.
  */
-public PointValues( String[] colors, String[] messages, 
+protected PointValues( String[] colors, String[] messages, 
 			String[] rawstate, String[] bgColor, int[] imgIDs, int colorCount ) 
 {
 	super();
@@ -88,8 +102,8 @@ public PointValues( String[] colors, String[] messages,
  * Used to make temporary pointValues ONLY, note: all the color fields and PointData
  * fields are still NULL after creation
  ***/
-public PointValues( int pointid, Object ptType, Object ptName, Object devName, 
-					Object ptState, Object devType, Object devCurrentState, int devId ) 
+public PointValues( int pointid, String ptType, String ptName, String devName, 
+			String ptState, String devType, int devId ) 
 {
 	super();
 	
@@ -97,55 +111,59 @@ public PointValues( int pointid, Object ptType, Object ptName, Object devName,
 	deviceName = devName.toString();
 	pointState = ptState.toString();
 	deviceType = devType.toString();
-	deviceCurrentState = devCurrentState.toString();
 	deviceID = devId;
 	
-	pointData = new PointData();	
-	pointData.setTime( new java.util.Date() );
-	pointData.setId( pointid );
-	pointData.setType( com.cannontech.database.data.point.PointTypes.getType(ptType.toString()) );
+	setPointData( new PointData() );	
+	getPointData().setTime( new java.util.Date() );
+	getPointData().setId( pointid );
+	getPointData().setType( PointTypes.getType(ptType.toString()) );
 }
 
 
 
 /**
  * PointValues constructor comment.
+ * USED TO MAKE A NEW POINTVALUE FROM A PREVIOUS EXISTING POINTVALUE
  */
-// USED TO MAKE A NEW POINTVALUE FROM A PREVIOUS EXISTING POINTVALUE
 public PointValues( PointValues point, String[] colors, String[] messages, 
 			String[] rawstate, String[] bgColor, int[] imgIDs, int colorCount ) 
 {
 	this( colors, messages, rawstate, bgColor, imgIDs, colorCount );
 	
-	pointData = new PointData();	
-	pointData.setTime( new java.util.Date() );
-	pointData.setId( point.getPointData().getId() );
-	pointData.setType( point.getPointData().getType() );
+	setPointData( new PointData() );	
+	getPointData().setTime( new java.util.Date() );
+	getPointData().setId( point.getPointData().getId() );
+	getPointData().setType( point.getPointData().getType() );
+
 	deviceName = point.getDeviceName();
 	pointState = point.getPointState();
 	deviceType = point.getDeviceType();
-	deviceCurrentState = point.getDeviceCurrentState();
 	deviceID = point.getDeviceID();
 	pointName = point.getPointName();
 	decimalPlaces = point.getDecimalPlaces();
+	
+	setSignal( point.getSignal() );
 }
 
 /**
  * PointValues constructor comment.
+ * Used to make PSUEDO pointValues ONLY
  */
-// Used to make PSUEDO pointValues ONLY
-public PointValues( Signal signal, int ptType, String ptName, String[] colors, 
+public PointValues( Signal signal_, int ptType, String ptName, String[] colors, 
 			String[] messages, String[] rawstate, String[] bgColor, int[] imgIDs, int colorCount ) 
 {
 	this( colors, messages, rawstate, bgColor, imgIDs, colorCount );
 
 	pointName = ptName;
-	pointData = new PointData();
-	pointData.setTime( new java.util.Date() );		
-	pointData.setId( signal.getId() );
-	pointData.setType( ptType );
-	pointData.setTime( new java.util.Date() );
-	pointData.setTags( signal.getTags() );
+
+	setPointData( new PointData() );
+	getPointData().setTime( new java.util.Date() );		
+	getPointData().setId( signal_.getId() );
+	getPointData().setType( ptType );
+	getPointData().setTime( new java.util.Date() );
+	getPointData().setTags( signal_.getTags() );
+	
+	setSignal( signal_ );
 }
 
 /**
@@ -227,14 +245,7 @@ public int getCurrentForegroundColor()
 public Integer getDecimalPlaces() {
 	return decimalPlaces;
 }
-/**
- * Insert the method's description here.
- * Creation date: (8/15/00 5:14:11 PM)
- * @return java.lang.Object
- */
-public java.lang.Object getDeviceCurrentState() {
-	return deviceCurrentState;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (8/15/00 5:14:11 PM)
@@ -248,7 +259,7 @@ public int getDeviceID() {
  * Creation date: (8/15/00 5:14:11 PM)
  * @return java.lang.Object
  */
-public java.lang.Object getDeviceName() {
+public String getDeviceName() {
 	return deviceName;
 }
 /**
@@ -256,7 +267,7 @@ public java.lang.Object getDeviceName() {
  * Creation date: (8/15/00 5:14:11 PM)
  * @return java.lang.Object
  */
-public java.lang.Object getDeviceType() {
+public String getDeviceType() {
 	return deviceType;
 }
 /**
@@ -271,11 +282,12 @@ public int getOriginalBackgroundColor()
 /**
  * Insert the method's description here.
  * Creation date: (8/15/00 4:58:43 PM)
- * @return com.cannontech.message.dispatch.message.PointData
+ * @return PointData
  */
-public com.cannontech.message.dispatch.message.PointData getPointData() {
+private PointData getPointData() {
 	return pointData;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (2/2/00 4:59:47 PM)
@@ -290,7 +302,7 @@ public String getPointName()
  * Creation date: (8/16/00 10:18:48 AM)
  * @return java.lang.Object
  */
-public java.lang.Object getPointState() {
+public String getPointState() {
 	return pointState;
 }
 /**
@@ -393,14 +405,7 @@ public void setCurrentRowColor( String fg, String bg, String text )
 public void setDecimalPlaces(Integer newDecimalPlaces) {
 	decimalPlaces = newDecimalPlaces;
 }
-/**
- * Insert the method's description here.
- * Creation date: (8/15/00 5:14:11 PM)
- * @param newDeviceCurrentState java.lang.Object
- */
-public void setDeviceCurrentState(java.lang.Object newDeviceCurrentState) {
-	deviceCurrentState = newDeviceCurrentState;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (8/15/00 5:14:11 PM)
@@ -414,7 +419,7 @@ public void setDeviceID(int newDeviceID) {
  * Creation date: (8/15/00 5:14:11 PM)
  * @param newDeviceName java.lang.Object
  */
-public void setDeviceName(java.lang.Object newDeviceName) {
+public void setDeviceName(String newDeviceName) {
 	deviceName = newDeviceName;
 }
 /**
@@ -422,23 +427,28 @@ public void setDeviceName(java.lang.Object newDeviceName) {
  * Creation date: (8/15/00 5:14:11 PM)
  * @param newDeviceType java.lang.Object
  */
-public void setDeviceType(java.lang.Object newDeviceType) {
+public void setDeviceType(String newDeviceType) {
 	deviceType = newDeviceType;
 }
 /**
  * Insert the method's description here.
  * Creation date: (8/15/00 4:58:43 PM)
- * @param newPointData com.cannontech.message.dispatch.message.PointData
+ * @param newPointData PointData
  */
-public void setPointData(com.cannontech.message.dispatch.message.PointData newPointData) {
+public void setPointData(PointData newPointData) 
+{
+	if( newPointData == null )
+		throw new IllegalStateException("A setter PointData method can not take a null value");
+
 	pointData = newPointData;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (8/16/00 10:18:48 AM)
  * @param newPointState java.lang.Object
  */
-public void setPointState(java.lang.Object newPointState) {
+public void setPointState(String newPointState) {
 	pointState = newPointState;
 }
 /**
@@ -464,4 +474,105 @@ public String toString()
 {
 	return getPointData().getId() + " : " + getPointName() + " DevID = " + getDeviceID();
 }
+
+
+	public int getPointID() 
+	{
+		return getPointData().getId();
+	}
+
+	public double getValue() 
+	{
+		return getPointData().getValue();
+	}
+
+	public Date getTimeStamp() 
+	{
+		return getPointData().getTimeStamp();
+	}
+
+	public Date getPointDataTimeStamp() 
+	{
+		return getPointData().getPointDataTimeStamp();
+	}
+
+	public int getSOETag()
+	{
+		return getPointData().getSOE_Tag();
+	}
+
+	public long getPointQuality()
+	{
+		return getPointData().getQuality();
+	}
+
+	public long getTags()
+	{
+		return getPointData().getTags();
+	}
+
+	public int getPointType()
+	{
+		return getPointData().getType();
+	}
+
+	public long getSignalCategory()
+	{
+		if( getSignal() == null )
+			return -1; //we are not alarming
+		else
+			return getSignal().getAlarmStateID();
+	}
+
+	public void setSOETag( int newTag_ ) 
+	{
+		getPointData().setSOE_Tag( newTag_ );
+	}
+
+	public void setTime( Date newDate_ ) 
+	{
+		getPointData().setTime( newDate_ );
+	}
+
+	/** 
+	 * START ----------- Setters that overlap PointData and Signal
+	 **/
+	public void setTags( long newTag_ ) 
+	{
+		getPointData().setTags( newTag_ );
+
+		//keep the data structures in sink
+		if( getSignal() != null )
+			getSignal().setTags( newTag_ );
+	}
+
+	/** 
+	 * END ----------- Setters that overlap PointData and Signal
+	 **/
+
+	public boolean signalEquals( Signal signal_ )
+	{
+		if( signal_ == null )
+			return false;
+			
+		return signal_.equals( getSignal() );
+	}
+	
+
+	/**
+	 * @return
+	 */
+	private Signal getSignal()
+	{
+		return signal;
+	}
+
+	/**
+	 * @param signal
+	 */
+	public void setSignal(Signal signal)
+	{
+		this.signal = signal;
+	}
+
 }

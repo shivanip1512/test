@@ -3,7 +3,12 @@ package com.cannontech.tdc;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
+import com.cannontech.database.cache.functions.AlarmCatFuncs;
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.tdc.data.Display;
+import com.cannontech.tdc.bookmark.BookMarkBase;
 import com.cannontech.tdc.bookmark.BookMarkSelectionListener;
 import com.cannontech.tdc.utils.TDCDefines;
 /**
@@ -88,9 +93,8 @@ class SignalAlarmHandler
       {
          javax.swing.JMenuItem menuItem = (javax.swing.JMenuItem)getAlarmVector().get(i);
          
-          com.cannontech.message.dispatch.message.Signal storedSig = 
-             (com.cannontech.message.dispatch.message.Signal)
-               menuItem.getClientProperty( SignalAlarmHandler.class.getName() );
+          Signal storedSig = 
+          	(Signal)menuItem.getClientProperty( SignalAlarmHandler.class.getName() );
    
          //we already have a JMenuItem for this signal
          if( storedSig != null )
@@ -102,12 +106,12 @@ class SignalAlarmHandler
                   menuItem.putClientProperty( 
                         SignalAlarmHandler.class.getName(), sig );
                   
-                  com.cannontech.database.data.lite.LitePoint lp =      
-                     com.cannontech.database.cache.functions.PointFuncs.getLitePoint( (int)sig.getId() );
+                  LitePoint lp =      
+                     PointFuncs.getLitePoint( (int)sig.getId() );
                   
                   menuItem.setText(
                         "[" + (new ModifiedDate(sig.getTimeStamp().getTime()).toString()) + "] " +
-                        com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(lp.getPaobjectID()) +
+                        PAOFuncs.getYukonPAOName(lp.getPaobjectID()) +
                         " : " +
                         lp.getPointName() );
                         
@@ -205,7 +209,7 @@ class SignalAlarmHandler
    {
        javax.swing.JMenuItem newItem = new javax.swing.JMenuItem(
             "[" + (new ModifiedDate(sig.getTimeStamp().getTime()).toString()) + "] " +
-            com.cannontech.database.cache.functions.PointFuncs.getPointName((int)sig.getId()) );
+            PointFuncs.getPointName((int)sig.getId()) );
        
       newItem.putClientProperty( SignalAlarmHandler.class.getName(), sig );
       newItem.setBackground(java.awt.SystemColor.control);
@@ -213,8 +217,8 @@ class SignalAlarmHandler
 
       newItem.putClientProperty( TDCMainPanel.PROP_BOOKMARK, 
             Display.DISPLAY_TYPES[Display.ALARMS_AND_EVENTS_TYPE_INDEX] +
-            com.cannontech.tdc.bookmark.BookMarkBase.BOOKMARK_TOKEN +
-            com.cannontech.database.cache.functions.AlarmCatFuncs.getAlarmCategoryName(
+            BookMarkBase.BOOKMARK_TOKEN +
+            AlarmCatFuncs.getAlarmCategoryName(
                   (int)sig.getAlarmStateID()) );
 
 

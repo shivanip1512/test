@@ -15,16 +15,6 @@ void JToolBarButtonClearAction_actionPerformed(java.util.EventObject newEvent);
  * 
  * @param newEvent java.util.EventObject
  */
-void JToolBarButtonClearAlarmAction_actionPerformed(java.util.EventObject newEvent);
-/**
- * 
- * @param newEvent java.util.EventObject
- */
-void JToolBarButtonClearViewableAlarmsAction_actionPerformed(java.util.EventObject newEvent);
-/**
- * 
- * @param newEvent java.util.EventObject
- */
 void JToolBarButtonRefreshAction_actionPerformed(java.util.EventObject newEvent);
 /**
  * 

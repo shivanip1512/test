@@ -25,9 +25,7 @@ import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.tdc.calendar.CalendarDialog;
 import com.cannontech.tdc.commandevents.AckAlarm;
-import com.cannontech.tdc.commandevents.ClearAlarm;
 import com.cannontech.tdc.data.ColumnData;
 import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
@@ -148,8 +146,6 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC2(e);
 	if (e.getSource() == getJMenuItemPopUpAckAlarm()) 
 		connEtoC5(e);
-	if (e.getSource() == getJMenuItemPopUpClear()) 
-		connEtoC6(e);
 	if (e.getSource() == getJMenuItemPopUpManualEntry()) 
 		connEtoC9(e);
 	if (e.getSource() == getJMenuItemPageForward()) 
@@ -487,24 +483,7 @@ private void connEtoC5(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
-/**
- * connEtoC6:  (JMenuItemPopUpClear.action.actionPerformed(java.awt.event.ActionEvent) --> TDCMainPanel.jMenuItemPopUpClear_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC6(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.jMenuItemPopUpClear_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC7(java.awt.event.ActionEvent arg1) {
 	try {
@@ -576,7 +555,7 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 			 com.cannontech.database.data.point.PointTypes.getType(ptType) == com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT ||
 			 com.cannontech.database.data.point.PointTypes.getType(ptType) == com.cannontech.database.data.point.PointTypes.CALCULATED_POINT )
 		{
-			tableModel.setObservedRow( tableModel.getRowNumber( new Long( pt.getPointData().getId() ).longValue() ) );
+			tableModel.setObservedRow( tableModel.getRowNumber( new Long(pt.getPointID()).longValue() ) );
 
 			if( tableModel.isRowInAalarmVector(selectedRow) )
 				return new AnalogPanel( data, 
@@ -593,7 +572,7 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 					&& ( TagUtils.isControllablePoint(data.getTags()) && TagUtils.isControlEnabled(data.getTags()) )
 					&& source != getJMenuItemPopUpManualEntry() )
 		{			
-			tableModel.setObservedRow( tableModel.getRowNumber( new Long( pt.getPointData().getId() ).longValue() ) );
+			tableModel.setObservedRow( tableModel.getRowNumber( new Long(pt.getPointID()).longValue() ) );
 
 			return new StatusPanelControlEntry( data, 
 									tableModel.getObservedRow(), 
@@ -601,7 +580,7 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 		}
 		else if( com.cannontech.database.data.point.PointTypes.getType(ptType) == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
 		{			
-			tableModel.setObservedRow( tableModel.getRowNumber( new Long( pt.getPointData().getId() ).longValue() ) );
+			tableModel.setObservedRow( tableModel.getRowNumber( new Long(pt.getPointID()).longValue() ) );
 
 			if( tableModel.isRowInAalarmVector(selectedRow) )
 				return new StatusPanelManualEntry( data, 
@@ -692,7 +671,7 @@ public void displayTable_MouseClicked(java.awt.event.MouseEvent mouseEvent)
 		{
 			showDebugInfo();
 		}
-		else if( isUserDefinedDisplay() )
+		else if( Display.isUserDefinedType(getCurrentDisplay().getType()) )
 		{
 			showRowEditor( mouseEvent.getSource() );
 		}
@@ -721,7 +700,7 @@ public void executeDateChange( java.util.Date newDate )
 
 	//only accepet the change if we are looking at the event viewer
 	//  and there is at least a 1 minute difference between the new date and the old date
-	if( Display.isReadOnlyDisplay(getTableDataModel().getCurrentDisplayNumber())
+	if( Display.isHistoryDisplay(getTableDataModel().getCurrentDisplayNumber())
 		 && (int)(newDate.getTime() / 600000) != (int)(getPreviousDate().getTime() / 600000) )
 	{
 		java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
@@ -734,13 +713,15 @@ public void executeDateChange( java.util.Date newDate )
 			if( Display.isTodaysDisplay(newDate) )
 			{
 				//we are looking at today
-				setDisplayTitle( getCurrentDisplay().getTitle(), null );
-				getTableDataModel().setCurrentDisplayNumber( Display.EVENT_VIEWER_DISPLAY_NUMBER );
+				setDisplayTitle( getCurrentDisplay().getName(), null );
+				
+				getTableDataModel().ignoreMessages( false );				
 			}
 			else
 			{
-				setDisplayTitle( getCurrentDisplay().getTitle(), newDate );
-				getTableDataModel().setCurrentDisplayNumber( Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER );				
+				setDisplayTitle( getCurrentDisplay().getName(), newDate );
+
+				getTableDataModel().ignoreMessages( true );				
 			}
 		
 			
@@ -749,12 +730,14 @@ public void executeDateChange( java.util.Date newDate )
 			getTableDataModel().clearSystemViewerDisplay( true );
 			resetPagingProperties();
 
-			getReadOnlyDisplayData( new java.util.Date(newDate.getTime()) );
+			getHistoryDisplayData( new java.util.Date(newDate.getTime()) );
 			previousDate = newDate;			
 		}
 		finally
 		{
 			owner.setCursor( original );
+
+			executeRefresh_Pressed();
 		}
 		
 	}
@@ -901,8 +884,13 @@ public void fireBookMarkSelected( Object source )
 			{
 				for( int i = 0; i < getJComboCurrentDisplay().getItemCount(); i++ )
 					if( getJComboCurrentDisplay().getItemAt(i).equals(bookMark) )
-					{
+					{						
 						getJComboCurrentDisplay().setSelectedItem( bookMark );
+						
+						//set the date to today for all Alarm bookmarks
+						if( Display.isAlarmDisplay(getCurrentDisplayNumber()) )
+							parentFrame.setSelectedDate( new Date() );
+
 						break;
 					}
 			}
@@ -974,7 +962,7 @@ protected void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObj
 					if( this.isDisplayable() )
 						checkForMissingPoints();
 						
-					if( isCoreDisplay() ) 
+					if( Display.isCoreType(getCurrentDisplay().getType()) ) 
 						initSystemDisplays();
 				}
 					
@@ -1395,28 +1383,6 @@ private javax.swing.JMenuItem getJMenuItemPopUpAckAlarm() {
 	return ivjJMenuItemPopUpAckAlarm;
 }
 /**
- * Return the JMenuItem2 property value.
- * @return javax.swing.JMenuItem
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JMenuItem getJMenuItemPopUpClear() {
-	if (ivjJMenuItemPopUpClear == null) {
-		try {
-			ivjJMenuItemPopUpClear = new javax.swing.JMenuItem();
-			ivjJMenuItemPopUpClear.setName("JMenuItemPopUpClear");
-			ivjJMenuItemPopUpClear.setMnemonic('e');
-			ivjJMenuItemPopUpClear.setText("Clear Alarm");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJMenuItemPopUpClear;
-}
-/**
  * Return the JMenuItemPopUpManualControl property value.
  * @return javax.swing.JMenuItem
  */
@@ -1517,7 +1483,6 @@ private javax.swing.JPopupMenu getJPopupMenuManual() {
 			ivjJPopupMenuManual = new javax.swing.JPopupMenu();
 			ivjJPopupMenuManual.setName("JPopupMenuManual");
 			ivjJPopupMenuManual.add(getJMenuItemPopUpAckAlarm());
-			ivjJPopupMenuManual.add(getJMenuItemPopUpClear());
 			ivjJPopupMenuManual.add(getJMenuItemPopUpManualEntry());
 			ivjJPopupMenuManual.add(getJMenuItemPopUpManualControl());
 			ivjJPopupMenuManual.add(getJMenuTags());
@@ -1769,7 +1734,7 @@ private Display[] getLastDisplays() {
  * Insert the method's description here.
  * Creation date: (3/24/00 1:11:30 PM)
  */
-private void getReadOnlyDisplayData( java.util.Date date ) 
+private void getHistoryDisplayData( java.util.Date date ) 
 {
 	java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
 	java.awt.Cursor original = owner.getCursor();	
@@ -1781,15 +1746,21 @@ private void getReadOnlyDisplayData( java.util.Date date )
 		{
 			totalPages = getTableDataModel().createRowsForRawPointHistoryView( date, pageNumber );
 		}
-		else if( getCurrentDisplayNumber() == Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER
-			 		|| getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
+		else if( getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
 		{		
 			totalPages = getTableDataModel().createRowsForHistoricalView( date, pageNumber );
+		}
+		else if( Display.isAlarmDisplay(getCurrentDisplayNumber()) )
+		{		
+			totalPages = getTableDataModel().createRowsForHistoricalAlarmView( 
+						date,
+						pageNumber,
+						(int)getCurrentDisplayNumber() );
 		}
 				
 
 		//see if we need to add paging capability here
-		if( Display.isReadOnlyDisplay(getTableDataModel().getCurrentDisplayNumber()) )
+		if( Display.isHistoryDisplay(getTableDataModel().getCurrentDisplayNumber()) )
 		{
 			getJRadioButtonPage1().setSelected( true );
 			
@@ -2162,7 +2133,6 @@ private void initConnections() throws java.lang.Exception {
 	getJComboCurrentDisplay().addActionListener(this);
 	getJPopupMenuManual().addPopupMenuListener(this);
 	getJMenuItemPopUpAckAlarm().addActionListener(this);
-	getJMenuItemPopUpClear().addActionListener(this);
 	getJMenuItemPopUpManualEntry().addActionListener(this);
 	getJLabelDisplayTitle().addMouseListener(this);
 	getJRadioButtonMenuItemDisableDev().addItemListener(this);
@@ -2373,7 +2343,7 @@ public void initializeTable()
  */
 protected void initSystemDisplays() 
 {
-	if( Display.isReadOnlyDisplay(getTableDataModel().getCurrentDisplayNumber()) )
+	if( Display.isHistoryDisplay(getTableDataModel().getCurrentDisplayNumber()) )
 	{
 		// add in todays data
 		java.util.Date newDate = new java.util.Date();
@@ -2385,17 +2355,20 @@ protected void initSystemDisplays()
 		if( Display.isTodaysDisplay(newDate) )
 		{
 			//we are looking at today
-			setDisplayTitle( getCurrentDisplay().getTitle(), null );
-			getTableDataModel().setCurrentDisplayNumber( Display.EVENT_VIEWER_DISPLAY_NUMBER );
+			setDisplayTitle( getCurrentDisplay().getName(), null );
+			
+			getTableDataModel().ignoreMessages( false );				
 		}
 		else
 		{
-			setDisplayTitle( getCurrentDisplay().getTitle(), newDate );
-			getTableDataModel().setCurrentDisplayNumber( Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER );				
+			setDisplayTitle( getCurrentDisplay().getName(), newDate );
+
+			getTableDataModel().ignoreMessages( true );				
 		}
 			
-		getReadOnlyDisplayData( newDate );
+		getHistoryDisplayData( newDate );
 	}
+
 }
 /**
  * Insert the method's description here.
@@ -2405,35 +2378,12 @@ protected void initSystemDisplays()
 public boolean isClientDisplay() 
 {
 
-	return ( !isCoreDisplay() 
-		 		&& !isUserDefinedDisplay() 
+	return ( !Display.isCoreType(getCurrentDisplay().getType()) 
+		 		&& !Display.isUserDefinedType(getCurrentDisplay().getType()) 
 		 		&& currentDisplay != null 
 		 		&& getCurrentSpecailChild() != null );
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/18/00 1:44:35 PM)
- * Version: <version>
- */
-public boolean isCoreDisplay()
-{
-	if( currentDisplay == null )
-		return false;
-		
-	return ( Display.getDisplayTypeIndexByType(getCurrentDisplay().getType()) == Display.ALARMS_AND_EVENTS_TYPE_INDEX);
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/18/00 1:44:35 PM)
- * Version: <version>
- */
-public boolean isUserDefinedDisplay() 
-{
-	if( currentDisplay == null )
-		return false;
 
-	return ( Display.getDisplayTypeIndexByType(getCurrentDisplay().getType()) == Display.CUSTOM_DISPLAYS_TYPE_INDEX );
-}
 /**
  * Method to handle events for the ItemListener interface.
  * @param e java.awt.event.ItemEvent
@@ -2466,7 +2416,7 @@ public void jLabelDisplayTitle_MousePressed(java.awt.event.MouseEvent mouseEvent
 	if( getDisplayTable().getSelectedRow() >= 0 )
 	{
 		PointValues point = getTableDataModel().getPointValue( getDisplayTable().getSelectedRow() );
-		com.cannontech.clientutils.CTILogger.info("CLCIKSD for ptID = "+ point.getPointData().getId() + " Time = "+ point.getPointData().getTimeStamp() + " tags = " + Long.toHexString(point.getPointData().getTags()) );
+		com.cannontech.clientutils.CTILogger.info("CLCIKSD for ptID = "+ point.getPointID() + " Time = "+ point.getTimeStamp() + " tags = " + Long.toHexString(point.getTags()) );
 	}
 	
 /*  // a test to force a point into an alarming state
@@ -2563,7 +2513,7 @@ public void jMenuItemGraph_ActionPerformed(java.awt.event.ActionEvent actionEven
 			prev30.getTime(),
 			currDayPls1.getTime(),
 			"30 Day Trend Snapshot for " + pv.getPointName(),
-			new int[] { pv.getPointData().getId() },
+			new int[] { pv.getPointID() },
 			new String[] { pv.getPointName() }) );
 	
 	com.cannontech.jfreechart.chart.YukonChartPanel
@@ -2665,7 +2615,7 @@ public void jMenuItemPopUpAckAlarm_ActionPerformed(java.awt.event.ActionEvent ac
 }
 /**
  * Comment
- */
+ *
 public void jMenuItemPopUpClear_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	int pointid = (int)getTableDataModel().getPointID( getDisplayTable().getSelectedRow() );
@@ -2676,7 +2626,7 @@ public void jMenuItemPopUpClear_ActionPerformed(java.awt.event.ActionEvent actio
 	}
 		
 	return;
-}
+}*/
 /**
  * Comment
  */
@@ -2689,18 +2639,18 @@ public void jMenuItemPopUpDisable_ActionPerformed(java.awt.event.ActionEvent act
 	String msg = new String();
 
 	// see if we need to disable the points service
-	if( TagUtils.isPointOutOfService(ptValue.getPointData().getTags()) )
+	if( TagUtils.isPointOutOfService(ptValue.getTags()) )
 	{
 		msg = "ENABLE";
-		sig.setTags( ptValue.getPointData().getTags() & ~com.cannontech.message.dispatch.message.Signal.TAG_DISABLE_POINT_BY_POINT );
+		sig.setTags( ptValue.getTags() & ~com.cannontech.message.dispatch.message.Signal.TAG_DISABLE_POINT_BY_POINT );
 	}
 	else
 	{
 		msg = "DISABLE";
-		sig.setTags( ptValue.getPointData().getTags() | com.cannontech.message.dispatch.message.Signal.TAG_DISABLE_POINT_BY_POINT );
+		sig.setTags( ptValue.getTags() | com.cannontech.message.dispatch.message.Signal.TAG_DISABLE_POINT_BY_POINT );
 	}
 						
-	sig.setId( ptValue.getPointData().getId() );
+	sig.setId( ptValue.getPointID() );
 	
 	sig.setDescription("Point control change occured from TDC on point: " + 
 		ptValue.getDeviceName().toString() + " / " + ptValue.getPointName()); //who
@@ -2762,25 +2712,27 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 		int selectedRow = getDisplayTable().getSelectedRow();
 			
 		getJMenuItemPopUpAckAlarm().setEnabled( getTableDataModel().isRowAcked( selectedRow ) );
-		getJMenuItemPopUpClear().setEnabled( getTableDataModel().isRowAlarmUnCleared(selectedRow));
 
-		
-		getJMenuControl().setEnabled( true );
 		setAblementPopUpItems( selectedRow );
-		
-		// check to see if the point can be controlled AND its control is NOT disabled
-		getJMenuItemPopUpManualControl().setEnabled( 
-				(TagUtils.isControllablePoint(
-					getTableDataModel().getPointValue(selectedRow).getPointData().getTags())
-				&&
-				TagUtils.isControlEnabled(
-					getTableDataModel().getPointValue(selectedRow).getPointData().getTags())) );
+
 
 
 		// we cant enter a manual entry from a system display
-		getJMenuItemPopUpManualEntry().setEnabled( !isCoreDisplay() );
-		getJMenuItemGraph().setEnabled( !isCoreDisplay() );
-		getJMenuTags().setEnabled( !isCoreDisplay() );
+		
+		// check to see if the point can be controlled AND its control is NOT disabled
+		getJMenuItemPopUpManualControl().setEnabled(
+				!Display.isCoreType(getCurrentDisplay().getType()) 
+				&& 
+				(TagUtils.isControllablePoint(
+					getTableDataModel().getPointValue(selectedRow).getTags())
+				&&
+				TagUtils.isControlEnabled(
+					getTableDataModel().getPointValue(selectedRow).getTags())) );
+
+		getJMenuControl().setEnabled( !Display.isCoreType(getCurrentDisplay().getType()) );
+		getJMenuItemPopUpManualEntry().setEnabled( !Display.isCoreType(getCurrentDisplay().getType()) );
+		getJMenuItemGraph().setEnabled( !Display.isCoreType(getCurrentDisplay().getType()) );
+		getJMenuTags().setEnabled( !Display.isCoreType(getCurrentDisplay().getType()) );
 	}
 	else
 	{
@@ -2823,7 +2775,7 @@ public void jRadioButtonMenuItemAllowDev_ActionPerformed(java.awt.event.ActionEv
 public void jRadioButtonMenuItemAllowPt_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	int selectedRow = getDisplayTable().getSelectedRow();
-	int pointID = (int)getTableDataModel().getPointValue(selectedRow).getPointData().getId();
+	int pointID = (int)getTableDataModel().getPointValue(selectedRow).getPointID();
 
 	// build up our opArgList for our command	message
 	Vector data = new Vector(4);
@@ -2884,7 +2836,7 @@ public void jRadioButtonMenuItemDisableDev_ItemStateChanged(java.awt.event.ItemE
 public void jRadioButtonMenuItemDisablePt_ItemStateChanged(java.awt.event.ItemEvent itemEvent) 
 {
 	int selectedRow = getDisplayTable().getSelectedRow();
-	int pointID = (int)getTableDataModel().getPointValue(selectedRow).getPointData().getId();
+	int pointID = (int)getTableDataModel().getPointValue(selectedRow).getPointID();
 
 	// build up our opArgList for our command	message
 	Vector data = new Vector(4);
@@ -2936,7 +2888,7 @@ public void jRadioButtonMenuItemEnableDev_ItemStateChanged(java.awt.event.ItemEv
 public void jRadioButtonMenuItemEnbablePt_ItemStateChanged(java.awt.event.ItemEvent itemEvent) 
 {
 	int selectedRow = getDisplayTable().getSelectedRow();
-	int pointID = (int)getTableDataModel().getPointValue(selectedRow).getPointData().getId();
+	int pointID = (int)getTableDataModel().getPointValue(selectedRow).getPointID();
 
 	// build up our opArgList for our command	message
 	Vector data = new Vector(4);
@@ -2988,7 +2940,7 @@ public void jRadioButtonMenuItemInhibitDev_ActionPerformed(java.awt.event.Action
 public void jRadioButtonMenuItemInhibitPt_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	int selectedRow = getDisplayTable().getSelectedRow();
-	int pointID = (int)getTableDataModel().getPointValue(selectedRow).getPointData().getId();
+	int pointID = (int)getTableDataModel().getPointValue(selectedRow).getPointID();
 
 	// build up our opArgList for our command	message
 	Vector data = new Vector(4);
@@ -3020,7 +2972,7 @@ public void jRadioButtonPage_ActionPerformed(java.awt.event.ActionEvent actionEv
 
 	try
 	{
-		if( Display.isReadOnlyDisplay(getTableDataModel().getCurrentDisplayNumber()) )
+		if( Display.isHistoryDisplay(getTableDataModel().getCurrentDisplayNumber()) )
 		{
 			getTableDataModel().clearSystemViewerDisplay( false );
 
@@ -3033,15 +2985,28 @@ public void jRadioButtonPage_ActionPerformed(java.awt.event.ActionEvent actionEv
 				pageNumber = 1;
 
 			//Always add 1 milleseconds less than 1 day (86399999L) to see the current day
-			if( getCurrentDisplayNumber() == Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER 
-				 || getTableDataModel().getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
+			final int MILLI_OFFSET = 86399999;
+			
+			if( getTableDataModel().getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
+			{
 				totalPages = getTableDataModel().createRowsForHistoricalView( 
-								new java.util.Date(getPreviousDate().getTime() + 86399999),
+								new java.util.Date(getPreviousDate().getTime() + MILLI_OFFSET),
 								pageNumber );
+			}
 			else if( getCurrentDisplayNumber() == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER )
+			{
 				totalPages = getTableDataModel().createRowsForRawPointHistoryView( 
-								new java.util.Date(getPreviousDate().getTime() + 86399999),
+								new java.util.Date(getPreviousDate().getTime() + MILLI_OFFSET),
 								pageNumber );
+			}
+			else if( Display.isAlarmDisplay(getCurrentDisplayNumber()) )
+			{
+				totalPages = getTableDataModel().createRowsForHistoricalAlarmView( 
+								new java.util.Date(getPreviousDate().getTime() + MILLI_OFFSET),
+								pageNumber,
+								(int)getCurrentDisplayNumber() );
+			}
+			
 			
 			setDisplayTitle(getCurrentDisplay().getName(), getPreviousDate() );
 		}
@@ -3194,14 +3159,7 @@ public void executeRefresh_Pressed()
 		{
 			getCurrentSpecailChild().executeRefreshButton();
 		}		
-		else if( getTableDataModel().isAlarmDisplay() )
-				 // || getMainPanel().isUserDefinedDisplay() )
-		{
-			// do not relayout alarm models
-			//This will only reRegister the client, no screen setup is involved
-			getTdcClient().reRegister( getTableDataModel().getAllPointIDs() );			
-		}
-		else //This will setup the screen AND reRegister the client
+		else
 		{
 			//be sure we capture any changes made to the table by the user
 			updateDisplayColumnData();
@@ -3410,7 +3368,7 @@ private void setAblementPopUpItems( int selectedRow )
 
 
 	
-	long tags = getTableDataModel().getPointValue( selectedRow ).getPointData().getTags();
+	long tags = getTableDataModel().getPointValue( selectedRow ).getTags();
 	
 	boolean isPointOutOfService = TagUtils.isPointOutOfService(tags);
 	getJRadioButtonMenuItemDisablePt().setSelected( isPointOutOfService );
@@ -3506,9 +3464,10 @@ private void setDisplayTitle(String title, java.util.Date date )
 		java.util.GregorianCalendar calendar = new java.util.GregorianCalendar();
 		calendar.setTime( date );
 
-      title = "Event Viewer For " + CommonUtils.formatMonthString( calendar.get( calendar.MONTH ) ) + " " +
+      title = title + " (" + 
+      		CommonUtils.formatMonthString( calendar.get( calendar.MONTH ) ) + " " +
             calendar.get( calendar.DAY_OF_MONTH ) + ", " +
-            calendar.get( calendar.YEAR );
+            calendar.get( calendar.YEAR ) + ")";
 	}
 
 	if( totalPages > 1 )
@@ -3686,6 +3645,8 @@ public void setUpTable()
 {
 	if (getJComboCurrentDisplay().getSelectedItem() != null)
 	{
+		getTableDataModel().ignoreMessages( false );
+
 		java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
 		Cursor original = owner.getCursor();
 		owner.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
@@ -3696,7 +3657,7 @@ public void setUpTable()
 
 			resetMainPanel();
 			
-			if( isCoreDisplay() )
+			if( Display.isCoreType(getCurrentDisplay().getType()) )
 			{
 				// Set up the column names and Display Title
 				String displayName = getJComboCurrentDisplay().getSelectedItem().toString();
@@ -3731,54 +3692,7 @@ public void setUpTable()
 		}
 	}
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/28/00 9:43:19 AM)
- */
-private void showCalendarDialog() 
-{
-	java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);		
 
-	java.util.Date newDate = new java.util.Date();
-
-	if( !refreshPressed )
-	{
-		CalendarDialog cd = null;
-				
-		if( owner.isDisplayable() )
-		{
-			cd = new CalendarDialog( owner, getCurrentDisplayNumber() );				
-			cd.setModal( true );		
-			cd.setLocationRelativeTo( owner );
-			cd.show();			
-						
-			try
-			{
-				newDate = cd.getSelectedDate();
-				previousDate = newDate;
-			}
-			catch( NullPointerException e )  // the X box must have been pressed in the dialog
-			{/*use todays date as default*/ }
-
-			cd.dispose();
-			cd = null;
-		}
-	}
-	else
-	{
-		newDate = getPreviousDate();
-		refreshPressed = false;
-	}
-
-		
-	if( Display.isReadOnlyDisplay(getTableDataModel().getCurrentDisplayNumber()) )
-	{		
-		getReadOnlyDisplayData( newDate );
-	}
-	
-		
-	setDisplayTitle( getCurrentDisplay().getName(), newDate );
-}
 /**
  * Insert the method's description here.
  * Creation date: (4/5/00 4:29:59 PM)
@@ -3786,15 +3700,13 @@ private void showCalendarDialog()
  */
 private void showDebugInfo( ) 
 {
-	com.cannontech.tdc.debug.RowDebugViewer d = new com.cannontech.tdc.debug.RowDebugViewer( 
+	com.cannontech.debug.gui.ObjectInfoDialog d = new com.cannontech.debug.gui.ObjectInfoDialog(
 		com.cannontech.common.util.CtiUtilities.getParentFrame(this) ); 
-	
-	d.setValue( getTableDataModel().getPointValue( getDisplayTable().getSelectedRow() ) );
-		
-	d.setLocation( this.getLocationOnScreen() );		
-	d.setModal( true );		
-	d.show();
-	
+
+	d.setLocation( this.getLocationOnScreen() );
+	d.setModal( true );
+	d.showDialog( 
+		getTableDataModel().getPointValue( getDisplayTable().getSelectedRow() ) );
 }
 /**
  * Insert the method's description here.

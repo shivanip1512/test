@@ -6,11 +6,9 @@ package com.cannontech.tdc;
  * @author: 
  */
 import java.awt.Component;
-import java.awt.FlowLayout;
 import java.awt.Image;
 
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
@@ -78,6 +76,12 @@ public Component getTableCellRendererComponent(javax.swing.JTable table, Object 
 		setForeground( Colors.getColor( model.getRowForegroundColor( row ) ) );
 		setFont( plainFont );
 	}
+
+
+	//we have the same colors, lets make a distinction
+	if( getBackground().equals(getForeground()) )
+		setForeground( getForeground().darker().darker() );
+
 
 	if( value != null )
 	{

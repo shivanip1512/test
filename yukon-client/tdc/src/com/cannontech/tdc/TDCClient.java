@@ -14,6 +14,8 @@ import com.cannontech.message.util.Message;
 import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.clientutils.CTILogger;
+
 
 public class TDCClient extends com.cannontech.clientutils.ClientBase
 {
@@ -75,7 +77,7 @@ private PointRegistration getPtRegMsg()
 		displayName = caller.getCurrentDisplay().getName();
 		
 	//Register for points
-	if( callerModel.isAlarmDisplay() )
+	if( Display.isAlarmDisplay(callerModel.getCurrentDisplayNumber()) )
 	{
 		TDCMainFrame.messageLog.addMessage("Registering display " + displayName + " for ALARMS", MessageBoxFrame.INFORMATION_MSG);
 		pReg.setRegFlags( PointRegistration.REG_ALARMS );
@@ -125,7 +127,7 @@ public void receivedDBChangMsg( DBChangeMsg msg )
 	String display = caller.getCurrentDisplay().getName() != null ? 
 			caller.getCurrentDisplay().getName() : "#" + caller.getCurrentDisplayNumber();
 
-	com.cannontech.clientutils.CTILogger.info("DATABASE CHANGE RECEIVED = " + msg.toString() + " Display = " + display );
+	CTILogger.info("DATABASE CHANGE RECEIVED = " + msg.toString() + " Display = " + display );
 	
 	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage((com.cannontech.message.dispatch.message.DBChangeMsg)msg);
 
@@ -157,7 +159,7 @@ public void receivedPointData( PointData point )
 	String display = caller.getCurrentDisplay().getName() != null ? 
 			caller.getCurrentDisplay().getName() : "#" + caller.getCurrentDisplayNumber();
 			
-	com.cannontech.clientutils.CTILogger.info("POINTDATA RECEIVED -- PointID = " + point.getId() +
+	CTILogger.info("POINTDATA RECEIVED -- PointID = " + point.getId() +
 		" Value = " + point.getValue() + " Tags(hex) = " + Long.toHexString(point.getTags()) +
 		" Display = " + display );
 
@@ -176,8 +178,9 @@ public void receivedSignal( Signal signal )
 	String display = caller.getCurrentDisplay().getName() != null ? 
 			caller.getCurrentDisplay().getName() : "#" + caller.getCurrentDisplayNumber();
 
-	com.cannontech.clientutils.CTILogger.info("SIGNAL RECEIVED for ptID = "+ signal.getId() + " alarmStateID = "+ signal.getAlarmStateID() + " Tags(hex) = " + Integer.toHexString(signal.getTags()) +
-		" Display = " + display );
+	CTILogger.info(
+		"SIGNAL RECEIVED for ptID="+ signal.getId() + ",alarmStateID="+ signal.getAlarmStateID() + ",Tags(hex)=" + Integer.toHexString(signal.getTags()) +
+		",Condition=" + signal.getCondition() + ",Display=" + display );
 	
 	callerModel.processSignalReceived( signal );
 

@@ -174,11 +174,7 @@ private synchronized void processAlarmColors()
 				minLoc = loc;
 
 
-			//for now, always set the silenced flag with every iteration!!
-			//alarmedRows.setAllSilenced( model.isSilenced() );				
-
-
-			getModel().setBGRowColor( loc, alarmedRows.elementAt( i ).getAlarmColor() );
+			getModel().setBGRowColor( loc, alarmedRows.elementAt(i).getAlarmColor() );			
 		}								
 	}
 

@@ -27,13 +27,13 @@ public EditorDialogData(com.cannontech.tdc.PointValues pt, String[] allStates)
 {
 	super();
 
-	setPointID( (int)pt.getPointData().getId() );
+	setPointID( (int)pt.getPointID() );
 	setDeviceID( pt.getDeviceID() );
 	setDeviceName( pt.getDeviceName().toString() );
 	setPointName( pt.getPointName() );
-	setTags( pt.getPointData().getTags() );
+	setTags( pt.getTags() );
 	setAllStates(allStates);
-	setPointType( pt.getPointData().getType() );
+	setPointType( pt.getPointType() );
 }
 /**
  * Insert the method's description here.

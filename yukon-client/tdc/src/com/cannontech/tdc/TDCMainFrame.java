@@ -38,7 +38,6 @@ import java.util.Vector;
 
 import com.cannontech.tdc.exportdata.ExportCreatedDisplay;
 import com.cannontech.tdc.commandevents.AckAlarm;
-import com.cannontech.tdc.commandevents.ClearAlarm;
 import com.cannontech.tdc.aboutbox.AboutBoxDialog;
 import com.cannontech.tdc.spawn.TDCMainFrameSpawnListener;
 import com.cannontech.tdc.data.Display;
@@ -308,7 +307,7 @@ public void alarmToolBar_JToolBarButtonAckViewableAction_actionPerformed(java.ut
 		{
 			long pointID = getMainPanel().getTableDataModel().getPointID( Integer.parseInt(rowNumbers.get(i).toString()) );
 			
-			if( getMainPanel().getTableDataModel().isPointAlarmed(pointID) )
+			if( getMainPanel().getTableDataModel().isPointAlarmed( (int)pointID) )
 				ptIDs.addElement( (int)pointID);
 		}
 
@@ -333,8 +332,8 @@ public void alarmToolBar_JToolBarButtonClearAction_actionPerformed(java.util.Eve
 
 
 /**
- * Comment
- */
+ * Commen
+ *
 public void alarmToolBar_JToolBarButtonClearViewableAlarmsAction_actionPerformed(java.util.EventObject newEvent) 
 {
 	java.util.ArrayList rowNumbers = getMainPanel().getViewableRowNumbers();
@@ -355,7 +354,7 @@ public void alarmToolBar_JToolBarButtonClearViewableAlarmsAction_actionPerformed
 				ptIDs.addElement( pointID );
 		}
 
-		if( getMainPanel().getTableDataModel().isAlarmDisplay() )
+		if( Display.isAlarmDisplay(getMainPanel().getCurrentDisplayNumber()) )
 		{
 			// remove all the blank rows starting with the bottom one and working our way up
 			for( int i = (blankRows.size()-1); i >= 0; i-- )
@@ -368,7 +367,7 @@ public void alarmToolBar_JToolBarButtonClearViewableAlarmsAction_actionPerformed
 		
 	return;
 }
-
+*/
 
 /**
  * Comment
@@ -811,26 +810,6 @@ private void connEtoC24(java.util.EventObject arg1) {
 		// user code begin {1}
 		// user code end
 		this.alarmToolBar_JToolBarButtonAckViewableAction_actionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-
-
-/**
- * connEtoC26:  (AlarmToolBar.alarmToolBar.JToolBarButtonClearViewableAlarmsAction_actionPerformed(java.util.EventObject) --> TDCMainFrame.alarmToolBar_JToolBarButtonClearViewableAlarmsAction_actionPerformed(Ljava.util.EventObject;)V)
- * @param arg1 java.util.EventObject
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC26(java.util.EventObject arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.alarmToolBar_JToolBarButtonClearViewableAlarmsAction_actionPerformed(arg1);
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -3041,7 +3020,7 @@ private void initAccelerators()
 private boolean isUserViewActionPermittable() 
 {
 	// make sure we are displaying a customized(user created) view
-	if( getMainPanel().isUserDefinedDisplay() )
+	if( Display.isUserDefinedType(getMainPanel().getCurrentDisplay().getType()) )
 		return true;
 	else
 	{
@@ -3939,35 +3918,6 @@ public void JToolBarButtonClearAction_actionPerformed(java.util.EventObject newE
 	// user code end
 }
 
-
-/**
- * Method to handle events for the AlarmToolBarListener interface.
- * @param newEvent java.util.EventObject
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void JToolBarButtonClearAlarmAction_actionPerformed(java.util.EventObject newEvent) {
-	// user code begin {1}
-	// user code end
-	// user code begin {2}
-	// user code end
-}
-
-
-/**
- * Method to handle events for the AlarmToolBarListener interface.
- * @param newEvent java.util.EventObject
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void JToolBarButtonClearViewableAlarmsAction_actionPerformed(java.util.EventObject newEvent) {
-	// user code begin {1}
-	// user code end
-	if (newEvent.getSource() == getAlarmToolBar()) 
-		connEtoC26(newEvent);
-	// user code begin {2}
-	// user code end
-}
-
-
 /**
  * Method to handle events for the AlarmToolBarListener interface.
  * @param newEvent java.util.EventObject
@@ -4087,13 +4037,12 @@ public void mainPanel_JComboCurrentDisplayAction_actionPerformed(java.util.Event
 
 		// enable/disable the correct corresponding buttons for the the current view
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMPONENT_INDEX_CLEAR,
-			Display.isReadOnlyDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
+			Display.isHistoryDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMPONENT_INDEX_ACKALL, true );
-		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMPONENT_INDEX_CLEARVIEWABLE, true );
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMPONENT_INDEX_DATELABEL,
-			Display.isReadOnlyDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
+			Display.isHistoryDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMPONENT_INDEX_DATE,
-			Display.isReadOnlyDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
+			Display.isHistoryDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
 
 		
 		setTitleFromDisplay();				
@@ -4102,7 +4051,7 @@ public void mainPanel_JComboCurrentDisplayAction_actionPerformed(java.util.Event
 		
 	//JMenuItems disabling needs to go here
 	getJMenuItemPrint().setEnabled(
-			Display.isReadOnlyDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
+			Display.isHistoryDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
 		
 	return;
 }
@@ -4358,6 +4307,11 @@ public void setSelectedViewType(String buttonText)
 	
 }
 
+public void setSelectedDate( Date newDate_ )
+{
+	getAlarmToolBar().setSelectedDate( newDate_ );
+}
+
 
 /**
  * Insert the method's description here.
@@ -4381,11 +4335,11 @@ private void setTitleFromDisplay()
 	}
 
 		
-	if( getMainPanel().isUserDefinedDisplay() )
+	if( Display.isUserDefinedType(getMainPanel().getCurrentDisplay().getType()) )
 	{
 		setTitle( getMainPanel().getCurrentDisplay().getName() + connected );
 	}
-	else if( getMainPanel().isCoreDisplay() )
+	else if( Display.isCoreType(getMainPanel().getCurrentDisplay().getType()) )
 	{
 		setTitle( getMainPanel().getCurrentDisplay().getTitle() + connected );
 	}

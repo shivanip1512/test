@@ -48,22 +48,7 @@ public void JToolBarButtonClearAction_actionPerformed(java.util.EventObject newE
 	((com.cannontech.tdc.toolbar.AlarmToolBarListener)a).JToolBarButtonClearAction_actionPerformed(newEvent);
 	((com.cannontech.tdc.toolbar.AlarmToolBarListener)b).JToolBarButtonClearAction_actionPerformed(newEvent);
 }
-/**
- * 
- * @param newEvent java.util.EventObject
- */
-public void JToolBarButtonClearAlarmAction_actionPerformed(java.util.EventObject newEvent) {
-	((com.cannontech.tdc.toolbar.AlarmToolBarListener)a).JToolBarButtonClearAlarmAction_actionPerformed(newEvent);
-	((com.cannontech.tdc.toolbar.AlarmToolBarListener)b).JToolBarButtonClearAlarmAction_actionPerformed(newEvent);
-}
-/**
- * 
- * @param newEvent java.util.EventObject
- */
-public void JToolBarButtonClearViewableAlarmsAction_actionPerformed(java.util.EventObject newEvent) {
-	((com.cannontech.tdc.toolbar.AlarmToolBarListener)a).JToolBarButtonClearViewableAlarmsAction_actionPerformed(newEvent);
-	((com.cannontech.tdc.toolbar.AlarmToolBarListener)b).JToolBarButtonClearViewableAlarmsAction_actionPerformed(newEvent);
-}
+
 /**
  * 
  * @param newEvent java.util.EventObject
