@@ -48,7 +48,7 @@ class LoginSupport {
 			try {
 				int c = conn.getResponseCode();
 				if(c == HttpURLConnection.HTTP_FORBIDDEN) {
-					throw new RuntimeException("Invalid username or password");
+					throw new RuntimeException("Invalid Username or Password.  Usernames and Passwords are case sensitive, be sure to use correct upper and lower case.");
 				}
 				else {
 					throw new RuntimeException(e.getMessage());

@@ -36,11 +36,13 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * @author aaron
  */
 public class ClientSession {
-	
+		
 	private LiteYukonUser user;
 	private String sessionID;
 	private String host;
 	private int port;
+	
+	private String errMsg;
 	
 	/**
 	 * Return the user associated with this session.
@@ -76,133 +78,148 @@ public class ClientSession {
 	}
 	
 	/**
-	 * Attempt to establish a session
-	 * @return
-	 */
-	public synchronized boolean establishSession() {
-		return establishSession(null);
-	}
-	
-	/**
-	 * Attempt to establish a session.  Takes a parent frame, useful to
-	 * set the frame icon if we have to pop up a dialog.  You decide.
-	 * @param parent
-	 * @return
-	 */
+		 * Attempt to establish a session
+		 * @return
+		 */
+		public synchronized boolean establishSession() {
+			return establishSession(null);
+		}
+		
 	public synchronized boolean establishSession(Frame parent) {
-		String errMsg = null;
-		
-		LoginPrefs prefs = LoginPrefs.getInstance();
-		LiteYukonUser user;	
-		
 		Properties dbProps = PoolManager.loadDBProperties();
+		
+		boolean success = false;
 		if(dbProps != null && !dbProps.isEmpty()) {
-			CTILogger.info("Local database properties found, skipping logon");
-			user = YukonUserFuncs.getLiteYukonUser(-1);
-			
-			if(user == null) {
-				CTILogger.error("Couldn't locate default user in the database");
-				return false;
-			}
-
-			this.user = user;
+			success = doLocalLogin(parent, dbProps);
+		}
+		else {
+			success = doRemoteLogin(parent);
+		}			
+		
+		if(success) {
+			LoginPrefs prefs = LoginPrefs.getInstance();
+			prefs.setCurrentSessionID(sessionID);
+			prefs.setCurrentUserID(user.getUserID());
+			prefs.setCurrentYukonHost(host);
+			prefs.setCurrentYukonPort(port);
 			return true;
 		}
-
-		String sessionID = prefs.getCurrentSessionID();
-		String host = prefs.getCurrentYukonHost();
-		int port = prefs.getCurrentYukonPort();
-					
-		try {										
-			dbProps = 
-				LoginSupport.getDBProperties(sessionID, host, port);
-		}
-		catch(RuntimeException re) {
-			//dismiss 
-		}
-				
-		if(dbProps != null && !dbProps.isEmpty()) {
-			PoolManager.setDBProperties(dbProps);
-			user = YukonUserFuncs.getLiteYukonUser(prefs.getCurrentUserID());
-				
-			if(user != null) {
-				this.user = user;
-				this.sessionID = sessionID;
-				this.host = host;
-				this.port = port;
-				}
-			else {
-				errMsg = "Couldn't locate user in the database";
-				}
-			}
-			else
-			{
-				LoginPanel lp = new LoginPanel(
-					prefs.getCurrentYukonHost(),
-					prefs.getAvailableYukonHosts(),
-					prefs.getDefaultUsername(),
-					prefs.getDefaultPassword(),
-					prefs.getDefaultRememberPassword());
-				
-				sessionID = lp.showLoginDialog(parent);
-				
-				if(sessionID != null) {
-					dbProps = LoginSupport.getDBProperties(sessionID,lp.getYukonHost(),lp.getYukonPort());
-					
-					if(dbProps != null) {
-						PoolManager.setDBProperties(dbProps);
-						user = AuthFuncs.login(lp.getUsername(), lp.getPassword());
-						
-						if(user != null) {
-							boolean rememberPass = lp.isRememberPassword();
-							this.user = user;
-							this.sessionID = sessionID;
-							this.host = host;
-							this.port = port;
-							
-							prefs.setCurrentUserID(user.getUserID());
-							prefs.setCurrentSessionID(sessionID);
-							prefs.addAvailableYukonHost(lp.getYukonHost());
-							prefs.setCurrentYukonHost(lp.getYukonHost());
-							prefs.setCurrentYukonPort(lp.getYukonPort());
-							prefs.setDefaultUsername(lp.getUsername());
-							
-							if(rememberPass) {
-								prefs.setDefaultPassword(lp.getPassword());
-							}
-							else {
-								prefs.setDefaultPassword("");
-							}
-							prefs.setDefaultRememberPassword(rememberPass);
-						}
-						else {
-							errMsg = "couldn't locat user inthe db";
-						}
-					}
-					else {
-						errMsg = "Couldn't get db.properties";
-					}
-										
-				}
-				else {
-					errMsg = "Couldn't get a sessionid";
-				}
-			}
-				
-		if(errMsg != null) {
-			JOptionPane.showMessageDialog(null, errMsg, "Unable to establish session...", JOptionPane.ERROR_MESSAGE);
-			return false;
 		
-		}
-		return true;
+		return false;
 	}
 	
-	public synchronized void closeSession() {
-		if(sessionID != null) {
-			LoginPrefs.getInstance().setCurrentSessionID("");
-			LoginPrefs.getInstance().setCurrentUserID(-1);
-			LoginSupport.closeSession(sessionID, host, port);
+	private boolean doLocalLogin(Frame p, Properties props) {
+		PoolManager.setDBProperties(props);
+		
+		LoginPrefs prefs = LoginPrefs.getInstance();
+		int userID = prefs.getCurrentUserID();
+		if(userID > 0) {
+			//already 'logged in' so just try to use it
+			LiteYukonUser u = YukonUserFuncs.getLiteYukonUser(userID);
+			if(u != null) {
+				setSessionInfo(u, Integer.toString(userID), "", -1);		
+				return true;
+			}
+			//Couldn't find the supposedly logged in user, disregard current login
 		}
+
+		LoginPanel lp = makeLocalLoginPanel();
+		while(collectInfo(lp)) {
+			LiteYukonUser u = AuthFuncs.login(lp.getUsername(), lp.getPassword());
+			if(u != null) {
+				//score! we found them
+				setSessionInfo(u, Integer.toString(userID), "", -1);
+				return true;
+			}
+			else {
+				// bad username or password
+				displayMessage(p, "Invalid Username or Password.  Usernames and Passwords are case sensitive, be sure to use correct upper and lower case.", "Yukon Login");
+			}
+		}
+		
+		// They gave up trying to login
+		return false;
+	}
+	
+	private boolean doRemoteLogin(Frame p) {
+		LoginPrefs prefs = LoginPrefs.getInstance();
+		
+		String sessionID = prefs.getCurrentSessionID();
+		int userID = prefs.getCurrentUserID();
+		String host = prefs.getCurrentYukonHost();
+		int port = prefs.getCurrentYukonPort();
+		
+		if(sessionID.length() > 0 && host.length() > 0 && port > 0) {
+			// have a session info already lets try it
+			Properties dbProps = LoginSupport.getDBProperties(sessionID, host, port);
+			if(!dbProps.isEmpty()) {
+				LiteYukonUser u = YukonUserFuncs.getLiteYukonUser(userID);
+				if(u != null) {
+					//score! we found them
+					setSessionInfo(u, sessionID, host, port);
+					return true;
+				}
+			}
+		}  // current session didn't work out, lets try to establish a new one
+		
+		LoginPanel lp = makeRemoteLoginPanel();
+		while(collectInfo(lp)) {
+			try {
+				sessionID = LoginSupport.getSessionID(lp.getYukonHost(), lp.getYukonPort(), lp.getUsername(), lp.getPassword());
+			}
+			catch(RuntimeException re) {
+				displayMessage(p, re.getMessage(), "Yukon Login");
+			}
+			
+			Properties dbProps = LoginSupport.getDBProperties(sessionID, lp.getYukonHost(), lp.getYukonPort());
+			if(!dbProps.isEmpty()) {
+				PoolManager.setDBProperties(dbProps);
+				LiteYukonUser u = AuthFuncs.login(lp.getUsername(), lp.getPassword());
+				if(u != null) {
+					//score! we found them
+				  	setSessionInfo(u, sessionID, lp.getYukonHost(), lp.getYukonPort());
+				  	return true;
+				}
+				else {
+					//ooh, thats bad.
+					displayMessage(p, "Server returned valid session ID but user id: " + userID + " couldn't be found in the local cache.  This is either a bug or a configuration problem.", "Error");					
+				}
+			}
+		}
+		return false;		 
+	}
+	
+	private void setSessionInfo(LiteYukonUser u, String sessionID, String host, int port) {
+		this.user = u;
+		this.sessionID = sessionID;
+		this.host = host;
+		this.port = port;			
+	}
+	
+	private LoginPanel makeLocalLoginPanel() {
+		LoginPrefs prefs = LoginPrefs.getInstance();
+		return  new LoginPanel(	prefs.getCurrentYukonHost(),
+								prefs.getAvailableYukonHosts(),
+								prefs.getDefaultUsername(),
+								prefs.getDefaultPassword(),
+								prefs.getDefaultRememberPassword(), true);
+	}
+		
+	private LoginPanel makeRemoteLoginPanel() {
+			LoginPrefs prefs = LoginPrefs.getInstance();
+			return  new LoginPanel(	prefs.getCurrentYukonHost(),
+									prefs.getAvailableYukonHosts(),
+									prefs.getDefaultUsername(),
+									prefs.getDefaultPassword(),
+									prefs.getDefaultRememberPassword(), false);
+		}
+		
+	private boolean collectInfo(LoginPanel lp) {
+		return JOptionPane.showConfirmDialog(null, lp, "Yukon Login", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
+	}
+	
+	private void displayMessage(Frame p, String msg, String title) {
+		JOptionPane.showMessageDialog(p, msg, title, JOptionPane.WARNING_MESSAGE); 
 	}
 	
 	// My pretty private instance

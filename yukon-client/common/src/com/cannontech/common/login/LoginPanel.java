@@ -9,10 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -43,32 +40,34 @@ class LoginPanel extends JPanel implements CaretListener, ActionListener {
 	private final JTextField usernameField = new JTextField();
 	private final JPasswordField passwordField = new JPasswordField();
 	private final JCheckBox rememberCheckBox = new JCheckBox("Remember my password");
-	private final JButton loginButton = new JButton("Ok");
-	private final JButton cancelButton = new JButton("Cancel");
+	
+	//private final JButton loginButton = new JButton("Ok");
+	//private final JButton cancelButton = new JButton("Cancel");
 	
 	// After logging in these will be set
 	private String sessionID = null;
 	
 	/* This adapter is added to all the components above
 	 * so the login button is pressed whenever the enter button is hit */
-	private final KeyAdapter myKeyAdapter = new KeyAdapter() {
+	/*private final KeyAdapter myKeyAdapter = new KeyAdapter() {
 		public void keyPressed(KeyEvent e) {
 			if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 				loginButton.doClick();
 			}
 		}
 	};
-	
+	*/
 	public LoginPanel() {
 		this(
 			LoginPrefs.getInstance().getCurrentYukonHost(),
 			LoginPrefs.getInstance().getAvailableYukonHosts(),
 			LoginPrefs.getInstance().getDefaultUsername(), 
 			LoginPrefs.getInstance().getDefaultPassword(), 
-			LoginPrefs.getInstance().getDefaultRememberPassword());
+			LoginPrefs.getInstance().getDefaultRememberPassword(),
+			true);
 	}
 	
-	public LoginPanel(String host, String[] hosts, String username, String password, boolean rememberPassword) {
+	public LoginPanel(String host, String[] hosts, String username, String password, boolean rememberPassword, boolean localLogin) {
 				
 		setLayout(new GridBagLayout());
 		
@@ -93,32 +92,34 @@ class LoginPanel extends JPanel implements CaretListener, ActionListener {
 			new GridBagConstraints(1,3,2,1,1.0,0.0,GridBagConstraints.EAST,GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0);
 		GridBagConstraints rememberCheckBoxCons =
 			new GridBagConstraints(1,4,2,1,1.0,0.0,GridBagConstraints.WEST,GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0);
-		GridBagConstraints loginButtonCons = 
-			new GridBagConstraints(1,5,1,1,1.0,0.0,GridBagConstraints.EAST,GridBagConstraints.NONE,new Insets(4,4,4,4),0,0);
-		GridBagConstraints cancelButtonCons = 
-			new GridBagConstraints(2,5,1,1,1.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets(4,4,4,4),0,0);
+		//GridBagConstraints loginButtonCons = 
+		//	new GridBagConstraints(1,5,1,1,1.0,0.0,GridBagConstraints.EAST,GridBagConstraints.NONE,new Insets(4,4,4,4),0,0);
+		//GridBagConstraints cancelButtonCons = 
+		//	new GridBagConstraints(2,5,1,1,1.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets(4,4,4,4),0,0);
 		
 		
 	//	add(messageLabel, messageLabelCons);
-		add(hostLabel, hostLabelCons);
+		if(!localLogin)
+			add(hostLabel, hostLabelCons);
 		add(usernameLabel, usernameLabelCons);
 		add(passwordLabel, passwordLabelCons);
 		add(usernameField, usernameFieldCons);
 		add(passwordField, passwordFieldCons);
-		add(hostComboBox, hostComboCons);
+		if(!localLogin)
+			add(hostComboBox, hostComboCons);
 		add(rememberCheckBox, rememberCheckBoxCons);
-		add(loginButton, loginButtonCons);			
-		add(cancelButton, cancelButtonCons);
+		//add(loginButton, loginButtonCons);			
+		//add(cancelButton, cancelButtonCons);
 		
-		((JTextField) hostComboBox.getEditor().getEditorComponent()).addKeyListener(myKeyAdapter);
+		//((JTextField) hostComboBox.getEditor().getEditorComponent()).addKeyListener(myKeyAdapter);
 		//hostComboBox.addActionListener(this);
 		usernameField.addCaretListener(this);
 		passwordField.addCaretListener(this);
 		
-		hostComboBox.addKeyListener(myKeyAdapter);
-		usernameField.addKeyListener(myKeyAdapter);
-		passwordField.addKeyListener(myKeyAdapter);
-		rememberCheckBox.addKeyListener(myKeyAdapter);
+		//hostComboBox.addKeyListener(myKeyAdapter);
+		//usernameField.addKeyListener(myKeyAdapter);
+		//passwordField.addKeyListener(myKeyAdapter);
+		//rememberCheckBox.addKeyListener(myKeyAdapter);
 		
 		hostComboBox.setEditable(true);
 		for(int i = 0; i < hosts.length; i++) {
@@ -129,7 +130,7 @@ class LoginPanel extends JPanel implements CaretListener, ActionListener {
 		setPassword(password);
 		setRememberPassword(rememberPassword);	
 	}
-	
+
 	public String getYukonHost() {
 		return hostComboBox.getSelectedItem().toString();
 	}
@@ -163,17 +164,17 @@ class LoginPanel extends JPanel implements CaretListener, ActionListener {
 	}
 	
 	void addLoginActionListener(ActionListener l) {
-		loginButton.addActionListener(l);
+	//	loginButton.addActionListener(l);
 	}
 	
 	void addCancelActionListener(ActionListener l) {
-		cancelButton.addActionListener(l);
+	//	cancelButton.addActionListener(l);
 	}
 	
 	public void caretUpdate(CaretEvent e) {
-		loginButton.setEnabled( getYukonHost().length() >0 &&
-								getUsername().length() > 0 && 
-								getPassword().length() > 0);
+	//	loginButton.setEnabled( getYukonHost().length() >0 &&
+	//							getUsername().length() > 0 && 
+	//							getPassword().length() > 0);
 	}
 	
 	/**
@@ -276,9 +277,9 @@ class LoginPanel extends JPanel implements CaretListener, ActionListener {
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
-		loginButton.setEnabled( getYukonHost().length() >0 &&
-										getUsername().length() > 0 && 
-										getPassword().length() > 0);
+		//loginButton.setEnabled( getYukonHost().length() >0 &&
+		//								getUsername().length() > 0 && 
+		//								getPassword().length() > 0);
 
 	}
 

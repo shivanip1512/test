@@ -47,7 +47,7 @@ class LoginPrefs extends CtiPreferences {
 	}
 	
 	public boolean getDefaultRememberPassword() {
-		return getBoolean(DEFAULT_REMEMBER_PASSWORD, false);
+		return getBoolean(DEFAULT_REMEMBER_PASSWORD, true);
 	}
 	
 	public void setCurrentSessionID(String sessID) {
