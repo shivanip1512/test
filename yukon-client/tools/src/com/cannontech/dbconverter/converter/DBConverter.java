@@ -1,5 +1,6 @@
 package com.cannontech.dbconverter.converter;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.dbtools.updater.MessageFrameAdaptor;
 import com.cannontech.tools.gui.*;
@@ -67,6 +68,12 @@ public String getName()
 {
 	return "DBConverter";
 }
+
+public String getParamText()
+{
+	return "Src-Directory:";
+}
+
 
 public void run()
 {
@@ -149,6 +156,10 @@ public static synchronized PtUnitRets[] getAllPointUnitd()
 	return (PtUnitRets[])list.toArray();
 }
 
+public String getDefaultValue()
+{
+	return CtiUtilities.USER_DIR;
+}
 
 /**
  * appends a file name with the path
@@ -159,7 +170,7 @@ public static synchronized PtUnitRets[] getAllPointUnitd()
 public String getFullFileName(String aFileName) 
 {
 	//try to get this value from our System properties
-	String propPath = System.getProperty(IRunnableDBTool.PROP_SRCPATH);
+	String propPath = System.getProperty(IRunnableDBTool.PROP_VALUE);
 	
 	return propPath + aFileName;
 }
@@ -466,7 +477,7 @@ public static void main(String[] args)
 	
 	com.cannontech.clientutils.CTILogger.info("Import File Path:" + filePathName);
 
-	System.setProperty( IRunnableDBTool.PROP_SRCPATH, 
+	System.setProperty( IRunnableDBTool.PROP_VALUE, 
 			filePathName + IRunnableDBTool.FS );
 
 	DBConverter converter = new DBConverter();

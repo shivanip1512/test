@@ -89,7 +89,7 @@ public class DBUpdater extends MessageFrameAdaptor
 
 	public final static String[] CMD_LINE_PARAM_NAMES = 
 	{
-		IRunnableDBTool.PROP_SRCPATH,
+		IRunnableDBTool.PROP_VALUE,
 		"verbose"
 	};
 
@@ -106,7 +106,16 @@ public class DBUpdater extends MessageFrameAdaptor
 		return "DBUpdater";
 	}
 
-	
+	public String getParamText()
+	{
+		return "Src-Directory:";
+	}
+
+	public String getDefaultValue()
+	{
+		return CtiUtilities.USER_DIR;
+	}
+
 	public static void initApp( String[] args )
 	{
 		final CommandLineParser parser;
@@ -140,9 +149,10 @@ public class DBUpdater extends MessageFrameAdaptor
 			getIMessageFrame().addOutput("		Lines read from files successfully, starting DB transactions..." );
 			getIMessageFrame().addOutput("");			
 
-			executeCommands();
-
-			getIMessageFrame().finish( "DBUpdate Completed Successfully" );
+			if( executeCommands() )
+				getIMessageFrame().finish( "DBUpdate Completed Successfully" );
+			else
+				getIMessageFrame().finish( "DBUpdate was Unsuccessfully executed" );
 		}
 		catch( Exception e )
 		{
@@ -168,12 +178,12 @@ public class DBUpdater extends MessageFrameAdaptor
 			System.out.println("An intermediate file is generated in the " + CtiUtilities.getLogDirPath() );
 			System.out.println("directory for each DBUpdate file found.");
 			System.out.println("");
-			System.out.println(" DBUpdater " + IRunnableDBTool.PROP_SRCPATH + "=<SRC_PATH> [verbose= true | false]");
+			System.out.println(" DBUpdater " + IRunnableDBTool.PROP_VALUE + "=<SRC_PATH> [verbose= true | false]");
 			System.out.println("");
-			System.out.println("   " + IRunnableDBTool.PROP_SRCPATH + "   : directory that contains the script files for updating the DB");
+			System.out.println("   " + IRunnableDBTool.PROP_VALUE + "   : directory that contains the script files for updating the DB");
 			System.out.println("   verbose  : should we show the most output possible (default true)");
 			System.out.println("");
-			System.out.println(" example: DBUpdater " + IRunnableDBTool.PROP_SRCPATH + "=d:" +
+			System.out.println(" example: DBUpdater " + IRunnableDBTool.PROP_VALUE + "=d:" +
 						FS + "YukonMiscInstall" + FS + "YukonDatabase" + FS + "DatabaseUpdates" +
 						FS + "SqlServer");
 			

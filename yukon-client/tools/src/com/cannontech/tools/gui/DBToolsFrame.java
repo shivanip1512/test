@@ -7,6 +7,7 @@ import java.util.Vector;
 import javax.swing.ButtonGroup;
 import javax.swing.JFileChooser;
 import javax.swing.JRadioButton;
+import javax.swing.filechooser.FileFilter;
 
 import com.cannontech.clientutils.popup.PopUpMenuShower;
 import com.cannontech.dbconverter.converter.DBConverter;
@@ -197,6 +198,11 @@ private javax.swing.JButton getBrowseButton() {
 			ivjBrowseButton.setName("BrowseButton");
 			ivjBrowseButton.setText("Browse");
 			// user code begin {1}
+			
+			ivjBrowseButton.setMinimumSize(new java.awt.Dimension(90, 25));
+			ivjBrowseButton.setMaximumSize(new java.awt.Dimension(90, 25));
+			ivjBrowseButton.setPreferredSize(new java.awt.Dimension(90, 25));
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -290,8 +296,8 @@ private javax.swing.JPanel getButtonPanel() {
 			java.awt.GridBagConstraints constraintsStartButton = new java.awt.GridBagConstraints();
 			constraintsStartButton.gridx = 2; constraintsStartButton.gridy = 2;
 			constraintsStartButton.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsStartButton.ipadx = 14;
-			constraintsStartButton.insets = new java.awt.Insets(4, 3, 10, 357);
+			constraintsStartButton.insets = new java.awt.Insets(4, 3, 10, 6);
+			constraintsStartButton.weightx = 1.0;
 			getButtonPanel().add(getStartButton(), constraintsStartButton);
 
 			java.awt.GridBagConstraints constraintsPathField = new java.awt.GridBagConstraints();
@@ -299,23 +305,19 @@ private javax.swing.JPanel getButtonPanel() {
 			constraintsPathField.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsPathField.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsPathField.weightx = 1.0;
-			constraintsPathField.ipadx = 432;
-			constraintsPathField.ipady = 7;
 			constraintsPathField.insets = new java.awt.Insets(14, 3, 4, 6);
 			getButtonPanel().add(getPathField(), constraintsPathField);
 
 			java.awt.GridBagConstraints constraintsBrowseButton = new java.awt.GridBagConstraints();
 			constraintsBrowseButton.gridx = 3; constraintsBrowseButton.gridy = 1;
 			constraintsBrowseButton.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsBrowseButton.ipadx = 6;
 			constraintsBrowseButton.insets = new java.awt.Insets(12, 6, 6, 71);
 			getButtonPanel().add(getBrowseButton(), constraintsBrowseButton);
 
 			java.awt.GridBagConstraints constraintsJLabelOption = new java.awt.GridBagConstraints();
 			constraintsJLabelOption.gridx = 1; constraintsJLabelOption.gridy = 1;
 			constraintsJLabelOption.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelOption.ipadx = 5;
-			constraintsJLabelOption.insets = new java.awt.Insets(17, 12, 12, 3);
+			constraintsJLabelOption.insets = new java.awt.Insets(17, 12, 4, 3);
 			getButtonPanel().add(getJLabelOption(), constraintsJLabelOption);
 			// user code begin {1}
 			// user code end
@@ -339,15 +341,25 @@ public void getChooser()
 	
 	//This will need to be updated someday for a new version of swing
 	java.awt.Frame parent = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
-	javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+	JFileChooser fileChooser = new JFileChooser();
 
-	//we set the chooser so it will only look for dirs
+
+	//we set the chooser so it will only look for dirs	
+	fileChooser.setAcceptAllFileFilterUsed( false );
 	fileChooser.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY );
 	fileChooser.setApproveButtonText("Select");
 	fileChooser.setApproveButtonMnemonic('s');
 	
+	//allow them to see only directories
+	fileChooser.setFileFilter( new FileFilter()
+	{
+		public boolean accept(File f) { return f.isDirectory(); };
+		public String getDescription() { return "Directories Only"; };
+	});
+
+
 	//set the chooser to the current location
-	fileChooser.setCurrentDirectory( 
+	fileChooser.setCurrentDirectory(
 			new File(getPathField().getText()) );
 
 
@@ -386,8 +398,8 @@ private javax.swing.JLabel getJLabelMsgs() {
 			ivjJLabelMsgs.setName("JLabelMsgs");
 			ivjJLabelMsgs.setPreferredSize(new java.awt.Dimension(250, 14));
 			ivjJLabelMsgs.setText("Output Messages");
-			ivjJLabelMsgs.setMaximumSize(new java.awt.Dimension(250, 14));
-			ivjJLabelMsgs.setMinimumSize(new java.awt.Dimension(250, 14));
+//			ivjJLabelMsgs.setMaximumSize(new java.awt.Dimension(250, 14));
+//			ivjJLabelMsgs.setMinimumSize(new java.awt.Dimension(250, 14));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -437,9 +449,12 @@ private javax.swing.JPanel getJPanelTools() {
 			ivjJPanelTools.setName("JPanelTools");
 			ivjJPanelTools.setBorder(ivjLocalBorder);
 			ivjJPanelTools.setLayout(getJPanelToolsFlowLayout());
-			ivjJPanelTools.setMaximumSize(new java.awt.Dimension(32767, 32767));
-			ivjJPanelTools.setPreferredSize(new java.awt.Dimension(800, 61));
-			ivjJPanelTools.setMinimumSize(new java.awt.Dimension(800, 61));
+			
+			ivjJPanelTools.setMinimumSize(new java.awt.Dimension(130, 90));
+			ivjJPanelTools.setMaximumSize(new java.awt.Dimension(130, 90));
+			ivjJPanelTools.setPreferredSize(new java.awt.Dimension(130, 90));
+			
+			
 			getJPanelTools().add(getJRadioButton0(), getJRadioButton0().getName());
 			getJPanelTools().add(getJRadioButton1(), getJRadioButton1().getName());
 			getJPanelTools().add(getJRadioButton2(), getJRadioButton2().getName());
@@ -458,22 +473,16 @@ private javax.swing.JPanel getJPanelTools() {
 					{
 						JRadioButton butt = (JRadioButton)e.getSource();
 						
-						int indx = -1;
+						//store the tool in the radio button
+						IRunnableDBTool tool = (IRunnableDBTool)butt.getClientProperty( butt );
+
+						getJLabelOption().setText( tool.getParamText() );
 						
-						try
-						{
-							indx = Integer.parseInt( butt.getActionCommand() );
-						}
-						catch( Exception ex ) {}
+						if( tool.getDefaultValue() != null )
+							getPathField().setText( tool.getDefaultValue() );
 
-
-						if( indx == 2 )
-							getJLabelOption().setText( IRunnableDBTool.PROP_ENABLE );
-						else
-							getJLabelOption().setText( IRunnableDBTool.PROP_SRCPATH );						
-
-
-						getBrowseButton().setEnabled( indx != 2 );
+						getBrowseButton().setEnabled( 
+							!(tool instanceof ModifyConstraints) );
 					}
 				}
 			};
@@ -482,15 +491,17 @@ private javax.swing.JPanel getJPanelTools() {
 			for( int i = 0; i < getJPanelTools().getComponentCount(); i++ )
 			{
 				if( getJPanelTools().getComponent(i) instanceof JRadioButton )
-				{
+				{					
 					JRadioButton butt = (JRadioButton)getJPanelTools().getComponent(i);
 					
 					if( i < ALL_TOOLS.length )
 					{
 						buttGroup.add( butt );
 						butt.setText( ALL_TOOLS[i].getName() );
-						butt.setActionCommand( String.valueOf(i) );
 						butt.addActionListener( al );
+						
+						//store the tool in the radio button
+						butt.putClientProperty( butt, ALL_TOOLS[i] );
 					}
 					else
 					{
@@ -679,40 +690,37 @@ private javax.swing.JPanel getMainPanel() {
 			ivjMainPanel.setName("MainPanel");
 			ivjMainPanel.setLayout(new java.awt.GridBagLayout());
 
-			java.awt.GridBagConstraints constraintsButtonPanel = new java.awt.GridBagConstraints();
-			constraintsButtonPanel.gridx = 1; constraintsButtonPanel.gridy = 3;
-			constraintsButtonPanel.gridwidth = 2;
-			constraintsButtonPanel.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsButtonPanel.anchor = java.awt.GridBagConstraints.SOUTH;
-			constraintsButtonPanel.weightx = 1.0;
-			constraintsButtonPanel.weighty = 1.0;
-			constraintsButtonPanel.insets = new java.awt.Insets(3, 12, 10, 9);
-			getMainPanel().add(getButtonPanel(), constraintsButtonPanel);
+			java.awt.GridBagConstraints constraintsJLabelMsgs = new java.awt.GridBagConstraints();
+			constraintsJLabelMsgs.gridx = 1; constraintsJLabelMsgs.gridy = 1;
+			constraintsJLabelMsgs.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJLabelMsgs.insets = new java.awt.Insets(11, 16, 2, 2);
+			getMainPanel().add(getJLabelMsgs(), constraintsJLabelMsgs);
 
 			java.awt.GridBagConstraints constraintsOutputScrollPane = new java.awt.GridBagConstraints();
 			constraintsOutputScrollPane.gridx = 1; constraintsOutputScrollPane.gridy = 2;
 			constraintsOutputScrollPane.fill = java.awt.GridBagConstraints.BOTH;
 			constraintsOutputScrollPane.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsOutputScrollPane.weightx = 2.0;
-			constraintsOutputScrollPane.weighty = 2.0;
-			constraintsOutputScrollPane.ipady = 291;
+			constraintsOutputScrollPane.weightx = 1.0;
+			constraintsOutputScrollPane.weighty = 1.0;
 			constraintsOutputScrollPane.insets = new java.awt.Insets(2, 12, 2, 2);
 			getMainPanel().add(getOutputScrollPane(), constraintsOutputScrollPane);
 
-			java.awt.GridBagConstraints constraintsJLabelMsgs = new java.awt.GridBagConstraints();
-			constraintsJLabelMsgs.gridx = 1; constraintsJLabelMsgs.gridy = 1;
-			constraintsJLabelMsgs.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelMsgs.ipadx = 47;
-			constraintsJLabelMsgs.insets = new java.awt.Insets(11, 16, 2, 373);
-			getMainPanel().add(getJLabelMsgs(), constraintsJLabelMsgs);
+			java.awt.GridBagConstraints constraintsButtonPanel = new java.awt.GridBagConstraints();
+			constraintsButtonPanel.gridx = 1; constraintsButtonPanel.gridy = 3;
+			constraintsButtonPanel.gridwidth = 2;
+			constraintsButtonPanel.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsButtonPanel.anchor = java.awt.GridBagConstraints.SOUTH;
+			constraintsButtonPanel.weightx = 0.0;
+			constraintsButtonPanel.weighty = 0.0;
+			constraintsButtonPanel.insets = new java.awt.Insets(3, 12, 10, 9);
+			getMainPanel().add(getButtonPanel(), constraintsButtonPanel);
 
 			java.awt.GridBagConstraints constraintsJPanelTools = new java.awt.GridBagConstraints();
 			constraintsJPanelTools.gridx = 2; constraintsJPanelTools.gridy = 2;
 			constraintsJPanelTools.fill = java.awt.GridBagConstraints.BOTH;
 			constraintsJPanelTools.anchor = java.awt.GridBagConstraints.EAST;
-			constraintsJPanelTools.weightx = 1.0;
-			constraintsJPanelTools.weighty = 1.0;
-			constraintsJPanelTools.ipadx = -536;
+			constraintsJPanelTools.weightx = 0.0;
+			constraintsJPanelTools.weighty = 0.0;
 			constraintsJPanelTools.insets = new java.awt.Insets(2, 2, 2, 8);
 			getMainPanel().add(getJPanelTools(), constraintsJPanelTools);
 			// user code begin {1}
@@ -730,7 +738,6 @@ private javax.swing.JPanel getMainPanel() {
  * Return the MessageArea property value.
  * @return javax.swing.JTextArea
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextArea getMessageArea() 
 {
 	if (ivjMessageArea == null) 
@@ -739,12 +746,10 @@ private javax.swing.JTextArea getMessageArea()
 		{
 			ivjMessageArea = new javax.swing.JTextArea();
 			ivjMessageArea.setName("MessageArea");
-			ivjMessageArea.setBounds(0, 0, 160, 120);
-			// user code begin {1}
+			
+			ivjMessageArea.setBounds(0, 0, 160, 120);			
 
 			ivjMessageArea.setEditable( false );
-
-			// user code end
 		}
 		catch (java.lang.Throwable ivjExc) 
 		{
@@ -770,8 +775,10 @@ private javax.swing.JScrollPane getOutputScrollPane() {
 			ivjOutputScrollPane.setAutoscrolls(true);
 			ivjOutputScrollPane.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 			ivjOutputScrollPane.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			
 			getOutputScrollPane().setViewportView(getMessageArea());
-			// user code begin {1}
+			// user code begin {1}			
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -833,6 +840,11 @@ private javax.swing.JButton getStartButton() {
 			ivjStartButton.setName("StartButton");
 			ivjStartButton.setText("Start...");
 			// user code begin {1}
+			
+			ivjStartButton.setMinimumSize(new java.awt.Dimension(90, 25));
+			ivjStartButton.setMaximumSize(new java.awt.Dimension(90, 25));
+			ivjStartButton.setPreferredSize(new java.awt.Dimension(90, 25));
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -984,10 +996,23 @@ public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e)
 private void setProps()
 {
 	// get the text from the input field
-	System.setProperty( IRunnableDBTool.PROP_SRCPATH, getPathField().getText() );
-	System.setProperty( IRunnableDBTool.PROP_ENABLE, getPathField().getText() );
+	System.setProperty( IRunnableDBTool.PROP_VALUE, getPathField().getText() );
 }
 
+private JRadioButton getSelectedButton()
+{
+	for( int i = 0; i < getJPanelTools().getComponentCount(); i++ )
+	{		
+		if( getJPanelTools().getComponent(i) instanceof JRadioButton )
+		{
+			if( ((JRadioButton)getJPanelTools().getComponent(i)).isSelected() )
+				return (JRadioButton)getJPanelTools().getComponent(i);
+		}
+		
+	}
+	
+	return null;
+}
 
 //=====================================================================================
 //we null out any previous threads that might exist, then make a new one, and start
@@ -997,16 +1022,20 @@ public void startButton_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 {
 	setProps();
 	
-	int opt = 
-		Integer.valueOf(buttGroup.getSelection().getActionCommand()).intValue();
+	//store the tool in the radio button
+	JRadioButton butt = getSelectedButton();
+	
+	if( butt != null )
+	{
+		IRunnableDBTool tool = (IRunnableDBTool)butt.getClientProperty( butt );
 
-		
-	//ourConverter = new DBConverter(thePath);
-	ALL_TOOLS[opt].setIMessageFrame( this );
-
-	//printThread = null;
-	Thread t = new Thread( ALL_TOOLS[opt] );
-	t.setName("DBTool");
-	t.start();
+		tool.setIMessageFrame( this );
+	
+		//printThread = null;
+		Thread t = new Thread( tool );
+		t.setName("DBTool");
+		t.start();
+	}
 }
+
 }

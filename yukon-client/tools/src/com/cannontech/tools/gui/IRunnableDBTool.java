@@ -8,10 +8,8 @@ package com.cannontech.tools.gui;
  */
 public interface IRunnableDBTool extends Runnable
 {
-	//used as keys in hash maps and labels in GUIs
-	public static final String PROP_SRCPATH = "Src-Path";
-	public static final String PROP_ENABLE = "Enable/Disable";
-
+	//used as a key in hash maps and labels in GUIs
+	public static final String PROP_VALUE = "src_path";
 
 	//less typing for these
 	public static final String FS = System.getProperty("file.separator");
@@ -21,4 +19,8 @@ public interface IRunnableDBTool extends Runnable
 	void setIMessageFrame( IMessageFrame frm );
 	
 	String getName();
+	
+	String getParamText();
+	
+	String getDefaultValue();
 }

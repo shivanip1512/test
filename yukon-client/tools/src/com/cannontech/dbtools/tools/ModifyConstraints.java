@@ -37,6 +37,16 @@ public class ModifyConstraints extends MessageFrameAdaptor
 			getIMessageFrame().finish( "All Tables Processed" );
 	}
 
+	public String getParamText()
+	{
+		return "Enable or Disable:";
+	}
+
+	public String getDefaultValue()
+	{
+		return "Enable";
+	}
+
 	/**
 	 * ModifyConstraints disables/enables all the user constraints of the database 
 	 * provided.  Use with caution.  Possibly useful in conjunction with
@@ -48,7 +58,7 @@ public class ModifyConstraints extends MessageFrameAdaptor
 	 */
 	private boolean modifyConstraints()
 	{
-		final String enable = System.getProperty( IRunnableDBTool.PROP_ENABLE );
+		final String enable = System.getProperty( IRunnableDBTool.PROP_VALUE );
 
 		if( enable == null 
 			 || 
