@@ -9,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/07/30 21:35:07 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/09/20 16:11:51 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.6  2004/09/20 16:11:51  mfisher
+* changed RTM functions to be static - we don't need to keep state
+*
 * Revision 1.5  2004/07/30 21:35:07  cplender
 * RTM stuff
 *
@@ -68,7 +71,7 @@ protected:
 
     INT loadControl();                 // This is a shed!
     INT restoreLoadControl();
-    INT formRTMRequest(USHORT command);
+    //INT formRTMRequest(USHORT command);
 
 
     /*
@@ -127,6 +130,9 @@ public:
     RWCString strategyAsString() const;
     RWCString functionAsString() const;
 
+    static INT formatTMScmd (UCHAR *abuf, INT *buflen, USHORT TMS_cmd_type, USHORT xmitter);
+    static INT TMSlen (UCHAR *abuf, INT *len);
+    static INT procTMSmsg(UCHAR *abuf, INT len, SA_CODE *scode, X205CMD *x205cmd);
 };
 
 #endif // #ifndef __PROT_SA3RDPARTY_H__

@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_sa3rdparty
@@ -8,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/07/30 21:35:07 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/09/20 16:11:51 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.9  2004/09/20 16:11:51  mfisher
+* changed RTM functions to be static - we don't need to keep state
+*
 * Revision 1.8  2004/07/30 21:35:07  cplender
 * RTM stuff
 *
@@ -122,12 +124,12 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
         }
     }
 
-    if(_sa._groupType == GRP_SA_RTM)
+/*    if(_sa._groupType == GRP_SA_RTM)
     {
         formRTMRequest( parse.getiValue("rtm_command") );
         _messageReady = true;
     }
-    else
+    else*/
     {
         switch(_sa._commandType)
         {
@@ -1305,7 +1307,6 @@ void CtiProtocolSA3rdParty::computeSnCTime()
 
 }
 
-
 /*
  *  command may be one of the following:
 
@@ -1316,6 +1317,7 @@ void CtiProtocolSA3rdParty::computeSnCTime()
     #define TMS_ACK 3
  */
 
+/*
 INT CtiProtocolSA3rdParty::formRTMRequest(USHORT command)
 {
     INT retCode;
@@ -1342,3 +1344,20 @@ INT CtiProtocolSA3rdParty::formRTMRequest(USHORT command)
 
     return retCode;
 }
+*/
+
+INT CtiProtocolSA3rdParty::formatTMScmd (UCHAR *abuf, INT *buflen, USHORT TMS_cmd_type, USHORT xmitter)
+{
+    return ::formatTMScmd(abuf, buflen, TMS_cmd_type, xmitter);
+}
+
+INT CtiProtocolSA3rdParty::TMSlen (UCHAR *abuf, INT *len)
+{
+    return ::TMSlen(abuf, len);
+}
+
+INT CtiProtocolSA3rdParty::procTMSmsg(UCHAR *abuf, INT len, SA_CODE *scode, X205CMD *x205cmd)
+{
+    return ::procTMSmsg(abuf, len, scode, x205cmd);
+}
+
