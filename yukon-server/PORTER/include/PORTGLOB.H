@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/PORTGLOB.H-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/06/10 20:58:04 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/07/21 22:06:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,8 +50,9 @@ using namespace std;
 #define P_PERFORM_EVENT                3
 #define P_QUIT_EVENT                   4
 #define P_REFRESH_EVENT                5
+#define P_GWRESULT_EVENT               6
 
-#define NUMPORTEREVENTS                6
+#define NUMPORTEREVENTS                7
 
 
 typedef set< CtiStatistics > CtiStatisticsSet_t;
