@@ -25,8 +25,8 @@ import com.cannontech.esub.web.SessionInfo;
  */
 public class AuthFilter implements Filter {
 	
-	private static final String LOGIN_FORM_URL = "login.jsp";
-	private static final String LOGIN_ERROR_URL = "login.jsp?failed=true";
+	private static String LOGIN_FORM_URL = "login.jsp";
+	private static String LOGIN_ERROR_URL = "login.jsp?failed=true";
 	// Keys to store things
 	private static final String LOGGED_IN		 = "LOGGED_IN";
 	private static final String SESSION_INFO   = "SESSIONINFO";
@@ -53,28 +53,16 @@ public class AuthFilter implements Filter {
 		FilterChain chain)
 		throws IOException, ServletException {
 
-
 		HttpServletRequest hreq = (HttpServletRequest)req;
 		HttpServletResponse hres = (HttpServletResponse)resp;
 
 		String currentURI = hreq.getRequestURL().toString();
         String currentURL = hreq.getRequestURI();
 	
-		// get everything after the context root
-        int firstSlash = currentURL.indexOf("/",1); // jump past the starting slash
-        String targetURL = null;
-        if (firstSlash != -1) targetURL = currentURL.substring(firstSlash + 1, currentURL.length());
-
+		String targetURL = currentURL;
+		
 		Logger.global.info("Auth Filter invoked, currentURI=" + currentURI + "  currentURL=" + currentURL);
 				
-		// Check for a the login field, if set do try to valid them 	
-		String doLogin = hreq.getParameter(FORM_LOGIN);				
-        if (doLogin != null) {
-            validateLogin(req, resp, chain);
-            // jump out of this method, shouldn't get here
-            return;
-        }
-
 		// check if the user is signed on
         boolean signedOn = false;
         if (hreq.getSession().getAttribute(LOGGED_IN) != null) {
@@ -83,18 +71,27 @@ public class AuthFilter implements Filter {
             hreq.getSession().setAttribute(LOGGED_IN, new Boolean(false));
         }
         
+        // Check for a the login field, if set do try to valid them 	
+		String doLogin = hreq.getParameter(FORM_LOGIN);				
+        if (doLogin != null) {
+            validateLogin(req, resp, chain);
+            // jump out of this method, shouldn't get here
+            return;
+        }
+        
         // jump to the resource if signed on
         // FIXFIXFIX do a check on the target to see if they are allowed
         // to access this resource!!        
-        if (signedOn) {
+        if (signedOn || 
+        	currentURL.equals(hreq.getContextPath() + "/" + LOGIN_FORM_URL)) {
          	chain.doFilter(req,resp);
             return;
         }
         else {
         	// put the orginal url in the session so others can access
             hreq.getSession().setAttribute(ORIGINAL_URL,  targetURL);
-            config.getServletContext().getRequestDispatcher("/" + LOGIN_FORM_URL).forward(req, resp);
-            //hres.sendRedirect(LOGIN_FORM_URL);
+            //config.getServletContext().getRequestDispatcher("/" + LOGIN_FORM_URL).forward(req, resp);
+            hres.sendRedirect(hreq.getContextPath() + "/" + LOGIN_FORM_URL);
             // Jump out of the filter and go to the next page
              return;        	
         }			
@@ -122,14 +119,19 @@ public class AuthFilter implements Filter {
 			hreq.getSession().setAttribute(LOGGED_IN, Boolean.TRUE);
 			hreq.getSession().setAttribute(SESSION_INFO,info);			
             String targetURL = (String)hreq.getSession().getAttribute(ORIGINAL_URL);
+            
+            if( targetURL == null ) {
+             	targetURL = hreq.getRequestURL().toString();
+            }
+            
 			Logger.global.info("redirecting authenticated user to: " + targetURL);
             hres.sendRedirect(targetURL);
             return;
 		}
 		else {
 			Logger.global.info("failed login, redirecting user to: " + LOGIN_ERROR_URL);
-			config.getServletContext().getRequestDispatcher("/" + LOGIN_ERROR_URL).forward(req, resp);
-			//hres.sendRedirect(LOGIN_ERROR_URL);
+			//config.getServletContext().getRequestDispatcher("/" + LOGIN_ERROR_URL).forward(req, resp);
+			hres.sendRedirect(hreq.getContextPath() + "/" + LOGIN_ERROR_URL);
             return;	
 		}
 	}

@@ -29,10 +29,10 @@
             </a></font><i><font color="#FFFFFF" size="-1" face="Times New Roman"><br clear="ALL">
               </font></i></td>
             <td width="32%" valign="bottom"> 
-              <div align="center"><img src="/images/esubHeader.gif" width="347" height="30"></div>
+              <div align="center"><img src="esubHeader.gif" width="347" height="30"></div>
             </td>
             <td width="34%" valign="top"> 
-              <div align="right"><img src="/images/YukonLogoWhite.gif" width="132" height="28"></div>
+              <div align="right"><img src="YukonLogoWhite.gif" width="132" height="28"></div>
               <font face="Arial, Helvetica, sans-serif" size="2"><A HREF="esub-demo/SVGView.exe">Click here to install Adobe SVG Plugin 3.0
             </A></FONT><BR>
             <BR>
@@ -114,7 +114,7 @@
           </tr>
           <tr> 
             <td width="40%" height="20">&nbsp; </td>
-            <td width="60%" height="20"> <input type="image" src="/images/SubmitButton.gif" width="58" height="20" border="0"></td>
+            <td width="60%" height="20"> <input type="image" src="SubmitButton.gif" width="58" height="20" border="0"></td>
             <input name="LOGIN" type="hidden" value="true"/>
             </form>
           </tr>
@@ -122,7 +122,7 @@
 		<div align="center"><br>
                           <font face="Arial, Helvetica, sans-serif" size="2">To obtain a password, 
               or if you have forgotten your password, contact:<br>
-                <a href="mailto:info@cannontech.com"><img src="/images/Contact.gif" width="128" height="20" border="0"></a> 
+                <a href="mailto:info@cannontech.com"><img src="Contact.gif" width="128" height="20" border="0"></a> 
                 </font></div>
       </center>
 			</td>
