@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
@@ -164,6 +165,8 @@ public class StarsAdmin extends HttpServlet {
 			updateOperatorLogin( user, req, session );
 		else if (action.equalsIgnoreCase("DeleteOperatorLogin"))
 			deleteOperatorLogin( user, req, session );
+		else if (action.equalsIgnoreCase("MemberLogin"))
+			memberLogin( user, req, session );
         
     	resp.sendRedirect( redirect );
 	}
@@ -1106,11 +1109,8 @@ public class StarsAdmin extends HttpServlet {
     		String faqLink = req.getParameter("FAQLink");
         	String value = AuthFuncs.getRolePropertyValue( liteUser, ConsumerInfoRole.WEB_LINK_FAQ, "(none)" );
 			
-        	LiteYukonGroup customerGroup = energyCompany.getResidentialCustomerGroup();
-        	LiteYukonGroup operatorGroup = energyCompany.getWebClientOperatorGroup();
-        	
-        	boolean updateCustGroup = AuthFuncs.getRolePropValueGroup(customerGroup, ResidentialCustomerRole.WEB_LINK_FAQ, null) != null;
-        	boolean updateOperGroup = AuthFuncs.getRolePropValueGroup(operatorGroup, ConsumerInfoRole.WEB_LINK_FAQ, null) != null;
+        	LiteYukonGroup[] customerGroups = energyCompany.getResidentialCustomerGroups();
+        	LiteYukonGroup[] operatorGroups = energyCompany.getWebClientOperatorGroups();
         	
     		String sql = null;
     		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
@@ -1120,38 +1120,34 @@ public class StarsAdmin extends HttpServlet {
         		!customizedFAQ && ServerUtils.forceNotNone(value).length() > 0)
         	{
         		if (!customizedFAQ) faqLink = "(none)";
-    			if (updateCustGroup) {
-		        	sql = "UPDATE YukonGroupRole SET Value = '" + faqLink + "'" +
-		        			" WHERE GroupID = " + customerGroup.getGroupID() +
-		        			" AND RoleID = " + ResidentialCustomerRole.ROLEID +
-		        			" AND RolePropertyID = " + ResidentialCustomerRole.WEB_LINK_FAQ;
-		        	stmt.setSQLString( sql );
-		        	stmt.execute();
-    			}
+        		
+        		for (int i = 0; i < customerGroups.length; i++) {
+        			if (AuthFuncs.getRolePropValueGroup(customerGroups[i], ResidentialCustomerRole.WEB_LINK_FAQ, null) != null) {
+						sql = "UPDATE YukonGroupRole SET Value = '" + faqLink + "'" +
+								" WHERE GroupID = " + customerGroups[i].getGroupID() +
+								" AND RoleID = " + ResidentialCustomerRole.ROLEID +
+								" AND RolePropertyID = " + ResidentialCustomerRole.WEB_LINK_FAQ;
+						stmt.setSQLString( sql );
+						stmt.execute();
+						
+						ServerUtils.handleDBChange( customerGroups[i], DBChangeMsg.CHANGE_TYPE_UPDATE );
+        			}
+        		}
 	        	
-	        	if (updateOperGroup) {
-		        	sql = "UPDATE YukonGroupRole SET Value = '" + faqLink + "'" +
-		        			" WHERE GroupID = " + operatorGroup.getGroupID() +
-		        			" AND RoleID = " + ConsumerInfoRole.ROLEID +
-		        			" AND RolePropertyID = " + ConsumerInfoRole.WEB_LINK_FAQ;
+	        	for (int i = 0; i < operatorGroups.length; i++) {
+	        		if (AuthFuncs.getRolePropValueGroup(operatorGroups[i], ConsumerInfoRole.WEB_LINK_FAQ, null) != null) {
+						sql = "UPDATE YukonGroupRole SET Value = '" + faqLink + "'" +
+								" WHERE GroupID = " + operatorGroups[i].getGroupID() +
+								" AND RoleID = " + ConsumerInfoRole.ROLEID +
+								" AND RolePropertyID = " + ConsumerInfoRole.WEB_LINK_FAQ;
+						stmt.setSQLString( sql );
+						stmt.execute();
+	        		}
+	        		
+					ServerUtils.handleDBChange( operatorGroups[i], DBChangeMsg.CHANGE_TYPE_UPDATE );
 	        	}
-	        	else {
-		        	sql = "UPDATE YukonUserRole SET Value = '" + faqLink + "'" +
-		        			" WHERE UserID = " + liteUser.getUserID() +
-		        			" AND RoleID = " + ConsumerInfoRole.ROLEID +
-		        			" AND RolePropertyID = " + ConsumerInfoRole.WEB_LINK_FAQ;
-	        	}
-	        	stmt.setSQLString( sql );
-        		stmt.execute();
         	}
         	
-    		if (updateCustGroup)
-	        	ServerUtils.handleDBChange( customerGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
-	        if (updateOperGroup)
-	        	ServerUtils.handleDBChange( operatorGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
-	        else
-	        	ServerUtils.handleDBChange( liteUser, DBChangeMsg.CHANGE_TYPE_UPDATE );
-
         	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "FAQ link updated successfully");
         }
         catch (Exception e) {
@@ -1910,21 +1906,34 @@ public class StarsAdmin extends HttpServlet {
 		try {
 			String warning = null;
 			LiteYukonGroup operGroup = null;
-			LiteYukonGroup custGroup = null;
 			
-			String operGroupName = req.getParameter("OperatorGroup");
-			String[] operGroupNames= operGroupName.split(",");
-			if (operGroupNames.length > 0) {
-				operGroup = AuthFuncs.getGroup( operGroupNames[0] );
-				if (operGroup == null)
-					throw new WebClientException( "Group '" + operGroupNames[0] + "' doesn't exist");
+			String[] operGroupNames= req.getParameter("OperatorGroup").split(",");
+			String operGroupName = "";
+			for (int i = 0; i < operGroupNames.length; i++) {
+				String groupName = operGroupNames[i].trim();
+				LiteYukonGroup group = AuthFuncs.getGroup( groupName );
+				if (group == null)
+					throw new WebClientException( "Operator group '" + groupName + "' doesn't exist");
+				
+				if (i == 0)
+					operGroupName += groupName;
+				else
+					operGroupName += "," + groupName;
+				if (i == 0) operGroup = group;
 			}
 			
-			String custGroupName = req.getParameter("CustomerGroup");
-			if (custGroupName.length() > 0) {
-				custGroup = AuthFuncs.getGroup( custGroupName );
-				if (custGroup == null)
-					throw new WebClientException( "Group '" + custGroupName + "' doesn't exist");
+			String[] custGroupNames = req.getParameter("CustomerGroup").split(",");
+			String custGroupName = "";
+			for (int i = 0; i < custGroupNames.length; i++) {
+				String groupName = custGroupNames[i].trim();
+				LiteYukonGroup group = AuthFuncs.getGroup( groupName );
+				if (group == null)
+					throw new WebClientException( "Customer group '" + groupName + "' doesn't exist");
+				
+				if (i == 0)
+					custGroupName += groupName;
+				else
+					custGroupName += "," + groupName;
 			}
 			
 			if (YukonUserFuncs.getLiteYukonUser( req.getParameter("Username") ) != null)
@@ -2066,6 +2075,25 @@ public class StarsAdmin extends HttpServlet {
 		
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
+	}
+	
+	private void memberLogin(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		int userID = Integer.parseInt( req.getParameter("UserID") );
+		LiteYukonUser memberLogin = YukonUserFuncs.getLiteYukonUser( userID );
+		String redir = req.getParameter( ServletUtils.ATT_REDIRECT );
+		
+		try {
+			redirect = req.getContextPath() + "/servlet/LoginController?" +
+					LoginController.ACTION + "=" + LoginController.LOGIN + "&" +
+					LoginController.USERNAME + "=" + memberLogin.getUsername() + "&" +
+					LoginController.PASSWORD + "=" + memberLogin.getPassword() + "&" +
+					LoginController.REDIRECT + "=" + java.net.URLEncoder.encode(redir, "UTF-8") + "&" +
+					LoginController.SAVE_CURRENT_USER + "=true";
+		}
+		catch (java.io.UnsupportedEncodingException e) {
+			e.printStackTrace();
+			redirect = redir;
+		}
 	}
 	
 }

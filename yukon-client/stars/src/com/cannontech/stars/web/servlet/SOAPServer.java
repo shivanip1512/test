@@ -465,14 +465,16 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			}
 		}
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB) {
-			LiteContact liteContact = YukonUserFuncs.getLiteContact( msg.getId() );
-			if (liteContact != null) {
-				for (int i = 0; i < companies.size(); i++) {
-					LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
-					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInfoByContact( liteContact.getContactID() );
-					if (liteAcctInfo != null) {
-						handleYukonUserChange( msg, energyCompany, liteAcctInfo );
-						break;
+			if (msg.getCategory().equals( DBChangeMsg.CAT_YUKON_USER )) {
+				LiteContact liteContact = YukonUserFuncs.getLiteContact( msg.getId() );
+				if (liteContact != null) {
+					for (int i = 0; i < companies.size(); i++) {
+						LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
+						LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInfoByContact( liteContact.getContactID() );
+						if (liteAcctInfo != null) {
+							handleYukonUserChange( msg, energyCompany, liteAcctInfo );
+							break;
+						}
 					}
 				}
 			}
@@ -649,7 +651,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 					// We only care about the login of primary contact now
 					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 					if (starsAcctInfo != null)
-						starsAcctInfo.setStarsUser( StarsLiteFactory.createStarsUser(liteUser) );
+						starsAcctInfo.setStarsUser( StarsLiteFactory.createStarsUser(liteUser, energyCompany) );
 				}
 				
 				break;

@@ -11,7 +11,6 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -50,6 +49,8 @@ public class UpdateLoginAction implements ActionBase {
             StarsUpdateLogin updateLogin = new StarsUpdateLogin();
             updateLogin.setUsername( req.getParameter("Username") );
             updateLogin.setPassword( req.getParameter("Password") );
+            if (req.getParameter("CustomerGroup").length() > 0)
+            	updateLogin.setGroupID( Integer.parseInt(req.getParameter("CustomerGroup")) );
             
             StarsOperation operation = new StarsOperation();
             operation.setStarsUpdateLogin( updateLogin );
@@ -138,18 +139,21 @@ public class UpdateLoginAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
 					user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-					
+			
 			StarsUser starsUser = accountInfo.getStarsUser();
 			if (starsUser == null) {
 				starsUser = new StarsUser();
 				accountInfo.setStarsUser( starsUser );
 			}
+			
 			starsUser.setUsername( updateLogin.getUsername() );
 			starsUser.setPassword( updateLogin.getPassword() );
-
+			if (updateLogin.hasGroupID())
+				starsUser.setGroupID( updateLogin.getGroupID() );
+			
 			if (reqOper.getStarsNewCustomerAccount() == null)	// If not from the new customer account page
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, success.getDescription() );
-				
+			
             return 0;
         }
         catch (Exception e) {
@@ -181,9 +185,8 @@ public class UpdateLoginAction implements ActionBase {
         com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
         com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();
         
-        LiteYukonGroup liteGroup = energyCompany.getResidentialCustomerGroup();
         com.cannontech.database.db.user.YukonGroup dbGroup = new com.cannontech.database.db.user.YukonGroup();
-        dbGroup.setGroupID( new Integer(liteGroup.getGroupID()) );
+        dbGroup.setGroupID( new Integer(login.getGroupID()) );
         dataUser.getYukonGroups().addElement( dbGroup );
         
     	dbUser.setUsername( login.getUsername() );
@@ -241,12 +244,15 @@ public class UpdateLoginAction implements ActionBase {
 			userID == com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID)
 		{
 			// Create new customer login
+			if (!updateLogin.hasGroupID())
+				throw new WebClientException( "Cannot create login without a customer group" );
+		    
 			if (username.trim().length() == 0 || password.trim().length() == 0)
 				throw new WebClientException( "Username and password cannot be empty" );
 		    
 			if (!checkLogin( updateLogin ))
 				throw new WebClientException( "Username '" + username + "' already exists" );
-		    
+			
 			LiteYukonUser liteUser = createLogin( updateLogin, liteContact, energyCompany );
 		}
 		else if (username.trim().length() == 0) {

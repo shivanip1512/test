@@ -146,11 +146,12 @@ public class NewCustAccountAction implements ActionBase {
 				StarsUpdateLogin login = new StarsUpdateLogin();
 				login.setUsername( username );
 				login.setPassword( password );
+				login.setGroupID( Integer.parseInt(req.getParameter("CustomerGroup")) );
 				newAccount.setStarsUpdateLogin( login );
 			}
 			
 			user.setAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT, newAccount );
-
+			
             StarsOperation operation = new StarsOperation();
             operation.setStarsNewCustomerAccount( newAccount );
 
