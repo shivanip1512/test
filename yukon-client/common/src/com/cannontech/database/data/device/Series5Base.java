@@ -28,8 +28,8 @@ public class Series5Base extends RemoteBase {
 	
 	public void add() throws java.sql.SQLException 
 	{
-	   super.add();
-	   getSeries5().add();
+		super.add();
+	   	getSeries5().add();
 		getSeries5RTU().add();
 	}
 
@@ -39,8 +39,8 @@ public class Series5Base extends RemoteBase {
 	public void delete() throws java.sql.SQLException
 	{
 		getSeries5RTU().delete();
-	   getSeries5().delete();
-	   super.delete();
+	   	getSeries5().delete();
+	   	super.delete();
 	}
 
 	/**
@@ -48,8 +48,8 @@ public class Series5Base extends RemoteBase {
 	 */
 	public void retrieve() throws java.sql.SQLException
 	{
-	   super.retrieve();
-	   getSeries5().retrieve();
+	   	super.retrieve();
+	  	getSeries5().retrieve();
 		getSeries5RTU().retrieve();
 	}
 	/**
@@ -59,8 +59,8 @@ public class Series5Base extends RemoteBase {
 	 */
 	public void setDbConnection(java.sql.Connection conn) 
 	{
-	   super.setDbConnection(conn);
-	   getSeries5().setDbConnection(conn);
+	   	super.setDbConnection(conn);
+	   	getSeries5().setDbConnection(conn);
 		getSeries5RTU().setDbConnection(conn);
 	}
    
@@ -70,8 +70,8 @@ public class Series5Base extends RemoteBase {
 	 */
 	public void setDeviceID(Integer deviceID)
 	{
-	   super.setDeviceID(deviceID);
-	   getSeries5().setDeviceID(deviceID);
+	   	super.setDeviceID(deviceID);
+	   	getSeries5().setDeviceID(deviceID);
 		getSeries5RTU().setDeviceID(deviceID);
 	}
 	/**
@@ -79,8 +79,8 @@ public class Series5Base extends RemoteBase {
 	 */
 	public void update() throws java.sql.SQLException
 	{
-	   super.update();
-	   getSeries5().update();
+	   	super.update();
+	   	getSeries5().update();
 		getSeries5RTU().update();
 	}
 
