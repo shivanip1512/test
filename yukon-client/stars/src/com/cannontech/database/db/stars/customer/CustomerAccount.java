@@ -142,34 +142,44 @@ public class CustomerAccount extends DBPersistent {
     }
     
     public static int[] searchBySerialNumber(String serialNo, int energyCompanyID) {
-    	int[] invIDs = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber( serialNo, energyCompanyID );
-    	if (invIDs == null)
-    		return null;
-    	if (invIDs.length == 0)
-    		return new int[0];
+    	java.sql.Connection conn = null;
     	
-        String sql = "SELECT DISTINCT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.stars.hardware.InventoryBase.TABLE_NAME + " inv "
-    			   + "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID AND acct.AccountID = inv.AccountID AND (inv.InventoryID = " + invIDs[0];
-    	for (int i = 1; i < invIDs.length; i++)
-    		sql += " OR inv.InventoryID = " + invIDs[i];
-    	sql += ")";
+    	try {
+    		conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+    				com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    				
+			int[] invIDs = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber( serialNo, energyCompanyID, conn );
+			if (invIDs.length == 0) return new int[0];
     	
-        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-        		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-
-        try {
-    		stmt.execute();
-			int[] accountIDs = new int[ stmt.getRowCount() ];
-			for (int i = 0; i < stmt.getRowCount(); i++)
-				accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+			String sql = "SELECT DISTINCT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.stars.hardware.InventoryBase.TABLE_NAME + " inv "
+					   + "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID AND acct.AccountID = inv.AccountID AND (inv.InventoryID = " + invIDs[0];
+			for (int i = 1; i < invIDs.length; i++)
+				sql += " OR inv.InventoryID = " + invIDs[i];
+			sql += ")";
+			
+			java.sql.Statement stmt = conn.createStatement();
+			java.sql.ResultSet rset = stmt.executeQuery( sql );
+			
+			int rowCnt = (rset.last())? rset.getRow() : 0;
+			int[] accountIDs = new int[rowCnt];
+			
+			rset.beforeFirst();
+			int i = 0;
+			while (rset.next())
+				accountIDs[i++] = rset.getInt(1);
 			
 			return accountIDs;
-        }
-        catch( Exception e ) {
-            e.printStackTrace();
-        }
-
-        return null;
+    	}
+    	catch (java.sql.SQLException e) {
+    		e.printStackTrace();
+    		return null;
+    	}
+    	finally {
+    		try {
+    			if (conn != null) conn.close();
+    		}
+    		catch (java.sql.SQLException e) {}
+    	}
     }
 
     public static CustomerAccount getCustomerAccount(Integer accountID) {
