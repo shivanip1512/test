@@ -20,12 +20,10 @@ public class TabularHtml extends HTMLBuffer
  */
 public StringBuffer getHtml(StringBuffer buf)
 {
-System.out.println(" 55555 ");	
 	long timer = System.currentTimeMillis();
 
 	double tabStDt = new Long(model.getStartDate().getTime() / 1000).doubleValue();
 	double tabEndDt = new Long(model.getEndDate().getTime() / 1000).doubleValue();
-System.out.println(" AAAAAA ");
 	
 	java.util.Date headerDateDisplay = model.getStartDate();
 		
@@ -36,13 +34,12 @@ System.out.println(" AAAAAA ");
 		//System.out.println("START = "+ tabStDt + "   END: " + tabEndDt);
 		headerDateDisplay = getTabularStartDate();
 	}
-System.out.println(" BBBBBB ");
 //	buf.append("<link rel=\"stylesheet\" href=\"d:/yukon/client/bin/CannonStyle.css\" type=\"text/css\">");
 	buf.append("<CENTER><CENTER><TABLE BORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\"><TR>\n");
 	buf.append("<TD BGCOLOR=\"#ffffff\" class=\"Main\"><CENTER>&nbsp;<B><FONT FACE=\"Arial\">\n");
 	buf.append( model.getName());
 	buf.append("</FONT></B><BR><B><FONT FACE=\"Arial\">\n");
-System.out.println(" CCCCCC ");	
+
 	//if( com.cannontech.common.util.TimeUtil.differenceInDays( model.getStartDate(), model.getEndDate() ) == 1 )
 	//{
 		buf.append( dateFormat.format( headerDateDisplay ));
@@ -53,7 +50,6 @@ System.out.println(" CCCCCC ");
  		//buf.append( " - " );
  		//buf.append( dateFormat.format( model.getEndDate() ) );
 	//}
-System.out.println(" DDDDDDDDDD ");
 	buf.append("</FONT></B><TABLE BORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"0\"></CENTER>\n");
  	buf.append("<TR>\n");
 	buf.append("<TD BGCOLOR=\"#999966\" class=\"HeaderCell\" WIDTH=\"90\">\n");
@@ -71,7 +67,6 @@ System.out.println(" DDDDDDDDDD ");
 	buf.append("</TR><TR>\n");
 	buf.append("<TD VALIGN=\"TOP\" BGCOLOR=\"#CCCC99\" class=\"TableCell\" WIDTH=\"90\">\n");
 	buf.append("<P ALIGN=CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">\n");
-System.out.println(" EEEEEEE ");
  	// Gets ALL possible timestamps for all of the points.
  	// Set up a tree map of the model
 	java.util.TreeMap tree = new java.util.TreeMap();
@@ -102,7 +97,6 @@ System.out.println(" EEEEEEE ");
 				objectValues[k] = new Double(values[l]);	 		
 		}
 	}
-System.out.println(" FFFFFFFFF");
 	//time values
 	java.util.Set keySet = tree.keySet();
 	Double[] keyArray = new Double[keySet.size()];
