@@ -4,11 +4,6 @@ package com.cannontech.graph;
  * The main graphing class.
  * main in this class starts up the standalone application.
  *
- * It would be nice if the application specific(swing) code was
- * moved somewhere else.  In its present form it mixes its service
- * functionality (encodeXXX) as a library with standalone application
- * code.
- *
  * Creation date: (12/15/99 10:13:31 AM)
  * @author:  Aaron Lauinger 
  */
@@ -97,6 +92,24 @@ public void chartChanged(com.jrefinery.chart.event.ChartChangeEvent event)
 	}
 }
 
+public void encodeCSV(java.io.OutputStream out) throws java.io.IOException
+{
+	com.cannontech.graph.exportdata.ExportDataFile eDataFile = 
+		new com.cannontech.graph.exportdata.ExportDataFile(
+		viewType,
+		getFreeChart(), 
+		getTrendModel().getChartName(), 
+		getTrendModel());
+
+	eDataFile.setExtension("csv");
+
+	String data[] = eDataFile.createCSVFormat();
+	for( int i = 0; i < data.length; i++ )
+	{
+		if( data[i] != null)
+			out.write( data[ i ].getBytes() );
+	}
+}
 
 /**
  * Encodes a gif on the given stream.  This method is used heavily
@@ -165,7 +178,7 @@ public void encodePng(java.io.OutputStream out) throws java.io.IOException
 }
 
 public void encodeSVG(java.io.OutputStream out) throws java.io.IOException
-{
+{	
 	synchronized(Graph.class)
 	{		
 		org.w3c.dom.DOMImplementation domImpl =
@@ -205,11 +218,15 @@ public void encodePeakHTML(java.io.OutputStream out) throws java.io.IOException
 	tabHtml.getHtml(buf);
 	out.write(buf.toString().getBytes());	
 }
+
+public void encodeSummmaryHTML(java.io.OutputStream out) throws java.io.IOException 
+{
+	encodePeakHTML(out);
+	encodeUsageHTML(out);
+}
 	
 public void encodePDF(java.io.OutputStream out) throws java.io.IOException
 {
-	// NOT IMPLEMENTE CORRECTLY YET!!!!  9/04/02 SN
-
 	try
 	{
 		com.klg.jclass.util.swing.encode.page.PDFEncoder encoder = new com.klg.jclass.util.swing.encode.page.PDFEncoder();
@@ -224,21 +241,7 @@ public void encodePDF(java.io.OutputStream out) throws java.io.IOException
 	{
 		ee.printStackTrace();
 	}
-
-	finally
-	{
-		try
-		{
-			if( out != null )
-				out.close();
-		} 
-		catch( java.io.IOException ioe )
-		{
-			ioe.printStackTrace();
-		}
-	}//end finally
-
-}//end encodePDFFormat()
+}
 /**
  * Encodes a tabular representation on the given output stream.
  * Creation date: (11/17/00 11:14:55 AM)
