@@ -7,8 +7,10 @@ package com.cannontech.tdc;
  */
 import java.awt.Cursor;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.cannontech.clientutils.CTILogger;
@@ -18,6 +20,9 @@ import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.graph.Graph;
+import com.cannontech.graph.model.TrendModel;
+import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.tdc.calendar.CalendarDialog;
@@ -98,6 +103,10 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemInhibitDev = null;
 	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemInhibitPt = null;
 	private TDCDBChangeHandler dbChangeHandler = new TDCDBChangeHandler();
+	
+	private javax.swing.JMenuItem jMenuItemGraph = null;
+
+
 /**
  * TDC constructor comment.
  */
@@ -158,6 +167,10 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	if (e.getSource() == getJRadioButtonMenuItemAllowDev()) 
 		connEtoC19(e);
 	// user code begin {2}
+
+	if( e.getSource() == getJMenuItemGraph() ) 
+		jMenuItemGraph_ActionPerformed( e );
+
 
 	if( e.getSource() instanceof javax.swing.JRadioButtonMenuItem ) 
 		jRadioButtonPage_ActionPerformed(e);
@@ -1447,6 +1460,30 @@ private javax.swing.JMenuItem getJMenuItemPopUpManualEntry() {
 	}
 	return ivjJMenuItemPopUpManualEntry;
 }
+
+/**
+ * Return the JMenuItemGraph property value.
+ * @return javax.swing.JMenuItem
+ */
+private javax.swing.JMenuItem getJMenuItemGraph() 
+{
+	if( jMenuItemGraph == null ) 
+	{
+		try 
+		{
+			jMenuItemGraph = new javax.swing.JMenuItem();
+			jMenuItemGraph.setName("JMenuItemGraph");
+			jMenuItemGraph.setMnemonic('T');
+			jMenuItemGraph.setText("30 Day Trend...");
+		} 
+		catch (java.lang.Throwable ivjExc) 
+		{
+			handleException(ivjExc);
+		}
+	}
+	return jMenuItemGraph;
+}
+
 /**
  * Return the JMenuAblement property value.
  * @return javax.swing.JMenu
@@ -1486,6 +1523,9 @@ private javax.swing.JPopupMenu getJPopupMenuManual() {
 			ivjJPopupMenuManual.add(getJMenuTags());
 			ivjJPopupMenuManual.add(getJMenuControl());
 			// user code begin {1}
+
+			ivjJPopupMenuManual.add( getJMenuItemGraph() );
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -2114,7 +2154,9 @@ private void initConnections() throws java.lang.Exception {
 	getJLabelDisplayTitle().addMouseListener( listener2 );
 
 	setTableHeaderListener();
-		
+	
+	getJMenuItemGraph().addActionListener( this );
+
 	// user code end
 	getDisplayTable().addMouseListener(this);
 	getJComboCurrentDisplay().addActionListener(this);
@@ -2500,6 +2542,57 @@ public void jMenuItemPageBack_ActionPerformed(java.awt.event.ActionEvent actionE
 	
 	return;*/
 }
+
+
+public void jMenuItemGraph_ActionPerformed(java.awt.event.ActionEvent actionEvent)
+{
+	PointValues pv = getTableDataModel().getPointValue( getDisplayTable().getSelectedRow() );
+	
+	GregorianCalendar prev30 = new GregorianCalendar();
+	prev30.setTime( new Date() );
+	prev30.set( GregorianCalendar.DAY_OF_YEAR, prev30.get(GregorianCalendar.DAY_OF_YEAR) - 30 );
+	
+	GregorianCalendar currDayPls1 = new GregorianCalendar();
+	currDayPls1.setTime( new Date() );
+	currDayPls1.set( GregorianCalendar.DAY_OF_YEAR, currDayPls1.get(GregorianCalendar.DAY_OF_YEAR) + 1 );
+	
+	
+	Graph graph = new Graph();
+	graph.setTrendModel(
+		new TrendModel(
+			prev30.getTime(),
+			currDayPls1.getTime(),
+			"30 Day Trend Snapshot for " + pv.getPointName(),
+			new int[] { pv.getPointData().getId() },
+			new String[] { pv.getPointName() }) );
+	
+	com.cannontech.jfreechart.chart.YukonChartPanel
+		freeChartPanel = new com.cannontech.jfreechart.chart.YukonChartPanel(
+				graph.getFreeChart());
+		
+	freeChartPanel.setVisible(true);
+
+	// turn all zoom on
+	freeChartPanel.setHorizontalZoom(true);
+	freeChartPanel.setVerticalZoom(true);
+
+	freeChartPanel.setChart(
+				graph.getTrendModel().refresh( TrendModelType.LINE_VIEW ) );
+	
+
+	JFrame jd = new JFrame(
+		pv.getPointName() + " - 30 Day Trend Snapshot");
+	
+	jd.setIconImage( CtiUtilities.getParentFrame(this).getIconImage() );
+	jd.setResizable( true );
+	jd.setSize( 600, 430 );
+	jd.setLocation( this.getLocationOnScreen() );
+	
+	jd.setContentPane( freeChartPanel );
+
+	jd.show();
+}
+
 /**
  * Comment
  */
@@ -2670,9 +2763,8 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 			
 		getJMenuItemPopUpAckAlarm().setEnabled( getTableDataModel().isRowAcked( selectedRow ) );
 		getJMenuItemPopUpClear().setEnabled( getTableDataModel().isRowAlarmUnCleared(selectedRow));
-		getJMenuItemPopUpManualEntry().setEnabled( true );
 
-		getJMenuTags().setEnabled( true );
+		
 		getJMenuControl().setEnabled( true );
 		setAblementPopUpItems( selectedRow );
 		
@@ -2685,13 +2777,10 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 					getTableDataModel().getPointValue(selectedRow).getPointData().getTags())) );
 
 
-		if( isCoreDisplay() )
-		{
-			// we cant enter a manual entry from a system display
-			getJMenuItemPopUpManualEntry().setEnabled( false );
-			getJMenuTags().setEnabled( false );
-		}
-
+		// we cant enter a manual entry from a system display
+		getJMenuItemPopUpManualEntry().setEnabled( !isCoreDisplay() );
+		getJMenuItemGraph().setEnabled( !isCoreDisplay() );
+		getJMenuTags().setEnabled( !isCoreDisplay() );
 	}
 	else
 	{
