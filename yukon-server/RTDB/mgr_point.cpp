@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/08/22 21:43:30 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/08/25 13:32:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,6 +99,19 @@ ApplyInvalidateNotUpdated(const CtiHashKey *key, CtiPoint *&pPt, void* d)
     {
         pPt->resetValid();   //   NOT NOT NOT Valid
     }
+    return;
+}
+
+static void
+ApplyInvalidateLimtsForPAO(const CtiHashKey *key, CtiPoint *&pPt, void* d)
+{
+    LONG paoID = (LONG)d;
+
+    if(pPt->getDeviceID() == paoID && pPt->isNumeric())
+    {
+        ((CtiPointNumeric*)pPt)->invalidateLimits();
+    }
+
     return;
 }
 
@@ -705,7 +718,7 @@ void CtiPointManager::refreshAlarming(LONG pntID, LONG paoID)
     LONG pID;
     CtiPointBase *pPt;
 
-    while( rdr() ) // there better be Only one in there!
+    while( rdr() )
     {
         rdr["pointid"] >> pID;
 
@@ -724,8 +737,24 @@ void CtiPointManager::refreshPointLimits(LONG pntID, LONG paoID)
 {
     LONG        lTemp = 0;
     CtiPoint*   pTempCtiPoint = NULL;
+    CtiHashKey  key(-1);;
 
     LockGuard  guard(monitor());
+
+
+    // Make sure any limits this point previously had are marked as removed!
+    if(pntID != 0 && Map.entries() > 0)
+    {
+        key = CtiHashKey(pntID);
+        if(((pTempCtiPoint = Map.findValue(&key)) != NULL))
+        {
+            ((CtiPointNumeric*)pTempCtiPoint)->invalidateLimits();
+        }
+    }
+    else if(pntID == 0 && paoID != 0)       // This is much more work...
+    {
+        Map.apply(ApplyInvalidateLimtsForPAO, (void*)paoID);
+    }
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -756,7 +785,7 @@ void CtiPointManager::refreshPointLimits(LONG pntID, LONG paoID)
     while( rdr() )
     {
         rdr["pointid"] >> lTemp;            // get the PointID
-        CtiHashKey key(lTemp);
+        key = CtiHashKey(lTemp);
 
         if( Map.entries() > 0 && ((pTempCtiPoint = Map.findValue(&key)) != NULL) )
         {
