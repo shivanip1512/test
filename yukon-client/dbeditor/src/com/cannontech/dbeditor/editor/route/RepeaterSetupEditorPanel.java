@@ -78,7 +78,6 @@ public void advancedSetupButton_ActionPerformed(java.awt.event.ActionEvent actio
                                             "Changes not applied.",
                                             JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
         addOrRemoveHasBeenDone = false;
-        changeUpdated = true;
         if(optional == JOptionPane.YES_OPTION)
         {
 			/*start of the chain that leads eventually out to the DatabaseEditor class
@@ -392,6 +391,7 @@ public Object getValue(Object val) {
    
    
 	dbRegenerate = true;
+	changeUpdated = true;
 	return val;
 }
 /**
