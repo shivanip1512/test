@@ -583,14 +583,16 @@ public void actionPerformed_EditMenuItem( )
 						getGraph().getClientConnection().write(dbChange[i]);
 					}
 					getTreeViewPanel().refresh();
-					getTreeViewPanel().selectObject(gDef);			
+					getTreeViewPanel().selectObject(gDef);	//inits a valueChanged event.			
 				}
 				catch( com.cannontech.database.TransactionException e )
 				{
 					com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 				}
 
-				getGraph().setGraphDefinition(gDef);
+				//force an update on the GDEF update
+				getGraph().setUpdateTrend(true);
+				
 				updateCurrentPane();
 			}
 			//else (gDef == null)	//'CANCEL' out of dialog.
@@ -2053,6 +2055,7 @@ private void initializeSwingComponents()
 		}
 	});
 	
+	boolean found = getTreeViewPanel().selectByString(getTrendProperties().getGdefName());
 	//Construct a mouse listener that will allow double clicking selection in the tree
 	getTreeViewPanel().getTree().addMouseListener(new java.awt.event.MouseAdapter()
 	{
@@ -2102,6 +2105,9 @@ private void initializeSwingComponents()
 	if( getTrendProperties().getViewType() != TrendModelType.TABULAR_VIEW &&
 		getTrendProperties().getViewType() != TrendModelType.SUMMARY_VIEW )	//not tabular or summary
 		savedViewType = getTrendProperties().getViewType();
+	
+	if(found)	//found a gdefName to start with and display data
+		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 }
 /**
  * Insert the method's description here.
@@ -2514,9 +2520,6 @@ public void valueChanged(javax.swing.event.TreeSelectionEvent event)
 
 	try
 	{
-		// Signal the trend to be rebuilt through a database hit.
-		getGraph().setUpdateTrend(true);
-		
 		//Current cursor set to waiting during the update.
 		savedCursor = this.getCursor();
 		this.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
