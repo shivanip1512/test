@@ -13,19 +13,27 @@ import java.text.SimpleDateFormat;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.db.version.CTIDatabase;
+import com.cannontech.tools.gui.IMessageFrame;
+import com.cannontech.tools.gui.IRunnableDBTool;
 
 
 /**
  * @author rneuharth
  * 
+
+For 2.40 Yukon client updates, 
+the following minimum versions of software are needed:
+ JRE 1.4.0
+ Oracle 9.2
+ SQLServer 2000 (8.0)
+ 
+ 
  * Suggested DBUpdate Process Steps
  * 1) Install any new JRE (optional)
- * 2) Update DBMS version (oracle 8 to oracle 9) (optional)
+ * 2) Update DBMS version (example: oracle 8 to oracle 9) (optional)
  * 3) Install new Yukon software (clients, server, etc)
- * 4) Execute DBUpdate application
+ * 4) Execute DBUpdate application (DBToolsFrame.bat file in \yukon\client\bin\ )
  * 5)
  *
  *
@@ -37,24 +45,26 @@ import com.cannontech.database.db.version.CTIDatabase;
  * 3) File name must have the version number as the first 4 chars (ex: 2.40, 2.41)
  * 4) All meta data tags (the @ sign) should be nested in a comment
  * 5)
+ * 
+ * 
  */
-public class DBUpdater
+public class DBUpdater implements IRunnableDBTool
 {
 	//local class to execute update functions
-	private final UpdateDB updateDB = new UpdateDB();
-
-	private static double dbVersion = 0.0;
+	private UpdateDB updateDB = null;
+	
+	private IMessageFrame output = null;
 
 	private static final SimpleDateFormat frmt = new SimpleDateFormat("_MM-dd-yyyy_HH-mm-ss");
 	
-	//less typeing for these
+	//less typing for these
 	private static final String FS = System.getProperty("file.separator");
 	private static final String LF = System.getProperty("line.separator");
 
 
 	public final static String[] CMD_LINE_PARAM_NAMES = 
 	{
-		"src",
+		IRunnableDBTool.PROP_PATH,
 		"verbose"
 	};
 
@@ -66,6 +76,10 @@ public class DBUpdater
 		super();
 	}
 
+	public String getName()
+	{
+		return "DBUpdater";
+	}
 
 	
 	public static void initApp( String[] args )
@@ -89,7 +103,31 @@ public class DBUpdater
 
 	}
 
+	public void run()
+	{
+		updateDB = new UpdateDB( getIMessageFrame() );
 
+		try
+		{
+			getUpdateCommands();
+			
+			getIMessageFrame().addOutput("");
+			getIMessageFrame().addOutput("		Lines read from files successfully, starting DB transactions..." );
+			getIMessageFrame().addOutput("");			
+
+			executeCommands();
+
+			getIMessageFrame().finish( "DBUpdate Completed Successfully" );
+		}
+		catch( Exception e )
+		{
+			getIMessageFrame().finish( "Unsuccessfully DBUpdate" );
+			CTILogger.warn( "A problem occurred in the main execution", e );
+		}
+
+	}
+	
+	
 	/**
 	 * Main entry point
 	 * @param args java.lang.String[]
@@ -105,12 +143,12 @@ public class DBUpdater
 			System.out.println("An intermediate file is generated in the " + CtiUtilities.getLogDirPath() );
 			System.out.println("directory for each DBUpdate file found.");
 			System.out.println("");
-			System.out.println(" DBUpdater src=<SRC_PATH> [verbose= true | false]");
+			System.out.println(" DBUpdater " + IRunnableDBTool.PROP_PATH + "=<SRC_PATH> [verbose= true | false]");
 			System.out.println("");
-			System.out.println("   src      : directory that contains the script files for updating the DB");
+			System.out.println("   " + IRunnableDBTool.PROP_PATH + "   : directory that contains the script files for updating the DB");
 			System.out.println("   verbose  : should we show the most output possible (default true)");
 			System.out.println("");
-			System.out.println(" example: DBUpdater src=d:" +
+			System.out.println(" example: DBUpdater " + IRunnableDBTool.PROP_PATH + "=d:" +
 						FS + "YukonMiscInstall" + FS + "YukonDatabase" + FS + "DatabaseUpdates" +
 						FS + "SqlServer");
 			
@@ -119,30 +157,8 @@ public class DBUpdater
 		
 
 		initApp( args );
-		
-		
-		try
-		{
-			updater.getUpdateCommands();
-			
-			CTILogger.info("");
-			CTILogger.info("		Lines read from files successfully, starting DB transactions..." );
-			CTILogger.info("");			
 
-			updater.executeCommands();
-
-		}
-		catch( Exception e )
-		{
-			CTILogger.warn( "A problem occurred in the main execution", e );
-		}
-		finally
-		{
-			//persist the state of the app
-			//updater.getUpdaterState().persistState();
-		}
-
-
+		updater.run();
 	}
 
 
@@ -185,16 +201,16 @@ public class DBUpdater
 			
 			
 
-			CTILogger.info("   SUCCESS for ALL_COMMANDS");
-			CTILogger.info("----------------------------------------------------------------------------------------------");
+			getIMessageFrame().addOutput("   SUCCESS for ALL_COMMANDS");
+			getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
 
 			
 			return true;
 		}
 		catch( Exception e )
 		{
-			CTILogger.info( "   **FAILURE : " + cmd );
-			CTILogger.info( "     Please fix in file : " + sqlFile.getName() );
+			getIMessageFrame().addOutput( "   **FAILURE : " + cmd );
+			getIMessageFrame().addOutput( "     Please fix in file : " + sqlFile.getName() );
 
 			handleException( e );  //array-index, SQLException, .....
 			
@@ -239,14 +255,14 @@ public class DBUpdater
 				{
 					stat.execute( cmd );
 					line_.setSuccess( true );
-					CTILogger.debug( "   SUCCESS : " + cmd );				
+					getIMessageFrame().addOutput( "   SUCCESS : " + cmd );				
 				}
 				catch( SQLException ex )
 				{
 					//since we are ignoring errors, do not let the SQL error force use to exit
 					line_.setSuccess( false );
-					CTILogger.debug( "   UNSUCCESSFUL : " + cmd );
-					CTILogger.debug( "     (IGNORING ERROR) : " + ex.getMessage() );
+					getIMessageFrame().addOutput( "   UNSUCCESSFUL : " + cmd );
+					getIMessageFrame().addOutput( "     (IGNORING ERROR) : " + ex.getMessage() );
 				}
 
 			}
@@ -254,7 +270,7 @@ public class DBUpdater
 			{
 				stat.execute( cmd );
 				line_.setSuccess( true );
-				CTILogger.debug( "   SUCCESS : " + cmd );
+				getIMessageFrame().addOutput( "   SUCCESS : " + cmd );
 			}
 
 			try
@@ -297,11 +313,11 @@ public class DBUpdater
 		for( int i = 0; i < files.length; i++ )
 		{
 			File sqlFile = files[i];
-			double fVers = getFileVersion( sqlFile );
+			double fVers = UpdateDB.getFileVersion( sqlFile );
 
 
-			CTILogger.info("----------------------------------------------------------------------------------------------");
-			CTILogger.info("Start reading file : " + sqlFile );
+			getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
+			getIMessageFrame().addOutput("Start reading file : " + sqlFile );
 
 			try
 			{
@@ -312,7 +328,7 @@ public class DBUpdater
 				handleException( e );
 			}
 			
-			CTILogger.info("Done reading file");
+			getIMessageFrame().addOutput("Done reading file");
 
 
 			DecimalFormat df = new DecimalFormat( "#.00" );
@@ -323,13 +339,13 @@ public class DBUpdater
 							df.format(fVers) + 
 							DBMSDefines.NAME_VALID) );
 			
-			CTILogger.info("----------------------------------------------------------------------------------------------");
+			getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
 		}
 
-		CTILogger.info("");
-		CTILogger.info("----------------------------------------------------------------------------------------------");
-		CTILogger.info("Valid SQL strings LOADED (" + validLines.length + ")" );
-		CTILogger.info("----------------------------------------------------------------------------------------------");		
+		getIMessageFrame().addOutput("");
+		getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
+		getIMessageFrame().addOutput("Valid SQL strings LOADED (" + validLines.length + ")" );
+		getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");		
 
 	}
 
@@ -391,41 +407,46 @@ public class DBUpdater
 	 */
 	private void handleException(java.lang.Throwable exception) 
 	{
-		CTILogger.info("--------- CAUGHT EXCEPTION ---------");
+		getIMessageFrame().addOutput("--------- CAUGHT EXCEPTION ---------");
+		getIMessageFrame().addOutput("    " + exception.getMessage() );
+
+		CTILogger.error("--------- CAUGHT EXCEPTION ---------");
 		CTILogger.error( exception.getMessage(), exception );
-	}	
-	
-
-	public static double getFileVersion( File file_ )
-	{
-		try
-		{
-			return Double.parseDouble( file_.getName().substring(0, 4) );
-		}
-		catch( Exception e )
-		{
-			CTILogger.info("Invalid file name, name = " + file_.getName() );
-			return -1.0;
-		}
-
-	}
-
-	public static double getDBVersion()
-	{
-		if( dbVersion <= 0.0 )
-		{
-			CTIDatabase db = VersionTools.getDatabaseVersion();			
-
-			dbVersion = Double.parseDouble( db.getVersion() );
-
-			CTILogger.info("");
-			CTILogger.info("----------------------------------------------------------------------------------------------");
-			CTILogger.info( "Current DB Version : " + dbVersion );
-			CTILogger.info("----------------------------------------------------------------------------------------------");
-			CTILogger.info("");
-		}				
-
-		return dbVersion;					
 	}
 	
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (7/12/2001 1:05:41 PM)
+	 * @param newCf IMessageFrame
+	 */
+	public void setIMessageFrame(IMessageFrame newMf) 
+	{
+		output = newMf;
+	}
+
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (7/12/2001 1:05:41 PM)
+	 * @param newCf IMessageFrame
+	 */
+	public IMessageFrame getIMessageFrame() 
+	{
+		if( output == null )
+		{
+			//just in case this is not set, add a default outputter
+			output = new IMessageFrame()
+			{
+				public void addOutput( final String msg )
+				{
+					System.out.println(msg);
+				}
+			
+				public void finish( String msg )
+				{}  //no-op for now
+			
+			};
+		}
+	
+		return output;
+	}
 }

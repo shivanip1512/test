@@ -1,14 +1,18 @@
 package com.cannontech.dbconverter.converter;
+
+import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.tools.gui.*;
+
 /**
  * Insert the type's description here.
  * Creation date: (1/10/2001 11:18:45 PM)
  * @author: 
  */
-public class DBConverter 
+public class DBConverter implements IRunnableDBTool 
 {
 	// main will set the path
 	private String filePathName;
-	private ConverterFrame cf = null;
+	private IMessageFrame cf = null;
 	
 	private static final int MAX_DSM2_MACRO_COUNT = 30;
 	
@@ -53,7 +57,8 @@ public class DBConverter
 	
 	private String AccumPointFileName = "ptaccum.txt";
 	public static final int ACCUM_PT_TOKEN_COUNT = 13;	
-		
+
+
 /**
  * DBConverter constructor comment.
  */
@@ -63,10 +68,55 @@ public DBConverter(String myPathName)
 
 
 	filePathName = myPathName;
-	if(filePathName.endsWith("/") == false)
+	if( filePathName != null && !filePathName.endsWith("/") )
 	{
 		filePathName.concat("/");
 	}
+}
+
+/**
+ * DBConverter constructor comment.
+ */
+public DBConverter() 
+{
+	this(null);
+}
+
+public String getName()
+{
+	return "DBConverter";
+}
+
+public void run()
+{
+	processStateGroupFile();
+	processPortFile();
+	processTransmitterFile();
+	processVirtualDeviceFile();
+	processSingleRouteFile();
+
+	for (int myPassCount = 1; myPassCount < 4; ++myPassCount)
+	{
+		processRepeaterFile(myPassCount);
+		processRptRouteFile(myPassCount);
+	}
+
+	processRouteMacro();
+	processCapBankControllers();
+	processMCTDevices();
+	processRTUDevices();
+
+	processLoadGroups();
+			
+	// do the points for devices
+	processStatusPoints();
+	processAnalogPoints();
+	processAccumulatorPoints();
+
+	getCf().addOutput("");
+	getCf().addOutput("");
+	getCf().addOutput("...finished with Database Conversion");
+	getCf().finish( "Database Conversion is complete.");
 }
 
 
@@ -122,10 +172,26 @@ public static synchronized PtUnitRets[] getAllPointUnitd()
 /**
  * Insert the method's description here.
  * Creation date: (7/12/2001 1:05:41 PM)
- * @param newCf com.cannontech.dbconverter.converter.ConverterFrame
+ * @param newCf IMessageFrame
  */
-public ConverterFrame getCf() 
+public IMessageFrame getCf() 
 {
+	if( cf == null )
+	{
+		//just in case this is not set, add a default outputter
+		cf = new IMessageFrame()
+		{
+			public void addOutput( final String msg )
+			{
+				System.out.println(msg);
+			}
+			
+			public void finish( String msg)
+			{}  //no-op for now
+			
+		};
+	}
+	
 	return cf;
 }
 
@@ -138,8 +204,15 @@ public ConverterFrame getCf()
  */
 public String getFullFileName(String aFileName) 
 {
-	String tempFileName = filePathName + aFileName;
-	return tempFileName;
+	if( filePathName == null )
+	{
+		//try to get this value from our System properties
+		String propPath = System.getProperty(IRunnableDBTool.PROP_PATH);
+		if( propPath != null )
+			filePathName = propPath;
+	}
+	
+	return filePathName + aFileName;
 }
 
 
@@ -554,10 +627,10 @@ public boolean processAccumulatorPoints()
 
 
 		// set default settings for point ALARMING
-		accumPoint.getPointAlarming().setAlarmStates( accumPoint.getPointAlarming().DEFAULT_ALARM_STATES );
-		accumPoint.getPointAlarming().setExcludeNotifyStates( accumPoint.getPointAlarming().DEFAULT_EXCLUDE_NOTIFY );
+		accumPoint.getPointAlarming().setAlarmStates( PointAlarming.DEFAULT_ALARM_STATES );
+		accumPoint.getPointAlarming().setExcludeNotifyStates( PointAlarming.DEFAULT_EXCLUDE_NOTIFY );
 		accumPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
-		accumPoint.getPointAlarming().setNotificationGroupID(  new Integer(accumPoint.getPointAlarming().NONE_NOTIFICATIONID) );
+		accumPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
 
 		// set Point Units
 		String comparer = new String( tokenizer.nextElement().toString() );
@@ -732,10 +805,10 @@ public boolean processAnalogPoints()
 		analogPoint.getPoint().setAlarmInhibit(new Character('N'));
 
 		// set default settings for point ALARMING
-		analogPoint.getPointAlarming().setAlarmStates( analogPoint.getPointAlarming().DEFAULT_ALARM_STATES );
-		analogPoint.getPointAlarming().setExcludeNotifyStates( analogPoint.getPointAlarming().DEFAULT_EXCLUDE_NOTIFY );
+		analogPoint.getPointAlarming().setAlarmStates( PointAlarming.DEFAULT_ALARM_STATES );
+		analogPoint.getPointAlarming().setExcludeNotifyStates( PointAlarming.DEFAULT_EXCLUDE_NOTIFY );
 		analogPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
-		analogPoint.getPointAlarming().setNotificationGroupID(  new Integer(analogPoint.getPointAlarming().NONE_NOTIFICATIONID) );
+		analogPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
 
 		// set Point Units
 		analogPoint.getPointUnit().setDecimalPlaces(new Integer(2));
@@ -1814,10 +1887,10 @@ public boolean processStatusPoints()
 		statusPoint.getPoint().setAlarmInhibit(new Character('N'));
 
 		// set default settings for point ALARMING
-		statusPoint.getPointAlarming().setAlarmStates( statusPoint.getPointAlarming().DEFAULT_ALARM_STATES );
-		statusPoint.getPointAlarming().setExcludeNotifyStates( statusPoint.getPointAlarming().DEFAULT_EXCLUDE_NOTIFY );
+		statusPoint.getPointAlarming().setAlarmStates( PointAlarming.DEFAULT_ALARM_STATES );
+		statusPoint.getPointAlarming().setExcludeNotifyStates( PointAlarming.DEFAULT_EXCLUDE_NOTIFY );
 		statusPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
-		statusPoint.getPointAlarming().setNotificationGroupID(  new Integer(statusPoint.getPointAlarming().NONE_NOTIFICATIONID) );
+		statusPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
 	
 		statusPoint.getPointStatus().setInitialState(new Integer(1));
 		statusPoint.getPointStatus().setControlInhibit(new Character('N'));
@@ -2028,9 +2101,9 @@ private java.util.ArrayList readFile(String fileName)
 /**
  * Insert the method's description here.
  * Creation date: (7/12/2001 1:05:41 PM)
- * @param newCf com.cannontech.dbconverter.converter.ConverterFrame
+ * @param newCf IMessageFrame
  */
-public void setCf(ConverterFrame newCf) 
+public void setIMessageFrame(IMessageFrame newCf) 
 {
 	cf = newCf;
 }

@@ -10,21 +10,37 @@ import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.version.VersionTools;
+import com.cannontech.database.db.version.CTIDatabase;
+import com.cannontech.tools.gui.IMessageFrame;
 
 /**
  * @author rneuharth
  *
  * Handled the File IO and the checking of validity for files and lines.
  * Decides which files to load in the given DIR.
+ * 
+ * D:\eclipse\head\yukon-database\DBUpdates\oracle\
  */
 public class UpdateDB
 {
+	private static double dbVersion = 0.0;
+	private IMessageFrame output = null;
+
 	/**
 	 * 
 	 */
-	public UpdateDB()
+	public UpdateDB( IMessageFrame output_ )
 	{
 		super();
+		output = output_;
+		
+		getIMessageFrame().addOutput("");
+		getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
+		getIMessageFrame().addOutput( "Current DB Version : " + getDBVersion() );
+		getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
+		getIMessageFrame().addOutput("");
+		
 	}
 
 
@@ -48,13 +64,13 @@ public class UpdateDB
 		for( int i = 0; i < genDIR.listFiles().length; i++ )
 		{
 			File sqlFile = genDIR.listFiles()[i];
-			double fVers = DBUpdater.getFileVersion(sqlFile);
+			double fVers = getFileVersion(sqlFile);
 
 
-			if( DBUpdater.getFileVersion(sqlFile) < DBMSDefines.MIN_VERSION
-				 || fVers <= DBUpdater.getDBVersion() )
+			if( getFileVersion(sqlFile) < DBMSDefines.MIN_VERSION
+				 || fVers <= getDBVersion() )
 			{
-				CTILogger.info("IGNORING file (Version mismatch): " + sqlFile );
+				getIMessageFrame().addOutput("  IGNORING file (Version mismatch): " + sqlFile );
 				continue;
 			}
 
@@ -73,12 +89,12 @@ public class UpdateDB
 		for( int i = 0; i < userDIR.listFiles().length; i++ )
 		{
 			File sqlFile = userDIR.listFiles()[i];
-			double fVers = DBUpdater.getFileVersion(sqlFile);
+			double fVers = getFileVersion(sqlFile);
 			
-			if( DBUpdater.getFileVersion(sqlFile) < DBMSDefines.MIN_VERSION
-				 || fVers <= DBUpdater.getDBVersion() )
+			if( getFileVersion(sqlFile) < DBMSDefines.MIN_VERSION
+				 || fVers <= getDBVersion() )
 			{
-				CTILogger.info("IGNORING file (Version mismatch): " + sqlFile );
+				getIMessageFrame().addOutput("  IGNORING file (Version mismatch): " + sqlFile );
 				continue;
 			}
 
@@ -184,13 +200,14 @@ public class UpdateDB
 			}
 			catch( Exception e)
 			{
+				getIMessageFrame().addOutput( e.getMessage() );
 				CTILogger.error( e.getMessage(), e );
 				throw new DBUpdateException( e );
 			}
 		}
 		else
 		{
-			CTILogger.info( "Unable to find file '" + file +"'" );
+			getIMessageFrame().addOutput( "Unable to find file '" + file +"'" );
 			throw new DBUpdateException( "Unable to find file '" + file +"'" );
 		}
 
@@ -217,7 +234,7 @@ public class UpdateDB
 		if( file_ == null )
 			return false;
 
-		if( DBUpdater.getFileVersion(file_) > 0.0
+		if( getFileVersion(file_) > 0.0
 			 && file_.getAbsolutePath().toLowerCase().endsWith(DBMSDefines.SQL_EXT)
 			 && (file_.getAbsolutePath().toLowerCase().indexOf(DBMSDefines.NAME_VALID) > -1) )
 		{
@@ -227,5 +244,42 @@ public class UpdateDB
 		return false;
 	}
 
+
+	public static double getDBVersion()
+	{
+		if( dbVersion <= 0.0 )
+		{
+			CTIDatabase db = VersionTools.getDatabaseVersion();			
+
+			dbVersion = Double.parseDouble( db.getVersion() );
+		}				
+
+		return dbVersion;					
+	}
+
+	public static double getFileVersion( File file_ )
+	{
+		try
+		{
+			return Double.parseDouble( file_.getName().substring(0, 4) );
+		}
+		catch( Exception e )
+		{
+			CTILogger.info("Invalid file name, name = " + file_.getName() );
+			return -1.0;
+		}
+
+	}
+	
+
+	/**
+	 * This is where our output goes to
+	 * 
+	 * @return IMessageFrame
+	 */
+	public IMessageFrame getIMessageFrame() 
+	{
+		return output;
+	}
 
 }
