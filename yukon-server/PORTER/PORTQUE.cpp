@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2002/11/15 14:08:02 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2002/12/03 17:56:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -102,11 +102,33 @@ void blitzNexusFromCCUQueue(CtiDevice *Device, CTINEXUS *&Nexus)
 
         if(pInfo)
         {
+            ULONG QueEntCnt;
+
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Attempting to remove all queue entries for bad nexus 0x" << Nexus << endl;
             }
-            CleanQueue( pInfo->QueueHandle, (void*)Nexus, findReturnNexusMatch, cleanupOrphanOutMessages );
+
+            QueryQueue(pInfo->QueueHandle, &QueEntCnt);
+            if(QueEntCnt)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "    CCU:  " << Device->getName() << "  PURGING " << QueEntCnt << " queue queue entries" << endl;
+                }
+                CleanQueue( pInfo->QueueHandle, (void*)Nexus, findReturnNexusMatch, cleanupOrphanOutMessages );
+            }
+
+            QueryQueue(pInfo->ActinQueueHandle, &QueEntCnt);
+            if(QueEntCnt)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "    CCU:  " << Device->getName() << "  PURGING " << QueEntCnt << " actin queue entries" << endl;
+                }
+                CleanQueue( pInfo->ActinQueueHandle, (void*)Nexus, findReturnNexusMatch, cleanupOrphanOutMessages );
+            }
+
         }
     }
 }
@@ -892,7 +914,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
                             << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes" << endl;
                     }
 
-                    if(SocketError == BADSOCK)
+                    if(CTINEXUS::CTINexusIsFatalSocketError(SocketError))
                     {
                         status = SocketError;
                     }
@@ -1750,10 +1772,10 @@ DeQueue (INMESS *InMessage)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " Error writing to return nexus.  DeQueue().  "
-                                    << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes" << endl;
+                                    << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes.  Error: " << SocketError << endl;
                             }
 
-                            if(SocketError == BADSOCK)
+                            if(CTINEXUS::CTINexusIsFatalSocketError(SocketError))
                             {
                                 status = SocketError;
                             }

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2002/11/15 20:44:32 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2002/12/03 17:57:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2299,15 +2299,14 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                 InMessage->InLength = j;
             }
 
-            if(status == BADSOCK)
+            if( status && CTINEXUS::CTINexusIsFatalSocketError(status))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
-                blitzNexusFromQueue( Port->getPortQueueHandle(), InMessage->ReturnNexus);
-                blitzNexusFromCCUQueue( Device, InMessage->ReturnNexus);
-
+                blitzNexusFromQueue( Port->getPortQueueHandle(), OutMessage->ReturnNexus);
+                blitzNexusFromCCUQueue( Device, OutMessage->ReturnNexus);
             }
 
             /* Only break if this is not DTRAN */
