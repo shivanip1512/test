@@ -135,7 +135,7 @@ public class CallTrackingAction implements ActionBase {
             if (callTrackingResp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            operator.setAttribute("CALL_TRACKING", callTrackingResp);
+            operator.setAttribute("$$CALL_TRACKING", callTrackingResp);
             
 			return 0;
         }

@@ -11,21 +11,37 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import java.util.Enumeration;
 import java.util.Vector;
+import org.exolab.castor.xml.*;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
  * 
  * @version $Revision$ $Date$
 **/
-public abstract class StarsCustSelectionList implements java.io.Serializable {
+public class StarsCustSelectionList implements java.io.Serializable {
 
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    private java.util.Vector _listEntryList;
+    private int _listID;
+
+    /**
+     * keeps track of state for field: _listID
+    **/
+    private boolean _has_listID;
+
+    private java.util.Vector _starsSelectionListEntryList;
 
 
       //----------------/
@@ -34,7 +50,7 @@ public abstract class StarsCustSelectionList implements java.io.Serializable {
 
     public StarsCustSelectionList() {
         super();
-        _listEntryList = new Vector();
+        _starsSelectionListEntryList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsCustSelectionList()
 
 
@@ -45,67 +61,91 @@ public abstract class StarsCustSelectionList implements java.io.Serializable {
     /**
      * 
      * 
-     * @param vListEntry
+     * @param vStarsSelectionListEntry
     **/
-    public void addListEntry(ListEntry vListEntry)
+    public void addStarsSelectionListEntry(StarsSelectionListEntry vStarsSelectionListEntry)
         throws java.lang.IndexOutOfBoundsException
     {
-        _listEntryList.addElement(vListEntry);
-    } //-- void addListEntry(ListEntry) 
+        _starsSelectionListEntryList.addElement(vStarsSelectionListEntry);
+    } //-- void addStarsSelectionListEntry(StarsSelectionListEntry) 
 
     /**
      * 
      * 
      * @param index
-     * @param vListEntry
+     * @param vStarsSelectionListEntry
     **/
-    public void addListEntry(int index, ListEntry vListEntry)
+    public void addStarsSelectionListEntry(int index, StarsSelectionListEntry vStarsSelectionListEntry)
         throws java.lang.IndexOutOfBoundsException
     {
-        _listEntryList.insertElementAt(vListEntry, index);
-    } //-- void addListEntry(int, ListEntry) 
+        _starsSelectionListEntryList.insertElementAt(vStarsSelectionListEntry, index);
+    } //-- void addStarsSelectionListEntry(int, StarsSelectionListEntry) 
 
     /**
     **/
-    public java.util.Enumeration enumerateListEntry()
+    public void deleteListID()
     {
-        return _listEntryList.elements();
-    } //-- java.util.Enumeration enumerateListEntry() 
+        this._has_listID= false;
+    } //-- void deleteListID() 
+
+    /**
+    **/
+    public java.util.Enumeration enumerateStarsSelectionListEntry()
+    {
+        return _starsSelectionListEntryList.elements();
+    } //-- java.util.Enumeration enumerateStarsSelectionListEntry() 
+
+    /**
+     * Returns the value of field 'listID'.
+     * 
+     * @return the value of field 'listID'.
+    **/
+    public int getListID()
+    {
+        return this._listID;
+    } //-- int getListID() 
 
     /**
      * 
      * 
      * @param index
     **/
-    public ListEntry getListEntry(int index)
+    public StarsSelectionListEntry getStarsSelectionListEntry(int index)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _listEntryList.size())) {
+        if ((index < 0) || (index > _starsSelectionListEntryList.size())) {
             throw new IndexOutOfBoundsException();
         }
         
-        return (ListEntry) _listEntryList.elementAt(index);
-    } //-- ListEntry getListEntry(int) 
+        return (StarsSelectionListEntry) _starsSelectionListEntryList.elementAt(index);
+    } //-- StarsSelectionListEntry getStarsSelectionListEntry(int) 
 
     /**
     **/
-    public ListEntry[] getListEntry()
+    public StarsSelectionListEntry[] getStarsSelectionListEntry()
     {
-        int size = _listEntryList.size();
-        ListEntry[] mArray = new ListEntry[size];
+        int size = _starsSelectionListEntryList.size();
+        StarsSelectionListEntry[] mArray = new StarsSelectionListEntry[size];
         for (int index = 0; index < size; index++) {
-            mArray[index] = (ListEntry) _listEntryList.elementAt(index);
+            mArray[index] = (StarsSelectionListEntry) _starsSelectionListEntryList.elementAt(index);
         }
         return mArray;
-    } //-- ListEntry[] getListEntry() 
+    } //-- StarsSelectionListEntry[] getStarsSelectionListEntry() 
 
     /**
     **/
-    public int getListEntryCount()
+    public int getStarsSelectionListEntryCount()
     {
-        return _listEntryList.size();
-    } //-- int getListEntryCount() 
+        return _starsSelectionListEntryList.size();
+    } //-- int getStarsSelectionListEntryCount() 
+
+    /**
+    **/
+    public boolean hasListID()
+    {
+        return this._has_listID;
+    } //-- boolean hasListID() 
 
     /**
     **/
@@ -125,65 +165,95 @@ public abstract class StarsCustSelectionList implements java.io.Serializable {
      * 
      * @param out
     **/
-    public abstract void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public void marshal(java.io.Writer out)
+        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    {
+        
+        Marshaller.marshal(this, out);
+    } //-- void marshal(java.io.Writer) 
 
     /**
      * 
      * 
      * @param handler
     **/
-    public abstract void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    {
+        
+        Marshaller.marshal(this, handler);
+    } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
     **/
-    public void removeAllListEntry()
+    public void removeAllStarsSelectionListEntry()
     {
-        _listEntryList.removeAllElements();
-    } //-- void removeAllListEntry() 
+        _starsSelectionListEntryList.removeAllElements();
+    } //-- void removeAllStarsSelectionListEntry() 
 
     /**
      * 
      * 
      * @param index
     **/
-    public ListEntry removeListEntry(int index)
+    public StarsSelectionListEntry removeStarsSelectionListEntry(int index)
     {
-        java.lang.Object obj = _listEntryList.elementAt(index);
-        _listEntryList.removeElementAt(index);
-        return (ListEntry) obj;
-    } //-- ListEntry removeListEntry(int) 
+        java.lang.Object obj = _starsSelectionListEntryList.elementAt(index);
+        _starsSelectionListEntryList.removeElementAt(index);
+        return (StarsSelectionListEntry) obj;
+    } //-- StarsSelectionListEntry removeStarsSelectionListEntry(int) 
+
+    /**
+     * Sets the value of field 'listID'.
+     * 
+     * @param listID the value of field 'listID'.
+    **/
+    public void setListID(int listID)
+    {
+        this._listID = listID;
+        this._has_listID = true;
+    } //-- void setListID(int) 
 
     /**
      * 
      * 
      * @param index
-     * @param vListEntry
+     * @param vStarsSelectionListEntry
     **/
-    public void setListEntry(int index, ListEntry vListEntry)
+    public void setStarsSelectionListEntry(int index, StarsSelectionListEntry vStarsSelectionListEntry)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _listEntryList.size())) {
+        if ((index < 0) || (index > _starsSelectionListEntryList.size())) {
             throw new IndexOutOfBoundsException();
         }
-        _listEntryList.setElementAt(vListEntry, index);
-    } //-- void setListEntry(int, ListEntry) 
+        _starsSelectionListEntryList.setElementAt(vStarsSelectionListEntry, index);
+    } //-- void setStarsSelectionListEntry(int, StarsSelectionListEntry) 
 
     /**
      * 
      * 
-     * @param listEntryArray
+     * @param starsSelectionListEntryArray
     **/
-    public void setListEntry(ListEntry[] listEntryArray)
+    public void setStarsSelectionListEntry(StarsSelectionListEntry[] starsSelectionListEntryArray)
     {
         //-- copy array
-        _listEntryList.removeAllElements();
-        for (int i = 0; i < listEntryArray.length; i++) {
-            _listEntryList.addElement(listEntryArray[i]);
+        _starsSelectionListEntryList.removeAllElements();
+        for (int i = 0; i < starsSelectionListEntryArray.length; i++) {
+            _starsSelectionListEntryList.addElement(starsSelectionListEntryArray[i]);
         }
-    } //-- void setListEntry(ListEntry) 
+    } //-- void setStarsSelectionListEntry(StarsSelectionListEntry) 
+
+    /**
+     * 
+     * 
+     * @param reader
+    **/
+    public static com.cannontech.stars.xml.serialize.StarsCustSelectionList unmarshal(java.io.Reader reader)
+        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    {
+        return (com.cannontech.stars.xml.serialize.StarsCustSelectionList) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsCustSelectionList.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsCustSelectionList unmarshal(java.io.Reader) 
 
     /**
     **/

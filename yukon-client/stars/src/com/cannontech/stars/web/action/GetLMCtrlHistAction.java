@@ -100,9 +100,9 @@ public class GetLMCtrlHistAction implements ActionBase {
 			}
 
 			if (operator != null)
-	            operator.setAttribute( "LM_CONTROL_HISTORY", ctrlHist );
+	            operator.setAttribute( "$$LM_CONTROL_HISTORY", ctrlHist );
 	        else
-	        	session.setAttribute( "LM_CONTROL_HISTORY", ctrlHist );
+	        	session.setAttribute( "$$LM_CONTROL_HISTORY", ctrlHist );
             
             return 0;
         }

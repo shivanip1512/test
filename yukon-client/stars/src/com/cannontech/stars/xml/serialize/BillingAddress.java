@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: BillingAddress.java,v 1.5 2002/09/06 22:37:20 zyao Exp $
+ * $Id: BillingAddress.java,v 1.6 2002/09/11 15:30:17 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,13 +11,19 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import org.exolab.castor.xml.*;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
  * 
- * @version $Revision: 1.5 $ $Date: 2002/09/06 22:37:20 $
+ * @version $Revision: 1.6 $ $Date: 2002/09/11 15:30:17 $
 **/
 public class BillingAddress extends StarsCustomerAddress 
 implements java.io.Serializable

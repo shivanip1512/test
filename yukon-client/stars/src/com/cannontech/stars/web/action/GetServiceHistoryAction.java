@@ -1,5 +1,7 @@
 package com.cannontech.stars.web.action;
 
+import java.util.Hashtable;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -13,6 +15,9 @@ import com.cannontech.stars.xml.serialize.StarsGetServiceRequestHistory;
 import com.cannontech.stars.xml.serialize.StarsGetServiceRequestHistoryResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
+import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
+import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
+import com.cannontech.stars.xml.StarsCustListEntryFactory;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -80,25 +85,30 @@ public class GetServiceHistoryAction implements ActionBase {
             for (int i = 0; i < orders.length; i++) {
             	StarsServiceRequestHistory servHist = new StarsServiceRequestHistory();
             	
-            	com.cannontech.database.data.stars.report.WorkOrderBase order =
-            			new com.cannontech.database.data.stars.report.WorkOrderBase();
-            	order.setWorkOrderBase( orders[i] );
-            	order.setCustomerBase( account.getCustomerBase() );
-            	order.setSite( account.getAccountSite() );
-            	Transaction.createTransaction( Transaction.RETRIEVE, order ).execute();
-            	
+            	com.cannontech.database.db.stars.CustomerListEntry entry = new com.cannontech.database.db.stars.CustomerListEntry();
+            	entry.setEntryID( orders[i].getWorkTypeID() );
+            	Transaction.createTransaction( Transaction.RETRIEVE, entry );
             	ServiceType servType = new ServiceType();
-            	servType.setEntryID( orders[i].getWorkTypeID().intValue() );
-            	servType.setContent( order.getWorkType().getEntryText() );
+            	servType.setEntryID( entry.getEntryID().intValue() );
+            	servType.setContent( entry.getEntryText() );
             	servHist.setServiceType( servType );
             	
-            	ServiceCompany servCompany = new ServiceCompany();
-            	servCompany.setEntryID( orders[i].getServiceCompanyID().intValue() );
-            	servCompany.setContent( order.getServiceCompany().getServiceCompany().getCompanyName() );
-            	servHist.setServiceCompany( servCompany );
+            	entry.setEntryID( orders[i].getCurrentStateID() );
+            	Transaction.createTransaction( Transaction.RETRIEVE, entry );
+            	servHist.setCurrentState( entry.getEntryText() );
+            	
+            	Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+            	StarsCustSelectionList serviceCompanyList = (StarsCustSelectionList)
+            			selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICECOMPANY );
+            	for (int j = 0; j < serviceCompanyList.getStarsSelectionListEntryCount(); j++) {
+            		StarsSelectionListEntry starsEntry = serviceCompanyList.getStarsSelectionListEntry(j);
+            		if (starsEntry.getEntryID() == orders[i].getServiceCompanyID().intValue()) {
+            			ServiceCompany servCompany = (ServiceCompany) StarsCustListEntryFactory.newStarsCustListEntry( starsEntry, ServiceCompany.class );
+            			servHist.setServiceCompany( servCompany );
+            		}
+            	}
             	
             	servHist.setOrderNumber( orders[i].getOrderNumber().toString() );
-            	servHist.setCurrentState( order.getCurrentState().getEntryText() );
             	servHist.setDateReported( orders[i].getDateReported() );
             	servHist.setDescription( orders[i].getDescription() );
             	servHist.setDateScheduled( orders[i].getDateScheduled() );
@@ -140,7 +150,7 @@ public class GetServiceHistoryAction implements ActionBase {
             if (getServHistResp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            operator.setAttribute("SERVICE_HISTORY", getServHistResp);
+            operator.setAttribute("$$SERVICE_HISTORY", getServHistResp);
             
 			return 0;
         }

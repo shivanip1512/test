@@ -76,19 +76,22 @@ public class WorkOrderBase extends DBPersistent {
         getCurrentState().setEntryID( getWorkOrderBase().getCurrentStateID() );
         getCurrentState().retrieve();
         
-        if (getSite().getAccountSite() == null) {
-        	getSite().setAccountSiteID( getWorkOrderBase().getSiteID() );
-        	getSite().retrieve();
+        if (getSite() == null) {
+        	site = new com.cannontech.database.data.stars.customer.AccountSite();
+        	site.setAccountSiteID( getWorkOrderBase().getSiteID() );
+        	site.retrieve();
         }
         
-        if (getServiceCompany().getServiceCompany() == null) {
-        	getServiceCompany().setCompanyID( getWorkOrderBase().getServiceCompanyID() );
-        	getServiceCompany().retrieve();
+        if (getServiceCompany() == null) {
+        	serviceCompany = new ServiceCompany();
+        	serviceCompany.setCompanyID( getWorkOrderBase().getServiceCompanyID() );
+        	serviceCompany.retrieve();
         }
         
-        if (getCustomerBase().getCustomerBase() == null) {
-        	getCustomerBase().setCustomerID( getWorkOrderBase().getCustomerID() );
-        	getCustomerBase().retrieve();
+        if (getCustomerBase() == null) {
+        	customerBase = new com.cannontech.database.data.stars.customer.CustomerBase();
+        	customerBase.setCustomerID( getWorkOrderBase().getCustomerID() );
+        	customerBase.retrieve();
         }
     }
     
@@ -116,8 +119,6 @@ public class WorkOrderBase extends DBPersistent {
 	 * @return com.cannontech.database.data.stars.customer.CustomerBase
 	 */
 	public com.cannontech.database.data.stars.customer.CustomerBase getCustomerBase() {
-		if (customerBase == null)
-			customerBase = new com.cannontech.database.data.stars.customer.CustomerBase();
 		return customerBase;
 	}
 
@@ -126,8 +127,6 @@ public class WorkOrderBase extends DBPersistent {
 	 * @return com.cannontech.database.data.stars.report.ServiceCompany
 	 */
 	public com.cannontech.database.data.stars.report.ServiceCompany getServiceCompany() {
-		if (serviceCompany == null)
-			serviceCompany = new ServiceCompany();
 		return serviceCompany;
 	}
 
@@ -136,8 +135,6 @@ public class WorkOrderBase extends DBPersistent {
 	 * @return com.cannontech.database.data.stars.customer.AccountSite
 	 */
 	public com.cannontech.database.data.stars.customer.AccountSite getSite() {
-		if (site == null)
-			site = new com.cannontech.database.data.stars.customer.AccountSite();
 		return site;
 	}
 

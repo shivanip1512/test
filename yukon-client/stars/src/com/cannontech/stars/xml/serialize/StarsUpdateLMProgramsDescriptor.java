@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsUpdateLMProgramsDescriptor.java,v 1.5 2002/09/06 22:37:17 zyao Exp $
+ * $Id: StarsUpdateLMProgramsDescriptor.java,v 1.6 2002/09/11 15:30:15 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,15 +11,21 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import org.exolab.castor.mapping.AccessMode;
+import org.exolab.castor.mapping.ClassDescriptor;
+import org.exolab.castor.mapping.FieldDescriptor;
+import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.FieldValidator;
-import org.exolab.castor.xml.NodeType;
-import org.exolab.castor.xml.XMLFieldHandler;
+import org.exolab.castor.xml.TypeValidator;
+import org.exolab.castor.xml.XMLFieldDescriptor;
+import org.exolab.castor.xml.handlers.*;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
+import org.exolab.castor.xml.validators.*;
 
 /**
  * 
  * 
- * @version $Revision: 1.5 $ $Date: 2002/09/06 22:37:17 $
+ * @version $Revision: 1.6 $ $Date: 2002/09/11 15:30:15 $
 **/
 public class StarsUpdateLMProgramsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
