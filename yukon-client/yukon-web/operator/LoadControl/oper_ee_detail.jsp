@@ -49,7 +49,7 @@
     if( offerRevisions.size() > 0 )
     {   
  
-        int totalCommitted = 0;
+        double totalCommitted = 0;
         LMEnergyExchangeCustomer[] customers = cache.getEnergyExchangeCustomers(program.getYukonID().longValue());               
 %>
 
@@ -172,13 +172,14 @@
                       reply.getRevisionNumber().intValue() == revisionNumber.intValue() )
                   {
                       // Add up the total committed
-                      int committed = 0;
+                      double committed = 0;
 
                       java.util.Vector hourlyReplies = reply.getEnergyExchangeHourlyCustomer();
                       for( int k = 0; k < hourlyReplies.size(); k++ )
                       {
                         LMEnergyExchangeHourlyCustomer hourlyReply = (LMEnergyExchangeHourlyCustomer) hourlyReplies.elementAt(k);
-                        committed += hourlyReply.getAmountCommitted().intValue();
+    	                if( hourlyReply.getRevisionNumber().intValue() == reply.getRevisionNumber().intValue())
+	                        committed += hourlyReply.getAmountCommitted().intValue();
                       }
 
                       totalCommitted += committed;
@@ -187,7 +188,7 @@
                       <tr valign="top"> 
                         <td width="300" class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= program.getYukonID() %>&offer=<%= offerID %>&rev=<%= revisionNumber %>&cust=<%= customer.getCustomerID() %>" class="Link1"><%= customer.getCompanyName() %></a></td>
                         <td width="150" class="TableCell"><%= reply.getAcceptStatus() %></td>
-                        <td width="150" class="TableCell"><%= committed %></td>
+                        <td width="150" class="TableCell"><%= numberFormat.format(committed )%></td>
                       </tr>
                       <%
                   }
@@ -215,7 +216,7 @@
 						</form>
                         <form name="form2" method="post" action="oper_ee.jsp?tab=close&prog=<%= programID %>&offer=<%= offerID %>">
 						<td width="13%"> 
-                          <input type="submit" name="tab" value="Close">
+                          <input type="submit" name="tab" value="Close Offer">
                         </td>
 						</form>
                       </tr>
@@ -223,8 +224,8 @@
                     <p></p>
                     <p> 
                       <center>
-                        <p><span class="MainHeader"><b>TOTAL: <%= totalCommitted %> 
-                          kW</b></span> </p>
+                        <p><span class="MainHeader"><b>TOTAL: <%= numberFormat.format(totalCommitted) %> 
+                          kWh</b></span> </p>
                         </center>
                     <p align="center" class="MainHeader"> <a href="oper_ee.jsp?tab=Current" class="Link1"><b>Back 
                       to Current Summary</b></a><br>
