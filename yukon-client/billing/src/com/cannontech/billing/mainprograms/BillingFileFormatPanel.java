@@ -155,7 +155,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	else if ( event.getSource() == getBillingGroupTypeComboBox())
 	{
 //		getBillingDefaults().setBillGroupColumn(billingTypeColumn[getBillingGroupTypeComboBox().getSelectedIndex()]);
-		getBillingDefaults().setBillGroupColumn(getBillingGroupTypeComboBox().getSelectedIndex());
+		getBillingDefaults().setBillGroupSQLString(getBillingGroupTypeComboBox().getSelectedIndex());
 		getGroupList().setListData(getBillingFile().retreiveAllBillGroupsVector());
 	}
 }
@@ -353,7 +353,7 @@ private javax.swing.JComboBox getBillingGroupTypeComboBox() {
 			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupComboBoxString(BillingFileDefaults.ALTERNATE_GROUP));
 			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupComboBoxString(BillingFileDefaults.BILLING_GROUP));
 
-			ivjBillingGroupTypeComboBox.setSelectedItem(getBillingDefaults().getBillGroupComboBoxString(getBillingDefaults().getBillGroupColumn()));
+			ivjBillingGroupTypeComboBox.setSelectedItem(getBillingDefaults().getBillGroupComboBoxString(getBillingDefaults().getBillGroupSQLString()));
 			ivjBillingGroupTypeComboBox.addActionListener(this);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
