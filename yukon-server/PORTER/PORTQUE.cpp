@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/08/28 16:19:52 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/09/09 14:55:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,6 +94,23 @@ void blitzNexusFromQueue(HCTIQUEUE q, CTINEXUS *&Nexus)
     CleanQueue( q, (void*)Nexus, findReturnNexusMatch, cleanupOrphanOutMessages );
 }
 
+void blitzNexusFromCCUQueue(CtiDevice *Device, CTINEXUS *&Nexus)
+{
+    if(Device->getType() == TYPE_CCU711)
+    {
+        CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Device->getTrxInfo();
+
+        if(pInfo)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Attempting to remove all queue entries for bad nexus 0x" << Nexus << endl;
+            }
+            CleanQueue( pInfo->QueueHandle, (void*)Nexus, findReturnNexusMatch, cleanupOrphanOutMessages );
+        }
+    }
+}
+
 /* Thread to process and dispatch entries from Queue & ACTIN queues */
 VOID QueueThread (VOID *Arg)
 {
@@ -105,32 +122,35 @@ VOID QueueThread (VOID *Arg)
         dout << RWTime() << " Queue Thread Starting as TID " << CurrentTID() << endl;
     }
 
+    HANDLE hQueueArray[] = {
+        hPorterEvents[P_QUEUE_EVENT],
+        hPorterEvents[P_QUIT_EVENT]
+    };
+
     /* make it clear who isn't the boss */
     CTISetPriority(PRTYS_THREAD, PRTYC_REGULAR, -10, 0);
 
     for( ;PorterQuit != TRUE; )
     {
-        dwWait = WaitForMultipleObjects(NUMPORTEREVENTS, hPorterEvents, FALSE, 5000L);
+        dwWait = WaitForMultipleObjects(2, hQueueArray, FALSE, 5000L);
 
         if(dwWait != WAIT_TIMEOUT)
         {
             switch( dwWait - WAIT_OBJECT_0 )
             {
-            case P_QUEUE_EVENT:
+            case WAIT_OBJECT_0: // P_QUEUE_EVENT:
                 {
                     ResetEvent(hPorterEvents[ P_QUEUE_EVENT ]);
                     break;
                 }
-            case P_QUIT_EVENT:
+            case WAIT_OBJECT_0 + 1: // P_QUIT_EVENT:
                 {
                     PorterQuit = TRUE;
                     continue;            // the for loop
                 }
-            case P_TIMESYNC_EVENT:
-            case P_SCANNER_EVENT:
-            case P_PERFORM_EVENT:
             default:
                 {
+                    Sleep(1000);
                     continue;
                 }
             }

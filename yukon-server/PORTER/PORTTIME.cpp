@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/09/03 20:53:15 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/09/09 14:55:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -662,6 +662,11 @@ VOID TimeSyncThread (PVOID Arg)
     /* send out time syncs for the first time... */
     PortManager.apply(applyPortSendTime, NULL);
 
+    HANDLE hTimeSyncArray[] = {
+        hPorterEvents[P_TIMESYNC_EVENT],
+        hPorterEvents[P_QUIT_EVENT]
+    };
+
     /* loop doing time sync at 150 seconds after the hour */
     for(; PorterQuit != TRUE ;)
     {
@@ -680,26 +685,24 @@ VOID TimeSyncThread (PVOID Arg)
             EventWait = 1000L * (TimeSyncRate - (TimeB.time % TimeSyncRate));
         }
 
-        dwWait = WaitForMultipleObjects(NUMPORTEREVENTS, hPorterEvents, FALSE, EventWait);
+        dwWait = WaitForMultipleObjects(2, hTimeSyncArray, FALSE, EventWait);
 
         if(dwWait != WAIT_TIMEOUT)
         {
             switch( dwWait - WAIT_OBJECT_0 )
             {
-            case P_TIMESYNC_EVENT:
+            case WAIT_OBJECT_0:     // P_TIMESYNC_EVENT:
                 {
                     break;
                 }
-            case P_QUIT_EVENT:
+            case WAIT_OBJECT_0 + 1: // P_QUIT_EVENT:
                 {
                     PorterQuit = TRUE;
                     continue;            // the for loop
                 }
-            case P_QUEUE_EVENT:
-            case P_SCANNER_EVENT:
-            case P_PERFORM_EVENT:
             default:
                 {
+                    Sleep(1000);
                     continue;
                 }
             }
