@@ -1,5 +1,7 @@
 package com.cannontech.billing;
 
+import java.util.Date;
+
 /**
  * Insert the type's description here.
  * Creation date: (5/18/00 3:46:39 PM)
@@ -148,13 +150,14 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 					double reading = rset.getDouble(4);
 					currentDeviceID = rset.getInt(5);
 					int ptOffset = rset.getInt(6);
-
+					Date tsDate = new Date(ts.getTime());
+					
 					inValidTimestamp:
 					if( currentDeviceID == lastDeviceID)
 					{
 						if (ptOffset == 1 || isKWH(ptOffset))
 						{
-							if( ts.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 								
 							//** Get the last record and add to it the other pointOffsets' values. **//
@@ -167,7 +170,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 						}
 						else if (isKW(ptOffset))
 						{
-							if( ts.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 								
 							//** Get the last record and add to it the other pointOffsets' values. **//
@@ -185,7 +188,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 							new com.cannontech.billing.record.SEDCRecord(meterNumber);
 						if (ptOffset == 1 || isKWH(ptOffset))
 						{
-							if( ts.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 							
 							sedcRec.setReadingKWH(reading);
@@ -195,7 +198,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 						}
 						else if (isKW(ptOffset))
 						{
-							if( ts.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 
 							sedcRec.setReadingKW(reading);
