@@ -8,6 +8,7 @@ package com.cannontech.database.data.lite;
 public class LiteDeviceMeterNumber extends LiteBase
 {
 	String meterNumber = null;
+	String collGroup = null;
 /**
  * LiteDeviceMeterNumber constructor comment.
  */
@@ -26,11 +27,12 @@ public LiteDeviceMeterNumber(int devID)
 /**
  * LiteDeviceMeterNumber constructor comment.
  */
-public LiteDeviceMeterNumber(int devID, String meterNum)
+public LiteDeviceMeterNumber(int devID, String meterNum, String collGrp)
 {
 	super();
 	setDeviceID(devID);
 	meterNumber = new String(meterNum);
+	collGroup = new String(collGrp);
 
 	setLiteType(LiteTypes.DEVICE_METERNUMBER);	
 }
@@ -54,7 +56,7 @@ public void retrieve(String databaseAlias)
 	
    com.cannontech.database.SqlStatement s = 
       new com.cannontech.database.SqlStatement(
-         "SELECT METERNUMBER FROM DEVICEMETERGROUP WHERE DEVICEID = " + getDeviceID(),
+         "SELECT METERNUMBER, COLLECTIONGROUP FROM DEVICEMETERGROUP WHERE DEVICEID = " + getDeviceID(),
          com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
 	try 
@@ -66,6 +68,7 @@ public void retrieve(String databaseAlias)
 
 
       setMeterNumber( s.getRow(0)[0].toString() );
+      setCollGroup(s.getRow(0)[1].toString());
 	}
 	catch( Exception e )
 	{
@@ -107,4 +110,18 @@ public boolean equals(Object o)
 		return super.equals(o);
 }
 
+    /**
+     * @return Returns the collGroup.
+     */
+    public String getCollGroup()
+    {
+        return collGroup;
+    }
+    /**
+     * @param collGroup The collGroup to set.
+     */
+    public void setCollGroup(String collGroup)
+    {
+        this.collGroup = new String(collGroup);
+    }
 }

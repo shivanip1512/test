@@ -112,6 +112,7 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				returnObject = new com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase();
 				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setDeviceID(new Integer(((LiteDeviceMeterNumber)liteObject).getDeviceID()) );
 				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setMeterNumber(((LiteDeviceMeterNumber)liteObject).getMeterNumber() );
+				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setCollectionGroup(((LiteDeviceMeterNumber)liteObject).getCollGroup() );
 				break;				
 			case LiteTypes.HOLIDAY_SCHEDULE:
 				returnObject = new com.cannontech.database.data.holiday.HolidaySchedule();
@@ -360,7 +361,8 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 	{
 		returnLite = new LiteDeviceMeterNumber(
 				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getDeviceID().intValue(),
-				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getMeterNumber());
+				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getMeterNumber(),
+				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getCollectionGroup());
 	}
 	else if( val instanceof YukonUser )
 	{
