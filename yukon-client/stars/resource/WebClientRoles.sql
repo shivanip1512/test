@@ -52,9 +52,10 @@ insert into YukonRoleProperty values(-20150,-201,'Super Operator','false','Used 
 insert into YukonRoleProperty values(-20151,-201,'New Account Wizard','true','Controls whether to enable the new account wizard');
 insert into YukonRoleProperty values(-20152,-201,'Import Customer Account','false','Controls whether to enable the customer account importing feature');
 insert into YukonRoleProperty values(-20153,-201,'Inventory Checking Time','EARLY','Controls when to perform inventory checking while creating or updating hardware information. Possible values are EARLY, LATE, and NONE');
-insert into YukonRoleProperty values(-20154,-201,'Automatic Configuration','true','Controls whether to automatically send out config command when creating hardware or changing program enrollment');
+insert into YukonRoleProperty values(-20154,-201,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment');
 insert into YukonRoleProperty values(-20155,-201,'Order Number Auto Generation','false','Controls whether the order number is automatically generated or entered by user');
 insert into YukonRoleProperty values(-20156,-201,'Call Number Auto Generation','false','Controls whether the call number is automatically generated or entered by user');
+insert into YukonRoleProperty values(-20157,-201,'Opt Out Rules','(none)','Defines the rules for opting out.');
 insert into YukonRoleProperty values(-20800,-201,'Link FAQ','(none)','The customized FAQ link');
 insert into YukonRoleProperty values(-20801,-201,'Link Thermostat Instructions','(none)','The customized thermostat instructions link');
 insert into YukonRoleProperty values(-20810,-201,'Text Control','control','Term for control');
@@ -92,8 +93,9 @@ insert into YukonRoleProperty values(-40009,-400,'Admin Change Login','true','Co
 insert into YukonRoleProperty values(-40010,-400,'Thermostats All','false','Controls whether to allow programming multiple thermostats at one time');
 insert into YukonRoleProperty values(-40050,-400,'Notification on General Page','false','Controls whether to show the notification email box on the general page (useful only when the programs enrollment feature is not selected)');
 insert into YukonRoleProperty values(-40051,-400,'Hide Opt Out Box','false','Controls whether to show the opt out box on the programs opt out page');
-insert into YukonRoleProperty values(-40052,-400,'Automatic Configuration','true','Controls whether to automatically send out config command when changing program enrollment');
+insert into YukonRoleProperty values(-40052,-400,'Automatic Configuration','false','Controls whether to automatically send out config command when changing program enrollment');
 insert into YukonRoleProperty values(-40054,-400,'Disable Program Signup','false','Controls whether to prevent the customers from enrolling in or out of the programs');
+insert into YukonRoleProperty values(-40055,-400,'Opt Out Rules','(none)','Defines the rules for opting out.');
 insert into YukonRoleProperty values(-40100,-400,'Link FAQ','(none)','The customized FAQ link');
 insert into YukonRoleProperty values(-40101,-400,'Link Utility Email','(none)','The customized utility email');
 insert into YukonRoleProperty values(-40102,-400,'Link Thermostat Instructions','(none)','The customized thermostat instructions link');
