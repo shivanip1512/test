@@ -16,6 +16,7 @@ import java.awt.Component;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
+import com.cannontech.common.gui.util.JTextFieldTimeEntry;
 
 /**
  * Insert the type's description here.
@@ -411,8 +412,8 @@ private javax.swing.JTable getProgramsTable()
 			startOffsetColumn.setPreferredWidth(60);
 			startGearColumn.setPreferredWidth(100);
 	
-			//create our editor for the Integer fields
-			javax.swing.JTextField field = new javax.swing.JTextField();
+			//create our editor for the time fields
+			JTextFieldTimeEntry field = new JTextFieldTimeEntry();
 			field.addKeyListener(new java.awt.event.KeyAdapter() 
 			{
 				public void keyTyped(java.awt.event.KeyEvent e) 
@@ -422,17 +423,20 @@ private javax.swing.JTable getProgramsTable()
 			});
 		
 			field.setHorizontalAlignment( javax.swing.JTextField.CENTER );
-			field.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(1, 99999) );
 			javax.swing.DefaultCellEditor ed = new javax.swing.DefaultCellEditor(field);
 			ed.setClickCountToStart(1);
 			startOffsetColumn.setCellEditor( ed );
 			stopOffsetColumn.setCellEditor( ed );
-	
+			
 			//create our renderer for the Integer fields
 			javax.swing.table.DefaultTableCellRenderer rend = new javax.swing.table.DefaultTableCellRenderer();
 			rend.setHorizontalAlignment( field.getHorizontalAlignment() );
 			startOffsetColumn.setCellRenderer(rend);
 			stopOffsetColumn.setCellRenderer(rend);
+			
+			
+			//for the gears, just use a default renderer
+			startGearColumn.setCellRenderer(rend);
 			
 			//create the editor for the gear field
 			javax.swing.JComboBox combo = new javax.swing.JComboBox();
@@ -453,7 +457,7 @@ private javax.swing.JTable getProgramsTable()
 				public void mouseClicked(java.awt.event.MouseEvent e) {}
 				public void mouseEntered(java.awt.event.MouseEvent e) 
 				{
-					//need to populate the combo editor to the program's gears
+					//need to populate the combo editor and renderer to the program's gears
 					userWantsTheirGears();
 				}
 				public void mousePressed(java.awt.event.MouseEvent e) {}
@@ -462,9 +466,6 @@ private javax.swing.JTable getProgramsTable()
 			});
 			startGearColumn.setCellEditor( new ComboBoxTableEditor(combo) );
 			
-			//for the gears, just use a default renderer
-			startGearColumn.setCellRenderer(rend);
-				
 		}	
 			
 		// user code end
@@ -513,9 +514,9 @@ public Object getValue(Object o)
 
 		newScenarioProgram.setProgramID(new Integer(thePAO.getLiteID()));
 		
-		newScenarioProgram.setStartOffset(getTableModel().getStartOffsetAt(j));
+		newScenarioProgram.setStartOffset(JTextFieldTimeEntry.getTimeTotalSeconds(getTableModel().getStartOffsetAt(j)));
 		
-		newScenarioProgram.setStopOffset(getTableModel().getStopOffsetAt(j));
+		newScenarioProgram.setStopOffset(JTextFieldTimeEntry.getTimeTotalSeconds(getTableModel().getStopOffsetAt(j)));
 		
 		newScenarioProgram.setStartGear(new Integer(((LiteGear)getTableModel().getStartGearAt(j)).getGearNumber()));
 		
@@ -645,7 +646,7 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 		}
 	
 		//add the new row
-		getTableModel().addRowValue( thePAO, new Integer(0), new Integer(0),
+		getTableModel().addRowValue( thePAO, "0:00", "0:00",
 			startingGear);
 		
 		//update the available programs list
@@ -791,7 +792,7 @@ public void setValue(Object o)
 		//find the start gear
 		for(int x = 0; x < allGears.size(); x++)
 		{
-			if( ((LiteGear)allGears.elementAt(x)).getGearNumber() == lightProgram.getStartGear().intValue() )
+			if( ((LiteGear)allGears.elementAt(x)).getOwnerID() == progID.intValue() && ((LiteGear)allGears.elementAt(x)).getGearNumber() == lightProgram.getStartGear().intValue() )
 			{
 				startingGear = (LiteGear)allGears.elementAt(x);
 				break;
@@ -799,7 +800,7 @@ public void setValue(Object o)
 		}
 		
 		//add the new row
-		getTableModel().addRowValue( thePAO, lightProgram.getStartOffset(), lightProgram.getStopOffset(),
+		getTableModel().addRowValue( thePAO, JTextFieldTimeEntry.setTimeTextForField(lightProgram.getStartOffset()), JTextFieldTimeEntry.setTimeTextForField(lightProgram.getStopOffset()),
 			startingGear);
 			
 		
@@ -836,7 +837,6 @@ public void userWantsTheirGears()
 	startGearColumn.getCellEditor().getTableCellEditorComponent(
 				getProgramsTable(), specificGears, true, 
 				currentRow, LMControlScenarioProgramTableModel.STARTGEAR_COLUMN);
-
 }
 
 public boolean isInputValid() 

@@ -194,6 +194,70 @@ public Integer getTimeTotalSeconds()
 		
 	}
 
+		return new Integer( (hour * 3600) + (minute * 60) );
+}
+
+public static Integer getTimeTotalSeconds(String time) 
+{
+
+	String text = time;
+	int hour = 0;
+	int minute = 0;
+
+	if( text != null && text.length() > 0 )
+	{
+
+		try
+		{
+			int pos = -1;
+			
+			if( (pos = text.indexOf(":")) != -1  ) //found the :
+			{
+				hour = Integer.parseInt( text.substring(0, pos) );
+
+				if( (pos+1) < text.length() )
+					minute = Integer.parseInt( text.substring(pos+1, text.length()) );
+			}
+			else  //did not find :
+			{
+				switch( text.length() )
+				{
+					case 1: //9
+						hour = Integer.parseInt( text );
+						break;
+						
+					case 2: //23
+						hour = Integer.parseInt( text );
+						if( hour >= 24 )
+						{
+							hour = Integer.parseInt( text.substring(0, 1) );
+							minute = Integer.parseInt( text.substring(1, 2) );
+						}
+						break;
+
+					case 3: //930
+						hour = Integer.parseInt( text.substring(0, 1) );
+						minute = Integer.parseInt( text.substring(1, 3) );
+						break;
+
+					case 4://0930
+						hour = Integer.parseInt( text.substring(0, 2) );
+						minute = Integer.parseInt( text.substring(2, 4) );
+						break;
+					
+					default:
+						return new Integer(0);
+				}
+
+			}
+				
+		}
+		catch( Exception e )
+		{
+			return new Integer(0);
+		}	
+		
+	}
 	
 	return new Integer( (hour * 3600) + (minute * 60) );
 }
@@ -281,6 +345,23 @@ public void setTimeText( Integer seconds )
 	});
 */
 }
+
+public static String setTimeTextForField( Integer seconds )
+{
+	int hours = seconds.intValue() / 3600;
+	int minutes = (seconds.intValue() % 3600) / 60;
+
+	String hrStr = String.valueOf(hours);
+	String minStr = String.valueOf(minutes);
+	
+	if( minutes <= 9 )
+		minStr = "0" + minutes;
+
+	if( hours <= 9 )
+		hrStr = "0" + hours;
+
+	return hrStr + ":" + minStr;
+}		
 /**
  * Insert the method's description here.
  * Creation date: (4/24/2001 9:32:04 AM)

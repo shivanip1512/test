@@ -34,18 +34,18 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 		"Start Gear"
 	};
 	
-	private Class[] COLUMN_CLASSES = {LiteYukonPAObject.class, Integer.class, Integer.class, LiteGear.class};
+	private Class[] COLUMN_CLASSES = {LiteYukonPAObject.class, String.class, String.class, LiteGear.class};
 	
 	private Vector rows = null;
 	
 	private class RowValue
 	{
 		private LiteYukonPAObject programLitePAO = null;
-		private Integer startOffset = null;
-		private Integer stopOffset = null;
+		private String startOffset = null;
+		private String stopOffset = null;
 		private LiteGear initialGear = null;
 		
-		public RowValue(LiteYukonPAObject programLitePAO, Integer startOffset, Integer stopOffset, LiteGear initialGear )
+		public RowValue(LiteYukonPAObject programLitePAO, String startOffset, String stopOffset, LiteGear initialGear )
 		{
 			super();
 			this.programLitePAO = programLitePAO;
@@ -58,10 +58,10 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 		public LiteYukonPAObject getProgramLitePAO()
 			{ return programLitePAO; }
 
-		public Integer getStartOffset()
+		public String getStartOffset()
 			{ return startOffset; }
 			
-		public Integer getStopOffset()
+		public String getStopOffset()
 			{ return stopOffset; }
 		
 		public LiteGear getStartGear()
@@ -71,10 +71,10 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 		public void setProgramLitePAO(LiteYukonPAObject val)
 			{ programLitePAO = val; }
 
-		public void setStartOffset(Integer val)
+		public void setStartOffset(String val)
 			{ startOffset = val; }
 			
-		public void setStopOffset(Integer val)
+		public void setStopOffset(String val)
 			{ stopOffset = val; }
 
 		public void setStartGear(LiteGear val)
@@ -87,7 +87,7 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 		super();
 	}
 	
-	public void addRowValue(LiteYukonPAObject programLitePAO, Integer startOffset, Integer stopOffset, LiteGear initialGear) 
+	public void addRowValue(LiteYukonPAObject programLitePAO, String startOffset, String stopOffset, LiteGear initialGear) 
 	{
 		getRows().addElement( new RowValue(programLitePAO, startOffset, stopOffset, initialGear) );
 	}
@@ -125,7 +125,7 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 	/**
 	 * getValueAt method comment.
 	 */
-	public Integer getStartOffsetAt(int row ) 
+	public String getStartOffsetAt(int row ) 
 	{
 		if( getRows() == null )
 			return null;
@@ -138,7 +138,7 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 			return null;
 	}
 	
-	public Integer getStopOffsetAt(int row ) 
+	public String getStopOffsetAt(int row ) 
 	{
 		if( getRows() == null )
 			return null;
@@ -230,7 +230,7 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 		}
 	}
 	
-	public void setRowValue(int rowNumber, LiteYukonPAObject name, Integer start, Integer stop, LiteGear gear) 
+	public void setRowValue(int rowNumber, LiteYukonPAObject name, String start, String stop, LiteGear gear) 
 	{
 		if( rowNumber >=0 && rowNumber < getRowCount() )
 		{
@@ -251,12 +251,12 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 				
 				case STARTOFFSET_COLUMN:
 					if(value.toString().compareTo("") != 0)
-						((RowValue)getRows().elementAt(row)).setStartOffset(new Integer(value.toString()));
+						((RowValue)getRows().elementAt(row)).setStartOffset(value.toString());
 					break;
 					
 				case STOPOFFSET_COLUMN:
 					if(value.toString().compareTo("") != 0)
-						((RowValue)getRows().elementAt(row)).setStopOffset(new Integer(value.toString()));
+						((RowValue)getRows().elementAt(row)).setStopOffset(value.toString());
 					break;
 				
 				case STARTGEAR_COLUMN:
