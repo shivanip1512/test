@@ -398,8 +398,13 @@ private javax.swing.JLabel getSeasonIDField() {
 		try {
 			ivjSeasonIDField = new javax.swing.JLabel();
 			ivjSeasonIDField.setName("SeasonIDField");
-			ivjSeasonIDField.setFont(new java.awt.Font("Arial", 1, 12));
 			ivjSeasonIDField.setText("new");
+			ivjSeasonIDField.setMaximumSize(new java.awt.Dimension(140, 14));
+			ivjSeasonIDField.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+			ivjSeasonIDField.setPreferredSize(new java.awt.Dimension(140, 14));
+			ivjSeasonIDField.setFont(new java.awt.Font("Arial", 1, 12));
+			ivjSeasonIDField.setMinimumSize(new java.awt.Dimension(140, 14));
+			ivjSeasonIDField.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
