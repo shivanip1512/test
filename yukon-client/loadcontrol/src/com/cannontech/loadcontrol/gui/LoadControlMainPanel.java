@@ -192,9 +192,11 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 					EMPTY_TABLE_MODEL } );
 
 
+//NO SUCH THING AS A SCHEDULED AREA!!
+/* 
 		LCDisplayItem d5 = 
 			new LCDisplayItem( ControlAreaActionListener.SEL_SCHEDULED_AREAS );
-		d2.setLocalTableModels(
+		d5.setLocalTableModels(
 			new TableModel[] { 
 					new FilteredControlAreaTableModel(
 						new int[] {LMControlArea.STATE_SCHEDULED,
@@ -202,13 +204,13 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 						getControlAreaTableModel().getTableModelListeners()),
 					getProgramTableModel(),
 					getGroupTableModel() } );
+*/
 
 
 		getComboBox().addItem( d1 );		
 		getComboBox().addItem( d2 );
 		getComboBox().addItem( d3 );
 		getComboBox().addItem( d4 );
-		getComboBox().addItem( d5 );
 
 
 		getComboBox().addActionListener( getControlAreaActionListener() );

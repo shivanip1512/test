@@ -12,7 +12,8 @@ public class LMControlArea
 	public static final int STATE_INACTIVE = 0;
 	public static final int STATE_ACTIVE = 1;
 	public static final int STATE_MANUAL_ACTIVE = 2;
-	public static final int STATE_SCHEDULED = 3;
+	/* The SCHEDULED state is never set */
+//	public static final int STATE_SCHEDULED = 3;
 	public static final int STATE_FULLY_ACTIVE = 4;
 	public static final int STATE_CNTRL_ATTEMPT = 5;
 
@@ -83,8 +84,11 @@ public static java.awt.Color getControlAreaStateColor( LMControlArea areaValue )
 {
 	if( areaValue.getDisableFlag().booleanValue() )
 		return java.awt.Color.red;
-	else if( areaValue.getControlAreaState().intValue() == LMControlArea.STATE_SCHEDULED )
+	else if( areaValue.getControlAreaState().intValue() == LMControlArea.STATE_CNTRL_ATTEMPT )
+			   //|| areaValue.getControlAreaState().intValue() == LMControlArea.STATE_SCHEDULED )
+	{
 		return java.awt.Color.yellow;
+	}
 	else if( areaValue.getControlAreaState().intValue() == LMControlArea.STATE_INACTIVE )
 		return java.awt.Color.black;
 	else
@@ -109,8 +113,8 @@ public static String getControlAreaStateString(int state)
 		case STATE_MANUAL_ACTIVE:
 		return "MANUAL ACTIVE";
 
-		case STATE_SCHEDULED:
-		return "SCHEDULED";
+//		case STATE_SCHEDULED:
+//		return "SCHEDULED";
 
 		case STATE_FULLY_ACTIVE:
 		return "FULLY ACTIVE";

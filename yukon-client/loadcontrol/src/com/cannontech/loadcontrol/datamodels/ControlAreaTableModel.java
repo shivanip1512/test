@@ -205,8 +205,8 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 			{
 				return cellColors[1];
 			}
-			else if( getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_SCHEDULED
-						 || getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_CNTRL_ATTEMPT )
+			else if( getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_CNTRL_ATTEMPT )
+						 //|| getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_SCHEDULED )
 			{
 				return cellColors[2];
 			}
