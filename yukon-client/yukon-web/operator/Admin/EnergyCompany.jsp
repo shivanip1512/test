@@ -32,7 +32,7 @@
 		ecTemp.setEmail( request.getParameter("Email") );
 		ecTemp.setTimeZone( request.getParameter("TimeZone") );
 		
-		ServletUtils.saveRequest(request, session, new String[] {"Route", "OperatorGroup", "CustomerGroup", "OptOutNotif"});
+		ServletUtils.saveRequest(request, session, new String[] {"Route", "OperatorGroup", "CustomerGroup", "AdminEmail", "OptOutNotif"});
 		
 		response.sendRedirect("Address.jsp?referer=EnergyCompany.jsp");
 		return;
@@ -64,6 +64,10 @@
 		for (int i = 0; i < custGroups.length; i++)
 			custGroup += custGroups[i].getGroupName() + ",";
 	}
+	
+	String adminEmail = savedReq.getProperty("AdminEmail");
+	if (adminEmail == null)
+		adminEmail = liteEC.getEnergyCompanySetting(EnergyCompanyRole.ADMIN_EMAIL_ADDRESS);
 	
 	String optOutNotif = savedReq.getProperty("OptOutNotif");
 	if (optOutNotif == null)
@@ -116,22 +120,10 @@ function addCustomerGroup(form) {
 	if (form.CustGroupList.value == "") return;
 	form.CustomerGroup.value = appendString(form.CustomerGroup.value, form.CustGroupList.value);
 }
-
-function setSendNotification(form) {
-	form.OptOutNotif.disabled = !form.SendNotif.checked;
-	if (form.SendNotif.checked) form.OptOutNotif.focus();
-}
-
-function init() {
-	if (document.form1.OptOutNotif.value == "")
-		document.form1.OptOutNotif.disabled = true;
-	else
-		document.form1.SendNotif.checked = true;
-}
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0" onload="init()">
+<body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -252,7 +244,6 @@ function init() {
                           Groups: </td>
                         <td class="TableCell"> 
                           <input type="text" name="OperatorGroup" size="50" value="<%= operGroup %>">
-                          <br>
                         </td>
                       </tr>
                       <tr> 
@@ -276,7 +267,6 @@ function init() {
                           Groups:</td>
                         <td class="TableCell"> 
                           <input type="text" name="CustomerGroup" size="50" value="<%= custGroup %>">
-                          <br>
                         </td>
                       </tr>
                       <tr>
@@ -296,12 +286,18 @@ function init() {
                         </td>
                       </tr>
                       <tr> 
+                        <td width="25%" align="right" class="TableCell">Admin. Email 
+                          Sender:</td>
+                        <td class="TableCell"> 
+                          <input type="text" name="AdminEmail" size="50" value="<%= adminEmail %>">
+                        </td>
+                      </tr>
+                      <tr> 
                         <td width="25%" align="right" class="TableCell">Opt out 
                           Notif. Recipients:</td>
                         <td class="TableCell"> 
                           <input type="text" name="OptOutNotif" size="50" value="<%= optOutNotif %>">
-                          <input type="checkbox" name="SendNotif" value="true" onclick="setSendNotification(this.form)">
-                          Send Notification</td>
+                        </td>
                       </tr>
                     </table>
                   </td>
