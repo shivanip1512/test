@@ -5,7 +5,6 @@
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
-<%@ page import="com.cannontech.stars.util.ECUtils" %>
 <%@ page import="com.cannontech.stars.util.ObjectInOtherEnergyCompanyException" %>
 <%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 <%

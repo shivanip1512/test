@@ -2,7 +2,6 @@
 <%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
-<%@ page import="com.cannontech.stars.util.ECUtils" %>
 <%
 	int orderID = Integer.parseInt(request.getParameter("OrderId"));
 	LiteWorkOrderBase liteOrder = liteEC.getWorkOrderBase(orderID, true);

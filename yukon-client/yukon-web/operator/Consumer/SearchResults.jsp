@@ -4,7 +4,6 @@
 <%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
-<%@ page import="com.cannontech.stars.util.ECUtils" %>
 <%
 	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse)
 			session.getAttribute(ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS);

@@ -222,7 +222,7 @@ function showAll(form) {
                             <div id="DivEnergyCompany" style="display:none"> 
                               <select name="Member">
                                 <%
-	ArrayList descendants = com.cannontech.stars.util.ECUtils.getAllDescendants(liteEC);
+	ArrayList descendants = ECUtils.getAllDescendants(liteEC);
 	for (int i = 0; i < descendants.size(); i++) {
 		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
 		String selected = (company.getLiteID() == inventoryBean.getMember())? "selected" : "";

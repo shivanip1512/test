@@ -1,7 +1,7 @@
 <%
 	int[] invIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
 	
-	boolean isOperator = com.cannontech.stars.util.ECUtils.isOperator(user);
+	boolean isOperator = ECUtils.isOperator(user);
 	String scheduleLabel = (isOperator)? AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule") :
 			AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule");
 	String manualLabel = (isOperator)? AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual") :

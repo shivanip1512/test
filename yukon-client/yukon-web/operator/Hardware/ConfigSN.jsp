@@ -3,7 +3,6 @@
 <%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
-<%@ page import="com.cannontech.stars.util.ECUtils" %>
 <%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 <%
 	String trackHwAddr = liteEC.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);

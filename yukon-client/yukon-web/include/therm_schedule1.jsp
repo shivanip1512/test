@@ -6,7 +6,7 @@
  * allTherm: boolean
  * thermNoStr: String
  */
-	boolean isOperator = com.cannontech.stars.util.ECUtils.isOperator(user);
+	boolean isOperator = ECUtils.isOperator(user);
 	boolean isRecommended = (invID < 0);
 
 	StarsThermostatProgram dftThermoProgram = null;

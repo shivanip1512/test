@@ -116,7 +116,7 @@ function addCustomerGroup(form) {
                                 <input type="text" name="CompanyName" size="30">
                                 <span class="ErrorMsg">*</span> </td>
                             </tr>
-<% if (!com.cannontech.stars.util.ECUtils.isDefaultEnergyCompany(liteEC)) { %>
+<% if (!ECUtils.isDefaultEnergyCompany(liteEC)) { %>
                             <tr>
                               <td width="25%" align="right">&nbsp;</td>
                               <td width="75%">
