@@ -218,6 +218,7 @@ insert into YukonListEntry values (1321,1053,0,'Device type',2901);
 insert into YukonListEntry values (1322,1053,0,'Service company',2902);
 insert into YukonListEntry values (1323,1053,0,'Location',2903);
 insert into YukonListEntry values (1324,1053,0,'Configuration',2904);
+insert into YukonListEntry values (1325,1053,0,'Device status',2905);
 insert into YukonListEntry values (1331,1054,0,'Order #',3301);
 insert into YukonListEntry values (1332,1054,0,'Acct #',3302);
 insert into YukonListEntry values (1333,1054,0,'Phone #',3303);
