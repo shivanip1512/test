@@ -184,12 +184,12 @@ alter table Contact drop constraint FK_CSTCONT_GRPRECIP;
 
 alter table Contact drop column LocationID;
 
+/* No big deal if this fails, just insure a row is there */
+insert into contact values ( 0, '(none)', '(none)', -1, 0 );
+
 alter table Contact
    add constraint FK_CON_REF__ADD foreign key (AddressID)
       references Address (AddressID);
-
-/* No big deal if this fails, just insure a row is there */
-insert into contact values ( 0, '(none)', '(none)', -1, 0 );
 
 
 
