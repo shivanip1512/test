@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/06/03 23:14:27 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/06/23 19:05:48 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -365,7 +365,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        slog << RWTime() << " LMI device \"" << _name << "\" purging all other codes" << endl;
+                        slog << RWTime() << " LMI device \"" << _name << "\" removing previously-transmitted codes" << endl;
                     }
 
                     _first_comm = false;
