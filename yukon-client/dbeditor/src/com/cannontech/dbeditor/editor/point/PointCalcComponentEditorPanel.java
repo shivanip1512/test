@@ -62,6 +62,8 @@ public class PointCalcComponentEditorPanel extends com.cannontech.common.gui.uti
 	private javax.swing.JCheckBox ivjUsePointCheckBox = null;
 	private javax.swing.JPanel ivjJPanelOperations = null;
 	private java.util.Vector basilHolder = null;
+	private Integer currentlyMappedBaselineID = null;
+
 /**
  * Constructor
  */
@@ -138,8 +140,13 @@ public void addComponentButton_ActionPerformed(java.awt.event.ActionEvent action
 		componentValid = true;
 	}
 
+	if( ((String)getOperationFunctionComboBox().getSelectedItem()).equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) )
+	{
+		currentlyMappedBaselineID = new Integer(((com.cannontech.database.data.lite.LiteBaseline)getSelectBaselineComboBox().getSelectedItem()).getBaselineID());
+	}
+		
 	calcComponentVector.addElement(getOperationFunctionComboBox().getSelectedItem());
-
+	
 	if( componentValid )
 	{
 		getTableModel().addRow(calcComponentVector);
@@ -248,7 +255,7 @@ public void functionComboBox_ActionPerformed(java.awt.event.ActionEvent actionEv
 
 		for(int i = 0; i < getBasilHolder().size(); i++)
 		{
-			getSelectBaselineComboBox().addItem(((com.cannontech.database.data.lite.LiteBaseline)getBasilHolder().elementAt(i)).getBaselineName());
+			getSelectBaselineComboBox().addItem(getBasilHolder().elementAt(i));
 		}
 		getSelectBaselineComboBox().setVisible(true);
 
@@ -451,6 +458,11 @@ public void editComponentButton_ActionPerformed(java.awt.event.ActionEvent actio
 		componentValid = true;
 	}
 	calcComponentVector.addElement(getOperationFunctionComboBox().getSelectedItem());
+	
+	if( ((String)getOperationFunctionComboBox().getSelectedItem()).equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) )
+		{
+			currentlyMappedBaselineID = new Integer(((com.cannontech.database.data.lite.LiteBaseline)getSelectBaselineComboBox().getSelectedItem()).getBaselineID());
+		}
 
 	if( componentValid )
 	{
@@ -849,6 +861,13 @@ private java.util.Vector getBasilHolder()
 	return basilHolder;
 }
 
+private Integer getCurrentlyMappedBaselineID()
+{
+	if( currentlyMappedBaselineID == null)
+		currentlyMappedBaselineID = new Integer(0);
+	return currentlyMappedBaselineID;
+}
+
 /**
  * Return the OperationFunctionLabel property value.
  * @return javax.swing.JLabel
@@ -1028,6 +1047,7 @@ public Object getValue(Object val)
 	}
 
 	calcPoint.setCalcComponentVector(calcComponentsVector);
+	calcPoint.getCalcBaselinePoint().setBaselineID(currentlyMappedBaselineID);
 	return val;
 
 }
@@ -1202,6 +1222,11 @@ public void mouseReleased(java.awt.event.MouseEvent e) {
 public void removeComponentButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 
 	int selectedRowCount = getComponentsTable().getSelectedRowCount();
+	
+	if( ((String)getOperationFunctionComboBox().getSelectedItem()).equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) )
+		{
+			currentlyMappedBaselineID = null;
+		}
 
 	if( selectedRowCount > 0 )
 	{

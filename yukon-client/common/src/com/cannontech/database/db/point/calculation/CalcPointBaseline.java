@@ -16,7 +16,7 @@ public class CalcPointBaseline extends com.cannontech.database.db.DBPersistent
 
 	public static final String SELECT_COLUMNS[] = { COLUMNS[1] };
 
-	public static final String TABLENAME = "CalcBaselinePoint";
+	public static final String TABLENAME = "CalcPointBaseline";
 
 	/**
 	 * CalcPointBaseline constructor comment.

@@ -171,7 +171,7 @@ public class DBDeletionFuncs
 		{
 			Integer theID = new Integer( baselineID );
 	
-			if( com.cannontech.database.data.baseline.Baseline.inUseByPoints(
+			if( com.cannontech.database.data.point.CalculatedPoint.inUseByPoint(
 					theID, CtiUtilities.getDatabaseAlias() ) )
 			{
 				theWarning.delete(0, theWarning.length());

@@ -133,12 +133,6 @@ public Integer getHolidaysUsed()
 	return getBaseline().getHolidaysUsed();
 }
 
-public static boolean inUseByPoints(Integer baselineID, String databaseAlias)
-{
-	return false;
-}
-
-
 public void retrieve() throws java.sql.SQLException 
 {
 	

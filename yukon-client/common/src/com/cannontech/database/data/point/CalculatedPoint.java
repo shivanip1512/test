@@ -44,7 +44,8 @@ public void add() throws java.sql.SQLException
 	for( int i = 0; i < getCalcComponentVector().size(); i++ )
 		((CalcComponent) getCalcComponentVector().elementAt(i)).add();
 
-	//((CalcPointBaseline) getCalcBaselinePoint()).add();
+	if(getCalcBaselinePoint().getBaselineID() != null)
+		((CalcPointBaseline) getCalcBaselinePoint()).add();
 }
 /**
  * Insert the method's description here.
@@ -63,7 +64,7 @@ public void addPartial() throws java.sql.SQLException {
 public void delete() throws java.sql.SQLException 
 {
 	CalcComponent.deleteCalcComponents( getPoint().getPointID(), getDbConnection() );
-	//CalcPointBaseline.deleteCalcBaselinePoint( getPoint().getPointID(), getDbConnection() );
+	CalcPointBaseline.deleteCalcBaselinePoint( getPoint().getPointID(), getDbConnection() );
 	
 	//a dynamic table used by the CalcHistorical application
 	delete(DynamicCalcHistorical.TABLE_NAME, "PointID", getPoint().getPointID());
@@ -118,8 +119,9 @@ public java.util.Vector getCalcComponentVector() {
  */
 public CalcPointBaseline getCalcBaselinePoint() {
 
-	if( calcBaselinePoint == null )
+	if(calcBaselinePoint == null)
 		calcBaselinePoint = new CalcPointBaseline();
+		
 	
 	return calcBaselinePoint;
 }
@@ -132,7 +134,9 @@ public void retrieve() throws java.sql.SQLException{
 	getCalcBase().retrieve();
 
 	calcComponentVector = CalcComponent.getCalcComponents(getPoint().getPointID());
-	//calcBaselinePoint = CalcPointBaseline.getCalcBaselinePoint(getPoint().getPointID());
+	
+	if(getCalcBaselinePoint().getBaselineID() != null)
+		calcBaselinePoint = CalcPointBaseline.getCalcBaselinePoint(getPoint().getPointID());
 }
 /**
  * This method was created in VisualAge.
@@ -197,9 +201,14 @@ public void update() throws java.sql.SQLException {
 	for( int i = 0; i < getCalcComponentVector().size(); i++ )
 		((CalcComponent) getCalcComponentVector().elementAt(i)).add();
 	
-	/*CalcPointBaseline.deleteCalcBaselinePoint(getPoint().getPointID(), getDbConnection());	
-	getCalcBaselinePoint().add();*/
+	CalcPointBaseline.deleteCalcBaselinePoint(getPoint().getPointID(), getDbConnection());	
+	
+	if(getCalcBaselinePoint().getBaselineID() != null)
+		getCalcBaselinePoint().add();
 }
 
-
+public static boolean inUseByPoint(Integer baselineID, String databaseAlias)
+{
+	return false;
+}
 }
