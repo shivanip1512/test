@@ -666,6 +666,7 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
       </tr>
     </table>
 <%
+		}
 	}
 %>
 
