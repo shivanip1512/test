@@ -14,6 +14,7 @@ abstract class PointCreate
 					
 	private static boolean disconnectCreate = false;
 	private static boolean powerFailCreate = false;
+	private static boolean oneDeviceAnalogPointCreate = false;
 	/**
 	 * PowerFailPointCreate constructor comment.
 	 */
@@ -29,14 +30,24 @@ abstract class PointCreate
 	 */
 	public static void main(String[] args) 
 	{
+		int devID = -1;
+		int count = 0;
 		for (int i = 0; i < args.length; i++)
 		{
-			String arg = args[i].toLowerCase();
-			if( arg.startsWith("d"))	//Disconnect Points Will Be Created
+
+			if( args[i].toLowerCase().startsWith("analog"))
+			{
+				if( args.length <= 3)	//must have 'analog devid count' args specified.
+					break;
+				oneDeviceAnalogPointCreate = true;
+				devID = Integer.parseInt(args[++i]);
+				count = Integer.parseInt(args[++i]);
+			}
+			else if( args[i].toLowerCase().startsWith("d"))	//Disconnect Points Will Be Created
 			{
 				disconnectCreate = true;
 			}
-			else if( arg.startsWith("p"))
+			else if( args[i].toLowerCase().startsWith("p"))
 			{
 				powerFailCreate = true;	//Power Fail Points Will Be Created
 			}
@@ -44,6 +55,16 @@ abstract class PointCreate
 			
 		java.util.Date timerStart = null;
 		java.util.Date timerStop = null;
+		if(oneDeviceAnalogPointCreate)
+		{
+			timerStart = new java.util.Date();
+			OneDevice_AnalogPointCreate analogPointCreator = new OneDevice_AnalogPointCreate(devID, count);
+			analogPointCreator.create();
+			timerStop = new java.util.Date();
+			com.cannontech.clientutils.CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + 
+					" Secs for OneDevice_AnalogPointCreate to complete" );
+			
+		}
 		if( powerFailCreate )
 		{
 			timerStart = new java.util.Date();
