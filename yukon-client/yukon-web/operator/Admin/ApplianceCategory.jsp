@@ -84,6 +84,11 @@ function sameAsDispName(form, checked) {
 	form.ProgShortName.disabled = checked;
 }
 
+var progChanged = false;
+function setProgramChanged() {
+	progChanged = true;
+}
+
 var progID = new Array();
 var deviceID = new Array();
 var progName = new Array();
@@ -170,6 +175,7 @@ function newYukonEntry(progIdx) {
 function addProgram(form) {
 	var assgnProgList = document.getElementById("ProgramsAssigned");
 	var availProgList = document.getElementById("ProgramsAvailable");
+	var progList = document.getElementById("Program");
 	
 	if (availProgList.selectedIndex >= 0) {
 		if (availProgList.value > 0)
@@ -183,7 +189,14 @@ function addProgram(form) {
 		if (deviceID[idx] == 0) oOption.innerText = "*" + dispName[idx];
 		oOption.value = idx;
 		
+		oOption = document.createElement("OPTION");
+		progList.add(oOption);
+		oOption.innerText = progName[idx];
+		if (deviceID[idx] == 0) oOption.innerText = "*" + dispName[idx];
+		oOption.value = idx;
+		
 		assgnProgList.selectedIndex = assgnProgList.length - 1;
+		progList.selectedIndex = progList.length - 1;
 		showProgramConfig(form);
 	}
 }
@@ -198,25 +211,36 @@ function removeProgram(form) {
 	
 	var assgnProgList = document.getElementById("ProgramsAssigned");
 	var availProgList = document.getElementById("ProgramsAvailable");
+	var progList = document.getElementById("Program");
 	
 	if (assgnProgList.selectedIndex >= 0) {
-		assgnProgList.remove(assgnProgList.selectedIndex);
+		for (i = 1; i < progList.length; i++) {
+			if (progList.options[i].value == assgnProgList.value) {
+				if (i == progList.selectedIndex) {
+					progList.selectedIndex = 0;
+					showProgramConfig(form);
+				}
+				progList.remove(i);
+				break;
+			}
+		}
 		
 		if (deviceID[assgnProgList.value] > 0) {
 			var idx = newYukonEntry(assgnProgList.value);
-			
 			var oOption = document.createElement("OPTION");
 			oOption.innerText = yukonProgName[idx];
 			oOption.value = idx;
 			availProgList.options.add(oOption);
 		}
 		
-		curProgIdx = -1;
-		clearProgramConfig(form);
+		assgnProgList.remove(assgnProgList.selectedIndex);
 	}
 }
 
 function saveProgramConfig(form) {
+	var assgnProgList = document.getElementById("ProgramsAssigned");
+	var progList = document.getElementById("Program");
+	
 	if (curProgIdx >= 0) {
 		if (form.SameAsProgName.checked)
 			dispName[curProgIdx] = "";
@@ -242,9 +266,15 @@ function saveProgramConfig(form) {
 			}
 			else {
 				// Set the option text to be the display name, add a "*" in front to indicate it is a virtual program
-				for (i = 0; i < form.ProgramsAssigned.options.length; i++) {
-					if (form.ProgramsAssigned.options[i].value == curProgIdx) {
-						form.ProgramsAssigned.options[i].innerText = "*" + dispName[curProgIdx];
+				for (i = 0; i < assgnProgList.length; i++) {
+					if (assgnProgList.options[i].value == curProgIdx) {
+						assgnProgList.options[i].innerText = "*" + dispName[curProgIdx];
+						break;
+					}
+				}
+				for (i = 1; i < progList.length; i++) {
+					if (progList.options[i].value == curProgIdx) {
+						progList.options[i].innerText = "*" + dispName[curProgIdx];
 						break;
 					}
 				}
@@ -252,11 +282,11 @@ function saveProgramConfig(form) {
 		}
 	}
 	
+	progChanged = false;
 	return true;
 }
 
 function clearProgramConfig(form) {
-	document.getElementById("ProgName").innerText = "";
 	sameAsProgName(form, false);
 	form.SameAsProgName.disabled = false;
 	sameAsDispName(form, false);
@@ -272,25 +302,38 @@ function clearProgramConfig(form) {
 	form.IconSavings.style.visibility = "hidden";
 	form.IconControl.style.visibility = "hidden";
 	form.IconEnvrn.style.visibility = "hidden";
+	form.SaveProgConfig.disabled = true;
 }
 
 function showProgramConfig(form) {
-	if (form.ProgramsAssigned.selectedIndex >= 0 && form.ProgramsAssigned.value != curProgIdx) {
-		if (!saveProgramConfig(form)) {	// Failed to save the program configuration
-			for (i = 0; i < form.ProgramsAssigned.length; i++) {
-				if (form.ProgramsAssigned.options[i].value == curProgIdx) {
-					form.ProgramsAssigned.selectedIndex = i;
-					return;
+	var progList = document.getElementById("Program");
+	
+	if (curProgIdx >= 0 && progChanged) {
+		if (confirm("Program configuration has been changed, do you want to save the changes?")) {
+			if (!saveProgramConfig(form)) {	// Failed to save the program configuration
+				for (i = 0; i < progList.length; i++) {
+					if (progList.options[i].value == curProgIdx) {
+						progList.selectedIndex = i;
+						return;
+					}
 				}
 			}
 		}
+		else
+			progChanged = false;
+	}
+	
+	if (progList.selectedIndex >= 0) {
+		curProgIdx = progList.value;
+		if (curProgIdx == -1) {
+			clearProgramConfig(form);
+			return;
+		}
 		
-		curProgIdx = form.ProgramsAssigned.value;
-		
-		document.getElementById("ProgName").innerText = progName[curProgIdx];
 		form.ProgDispName.value = dispName[curProgIdx];
 		if (deviceID[curProgIdx] > 0) {
 			sameAsProgName(form, dispName[curProgIdx] == "");
+			form.SameAsProgName.disabled = false;
 		}
 		else {
 			sameAsProgName(form, false);
@@ -305,32 +348,35 @@ function showProgramConfig(form) {
 		form.IconNameControl.value = iconNameControl[curProgIdx];
 		form.IconNameEnvrn.value = iconNameEnvrn[curProgIdx];
 		changeProgramIcons(form);
+		form.SaveProgConfig.disabled = false;
 	}
 }
 
 function moveUp(form) {
-	var entries = form.ProgramsAssigned;
-	var idx = entries.selectedIndex;
+	var assgnProgList = document.getElementById("ProgramsAssigned");
+	var idx = assgnProgList.selectedIndex;
 	if (idx > 0) {
-		var oOption = entries.options[idx];
-		entries.options.remove(idx);
-		entries.options.add(oOption, idx-1);
+		var oOption = assgnProgList.options[idx];
+		assgnProgList.options.remove(idx);
+		assgnProgList.options.add(oOption, idx-1);
 	}
 }
 
 function moveDown(form) {
-	var entries = form.ProgramsAssigned;
-	var idx = entries.selectedIndex;
-	if (idx >= 0 && idx < entries.options.length - 1) {
-		var oOption = entries.options[idx];
-		entries.options.remove(idx);
-		entries.options.add(oOption, idx+1);
+	var assgnProgList = document.getElementById("ProgramsAssigned");
+	var idx = assgnProgList.selectedIndex;
+	if (idx >= 0 && idx < assgnProgList.length - 1) {
+		var oOption = assgnProgList.options[idx];
+		assgnProgList.options.remove(idx);
+		assgnProgList.options.add(oOption, idx+1);
 	}
 }
 
 function prepareSubmit(form) {
-	if (!saveProgramConfig(form))
-		return false;
+	if (curProgIdx >= 0 && progChanged) {
+		if (confirm("Program configuration has been changed, do you want to save the changes?"))
+			if (!saveProgramConfig(form)) return false;
+	}
 	
 	var assgnProgList = document.getElementById("ProgramsAssigned");
 	for (i = 0; i < assgnProgList.options.length; i++) {
@@ -395,11 +441,11 @@ function init() {
 			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin" onsubmit="return prepareSubmit(this)">
               <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
-                  <td class="HeaderCell">Edit Appliance Category</td>
+                  <td class="HeaderCell">Appliance Category</td>
                 </tr>
                 <tr> 
                   <td height="252"> 
-                    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="3">
                       <input type="hidden" name="action" value="UpdateApplianceCategory">
                       <input type="hidden" name="AppCatID" value="<%= category.getApplianceCategoryID() %>">
                       <tr> 
@@ -421,14 +467,14 @@ function init() {
                         <td width="15%" align="right" class="TableCell" height="7">Type:</td>
                         <td width="85%" class="TableCell" valign="middle" height="7"> 
                           <select name="Category">
-<%
+                            <%
 	StarsCustSelectionList categoryList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY );
 	for (int i = 0; i < categoryList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = categoryList.getStarsSelectionListEntry(i);
 		String selectedStr = (entry.getEntryID() == category.getCategoryID()) ? "selected" : "";
 %>
                             <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
-<%	} %>
+                            <%	} %>
                           </select>
                         </td>
                       </tr>
@@ -468,7 +514,9 @@ function init() {
 		LMProgramDirect program = (LMProgramDirect) availPrograms.get(i);
 %>
                                         <option value="<%= i+1 %>"><%= program.getYukonName() %></option>
-<%	} %>
+<%
+	}
+%>
                                       </select>
                                     </td>
                                     <td width="50" align="center"> 
@@ -477,7 +525,7 @@ function init() {
                                       <input type="button" id="RemoveButton" name="Add" value="<<" onclick="removeProgram(this.form)">
                                     </td>
                                     <td width="175" valign="top"> Assigned Programs:<br>
-                                      <select id="ProgramsAssigned" name="ProgramsAssigned" size="5" style="width:165" onclick="showProgramConfig(this.form)">
+                                      <select id="ProgramsAssigned" name="ProgramsAssigned" size="5" style="width:165">
 <%
 	for (int i = 0; i < category.getStarsEnrLMProgramCount(); i++) {
 		StarsEnrLMProgram program = category.getStarsEnrLMProgram(i);
@@ -485,12 +533,14 @@ function init() {
 		if (program.getDeviceID() == 0) progName = "*" + ServletUtils.getProgramDisplayNames(program)[0];
 %>
                                         <option value="<%= i %>"><%= progName %></option>
-<%	} %>
+<%
+	}
+%>
                                       </select>
                                       <br>
                                       * means virtual program<br>
                                     </td>
-                                    <td align="center">
+                                    <td align="center"> 
                                       <input type="button" name="MoveUp" value="Move Up" onclick="moveUp(this.form)">
                                       <br>
                                       <input type="button" name="MoveDown" value="Move Down" onclick="moveDown(this.form)">
@@ -502,124 +552,141 @@ function init() {
                           </table>
                         </td>
                       </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              <br>
+              <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
+                <tr> 
+                  <td class="HeaderCell">Program Configuration</td>
+                </tr>
+                <tr> 
+                  <td>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                       <tr> 
-                        <td colspan="2">
-                          <hr>
-                          <span class="MainText">Click on a program in the &quot;Assigned 
-                          Programs&quot; list to show or update its configuration:</span></td>
+                        <td width="15%" align="right">Program:</td>
+                        <td width="85%">
+                          <select id="Program" onchange="showProgramConfig(this.form)">
+                            <option value="-1">(Select a program)</option>
+<%
+	for (int i = 0; i < category.getStarsEnrLMProgramCount(); i++) {
+		StarsEnrLMProgram program = category.getStarsEnrLMProgram(i);
+		String progName = program.getYukonName();
+		if (program.getDeviceID() == 0) progName = "*" + ServletUtils.getProgramDisplayNames(program)[0];
+%>
+                            <option value="<%= i %>"><%= progName %></option>
+<%
+	}
+%>
+                          </select>
+                        </td>
                       </tr>
                       <tr> 
-                        <td width="15%" class="TableCell" align="right">Program 
-                          Configuration:</td>
-                        <td width="85%" class="TableCell"> 
-                          <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-                            <tr> 
-                              <td width="16%">Program Name:</td>
-                              <td width="84%"><span id="ProgName">&nbsp;</span></td>
-                            </tr>
-                            <tr> 
-                              <td width="16%">Display Name:</td>
-                              <td width="84%"> 
-                                <input type="text" name="ProgDispName" size="20">
-                                <input type="checkbox" name="SameAsProgName" value="true" onclick="sameAsProgName(this.form, this.checked)">
-                                Same as program name</td>
-                            </tr>
-                            <tr> 
-                              <td width="16%">Short Name:</td>
-                              <td width="84%"> 
-                                <input type="text" name="ProgShortName" size="20">
-                                <input type="checkbox" name="SameAsDispName" value="true" onclick="sameAsDispName(this.form, this.checked)">
-                                Same as display name </td>
-                            </tr>
-                            <tr> 
-                              <td width="16%">Description:</td>
-                              <td width="84%"> 
-                                <textarea name="ProgDescription" rows="4" wrap="soft" cols="40"></textarea>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td width="16%">Description File:</td>
-                              <td width="84%">
-                                <input type="text" name="ProgDescFile" size="40">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="16%">Chance of Control:</td>
-                              <td width="84%"> 
-                                <select name="ProgCtrlOdds">
-                                  <%
+                        <td width="15%" align="right">Display Name:</td>
+                        <td width="85%"> 
+                          <input type="text" name="ProgDispName" size="20" onchange="setProgramChanged()">
+                          <input type="checkbox" name="SameAsProgName" value="true" onclick="sameAsProgName(this.form, this.checked);setProgramChanged()">
+                          Same as program name</td>
+                      </tr>
+                      <tr> 
+                        <td width="15%" align="right">Short Name:</td>
+                        <td width="85%"> 
+                          <input type="text" name="ProgShortName" size="20" onchange="setProgramChanged()">
+                          <input type="checkbox" name="SameAsDispName" value="true" onclick="sameAsDispName(this.form, this.checked);setProgramChanged()">
+                          Same as display name </td>
+                      </tr>
+                      <tr> 
+                        <td width="15%" align="right">Description:</td>
+                        <td width="85%"> 
+                          <textarea name="ProgDescription" rows="4" wrap="soft" cols="40" onchange="setProgramChanged()"></textarea>
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="15%" align="right">Description File:</td>
+                        <td width="85%"> 
+                          <input type="text" name="ProgDescFile" size="40" onchange="setProgramChanged()">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="15%" align="right">Chance of Control:</td>
+                        <td width="85%"> 
+                          <select name="ProgCtrlOdds" onchange="setProgramChanged()">
+<%
 	StarsCustSelectionList ctrlOddsList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL );
 	if (ctrlOddsList == null || ctrlOddsList.getStarsSelectionListEntry(0).getEntryID() > 0) {
 %>
-                                  <option value="0">(none)</option>
-                                  <%
+                            <option value="0">(none)</option>
+<%
 	}
 	if (ctrlOddsList != null) {
 		for (int i = 0; i < ctrlOddsList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = ctrlOddsList.getStarsSelectionListEntry(i);
 %>
-                                  <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                                  <%		}
+                            <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+<%
+		}
 	}
 %>
-                                </select>
-                              </td>
-                            </tr>
+                          </select>
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="15%" align="right">Program Description Icons:</td>
+                        <td width="85%"> 
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
-                              <td width="16%">Program Description Icons:</td>
-                              <td width="84%"> 
-                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                              <td width="60%"> 
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                                   <tr> 
-                                    <td width="60%"> 
-                                      <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-                                        <tr> 
-                                          <td width="30%" height="25">Savings: 
-                                          </td>
-                                          <td width="70%" height="25"> 
-                                            <input type="text" name="IconNameSavings" size="20">
-                                          </td>
-                                        </tr>
-                                        <tr> 
-                                          <td width="30%" height="25">Control%:</td>
-                                          <td width="70%" height="25"> 
-                                            <input type="text" name="IconNameControl" size="20">
-                                          </td>
-                                        </tr>
-                                        <tr> 
-                                          <td width="30%" height="25">Environment:</td>
-                                          <td width="70%" height="25"> 
-                                            <input type="text" name="IconNameEnvrn" size="20">
-                                          </td>
-                                        </tr>
-                                      </table>
+                                    <td width="30%" height="25">Savings: </td>
+                                    <td width="70%" height="25"> 
+                                      <input type="text" name="IconNameSavings" size="20" onchange="setProgramChanged()">
                                     </td>
-                                    <td width="20%"> 
-                                      <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-                                        <tr> 
-                                          <td> 
-                                            <input type="button" name="Preview2" value="Preview" onClick="changeProgramIcons(this.form)">
-                                          </td>
-                                        </tr>
-                                      </table>
+                                  </tr>
+                                  <tr> 
+                                    <td width="30%" height="25">Control%:</td>
+                                    <td width="70%" height="25"> 
+                                      <input type="text" name="IconNameControl" size="20" onchange="setProgramChanged()">
                                     </td>
-                                    <td width="20%"> 
-                                      <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-                                        <tr> 
-                                          <td height="25"><img id="IconSavings" src="../../../WebConfig/yukon/Icons/$$Sm.gif" style="visibility:hidden"></td>
-                                        </tr>
-                                        <tr> 
-                                          <td height="25"><img id="IconControl" src="../../../WebConfig/yukon/Icons/HalfSm.gif" style="visibility:hidden"></td>
-                                        </tr>
-                                        <tr> 
-                                          <td height="25"><img id="IconEnvrn" src="../../../WebConfig/yukon/Icons/Tree2Sm.gif" style="visibility:hidden"></td>
-                                        </tr>
-                                      </table>
+                                  </tr>
+                                  <tr> 
+                                    <td width="30%" height="25">Environment:</td>
+                                    <td width="70%" height="25"> 
+                                      <input type="text" name="IconNameEnvrn" size="20" onchange="setProgramChanged()">
                                     </td>
+                                  </tr>
+                                </table>
+                              </td>
+                              <td width="20%"> 
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                                  <tr> 
+                                    <td> 
+                                      <input type="button" name="Preview2" value="Preview" onClick="changeProgramIcons(this.form)">
+                                    </td>
+                                  </tr>
+                                </table>
+                              </td>
+                              <td width="20%"> 
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                                  <tr> 
+                                    <td height="25"><img id="IconSavings" src="../../../WebConfig/yukon/Icons/$$Sm.gif" style="visibility:hidden"></td>
+                                  </tr>
+                                  <tr> 
+                                    <td height="25"><img id="IconControl" src="../../../WebConfig/yukon/Icons/HalfSm.gif" style="visibility:hidden"></td>
+                                  </tr>
+                                  <tr> 
+                                    <td height="25"><img id="IconEnvrn" src="../../../WebConfig/yukon/Icons/Tree2Sm.gif" style="visibility:hidden"></td>
                                   </tr>
                                 </table>
                               </td>
                             </tr>
                           </table>
+                        </td>
+                      </tr>
+                      <tr align="center"> 
+                        <td colspan="2"> 
+                          <input type="button" name="SaveProgConfig" value="Save" disabled onclick="saveProgramConfig(this.form)">
                         </td>
                       </tr>
                     </table>
