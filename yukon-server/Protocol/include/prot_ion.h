@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/04/04 19:59:12 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/04/08 00:03:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,9 +34,14 @@ using namespace std;
 class IM_EX_PROT CtiProtocolION : public  CtiProtocolBase
 {
     enum   IONCommand;
-    struct ion_output_point;
+    enum   IONStates;
 
 private:
+
+    IONStates _ionState, _retryState;
+
+    unsigned int _protocolErrors;
+    int _abortStatus;
 
     CtiIONApplicationLayer _appLayer;
 
@@ -76,6 +81,7 @@ private:
     ion_value_register_map  _digitalInValueRegisters;
 
     ion_value_register_map  _externalPulseRegisters;
+    ion_value_register_map  _externalBooleanRegisters;
 
     vector< unsigned long > _powerMeterModules;
 
@@ -184,6 +190,15 @@ protected:
         Register_PowerMeter1S_I5          = 0x5e4f,
         Register_PowerMeter1S_PhaseRev    = 0x6000,
         Register_PowerMeter1S_LineFreq    = 0x5827,
+
+        Register_Arimetic01Result1        = 0x5b3c,
+        Register_Arimetic01Result2        = 0x5b44,
+        Register_Arimetic01Result3        = 0x5b4c,
+        Register_Arimetic01Result4        = 0x5b54,
+        Register_Arimetic01Result5        = 0x5b5c,
+        Register_Arimetic01Result6        = 0x5b64,
+        Register_Arimetic01Result7        = 0x5b6c,
+        Register_Arimetic01Result8        = 0x5b74
     };
 
     enum IONStates
@@ -232,7 +247,7 @@ protected:
 
         State_Complete,
         State_Abort
-    } _ionState;
+    };
 
     enum IONClasses
     {
@@ -294,6 +309,11 @@ protected:
         Module_PowerModule_HighSpeed  = 0x102
     };
 
+    enum IONProtocol
+    {
+        Protocol_ErrorMax = 3
+    };
+
 public:
 
     CtiProtocolION();
@@ -327,8 +347,9 @@ public:
     int recvCommRequest( OUTMESS *OutMessage );
     int sendCommResult ( INMESS  *InMessage  );
 
-    bool hasInboundData( void );
+    bool hasInboundData( void ) const;
     void getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList );
+    void clearInboundData( void );
 
     bool   hasPointUpdate     ( CtiPointType_t pointType, int offset ) const;
     double getPointUpdateValue( CtiPointType_t pointType, int offset ) const;

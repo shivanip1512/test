@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/04/04 19:59:12 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/04/08 00:03:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,8 @@
 #include "logger.h"
 #include "utility.h"
 #include "porter.h"  //  for the RESULT EventCode flag
+
+#include "cparms.h"
 
 #include "prot_ion.h"
 
@@ -84,6 +86,15 @@ void CtiProtocolION::initializeSets( void )
     {
         _externalPulseRegisters.insert(make_pair(1 + i, 0x68ae + i));
     }
+
+    for( i = 0; i < 32; i++ )
+    {
+        _externalBooleanRegisters.insert(make_pair(1 + i, 0x608f + i));
+    }
+    for( i = 0; i < 28; i++ )
+    {
+        _externalBooleanRegisters.insert(make_pair(33 + i, 0x633e + i));
+    }
 }
 
 
@@ -105,6 +116,8 @@ CtiProtocolION::IONCommand CtiProtocolION::getCommand( void )
 void CtiProtocolION::setCommand( IONCommand command )
 {
     _currentCommand.command = command;
+    _protocolErrors = 0;
+    _abortStatus    = NoError;
 }
 
 
@@ -112,6 +125,8 @@ void CtiProtocolION::setCommand( IONCommand command, unsigned int unsigned_int_p
 {
     _currentCommand.command                 = command;
     _currentCommand.unsigned_int_parameter  = unsigned_int_parameter;
+    _protocolErrors = 0;
+    _abortStatus    = NoError;
 }
 
 
@@ -196,10 +211,11 @@ int CtiProtocolION::generate( CtiXfer &xfer )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "Unknown state " << _ionState << " in CtiProtocolION::generate" << endl;
+                        dout << "Unknown command " << _currentCommand.command << " in CtiProtocolION::generate" << endl;
                     }
 
-                    _ionState = State_Abort;
+                    _ionState   = State_Abort;
+                    _retryState = State_Abort;
                 }
             }
         }
@@ -217,13 +233,26 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
 
     if( _appLayer.errorCondition() )
     {
-        // ACH:  do various commands need to handle an error differently?
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        _ionState = State_Abort;
+        _protocolErrors++;
+        _ionState = _retryState;
+
+        if( _protocolErrors > Protocol_ErrorMax )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "_protocolErrors = " << _protocolErrors << endl;
+            }
+
+            _ionState    = State_Abort;
+            _retryState  = State_Abort;
+            _abortStatus = alStatus;
+        }
     }
     //  ACH:  move isInputValid check here - allow for empty appLayer... ?
     else if( _appLayer.isTransactionComplete() )
@@ -276,7 +305,8 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
                         dout << "Unknown state " << _ionState << " in CtiProtocolION::decode" << endl;
                     }
 
-                    _ionState = State_Abort;
+                    _ionState   = State_Abort;
+                    _retryState = State_Abort;
                 }
             }
         }
@@ -430,7 +460,8 @@ void CtiProtocolION::decodeConfigRead( void )
         {
             //  ACH:  check for errors before i just switch to listening mode
 
-            _ionState = State_ReceiveFeatureManagerInfo;
+            _retryState = _ionState;
+            _ionState   = State_ReceiveFeatureManagerInfo;
 
             break;
         }
@@ -451,7 +482,8 @@ void CtiProtocolION::decodeConfigRead( void )
                         _setup_handles.push_back((tmpArray->at(i))->getValue());
                     }
 
-                    _ionState = State_RequestManagerInfo;
+                    _ionState   = State_RequestManagerInfo;
+                    _retryState = _ionState;
                 }
                 else
                 {
@@ -461,7 +493,8 @@ void CtiProtocolION::decodeConfigRead( void )
                         dout << "No manager handles returned, aborting" << endl;
                     }
 
-                    _ionState = State_Abort;
+                    _ionState   = State_Abort;
+                    _retryState = State_Abort;
                 }
             }
             else
@@ -472,7 +505,8 @@ void CtiProtocolION::decodeConfigRead( void )
                 }
 
                 //  ACH:  maybe increment protocol error count and try again...
-                _ionState = State_Abort;
+                _protocolErrors++;
+                _ionState = _retryState;
             }
 
             break;
@@ -482,7 +516,8 @@ void CtiProtocolION::decodeConfigRead( void )
         {
             //  ACH:  check for errors before i just switch to listening mode
 
-            _ionState = State_ReceiveManagerInfo;
+            _retryState = _ionState;
+            _ionState   = State_ReceiveManagerInfo;
 
             break;
         }
@@ -532,7 +567,8 @@ void CtiProtocolION::decodeConfigRead( void )
 
                 if( _handleManagerPowerMeter && _handleManagerDigitalIn && _handleManagerDataRecorder )
                 {
-                    _ionState = State_RequestPowerMeterModuleHandles;
+                    _ionState   = State_RequestPowerMeterModuleHandles;
+                    _retryState = _ionState;
                 }
                 else
                 {
@@ -542,7 +578,8 @@ void CtiProtocolION::decodeConfigRead( void )
                         dout << "Not all manager handles found, aborting" << endl;
                     }
 
-                    _ionState = State_Abort;
+                    _ionState   = State_Abort;
+                    _retryState = State_Abort;
                 }
             }
             else
@@ -553,7 +590,8 @@ void CtiProtocolION::decodeConfigRead( void )
                 }
 
                 //  ACH:  maybe increment protocol error count and try again...
-                _ionState = State_Abort;
+                _protocolErrors++;
+                _ionState = _retryState;
             }
 
             break;
@@ -563,7 +601,8 @@ void CtiProtocolION::decodeConfigRead( void )
         {
             //  ACH:  check for errors before i just switch to listening mode
 
-            _ionState = State_ReceivePowerMeterModuleHandles;
+            _retryState = _ionState;
+            _ionState   = State_ReceivePowerMeterModuleHandles;
 
             break;
         }
@@ -578,7 +617,8 @@ void CtiProtocolION::decodeConfigRead( void )
 
                     _powerMeterModules.push_back(tmpHandle->getValue());
 
-                    _ionState = State_RequestDigitalInputModuleHandles;
+                    _ionState   = State_RequestDigitalInputModuleHandles;
+                    _retryState = _ionState;
                 }
                 else if( _dsIn.itemIsType(0, CtiIONFixedArray::FixedArray_UnsignedInt) )
                 {
@@ -586,7 +626,8 @@ void CtiProtocolION::decodeConfigRead( void )
 
                     _powerMeterModules.push_back(tmpHandle->getValue());
 
-                    _ionState = State_RequestDigitalInputModuleHandles;
+                    _ionState   = State_RequestDigitalInputModuleHandles;
+                    _retryState = _ionState;
                 }
                 else
                 {
@@ -596,7 +637,8 @@ void CtiProtocolION::decodeConfigRead( void )
                         dout << "Power meter handles not returned, aborting" << endl;
                     }
 
-                    _ionState = State_Abort;
+                    _ionState   = State_Abort;
+                    _retryState = _ionState;
                 }
             }
             else
@@ -607,7 +649,8 @@ void CtiProtocolION::decodeConfigRead( void )
                 }
 
                 //  ACH:  maybe increment protocol error count and try again...
-                _ionState = State_Abort;
+                _ionState   = State_Abort;
+                _retryState = _ionState;
             }
 
             break;
@@ -617,6 +660,7 @@ void CtiProtocolION::decodeConfigRead( void )
         {
             //  ACH:  check for errors before i just switch to listening mode
 
+            _retryState = _ionState;
             _ionState = State_ReceiveDigitalInputModuleHandles;
 
             break;
@@ -633,6 +677,7 @@ void CtiProtocolION::decodeConfigRead( void )
                     _digitalInModules.push_back(tmpHandle->getValue());
 
                     _ionState = State_Complete;
+                    _retryState = _ionState;
                 }
                 else if( _dsIn.itemIsType(0, CtiIONFixedArray::FixedArray_UnsignedInt) )
                 {
@@ -643,7 +688,8 @@ void CtiProtocolION::decodeConfigRead( void )
                         _digitalInModules.push_back(tmpHandleArray->at(i)->getValue());
                     }
 
-                    _ionState = State_Init;
+                    _ionState   = State_Init;
+                    _retryState = _ionState;
                     setConfigRead(true);
                 }
                 else
@@ -654,7 +700,8 @@ void CtiProtocolION::decodeConfigRead( void )
                         dout << "Digital input handles not returned, aborting" << endl;
                     }
 
-                    _ionState = State_Abort;
+                    _ionState   = State_Abort;
+                    _retryState = _ionState;
                 }
             }
             else
@@ -665,7 +712,8 @@ void CtiProtocolION::decodeConfigRead( void )
                 }
 
                 //  ACH:  maybe increment protocol error count and try again...
-                _ionState = State_Abort;
+                _protocolErrors++;
+                _ionState = _retryState;
             }
 
             break;
@@ -679,7 +727,8 @@ void CtiProtocolION::decodeConfigRead( void )
                 dout << "Unknown state " << _ionState << " in CtiProtocolION::decodeConfigRead" << endl;
             }
 
-            _ionState = State_Abort;
+            _ionState   = State_Abort;
+            _retryState = _ionState;
 
             break;
         }
@@ -740,6 +789,7 @@ void CtiProtocolION::generateExceptionScan( void )
                 dout << "Unknown state " << _ionState << " in CtiProtocolION::generateExceptionScan" << endl;
             }
 
+            _retryState = _ionState;
             _ionState = State_Abort;
 
             break;
@@ -756,7 +806,8 @@ void CtiProtocolION::decodeExceptionScan( void )
         case State_Init:
         case State_RequestDigitalInputData:
         {
-            _ionState = State_ReceiveDigitalInputData;
+            _retryState = _ionState;
+            _ionState   = State_ReceiveDigitalInputData;
 
             break;
         }
@@ -790,7 +841,8 @@ void CtiProtocolION::decodeExceptionScan( void )
                         _pointData.push_back(pdata);
                     }
 
-                    _ionState = State_Complete;
+                    _ionState   = State_Complete;
+                    _retryState = _ionState;
                 }
                 else
                 {
@@ -800,7 +852,8 @@ void CtiProtocolION::decodeExceptionScan( void )
                         dout << "Invalid digital inputs return, aborting" << endl;
                     }
 
-                    _ionState = State_Abort;
+                    _ionState   = State_Abort;
+                    _retryState = _ionState;
                 }
             }
             else
@@ -811,7 +864,8 @@ void CtiProtocolION::decodeExceptionScan( void )
                 }
 
                 //  ACH:  maybe increment protocol error count and try again...
-                _ionState = State_Abort;
+                _protocolErrors++;
+                _ionState = _retryState;
             }
 
             break;
@@ -825,7 +879,8 @@ void CtiProtocolION::decodeExceptionScan( void )
                 dout << "Unknown state " << _ionState << " in CtiProtocolION::decodeExceptionScan" << endl;
             }
 
-            _ionState = State_Abort;
+            _ionState   = State_Abort;
+            _retryState = _ionState;
 
             break;
         }
@@ -910,6 +965,39 @@ void CtiProtocolION::generateIntegrityScan( void )
 
             tmpProgram->addStatement(tmpStatement);
 
+            if( gConfigParms.getValueAsString("DUKE_ISSG").compareTo("true", RWCString::ignoreCase) == 0 )
+            {
+                ion_value_register_map::iterator itr;
+
+                tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadRegisterValue);
+                tmpStatement = CTIDBG_new CtiIONStatement(Register_Arimetic01Result1, tmpMethod);
+
+                tmpProgram->addStatement(tmpStatement);
+
+                tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadRegisterValue);
+                tmpStatement = CTIDBG_new CtiIONStatement(Register_Arimetic01Result2, tmpMethod);
+
+                tmpProgram->addStatement(tmpStatement);
+
+                tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadRegisterValue);
+                tmpStatement = CTIDBG_new CtiIONStatement(Register_Arimetic01Result7, tmpMethod);
+
+                tmpProgram->addStatement(tmpStatement);
+
+                tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadRegisterValue);
+                tmpStatement = CTIDBG_new CtiIONStatement(Register_Arimetic01Result8, tmpMethod);
+
+                tmpProgram->addStatement(tmpStatement);
+
+                if( (itr = _externalBooleanRegisters.find(5)) != _externalBooleanRegisters.end() )
+                {
+                    tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadRegisterValue);
+                    tmpStatement = CTIDBG_new CtiIONStatement(Register_PowerMeter1S_PFSIGNtotal, tmpMethod);
+
+                    tmpProgram->addStatement(tmpStatement);
+                }
+            }
+
             _dsOut.clearAndDestroy();
 
             _dsOut.push_back(tmpProgram);
@@ -939,6 +1027,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
         case State_Init:
         case State_RequestPowerMeterData:
         {
+            _retryState = _ionState;
             _ionState = State_ReceivePowerMeterData;
 
             break;
@@ -1061,7 +1150,59 @@ void CtiProtocolION::decodeIntegrityScan( void )
 
                 _pointData.push_back(pdata);
 
-                _ionState = State_Complete;
+                if( gConfigParms.getValueAsString("DUKE_ISSG").compareTo("true", RWCString::ignoreCase) == 0 )
+                {
+                    pdata.offset = 257;
+                    pdata.time   = Now.seconds();
+                    pdata.type   = AnalogPointType;
+                    pdata.value  = _dsIn[i++]->getNumericValue();
+                    _snprintf(pdata.name, 19, "Notify Delay");
+                    pdata.name[19] = 0;
+
+                    _pointData.push_back(pdata);
+
+                    pdata.offset = 258;
+                    pdata.time   = Now.seconds();
+                    pdata.type   = AnalogPointType;
+                    pdata.value  = _dsIn[i++]->getNumericValue();
+                    _snprintf(pdata.name, 19, "Control Delay");
+                    pdata.name[19] = 0;
+
+                    _pointData.push_back(pdata);
+
+                    pdata.offset = 263;
+                    pdata.time   = Now.seconds();
+                    pdata.type   = AnalogPointType;
+                    pdata.value  = _dsIn[i++]->getNumericValue();
+                    _snprintf(pdata.name, 19, "Notify Remain");
+                    pdata.name[19] = 0;
+
+                    _pointData.push_back(pdata);
+
+                    pdata.offset = 264;
+                    pdata.time   = Now.seconds();
+                    pdata.type   = AnalogPointType;
+                    pdata.value  = _dsIn[i++]->getNumericValue();
+                    _snprintf(pdata.name, 19, "Control Remain");
+                    pdata.name[19] = 0;
+
+                    _pointData.push_back(pdata);
+
+                    if( i < _dsIn.size() )
+                    {
+                        pdata.offset = 101;
+                        pdata.time   = Now.seconds();
+                        pdata.type   = StatusPointType;
+                        pdata.value  = _dsIn[i++]->getNumericValue();
+                        _snprintf(pdata.name, 19, "Program");
+                        pdata.name[19] = 0;
+
+                        _pointData.push_back(pdata);
+                    }
+                }
+
+                _ionState   = State_Complete;
+                _retryState = _ionState;
             }
             else
             {
@@ -1071,7 +1212,8 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 }
 
                 //  ACH:  maybe increment protocol error count and try again...
-                _ionState = State_Abort;
+                _ionState   = State_Abort;
+                _retryState = _ionState;
             }
 
             break;
@@ -1086,6 +1228,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
             }
 
             _ionState = State_Abort;
+            _retryState = _ionState;
 
             break;
         }
@@ -1165,8 +1308,18 @@ void CtiProtocolION::generateEventLogRead( void )
 
             tmpProgram   = CTIDBG_new CtiIONProgram();
 
+            //  getting the one immediately following our last position
             start        = CTIDBG_new CtiIONUnsignedInt(_eventLogLastPosition + 1);
-            end          = CTIDBG_new CtiIONUnsignedInt(_eventLogCurrentPosition - 1);  //  it's a look-ahead counter, so get the record just before the end
+
+            //  41 - 34 - 2 = 5, for example
+            if( (_eventLogCurrentPosition - _eventLogLastPosition - 2) > 5 )
+            {
+                end = CTIDBG_new CtiIONUnsignedInt(_eventLogLastPosition + 1 + 5);  //  get a max of 5 at once
+            }
+            else
+            {
+                end = CTIDBG_new CtiIONUnsignedInt(_eventLogCurrentPosition - 1);  //  it's a look-ahead counter, so get the record just before the end
+            }
 
             tmpRange     = CTIDBG_new CtiIONRange(start, end);
 
@@ -1200,6 +1353,7 @@ void CtiProtocolION::generateEventLogRead( void )
             }
 
             _ionState = State_Abort;
+            _retryState = _ionState;
 
             break;
         }
@@ -1215,6 +1369,7 @@ void CtiProtocolION::decodeEventLogRead( void )
         case State_Init:
         case State_RequestEventLogPosition:
         {
+            _retryState = _ionState;
             _ionState = State_ReceiveEventLogPosition;
 
             break;
@@ -1234,6 +1389,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                     if( _eventLogLastPosition == 0 || _eventLogDepth == 0 )
                     {
                         _ionState = State_RequestEventLogDepth;
+                        _retryState = _ionState;
                     }
                     else
                     {
@@ -1245,10 +1401,12 @@ void CtiProtocolION::decodeEventLogRead( void )
                         if( (_eventLogLastPosition + 1) < _eventLogCurrentPosition )
                         {
                             _ionState = State_RequestEventLogRecords;
+                            _retryState = _ionState;
                         }
                         else
                         {
                             _ionState = State_Complete;
+                            _retryState = _ionState;
                         }
                     }
                 }
@@ -1261,6 +1419,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                     }
 
                     _ionState = State_Abort;
+                    _retryState = _ionState;
                 }
             }
             else
@@ -1271,7 +1430,8 @@ void CtiProtocolION::decodeEventLogRead( void )
                 }
 
                 //  ACH:  maybe increment protocol error count and try again...
-                _ionState = State_Abort;
+                _protocolErrors++;
+                _ionState = _retryState;
             }
 
             break;
@@ -1279,6 +1439,7 @@ void CtiProtocolION::decodeEventLogRead( void )
 
         case State_RequestEventLogDepth:
         {
+            _retryState = _ionState;
             _ionState = State_ReceiveEventLogDepth;
 
             break;
@@ -1303,10 +1464,12 @@ void CtiProtocolION::decodeEventLogRead( void )
                     if( (_eventLogLastPosition + 1) < _eventLogCurrentPosition )
                     {
                         _ionState = State_RequestEventLogRecords;
+                        _retryState = _ionState;
                     }
                     else
                     {
                         _ionState = State_Complete;
+                        _retryState = _ionState;
                     }
                 }
                 else
@@ -1318,6 +1481,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                     }
 
                     _ionState = State_Abort;
+                    _retryState = _ionState;
                 }
             }
             else
@@ -1328,7 +1492,8 @@ void CtiProtocolION::decodeEventLogRead( void )
                 }
 
                 //  ACH:  maybe increment protocol error count and try again...
-                _ionState = State_Abort;
+                _protocolErrors++;
+                _ionState = _retryState;
             }
 
             break;
@@ -1336,6 +1501,7 @@ void CtiProtocolION::decodeEventLogRead( void )
 
         case State_RequestEventLogRecords:
         {
+            _retryState = _ionState;
             _ionState = State_ReceiveEventLogRecords;
 
             break;
@@ -1349,6 +1515,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                 RWTime Now;
 
                 _ionState = State_Complete;
+                _retryState = _ionState;
 
                 if( _dsIn[0]->isStructArray() )
                 {
@@ -1438,6 +1605,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                     }
 
                     _ionState = State_Abort;
+                    _retryState = _ionState;
                 }
             }
             else
@@ -1448,7 +1616,8 @@ void CtiProtocolION::decodeEventLogRead( void )
                 }
 
                 //  ACH:  maybe increment protocol error count and try again...
-                _ionState = State_Abort;
+                _protocolErrors++;
+                _ionState = _retryState;
             }
 
             break;
@@ -1463,6 +1632,7 @@ void CtiProtocolION::decodeEventLogRead( void )
             }
 
             _ionState = State_Abort;
+            _retryState = _ionState;
 
             break;
         }
@@ -1499,6 +1669,7 @@ void CtiProtocolION::generateExternalPulseTrigger( void )
             else
             {
                 _ionState = State_Abort;
+                _retryState = _ionState;
             }
 
             _appLayer.setToOutput(_dsOut);
@@ -1517,6 +1688,7 @@ void CtiProtocolION::generateExternalPulseTrigger( void )
             }
 
             _ionState = State_Abort;
+            _retryState = _ionState;
 
             break;
         }
@@ -1533,6 +1705,7 @@ void CtiProtocolION::decodeExternalPulseTrigger( void )
         case State_SendExternalPulseTrigger:
         {
             _ionState = State_Complete;
+            _retryState = _ionState;
 
             break;
         }
@@ -1546,6 +1719,7 @@ void CtiProtocolION::decodeExternalPulseTrigger( void )
             }
 
             _ionState = State_Abort;
+            _retryState = _ionState;
 
             break;
         }
@@ -1660,8 +1834,7 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
         _eventLogs.pop_back();
     }
 
-
-    _eventLogsComplete = true;
+    _eventLogsComplete = false;
 
     if( InMessage != NULL )
     {
@@ -1700,6 +1873,10 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
                 tmpDS.erase(0);
             }
         }
+        else
+        {
+            retVal = -1;  //  make this an error code sometime?
+        }
     }
     else
     {
@@ -1710,7 +1887,7 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
 }
 
 
-bool CtiProtocolION::hasInboundData( void )
+bool CtiProtocolION::hasInboundData( void ) const
 {
     return !_pointData.empty() || !_eventLogs.empty();
 }
@@ -1735,8 +1912,6 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
 
         pointList.append(pointdata);
     }
-
-    _pointData.clear();
 
     for( e_itr = _eventLogs.begin(); e_itr != _eventLogs.end(); e_itr++ )
     {
@@ -1789,11 +1964,10 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
         }
     }
 
-    _eventLogs.clear();
-
     //  create a new pointdata msg to update our current event log position, if appropriate
     if( maxEventRecord > 0 )
     {
+        //  FIX:  perhaps this should happen in recvCommResult?  odd for this function to be manipulating internal variables
         if( maxEventRecord > _eventLogLastPosition )
         {
             _eventLogLastPosition = maxEventRecord;
@@ -1807,6 +1981,13 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
     }
 }
 
+
+void CtiProtocolION::clearInboundData( void )
+{
+    _pointData.clear();
+
+    _eventLogs.clear();
+}
 
 
 bool CtiProtocolION::hasPointUpdate( CtiPointType_t type, int offset ) const
@@ -1863,9 +2044,18 @@ int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
     memcpy(&tmpOM, OutMessage->Buffer.OutMessage, sizeof(tmpOM));
 
     _currentCommand         = tmpOM.cmd_struct;
-    _eventLogLastPosition   = tmpOM.event_log_last_position;
 
-    _ionState = State_Init;
+    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "tmpOM.event_log_last_position = " << tmpOM.event_log_last_position << endl;
+    }
+
+    _eventLogLastPosition = tmpOM.event_log_last_position;
+
+    _ionState   = State_Init;
+    _retryState = _ionState;
 
     return retVal;
 }
@@ -1875,7 +2065,12 @@ int CtiProtocolION::sendCommResult( INMESS *InMessage )
 {
     int retVal = NoError;
 
-    if( resultSize() < sizeof( InMessage->Buffer ) )
+    if( _ionState == State_Abort )
+    {
+        InMessage->EventCode = _abortStatus;
+        InMessage->InLength = 0;
+    }
+    else if( resultSize() < sizeof( InMessage->Buffer ) )
     {
         putResult( InMessage->Buffer.InMessage );
         InMessage->InLength = resultSize();
