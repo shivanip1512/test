@@ -300,6 +300,7 @@ void CtiCCSubstationBusStore::reset()
                                  << dynamicCCSubstationBusTable["powerfactorvalue"]
                                  << dynamicCCSubstationBusTable["kvarsolution"]
                                  << dynamicCCSubstationBusTable["estimatedpfvalue"]
+                                 << dynamicCCSubstationBusTable["currentvarpointquality"]
                                  << pointTable["pointid"]
                                  << pointTable["pointoffset"]
                                  << pointTable["pointtype"];
@@ -422,6 +423,7 @@ void CtiCCSubstationBusStore::reset()
                                  << dynamicCCFeederTable["powerfactorvalue"]
                                  << dynamicCCFeederTable["kvarsolution"]
                                  << dynamicCCFeederTable["estimatedpfvalue"]
+                                 << dynamicCCFeederTable["currentvarpointquality"]
                                  << pointTable["pointid"]
                                  << pointTable["pointoffset"]
                                  << pointTable["pointtype"];
