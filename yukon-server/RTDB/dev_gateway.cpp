@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/12/19 16:53:52 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/06/30 14:39:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -421,7 +421,7 @@ void CtiDeviceGateway::run()
                 continue;
             }
 
-            /* Wait for 2 bytes to be available so we can get the type in */
+            /* Wait for GWHEADER bytes to be available so we can get the type in */
             rc = recv (_msgsock, (char *)&GatewayRX, sizeof(GWHEADER), 0);
 
             if(rc == SOCKET_ERROR)
@@ -860,3 +860,31 @@ bool CtiDeviceGateway::shouldClean()
 {
     return isSet(GW_CLEAN_ME);
 }
+
+CtiMessage* CtiDeviceGateway::rsvpToDispatch()
+{
+    CtiMultiMsg *pMultiTemp = 0;
+    CtiMultiMsg *pMulti = new CtiMultiMsg;
+
+    SMAP_t::iterator smitr;
+
+    for( smitr = _statMap.begin(); smitr != _statMap.end(); smitr++ )
+    {
+        CtiDeviceGatewayStat *pGW = (*smitr).second;
+        pMultiTemp = (CtiMultiMsg *)pGW->rsvpToDispatch();
+
+        if(pMultiTemp)
+        {
+            pMulti->insert(pMultiTemp);
+        }
+    }
+
+    if(pMulti->getCount() == 0)
+    {
+        delete pMulti;
+        pMulti = 0;
+    }
+
+    return pMulti;
+}
+

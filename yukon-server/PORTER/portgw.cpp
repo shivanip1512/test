@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/05/05 15:31:44 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/06/30 14:39:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 #include <map>
 using namespace std;
 
+#include "connection.h"
 #include "cparms.h"
 #include "dlldefs.h"
 #include "dllyukon.h"
@@ -73,10 +74,46 @@ void GWTimeSyncThread (void *Dummy)
 {
     RWTime now;
     RWTime midnightnext = now + 60;
+    RWTime querynext = now + 60;
 
     while(!PorterQuit)
     {
         now = now.now();
+
+        if(now > querynext && gwMap.size() > 0)
+        {
+            CtiLockGuard< CtiMutex > guard(gwmux, 15000);
+
+            if(guard.isAcquired())
+            {
+                querynext = now + (60 * (59 - now.minute())) + (60 - now.second());
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << now << " Query runtimes from all connected gateways.  Next query at " << querynext << endl;
+                }
+
+                {
+                    GWMAP_t::iterator itr;
+
+                    for(itr = gwMap.begin(); itr != gwMap.end() ;itr++)
+                    {
+                        CtiDeviceGateway *pGW = (*itr).second;
+                        pGW->sendQueryRuntime(0, FALSE);    // Get them all, reset none = FALSE
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Gateway Runtimes queried." << endl;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
 
         if(now > midnightnext && gwMap.size() > 0)
         {
@@ -100,7 +137,10 @@ void GWTimeSyncThread (void *Dummy)
 #if 0  // 10/23/03 CGP // until we solve the timezone issue
                         pGW->sendtm_Clock();
 #endif
-                        pGW->sendQueryRuntime(0, FALSE);    // Get them all, reset none = FALSE
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Gateway timesync disabled. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
                     }
                 }
             }
@@ -142,8 +182,6 @@ void KeepAliveThread (void *Dummy)
                                 pGW->interrupt(CtiThread::SHUTDOWN);
                                 pGW->join();
                             }
-
-                            // pGW->sendSetBindMode(TRUE);
                         }
                     }
                     catch(...)
@@ -158,9 +196,9 @@ void KeepAliveThread (void *Dummy)
                     {
                         try
                         {
-                    for(itr = gwMap.begin(); itr != gwMap.end() ;itr++)
-                    {
-                        CtiDeviceGateway *pGW = (*itr).second;
+                            for(itr = gwMap.begin(); itr != gwMap.end() ;itr++)
+                            {
+                                CtiDeviceGateway *pGW = (*itr).second;
                                 if(pGW->shouldClean())
                                 {
                                     gwMap.erase(itr);
@@ -289,12 +327,14 @@ void GWConnectionThread(VOID *Arg)
                 GWMAP_t::iterator itr = gwMap.find( msgsock );
                 if( itr != gwMap.end() )
                 {
+                    delete pGW;             // Don't leak here.
                     pGW = (*itr).second;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " Already in the list! " << endl;
+                        dout << " Gateway already in the list! " << endl;
                     }
+                    pGW = 0;
                 }
                 else
                 {
@@ -326,6 +366,8 @@ void GWConnectionThread(VOID *Arg)
 
 VOID PorterGWThread(void *pid)
 {
+    extern CtiConnection    VanGoghConnection;
+
     INT status;
     OUTMESS        *OutMessage;
     REQUESTDATA    ReadResult;
@@ -378,6 +420,29 @@ VOID PorterGWThread(void *pid)
             if(OutMessage)
             {
                 ExecuteParse( CtiCommandParser( OutMessage->Request.CommandStr ), OutMessage );
+            }
+            else
+            {
+                CtiLockGuard< CtiMutex > guard(gwmux, 500);
+
+                if(guard.isAcquired())
+                {
+                    GWMAP_t::iterator itr;
+
+                    for(itr = gwMap.begin(); itr != gwMap.end() ;itr++)
+                    {
+                        CtiDeviceGateway *pGW = (*itr).second;
+                        CtiMultiMsg *pMsg = (CtiMultiMsg *)pGW->rsvpToDispatch();
+
+                        if(pMsg)
+                            VanGoghConnection.WriteConnQue(pMsg);
+                    }
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
 
             if(OutMessage)
@@ -589,14 +654,14 @@ void ReturnDataToClient(CtiDeviceGatewayStat::OpCol_t &reportableOperations)
         {
             CtiPendingStatOperation &op = *ro_itr;
 
-            #if 0
+#if 0
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " Stat      " << op.getSerial() << endl;
                 dout << " Operation " << op.getOperation() << endl;
             }
-            #endif
+#endif
 
             if(op.getOutMessage() != 0)
             {

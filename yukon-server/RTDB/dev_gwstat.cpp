@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/12/17 15:28:04 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/06/30 14:39:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,12 +25,16 @@
 #include "devicetypes.h"
 #include "numstr.h"
 #include "logger.h"
+#include "msg_multi.h"
+#include "pt_numeric.h"
 #include "tbl_gateway_end_device.h"
+#include "utility.h"
 #include "yukon.h"
 
 #define GATEWAY_TEMPERATURE_PRECISION 0
 
 CtiDeviceGatewayStat::CtiDeviceGatewayStat(ULONG sn) :
+_pMulti(0),
 _controlOutMessage(0),
 _primed(false),
 _deviceSN(sn)
@@ -74,6 +78,11 @@ _deviceSN(sn)
 
 CtiDeviceGatewayStat::~CtiDeviceGatewayStat()
 {
+    if(_pMulti)
+    {
+        delete _pMulti;
+        _pMulti = 0;
+    }
     if(_controlOutMessage)
     {
         delete _controlOutMessage;
@@ -484,6 +493,23 @@ bool CtiDeviceGatewayStat::clearPrintList()
     return hasentries;
 }
 
+RWCString CtiDeviceGatewayStat::printListAsString(UINT Type) const
+{
+    CtiLockGuard< CtiMutex > gd(_collMux);
+
+    RWCString retStr;
+    {
+        StatPrintList_t::const_iterator itr = _printlist.find(Type);
+
+        if(itr != _printlist.end())
+        {
+            retStr += (*itr).second;
+        }
+    }
+
+    return retStr;
+}
+
 bool CtiDeviceGatewayStat::printPacketData( )
 {
     CtiLockGuard< CtiMutex > gd(_collMux);
@@ -618,7 +644,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
 
             updatePrintList(Type, astr);
-
+            postAnalogOutputPoint(Type, PO_Filter, _battery._battery );
             break;
         }
     case TYPE_RSSI:
@@ -640,6 +666,9 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             astr += (RWCString("Heat Runtime:  " + CtiNumStr(_runtime._heatRuntime)+ " Minutes"));
 
             updatePrintList(Type, astr);
+
+            postAnalogOutputPoint(Type, PO_CoolRuntime, _runtime._coolRuntime );
+            postAnalogOutputPoint(Type, PO_HeatRuntime, _runtime._heatRuntime );
 
             break;
         }
@@ -743,6 +772,10 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
 
             updatePrintList(Type, astr);
+
+            postAnalogOutputPoint(Type, PO_CoolSetpoint, convertFromStatTemp(_setpoints._coolSetpoint) );
+            postAnalogOutputPoint(Type, PO_HeatSetpoint, convertFromStatTemp(_setpoints._heatSetpoint) );
+
             break;
         }
     case TYPE_DEADBAND:
@@ -826,6 +859,8 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
 
             astr += RWCString(CtiNumStr(dt, GATEWAY_TEMPERATURE_PRECISION) + getUnitName());
             updatePrintList(Type, astr);
+
+            postAnalogOutputPoint(Type, PO_DisplayedTemperature, dt );
 
             break;
         }
@@ -958,6 +993,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
 
             updatePrintList(Type, astr);
+            postAnalogOutputPoint(Type, PO_Fanswitch, _fanSwitch._fanSwitch);
 
             break;
         }
@@ -1002,6 +1038,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
                 }
 
                 updatePrintList(Type, astr);
+                postAnalogOutputPoint(Type, PO_Filter, _fanSwitch._fanSwitch);
             }
 
             break;
@@ -1109,6 +1146,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
                 astr += (RWCString(CtiNumStr(convertFromStatTemp(_outdoorTemp._outdoorTemperature)) + getUnitName()));
             }
             updatePrintList(Type, astr);
+            postAnalogOutputPoint(Type, PO_OutdoorTemp, convertFromStatTemp(_outdoorTemp._outdoorTemperature));
 
             break;
         }
@@ -1166,6 +1204,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
                 break;
             }
             updatePrintList(Type, astr);
+            postAnalogOutputPoint(Type, PO_SystemSwitch, convertFromStatTemp(_outdoorTemp._outdoorTemperature));
 
             break;
 
@@ -1349,6 +1388,8 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
 
             updatePrintList(Type, astr);
+            postAnalogOutputPoint(Type, PO_UtilCoolSetpoint, convertFromStatTemp(_utilSetpoint._utilCoolSetpoint));
+            postAnalogOutputPoint(Type, PO_UtilHeatSetpoint, convertFromStatTemp(_utilSetpoint._utilHeatSetpoint));
 
             break;
         }
@@ -4441,3 +4482,60 @@ void CtiDeviceGatewayStat::BuildHeader(GWHEADER *pGWH, unsigned short  Type, uns
     pGWH->DeviceID =  htonl (myid);
 }
 
+bool CtiDeviceGatewayStat::verifyGatewayDid()
+{
+    if(getID() < 0)
+    {
+        // This is a once per restart check.  ADDING stats to the DB will NOT make them reload properly without additional code.
+        // Try to reload it based upon our known statid.
+        setID(GetPAOIdOfEnergyPro(_deviceSN));
+    }
+
+    return (getID() > 0);
+}
+
+void CtiDeviceGatewayStat::postAnalogOutputPoint(UINT Type, UINT pointoffset, double value)
+{
+    if(verifyGatewayDid())     // Is my paoid determined???
+    {
+        CtiPointNumeric *pNumericPoint = NULL;
+
+        if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(pointoffset, AnalogPointType)) != NULL)
+        {
+            RWCString valReport = printListAsString(Type);
+
+            LockGuard guard(monitor());
+
+            // This point exists and is in the DB.  Let's process and create an rsvpToDispatch.
+            if(!_pMulti)
+            {
+                _pMulti = new CtiMultiMsg;
+            }
+
+            value = pNumericPoint->computeValueForUOM(value);
+
+            CtiPointDataMsg *pData = new CtiPointDataMsg(pNumericPoint->getPointID(),
+                                                         value,
+                                                         NormalQuality,
+                                                         AnalogPointType,
+                                                         valReport);
+
+            _pMulti->insert(pData);
+        }
+    }
+
+    return;
+}
+
+/*
+ *  Last transaction produced this batch of responses to be sent to dispatch!
+ */
+CtiMessage* CtiDeviceGatewayStat::rsvpToDispatch(bool clearMessage)
+{
+    LockGuard guard(monitor());
+
+    CtiMultiMsg *pTemp = _pMulti;
+    _pMulti = 0;
+
+    return pTemp;
+}

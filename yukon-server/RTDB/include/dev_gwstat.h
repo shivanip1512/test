@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/12/17 15:28:04 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/06/30 14:39:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,8 +26,9 @@ using namespace std;
 
 #include "cmdparse.h"
 #include "ctitypes.h"
-#include "dsm2.h"
+#include "dev_ied.h"
 #include "dlldefs.h"
+#include "dsm2.h"
 #include "gateway.h"
 #include "pending_stat_operation.h"
 
@@ -84,7 +85,7 @@ using namespace std;
 #define ID_STRING                3299   // (Any string that you want to throw in here, could have multiple entries in the table)
 
 
-class IM_EX_DEVDB CtiDeviceGatewayStat
+class IM_EX_DEVDB CtiDeviceGatewayStat : public CtiDeviceIED
 {
 public:
 
@@ -190,16 +191,37 @@ public:
     static int estimateSetpointPriority();
 
     static void BuildHeader(GWHEADER *pGWH, unsigned short  Type, unsigned short Length, unsigned myid);
+    virtual CtiMessage* rsvpToDispatch(bool clearMessage = true);
+    RWCString printListAsString(UINT Type) const;
+
 
 protected:
 
-    CtiMutex        _collMux;
+    mutable CtiMutex        _collMux;
     StatPrintList_t _printlist;          // Last collected stuff from the gw.
     StatResponse_t  _responseVector;
     OpCol_t         _operations;        // Outstanding operations on the stat.
 
 private:
 
+    enum
+    {
+        PO_CoolRuntime = 1,
+        PO_HeatRuntime,
+        PO_CoolSetpoint,
+        PO_HeatSetpoint,
+        PO_DisplayedTemperature,
+        PO_Fanswitch,
+        PO_OutdoorTemp,
+        PO_SystemSwitch,
+        PO_UtilCoolSetpoint,
+        PO_UtilHeatSetpoint,
+        PO_Filter,
+        PO_Battery
+    };
+
+
+    CtiMultiMsg *_pMulti;
     CtiOutMessage *_controlOutMessage;
 
     bool _primed;
@@ -387,6 +409,10 @@ private:
     bool generateTidbitToDatabase( USHORT Type, int day, int period );
     RWCString generateTidbitScheduleToDatabase(int day, int period);
     int processSchedulePeriod(SOCKET msgsock, CtiCommandParser &parse, CtiOutMessage *&OutMessage, int dow, int pod, BYTE per);
+
+    bool verifyGatewayDid();
+    void postAnalogOutputPoint(UINT Type, UINT pointoffset, double value);
+
 
 };
 #endif // #ifndef __DEV_GWSTAT_H__

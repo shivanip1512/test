@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/12/17 15:28:04 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/06/30 14:39:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,5 +109,8 @@ public:
     bool isConnected() const { return _msgsock != INVALID_SOCKET; }
 
     bool shouldClean();
+
+    CtiMessage* rsvpToDispatch();
+
 };
 #endif // #ifndef __DEV_GATEWAY_H__
