@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.120 $
-* DATE         :  $Date: 2004/10/08 20:46:32 $
+* REVISION     :  $Revision: 1.121 $
+* DATE         :  $Date: 2004/11/03 19:24:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1124,8 +1124,10 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 DisplayTraceList(Port, traceList, true);
                             }
 
-                            //  ACH:  figure out how to allow for a single-OUTMESS request to generate multiple INMESS replies
-                            //          i.e. if we're returning a massive event log or something
+                            //  send load profile results here
+                            //ds->sendDispatchResults();
+
+                            //  send results to Commander here via return string
                             ds->sendCommResult(InMessage);
 
                             queue< CtiVerificationBase * > verification_queue;
@@ -1647,13 +1649,17 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     }
                 case TYPE_RTC:
                     {
+                        queue< CtiVerificationBase * > verification_queue;
+
                         OutMessage->InLength = 0;
 
                         CtiDeviceRTC *rtc = (CtiDeviceRTC *)Device.get();
 
-
                         rtc->prepareOutMessageForComms(OutMessage);
 
+                        rtc->getVerificationObjects(verification_queue);
+
+                        PorterVerificationThread.push(verification_queue);
 
                         /* output the message to the remote */
                         trx.setOutBuffer(OutMessage->Buffer.OutMessage);
@@ -2639,10 +2645,11 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                 blitzNexusFromCCUQueue( Device, OutMessage->ReturnNexus);
             }
 
-            /* Only break if this is not DTRAN */
-            if(!(OutMessage->EventCode & DTRAN))
+            //  only break if this is _not_ DTRAN
+            if( !(OutMessage->EventCode & DTRAN) )
+            {
                 break;
-
+            }
         }
     case TYPE_CCU700:
     case TYPE_CCU710:
