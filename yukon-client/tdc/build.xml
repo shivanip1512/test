@@ -26,6 +26,7 @@
 		<include name="**/*.gif"/>
  		<include name="**/*.ico"/>
  		<include name="**/*.dll"/>
+ 		<include name="**/*.au"/>
 	    </fileset>
        </copy>
    </target>
