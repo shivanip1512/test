@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.91 $
-* DATE         :  $Date: 2004/01/07 16:42:48 $
+* REVISION     :  $Revision: 1.92 $
+* DATE         :  $Date: 2004/01/08 23:16:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1422,7 +1422,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                        BYTE   inBuffer[5000];
                        BYTE   outBuffer[5000];
                        ULONG  bytesReceived = 0;
-                       int    error = 0;
+                       int    error = 1;
 
                        CtiDeviceMarkV        *markv = ( CtiDeviceMarkV *)Device;
                        CtiProtocolTransdata  &transdata = markv->getProtocol();
@@ -1454,14 +1454,22 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                        if( !error )
                        {
                           CtiReturnMsg *retMsg = new CtiReturnMsg();
-                          retMsg->PointData().append( new CtiPointDataMsg() );
-                          VanGoghConnection.WriteConnQue( retMsg );
 
                           //send dispatch lp data directly
-                          markv->processDispatchReturnMessage( VanGoghConnection );
+                          markv->processDispatchReturnMessage( retMsg );
+
+                          if( !retMsg->getData().isEmpty() )
+                          {
+                             VanGoghConnection.WriteConnQue( retMsg );
+                          }
+                          else
+                          {
+                             delete retMsg;
+                          }
 
                           //send the billing data back to scanner
                           markv->sendCommResult( InMessage );
+                          
                        }
                        else
                        {
