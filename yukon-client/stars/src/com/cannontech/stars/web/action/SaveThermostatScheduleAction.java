@@ -13,6 +13,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeasonEntry;
@@ -132,6 +133,12 @@ public class SaveThermostatScheduleAction implements ActionBase {
 			else {
 				// Save to a new schedule
 				schedule.getLmThermostatSchedule().setScheduleName( saveSchedule.getScheduleName() );
+				// Use the entry ID in the default list as the thermostat type ID, so that
+				// we can delete a thermostat type without deleting all the saved schedules
+				int hwTypeDefID = YukonListFuncs.getYukonListEntry( liteNewSched.getThermostatTypeID() ).getYukonDefID();
+				schedule.getLmThermostatSchedule().setThermostatTypeID(
+						new Integer(SOAPServer.getDefaultEnergyCompany().getYukonListEntry(hwTypeDefID).getEntryID()) );
+				
 				schedule = (LMThermostatSchedule) Transaction.createTransaction( Transaction.INSERT, schedule ).execute();
 			}
 			
