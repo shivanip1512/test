@@ -154,10 +154,10 @@ function confirm_form(f) {
 			%>
                   <tr> 
                     <td width="90" valign="TOP" class="TableCell"><%= endingHourStr %></td>
-                    <td width="110" valign="TOP" class="TableCell"> <struts:text property="prices" size="8" pattern="@real" value="<%= priceStrs[i] %>"/> 
-                    </td>
-                    <td width="110" class="TableCell"> <struts:text property="amount" size="8" pattern="@real" value="<%= amountStrs[i] %>"/> 
-                    </td>
+                    <td width="110" valign="TOP" class="TableCell">
+                      <struts:text property="prices" size="8" pattern="@real" value="<%= priceStrs[i] %>"/> </td>
+                    <td width="110" valign="TOP" class="TableCell">
+                      <struts:text property="amount" size="8" pattern="@real" value="<%= amountStrs[i] %>"/></td>
                   </tr>
                   <%
 				}
@@ -183,11 +183,10 @@ function confirm_form(f) {
 			%>
                   <tr> 
                     <td width="90" valign="TOP" class="TableCell"><%= endingHourStr %></td>
-                    <td width="110" valign="TOP" class="TableCell"> 
-                      <struts:text property="prices" size="8" pattern="@real" value="<%= priceStrs[i] %>"/> 
-                    </td>
-                    <td width="110" class="TableCell"><struts:text property="amount" size="8" pattern="@real" value="<%= amountStrs[i] %>"/> 
-                    </td>
+                    <td width="110" valign="TOP" class="TableCell">
+                      <struts:text property="prices" size="8" pattern="@real" value="<%= priceStrs[i] %>"/></td>
+                    <td width="110" valign="TOP" class="TableCell">
+                      <struts:text property="amount" size="8" pattern="@real" value="<%= amountStrs[i] %>"/></td>
                   </tr>
                   <%
 				}
