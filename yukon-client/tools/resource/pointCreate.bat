@@ -9,7 +9,7 @@ echo:
 echo Usage:	pointcreate.bat [ p[owerfail] d[isconnect] ]
 echo:
 echo Ex1:  pointcreate.bat p d     - creates POWERFAIL and DISCONNECT points
-echo Ex2:  pointcreate.bat disc    - creates only DISCONNECT points
+echo Ex2:  pointcreate.bat disc    - creates only DISCONNECT STATUS points
 echo Ex3:  pointcreate.bat power   - creates only POWER FAIL points
 echo:
 :done
