@@ -5,6 +5,10 @@ package com.cannontech.calchist;
  * Creation date: (2/1/2002 9:52:28 AM)
  * @author: 
  */
+import java.io.IOException;
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
@@ -15,7 +19,7 @@ import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.message.dispatch.message.PointData;
 
-public class Baseline implements Cloneable
+public class Baseline implements Serializable
 {
 	//contains com.cannontech.database.db.point.calculation.CalcComponent values.
 	public Vector returnPointDataMsgVector = new Vector();
@@ -31,6 +35,8 @@ public class Baseline implements Cloneable
 	private int[] skipDaysArray = {java.util.Calendar.SATURDAY, java.util.Calendar.SUNDAY};
 	
 	private com.cannontech.database.db.baseline.BaseLine baselineProps = null;
+	//contains java.util.Date objects.
+	private Vector curtailedDates = null;
 	
 	/**
 	 * Baseline constructor comment.
@@ -261,11 +267,12 @@ public class Baseline implements Cloneable
 		
 		// Parameters (attributes set per pointId.
 		retrieveBaselineAttributes(calcComponent.getPointID().intValue());
+		retrieveCurtailedDays(calcComponent.getPointID().intValue());
 		setSkipDaysArray();
 					
 		GregorianCalendar tempCal = (GregorianCalendar)lastUpdateTimestamp.clone();
 		tempCal.add( java.util.Calendar.DAY_OF_YEAR, - 1 );
-	  
+			  
 		while ( validTimestampsVector.size() < getBaselineProperties().getCalcDays().intValue() )
 		{
 			boolean validData = true;
@@ -287,10 +294,11 @@ public class Baseline implements Cloneable
 				CTILogger.info("HOLIDAYS USED: " + tempCal.getTime());
 				validData = false;
 			}
-			//else if( ( tempCal.get( java.util.Calendar.DAY_OF_WEEK) == PREVIOUSLY CURTAILED DAY!!! )
-			//{
-				//tempCal.set( java.util.Calendar.DAY_OF_YEAR, calcHistorical.nextBaselineCalcTime.get( java.util.Calendar.DAY_OF_YEAR) - 1);					
-			//}
+			else if( isCurtailedDate(tempCal))
+			{	//Invalid. Previously curtailed date.  Point.pointID ->DeviceCustomerList.Deviceid ->Customer accepted offer.
+				CTILogger.info("PREVIOUSLY CURTAILED: " + tempCal.getTime());
+				validData = false;
+			}
 			else 
 			{	//Checks on actual data, not just date.
 				Vector validTimestamps = new Vector(1);
@@ -301,7 +309,7 @@ public class Baseline implements Cloneable
 					validData = false;
 					if( validTimestampsVector.size() == 0)
 					{
-						CTILogger.info("First day to check and we don't have data.  Going to skip and wait longer!");
+						CTILogger.info("First day to check and we don't have data.  Going to skip and wait longer! " + tempCal.getTime());
 						return null;
 					}
 				}
@@ -311,8 +319,9 @@ public class Baseline implements Cloneable
 					validData = false;
 					if( validTimestampsVector.size() == 0)
 					{
-						CTILogger.info("First day to check and we don't have a full days worth of data.  Going to skip and wait longer!");
-//						return null;
+						/* TODO  - Add check for, do we have any data greater than yesterday?  If so, we must skip yesterday and carry on with our life!  David/Stacey choice.*/						
+						CTILogger.info("First day to check and we don't have a full days worth of data.  Going to skip and wait longer! " + tempCal.getTime());
+						return null;
 					}
 				}
 				else if(baselineProps.getPercentWindow().intValue() > 0 
@@ -329,13 +338,12 @@ public class Baseline implements Cloneable
 						{
 							try
 							{
-								Baseline baselineClass = (Baseline)this.clone();
+								Baseline baselineClass = (Baseline)CtiUtilities.copyObject(this);
 								returnPointDataMsgVector.addAll(baselineClass.main(percentCalcComponent.getComponentPointID()));
 								percentHoursAndValues = baselineClass.baselineHoursAndValues;
 							}
-							catch (CloneNotSupportedException e)
+							catch (IOException e)
 							{
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}											
@@ -439,6 +447,71 @@ public class Baseline implements Cloneable
 		}
 		return false;
 	}
+	
+	private boolean isCurtailedDate(GregorianCalendar cal)
+	{
+		if( getCurtailedDates() != null)
+		{
+			for (int i = 0; i < getCurtailedDates().size(); i++)
+			{
+				if( ((Date)getCurtailedDates().get(i)).compareTo(cal.getTime()) == 0)
+					return true;
+			}
+		}
+		return false;	
+	}
+	private void retrieveCurtailedDays(int pointID)
+	{
+
+		java.sql.PreparedStatement preparedStatement = null;
+		java.sql.Connection conn = null;
+		java.sql.ResultSet rset = null;
+		try
+		{
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection( com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+			String sql = "SELECT DISTINCT LMEEPO.OFFERDATE FROM LMENERGYEXCHANGEPROGRAMOFFER LMEEPO, "+
+							"DEVICECUSTOMERLIST DCL, " +
+							"LMENERGYEXCHANGECUSTOMERREPLY LMEECR, "+
+							"POINT P " +
+							"WHERE DCL.CUSTOMERID = LMEECR.CUSTOMERID " +
+							"AND LMEECR.OFFERID = LMEEPO.OFFERID " +
+							"AND DCL.DEVICEID = P.PAOBJECTID " +
+							"AND LMEECR.ACCEPTSTATUS = 'Accepted' " + 
+							"AND P.POINTID = " + pointID;
+			preparedStatement = conn.prepareStatement(sql);
+			rset = preparedStatement.executeQuery();
+		
+			curtailedDates = new Vector();
+			while (rset.next())
+			{
+				Timestamp ts = rset.getTimestamp(1);
+				Date date = new Date();
+				date.setTime(ts.getTime());
+				curtailedDates.add(date);
+			}
+		}
+		catch( java.sql.SQLException e )
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				if( preparedStatement != null )
+					preparedStatement.close();			
+				if (rset != null)
+					rset.close();
+				if( conn != null )
+					conn.close();
+			}
+			catch( java.sql.SQLException e )
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
 	/*private void load30Average(Integer pointId)
 	{
 		Vector valid30DayTimestamps = new Vector(30);
@@ -827,6 +900,14 @@ public class Baseline implements Cloneable
 	public void setHistoricalCalcComponents(Vector vector)
 	{
 		historicalCalcComponents = vector;
+	}
+
+	/**
+	 * @return
+	 */
+	public Vector getCurtailedDates()
+	{
+		return curtailedDates;
 	}
 
 }

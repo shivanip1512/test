@@ -6,13 +6,16 @@
  */
 package com.cannontech.calchist;
 
+import java.io.Serializable;
+
 /**
  * @author snebben
  *
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class HoursAndValues{
+public class HoursAndValues implements Serializable
+{
 	Double [] values = null;
 	Integer [] hours = null;
 		

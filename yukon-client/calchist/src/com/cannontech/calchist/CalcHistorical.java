@@ -148,7 +148,7 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 						}
 					}
 /*				//Calc-logic way of processing power factor.  CalcHistorical uses the setup of powerfactor_xx_xx_function.
-                    else if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase("push") )
+					else if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase("push") )
 					{
 						if( powerFactor == null)
 						{
@@ -231,7 +231,7 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 				}
 				powerFactor.pfType = KW_KVAR_PFTYPE;				
 
-                //Original way of processing Power Fail.  It is done using push in calc-logic.				
+				//Original way of processing Power Fail.  It is done using push in calc-logic.				
 				com.cannontech.database.data.lite.LitePointUnit ltPU = 
 					new com.cannontech.database.data.lite.LitePointUnit( ((CalcComponent)calcComponentVector.get(i)).getComponentPointID().intValue());
 				ltPU.retrieve(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
@@ -723,10 +723,10 @@ private double calculatePowerFactor(PF pFactor)
 
 	if( kva != 0.0)
 	{
-                if( kw < 0 )
-                {
-                    kw = -kw;
-                }
+				if( kw < 0 )
+				{
+					kw = -kw;
+				}
 		pfValue = kw / kva;
 		/*if( kvar < 0.0 && pfValue != 1.0)
 		{
