@@ -1127,7 +1127,6 @@ private com.cannontech.database.db.device.lm.LMGroupExpressComAddress createAddr
 							addressTemp = new com.cannontech.database.db.device.lm.LMGroupExpressComAddress(type);
 							
 					addressTemp.setAddress( new Integer(textField.getText()) );
-					addressTemp.setAddressType(CtiUtilities.STRING_NONE );
 					addressTemp.setAddressName( CtiUtilities.STRING_NONE ); 
 					
 					return addressTemp;
