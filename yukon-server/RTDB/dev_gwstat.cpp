@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/08/18 15:16:20 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/08/19 14:00:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -666,7 +666,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
 
             astr += (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + " Cool Setpoint:  ");
-            if(_setpoints._coolSetpoint = 0x7fff)
+            if(_setpoints._coolSetpoint == 0x7fff)
             {
                 astr += RWCString("Unknown\n");
             }
@@ -2838,6 +2838,11 @@ int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &pars
                             if(_schedule[dow][pod]._heatSetpoint != 0x7fff)
                             {
                                 heat = convertFromStatTemp(_schedule[dow][pod]._heatSetpoint, scaleFahrenheit);
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << " hsp 0x" << CtiNumStr(_schedule[dow][pod]._heatSetpoint).hex().zpad(4) << endl;
+                                }
                             }
                             else
                             {
@@ -2848,6 +2853,11 @@ int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &pars
                         {
                             if(_schedule[dow][pod]._coolSetpoint != 0x7fff)
                             {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << " csp 0x" << CtiNumStr(_schedule[dow][pod]._coolSetpoint).hex().zpad(4) << endl;
+                                }
                                 cool = convertFromStatTemp(_schedule[dow][pod]._coolSetpoint, scaleFahrenheit);
                             }
                             else
@@ -3470,6 +3480,8 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         {
             if(_setpoints._coolSetpoint == 0x7fff || _setpoints._heatSetpoint == 0x7fff)
             {
+                astr = RWCString("0,");
+                astr += RWCString("0,");
             }
             else
             {
