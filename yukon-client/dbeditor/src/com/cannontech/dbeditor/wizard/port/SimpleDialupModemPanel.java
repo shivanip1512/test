@@ -126,14 +126,10 @@ public Object getValue(Object val) {
 		if ( ((com.cannontech.database.data.port.DirectPort)val).getPAOType().equalsIgnoreCase(com.cannontech.database.data.pao.PortTypes.STRING_LOCAL_DIALUP) )
 		{
 			((com.cannontech.database.data.port.LocalDialupPort) val).getPortDialupModem().setModemType( modemType );
-			((com.cannontech.database.data.port.LocalDialupPort) val).getPortDialupModem().setPrefixNumber(" ");
-			((com.cannontech.database.data.port.LocalDialupPort) val).getPortDialupModem().setSuffixNumber(" ");
 		}
 		else if ( ((com.cannontech.database.data.port.DirectPort)val).getPAOType().equalsIgnoreCase(com.cannontech.database.data.pao.PortTypes.STRING_TERM_SERVER_DIALUP) )
 		{
 			((com.cannontech.database.data.port.TerminalServerDialupPort) val).getPortDialupModem().setModemType( modemType );
-			((com.cannontech.database.data.port.TerminalServerDialupPort) val).getPortDialupModem().setPrefixNumber(" ");
-			((com.cannontech.database.data.port.TerminalServerDialupPort) val).getPortDialupModem().setSuffixNumber(" ");
 		}
 	}
 	catch( ClassCastException cce )
@@ -153,8 +149,8 @@ public Object getValue(Object val) {
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initializes connections

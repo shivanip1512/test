@@ -7,17 +7,17 @@ package com.cannontech.database.db.port;
  
 public class PortDialupModem extends DBPersistent {
 	private String modemType = null;
-	private String initializationString = null;
-	private String prefixNumber = null;
-	private String suffixNumber = null;
+	private String initializationString = "ATH0";
+	private String prefixNumber = " ";
+	private String suffixNumber = " ";
 	
 	private Integer portID = null;
 /**
  * PortDialupModem constructor comment.
  */
-public PortDialupModem() {
+public PortDialupModem() 
+{
 	super();
-	initialize( null, null, null, null,null );
 }
 
 /**
@@ -70,21 +70,7 @@ public String getPrefixNumber() {
 public String getSuffixNumber() {
 	return suffixNumber;
 }
-/**
- * This method was created in VisualAge.
- * @param portNumber java.lang.Integer
- * @param initializationString java.lang.String
- * @param prefixNumber java.lang.String
- * @param suffixNumber java.lang.String
- */
-public void initialize( Integer portID, String modemType, String initializationString, String prefixNumber, String suffixNumber ) {
 
-	setPortID( portID );
-	setModemType( modemType );
-	setInitializationString( initializationString );
-	setPrefixNumber( prefixNumber );
-	setSuffixNumber( suffixNumber );
-}
 /**
  * retrieve method comment.
  */

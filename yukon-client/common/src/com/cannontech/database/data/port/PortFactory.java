@@ -61,9 +61,6 @@ public static DirectPort createPort( int typeOfPort ) throws java.sql.SQLExcepti
 			LocalDialupPort ldp = new LocalDialupPort();
 
 			ldp.setPortType( PortTypes.STRING_LOCAL_DIALUP );
-			ldp.getPortDialupModem().setInitializationString("ATH0");
-			ldp.getPortDialupModem().setPrefixNumber("");
-			ldp.getPortDialupModem().setSuffixNumber("");
 			
 			ldp.getPortTiming().setPreTxWait(new Integer(25));
 			ldp.getPortTiming().setRtsToTxWait(new Integer(0));
@@ -116,10 +113,6 @@ public static DirectPort createPort( int typeOfPort ) throws java.sql.SQLExcepti
 			TerminalServerDialupPort tp = new TerminalServerDialupPort();
 			tp.setPortType( PortTypes.STRING_TERM_SERVER_DIALUP );
 
-			tp.getPortDialupModem().setInitializationString("ATH0");
-			tp.getPortDialupModem().setPrefixNumber("");
-			tp.getPortDialupModem().setSuffixNumber("");
-			
 			tp.getPortTiming().setPreTxWait(new Integer(25));
 			tp.getPortTiming().setRtsToTxWait(new Integer(0));
 			tp.getPortTiming().setPostTxWait(new Integer(0));

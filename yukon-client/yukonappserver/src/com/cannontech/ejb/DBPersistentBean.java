@@ -622,9 +622,8 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
       	String str = com.cannontech.common.util.StringUtils.trimSpaces(o.toString());
       	if( str == null || str.length() <= 0 )
       	{
-      		CTILogger.warn("A null value as found in a DBPersistent object, using a default value of 0 (zero)");
-      		CTILogger.warn( CtiUtilities.getSTACK_TRACE() ); 
-      		str = "0";
+      		CTILogger.warn("A null value was found in a DBPersistent object, using a default value of ' '  (blank char)");
+      		str = " ";
       	}
       	
          return str;
@@ -653,9 +652,8 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
       	String str = com.cannontech.common.util.StringUtils.trimSpaces(o.toString());
       	if( str == null || str.length() <= 0 )
       	{
-      		CTILogger.warn("A null value as found in a DBPersistent object, using a default value of 0 (zero)");
-      		CTILogger.warn( CtiUtilities.getSTACK_TRACE() );
-      		str = "0";
+      		CTILogger.warn("A null value was found in a DBPersistent object, using a default value of ' '  (blank char)");
+      		str = " ";
       	}
       	
          return str;
