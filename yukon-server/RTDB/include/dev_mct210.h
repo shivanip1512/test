@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct210.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/10/27 22:04:06 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/12/07 18:14:26 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,25 +50,28 @@ protected:
 
 private:
 
-   static DLCCommandSet _commandStore;
+    static DLCCommandSet _commandStore;
 
 public:
 
-   typedef CtiDeviceMCT2XX Inherited;
+    enum
+    {
+        MCT210_StatusConnected    = 0x80,
+        MCT210_StatusDisconnected = 0x40
+    };
 
-   CtiDeviceMCT210();
-   CtiDeviceMCT210(const CtiDeviceMCT210& aRef);
+    typedef CtiDeviceMCT2XX Inherited;
 
-   virtual ~CtiDeviceMCT210();
+    CtiDeviceMCT210();
+    CtiDeviceMCT210(const CtiDeviceMCT210& aRef);
 
-   CtiDeviceMCT210& operator=(const CtiDeviceMCT210 &aRef);
+    virtual ~CtiDeviceMCT210();
 
-   static  bool initCommandStore();
-   virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
+    CtiDeviceMCT210& operator=(const CtiDeviceMCT210 &aRef);
 
-   virtual INT ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
+    static  bool initCommandStore();
+    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
-   INT  decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
-   void decodeStati(INT &stat, INT which, BYTE *Data);
+    virtual INT ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
 };
 #endif // #ifndef __DEV_MCT210_H__
