@@ -1159,6 +1159,13 @@ public void operationalStateComboBox_ActionPerformed(java.awt.event.ActionEvent 
 	else
 	{
 		setDevicePointComboVisible( true );
+	
+		if( getControlPointComboBox().getModel().getSize() > 0 )
+			getControlPointComboBox().removeAllItems();
+		
+		if( getControlDeviceComboBox().getModel().getSize() > 0 )
+			getControlDeviceComboBox().removeAllItems();	
+	
 		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized(cache)
 		{
@@ -1257,9 +1264,11 @@ public void setValue(Object val)
 		getControlInhibitCheckBox().doClick();
 	}
 
-		
 	if( getControlPointComboBox().getModel().getSize() > 0 )
 		getControlPointComboBox().removeAllItems();
+		
+	if( getControlDeviceComboBox().getModel().getSize() > 0 )
+		getControlDeviceComboBox().removeAllItems();	
 
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
