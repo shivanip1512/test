@@ -33,6 +33,7 @@ private:
 
     int _postControlScanCount;
 
+    CtiProtocolION    _ion;
     CtiTableDeviceAddress _address;
 
     RWCString _collectionGroup,
@@ -43,9 +44,6 @@ private:
     bool _scanGeneralPending, _scanIntegrityPending, _scanAccumulatorPending;
 
 protected:
-
-    CtiProtocolBase *getProtocol( void ) const;
-    CtiProtocolION  _ion;
 
     CtiTableDeviceMeterGroup MeterGroup;
 
@@ -86,6 +84,7 @@ public:
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
     virtual RWCString getDescription(const CtiCommandParser & parse) const;
+    Protocol::Interface *getProtocol( void );
 
     //  virtual in case different ION devices need to form up alternate requests for the same command
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
