@@ -349,7 +349,7 @@ private javax.swing.JLabel getOpAddressJLabel() {
 		try {
 			ivjOpAddressJLabel = new javax.swing.JLabel();
 			ivjOpAddressJLabel.setName("OpAddressJLabel");
-			ivjOpAddressJLabel.setText("Operational Address: ");
+			ivjOpAddressJLabel.setText("Function Code: ");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
