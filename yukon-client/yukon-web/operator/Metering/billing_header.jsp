@@ -6,7 +6,6 @@
 <%@ page import="com.cannontech.billing.mainprograms.BillingFileDefaults" %>
 <%@ page import="com.cannontech.billing.FileFormatTypes"%>
 <%@ page import="com.cannontech.util.ServletUtil" %>
-<%@ taglib uri="/WEB-INF/jruntags.jar" prefix="jrun" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
 <cti:checklogin/>

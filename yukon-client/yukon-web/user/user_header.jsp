@@ -14,7 +14,6 @@
 <%@ page import="com.cannontech.roles.yukon.EnergyCompanyRole" %>
 
 <%@ page import="com.cannontech.util.ServletUtil" %>
-<%@ taglib uri="/WEB-INF/jruntags.jar" prefix="jrun" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
 <cti:checklogin/>

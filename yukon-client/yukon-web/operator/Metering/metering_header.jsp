@@ -5,7 +5,6 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.graph.model.TrendModelType" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
-<%@ taglib uri="/WEB-INF/jruntags.jar" prefix="jrun" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
 <cti:checklogin/>
