@@ -982,8 +982,6 @@ public Object getValue(Object object)
 		if( date instanceof java.util.Date )
 		{
 			calTemp.setTime((java.util.Date) date);
-		System.out.println(" calTemp start = " + calTemp.getTime());
-
 			exportProps.setMinTimestamp(calTemp);
 		}
 		else if( date instanceof java.util.Calendar )
