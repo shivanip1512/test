@@ -54,12 +54,8 @@
 			"Ph: " + energyCompany.getMainPhoneNumber() + "<br>" : "";
 	String faxNo = (energyCompany.getMainFaxNumber().trim().length() > 0)?
 			"Fax: " + energyCompany.getMainFaxNumber() + "<br>" : "";
-	String email = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LINK_UTIL_EMAIL);
-	if (ServerUtils.forceNotNone(email).length() > 0)
-		email = "<a href='" + email + "' class='Link1' target='new'>Send us an email</a><br>";
-	else
-		email = (energyCompany.getEmail().trim().length() > 0)?
-				"<a href='mailto:" + energyCompany.getEmail() + "' class='Link1'>Email: " + energyCompany.getEmail() + "</a><br>" : "";
+	String email = (energyCompany.getEmail().trim().length() > 0)?
+			"<a href='mailto:" + energyCompany.getEmail() + "' class='Link1'>Email: " + energyCompany.getEmail() + "</a><br>" : "";
 	
 	desc = desc.replaceAll(ServletUtils.UTIL_COMPANY_ADDRESS, address);
 	desc = desc.replaceAll(ServletUtils.UTIL_PHONE_NUMBER, phoneNo);

@@ -163,31 +163,6 @@ function removeAllMembers(form) {
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
             </div>
-<cti:checkProperty propertyid="<%= ConsumerInfoRole.SUPER_OPERATOR %>">
-			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin" onsubmit="return confirmDeleteAccount(this)">
-              <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
-                <tr> 
-                  <td class="HeaderCell">Delete Customer Accounts</td>
-                </tr>
-                <tr> 
-                  <td> 
-                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
-					  <input type="hidden" name="action" value="DeleteCustAccounts">
-                      <tr> 
-                        <td width="75%" class="TableCell">Please enter the account 
-                          # to be deleted (* to delete all accounts): 
-                          <input type="text" name="AcctNo" maxlength="40" size="14">
-                        </td>
-                        <td width="25%">
-                          <input type="submit" name="Submit" value="Submit">
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            </form>
-</cti:checkProperty>
             <br>
             <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
               <tr> 
