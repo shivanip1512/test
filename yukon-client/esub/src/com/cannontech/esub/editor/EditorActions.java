@@ -530,8 +530,8 @@ class EditorActions {
 			true) {
 			
 		public void processAction(ActionEvent e ) {
-			DynamicGraphElement graph = 
-				new DynamicGraphElement();
+			com.cannontech.esub.element.DynamicGraphElement graph = 
+				new com.cannontech.esub.element.DynamicGraphElement();
 				
 			graph.setDrawing(editor.getDrawing());
 			editor.setBehavior(graph);
@@ -550,7 +550,7 @@ class EditorActions {
 			"AlarmIcon.gif",
 			true) {
 		public void processAction(ActionEvent e) {				
-				CurrentAlarmsTable table = new CurrentAlarmsTable();
+				com.cannontech.esub.element.CurrentAlarmsTable table = new com.cannontech.esub.element.CurrentAlarmsTable();
 				
 				editor.setBehavior(table);
 				editor.elementPlacer.setElement(table);

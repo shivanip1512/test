@@ -97,7 +97,7 @@ public class ConvertElement1 {
 			
 		copyComponent(elem,newElem);
 		
-		newElem.setDrawingHeight(elem.getDrawingWidth());
+		newElem.setDrawingHeight(elem.getDrawingHeight());
 		newElem.setDrawingWidth(elem.getDrawingWidth());
 		newElem.setRoleID(elem.getRoleID());
 		newElem.setLinkTo(elem.getLinkTo());
@@ -173,5 +173,5 @@ public class ConvertElement1 {
 				newComp.setSize(oldComp.getSize());			
 			}
 	}
-	*/
+*/	
 }
