@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2003/11/05 16:41:59 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/02/16 21:02:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,6 +47,8 @@
     #define LMAR_TIMED_RESTORE      "T"             // Control terminated based on time set in load group.
     #define LMAR_MANUAL_RESTORE     "M"             // Control terminated because of an active restore or terminate command being sent.
     #define LMAR_OVERRIDE_CONTROL   "O"             // Control terminated because a new command of a different nature was sent to this group.
+    #define LMAR_CONTROLACCT_ADJUST "A"             // Control accounting was adjusted by user.
+    #define LMAR_PERIOD_TRANSITION  "P"             // Control was active as we crossed a control history boundary.  This log denotes the last log in the previos interval.
 
 #endif
 
