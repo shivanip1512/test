@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/02/21 22:28:23 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/03/05 04:02:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1461,8 +1461,10 @@ void CtiProtocolION::generateExternalPulseTrigger( void )
 
             if( (itr = _externalPulseRegisters.find(_currentCommand.unsigned_int_parameter)) != _externalPulseRegisters.end() )
             {
-                tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::WriteValue);
+                tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::WriteRegisterValue);
                 tmpStatement = CTIDBG_new CtiIONStatement((*itr).second, tmpMethod);
+
+                tmpProgram->addStatement(tmpStatement);
 
                 _dsOut.push_back(tmpProgram);
             }
