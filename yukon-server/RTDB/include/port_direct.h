@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_direct.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:18 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/06 19:27:57 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -100,6 +100,8 @@ public:
 
    virtual INT inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMessage > &traceList);
    virtual INT outMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMessage > &traceList);
+
+   INT readIDLCHeader(CtiXfer& Xfer, unsigned long *bytesRead, bool suppressEcho);
 
    INT checkCommStatus(INT trace);
    INT isCTS() const;

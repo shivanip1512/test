@@ -22,8 +22,8 @@ using namespace std;
 
 #include "port_direct.h"
 #include "portsup.h"
+#include "dllbase.h"
 
-//  you want a comment?
 CtiTablePortLocalSerial CtiPortDirect::getLocalSerial() const
 {
     return _localSerial;
@@ -330,51 +330,10 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceBase *Dev, RWTPtrSlist< CtiMes
 
         SetReadTimeOut( getHandle(), Tmot );
 
-        /* If neccesary wait for IDLC flag character */
+        //  if the beginning of an IDLC message
         if(_tblPortBase.getProtocol() == ProtocolWrapIDLC && Xfer.isMessageStart())
         {
-            do
-            {
-                if((status = CTIRead(getHandle(), Message,  1, &byteCount)) || byteCount != 1)
-                {
-                    if(status != NORMAL)
-                    {
-                        status = READERR;
-                    }
-                    else if(byteCount != 1)
-                    {
-                        status = READTIMEOUT;
-                    }
-                    break;
-                }
-
-                /* Make sure that any errors on the port are cleared */
-                GetPortCommError(getHandle());
-
-            }  while(Message[0] != 0x7e && Message[0] != 0xfc);
-
-            if(status == NORMAL)
-            {
-                if(_tblPortBase.getProtocol() == ProtocolWrapIDLC && Message[0] == 0xfc)
-                {
-                    Message[0] = 0x7e;
-                }
-
-                if((status = CTIRead(getHandle(), Message + 1, Xfer.getInCountExpected() - 1, &byteCount)) != NORMAL)
-                {
-                    if(status == ERROR_INVALID_HANDLE)
-                    {
-                        close(false);
-                        status = PORTREAD;
-                    }
-                    else if(status != NORMAL)
-                    {
-                        status = READERR;
-                    }
-                }
-
-                byteCount += 1;
-            }
+            status = readIDLCHeader(Xfer, &byteCount, true);
         }
         else
         {
@@ -430,6 +389,121 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceBase *Dev, RWTPtrSlist< CtiMes
 
     return status;
 }
+
+
+INT CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCount, bool suppressEcho)
+{
+    int status = NORMAL;
+
+    int   matchCount = 0;
+    bool  matching   = true;
+
+    BYTE *Message    = Xfer.getInBuffer();      // Local alias for ease of use!
+
+    //  only suppress if Mr. Cparm says we can
+    suppressEcho = suppressEcho & gIDLCEchoSuppression;
+
+    //  wait for the framing byte (0x7e) (or its wacky counterpart, 0xfc - eventually remove support for 0xfc...?)
+    do
+    {
+        if((status = CTIRead(getHandle(), Message,  1, byteCount)) || *byteCount != 1)
+        {
+            if(status != NORMAL)
+            {
+                status = READERR;
+            }
+            else if(*byteCount != 1)
+            {
+                status = READTIMEOUT;
+            }
+
+            break;
+        }
+
+        /* Make sure that any errors on the port are cleared */
+        GetPortCommError(getHandle());
+
+    }  while(Message[0] != 0x7e && Message[0] != 0xfc);
+
+    //  if we successfully got the framing byte
+    if(status == NORMAL)
+    {
+        if( Message[0] == 0xfc)
+        {
+            Message[0] = 0x7e;
+        }
+
+        matchCount++;
+
+        if( Message[matchCount - 1] != (Xfer.getOutBuffer())[matchCount - 1] )
+        {
+            matching = false;
+        }
+
+        if( suppressEcho )
+        {
+            //  FIX/IMPROVE:  maybe read a chunk of 5 instead of just one-by-one... ?
+            //                make sure to check against all IDLC message types before assuming
+
+            //  check byte-by-byte against output to make sure it's not an echo
+            while( matching && matchCount < Xfer.getOutCount() && status == NORMAL )
+            {
+                if((status = CTIRead(getHandle(), Message + matchCount, 1, byteCount)) == NORMAL && *byteCount == 1)
+                {
+                    matchCount += *byteCount;
+                }
+
+                if( Message[matchCount - 1] != (Xfer.getOutBuffer())[matchCount - 1] )
+                {
+                    matching = false;
+                }
+            }
+
+            if( matchCount == Xfer.getOutCount() && matching )
+            {
+                //  if it's an echo
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " Discarding IDLC echo message" << endl;
+                }
+
+                //  start all over, but don't check for an echo - it's already been caught
+                status = readIDLCHeader(Xfer, byteCount, false);
+            }
+        }
+
+
+        //  if the message doesn't match OR we don't care about suppressing echoes, just blithely read on
+        if( !suppressEcho || !matching )
+        {
+            if( status == NORMAL )
+            {
+                if((status = CTIRead(getHandle(), Message + matchCount, Xfer.getInCountExpected() - matchCount, byteCount)) != NORMAL)
+                {
+                    if(status == ERROR_INVALID_HANDLE)
+                    {
+                        close(false);
+                        status = PORTREAD;
+                    }
+                    else if(status != NORMAL)
+                    {
+                        status = READERR;
+                    }
+                }
+                else
+                {
+                    //  add on the bytes we've already read
+                    *byteCount += matchCount;
+                }
+            }
+        }
+    }
+
+    return status;
+}
+
+
 
 INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessage > &traceList)
 {

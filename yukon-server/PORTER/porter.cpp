@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2002/09/06 19:03:42 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2002/09/06 19:27:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1520,6 +1520,7 @@ void LoadPorterGlobals(void)
         }
     }
 
+
     if(!(Temp = gConfigParms.getValueAsString("PORTER_DEBUGLEVEL")).isNull())
     {
         char *eptr;
@@ -1557,6 +1558,16 @@ void LoadPorterGlobals(void)
         }
     }
 
+
+    if(!(Temp = gConfigParms.getValueAsString("PORTER_IDLC_ECHO_SUPPRESSION")).isNull())
+    {
+        Temp.toLower();
+
+        if( Temp == "true" || Temp == "yes")
+        {
+            gIDLCEchoSuppression = true;
+        }
+    }
 
 
     if(DebugLevel & 0x0001)
