@@ -1,5 +1,9 @@
 package com.cannontech.database.cache.functions;
 
+import java.util.List;
+
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 /**
@@ -125,5 +129,20 @@ public static java.util.Hashtable getAllLiteDevicesWithPoints()
 public static LiteYukonPAObject getLiteDevice(final int deviceID) 
 {
 	return PAOFuncs.getLiteYukonPAO( deviceID );
+}
+
+public static LiteDeviceMeterNumber getLiteDeviceMeterNumber(int deviceID)
+{
+    DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+    List allDevMtrGrps = cache.getAllDeviceMeterGroups();
+    
+    LiteDeviceMeterNumber ldmn = null;
+    for (int i = 0; i < allDevMtrGrps.size(); i++)
+    {
+        ldmn = (LiteDeviceMeterNumber)allDevMtrGrps.get(i);
+        if (ldmn.getDeviceID() == deviceID)
+            return ldmn;
+    }
+    return null;
 }
 }
