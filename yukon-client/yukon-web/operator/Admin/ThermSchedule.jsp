@@ -1,13 +1,16 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%
+	StarsThermostatTypes thermoType = StarsThermostatTypes.valueOf(request.getParameter("type"));
+	
 	StarsThermostatProgram thermoProgram = null;
 	for (int i = 0; i < dftThermoSchedules.getStarsThermostatProgramCount(); i++) {
-		if (dftThermoSchedules.getStarsThermostatProgram(i).getThermostatType().getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {
+		if (dftThermoSchedules.getStarsThermostatProgram(i).getThermostatType().getType() == thermoType.getType()) {
 			thermoProgram = dftThermoSchedules.getStarsThermostatProgram(i);
 			break;
 		}
 	}
 	
+	StarsThermostatDynamicData curSettings = null;
 	int invID = -1;
 	int[] invIDs = new int[0];
 	boolean allTherm = false;
@@ -46,7 +49,23 @@
               <span class="TitleHeader">ADMINISTRATION - DEFAULT THERMOSTAT SCHEDULE</span><br>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
+<%
+	if (thermoType.getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {
+%>
 			  <%@ include file="../../include/therm_schedule.jsp" %>
+<%
+	}
+	else if (thermoType.getType() == StarsThermostatTypes.COMMERCIAL_TYPE) {
+%>
+			  <%@ include file="../../include/therm_schedule1.jsp" %>
+<%
+	}
+	else if (thermoType.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
+%>
+			  <%@ include file="../../include/therm_schedule2.jsp" %>
+<%
+	}
+%>
 			  <p align="center" class="MainText">
 			    <% int crStartYear = 2003; %><%@ include file="../../include/copyright.jsp" %>
 			  </p>

@@ -48,12 +48,7 @@ function goToSchedule() {
 	var thermType = checkThermostatType();
 	if (thermType == null) return;
 	
-	if (thermType == "<%= StarsThermostatTypes.EXPRESSSTAT.toString() %>")
-		document.form1.REDIRECT.value = "ThermSchedule.jsp?AllTherm";
-	else if (thermType == "<%= StarsThermostatTypes.COMMERCIAL.toString() %>")
-		document.form1.REDIRECT.value = "ThermSchedule1.jsp?AllTherm";
-	else if (thermType == "<%= StarsThermostatTypes.ENERGYPRO.toString() %>")
-		document.form1.REDIRECT.value = "ThermSchedule2.jsp?AllTherm";
+	document.form1.REDIRECT.value = "ThermSchedule.jsp?AllTherm";
 	document.form1.submit();
 }
 
@@ -61,10 +56,7 @@ function goToManual() {
 	var thermType = checkThermostatType();
 	if (thermType == null) return;
 	
-	if (thermType == "<%= StarsThermostatTypes.EXPRESSSTAT.toString() %>")
-		document.form1.REDIRECT.value = "Thermostat.jsp?AllTherm";
-	else if (thermType == "<%= StarsThermostatTypes.ENERGYPRO.toString() %>")
-		document.form1.REDIRECT.value = "Thermostat2.jsp?AllTherm";
+	document.form1.REDIRECT.value = "Thermostat.jsp?AllTherm";
 	document.form1.submit();
 }
 </script>

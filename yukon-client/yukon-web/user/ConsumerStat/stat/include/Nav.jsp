@@ -261,66 +261,19 @@ pageLinks = new Array(<%= thermostats.getStarsInventoryCount() %>);
 	int tstatCnt = thermostats.getStarsInventoryCount();
 	for (int i = 0; i < tstatCnt; i++) {
 %>
-	pageLinks[<%= i %>] = new Array(3);
+	pageLinks[<%= i %>] = new Array(4);
 	pageLinks[<%= i %>][0] = "NewLabel.jsp?Item=<%= i %>";
-<%
-		StarsThermostatTypes type = thermostats.getStarsInventory(i).getLMHardware().getStarsThermostatSettings().getStarsThermostatProgram().getThermostatType();
-		if (type.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
-%>
-	pageLinks[<%= i %>][1] = "ThermSchedule2.jsp?Item=<%= i %>";
-	pageLinks[<%= i %>][2] = "Thermostat2.jsp?Item=<%= i %>";
-<%
-		}
-		else if (type.getType() == StarsThermostatTypes.COMMERCIAL_TYPE) {
-%>
-	pageLinks[<%= i %>][1] = "ThermSchedule1.jsp?Item=<%= i %>";
-	pageLinks[<%= i %>][2] = "Thermostat.jsp?Item=<%= i %>";
-<%
-		}
-		else {
-%>
 	pageLinks[<%= i %>][1] = "ThermSchedule.jsp?Item=<%= i %>";
 	pageLinks[<%= i %>][2] = "Thermostat.jsp?Item=<%= i %>";
+	pageLinks[<%= i %>][3] = "SavedSchedules.jsp?Item=<%= i %>";
 <%
-		}
-	}
-%>
-<%
-	int[] selectedInvIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
-	StarsThermostatTypes allType = null;
-	if (selectedInvIDs != null && selectedInvIDs.length > 0) {
-		for (int i = 0; i < tstatCnt; i++) {
-			StarsInventory tstat = thermostats.getStarsInventory(i);
-			if (tstat.getInventoryID() == selectedInvIDs[0]) {
-				allType = tstat.getLMHardware().getStarsThermostatSettings().getStarsThermostatProgram().getThermostatType();
-				break;
-			}
-		}
 	}
 %>
 	// Defines links for the thermostat "All" menu
 	pageLinks[<%= tstatCnt %>] = new Array(3);
 	pageLinks[<%= tstatCnt %>][0] = "AllTherm.jsp";
-<%
-	if (allType == null || allType.getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {
-%>
 	pageLinks[<%= tstatCnt %>][1] = "ThermSchedule.jsp?AllTherm";
 	pageLinks[<%= tstatCnt %>][2] = "Thermostat.jsp?AllTherm";
-<%
-	}
-	else if (allType.getType() == StarsThermostatTypes.COMMERCIAL_TYPE) {
-%>
-	pageLinks[<%= tstatCnt %>][1] = "ThermSchedule1.jsp?AllTherm";
-	pageLinks[<%= tstatCnt %>][2] = "Thermostat.jsp?AllTherm";
-<%
-	}
-	else if (allType.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
-%>
-	pageLinks[<%= tstatCnt %>][1] = "ThermSchedule2.jsp?AllTherm";
-	pageLinks[<%= tstatCnt %>][2] = "Thermostat2.jsp?AllTherm";
-<%
-	}
-%>
 </script>
 
 <div id="thermostatMenu" class="bgMenu" style="width:100px" align="left">
@@ -341,6 +294,12 @@ pageLinks = new Array(<%= thermostats.getStarsInventoryCount() %>);
   </div>
   <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
   &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
+  </div>
+  <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(3)">
+  &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SAVED_SCHED, "Saved Schedules") %>
+  </div>
+  <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(3)">
+  &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SAVED_SCHED, "Saved Schedules") %>
   </div>
 </div>
 

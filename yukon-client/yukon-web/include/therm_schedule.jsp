@@ -190,6 +190,21 @@ function setToDefault() {
 	setChanged();
 }
 
+function saveSchedule() {
+	if (changed && confirm("You have made changes to the thermostat schedule. Would you like to save those changes first?")) {
+		var form = document.form1;
+<%
+	int lastSlashPos = request.getRequestURI().lastIndexOf("/");
+%>
+		form.REDIRECT.value = "<%= request.getRequestURI().substring(0, lastSlashPos)%>/SavedSchedules.jsp?<%= thermNoStr %>";
+		prepareSubmit(form);
+		form.submit();
+	}
+	else {
+		location.href = "SavedSchedules.jsp?<%= thermNoStr %>"
+	}
+}
+
 function init() {
 	updateLayout(
 		<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>,<%= coolSched.getTemperature1() %>,<%= heatSched.getTemperature1() %>,
@@ -201,11 +216,14 @@ function init() {
 	document.getElementById('MovingLayer2').style.display = "";
 	document.getElementById('MovingLayer3').style.display = "";
 	document.getElementById('MovingLayer4').style.display = "";
+	
+	if (document.getElementById('Default') != null) {
 <% if (isOperator) { %>
-	document.getElementById('Default').value = '<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>';
+		document.getElementById('Default').value = '<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>';
 <% } else { %>
-	document.getElementById('Default').value = '<cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>';
+		document.getElementById('Default').value = '<cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>';
 <% } %>
+	}
 }
 </script>
 
@@ -287,7 +305,6 @@ function init() {
 		instrLink = "Instructions.jsp";
 		target = "";
 	}
-	String manualLink = "Thermostat.jsp?" + thermNoStr;
 %>
                               <a class="Link1" href="<%= instrLink %>" <%= target %>>Click 
                               for hints and details</a>.
@@ -295,7 +312,7 @@ function init() {
                           </td>
                           <td class = "TableCell" width="29%" height="4" align = "left" valign="top" > 
                             <i>Make temporary adjustments to your heating and 
-                            cooling system<a class="Link1" href="<%= manualLink %>"> 
+                            cooling system<a class="Link1" href="Thermostat.jsp?<%= thermNoStr %>"> 
                             here</a>.</i> </td>
                         </tr>
                       </table>
@@ -524,6 +541,10 @@ function init() {
                   <td width="85%" align = "center" class = "TableCell"> 
                     <input type="submit" name="Submit" value="Submit">
 <% if (!isRecommended) { %>
+<% if (!allTherm) { %>
+                    <input type="button" value="Save/Apply Schedule" onclick="saveSchedule()">
+                    <p>
+<% } %>
                     <input type="button" id="Default" value="Recommended Settings" onclick="setToDefault()">
 <% } %>
                   </td>

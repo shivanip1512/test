@@ -10,35 +10,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-<script language="JavaScript">
-function goToSchedule() {
-<%
-	if (thermoSettings.getStarsThermostatDynamicData() == null) {
-%>
-	location.href = "ThermSchedule.jsp?Item=<%= itemNo %>";
-<%
-	} else {
-%>
-	location.href = "ThermSchedule2.jsp?Item=<%= itemNo %>";
-<%
-	}
-%>
-}
-
-function goToManual() {
-<%
-	if (thermoSettings.getStarsThermostatDynamicData() == null) {
-%>
-	location.href = "Thermostat.jsp?Item=<%= itemNo %>";
-<%
-	} else {
-%>
-	location.href = "Thermostat2.jsp?Item=<%= itemNo %>";
-<%
-	}
-%>
-}
-</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -104,12 +75,12 @@ function goToManual() {
             <table width="200" border="0" cellspacing="5" cellpadding="0" align="center">
               <tr> 
                 <td> 
-                  <div align="center" style="border:solid 1px #666999; cursor:pointer" onclick="goToSchedule()">
+                  <div align="center" style="border:solid 1px #666999; cursor:pointer" onclick="location.href = 'ThermSchedule.jsp?Item=<%= itemNo %>'">
 				    <span class="MainText"><%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule") %></span>
 				  </div>
                 </td>
                 <td> 
-                  <div align="center" style="border:solid 1px #666999; cursor:pointer" onclick="goToManual()">
+                  <div align="center" style="border:solid 1px #666999; cursor:pointer" onclick="location.href = "Thermostat.jsp?Item=<%= itemNo %>"">
 				    <span class="MainText"><%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual") %></span>
 				  </div>
                 </td>

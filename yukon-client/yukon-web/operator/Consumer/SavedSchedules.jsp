@@ -3,12 +3,10 @@
 <%
 	int thermNo = Integer.parseInt(request.getParameter("InvNo"));
 	StarsInventory thermostat = inventories.getStarsInventory(thermNo);
-	StarsThermostatDynamicData curSettings = thermostat.getLMHardware().getStarsThermostatSettings().getStarsThermostatDynamicData();
-	
-	int invID = thermostat.getInventoryID();
-	StarsThermostatTypes thermostatType = thermostat.getLMHardware().getStarsThermostatSettings().getStarsThermostatProgram().getThermostatType();
 	String thermNoStr = "InvNo=" + thermNo;
+	String scheduleURL = request.getContextPath() + "/operator/Consumer/ThermSchedule.jsp?" + thermNoStr;
 	
+	StarsThermostatDynamicData curSettings = thermostat.getLMHardware().getStarsThermostatSettings().getStarsThermostatDynamicData();
 	if (curSettings != null && ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
 		if (request.getParameter("OmitTimeout") != null)
 			session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT, "true");

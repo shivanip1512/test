@@ -84,19 +84,6 @@ function setTemp(curTemp) {
 		dftSetpoint = curTemp;
 }
 
-function getTemp() {
-	var mode = document.MForm.mode.value;
-<% if (curSettings != null) { %>
-	if (mode == "") mode = "<%= curSettings.getMode() %>";
-<% } %>
-	if (mode == "<%= StarsThermoModeSettings.COOL.toString() %>")
-		return coolSetpoint;
-	else if (mode == "<%= StarsThermoModeSettings.HEAT.toString() %>")
-		return heatSetpoint;
-	else
-		return dftSetpoint;
-}
-
 var timeoutId = -1;
 
 function setChanged() {
@@ -165,15 +152,9 @@ function modeChange(mode) {
 		
 		if (mode == '<%= StarsThermoModeSettings.COOL.toString() %>') {
 			document.MForm.tempField.style.color = "#003399";
-<% if (curSettings != null) { %>
-			document.MForm.tempField.value = getTemp();
-<% } %>
 		}
 		else if (mode == '<%= StarsThermoModeSettings.HEAT.toString() %>') {
 			document.MForm.tempField.style.color = "#FF0000";
-<% if (curSettings != null) { %>
-			document.MForm.tempField.value = getTemp();
-<% } %>
 		}
 		else {
 			document.MForm.tempField.style.color = "#CCCCCC";
@@ -184,9 +165,6 @@ function modeChange(mode) {
 		document.getElementById(mode).style.visibility = "hidden";
 		document.MForm.mode.value = "";
 		document.MForm.tempField.style.color = "#003366";
-<% if (curSettings != null) { %>
-		document.MForm.tempField.value = getTemp();
-<% } %>
 	}
 	
 	document.MForm.tempField.readOnly = disableFlag;

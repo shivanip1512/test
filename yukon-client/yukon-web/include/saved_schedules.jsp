@@ -1,9 +1,10 @@
 <%
 /* Required predefined variables:
- * invID: int
- * thermostatType: StarsThermostatTypes
- * thermNoStr: String
+ * thermostat: StarsInventory
+ * scheduleURL: String
  */
+	int invID = thermostat.getInventoryID();
+	StarsThermostatTypes thermostatType = thermostat.getLMHardware().getStarsThermostatSettings().getStarsThermostatProgram().getThermostatType();
 %>
 
 <script language="JavaScript">
@@ -36,8 +37,7 @@ function deleteSchedule(form) {
   <div align="center">
     <input type="hidden" name="action" value="SaveThermostatSchedule">
     <input type="hidden" name="InvID" value="<%= invID %>">
-	<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?<%= thermNoStr %>">
-	<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?<%= thermNoStr %>">
+	<input type="hidden" name="REDIRECT" value="<%= scheduleURL %>">
     <table width="80%" border="0" cellspacing="0" cellpadding="0" class="MainText">
       <tr> 
         <td align="center">Save the current thermostat schedule, apply a saved 
@@ -50,14 +50,14 @@ function deleteSchedule(form) {
         <td>
           <table width="100%" border="0" cellspacing="0" cellpadding="5" class="TableCell">
             <tr>
-              <td width="40%" align="right">Schedule Name:</td>
-              <td width="60%"> 
+              <td width="30%" align="right">Schedule Name:</td>
+              <td width="70%"> 
                 <input type="text" name="ScheduleName" size="30">
               </td>
             </tr>
             <tr>
-              <td width="40%" align="right">&nbsp;</td>
-              <td width="60%">
+              <td width="30%" align="right">&nbsp;</td>
+              <td width="70%">
                 <select name="ScheduleID" onchange="selectSchedule(this.form)">
                   <option value="-1">&lt;Select a saved schedule&gt;</option>
 <%
@@ -79,16 +79,17 @@ function deleteSchedule(form) {
     </table>
     <table width="50%" border="0" cellpadding="5">
       <tr> 
-        <td width="40%" align = "right" class = "TableCell"> 
+        <td width="38%" align = "right" class = "TableCell"> 
           <input type="submit" name="Save" value="Save">
         </td>
         <td width="20%" align = "center" class = "TableCell"> 
           <input type="button" name="Apply" value="Apply" onclick="applySchedule(this.form)" disabled>
         </td>
-        <td width="40%" align = "left" class = "TableCell">
+        <td width="42%" align = "left" class = "TableCell">
           <input type="button" name="Delete" value="Delete" onclick="deleteSchedule(this.form)" disabled>
         </td>
       </tr>
     </table>
+    <p><a href="<%= scheduleURL %>" class="MainText">[Back to schedule page]</a></p>
   </div>
 </form>

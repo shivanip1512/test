@@ -2,6 +2,7 @@
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	StarsThermostatSettings thermoSettings = null;
+	StarsThermostatDynamicData curSettings = null;
 	int invID = 0;
 	int[] invIDs = new int[0];
 	
@@ -29,8 +30,20 @@
 		int thermNo = Integer.parseInt(request.getParameter("InvNo"));
 		StarsInventory thermostat = inventories.getStarsInventory(thermNo);
 		thermoSettings = thermostat.getLMHardware().getStarsThermostatSettings();
+		curSettings = thermoSettings.getStarsThermostatDynamicData();
 		invID = thermostat.getInventoryID();
 		thermNoStr = "InvNo=" + thermNo;
+	}
+	
+	if (curSettings != null && ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
+		if (request.getParameter("OmitTimeout") != null)
+			session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT, "true");
+		
+		if (session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT) == null) {
+			session.setAttribute(ServletUtils.ATT_REFERRER, request.getRequestURI() + "?" + thermNoStr);
+			response.sendRedirect( "Timeout.jsp" );
+			return;
+		}
 	}
 %>
 <html>
@@ -40,7 +53,7 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 </head>
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onload="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -69,7 +82,7 @@
               <%@ include file="include/InfoSearchBar.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
-              <%@ include file="../../include/therm_manual.jsp" %>
+              <%@ include file="../../include/therm_manual2.jsp" %>
 			  <p align="center" class="MainText">
 			    <% int crStartYear = 2003; %><%@ include file="../../include/copyright.jsp" %>
 			  </p>

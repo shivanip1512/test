@@ -521,26 +521,20 @@ function removeAllMembers(form) {
                                 <%
 		for (int i = 0; i < dftThermoSchedules.getStarsThermostatProgramCount(); i++) {
 			StarsThermostatTypes type = dftThermoSchedules.getStarsThermostatProgram(i).getThermostatType();
+			
 			String typeName = "";
-			String url = "";
-			if (type.getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {
+			if (type.getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE)
 				typeName = "ExpressStat";
-				url = "ThermSchedule.jsp";
-			}
-			else if (type.getType() == StarsThermostatTypes.COMMERCIAL_TYPE) {
+			else if (type.getType() == StarsThermostatTypes.COMMERCIAL_TYPE)
 				typeName = "Commercial ExpressStat";
-				url = "ThermSchedule1.jsp";
-			}
-			else if (type.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
+			else if (type.getType() == StarsThermostatTypes.ENERGYPRO_TYPE)
 				typeName = "EnergyPro";
-				url = "ThermSchedule2.jsp";
-			}
 %>
                                 <tr> 
                                   <td width="5%">&nbsp;</td>
                                   <td width="70%"><%= typeName %></td>
                                   <td width="25%"> 
-                                    <input type="button" name="Edit2" value="Edit" onclick="location.href = '<%= url %>'">
+                                    <input type="button" name="Edit2" value="Edit" onclick="location.href = 'ThermSchedule.jsp?type=<%= type.toString() %>'">
                                   </td>
                                 </tr>
                                 <%

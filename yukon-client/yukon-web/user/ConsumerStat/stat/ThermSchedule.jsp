@@ -1,6 +1,7 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%
 	StarsThermostatProgram thermoProgram = null;
+	StarsThermostatDynamicData curSettings = null;
 	int invID = 0;
 	int[] invIDs = new int[0];
 	
@@ -28,8 +29,20 @@
 		int thermNo = Integer.parseInt(request.getParameter("Item"));
 		StarsInventory thermostat = thermostats.getStarsInventory(thermNo);
 		thermoProgram = thermostat.getLMHardware().getStarsThermostatSettings().getStarsThermostatProgram();
+		curSettings = thermostat.getLMHardware().getStarsThermostatSettings().getStarsThermostatDynamicData();
 		invID = thermostat.getInventoryID();
 		thermNoStr = "Item=" + thermNo;
+	}
+	
+	if (curSettings != null && ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
+		if (request.getParameter("OmitTimeout") != null)
+			session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT, "true");
+		
+		if (session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT) == null) {
+			session.setAttribute(ServletUtils.ATT_REFERRER, request.getRequestURI() + "?" + thermNoStr);
+			response.sendRedirect( "Timeout.jsp" );
+			return;
+		}
 	}
 %>
 <html>
@@ -75,7 +88,24 @@
               </table>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
+<%
+	StarsThermostatTypes thermoType = thermoProgram.getThermostatType();
+	if (thermoType.getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {
+%>
 			  <%@ include file="../../../include/therm_schedule.jsp" %>
+<%
+	}
+	else if (thermoType.getType() == StarsThermostatTypes.COMMERCIAL_TYPE) {
+%>
+			  <%@ include file="../../../include/therm_schedule1.jsp" %>
+<%
+	}
+	else if (thermoType.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
+%>
+			  <%@ include file="../../../include/therm_schedule2.jsp" %>
+<%
+	}
+%>
 			  <p align="center" class="MainText">
 			    <% int crStartYear = 2003; %><%@ include file="../../../include/copyright.jsp" %>
 			  </p>

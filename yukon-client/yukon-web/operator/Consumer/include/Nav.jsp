@@ -469,27 +469,8 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
 	pageLinks[<%= num %>][1] = "ConfigHardware.jsp?InvNo=<%= num %>";
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT %>">
-<%
-		StarsThermostatTypes type = inventories.getStarsInventory(num).getLMHardware().getStarsThermostatSettings().getStarsThermostatProgram().getThermostatType();
-		if (type.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
-%>
-	pageLinks[<%= num %>][2] = "ThermSchedule2.jsp?InvNo=<%= num %>";
-	pageLinks[<%= num %>][3] = "Thermostat2.jsp?InvNo=<%= num %>";
-<%
-		}
-		else if (type.getType() == StarsThermostatTypes.COMMERCIAL_TYPE) {
-%>
-	pageLinks[<%= num %>][2] = "ThermSchedule1.jsp?InvNo=<%= num %>";
-	pageLinks[<%= num %>][3] = "Thermostat.jsp?InvNo=<%= num %>";
-<%
-		}
-		else {
-%>
 	pageLinks[<%= num %>][2] = "ThermSchedule.jsp?InvNo=<%= num %>";
 	pageLinks[<%= num %>][3] = "Thermostat.jsp?InvNo=<%= num %>";
-<%
-		}
-%>
 	pageLinks[<%= num %>][4] = "SavedSchedules.jsp?InvNo=<%= num %>";
 </cti:checkProperty>
 <%
@@ -503,45 +484,13 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 	pageLinks[<%= num %>][2] = "CommandMeter.jsp?InvNo=<%= num %>";
 <%
 	}
-%>
-<%
 	int invCnt = inventories.getStarsInventoryCount();
-	StarsThermostatTypes allType = null;
-	
-	int[] selectedInvIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
-	if (selectedInvIDs != null && selectedInvIDs.length > 0) {
-		for (int i = 0; i < thermostats.getStarsInventoryCount(); i++) {
-			StarsInventory tstat = thermostats.getStarsInventory(i);
-			if (tstat.getInventoryID() == selectedInvIDs[0]) {
-				allType = tstat.getLMHardware().getStarsThermostatSettings().getStarsThermostatProgram().getThermostatType();
-				break;
-			}
-		}
-	}
 %>
 	// Defines links for the thermostat "All" menu
 	pageLinks[<%= invCnt %>] = new Array(3);
 	pageLinks[<%= invCnt %>][0] = "AllTherm.jsp";
-<%
-	if (allType == null || allType.getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {
-%>
 	pageLinks[<%= invCnt %>][1] = "ThermSchedule.jsp?AllTherm";
 	pageLinks[<%= invCnt %>][2] = "Thermostat.jsp?AllTherm";
-<%
-	}
-	else if (allType.getType() == StarsThermostatTypes.COMMERCIAL_TYPE) {
-%>
-	pageLinks[<%= invCnt %>][1] = "ThermSchedule1.jsp?AllTherm";
-	pageLinks[<%= invCnt %>][2] = "Thermostat.jsp?AllTherm";
-<%
-	}
-	else if (allType.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
-%>
-	pageLinks[<%= invCnt %>][1] = "ThermSchedule2.jsp?AllTherm";
-	pageLinks[<%= invCnt %>][2] = "Thermostat2.jsp?AllTherm";
-<%
-	}
-%>
 
 </script>
 
