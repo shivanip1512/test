@@ -12,6 +12,7 @@ import java.util.Enumeration;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonListFuncs;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.data.customer.Contact;
@@ -429,11 +430,13 @@ private javax.swing.JComboBox getJComboBoxNotifyType() {
 			//since the HashTable holding the ListEntries returns in
 			// reverse order, we must walk backwards through it in
 			// a for loop
-			Object[] entrs = YukonListFuncs.yukonListEntries.values().toArray();
+			Object[] entrs = YukonListFuncs.getYukonListEntries().values().toArray();
 			for( int i = (entrs.length-1); i >= 0; i-- )
 			{
-				ivjJComboBoxNotifyType.addItem(
-					(YukonListEntry)entrs[i] );
+				YukonListEntry entry = (YukonListEntry)entrs[i];
+				
+				if( entry.getListID() == YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE )
+					ivjJComboBoxNotifyType.addItem( entry );
 			}
 			
 			// user code end
