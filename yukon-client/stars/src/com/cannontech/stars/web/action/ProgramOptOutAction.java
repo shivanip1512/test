@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
@@ -161,6 +162,7 @@ public class ProgramOptOutAction implements ActionBase {
         	energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
 			TimeZone tz = TimeZone.getTimeZone( energyCompany.getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE) );
+			String logMsg = null;
 			
             StarsProgramOptOut optOut = reqOper.getStarsProgramOptOut();
             StarsProgramOptOutResponse resp = new StarsProgramOptOutResponse();
@@ -198,6 +200,9 @@ public class ProgramOptOutAction implements ActionBase {
             	resp.setStarsLMProgramHistory( starsProgHist );
             	
             	resp.setDescription( "The " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event has been scheduled" );
+            	
+            	logMsg = "Start Date/Time:" + ServerUtils.formatDate(optOut.getStartDateTime(), tz) +
+            			", Duration:" + optOut.getPeriod() + ((optOut.getPeriod() > 1)? " Days" : " Day");
             }
             else if (optOut.getPeriod() == OPTOUT_TODAY) {
             	int offHours = (int)((ServletUtil.getTomorrow(tz).getTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
@@ -234,6 +239,8 @@ public class ProgramOptOutAction implements ActionBase {
 			        resp.setDescription( ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " command has been sent out successfully" );
 			    else
 			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_PAST) );
+			    
+			    logMsg = "Today";
             }
             else if (optOut.getPeriod() == REPEAT_LAST) {
 				/* We will only resend the command if there is no opt out event in the event queue
@@ -302,8 +309,16 @@ public class ProgramOptOutAction implements ActionBase {
 			        resp.setDescription( ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " command has been sent out successfully" );
 			    else
 			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_PAST) );
+			    
+			    logMsg = "Start Date/Time:(Immediately), Duration:" + optOut.getPeriod() + ((optOut.getPeriod() > 1)? " Days" : " Day");
             }
-
+            
+			// Log activity
+			if (logMsg != null) {
+				ActivityLogger.log(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
+						"Program Opt Out", logMsg );
+			}
+			
         	respOper.setStarsProgramOptOutResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }

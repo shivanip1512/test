@@ -242,14 +242,11 @@ public class SendOptOutNotificationAction implements ActionBase {
 	
 	private static LiteLMProgramEvent findLastOptOutEvent(ArrayList custEventHist, int programID, LiteStarsEnergyCompany energyCompany) {
 		int tempTermID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION ).getEntryID();
-		int termID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION ).getEntryID();
 		
 		try {
 			for (int i = custEventHist.size() - 1; i >= 0; i--) {
 				LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) custEventHist.get(i);
 				if (liteEvent.getProgramID() != programID) continue;
-				
-				if (liteEvent.getActionID() == termID) break;
 				
 				if (liteEvent.getActionID() == tempTermID)
 					return liteEvent;
