@@ -119,12 +119,14 @@ function deleteAccount(form) {
                                 <input type="text" name="AcctNo" maxlength="40" size="14" value="<%= account.getAccountNumber() %>">
                               </td>
                               <td valign="top" class="TableCell" width="87"> Commercial: 
-                                <input type="checkbox" name="Commercial" value="true" <% if (account.getIsCommercial()) { %>checked<% } %>>
+                                <input type="checkbox" name="Commercial" value="true" disabled
+                                  <% if (account.getIsCommercial()) { %>checked<% } %>>
                               </td>
                             </tr>
                           </table>
                         </td>
                       </tr>
+<% if (account.getIsCommercial()) { %>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Company: </div>
@@ -133,6 +135,7 @@ function deleteAccount(form) {
                           <input type="text" name="Company" maxlength="30" size="24" value="<%= account.getCompany() %>">
                         </td>
                       </tr>
+<% } %>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Last Name:</div>
