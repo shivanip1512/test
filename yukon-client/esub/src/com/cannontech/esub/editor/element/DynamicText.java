@@ -37,6 +37,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
 	public static final int HIGH_LIMIT =  0x00000040;
 	public static final int LIMIT_DURATION = 0x00000080;
 	public static final int ALARM_TEXT =  0x00000100;
+	public static final int STATE_TEXT = 0x000000200;
 	
 	private com.cannontech.database.data.lite.LitePoint point;	
 	private int displayAttribs = 0x00;
