@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/08/12 13:03:59 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/09/12 02:34:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -179,6 +179,34 @@ int CtiDeviceGateway::checkPendingOperations(  )
     return processed;
 }
 
+
+int CtiDeviceGateway::sendQueryRuntime(LONG dev, UCHAR Reset)
+{
+    int cnt = 0;
+    SMAP_t::iterator smitr;
+
+    if(dev != 0)
+    {
+        SMAP_t::iterator smitr = _statMap.find( dev );
+        if( smitr != _statMap.end() )
+        {
+            cnt++;
+            CtiDeviceGatewayStat *pGW = (*smitr).second;
+            pGW->sendQueryRuntime(_msgsock, Reset);
+        }
+    }
+    else
+    {
+        for( smitr = _statMap.begin(); smitr != _statMap.end(); smitr++ )
+        {
+            cnt++;
+            CtiDeviceGatewayStat *pGW = (*smitr).second;
+            pGW->sendQueryRuntime(_msgsock, Reset);
+        }
+    }
+
+    return cnt;
+}
 
 int CtiDeviceGateway::sendGet(USHORT Type, LONG dev)
 {

@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/08/07 15:42:17 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/09/12 02:34:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,6 +85,7 @@ public:
     int checkPendingOperations();
 
     int sendGet(USHORT Type, LONG dev = 0);
+    int sendQueryRuntime(LONG dev, UCHAR Reset);
     void sendtm_Clock (void);
     void sendKeepAlive (void);
     void sendSetBindMode (UCHAR BindMode = TRUE);
