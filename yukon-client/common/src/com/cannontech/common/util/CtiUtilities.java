@@ -30,6 +30,10 @@ public final class CtiUtilities
 
 	public static final Character trueChar = new Character('Y');
 	public static final Character falseChar = new Character('N');
+	
+	public static final String TRUE_STRING = "true";
+	public static final String FALSE_STRING = "false";
+	
 	private static java.util.GregorianCalendar gc1990 = null;
 	
 	//a universal formatter for numbers
@@ -768,7 +772,6 @@ public final static Character getTrueCharacter() {
 	return trueChar;
 }
 
-
 /**
  * 
  * 
@@ -805,10 +808,18 @@ public final static String getUserName()
  * @param c java.lang.Character
  */
 public final static boolean isTrue(java.lang.Character c) {
-
-	return ( c.equals(trueChar));
+	return (trueChar.equals(c));
 }
 
+/** 
+ * Return true if the given string represents true.
+ * Case insensitive
+ * @param s String
+ * @return boolean
+*/
+public final static boolean isTrue(String s) {
+	return (TRUE_STRING.equalsIgnoreCase(s));
+}
 
 /**
  * This method was created in VisualAge.
