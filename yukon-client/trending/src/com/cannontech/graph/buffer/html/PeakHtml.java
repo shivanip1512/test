@@ -112,33 +112,34 @@ public StringBuffer getHtml(StringBuffer buf)
 		double[] peakData = model.getTrendSeries()[(int) peakPointIndex].getValuesArray();
 		long[] peakTimeStamps = model.getTrendSeries()[(int) peakPointIndex].getPeriodsArray();
 
-
 		// Using a sorted tree map to find the 6 peak values and timestamps
+		// THIS IS DIFFERENT THAN MOST OUR TREE MAPS, KEY IS VALUE, NOT TIMESTAMP
 		java.util.TreeMap peakMap = new java.util.TreeMap();
-	
+
 		for( int i = 0; i < peakData.length; i++ )
 		{
-			if( peakMap.size() < 6 || peakData[i] > ((Long) peakMap.firstKey()).doubleValue() )
+			if( peakMap.size() < 6 || peakData[i] > ((Double)(peakMap.firstKey())).doubleValue() )
 			{
 				if( peakMap.size() == 6 )
 					peakMap.remove( peakMap.firstKey() );
 			
-				peakMap.put( new Long( peakTimeStamps[i] ), new Double( peakData[i]));
+				peakMap.put( new Double( peakData[i]), new Long( peakTimeStamps[i] ));
 			}
 		}	
 		java.util.Set keySet = peakMap.keySet();
-		Long[] keyArray = new Long[keySet.size()];
+//		Long[] keyArray = new Long[keySet.size()];
+		Double[] keyArray = new Double[keySet.size()];
 		keySet.toArray(keyArray);
 	
 		for( int i = keyArray.length-1; i >= 0; i-- )
 		{
 			buf.append("  <TR>\r\n");
 			buf.append("    <TD ALIGN=CENTER WIDTH=\"120\" BGCOLOR=\"#CCCC99\" class=\"TableCell\">&nbsp;<FONT SIZE=\"-1\" FACE=\"Arial\">");
-			buf.append( dateTimeformat.format(new java.util.Date(((Long)keyArray[i]).longValue())));
+			buf.append( dateTimeformat.format(new java.util.Date(((Long)peakMap.get(keyArray[i])).longValue())));
 			buf.append("</FONT></TD>\r\n");
 	
 			buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\">&nbsp;<FONT SIZE=\"-1\" FACE=\"Arial\">");
-			buf.append( valueFormat.format(( (Double)peakMap.get(keyArray[i])).doubleValue()));
+			buf.append( valueFormat.format(( (Double)keyArray[i]).doubleValue()));
 			buf.append("</FONT></TD>\r\n");
 			
 			for( int j = 0; j < model.getTrendSeries().length; j++ )
@@ -154,8 +155,8 @@ public StringBuffer getHtml(StringBuffer buf)
 
 					double[] vals = model.getTrendSeries()[j].getValuesArray();
 					long[] times = model.getTrendSeries()[j].getPeriodsArray();
-					
-					Long ts = (Long) keyArray[i];
+
+					Long ts = (Long) peakMap.get(keyArray[i]);
 					int index = -1;
 				
 					if( ts != null  && times != null)
