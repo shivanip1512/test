@@ -4,26 +4,41 @@ package com.cannontech.macs.gui;
  * This type was created in VisualAge.
  */
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.commonutils.GenericEvent;
+import com.cannontech.clientutils.popup.PopUpEventListener;
+import com.cannontech.clientutils.popup.PopUpMenuShower;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.common.wizard.WizardPanelEvent;
+import com.cannontech.common.wizard.WizardPanelListener;
 import com.cannontech.macs.debug.ScheduleDebugViewer;
+import com.cannontech.macs.events.MACSGenericTableModelEvent;
 import com.cannontech.macs.gui.popup.SchedulerPopUpMenu;
 import com.cannontech.macs.schedule.editor.ScheduleEditorPanel;
+import com.cannontech.macs.schedule.wizard.ScheduleWizardPanel;
 import com.cannontech.message.macs.message.Info;
 import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.message.macs.message.Schedule;
@@ -36,10 +51,10 @@ import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
-public class SchedulerMainPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener, javax.swing.event.ListSelectionListener, javax.swing.event.TableModelListener, com.cannontech.common.wizard.WizardPanelListener, com.cannontech.common.editor.PropertyPanelListener, javax.swing.event.PopupMenuListener, com.cannontech.clientutils.popup.PopUpEventListener, MessageListener
+public class SchedulerMainPanel extends javax.swing.JPanel implements ActionListener, MouseListener, ListSelectionListener, TableModelListener, WizardPanelListener, PropertyPanelListener, PopupMenuListener, PopUpEventListener, MessageListener
 {
 	private static final int PRE_CREATED_FRAMES = 3;
-	private com.cannontech.macs.gui.popup.SchedulerPopUpMenu schedulePopupMenu = null;
+	private SchedulerPopUpMenu schedulePopupMenu = null;
 	private ScheduleTableModel scheduleTableModel = null;
 	private java.util.ArrayList frames = null;
 	
@@ -87,7 +102,7 @@ public void actionPerformed(ActionEvent event)
 	
 	try
 	{	
-		parent = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+		parent = CtiUtilities.getParentFrame(this);
 		savedCursor = parent.getCursor();
 		parent.setCursor( new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR) );
 			
@@ -115,7 +130,7 @@ public void actionPerformed(ActionEvent event)
 			}
 			catch(Exception e )
 			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 			}
 		}*/
 		else if( event.getSource() == getDeleteScheduleButton() )
@@ -183,7 +198,7 @@ public String[] createPrintableText()
  */
 private void executeCreateButton_ActionPerformed( ActionEvent event )
 {
-	showWizardPanel( new com.cannontech.macs.schedule.wizard.ScheduleWizardPanel() );
+	showWizardPanel( new ScheduleWizardPanel() );
 }
 /**
  * Insert the method's description here.
@@ -198,7 +213,7 @@ private void executeDeleteButton_ActionPerformed( ActionEvent event )
 	if( selected == null || selected.getCurrentState().equals(Schedule.STATE_PENDING) )
 		return;
 
-	if( javax.swing.JOptionPane.showConfirmDialog( com.cannontech.common.util.CtiUtilities.getParentFrame(this), "Do you really want to delete '" + selected.getScheduleName() + "'?", "Schedule Deletion", javax.swing.JOptionPane.YES_NO_OPTION ) == javax.swing.JOptionPane.NO_OPTION )
+	if( javax.swing.JOptionPane.showConfirmDialog( CtiUtilities.getParentFrame(this), "Do you really want to delete '" + selected.getScheduleName() + "'?", "Schedule Deletion", JOptionPane.YES_NO_OPTION ) == JOptionPane.NO_OPTION )
 		return;
 
 	try
@@ -210,7 +225,6 @@ private void executeDeleteButton_ActionPerformed( ActionEvent event )
 	{
 		handleException( e );
 	}
-
 }
 /**
  * Insert the method's description here.
@@ -253,7 +267,6 @@ private void executeEnableDisableButton_ActionPerformed( ActionEvent event )
 	{
 		handleException( e );
 	}
-	
 }
 /**
  * Insert the method's description here.
@@ -269,8 +282,7 @@ private void executeStartStopButton_ActionPerformed( ActionEvent event )
 		if( selected == null || selected.getCurrentState().equalsIgnoreCase(Schedule.STATE_DISABLED) )
 			return;
 
-
-		final javax.swing.JDialog d = new javax.swing.JDialog( com.cannontech.common.util.CtiUtilities.getParentFrame(this) );
+		final JDialog d = new JDialog( CtiUtilities.getParentFrame(this) );
 		ManualChangeJPanel panel = null;
 		
 		if( selected.getCurrentState().equalsIgnoreCase(Schedule.STATE_WAITING) )
@@ -296,7 +308,6 @@ private void executeStartStopButton_ActionPerformed( ActionEvent event )
 			};
 		}
 					
-
 		d.setModal(true);
 		d.setContentPane(panel);
 		//d.setSize(280,280);
@@ -328,7 +339,6 @@ private void executeStartStopButton_ActionPerformed( ActionEvent event )
 	{
 		handleException( e );
 	}
-	
 }
 /**
  * Insert the method's description here.
@@ -378,12 +388,12 @@ public String getConnectionState()
 		
 		try
 		{
-			com.cannontech.clientutils.CTILogger.info("...Retrieving MACS schedules...");
+			CTILogger.info("...Retrieving MACS schedules...");
 			getIMACSConnection().sendRetrieveAllSchedules();
 		}
 		catch( java.io.IOException e )
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 	}
 	else if( !validConn && lastConnectionStatus )
@@ -420,7 +430,7 @@ public javax.swing.JButton getCreateScheduleButton()
 		createScheduleButton = new JButton("Create...");
 		createScheduleButton.setPreferredSize( new java.awt.Dimension( 80, 23 ) );
 		createScheduleButton.addActionListener(this);
-		createScheduleButton.setVisible( com.cannontech.macs.gui.Scheduler.isCreateable() );
+		createScheduleButton.setVisible( Scheduler.isCreateable() );
         
         getCreateScheduleButton().setEnabled( false );
 	}
@@ -440,7 +450,7 @@ public javax.swing.JButton getDeleteScheduleButton()
 		deleteScheduleButton.setPreferredSize( new java.awt.Dimension( 80, 23 ) );
 		deleteScheduleButton.setEnabled(false);
 		deleteScheduleButton.addActionListener( this );
-		deleteScheduleButton.setVisible( com.cannontech.macs.gui.Scheduler.isCreateable() );
+		deleteScheduleButton.setVisible( Scheduler.isCreateable() );
 	}
 
 	return deleteScheduleButton;
@@ -458,7 +468,7 @@ public javax.swing.JButton getEditViewButton()
 		editButton.setPreferredSize( new java.awt.Dimension( 80, 23 ) );
 		editButton.addActionListener(this);
 		editButton.setEnabled(false);
-		editButton.setVisible( com.cannontech.macs.gui.Scheduler.isCreateable() );
+		editButton.setVisible( Scheduler.isCreateable() );
 	}
 	
 	return editButton;
@@ -476,7 +486,7 @@ public javax.swing.JButton getEnableDisableButton()
 		enableDisableButton.setPreferredSize( new java.awt.Dimension(80,23) );
 		enableDisableButton.setEnabled(false);
 		enableDisableButton.addActionListener(this);
-		enableDisableButton.setVisible( com.cannontech.macs.gui.Scheduler.isEnableable() );
+		enableDisableButton.setVisible( Scheduler.isEnableable() );
 	}
 
 	return enableDisableButton;
@@ -534,11 +544,11 @@ private com.cannontech.common.gui.util.MessagePanel getMessagePanel()
  * Insert the method's description here.
  * Creation date: (1/8/2001 10:14:31 AM)
  */
-private com.cannontech.macs.gui.popup.SchedulerPopUpMenu getSchedulePopupMenu() 
+private SchedulerPopUpMenu getSchedulePopupMenu() 
 {
 	if( schedulePopupMenu == null )
 	{
-		schedulePopupMenu = new com.cannontech.macs.gui.popup.SchedulerPopUpMenu();
+		schedulePopupMenu = new SchedulerPopUpMenu();
 		schedulePopupMenu.setName("ScheduleTablePopupMenu");
 	}
 	
@@ -678,7 +688,7 @@ public javax.swing.JButton getStartStopButton()
 		startStopButton.setPreferredSize( new java.awt.Dimension( 80, 23 ) );
 		startStopButton.setEnabled(false);
 		startStopButton.addActionListener( this );
-		startStopButton.setVisible( com.cannontech.macs.gui.Scheduler.isStartable() );
+		startStopButton.setVisible( Scheduler.isStartable() );
 	}
 	
 	return startStopButton;
@@ -690,13 +700,13 @@ public javax.swing.JButton getStartStopButton()
 private void handleException(Throwable exception) 
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	CTILogger.error( exception.getMessage(), exception );;
 }
 /* This method was created in VisualAge.
  * @param event com.cannontech.common.util.MessageEvent
  */
-public void handlePopUpEvent(com.cannontech.clientutils.commonutils.GenericEvent event)
+public void handlePopUpEvent(GenericEvent event)
 {
 
 	try
@@ -731,8 +741,6 @@ public void handlePopUpEvent(com.cannontech.clientutils.commonutils.GenericEvent
 	{
 		handleException( e );
 	}
-
-
 }
 /**
  * Insert the method's description here.
@@ -749,7 +757,7 @@ private void initConnections()
 	getScheduleTable().addMouseListener( this );	
 
 	// init the popup box for the ScheduleTable
-	java.awt.event.MouseListener schedListener = new com.cannontech.clientutils.popup.PopUpMenuShower( getSchedulePopupMenu() );
+	java.awt.event.MouseListener schedListener = new PopUpMenuShower( getSchedulePopupMenu() );
 	getScheduleTable().addMouseListener( schedListener );
 	getSchedulePopupMenu().addPopupMenuListener( this );
 
@@ -837,7 +845,6 @@ public void mousePressed(MouseEvent event)
 		getScheduleTable().getSelectionModel().setSelectionInterval(
 				 		rowLocation, rowLocation );
 	}
-
 }
 /**
  * This method was created in VisualAge.
@@ -900,7 +907,6 @@ private void removeUnneededFrames()
 		else
 			return;
 	}
-
 }
 /**
  * This method was created in VisualAge.
@@ -921,7 +927,6 @@ public void selectionPerformed( PropertyPanelEvent event)
 		return;
 	}
 
-	
 	//Update the object on an apply or ok
 	if( event.getID() == PropertyPanelEvent.APPLY_SELECTION ||
 		 event.getID() == PropertyPanelEvent.OK_SELECTION		)
@@ -965,7 +970,6 @@ public void selectionPerformed( PropertyPanelEvent event)
 			}
 		}
 	}
-	
 }
 /**
  * This method was created in VisualAge.
@@ -1016,7 +1020,6 @@ public void selectionPerformed(WizardPanelEvent event)
 		}
 		
 	}
-	
 }
 /**
  * Insert the method's description here.
@@ -1025,16 +1028,13 @@ public void selectionPerformed(WizardPanelEvent event)
  */
 private void showDebugInfo( ) 
 {
-	
-	ScheduleDebugViewer d = new ScheduleDebugViewer( 
-		com.cannontech.common.util.CtiUtilities.getParentFrame(this) ); 
+	ScheduleDebugViewer d = new ScheduleDebugViewer(CtiUtilities.getParentFrame(this) ); 
 	
 	d.setValue( getSelectedSchedule() );
 		
 	d.setLocation( this.getLocationOnScreen() );		
 	d.setModal( true );		
 	d.show();
-	
 }
 /**
  * This method was created in VisualAge.
@@ -1045,7 +1045,7 @@ public void showEditorPanel( final Schedule selectedSchedule )
 	if( selectedSchedule == null )
 		return;
 	
-	java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+	java.awt.Frame owner = CtiUtilities.getParentFrame(this);
 	java.awt.Cursor savedCursor = owner.getCursor();
 	
 	try
@@ -1053,7 +1053,7 @@ public void showEditorPanel( final Schedule selectedSchedule )
 		owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 
 		//create a new editor panel for this Schedule
-		ScheduleEditorPanel panel = new com.cannontech.macs.schedule.editor.ScheduleEditorPanel();
+		ScheduleEditorPanel panel = new ScheduleEditorPanel();
 				//(ScheduleEditorPanel)selectedSchedule.getEditorPanel();
 				
 		javax.swing.JFrame frame = getAvailableFrame();
@@ -1068,16 +1068,14 @@ public void showEditorPanel( final Schedule selectedSchedule )
 		frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(TDCMainFrame.TDC_GIF));
 		frame.show();
 
-
 		// use a clone of the desired Schedule since we do not want our client
 		// to change its meaning of the Schedule
-		Schedule tempSched = (Schedule)com.cannontech.common.util.CtiUtilities.copyObject(selectedSchedule);
+		Schedule tempSched = (Schedule)CtiUtilities.copyObject(selectedSchedule);
 		tempSched.getNonPersistantData().setCategories( getIMACSConnection().getCategoryNames().keys() );
 		panel.setValue( tempSched );
 
 		frame.validate();
 	
-
 		// IF ITS A SCRIPT SCHEDULE, WE MUST GET THE SCRIPT TEXT HERE
 		if( Schedule.SCRIPT_TYPE.equalsIgnoreCase(selectedSchedule.getType()) )
 			getIMACSConnection().sendRetrieveScriptText( selectedSchedule.getScriptFileName() );		
@@ -1098,7 +1096,7 @@ public void showEditorPanel( final Schedule selectedSchedule )
 private void showWizardPanel(WizardPanel wizard) 
 {
 	//Set the cursor to wait
-	java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame( this );
+	java.awt.Frame owner = CtiUtilities.getParentFrame( this );
 	java.awt.Cursor savedCursor = owner.getCursor();
 	owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 
@@ -1155,7 +1153,6 @@ private void synchTableAndButtons(Schedule selected)
    }
    else if (selected.getCurrentState().equals(Schedule.STATE_PENDING))
    {
-   	 
 	   //disable all buttons!!
 	  getStartStopButton().setText("Stop");
 	  getEnableDisableButton().setEnabled(false);
@@ -1171,7 +1168,7 @@ private void synchTableAndButtons(Schedule selected)
  */
 public void tableChanged(TableModelEvent event ) 
 {
-	if( event instanceof com.cannontech.macs.events.MACSGenericTableModelEvent )
+	if( event instanceof MACSGenericTableModelEvent )
 	{
 		getScheduleTable().getSelectionModel().setSelectionInterval( -1, -1 );
 		lastSelected = null;
@@ -1220,12 +1217,10 @@ public void messageReceived( MessageEvent e )
 			{
 				ScheduleEditorPanel pane = (ScheduleEditorPanel)f.getContentPane();
 
-				pane.updateScriptText( 
-					(ScriptFile)in );
+				pane.updateScriptText( (ScriptFile)in );
 			}
 
 		}
-		
 	}
     else if( in instanceof ConnStateChange )
     {
@@ -1238,11 +1233,10 @@ public void messageReceived( MessageEvent e )
         {
             public void run()
             {
-                java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame(SchedulerMainPanel.this);
+                java.awt.Frame f = CtiUtilities.getParentFrame(SchedulerMainPanel.this);
                 if( f != null )
                     f.setTitle(connectedString);
             }
-                
         });
         
         getCreateScheduleButton().setEnabled( csMsg.isConnected() );
@@ -1263,12 +1257,7 @@ public void messageReceived( MessageEvent e )
                     f.setVisible(false);
             }
         }
-        
     }
-    
-    
-
-
 }
 
 /**
@@ -1291,6 +1280,5 @@ public void valueChanged(ListSelectionEvent event) {
 		if( selected != null )
 			synchTableAndButtons( selected );
 	}
-	
 }
 }
