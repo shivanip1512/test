@@ -85,9 +85,20 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 		groupVector.add(vstr.restoreObject(polystr));
 	}
 
-	Vector activeMastersVector = (Vector) vstr.restoreObject(polystr);
-	Vector activeSubordinatesVector = (Vector) vstr.restoreObject(polystr);
-
+	// restore all the active master programs
+	numGroups = vstr.extractInt();
+	Vector activeMastersVector = new Vector(numGroups);
+	for(int i = 0; i < numGroups; i++) {
+		activeMastersVector.add(vstr.restoreObject(polystr));
+	}
+	
+	// restore all the active subordinate programs
+	numGroups = vstr.extractInt();
+	Vector activeSubordinatesVector = new Vector(numGroups);
+	for(int i = 0; i < numGroups; i++) {
+		activeSubordinatesVector.add(vstr.restoreObject(polystr));
+	}
+		
 	lmProgramDirect.setCurrentGearNumber(currentGearNumber);
 	lmProgramDirect.setLastGroupControlled(lastGroupControlled);
 	lmProgramDirect.setDirectStartTime( directStartTime );
@@ -106,6 +117,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
  */
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException
 {
+	//I don't think this is ever used!
 	super.saveGuts( obj, vstr, polystr );
 }
 }
