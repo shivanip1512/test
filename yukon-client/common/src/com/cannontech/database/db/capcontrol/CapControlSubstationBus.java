@@ -9,6 +9,8 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
 	public static final String CNTRL_INDIVIDUAL_FEEDER = "IndividualFeeder";
 	public static final String CNTRL_SUBSTATION_BUS = "SubstationBus";
 	public static final String CNTRL_BUSOPTIMIZED_FEEDER= "BusOptimizedFeeder";
+	public static final String CNTRL_MANUAL_ONLY= "ManualOnly";
+	
 	
 	private Integer substationBusID = null;
 	private String controlMethod = CNTRL_INDIVIDUAL_FEEDER;

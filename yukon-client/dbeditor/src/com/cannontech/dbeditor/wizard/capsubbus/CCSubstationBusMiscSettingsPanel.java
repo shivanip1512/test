@@ -6,6 +6,8 @@ package com.cannontech.dbeditor.wizard.capsubbus;
 import java.awt.Dimension;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.StringUtils;
+import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
  
 public class CCSubstationBusMiscSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -528,14 +530,17 @@ private javax.swing.JComboBox getJComboBoxControlMethod() {
 			// user code begin {1}
 
 			ivjJComboBoxControlMethod.addItem( 
-				com.cannontech.common.util.StringUtils.addCharBetweenWords( ' ', com.cannontech.database.db.capcontrol.CapControlSubstationBus.CNTRL_INDIVIDUAL_FEEDER ) );
+				StringUtils.addCharBetweenWords( ' ', CapControlSubstationBus.CNTRL_INDIVIDUAL_FEEDER ) );
 
 			ivjJComboBoxControlMethod.addItem( 
-				com.cannontech.common.util.StringUtils.addCharBetweenWords( ' ', com.cannontech.database.db.capcontrol.CapControlSubstationBus.CNTRL_SUBSTATION_BUS ) );
+				StringUtils.addCharBetweenWords( ' ', CapControlSubstationBus.CNTRL_BUSOPTIMIZED_FEEDER ) );
 
 			ivjJComboBoxControlMethod.addItem( 
-				com.cannontech.common.util.StringUtils.addCharBetweenWords( ' ', com.cannontech.database.db.capcontrol.CapControlSubstationBus.CNTRL_BUSOPTIMIZED_FEEDER ) );
-			
+				StringUtils.addCharBetweenWords( ' ', CapControlSubstationBus.CNTRL_MANUAL_ONLY ) );
+
+			ivjJComboBoxControlMethod.addItem( 
+				StringUtils.addCharBetweenWords( ' ', CapControlSubstationBus.CNTRL_SUBSTATION_BUS ) );
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1437,7 +1442,7 @@ public Object getValue(Object val)
 	subBus.getCapControlSubstationBus().setFailurePercent( new Integer(((Number)spinFieldVal).intValue()) );
 
 	subBus.getCapControlSubstationBus().setControlMethod( 
-		com.cannontech.common.util.StringUtils.removeChars( ' ', getJComboBoxControlMethod().getSelectedItem().toString() ) );
+		StringUtils.removeChars( ' ', getJComboBoxControlMethod().getSelectedItem().toString() ) );
 
 	if( getMaxDailyOperationCheckBox().isSelected() )
 	{
@@ -1741,7 +1746,7 @@ public void setValue(Object val )
 	getFailurePercentSpinField().setValue(	subBus.getCapControlSubstationBus().getFailurePercent() );
 
 	getJComboBoxControlMethod().setSelectedItem( 
-		com.cannontech.common.util.StringUtils.addCharBetweenWords( ' ', subBus.getCapControlSubstationBus().getControlMethod() ) );
+		StringUtils.addCharBetweenWords( ' ', subBus.getCapControlSubstationBus().getControlMethod() ) );
 
 
 	Integer maxDailyOperation = subBus.getCapControlSubstationBus().getMaxDailyOperation();
