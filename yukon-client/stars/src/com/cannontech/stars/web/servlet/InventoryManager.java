@@ -569,7 +569,7 @@ public class InventoryManager extends HttpServlet {
 		
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares added to inventory successfully.</span><br>" +
-					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (serial numbers may already exist). And they are listed below:</span><br>";
+					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (serial numbers may already exist). They are listed below:</span><br>";
 			if (serialNoSet.size() > 0) {
 				resultDesc += "<br><table width='100' cellspacing='0' cellpadding='0' border='0' align='center' class='TableCell'>";
 				for (int i = 0; i < serialNoSet.size(); i++) {
@@ -699,7 +699,7 @@ public class InventoryManager extends HttpServlet {
 		
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares updated successfully.</span><br>" +
-					"<span class='ErrorMsg'>" + numFailure + " hardwares failed. And they are listed below:</span><br>";
+					"<span class='ErrorMsg'>" + numFailure + " hardwares failed. They are listed below:</span><br>";
 			
 			session.setAttribute(INVENTORY_SET_DESC, resultDesc);
 			session.setAttribute(INVENTORY_SET, hardwareSet);
@@ -748,6 +748,10 @@ public class InventoryManager extends HttpServlet {
 		}
 		
 		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
+		int categoryID = ECUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
+		
+		// If device type is MCT, the from string must be "*" (delete all MCTs)
+		if (ECUtils.isMCT(categoryID) && fromStr != null) return;
 		
 		int numSuccess = 0, numFailure = 0;
 		ArrayList hardwareSet = new ArrayList();
@@ -756,34 +760,67 @@ public class InventoryManager extends HttpServlet {
 		try {
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			
-			java.util.TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
-					devTypeID.intValue(), fromStr, toStr, user.getEnergyCompanyID(), conn );
-			
-			java.util.Iterator it = snTable.values().iterator();
-			while (it.hasNext()) {
-				Integer invID = (Integer) it.next();
-				LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID.intValue(), true );
+			if (ECUtils.isMCT(categoryID)) {
+				ArrayList inventory = energyCompany.loadAllInventory();
+				ArrayList mctList = new ArrayList();
 				
-				if (liteInv.getAccountID() > 0) {
-					hardwareSet.add( liteInv );
-					numFailure++;
-					continue;
+				synchronized (inventory) {
+					for (int i = 0; i < inventory.size(); i++) {
+						LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
+						if (ECUtils.isMCT( liteInv.getCategoryID() )) {
+							if (liteInv.getAccountID() > 0) {
+								hardwareSet.add( liteInv );
+								numFailure++;
+							}
+							else
+								mctList.add( liteInv );
+						}
+					}
 				}
 				
-				try {
-					com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-							new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-					hardware.setInventoryID( invID );
-					hardware.setDbConnection( conn );
-					hardware.delete();
+				for (int i = 0; i < mctList.size(); i++) {
+					LiteInventoryBase liteInv = (LiteInventoryBase) mctList.get(i);
 					
-					energyCompany.deleteInventory( invID.intValue() );
+					com.cannontech.database.data.stars.hardware.InventoryBase inv =
+							new com.cannontech.database.data.stars.hardware.InventoryBase();
+					inv.setInventoryID( new Integer(liteInv.getInventoryID()) );
+					inv.setDbConnection( conn );
+					inv.delete();
+					
+					energyCompany.deleteInventory( liteInv.getInventoryID() );
 					numSuccess++;
 				}
-				catch (java.sql.SQLException e) {
-					CTILogger.error( e.getMessage(), e );
-					hardwareSet.add( liteInv );
-					numFailure++;
+			}
+			else {
+				java.util.TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
+						devTypeID.intValue(), fromStr, toStr, user.getEnergyCompanyID(), conn );
+				
+				java.util.Iterator it = snTable.values().iterator();
+				while (it.hasNext()) {
+					Integer invID = (Integer) it.next();
+					LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID.intValue(), true );
+					
+					if (liteInv.getAccountID() > 0) {
+						hardwareSet.add( liteInv );
+						numFailure++;
+						continue;
+					}
+					
+					try {
+						com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
+								new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+						hardware.setInventoryID( invID );
+						hardware.setDbConnection( conn );
+						hardware.delete();
+						
+						energyCompany.deleteInventory( invID.intValue() );
+						numSuccess++;
+					}
+					catch (java.sql.SQLException e) {
+						CTILogger.error( e.getMessage(), e );
+						hardwareSet.add( liteInv );
+						numFailure++;
+					}
 				}
 			}
 		}
@@ -802,8 +839,8 @@ public class InventoryManager extends HttpServlet {
 		
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares deleted successfully.</span><br>" +
-					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (you must remove a hardware from the customer account <br>" +
-					"it's assigned to before deleting it). And they are listed below:</span><br>";
+					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (you must remove a hardware from the account it is assigned to before deleting it). " +
+					"They are listed below:</span><br>";
 			
 			session.setAttribute(INVENTORY_SET_DESC, resultDesc);
 			session.setAttribute(INVENTORY_SET, hardwareSet);
@@ -913,7 +950,7 @@ public class InventoryManager extends HttpServlet {
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares' configuration " +
 					((configNow)? "sent out" : "scheduled") + " successfully.</span><br>";
-			resultDesc += "<span class='ErrorMsg'>" + numFailure + " hardware(s) failed. And they are listed below:</span><br>";
+			resultDesc += "<span class='ErrorMsg'>" + numFailure + " hardware(s) failed. They are listed below:</span><br>";
 			
 			session.setAttribute(INVENTORY_SET_DESC, resultDesc);
 			session.setAttribute(INVENTORY_SET, hardwareSet);
