@@ -2,8 +2,11 @@ package com.cannontech.dbeditor.wizard.device;
 
 import java.awt.Dimension;
 
+import com.cannontech.database.data.device.IDeviceMeterGroup;
 import com.cannontech.database.data.device.IEDMeter;
+import com.cannontech.database.data.device.Ion7700;
 import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.db.device.DeviceMeterGroup;
  
 /**
  * This type was created in VisualAge.
@@ -102,7 +105,7 @@ private javax.swing.JLabel getMeterNumberLabel() {
 			ivjMeterNumberLabel = new javax.swing.JLabel();
 			ivjMeterNumberLabel.setName("MeterNumberLabel");
 			ivjMeterNumberLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjMeterNumberLabel.setText("Utility Meter Number:");
+			ivjMeterNumberLabel.setText("Meter Number:");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -126,7 +129,9 @@ private javax.swing.JTextField getMeterNumberTextField() {
 			ivjMeterNumberTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjMeterNumberTextField.setColumns(12);
 			// user code begin {1}
-			ivjMeterNumberTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_DEVICE_NAME_LENGTH));
+			ivjMeterNumberTextField.setDocument(
+				new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_DEVICE_NAME_LENGTH));
+				
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -157,18 +162,16 @@ public Dimension getPreferredSize() {
  */
 public Object getValue(Object val)
 {
-    String meterNumber = getMeterNumberTextField().getText();
-    if (val instanceof IEDMeter)
-    {
-        IEDMeter ied = ((IEDMeter) val);
-        ied.getDeviceMeterGroup().setMeterNumber(meterNumber);
-    }
-    else if (val instanceof MCTBase)
-    {
-        MCTBase mct = ((MCTBase) val);
-        mct.getDeviceMeterGroup().setMeterNumber(meterNumber);
-    }
-    return val;
+	if( val == null )
+		return val;
+
+   DeviceMeterGroup dmg = 
+    		((IDeviceMeterGroup)val).getDeviceMeterGroup();
+
+   String meterNumber = getMeterNumberTextField().getText();    
+	dmg.setMeterNumber(meterNumber);
+
+   return val;
 }
 /**
  * Called whenever the part throws an exception.
@@ -177,8 +180,8 @@ public Object getValue(Object val)
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initializes connections
@@ -260,10 +263,10 @@ public void setDefaultMeterNumber(String address) {
  */
 public void setValue(Object val)
 {
-	getMeterNumberTextField().setText( new String(com.cannontech.common.util.CtiUtilities.STRING_DEFAULT) );
-
-
+	getMeterNumberTextField().setText( 
+			new String(com.cannontech.common.util.CtiUtilities.STRING_DEFAULT) );
 }
+
 /**
  * 
  */

@@ -1,11 +1,13 @@
 package com.cannontech.database.data.device.devicemetergroup;
 
+import com.cannontech.database.data.device.IDeviceMeterGroup;
+
 /**
  * Insert the type's description here.
  * Creation date: (9/5/2001 5:36:15 PM)
  * @author: 
  */
-public class DeviceMeterGroupBase extends com.cannontech.database.db.DBPersistent
+public class DeviceMeterGroupBase extends com.cannontech.database.db.DBPersistent implements IDeviceMeterGroup
 {
 	private com.cannontech.database.db.device.DeviceMeterGroup deviceMeterGroup = null;
 /**

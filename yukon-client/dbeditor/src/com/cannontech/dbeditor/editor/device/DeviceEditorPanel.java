@@ -32,7 +32,8 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.LANDISGYRS4, PAOGroups.MCT310, PAOGroups.MCT318, PAOGroups.MCT360,
 			PAOGroups.MCT370, PAOGroups.MCT240, PAOGroups.LMT_2, PAOGroups.MCT248, PAOGroups.MCT250, PAOGroups.MCT210,
 			PAOGroups.DR_87, PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L, PAOGroups.MCT213,
-			PAOGroups.DCT_501, PAOGroups.MCT310CT, PAOGroups.MCT310IM
+			PAOGroups.DCT_501, PAOGroups.MCT310CT, PAOGroups.MCT310IM, PAOGroups.ION_7330,
+			PAOGroups.ION_7700, PAOGroups.ION_8300
 		},
       {   //2 - CapBankController
          PAOGroups.CAPBANKCONTROLLER, PAOGroups.CBC_FP_2800, PAOGroups.DNP_CBC_6510

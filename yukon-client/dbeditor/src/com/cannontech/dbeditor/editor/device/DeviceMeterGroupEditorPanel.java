@@ -2,6 +2,7 @@ package com.cannontech.dbeditor.editor.device;
 
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.IDeviceMeterGroup;
 import com.cannontech.database.data.device.IEDMeter;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.pao.DeviceTypes;
@@ -1009,7 +1010,6 @@ private javax.swing.JTextField getMeterNumberTextField()
  */
 public Object getValue(Object val) 
 {
-	DeviceMeterGroup dmg = null;
 
 	//The default object is either a MCT or a IEDmeter
 	if( val instanceof MCTBase || val instanceof IEDMeter )
@@ -1018,12 +1018,10 @@ public Object getValue(Object val)
 		
 		if( val instanceof MCTBase )
 		{
-			dmg = ((MCTBase) val).getDeviceMeterGroup();
 			dlp = ((MCTBase) val).getDeviceLoadProfile();
 		}		
 		else if( val instanceof IEDMeter )
 		{
-			dmg = ((IEDMeter) val).getDeviceMeterGroup();
 			dlp = ((IEDMeter) val).getDeviceLoadProfile();
 		}
 				
@@ -1059,8 +1057,11 @@ public Object getValue(Object val)
 		}
 		
 	}
-//	else if( val instanceof IEDMeter )
-//		dmg = ((IEDMeter) val).getDeviceMeterGroup();
+
+
+	//handle the devicemetergroup data below
+	DeviceMeterGroup dmg = 
+			((IDeviceMeterGroup)val).getDeviceMeterGroup();
 
 	String cycleGroup = getCycleGroupComboBox().getSelectedItem().toString();
 	String areaCodeGroup = getAreaCodeGroupComboBox().getSelectedItem().toString();
@@ -1281,8 +1282,6 @@ public static void main(java.lang.String[] args) {
  */
 public void setValue(Object val) 
 {
-
-	DeviceMeterGroup dmg = null;
 	int deviceType = com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((DeviceBase)val).getPAOType() );
 
 	//The default object is either a MCT or a IEDmeter
@@ -1340,18 +1339,20 @@ public void setValue(Object val)
          getLoadProfileCollectionPanel().setBorder( null );
       }
 
-		dmg = ((MCTBase) val).getDeviceMeterGroup();
 	}
-	else if( val instanceof IEDMeter )
+	else //must not have load profile data??
+	//if( val instanceof IEDMeter )
 	{		
 		getLastIntervalDemandRateLabel().setVisible(false);
 		getLastIntervalDemandRateComboBox().setVisible(false);
 		
  		getLoadProfileCollectionPanel().setVisible(false);
-
-		dmg = ((IEDMeter) val).getDeviceMeterGroup();
 	}
 
+
+	//handle the DeviceMeterGroup data below
+	DeviceMeterGroup dmg = 
+			((IDeviceMeterGroup)val).getDeviceMeterGroup();
 	
 	getMeterNumberTextField().setText( dmg.getMeterNumber() );
 	getCycleGroupComboBox().setSelectedItem( dmg.getCollectionGroup() );

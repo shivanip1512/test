@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.wizard.device;
 
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 
 /**
  * This type was created in VisualAge.
@@ -230,11 +231,16 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		{
 			return getDeviceTapTerminalPanel();
 		}
-		else if( com.cannontech.database.data.device.DeviceTypesFuncs.isMeter(devType)
+		else if( (DeviceTypesFuncs.isMeter(devType)
+					  && !DeviceTypesFuncs.isIon(devType))
 				    || devType == com.cannontech.database.data.pao.PAOGroups.DAVISWEATHER)
+		{
 			return getDeviceIEDNamePanel();
+		}
 		else if( devType == com.cannontech.database.data.pao.PAOGroups.VIRTUAL_SYSTEM )
+		{
 			return getDeviceVirtualNamePanel();
+		}
 		else
 		{
 			getDeviceNameAddressPanel().setDeviceType( devType );
@@ -245,11 +251,11 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	{
 		int devType = getDeviceTypePanel().getDeviceType();
 
-		if( com.cannontech.database.data.device.DeviceTypesFuncs.isMeter(devType) 
-			 || com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(devType) )
+		if( DeviceTypesFuncs.isMeter(devType) 
+			 || DeviceTypesFuncs.isMCT(devType) )
 		{
 			getDeviceMeterNumberPanel().setValue(null);
-			if( com.cannontech.database.data.device.DeviceTypesFuncs.isMCTiORMCT2XX(devType) )
+			if( DeviceTypesFuncs.isMCTiORMCT2XX(devType) )
 			{
 				getDeviceMeterNumberPanel().setDefaultMeterNumber(getDeviceNameAddressPanel().getAddress());
 			}
@@ -284,7 +290,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	{
 		int devType = getDeviceTypePanel().getDeviceType();
 
-		if( com.cannontech.database.data.device.DeviceTypesFuncs.isCarrier(devType) )
+		if( DeviceTypesFuncs.isCarrier(devType) )
 		{
 			getDeviceRoutePanel().setValue(null);
 			return getDeviceRoutePanel();

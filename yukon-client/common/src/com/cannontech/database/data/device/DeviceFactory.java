@@ -244,42 +244,23 @@ private final static DeviceBase setDeviceDefaults( int type, DeviceBase returnDe
 {
 	returnDevice.setDeviceType( com.cannontech.database.data.pao.PAOGroups.getDeviceTypeString(type) );
 
-	if( DeviceTypesFuncs.isTransmitter(type) )
+	if( DeviceTypesFuncs.isMCT(type)
+      && (type == PAOGroups.MCT360 || type == PAOGroups.MCT370) )
 	{
-		returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_TRANSMITTER);
+		((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setConnectedIED("None");
+		((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setIEDScanRate(new Integer(60));
+		((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setDefaultDataClass(new Integer(0));
+		((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setDefaultDataOffset(new Integer(0));
+		((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setPassword("None");
+		((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setRealTimeScan(new Character('N'));
 	}
-	else if( DeviceTypesFuncs.isMeter(type) )
-	{
-		returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_METER);
-	}
-	else if (type == PAOGroups.DAVISWEATHER)
-	{
-		returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_IED);
-	}
-	else if( DeviceTypesFuncs.isCarrier(type) )
-	{
-		returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_CARRIER);
-		
-		if( DeviceTypesFuncs.isMCT(type)
-          && (type == PAOGroups.MCT360 || type == PAOGroups.MCT370) )
-		{
-			((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setConnectedIED("None");
-			((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setIEDScanRate(new Integer(60));
-			((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setDefaultDataClass(new Integer(0));
-			((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setDefaultDataOffset(new Integer(0));
-			((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setPassword("None");
-			((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setRealTimeScan(new Character('N'));
-		}
 
-	}
-	else if ( DeviceTypesFuncs.isRTU(type) )
-	{
-		returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
-	}
-	else if( type == PAOGroups.VIRTUAL_SYSTEM )
-	{
-		returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_VIRTUAL);
-	}
+
+	//programmer error at this point, let us know
+	if( returnDevice.getPAOClass() == null )
+		throw new IllegalStateException(
+			"A device exists that has a (null) PAOClass, DeviceBaseClass = " +
+			returnDevice.getClass().getName() );
 
 	return returnDevice;
 }

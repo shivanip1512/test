@@ -1,5 +1,7 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.database.data.pao.DeviceClasses;
+
 /**
  * @author rneuharth
  * Aug 9, 2002 at 12:43:42 PM
@@ -16,6 +18,7 @@ public class DNPBase extends RemoteBase implements com.cannontech.database.db.DB
 	public DNPBase()
 	{
 		super();
+		setDeviceClass( DeviceClasses.STRING_CLASS_RTU );
 	}
 
    public Integer copiableAddress() 

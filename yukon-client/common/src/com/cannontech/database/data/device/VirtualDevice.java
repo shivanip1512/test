@@ -1,5 +1,7 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.database.data.pao.DeviceClasses;
+
 /**
  * Insert the type's description here.
  * Creation date: (10/4/00 2:56:37 PM)
@@ -11,6 +13,7 @@ public class VirtualDevice extends DeviceBase {
  */
 public VirtualDevice() {
 	super();
+	setDeviceClass( DeviceClasses.STRING_CLASS_VIRTUAL );
 }
 /**
  * This method was created in VisualAge.

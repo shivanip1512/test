@@ -1,5 +1,7 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.database.data.pao.DeviceClasses;
+
 /**
  * This type was created in VisualAge.
  */
@@ -9,6 +11,7 @@ public class TCUBase extends IDLCBase {
  */
 public TCUBase() {
 	super();
+	setDeviceClass( DeviceClasses.STRING_CLASS_TRANSMITTER );	
 }
 /**
  * Insert the method's description here.

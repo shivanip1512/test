@@ -91,24 +91,24 @@ public final static boolean isCarrier(int deviceType)
 {
 	switch(deviceType)
 	{
+		case MCT210:
 		case MCT213:
-		case MCT310:
-		case MCT318:
-		case MCT360:
-		case MCT370:
 		case MCT240:
 		case MCT248:
 		case MCT250:
-		case MCT210:
-		case REPEATER:
-		case REPEATER_800:
-		case DCT_501:
-		case LMT_2:
+		case MCT310:
 		case MCT310ID:
 		case MCT310IL:
       case MCT310CT:
       case MCT310IM:      
 		case MCT318L:
+		case MCT318:
+		case MCT360:
+		case MCT370:
+		case REPEATER:
+		case REPEATER_800:
+		case DCT_501:
+		case LMT_2:
 		case MCTBROADCAST:
 			return true;
 	
@@ -428,12 +428,36 @@ public final static boolean isMeter(int deviceType)
 		case DR_87:
 		case QUANTUM:
 		case SIXNET:
+		case ION_7700:
+		case ION_7330:
+		case ION_8300:
 			return true;
 	
 		default:
 			return false;
 	}
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (1/15/2001 1:46:22 PM)
+ * @return boolean
+ * @param deviceType int
+ */
+public final static boolean isIon(int deviceType) 
+{
+	switch(deviceType)
+	{	
+		case ION_7700:
+		case ION_7330:
+		case ION_8300:
+			return true;
+	
+		default:
+			return false;
+	}
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/15/2001 1:46:22 PM)

@@ -5,7 +5,8 @@ import com.cannontech.database.db.device.DeviceMeterGroup;
 /**
  * This type was created in VisualAge.
  */
-public class MCTBase extends CarrierBase {
+public class MCTBase extends CarrierBase implements IDeviceMeterGroup 
+{
 	private DeviceMeterGroup deviceMeterGroup = null;
 	private DeviceLoadProfile deviceLoadProfile = null;
 /**

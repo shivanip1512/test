@@ -1,5 +1,6 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.db.device.DeviceTapPagingSettings;
 
 /**
@@ -13,6 +14,7 @@ public class PagingTapTerminal extends IEDBase {
  */
 public PagingTapTerminal() {
 	super();
+	setDeviceClass( DeviceClasses.STRING_CLASS_TRANSMITTER );
 }
 /**
  * This method was created in VisualAge.

@@ -1,11 +1,12 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 /**
  * This type was created in VisualAge.
  */
-public class IEDMeter extends IEDBase 
+public class IEDMeter extends IEDBase implements IDeviceMeterGroup
 {
 	private DeviceMeterGroup deviceMeterGroup = null;
 	private DeviceLoadProfile deviceLoadProfile = null;
@@ -14,6 +15,7 @@ public class IEDMeter extends IEDBase
  */
 public IEDMeter() {
 	super();
+	setDeviceClass( DeviceClasses.STRING_CLASS_METER );	
 }
 /**
  * This method was created in VisualAge.

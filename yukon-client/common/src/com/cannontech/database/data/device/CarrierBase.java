@@ -1,5 +1,6 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceRoutes;
 
@@ -18,6 +19,7 @@ public class CarrierBase extends TwoWayDevice implements com.cannontech.database
     */
    public CarrierBase() {
    	super();
+   	setDeviceClass( DeviceClasses.STRING_CLASS_CARRIER );
    }
 
    public Integer copiableAddress() 
