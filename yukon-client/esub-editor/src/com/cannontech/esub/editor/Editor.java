@@ -218,7 +218,7 @@ public class Editor extends JPanel {
 		EditorActions editorActions = new EditorActions(this);
 		EditorMenus editorMenus = new EditorMenus(editorActions);
 		EditorToolBar editorToolBar = new EditorToolBar(editorActions);
-
+		EditorKeys editorKeys = new EditorKeys(editorActions);
 		JMenuBar menuBar = editorMenus.getMenuBar();
 		JToolBar toolBar = editorToolBar.getToolBar();
 
@@ -227,12 +227,9 @@ public class Editor extends JPanel {
 		p.add(menuBar, java.awt.BorderLayout.NORTH);
 		p.add(toolBar, java.awt.BorderLayout.WEST);
 
-		lxView.addMouseListener(viewMouseListener);
-		lxView.registerKeyboardAction(
-			editorActions.getAction(EditorActions.DELETE_ELEMENT),
-			KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, true),
-			JComponent.WHEN_IN_FOCUSED_WINDOW);
-
+		lxView.addMouseListener(viewMouseListener);		
+			
+//		lxView.registerKeyboardAction(E)
 		/*deletePopupItem.addActionListener(
 			editorActions.getAction(EditorActions.SET_DYNAMIC_TEXT_COLOR));		
 		*/

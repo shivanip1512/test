@@ -38,11 +38,16 @@ public Image getImage(String imageName) {
 	
 	if( i == null ) {
 		synchronized(this) {
+			System.out.println("Loading: " + imageName);
 			i = loadImage(imageName);
 			if( i != null ) {
 				imageMap.put(imageName, i);
 			}
 		}
+	}
+	else
+	{
+		System.out.println("Cached: " + imageName);
 	}
 
 	return i;	
@@ -67,14 +72,15 @@ public synchronized void clear() {
 }
 
 /**
- * Loads an image from the classpath
+ * Loads an image from the filesystem
  * Creation date: (1/8/2002 2:47:15 PM)
  * @return java.awt.Image
  * @param name java.lang.String
  */
 private Image loadImage(String name) {
 
-	return Toolkit.getDefaultToolkit().getImage(name);
+	return Toolkit.getDefaultToolkit().createImage(name);
+//	return Toolkit.getDefaultToolkit().getImage(name);
 }
 
 
