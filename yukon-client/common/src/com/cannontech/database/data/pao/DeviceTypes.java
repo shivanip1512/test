@@ -130,5 +130,5 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_LM_ENERGY_EXCHANGE_PROGRAM = {"LM ENERGY EXCHANGE", "ENERGY EXCHANGE" };
 	public static final String[] STRING_SIXNET = {"SIXNET"};
    public static final String[] STRING_DNP_CBC_6510 = {"CBC 6510", "CBC-6510" };
-   public static final String[] STRING_ION_7700 = {"ION-7700", "ION 7700" };
+   public static final String[] STRING_ION_7700 = {"ION", "ION 7700", "ION-7700" };
 }
