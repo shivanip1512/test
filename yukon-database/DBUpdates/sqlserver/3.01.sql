@@ -382,9 +382,9 @@ insert into YukonGroupRole values(-89,-1,-4,-1304,'(none)');
 insert into YukonGroupRole values(-90,-1,-4,-1305,'(none)');
 
 
-/* New default group for STARS operators and customers */
-insert into yukongroup values (-303,'STARS Operators Grp','The default group of STARS operators');
-insert into yukongroup values (-304,'STARS Customers Grp','The default group of STARS customers');
+/* New default groups for STARS operators and customers */
+insert into yukongroup values (-303,'STARS Operators Grp','The default group for STARS operators');
+insert into yukongroup values (-304,'STARS Residential Customers Grp','The default group for STARS residential customers');
 
 insert into yukongrouprole values (-2000,-303,-108,-10800,'/operator/Operations.jsp');
 insert into yukongrouprole values (-2002,-303,-108,-10802,'(none)');
