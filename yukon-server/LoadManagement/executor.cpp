@@ -9,6 +9,8 @@
     
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
+#include "yukon.h"
+
 #include "msg_server_req.h"
 #include "msg_server_resp.h"
 
