@@ -56,33 +56,33 @@ INT CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
     }
     else
     {
-        if(CTIOpen ((char*)(_localSerial.getPhysicalPort().data()),
-                    &getHandle(),
-                    &Result,
-                    0L,
-                    FILE_NORMAL,
-                    FILE_OPEN,
-                    OPEN_ACCESS_READWRITE | OPEN_SHARE_DENYREADWRITE | OPEN_FLAGS_WRITE_THROUGH,
-                    0L) || Result != 1)
-        {
-            close(false);
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << getName() << " *** ERROR *** acquiring port handle on " << _localSerial.getPhysicalPort() << endl;
-            }
-
-            return(BADPORT);
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << getName() << " acquiring port handle" << endl;
-        }
-
-
         try
         {
+            if(CTIOpen ((char*)(_localSerial.getPhysicalPort().data()),
+                        &getHandle(),
+                        &Result,
+                        0L,
+                        FILE_NORMAL,
+                        FILE_OPEN,
+                        OPEN_ACCESS_READWRITE | OPEN_SHARE_DENYREADWRITE | OPEN_FLAGS_WRITE_THROUGH,
+                        0L) || Result != 1)
+            {
+                close(false);
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Port " << getName() << " *** ERROR *** acquiring port handle on " << _localSerial.getPhysicalPort() << endl;
+                }
+
+                return(BADPORT);
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Port " << getName() << " acquiring port handle" << endl;
+            }
+
+
             /* load _dcb and set the default DCB/COMMTIMEOUTS info for the port */
             initPrivateStores();
 
@@ -122,33 +122,11 @@ INT CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
             /* Raise DTR */
             raiseDTR();
 
-        }
-        catch(...)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
-
-        try
-        {
             if((status = reset(true)) != NORMAL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Error resetting port on " << getName() << endl;
             }
-        }
-        catch(...)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
-
-        try
-        {
             /* set the modem parameters */
             if((status = setup(true)) != NORMAL)
             {
@@ -160,7 +138,7 @@ INT CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << getName() << endl;
             }
         }
     }
@@ -733,28 +711,19 @@ INT CtiPortDirect::close(INT trace)
 {
     INT status = NORMAL;
 
-    try
+    if(getHandle() != NULL)
     {
-        if(getHandle() != NULL)
+        if(_dialable)
         {
-            if(_dialable)
-            {
-                _dialable->disconnect(NULL, trace);
-            }
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getName() << " releasing port handle" << endl;
-            }
-            status = CTIClose(getHandle());
+            _dialable->disconnect(NULL, trace);
         }
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
 
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " " << getName() << " releasing port handle" << endl;
+        }
+        status = CTIClose(getHandle());
+    }
 
     return status;
 }
@@ -886,19 +855,10 @@ INT CtiPortDirect::reset(INT trace)
 {
     INT status = NORMAL;
 
-    try
+    if(_dialable)
     {
-        if(_dialable)
-        {
-            status = _dialable->reset(trace);
-        }
+        status = _dialable->reset(trace);
     }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
 
     return status;
 }

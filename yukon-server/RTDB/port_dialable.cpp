@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   port_dialable
@@ -7,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/03/13 19:36:04 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/09/29 22:20:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,11 +100,14 @@ INT CtiPortDialable::waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG 
             // null out any CR LF
             Response[i] = '\0';
 
-            // handle non-verbal OK
-            if(!(strcmp(ExpectedResponse, "OK")) && !(strcmp(Response, "0")))
+            if(ExpectedResponse != NULL)
             {
-                // 0 is the same as OK for non-verbal
-                strcpy(Response,"OK");
+                // handle non-verbal OK
+                if(!(strcmp(ExpectedResponse, "OK")) && !(strcmp(Response, "0")))
+                {
+                    // 0 is the same as OK for non-verbal
+                    strcpy(Response,"OK");
+                }
             }
 
             // check for expected return
@@ -166,5 +170,4 @@ CtiPortDialable& CtiPortDialable::setTablePortDialup(const CtiTablePortDialup& a
     _tblPortDialup = aRef;
     return *this;
 }
-
 

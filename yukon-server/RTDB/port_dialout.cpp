@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/09/12 02:43:10 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/09/29 22:20:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,21 +141,13 @@ INT CtiPortDialout::reset(INT trace)
 {
     INT status = NORMAL;
 
-    try
-    {
-        setDialedUpNumber(RWCString());
+    setDialedUpNumber(RWCString());
 
-        if(_superPort)
-        {
-            status = modemReset(_superPort->getPortID(), trace);
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+    if(_superPort)
+    {
+        status = modemReset(_superPort->getPortID(), trace);
     }
-    catch(...)
+    else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -189,48 +181,24 @@ INT CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
     ULONG i = 0;
     static ULONG tCount = 0;
 
-    /* set the timeout on read to 1 second */
-    _superPort->setPortReadTimeOut(1000);
-    _superPort->lowerRTS();
-    _superPort->lowerDTR();
-    CTISleep( 500L );
-    _superPort->raiseDTR();
-    _superPort->raiseRTS();
-    CTISleep( 500L );
-
-    /* If we do not have CTS it is a problem */
-    if(!(_superPort->ctsTest()))
+    try
     {
-        if(!(++tCount % 300))
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << "  Port " << _superPort->getName() << " No Modem CTS.  Modem may be off or configured wrong" << endl;
-        }
-
+        /* set the timeout on read to 1 second */
+        _superPort->setPortReadTimeOut(1000);
+        _superPort->lowerRTS();
         _superPort->lowerDTR();
         CTISleep( 500L );
         _superPort->raiseDTR();
         _superPort->raiseRTS();
         CTISleep( 500L );
 
-        if(!(_superPort->ctsTest()))
-        {
-            return READTIMEOUT;
-        }
-    }
-
-    /* Try five times to intialize modem */
-    for(i = 0; i < 5; i++)
-    {
-        /* Wait for CTS */
+        /* If we do not have CTS it is a problem */
         if(!(_superPort->ctsTest()))
         {
             if(!(++tCount % 300))
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Port " << _superPort->getName() << " No Modem CTS..." << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << "  Port " << _superPort->getName() << " No Modem CTS.  Modem may be off or configured wrong" << endl;
             }
 
             _superPort->lowerDTR();
@@ -245,76 +213,108 @@ INT CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
             }
         }
 
-        /* Clear the buffer */
-        _superPort->inClear();
-        ResponseSize = sizeof (Response);
-
-        /* Wait to see if we get the no carrier message */
-        if( !(_superPort->waitForPortResponse(&ResponseSize, Response, 1)) )      // See if we get something back from this guy.
+        /* Try five times to intialize modem */
+        for(i = 0; i < 5; i++)
         {
-            if(Trace)
+            /* Wait for CTS */
+            if(!(_superPort->ctsTest()))
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response <<  endl;
-            }
-        }
+                if(!(++tCount % 300))
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Port " << _superPort->getName() << " No Modem CTS..." << endl;
+                    }
+                }
 
-        ResponseSize = sizeof (Response);
-        // Make an attempt to determine if we are in the command mode
-        _superPort->writePort("AT\r", 3, 1, &BytesWritten);    // Attention to the modem.
-        if(Trace)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << _superPort->getName() << " Sent to Modem:  AT" << endl;
-        }
+                _superPort->lowerDTR();
+                CTISleep( 500L );
+                _superPort->raiseDTR();
+                _superPort->raiseRTS();
+                CTISleep( 500L );
 
-        /* Wait for a response or till we time out */
-        if(_superPort->waitForPortResponse(&ResponseSize, Response, 3, "OK"))
-        {
-            // Just in case we are out to lunch here...
-            _superPort->writePort("+++", 3, 1, &BytesWritten);    // Attention to the modem.
-
-            if(Trace)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << _superPort->getName() << " Sent to Modem:  +++" << endl;
+                if(!(_superPort->ctsTest()))
+                {
+                    return READTIMEOUT;
+                }
             }
 
+            /* Clear the buffer */
+            _superPort->inClear();
             ResponseSize = sizeof (Response);
 
-            /* Wait for a response or till we time out */
-            if(_superPort->waitForPortResponse(&ResponseSize, Response, 3, "OK"))
+            /* Wait to see if we get the no carrier message */
+            if( !(_superPort->waitForPortResponse(&ResponseSize, Response, 1)) )      // See if we get something back from this guy.
             {
                 if(Trace)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Port " << _superPort->getName() << " Modem Response Timeout" << endl;
+                    dout << RWTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response <<  endl;
+                }
+            }
+
+            ResponseSize = sizeof (Response);
+            // Make an attempt to determine if we are in the command mode
+            _superPort->writePort("AT\r", 3, 1, &BytesWritten);    // Attention to the modem.
+            if(Trace)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Port " << _superPort->getName() << " Sent to Modem:  AT" << endl;
+            }
+
+            /* Wait for a response or till we time out */
+            if(_superPort->waitForPortResponse(&ResponseSize, Response, 3, "OK"))
+            {
+                // Just in case we are out to lunch here...
+                _superPort->writePort("+++", 3, 1, &BytesWritten);    // Attention to the modem.
+
+                if(Trace)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Port " << _superPort->getName() << " Sent to Modem:  +++" << endl;
                 }
 
-                _superPort->writePort("\r", 1, 1, &BytesWritten);    // Get rid of the trash that didn't give a good return.
+                ResponseSize = sizeof (Response);
+
+                /* Wait for a response or till we time out */
+                if(_superPort->waitForPortResponse(&ResponseSize, Response, 3, "OK"))
+                {
+                    if(Trace)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Port " << _superPort->getName() << " Modem Response Timeout" << endl;
+                    }
+
+                    _superPort->writePort("\r", 1, 1, &BytesWritten);    // Get rid of the trash that didn't give a good return.
+                }
+            }
+            else if(Trace)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response <<  endl;
+            }
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << _superPort->getName() << " modem reset" << endl;
+            }
+            if(gLogPorts)
+            {
+                CtiLockGuard<CtiLogger> portlog_guard(_superPort->getPortLog());
+                _superPort->getPortLog() << RWTime() << " " << _superPort->getName() << " modem reset" << endl;
+            }
+
+            /* Make sure that we got OK */
+            if(!(strnicmp(Response, "OK", 2)))
+            {
+                return(NORMAL);
             }
         }
-        else if(Trace)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response <<  endl;
-        }
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << _superPort->getName() << " modem reset" << endl;
-        }
-        if(gLogPorts)
-        {
-            CtiLockGuard<CtiLogger> portlog_guard(_superPort->getPortLog());
-            _superPort->getPortLog() << RWTime() << " " << _superPort->getName() << " modem reset" << endl;
-        }
-
-        /* Make sure that we got OK */
-        if(!(strnicmp(Response, "OK", 2)))
-        {
-            return(NORMAL);
-        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << endl;
     }
 
     return(!NORMAL);
@@ -395,20 +395,10 @@ INT CtiPortDialout::modemSetup(USHORT Trace, BOOL dcdTest)
         dout << RWTime() << " " << _superPort->getName() << " modem setup " << (j >= 5 ? "failed" : "successful") << endl;
     }
 
-    try
+    if(gLogPorts)
     {
-        if(gLogPorts)
-        {
-            CtiLockGuard<CtiLogger> portlog_guard(_superPort->getPortLog());
-            _superPort->getPortLog() << RWTime() << " " << _superPort->getName() << " modem setup " << (j >= 5 ? "failed" : "successful") << endl;
-        }
-    }
-    catch(...)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CtiLockGuard<CtiLogger> portlog_guard(_superPort->getPortLog());
+        _superPort->getPortLog() << RWTime() << " " << _superPort->getName() << " modem setup " << (j >= 5 ? "failed" : "successful") << endl;
     }
 
     if(j >= 5)
