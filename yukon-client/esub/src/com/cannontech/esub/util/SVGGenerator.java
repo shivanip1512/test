@@ -198,7 +198,7 @@ public class SVGGenerator {
 		if(isEditEnabled() && text.isEditable()) {
 			textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
 		}
-System.out.println("inserting text: " + text.getText());		
+
 		Text theText = doc.createTextNode(text.getText());
 		textElem.insertBefore(theText, null);
 		
