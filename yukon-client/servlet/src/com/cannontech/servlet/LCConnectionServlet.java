@@ -116,7 +116,7 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
  */
 public void update(java.util.Observable obs, Object o) 
 {
-	if( obs == conn )
+/*	if( obs == conn ) was spamming so commented out
 	{		
 		if( conn.isValid() )
 			CTILogger.info("Connection established to " + conn.getHost() + ":" + conn.getPort());
@@ -126,6 +126,6 @@ public void update(java.util.Observable obs, Object o)
 	else
 	{
 		CTILogger.info("Warning!  received an update from an unknown observable!");
-	}
+	}*/
 }
 }
