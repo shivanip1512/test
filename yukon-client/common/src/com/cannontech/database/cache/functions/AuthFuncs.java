@@ -111,18 +111,22 @@ public class AuthFuncs {
 	 * @param roleProperty
 	 * @return String
 	 */
-	public static String getRolePropValueGroup(LiteYukonGroup group_, int roleID, int rolePropertyID, String defaultValue) 
+	public static String getRolePropValueGroup(LiteYukonGroup group_, int rolePropertyID, String defaultValue) 
 	{
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized(cache) 
 		{
 			Map lookupMap = cache.getYukonGroupRolePropertyMap();
 			Map roleMap = (Map) lookupMap.get( group_ );
-			Map propMap = (Map) roleMap.get( getRole(roleID) );
-			String value = (String) propMap.get( getRoleProperty(rolePropertyID) );
-			if (value != null) return value;
+			
+			Iterator rIter = roleMap.entrySet().iterator(); 
+			while(rIter.hasNext()) {
+				Map propMap = (Map) ((Map.Entry) rIter.next()).getValue(); //Iter.next();
+				String val = (String) propMap.get(getRoleProperty(rolePropertyID));
+				if(val != null) return val;
+			}
 		}
-		return defaultValue;	
+		return defaultValue;			
 	}
 	
 	/**
@@ -146,6 +150,11 @@ public class AuthFuncs {
 		return retList;
 	}
 	
+	/**
+	 * Return a particular lite yukon role given a role id.
+	 * @param roleid
+	 * @return
+	 */
 	public static LiteYukonRole getRole(int roleid) {		
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		
@@ -161,6 +170,11 @@ public class AuthFuncs {
 		return null;
 	}
 	
+	/**
+	 * Return a particular role property given a role property id.
+	 * @param propid
+	 * @return
+	 */
 	public static LiteYukonRoleProperty getRoleProperty(int propid) {
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		
@@ -175,6 +189,11 @@ public class AuthFuncs {
 		return null;
 	}
 	
+	/**
+	 * Return a List<LiteYukonRoleProperty> for a given LiteYukonRole
+	 * @param role
+	 * @return
+	 */
 	public static List getRoleProperties(LiteYukonRole role) {
 		ArrayList props = new ArrayList();
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();

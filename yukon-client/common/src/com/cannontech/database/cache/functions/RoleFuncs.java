@@ -83,7 +83,7 @@ public class RoleFuncs
 	 * @param roleProperty
 	 * @return String
 	 */
-	public static String getRolePropValueGroup(int groupID, int roleID, int rolePropertyID, String defaultValue) 
+	public static String getRolePropValueGroup(int groupID, int rolePropertyID, String defaultValue) 
 	{		
 		LiteYukonGroup group = null;
 			
@@ -104,7 +104,7 @@ public class RoleFuncs
 		
 		}
 		
-		return AuthFuncs.getRolePropValueGroup( group, roleID, rolePropertyID, defaultValue );
+		return AuthFuncs.getRolePropValueGroup( group, rolePropertyID, defaultValue );
 	}
 
 	/**
