@@ -139,63 +139,84 @@ function removeAllConfig(form) {
             <div align="center"> 
               <% String header = "CONFIGURE SERIAL NUMBER RANGE"; %>
               <%@ include file="include/SearchBar.jsp" %>
-			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
+              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  
+              <table width="80%" border="0" cellspacing="0" cellpadding="0" class="MainText">
+                <tr> 
+                  <td align="center">Add serial numbers to be configured by range 
+                    (Add Range),<br>
+                    or by selecting individual devices from the current inventory 
+                    (Select From Inventory).</td>
+                </tr>
+              </table>
               <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 			    <input type="hidden" name="action" value="ConfigSNRange">
 				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
-                <table width="64%" border="1" cellspacing="0" cellpadding="5" align="center" height="91">
-                  <tr> 
-                    <td align = "left" class = "MainText" bgcolor="#CCCCCC"><b>Configure 
-                      Serial Number Range</b></td>
-                  </tr>
-                  <tr> 
+                <table width="64%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                  <tr>
                     <td align="center"> 
-                      <table width="100%" border="0" class="TableCell">
+                      <table width="100%" border="1" cellspacing="0" cellpadding="3" bgcolor="CCCCCC">
                         <tr> 
-                          <td width="25%"> 
-                            <div align="right">Range:</div>
-                          </td>
-                          <td width="75%"> 
-                            <input type="text" name="From" size="10">
-                            &nbsp;to&nbsp;
-                            <input type="text" name="To" size="10">
-                          </td>
-                        </tr>
-                        <tr> 
-                          <td width="25%"> 
-                            <div align="right">Device Type:</div>
-                          </td>
-                          <td width="75%"> 
-                            <select name="DeviceType">
-<%
+                          <td align="center"> 
+                            <table width="100%" border="0" class="TableCell2">
+                              <tr> 
+                                <td width="25%"> 
+                                  <div align="right">Range:</div>
+                                </td>
+                                <td width="75%"> 
+                                  <input type="text" name="From" size="10">
+                                  &nbsp;to&nbsp; 
+                                  <input type="text" name="To" size="10">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="25%"> 
+                                  <div align="right">Device Type:</div>
+                                </td>
+                                <td width="75%"> 
+                                  <select name="DeviceType">
+                                    <%
 	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) continue;
 %>
-                              <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-<%
+                                    <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                                    <%
 	}
 %>
-                            </select>
+                                  </select>
+                                </td>
+                              </tr>
+                            </table>
+                            <input type="button" name="AddConfigRange" value="Add Range" onClick="addConfigRange(this.form)">
                           </td>
                         </tr>
                       </table>
-                      <input type="button" name="AddConfigRange" value="Add Range" onclick="addConfigRange(this.form)">
-                      <br>
-                      <br>
-                      <input type="button" name="AddFromInventory" value="Select From Inventory" onClick="selectFromInventory(this.form)">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="center" height="20">or</td>
+                  </tr>
+                  <tr>
+                    <td align="center">
+                      <table width="100%" border="1" cellspacing="0" cellpadding="3" bgcolor="CCCCCC">
+                        <tr>
+                          <td align="center"> 
+                            <input type="button" name="AddFromInventory" value="Select From Inventory" onClick="selectFromInventory(this.form)">
+                          </td>
+                        </tr>
+                      </table>
                     </td>
                   </tr>
                 </table>
                 <p> 
                 <table width="64%" border="1" cellspacing="0" cellpadding="5">
                   <tr> 
-                    <td class="MainText" bgcolor="#CCCCCC"><b>Added Serial Numbers 
-                      (Ranges)</b> </td>
+                    <td class="MainText" bgcolor="#CCCCCC"><b>Serial Numbers to 
+                      be Configured</b></td>
                   </tr>
                   <tr> 
                     <td align="center"> 
