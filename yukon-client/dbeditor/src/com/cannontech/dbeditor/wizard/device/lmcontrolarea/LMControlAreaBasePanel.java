@@ -285,6 +285,7 @@ private javax.swing.JComboBox getJComboBoxMinRespTime() {
 			ivjJComboBoxMinRespTime.addItem("5 minute");
 			ivjJComboBoxMinRespTime.addItem("10 minute");
 			ivjJComboBoxMinRespTime.addItem("15 minute");
+			ivjJComboBoxMinRespTime.addItem("30 minute");
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
