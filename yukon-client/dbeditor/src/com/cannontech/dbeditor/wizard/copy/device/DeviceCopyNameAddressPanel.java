@@ -10,6 +10,9 @@ import com.cannontech.database.data.device.*;
  import com.cannontech.database.db.*;
  import com.cannontech.database.data.device.*;
  import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.data.capcontrol.CapBankController;
+import com.cannontech.database.data.capcontrol.CapBankController6510;
+import com.cannontech.database.data.capcontrol.ICapBankController;
  import com.cannontech.common.gui.util.DataInputPanel;
  
 public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ItemListener, javax.swing.event.CaretListener {
@@ -706,7 +709,7 @@ public void setValue(Object val )
 	//handle all device Address fields
 	boolean showAddress = 
 			(val instanceof IEDBase)
-			 || (val instanceof com.cannontech.database.data.capcontrol.CapBankController)
+			 //|| (val instanceof ICapBankController)
 			 || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.GROUP)
 			 || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.VIRTUAL);
 
@@ -733,6 +736,16 @@ public void setValue(Object val )
 	if( val instanceof IEDMeter )
 		getJTextFieldMeterNumber().setText( ((IEDMeter)val).getDeviceMeterGroup().getMeterNumber().toString() );
 
+	if( val instanceof ICapBankController )
+	{
+		getPhysicalAddressLabel().setText(
+			(val instanceof CapBankController ? "Serial Number:"
+			 : (val instanceof CapBankController6510 ? "Master Address:" : "Address:")) );
+
+		getAddressTextField().setText( 
+			((ICapBankController)val).copiableAddress().toString() );
+	}
+
 
 	getNameTextField().setText( ((com.cannontech.database.data.device.DeviceBase)val).getPAOName() );
 	int deviceDeviceID = ((com.cannontech.database.data.device.DeviceBase)val).getDevice().getDeviceID().intValue();
@@ -747,7 +760,7 @@ public void setValue(Object val )
 			if( ((com.cannontech.database.data.lite.LitePoint)allPoints.get(i)).getPaobjectID() == deviceDeviceID )
 			{
 				getPointCopyCheckBox().setEnabled(true);
-				getPointCopyCheckBox().setSelected( true );
+				getPointCopyCheckBox().setSelected(true);
 				break;
 			}
 		}

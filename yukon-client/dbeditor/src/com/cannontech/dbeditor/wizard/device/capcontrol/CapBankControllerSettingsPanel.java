@@ -2,6 +2,7 @@ package com.cannontech.dbeditor.wizard.device.capcontrol;
 
 import java.awt.Dimension;
 
+import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
 
@@ -365,39 +366,48 @@ public Object getValue(Object val)
       throw new IllegalStateException("CBC type of: " + getCbcType() + " not found");
 
 
-   Integer serailNumber = new Integer(getSerialNumberTextField().getText());
+   Integer serialNumber = new Integer(getSerialNumberTextField().getText());
 
-   if( newDevice instanceof com.cannontech.database.data.capcontrol.CapBankController )
+   if( newDevice instanceof ICapBankController )
    {
-   	((com.cannontech.database.data.capcontrol.CapBankController) newDevice).getDeviceCBC().setSerialNumber(
-   		serailNumber );
-   	((com.cannontech.database.data.capcontrol.CapBankController) newDevice).getDeviceCBC().setRouteID(
-   		new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID()));
+      ICapBankController cntrler = 
+            (ICapBankController)newDevice;
+
+		Integer comID = new Integer(0);
+		if( getRouteComboBox().getSelectedItem() != null )
+			comID = new Integer( 
+				((com.cannontech.database.data.lite.LiteYukonPAObject)getRouteComboBox().getSelectedItem()).getYukonID() );
+			
+   	cntrler.assignAddress( serialNumber );
+   
+  		cntrler.setCommID( comID );
+   	
+   	if( newDevice instanceof com.cannontech.database.data.capcontrol.CapBankController6510 )
+	   {
+	
+	      com.cannontech.database.data.capcontrol.CapBankController6510 
+	            tempController = (com.cannontech.database.data.capcontrol.CapBankController6510)newDevice;
+	
+	      Integer slave = null;
+	/*            (getJTextFieldSlaveAddress().getText() == null 
+	               || getJTextFieldSlaveAddress().getText().length() <= 0)
+	            ? new Integer(0)
+	            : new Integer(getJTextFieldSlaveAddress().getText());
+	*/            
+	      Integer postWait = null;
+	/*            (getJTextFieldPostCommWait().getText() == null
+	               || getJTextFieldPostCommWait().getText().length() <= 0)
+	            ? new Integer(0)
+	            : new Integer(getJTextFieldPostCommWait().getText());
+	*/
+	
+	      tempController.getDeviceDNP().setSlaveAddress( slave );
+	      tempController.getDeviceDNP().setPostCommWait( postWait );            
+	   }
    }
-   else if( newDevice instanceof com.cannontech.database.data.capcontrol.CapBankController6510 )
-   {
-
-      com.cannontech.database.data.capcontrol.CapBankController6510 
-            tempController = (com.cannontech.database.data.capcontrol.CapBankController6510)newDevice;
-
-      Integer slave = null;
-/*            (getJTextFieldSlaveAddress().getText() == null 
-               || getJTextFieldSlaveAddress().getText().length() <= 0)
-            ? new Integer(0)
-            : new Integer(getJTextFieldSlaveAddress().getText());
-*/            
-      Integer postWait = null;
-/*            (getJTextFieldPostCommWait().getText() == null
-               || getJTextFieldPostCommWait().getText().length() <= 0)
-            ? new Integer(0)
-            : new Integer(getJTextFieldPostCommWait().getText());
-*/
-
-      tempController.getDeviceDNP().setMasterAddress( serailNumber );
-      tempController.getDeviceDNP().setSlaveAddress( slave );
-      tempController.getDeviceDNP().setPostCommWait( postWait );            
-   }
-
+   else
+      throw new IllegalStateException("CBC class of: " + newDevice.getClass().getName() + " not found");
+   
 	
 	newDevice.setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
    newDevice.setPAOName(getNameTextField().getText());
@@ -433,7 +443,7 @@ public Object getValue(Object val)
 	newVal.getDBPersistentVector().add(newPoint);
 
 
-	checkCBCSerialNumbers( serailNumber.intValue() );
+	checkCBCSerialNumbers( serialNumber.intValue() );
 
 	return newVal;
 }

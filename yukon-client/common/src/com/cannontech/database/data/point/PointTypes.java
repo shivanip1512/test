@@ -3,8 +3,8 @@ package com.cannontech.database.data.point;
 /**
  * This type was created in VisualAge.
  */
-public final class PointTypes {
-
+public final class PointTypes implements IPointOffsets
+{
 	//System point id constants - these mirror the #defines
 	// in pointtypes.h
 	public static final int SYS_PID_SYSTEM			=	0;
@@ -14,10 +14,7 @@ public final class PointTypes {
 	public static final int SYS_PID_MACS	 		=	-4;
 	public static final int SYS_PID_LOADMANAGEMENT	=	-10;
 
-   public static final int PT_OFFSET_DAILY_HISTORY = 2500;
-   public static final int PT_OFFSET_MONTHLY_HISTORY = 2501;
-   public static final int PT_OFFSET_SEASONAL_HISTORY = 2502;
-   public static final int PT_OFFSET_ANNUAL_HISTORY = 2503;
+
 	
 	//The following constants are keys into the private
 	//Array of strings (not related to any c/c++ defines!)

@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import com.cannontech.common.util.CtiProperties;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController;
+import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.DeviceFactory;
  
 public class CapBankCntrlCreationPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -257,23 +258,14 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
       ? new Integer( ((com.cannontech.database.data.lite.LiteYukonPAObject) getJComboBoxCBCRoute().getSelectedItem()).getYukonID() )
       : new Integer(0) );
 
-   if( newCBC instanceof com.cannontech.database.data.capcontrol.CapBankController )
+   if( newCBC instanceof ICapBankController )
    {
-      com.cannontech.database.data.capcontrol.CapBankController cntrler = 
-            (com.cannontech.database.data.capcontrol.CapBankController)newCBC;
+      ICapBankController cntrler = 
+            (ICapBankController)newCBC;
 
-   	cntrler.getDeviceCBC().setSerialNumber(serialNumber);
+   	cntrler.assignAddress(serialNumber);
    
-  		cntrler.getDeviceCBC().setRouteID( comboID );
-   }
-   else if( newCBC instanceof com.cannontech.database.data.capcontrol.CapBankController6510 )
-   {
-      com.cannontech.database.data.capcontrol.CapBankController6510 cntrler = 
-            (com.cannontech.database.data.capcontrol.CapBankController6510)newCBC;
-
-      cntrler.getDeviceDNP().setMasterAddress( serialNumber );   
-      
-      cntrler.getDeviceDirectCommSettings().setPortID( comboID );
+  		cntrler.setCommID( comboID );
    }
    else
       throw new IllegalStateException("CBC class of: " + newCBC.getClass().getName() + " not found");

@@ -17,7 +17,12 @@ import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.PagingTapTerminal;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.TwoWayDevice;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.db.DBPersistent;
  
@@ -144,10 +149,13 @@ public Dimension getPreferredSize() {
 public Object getValue(Object val)
 {
 	Integer portID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getPortComboBox().getSelectedItem()).getYukonID());
-
-	if (val instanceof PagingTapTerminal)
+	int devType = com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((DeviceBase) val).getPAOType() );
+	
+	if( val instanceof PagingTapTerminal )
+	{
 		 ((PagingTapTerminal) val).getDeviceDirectCommSettings().setPortID(portID);
-	else if (val instanceof RemoteBase)
+	}
+	else if( val instanceof RemoteBase )
 	{
 		((RemoteBase) val).getDeviceDirectCommSettings().setPortID(portID);
 
@@ -185,22 +193,20 @@ public Object getValue(Object val)
 	{
 		com.cannontech.database.data.multi.SmartMultiDBPersistent newVal = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
 		((DeviceBase) val).setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
-
-	 	int type = com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((DeviceBase) val).getPAOType() );
 		
 		//checks device type and accordingly sets route type
 		
 		String routeType;
 
-		if( DeviceTypesFuncs.isCCU(type) || DeviceTypesFuncs.isRepeater(type) )
+		if( DeviceTypesFuncs.isCCU(devType) || DeviceTypesFuncs.isRepeater(devType) )
 			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_CCU;
-		else if( DeviceTypesFuncs.isLCU(type) )
+		else if( DeviceTypesFuncs.isLCU(devType) )
 			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_LCU;
-		else if ( DeviceTypesFuncs.isTCU(type) )
+		else if ( DeviceTypesFuncs.isTCU(devType) )
 			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_TCU;
-		else if (type == PAOGroups.TAPTERMINAL)
+		else if (devType == PAOGroups.TAPTERMINAL)
 			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_TAP_PAGING;
-		else if (type == PAOGroups.WCTP_TERMINAL)
+		else if (devType == PAOGroups.WCTP_TERMINAL)
 			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_WCTP_TERMINAL_ROUTE;
 		else
 			return val;
@@ -229,9 +235,11 @@ public Object getValue(Object val)
 				com.cannontech.database.data.point.PointTypes.STATUS_POINT,
 				"COMM STATUS",
 				((DeviceBase) val).getDevice().getDeviceID(),
-				new Integer(2000) );
+				new Integer(PointTypes.PT_OFFSET_TRANS_STATUS) );
 		
-		newPoint.getPoint().setStateGroupID( new Integer(1) );
+		newPoint.getPoint().setStateGroupID( 
+				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS) );
+
 		((com.cannontech.database.data.point.StatusPoint) newPoint).setPointStatus(
 			new com.cannontech.database.db.point.PointStatus(pointID));
 
@@ -246,9 +254,65 @@ public Object getValue(Object val)
 		
 		return newVal;
 	}
+	else if( DeviceTypesFuncs.isMeter(devType) 
+				 && devType != DeviceTypes.DR_87 )
+	{
+		((DeviceBase) val).setDeviceID( 
+				com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+
+		SmartMultiDBPersistent smartDB = createPoints( ((DeviceBase) val).getPAObjectID() );
+
+		smartDB.addDBPersistent( (DeviceBase)val );
+		smartDB.setOwnerDBPersistent( (DeviceBase)val );
+		
+		return smartDB;
+	}
 	else
 		return val;
 }
+
+private SmartMultiDBPersistent createPoints( Integer paoID )
+{
+	SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
+	int[] ids = com.cannontech.database.db.point.Point.getNextPointIDs(4);
+	
+	//add all ther point to the smart object
+	smartDB.addDBPersistent( 
+		PointFactory.createAnalogPoint(
+			"Total KWH",
+			paoID,
+			new Integer(ids[0]),
+			PointTypes.PT_OFFSET_TOTAL_KWH,
+			com.cannontech.database.data.point.PointUnits.UOMID_KWH) );
+
+	smartDB.addDBPersistent( 
+		PointFactory.createAnalogPoint(
+			"Total KVARH",
+			paoID,
+			new Integer(ids[1]),
+			PointTypes.PT_OFFSET_TOTAL_KVARH,
+			com.cannontech.database.data.point.PointUnits.UOMID_KVARH) );
+				
+	smartDB.addDBPersistent( 
+		PointFactory.createAnalogPoint(
+			"LP KW Demand",
+			paoID,
+			new Integer(ids[2]),
+			PointTypes.PT_OFFSET_LP_KW_DEMAND,
+			com.cannontech.database.data.point.PointUnits.UOMID_KW) );
+
+	smartDB.addDBPersistent( 
+		PointFactory.createAnalogPoint(
+			"KVAR Demand",
+			paoID,
+			new Integer(ids[3]),
+			PointTypes.PT_OFFSET_KVAR_DEMAND,
+			com.cannontech.database.data.point.PointUnits.UOMID_KVAR) );
+				
+	
+	return smartDB;	
+}
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable

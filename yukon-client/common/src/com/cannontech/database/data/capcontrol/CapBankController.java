@@ -6,7 +6,7 @@ import com.cannontech.database.data.point.PointFactory;
 /**
  * This type was created in VisualAge.
  */
-public abstract class CapBankController extends CapControlDeviceBase implements com.cannontech.database.db.DBCopiable 
+public abstract class CapBankController extends CapControlDeviceBase implements com.cannontech.database.db.DBCopiable, ICapBankController 
 {
 	private com.cannontech.database.db.capcontrol.DeviceCBC deviceCBC = null;
    
@@ -25,6 +25,17 @@ public CapBankController() {
    {
       getDeviceCBC().setSerialNumber( newAddress );
    }
+   
+   public void setCommID( Integer comID )
+   {
+   	getDeviceCBC().setRouteID( comID );
+   }
+
+	public Integer getCommID()
+	{
+		return getDeviceCBC().getRouteID();
+	}
+  
   
 /**
  * This method was created in VisualAge.

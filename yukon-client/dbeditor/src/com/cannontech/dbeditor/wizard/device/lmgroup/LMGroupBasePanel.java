@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import com.cannontech.database.data.device.lm.LMGroup;
+import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 
 public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -325,150 +326,46 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 
 		if( getJCheckBoxAnnual().isSelected() )
 		{
-			com.cannontech.database.data.point.PointBase annualPoint =
-				com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.ANALOG_POINT);
-
-			//defaults point
-			annualPoint = com.cannontech.database.data.point.PointBase.createNewPoint(		
-					new Integer(ids[1]),
-					com.cannontech.database.data.point.PointTypes.ANALOG_POINT,
+			smartDB.addDBPersistent( 
+				PointFactory.createAnalogPoint(
 					"ANNUAL HISTORY",
 					paoID,
-					new Integer(PointTypes.PT_OFFSET_ANNUAL_HISTORY) );
-
-			annualPoint.getPoint().setStateGroupID( 
-				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
-
-			//defaults - pointUnit
-			((com.cannontech.database.data.point.ScalarPoint)annualPoint).setPointUnit(
-				new com.cannontech.database.db.point.PointUnit(
 					new Integer(ids[1]),
-					new Integer(com.cannontech.database.data.point.PointUnits.UOMID_COUNTS),
-					new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
-					new Double(0.0),
-					new Double(0.0)));
-
-			//defaults - pointAnalog
-			((com.cannontech.database.data.point.AnalogPoint)annualPoint).setPointAnalog(
-				new com.cannontech.database.db.point.PointAnalog(
-					new Integer(ids[1]),
-					new Double(-1.0),
-					com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.TRANSDUCER_NONE),
-					new Double(1.0),
-					new Double(0.0)));
-
-			smartDB.addDBPersistent( annualPoint );
+					PointTypes.PT_OFFSET_ANNUAL_HISTORY,
+					com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
 		}
 
 		if( getJCheckBoxDaily().isSelected() )
 		{
-			com.cannontech.database.data.point.PointBase dailyPoint =
-				com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.ANALOG_POINT);
-
-			//defaults point
-			dailyPoint = com.cannontech.database.data.point.PointBase.createNewPoint(		
-					new Integer(ids[2]),
-					com.cannontech.database.data.point.PointTypes.ANALOG_POINT,
+			smartDB.addDBPersistent( 
+				PointFactory.createAnalogPoint(
 					"DAILY HISTORY",
 					paoID,
-               new Integer(PointTypes.PT_OFFSET_DAILY_HISTORY) );
-
-			dailyPoint.getPoint().setStateGroupID( 
-				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
-
-			//defaults - pointUnit
-			((com.cannontech.database.data.point.ScalarPoint)dailyPoint).setPointUnit(
-				new com.cannontech.database.db.point.PointUnit(
 					new Integer(ids[2]),
-					new Integer(com.cannontech.database.data.point.PointUnits.UOMID_COUNTS),
-					new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
-					new Double(0.0),
-					new Double(0.0)));
-
-			//defaults - pointAnalog
-			((com.cannontech.database.data.point.AnalogPoint)dailyPoint).setPointAnalog(
-				new com.cannontech.database.db.point.PointAnalog(
-					new Integer(ids[2]),
-					new Double(-1.0),
-					com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.TRANSDUCER_NONE),
-					new Double(1.0),
-					new Double(0.0)));
-
-			smartDB.addDBPersistent( dailyPoint );
+					PointTypes.PT_OFFSET_DAILY_HISTORY,
+					com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
 		}
 
 		if( getJCheckBoxSeasonal().isSelected() )
 		{
-			com.cannontech.database.data.point.PointBase seasonPoint =
-				com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.ANALOG_POINT);
-
-			//defaults point
-			seasonPoint = com.cannontech.database.data.point.PointBase.createNewPoint(		
-					new Integer(ids[3]),
-					com.cannontech.database.data.point.PointTypes.ANALOG_POINT,
+			smartDB.addDBPersistent( 
+				PointFactory.createAnalogPoint(
 					"SEASON HISTORY",
 					paoID,
-               new Integer(PointTypes.PT_OFFSET_SEASONAL_HISTORY) );
-
-			seasonPoint.getPoint().setStateGroupID( 
-				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
-
-			//defaults - pointUnit
-			((com.cannontech.database.data.point.ScalarPoint)seasonPoint).setPointUnit(
-				new com.cannontech.database.db.point.PointUnit(
 					new Integer(ids[3]),
-					new Integer(com.cannontech.database.data.point.PointUnits.UOMID_COUNTS),
-					new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
-					new Double(0.0),
-					new Double(0.0)));
-
-			//defaults - pointAnalog
-			((com.cannontech.database.data.point.AnalogPoint)seasonPoint).setPointAnalog(
-				new com.cannontech.database.db.point.PointAnalog(
-					new Integer(ids[3]),
-					new Double(-1.0),
-					com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.TRANSDUCER_NONE),
-					new Double(1.0),
-					new Double(0.0)));
-
-			smartDB.addDBPersistent( seasonPoint );
+					PointTypes.PT_OFFSET_SEASONAL_HISTORY,
+					com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
 		}
 
 		if( getJCheckBoxMonthly().isSelected() )
 		{
-			com.cannontech.database.data.point.PointBase monthPoint =
-				com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.ANALOG_POINT);
-
-			//defaults point
-			monthPoint = com.cannontech.database.data.point.PointBase.createNewPoint(		
-					new Integer(ids[4]),
-					com.cannontech.database.data.point.PointTypes.ANALOG_POINT,
+			smartDB.addDBPersistent( 
+				PointFactory.createAnalogPoint(
 					"MONTH HISTORY",
 					paoID,
-               new Integer(PointTypes.PT_OFFSET_MONTHLY_HISTORY) );
-
-			monthPoint.getPoint().setStateGroupID( 
-				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
-
-			//defaults - pointUnit
-			((com.cannontech.database.data.point.ScalarPoint)monthPoint).setPointUnit(
-				new com.cannontech.database.db.point.PointUnit(
 					new Integer(ids[4]),
-					new Integer(com.cannontech.database.data.point.PointUnits.UOMID_COUNTS),
-					new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
-					new Double(0.0),
-					new Double(0.0)));
-
-			//defaults - pointAnalog
-			((com.cannontech.database.data.point.AnalogPoint)monthPoint).setPointAnalog(
-				new com.cannontech.database.db.point.PointAnalog(
-					new Integer(ids[4]),
-					new Double(-1.0),
-					com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.TRANSDUCER_NONE),
-					new Double(1.0),
-					new Double(0.0)));
-
-			smartDB.addDBPersistent( monthPoint );
+					PointTypes.PT_OFFSET_MONTHLY_HISTORY,
+					com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
 		}
 	
 	}

@@ -7,6 +7,9 @@ import java.awt.Dimension;
 
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.point.Point;
  
 public class CapBankSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private String capBankSelectedType = null;
@@ -168,43 +171,16 @@ private static void createBankOpCntPoint(
 {	
 	//defaults pointControl
 	//an analog point is created
-	com.cannontech.database.data.point.PointBase newPoint2 =
-		com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.ANALOG_POINT);
-	Integer pointID = null;
 
-	//defaults point
-	newPoint2 = com.cannontech.database.data.point.PointBase.createNewPoint(		
-			pointID,
-			com.cannontech.database.data.point.PointTypes.ANALOG_POINT,
-			"OPERATIONS",
+	newVal.addDBPersistent( 
+		PointFactory.createAnalogPoint(
+			"OPERATION",
 			com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID(),
-			new Integer(1) );
-
-	newPoint2.getPoint().setStateGroupID( new Integer(-1) );
-
-	//defaults - pointUnit
-	((com.cannontech.database.data.point.ScalarPoint) newPoint2).setPointUnit(
-		new com.cannontech.database.db.point.PointUnit(
-			pointID,
-			new Integer(com.cannontech.database.data.point.PointUnits.UOMID_COUNTS),
-			new Integer(0), //allow no decimal places
-			new Double(0.0),
-			new Double(0.0)));
-
-	
-	//defaults - pointAccumulator
-	((com.cannontech.database.data.point.AnalogPoint) newPoint2).setPointAnalog(
-		new com.cannontech.database.db.point.PointAnalog(
-			pointID,
-			new Double(-1.0),
-			com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.TRANSDUCER_NONE),
-			new Double(1.0),
-			new Double(0.0)));
-	
-
-	//add the point here
-	newVal.addDBPersistent(newPoint2);
+			null,
+			PointTypes.PT_OFFSET_TOTAL_KWH,
+			com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );
 }
+
 /**
  * Return the PhysicalAddressLabel property value.
  * @return javax.swing.JLabel

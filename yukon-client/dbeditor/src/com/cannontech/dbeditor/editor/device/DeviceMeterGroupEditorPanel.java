@@ -1,8 +1,10 @@
 package com.cannontech.dbeditor.editor.device;
+
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IEDMeter;
 import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 
@@ -1345,15 +1347,15 @@ public void setValue(Object val)
 		getLastIntervalDemandRateLabel().setVisible(false);
 		getLastIntervalDemandRateComboBox().setVisible(false);
 		
-		getLoadProfileCollectionPanel().setVisible(false);
+ 		getLoadProfileCollectionPanel().setVisible(false);
 
 		dmg = ((IEDMeter) val).getDeviceMeterGroup();
 	}
 
-
+	
+	getMeterNumberTextField().setText( dmg.getMeterNumber() );
 	getCycleGroupComboBox().setSelectedItem( dmg.getCollectionGroup() );
 	getAreaCodeGroupComboBox().setSelectedItem( dmg.getTestCollectionGroup() );
-	getMeterNumberTextField().setText( dmg.getMeterNumber() );
    getJComboBoxBillingGroup().setSelectedItem( dmg.getBillingGroup() );
 }
 }

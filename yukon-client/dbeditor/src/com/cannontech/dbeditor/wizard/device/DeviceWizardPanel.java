@@ -243,15 +243,20 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		int devType = getDeviceTypePanel().getDeviceType();
 
 		if( com.cannontech.database.data.device.DeviceTypesFuncs.isMeter(devType) 
-			 || com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(devType)
-			 || devType == com.cannontech.database.data.pao.PAOGroups.DAVISWEATHER)
+			 || com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(devType) )
 		{
 			getDeviceMeterNumberPanel().setValue(null);
 			if( com.cannontech.database.data.device.DeviceTypesFuncs.isMCTiORMCT2XX(devType) )
 			{
 				getDeviceMeterNumberPanel().setDefaultMeterNumber(getDeviceNameAddressPanel().getAddress());
 			}
+			
 			return getDeviceMeterNumberPanel();
+		}
+		else if( devType == com.cannontech.database.data.pao.PAOGroups.DAVISWEATHER )
+		{
+			getDeviceScanRatePanel().setDeviceType(getDeviceTypePanel().getDeviceType());
+			return getDeviceScanRatePanel();			
 		}
 		else if( com.cannontech.database.data.pao.DeviceTypes.MCTBROADCAST == devType )
 		{
