@@ -101,15 +101,22 @@ insert into YukonUser values (-9999,'(none)','(none)',0,'01-JAN-2000','Disabled'
 
 
 /* energy company role properties */
+update YukonRoleProperty set Description='(Deprecated) Use this value as the admin email address only if the energy company''s primary contact doesn''t have an email address.' where RolePropertyId=-1100;
 update YukonRoleProperty set DefaultValue='Residential Customers', Description='Group name of all the residential customer logins' where RolePropertyID=-1105;
 update YukonRoleProperty set DefaultValue='Web Client Operators' where RolePropertyID=-1106;
 
 /* web client role properties */
+update YukonRoleProperty set DefaultValue='yukon/CannonStyle.css' where RolePropertyId=-10802;
+update YukonRoleProperty set DefaultValue='yukon/Bullet.gif' where RolePropertyId=-10803;
+update YukonRoleProperty set DefaultValue='yukon/BulletExpand.gif' where RolePropertyId=-10804;
+update YukonRoleProperty set DefaultValue='yukon/DemoHeader.gif' where RolePropertyId=-10805;
 update YukonRoleProperty set KeyName='log_in_url', DefaultValue='/login.jsp', Description='The url where the user login from. It is used as the url to send the users to when they log off.' where RolePropertyID=-10806;
 /* @error ignore */
-insert into YukonRoleProperty values(-10807,-108,'nav_connector_bottom','BottomConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of the last hardware under each category');
+insert into YukonRoleProperty values(-10807,-108,'nav_connector_bottom','yukon/BottomConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of the last hardware under each category');
 /* @error ignore */
-insert into YukonRoleProperty values(-10808,-108,'nav_connector_middle','MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
+insert into YukonRoleProperty values(-10808,-108,'nav_connector_middle','yukon/MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
+update YukonRoleProperty set DefaultValue='yukon/BottomConnector.gif' where RolePropertyId=-10807;
+update YukonRoleProperty set DefaultValue='yukon/MidConnector.gif' where RolePropertyId=-10808;
 
 /* operator consumer info role properties */
 update YukonRoleProperty set KeyName='Super Operator', DefaultValue='false', Description='Used for some testing functions (not recommended)' where RolePropertyID=-20150;
@@ -154,12 +161,14 @@ update YukonRoleProperty set KeyName='Disable Program Signup', DefaultValue='fal
 /* @error ignore */
 insert into YukonRoleProperty values(-40055,-400,'Opt Out Rules','(none)','Defines the rules for opting out.');
 update YukonRoleProperty set DefaultValue='(none)' where RolePropertyID=-40100;
-update YukonRoleProperty set DefaultValue='(none)' where RolePropertyID=-40101;
+update YukonRoleProperty set DefaultValue='(none)', Description='(Deprecated) Use the "Description Utility" role property to handle the customized utility email.' where RolePropertyID=-40101;
 /* @error ignore */
 insert into YukonRoleProperty values(-40102,-400,'Link Thermostat Instructions','(none)','The customized thermostat instructions link');
 update YukonRoleProperty set DefaultValue='THERMOSTAT - SCHEDULE' where RolePropertyID=-40157;
 update YukonRoleProperty set DefaultValue='THERMOSTAT - MANUAL' where RolePropertyID=-40158;
 update YukonRoleProperty set Description='Description on the contact us page. The special fields will be replaced by real information when displayed on the web.' where RolePropertyID=-40173;
+update YukonRoleProperty set DefaultValue='yukon/Mom.jpg' where RolePropertyId=-40180;
+update YukonRoleProperty set DefaultValue='yukon/Family.jpg' where RolePropertyId=-40181;
 
 /* residential customers group */
 /* @error ignore */
@@ -172,6 +181,7 @@ insert into yukongrouprole values (552,-300,-400,-40052,'false');
 insert into yukongrouprole values (555,-300,-400,-40055,'(none)');
 /* @error ignore */
 insert into yukongrouprole values (602,-300,-400,-40102,'(none)');
+update YukonGroupRole set Value='yukon/DemoHeaderCES.gif' where Value='DemoHeaderCES.gif';
 
 /* web client operators group */
 /* @error ignore */
