@@ -437,7 +437,7 @@ alter table capcontrolsubstationbus alter column ControlSendRetries numeric not 
 go
 
 
-
+drop table SoeLog;
 drop table TagLog;
 go
 

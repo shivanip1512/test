@@ -394,6 +394,7 @@ alter table capcontrolsubstationbus modify column ControlSendRetries not null;
 
 
 
+drop table SoeLog;
 drop table TagLog;
 create table TagLog  (
    LogID                NUMBER                           not null,
