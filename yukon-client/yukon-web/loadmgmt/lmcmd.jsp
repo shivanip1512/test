@@ -26,7 +26,7 @@ WebCmdMsg cmdMsg = LMCmdMsgFactory.createCmdMsg( cmd, new Integer(itemid), null,
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../WebConfig/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" type="text/css" href="css/lm.css">
 <script langauge="Javascript" src="../JavaScript/calendar.js"></script>
 <script language="JavaScript" src="../JavaScript/drag.js"></script>
