@@ -126,7 +126,7 @@ function deleteHardware(form) {
               </form>
             <table width="610" border="0" cellspacing="0" cellpadding="10" align="center" height="66">
               <tr> 
-                 <td width="300" valign="top" bgcolor="#FFFFFF" height="65"> 
+                 <td valign="top" bgcolor="#FFFFFF" height="65"> 
                     <div align="center"> <span class="MainHeader">Hardware History</span> 
                       <br>
                       <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
