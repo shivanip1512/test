@@ -127,7 +127,7 @@ CtiIONFloatArray::CtiIONFloatArray( unsigned char *buf, unsigned long len, unsig
     CtiIONValue *tmpValue;
     unsigned long pos = 0;
 
-    setValid( TRUE );
+    setValid(true);
 
     for( unsigned long i = 0; i < itemCount && isValid( ); i++ )
     {
