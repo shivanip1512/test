@@ -1,7 +1,6 @@
 package com.cannontech.common.cache;
 
-import java.util.logging.Logger;
-
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 
 /**
@@ -40,10 +39,7 @@ public class PointChangeCache  implements Runnable, java.util.Observer {
 
 	//Date of the last point change received from dispatch
 	private java.util.Date lastChange = null;
-	
-	// Logger to use
-	private Logger logger;
-	
+		
 	// Singleton instance
 	private static PointChangeCache instance;
 	
@@ -61,9 +57,7 @@ public static synchronized PointChangeCache getPointChangeCache() {
  */
 protected PointChangeCache()
 {
-	super();
-	
-	logger = Logger.getLogger(getClass().toString());
+	super();	
 }
 /**
  * Insert the method's description here.
@@ -83,7 +77,7 @@ public synchronized void connect()
 		}
 		catch (Exception e)
 		{
-			logger.severe("Can't read the properties file. " + "Make sure /config.properties is in the CLASSPATH");
+			CTILogger.error("Can't read the properties file. " + "Make sure /config.properties is in the CLASSPATH");
 			return;
 		}
 		vgHost = props.getProperty("dispatch_machine");
@@ -94,11 +88,11 @@ public synchronized void connect()
 		}
 		catch (NumberFormatException ne)
 		{
-			logger.warning("unable to determine dispatch");
+			CTILogger.warn("unable to determine dispatch");
 			return;
 		}
 		
-		logger.fine("attempting to connect to vangogh @" + vgHost + ":" + vgPort);
+		CTILogger.debug("attempting to connect to vangogh @" + vgHost + ":" + vgPort);
 		conn = new com.cannontech.message.dispatch.ClientConnection();
 		conn.addObserver(this);
 		conn.setHost(vgHost);
@@ -125,7 +119,7 @@ public synchronized void connect()
 	catch( java.io.IOException e )
 	{
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		logger.warning("An error occured connecting with dispatch");
+		CTILogger.warn("An error occured connecting with dispatch");
 	}
 
 	if( runner == null )
@@ -148,7 +142,7 @@ public synchronized void disconnect()
 	catch( java.io.IOException io )
 	{
 		com.cannontech.clientutils.CTILogger.error( io.getMessage(), io );
-		logger.warning("An error occured connecting with dispatch");
+		CTILogger.warn("An error occured connecting with dispatch");
 	}
 
 	//interrupt the runner thread and join with it
@@ -238,7 +232,7 @@ private void handleMessage(com.cannontech.message.util.Message msg)
 		Long id = new Long(((com.cannontech.message.dispatch.message.PointData) msg).getId());		
 		pointData.put(id, msg);		
 		
-		logger.fine("Received point data for point id:  " + id);
+		CTILogger.debug("Received point data for point id:  " + id);
 	}
 	else
 	if (msg instanceof com.cannontech.message.dispatch.message.Signal)
@@ -248,24 +242,24 @@ private void handleMessage(com.cannontech.message.util.Message msg)
 
 		Long id = new Long( signal.getId() );
 
-		logger.fine("Received signal id:  " + id + " tags:  " + signal.getTags() );
+		CTILogger.debug("Received signal id:  " + id + " tags:  " + signal.getTags() );
 		
 			
 		if( (signal.getTags() & com.cannontech.message.dispatch.message.Signal.MASK_ANY_ALARM) != 0 )
 		{						
 			signalData.put( id, signal );
-			logger.fine("Storing signal");
+			CTILogger.debug("Storing signal");
 		}
 		else
 		{
 			signalData.remove( id );
-			logger.fine("Removing signal");
+			CTILogger.debug("Removing signal");
 		
 		}		
 	}
 	else
 	{
-		logger.warning("received an unknown message of class:  " + msg.getClass() );
+		CTILogger.warn("received an unknown message of class:  " + msg.getClass() );
 	}
 	
 	lastChange = msg.getTimeStamp();
@@ -344,7 +338,7 @@ public void run()
 {		
 	try
 	{
-		logger.fine("starting up...");
+		CTILogger.debug("starting up...");
 		
 		while(true)
 		{
@@ -357,19 +351,19 @@ public void run()
 				}
 				else
 				{
-					logger.warning("received an unknown message of class:  " + in.getClass());
+					CTILogger.warn("received an unknown message of class:  " + in.getClass());
 				}
 			}
 			
 			Thread.sleep(1000);
 
 			if( !conn.isValid() )						
-				logger.warning("connect to dispatch is down...");			
+				CTILogger.warn("connect to dispatch is down...");			
 		}
 	}
 	catch( InterruptedException ie )
 	{
-		logger.fine("closing connection to dispatch");
+		CTILogger.debug("closing connection to dispatch");
 	}
 	finally
 	{
@@ -379,7 +373,7 @@ public void run()
 		}
 		catch( java.io.IOException ioe )
 		{
-			logger.warning("Error disconnecting with vangogh occured");
+			CTILogger.warn("Error disconnecting with vangogh occured");
 		}		
 	}
 }
@@ -394,9 +388,9 @@ public void update(java.util.Observable obs, Object val)
 	if( obs instanceof com.cannontech.message.dispatch.ClientConnection )
 	{
 		if( conn.isValid() )
-			logger.info("Connection established to " + conn.getHost() + ":" + conn.getPort());
+			CTILogger.debug("Connection established to " + conn.getHost() + ":" + conn.getPort());
 		else
-			logger.info("Connection to " + conn.getHost() + ":" + conn.getPort() + " is down");
+			CTILogger.debug("Connection to " + conn.getHost() + ":" + conn.getPort() + " is down");
 	}
 }
 }
