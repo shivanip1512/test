@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/01/04 22:16:03 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/01/13 17:49:57 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.23  2005/01/13 17:49:57  mfisher
+* Returning ErrReturn for error instead of InMessage->EventCode
+*
 * Revision 1.22  2005/01/04 22:16:03  cplender
 * Completed the asString() method.
 *
@@ -87,6 +90,7 @@
 #pragma warning( disable : 4786)
 
 #include "cparms.h"
+#include "dsm2err.h"
 #include "dev_rtc.h"
 
 #include "msg_cmd.h"
@@ -273,10 +277,16 @@ INT CtiDeviceRTC::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
     }
     else
     {
+        char error_str[80];
+
+        GetErrorString(ErrReturn, error_str);
+
+        resultString = getName() + " / operation failed \"" + error_str + "\" (" + RWCString(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
+
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                        RWCString(InMessage->Return.CommandStr),
-                                                       getName() + " / operation failed",
-                                                       InMessage->EventCode & 0x7fff,
+                                                       resultString,
+                                                       ErrReturn,
                                                        InMessage->Return.RouteID,
                                                        InMessage->Return.MacroOffset,
                                                        InMessage->Return.Attempt,

@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/11/03 19:21:20 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/01/13 17:49:57 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.6  2005/01/13 17:49:57  mfisher
+* Returning ErrReturn for error instead of InMessage->EventCode
+*
 * Revision 1.5  2004/11/03 19:21:20  mfisher
 * finished up protocol stuff, added ACK
 *
@@ -33,6 +36,7 @@
 
 #pragma warning( disable : 4786)
 #include "cparms.h"
+#include "dsm2err.h"
 #include "dev_rtm.h"
 
 #include "msg_cmd.h"
@@ -327,10 +331,16 @@ INT CtiDeviceRTM::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
     }
     else
     {
+        char error_str[80];
+
+        GetErrorString(ErrReturn, error_str);
+
+        resultString = getName() + " / operation failed \"" + error_str + "\" (" + RWCString(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
+
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                        RWCString(InMessage->Return.CommandStr),
-                                                       getName() + " / operation failed",
-                                                       InMessage->EventCode & 0x7fff,
+                                                       resultString,
+                                                       ErrReturn,
                                                        InMessage->Return.RouteID,
                                                        InMessage->Return.MacroOffset,
                                                        InMessage->Return.Attempt,

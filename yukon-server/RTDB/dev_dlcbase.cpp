@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2004/12/07 17:56:01 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/01/13 17:49:57 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -265,14 +265,14 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
     if(ErrReturn)
     {
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                  RWCString(InMessage->Return.CommandStr),
-                                  RWCString(),
-                                  InMessage->EventCode & 0x7fff,
-                                  InMessage->Return.RouteID,
-                                  InMessage->Return.MacroOffset,
-                                  InMessage->Return.Attempt,
-                                  InMessage->Return.TrxID,
-                                  InMessage->Return.UserID);
+                                         RWCString(InMessage->Return.CommandStr),
+                                         RWCString(),
+                                         ErrReturn,
+                                         InMessage->Return.RouteID,
+                                         InMessage->Return.MacroOffset,
+                                         InMessage->Return.Attempt,
+                                         InMessage->Return.TrxID,
+                                         InMessage->Return.UserID);
 
         if( retMsg != NULL )
         {
@@ -331,7 +331,11 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
                 }
             }
 
-            resultString = getName() + " / operation failed";
+            char error_str[80];
+
+            GetErrorString(ErrReturn, error_str);
+
+            resultString = getName() + " / operation failed \"" + error_str + "\" (" + RWCString(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 
             retMsg->setResultString(resultString);
 
