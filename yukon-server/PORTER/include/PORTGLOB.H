@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/PORTGLOB.H-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/06/21 15:37:56 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/07/23 19:44:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,6 +36,7 @@ using namespace std;
 #define PORTER_DEBUG_RIPPLE            0x00000800
 #define PORTER_DEBUG_PRIORITIES        0x00001000
 #define PORTER_DEBUG_CCUMESSAGES       0x00010000
+#define PORTER_DEBUG_CCUCONFIG         0x00020000
 
 #define PORTER_DBGBIT_VERBOSEERRORS    0x00000001
 
@@ -87,7 +88,6 @@ extern IM_EX_PORTGLOB ULONG         AlphaFailures;
 extern IM_EX_PORTGLOB LONG          TracePort;
 extern IM_EX_PORTGLOB LONG          TraceRemote;
 extern IM_EX_PORTGLOB BOOL          NetCXAltPin;
-extern IM_EX_PORTGLOB ULONG         DebugBitFlag;      // Debugging Bits
 
 extern IM_EX_PORTGLOB ULONG         PILMaxQueueSize;        // Debugging Bits
 extern IM_EX_PORTGLOB BOOL          cParmPorterServiceLog;  // CPARM which causes the porter service to write output to porter.logxx

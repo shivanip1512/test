@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTGLOB.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/06/21 15:37:56 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/07/23 19:44:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,7 +70,6 @@ IM_EX_PORTGLOB ULONG           AlphaFailures = 0;
 IM_EX_PORTGLOB LONG            TracePort   = 0L;
 IM_EX_PORTGLOB LONG            TraceRemote = 0L;
 IM_EX_PORTGLOB BOOL            NetCXAltPin = FALSE;
-IM_EX_PORTGLOB ULONG           DebugBitFlag = PORTER_DBGBIT_VERBOSEERRORS;      // Debugging Bits
 IM_EX_PORTGLOB UINT            ExtraPortTimeOut[MAXPORT];
 IM_EX_PORTGLOB ULONG           PILMaxQueueSize = 1000;
 

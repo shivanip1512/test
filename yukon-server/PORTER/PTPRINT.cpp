@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PTPRINT.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:34 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/07/23 19:44:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -119,12 +119,10 @@ TraceIn (PBYTE   Message,          /* message to print out in hex */
       /* then print the formatted hex trace */
       TPrint(Message, Length);
 
-      if(ErrorCode && DebugBitFlag & PORTER_DBGBIT_VERBOSEERRORS)
+      if(ErrorCode)
       {
          PrintError(ErrorCode);
       }
-
-      // dout << endl;
 
       /* Restore the screen to normal */
    }
