@@ -900,39 +900,88 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
 {
     INT retCode = NORMAL;
 
-    CtiCommandParser  parse(InMessage->Return.CommandStr);
-    CtiReturnMsg     *pPIL;
-    CtiPointDataMsg  *commFailed;
-    CtiPointBase     *commPoint;
+    //CtiCommandParser  parse(InMessage->Return.CommandStr);
+    CtiReturnMsg     *retMsg;
+    CtiCommandMsg    *pMsg;
+    RWCString         resultString;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
-    pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                   RWCString(InMessage->Return.CommandStr),
-                                   RWCString(),
-                                   InMessage->EventCode & 0x7fff,
-                                   InMessage->Return.RouteID,
-                                   InMessage->Return.MacroOffset,
-                                   InMessage->Return.Attempt,
-                                   InMessage->Return.TrxID,
-                                   InMessage->Return.UserID);
+    retMsg = CTIDBG_new CtiReturnMsg(getID(),
+                                     RWCString(InMessage->Return.CommandStr),
+                                     RWCString(),
+                                     InMessage->EventCode & 0x7fff,
+                                     InMessage->Return.RouteID,
+                                     InMessage->Return.MacroOffset,
+                                     InMessage->Return.Attempt,
+                                     InMessage->Return.TrxID,
+                                     InMessage->Return.UserID);
 
-    if( pPIL != NULL )
+    if( retMsg != NULL )
     {
-        //  insert "Sky is falling" messages into pPIL here
+        //  send a Device Failed/Point Failed message to dispatch, if applicable
+        pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
-        // send the whole mess to dispatch
-        if (pPIL->PointData().entries() > 0)
+        if( pMsg != NULL )
         {
-            retList.insert( pPIL );
+            switch( InMessage->Sequence )
+            {
+                case CtiProtocolION::Command_ExceptionScan:
+                {
+                    pMsg->insert( -1 );             //  This is the dispatch token and is unimplemented at this time
+                    pMsg->insert(OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+                    pMsg->insert(getID());          //  The id (device or point which failed)
+                    pMsg->insert(ScanRateGeneral);  //  defined in yukon.h
+                    pMsg->insert(InMessage->EventCode);
+
+                    break;
+                }
+
+                case CtiProtocolION::Command_IntegrityScan:
+                {
+                    pMsg->insert( -1 );             //  This is the dispatch token and is unimplemented at this time
+                    pMsg->insert(OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+                    pMsg->insert(getID());          //  The id (device or point which failed)
+                    pMsg->insert(ScanRateIntegrity);
+                    pMsg->insert(InMessage->EventCode);
+
+                    break;
+                }
+
+                case CtiProtocolION::Command_EventLogRead:
+                {
+                    pMsg->insert( -1 );             //  This is the dispatch token and is unimplemented at this time
+                    pMsg->insert(OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+                    pMsg->insert(getID());          //  The id (device or point which failed)
+                    pMsg->insert(ScanRateAccum);
+                    pMsg->insert(InMessage->EventCode);
+
+                    break;
+                }
+
+                default:
+                {
+                    delete pMsg;
+                    pMsg = NULL;
+
+                    break;
+                }
+            }
+
+            if( pMsg != NULL )
+            {
+                retMsg->insert(pMsg);
+            }
         }
-        else
-        {
-            delete pPIL;
-        }
+
+        resultString = getName() + " / operation failed";
+
+        retMsg->setResultString(resultString);
+
+        retList.append(retMsg);
     }
 
     return retCode;
