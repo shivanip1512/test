@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/connection.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/08/08 23:16:22 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/08/28 16:16:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,8 +81,6 @@ protected:
          UINT     _valid                  : 1;
          UINT     _dontReconnect          : 1;
          UINT     _serverConnection       : 1;
-         UINT     _blockingWrites         : 1;
-         UINT     _autoExtend             : 1;
          UINT     _localQueueAlloc        : 1;
       };
    };
@@ -129,10 +127,6 @@ public:
    CtiQueue<CtiMessage, less<CtiMessage> > & getOutQueueHandle();
    CtiQueue<CtiMessage, less<CtiMessage> > & getInQueueHandle();
 
-   CtiConnection& setBlockingWrites(BOOL b = TRUE);
-   CtiConnection& resetBlockingWrites(BOOL b = FALSE);
-   CtiConnection& setAutoExtend(BOOL b = TRUE);
-   CtiConnection& resetAutoExtend(BOOL b = FALSE);
    BOOL  isViable() const;
    UINT  valid() const;
    void  forceTermination();

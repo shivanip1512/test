@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/08/20 22:44:48 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/08/28 16:16:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,37 +77,6 @@ int CtiConnection::WriteConnQue(CtiMessage *QEnt, unsigned timeout, bool cleanif
 
     if(outQueue.isFull())
     {
-        if( _autoExtend )
-        {
-            if(getDebugLevel() & 0x00001000)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** QUEUE RESIZED +100 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            outQueue.resize( 100 );
-        }
-        else if( !_blockingWrites ) // Lowest sort gets pulled off the Queue
-        {
-            status = QUEUE_WRITE;
-
-            if(getDebugLevel() & 0x00001000)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << who() << " queue tailPurge to prevent a blocking write" << endl;
-            }
-            outQueue.tailPurge();
-        }
-        else if( _serverConnection )
-        {
-            status = QUEUE_WRITE;
-            if(getDebugLevel() & 0x00001000)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Server cannot wait for client " << who() << " queue tailPurge to prevent a blocking write" << endl;
-            }
-            outQueue.tailPurge();
-        }
-        else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << "OutThread  : " << who() << " queue is full.  Will BLOCK " << endl;
@@ -283,7 +252,7 @@ void CtiConnection::InThread()
 
                     if(inQueue->isFull())
                     {
-
+#if 0
                         if( !_blockingWrites ) // Lowest sort gets pulled off the Queue
                         {
                             inQueue->tailPurge();
@@ -296,11 +265,11 @@ void CtiConnection::InThread()
                             }
                         }
                         else if(getDebugLevel() & 0x00001000)
+#endif
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << NowTime << " InThread  : " << who() << " queue is full.  Will BLOCK. It allows " << (INT)inQueue->entries() << " entries" << endl;
+                            dout << NowTime << " InThread  : " << who() << " queue is full.  Will BLOCK. It allows " << (INT)inQueue->size() << " entries" << endl;
                         }
-
                     }
 
                     _lastInQueueWrite = _lastInQueueWrite.now();    // Refresh the time...
@@ -433,16 +402,31 @@ void CtiConnection::OutThread()
 
                     if( _valid )
                     {
-                        Out() << *MyMsg;
-                        // 20020620 CGP // if(outQueue.entries() == 0) Out().vflush();
-                        Out().vflush();
-
-                        messagePeek( MyMsg );
-
-                        if( MyMsg ) // Clean up the memory, after all, it just went out the door...
+                        try
                         {
-                            delete MyMsg;
-                            MyMsg = NULL;
+                            Out() << *MyMsg;
+                            Out().vflush();
+
+                            messagePeek( MyMsg );
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        try
+                        {
+                            if( MyMsg ) // Clean up the memory, after all, it just went out the door...
+                            {
+                                delete MyMsg;
+                                MyMsg = NULL;
+                            }
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
                 }
@@ -1011,6 +995,12 @@ void CtiConnection::messagePeek( CtiMessage *MyMsg )
             messagePeek(((CtiMessage*)(pMulti->getData()[i])));             // recurse.
         }
     }
+    else if(MyMsg->isA() > 0x8000 || MyMsg->isA() < 1510)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "  ODD MESSAGE TYPE " << MyMsg->isA() << endl;
+    }
 
     return;
 }
@@ -1163,29 +1153,6 @@ void CtiConnection::ThreadTerminate()
 CtiQueue<CtiMessage, less<CtiMessage> > & CtiConnection::getOutQueueHandle()  { return outQueue;}
 CtiQueue<CtiMessage, less<CtiMessage> > & CtiConnection::getInQueueHandle()   { return *inQueue;}
 
-CtiConnection& CtiConnection::setBlockingWrites(BOOL b)
-{
-    _blockingWrites = b;
-    return *this;
-}
-
-CtiConnection& CtiConnection::resetBlockingWrites(BOOL b)
-{
-    _blockingWrites = b;
-    return *this;
-}
-
-CtiConnection& CtiConnection::setAutoExtend(BOOL b)
-{
-    _autoExtend = b;
-    return *this;
-}
-
-CtiConnection& CtiConnection::resetAutoExtend(BOOL b)
-{
-    _autoExtend = b;
-    return *this;
-}
 BOOL CtiConnection::isViable() const
 {
     return
