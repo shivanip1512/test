@@ -187,6 +187,22 @@ BOOL CtiConfigParameters::isOpt(RWCString key)
       return FALSE;
 }
 
+bool CtiConfigParameters::isOpt(RWCString key, RWCString isEqualThisValue)
+{
+   CtiConfigKey     Key(key);
+   CtiConfigValue   *Value;
+
+   checkForRefresh();
+
+   RWRecursiveLock<RWMutexLock>::LockGuard gaurd(mutex);
+   Value = (CtiConfigValue*)mHash.findValue(&Key);
+
+   if(Value && !Value->getValue().compareTo(isEqualThisValue, RWCString::ignoreCase) )
+      return true;
+   else
+      return false;
+}
+
 
 RWCString
 CtiConfigParameters::getValueAsString(RWCString key, RWCString defaultval)

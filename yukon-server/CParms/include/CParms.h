@@ -43,6 +43,7 @@ public:
    RWCString getYukonBaseDir() const;
 
    BOOL              isOpt(RWCString key);
+   bool isOpt(RWCString key, RWCString isEqualThisValue);
 
    /*
     * returns bool true i.f.f. the cparms were refreshed on this call.  Uses the built in timer to
