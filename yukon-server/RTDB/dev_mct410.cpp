@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/04/20 20:33:25 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/04/21 20:54:26 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -507,54 +507,48 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 }
 
 
-PointQuality_t CtiDeviceMCT410::getDataQuality( int value )
+PointQuality_t CtiDeviceMCT410::getDataQuality( unsigned long value, int bytes )
 {
     int errorcode = value & 0xff;
     PointQuality_t retval;
 
-    while( (value > 0xff) && (errorcode > 0xe0) )
-    {
-        value >>= 8;
-
-        if( (value & 0xff) != 0xff )
-        {
-            errorcode = 0;
-        }
-    }
+    if( bytes < 4 )     value ^= 0xFF000000;
+    if( bytes < 3 )     value ^= 0x00FF0000;
+    if( bytes < 2 )     value ^= 0x0000FF00;
 
     //  i s'pose this could be a set sometime, eh?
     switch( errorcode )
     {
-        case 0xFF:  //  Meter Communications Problem
-        case 0xFE:  //  --
-        case 0xFD:  //  No Data Yet Available
-        case 0xFC:  //  --
-        case 0xFB:  //  Data not available for interval
-        case 0xFA:  //  --
+        case 0xFFFFFFFF:  //  Meter Communications Problem
+        case 0xFFFFFFFE:  //  --
+        case 0xFFFFFFFD:  //  No Data Yet Available
+        case 0xFFFFFFFC:  //  --
+        case 0xFFFFFFFB:  //  Data not available for interval
+        case 0xFFFFFFFA:  //  --
         {
             retval = InvalidQuality;
             break;
         }
-        case 0xF9:  //  Device Filler
-        case 0xF8:  //  --
+        case 0xFFFFFFF9:  //  Device Filler
+        case 0xFFFFFFF8:  //  --
         {
             retval = DeviceFillerQuality;
             break;
         }
-        case 0xF7:  //  Power failure occurred during interval
-        case 0xF6:  //  --
+        case 0xFFFFFFF7:  //  Power failure occurred during interval
+        case 0xFFFFFFF6:  //  --
         {
             retval = PowerfailQuality;
             break;
         }
-        case 0xF5:  //  Power restored in this interval
-        case 0xF4:  //  --
+        case 0xFFFFFFF5:  //  Power restored in this interval
+        case 0xFFFFFFF4:  //  --
         {
             retval = PartialIntervalQuality;
             break;
         }
-        case 0xE1:  //  Overflow
-        case 0xE0:  //  --
+        case 0xFFFFFFE1:  //  Overflow
+        case 0xFFFFFFE0:  //  --
         {
             retval = OverflowQuality;
             break;
@@ -635,7 +629,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
         RecentValue = MAKEULONG(MAKEUSHORT(DSt->Message[2], DSt->Message[1]), (USHORT)(DSt->Message[0]));
 
-        quality = getDataQuality(RecentValue);
+        quality = getDataQuality(RecentValue, 3);
 
         if( !isValidDataQuality(quality) )
         {
@@ -712,7 +706,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         Value = MAKEUSHORT(DSt->Message[1], DSt->Message[0]);
 
-        quality = getDataQuality(MAKEUSHORT(DSt->Message[1], DSt->Message[0] ));
+        quality = getDataQuality(MAKEUSHORT(DSt->Message[1], DSt->Message[0] ), 2);
 
         if( !isValidDataQuality(quality) )
         {
@@ -753,7 +747,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         Value = MAKEUSHORT(DSt->Message[3], DSt->Message[2]);
 
-        quality = getDataQuality(MAKEUSHORT(DSt->Message[3], DSt->Message[2] ));
+        quality = getDataQuality(MAKEUSHORT(DSt->Message[3], DSt->Message[2] ), 2);
 
         if( !isValidDataQuality(quality) )
         {
@@ -793,7 +787,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         Value = MAKEUSHORT(DSt->Message[5], DSt->Message[4]);
 
-        quality = getDataQuality(MAKEUSHORT(DSt->Message[5], DSt->Message[4] ));
+        quality = getDataQuality(MAKEUSHORT(DSt->Message[5], DSt->Message[4] ), 2);
 
         if( !isValidDataQuality(quality) )
         {
@@ -883,7 +877,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
         tmpTime = RWTime(timeOfPeak + rwEpoch);
 
         //  note that this is the same as above - this needs to be consolidated into a single temporary integer variable
-        quality = getDataQuality(MAKEUSHORT(DSt->Message[1], DSt->Message[0] ));
+        quality = getDataQuality(MAKEUSHORT(DSt->Message[1], DSt->Message[0] ), 2);
 
         if( !isValidDataQuality(quality) )
         {
@@ -924,7 +918,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
 
         Value = MAKEUSHORT(DSt->Message[7], DSt->Message[6]);
 
-        quality = getDataQuality(MAKEUSHORT(DSt->Message[7], DSt->Message[6] ));
+        quality = getDataQuality(MAKEUSHORT(DSt->Message[7], DSt->Message[6] ), 2);
 
         if( !isValidDataQuality(quality) )
         {
@@ -999,7 +993,7 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
 
         maxVolts = MAKEUSHORT(DSt->Message[1], DSt->Message[0]);
 
-        quality = getDataQuality(MAKEUSHORT(DSt->Message[1], DSt->Message[0] ));
+        quality = getDataQuality(MAKEUSHORT(DSt->Message[1], DSt->Message[0] ), 2);
 
         if( !isValidDataQuality(quality) )
         {
@@ -1015,7 +1009,7 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
 
         minVolts = MAKEUSHORT(DSt->Message[7], DSt->Message[6]);
 
-        quality = getDataQuality(MAKEUSHORT(DSt->Message[7], DSt->Message[6] ));
+        quality = getDataQuality(MAKEUSHORT(DSt->Message[7], DSt->Message[6] ), 2);
 
         if( !isValidDataQuality(quality) )
         {
