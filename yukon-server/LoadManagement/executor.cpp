@@ -1132,7 +1132,16 @@ void CtiLMManualControlMsgExecutor::ScheduledStart()
                                     //lmProgramDirect->setNotificationDateTime(_controlMsg->getNotifyTime());
                                     lmProgramDirect->setDirectStartTime(_controlMsg->getStartTime());
                                     lmProgramDirect->setStartedControlling(_controlMsg->getStartTime());
-                                    lmProgramDirect->setDirectStopTime(_controlMsg->getStopTime());
+                                    if( _controlMsg->getStopTime().seconds() < RWDBDateTime(1991,1,1,0,0,0,0).seconds() )
+                                    {//saves us from stopping immediately after starting if client is dumb enough to send us a stop time of 1990
+                                        RWDBDateTime pluggedStopTime(lmProgramDirect->getDirectStartTime());
+                                        pluggedStopTime = pluggedStopTime.addDays(1);
+                                        lmProgramDirect->setDirectStopTime(pluggedStopTime);
+                                    }
+                                    else
+                                    {
+                                        lmProgramDirect->setDirectStopTime(_controlMsg->getStopTime());
+                                    }
                                     lmProgramDirect->setCurrentGearNumber(_controlMsg->getStartGear()-1);
                                     if( _controlMsg->getStartPriority() > currentControlArea->getCurrentPriority() )
                                     {
@@ -1392,7 +1401,16 @@ void CtiLMManualControlMsgExecutor::StartNow()
                                     //lmProgramDirect->setNotificationDateTime(_controlMsg->getNotifyTime());
                                     lmProgramDirect->setDirectStartTime(RWDBDateTime());
                                     lmProgramDirect->setStartedControlling(RWDBDateTime());
-                                    lmProgramDirect->setDirectStopTime(_controlMsg->getStopTime());
+                                    if( _controlMsg->getStopTime().seconds() < RWDBDateTime(1991,1,1,0,0,0,0).seconds() )
+                                    {//saves us from stopping immediately after starting if client is dumb enough to send us a stop time of 1990
+                                        RWDBDateTime pluggedStopTime(lmProgramDirect->getDirectStartTime());
+                                        pluggedStopTime = pluggedStopTime.addDays(1);
+                                        lmProgramDirect->setDirectStopTime(pluggedStopTime);
+                                    }
+                                    else
+                                    {
+                                        lmProgramDirect->setDirectStopTime(_controlMsg->getStopTime());
+                                    }
                                     lmProgramDirect->setCurrentGearNumber(_controlMsg->getStartGear()-1);
                                     if( _controlMsg->getStartPriority() > currentControlArea->getCurrentPriority() )
                                     {
