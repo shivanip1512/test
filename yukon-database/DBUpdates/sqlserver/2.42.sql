@@ -9,9 +9,7 @@ TagName              varchar(60)          not null,
 TagLevel             numeric              not null,
 Inhibit              char(1)              not null,
 ColorID              numeric              not null,
-ImageID              numeric              not null,
-RefStr               varchar(60)          not null,
-ForStr               varchar(60)          not null
+ImageID              numeric              not null
 );
 go
 alter table Tags
@@ -23,6 +21,8 @@ create table DynamicTags (
 InstanceID           numeric              not null,
 PointID              numeric              not null,
 TagID                numeric              not null,
+UserName             varchar(60)          not null,
+Action               varchar(20)          not null,
 Description          varchar(120)         not null,
 TagTime              datetime             not null,
 RefStr               varchar(60)          null,
@@ -46,6 +46,8 @@ create table TagLog (
 LogID                numeric              not null,
 PointID              numeric              not null,
 TagID                numeric              not null,
+UserName             varchar(60)          not null,
+Action               varchar(20)          not null,
 Description          varchar(120)         not null,
 TagTime              datetime             not null,
 RefStr               varchar(60)          not null,

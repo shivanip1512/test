@@ -7,9 +7,7 @@ create table Tags  (
    TagLevel             NUMBER                           not null,
    Inhibit              CHAR(1)                          not null,
    ColorID              NUMBER                           not null,
-   ImageID              NUMBER                           not null,
-   RefStr               VARCHAR2(60)                     not null,
-   ForStr               VARCHAR2(60)                     not null
+   ImageID              NUMBER                           not null
 );
 alter table Tags
    add constraint PK_TAGS primary key (TagID);
@@ -19,6 +17,8 @@ create table DynamicTags  (
    InstanceID           NUMBER                           not null,
    PointID              NUMBER                           not null,
    TagID                NUMBER                           not null,
+   UserName             VARCHAR2(60)                     not null,
+   Action          		VARCHAR2(20)                     not null,
    Description          VARCHAR2(120)                    not null,
    TagTime              DATE                             not null,
    RefStr               VARCHAR2(60),
@@ -38,6 +38,8 @@ create table TagLog  (
    LogID                NUMBER                           not null,
    PointID              NUMBER                           not null,
    TagID                NUMBER                           not null,
+   UserName             VARCHAR2(60)                     not null,
+   Action          		VARCHAR2(20)                     not null,
    Description          VARCHAR2(120)                    not null,
    TagTime              DATE                             not null,
    RefStr               VARCHAR2(60)                     not null,
