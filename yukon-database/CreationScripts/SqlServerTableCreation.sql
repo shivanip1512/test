@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     1/24/2003 3:19:52 PM                         */
+/* Created on:     2/3/2003 1:10:27 PM                          */
 /*==============================================================*/
 
 
@@ -1672,7 +1672,7 @@ ContactID            numeric              not null,
 NotificationCategoryID numeric              not null,
 DisableFlag          char(1)              not null,
 Notification         varchar(130)         not null,
-constraint PK_CONTACTNOTIFICATION primary key  (ContactID, NotificationCategoryID)
+constraint PK_CONTACTNOTIFICATION primary key  (ContactID, NotificationCategoryID, Notification)
 )
 go
 
@@ -3596,16 +3596,6 @@ go
 
 
 /*==============================================================*/
-/* Index: Indx_RwPtHisPtIDTst                                   */
-/*==============================================================*/
-create   index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
-POINTID,
-TIMESTAMP
-)
-go
-
-
-/*==============================================================*/
 /* Table : RepeaterRoute                                        */
 /*==============================================================*/
 create table RepeaterRoute (
@@ -3757,16 +3747,6 @@ go
 /* Index: Indx_SYSLG_Date                                       */
 /*==============================================================*/
 create   index Indx_SYSLG_Date on SYSTEMLOG (
-DATETIME
-)
-go
-
-
-/*==============================================================*/
-/* Index: Indx_SYSLG_PtIdDt                                     */
-/*==============================================================*/
-create   index Indx_SYSLG_PtIdDt on SYSTEMLOG (
-POINTID,
 DATETIME
 )
 go
