@@ -21,6 +21,14 @@ MM_reloadPage(true);
 </script>
 // -->
 </head>
+<%
+	graphBean.setGdefid( 
+		(request.getParameter("gdefid") == null 
+		 ? -1 : Integer.parseInt(request.getParameter("gdefid"))) );
+	graphBean.setPage( 
+		(request.getParameter("page") == null 
+		 ? 1 : Integer.parseInt(request.getParameter("page"))) );
+%>
 <body class="Background" leftmargin="0" topmargin="0" onload = "init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>

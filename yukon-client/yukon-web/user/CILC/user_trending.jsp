@@ -22,6 +22,14 @@ MM_reloadPage(true);
 </script>
 // -->
 </head>
+<%
+	graphBean.setGdefid( 
+		(request.getParameter("gdefid") == null 
+		 ? -1 : Integer.parseInt(request.getParameter("gdefid"))) );
+	graphBean.setPage( 
+		(request.getParameter("page") == null 
+		 ? 1 : Integer.parseInt(request.getParameter("page"))) );
+%>
 <body class="Background" leftmargin="0" topmargin="0" onload = "init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
@@ -90,26 +98,19 @@ MM_reloadPage(true);
 					}
 					else // "graph" is default
 					{%>
-        	            <img id = "theGraph" src="<%=request.getContextPath()%>/servlet/GraphGenerator?" >
+        	            <img id = "theGraph" src="<%=request.getContextPath()%>/servlet/GraphGenerator?action=EncodeGraph">					
                 	<%}%>
-
-					<%
-					if( request.getParameter("update") != null && request.getParameter("update").equalsIgnoreCase("now"))
-					{
-						graphBean.getDataNow();
-					}%>
 					<br><font size="-1"><cti:getProperty propertyid="<%= CommercialMeteringRole.TRENDING_DISCLAIMER%>"/></font>                	
 					</center>
                 </td>
               </tr>
             </table>
           <br>
-</td>
+		  </td>
         </tr>
       </table>
     </td>
   </tr>
 </table>
-<!--<script>Calendar.CreateCalendarLayer(10, 275, "");</script>-->
 </body>
 </html>
