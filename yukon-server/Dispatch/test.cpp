@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2004/09/16 16:17:35 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2004/09/21 14:31:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <rw/toolpro/sockport.h>
 #include <rw/toolpro/inetaddr.h>
 
+#include "thread.h"
 #include "queue.h"
 #include "exchange.h"
 #include "netports.h"
@@ -45,13 +46,11 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "connection.h"
 #include "counter.h"
 #include "pointtypes.h"
-
 #include "msg_notif_email.h"
 #include "msg_notif_email_attachment.h"
-//#include "thread_monitor.h"
-//#include "verification_objects.h"
+#include "thread_monitor.h"
 
-BOOL           bQuit = FALSE;
+BOOL bQuit = FALSE;
 
 int tagProcessInbounds(CtiMessage *&pMsg, int clientId);
 void tagExecute(int argc, char **argv);
@@ -65,6 +64,9 @@ void lmHelp();
 void dbchangeExecute(int argc, char **argv);
 void socketExecute(int argc, char **argv);
 void testThreads( int argc, char **argv );
+void DoTheNasty(int argc, char **argv);
+void booya( void *haha );
+void ha( void *la );
 
 typedef void (*XFUNC)(int argc, char **argv);       // Execution function
 typedef void (*HFUNC)();                           // Help Function
@@ -77,6 +79,221 @@ typedef struct
 
 } TESTFUNC_t;
 
+class EThread : public CtiThread
+{
+public:
+   EThread();
+   EThread( CtiThreadRegData::fooptr alt, int behave, string name, CtiThreadRegData::fooptr killBill, ULONG freq );
+   ~EThread();
+   virtual void run( void );
+   CtiThreadRegData* getData( void );
+   void setQuit( bool in );
+   bool inserted( void );
+   void setInserted( bool in );
+   bool timeToTickle( void );
+   void reset( void );
+
+   private:
+
+   int               _heart_beat;
+   bool              _tickle;
+   bool              _added;
+   bool              _quit;
+   CtiThreadRegData  *_data;
+};
+
+EThread::EThread() :
+   _quit( false ),
+   _added( false ),
+   _tickle( false ),
+   _heart_beat( 0 )
+{
+   _data = 0;
+}
+
+EThread::EThread( CtiThreadRegData::fooptr alt, int behave, string name, CtiThreadRegData::fooptr killBill, ULONG freq ) :
+   _quit( false ),
+   _added( false ),
+   _tickle( false ),
+   _heart_beat( 0 )
+{
+   _data = new CtiThreadRegData;
+
+   _data->setAlternate( alt );
+   _data->setBehaviour( behave );
+   _data->setName( name );
+   _data->setShutdownFunc( killBill );
+   _data->setTickleFreq( freq );
+}
+
+EThread::~EThread()
+{
+}
+
+void EThread::setQuit( bool in )
+{
+   _quit = in;
+}
+
+bool EThread::inserted( void )
+{
+   return _added;
+}
+
+CtiThreadRegData* EThread::getData( void )
+{
+   return _data;
+}
+
+void EThread::setInserted( bool in )
+{
+   _added = in;
+}
+
+bool EThread::timeToTickle( void )
+{
+   return _tickle;
+}
+
+void EThread::reset( void )
+{
+   _tickle = false;
+}
+
+void EThread::run( void )
+{
+   int index = 0;
+   bool reged = false;
+
+   {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      dout << _data->getName() << " starting up" << endl;
+   }
+
+   while( !_quit )
+   {
+      Sleep( 500 );
+
+      if( _heart_beat > _data->getTickleFreq() - 5 )
+      {
+         {
+            CtiLockGuard<CtiLogger> doubt_guard( dout );
+            dout << _data->getName() << " Time to tickle! " << _heart_beat << " " << _data->getTickleFreq() << endl;
+         }
+
+         _heart_beat = 0;
+         _tickle = true;
+      }
+      else
+      {
+         _heart_beat++;
+      }
+   }
+}
+
+//===========================================================================================================
+//===========================================================================================================
+
+void testThreads( int argc, char **argv )
+{
+   CtiThreadMonitor  *monitor = new CtiThreadMonitor;
+   EThread           *bob = new EThread( ha, 2, "Bob", booya, 30 );
+   EThread           *sam = new EThread( ha, 1, "Sam", booya, 45 );
+   EThread           *joe = new EThread( ha, 0, "Joe", booya, 90 );
+   int               index = 0;
+
+   monitor->start();
+
+   bob->start();
+   joe->start();
+
+   for( ;; )
+   {
+      Sleep( 1000 );
+
+      if( bob->isRunning() )
+      {
+         if( !bob->inserted() )
+         {
+            bob->getData()->setId( bob->getID() );
+            bob->setInserted( true );
+            monitor->insertThread( bob->getData() );
+         }
+
+         if( bob->timeToTickle() )
+         {
+            monitor->insertThread( bob->getData() );
+            bob->reset();
+         }
+      }
+
+      if( sam->isRunning() )
+      {
+         if( !sam->inserted() )
+         {
+            sam->getData()->setId( sam->getID() );
+            sam->setInserted( true );
+            monitor->insertThread( sam->getData() );
+         }
+
+         if( sam->timeToTickle() )
+         {
+            monitor->insertThread( sam->getData() );
+            sam->reset();
+         }
+      }
+
+      if( joe->isRunning() )
+      {
+         if( !joe->inserted() )
+         {
+            joe->getData()->setId( joe->getID() );
+            joe->setInserted( true );
+            monitor->insertThread( joe->getData() );
+         }
+
+         if( joe->timeToTickle() )
+         {
+            monitor->insertThread( joe->getData() );
+            joe->reset();
+         }
+      }
+
+      if( !sam->isRunning() )
+      {
+         if( index > 100 )
+            sam->start();
+      }
+
+      if( index > 21 )
+         bob->setQuit( true );
+
+      if( index == 30 )
+      {
+         monitor->dump();
+      }
+
+	  index++;
+   }
+}
+
+void ha( void *la )
+{
+   {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      dout << "I'm the Alternate function..." << endl;
+   }
+}
+
+void booya( void *haha )
+{
+   {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      dout << "I'm the function of DEATH! Buahahahaha" << endl;
+   }
+}
+
+
 TESTFUNC_t testfunction[] = {
     {"seasonreset", seasonExecute, defaultHelp},
     {"tags", tagExecute, tagHelp},
@@ -88,9 +305,6 @@ TESTFUNC_t testfunction[] = {
     {"thread", testThreads, defaultHelp },
     {"", 0, 0}
 };
-
-
-void DoTheNasty(int argc, char **argv);
 
 static double GetPointValue(int pointtype)
 {
@@ -215,10 +429,8 @@ void DoTheNasty(int argc, char **argv)
     }
 }
 
-void testThreads( int argc, char **argv )
-{
-   
-}
+//===========================================================================================================
+//===========================================================================================================
 
 void notifEmailExecute( int argc, char **argv )
 {
