@@ -1013,6 +1013,10 @@ insert into YukonGroupRole values (-738,-301,-201,-20118,'true');
 insert into YukonGroupRole values (-1205,-2,-201,-20118,'true');
 
 
+alter table CALCCOMPONENT
+   add constraint FK_ClcCmp_Pt foreign key (COMPONENTPOINTID)
+      references POINT (POINTID);
+go
 
 
 /******************************************************************************/
