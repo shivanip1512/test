@@ -63,7 +63,7 @@ public long getLimit() {
 	return limit;
 }
 /**
- * Insert the method's description here.
+ * Time that this point read/gathered. This is NOT the time this message was created!
  * Creation date: (2/2/00 10:14:36 AM)
  * @return java.util.Date
  */
