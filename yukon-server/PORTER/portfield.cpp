@@ -1,3 +1,5 @@
+
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   portfield
@@ -6,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.80 $
-* DATE         :  $Date: 2003/11/05 16:41:59 $
+* REVISION     :  $Revision: 1.81 $
+* DATE         :  $Date: 2003/11/06 21:15:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -968,98 +970,106 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
      *  reports itself as currently executing...
      */
 
-    if(OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC ||
-       !gConfigParms.getValueAsString("PORTER_EXCLUSION_TEST").compareTo("true", RWCString::ignoreCase) )
+    try
     {
-        CtiTablePaoExclusion exclusion;
-
+        if(OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC ||
+           !gConfigParms.getValueAsString("PORTER_EXCLUSION_TEST").compareTo("true", RWCString::ignoreCase) )
         {
-            CtiPortManager::LockGuard  port_guard(PortManager.getMux());
-            RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
+            CtiTablePaoExclusion exclusion;
 
-            portMayExecute = PortManager.mayPortExecuteExclusionFree(Port, exclusion);
-
-            if(portMayExecute)
             {
-                deviceMayExecute = DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion);
-            }
-        }
+                CtiPortManager::LockGuard  port_guard(PortManager.getMux());
+                RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
 
-        if( !portMayExecute || !deviceMayExecute )
-        {
-            // There is an exclusion conflict for this device or port!
-            ClearExclusions(Port,Device);       // Make sure we didn't dirty up the books.
+                portMayExecute = PortManager.mayPortExecuteExclusionFree(Port, exclusion);
 
-            // Decide how to requeue this port/device combo.
-            switch(exclusion.getFunctionRequeue())
-            {
-            case (CtiTablePaoExclusion::RequeueNextExecutableOM):
+                if(portMayExecute)
                 {
-                    if( ShuffleQueue( Port, OutMessage, Device ) )
+                    deviceMayExecute = DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion);
+                }
+            }
+
+            if( !portMayExecute || !deviceMayExecute )
+            {
+                // There is an exclusion conflict for this device or port!
+                ClearExclusions(Port,Device);       // Make sure we didn't dirty up the books.
+
+                // Decide how to requeue this port/device combo.
+                switch(exclusion.getFunctionRequeue())
+                {
+                case (CtiTablePaoExclusion::RequeueNextExecutableOM):
                     {
-                        // Queue has been shuffled and we have a different OM now than when we entered!
+                        if( ShuffleQueue( Port, OutMessage, Device ) )
+                        {
+                            // Queue has been shuffled and we have a different OM now than when we entered!
+                            if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " OutMessage shuffled excluded for non-excluded outmessage. " << endl;
+                            }
+                        }
+                        else
+                        {
+                            if(getDebugLevel() & DEBUGLEVEL_LUDICROUS && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " " << Port->getName() << " queue unable to be shuffled.  No non-excluded outmessages exist. " << endl;
+                            }
+
+                            if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                                }
+
+                                delete OutMessage;
+                            }
+
+                            OutMessage = 0;
+                            Sleep(100L);
+                        }
+
+                        return RETRY_SUBMITTED;
+                    }
+                case (CtiTablePaoExclusion::RequeueThisCommandNext):
+                    {
+                        // Keep this ONE HIGH HIGH PRIORITY.
+                        OutMessage->Priority = MAXPRIORITY - 1;
+
                         if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " OutMessage shuffled excluded for non-excluded outmessage. " << endl;
+                            dout << RWTime() << " Re-queuing original (excluded) message at high priority to examine next" << endl;
                         }
-
-                        break;
+                        // FALL THROUGH!
                     }
-
-                    if(getDebugLevel() & DEBUGLEVEL_LUDICROUS && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                case (CtiTablePaoExclusion::RequeueQueuePriority):
+                default:
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << Port->getName() << " queue unable to be shuffled.  No non-excluded outmessages exist. " << endl;
-                    }
-
-                    if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
-                    {
+                        if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                            }
+
+                            delete OutMessage;
                         }
 
-                        delete OutMessage;
+                        OutMessage = 0;
+                        Sleep(100L);
+
+                        return RETRY_SUBMITTED;
                     }
-
-                    OutMessage = 0;
-                    Sleep(100L);
-
-                    return RETRY_SUBMITTED;
-                }
-            case (CtiTablePaoExclusion::RequeueThisCommandNext):
-                {
-                    // Keep this ONE HIGH HIGH PRIORITY.
-                    OutMessage->Priority = MAXPRIORITY - 1;
-
-                    if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Re-queuing original (excluded) message at high priority to examine next" << endl;
-                    }
-                    // FALL THROUGH!
-                }
-            case (CtiTablePaoExclusion::RequeueQueuePriority):
-            default:
-                {
-                    if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
-                        }
-
-                        delete OutMessage;
-                    }
-
-                    OutMessage = 0;
-                    Sleep(100L);
-
-                    return RETRY_SUBMITTED;
                 }
             }
         }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     // 030503 CGP END Exclusion logic.
 
@@ -1348,96 +1358,96 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     }
 
                 case TYPE_KV2:
-                   {
-                      BYTE  inBuffer[512];
-                      BYTE  outBuffer[300];
-                      ULONG bytesReceived = 0;
+                    {
+                        BYTE  inBuffer[512];
+                        BYTE  outBuffer[300];
+                        ULONG bytesReceived = 0;
 
-                      CtiDeviceKV2 *kv2dev    = ( CtiDeviceKV2 *)Device;
-                      CtiProtocolANSI &ansi   = kv2dev->getProtocol();
+                        CtiDeviceKV2 *kv2dev    = ( CtiDeviceKV2 *)Device;
+                        CtiProtocolANSI &ansi   = kv2dev->getProtocol();
 
-                      //allocate some space
-                      trx.setInBuffer( inBuffer );
-                      trx.setOutBuffer( outBuffer );
-                      trx.setInCountActual( &bytesReceived );
+                        //allocate some space
+                        trx.setInBuffer( inBuffer );
+                        trx.setOutBuffer( outBuffer );
+                        trx.setInCountActual( &bytesReceived );
 
-                      //unwind the message we made in scanner
-                      if( ansi.recvOutbound( OutMessage ) != 0 )
-                      {
-                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " KV2 loop entered **********************************************" << endl;
-                         }
-
-                         while( !ansi.isTransactionComplete() )
-                         {
-                            //jump in, check for login, build packets, send messages, etc...
-                            ansi.generate( trx );
-                            status = Port->outInMess( trx, Device, traceList );
-                            if( status != NORMAL )
+                        //unwind the message we made in scanner
+                        if( ansi.recvOutbound( OutMessage ) != 0 )
+                        {
                             {
-                               CtiLockGuard<CtiLogger> doubt_guard(dout);
-                               dout << RWTime() << " KV2 loop is A-B-N-O-R-M-A-L " << endl;
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " KV2 loop entered **********************************************" << endl;
                             }
-                            ansi.decode( trx, status );
 
-                            // Prepare for tracing
-                            if( trx.doTrace( status ))
+                            while( !ansi.isTransactionComplete() )
                             {
-                               Port->traceXfer( trx, traceList, Device, status );
+                                //jump in, check for login, build packets, send messages, etc...
+                                ansi.generate( trx );
+                                status = Port->outInMess( trx, Device, traceList );
+                                if( status != NORMAL )
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " KV2 loop is A-B-N-O-R-M-A-L " << endl;
+                                }
+                                ansi.decode( trx, status );
+
+                                // Prepare for tracing
+                                if( trx.doTrace( status ))
+                                {
+                                    Port->traceXfer( trx, traceList, Device, status );
+                                }
+                                DisplayTraceList( Port, traceList, true );
                             }
-                            DisplayTraceList( Port, traceList, true );
-                         }
 
-                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " KV2 loop exited  **********************************************" << endl;
-                         }
-                      }
-                      // return value to tell us if we are successful or not
-                      status = ansi.sendCommResult( InMessage );
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " KV2 loop exited  **********************************************" << endl;
+                            }
+                        }
+                        // return value to tell us if we are successful or not
+                        status = ansi.sendCommResult( InMessage );
 
-                      ansi.reinitialize();
-                      break;
-                   }
+                        ansi.reinitialize();
+                        break;
+                    }
 
                 case TYPE_TDMARKV:
-                  {
-                     BYTE  inBuffer[5000];
-                     BYTE  outBuffer[5000];
-                     ULONG bytesReceived = 0;
+                    {
+                        BYTE  inBuffer[5000];
+                        BYTE  outBuffer[5000];
+                        ULONG bytesReceived = 0;
 
-                     CtiDeviceMarkV       *markv = ( CtiDeviceMarkV *)Device;
-                     CtiProtocolTransdata &transdata = markv->getProtocol();
+                        CtiDeviceMarkV       *markv = ( CtiDeviceMarkV *)Device;
+                        CtiProtocolTransdata &transdata = markv->getProtocol();
 
-                     trx.setInBuffer( inBuffer );
-                     trx.setOutBuffer( outBuffer );
-                     trx.setInCountActual( &bytesReceived );
+                        trx.setInBuffer( inBuffer );
+                        trx.setOutBuffer( outBuffer );
+                        trx.setInCountActual( &bytesReceived );
 
-                     transdata.reinitalize();
+                        transdata.reinitalize();
 
-                     while( !transdata.isTransactionComplete() )
-                     {
-                        transdata.generate( trx );
-
-                        status = Port->outInMess( trx, Device, traceList );
-
-                        transdata.decode( trx, status );
-
-                        if( trx.doTrace( status ))
+                        while( !transdata.isTransactionComplete() )
                         {
-                           Port->traceXfer( trx, traceList, Device, status );
+                            transdata.generate( trx );
+
+                            status = Port->outInMess( trx, Device, traceList );
+
+                            transdata.decode( trx, status );
+
+                            if( trx.doTrace( status ))
+                            {
+                                Port->traceXfer( trx, traceList, Device, status );
+                            }
+
+                            DisplayTraceList( Port, traceList, true );
                         }
 
-                        DisplayTraceList( Port, traceList, true );
-                     }
-
-                     status = transdata.sendCommResult( InMessage );
+                        status = transdata.sendCommResult( InMessage );
 
 //                     transdata.reinitalize();
-                     transdata.destroy();
-                     break;
-                  }
+                        transdata.destroy();
+                        break;
+                    }
 
                 case TYPE_SIXNET:
                     {
@@ -2516,7 +2526,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
             dout << RWTime() << " Port " << Port->getName() << " has a COMM category error. " << CommResult << endl;
         }
 
-         // This tallies success/fail on the port.  The port decides when he has become questionable.
+        // This tallies success/fail on the port.  The port decides when he has become questionable.
         bool reportablechange = Port->adjustCommCounts(CommResult);     // returns true if there is a reportable change!
 
         if((PorterDebugLevel & PORTER_DEBUG_COMMFAIL) && reportablechange)
@@ -3638,11 +3648,19 @@ INT ClearExclusions(CtiPortSPtr Port, CtiDevice *Device)
 {
     INT status = NORMAL;
 
-    CtiPortManager::LockGuard  port_guard(PortManager.getMux());
-    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
+    try
+    {
+        CtiPortManager::LockGuard  port_guard(PortManager.getMux());
+        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
 
-    PortManager.removePortExclusionBlocks(Port);
-    DeviceManager.removeDeviceExclusionBlocks(Device);
+        PortManager.removePortExclusionBlocks(Port);
+        DeviceManager.removeDeviceExclusionBlocks(Device);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
     return status;
 }
@@ -3679,7 +3697,7 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDevice *device )
                 }
                 else
                 {
-                    if(PortManager.writeQueue(pOutMessage->Port, pOutMessage->EventCode, sizeof (*pOutMessage), (char *)pOutMessage, MAXPRIORITY - 1))
+                    if(PortManager.writeQueue(pOutMessage->Port, pOutMessage->EventCode, sizeof (*pOutMessage), (char *)pOutMessage, MAXPRIORITY - 2))
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3690,7 +3708,7 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDevice *device )
                     }
 
                     /* The OUTMESS that got us here is always examined next again! */
-                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *)OutMessage, MAXPRIORITY - 1))
+                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *)OutMessage, MAXPRIORITY - 2))
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3703,7 +3721,7 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDevice *device )
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " OutMessage Swap!" << endl;
+                            dout << RWTime() << " " << Port->getName() << " OutMessage Swap!" << endl;
                         }
                         //OutMessage = pOutMessage;
                         OutMessage = 0;
@@ -3733,83 +3751,59 @@ BOOL areAnyQueueEntriesOkToSend(void *data, void* d)
 
     bool     blockedByExclusion = false;
 
-    if(OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC)     // Indicates an excludable message!
+    try
     {
+        if(OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC)     // Indicates an excludable message!
         {
-            bool portMayExecute;
-            bool deviceMayExecute;
-
-            CtiPortManager::LockGuard  port_guard(PortManager.getMux());
-            RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
-
-            CtiPortSPtr Port = PortManager.PortGetEqual( OutMessage->Port );
-            CtiDevice* Device = DeviceManager.getEqual( OutMessage->DeviceID );
-
-            if(Port && Device)
             {
-                CtiTablePaoExclusion exclusion;
+                bool portMayExecute;
+                bool deviceMayExecute;
 
-                portMayExecute = PortManager.mayPortExecuteExclusionFree(Port, exclusion);
+                CtiPortManager::LockGuard  port_guard(PortManager.getMux());
+                RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
 
-                if(portMayExecute)
+                CtiPortSPtr Port = PortManager.PortGetEqual( OutMessage->Port );
+                CtiDevice* Device = DeviceManager.getEqual( OutMessage->DeviceID );
+
+                if(Port && Device)
                 {
-                    deviceMayExecute = DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion);
-                }
+                    CtiTablePaoExclusion exclusion;
 
-                if( portMayExecute && deviceMayExecute )
-                {
-                    if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                    portMayExecute = PortManager.mayPortExecuteExclusionFree(Port, exclusion);
+
+                    if(portMayExecute)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Found an excludable which MAY be executed!" << endl;
+                        deviceMayExecute = DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion);
                     }
-                    bStatus = TRUE;     // This device/port combo is locked in as executable!!!
-                }
-                else
-                {
-                    ClearExclusions(Port,Device);
-                }
-            }
-        }
 
-    }
-    else
-    {
-        if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** NON-Excludable OM found  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-        bStatus = TRUE; // We can send anything which says it is non-excludable!
-    }
-
-
-#if 0
-    if(OutMessage->EventCode & RIPPLE)     // Indicates a command message!
-    {
-        CtiDevice* Dev = DeviceManager.getEqual( OutMessage->DeviceID );
-
-        if(Dev != NULL)
-        {
-            if(isLCU(Dev->getType()))
-            {
-                CtiDeviceLCU *lcu = (CtiDeviceLCU*)Dev;      // This IS an LCU
-
-                if( Now > lcu->getNextCommandTime() )
-                {
-                    RWMutexLock::LockGuard guard( lcu->getExclusionMux() );             // get mux for all LCU's
-                    blockedByExclusion = DeviceManager.getMap().contains( containsExclusionBlockage, (void*)lcu);
-
-                    if( !blockedByExclusion )
+                    if( portMayExecute && deviceMayExecute )
                     {
-                        bStatus = TRUE;
-                        CtiDeviceLCU::assignToken( lcu->getID() );
+                        if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Found an excludable which MAY be executed!" << endl;
+                        }
+                        bStatus = TRUE;     // This device/port combo is locked in as executable!!!
                     }
                 }
             }
+
+        }
+        else
+        {
+            if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** NON-Excludable OM found  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            bStatus = TRUE; // We can send anything which says it is non-excludable!
         }
     }
-#endif
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
     return bStatus;
 }
@@ -3841,5 +3835,3 @@ INT VerifyOutMessage(OUTMESS *&OutMessage)
 
     return nRet;
 }
-
-

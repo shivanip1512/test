@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_base
@@ -6,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2003/10/10 15:38:27 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2003/11/06 21:15:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,16 +107,16 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                *pReq,
                 status = ControlInhibitedOnDevice;
 
                 CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                                      RWCString(OutMessageTemplate->Request.CommandStr),
-                                                      getName() + RWCString(": ") + FormatError(status),
-                                                      status,
-                                                      OutMessageTemplate->Request.RouteID,
-                                                      OutMessageTemplate->Request.MacroOffset,
-                                                      OutMessageTemplate->Request.Attempt,
-                                                      OutMessageTemplate->Request.TrxID,
-                                                      OutMessageTemplate->Request.UserID,
-                                                      OutMessageTemplate->Request.SOE,
-                                                      RWOrdered());
+                                                             RWCString(OutMessageTemplate->Request.CommandStr),
+                                                             getName() + RWCString(": ") + FormatError(status),
+                                                             status,
+                                                             OutMessageTemplate->Request.RouteID,
+                                                             OutMessageTemplate->Request.MacroOffset,
+                                                             OutMessageTemplate->Request.Attempt,
+                                                             OutMessageTemplate->Request.TrxID,
+                                                             OutMessageTemplate->Request.UserID,
+                                                             OutMessageTemplate->Request.SOE,
+                                                             RWOrdered());
 
                 retList.insert( pRet );
             }
@@ -334,16 +335,16 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                  *pReq,
     resultString = getName() + " has no type specific ExecuteRequest Method";
 
     CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                          RWCString(tempOut->Request.CommandStr),
-                                          resultString,
-                                          NoExecuteRequestMethod,
-                                          tempOut->Request.RouteID,
-                                          tempOut->Request.MacroOffset,
-                                          tempOut->Request.Attempt,
-                                          tempOut->Request.TrxID,
-                                          tempOut->Request.UserID,
-                                          tempOut->Request.SOE,
-                                          RWOrdered());
+                                                 RWCString(tempOut->Request.CommandStr),
+                                                 resultString,
+                                                 NoExecuteRequestMethod,
+                                                 tempOut->Request.RouteID,
+                                                 tempOut->Request.MacroOffset,
+                                                 tempOut->Request.Attempt,
+                                                 tempOut->Request.TrxID,
+                                                 tempOut->Request.UserID,
+                                                 tempOut->Request.SOE,
+                                                 RWOrdered());
     if( pRet != NULL )
     {
         retList.insert( pRet );
@@ -450,7 +451,8 @@ _singleDevice(false),
 _routeMgr(NULL),
 _responsesOnTrxID(0),
 _currTrxID(0)
-{}
+{
+}
 
 CtiDeviceBase::CtiDeviceBase(const CtiDeviceBase& aRef) :
 _executing(false),
@@ -524,13 +526,28 @@ void CtiDeviceBase::DumpData()
     _deviceBase.DumpData();
 }
 
-INT CtiDeviceBase::ReportError(INT mess) { return 0;}
+INT CtiDeviceBase::ReportError(INT mess)
+{
+    return 0;
+}
 
 /* Properly defined by the device types themselves... */
-INT CtiDeviceBase::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)      { return NoGeneralScanMethod;}
-INT CtiDeviceBase::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)    { return NoIntegrityScanMethod;}
-INT CtiDeviceBase::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)  { return NoAccumulatorScanMethod;}
-INT CtiDeviceBase::LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)  { return NoLoadProfileScanMethod;}
+INT CtiDeviceBase::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+{
+    return NoGeneralScanMethod;
+}
+INT CtiDeviceBase::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+{
+    return NoIntegrityScanMethod;
+}
+INT CtiDeviceBase::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+{
+    return NoAccumulatorScanMethod;
+}
+INT CtiDeviceBase::LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+{
+    return NoLoadProfileScanMethod;
+}
 
 INT CtiDeviceBase::ResultDecode(INMESS*, RWTime&, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
@@ -549,7 +566,10 @@ INT CtiDeviceBase::ErrorDecode(INMESS*, RWTime&,  RWTPtrSlist< CtiMessage > &vgL
 }
 
 
-BOOL              CtiDeviceBase::getLogOnNeeded() const                          { return _logOnNeeded;}
+BOOL              CtiDeviceBase::getLogOnNeeded() const
+{
+    return _logOnNeeded;
+}
 CtiDeviceBase&    CtiDeviceBase::setLogOnNeeded(BOOL b)
 {
     _logOnNeeded = b;
@@ -599,7 +619,7 @@ INT CtiDeviceBase::deviceMaxCommFails() const
 }
 
 #ifndef  COMM_FAIL_REPORT_TIME
- #define COMM_FAIL_REPORT_TIME 300
+    #define COMM_FAIL_REPORT_TIME 300
 #endif
 
 bool CtiDeviceBase::adjustCommCounts( bool &isCommFail, bool retry )
@@ -755,16 +775,16 @@ INT CtiDeviceBase::checkForInhibitedDevice(RWTPtrSlist< CtiMessage > &retList, c
         status = DEVICEINHIBITED;
 
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                              RWCString(OutMessage->Request.CommandStr),
-                                              getName() + RWCString(": ") + FormatError(status),
-                                              status,
-                                              OutMessage->Request.RouteID,
-                                              OutMessage->Request.MacroOffset,
-                                              OutMessage->Request.Attempt,
-                                              OutMessage->Request.TrxID,
-                                              OutMessage->Request.UserID,
-                                              OutMessage->Request.SOE,
-                                              RWOrdered());
+                                                     RWCString(OutMessage->Request.CommandStr),
+                                                     getName() + RWCString(": ") + FormatError(status),
+                                                     status,
+                                                     OutMessage->Request.RouteID,
+                                                     OutMessage->Request.MacroOffset,
+                                                     OutMessage->Request.Attempt,
+                                                     OutMessage->Request.TrxID,
+                                                     OutMessage->Request.UserID,
+                                                     OutMessage->Request.SOE,
+                                                     RWOrdered());
 
         retList.insert( pRet );
     }
@@ -789,9 +809,33 @@ bool CtiDeviceBase::isTAP() const
 
 bool CtiDeviceBase::hasExclusions() const
 {
-    bool bret = _excluded.size() != 0;
+    bool bstatus = false;
 
-    return bret;
+    try
+    {
+        CtiLockGuard<CtiMutex> ex_guard(_exclusionMux, 5000);
+
+        if(ex_guard.isAcquired())
+        {
+            bstatus = _excluded.size() != 0;
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << "  " << getName() << " unable to acquire exclusion mutex: hasExclusions()" << endl;
+            }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    return bstatus;
 }
 
 CtiDeviceBase::exclusions CtiDeviceBase::getExclusions() const
@@ -800,13 +844,51 @@ CtiDeviceBase::exclusions CtiDeviceBase::getExclusions() const
 }
 void CtiDeviceBase::addExclusion(CtiTablePaoExclusion &paox)
 {
-    _excluded.push_back(paox);
+    try
+    {
+        CtiLockGuard<CtiMutex> guard(_exclusionMux, 30000);
+
+        if(guard.isAcquired())
+        {
+            _excluded.push_back(paox);
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " " << getName() << " unable to acquire exclusion mutex: addExclusion()" << endl;
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     return;
 }
 
 void CtiDeviceBase::clearExclusions()
 {
-    _excluded.clear();
+    try
+    {
+        CtiLockGuard<CtiMutex> guard(_exclusionMux, 15000);
+
+        if(guard.isAcquired())
+        {
+            _excluded.clear();
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " " << getName() << " unable to acquire exclusion mutex: clearExclusions()" << endl;
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     return;
 }
 
@@ -824,21 +906,42 @@ bool CtiDeviceBase::isDeviceExcluded(long id) const
 {
     bool bstatus = false;
 
-    if(hasExclusions())
+    try
     {
-        exclusions::const_iterator itr;
+        CtiLockGuard<CtiMutex> guard(_exclusionMux, 5000);
 
-        for(itr = _excluded.begin(); itr != _excluded.end(); itr++)
+        if(guard.isAcquired())
         {
-            const CtiTablePaoExclusion &paox = *itr;
-
-            if(paox.getExcludedPaoId() == id)
+            if(hasExclusions())
             {
-                bstatus = true;
-                break;
+                exclusions::const_iterator itr;
+
+                for(itr = _excluded.begin(); itr != _excluded.end(); itr++)
+                {
+                    const CtiTablePaoExclusion &paox = *itr;
+
+                    if(paox.getExcludedPaoId() == id)
+                    {
+                        bstatus = true;
+                        break;
+                    }
+                }
             }
         }
+        else
+        {
+            bstatus = true;
+
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " " << getName() << " unable to acquire exclusion mutex: isDeviceExcluded()" << endl;
+        }
     }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCLUSION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     return bstatus;
 }
 
@@ -855,13 +958,36 @@ void CtiDeviceBase::setExecuting(bool set)
 
 bool CtiDeviceBase::isExecutionProhibited() const
 {
-    return (_executionProhibited.size() != 0);
+    return(_executionProhibited.size() != 0);
 }
 
 size_t CtiDeviceBase::setExecutionProhibited(unsigned long id)
 {
-    _executionProhibited.push_back( id );
-    return _executionProhibited.size();
+    size_t cnt = 0;
+
+    try
+    {
+        CtiLockGuard<CtiMutex> guard(_exclusionMux, 5000);
+        if(guard.isAcquired())
+        {
+            _executionProhibited.push_back( id );
+            cnt = _executionProhibited.size();
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << getName() << " unable to acquire exclusion mutex: setExecutionProhibited()" << endl;
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCLUSION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return cnt;
 }
 
 bool CtiDeviceBase::removeExecutionProhibited(unsigned long id)
@@ -871,16 +997,27 @@ bool CtiDeviceBase::removeExecutionProhibited(unsigned long id)
 
     try
     {
-        for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); )
+        CtiLockGuard<CtiMutex> guard(_exclusionMux, 5000);
+        if(guard.isAcquired())
         {
-            if(*itr == id)
+            for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); )
             {
-                itr = _executionProhibited.erase(itr);
-                removed = true;
+                if(*itr == id)
+                {
+                    itr = _executionProhibited.erase(itr);
+                    removed = true;
+                }
+                else
+                {
+                    itr++;
+                }
             }
-            else
+        }
+        else
+        {
             {
-                itr++;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << getName() << " unable to acquire exclusion mutex: removeExecutionProhibited()" << endl;
             }
         }
     }
@@ -888,10 +1025,9 @@ bool CtiDeviceBase::removeExecutionProhibited(unsigned long id)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
     return removed;
 }
-

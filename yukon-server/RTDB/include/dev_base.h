@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2003/10/10 15:38:29 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2003/11/06 21:15:56 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -202,7 +202,9 @@ public:
 
     virtual INT getProtocolWrap() const;
 
+    virtual bool isExecutionProhibitedByInternalLogic() const;
 
+    CtiMutex& getExclusionMux();
     bool hasExclusions() const;
     exclusions getExclusions() const;
     void addExclusion(CtiTablePaoExclusion &paox);
@@ -244,6 +246,7 @@ private:
     int _responsesOnTrxID;
     RWTime _lastReport;
 
+    mutable CtiMutex _exclusionMux;  // Used when processing the exclusion logic
     bool          _executing;             // Device is currently executing...
     exclusions    _excluded;
     prohibitions  _executionProhibited;   // Device is currently prohibited from executing because of this list of devids.
@@ -288,5 +291,7 @@ inline INT CtiDeviceBase::getBits() const { return 8; }
 inline INT CtiDeviceBase::getStopBits() const { return ONESTOPBIT; }
 inline INT CtiDeviceBase::getParity() const { return NOPARITY; }
 inline INT CtiDeviceBase::getProtocolWrap() const { return ProtocolWrapNone; }
+inline CtiMutex& CtiDeviceBase::getExclusionMux() { return _exclusionMux; }
+inline bool CtiDeviceBase::isExecutionProhibitedByInternalLogic() const { return false;}
 
 #endif // #ifndef __DEV_BASE_H__

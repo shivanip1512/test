@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/04/15 22:10:50 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/11/06 21:15:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2200,5 +2200,18 @@ bool CtiDeviceLCU::watchBusyBit() const
     }
 
     return ret;
+}
+
+bool CtiDeviceLCU::isExecutionProhibitedByInternalLogic() const
+{
+    bool prohibited = false;
+    RWTime now;
+
+    if(now < getNextCommandTime())
+    {
+        prohibited = true;
+    }
+
+    return prohibited;
 }
 

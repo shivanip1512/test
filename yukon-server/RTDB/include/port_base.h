@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2003/10/10 15:38:29 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2003/11/06 21:15:56 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -183,6 +183,7 @@ public:
     virtual ULONG getDelay(int Offset) const { return 0L; }
     virtual CtiPort& setDelay(int Offset, int D) { return *this; }
 
+    CtiMutex& getExclusionMux();
     bool hasExclusions() const;
     exclusions getExclusions() const;
     void addExclusion(CtiTablePaoExclusion &paox);
@@ -217,6 +218,8 @@ public:
     void setPoolAssignedGUID(LONG guid);
     HANDLE setQuitEventHandle(HANDLE quit);
     HANDLE getQuitEventHandle();
+
+    virtual bool isExecutionProhibitedByInternalLogic() const;
 
     RWTime getLastOMRead() const;
     void setLastOMRead(RWTime &atime = RWTime());
@@ -257,6 +260,7 @@ private:
     size_t                      _traceListOffset;
     CTI_PORTTHREAD_FUNC_PTR     _portFunc;
 
+    mutable CtiMutex            _exclusionMux;          // Used when processing the exclusion logic
     bool                        _executing;             // Port is currently executing work...
     prohibitions                _executionProhibited;   // Port is currently prohibited from executing because of this list of portids.
     exclusions                  _excluded;
@@ -266,6 +270,8 @@ private:
     RWTime                      _lastOMRead;
     RWTime                      _lastOMComplete;
 };
+
+inline CtiMutex& CtiPort::getExclusionMux() { return _exclusionMux; }
 
 inline bool CtiPort::isQuestionable() const   { return _commFailCount >= portMaxCommFails();}
 
@@ -307,6 +313,8 @@ inline void CtiPort::setPoolAssignedGUID(LONG guid) { _poolAssignedGUID = guid; 
 
 inline HANDLE CtiPort::setQuitEventHandle(HANDLE quit) { HANDLE oldQuit = _quitEvent; _quitEvent = quit; return oldQuit; }
 inline HANDLE CtiPort::getQuitEventHandle() { return _quitEvent; }
+
+inline bool CtiPort::isExecutionProhibitedByInternalLogic() const { return false;}
 
 
 

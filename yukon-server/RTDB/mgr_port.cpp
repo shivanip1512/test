@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/10/10 15:38:28 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2003/11/06 21:15:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -102,6 +102,8 @@ inline bool isNotUpdated(CtiPortSPtr &Port, void* d)
 
 inline void applyRemoveProhibit(const long key, CtiPortSPtr Port, void* d)
 {
+    try
+    {
     CtiPort *pAnxiousPort = (CtiPort *)d;       // This is the port that wishes to execute!
     LONG pid = (LONG)pAnxiousPort->getPortID();       // This is the port id which is to be pulled from the prohibition list.
 
@@ -113,6 +115,14 @@ inline void applyRemoveProhibit(const long key, CtiPortSPtr Port, void* d)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Port " << Port->getName() << " no longer prohibited because of " << pAnxiousPort->getName() << "." << endl;
+        }
+    }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -686,7 +696,8 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
         if(anxiousPort)
         {
             // Make sure no other port out there has begun executing and doesn't want us to until they are done.
-            if( !anxiousPort->isExecutionProhibited() )
+            // The port may also have logic which prevents it's executing.
+            if( !anxiousPort->isExecutionProhibited() && !anxiousPort->isExecutionProhibitedByInternalLogic() )
             {
                 ptr_type port;
                 spiterator itr;
@@ -764,7 +775,7 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
 
             if(bstatus)
             {
-                if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                if(anxiousPort->hasExclusions() && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Port " << anxiousPort->getName() << " is clear to execute" << endl;
@@ -776,7 +787,7 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " **** EXCLUSION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return bstatus;
@@ -800,7 +811,7 @@ bool CtiPortManager::removePortExclusionBlocks(ptr_type anxiousPort)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return bstatus;

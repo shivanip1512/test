@@ -1,3 +1,4 @@
+
 #include <iostream>
 using namespace std;
 
@@ -496,7 +497,10 @@ CtiPort& CtiPort::operator=(const CtiPort& aRef)
     return *this;
 }
 
-LONG CtiPort::getConnectedDevice() const          { return _connectedDevice;}
+LONG CtiPort::getConnectedDevice() const
+{
+    return _connectedDevice;
+}
 CtiPort& CtiPort::setConnectedDevice(const LONG d)
 {
     _connectedDevice = d;
@@ -587,34 +591,94 @@ INT CtiPort::disconnect(CtiDevice *Device, INT trace)
     return NORMAL;
 }
 
-CtiPort& CtiPort::setShouldDisconnect(BOOL b)               { return *this;}
-BOOL CtiPort::shouldDisconnect() const                      { return FALSE;}
-INT CtiPort::reset(INT trace)                               { return NORMAL;}
-INT CtiPort::setup(INT trace)                               { return NORMAL;}
-INT CtiPort::close(INT trace)                               { return NORMAL;}
+CtiPort& CtiPort::setShouldDisconnect(BOOL b)
+{
+    return *this;
+}
+BOOL CtiPort::shouldDisconnect() const
+{
+    return FALSE;
+}
+INT CtiPort::reset(INT trace)
+{
+    return NORMAL;
+}
+INT CtiPort::setup(INT trace)
+{
+    return NORMAL;
+}
+INT CtiPort::close(INT trace)
+{
+    return NORMAL;
+}
 
 
 /* virtuals to make the world all fat and happy */
-INT       CtiPort::ctsTest() const            { return TRUE;}
-INT       CtiPort::dcdTest() const            { return TRUE;}
-INT       CtiPort::dsrTest() const            { return TRUE;}
+INT       CtiPort::ctsTest() const
+{
+    return TRUE;
+}
+INT       CtiPort::dcdTest() const
+{
+    return TRUE;
+}
+INT       CtiPort::dsrTest() const
+{
+    return TRUE;
+}
 
-INT       CtiPort::lowerRTS()           { return NORMAL;}
-INT       CtiPort::raiseRTS()           { return NORMAL;}
-INT       CtiPort::lowerDTR()           { return NORMAL;}
-INT       CtiPort::raiseDTR()           { return NORMAL;}
+INT       CtiPort::lowerRTS()
+{
+    return NORMAL;
+}
+INT       CtiPort::raiseRTS()
+{
+    return NORMAL;
+}
+INT       CtiPort::lowerDTR()
+{
+    return NORMAL;
+}
+INT       CtiPort::raiseDTR()
+{
+    return NORMAL;
+}
 
-INT       CtiPort::inClear()            { return NORMAL;}
-INT       CtiPort::outClear()           { return NORMAL;}
+INT       CtiPort::inClear()
+{
+    return NORMAL;
+}
+INT       CtiPort::outClear()
+{
+    return NORMAL;
+}
 
-INT       CtiPort::byteTime(ULONG bytes) const      { return 0;}
+INT       CtiPort::byteTime(ULONG bytes) const
+{
+    return 0;
+}
 
 
-HANDLE    CtiPort::getHandle() const                { return NULL;}
-INT       CtiPort::getIPPort() const                { return -1;}
-RWCString CtiPort::getIPAddress() const             { return RWCString("");}
-RWCString CtiPort::getPhysicalPort() const          { return RWCString("");}
-RWCString CtiPort::getModemInit() const             { return RWCString("");}
+HANDLE    CtiPort::getHandle() const
+{
+    return NULL;
+}
+INT       CtiPort::getIPPort() const
+{
+    return -1;
+}
+RWCString CtiPort::getIPAddress() const
+{
+    return RWCString("");
+}
+RWCString CtiPort::getPhysicalPort() const
+{
+    return RWCString("");
+}
+RWCString CtiPort::getModemInit() const
+{
+    return RWCString("");
+}
 
 void CtiPort::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
@@ -855,7 +919,32 @@ bool CtiPort::setPortForDevice(CtiDevice* Device)
 
 bool CtiPort::hasExclusions() const
 {
-    return _excluded.size() != 0;
+    bool bstatus = false;
+    try
+    {
+        CtiLockGuard<CtiMutex> ex_guard(_exclusionMux, 5000);
+
+        if(ex_guard.isAcquired())
+        {
+            bstatus = _excluded.size() != 0;
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << "  " << getName() << " unable to acquire exclusion mutex: " << endl;
+            }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    return bstatus;
 }
 
 CtiPort::exclusions CtiPort::getExclusions() const
@@ -864,13 +953,59 @@ CtiPort::exclusions CtiPort::getExclusions() const
 }
 void CtiPort::addExclusion(CtiTablePaoExclusion &paox)
 {
-    _excluded.push_back(paox);
+    try
+    {
+        CtiLockGuard<CtiMutex> ex_guard(_exclusionMux, 30000);
+
+        if(ex_guard.isAcquired())
+        {
+            _excluded.push_back(paox);
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << "  " << getName() << " unable to acquire exclusion mutex: addExclusion()" << endl;
+            }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
     return;
 }
 
 void CtiPort::clearExclusions()
 {
-    _excluded.clear();
+    try
+    {
+        CtiLockGuard<CtiMutex> ex_guard(_exclusionMux, 5000);
+
+        if(ex_guard.isAcquired())
+        {
+            _excluded.clear();
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << "  " << getName() << " unable to acquire exclusion mutex: clearExclusions()" << endl;
+            }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
     return;
 }
 
@@ -881,20 +1016,44 @@ bool CtiPort::isPortExcluded(long portid) const
 {
     bool bstatus = false;
 
-    if(hasExclusions())
+    try
     {
-        exclusions::const_iterator itr;
+        CtiLockGuard<CtiMutex> ex_guard(_exclusionMux, 5000);
 
-        for(itr = _excluded.begin(); itr != _excluded.end(); itr++)
+        if(ex_guard.isAcquired())
         {
-            const CtiTablePaoExclusion &paox = *itr;
-            if(paox.getExcludedPaoId() == portid)
+            if(hasExclusions())
             {
-                bstatus = true;
-                break;
+                exclusions::const_iterator itr;
+
+                for(itr = _excluded.begin(); itr != _excluded.end(); itr++)
+                {
+                    const CtiTablePaoExclusion &paox = *itr;
+                    if(paox.getExcludedPaoId() == portid)
+                    {
+                        bstatus = true;
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            bstatus = true;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << "  " << getName() << " unable to acquire exclusion mutex: isPortExcluded()" << endl;
             }
         }
     }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
     return bstatus;
 }
 
@@ -911,33 +1070,81 @@ void CtiPort::setExecuting(bool set)
 
 bool CtiPort::isExecutionProhibited() const
 {
-    return (_executionProhibited.size() != 0);
+    return(_executionProhibited.size() != 0);
 }
 
 size_t CtiPort::setExecutionProhibited(unsigned long pid)
 {
-    _executionProhibited.push_back( pid );
-    return _executionProhibited.size();
+    size_t cnt = 0;
+    try
+    {
+        CtiLockGuard<CtiMutex> ex_guard(_exclusionMux, 5000);
+
+        if(ex_guard.isAcquired())
+        {
+            _executionProhibited.push_back( pid );
+            cnt = _executionProhibited.size();
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << "  " << getName() << " unable to acquire exclusion mutex: setExecutionProhibited()" << endl;
+            }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    return cnt;
 }
 
 bool CtiPort::removeExecutionProhibited(unsigned long pid)
 {
     bool removed = false;
 
-    CtiPort::prohibitions::iterator itr;
-
-    for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); )
+    try
     {
-        if(*itr == pid)
+        CtiLockGuard<CtiMutex> ex_guard(_exclusionMux, 5000);
+
+        if(ex_guard.isAcquired())
         {
-            itr = _executionProhibited.erase(itr);
-            removed = true;
+            CtiPort::prohibitions::iterator itr;
+
+            for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); )
+            {
+                if(*itr == pid)
+                {
+                    itr = _executionProhibited.erase(itr);
+                    removed = true;
+                }
+                else
+                {
+                    itr++;
+                }
+            }
         }
         else
         {
-            itr++;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << "  " << getName() << " unable to acquire exclusion mutex: removeExecutionProhibited()" << endl;
+            }
         }
     }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
     return removed;
 }
 
@@ -1012,7 +1219,7 @@ INT CtiPort::readQueue( PREQUESTDATA RequestData, PULONG DataSize, PPVOID Data, 
 }
 
 #ifndef  COMM_FAIL_REPORT_TIME
- #define COMM_FAIL_REPORT_TIME 300
+    #define COMM_FAIL_REPORT_TIME 300
 #endif
 
 INT CtiPort::portMaxCommFails() const
@@ -1195,4 +1402,3 @@ void CtiPort::setLastOMComplete(RWTime &atime)
 {
     _lastOMComplete = atime;
 }
-

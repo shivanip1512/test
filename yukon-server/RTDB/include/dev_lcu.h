@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:12 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/11/06 21:15:56 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -98,8 +98,6 @@ private:
     static RWMutexLock   _staticMux;
     static RWMutexLock   _lcuExclusionMux;     // Must be acquired before examining exclusion lists
 
-    RWTValOrderedVector<ULONG>   _exclusionList; // List of LCU Device IDs which must not be tx simultaneously
-
     RWCString            _lastCommand;
 
     vector< pair<ULONG, double> >  _honktime;
@@ -183,5 +181,8 @@ public:
 
     bool           exceedsDutyCycle(BYTE *bptr);
     bool           watchBusyBit() const;
+
+    virtual bool isExecutionProhibitedByInternalLogic() const;
+
 };
 #endif // #ifndef __DEV_LCU_H__

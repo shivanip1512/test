@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2003/11/05 16:45:54 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2003/11/06 21:15:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,17 +74,27 @@ inline void applyClearExclusions(const CtiHashKey *unusedkey, CtiDeviceBase *&De
 
 inline void applyRemoveProhibit(const CtiHashKey *unusedkey, CtiDeviceBase *&Device, void* d)
 {
-    CtiDevice *pAnxiousDevice = (CtiDevice *)d;       // This is the port that wishes to execute!
-    LONG did = (LONG)pAnxiousDevice->getID();         // This is the id which is to be pulled from the prohibition list.
-
-    if(Device->isExecutionProhibited())     // There is at least one entry in the list...
+    try
     {
-        bool found = Device->removeExecutionProhibited( did );
+        CtiDevice *pAnxiousDevice = (CtiDevice *)d;       // This is the port that wishes to execute!
+        LONG did = (LONG)pAnxiousDevice->getID();         // This is the id which is to be pulled from the prohibition list.
 
-        if(found && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+        if(Device->isExecutionProhibited())     // There is at least one entry in the list...
+        {
+            bool found = Device->removeExecutionProhibited( did );
+
+            if(found && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Device " << Device->getName() << " no longer prohibited because of " << pAnxiousDevice->getName() << "." << endl;
+            }
+        }
+    }
+    catch(...)
+    {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Device " << Device->getName() << " no longer prohibited because of " << pAnxiousDevice->getName() << "." << endl;
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -1380,14 +1390,15 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevic
 {
     bool bstatus = false;
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(getMux());
-
     try
     {
         if(anxiousDevice)
         {
+            RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(getMux());
+
             // Make sure no other device out there has begun executing and doesn't want us to until they are done.
-            if( !anxiousDevice->isExecutionProhibited() )
+            // The device may also have logic which prevents it's executing.
+            if( !anxiousDevice->isExecutionProhibited() && !anxiousDevice->isExecutionProhibitedByInternalLogic() )
             {
                 if(anxiousDevice->hasExclusions())
                 {
@@ -1439,7 +1450,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevic
                         }
                     }
 
-                    if(!exlist.empty())     // This tells me that I have noconflicting points!
+                    if(!exlist.empty())     // This tells me that I have no conflicting devices!
                     {
                         vector< CtiDeviceBase* >::iterator xitr;
                         for(xitr = exlist.begin(); xitr != exlist.end(); xitr++)
@@ -1463,7 +1474,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevic
 
             if(bstatus)
             {
-                if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                if(anxiousDevice->hasExclusions() && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Device " << anxiousDevice->getName() << " is clear to execute" << endl;
@@ -1475,7 +1486,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevic
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return bstatus;
@@ -1501,7 +1512,7 @@ bool CtiDeviceManager::removeDeviceExclusionBlocks(CtiDeviceBase* anxiousDevice)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return bstatus;
