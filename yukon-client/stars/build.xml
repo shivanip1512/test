@@ -19,24 +19,12 @@
 
 		<jar jarfile="${yukon.lib}/stars.jar"
 			basedir="build/" />
-<!--
-		<copy todir="${stars-web}/WEB-INF/lib">
+
+		<copy todir="${yukon.lib}">
 			<fileset dir="resource">
 				<include name="**/*.properties"/>
 			</fileset>
 		</copy>
-       
-		<copy todir="${stars-web}/WEB-INF/lib">
-			<fileset dir="${yukon.lib}">
-				<include name="**/*.jar"/>
-				<exclude name="**/classes12.jar"/>
-				<include name="**/*.zip"/>
-			</fileset>
-		</copy>
-       
-		<war warfile="${jrun.base}/stars-demo/stars-demo.war" webxml="${stars-web}/web.xml">
-			<fileset dir="${stars-web}"/>
-		</war>-->
 	</target>
 
 	<target name="install" depends="build">
