@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2003/10/23 13:32:50 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2003/11/05 16:44:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,18 +26,30 @@ using namespace std;
 
 RWTime CtiDeviceSingle::adjustNextScanTime(const INT scanType)
 {
-    RWTime Now;
-    RWTime When(YUKONEOT);
+    RWTime    Now;
+    RWTime    When(YUKONEOT);
+    int       loop_count = 0;
+    const int MaxLoopCount = 100;
 
     if( getScanRate(scanType) > 0 )
     {
         if(!(getNextScan(scanType).seconds() % getScanRate(scanType)))
-        {     // Aligned to the correct boundary.
+        {   // Aligned to the correct boundary.
             do
             {
                 setNextScan( scanType, getNextScan(scanType) + getScanRate(scanType) );
             }
-            while(getNextScan(scanType) <= Now);
+            while(getNextScan(scanType) <= Now && ++loop_count < MaxLoopCount);
+
+            if( loop_count >= MaxLoopCount )
+            {
+                setNextScan(scanType, firstScan(Now+120, scanType));
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - infinite loop averted in adjustNextScanTime **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
         }
         else
         {
