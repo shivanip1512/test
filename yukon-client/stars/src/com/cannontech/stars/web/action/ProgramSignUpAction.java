@@ -100,11 +100,11 @@ public class ProgramSignUpAction implements ActionBase {
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsProgramSignUp( progSignUp );
 			
-            return SOAPUtil.buildSOAPMessage( operation );
+			return SOAPUtil.buildSOAPMessage( operation );
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
 		}
 		
 		return null;
@@ -114,56 +114,56 @@ public class ProgramSignUpAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
-        StarsOperation respOper = new StarsOperation();
+		StarsOperation respOper = new StarsOperation();
         
-        try {
-            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+		try {
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-            StarsProgramSignUp progSignUp = reqOper.getStarsProgramSignUp();
+			StarsProgramSignUp progSignUp = reqOper.getStarsProgramSignUp();
             
-            int energyCompanyID = progSignUp.getEnergyCompanyID();
-            if (energyCompanyID <= 0) {
-            	if (user == null) {
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
-	            	return SOAPUtil.buildSOAPMessage( respOper );
-            	}
-            	energyCompanyID = user.getEnergyCompanyID();
-            }
+			int energyCompanyID = progSignUp.getEnergyCompanyID();
+			if (energyCompanyID <= 0) {
+				if (user == null) {
+					respOper.setStarsFailure( StarsFactory.newStarsFailure(
+							StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
+					return SOAPUtil.buildSOAPMessage( respOper );
+				}
+				energyCompanyID = user.getEnergyCompanyID();
+			}
             
-            LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
-            LiteStarsCustAccountInformation liteAcctInfo = null;
-            if (progSignUp.getAccountNumber() != null) {
+			LiteStarsCustAccountInformation liteAcctInfo = null;
+			if (progSignUp.getAccountNumber() != null) {
 				liteAcctInfo = energyCompany.searchAccountByAccountNo( progSignUp.getAccountNumber() );
-            }
-            else
-            	liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+			}
+			else
+				liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             
-            if (progSignUp.getStarsSULMPrograms() == null) {
-            	// Resend the not enrolled command
-            	respOper.setStarsProgramSignUpResponse( resendNotEnrolled(energyCompany, liteAcctInfo) );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
+			if (progSignUp.getStarsSULMPrograms() == null) {
+				// Resend the not enrolled command
+				respOper.setStarsProgramSignUpResponse( resendNotEnrolled(energyCompany, liteAcctInfo) );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
             
-            String progEnrBefore = null;
-            for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
-            	LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
-            	if (progEnrBefore == null)
-            		progEnrBefore = liteProg.getLmProgram().getProgramName();
-            	else
+			String progEnrBefore = null;
+			for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
+				LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
+				if (progEnrBefore == null)
+					progEnrBefore = liteProg.getLmProgram().getProgramName();
+				else
 					progEnrBefore += ", " + liteProg.getLmProgram().getProgramName();
-            }
+			}
             
 			// If there is only one hardware in this account, use it as the default hardware, assign all programs to it
 			Integer dftInvID = null;
 			if (liteAcctInfo.getInventories().size() == 1)
 				dftInvID = (Integer) liteAcctInfo.getInventories().get(0);
 	        
-	        updateProgramEnrollment( progSignUp, liteAcctInfo, dftInvID, energyCompany );
+			updateProgramEnrollment( progSignUp, liteAcctInfo, dftInvID, energyCompany );
 	        
-	        String progEnrNow = null;
+			String progEnrNow = null;
 			for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
 				LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
 				if (progEnrNow == null)
@@ -172,19 +172,19 @@ public class ProgramSignUpAction implements ActionBase {
 					progEnrNow += ", " + liteProg.getLmProgram().getProgramName();
 			}
 	        
-    		// Go through the list of hardware "to be disabled", and move the fake ones to the "to be configured" list
-    		for (int i = 0; i < hwIDsToDisable.size(); i++) {
-    			int invID = ((Integer) hwIDsToDisable.get(i)).intValue();
+			// Go through the list of hardware "to be disabled", and move the fake ones to the "to be configured" list
+			for (int i = 0; i < hwIDsToDisable.size(); i++) {
+				int invID = ((Integer) hwIDsToDisable.get(i)).intValue();
     			
-    			for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-    				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-    				if (liteApp.getInventoryID() == invID) {
-    					Integer id = (Integer) hwIDsToDisable.remove(i);
-    					if (!hwIDsToConfig.contains( id )) hwIDsToConfig.add( id );
-    					break;
-    				}
-    			}
-    		}
+				for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+					LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+					if (liteApp.getInventoryID() == invID) {
+						Integer id = (Integer) hwIDsToDisable.remove(i);
+						if (!hwIDsToConfig.contains( id )) hwIDsToConfig.add( id );
+						break;
+					}
+				}
+			}
 			
 			// Send out the config/disable command
 			StarsInventories starsInvs = new StarsInventories();
@@ -228,11 +228,11 @@ public class ProgramSignUpAction implements ActionBase {
 			ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
 					"Program Enrollment", logMsg );
             
-            if (user == null) {	// Probably from the sign up wizard?
-	            StarsSuccess success = new StarsSuccess();
-	            respOper.setStarsSuccess( success );
-	            return SOAPUtil.buildSOAPMessage( respOper );
-            }
+			if (user == null) {	// Probably from the sign up wizard?
+				StarsSuccess success = new StarsSuccess();
+				respOper.setStarsSuccess( success );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
             
 			StarsProgramSignUpResponse resp = new StarsProgramSignUpResponse();
 			resp.setStarsInventories( starsInvs );
@@ -249,8 +249,8 @@ public class ProgramSignUpAction implements ActionBase {
 			for (int i = 0; i < liteProgs.size(); i++) {
 				LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteProgs.get(i);
 				starsProgs.addStarsLMProgram( StarsLiteFactory.createStarsLMProgram(liteProg, energyCompany) );
-				starsProgs.setStarsLMProgramHistory( StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo.getProgramHistory()) );
 			}
+			starsProgs.setStarsLMProgramHistory( StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo.getProgramHistory()) );
 			
 			ArrayList liteApps = liteAcctInfo.getAppliances();
 			StarsAppliances starsApps = new StarsAppliances();
@@ -277,20 +277,20 @@ public class ProgramSignUpAction implements ActionBase {
 			}
 			
 			respOper.setStarsProgramSignUpResponse( resp );
-            return SOAPUtil.buildSOAPMessage( respOper );
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+			return SOAPUtil.buildSOAPMessage( respOper );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
             
-            try {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to update the program enrollment") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
-            catch (Exception e2) {
-            	e2.printStackTrace();
-            }
-        }
+			try {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to update the program enrollment") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
+			catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
         
 		return null;
 	}
@@ -299,8 +299,8 @@ public class ProgramSignUpAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#parse(SOAPMessage, SOAPMessage, HttpSession)
 	 */
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
-        try {
-            StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
+		try {
+			StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
@@ -338,17 +338,17 @@ public class ProgramSignUpAction implements ActionBase {
 				}
 			}
 			else {
-	            if (operation.getStarsSuccess() == null)
-	            	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+				if (operation.getStarsSuccess() == null)
+					return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			}
 			
-            return 0;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+			return 0;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
 	public static void updateProgramEnrollment(StarsProgramSignUp progSignUp, LiteStarsCustAccountInformation liteAcctInfo,
@@ -448,10 +448,10 @@ public class ProgramSignUpAction implements ActionBase {
 							liteApp.setAddressingGroupID( groupID );
 							liteStarsProg.setGroupID( groupID );
 	                		
-	                		if (groupID > 0) {
+							if (groupID > 0) {
 								Integer hwID = new Integer( liteApp.getInventoryID() );
 								if (!hwIDsToConfig.contains( hwID )) hwIDsToConfig.add( hwID );
-	                		}
+							}
 						}
     					
 						liteApp.setLmProgramID( program.getProgramID() );
@@ -582,14 +582,14 @@ public class ProgramSignUpAction implements ActionBase {
 							groupID = liteProg.getGroupIDs()[0];
 						liteStarsProg.setGroupID( groupID );
 	        			
-	        			if (groupID > 0) {
+						if (groupID > 0) {
 							LMHardwareConfiguration hwConfig = new LMHardwareConfiguration();
 							hwConfig.setInventoryID( invID );
 							hwConfig.setAddressingGroupID( new Integer(groupID) );
 							app.setLMHardwareConfig( hwConfig );
 		        			
 							if (!hwIDsToConfig.contains( invID )) hwIDsToConfig.add( invID );
-	        			}
+						}
 					}
 	        		
 					app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
@@ -674,7 +674,7 @@ public class ProgramSignUpAction implements ActionBase {
 		}
 		
 		resp.setStarsInventories( starsInvs );
-    	resp.setDescription( "Not enrolled command has been resent successfully" );
+		resp.setDescription( "Not enrolled command has been resent successfully" );
 		return resp;
 	}
 
