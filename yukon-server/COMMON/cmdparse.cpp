@@ -604,7 +604,7 @@ void  CtiCommandParser::doParseControl(void)
 
     RWCRExpr   re_frozen("froz");
     RWCRExpr   re_update("upd");
-    RWCRExpr   re_test("test");
+    RWCRExpr   re_test("test_mode_flag");
 
     RWCTokenizer   tok(chck);
 
