@@ -152,16 +152,23 @@ RWDBDatabase getDatabase(unsigned dbID)
         RWDBManager::setErrorHandler(info->error_handler);
         *db = RWDBManager::database( info->dll,info->name, info->user, info->password, "" );
 
-        db->defaultConnections( gMaxDBConnectionCount );
-
         if( db->isValid() )
         {
+            db->defaultConnections( gMaxDBConnectionCount );
             reconnect = false;
 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() <<    " Connected to "    << info->name <<
             " as "              << info->user <<
             " with "            << info->dll << endl;
+        }
+        else
+        {
+            Sleep(10000);
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Failed to connect to database" << endl;
+            }
         }
     }
 
