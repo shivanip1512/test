@@ -390,6 +390,33 @@ public class ServerUtils {
 		return name.toString();
 	}
 	
+	public static String getFormattedAddress(LiteAddress liteAddr) {
+		StringBuffer addr = new StringBuffer();
+    	
+		String locationAddr1 = forceNotNone( liteAddr.getLocationAddress1() ).trim();
+		if (locationAddr1.length() > 0)
+			addr.append( locationAddr1 ).append( "<br>" );
+			
+		String locationAddr2 = forceNotNone( liteAddr.getLocationAddress2() ).trim();
+		if (locationAddr2.length() > 0)
+			addr.append( locationAddr2 ).append( "<br>" );
+			
+		String cityName = forceNotNone( liteAddr.getCityName() ).trim();
+		if (cityName.length() > 0)
+			addr.append( cityName ).append( ", " );
+		
+		String stateCode = forceNotNone( liteAddr.getStateCode() ).trim();
+		if (stateCode.length() > 0) {
+			addr.append( stateCode );
+			String zipCode = forceNotNone( liteAddr.getZipCode() ).trim();
+			if (zipCode.length() > 0)
+				addr.append(" ").append( zipCode );
+		}
+    	
+		if (addr.length() == 0) addr.append("Address N/A");
+		return addr.toString();
+	}
+	
 	public static String getOneLineAddress(LiteAddress liteAddr) {
 		StringBuffer addr = new StringBuffer();
 		
