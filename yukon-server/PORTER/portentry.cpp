@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/07/18 16:22:49 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/07/30 21:15:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1460,6 +1460,12 @@ INT GenerateCompleteRequest(RWTPtrSlist< OUTMESS > &outList, OUTMESS *&OutMessag
 
         // Re-establish the connection on the beastie..
         pReq->setRouteId( OutMessage->Request.RouteID );
+
+        if(OutMessage->Request.MacroOffset == 0)
+        {
+            OutMessage->Request.MacroOffset = Dev->selectInitialMacroRouteOffset(OutMessage->Request.RouteID);
+        }
+
         pReq->setMacroOffset( OutMessage->Request.MacroOffset );
 
 
