@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/06/12 15:07:30 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2004/03/16 15:48:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,7 +51,8 @@ CtiProtocolExpresscom::CtiProtocolExpresscom(const CtiProtocolExpresscom& aRef)
 }
 
 CtiProtocolExpresscom::~CtiProtocolExpresscom()
-{}
+{
+}
 
 CtiProtocolExpresscom& CtiProtocolExpresscom::operator=(const CtiProtocolExpresscom& aRef)
 {
@@ -621,7 +622,7 @@ INT CtiProtocolExpresscom::rawmaintenance(RWCString str)
 {
     int i = 0;
     BYTE function;
-    BYTE raw[5] = { 0, 0, 0, 0, 0 };
+    BYTE raw[5] = { 0, 0, 0, 0, 0};
 
     CHAR *p;
     RWCTokenizer cmdtok(str);
@@ -942,14 +943,19 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
 
     if(CtlReq == CMD_FLAG_CTL_SHED)
     {
-        // Add these two items to the list for control accounting!
-        parse.setValue("control_interval", parse.getiValue("shed"));
-        parse.setValue("control_reduction", 100 );
+        int shed_seconds = parse.getiValue("shed");
+        if(shed_seconds >= 0)
+        {
+            // Add these two items to the list for control accounting!
+            parse.setValue("control_interval", parse.getiValue("shed"));
+            parse.setValue("control_reduction", 100 );
 
-        INT rand  = parse.getiValue("shed_rand", 0);
-        INT delay = parse.getiValue("delaytime_sec", 0) / 60;
+            INT randin  = parse.getiValue("xcrandstart", 0);
+            INT randout = parse.getiValue("xcrandstop", 0);
+            INT delay = parse.getiValue("delaytime_sec", 0) / 60;
 
-        timedLoadControl(relaymask, parse.getiValue("shed"), rand, delay);
+            timedLoadControl(relaymask, shed_seconds, randin, randout, delay);
+        }
     }
     else if(CtlReq == CMD_FLAG_CTL_CYCLE && !parse.isKeyValid("xctcycle"))
     {
@@ -1011,8 +1017,8 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
 
         double totalcontroltime = parse.getiValue("xctb", 0) + parse.getiValue("xctc", 0) + parse.getdValue("xctd", 0) + parse.getiValue("xcte", 0) + parse.getiValue("xctf", 0);
         double controlledtime = (gConfigParms.getValueAsDouble("XCOM_SETPOINT_TD_CONTROL_RATIO", 100.0)) * parse.getdValue("xctd", 0) +
-            (gConfigParms.getValueAsDouble("XCOM_SETPOINT_TE_CONTROL_RATIO", 50.0)) * parse.getdValue("xcte", 0) +
-            (gConfigParms.getValueAsDouble("XCOM_SETPOINT_TF_CONTROL_RATIO", 25.0)) * parse.getdValue("xctf", 0);
+                                (gConfigParms.getValueAsDouble("XCOM_SETPOINT_TE_CONTROL_RATIO", 50.0)) * parse.getdValue("xcte", 0) +
+                                (gConfigParms.getValueAsDouble("XCOM_SETPOINT_TF_CONTROL_RATIO", 25.0)) * parse.getdValue("xctf", 0);
 
         // Add these two items to the list for control accounting!
         if(totalcontroltime > 0) parse.setValue("control_reduction", (int)(controlledtime/totalcontroltime) );
@@ -1236,11 +1242,11 @@ INT CtiProtocolExpresscom::configureGeoAddressing(CtiCommandParser &parse)
     BYTE raw[20];
 
     raw[0] = (parse.isKeyValid("xca_spid") ? 0x80 : 0x00) |
-        (parse.isKeyValid("xca_geo") ? 0x40 : 0x00) |
-        (parse.isKeyValid("xca_sub") ? 0x20 : 0x00) |
-        (parse.isKeyValid("xca_feeder") ? 0x10 : 0x00) |
-        (parse.isKeyValid("xca_zip") ? 0x08 : 0x00) |
-        (parse.isKeyValid("xca_uda") ? 0x04 : 0x00);
+             (parse.isKeyValid("xca_geo") ? 0x40 : 0x00) |
+             (parse.isKeyValid("xca_sub") ? 0x20 : 0x00) |
+             (parse.isKeyValid("xca_feeder") ? 0x10 : 0x00) |
+             (parse.isKeyValid("xca_zip") ? 0x08 : 0x00) |
+             (parse.isKeyValid("xca_uda") ? 0x04 : 0x00);
 
     if(raw[0] != 0)
     {
