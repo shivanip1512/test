@@ -180,7 +180,7 @@ function prepareSubmit(form) {
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
               
             <div align="center"> <br>
-              <span class="TitleHeader">ADMINISTRATION - INTERVIEW QUESTIONS</span>
+              <span class="TitleHeader">ADMINISTRATION - INTERVIEW QUESTIONS</span><br>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
             </div>

@@ -50,7 +50,7 @@
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> <br>
-              <span class="TitleHeader">CUSTOMER PRIVILEGES</span>
+              <span class="TitleHeader">CUSTOMER PRIVILEGES</span><br>
             </div>
               
             <p align="center" class="MainText">Select which of the following functionality customers will have access to:</p>

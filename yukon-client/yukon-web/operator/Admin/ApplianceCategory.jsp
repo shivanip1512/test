@@ -344,7 +344,7 @@ function prepareSubmit(form) {
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
             <div align="center"> <br>
-              <span class="TitleHeader">ADMINISTRATION - APPLIANCE CATEGORY</span>
+              <span class="TitleHeader">ADMINISTRATION - APPLIANCE CATEGORY</span><br>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
             </div>
