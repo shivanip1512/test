@@ -4,7 +4,7 @@
 <%
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
 	StarsInventory inventory = inventories.getStarsInventory(invNo);
-	int deviceTypeID = inventory.getDeviceType().getEntryID();
+	int hwConfigType = ECUtils.getHardwareConfigType(inventory.getDeviceType().getEntryID());
 	StarsLMConfiguration configuration = inventory.getLMHardware().getStarsLMConfiguration();
 	
 	ArrayList attachedApps = new ArrayList();

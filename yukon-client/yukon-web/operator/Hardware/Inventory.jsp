@@ -239,9 +239,9 @@ function showAll(form) {
                     </td>
                     <td width="25%"> 
                       <input type="submit" name="Submit" value="Show">
-                      <% if (inventoryBean.getFilterBy() != 0) { %>
+<% if (inventoryBean.getFilterBy() != 0) { %>
                       <input type="button" name="ShowAll" value="Show All" onClick="showAll(this.form)">
-                      <%	} %>
+<% } %>
                     </td>
                   </tr>
                 </table>
@@ -255,48 +255,6 @@ function showAll(form) {
               </table>
 			  <br>
               <%= inventoryBean.getHTML(request) %> 
-              <!--              <table width='80%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>
-                <tr>
-                  <td>1-4 of 4 | <font color='#CCCCCC'>First</font> | <font color='#CCCCCC'>Previous</font> 
-                    | <font color='#CCCCCC'>Next</font> | <font color='#CCCCCC'>Last</font></td>
-                </tr>
-                <tr>
-                  <td> 
-                    <table width='100%' border='1' cellspacing='0' cellpadding='3'>
-                      <tr> 
-                        <td class='HeaderCell' width='17%'>Serial # / Device Name</td>
-                        <td class='HeaderCell' width='17%'>Device Type</td>
-                        <td class='HeaderCell' width='17%'>Install Date</td>
-                        <td class='HeaderCell' width='49%'>Location</td>
-                      </tr>
-                      <tr> 
-                        <td class='TableCell' width='17%'><a href='InventoryDetail.jsp?InvId=7'>500000000</a></td>
-                        <td class='TableCell' width='17%'>LCR-5000</td>
-                        <td class='TableCell' width='17%'>08/24/2003</td>
-                        <td class='TableCell' width='49%'><a href='' onclick='selectAccount(7); return false;'>Acct 
-                          # 12345</a> Robert Livingston, 8301 Golden Valley Rd, Suite 300...</td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-                <tr>
-                  <td>1-4 of 4 | <font color='#CCCCCC'>First</font> | <font color='#CCCCCC'>Previous</font> 
-                    | <font color='#CCCCCC'>Next</font> | <font color='#CCCCCC'>Last</font></td>
-                </tr>
-              </table>
-			  <form name='cusForm' method='post' action='/servlet/SOAPClient'>
-                <input type='hidden' name='action' value='GetCustAccount'>
-                <input type='hidden' name='AccountID' value=''>
-                <input type='hidden' name='REDIRECT' value='/operator/Consumer/Update.jsp'>
-                <input type='hidden' name='REFERRER' value='/operator/Hardware/Inventory.jsp'>
-			  </form>
-<script language='JavaScript'>
-function selectAccount(accountID) {
-  var form = document.cusForm;
-  form.AccountID.value = accountID;
-  form.submit();
-}
-</script>-->
               <p>&nbsp; </p>
             </div>
           </td>
