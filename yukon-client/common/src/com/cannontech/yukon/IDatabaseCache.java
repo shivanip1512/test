@@ -40,6 +40,8 @@ public interface IDatabaseCache
    public java.util.List getAllPointsUnits();
    public java.util.List getAllPointLimits();
    public java.util.HashMap getAllPointidMultiplierHashMap();
+   //Map<Integer,Integer>
+   public java.util.Map getAllPointIDOffsetMap();
    public java.util.List getAllPorts();
    public java.util.List getAllRoutes();
    public java.util.List getAllStateGroups();

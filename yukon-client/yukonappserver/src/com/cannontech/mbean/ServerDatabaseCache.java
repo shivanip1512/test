@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.cache.DBChangeListener;
@@ -22,13 +23,10 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.server.cache.*;
 
-
-import org.jboss.naming.NonSerializableFactory;
-
 /**
- * Insert the type's description here.
+ * All the action is here!
  * Creation date: (3/14/00 3:20:44 PM)
- * @author: 
+ * @author: everyone and their dog
  */ 
 
 public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
@@ -90,6 +88,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	
 	
 	private java.util.HashMap allPointidMultiplierHashMap = null;
+	private java.util.HashMap allPointIDOffsetHashMap = null;
+	
 /**
  * DefaultDatabaseCache constructor comment.
  */
@@ -540,21 +540,39 @@ public synchronized java.util.List getAllPointLimits() {
 	}
 }
 /**
- * Insert the method's description here.
+ * Get a map of type HashMap<Integer(point id),Double(multiplier>
  * Creation date: (3/14/00 3:19:19 PM)
- * @return java.util.Collection
+ * @return java.util.HashMap
  */
 public synchronized java.util.HashMap getAllPointidMultiplierHashMap(){
+	loadPointMaps();
+	return allPointidMultiplierHashMap;
+}
 
-	if( allPointidMultiplierHashMap != null )
-		return allPointidMultiplierHashMap;
-	else
+/**
+ * Get a map of type Map<Integer(point id), Integer(data offset)
+ * @return java.util.Map
+ */
+public synchronized java.util.Map getAllPointIDOffsetMap() {
+	loadPointMaps();
+	return allPointIDOffsetHashMap;
+}
+
+/**
+ * Convenience method to load multiplier and offset maps
+ * Populates allPointidMultiplierHashMap and allPointIDOffsetHashMap
+ */
+private synchronized void loadPointMaps() {
+	if( allPointidMultiplierHashMap != null &&
+		allPointIDOffsetHashMap != null)
+		return;
+	
 	{
 
-//	java.util.Vector returnMultipliers = new java.util.Vector();
-	allPointidMultiplierHashMap = new java.util.HashMap(50);	//guess of how many points there may be.
+	allPointIDOffsetHashMap = new java.util.HashMap(getAllPoints().size()*2);
+	allPointidMultiplierHashMap = new java.util.HashMap(getAllPoints().size()*2);	//guess of how many points there may be.
 	
-	String sql = new String("SELECT ACC.POINTID, ACC.MULTIPLIER FROM POINTACCUMULATOR ACC");
+	String sql = new String("SELECT ACC.POINTID, ACC.MULTIPLIER, ACC.DATAOFFSET FROM POINTACCUMULATOR ACC");
 
 	java.sql.Connection conn = null;
 	java.sql.PreparedStatement pstmt = null;
@@ -565,8 +583,8 @@ public synchronized java.util.HashMap getAllPointidMultiplierHashMap(){
 
 		if( conn == null )
 		{
-			System.out.println(":  Error getting database connection.");
-			return null;
+			CTILogger.error(":  Error getting database connection.");
+			return;
 		}
 		else
 		{
@@ -577,10 +595,12 @@ public synchronized java.util.HashMap getAllPointidMultiplierHashMap(){
 			{
 				Integer pointID = new Integer(rset.getInt(1));
 				Double multiplier = new Double(rset.getDouble(2));
-				allPointidMultiplierHashMap.put(pointID, multiplier);				
+				Integer offset = new Integer(rset.getInt(3));
+				allPointidMultiplierHashMap.put(pointID, multiplier);
+				allPointIDOffsetHashMap.put(pointID, offset);				
 			}
 			
-			sql = new String("SELECT ANA.POINTID, ANA.MULTIPLIER FROM POINTANALOG ANA");
+			sql = new String("SELECT ANA.POINTID, ANA.MULTIPLIER, ANA.DATAOFFSET FROM POINTANALOG ANA");
 			pstmt = conn.prepareStatement(sql.toString());
 			rset = pstmt.executeQuery();
 			
@@ -588,7 +608,9 @@ public synchronized java.util.HashMap getAllPointidMultiplierHashMap(){
 			{
 				Integer pointID = new Integer( rset.getInt(1));
 				Double multiplier = new Double( rset.getDouble(2));
+				Integer offset = new Integer(rset.getInt(3));
 				allPointidMultiplierHashMap.put(pointID, multiplier);
+				allPointIDOffsetHashMap.put(pointID, offset);
 			}
 		}
 	}
@@ -606,10 +628,10 @@ public synchronized java.util.HashMap getAllPointidMultiplierHashMap(){
 		catch( java.sql.SQLException e2 )
 		{
 			e2.printStackTrace();//sometin is up
-			return null;
+			return;
 		}	
 	}
-		return allPointidMultiplierHashMap;
+		return;
 	}
 }
 
@@ -1261,6 +1283,7 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 		allGraphTaggedPoints = null;
 		allPointsUnits = null;
 		allPointidMultiplierHashMap = null;
+		allPointIDOffsetHashMap = null;
 		allPointLimits = null;
 		retLBase = handlePointChange( dbType, id );
 	}
@@ -2052,6 +2075,7 @@ public synchronized void releaseAllCache()
 	allRoutes = null; //PAO
 	
 	allPointidMultiplierHashMap = null;
+	allPointIDOffsetHashMap = null;
 }
 /**
  * Insert the method's description here.

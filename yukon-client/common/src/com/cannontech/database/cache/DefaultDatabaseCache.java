@@ -223,7 +223,15 @@ public class DefaultDatabaseCache implements IDatabaseCache
       return getDBCache().getAllPointidMultiplierHashMap();
    }
    
-
+   /**
+	* @ejb:interface-method
+	* tview-type="remote" 
+	**/
+   public synchronized java.util.Map getAllPointIDOffsetMap() 
+   {
+   		return getDBCache().getAllPointIDOffsetMap();
+   }
+   
    /**
     * @ejb:interface-method
     * tview-type="remote" 

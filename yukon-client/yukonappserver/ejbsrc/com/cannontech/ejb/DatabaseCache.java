@@ -47,6 +47,8 @@ public interface DatabaseCache
 
    public java.util.HashMap getAllPointidMultiplierHashMap(  ) throws java.rmi.RemoteException;
 
+   public java.util.Map getAllPointIDOffsetMap() throws java.rmi.RemoteException;
+   
    public java.util.List getAllPoints(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllPointsUnits(  ) throws java.rmi.RemoteException;
