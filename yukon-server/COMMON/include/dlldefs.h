@@ -416,6 +416,14 @@
 #else
    #define IM_EX_FDRLODESTARIMPORT       __declspec(dllimport)
 #endif
+#ifdef _DLL_FDRDSM2FILEIN
+   #define IM_EX_FDRDSM2FILEIN       __declspec(dllexport)
+#elif defined( STI_UNDERSTAND )
+   #define IM_EX_FDRDSM2FILEIN
+#else
+   #define IM_EX_FDRDSM2FILEIN       __declspec(dllimport)
+#endif
+
 
 
 

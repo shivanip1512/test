@@ -6,6 +6,7 @@ all:
         @$(MAKE) -nologo -f fdrtextexport.mak
         @$(MAKE) -nologo -f fdrtextimport.mak
         @$(MAKE) -nologo -f fdrdsm2import.mak
+        @$(MAKE) -nologo -f fdrdsm2filein.mak
         @$(MAKE) -nologo -f fdrrdex.mak
         @$(MAKE) -nologo -f fdrcygnet.mak
         @$(MAKE) -nologo -f fdracs.mak
@@ -23,6 +24,7 @@ copy:
         @$(MAKE) -nologo -f fdrtextexport.mak
         @$(MAKE) -nologo -f fdrtextimport.mak
         @$(MAKE) -nologo -f fdrdsm2import.mak
+        @$(MAKE) -nologo -f fdrdsm2filein.mak
         @$(MAKE) -nologo -f fdrrdex.mak
         @$(MAKE) -nologo -f fdrrccs.mak
         @$(MAKE) -nologo -f fdrcygnet.mak $@
@@ -41,6 +43,7 @@ deps:
         @$(MAKE) -nologo -f fdrtextexport.mak
         @$(MAKE) -nologo -f fdrtextimport.mak
         @$(MAKE) -nologo -f fdrdsm2import.mak
+        @$(MAKE) -nologo -f fdrdsm2filein.mak
         @$(MAKE) -nologo -f fdrrdex.mak
         @$(MAKE) -nologo -f fdrrccs.mak
         @$(MAKE) -nologo -f fdrvalmet.mak $@
