@@ -18,6 +18,7 @@ import org.jfree.report.modules.output.pageable.base.PageableReportProcessor;
 import org.jfree.report.modules.output.pageable.pdf.PDFOutputTarget;
 
 import com.cannontech.analysis.report.CarrierDBReport;
+import com.cannontech.analysis.report.DailyPeaksReport;
 import com.cannontech.analysis.report.DisconnectReport;
 import com.cannontech.analysis.report.ECActivityDetailReport;
 import com.cannontech.analysis.report.ECActivityLogReport;
@@ -57,6 +58,9 @@ public class ReportFuncs
 				
 			case ReportTypes.LG_ACCOUNTING_DATA:
 				return new LGAccountingReport();
+				
+			case ReportTypes.LM_DAILY_PEAKS_DATA:
+				return new DailyPeaksReport();
 				
 			case ReportTypes.METER_READ_DATA:
 				return new MeterReadReport();

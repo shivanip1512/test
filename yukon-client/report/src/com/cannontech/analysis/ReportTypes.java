@@ -21,22 +21,23 @@ public class ReportTypes
 	public static final int SYSTEM_LOG_DATA = 1;
 	public static final int LM_CONTROL_LOG_DATA = 2;
 	public static final int LG_ACCOUNTING_DATA = 3;
+	public static final int LM_DAILY_PEAKS_DATA = 4;
 	
-	public static final int METER_READ_DATA = 4;
-	public static final int CARRIER_DB_DATA = 5;
-	public static final int POWER_FAIL_DATA = 6;
-	public static final int DISCONNECT_METER_DATA = 7;
-	public static final int CARRIER_ROUTE_MACRO_DATA = 8;
-	public static final int LOAD_PROFILE_DATA = 9;
+	public static final int METER_READ_DATA = 5;
+	public static final int CARRIER_DB_DATA = 6;
+	public static final int POWER_FAIL_DATA = 7;
+	public static final int DISCONNECT_METER_DATA = 8;
+	public static final int CARRIER_ROUTE_MACRO_DATA = 9;
+	public static final int LOAD_PROFILE_DATA = 10;
 	
-	public static final int EC_ACTIVITY_LOG_DATA = 10;
-	public static final int EC_ACTIVITY_DETAIL_DATA = 11;
-	public static final int PROGRAM_DETAIL_DATA = 12;
+	public static final int EC_ACTIVITY_LOG_DATA = 11;
+	public static final int EC_ACTIVITY_DETAIL_DATA = 12;
+	public static final int PROGRAM_DETAIL_DATA = 13;
 	
-	public static final int EC_WORK_ORDER_DATA = 13;
+	public static final int EC_WORK_ORDER_DATA = 14;
 
 	/** Cap Bank Reports */
-	public static final int CBC_BANK_DATA = 14;
+	public static final int CBC_BANK_DATA = 15;
 
 	
 	/** String names for report types */
@@ -45,6 +46,7 @@ public class ReportTypes
 	public static final String SYSTEM_LOG_DATA_STRING = "System Log";
 	public static final String LM_CONTROL_LOG_DATA_STRING = "Load Management Log";
 	public static final String LG_ACCOUNTING_DATA_STRING = "Load Group Accounting";
+	public static final String LM_DAILY_PEAKS_STRING = "LM Daily Peaks";
 	
 	public static final String METER_DATA_STRING = "Meter Reads";
 	public static final String CARRIER_DB_DATA_STRING = "Carrier Data";
@@ -68,6 +70,7 @@ public class ReportTypes
 		SYSTEM_LOG_DATA_STRING,
 		LM_CONTROL_LOG_DATA_STRING,
 		LG_ACCOUNTING_DATA_STRING,
+		LM_DAILY_PEAKS_STRING,
 	
 		METER_DATA_STRING,
 		CARRIER_DB_DATA_STRING,
@@ -124,7 +127,7 @@ public class ReportTypes
 		{EC_ACTIVITY_LOG_DATA, SYSTEM_LOG_DATA},	//admin log reports
 		{METER_READ_DATA, POWER_FAIL_DATA, DISCONNECT_METER_DATA, LOAD_PROFILE_DATA},	//amr reports
 		{STATISTIC_DATA},	//stat reports
-		{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA},		//lm reports
+		{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA},		//lm reports
 		{CBC_BANK_DATA}, //cap control reports
 		{CARRIER_DB_DATA}, //database reports
 		{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA, PROGRAM_DETAIL_DATA, EC_WORK_ORDER_DATA},	//stars reports
