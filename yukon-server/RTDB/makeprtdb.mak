@@ -35,6 +35,7 @@ INCLPATHS+= \
 YUKONPORTDLLOBJS=\
 mgr_port.obj \
 port_base.obj \
+port_dialable.obj \
 port_dialin.obj \
 port_dialout.obj \
 port_direct.obj \
