@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTCONT.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/15 14:07:59 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/12/19 20:25:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -254,11 +254,7 @@ RemoteControl (OUTMESS *OutMessage)
 
       if(OutMessage->Buffer.CSt.Value == OPENED)
       {
-         if((i = ILEXHeader (MyOutMessage->Buffer.OutMessage + PREIDLEN,
-                             RemoteRecord.Remote,
-                             ILEXSBOSELECT,
-                             0,
-                             0)) != NORMAL)
+         if((i = ILEXHeader (MyOutMessage->Buffer.OutMessage + PREIDLEN, RemoteRecord.Remote, ILEXSBOSELECT, 0, 0)) != NORMAL)
          {
             delete (MyOutMessage);
             return(i);
@@ -269,11 +265,7 @@ RemoteControl (OUTMESS *OutMessage)
       }
       else if(OutMessage->Buffer.CSt.Value == CLOSED)
       {
-         if((i = ILEXHeader (MyOutMessage->Buffer.OutMessage + PREIDLEN,
-                             RemoteRecord.Remote,
-                             ILEXSBOSELECT,
-                             1,
-                             0)) != NORMAL)
+         if((i = ILEXHeader (MyOutMessage->Buffer.OutMessage + PREIDLEN, RemoteRecord.Remote, ILEXSBOSELECT, 1, 0)) != NORMAL)
          {
             delete (MyOutMessage);
             return(i);
@@ -325,11 +317,7 @@ RemoteControl (OUTMESS *OutMessage)
       MyOutMessage->SaveNexus.NexusState = CTINEXUS_STATE_NULL;
 
       /* set up the execute */
-      if((i = ILEXHeader (MyOutMessage->Buffer.OutMessage + PREIDLEN,
-                          RemoteRecord.Remote,
-                          ILEXSBOEXECUTE,
-                          0,
-                          0)) != NORMAL)
+      if((i = ILEXHeader (MyOutMessage->Buffer.OutMessage + PREIDLEN, RemoteRecord.Remote, ILEXSBOEXECUTE, 0, 0)) != NORMAL)
       {
          delete (MyOutMessage);
          return(i);
