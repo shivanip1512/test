@@ -1095,7 +1095,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 	}
 	
-	public YukonListEntry getYukonListEntry(int yukonDefID) {
+	public YukonListEntry getYukonListEntry(int yukonDefID, boolean useDefault) {
 		ArrayList selectionLists = getAllSelectionLists();
 		for (int i = 0; i < selectionLists.size(); i++) {
 			YukonSelectionList list = (YukonSelectionList) selectionLists.get(i);
@@ -1110,10 +1110,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		// Search the default energy company if list entry is not found here
-		if (!ECUtils.isDefaultEnergyCompany( this ))
+		if (useDefault && !ECUtils.isDefaultEnergyCompany( this ))
 			return StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonListEntry( yukonDefID );
 		
 		return null;
+	}
+	
+	public YukonListEntry getYukonListEntry(int yukonDefID) {
+		return getYukonListEntry(yukonDefID, true);
 	}
 	
 	public synchronized ArrayList getServiceCompanies() {
@@ -3199,6 +3203,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	private void loadEnergyCompanyHierarchy() {
+		parent = null;
+		children = new ArrayList();
+		memberLoginIDs = new ArrayList();
+		
 		String sql = "SELECT EnergyCompanyID, ItemID FROM ECToGenericMapping " +
 				"WHERE MappingCategory='" + ECToGenericMapping.MAPPING_CATEGORY_MEMBER + "' " +
 				"AND (EnergyCompanyID=" + getEnergyCompanyID() + " OR ItemID=" + getEnergyCompanyID() + ")";
@@ -3206,8 +3214,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		try {
 			SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 			stmt.execute();
-			
-			children = new ArrayList();
 			
 			for (int i = 0; i < stmt.getRowCount(); i++) {
 				int parentID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
@@ -3217,6 +3223,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 					children.add( StarsDatabaseCache.getInstance().getEnergyCompany(childID) );
 				else	// childID == getLiteID()
 					parent = StarsDatabaseCache.getInstance().getEnergyCompany( parentID );
+			}
+			
+			ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems(
+					getEnergyCompanyID(), ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
+			
+			if (items != null) {
+				for (int i = 0; i < items.length; i++)
+					memberLoginIDs.add( items[i].getItemID() );
 			}
 			
 			hierarchyLoaded = true;
@@ -3240,20 +3254,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public synchronized ArrayList getMemberLoginIDs() {
-		if (memberLoginIDs == null) {
-			ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems(
-					getEnergyCompanyID(), ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
-			
-			memberLoginIDs = new ArrayList();
-			if (items != null) {
-				for (int i = 0; i < items.length; i++)
-					memberLoginIDs.add( items[i].getItemID() );
-			}
-			
-			CTILogger.info( "All member logins loaded for energy company #" + getEnergyCompanyID() );
-		}
-		
+		if (!hierarchyLoaded)
+			loadEnergyCompanyHierarchy();
 		return memberLoginIDs;
+	}
+	
+	public synchronized void clearHierarchy() {
+		hierarchyLoaded = false;
 	}
 
 }

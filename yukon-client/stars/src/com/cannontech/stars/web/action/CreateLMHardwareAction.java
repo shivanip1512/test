@@ -377,20 +377,20 @@ public class CreateLMHardwareAction implements ActionBase {
 						DeleteLMHardwareAction.parseResponse( invID, starsPrevAccount );
 				}
             	
-            	if (createHw.getLMHardware() != null && liteInv instanceof LiteStarsLMHardware) {
+				if (createHw.getLMHardware() != null && liteInv instanceof LiteStarsLMHardware) {
 					hw.setInventoryID( new Integer(invID) );
 					hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
 							Transaction.createTransaction( Transaction.UPDATE, hw ).execute();
             		
-            		StarsLiteFactory.setLiteStarsLMHardware( (LiteStarsLMHardware)liteInv, hw );
-            	}
-            	else {
+					StarsLiteFactory.setLiteStarsLMHardware( (LiteStarsLMHardware)liteInv, hw );
+				}
+				else {
 					invDB.setInventoryID( new Integer(invID) );
 					invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
 							Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
 					
 					StarsLiteFactory.setLiteInventoryBase( liteInv, invDB );
-            	}
+				}
 			}
 			
 			if (liteAcctInfo != null) {
@@ -442,7 +442,8 @@ public class CreateLMHardwareAction implements ActionBase {
 				eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
 				eventBaseDB.setActionID( new Integer(installActID) );
 				eventBaseDB.setEventDateTime( new Date(liteInv.getInstallDate()) );
-				eventBaseDB.setNotes( createHw.getInstallationNotes() );
+				if (createHw.getInstallationNotes() != null)
+					eventBaseDB.setNotes( createHw.getInstallationNotes() );
 				eventDB.setInventoryID( invDB.getInventoryID() );
 				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 				

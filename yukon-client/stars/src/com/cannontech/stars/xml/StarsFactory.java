@@ -490,12 +490,15 @@ public class StarsFactory {
 			invDB.setInstallDate( starsInv.getInstallDate() );
 		if (starsInv.getRemoveDate() != null)
 			invDB.setRemoveDate( starsInv.getRemoveDate() );
-		invDB.setAlternateTrackingNumber( starsInv.getAltTrackingNumber() );
+		if (starsInv.getAltTrackingNumber() != null)
+			invDB.setAlternateTrackingNumber( starsInv.getAltTrackingNumber() );
 		if (starsInv.getVoltage() != null)
 			invDB.setVoltageID( new Integer(starsInv.getVoltage().getEntryID()) );
-		invDB.setNotes( starsInv.getNotes() );
+		if (starsInv.getNotes() != null)
+			invDB.setNotes( starsInv.getNotes() );
 		invDB.setDeviceID( new Integer(starsInv.getDeviceID()) );
-		invDB.setDeviceLabel( starsInv.getDeviceLabel() );
+		if (starsInv.getDeviceLabel() != null)
+			invDB.setDeviceLabel( starsInv.getDeviceLabel() );
 	}
 	
 	
@@ -507,16 +510,16 @@ public class StarsFactory {
 			orderDB.setAccountID( new Integer(order.getAccountID()) );
 		if (order.getOrderNumber() != null)
 			orderDB.setOrderNumber( order.getOrderNumber() );
-		if (order.getDateReported() != null)
-			orderDB.setDateReported( order.getDateReported() );
-		
 		orderDB.setWorkTypeID( new Integer(order.getServiceType().getEntryID()) );
-		orderDB.setServiceCompanyID( new Integer(order.getServiceCompany().getEntryID()) );
-		orderDB.setOrderedBy( order.getOrderedBy() );
-		orderDB.setDescription( order.getDescription() );
-		
 		if (order.getCurrentState() != null)
 			orderDB.setCurrentStateID( new Integer(order.getCurrentState().getEntryID()) );
+		orderDB.setServiceCompanyID( new Integer(order.getServiceCompany().getEntryID()) );
+		if (order.getDateReported() != null)
+			orderDB.setDateReported( order.getDateReported() );
+		if (order.getOrderedBy() != null)
+			orderDB.setOrderedBy( order.getOrderedBy() );
+		if (order.getDescription() != null)
+			orderDB.setDescription( order.getDescription() );
 		if (order.getDateScheduled() != null)
 			orderDB.setDateScheduled( order.getDateScheduled() );
 		if (order.getDateCompleted() != null)

@@ -542,54 +542,46 @@ public class StarsAdminUtil {
 		map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER );
 		Transaction.createTransaction( Transaction.INSERT, map ).execute();
 		
-		LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( memberID );
-		ArrayList members = energyCompany.getChildren();
-		synchronized (members) { members.add(member); }
-		
 		if (loginID != -1) {
 			map.setItemID( new Integer(loginID) );
 			map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
 			Transaction.createTransaction( Transaction.INSERT, map ).execute();
-			
-			ArrayList loginIDs = energyCompany.getMemberLoginIDs();
-			synchronized (loginIDs) { loginIDs.add(new Integer(loginID)); }
 		}
+		
+		energyCompany.clearHierarchy();
+		StarsDatabaseCache.getInstance().getEnergyCompany( memberID ).clearHierarchy();
 	}
 	
 	public static void removeMember(LiteStarsEnergyCompany energyCompany, int memberID) throws Exception {
 		ArrayList members = energyCompany.getChildren();
 		ArrayList loginIDs = energyCompany.getMemberLoginIDs();
 		
-		synchronized (members) {
-			Iterator it = members.iterator();
-			while (it.hasNext()) {
-				LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) it.next();
-				if (memberID != -1 && member.getLiteID() != memberID) continue;
+		Iterator it = members.iterator();
+		while (it.hasNext()) {
+			LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) it.next();
+			if (memberID != -1 && member.getLiteID() != memberID) continue;
+			
+			ECToGenericMapping map = new ECToGenericMapping();
+			map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+			map.setItemID( member.getEnergyCompanyID() );
+			map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER );
+			Transaction.createTransaction( Transaction.DELETE, map ).execute();
+			
+			member.clearHierarchy();
+			
+			for (int i = 0; i < loginIDs.size(); i++) {
+				Integer loginID = (Integer) loginIDs.get(i);
+				LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( loginID.intValue() );
 				
-				ECToGenericMapping map = new ECToGenericMapping();
-				map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-				map.setItemID( member.getEnergyCompanyID() );
-				map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER );
-				Transaction.createTransaction( Transaction.DELETE, map ).execute();
-				
-				it.remove();
-				
-				synchronized (loginIDs) {
-					for (int i = 0; i < loginIDs.size(); i++) {
-						Integer loginID = (Integer) loginIDs.get(i);
-						LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( loginID.intValue() );
-						
-						if (EnergyCompanyFuncs.getEnergyCompany( liteUser ).getEnergyCompanyID() == member.getLiteID()) {
-							map.setItemID( loginID );
-							map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
-							Transaction.createTransaction( Transaction.DELETE, map ).execute();
-							
-							loginIDs.remove(i);
-							break;
-						}
-					}
+				if (EnergyCompanyFuncs.getEnergyCompany( liteUser ).getEnergyCompanyID() == member.getLiteID()) {
+					map.setItemID( loginID );
+					map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
+					Transaction.createTransaction( Transaction.DELETE, map ).execute();
+					break;
 				}
 			}
 		}
+		
+		energyCompany.clearHierarchy();
 	}
 }

@@ -475,8 +475,8 @@ public class StarsAdmin extends HttpServlet {
 			LiteYukonGroup adminGroup = energyCompany.getOperatorAdminGroup();
 			boolean adminGroupUpdated = false;
 	        
-	        adminGroupUpdated |= StarsAdminUtil.updateGroupRoleProperty(
-	        		adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.DEFAULT_TIME_ZONE, req.getParameter("TimeZone") );
+			adminGroupUpdated |= StarsAdminUtil.updateGroupRoleProperty(
+					adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.DEFAULT_TIME_ZONE, req.getParameter("TimeZone") );
 			
 			String[] operGroupNames = req.getParameter("OperatorGroup").split(",");
 			String operGroupIDs = "";
@@ -1949,14 +1949,12 @@ public class StarsAdmin extends HttpServlet {
 		ArrayList loginIDs = energyCompany.getMemberLoginIDs();
 		Integer prevLoginID = null;
 		
-		synchronized (loginIDs) {
-			for (int i = 0; i < loginIDs.size(); i++) {
-				Integer id = (Integer) loginIDs.get(i);
-				LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( id.intValue() );
-				if (EnergyCompanyFuncs.getEnergyCompany( liteUser ).getEnergyCompanyID() == memberID) {
-					prevLoginID = id;
-					break;
-				}
+		for (int i = 0; i < loginIDs.size(); i++) {
+			Integer id = (Integer) loginIDs.get(i);
+			LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( id.intValue() );
+			if (EnergyCompanyFuncs.getEnergyCompany( liteUser ).getEnergyCompanyID() == memberID) {
+				prevLoginID = id;
+				break;
 			}
 		}
 		
@@ -1970,11 +1968,6 @@ public class StarsAdmin extends HttpServlet {
 							" AND MappingCategory = 'MemberLogin'";
 					SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 					stmt.execute();
-					
-					synchronized (loginIDs) {
-						loginIDs.remove( prevLoginID );
-						loginIDs.add( new Integer(loginID) );
-					}
 				}
 				else {
 					ECToGenericMapping map = new ECToGenericMapping();
@@ -1982,8 +1975,6 @@ public class StarsAdmin extends HttpServlet {
 					map.setItemID( prevLoginID );
 					map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
 					Transaction.createTransaction( Transaction.DELETE, map ).execute();
-					
-					synchronized (loginIDs) { loginIDs.remove(prevLoginID); }
 				}
 			}
 			else {
@@ -1994,9 +1985,9 @@ public class StarsAdmin extends HttpServlet {
 				map.setItemID( new Integer(loginID) );
 				map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
 				Transaction.createTransaction( Transaction.INSERT, map ).execute();
-				
-				synchronized (loginIDs) { loginIDs.add(new Integer(loginID)); }
 			}
+			
+			energyCompany.clearHierarchy();
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
