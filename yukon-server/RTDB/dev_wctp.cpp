@@ -68,6 +68,18 @@ CtiDeviceWctpTerminal::~CtiDeviceWctpTerminal()
     }
 }
 
+
+bool CtiDeviceWctpTerminal::allowPrefix() const
+{
+    return _allowPrefix;
+}
+
+CtiDeviceWctpTerminal& CtiDeviceWctpTerminal::setAllowPrefix(bool val)
+{
+    _allowPrefix = val;
+    return *this;
+}
+
 bool CtiDeviceWctpTerminal::devicePacingExceeded()
 {
     bool toofast = false;
@@ -680,7 +692,7 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
             CHAR  msgPayload[256];
             CHAR  temp[8];
 
-            if( gDoPrefix )
+            if( gDoPrefix && allowPrefix() )
             {
                 /* Stick a little TAPTerm fakey in there */
                 msgPayload[sendCnt++] = incrementPagePrefix();
@@ -1104,6 +1116,7 @@ CHAR CtiDeviceWctpTerminal::incrementPagePrefix()
 }
 
 CtiDeviceWctpTerminal::CtiDeviceWctpTerminal() :
+_allowPrefix(true),
 _pagesPerMinute(0),
 _sendFiller(true),
 _pageCount(0),

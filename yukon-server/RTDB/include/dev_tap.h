@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tap.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/06/27 19:25:25 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/03/18 19:42:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,6 +51,7 @@ private:
    RWTime   _pacingTimeStamp;       // This is a timestamp from which we began the pacing process.
    int      _pagesPerMinute;      // This is a count of pages since the _pacingTimeStamp.         Used with CPARM: PAGING_BATCH_SIZE
    bool     _pacingReport;
+   bool     _allowPrefix;
 
 public:
 
@@ -120,6 +121,8 @@ public:
    INT printChar( RWCString &Str, CHAR Char );
    bool devicePacingExceeded();
    bool blockedByPageRate() const;
+   bool allowPrefix() const;
+   CtiDeviceTapPagingTerminal& setAllowPrefix(bool val = false);
 
 };
 

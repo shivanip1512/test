@@ -62,6 +62,7 @@ private:
     int      _pagesPerMinute;        // This is a count of pages since the _pacingTimeStamp.         Used with CPARM: PAGING_BATCH_SIZE
     bool     _pacingReport;
 
+    bool     _allowPrefix;
 
 public:
 
@@ -129,6 +130,8 @@ public:
    CtiDeviceWctpTerminal& setSendFiller(bool yesno);
    bool getSendFiller() const;
    bool devicePacingExceeded();
+   bool allowPrefix() const;
+   CtiDeviceWctpTerminal& setAllowPrefix(bool val = false);
 
 private:
 

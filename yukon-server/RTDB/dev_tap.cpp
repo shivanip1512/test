@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/07/25 19:12:17 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/03/18 19:42:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -855,7 +855,7 @@ INT CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< Cti
 
             out[sendCnt++] = CHAR_CR;
 
-            if( gDoPrefix )
+            if( gDoPrefix && allowPrefix())
             {
                 /* Stick a little TAPTerm fakey in there */
                 out[sendCnt++] = incrementPagePrefix();
@@ -1399,6 +1399,7 @@ bool CtiDeviceTapPagingTerminal::getSendFiller() const
 }
 
 CtiDeviceTapPagingTerminal::CtiDeviceTapPagingTerminal() :
+_allowPrefix(true),
 _pagesPerMinute(0),
 _sendFiller(true),
 _idByteCount(20),
@@ -1559,4 +1560,16 @@ bool CtiDeviceTapPagingTerminal::devicePacingExceeded()
 
     return toofast;
 }
+
+bool CtiDeviceTapPagingTerminal::allowPrefix() const
+{
+    return _allowPrefix;
+}
+
+CtiDeviceTapPagingTerminal& CtiDeviceTapPagingTerminal::setAllowPrefix(bool val)
+{
+    _allowPrefix = val;
+    return *this;
+}
+
 
