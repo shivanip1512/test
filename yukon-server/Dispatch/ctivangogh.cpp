@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2002/10/11 14:08:06 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2002/10/14 13:20:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -607,8 +607,8 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 for(i = 0; i < Cmd->getOpArgList().entries(); i++)
                 {
                     pid   = Cmd->getOpArgList().at(i);
-                    pPt   = PointMgr.getMap().findValue( &CtiHashKey(pid) );
 
+                    pPt   = PointMgr.getEqual(pid);
                     if(pPt != NULL)      // I know about the point...
                     {
                         CtiSignalMsg *pSigNew = NULL;
@@ -702,7 +702,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
             {
                 pid   = Cmd->getOpArgList().at(i);
 
-                pPt   = PointMgr.getMap().findValue( &CtiHashKey(pid) );
+                pPt   = PointMgr.getEqual(pid);
                 pSig  = _signalsPending.getMap().findValue(&CtiHashKey(pid));
 
                 if(pPt != NULL)      // I know about the point...
@@ -803,7 +803,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                         }
                         else
                         {
-                            pPoint = PointMgr.getMap().findValue( &CtiHashKey(pid) );
+                            pPoint = PointMgr.getEqual(pid);
                         }
 
                         if(pPoint != NULL)
@@ -1255,7 +1255,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
     try
     {
         // See if I know about this point ID
-        CtiPoint *TempPoint = PointMgr.getMap().findValue(&CtiHashKey(aPD.getId()));
+        CtiPoint *TempPoint = PointMgr.getEqual(aPD.getId());
 
         if(TempPoint != NULL)      // We do know this point..
         {
@@ -1335,12 +1335,11 @@ INT CtiVanGogh::archiveSignalMessage(const CtiSignalMsg& aSig)
     try
     {
         CtiSignalMsg *pSig = NULL;
-        CtiHashKey key(aSig.getId());
 
         {
             // See if I know about this point ID
             CtiLockGuard<CtiMutex> pmguard(server_mux);
-            CtiPoint *TempPoint = PointMgr.getMap().findValue(&key);
+            CtiPoint *TempPoint = PointMgr.getEqual(aSig.getId());
 
             if(TempPoint != NULL)
             {
@@ -1554,7 +1553,7 @@ INT CtiVanGogh::postMessageToClients(CtiMessage *pMsg)
                         MgrToRemove = Mgr;
 
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Connection is having issues : " << VGCM.getClientName() << " / " << VGCM.getClientAppId() << endl;
+                        dout << RWTime() << " Connection is not viable : " << VGCM.getClientName() << " / " << VGCM.getClientAppId() << endl;
                     }
                 }
                 else if(pMulti != NULL) // This means none of the messages were for this connection.
@@ -1694,7 +1693,7 @@ INT CtiVanGogh::assembleMultiFromSignalForConnection(const CtiVanGoghConnectionM
             {
                 CtiSignalMsg *pNewSig = (CtiSignalMsg *)pSig->replicateMessage();
 
-                CtiPoint *pTempPoint = PointMgr.getMap().findValue(&CtiHashKey(pSig->getId()));
+                CtiPoint *pTempPoint = PointMgr.getEqual(pSig->getId());
 
                 if(pTempPoint != NULL)
                 {
@@ -1728,7 +1727,7 @@ INT CtiVanGogh::assembleMultiFromPointDataForConnection(const CtiVanGoghConnecti
         {
             if(!(pDat->getTags() & TAG_POINT_DELAYED_UPDATE))   // We will propagate this one later!
             {
-                CtiPoint *pTempPoint = PointMgr.getMap().findValue(&CtiHashKey(pDat->getId()));
+                CtiPoint *pTempPoint = PointMgr.getEqual(pDat->getId());
 
                 if(pTempPoint != NULL)
                 {
@@ -1868,9 +1867,7 @@ BOOL CtiVanGogh::isPointDataNewInformation(const CtiPointDataMsg &Msg)
     {
         // Verify that the point has actually changed from the last known!
         // OR it must be marked for forcing through the system
-        CtiHashKey  key(Msg.getId());
-
-        CtiPoint *pPoint = PointMgr.getMap().findValue(&key);
+        CtiPoint *pPoint = PointMgr.getEqual(Msg.getId());
 
         if(pPoint != NULL)      // We do know this point..
         {
@@ -1891,9 +1888,7 @@ BOOL CtiVanGogh::isConnectionAttachedToMsgPoint(const CtiVanGoghConnectionManage
 {
     BOOL bStatus = FALSE;
 
-    CtiHashKey  key(pID);
-
-    CtiPoint *TempPoint = PointMgr.getMap().findValue(&key);
+    CtiPoint *TempPoint = PointMgr.getEqual(pID);
 
     if(TempPoint != NULL)      // We do know this point..
     {
@@ -1948,7 +1943,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
     {
         CtiPoint *pPoint = NULL;
         CtiLockGuard<CtiMutex> pmguard(server_mux);
-        pPoint = PointMgr.getMap().findValue( &CtiHashKey(pMsg->getPointId()) );
+        pPoint = PointMgr.getEqual(pMsg->getPointId());
 
         if(pPoint != NULL)
         {
@@ -2448,7 +2443,7 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                     long pid = mypair.first;
                     long logid = mypair.second;
 
-                    pPoint = PointMgr.getMap().findValue( &CtiHashKey(pid) );
+                    pPoint = PointMgr.getEqual(pid);
 
                     if(pPoint != NULL)
                     {
@@ -3008,7 +3003,7 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
     if(pData != NULL)
     {
         CtiLockGuard<CtiMutex> pmguard(server_mux);
-        CtiPoint *pPoint = PointMgr.getMap().findValue( &CtiHashKey(pData->getId()) );
+        CtiPoint *pPoint = PointMgr.getEqual(pData->getId());
 
         if(pPoint != NULL)      // We do know this point..
         {
@@ -3115,7 +3110,7 @@ INT CtiVanGogh::checkCommandDataStateQuality(CtiCommandMsg *pCmd, CtiMultiWrappe
     else if( Op.at((size_t)1) == RWInteger(OP_POINTID) )
     {
         CtiLockGuard<CtiMutex> pmguard(server_mux);
-        CtiPoint *pPoint = PointMgr.getMap().findValue( &CtiHashKey(Op.at((size_t)2)) );
+        CtiPoint *pPoint = PointMgr.getEqual(Op.at((size_t)2));
 
         if(pPoint != NULL)      // We know this point..
         {
@@ -3264,7 +3259,7 @@ void CtiVanGogh::postSignalAsEmail( const CtiSignalMsg &sig )
             CtiPoint *pPoint = NULL;
             {
                 CtiLockGuard<CtiMutex> pmguard(server_mux);
-                pPoint = PointMgr.getMap().findValue( &CtiHashKey(sig.getId()) );
+                pPoint = PointMgr.getEqual(sig.getId());
 
                 if(pPoint)
                 {
@@ -3582,7 +3577,7 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
     bool excluded = true;
 
     CtiLockGuard<CtiMutex> pmguard(server_mux);
-    if((point =  PointMgr.getMap().findValue( &CtiHashKey(sig.getId()) )) != NULL)
+    if((point =  PointMgr.getEqual(sig.getId())) != NULL)
     {
         {
             pointname = point->getName();
@@ -3699,6 +3694,8 @@ int CtiVanGogh::clientPurgeQuestionables(PULONG pDeadClients)
     int status = NORMAL;
     CtiConnectionManager *Mgr;
 
+    CtiLockGuard<CtiMutex> server_guard(server_mux);      // Get a lock on it.
+
     if(MainQueue_.entries() == 0)
     {
 
@@ -3760,8 +3757,10 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
                 if(CM->getClientAppId() != (RWThreadId)0 && (Mgr->getClientAppId() == CM->getClientAppId()))
                 {
                     // This guy is already registered. Might have lost his connection??
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << NowTime.now() << " " << CM->getClientName() << " just re-registered." << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << NowTime.now() << " " << CM->getClientName() << " just re-registered." << endl;
+                    }
                     removeMgr = TRUE;
                     break;
                 }
@@ -3769,11 +3768,13 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
                 {
                     if( Mgr->getClientQuestionable() )       // has this guy been previously pinged and not responded?
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << NowTime.now() << " " <<
-                        CM->getClientName() << " / " <<
-                        CM->getClientAppId() << " / " <<
-                        CM->getPeer() << " just won a client arbitration." << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << NowTime.now() << " " <<
+                                CM->getClientName() << " / " <<
+                                CM->getClientAppId() << " / " <<
+                                CM->getPeer() << " just won a client arbitration." << endl;
+                        }
 
                         removeMgr = TRUE;    // Make the old one go away...
 
@@ -3791,8 +3792,10 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
                         validEntry = TRUE;
 
                         // Old one wanted to be the only one
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << NowTime.now() << " New client \"" << CM->getClientName() << "\" conflicts with an existing client." << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << NowTime.now() << " New client \"" << CM->getClientName() << "\" conflicts with an existing client." << endl;
+                        }
                     }
 
                     break; // the for
@@ -3835,17 +3838,16 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
     {
         CtiLockGuard<CtiMutex> guard(server_mux);
 
-        if(mConnectionTable.remove(Mgr))
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << NowTime.now() << " " <<
             Mgr->getClientName() << " / " <<
             Mgr->getClientAppId() << " / " <<
             Mgr->getPeer() << " just _lost_ the client arbitration." << endl;
-
-            // This connection manager is abandoned now...
-            clientShutdown(Mgr);
         }
+
+        // This connection manager is abandoned now...
+        clientShutdown(Mgr);
     }
 
     return nRet;
@@ -5648,7 +5650,7 @@ void CtiVanGogh::insertAndPostControlHistoryPoints( CtiPendingPointOperations &p
 {
     int poff;
 
-    CtiPointBase *pPt = PointMgr.getMap().findValue( &CtiHashKey(ppc.getPointID()) );
+    CtiPointBase *pPt = PointMgr.getEqual(ppc.getPointID());
 
     if(pPt != 0)
     {
