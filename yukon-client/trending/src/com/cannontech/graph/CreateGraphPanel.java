@@ -79,6 +79,8 @@ public void actionPerformed(java.awt.event.ActionEvent event)
  */
 public void addGDS_ActionPerformed(javax.swing.tree.DefaultMutableTreeNode node)
 {
+	if( node == null)
+		return;
 	com.cannontech.database.data.lite.LitePoint pt = null;
 	String deviceName = null;
 	
@@ -180,6 +182,8 @@ public com.cannontech.database.db.graph.GraphDataSeries createGDS(com.cannontech
 	// call to obtain the type from the database (pointUnit)
 	String type = getPointTypeString(point);
 	gds.setType(type);
+
+	gds.setMultiplier(new Double(1.0));
 	
 	if( type.equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES))
 	{	//add to the peaks combo box if of type graph
@@ -476,12 +480,45 @@ private javax.swing.JTable getGraphGDSTable() {
 			java.awt.Color[] colors = getGraphColors().getAvailableColors();
 			String[] colorStrings = new String[colors.length];
 
+/*			int red = 0;
+			int green = 0;
+			int blue = 0;			
+			Vector colorVector = new Vector();
+			for( red = 0; red < 256; red+=64)
+			{
+				for ( green = 0; green< 256; green+=64)
+				{
+					for ( blue = 0; blue< 256; blue+=64)
+					{
+						java.awt.Color tempColor = new java.awt.Color(red, green, blue);
+						colorVector.add(tempColor);
+						System.out.println(tempColor.toString() + "  SIZE = " + colorVector.size());
+					}
+					blue = 255;
+					java.awt.Color tempColor = new java.awt.Color(red, green, blue);
+					colorVector.add(tempColor);
+					System.out.println("1" + tempColor.toString() + "  SIZE = " + colorVector.size());					
+				}
+				green = 255;
+				java.awt.Color tempColor = new java.awt.Color(red, green, blue);
+				colorVector.add(tempColor);
+				System.out.println("1" + tempColor.toString() + "  SIZE = " + colorVector.size());					
+				
+			}
+			red = 255;
+			java.awt.Color tempColor = new java.awt.Color(red, green, blue);
+			colorVector.add(tempColor);
+			System.out.println("3" + tempColor.toString() + "  SIZE = " + colorVector.size());					
+			
+			java.awt.Color[] colors = new java.awt.Color[colorVector.size()];
+			colorVector.toArray(colors);
+			*/
 			for( int i = 0 ; i < colors.length; i++ )
 			{
 				colorStrings[i] = com.cannontech.common.gui.util.Colors.getColorString(com.cannontech.common.gui.util.Colors.getColorID(colors[i]));
 			}
 			javax.swing.JComboBox colorComboBox = new javax.swing.JComboBox( colorStrings );
-			colorComboBox.setRenderer( new com.cannontech.common.gui.util.ColorComboBoxCellRenderer() );
+			colorComboBox.setRenderer(new com.cannontech.common.gui.util.ColorComboBoxCellRenderer() );
 			javax.swing.DefaultCellEditor colorEditor = new javax.swing.DefaultCellEditor(colorComboBox);
 
 			//Column inits.
@@ -492,13 +529,15 @@ private javax.swing.JTable getGraphGDSTable() {
 			colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN).setPreferredWidth(55);
 			colModel.getColumn(GDSTableModel.AXIS_NAME_COLUMN).setPreferredWidth(8);
 			colModel.getColumn(GDSTableModel.TYPE_NAME_COLUMN).setPreferredWidth(40);
+			colModel.getColumn(GDSTableModel.MULT_NAME_COLUMN).setPreferredWidth(20);			
 
 
 //			javax.swing.JColorChooser colorChooser = new javax.swing.JColorChooser(java.awt.Color.BLUE);
-//			javax.swing.JComboBox testBox = new javax.swing.JComboBox(new Object[] {colorChooser});
+//			javax.swing.JComboBox testBox = new javax.swing.JComboBox(new javax.swing.JColorChooser[] {colorChooser.get});
+//			colorChooser.showDialog(testBox, "COLOR", java.awt.Color.BLUE);
 //			javax.swing.DefaultCellEditor colorEditor = new javax.swing.DefaultCellEditor(testBox);
-//			colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN).setCellEditor(colorEditor);						
-//
+//			colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN).setCellEditor(colorEditor);
+
 
 			colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN).setCellEditor(colorEditor);
 			javax.swing.table.TableColumn tblColumn = colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN);
@@ -511,6 +550,7 @@ private javax.swing.JTable getGraphGDSTable() {
 			javax.swing.JComboBox typeComboBox = new javax.swing.JComboBox( new String[] { "graph", "usage", "yesterday" } );
 			javax.swing.DefaultCellEditor typeEditor = new javax.swing.DefaultCellEditor(typeComboBox);
 			colModel.getColumn(GDSTableModel.TYPE_NAME_COLUMN).setCellEditor(typeEditor);
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1014,6 +1054,7 @@ public Object getValue(Object object)
 		gds.setLabel(model.getRow(point - 1).getLabel());
 		gds.setAxis(model.getRow(point  - 1).getAxis());
 		gds.setColor(model.getRow(point - 1).getColor());
+		gds.setMultiplier(model.getRow(point - 1).getMultiplier());
 		model.addRow(gds);
 	}
 	
@@ -1152,10 +1193,9 @@ public void removeGDS_ActionPerformed(javax.swing.JTable table)
 	GDSTableModel model = (GDSTableModel) table.getModel();
 
 	//Remove the point from the peakPoint options.
-	//for loop is from largest to smallest index so we never hit an index already removed.
+	//for loop is reversed index order so we never hit an index already removed.
 	for (int i = rowsToRemove.length - 1; i >= 0; i--)
-	{
-		
+	{		
 		//If point removed is peak point, set peakPointComboBox to "no peak point" (index 0)
 		if ( (rowsToRemove[i] + 1 )== getPeakPointComboBox().getSelectedIndex())
 			getPeakPointComboBox().setSelectedIndex(0);
@@ -1203,10 +1243,10 @@ public void setValue(Object val)
 	com.cannontech.database.data.graph.GraphDefinition gDef = (com.cannontech.database.data.graph.GraphDefinition) val;
 	setGraphDefinitionValue(gDef);
 
-	//set Name with the GraphDefinition.Name	
+	//SET GRAPH NAME
 	getNameTextField().setText( gDef.getGraphDefinition().getName() );
 
-	//set AxisPanel, Left/Right AutoScaling  T/F  ----------------------
+	//SET LEFT/RIGHT (AUTO)SCALE
 	if( gDef.getGraphDefinition().getAutoScaleLeftAxis().charValue() == 'N' ||
 		gDef.getGraphDefinition().getAutoScaleLeftAxis().charValue() == 'n' )
 	{
@@ -1227,58 +1267,53 @@ public void setValue(Object val)
 		getAxisPanel().getRightAutoScalingCheckBox().setSelected(true);
 	}
 
-	//set AxisPanel, Left/Right Min/Max values from GraphDefinition  ----------------------	
+	//SET LEFT/RIGHT MIN/MAX VALUES
 	getAxisPanel().getLeftMinTextField().setText( gDef.getGraphDefinition().getLeftMin().toString() );
 	getAxisPanel().getLeftMaxTextField().setText( gDef.getGraphDefinition().getLeftMax().toString() );
 
 	getAxisPanel().getRightMinTextField().setText( gDef.getGraphDefinition().getRightMin().toString() );
 	getAxisPanel().getRightMaxTextField().setText( gDef.getGraphDefinition().getRightMax().toString() );
 	
-	//Insert/Display all graphdataseries in their respective tables
+	//INSERT ALL GDS (EXCEPT PEAK) INTO TABLE
 	java.util.List gds = gDef.getGraphDataSeries();
 	java.util.Iterator iter = gds.iterator();
 
 	GDSTableModel model = (GDSTableModel) getGraphGDSTable().getModel();
-
-	int selectedIndex = 0;
-	int peakPointID = 0;
+	GraphDataSeries peakDataSeries = null;
+	
 	while( iter.hasNext() )
 	{
-		com.cannontech.database.db.graph.GraphDataSeries elem = (com.cannontech.database.db.graph.GraphDataSeries) iter.next();		
-
-		if( elem.getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES) )
+		com.cannontech.database.db.graph.GraphDataSeries elem = (com.cannontech.database.db.graph.GraphDataSeries) iter.next();
+		if(( elem.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.PEAK_MASK) == GraphDataSeries.PEAK_MASK)
 		{	
-			// get the pointID value for the peak point ( need this ID to compare
-			//	  it's location in the table to that in the combo box)
-			peakPointID = elem.getPointID().intValue();
+			//SAVE THE PEAK GDS (Need it to locate peak point in combo box)
+			peakDataSeries = elem;
 		}
 		else
 		{
-			// Add elem types: Usage, Graph
+			// ADD ALL NON-PEAK SERIES TO TABLE
 			model.addRow(elem);
 		
-			// get a string to put in the peakPointComboBox to represent the graph items in the table
+			// ADD TABLE ELEMENTS TO PEAK COMBOBOX
 			String label = elem.getLabel().toString() + " :: " + elem.getDeviceName().toString();
 			peakPointsVector.addElement(label);		
 			getPeakPointComboBox().addItem(label);
-			selectedIndex++;
 		}
 	}
 
-	// Set the Selected Index for the peak point combo box:
-	// get the peak point to be displayed the combo box by comparing the pointID's of the peak point and
-	//    it's corresponding graph point.  Need to do this because usage points may disrupt the order.
-	if( peakPointID > 0)
+	// SET THE PEAK POINT COMBO BOX TO THE CORRECT GDS
+	if( peakDataSeries != null)
 	{
-		for( int i = 0; i < selectedIndex; i++)
+		for( int i = 0; i < model.getRowCount(); i++)
 		{
-			com.cannontech.database.db.graph.GraphDataSeries peakGDS = (com.cannontech.database.db.graph.GraphDataSeries) model.rows.get(i);
-			if( peakGDS.getPointID().intValue() == peakPointID)
+			com.cannontech.database.db.graph.GraphDataSeries tempGDS = (com.cannontech.database.db.graph.GraphDataSeries) model.rows.get(i);
+			// TRYING TO MATCH ON A COUPLE OF THINGS, I GUESS
+			if( peakDataSeries.getPointID().intValue() == tempGDS.getPointID().intValue() &&
+				peakDataSeries.getColor().intValue() == tempGDS.getColor().intValue())
 			{
 				getPeakPointComboBox().setSelectedIndex(i + 1);
 				break;
 			}
-			
 		}
 	}
 
