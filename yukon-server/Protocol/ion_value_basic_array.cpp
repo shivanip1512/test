@@ -37,7 +37,7 @@ CtiIONArray::IONArrayTypes CtiIONArray::getArrayType( void ) const
 }
 
 
-int CtiIONArray::isNumericArray( void )
+bool CtiIONArray::isNumericArray( void )
 {
     int retVal;
 
@@ -47,10 +47,10 @@ int CtiIONArray::isNumericArray( void )
         case IONFloatArray:
         case IONUnsignedIntArray:
         case IONSignedIntArray:
-           retVal = TRUE;
+           retVal = true;
 
         default:
-            retVal = FALSE;
+            retVal = false;
     }
 
     return retVal;

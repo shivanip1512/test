@@ -35,7 +35,7 @@ public:
     };
 
     IONArrayTypes getArrayType( void ) const;
-    int isNumericArray( void );
+    bool isNumericArray( void );
 
     int size( void );
 
