@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/09/12 02:33:11 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/05/19 14:53:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -509,7 +509,7 @@ CtiMultiMsg* CtiSignalManager::getPointSignals(long pointid) const
             if(key.first == pointid && pOriginalSig)
             {
                 pSig = (CtiSignalMsg*)(pOriginalSig->replicateMessage());
-                pSig->setText(AlarmTagsToString(pSig->getTags()) + pSig->getText());
+                pSig->setText( pSig->getText()+ AlarmTagsToString(pSig->getTags()) );
 
                 if(!pMulti)
                 {
