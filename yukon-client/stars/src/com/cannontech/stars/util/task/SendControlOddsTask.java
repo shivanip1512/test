@@ -47,7 +47,7 @@ public class SendControlOddsTask implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		CTILogger.info( "*** Start SendControlOdds timer task ***" );
+		CTILogger.info( "*** Start SendControlOdds task ***" );
 		
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
 		String from = energyCompany.getEnergyCompanySetting(
@@ -87,13 +87,13 @@ public class SendControlOddsTask implements Runnable {
 					LiteStarsCustAccountInformation accountInfo = energyCompany.getCustAccountInformation( accountID, true );
 					
 					LiteCustomerContact primContact = energyCompany.getCustomerContact( accountInfo.getCustomer().getPrimaryContactID() );
-					if (!primContact.getEmail().isEnabled()) continue;
+					if (primContact.getEmail() == null || !primContact.getEmail().isEnabled())
+						continue;
 					
 					ArrayList activeProgs = new ArrayList();	// List of all the active programs
 					for (int j = 0; j < accountInfo.getLmPrograms().size(); j++) {
 						LiteStarsLMProgram program = (LiteStarsLMProgram) accountInfo.getLmPrograms().get(j);
-						if (progList.contains( program.getLmProgram() )
-							&& ServerUtils.isInService( program.getProgramHistory() ))
+						if (progList.contains( program.getLmProgram() ) && program.isInService())
 							activeProgs.add( program );
 					}
 					if (activeProgs.size() == 0) continue;
@@ -135,7 +135,7 @@ public class SendControlOddsTask implements Runnable {
 			}
 		}
 				
-		CTILogger.info( "*** End SendControlOdds timer task ***" );
+		CTILogger.info( "*** End SendControlOdds task ***" );
 	}
 
 }

@@ -3,8 +3,8 @@
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link id="StyleSheet" rel="stylesheet" href="../../../WebConfig/CannonStyle.css" type="text/css">
-<link id="StyleSheet" rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../../WebConfig/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -17,7 +17,7 @@
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.HEADER_LOGO %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.HEADER_LOGO %>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height="28">&nbsp;</td>

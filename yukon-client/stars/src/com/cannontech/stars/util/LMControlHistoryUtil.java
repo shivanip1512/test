@@ -85,19 +85,19 @@ public class LMControlHistoryUtil {
 	            com.cannontech.database.db.pao.LMControlHistory ctrlHist =
 	            		new com.cannontech.database.db.pao.LMControlHistory();
 
-                ctrlHist.setLmCtrlHistID( new Integer(rset.getInt(0)) );
-                ctrlHist.setPaObjectID( new Integer(rset.getInt(1)) );
-                ctrlHist.setStartDateTime( new java.util.Date(rset.getTimestamp(2).getTime()) );
-                ctrlHist.setSoeTag( new Integer(rset.getInt(3)) );
-                ctrlHist.setControlDuration( new Integer(rset.getInt(4)) );
-                ctrlHist.setControlType( rset.getString(5) );
-                ctrlHist.setCurrentDailyTime( new Integer(rset.getInt(6)) );
-                ctrlHist.setCurrentMonthlyTime( new Integer(rset.getInt(7)) );
-                ctrlHist.setCurrentSeasonalTime( new Integer(rset.getInt(8)) );
-                ctrlHist.setCurrentAnnualTime( new Integer(rset.getInt(9)) );
-                ctrlHist.setActiveRestore( rset.getString(10) );
-                ctrlHist.setReductionValue( new Double(rset.getDouble(11)) );
-                ctrlHist.setStopDateTime( new java.util.Date(rset.getTimestamp(12).getTime()) );
+                ctrlHist.setLmCtrlHistID( new Integer(rset.getInt(1)) );
+                ctrlHist.setPaObjectID( new Integer(rset.getInt(2)) );
+                ctrlHist.setStartDateTime( new java.util.Date(rset.getTimestamp(3).getTime()) );
+                ctrlHist.setSoeTag( new Integer(rset.getInt(4)) );
+                ctrlHist.setControlDuration( new Integer(rset.getInt(5)) );
+                ctrlHist.setControlType( rset.getString(6) );
+                ctrlHist.setCurrentDailyTime( new Integer(rset.getInt(7)) );
+                ctrlHist.setCurrentMonthlyTime( new Integer(rset.getInt(8)) );
+                ctrlHist.setCurrentSeasonalTime( new Integer(rset.getInt(9)) );
+                ctrlHist.setCurrentAnnualTime( new Integer(rset.getInt(10)) );
+                ctrlHist.setActiveRestore( rset.getString(11) );
+                ctrlHist.setReductionValue( new Double(rset.getDouble(12)) );
+                ctrlHist.setStopDateTime( new java.util.Date(rset.getTimestamp(13).getTime()) );
 
                 ctrlHistList.add( ctrlHist );
             }
@@ -191,19 +191,19 @@ public class LMControlHistoryUtil {
             if (rset.next()) {
                 com.cannontech.database.db.pao.LMControlHistory ctrlHist = new com.cannontech.database.db.pao.LMControlHistory();
 
-                ctrlHist.setLmCtrlHistID( new Integer(rset.getInt(0)) );
-                ctrlHist.setPaObjectID( new Integer(rset.getInt(1)) );
-                ctrlHist.setStartDateTime( new java.util.Date(rset.getTimestamp(2).getTime()) );
-                ctrlHist.setSoeTag( new Integer(rset.getInt(3)) );
-                ctrlHist.setControlDuration( new Integer(rset.getInt(4)) );
-                ctrlHist.setControlType( rset.getString(5) );
-                ctrlHist.setCurrentDailyTime( new Integer(rset.getInt(6)) );
-                ctrlHist.setCurrentMonthlyTime( new Integer(rset.getInt(7)) );
-                ctrlHist.setCurrentSeasonalTime( new Integer(rset.getInt(8)) );
-                ctrlHist.setCurrentAnnualTime( new Integer(rset.getInt(9)) );
-                ctrlHist.setActiveRestore( rset.getString(10) );
-                ctrlHist.setReductionValue( new Double(rset.getDouble(11)) );
-                ctrlHist.setStopDateTime( new java.util.Date(rset.getTimestamp(12).getTime()) );
+                ctrlHist.setLmCtrlHistID( new Integer(rset.getInt(1)) );
+                ctrlHist.setPaObjectID( new Integer(rset.getInt(2)) );
+                ctrlHist.setStartDateTime( new java.util.Date(rset.getTimestamp(3).getTime()) );
+                ctrlHist.setSoeTag( new Integer(rset.getInt(4)) );
+                ctrlHist.setControlDuration( new Integer(rset.getInt(5)) );
+                ctrlHist.setControlType( rset.getString(6) );
+                ctrlHist.setCurrentDailyTime( new Integer(rset.getInt(7)) );
+                ctrlHist.setCurrentMonthlyTime( new Integer(rset.getInt(8)) );
+                ctrlHist.setCurrentSeasonalTime( new Integer(rset.getInt(9)) );
+                ctrlHist.setCurrentAnnualTime( new Integer(rset.getInt(10)) );
+                ctrlHist.setActiveRestore( rset.getString(11) );
+                ctrlHist.setReductionValue( new Double(rset.getDouble(12)) );
+                ctrlHist.setStopDateTime( new java.util.Date(rset.getTimestamp(13).getTime()) );
 
                 return ctrlHist;
             }

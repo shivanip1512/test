@@ -96,9 +96,9 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
             if (SOAPServer.isClientLocal()) {
             	resp.setStarsEnergyCompany( energyCompany.getStarsEnergyCompany() );
             	resp.setStarsEnrollmentPrograms( energyCompany.getStarsEnrollmentPrograms(getSettings.getProgramCategory()) );
+            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists(user) );
             	
 	            if (ServerUtils.isOperator( user )) {
-	            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists(user) );
 					if (AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_HARDWARES )
 						|| AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS))
 						resp.setStarsServiceCompanies( energyCompany.getStarsServiceCompanies() );
@@ -133,9 +133,9 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
             	resp.setStarsEnergyCompany( StarsLiteFactory.createStarsEnergyCompany(energyCompany) );
             	resp.setStarsEnrollmentPrograms( StarsLiteFactory.createStarsEnrollmentPrograms(
             			energyCompany.getAllApplianceCategories(), getSettings.getProgramCategory(), energyCompanyID) );
+            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists(user) );
             			
 	            if (ServerUtils.isOperator( user )) {
-	            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists(user) );
 					if (AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_HARDWARES )
 						|| AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS))
 						resp.setStarsServiceCompanies( energyCompany.getStarsServiceCompanies() );

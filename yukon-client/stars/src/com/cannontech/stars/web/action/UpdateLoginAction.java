@@ -95,40 +95,43 @@ public class UpdateLoginAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            // Check to see if the username has duplicates
-            DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-            synchronized (cache) {
-            	Iterator it = cache.getAllYukonUsers().iterator();
-            	while (it.hasNext()) {
-            		LiteYukonUser liteUser = (LiteYukonUser) it.next();
-            		if (liteUser.getUsername().equalsIgnoreCase( updateLogin.getUsername() )) {
-		            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-		            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The username is already existed, please enter a different one.") );
-		            	return SOAPUtil.buildSOAPMessage( respOper );
-            		}
-            	}
+            LiteYukonUser liteUser = null;
+            int loginID = liteAcctInfo.getCustomerAccount().getLoginID();
+            if (loginID != com.cannontech.user.UserUtils.USER_YUKON_ID)
+            	liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( loginID );
+            	
+            if (liteUser == null || !liteUser.getUsername().equalsIgnoreCase( updateLogin.getUsername() )) {
+	            // Check to see if the username already exists
+	            DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	            synchronized (cache) {
+	            	Iterator it = cache.getAllYukonUsers().iterator();
+	            	while (it.hasNext()) {
+	            		LiteYukonUser lUser = (LiteYukonUser) it.next();
+	            		if (lUser.getUsername().equalsIgnoreCase( updateLogin.getUsername() )) {
+			            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+			            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The username already exists, please enter a different one.") );
+			            	return SOAPUtil.buildSOAPMessage( respOper );
+	            		}
+	            	}
+	            }
             }
             
-            LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
-            if (liteAccount.getLoginID() == com.cannontech.user.UserUtils.USER_YUKON_ID) {
-            	createLogin( liteAccount,
+            if (loginID == com.cannontech.user.UserUtils.USER_YUKON_ID) {
+            	createLogin( liteAcctInfo.getCustomerAccount(),
 	            		updateLogin.getUsername(),
 	            		updateLogin.getPassword(),
 	            		energyCompany.getEnergyCompanySetting(EnergyCompanyRole.CUSTOMER_GROUP_NAME)
 	            		);
             }
             else {
-            	LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteAccount.getLoginID() );
-		        com.cannontech.database.db.user.YukonUser dbUser = (com.cannontech.database.db.user.YukonUser) StarsLiteFactory.createDBPersistent( liteUser );
-	            		
+		        com.cannontech.database.db.user.YukonUser dbUser = (com.cannontech.database.db.user.YukonUser)
+		        		StarsLiteFactory.createDBPersistent( liteUser );
+	            
 	            dbUser.setUsername( updateLogin.getUsername() );
 	            dbUser.setPassword( updateLogin.getPassword() );
 	            dbUser = (com.cannontech.database.db.user.YukonUser)
 	            		Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
 	            
-	            //liteUser.setUsername( dbUser.getUsername() );
-	            //liteUser.setPassword( dbUser.getPassword() );
-	            SOAPServer.updateStarsYukonUser( liteUser );
 	            ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
             }
             
@@ -186,7 +189,7 @@ public class UpdateLoginAction implements ActionBase {
 			starsUser.setPassword( updateLogin.getPassword() );
 
 			if (reqOper.getStarsNewCustomerAccount() == null)	// If not from the new customer account page
-				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, success.getDescription() );
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, success.getDescription() );
 				
             return 0;
         }

@@ -3,8 +3,8 @@
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link id="StyleSheet" rel="stylesheet" href="../../../WebConfig/CannonStyle.css" type="text/css">
-<link id="StyleSheet" rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../../WebConfig/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
 <script language="JavaScript">
 <!--
@@ -25,7 +25,7 @@ function confirmSubmit(form) { //v1.0
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height="28">&nbsp;</td>
@@ -84,8 +84,8 @@ function confirmSubmit(form) { //v1.0
                   <td width="304" valign="top" align = "center"> 
                   <form method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="return confirmSubmit(this)">
 				  	<input type="hidden" name="action" value="OptOutProgram">
-					<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/OptForm.jsp">
-					<input type="hidden" name="REDIRECT2" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/General.jsp">
+					<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/General.jsp">
+					<input type="hidden" name="REDIRECT2" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/OptForm.jsp">
 					<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/OptOut.jsp">
                       <table width="200" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
                         <tr> 
@@ -94,6 +94,24 @@ function confirmSubmit(form) { //v1.0
                             <table width="180" border="0" cellspacing="0" cellpadding="0" align="center">
                               <tr> 
                                 <td width="180" align="center"> 
+<%
+	StarsCustSelectionList periodList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD );
+	if (periodList != null) {
+%>
+		                          <select name="OptOutDate">
+<%
+		for (int i = 0; i < periodList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = periodList.getStarsSelectionListEntry(i);
+%>
+									<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+<%
+		}
+%>
+		                          </select>
+<%
+	}
+	else {
+%>
                                   <select name="OptOutPeriod">
 									<option value="1">One Day</option>
 									<option value="2">Two Days</option>
@@ -101,6 +119,9 @@ function confirmSubmit(form) { //v1.0
 									<option value="7">One Week</option>
 									<option value="14">Two Weeks</option>
                                   </select>
+<%
+	}
+%>
                                 </td>
                                 <td width="180" align="center"> 
                                   <input type="submit" name="Submit" value="Submit" >

@@ -5,6 +5,7 @@
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
+<%@ page import="com.cannontech.common.constants.YukonSelectionListDefs" %>
 
 <%@ page import="javax.xml.soap.SOAPMessage" %>
 <%@ page import="com.cannontech.stars.web.action.*" %>
@@ -26,6 +27,8 @@
 	
 	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
+	String confirmMsg = (String) session.getAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
+	session.removeAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
 	
 	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 	if (user == null || user.getYukonUser().getUserID() != liteYukonUser.getUserID()) {	// This is logged in using the normal LoginController, not the StarsLoginController
@@ -62,6 +65,8 @@
 	StarsLMPrograms programs = null;
 	StarsThermostatSettings thermoSettings = null;
 	StarsUser userLogin = null;
+	
+	Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 	
 	accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 	if (accountInfo != null) {

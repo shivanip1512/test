@@ -30,12 +30,13 @@
 	String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
+	String confirmMsg = (String) session.getAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
+	session.removeAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
 	
 	StarsYukonUser user = null;
 	
 	StarsGetEnergyCompanySettingsResponse ecSettings = null;
 	StarsEnergyCompany energyCompany = null;
-	StarsWebConfig ecWebSettings = null;
 	StarsEnrollmentPrograms categories = null;
 	StarsServiceCompanies companies = null;
 	StarsCustomerFAQs customerFAQs = null;
@@ -80,7 +81,6 @@
 		ecSettings = (StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 		if (ecSettings != null) {   
 			energyCompany = ecSettings.getStarsEnergyCompany();
-			//ecWebSettings = ecSettings.getStarsWebConfig();
 			categories = ecSettings.getStarsEnrollmentPrograms();
 			companies = ecSettings.getStarsServiceCompanies();
 			customerFAQs = ecSettings.getStarsCustomerFAQs();

@@ -3,8 +3,8 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
-<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
 <script language="JavaScript">
 var passwdChanged = false;
@@ -32,7 +32,7 @@ function checkPasswords(form) {
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -73,7 +73,8 @@ function checkPasswords(form) {
             <div align="center"> 
               <% String header = "ADMINISTRATION - CHANGE PASSWORD"; %>
               <%@ include file="InfoSearchBar.jsp" %>
-			<% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			
             <form method="POST" action="/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="UpdateLogin">

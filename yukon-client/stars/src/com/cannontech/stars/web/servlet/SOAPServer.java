@@ -360,19 +360,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		synchronized (userList) { userList.add( user ); }
 	}
 	
-	public static void updateStarsYukonUser(LiteYukonUser yukonUser) {
-		ArrayList userList = getAllStarsYukonUsers();
-		synchronized (userList) {
-			for (int i = 0; i < userList.size(); i++) {
-				StarsYukonUser user = (StarsYukonUser) userList.get(i);
-				if (user.getUserID() == yukonUser.getUserID()) {
-					user.resetYukonUser();
-					break;
-				}
-			}
-		}
-	}
-	
 	public static void updateLMControlHistory(LiteStarsLMControlHistory liteCtrlHist) {
 		ArrayList ctrlHist = liteCtrlHist.getLmControlHistory();
 		if (ctrlHist == null) {

@@ -17,21 +17,18 @@ import com.cannontech.stars.util.ServerUtils;
  */
 public class StarsYukonUser {
 
-	private LiteYukonUser yukonUser = null;
 	private int userID = 0;
 	private int energyCompanyID = 0;
 	private int[] accountIDs = null;
 	private Hashtable attributes = new Hashtable();
 	
 	public StarsYukonUser(LiteYukonUser user) {
-		yukonUser = user;
 		userID = user.getUserID();
 		init();
 	}
 	
 	public StarsYukonUser(StarsYukonUser starsUser) {
-		yukonUser = starsUser.getYukonUser();
-		userID = yukonUser.getUserID();
+		userID = starsUser.getUserID();
 		energyCompanyID = starsUser.getEnergyCompanyID();
 		accountIDs = starsUser.getCustomerAccountIDs();
 	}
@@ -41,13 +38,7 @@ public class StarsYukonUser {
 	}
 	
 	public LiteYukonUser getYukonUser() {
-		if (yukonUser == null)
-			yukonUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( userID );
-		return yukonUser;
-	}
-	
-	public void resetYukonUser() {
-		yukonUser = null;
+		return com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( userID );
 	}
 	
 	public int getEnergyCompanyID() {

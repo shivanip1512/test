@@ -3,8 +3,8 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link id="StyleSheet" rel="stylesheet" href="../../../WebConfig/CannonStyle.css" type="text/css">
-<link id="StyleSheet" rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../../WebConfig/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
 <script language="JavaScript">
 var passwdChanged = false;
@@ -32,7 +32,7 @@ function checkPasswords(form) {
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO %>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height="28">&nbsp;</td>
@@ -76,6 +76,7 @@ function checkPasswords(form) {
                 </tr>
               </table>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			
             <form method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="UpdateLogin">

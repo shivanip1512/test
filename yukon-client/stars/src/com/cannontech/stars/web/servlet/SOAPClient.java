@@ -430,6 +430,8 @@ public class SOAPClient extends HttpServlet {
                 	
                 	session.removeAttribute( ServletUtils.ATT_REDIRECT );
                 	session.removeAttribute( ServletUtils.ATT_ERROR_MESSAGE );
+                	session.removeAttribute( ServletUtils.ATT_CONFIRM_MESSAGE );
+                	
                 	int status = clientAction.parse(reqMsg, respMsg, session);
                 	if (session.getAttribute( ServletUtils.ATT_REDIRECT ) != null)
                 		destURL = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );

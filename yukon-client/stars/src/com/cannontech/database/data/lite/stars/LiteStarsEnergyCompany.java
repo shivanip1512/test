@@ -31,6 +31,7 @@ import com.cannontech.database.db.stars.appliance.ApplianceHeatPump;
 import com.cannontech.database.db.stars.appliance.ApplianceIrrigation;
 import com.cannontech.database.db.stars.appliance.ApplianceStorageHeat;
 import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
+import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.operator.OddsForControlRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
@@ -1022,7 +1023,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		ArrayList ctrlHistList = new ArrayList();
 		com.cannontech.database.db.pao.LMControlHistory[] ctrlHist = com.cannontech.stars.util.LMControlHistoryUtil.getLMControlHistory(
 				new Integer(groupID), com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod.ALL );
-		
 		for (int i = 0; i < ctrlHist.length; i++)
 			ctrlHistList.add( StarsLiteFactory.createLite(ctrlHist[i]) );
 		
@@ -1439,129 +1439,136 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public StarsCustomerSelectionLists getStarsCustomerSelectionLists(StarsYukonUser starsUser) {
+		StarsCustomerSelectionLists starsLists = new StarsCustomerSelectionLists();
 		LiteYukonUser liteUser = starsUser.getYukonUser();
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( starsUser.getEnergyCompanyID() );
 		
 		boolean energySourceListAdded = false;
 		boolean horsePowerListAdded = false;
 		boolean deviceLocationListAdded = false;
 		boolean deviceVoltageListAdded = false;
 		
-		StarsCustomerSelectionLists starsLists = new StarsCustomerSelectionLists();
-		starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE) );
-
-		if (AuthFuncs.checkRole( liteUser, OddsForControlRole.ROLEID ) != null) {
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL) );
-		}
-		if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL )) {
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION) );
-		}
-		if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING )) {
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE) );
-		}
-		if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPTOUT )) {
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD) );
-		}
-		if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_APPLIANCES )) {
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY) );
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER) );
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION) );
-			
-			ArrayList categories = getAllApplianceCategories();
-			for (int i = 0; i < categories.size(); i++) {
-				LiteApplianceCategory liteAppCat = (LiteApplianceCategory) categories.get(i);
-				if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER).getEntryID()) {
-					starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_TONNAGE) );
-					starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_AC_TYPE) );
-				}
-				else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
-					starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_NUM_OF_GALLONS) );
-					if (!energySourceListAdded) {
-						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_ENERGY_SOURCE) );
-						energySourceListAdded = true;
+		if (ServerUtils.isOperator( starsUser )) {
+			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE) );
+	
+			if (AuthFuncs.checkRole( liteUser, OddsForControlRole.ROLEID ) != null) {
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL) );
+			}
+			if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL )) {
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION) );
+			}
+			if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING )) {
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE) );
+			}
+			if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPTOUT )) {
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD) );
+			}
+			if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_APPLIANCES )) {
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY) );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER) );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION) );
+				
+				ArrayList categories = getAllApplianceCategories();
+				for (int i = 0; i < categories.size(); i++) {
+					LiteApplianceCategory liteAppCat = (LiteApplianceCategory) categories.get(i);
+					if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER).getEntryID()) {
+						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_TONNAGE) );
+						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_AC_TYPE) );
 					}
-				}
-				else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL).getEntryID()) {
-					starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SWITCH_OVER_TYPE) );
-					if (!energySourceListAdded) {
-						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_ENERGY_SOURCE) );
-						energySourceListAdded = true;
+					else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
+						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_NUM_OF_GALLONS) );
+						if (!energySourceListAdded) {
+							starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_ENERGY_SOURCE) );
+							energySourceListAdded = true;
+						}
 					}
-				}
-				else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR).getEntryID()) {
-					starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_TRANSFER_SWITCH_TYPE) );
-					starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_TRANSFER_SWITCH_MFG) );
-				}
-				else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER).getEntryID()) {
-					starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DRYER_TYPE) );
-					starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_BIN_SIZE) );
-					if (!energySourceListAdded) {
-						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_ENERGY_SOURCE) );
-						energySourceListAdded = true;
+					else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL).getEntryID()) {
+						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SWITCH_OVER_TYPE) );
+						if (!energySourceListAdded) {
+							starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_ENERGY_SOURCE) );
+							energySourceListAdded = true;
+						}
 					}
-					if (!horsePowerListAdded) {
-						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_HORSE_POWER) );
-						horsePowerListAdded = true;
+					else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR).getEntryID()) {
+						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_TRANSFER_SWITCH_TYPE) );
+						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_TRANSFER_SWITCH_MFG) );
 					}
-					starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_HEAT_SOURCE) );
-				}
-				else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT).getEntryID()) {
-					starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_TYPE) );
-				}
-				else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP).getEntryID()) {
-					starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_PUMP_TYPE) );
-					starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_STANDBY_SOURCE) );
-				}
-				else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION).getEntryID()) {
-					starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_IRRIGATION_TYPE) );
-					if (!horsePowerListAdded) {
-						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_HORSE_POWER) );
-						horsePowerListAdded = true;
+					else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER).getEntryID()) {
+						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DRYER_TYPE) );
+						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_BIN_SIZE) );
+						if (!energySourceListAdded) {
+							starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_ENERGY_SOURCE) );
+							energySourceListAdded = true;
+						}
+						if (!horsePowerListAdded) {
+							starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_HORSE_POWER) );
+							horsePowerListAdded = true;
+						}
+						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_HEAT_SOURCE) );
 					}
-					if (!energySourceListAdded) {
-						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_ENERGY_SOURCE) );
-						energySourceListAdded = true;
+					else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT).getEntryID()) {
+						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_TYPE) );
 					}
-					starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SOIL_TYPE) );
-					if (!deviceLocationListAdded) {
-						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_LOCATION) );
-						deviceLocationListAdded = true;
+					else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP).getEntryID()) {
+						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_PUMP_TYPE) );
+						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_STANDBY_SOURCE) );
 					}
-					if (!deviceVoltageListAdded) {
-						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE) );
-						deviceVoltageListAdded = true;
+					else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION).getEntryID()) {
+						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_IRRIGATION_TYPE) );
+						if (!horsePowerListAdded) {
+							starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_HORSE_POWER) );
+							horsePowerListAdded = true;
+						}
+						if (!energySourceListAdded) {
+							starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_ENERGY_SOURCE) );
+							energySourceListAdded = true;
+						}
+						starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SOIL_TYPE) );
+						if (!deviceLocationListAdded) {
+							starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_LOCATION) );
+							deviceLocationListAdded = true;
+						}
+						if (!deviceVoltageListAdded) {
+							starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE) );
+							deviceVoltageListAdded = true;
+						}
 					}
 				}
 			}
-		}
-		if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES )) {
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) );
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS) );
-			if (!deviceLocationListAdded) {
-				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_LOCATION) );
-				deviceLocationListAdded = true;
+			if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES )) {
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS) );
+				if (!deviceLocationListAdded) {
+					starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_LOCATION) );
+					deviceLocationListAdded = true;
+				}
+				if (!deviceVoltageListAdded) {
+					starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE) );
+					deviceVoltageListAdded = true;
+				}
 			}
-			if (!deviceVoltageListAdded) {
-				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE) );
-				deviceVoltageListAdded = true;
+			if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS )) {
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE) );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS) );
+			}
+			if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE )) {
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_RESIDENCE_TYPE) );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CONSTRUCTION_MATERIAL) );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DECADE_BUILT) );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SQUARE_FEET) );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_INSULATION_DEPTH) );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_GENERAL_CONDITION) );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_COOLING_SYSTEM) );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_HEATING_SYSTEM) );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_NUM_OF_OCCUPANTS) );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OWNERSHIP_TYPE) );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_FUEL_TYPE) );
 			}
 		}
-		if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS )) {
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE) );
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS) );
-		}
-		if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE )) {
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_RESIDENCE_TYPE) );
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CONSTRUCTION_MATERIAL) );
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DECADE_BUILT) );
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SQUARE_FEET) );
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_INSULATION_DEPTH) );
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_GENERAL_CONDITION) );
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_COOLING_SYSTEM) );
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_HEATING_SYSTEM) );
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_NUM_OF_OCCUPANTS) );
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OWNERSHIP_TYPE) );
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_FUEL_TYPE) );
+		else if (ServerUtils.isResidentialCustomer( starsUser )) {
+			if (AuthFuncs.checkRoleProperty( liteUser, ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT )
+				&& !AuthFuncs.checkRoleProperty( liteUser, ResidentialCustomerRole.HIDE_OPT_OUT_BOX )) {
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD) );
+			}
 		}
 		
 		return starsLists;

@@ -186,7 +186,7 @@ public class NewCustAccountAction implements ActionBase {
             stmt.execute();
             if (stmt.getRowCount() > 0) {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The account number is already existed, please enter a different one.") );
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The account number already exists, please enter a different one.") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             

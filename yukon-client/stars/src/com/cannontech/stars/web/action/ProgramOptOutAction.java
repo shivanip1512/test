@@ -256,7 +256,7 @@ public class ProgramOptOutAction implements ActionBase {
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
 			if (resp.getDescription() != null) {
-				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, resp.getDescription() );
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, resp.getDescription() );
 				return 0;
 			}
             

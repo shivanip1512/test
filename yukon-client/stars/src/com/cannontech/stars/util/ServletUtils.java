@@ -66,6 +66,7 @@ public class ServletUtils {
 	public static final String TRANSIENT_ATT_LEADING = "$$";
 	
 	public static final String ATT_ERROR_MESSAGE = "ERROR_MESSAGE";
+	public static final String ATT_CONFIRM_MESSAGE = "CONFIRM_MESSAGE";
 	public static final String ATT_PASSWORD_VERIFIED = "PASSWORD_VERIFIED";
 	public static final String ATT_REDIRECT = "REDIRECT";
 	public static final String ATT_REDIRECT2 = "REDIRECT2";

@@ -59,20 +59,17 @@ public class UpdateCustAccountAction implements ActionBase {
     public SOAPMessage build(HttpServletRequest req, HttpSession session) {
         try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			StarsCustAccountInformation accountInfo = null;
-			if (user != null)
-				accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-            if (accountInfo == null) return null;
+			if (user == null) return null;
 
-            StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
+            StarsUpdateCustomerAccount updateAccount = new StarsUpdateCustomerAccount();
 
-            account.setAccountNumber( req.getParameter("AcctNo") );
-            account.setIsCommercial( Boolean.valueOf(req.getParameter("Commercial")).booleanValue() );
-            account.setCompany( req.getParameter("Company") );
-            account.setAccountNotes( req.getParameter("AcctNotes") );
+            updateAccount.setAccountNumber( req.getParameter("AcctNo") );
+            updateAccount.setIsCommercial( Boolean.valueOf(req.getParameter("Commercial")).booleanValue() );
+            updateAccount.setCompany( req.getParameter("Company") );
+            updateAccount.setAccountNotes( req.getParameter("AcctNotes") );
 
-            account.setPropertyNumber( req.getParameter("PropNo") );
-            account.setPropertyNotes( req.getParameter("PropNotes") );
+            updateAccount.setPropertyNumber( req.getParameter("PropNo") );
+            updateAccount.setPropertyNotes( req.getParameter("PropNotes") );
 
             StreetAddress propAddr = new StreetAddress();
             propAddr.setStreetAddr1( req.getParameter("SAddr1") );
@@ -81,7 +78,7 @@ public class UpdateCustAccountAction implements ActionBase {
             propAddr.setState( req.getParameter("SState") );
             propAddr.setZip( req.getParameter("SZip") );
             propAddr.setCounty( req.getParameter("SCounty") );
-            account.setStreetAddress( propAddr );
+            updateAccount.setStreetAddress( propAddr );
 
 			Substation starsSub = new Substation();
 			starsSub.setEntryID( Integer.parseInt(req.getParameter("Substation")) );
@@ -92,7 +89,7 @@ public class UpdateCustAccountAction implements ActionBase {
             siteInfo.setPole( req.getParameter("Pole") );
             siteInfo.setTransformerSize( req.getParameter("TranSize") );
             siteInfo.setServiceVoltage( req.getParameter("ServVolt") );
-            account.setStarsSiteInformation( siteInfo );
+            updateAccount.setStarsSiteInformation( siteInfo );
 
             BillingAddress billAddr = new BillingAddress();
             if (req.getParameter("CopyAddress") != null) {
@@ -110,7 +107,7 @@ public class UpdateCustAccountAction implements ActionBase {
 	            billAddr.setState( req.getParameter("BState") );
 	            billAddr.setZip( req.getParameter("BZip") );
             }
-            account.setBillingAddress( billAddr );
+            updateAccount.setBillingAddress( billAddr );
 
             PrimaryContact primContact = new PrimaryContact();
             primContact.setLastName( req.getParameter("LastName") );
@@ -122,12 +119,7 @@ public class UpdateCustAccountAction implements ActionBase {
             email.setNotification( req.getParameter("Email") );
             email.setEnabled( Boolean.valueOf(req.getParameter("NotifyControl")).booleanValue() );
             primContact.setEmail( email );
-            account.setPrimaryContact( primContact );
-            
-            account.setTimeZone( ServletUtils.getTimeZoneStr(Calendar.getInstance().getTimeZone()) );
-
-            StarsUpdateCustomerAccount updateAccount = (StarsUpdateCustomerAccount)
-                    StarsFactory.newStarsCustAccount(account, StarsUpdateCustomerAccount.class );
+            updateAccount.setPrimaryContact( primContact );
 
             StarsOperation operation = new StarsOperation();
             operation.setStarsUpdateCustomerAccount( updateAccount );
@@ -165,10 +157,24 @@ public class UpdateCustAccountAction implements ActionBase {
             int energyCompanyID = user.getEnergyCompanyID();
             LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
-            StarsUpdateCustomerAccount updateAccount = reqOper.getStarsUpdateCustomerAccount();
-            
             /* Update customer account */
+            StarsUpdateCustomerAccount updateAccount = reqOper.getStarsUpdateCustomerAccount();
             LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
+            
+            if (!liteAccount.getAccountNumber().equalsIgnoreCase( updateAccount.getAccountNumber() )) {
+	            // Check to see if the account number has duplicates
+	            String sql = "SELECT 1 FROM CustomerAccount acct, ECToAccountMapping map "
+	            		   + "WHERE acct.AccountID = map.AccountID AND map.EnergyCompanyID = " + user.getEnergyCompanyID()
+	            		   + " AND UPPER(acct.AccountNumber) = UPPER('" + updateAccount.getAccountNumber() + "')";
+	            com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+	            		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+	            stmt.execute();
+	            if (stmt.getRowCount() > 0) {
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The account number already exists, please enter a different one.") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+	            }
+            }
             
             LiteAddress liteBillAddr = energyCompany.getAddress( liteAccount.getBillingAddressID() );
             BillingAddress starsBillAddr = updateAccount.getBillingAddress();

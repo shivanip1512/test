@@ -72,8 +72,8 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
-<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
 <script language="JavaScript" src ="../../JavaScript/drag.js">
 </script>
@@ -186,7 +186,7 @@ MM_reloadPage(true);
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
               </tr>
               <tr> 
 				  
@@ -230,8 +230,7 @@ MM_reloadPage(true);
               <% String header = "THERMOSTAT - SCHEDULE"; %>
               <%@ include file="InfoSearchBar.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-			  
-			<form name="form1" method="POST" action="/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
+              <form name="form1" method="POST" action="/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
