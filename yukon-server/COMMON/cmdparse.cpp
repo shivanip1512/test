@@ -1932,7 +1932,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(void)
                 if(!(strnum = token.match("in")).isNull() ||
                    !(strnum = token.match("enable")).isNull())
                 {
-                    flag |= 0x08;
+                    flag |= 0x0a;
 
                     _snprintf(tbuf, sizeof(tbuf), "SERVICE ENABLE");
                 }
