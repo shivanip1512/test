@@ -55,7 +55,7 @@ public class MissedMeterModel extends ReportModelBase
 			String routeName = rset.getString(5);
 			MissedMeter missedMeter = new MissedMeter(collGrp, paoName, pointName, pointID, routeName);
 
-			data.add(missedMeter);
+			getData().add(missedMeter);
 		}
 		catch(java.sql.SQLException e)
 		{
@@ -154,7 +154,7 @@ public class MissedMeterModel extends ReportModelBase
 				e.printStackTrace();
 			}
 		}
-		com.cannontech.clientutils.CTILogger.info("Report Records Collected from Database: " + data.size());
+		com.cannontech.clientutils.CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
 

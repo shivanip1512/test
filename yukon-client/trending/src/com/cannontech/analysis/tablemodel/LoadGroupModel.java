@@ -99,7 +99,7 @@ public class LoadGroupModel extends ReportModelBase
 														new java.util.Date(stopTS.getTime()),
 														controlDuration, controlType,
 														dailyTime, monthyTime, seasonalTime, annualTime); 
-			data.add(lgAccounting);
+			getData().add(lgAccounting);
 		}
 		catch(java.sql.SQLException e)
 		{
@@ -197,7 +197,7 @@ public class LoadGroupModel extends ReportModelBase
 				e.printStackTrace();
 			}
 		}
-		com.cannontech.clientutils.CTILogger.info("Report Records Collected from Database: " + data.size());
+		com.cannontech.clientutils.CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
 

@@ -55,7 +55,7 @@ public class PowerFailModel extends ReportModelBase
 			Integer powerFailCount = new Integer(rset.getInt(5));
 			PowerFail powerFail = new PowerFail(collGrp, paoName, pointName, pointID, powerFailCount);
 
-			data.add(powerFail);
+			getData().add(powerFail);
 		}
 		catch(java.sql.SQLException e)
 		{
@@ -146,7 +146,7 @@ public class PowerFailModel extends ReportModelBase
 				e.printStackTrace();
 			}
 		}
-		com.cannontech.clientutils.CTILogger.info("Report Records Collected from Database: " + data.size());
+		com.cannontech.clientutils.CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
 

@@ -108,7 +108,7 @@ public class SystemLogModel extends ReportModelBase
 			systemLog.setDescription(description);
 			systemLog.setUserName(userName);
  
-			data.add(systemLog);
+			getData().add(systemLog);
 		}
 		catch(java.sql.SQLException e)
 		{
@@ -187,7 +187,7 @@ public class SystemLogModel extends ReportModelBase
 				e.printStackTrace();
 			}
 		}
-		com.cannontech.clientutils.CTILogger.info("Report Records Collected from Database: " + data.size());
+		com.cannontech.clientutils.CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
 

@@ -65,7 +65,7 @@ public class DatabaseModel extends ReportModelBase
 			String testCollGroup = rset.getString(6);		
 					
 			Carrier carrier = new Carrier(paoName, paoType, address, routeName, collGroup, testCollGroup);
-			data.add(carrier);
+			getData().add(carrier);
 		}
 		catch(java.sql.SQLException e)
 		{
@@ -142,7 +142,7 @@ public class DatabaseModel extends ReportModelBase
 				e.printStackTrace();
 			}
 		}
-		com.cannontech.clientutils.CTILogger.info("Report Records Collected from Database: " + data.size());
+		com.cannontech.clientutils.CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
 		

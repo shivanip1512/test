@@ -126,7 +126,7 @@ public class StatisticModel extends ReportModelBase
 				e.printStackTrace();
 			}
 		}
-		com.cannontech.clientutils.CTILogger.info("Report Records Collected from Database: " + data.size());
+		com.cannontech.clientutils.CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
 		 
@@ -190,7 +190,7 @@ public class StatisticModel extends ReportModelBase
 			stat.setCompletions(completions);
 			stat.setRequests(requests);
 
-			data.add(stat);
+			getData().add(stat);
 		}
 		catch(java.sql.SQLException e)
 		{
