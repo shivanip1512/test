@@ -99,7 +99,8 @@ private void connEtoC1(java.awt.event.ActionEvent arg1) {
 private void connEtoC10(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
-		rampItOut(getJComboBoxHowToStop().getSelectedItem().toString().compareTo("Ramp Out") == 0);
+		rampItOut(getJComboBoxHowToStop().getSelectedItem().toString().compareTo("Ramp Out / Time In") == 0
+			|| getJComboBoxHowToStop().getSelectedItem().toString().compareTo("Ramp Out / Restore") == 0);
 		// user code end
 		this.fireInputUpdate();
 		// user code begin {2}
@@ -244,7 +245,8 @@ private javax.swing.JComboBox getJComboBoxHowToStop() {
 			// user code begin {1}
 			ivjJComboBoxHowToStop.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.STOP_TIME_IN ) );
 			ivjJComboBoxHowToStop.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.STOP_RESTORE ) );
-			ivjJComboBoxHowToStop.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.STOP_RAMP_OUT) );
+			ivjJComboBoxHowToStop.addItem( "Ramp Out / Time In");
+			ivjJComboBoxHowToStop.addItem( "Ramp Out / Restore");
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1200,16 +1202,31 @@ public Object getValue(Object o)
 	
 	if( getJComboBoxHowToStop().getSelectedItem() != null )
 	{
-		gear.setMethodStopType( 
-			com.cannontech.common.util.StringUtils.removeChars( ' ', getJComboBoxHowToStop().getSelectedItem().toString() ) );
+		if(getJComboBoxHowToStop().getSelectedItem().toString().compareTo("Ramp Out / Time In") == 0)
+		{
+			gear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT);
+			gear.setRampOutPercent(new Integer(((Number)getJCSpinFieldRampOutPercent().getValue()).intValue()));
+			String interval = getJTextFieldRampOutInterval().getText();
+			if(interval.compareTo("") == 0)
+				gear.setRampOutInterval(new Integer(0));
+			else
+				gear.setRampOutInterval(new Integer(interval));
+		}
+		else if(getJComboBoxHowToStop().getSelectedItem().toString().compareTo("Ramp Out / Restore") == 0)
+		{
+			gear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_RESTORE);
+			gear.setRampOutPercent(new Integer(((Number)getJCSpinFieldRampOutPercent().getValue()).intValue()));
+			String interval = getJTextFieldRampOutInterval().getText();
+			if(interval.compareTo("") == 0)
+				gear.setRampOutInterval(new Integer(0));
+			else
+				gear.setRampOutInterval(new Integer(interval));
+		}
+		else
+			gear.setMethodStopType( 
+				com.cannontech.common.util.StringUtils.removeChars( ' ', getJComboBoxHowToStop().getSelectedItem().toString() ) );
 	}
 	
-	if(gear.getMethodStopType().compareTo(LMProgramDirectGear.STOP_RAMP_OUT) == 0)
-	{
-		gear.setRampOutPercent(new Integer(((Number)getJCSpinFieldRampOutPercent().getValue()).intValue()));
-		gear.setRampOutInterval(new Integer(getJTextFieldRampOutInterval().getText()));
-	}
-		
 	if(getJCheckBoxRampIn().isSelected())
 	{
 		gear.setRampInPercent(new Integer(((Number)getJCSpinFieldRampInPercent().getValue()).intValue()));
@@ -1608,14 +1625,21 @@ public void setValue(Object o)
 	else
 		gear = (LMProgramDirectGear)o;
 
-	getJComboBoxHowToStop().setSelectedItem( StringUtils.addCharBetweenWords( ' ', gear.getMethodStopType() ) );
-
 	if(gear.getMethodStopType().compareTo(LMProgramDirectGear.STOP_RAMP_OUT) == 0)
 	{
+		getJComboBoxHowToStop().setSelectedItem( "Ramp Out / Time In" );
 		getJCSpinFieldRampOutPercent().setValue(gear.getRampOutPercent());
 		getJTextFieldRampOutInterval().setText(gear.getRampOutInterval().toString());
 	}
-		
+	else if(gear.getMethodStopType().compareTo(LMProgramDirectGear.STOP_RAMP_OUT_RESTORE) == 0)
+	{
+		getJComboBoxHowToStop().setSelectedItem( "Ramp Out / Restore" );
+		getJCSpinFieldRampOutPercent().setValue(gear.getRampOutPercent());
+		getJTextFieldRampOutInterval().setText(gear.getRampOutInterval().toString());
+	}
+	else
+		getJComboBoxHowToStop().setSelectedItem( StringUtils.addCharBetweenWords( ' ', gear.getMethodStopType() ) );
+
 	if(gear.getRampInPercent().intValue() != 0 && gear.getRampInInterval().intValue() != 0)
 	{
 		getJCheckBoxRampIn().setSelected(true);

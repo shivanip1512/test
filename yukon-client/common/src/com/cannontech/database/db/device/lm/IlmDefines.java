@@ -57,7 +57,7 @@ public interface IlmDefines
 	public static final String STOP_TIME_IN = "TimeIn";
 	public static final String STOP_STOP_CYCLE = "StopCycle";
 	public static final String STOP_RAMP_OUT = "RampOut";
-
+	public static final String STOP_RAMP_OUT_RESTORE = "RampOutRestore";
 
 	//all possible change conditions
 	public static final String CHANGE_NONE = "None"; //Manually Only
