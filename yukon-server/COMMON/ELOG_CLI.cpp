@@ -140,7 +140,7 @@ IM_EX_CTIBASE INT LogEvent(SYSTEMLOGMESS *LogMessage)
     #else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "" << *LogMessage << endl;              // Stupid trick.
+        dout << RWTime() << " " << *LogMessage << endl;              // Stupid trick.
     }
     #endif
 
