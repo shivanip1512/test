@@ -67,6 +67,8 @@ public class CtiProperties extends java.util.Properties implements ClientRights
    public static final String KEY_DISPATCH_PORT = "dispatch_port";
 
    public static final String KEY_TDC_ALARM_COUNT = "tdc_alarm_count";   
+
+   public static final String KEY_MODE = "yukon_mode";   
    
 	public static final String[] ALL_CONFIG_KEYS =
 	{
@@ -100,7 +102,8 @@ public class CtiProperties extends java.util.Properties implements ClientRights
 		KEY_BILLING_INPUT,
       KEY_LOG_LEVEL,
       
-      KEY_TDC_ALARM_COUNT
+      KEY_TDC_ALARM_COUNT,
+      KEY_MODE
 	};
 
 
