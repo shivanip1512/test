@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.editor.device;
 
 import com.cannontech.common.gui.util.AdvancedPropertiesDialog;
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
@@ -828,7 +829,12 @@ private javax.swing.JTextField getNameTextField() {
 			ivjNameTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjNameTextField.setMinimumSize(new java.awt.Dimension(132, 20));
 			// user code begin {1}
-			ivjNameTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_DEVICE_NAME_LENGTH));
+
+			ivjNameTextField.setDocument(
+					new TextFieldDocument(
+					TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
+					TextFieldDocument.INVALID_CHARS_PAO));
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -879,7 +885,10 @@ private javax.swing.JTextField getPasswordTextField() {
 			ivjPasswordTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjPasswordTextField.setMinimumSize(new java.awt.Dimension(120, 20));
 			// user code begin {1}
-			ivjPasswordTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_IED_PASSWORD_LENGTH));
+			
+			ivjPasswordTextField.setDocument(
+				new TextFieldDocument(TextFieldDocument.MAX_IED_PASSWORD_LENGTH));
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -934,7 +943,10 @@ private javax.swing.JTextField getPhoneNumberTextField() {
 			ivjPhoneNumberTextField.setEnabled(true);
 			ivjPhoneNumberTextField.setMinimumSize(new java.awt.Dimension(12, 20));
 			// user code begin {1}
-			ivjPhoneNumberTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_PHONE_NUMBER_LENGTH));
+			
+			ivjPhoneNumberTextField.setDocument(
+				new TextFieldDocument(TextFieldDocument.MAX_PHONE_NUMBER_LENGTH));
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

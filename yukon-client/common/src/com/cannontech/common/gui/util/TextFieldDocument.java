@@ -42,9 +42,11 @@ public class TextFieldDocument extends javax.swing.text.PlainDocument
 	public static int STRING_LENGTH_80 = 80;
 	public static int STRING_LENGTH_90 = 90;
 	public static int STRING_LENGTH_100 = 100;
+	
+	private char[] invalidChars = null;
 
 
-	public static final char[] INVALID_CHARS =
+	public static final char[] INVALID_CHARS_PAO =
 	{
 		'\'',
 		',',
@@ -69,13 +71,18 @@ public TextFieldDocument( int maxLength )
 
 	maxCharCount = maxLength;
 }
+
 /**
  * StringRangeDocument constructor comment.
- * @param c javax.swing.text.AbstractDocument.Content
  */
-protected TextFieldDocument(javax.swing.text.AbstractDocument.Content c) {
-	super(c);
+public TextFieldDocument( int maxLength, char[] nonvalidChars ) 
+{
+	this( maxLength );
+	
+	invalidChars = nonvalidChars;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (3/2/00 12:25:14 PM)
@@ -95,11 +102,15 @@ public boolean checkInputValue(String proposedValue)
 
 private boolean isValidString(String val)
 {
-	for( int i = 0; i < INVALID_CHARS.length; i++ )
+	if( invalidChars != null )
 	{
-		if( val.indexOf(INVALID_CHARS[i]) != -1 )
-			return false;
+		for( int i = 0; i < invalidChars.length; i++ )
+		{
+			if( val.indexOf(invalidChars[i]) != -1 )
+				return false;
+		}
 	}
+
 	
 	return true;
 }
