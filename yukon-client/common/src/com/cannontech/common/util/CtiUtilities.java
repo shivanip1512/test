@@ -975,8 +975,16 @@ public static final void setIntervalComboBoxSelectedItem(JComboBox comboBox, JCo
 	else
 	{
 		scanRateString = getDecimalFormatter().format(scanRateSecs/3600.0);
-		scanRateUnitString = "hours";
+		if(scanRateString.indexOf(".") != -1)
+		{
+			scanRateString = getDecimalFormatter().format(scanRateSecs/60.0);
+			scanRateUnitString = "minutes";
+		}
+		else
+			scanRateUnitString = "hours";
 	}
+	
+	
 	
 	comboBox.setSelectedItem( scanRateString );
 	comboBox2.setSelectedItem( scanRateUnitString );

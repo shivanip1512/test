@@ -7,6 +7,15 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  
 public class GenericGearPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {
 
+	protected class NewComboBoxEditor extends javax.swing.plaf.basic.BasicComboBoxEditor
+	{
+		public javax.swing.JTextField getJTextField()
+		{
+			//create this method so we don't have to cast the getEditorComponent() call
+			return editor;
+		}
+      
+	}
 /**
  * GenericGearPanel constructor comment.
  */

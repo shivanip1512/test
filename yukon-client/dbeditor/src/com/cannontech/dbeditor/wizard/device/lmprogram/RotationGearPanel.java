@@ -364,6 +364,11 @@ private javax.swing.JComboBox getJComboBoxSendRateDigits() {
 			ivjJComboBoxSendRateDigits.setMinimumSize(new java.awt.Dimension(0, 0));
 			ivjJComboBoxSendRateDigits.setEditable(true);
 			// user code begin {1}
+			NewComboBoxEditor ncb = new NewComboBoxEditor();
+			ncb.getJTextField().setDocument( 
+				  new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 1000) );
+         	ivjJComboBoxSendRateDigits.setEditor( ncb );
+			
 			ivjJComboBoxSendRateDigits.addItem("0");
 			ivjJComboBoxSendRateDigits.addItem("1");
 			ivjJComboBoxSendRateDigits.addItem("2");
