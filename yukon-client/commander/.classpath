@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="src" path="src"/>
+    <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
+    <classpathentry kind="src" path="/common"/>
+    <classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
+    <classpathentry kind="lib" path="/third-party/acme.jar"/>
+    <classpathentry kind="lib" path="/third-party/batik111.jar"/>
+    <classpathentry kind="lib" path="/third-party/castor-0.9.3.9-xml.jar"/>
+    <classpathentry kind="lib" path="/third-party/castor-0.9.3.9.jar"/>
+    <classpathentry kind="lib" path="/third-party/classes12.zip"/>
+    <classpathentry kind="lib" path="/third-party/j2ee.jar"/>
+    <classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
+    <classpathentry kind="lib" path="/third-party/jcchart401K.jar"/>
+    <classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
+    <classpathentry kind="lib" path="/third-party/jcommon-0.6.2.jar"/>
+    <classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
+    <classpathentry kind="lib" path="/third-party/jfreechart-0.9.0.jar"/>
+    <classpathentry kind="lib" path="/third-party/jloox2.0.2.jar"/>
+    <classpathentry kind="lib" path="/third-party/led.jar"/>
+    <classpathentry kind="lib" path="/third-party/rwav.jar"/>
+    <classpathentry kind="lib" path="/third-party/xerces.jar"/>
+    <classpathentry kind="output" path="bin"/>
+</classpath>
