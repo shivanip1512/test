@@ -61,11 +61,12 @@
               </table>
               <table width="600" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
-                  <td width="429" valign="top"> <table width="400" border="0" cellspacing="3" cellpadding="0">
+                  <td width="429" valign="top" align="center"> 
+                    <table width="400" border="0" cellspacing="3" cellpadding="0">
                       <tr> 
                         <td valign="bottom" class="Main">
 <div align="center"><strong><br>
-                            <cti:getProperty file="ecWebSettings.getURL()" name="<%= ServletUtils.WEB_TEXT_GENERAL_TITLE %>"/></strong> <br>
+                            <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_GENERAL_TITLE %>"/></strong> <br>
                             <br>
                             <br>
                             </div></td>
@@ -76,40 +77,47 @@
                               <td valign="top">
 								<p class="Main"><%= ecWebSettings.getDescription() %></p></td>
                               <td valign="top"> 
-                                <div align="center"><span class="Main">Your Enrolled 
-                                  Programs</span><br>
-                                  <table width="200" border="0" cellspacing="0" cellpadding="0" align="center">
-                                    <tr> 
-                                      <td><img src="dot.gif" width="8" height="8"></td>
-                                    </tr>
-                                  </table>
-                                  </div>
-                                <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
-                                  <tr class="TableCell"> 
-                                    <td width="69"> 
-                                      <div align="center"> <span class="TableCell"> 
+                                <table width="200" border="1" cellspacing="0" cellpadding="3" align="center">
+                                  <tr bgcolor="#CCCCCC" class="Main"> 
+                                    <td width="139"> <div align="center"> 
+                                        <p class="TableCell3">Your Enrolled Programs</p>
+                                      </div></td>
+                                    <td width="134"> <div align="center" class="TableCell3"><cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROL %>" format="capitalized"/> 
+                                        Since Midnight</div></td>
+                                  </tr>
+<%
+	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
+		StarsLMProgram program = programs.getStarsLMProgram(i);
+		StarsApplianceCategory category = null;
+		StarsLMControlHistory todayCtrlHist = ServletUtils.getTodaysControlHistory( program.getStarsLMControlHistory() );
+		
+		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
+			StarsApplianceCategory appCat = categories.getStarsApplianceCategory(j);
+			if (appCat.getApplianceCategoryID() == program.getApplianceCategoryID()) {
+				category = appCat;
+				break;
+			}
+		}
+%>
+                                  <tr> 
+                                    <td width="139"> <div align="center"> <span class="TableCell"> 
                                         <img src="../<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
                                         <%= program.getProgramName() %></span> 
-                                      </div>
-                                    </td>
-                                    <td width="8"><img src="dot.gif" width="8" height="8"></td>
-                                    <td width="123"> 
-                                      <table width="123" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-                                          <tr>
-                                            <td>
-                                            <div align="center" class="TableCell"><cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROL %>" format="capitalized"/> 
-                                              Since Midnight<br><div align="center"> 
+                                        
+                                      </div></td>
+                                    <td width="134" class="Main"> 
+                                      <div align="center"> 
                                         <%
 		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
 %>
-                                        <b>Out of Service</b> 
-                                        <%
+                                        <b>Out of Service</b>
+<%
 		}
 		else if (todayCtrlHist.getBeingControlled()) {
 %>
                                         <b>Currently<br>
                                         <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLING %>"/></b> 
-                                        <%
+<%
 		}
 		else if (todayCtrlHist.getControlHistoryCount() > 0) {
 %>
@@ -124,48 +132,64 @@
                                         <%
 		}
 %>
-                                      </div>
-                                            </div>
-                                          </td>
-                                          </tr>
-                                          <tr>
-                                          <td class="TableCell">
-                                            <div align="center">Control today 
-                                              is Likely</div>
-                                          </td>
-                                          </tr>
-                                        </table>
-                                      </td>
-                                    </tr>
-                                  <%
-	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
-		StarsLMProgram program = programs.getStarsLMProgram(i);
-		StarsApplianceCategory category = null;
-		StarsLMControlHistory todayCtrlHist = ServletUtils.getTodaysControlHistory( program.getStarsLMControlHistory() );
-		
-		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
-			StarsApplianceCategory appCat = categories.getStarsApplianceCategory(j);
-			if (appCat.getApplianceCategoryID() == program.getApplianceCategoryID()) {
-				category = appCat;
-				break;
-			}
-		}
-%>
-                                  
-                                  <%
+                                      </div></td>
+                                </tr>
+<%
 	}
 %>
-                                </table>
-                                <table width="200" border="0" cellspacing="0" cellpadding="0" align="center">
-                                  <tr>
-                                    <td><img src="dot.gif" width="8" height="8"></td>
-                                  </tr>
-                                </table>
-                              </td>
+							</table></td>
                             </tr>
                           </table></td>
                       </tr>
-                    </table></td>
+                    </table>
+                    <p></p> 
+<cti:checkRole roleid="<%= RoleTypes.NOTIFICATION_ON_GENERAL_PAGE %>">
+<%
+	boolean showNotification = false;
+	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
+		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
+		for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
+			StarsEnrLMProgram enrProg = category.getStarsEnrLMProgram(j);
+			if (enrProg.getChanceOfControlID() == com.cannontech.common.util.CtiUtilities.NONE_ID) continue;
+			
+			for (int k = 0; k < programs.getStarsLMProgramCount(); k++) {
+				if (programs.getStarsLMProgram(k).getProgramID() == enrProg.getProgramID()) {
+					showNotification = true;
+					break;
+				}
+			}
+			if (showNotification) break;
+		}
+		if (showNotification) break;
+	}
+	
+	if (showNotification) {
+%>
+				<form name="form1" method="POST" action="/servlet/SOAPClient">
+				  <input type="hidden" name="action" value="UpdateCtrlNotification">
+				  <input type="hidden" name="REDIRECT" value="/user/ConsumerStat/stat/General.jsp">
+				  <input type="hidden" name="REFERRER" value="/user/ConsumerStat/stat/General.jsp">
+                    <table width="295" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
+                      <tr> 
+                        <td height="58"> 
+                          <p align="center" class="TableCell1"> 
+                            <input type="checkbox" name="NotifyControl" value="true"
+							   <% if (primContact.getEmail().getEnabled()) out.print("checked"); %>>
+                            <span class="TableCell3"> I would like to be notified 
+                            by e-mail the day of control.<br>
+                            My e-mail address is:<br>
+                            <input type="text" name="Email" maxlength="50" size="30" value="<%= primContact.getEmail().getNotification() %>">
+                            <input type="submit" name="Submit" value="Submit">
+                            </span></p>
+                        </td>
+                      </tr>
+                    </table>
+				</form>
+<%
+	}
+%>
+</cti:checkRole>
+                  </td>
                   <td width="171"><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br> 
                     <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
                     <!--<%= account.getCompany() %><br> -->
