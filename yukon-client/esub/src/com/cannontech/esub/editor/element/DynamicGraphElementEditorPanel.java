@@ -1,18 +1,10 @@
 package com.cannontech.esub.editor.element;
 
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeWillExpandListener;
-import javax.swing.tree.ExpandVetoException;
-import javax.swing.tree.TreeSelectionModel;
-
-import com.cannontech.common.gui.util.CtiTreeCellRenderer;
-import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.graph.model.TrendModelType;
 
 /**
- * Insert the type's description here.
  * Creation date: (9/25/2002 11:58:02 AM)
- * @author: 
+ * @author: alauinger
  */
 public class DynamicGraphElementEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.TreeSelectionListener {
 	private DynamicGraphElement dynamicGraphElement;
