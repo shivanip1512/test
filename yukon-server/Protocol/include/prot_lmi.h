@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/06/02 20:59:20 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/06/03 23:14:27 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -194,9 +194,10 @@ public:
     int recvCommRequest( OUTMESS *OutMessage );
     int sendCommResult ( INMESS  *InMessage );
 
-    void queueCode( unsigned int code );
-    bool hasCodes( void ) const;
-    int  getNumCodes( void ) const;
+    void   queueCode( unsigned int code );
+    bool   hasCodes( void ) const;
+    int    getNumCodes( void ) const;
+    RWTime getTransmittingUntil( void ) const;
 
     bool isTransactionComplete( void );
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/06/02 20:59:19 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/06/03 23:14:27 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -207,12 +207,6 @@ void CtiProtocolLMI::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
 
 int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint - in recvCommRequest **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-
     if( OutMessage->Sequence == QueuedWorkToken )
     {
         setCommand(Command_SendQueuedCodes, 0, 0);
@@ -290,6 +284,12 @@ int CtiProtocolLMI::getNumCodes( void ) const
 }
 
 
+RWTime CtiProtocolLMI::getTransmittingUntil( void ) const
+{
+    return _transmitting_until;
+}
+
+
 bool CtiProtocolLMI::isTransactionComplete( void )
 {
     return _transactionComplete;  //  this is rather naive - maybe it should check state instead
@@ -332,13 +332,11 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                 unsigned long numcodes;
                 int current_code;
 
-                long percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 250),
-                     fudge   = gConfigParms.getValueAsULong("PORTER_LMI_FUDGE", 1000);
+                long percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 250);
 
-                if( _completion_time.seconds()  > _transmitting_until.seconds() )
+                if( _completion_time > _transmitting_until )
                 {
                     numcodes  = (_completion_time.seconds() - _transmitting_until.seconds()) * 1000;
-                    //numcodes -= fudge;  //  this is so that we can tweak the amount of time we request - we don't want to subtract it back off
                     numcodes /= percode;
                 }
                 else
@@ -390,7 +388,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                 }
 
                 _outbound.length = (numcodes * 6) + 2;
-                _transmitting_until += ((numcodes * percode) + fudge) / 1000;
+                _transmitting_until += (numcodes * percode) / 1000;
 
                 for( int i = 0; i < (numcodes * 6); i += 6 )
                 {
@@ -551,8 +549,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                 {
                     case Command_SendQueuedCodes:
                     {
-                        if( _codes.empty() ||
-                            Now >= (_transmitting_until - 1) )  //  knock off a second so we get out of here with some room to spare
+                        if( _codes.empty() || !((_completion_time - 1) > _transmitting_until) )  //  knock off a second so we act polite
                         {
                             _transactionComplete = true;
                         }
