@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/exchange.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/18 15:00:23 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/30 14:51:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,15 +59,20 @@ public:
     {
         LockGuard grd(monitor());
 
-        RWBoolean bValid = Portal_->socket().valid();
+        RWBoolean bValid = false;
 
-        if(!bValid ||
-           sinbuf  == NULL ||
-           soubuf  == NULL ||
-           oStream == NULL ||
-           iStream == NULL )
+        if(Portal_)
         {
-            bValid = false;
+            bValid = Portal_->socket().valid();
+
+            if(!bValid ||
+               sinbuf  == NULL ||
+               soubuf  == NULL ||
+               oStream == NULL ||
+               iStream == NULL )
+            {
+                bValid = false;
+            }
         }
 
         return bValid;
@@ -129,7 +134,12 @@ public:
         /*
          *  get the host from the RWSockAddr via a conversion to RWInetAddr
          */
-        RWInetHost  iHost = RWInetAddr::as(Portal_->socket().getpeername()).host();
+        RWInetHost  iHost;
+
+        if(Portal_)
+        {
+            iHost = RWInetAddr::as(Portal_->socket().getpeername()).host();
+        }
         return iHost;
     }
 
