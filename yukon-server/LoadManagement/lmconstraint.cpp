@@ -130,7 +130,7 @@ bool CtiLMConstraintChecker::checkWeekDays(const CtiLMProgramDirect& lm_program,
     {
         do
         {
-            if(!CtiHolidayManager::getInstance().isHoliday(startDate))
+            if(!CtiHolidayManager::getInstance().isHoliday(startDate, lm_program.getHolidayScheduleId())) 
             {   // The entire time the program is to run isn't a holiday,
                 // make sure to do a normal week day check
                 force_holiday = false;
@@ -144,7 +144,7 @@ bool CtiLMConstraintChecker::checkWeekDays(const CtiLMProgramDirect& lm_program,
         string result;
         do
         {
-            bool is_holiday = CtiHolidayManager::getInstance().isHoliday(startDate);
+            bool is_holiday = CtiHolidayManager::getInstance().isHoliday(startDate, lm_program.getHolidayScheduleId());
             if(is_holiday && (weekdays[(size_t)7] == 'E' || weekdays[(size_t)7] == 'e'))
             {
                 result = "The program is not allowed to run on ";
