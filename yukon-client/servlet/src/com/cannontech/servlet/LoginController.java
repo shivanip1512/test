@@ -7,6 +7,8 @@ package com.cannontech.servlet;
  * Creation date: (12/7/99 9:46:12 AM)
  * @author:	Aaron Lauinger 
  */
+
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -54,7 +56,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 		
 	if(LOGIN.equalsIgnoreCase(action)) {
 		String username = req.getParameter(USERNAME);
-		String password = req.getParameter(PASSWORD);	
+		String password = req.getParameter(PASSWORD);
 		LiteYukonUser user = AuthFuncs.login(username,password);
 		String home_url = null;
 		
@@ -63,6 +65,14 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			HttpSession session = req.getSession(true);
 			try {						
 				initSession(user, session);
+				
+				// Remember where they came from								
+				nextURI = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_OFF_URL, "");
+				if(nextURI.length() > 0 && !nextURI.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+					Cookie c = new Cookie(Integer.toString(WebClientRole.LOG_OFF_URL), nextURI);
+					c.setPath("/");
+					resp.addCookie(c);
+				}				
 			} catch(TransactionException e) {
 				session.invalidate();
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
