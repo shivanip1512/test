@@ -150,86 +150,92 @@ function newFAQSubject(form) {
                 <table width="600" border="1" cellspacing="0" cellpadding="0">
                   <tr>
                     <td>
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <table width="100%" border="0" cellspacing="0" cellpadding="3">
+                        <tr>
+                          <td class="HeaderCell">Choose FAQ Source</td>
+                        </tr>
                         <tr>
                           <td>
                             <table width="100%" border="0" cellspacing="0" cellpadding="3" align="center" class="MainText">
                               <input type="hidden" name="action" value="UpdateFAQSource">
                               <tr> 
-                                <td width="75%"> 
-                                  <input type="radio" name="Source" value="Inherited" onclick="changeSource(this.form, this.value); setContentChanged(true);" <% if (inherited) out.print("checked"); %>>
+                                <td width="80%"> 
+                                  <input type="radio" name="Source" value="Inherited" onClick="changeSource(this.form, this.value); setContentChanged(true);" <% if (inherited) out.print("checked"); %>>
                                   Inherited<br>
-                                  <input type="radio" name="Source" value="Link" onclick="changeSource(this.form, this.value); setContentChanged(true);" <% if (faqLink != null) out.print("checked"); %>>
+                                  <input type="radio" name="Source" value="Link" onClick="changeSource(this.form, this.value); setContentChanged(true);" <% if (faqLink != null) out.print("checked"); %>>
                                   Use a link to your company's website: 
-                                  <input type="text" name="FAQLink" size="30" value="<%= StarsUtils.forceNotNone(faqLink) %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="FAQLink" size="30" value="<%= StarsUtils.forceNotNone(faqLink) %>" onChange="setContentChanged(true)">
                                   <br>
-                                  <input type="radio" name="Source" value="Customized" onclick="changeSource(this.form, this.value); setContentChanged(true);" <% if (customized) out.print("checked"); %>>
+                                  <input type="radio" name="Source" value="Customized" onClick="changeSource(this.form, this.value); setContentChanged(true);" <% if (customized) out.print("checked"); %>>
                                   Define the FAQ subjects below:</td>
-                                <td width="25%"> 
+                                <td width="20%"> 
                                   <input type="submit" name="Submit" value="Submit">
                                 </td>
                               </tr>
                             </table>
                           </td>
                         </tr>
-                        <tr>
-                          <td>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+                <br>
+                <table width="600" border="1" cellspacing="0" cellpadding="0">
+                  <tr> 
+                    <td>
+                      <table width="100%" border="0" cellspacing="0" cellpadding="3">
+                        <input type="hidden" name="SubjectID" value="0">
+                        <tr> 
+                          <td class="HeaderCell">Edit FAQ Subjects</td>
+                        </tr>
+                        <tr> 
+                          <td> 
                             <table width="100%" border="0" cellspacing="0" cellpadding="3">
-							  <input type="hidden" name="SubjectID" value="0">
-                              <tr>
-                                <td class="HeaderCell">Edit FAQ Subjects</td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <table width="100%" border="0" cellspacing="0" cellpadding="3">
-                                    <tr valign="middle"> 
-                                      <td class="TableCell" width="10%">FAQ Subjects:</td>
-                                      <td class="TableCell" width="65%"> 
-                                        <select name="FAQSubjects" size="5" style="width:200" onchange="setButtonStatus(this.form)">
-<%
+                              <tr valign="middle"> 
+                                <td class="TableCell" width="15%">FAQ Subjects:</td>
+                                <td class="TableCell" width="65%"> 
+                                  <select name="FAQSubjects" size="5" style="width:300" onChange="setButtonStatus(this.form)">
+                                    <%
 	if (customerFAQs.getStarsCustomerFAQGroupCount() == 0) {
 %>
-                                          <option value="-1">&lt;no FAQ Subjects&gt;</option>
-<%	}
+                                    <option value="-1">&lt;no FAQ Subjects&gt;</option>
+                                    <%	}
 	else {
 		for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++) {
 			StarsCustomerFAQGroup faqGroup = customerFAQs.getStarsCustomerFAQGroup(i);
 %>
-                                          <option value="<%= i %>"><%= faqGroup.getSubject() %></option>
-<%		}
+                                    <option value="<%= i %>"><%= faqGroup.getSubject() %></option>
+                                    <%		}
 	}
 %>
-                                        </select>
-                                      </td>
-                                      <td class="TableCell" width="25%"> 
-                                        <input type="button" name="MoveUp" value="Move Up" onclick="moveUp(this.form)">
-                                        <br>
-                                        <input type="button" name="MoveDown" value="Move Down" onclick="moveDown(this.form)">
-                                        <br>
-                                        <input type="button" name="Save" value="Save" onclick="submitFAQSubjects(this.form)">
-                                      </td>
-                                    </tr>
-                                  </table>
+                                  </select>
+                                </td>
+                                <td class="TableCell" width="20%"> 
+                                  <input type="button" name="MoveUp" value="Move Up" onClick="moveUp(this.form)">
+                                  <br>
+                                  <input type="button" name="MoveDown" value="Move Down" onClick="moveDown(this.form)">
+                                  <br>
+                                  <input type="button" name="Save" value="Save" onClick="submitFAQSubjects(this.form)">
                                 </td>
                               </tr>
-                              <tr>
-                                <td>
-                                  <table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
-                                    <tr> 
-                                      <td width="15%"> 
-                                        <input type="button" name="Edit" value="Edit" onclick="editFAQSubject(this.form)">
-                                      </td>
-                                      <td width="15%"> 
-                                        <input type="button" name="New" value="New" onclick="newFAQSubject(this.form)">
-                                      </td>
-                                      <td width="15%"> 
-                                        <input type="button" name="Delete" value="Delete" onclick="deleteFAQSubject(this.form)">
-                                      </td>
-                                      <td width="55%"> 
-                                        <input type="button" name="DeleteAll" value="Delete All" onclick="deleteAllFAQSubjects(this.form)">
-                                      </td>
-                                    </tr>
-                                  </table>
+                            </table>
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td> 
+                            <table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
+                              <tr> 
+                                <td width="15%"> 
+                                  <input type="button" name="Edit" value="Edit" onClick="editFAQSubject(this.form)">
+                                </td>
+                                <td width="15%"> 
+                                  <input type="button" name="New" value="New" onClick="newFAQSubject(this.form)">
+                                </td>
+                                <td width="15%"> 
+                                  <input type="button" name="Delete" value="Delete" onClick="deleteFAQSubject(this.form)">
+                                </td>
+                                <td width="55%"> 
+                                  <input type="button" name="DeleteAll" value="Delete All" onClick="deleteAllFAQSubjects(this.form)">
                                 </td>
                               </tr>
                             </table>
