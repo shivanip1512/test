@@ -575,6 +575,22 @@ private void loadSignalTransmitterComboBox(String routeType) {
 					getSignalTransmitterComboBox().addItem( devices.get(i) );
 			}
 		}
+		else if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_SERIES_5_LMI_ROUTE) )
+		{
+			for(int i=0;i<devices.size();i++)
+			{
+				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() == PAOGroups.SERIES_5_LMI)
+					getSignalTransmitterComboBox().addItem( devices.get(i) );
+			}
+		}
+		else if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_RTC_ROUTE) )
+		{
+			for(int i=0;i<devices.size();i++)
+			{
+				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() == PAOGroups.RTC)
+					getSignalTransmitterComboBox().addItem( devices.get(i) );
+			}
+		}
 
 	}
 

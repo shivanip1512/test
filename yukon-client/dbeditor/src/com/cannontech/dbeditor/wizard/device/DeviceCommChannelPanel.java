@@ -209,6 +209,10 @@ public Object getValue(Object val)
 			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_TAP_PAGING;
 		else if (devType == PAOGroups.WCTP_TERMINAL)
 			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_WCTP_TERMINAL_ROUTE;
+		else if (devType == PAOGroups.SERIES_5_LMI)
+			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_SERIES_5_LMI_ROUTE;
+		else if (devType == PAOGroups.RTC)
+			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_RTC_ROUTE;
 		else
 			return val;
 		

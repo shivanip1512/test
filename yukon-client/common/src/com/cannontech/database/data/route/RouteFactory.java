@@ -50,8 +50,16 @@ public final static RouteBase createRoute(int routeType)
 			returnRoute = new WCTPTerminalRoute();
 			returnRoute.setRouteType( RouteTypes.STRING_WCTP_TERMINAL_ROUTE );
 			break;
+		case RouteTypes.ROUTE_SERIES_5_LMI:
+			returnRoute = new Series5LMIRoute();
+			returnRoute.setRouteType( RouteTypes.STRING_SERIES_5_LMI_ROUTE );
+			break;
+		case RouteTypes.ROUTE_RTC:
+			returnRoute = new RTCRoute();
+			returnRoute.setRouteType( RouteTypes.STRING_RTC_ROUTE );
+			break;
 		default:
-			throw new IllegalStateException( "*** (" + routeType + ") is not a valid route type." );
+
 	}
 
 	returnRoute.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_ROUTE );
@@ -104,6 +112,16 @@ public final static RouteBase createRoute( String routeType)
 	{
 		returnRoute = new WCTPTerminalRoute();
 		returnRoute.setRouteType( RouteTypes.STRING_WCTP_TERMINAL_ROUTE );
+	}
+	else if( routeType.equalsIgnoreCase(RouteTypes.STRING_SERIES_5_LMI_ROUTE) )
+	{
+		returnRoute = new Series5LMIRoute();
+		returnRoute.setRouteType( RouteTypes.STRING_SERIES_5_LMI_ROUTE );
+	}
+	else if( routeType.equalsIgnoreCase(RouteTypes.STRING_RTC_ROUTE) )
+	{
+		returnRoute = new RTCRoute();
+		returnRoute.setRouteType( RouteTypes.STRING_RTC_ROUTE );
 	}
 	else
 		throw new IllegalStateException( "*** " + routeType + " is not a valid route type." );

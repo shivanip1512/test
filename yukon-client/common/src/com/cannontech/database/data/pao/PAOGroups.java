@@ -646,6 +646,10 @@ public final static int getRouteType(String typeString)
 		return ROUTE_TCU;
 	else if( typeString.equalsIgnoreCase( STRING_VERSACOM) )
 		return ROUTE_VERSACOM;
+	else if( typeString.equalsIgnoreCase( STRING_SERIES_5_LMI_ROUTE) )
+		return ROUTE_SERIES_5_LMI;
+	else if( typeString.equalsIgnoreCase( STRING_RTC_ROUTE) )
+		return ROUTE_RTC;
 	else
 		return INVALID;
 }
