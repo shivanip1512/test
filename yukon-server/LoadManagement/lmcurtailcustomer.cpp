@@ -433,6 +433,6 @@ void CtiLMCurtailCustomer::restoreDynamicData(RWDBReader& rdr)
 // Possible acknowledge statuses
 const RWCString CtiLMCurtailCustomer::UnAcknowledgedAckStatus = "UnAcknowledged";
 const RWCString CtiLMCurtailCustomer::AcknowledgedAckStatus = "Acknowledged";
-const RWCString CtiLMCurtailCustomer::NotRequiredAckStatus = "NotRequired";
+const RWCString CtiLMCurtailCustomer::NotRequiredAckStatus = "Not Required";
 const RWCString CtiLMCurtailCustomer::VerbalAckStatus = "Verbal";
 
