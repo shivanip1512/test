@@ -882,7 +882,6 @@ void CtiCCCommandExecutor::ConfirmClose()
                     //currentSubstationBus->setCurrentDailyOperations(currentSubstationBus->getCurrentDailyOperations() + 1);
                     //currentFeeder->setCurrentDailyOperations(currentFeeder->getCurrentDailyOperations() + 1);
                     //currentCapBank->setCurrentDailyOperations(currentCapBank->getCurrentDailyOperations() + 1);
-                    currentSubstationBus->setRecentlyControlledFlag(TRUE);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                     currentSubstationBus->setVarValueBeforeControl(currentSubstationBus->getCurrentVarLoadPointValue());
                     currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
