@@ -124,6 +124,19 @@ public class YukonListEntry extends com.cannontech.database.db.DBPersistent
 		//strange, should not get here
 		return new Integer(CtiUtilities.NONE_ID);
 	}
+	
+	public static void deleteAllListEntries(Integer listID) {
+		String sql = "DELETE FROM " + TABLE_NAME + " WHERE ListID = " + listID;
+		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+				sql, CtiUtilities.getDatabaseAlias() );
+		
+		try {
+			stmt.execute();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Returns the entryID.
