@@ -165,6 +165,10 @@ void CtiLMConnection::_sendthr()
         }
         while ( isValid() && oStream->good() );
     }
+    catch(RWCancellation& )
+    {
+        throw;
+    }
     catch ( RWxmsg& msg )
     {
         /*{    
@@ -277,6 +281,10 @@ void CtiLMConnection::_recvthr()
 
         }
         while ( isValid()  && iStream->good() );
+    }
+    catch(RWCancellation& )
+    {
+        throw;
     }
     catch ( RWxmsg& msg )
     {
