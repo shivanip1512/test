@@ -1,8 +1,6 @@
 package com.cannontech.database.db.stars.customer;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -108,43 +106,6 @@ public class AccountSite extends DBPersistent {
         }
 
         return new Integer( nextAccountSiteID );
-    }
-    
-    public static Integer getAccountIDBySiteNo(String siteNo, int energyCompanyID) {
-    	java.sql.Connection conn = null;
-		java.sql.PreparedStatement stmt = null;
-		java.sql.ResultSet rset = null;
-		
-    	String sql = "SELECT acct.AccountID FROM " +
-    			"AccountSite site, CustomerAccount acct, ECToAccountMapping map " +
-    			"WHERE UPPER(site.SiteNumber) LIKE UPPER(?) " +
-    			"AND site.AccountSiteID = acct.AccountSiteID " +
-    			"AND acct.AccountID = map.AccountID and map.EnergyCompanyID = ?";
-    	
-    	try {
-    		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-    		
-    		stmt = conn.prepareStatement( sql );
-    		stmt.setString( 1, siteNo );
-    		stmt.setInt( 2, energyCompanyID );
-    		
-    		rset = stmt.executeQuery();
-    		if (rset.next())
-    			return new Integer( rset.getInt(1) );
-    	}
-    	catch (java.sql.SQLException e) {
-    		CTILogger.error( e.getMessage(), e );
-    	}
-    	finally {
-    		try {
-    			if (rset != null) rset.close();
-    			if (stmt != null) stmt.close();
-    			if (conn != null) conn.close();
-    		}
-    		catch (java.sql.SQLException e) {}
-    	}
-    	
-    	return null;
     }
 
     public Integer getAccountSiteID() {

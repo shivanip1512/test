@@ -148,15 +148,15 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 				// Delete all customer accounts
 				currentAction = "Deleting customer accounts";
 				
-				int[] accountIDs = CustomerAccount.searchByAccountNumber(
-						energyCompany.getEnergyCompanyID(), "%" );
-				
-				if (accountIDs != null) {
-					numAccount = accountIDs.length;
+				Object[][] accounts = CustomerAccount.getAllCustomerAccounts( energyCompany.getEnergyCompanyID() );
+				if (accounts != null) {
+					numAccount = accounts.length;
 					
-					for (int i = 0; i < accountIDs.length; i++) {
-						currentAction = "Deleting customer account id = " + accountIDs[i];
-						LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[i], true );
+					for (int i = 0; i < accounts.length; i++) {
+						int accountID = ((Integer) accounts[i][0]).intValue();
+						
+						currentAction = "Deleting customer account id = " + accountID;
+						LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountID, true );
 						DeleteCustAccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
 						
 						numAcctDeleted++;

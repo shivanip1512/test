@@ -2214,16 +2214,22 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		getCustAccountInfoMap().remove( new Integer(liteAcctInfo.getAccountID()) );
 	}
 	
-	private LiteStarsCustAccountInformation searchByAccountNo(String accountNo) {
+	/**
+	 * Search customer account by account # within the energy company.
+	 */
+	public LiteStarsCustAccountInformation searchAccountByAccountNo(String accountNo) {
 		ArrayList custAcctInfoList = getAllCustAccountInformation();
 		for (int i = 0; i < custAcctInfoList.size(); i++) {
-			LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
-			if (accountInfo.getCustomerAccount().getAccountNumber().equalsIgnoreCase( accountNo ))
-				return accountInfo;
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
+			if (liteAcctInfo.getCustomerAccount().getAccountNumber().equalsIgnoreCase( accountNo )) {
+				if (!liteAcctInfo.isExtended())
+					extendCustAccountInfo( liteAcctInfo );
+				return liteAcctInfo;
+			}
 		}
 		
 		try {
-			int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber( getEnergyCompanyID(), accountNo );
+			int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber( accountNo, getLiteID() );
 			if (accountIDs == null || accountIDs.length == 0) return null;
 			
 			// There shouldn't be more than one customer accounts with the same account number
@@ -2233,7 +2239,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			account = (com.cannontech.database.data.stars.customer.CustomerAccount)
 					Transaction.createTransaction(Transaction.RETRIEVE, account).execute();
 			
-			return addBriefCustAccountInfo( account );
+			return addCustAccountInformation( account );
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
@@ -2243,44 +2249,24 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	/**
-	 * Search customer account by account # within the energy company.
-	 */
-	public LiteStarsCustAccountInformation searchAccountByAccountNo(String accountNo) {
-		LiteStarsCustAccountInformation liteAcctInfo = searchByAccountNo( accountNo );
-		if (liteAcctInfo != null && !liteAcctInfo.isExtended())
-			extendCustAccountInfo( liteAcctInfo );
-		
-		return liteAcctInfo;
-	}
-	
-	/**
-	 * Search customer accounts by account #. Wildcard character "*" is allowed.
+	 * Search customer accounts by account #, search results based on partial match.
 	 * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
 	 * otherwise it returns a list of LiteStarsCustAccountInformation.
 	 */
 	public ArrayList searchAccountByAccountNo(String accountNo, boolean searchMembers) {
 		ArrayList accountList = new ArrayList();
 		
-		if (accountNo.indexOf('*') == -1) {
-			LiteStarsCustAccountInformation liteAcctInfo = searchByAccountNo( accountNo );
-			if (liteAcctInfo != null)  {
+		String acctNo = accountNo.replace( '*', '%' );
+		if (acctNo.indexOf('%') < 0) acctNo += "%";
+		
+		int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber( acctNo, getLiteID() );
+		if (accountIDs != null) {
+			for (int i = 0; i < accountIDs.length; i++) {
+				LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
 				if (searchMembers)
 					accountList.add( new Pair(liteAcctInfo, this) );
 				else
 					accountList.add( liteAcctInfo );
-			} 
-		}
-		else {
-			int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber(
-					getEnergyCompanyID(), accountNo.replace('*','%') );
-			if (accountIDs != null) {
-				for (int i = 0; i < accountIDs.length; i++) {
-					LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
-					if (searchMembers)
-						accountList.add( new Pair(liteAcctInfo, this) );
-					else
-						accountList.add( liteAcctInfo );
-				}
 			}
 		}
 		
@@ -2335,35 +2321,22 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	/**
-	 * Search customer account by residence map #.
+	 * Search customer account by residence map #, search results based on partial match
 	 * If searchMembers is true, the return type is Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
 	 * otherwise the return type is LiteStarsCustAccountInformation.
 	 */
-	public Object searchAccountByMapNo(String mapNo, boolean searchMembers) {
-		ArrayList acctInfoList = getAllCustAccountInformation();
-		for (int i = 0; i < acctInfoList.size(); i++) {
-			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) acctInfoList.get(i);
-			if (liteAcctInfo.getAccountSite().getSiteNumber().equalsIgnoreCase( mapNo )) {
-				if (searchMembers)
-					return new Pair(liteAcctInfo, this);
-				else
-					return liteAcctInfo;
-			}
-		}
+	public ArrayList searchAccountByMapNo(String mapNo, boolean searchMembers) {
+		ArrayList accountList = getAllCustAccountInformation();
 		
-		try {
-			Integer accountID = com.cannontech.database.db.stars.customer.AccountSite.getAccountIDBySiteNo( mapNo, getLiteID() );
-			if (accountID != null) {
-				LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountID.intValue(), true );
+		int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByMapNumber( mapNo, getLiteID() );
+		if (accountIDs != null) {
+			for (int i = 0; i < accountIDs.length; i++) {
+				LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
 				if (searchMembers)
-					return new Pair(liteAcctInfo, this);
+					accountList.add( new Pair(liteAcctInfo, this) );
 				else
-					return liteAcctInfo;
+					accountList.add( liteAcctInfo );
 			}
-		}
-		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
-			return null;
 		}
 		
 		if (searchMembers) {
@@ -2371,13 +2344,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			synchronized (children) {
 				for (int i = 0; i < children.size(); i++) {
 					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-					Object obj = company.searchAccountByMapNo( mapNo, searchMembers );
-					if (obj != null) return obj;
+					ArrayList memberList = company.searchAccountByMapNo( mapNo, searchMembers );
+					accountList.addAll( memberList );
 				}
 			}
 		}
 		
-		return null;
+		return accountList;
 	}
 	
 	/**
@@ -2389,7 +2362,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		ArrayList accountList = new ArrayList();
 		
 		try {
-			int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAddress( address, getLiteID() );
+			int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAddress( address + "%", getLiteID() );
 			if (accountIDs != null) {
 				for (int i = 0; i < accountIDs.length; i++) {
 					LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );

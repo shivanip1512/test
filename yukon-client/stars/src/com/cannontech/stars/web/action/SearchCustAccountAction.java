@@ -184,11 +184,7 @@ public class SearchCustAccountAction implements ActionBase {
             }
             else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_MAP_NO) {
             	/* Search by map number */
-            	Object obj = energyCompany.searchAccountByMapNo( searchAccount.getSearchValue(), searchMembers );
-            	if (obj != null) {
-            		accountList = new ArrayList();
-            		accountList.add( obj );
-            	}
+            	accountList = energyCompany.searchAccountByMapNo( searchAccount.getSearchValue(), searchMembers );
             }
             else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ADDRESS) {
             	accountList = energyCompany.searchAccountByAddress( searchAccount.getSearchValue(), searchMembers );

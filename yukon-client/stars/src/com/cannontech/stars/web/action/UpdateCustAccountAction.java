@@ -229,9 +229,7 @@ public class UpdateCustAccountAction implements ActionBase {
         	
 			if (!liteAccount.getAccountNumber().equalsIgnoreCase( updateAccount.getAccountNumber() )) {
 				// Check to see if the account number has duplicates
-				int[] result = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber(
-						energyCompany.getEnergyCompanyID(), updateAccount.getAccountNumber() );
-				if (result != null && result.length > 0)
+				if (energyCompany.searchAccountByAccountNo(updateAccount.getAccountNumber()) != null)
 					throw new WebClientException( "Account number already exists" );
 			}
         	

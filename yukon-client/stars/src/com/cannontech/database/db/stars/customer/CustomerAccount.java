@@ -71,7 +71,7 @@ public class CustomerAccount extends DBPersistent {
 		return null;
 	}
 
-    public static int[] searchByAccountNumber(Integer energyCompanyID, String accountNumber) {
+    public static int[] searchByAccountNumber(String accountNumber, int energyCompanyID) {
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement stmt = null;
 		java.sql.ResultSet rset = null;
@@ -84,8 +84,8 @@ public class CustomerAccount extends DBPersistent {
 	                   + " AND UPPER(acct.AccountNumber) LIKE UPPER(?)";
 	        
 	        stmt = conn.prepareStatement(sql);
-	        stmt.setInt(1, energyCompanyID.intValue());
-	        stmt.setString(2, accountNumber);
+	        stmt.setInt( 1, energyCompanyID );
+	        stmt.setString( 2, accountNumber );
 	        rset = stmt.executeQuery();
 	        
 	        ArrayList acctIDList = new ArrayList();
@@ -184,8 +184,8 @@ public class CustomerAccount extends DBPersistent {
 			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 	        
 			stmt = conn.prepareStatement(sql);
-			stmt.setInt(1, energyCompanyID);
-			stmt.setString(2, address + "%");
+			stmt.setInt( 1, energyCompanyID );
+			stmt.setString( 2, address );
 			rset = stmt.executeQuery();
 	        
 			ArrayList acctIDList = new ArrayList();
@@ -212,6 +212,50 @@ public class CustomerAccount extends DBPersistent {
 		
 		return null;
     }
+	
+	public static int[] searchByMapNumber(String mapNo, int energyCompanyID) {
+		String sql = "SELECT acct.AccountID FROM " +
+				"AccountSite site, CustomerAccount acct, ECToAccountMapping map " +
+				"WHERE UPPER(site.SiteNumber) LIKE UPPER(?) " +
+				"AND site.AccountSiteID = acct.AccountSiteID " +
+				"AND acct.AccountID = map.AccountID and map.EnergyCompanyID = ?";
+    	
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement stmt = null;
+		java.sql.ResultSet rset = null;
+		
+		try {
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+    		
+			stmt = conn.prepareStatement( sql );
+			stmt.setString( 1, mapNo );
+			stmt.setInt( 2, energyCompanyID );
+			rset = stmt.executeQuery();
+			
+			ArrayList acctIDList = new ArrayList();
+			while (rset.next())
+				acctIDList.add( new Integer(rset.getInt(1)) );
+	        
+			int[] accountIDs = new int[ acctIDList.size() ];
+			for (int i = 0; i < accountIDs.length; i++)
+				accountIDs[i] = ((Integer) acctIDList.get(i)).intValue();
+			
+			return accountIDs;
+		}
+		catch (java.sql.SQLException e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+		finally {
+			try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
+		}
+    	
+		return null;
+	}
 
     public static CustomerAccount getCustomerAccount(Integer accountID) {
         String sql = "SELECT AccountID, AccountSiteID, AccountNumber, CustomerID, BillingAddressID, AccountNotes "
