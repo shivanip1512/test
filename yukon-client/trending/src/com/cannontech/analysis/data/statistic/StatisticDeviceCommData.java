@@ -110,6 +110,17 @@ public class StatisticDeviceCommData extends StatisticReportDataBase
 		" FROM DYNAMICPAOSTATISTICS DPS, YUKONPAOBJECT PAO " +
 		" WHERE DPS.PAOBJECTID = PAO.PAOBJECTID ");
 
+		if(getPaoIDs() != null)
+		{
+			sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
+	
+			for (int i = 1; i < getPaoIDs().length; i++)
+			{
+				sql.append("," + getPaoIDs()[i]);
+			}
+	
+			sql.append(")");
+		}
 		if (getCategory() != null)
 			sql.append(" AND PAO.CATEGORY = '" + getCategory() + "' "); 
 		if (getStatType() != null )

@@ -33,7 +33,7 @@ public class StatisticCommChannelData extends StatisticReportDataBase
 	public final static String PORT_FAILURES_STRING = "Port Failures";
 	public final static String PORT_PERCENT_STRING = "Port Percent";
 	public final static String SUCC_COMM_PERC_STRING= "Successful Communication%";
-
+	
 	/** Inner class container of table model data*/
 	private class CommStat
 	{
@@ -57,7 +57,8 @@ public class StatisticCommChannelData extends StatisticReportDataBase
 	 */
 	public StatisticCommChannelData()
 	{
-		this("PORT", "PORT", "Monthly");		
+		this("PORT", "PORT", "Monthly");
+				
 	}
 
 	/**
@@ -106,6 +107,17 @@ public class StatisticCommChannelData extends StatisticReportDataBase
 		" FROM DYNAMICPAOSTATISTICS DPS, YUKONPAOBJECT PAO " +
 		" WHERE DPS.PAOBJECTID = PAO.PAOBJECTID ");
 	
+		if(getPaoIDs() != null)
+		{
+			sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
+			
+			for (int i = 1; i < getPaoIDs().length; i++)
+			{
+				sql.append("," + getPaoIDs()[i]);
+			}
+			
+			sql.append(")");
+		}
 		if( getPaoClass() != null )
 			sql.append(" AND PAOCLASS = '" + getPaoClass() +"' ");
 		if (getCategory() != null)

@@ -23,7 +23,8 @@ public abstract class StatisticReportDataBase extends ReportDataBase
 	private long startTime = Long.MIN_VALUE;
 	/** Stop time for query in millis */
 	private long stopTime = Long.MIN_VALUE;
-	
+	/** Yukon.paobjectid's to query for, null means all */
+	private int[] paoIDs = null;
 	/** YukonPaobject.paoClass value criteria, null results in all paoClasses */
 	private String paoClass = null;
 	
@@ -262,4 +263,20 @@ public abstract class StatisticReportDataBase extends ReportDataBase
 		}		
 		return String.valueOf(getStartTime());
 	}
+	/**
+	 * @return
+	 */
+	public int[] getPaoIDs()
+	{
+		return paoIDs;
+	}
+
+	/**
+	 * @param is
+	 */
+	public void setPaoIDs(int[] is)
+	{
+		paoIDs = is;
+	}
+
 }
