@@ -933,7 +933,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, ULONG
             {
                 if( getControlAreaState() == CtiLMControlArea::InactiveState )
                 {
-                    RWCString text = RWCString("Start, LM Control Area: ");
+                    RWCString text = RWCString("Automatic Start, LM Control Area: ");
                     text += getPAOName();
                     RWCString additional = *getAutomaticallyStartedSignalString();
                     //additional += getAutomaticallyStartedSignalString();
@@ -1059,6 +1059,23 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(ULONG secondsFromBeginn
             if( currentLMProgram->isAvailableToday() && currentLMProgram->isWithinValidControlWindow(secondsFromBeginningOfDay) &&
                 currentLMProgram->hasControlHoursAvailable() && !currentLMProgram->getDisableFlag() )
             {
+                if( getControlAreaState() == CtiLMControlArea::InactiveState )
+                {
+                    RWCString text = RWCString("Automatic Start, LM Control Area: ");
+                    text += getPAOName();
+                    RWCString additional = *getAutomaticallyStartedSignalString();
+                    //additional += getAutomaticallyStartedSignalString();
+                    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                    signal->setSOE(1);
+
+                    multiDispatchMsg->insert(signal);
+                    if( _LM_DEBUG )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - " << text << ", " << additional << endl;
+                    }
+                }
+
                 if( currentLMProgram->getProgramState() != CtiLMProgramBase::FullyActiveState &&
                     currentLMProgram->getProgramState() != CtiLMProgramBase::ManualActiveState &&
                     currentLMProgram->getProgramState() != CtiLMProgramBase::ScheduledState )
@@ -1094,6 +1111,12 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(ULONG secondsFromBeginn
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Unknown LM Program Type in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
+
+                    if( getControlAreaState() != CtiLMControlArea::FullyActiveState &&
+                        getControlAreaState() != CtiLMControlArea::ActiveState )
+                    {
+                        setControlAreaState(CtiLMControlArea::ActiveState);
                     }
                 }
                 else
@@ -1182,6 +1205,21 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
                     dout << RWTime() << " - " << text << ", " << additional << endl;
                 }
                 sentSignalMsg = true;
+            }
+
+            {
+                RWCString text = RWCString("Automatic Stop, LM Program: ");
+                text += currentLMProgram->getPAOName();
+                RWCString additional = RWCString("");//someday we can say why we auto stopped
+                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                signal->setSOE(i+2);
+
+                multiDispatchMsg->insert(signal);
+                if( _LM_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - " << text << ", " << additional << endl;
+                }
             }
             ((CtiLMProgramDirect*)currentLMProgram)->stopProgramControl(multiPilMsg, multiDispatchMsg);
             returnBOOL = TRUE;
