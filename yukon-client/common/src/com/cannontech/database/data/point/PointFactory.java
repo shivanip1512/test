@@ -173,4 +173,38 @@ public static PointBase createDmdAccumPoint( String pointName, Integer paoID,
    
    return point;  
 }
+
+
+public static PointBase createPulseAccumPoint( String pointName, Integer paoID, 
+      Integer pointID, int pointOffset, int pointUnit, double multiplier )
+{
+   PointBase point = PointBase.createNewPoint(  
+         pointID,
+         PointTypes.PULSE_ACCUMULATOR_POINT,
+         pointName,
+         paoID,
+         new Integer(pointOffset) );
+   
+   point.getPoint().setStateGroupID( 
+      new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ACCUMULATOR) );
+
+   //defaults - pointAccumulator   
+   com.cannontech.database.db.point.PointAccumulator accumPt = 
+      new com.cannontech.database.db.point.PointAccumulator(
+         pointID, new Double(multiplier), new Double(0.0) );
+   
+   ((AccumulatorPoint)point).setPointAccumulator( accumPt );  
+   
+   //defaults - pointUnit
+   ((com.cannontech.database.data.point.ScalarPoint)point).setPointUnit(
+      new com.cannontech.database.db.point.PointUnit(
+         pointID,
+         new Integer(pointUnit),
+         new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
+         new Double(0.0),
+         new Double(0.0)));
+   
+   return point;  
+}
+
 }
