@@ -117,7 +117,7 @@ private:
     int             _dataLength, _dataSent;
     int             _bytesInLastFrame;
     unsigned long   _inActual, _inTotal;
-    int             _commErrorCount, _protocolErrorCount;
+    int             _commErrorCount, _packetErrorCount;
 
     enum IOState
     {
@@ -134,8 +134,8 @@ private:
 
     enum
     {
-        CommRetries     = 3,
-        ProtocolRetries = 3
+        CommRetries   = 3,
+        PacketRetries = 3
     };
 
 protected:

@@ -59,8 +59,8 @@ void CtiIONDatalinkLayer::setToOutput( CtiIONSerializable &payload )
 
     _ioState        = Output;
 
-    _commErrorCount     = 0;
-    _protocolErrorCount = 0;
+    _commErrorCount   = 0;
+    _packetErrorCount = 0;
 
     _dataLength = payload.getSerializedLength();
     _data       = CTIDBG_new unsigned char[_dataLength];
@@ -76,7 +76,7 @@ void CtiIONDatalinkLayer::setToOutput( CtiIONSerializable &payload )
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** Checkpoint -- couldn't allocate _data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 }
@@ -94,8 +94,8 @@ void CtiIONDatalinkLayer::setToInput( void )
 
     _ioState            = InputHeader;
 
-    _commErrorCount     = 0;
-    _protocolErrorCount = 0;
+    _commErrorCount   = 0;
+    _packetErrorCount = 0;
 }
 
 
@@ -258,7 +258,7 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONDatalinkLayer::generate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             xfer.setOutBuffer(NULL);
@@ -406,20 +406,20 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
             default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** Checkpoint -- comm error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
 
-        if( ++_commErrorCount >= CommRetries )
-        {
-            _ioState = Failed;
-            retVal   = status;
-        }
+        //  comm errors propagate immediately up to the protocol object
+        _ioState = Failed;
+        retVal   = status;
     }
     else
     {
 
         #if 0
+        //  this is a dangerous block of code, as of 2003-apr-04.  it was left only because it was useful when threads were
+        //    dying before trace was printed.  the repetetive dout is sufficiently slow to destroy out/in communication timings.
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
 
@@ -443,6 +443,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
         {
             case InputHeader:
             {
+                //  ACH:  someday, make a unified packet-reading function or something - this is ugly
                 if( _inTotal == 0 )
                 {
                     //  still looking for the sync byte
@@ -458,6 +459,11 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                         memcpy(((unsigned char *)&_inFrame), _inBuffer + offset, _inActual - offset);
 
                         _inTotal += (_inActual - offset);
+                    }
+                    else
+                    {
+                        //  we didn't read the sync byte this try
+                        ++_packetErrorCount;
                     }
                 }
                 else
@@ -519,7 +525,8 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                         }
                         else
                         {
-                            _protocolErrorCount++;
+                            //  they sent the wrong packet
+                            ++_packetErrorCount;
 
                             if( _inFrame.header.cntlframetype == DataAcknakEnbl )
                             {
@@ -536,13 +543,9 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                     }
                     else
                     {
-                        _protocolErrorCount++;
+                        //  bad CRC - this read failed
 
-                        //  i have no way to accurately tell if they said this was going to be an ACK-enabled packet,
-                        //    what with the mangled data, so the best i can do is just try to read again
-                        _inTotal = 0;
-
-                        _ioState = InputHeader;
+                        _ioState = Failed;
                     }
                 }
 
@@ -577,8 +580,9 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
 
             case OutputRecvAckNack:
             {
-                //  ADD CODE HERE:  do SRC and DST need checking?
+                //  ACH:  do SRC and DST need checking?
 
+                //  ACH:  someday, make a unified packet-reading function or something - this is ugly
                 if( _inTotal == 0 )
                 {
                     //  still looking for the sync byte
@@ -597,7 +601,8 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                     }
                     else
                     {
-                        _protocolErrorCount++;
+                        //  we didn't read the sync byte
+                        ++_packetErrorCount;
                     }
                 }
                 else
@@ -611,7 +616,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                 if( _inTotal >= (EmptyPacketLength + UncountedHeaderBytes) )
                 {
                     if( _inFrame.header.cntlframetype == AcknakACK &&   //  make sure it's an ACK frame
-                        _inFrame.header.trancounter == _currentOutputFrame )          //  make sure they're ACKing the frame we just sent
+                        _inFrame.header.trancounter == _currentOutputFrame )  //  make sure they're ACKing the frame we just sent
                     {
                         _dataSent += _bytesInLastFrame;
 
@@ -627,7 +632,8 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                     }
                     else
                     {
-                        _protocolErrorCount++;
+                        //  try sending the packet again - we were NACK'd or something
+                        ++_packetErrorCount;
                         _ioState = Output;
                     }
                 }
@@ -639,7 +645,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONDatalinkLayer::decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _ioState = Failed;
@@ -648,7 +654,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
             }
         }
 
-        if( _protocolErrorCount > ProtocolRetries )
+        if( _packetErrorCount > PacketRetries )
         {
             _ioState = Failed;
         }
