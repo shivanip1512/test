@@ -52,6 +52,8 @@ yukon-client/servlet/work
 yukon-client/stars/bin
 yukon-client/stars/build
 yukon-client/tdc/.cvsignore
+yukon-client/tdc/TDCDisplaySettings.DAT
+yukon-client/tdc/TDCOut.DAT
 yukon-client/tdc/bin
 yukon-client/tdc/build
 yukon-client/tools/.cvsignore
