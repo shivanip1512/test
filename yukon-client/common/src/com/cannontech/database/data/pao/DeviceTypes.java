@@ -6,6 +6,9 @@ package com.cannontech.database.data.pao;
  */
 public interface DeviceTypes extends TypeBase
 {
+	//***IMPORTANT ** If you add a deviceType, please update the total device type count!
+	public final static int DEVICE_TYPES_COUNT = 77;
+	 
 	public final static int CCU710A       = DEVICE_OFFSET + 1;
 	public final static int CCU711        = DEVICE_OFFSET + 2;
 	public final static int TCU5000       = DEVICE_OFFSET + 3;
@@ -175,8 +178,4 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_SERIES_5_LMI = {"RTU-LMI", "RTU LMI"};
 	public static final String[] STRING_RTC = {"RTC"};
 	public static final String[] STRING_RTM = {"RTM"};
-	
-	
-	
-	
 }
