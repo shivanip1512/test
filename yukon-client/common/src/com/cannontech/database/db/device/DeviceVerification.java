@@ -19,10 +19,12 @@ public class DeviceVerification extends NestedDBPersistent
 	private Integer receiverID;
 	private Integer transmitterID;
 	private String resendOnFail;
+	private String disable;
+	
 	
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"RECEIVERID", "TRANSMITTERID", "RESENDONFAIL"
+		"RECEIVERID", "TRANSMITTERID", "RESENDONFAIL", "DISABLE"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "RECEIVERID" };
@@ -38,11 +40,12 @@ public DeviceVerification() {
 /**
  * DeviceVerification constructor comment.
  */
-public DeviceVerification(Integer recID, Integer transID, String rsendFail) {
+public DeviceVerification(Integer recID, Integer transID, String rsendFail, String flagDisable) {
 	super();
 	receiverID = recID;
 	transmitterID = transID;
 	resendOnFail = rsendFail;
+	disable = flagDisable;
 		
 }
 
@@ -51,7 +54,7 @@ public void add() throws java.sql.SQLException
 	Object addValues[] = 
 	{ 
 		getReceiverID(), getTransmitterID(),
-		getResendOnFail()
+		getResendOnFail(), getDisable()
 	};
 
 	add( TABLE_NAME, addValues );
@@ -118,6 +121,7 @@ public static final Vector getAllVerifications( Integer deviceID, java.sql.Conne
 				rtc.setReceiverID( new Integer(rset.getInt("RECEIVERID")) );
 				rtc.setTransmitterID( new Integer(rset.getInt("TRANSMITTERID")) );
 				rtc.setResendOnFail( rset.getString("RESENDONFAIL") );
+				rtc.setDisable( rset.getString("DISABLE") );
 	
 				tmpList.add( rtc );
 			}				
@@ -154,6 +158,10 @@ public String getResendOnFail() {
 	return resendOnFail;
 }
 
+public String getDisable() {
+	return disable;
+}
+
 public void retrieve() 
 {
 	Integer constraintValues[] = { getReceiverID() };	
@@ -166,6 +174,7 @@ public void retrieve()
 		{
 			setTransmitterID( (Integer) results[1] );
 			setResendOnFail( (String) results[2] );
+			setDisable( (String) results[3] );
 		}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -188,12 +197,16 @@ public void setResendOnFail(java.lang.String resFail) {
 	resendOnFail = resFail;
 }
 
+public void setDisable(String flagDisable) {
+	disable = flagDisable;
+}
+
 public void update() 
 {
 	Object setValues[] =
 	{ 
 		getReceiverID(), getTransmitterID(),
-		getResendOnFail()
+		getResendOnFail(), getDisable()
 	};
 	
 	Object constraintValues[] = { getReceiverID() };
