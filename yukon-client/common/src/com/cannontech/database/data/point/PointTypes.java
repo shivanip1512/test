@@ -13,11 +13,14 @@ public final class PointTypes {
 	public static final int SYS_PID_DISPATCH		=   -3;
 	public static final int SYS_PID_MACS	 		=	-4;
 	public static final int SYS_PID_LOADMANAGEMENT	=	-10;
+
+   public static final int PT_OFFSET_DAILY_HISTORY = 2500;
+   public static final int PT_OFFSET_MONTHLY_HISTORY = 2501;
+   public static final int PT_OFFSET_SEASONAL_HISTORY = 2502;
+   public static final int PT_OFFSET_ANNUAL_HISTORY = 2503;
 	
 	//The following constants are keys into the private
 	//Array of strings (not related to any c/c++ defines!)
-
-
 	//The Point Types
 	public static final int STATUS_POINT = 0;
 	public static final int ANALOG_POINT = 1;
