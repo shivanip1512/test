@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLDecoder;
 import java.util.Iterator;
 
 import javax.servlet.Filter;
@@ -61,13 +62,13 @@ public class ImageFilter implements Filter {
 		
 		String imgPath= uri.replaceFirst(conPath, "");
 		
-		if( imgPath.startsWith("/esub/images/") ) {		
-			ensureImageExists(config.getServletContext().getRealPath(imgPath));
+		if( imgPath.startsWith("/esub/images/") ) {	
+			ensureImageExists(URLDecoder.decode(config.getServletContext().getRealPath(imgPath),"UTF-8"));	
 			chain.doFilter(req,resp);		
 		}
 		else {			
 			imgPath = "/esub/images" + imgPath.substring(imgPath.lastIndexOf("/"));
-			ensureImageExists(config.getServletContext().getRealPath(imgPath));
+			ensureImageExists(URLDecoder.decode(config.getServletContext().getRealPath(imgPath), "UTF-8"));
 			config.getServletContext().getRequestDispatcher(imgPath).forward(req, resp);
 		}
 			
