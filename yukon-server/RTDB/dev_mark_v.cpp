@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/02/02 17:01:53 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2004/02/09 16:49:28 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,13 +84,6 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
       OutMessage->Port      = getPortID();
       OutMessage->Remote    = getAddress();
       OutMessage->Buffer.DUPReq.LP_Time = getLastLPTime().seconds();
-
-      if( getLastLPTime() > RWTime() )
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ----WARNING: LastLPTime is incorrect! " << getLastLPTime() << "----"  << endl;
-      }
-
       OutMessage->TimeOut   = 2;
       OutMessage->EventCode = RESULT | ENCODED;
       OutMessage->Sequence  = 0;
@@ -957,7 +950,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
    if( _transdataProtocol.getDidProcess() )
    {
-      storage = CTIDBG_new BYTE[30000];
+      storage = CTIDBG_new BYTE[50000];
       _transdataProtocol.retreiveData( storage );
 
       lp = ( CtiTransdataTracker::mark_v_lp *)storage;
@@ -990,12 +983,6 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                   pData->setTime( mTime );
                   pData->setType( pPoint->getType() );
                   
-                  if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-                  {
-                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                     dout << RWTime() << " ----Time Watcher --> " << mTime << endl;
-                  }
-
                   msgMulti->getData().insert( pData );
                   pData = NULL;
 
@@ -1044,7 +1031,6 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
          }
 
          //decrement the time to the interval previous to the current one...
-//         RWTime mTime( mTime.seconds() - lp->lpFormat[0] * 60 );
          RWTime tempTime( mTime.seconds() - ( lp->lpFormat[0] * 60 ) );
          mTime = tempTime;
       }
