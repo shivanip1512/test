@@ -1922,15 +1922,11 @@ public void jComboBoxCycleCountSndType_ActionPerformed(java.awt.event.ActionEven
 
 	if(LMProgramDirectGear.OPTION_DYNAMIC_SHED.compareTo(com.cannontech.common.util.StringUtils.removeChars( ' ', (String)getJComboBoxCycleCountSndType().getSelectedItem())) == 0)
 	{
-		getJComboBoxShedTimeDigits().setVisible(false);
-		getJComboBoxShedTimeUnits().setVisible(false);
-		getJLabelShedTime().setVisible(false);
+		getJLabelShedTime().setText("Max Shed Time   ");
 	}
 	else
 	{
-		getJComboBoxShedTimeDigits().setVisible(true);
-		getJComboBoxShedTimeUnits().setVisible(true);
-		getJLabelShedTime().setVisible(true);
+		getJLabelShedTime().setText("Fixed Shed Time");
 	}
 	
 	fireInputUpdate();
@@ -2118,9 +2114,9 @@ public void setValue(Object o)
 	//This will need to be altered once serverside supports the strings for fixed shed times and dynamic shed times
 	if(t.getMethodOptionType().compareTo(LMProgramDirectGear.OPTION_COUNT_DOWN) == 0)
 	{
-		getJComboBoxShedTimeDigits().setVisible(false);
-		getJComboBoxShedTimeUnits().setVisible(false);
-		getJLabelShedTime().setVisible(false);
+		getJLabelShedTime().setText("Max Shed Time   ");
+		com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( 
+			getJComboBoxShedTimeDigits(), getJComboBoxShedTimeUnits(), t.getShedTime().intValue() );
 	}
 	else
 	{
