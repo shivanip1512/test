@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/01/16 16:52:16 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/02/16 21:04:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -79,6 +79,7 @@ using namespace std;
 #include "expresscom.h"
 
 extern HCTIQUEUE* QueueHandle(LONG pid);
+extern CtiRouteManager    RouteManager;
 
 static void WriteMessageToPorter(OUTMESS *&OutMessage);
 static USHORT gsUID = 0;
@@ -113,6 +114,12 @@ static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
                 }
 
                 CtiDeviceBase *TransmitterDevice = itr_dev.value();
+
+                CtiRouteSPtr Route = TransmitterDevice->getRoute( TransmitterDevice->getRouteID() );
+                if( !Route || !Route->isDefaultRoute() )
+                {
+                    continue;
+                }
 
                 if(Port->getPortID() == TransmitterDevice->getPortID() && !TransmitterDevice->isInhibited())
                 {
@@ -198,6 +205,12 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                 }
 
                 CtiDeviceBase *TransmitterDevice = itr_dev.value();
+
+                CtiRouteSPtr Route = TransmitterDevice->getRoute( TransmitterDevice->getRouteID() );
+                if( !Route || !Route->isDefaultRoute() )
+                {
+                    continue;
+                }
 
                 if(Port->getPortID() == TransmitterDevice->getPortID() && !TransmitterDevice->isInhibited())
                 {
@@ -600,7 +613,7 @@ VOID FillerThread (PVOID Arg)
                 dout << RWTime() << " Sending Filler Messages " << endl;
             }
             /* Send filler messages */
-            PortManager.apply( applySendFiller, (void*)0 );
+            PortManager.apply( applySendFiller, (void*)0);
             PortManager.apply( applySendFillerPage, (void*)0 );
         }
     }
