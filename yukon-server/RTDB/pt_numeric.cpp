@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_numeric.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/30 16:30:24 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/03 13:22:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -312,11 +312,13 @@ DOUBLE CtiPointNumeric::computeValueForUOM(DOUBLE Value) const
 {
     int calcType = getPointUnits().getUnitMeasure().getCalcType();
 
+#if 0
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "trying to use " << calcType << endl;
     }
+#endif
 
     switch( calcType )
     {
