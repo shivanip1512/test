@@ -26,6 +26,7 @@ public final class CtiUtilities
 	
 	public static final String STRING_NONE = "(none)";
 	public static final String STRING_DEFAULT = "Default";
+	public static final String STRING_DASH_LINE = "  ----";
 
 	public static final Character trueChar = new Character('Y');
 	public static final Character falseChar = new Character('N');
