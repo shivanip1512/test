@@ -1,3 +1,12 @@
+<%@ page import="com.cannontech.database.data.lite.LiteDeviceTypeCommand"%> 
+<%@ page import="com.cannontech.database.data.lite.LiteCommand"%> 
+<%@ page import="com.cannontech.database.cache.functions.CommandFuncs"%>
+
+<%
+//set the deviceID of the YCBean
+ycBean.setDeviceID(deviceID);
+%>          
+
 	<SCRIPT language="JavaScript">
 	function disableButton(x)
 	{
@@ -5,37 +14,7 @@
 		document.commandForm.submit();
 	}
 	</SCRIPT>
-	
-<%
-//set the deviceID of the YCBean
-ycBean.setDeviceID(deviceID);
 
-
-	String[] defaultKeys = {
-		"Read Energy", 
-		"Read Energy (update)"
-	};
-	String[] defaultValues = {
-		"getvalue kwh", 
-		"getvalue kwh update"
-	};
-	//comands for disconnect meters
-	String[] disconnectKeys = {
-		"Read Energy", 
-		"Read Energy (update)", 
-		"Read Disconnect Status", 
-		"Disconnect Meter", 
-		"Connect Meter"
-	};
-	String[] disconnectValues = {
-		"getvalue kwh", 
-		"getvalue kwh update", 
-		"getstatus disconnect", 
-		"control disconnect", 
-		"control connect"
-	};
-	%>
-          
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "METER - CONTROL COMMANDS"; %>
@@ -64,21 +43,18 @@ ycBean.setDeviceID(deviceID);
 				<input id="referrer" type="hidden" name="REFERRER" value="<%= redirect %>">
               <tr> 
                 <td width="30%" class="SubtitleHeader" align="right">Execute Command :</td>
-                <td width="70%"> 
+                <td width="70%">
                   <select name="command">
-                  <%
+				  <%
                   	String tempCommand = ycBean.getCommandString().replaceAll("noqueue", "").trim();
-                    com.cannontech.common.util.KeysAndValues keysAndVals = 
-						new com.cannontech.common.util.KeysAndValues(defaultKeys, defaultValues);
-                    if( DeviceTypesFuncs.isDisconnectMCT(liteYukonPao.getType()))
-						keysAndVals = new com.cannontech.common.util.KeysAndValues(disconnectKeys, disconnectValues);
-
-					for (int i = 0; i < keysAndVals.getKeys().length; i++)
+					for (int i = 0; i < ycBean.getLiteDeviceTypeCommandsVector().size(); i++)
                   	{
-                  		out.print("<OPTION value='" + keysAndVals.getValues()[i] + "' ");
-                  	  	if( keysAndVals.getValues()[i].equalsIgnoreCase(tempCommand))
+					LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)ycBean.getLiteDeviceTypeCommandsVector().get(i);
+					LiteCommand lc = CommandFuncs.getCommand(ldtc.getCommandID());
+                  		out.print("<OPTION value='" + lc.getCommand() + "' ");
+                  	  	if( lc.getCommand().equalsIgnoreCase(tempCommand))
                   	  		out.print("SELECTED");
-               	  		out.println(">" + keysAndVals.getKeys()[i] + "</option>");
+               	  		out.println(">" + lc.getLabel() + "</option>");
                  	}
                   %>
 				  </select>
