@@ -56,6 +56,7 @@ function MM_popupMsg(msg) { //v1.0
 					<input type="hidden" name="action" value="SendOptOutNotification">
 					<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/General.jsp">
 					<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/OptOut.jsp">
+					<input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
                   <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
 <%
 	for (int i = 0; i < exitQuestions.getStarsExitInterviewQuestionCount(); i++) {

@@ -1,5 +1,8 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
+<%
+	boolean needMoreInfo = exitQuestions != null && exitQuestions.getStarsExitInterviewQuestionCount() > 0;
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -65,9 +68,13 @@ function validate(form) {
 			  <br>
 			  <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
 			    <input type="hidden" name="action" value="OptOutProgram">
-			    <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
-			    <input type="hidden" name="REDIRECT2" value="<%=request.getContextPath()%>/operator/Consumer/OptForm.jsp">
-			    <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/OptOut.jsp">
+			    <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/Programs.jsp">
+			    <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
+			    <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
+<% if (needMoreInfo) { %>
+			    <input type="hidden" name="<%= ServletUtils.NEED_MORE_INFORMATION %>">
+			    <input type="hidden" name="REDIRECT2" value="<%= request.getContextPath() %>/operator/Consumer/OptForm.jsp">
+<% } %>
                 <table width="350" border="1" cellspacing="0" cellpadding="5" bgcolor="#CCCCCC" align="center">
                   <tr> 
                     <td align="center"> 

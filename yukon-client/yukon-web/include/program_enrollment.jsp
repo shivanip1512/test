@@ -120,7 +120,11 @@ function confirmCancel() {
 				    <input type="hidden" name="action" value="ProgramSignUp">
 				    <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
 				    <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
-				    <input type="hidden" name="NeedMoreInfo" value="<%= needMoreInfo %>">
+				    <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
+<% if (needMoreInfo) { %>
+				    <input type="hidden" name="<%= ServletUtils.NEED_MORE_INFORMATION %>">
+				    <input type="hidden" name="REDIRECT2" value="<%= request.getContextPath() %>/operator/Consumer/Programs2.jsp">
+<% } %>
 				    <% if (inWizard) { %><input type="hidden" name="Wizard" value="true"><% } %>
                     <table border="1" cellspacing="0" cellpadding="3" width="95%">
                       <tr align = "center"> 

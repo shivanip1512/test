@@ -163,6 +163,7 @@ function validateTemp(e) {
 <% } %>
 				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?<%= thermNoStr %>">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?<%= thermNoStr %>">
+				<input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
 				<input type="hidden" name="mode" value="">
 				<input type="hidden" name="fan" value="">
 				<input type="hidden" name="RunProgram" value="false">

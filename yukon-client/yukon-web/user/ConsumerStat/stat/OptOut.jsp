@@ -1,4 +1,7 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%
+	boolean needMoreInfo = exitQuestions != null && exitQuestions.getStarsExitInterviewQuestionCount() > 0;
+%>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -65,9 +68,13 @@ function confirmSubmit(form) { //v1.0
               <cti:checkNoProperty propertyid="<%= ResidentialCustomerRole.HIDE_OPT_OUT_BOX %>"> 
               <form method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient" onSubmit="return confirmSubmit(this)">
                 <input type="hidden" name="action" value="OptOutProgram">
-                <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/General.jsp">
-                <input type="hidden" name="REDIRECT2" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/OptForm.jsp">
-                <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/OptOut.jsp">
+                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/user/ConsumerStat/stat/General.jsp">
+                <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
+                <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
+<% if (needMoreInfo) { %>
+                <input type="hidden" name="<%= ServletUtils.NEED_MORE_INFORMATION %>">
+                <input type="hidden" name="REDIRECT2" value="<%= request.getContextPath() %>/user/ConsumerStat/stat/OptForm.jsp">
+<% } %>
                 <table width="300" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                   <tr>
                     <td align="right" width="120">Start Date:</td>

@@ -137,8 +137,9 @@ function prepareSubmit(form) {
               </table>
               <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return prepareSubmit(this);">
 			    <input type="hidden" name="action" value="SetAddtEnrollInfo">
-			    <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
-			    <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
+			    <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/Programs.jsp">
+			    <input type="hidden" name="REFERRER" value="<%= request.getContextPath() %>/operator/Consumer/Programs.jsp">
+			    <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
 				<% if (inWizard) { %><input type="hidden" name="Wizard" value="true"><% } %>
                 <table width="80%" border="1" cellspacing="0" cellpadding="3">
                   <tr align="center"> 

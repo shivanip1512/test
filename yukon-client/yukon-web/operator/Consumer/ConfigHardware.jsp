@@ -114,6 +114,7 @@ function changeProgSelection(chkBox) {
 				<input type="hidden" name="SaveConfigOnly" value="false">
 				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
+				<input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
                 <table width="60%" border="1" cellspacing="0" cellpadding="3">
                   <tr> 
                     <td width="5%" class="HeaderCell">&nbsp; </td>
