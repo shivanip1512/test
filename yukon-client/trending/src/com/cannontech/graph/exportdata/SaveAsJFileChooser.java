@@ -7,20 +7,8 @@ package com.cannontech.graph.exportdata;
  */
 public class SaveAsJFileChooser extends javax.swing.JFileChooser implements com.cannontech.graph.GraphDefines, java.beans.PropertyChangeListener 
 {
-//	private int exportPane = 0;		//Trend Pane index.  Specifies which types are valid for each tab.
-		
-//	private String fileName = "";
-//	private static String extension = "";
 	private static java.io.File file = new java.io.File("C:/yukon/client/export/Chart.csv");
 	
-//	private static Object exportObject = null;
-	
-	//Object items that are only valid if csv exportting is selected.
-//	private static com.cannontech.graph.model.TrendModel trendModel = null;	
-//	private static String csvExportType = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;
-//	private static int csvColumnLength = 0;
-//	private static int csvRowLength = 0;
-
 	private ExportDataFile eDataFile = null;
 	/**
 	 * SaveAsJFileChooser constructor comment.
@@ -33,19 +21,19 @@ public class SaveAsJFileChooser extends javax.swing.JFileChooser implements com.
 	 * @param currentDirectory java.io.File
 	 */
 	
-	public SaveAsJFileChooser(String currentDirectory, int selectedPane, Object expObj, String newFileName)
+	public SaveAsJFileChooser(String currentDirectory, int viewType, Object expObj, String newFileName)
 	{
 		super(currentDirectory);
 		
-		eDataFile = new ExportDataFile(selectedPane, expObj, newFileName);
+		eDataFile = new ExportDataFile(viewType, expObj, newFileName);
 		initialize();
 	}
 
-	public SaveAsJFileChooser(String currentDirectory, int selectedPane, Object expObj, String newFileName, com.cannontech.graph.model.TrendModel tModel)
+	public SaveAsJFileChooser(String currentDirectory, int viewType, Object expObj, String newFileName, com.cannontech.graph.model.TrendModel tModel)
 	{
 		super(currentDirectory);
 
-		eDataFile = new ExportDataFile( selectedPane, expObj, newFileName, tModel);
+		eDataFile = new ExportDataFile( viewType, expObj, newFileName, tModel);
 		initialize();
 	}
 	
@@ -58,25 +46,23 @@ public class SaveAsJFileChooser extends javax.swing.JFileChooser implements com.
 	{
 		removeChoosableFileFilter(getFileFilter());
 			
-		if( eDataFile.getExportPane() == GRAPH_PANE)
+		if( eDataFile.getViewType() == com.cannontech.graph.model.TrendModelType.TABULAR_VIEW)
 		{
-//			eDataFile.setCSVExportMask( com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK);
+			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("html", "Web Page HTML"));
+			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("csv", "Comma Separated"));			
+		}
+		else if( eDataFile.getViewType() == com.cannontech.graph.model.TrendModelType.SUMMARY_VIEW)
+		{
+			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("html", "Web Page HTML"));			
+		}
+		else
+		{
 			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("csv", "Comma Separated"));
 			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("jpeg", "JPEG Image Format"));
 			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("png", "Portable Network Graphics"));			
 //			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("gif", "GIF Image Format"));
 //			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("svg", "Scalable Vector Graphics"));
 			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("pdf", "Portable Document Format"));
-		}
-		else if ( eDataFile.getExportPane() == TABULAR_PANE)
-		{
-//			eDataFile.setCSVExportMask( com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK);
-			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("html", "Web Page HTML"));
-			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("csv", "Comma Separated"));			
-		}
-		else if ( eDataFile.getExportPane() == SUMMARY_PANE)
-		{
-			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("html", "Web Page HTML"));			
 		}
 	
 		eDataFile.setExtension( ((com.cannontech.common.util.FileFilter)getFileFilter()).getFirstExt());
