@@ -1067,7 +1067,7 @@ public Object getValue(Object val) {
 		closeTime1 = new Integer( ((Integer)closeTime1SpinVal).intValue() );
 
 	Integer closeTime2 = null;
-	Object closeTime2SpinVal = getCloseTime1Spinner().getValue();
+	Object closeTime2SpinVal = getCloseTime2Spinner().getValue();
 	if( closeTime2SpinVal instanceof Long )
 		closeTime2 = new Integer( ((Long)closeTime2SpinVal).intValue() );
 	else if( closeTime2SpinVal instanceof Integer )
@@ -1080,7 +1080,9 @@ public Object getValue(Object val) {
 		point.getPointStatus().setControlInhibit( CtiUtilities.getFalseCharacter() );
 
 	if( (controlType.equals(com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.CONTROLTYPE_LATCH))) ||
-			(controlType.equals(com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.CONTROLTYPE_NORMAL))) )
+			(controlType.equals(com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.CONTROLTYPE_NORMAL))) ||
+			(controlType.equals(com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.CONTROLTYPE_SBO_LATCH))) ||
+			(controlType.equals(com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.CONTROLTYPE_SBO_PULSE))) )
 	{
 		point.getPointStatus().setControlOffset( controlPointOffset );
 		point.getPointStatus().setCloseTime1( closeTime1 );
