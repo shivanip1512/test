@@ -19,6 +19,7 @@ import com.cannontech.database.data.device.RTUBase;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.device.TCUBase;
+import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceScanRate;
@@ -1536,7 +1537,7 @@ public Object getValue(Object device)
 	java.util.Vector newScanRateVector = new java.util.Vector(3);
 
 
-	if( (val instanceof CCUBase) || (val instanceof TCUBase)
+	if( (val instanceof CCUBase) || (val instanceof TCUBase) || (val instanceof Series5Base)
 			  || (val instanceof RepeaterBase) ||
 			 (val instanceof PagingTapTerminal) )
 	{
@@ -1883,7 +1884,8 @@ public void setDeviceType(int type)
 			|| DeviceTypesFuncs.isTCU(type)
 			|| DeviceTypesFuncs.isRepeater(type)
 			|| (type == PAOGroups.TAPTERMINAL)
-			|| (type == PAOGroups.WCTP_TERMINAL) )
+			|| (type == PAOGroups.WCTP_TERMINAL)
+			|| (type == PAOGroups.SERIES_5_LMI) )
 	{
 		getPeriodicHealthCheckBox().setText("Periodic Health Check");
 
@@ -2035,7 +2037,8 @@ public void setValue(Object val)
 		|| (val instanceof TCUBase)
 		|| (val instanceof RepeaterBase)
 		|| (val instanceof PagingTapTerminal)
-		|| (val instanceof IEDMeter) )
+		|| (val instanceof IEDMeter)
+		|| (val instanceof Series5Base) )
 	{
 		if (dScanRate.length > 0)
 		{

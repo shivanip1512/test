@@ -35,6 +35,9 @@ public final static DeviceBase createDevice(int deviceType) {
 		case PAOGroups.TCU5500:
 			returnDevice = new TCU5500();
 			break;
+		case PAOGroups.SERIES_5_LMI:
+			returnDevice = new Series5LMI();
+			break;
 		case PAOGroups.LCU415:
 			returnDevice = new LCU415();
 			break;
