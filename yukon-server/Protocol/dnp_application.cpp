@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/07/19 13:41:51 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/07/25 20:53:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,27 +93,12 @@ void CtiDNPApplication::addObjectBlock( const CtiDNPObjectBlock &objBlock )
     //  ACH:  complain if generated+existing size > sizeof(OUTMESS.Buffer)
     objBlockLen = objBlock.getSerializedLen();
 
-    if( objBlockLen > 0 )
+    if( (objBlockLen > 0) &&
+        (objBlockLen < (DNP_APP_BUF_SIZE - _appReqBytesUsed)) )
     {
-        tmpbuf = new unsigned char[objBlockLen];
+        objBlock.serialize(_appReq.buf + _appReqBytesUsed);
 
-        if( tmpbuf != NULL )
-        {
-            objBlock.serialize(tmpbuf);
-
-            //  copy the data in
-            memcpy( &(_appReq.buf[_appReqBytesUsed]), tmpbuf, objBlockLen );
-            _appReqBytesUsed += objBlockLen;
-
-            delete tmpbuf;
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
+        _appReqBytesUsed += objBlockLen;
     }
     else
     {
@@ -281,7 +266,7 @@ bool CtiDNPApplication::hasInboundPoints( void )
 }
 
 
-void CtiDNPApplication::getInboundPoints( RWTPtrSlist< CtiMessage > &pointList )
+void CtiDNPApplication::getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList )
 {
     for( int i = 0; i < _inObjectBlocks.size(); i++ )
     {

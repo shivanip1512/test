@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/07/19 13:41:53 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/07/25 20:53:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,6 +22,7 @@
 #include "prot_dnp.h"
 #include "dnp_object_class.h"
 #include "dnp_object_binaryoutput.h"
+#include "dnp_object_analogoutput.h"
 
 CtiProtocolDNP::CtiProtocolDNP()
 {
@@ -61,7 +62,7 @@ void CtiProtocolDNP::setSlaveAddress( unsigned short address )
 }
 
 
-void CtiProtocolDNP::setCommand( DNPCommand command, XferPoint *points, int numPoints )
+void CtiProtocolDNP::setCommand( DNPCommand command, dnp_output_point *points, int numPoints )
 {
     unsigned char *tmp;
     int tmplen;
@@ -103,32 +104,26 @@ void CtiProtocolDNP::setCommand( DNPCommand command, XferPoint *points, int numP
             }
         case DNP_SetAnalogOut:
             {
-                /*
-                if( numPoints > 0 )
+                if( numPoints == 1 && points[0].type == AnalogOutput )
                 {
-                    dnp_point_descriptor control;
-                    dnp_analog_output_block_16_bit *aob;
-
                     _appLayer.setCommand(CtiDNPApplication::RequestDirectOp);
 
-                    control.group     = 41;  //  binary output
-                    control.variation =  2;  //  2
-                    control.qual_idx  =  1;  //  1 octet index
-                    control.qual_code =  7;  //  1 octect quantity
-                    control.qual_x    =  0;  //  unused bit
-                    control.idx_qty.qty_1oct.num = 1;
+                    CtiDNPObjectBlock dob(CtiDNPObjectBlock::ShortIndex_ShortQty);
+                    CtiDNPAnalogOutputBlock *aout = new CtiDNPAnalogOutputBlock(CtiDNPAnalogOutputBlock::AOB16Bit);
 
-                    control.idx_qty.qty_1oct.data[0] = (unsigned char)points->offset - 1;
+                    aout->setControl(points[0].aout.value);
 
-                    aob = (dnp_analog_output_block_16_bit *)(control.idx_qty.qty_1oct.data + 1);
+                    dob.addObjectIndex(aout, points[0].offset - 1);
 
-                    aob->status = 0;
-                    aob->value  = points->value;
-
-                    _appLayer.addData((unsigned char *)&control, 8);
+                    _appLayer.addObjectBlock(dob);
                 }
-                else*/
+                else
                 {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
                     command = DNP_Invalid;
                 }
 
@@ -136,22 +131,32 @@ void CtiProtocolDNP::setCommand( DNPCommand command, XferPoint *points, int numP
             }
         case DNP_SetDigitalOut:
             {
-                if( numPoints > 0 )
+                if( numPoints == 1 && points[0].type == DigitalOutput )
                 {
                     _appLayer.setCommand(CtiDNPApplication::RequestDirectOp);
 
                     CtiDNPObjectBlock dob(CtiDNPObjectBlock::ByteIndex_ByteQty);
+                    CtiDNPBinaryOutputControl *bout = new CtiDNPBinaryOutputControl(CtiDNPBinaryOutputControl::ControlRelayOutputBlock);
 
-                    CtiDNPBinaryOutputControl *crob = new CtiDNPBinaryOutputControl(CtiDNPBinaryOutputControl::ControlRelayOutputBlock);
+                    bout->setControlBlock(points[0].dout.on_time,
+                                          points[0].dout.off_time,
+                                          points[0].dout.count,
+                                          points[0].dout.control,
+                                          points[0].dout.queue,
+                                          points[0].dout.clear,
+                                          points[0].dout.trip_close);
 
-                    crob->setControlBlock(1500, 100, 1, CtiDNPBinaryOutputControl::PulseOn, false, false, CtiDNPBinaryOutputControl::Close);
-
-                    dob.addObjectIndex(crob, 1 /*points->offset*/);
+                    dob.addObjectIndex(bout, points[0].offset - 1);
 
                     _appLayer.addObjectBlock(dob);
                 }
                 else
                 {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
                     command = DNP_Invalid;
                 }
 
@@ -320,7 +325,7 @@ bool CtiProtocolDNP::hasInboundPoints( void )
 }
 
 
-void CtiProtocolDNP::getInboundPoints( RWTPtrSlist< CtiMessage > &pointList )
+void CtiProtocolDNP::getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList )
 {
     _appLayer.getInboundPoints(pointList);
 }

@@ -8,14 +8,20 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/07/19 13:41:52 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/07/25 20:53:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "dnp_object_binaryinput.h"
 #include "logger.h"
+
+
+CtiDNPBinaryInput::CtiDNPBinaryInput(int group, int variation) : CtiDNPObject(group, variation)
+{
+    _bi.raw = 0;
+}
 
 
 CtiDNPBinaryInput::CtiDNPBinaryInput(int variation) : CtiDNPObject(Group, variation)
@@ -152,7 +158,7 @@ int CtiDNPBinaryInput::getSerializedLen(void)
 }
 
 
-void CtiDNPBinaryInput::getPoint( RWTPtrSlist< CtiMessage > &objPoints )
+CtiPointDataMsg *CtiDNPBinaryInput::getPoint( void )
 {
     CtiPointDataMsg *tmpMsg;
 
@@ -205,18 +211,17 @@ void CtiDNPBinaryInput::getPoint( RWTPtrSlist< CtiMessage > &objPoints )
 
     }*/
 
-    tmpMsg = new CtiPointDataMsg(0, val, NormalQuality, StatusPointType);
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "Binary input, value " << val << endl;
     }
 
-    if( tmpMsg != NULL )
-    {
-        objPoints.append(tmpMsg);
-    }
+    //  the ID will be replaced by the offset by the object block, which will then be used by the
+    //    device to figure out the true ID
+    tmpMsg = new CtiPointDataMsg(0, val, NormalQuality, StatusPointType);
+
+    return tmpMsg;
 }
 
 

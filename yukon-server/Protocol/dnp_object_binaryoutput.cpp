@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/07/19 13:41:52 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/07/25 20:53:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -138,7 +138,7 @@ int CtiDNPBinaryOutput::getSerializedLen(void)
 }
 
 
-void CtiDNPBinaryOutput::getPoint( RWTPtrSlist< CtiMessage > &objPoints )
+CtiPointDataMsg *CtiDNPBinaryOutput::getPoint( void )
 {
     CtiPointDataMsg *tmpMsg;
 
@@ -191,18 +191,17 @@ void CtiDNPBinaryOutput::getPoint( RWTPtrSlist< CtiMessage > &objPoints )
 
     }*/
 
-    tmpMsg = new CtiPointDataMsg(0, val, NormalQuality, StatusOutputPointType);
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "Binary output, value " << val << endl;
     }
 
-    if( tmpMsg != NULL )
-    {
-        objPoints.append(tmpMsg);
-    }
+    //  the ID will be replaced by the offset by the object block, which will then be used by the
+    //    device to figure out the true ID
+    tmpMsg = new CtiPointDataMsg(0, val, NormalQuality, StatusPointType);
+
+    return tmpMsg;
 }
 
 

@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/07/19 13:41:54 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/07/25 20:53:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,12 +24,13 @@
 
 #include "dnp_application.h"
 #include "dnp_objects.h"
+#include "dnp_object_binaryoutput.h"
 #include "xfer.h"
 
 class IM_EX_PROT CtiProtocolDNP
 {
     enum   DNPCommand;
-    struct XferPoint;
+    struct dnp_output_point;
 
 private:
 
@@ -50,7 +51,7 @@ public:
     void setMasterAddress( unsigned short address );
     void setSlaveAddress( unsigned short address );
 
-    void setCommand( DNPCommand command, XferPoint *points = NULL, int numPoints = 0 );
+    void setCommand( DNPCommand command, dnp_output_point *points = NULL, int numPoints = 0 );
 
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
@@ -67,13 +68,38 @@ public:
     int recvInbound( INMESS *InMessage );
 
     bool hasInboundPoints( void );
-    void getInboundPoints( RWTPtrSlist< CtiMessage > &pointList );
+    void getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList );
 
-    struct XferPoint
+    enum DNPOutputPointType
     {
-        CtiPointType_t type;
-        unsigned int offset;
-        double value;
+        AnalogOutput,
+        DigitalOutput
+    };
+
+    struct dnp_output_point
+    {
+        union
+        {
+            struct dnp_ao_point
+            {
+                double value;
+            } aout;
+
+            struct dnp_do_point
+            {
+                CtiDNPBinaryOutputControl::ControlCode control;
+                CtiDNPBinaryOutputControl::TripClose trip_close;
+                unsigned long on_time;
+                unsigned long off_time;
+                bool queue;
+                bool clear;
+                unsigned char count;
+            } dout;
+        };
+
+        unsigned long offset;
+
+        DNPOutputPointType type;
     };
 
     enum DNPCommand

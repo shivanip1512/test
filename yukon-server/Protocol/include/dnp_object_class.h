@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/07/16 13:57:44 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/07/25 20:53:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,9 +41,9 @@ public:
         Group = 60
     };
 
-    int  restore(unsigned char *buf, int len);
+    int restore(unsigned char *buf, int len);
     int serialize(unsigned char *buf);
-    int  getSerializedLen(void);
+    int getSerializedLen(void);
 };
 
 #endif  //  #ifndef __DNP_OBJECT_CLASS_H__

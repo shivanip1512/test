@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/07/19 13:41:53 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/07/25 20:53:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,9 +85,9 @@ int CtiDNPObject::getVariation(void)
 }
 
 
-void CtiDNPObject::getPoint( RWTPtrSlist< CtiMessage > &objList )
+CtiPointDataMsg *CtiDNPObject::getPoint( void )
 {
-
+    return NULL;
 }
 
 
@@ -626,9 +626,10 @@ bool CtiDNPObjectBlock::hasPoints( void )
 }
 
 
-void CtiDNPObjectBlock::getPoints( RWTPtrSlist< CtiMessage > &pointList )
+void CtiDNPObjectBlock::getPoints( RWTPtrSlist< CtiPointDataMsg > &pointList )
 {
     CtiDNPObject *tmpObj;
+    CtiPointDataMsg *pMsg;
 
     switch( _group )
     {
@@ -649,7 +650,17 @@ void CtiDNPObjectBlock::getPoints( RWTPtrSlist< CtiMessage > &pointList )
             {
                 tmpObj = _objectList[i];
 
-                tmpObj->getPoint(pointList);
+                pMsg = tmpObj->getPoint();
+
+                if( pMsg != NULL )
+                {
+                    if( _objectIndices.size() < i )
+                    {
+                        pMsg->setId(_objectIndices[i]);
+                    }
+
+                    pointList.append(pMsg);
+                }
             }
         }
 

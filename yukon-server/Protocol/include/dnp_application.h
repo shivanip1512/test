@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/07/19 13:41:53 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/07/25 20:53:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -150,7 +150,7 @@ public:
     void eraseOutboundObjectBlocks( void );
     void eraseInboundObjectBlocks( void );
     bool hasInboundPoints( void );
-    void getInboundPoints( RWTPtrSlist< CtiMessage > &pointList );
+    void getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList );
 
     bool hasOutput( void );
 

@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/07/19 13:41:54 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/07/25 20:53:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,19 +42,23 @@ private:
     } _flags;
 
 protected:
+    CtiDNPAnalogOutput(int group, int variation);
+
     int restoreVariation(unsigned char *buf, int len, int variation);
     int serializeVariation(unsigned char *buf, int variation);
+
+    void setValue(long value);
 
 public:
     CtiDNPAnalogOutput(int variation);
 
-    enum Variation
+    enum variation
     {
         AO32Bit = 1,
         AO16Bit = 2
     };
 
-    enum
+    enum group
     {
         Group = 40
     };
@@ -63,27 +67,31 @@ public:
     virtual int serialize(unsigned char *buf);
     virtual int getSerializedLen(void);
 
-    void getPoint( RWTPtrSlist< CtiMessage > &objPoints );
+    virtual CtiPointDataMsg *getPoint( void );
 };
 
 
-class CtiDNPAnalogOutputBlock : public CtiDNPAnalogOutput
+class CtiDNPAnalogOutputBlock : public CtiDNPObject
 {
 private:
+    long _value;
+
     unsigned char _status;
 
 protected:
+int restoreVariation(unsigned char *buf, int len, int variation);
+    int serializeVariation(unsigned char *buf, int variation);
 
 public:
     CtiDNPAnalogOutputBlock(int variation);
 
-    enum Variation
+    enum variation
     {
         AOB32Bit = 1,
         AOB16Bit = 2
     };
 
-    enum
+    enum group
     {
         Group = 41
     };
@@ -91,6 +99,8 @@ public:
     int restore(unsigned char *buf, int len);
     int serialize(unsigned char *buf);
     int getSerializedLen(void);
+
+    void setControl(long value);
 };
 
 #endif  //  #ifndef __DNP_OBJECT_ANALOGOUTPUT_H__

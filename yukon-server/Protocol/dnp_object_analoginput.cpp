@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/07/19 13:41:52 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/07/25 20:53:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,13 @@
 
 
 //  ---  ANALOG INPUT  ---
+
+CtiDNPAnalogInput::CtiDNPAnalogInput(int group, int variation) : CtiDNPObject(group, variation)
+{
+    _value = 0;
+    _flags.raw = 0;
+}
+
 
 CtiDNPAnalogInput::CtiDNPAnalogInput(int variation) : CtiDNPObject(Group, variation)
 {
@@ -197,7 +204,7 @@ int CtiDNPAnalogInput::getSerializedLen(void)
 }
 
 
-void CtiDNPAnalogInput::getPoint( RWTPtrSlist< CtiMessage > &objPoints )
+CtiPointDataMsg *CtiDNPAnalogInput::getPoint( void )
 {
     CtiPointDataMsg *tmpMsg;
 
@@ -264,24 +271,24 @@ void CtiDNPAnalogInput::getPoint( RWTPtrSlist< CtiMessage > &objPoints )
 
     }*/
 
-    tmpMsg = new CtiPointDataMsg(0, val, NormalQuality, AnalogPointType);
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "Analog input, value " << val << endl;
     }
 
-    if( tmpMsg != NULL )
-    {
-        objPoints.append(tmpMsg);
-    }
+
+    //  the ID will be replaced by the offset by the object block, which will then be used by the
+    //    device to figure out the true ID
+    tmpMsg = new CtiPointDataMsg(0, val, NormalQuality, AnalogPointType);
+
+    return tmpMsg;
 }
 
 
 //  ---  ANALOG INPUT FROZEN  ---
 
-CtiDNPAnalogInputFrozen::CtiDNPAnalogInputFrozen(int variation) : CtiDNPAnalogInput(variation),
+CtiDNPAnalogInputFrozen::CtiDNPAnalogInputFrozen(int variation) : CtiDNPAnalogInput(Group, variation),
     _tof(CtiDNPTime::TimeAndDate)
 {
 

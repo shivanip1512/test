@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/07/19 13:41:54 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/07/25 20:53:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,7 +49,7 @@ public:
     virtual int serialize(unsigned char *buf);
     virtual int getSerializedLen(void);
 
-    void getPoint( RWTPtrSlist< CtiMessage > &objPoints );
+    CtiPointDataMsg *getPoint( void );
 };
 
 
