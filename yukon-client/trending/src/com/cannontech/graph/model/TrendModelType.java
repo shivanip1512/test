@@ -38,8 +38,6 @@ public final class TrendModelType
 	// Legend Display
 	public final static int LEGEND_LOAD_FACTOR_MASK = 0x0010;
 	public final static int LEGEND_MIN_MAX_MASK = 0x0020;
-		// Extra stuff.
-//	public final static int DWELL_LABELS_MASK = 0x0040;
 
 
 	public final static String getViewString(int viewID)
@@ -61,7 +59,13 @@ public final class TrendModelType
 				break;
 			case SHAPES_LINE_VIEW:
 				returnString =  SHAPES_LINE_VIEW_STRING;
-				break;			
+				break;		
+			case TABULAR_VIEW:
+				returnString = TABULAR_VIEW_STRING;
+				break;
+			case SUMMARY_VIEW:
+				returnString = SUMMARY_VIEW_STRING;
+				break;
 			default:
 				returnString = LINE_VIEW_STRING;
 		}
@@ -81,6 +85,10 @@ public final class TrendModelType
 			returnInt = STEP_VIEW;
 		else if (viewString.equalsIgnoreCase(SHAPES_LINE_VIEW_STRING))
 			returnInt = SHAPES_LINE_VIEW;
+		else if (viewString.equalsIgnoreCase(TABULAR_VIEW_STRING))
+			returnInt = TABULAR_VIEW;
+		else if (viewString.equalsIgnoreCase(SUMMARY_VIEW_STRING))
+			returnInt = SUMMARY_VIEW;
 		else
 			returnInt = LINE_VIEW;
 		
