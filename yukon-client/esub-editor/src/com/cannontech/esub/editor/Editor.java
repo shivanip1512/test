@@ -432,7 +432,7 @@ public class Editor extends JPanel {
 		//get this stuff loaded into the cache asap
 		DefaultDatabaseCache.getInstance().getAllDevices();
 		DefaultDatabaseCache.getInstance().getAllPoints();
-		DefaultDatabaseCache.getInstance().getAllStateGroups();
+		DefaultDatabaseCache.getInstance().getAllStateGroupMap();
 		
 //		fire up the db change listener
 		DefaultDatabaseCache.getInstance().addDBChangeListener(new DBChangeCaptain());	
