@@ -249,16 +249,15 @@ function removeAllMembers(form) {
 			String[] dispNames = ServerUtils.splitString(program.getStarsWebConfig().getAlternateDisplayName(), ",");
 			String progAlias = "";
 			if (dispNames.length > 0) {
-				progAlias += "(";
-				if (dispNames[0].trim().length() > 0) {
+				if (dispNames[0].length() > 0) {
 					progAlias += dispNames[0];
-					if (dispNames.length > 1 && dispNames[1].trim().length() > 0)
+					if (dispNames.length > 1 && dispNames[1].length() > 0)
 						progAlias += " / ";
 				}
-				if (dispNames.length > 1 && dispNames[1].trim().length() > 0)
+				if (dispNames.length > 1 && dispNames[1].length() > 0)
 					progAlias += dispNames[1];
-				progAlias += ")";
 			}
+			if (progAlias.length() > 0) progAlias = "(" + progAlias + ")";
 %>
                                         <tr> 
                                           <td width="15" class="TableCell">&nbsp;</td>
