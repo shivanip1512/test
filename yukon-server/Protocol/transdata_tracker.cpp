@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/01/20 19:06:01 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/01/28 16:50:13 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,50 +25,51 @@
 //=====================================================================================================================
 
 CtiTransdataTracker::CtiTransdataTracker():
-   _identify( "ID\r\n" ),
-   _revision( "II\r\n" ),
-   _demand_reset( "DR\r\n" ),
-   _search_scrolls( "SC\r\n" ),
-   _search_alts( "HC\r\n" ),
-   _search_comms( "CC\r\n" ),
-   _dump_demands( "RC\r\n" ),
-   _model_number( "MI\r\n" ),
-   _hold_display( "HD\r\n" ),
-   _set_display( "SD\r\n" ),
-   _change_display( "AD\r\n" ),
-   _scroll_display( "RS\r\n" ),
-   _get_clock( "GT\r\n" ),
-   _set_clock( "TI\r\n" ),
-   _alt_display( "ST\r\n" ),
-   _test_ram( "RM\r\n" ),
-   _diagnose( "DI\r\n" ),
-   _reset_fail( "RF\r\n" ),
-   _send_comm_buff( "BU\r\n" ),
-   _custom_regs( "SS\r\n" ),
-   _hang_up( "LO\r\n" ),
-   _interval( "IS\r\n" ),
-   _diag_status( "SA\r\n" ),
-   _channels_enabled( "DC\r\n" ),
-   _set_manual_mode( "CM\r\n" ),
-   _set_auto_mode( "CA\r\n" ),
-   _switch_in( "CI\r\n" ),
-   _switch_out( "CO\r\n" ),
-   _control_status( "CS\r\n" ),
-   _actuate( "SO\r\n" ),
-   _control_status_2( "OS\r\n" ),
-   _clear_eventlog( "RI\r\n" ),
-   _dump_eventlog_rec( "RV\r\n" ),
-   _dial_in_status( "DS\r\n" ),
-   _set_dial_in_time( "TC\r\n" ),
-   _get_dial_in_time( "GC\r\n" ),
-   _get_program_id( "PI\r\n" ),
-   _test( "\r\n" ),
+   _identify( "ID\r" ),
+   _revision( "II\r" ),
+   _demand_reset( "DR\r" ),
+   _search_scrolls( "SC\r" ),
+   _search_alts( "HC\r" ),
+   _search_comms( "CC\r" ),
+   _dump_demands( "RC\r" ),
+   _model_number( "MI\r" ),
+   _hold_display( "HD\r" ),
+   _set_display( "SD\r" ),
+   _change_display( "AD\r" ),
+   _scroll_display( "RS\r" ),
+   _get_clock( "GT\r" ),
+   _set_clock( "TI\r" ),
+   _alt_display( "ST\r" ),
+   _test_ram( "RM\r" ),
+   _diagnose( "DI\r" ),
+   _reset_fail( "RF\r" ),
+   _send_comm_buff( "BU\r" ),
+   _custom_regs( "SS\r" ),
+   _hang_up( "LO\r" ),
+   _interval( "IS\r" ),
+   _diag_status( "SA\r" ),
+   _channels_enabled( "DC\r" ),
+   _set_manual_mode( "CM\r" ),
+   _set_auto_mode( "CA\r" ),
+   _switch_in( "CI\r" ),
+   _switch_out( "CO\r" ),
+   _control_status( "CS\r" ),
+   _actuate( "SO\r" ),
+   _control_status_2( "OS\r" ),
+   _clear_eventlog( "RI\r" ),
+   _dump_eventlog_rec( "RV\r" ),
+   _dial_in_status( "DS\r" ),
+   _set_dial_in_time( "TC\r" ),
+   _get_dial_in_time( "GC\r" ),
+   _get_program_id( "PI\r" ),
+   _test( "\r\r\r" ),
    _good_return( "Ok\r\n?" ),
    _prot_message( "protocol" ),
    _retry( "Retry" ),
-   _dump( "XXXX\r\n" ),
+   _dump( "XXXX\r" ),
    _fail( "failed\r\n" ),
    _enter( "Enter" ),
+   _ems( "EMS" ),
    _lp( NULL ),
    _storage( NULL ),
    _meterData( NULL ),
@@ -277,7 +278,11 @@ bool CtiTransdataTracker::processComms( BYTE *data, int bytes )
          allGood = grabChannels( data, bytes );
 
       if( _lastState == doIntervalSize )
+      {
          allGood = grabFormat( data, bytes );
+         RWTime temp = timeAdjust( _lp->meterTime );  //we do this here because we have to have the format first!
+         _lp->meterTime = temp.seconds();
+      }
 
       if( _lastState == doTime )
          allGood = grabTime( data, bytes );
@@ -682,13 +687,28 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
       if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ meterTime " << t << endl;
+         dout << RWTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ meter time " << t << endl;
       }
 
       _lp->meterTime = t.seconds();
    }
 
    return( true );
+}
+//=====================================================================================================================
+//the point of this nonsense is to correct for the fact that the meter doesn't include a timestamp with loadprofile
+// data.  This means that we have to figure out how far off (forward) we are from the last interval we've passed and 
+// correct it...
+//=====================================================================================================================
+
+RWTime CtiTransdataTracker::timeAdjust( RWTime meterTime )
+{
+   int interval = _lp->lpFormat[0] * 60;
+   int pullOff = _lp->meterTime % interval;
+
+   RWTime corrected( _lp->meterTime - pullOff );
+
+   return( corrected );
 }
 
 //=====================================================================================================================

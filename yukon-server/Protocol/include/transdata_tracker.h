@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/01/16 22:45:45 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/01/28 16:50:13 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -80,6 +80,7 @@ class IM_EX_PROT CtiTransdataTracker
       int countChannels( void );
       int calcAcks( int recs );
       RWCString formatRecNums( int recs );
+      RWTime timeAdjust( RWTime meter );
 
    protected:
 
@@ -167,6 +168,7 @@ class IM_EX_PROT CtiTransdataTracker
       const char *const    _dump;
       const char *const    _fail;
       const char *const    _enter;
+      const char *const    _ems;
 
       RWCString            _password;
       RWCString            _tempSent;

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/01/20 19:06:01 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/01/28 16:50:13 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,7 +88,7 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
       if( getLastLPTime() > RWTime() )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ----WARNING: LastLPTime is incorrect!----" << endl;
+         dout << RWTime() << " ----WARNING: LastLPTime is incorrect! " << getLastLPTime() << "----"  << endl;
       }
 
       OutMessage->TimeOut   = 2;
@@ -984,8 +984,14 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                   pData->setValue( val );
                   pData->setQuality( qual );
                   pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
-                  pData->setMessageTime( mTime );
+                  pData->setTime( mTime );
                   pData->setType( pPoint->getType() );
+                  
+                  if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                  {
+                     CtiLockGuard<CtiLogger> doubt_guard(dout);
+                     dout << RWTime() << " ----Time Watcher --> " << mTime << endl;
+                  }
 
                   msgMulti->getData().insert( pData );
                   pData = NULL;
@@ -1003,7 +1009,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
                      pData->setValue( val );
                      pData->setQuality( qual );
-                     pData->setMessageTime( mTime );
+                     pData->setTime( mTime );
                      
                      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                      {
@@ -1022,6 +1028,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                   pPoint = NULL;
                }
             }
+            mTime -= lp->lpFormat[0] * 60;
          }
          
          if( firstLoop )
