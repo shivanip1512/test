@@ -29,12 +29,12 @@ public class SendControlOddsTask implements Runnable {
 	
 	private static final String subject = "Today's Odds For Control";
 	private static final String header =
-			"Program Enrollment                      Odds for Control\r\n" +
-			"============================================================\r\n";
-	private static final String blanks = "                                        ";
+			"Program Enrollment              Odds for Control\r\n" +
+			"================================================================\r\n";
+	private static final String blanks = "                                ";
 	private static final String footer = "To unsubscribe from the notification list, " +
 			"please go to http://www.wisewatts.com and login with your username and password. " +
-			"On the first page (or the \"General\" link), uncheck the notification box and click \"Submit\"";
+			"On the first page (or the \"General\" link), uncheck the notification box and click \"Submit\".";
 	
 	private int energyCompanyID = 0;
 	
