@@ -73,9 +73,9 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 	public String getProgressMsg() {
 		if (numToBeDeleted > 0) {
 			if (status == STATUS_FINISHED)
-				return numToBeDeleted + " hardwares deleted from inventory successfully";
+				return "The range " + snFrom + " to " + snTo + " has been deleted successfully";
 			else
-				return numSuccess + " of " + numToBeDeleted + " hardwares deleted from inventory";
+				return numSuccess + " of " + numToBeDeleted + " hardwares deleted";
 		}
 		else {
 			if (status == STATUS_FINISHED)
@@ -138,7 +138,7 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 					numSuccess++;
 				}
 				catch (TransactionException e) {
-					com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+					CTILogger.error( e.getMessage(), e );
 					hardwareSet.add( liteInv );
 					numFailure++;
 				}

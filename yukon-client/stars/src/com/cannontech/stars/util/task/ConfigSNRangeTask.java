@@ -82,13 +82,13 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 		if (numToBeConfigured > 0) {
 			if (configNow) {
 				if (status == STATUS_FINISHED)
-					return numToBeConfigured + " hardwares configured successfully";
+					return "The range " + snFrom + " to " + snTo + " has been configured successfully";
 				else
 					return numSuccess + " of " + numToBeConfigured + " hardwares configured";
 			}
 			else {
 				if (status == STATUS_FINISHED)
-					return numToBeConfigured + " hardware configuration saved to batch successfully";
+					return "Configuration for the range " + snFrom + " to " + snTo + " has been saved to batch successfully";
 				else
 					return numSuccess + " of " + numToBeConfigured + " hardware configuration saved to batch";
 			}

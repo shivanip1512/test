@@ -82,9 +82,9 @@ public class AddSNRangeTask implements TimeConsumingTask {
 	public String getProgressMsg() {
 		int numTotal = snTo - snFrom + 1;
 		if (status == STATUS_FINISHED)
-			return numSuccess + " hardwares added to inventory successfully";
+			return "The range " + snFrom + " to " + snTo + " has been added successfully";
 		else
-			return numSuccess + " of " + numTotal + " hardwares added to inventory";
+			return numSuccess + " of " + numTotal + " hardwares added";
 	}
 
 	/* (non-Javadoc)

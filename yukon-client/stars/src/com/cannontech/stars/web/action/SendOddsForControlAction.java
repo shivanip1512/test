@@ -43,56 +43,56 @@ public class SendOddsForControlAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
-        try {
-        	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-        	if (user == null) return null;
+		try {
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+			if (user == null) return null;
 			
 			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
 					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
 			
-        	String[] progIDs = req.getParameterValues( "ProgID" );
-        	String[] controlOdds = req.getParameterValues( "ControlOdds" );
-        	StarsSendOddsForControl sendCtrlOdds = new StarsSendOddsForControl();
+			String[] progIDs = req.getParameterValues( "ProgID" );
+			String[] controlOdds = req.getParameterValues( "ControlOdds" );
+			StarsSendOddsForControl sendCtrlOdds = new StarsSendOddsForControl();
         	
-        	if (progIDs != null) {
-        		for (int i = 0; i < progIDs.length; i++) {
-        			int progID = Integer.parseInt( progIDs[i] );
+			if (progIDs != null) {
+				for (int i = 0; i < progIDs.length; i++) {
+					int progID = Integer.parseInt( progIDs[i] );
         			
-        			for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
-        				StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
-        				for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
-        					StarsEnrLMProgram program = category.getStarsEnrLMProgram(k);
-        					if (program.getProgramID() == progID) {
-        						StarsEnrLMProgram enrProg = new StarsEnrLMProgram();
-        						enrProg.setProgramID( program.getProgramID() );
-        						ChanceOfControl ctrlOdds = (ChanceOfControl) StarsFactory.newStarsCustListEntry(
-        								ServletUtils.getStarsCustListEntryByID(
-        									selectionLists,
-        									com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL,
-        									Integer.parseInt(controlOdds[i])),
-        								ChanceOfControl.class );
-			        			enrProg.setChanceOfControl( ctrlOdds );
+					for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
+						StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
+						for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
+							StarsEnrLMProgram program = category.getStarsEnrLMProgram(k);
+							if (program.getProgramID() == progID) {
+								StarsEnrLMProgram enrProg = new StarsEnrLMProgram();
+								enrProg.setProgramID( program.getProgramID() );
+								ChanceOfControl ctrlOdds = (ChanceOfControl) StarsFactory.newStarsCustListEntry(
+										ServletUtils.getStarsCustListEntryByID(
+											selectionLists,
+											com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL,
+											Integer.parseInt(controlOdds[i])),
+										ChanceOfControl.class );
+								enrProg.setChanceOfControl( ctrlOdds );
 			        			
-			        			sendCtrlOdds.addStarsEnrLMProgram( enrProg );
-			        			break;
-        					}
-        				}
+								sendCtrlOdds.addStarsEnrLMProgram( enrProg );
+								break;
+							}
+						}
         				
-        				if (sendCtrlOdds.getStarsEnrLMProgramCount() == i+1) break;
-        			}
-        		}
-        	}
+						if (sendCtrlOdds.getStarsEnrLMProgramCount() == i+1) break;
+					}
+				}
+			}
         	
-        	StarsOperation operation = new StarsOperation();
-        	operation.setStarsSendOddsForControl( sendCtrlOdds );
-        	return SOAPUtil.buildSOAPMessage( operation );
-        }
-        catch (Exception e) {
-            CTILogger.error( e.getMessage(), e );
-            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
-        }
+			StarsOperation operation = new StarsOperation();
+			operation.setStarsSendOddsForControl( sendCtrlOdds );
+			return SOAPUtil.buildSOAPMessage( operation );
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
+		}
 
 		return null;
 	}
@@ -101,74 +101,74 @@ public class SendOddsForControlAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
-        StarsOperation respOper = new StarsOperation();
+		StarsOperation respOper = new StarsOperation();
         
-        try {
-            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+		try {
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-            if (user == null) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
+			if (user == null) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
             
-            int energyCompanyID = user.getEnergyCompanyID();
-            LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+			int energyCompanyID = user.getEnergyCompanyID();
+			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
-            ArrayList appCatList = energyCompany.getAllApplianceCategories();
-        	synchronized (appCatList) {
-	            StarsSendOddsForControl sendCtrlOdds = reqOper.getStarsSendOddsForControl();
-	            for (int i = 0; i < sendCtrlOdds.getStarsEnrLMProgramCount(); i++) {
-	            	StarsEnrLMProgram enrProg = sendCtrlOdds.getStarsEnrLMProgram(i);
-	            	boolean enrProgFound = false;
+			ArrayList appCatList = energyCompany.getAllApplianceCategories();
+			synchronized (appCatList) {
+				StarsSendOddsForControl sendCtrlOdds = reqOper.getStarsSendOddsForControl();
+				for (int i = 0; i < sendCtrlOdds.getStarsEnrLMProgramCount(); i++) {
+					StarsEnrLMProgram enrProg = sendCtrlOdds.getStarsEnrLMProgram(i);
+					boolean enrProgFound = false;
             		
-            		for (int j = 0; j < appCatList.size(); j++) {
-            			LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCatList.get(j);
-            			for (int k = 0; k < liteAppCat.getPublishedPrograms().length; k++) {
-            				LiteLMProgram liteProg = liteAppCat.getPublishedPrograms()[k];
-            				if (liteProg.getProgramID() == enrProg.getProgramID()) {
-            					liteProg.setChanceOfControlID( enrProg.getChanceOfControl().getEntryID() );
-            					enrProgFound = true;
+					for (int j = 0; j < appCatList.size(); j++) {
+						LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCatList.get(j);
+						for (int k = 0; k < liteAppCat.getPublishedPrograms().length; k++) {
+							LiteLMProgram liteProg = liteAppCat.getPublishedPrograms()[k];
+							if (liteProg.getProgramID() == enrProg.getProgramID()) {
+								liteProg.setChanceOfControlID( enrProg.getChanceOfControl().getEntryID() );
+								enrProgFound = true;
             					
-			        			com.cannontech.database.db.stars.LMProgramWebPublishing pubProg =
-			        					new com.cannontech.database.db.stars.LMProgramWebPublishing();
-			        			pubProg.setApplianceCategoryID( new Integer(liteAppCat.getApplianceCategoryID()) );
-			        			pubProg.setLMProgramID( new Integer(liteProg.getProgramID()) );
-			        			pubProg.setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
-			        			pubProg.setChanceOfControlID( new Integer(liteProg.getChanceOfControlID()) );
-			        			Transaction.createTransaction(Transaction.UPDATE, pubProg).execute();
+								com.cannontech.database.db.stars.LMProgramWebPublishing pubProg =
+										new com.cannontech.database.db.stars.LMProgramWebPublishing();
+								pubProg.setApplianceCategoryID( new Integer(liteAppCat.getApplianceCategoryID()) );
+								pubProg.setLMProgramID( new Integer(liteProg.getProgramID()) );
+								pubProg.setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
+								pubProg.setChanceOfControlID( new Integer(liteProg.getChanceOfControlID()) );
+								Transaction.createTransaction(Transaction.UPDATE, pubProg).execute();
 			        			
-            					break;
-            				}
-            			}
+								break;
+							}
+						}
             			
-            			if (enrProgFound) break;
-            		}
-            	}
+						if (enrProgFound) break;
+					}
+				}
             	
-            	// Create a new thread to get through all the accounts and send out emails
-            	new Thread( new SendControlOddsTask(energyCompanyID) ).start();
-            }
+				// Create a new thread to get through all the accounts and send out emails
+				new Thread( new SendControlOddsTask(energyCompanyID) ).start();
+			}
             
-            StarsSuccess success = new StarsSuccess();
-            success.setDescription( "Odds for control updated successfully" );
+			StarsSuccess success = new StarsSuccess();
+			success.setDescription( "Odds for control sent out successfully" );
             
-            respOper.setStarsSuccess( success );
-            return SOAPUtil.buildSOAPMessage( respOper );
-        }
-        catch (Exception e) {
-            CTILogger.error( e.getMessage(), e );
+			respOper.setStarsSuccess( success );
+			return SOAPUtil.buildSOAPMessage( respOper );
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
             
-            try {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot update control notification") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
-            catch (Exception e2) {
-            	CTILogger.error( e2.getMessage(), e2 );
-            }
-        }
+			try {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to send out odds for control") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
+			catch (Exception e2) {
+				CTILogger.error( e2.getMessage(), e2 );
+			}
+		}
 
 		return null;
 	}
@@ -177,8 +177,8 @@ public class SendOddsForControlAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#parse(SOAPMessage, SOAPMessage, HttpSession)
 	 */
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
-        try {
-            StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
+		try {
+			StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
@@ -189,7 +189,7 @@ public class SendOddsForControlAction implements ActionBase {
 			if (operation.getStarsSuccess() == null)
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-        	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
 					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
@@ -213,13 +213,14 @@ public class SendOddsForControlAction implements ActionBase {
 				}
 			}
 			
-            return 0;
-        }
-        catch (Exception e) {
-            CTILogger.error( e.getMessage(), e );
-        }
+			session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, operation.getStarsSuccess().getDescription() );
+			return 0;
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
 
-        return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 
 }

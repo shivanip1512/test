@@ -87,7 +87,7 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 	public String getProgressMsg() {
 		if (numToBeUpdated > 0) {
 			if (status == STATUS_FINISHED)
-				return numToBeUpdated + " hardwares updated successfully";
+				return "The range " + snFrom + " to " + snTo + " has been updated successfully";
 			else
 				return numSuccess + " of " + numToBeUpdated + " hardwares updated";
 		}
