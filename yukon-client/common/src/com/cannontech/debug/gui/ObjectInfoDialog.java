@@ -330,7 +330,8 @@ public void showDialog( final Object obj )
 	{
 		public void run()
 		{
-			java.util.Vector data = new java.util.Vector(obj.getClass().getMethods().length);
+			java.util.Vector data = new java.util.Vector(
+				obj == null ? 0 : obj.getClass().getMethods().length );
 
 			if( obj != null )
 			{
