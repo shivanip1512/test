@@ -22,7 +22,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.TableColumn;
 
@@ -2728,8 +2727,11 @@ private void jMenutItemTag_Modify( ActionEvent e )
 	d.addRowEditorDialogListener( panel );
 	
 	d.setLocationRelativeTo( this );		
-	d.setModal( true );		
+	d.setModal( true );
+
+	getTdcClient().addMessageListener( panel );
 	d.show();
+	getTdcClient().removeMessageListener( panel );
 }
 
 
@@ -3298,7 +3300,12 @@ protected void processDBChangeMsg( DBChangeMsg msg )
 					new java.util.EventObject( this ) );		
 	}
 	
+	//refresh the ALL models data
+	getTableDataModel().fireTableRowsUpdated( 
+				0,
+				getTableDataModel().getRowCount() );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/6/00 1:51:30 PM)

@@ -360,7 +360,7 @@ public void clearSystemViewerDisplay( boolean forceRepaint )
 		}	
 
 		if( forceRepaint )
-			forcePaintTableDataChanged();
+			fireTableDataChanged();
 	}
 }
 /**
@@ -499,31 +499,12 @@ private void deleteRowFromDataBase( long pointid )
  * Version: <version>
  * @param value boolean
  */
-public void forcePaintTableDataChanged() 
-{
-	fireTableDataChanged();	
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/23/00 2:18:04 PM)
- * Version: <version>
- * @param value boolean
- */
-public void forcePaintTableRowDeleted( int rowLocation )
-{	
-	fireTableRowsDeleted( rowLocation, rowLocation );
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/23/00 2:18:04 PM)
- * Version: <version>
- * @param value boolean
- */
 public void forcePaintTableRowUpdated( int minLocation, int maxLocation )
 {
 	fireTableRowsUpdated( minLocation, maxLocation );
 
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (11/10/00 11:20:46 AM)
@@ -1462,7 +1443,7 @@ public synchronized void makeTable ( )
 	if( blankPoints != null && blankPoints.size() > 0 )
 		insertBlankLines();
 
-	forcePaintTableDataChanged(); // refresh the table model
+	fireTableDataChanged(); // refresh the table model
 	
 	TDCMainFrame.messageLog.addMessage("Table reinited", MessageBoxFrame.INFORMATION_MSG );
 	exceededMaxMsg = true;	
@@ -1534,7 +1515,11 @@ public synchronized void processPointDataReceived( PointData point )
 
 	}
 	
-	
+	//refresh the the changed row
+	if( rowLocation >= 0 )
+		fireTableRowsUpdated( 
+			rowLocation,
+			rowLocation + 1 );	
 }
 
 private boolean checkFilter( Signal signal )
@@ -1583,7 +1568,7 @@ public synchronized void processSignalReceived( Signal signal )
 		return;
 	}
 
-
+	int rNum = -1;
 	if( Display.isReadOnlyDisplay(getCurrentDisplay().getDisplayNumber()) )  
 	{
 		//just add the raw columns to the display
@@ -1597,7 +1582,7 @@ public synchronized void processSignalReceived( Signal signal )
 		// set all fields that overlap in the PointData() and Signal() data structures
 		if( getPointValue(getRowNumber(signal)) != null )
 		{
-			int rNum = getRowNumber(signal);
+			rNum = getRowNumber(signal);
 
 			//the new row has been added, lets set its signl instance
 			getPointValue(rNum).updateSignal( signal );
@@ -1612,7 +1597,7 @@ public synchronized void processSignalReceived( Signal signal )
 	else  //handle EVENTS here (these signals should never be in our table)
 	{
 		// find the row number that has this pointid
-		int rNum = getRowNumber(signal.getPointID());
+		rNum = getRowNumber(signal.getPointID());
 		PointValues ptVal = getPointValue(rNum);
 
 
@@ -1634,6 +1619,12 @@ public synchronized void processSignalReceived( Signal signal )
 
 	if( !checkFilter(signal) )
 		removeRow( getRowNumber(signal) );
+
+	//refresh the the changed row
+	if( rNum >= 0 )
+		fireTableRowsUpdated( 
+			rNum,
+			rNum + 1 );
 }
 
 /**
@@ -1646,7 +1637,7 @@ public void removeAllRows()
 {
 	getRows().removeAllElements();
 	
-	forcePaintTableDataChanged();
+	fireTableDataChanged();
 }
 /**
  * Insert the method's description here.
@@ -1669,20 +1660,20 @@ private void removeRow( int rowNumber )
 	pointValues.removeElementAt( rowNumber );
 	getRows().removeElementAt( rowNumber );
 
-	forcePaintTableRowDeleted( rowNumber );
+	fireTableRowsDeleted( rowNumber, rowNumber );
 
 	//if there is a blank row below this row, remove it
 	if( isRowSelectedBlank(rowNumber) )
 	{
 		removeRow( rowNumber );
-		forcePaintTableRowDeleted( rowNumber );
+		fireTableRowsDeleted( rowNumber, rowNumber );
 	}
 	
 	//if there is a blank row above this row, remove it
 	if( isRowSelectedBlank(rowNumber-1) )
 	{
 		removeRow( rowNumber-1 );
-		forcePaintTableRowDeleted( rowNumber-1 );
+		fireTableRowsDeleted( rowNumber-1, rowNumber-1 );
 	}
 	
 }
@@ -1713,7 +1704,7 @@ public void reset()
 
 	setCurrentDisplay( Display.UNKNOWN_DISPLAY );
 
-	forcePaintTableDataChanged();
+	fireTableDataChanged();
 }
 /**
  * Insert the method's description here.

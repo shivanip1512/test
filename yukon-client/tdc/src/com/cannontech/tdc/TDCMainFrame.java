@@ -9,6 +9,9 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.clientutils.AlarmFileWatchDog;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.tdc.removedisplay.RemoveDisplayDialog;
 import com.cannontech.tdc.removedisplay.RemoveDisplayPanel;
@@ -53,7 +56,7 @@ import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.tdc.spawn.TDCMainFrameSpawnListener;
 import com.cannontech.tdc.data.Display;
 
-public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.tdc.spawn.TDCMainFrameSpawnListener, TDCMainPanelListener, com.cannontech.tdc.toolbar.AlarmToolBarListener, java.awt.event.ActionListener, java.awt.event.ItemListener, java.util.Observer {
+public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.tdc.spawn.TDCMainFrameSpawnListener, TDCMainPanelListener, com.cannontech.tdc.toolbar.AlarmToolBarListener, java.awt.event.ActionListener, java.awt.event.ItemListener, java.util.Observer, MessageListener {
 	private Clock ticker = null;
 	private transient javax.swing.JDialog textSearchDialog = null;
 	protected transient TDCMainFrameSpawnListener spawnTDCEventMulticaster = null;
@@ -2693,7 +2696,8 @@ public TDCClient getTdcClient()
                         getMainPanel().getTableDataModel().getAllPointIDs(), 
                         this );
 
-
+		tdcClient.addMessageListener( this );
+		
 		if( getMainPanel() != null )
 			getMainPanel().setTdcClient( tdcClient );
 
@@ -4482,14 +4486,20 @@ public void update(java.util.Observable observ, Object obj)
 			getTdcClient().reRegister( getMainPanel().getTableDataModel().getAllPointIDs() );
 	}
 
-   if( obj instanceof com.cannontech.message.dispatch.message.Signal )
-   {
-      com.cannontech.message.dispatch.message.Signal sig =
-         (com.cannontech.message.dispatch.message.Signal)obj;
+}
 
-      getAlarmHandler().handleSignal( sig );
+public void messageReceived( MessageEvent e )
+{
+	Message in = e.getMessage();
 
-   } //end Signal handler
+	if( in instanceof com.cannontech.message.dispatch.message.Signal )
+	{
+		com.cannontech.message.dispatch.message.Signal sig =
+			(com.cannontech.message.dispatch.message.Signal)in;
+
+		getAlarmHandler().handleSignal( sig );
+
+	} //end Signal handler
 
 }
 

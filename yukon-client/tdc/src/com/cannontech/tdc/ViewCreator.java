@@ -256,7 +256,7 @@ public class ViewCreator
 			tableModel.addBlankRowIfNeeded();
 		}
 	
-		tableModel.forcePaintTableDataChanged(); // is actually fireTableDataChanged();
+		tableModel.fireTableDataChanged(); // is actually fireTableDataChanged();
 	
 		return pageCount;
 	}
@@ -409,7 +409,7 @@ public class ViewCreator
 			tableModel.addBlankRowIfNeeded();
 		}
 	
-		tableModel.forcePaintTableDataChanged(); // is actually fireTableDataChanged();
+		tableModel.fireTableDataChanged(); // is actually fireTableDataChanged();
 	
 		return pageCount;
 	}
@@ -517,7 +517,7 @@ public class ViewCreator
 
 		}
 	
-		tableModel.forcePaintTableDataChanged(); // is actually fireTableDataChanged();
+		tableModel.fireTableDataChanged(); // is actually fireTableDataChanged();
 	
 		return pageCount;
 	}
@@ -650,7 +650,7 @@ public class ViewCreator
 			tableModel.addBlankRowIfNeeded();
 		}
 	
-		tableModel.forcePaintTableDataChanged(); // is actually fireTableDataChanged();
+		tableModel.fireTableDataChanged(); // is actually fireTableDataChanged();
 	
 		return pageCount;
 	}
@@ -785,7 +785,7 @@ public class ViewCreator
 			tableModel.addBlankRowIfNeeded();
 		}
 	
-		tableModel.forcePaintTableDataChanged(); // is actually fireTableDataChanged();
+		tableModel.fireTableDataChanged(); // is actually fireTableDataChanged();
 	
 		return pageCount;
 	}

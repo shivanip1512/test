@@ -21,10 +21,11 @@ public class TDCClient extends com.cannontech.clientutils.ClientBase
 {
 	// points we want to register for
 	private Long[] pointIDArray = null;
-	private boolean lastReceptionValid = false;
 	
 	private TDCMainPanel caller = null;
 	private Display2WayDataAdapter callerModel = null;
+	
+
 /**
  * TDCClient constructor comment.
  */
@@ -109,14 +110,7 @@ private PointRegistration getPtRegMsg()
 
 	return pReg;
 }
-/**
- * Insert the method's description here.
- * Creation date: (8/10/00 2:44:39 PM)
- * @return boolean
- */
-public boolean isLastReceptionValid() {
-	return lastReceptionValid;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/22/00 3:02:24 PM)
@@ -132,23 +126,8 @@ public void receivedDBChangMsg( DBChangeMsg msg )
 	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage((com.cannontech.message.dispatch.message.DBChangeMsg)msg);
 
 	caller.processDBChangeMsg( msg );
-		
-	lastReceptionValid = true;
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/22/00 3:02:24 PM)
- */
-public void receivedNullMsg()
-{
-	if( lastReceptionValid )
-	{
-		//callerModel.forcePaintTableDataChanged();
-		callerModel.fireTableRowsUpdated( 0, callerModel.getRowCount() );
-	}
 
-	lastReceptionValid = false;	
-}
 /**
  * Insert the method's description here.
  * Creation date: (3/22/00 3:02:24 PM)
@@ -164,10 +143,8 @@ public void receivedPointData( PointData point )
 		" Display = " + display );
 
 	callerModel.processPointDataReceived( point );
-
-
-	lastReceptionValid = true;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/22/00 3:02:24 PM)
@@ -184,8 +161,6 @@ public void receivedSignal( Signal signal )
 		",Display=" + display );
 	
 	callerModel.processSignalReceived( signal );
-
-	lastReceptionValid = true;
 }
 
 /**
