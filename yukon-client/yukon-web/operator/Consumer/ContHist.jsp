@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	String referrer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
@@ -74,13 +74,13 @@
         <tr> 
           <td  valign="top" width="101"> 
             <% String pageName = "ContHist.jsp"; %>
-            <%@ include file="Nav.jsp" %>
+            <%@ include file="include/Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_CONTROL_HISTORY, "PROGRAMS - CONTROL HISTORY"); %>
-              <%@ include file="InfoSearchBar.jsp" %>
+              <%@ include file="include/InfoSearchBar.jsp" %>
              
               <br>
             </div>

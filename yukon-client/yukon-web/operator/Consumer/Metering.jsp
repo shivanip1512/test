@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 
 <SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
@@ -64,7 +64,7 @@
 			<form>
 			<td  valign="top" width="101"><br>
 			<% String pageName = "Metering.jsp"; %>
-			<%@ include file="Nav.jsp" %>
+			<%@ include file="include/Nav.jsp" %>
 			</td>
 			</form>
 			<td width="1" bgcolor="#000000"></td>

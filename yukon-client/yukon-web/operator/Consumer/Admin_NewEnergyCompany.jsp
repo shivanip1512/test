@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <%	if (!AuthFuncs.checkRoleProperty(lYukonUser, com.cannontech.roles.operator.AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY))
 	{

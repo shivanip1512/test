@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
 <head>
@@ -76,13 +76,13 @@ function checkCallNo(form) {
         <tr> 
           <td  valign="top" width="101">
 		  <% String pageName = "Calls.jsp"; %>
-          <%@ include file="Nav.jsp" %>
+          <%@ include file="include/Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
               <% String header = "ACCOUNT - CALL TRACKING"; %>
-              <%@ include file="InfoSearchBar.jsp" %>
+              <%@ include file="include/InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
               <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">

@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
 <head>
@@ -50,11 +50,11 @@
         <tr> 
           <td  valign="top" width="101"> 
             <% String pageName = "Privileges.jsp"; %>
-            <%@ include file="Nav.jsp" %>
+            <%@ include file="include/Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center"><% String header = "ADMINISTRATION - CUSTOMER PRIVILEGES"; %><%@ include file="InfoSearchBar.jsp" %> 
+            <div align="center"><% String header = "ADMINISTRATION - CUSTOMER PRIVILEGES"; %><%@ include file="include/InfoSearchBar.jsp" %> 
             
               <p align="center" class="Subtext">Select which of the following functionality this 
                 customer will have access to:</p>

@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
@@ -286,14 +286,14 @@ function prepareSubmit() {
         <tr> 
           <td  valign="top" width="101">
 		  <% String pageName = "Thermostat2.jsp?InvNo=" + invNo; %>
-          <%@ include file="Nav.jsp" %>
+          <%@ include file="include/Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           
 		  <td width="657" valign="top" bgcolor="#FFFFFF" bordercolor="#333399"> 
             <div align="center">
               <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_THERM_MANUAL, "THERMOSTAT - MANUAL"); %>
-              <%@ include file="InfoSearchBar.jsp" %>
+              <%@ include file="include/InfoSearchBar.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			</div>

@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <%	if (!AuthFuncs.checkRoleProperty(lYukonUser, com.cannontech.roles.operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
 		|| ecSettings == null) {
 		response.sendRedirect("../Operations.jsp"); return;
@@ -146,7 +146,7 @@ function newFAQSubject(form) {
               
             <div align="center"> 
               <% String header = "ADMINISTRATION - CUSTOMER FAQS"; %>
-              <%@ include file="InfoSearchBar2.jsp" %>
+              <%@ include file="include/InfoSearchBar2.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
               <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">

@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
@@ -352,7 +352,7 @@ function prepareSubmit(form) {
               
             <div align="center">
               <% String header = "ADMINISTRATION - APPLIANCE CATEGORY"; %>
-              <%@ include file="InfoSearchBar2.jsp" %>
+              <%@ include file="include/InfoSearchBar2.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
             </div>

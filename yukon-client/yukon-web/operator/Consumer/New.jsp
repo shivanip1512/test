@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <%
 	StarsNewCustomerAccount newAccount = (StarsNewCustomerAccount)
 			user.getAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT );
@@ -138,7 +138,7 @@ function clearPage() {
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" bgcolor="#FFFFFF" valign = "top" align = "center"> 
             <% String header = "NEW SIGNUP"; %>
-            <%@ include file="InfoSearchBar2.jsp" %>
+            <%@ include file="include/InfoSearchBar2.jsp" %>
             <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
             <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onSubmit="return validate(this)">
               <input type="hidden" name="action" value="NewCustAccount">

@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
 <head>
@@ -71,10 +71,10 @@ function showAdditionalAppInfo(index)
           <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"><% String pageName = "CreateAppliances.jsp"; %><%@ include file="Nav.jsp" %></td>
+          <td  valign="top" width="101"><% String pageName = "CreateAppliances.jsp"; %><%@ include file="include/Nav.jsp" %></td>
           <td width="1" bgcolor="#000000"><img src=""../Images/Icons/VerticalRule.gif"" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div class = "MainText" align="center"><% String header = "CREATE NEW APPLIANCE"; %><%@ include file="InfoSearchBar.jsp" %>
+            <div class = "MainText" align="center"><% String header = "CREATE NEW APPLIANCE"; %><%@ include file="include/InfoSearchBar.jsp" %>
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
            
               <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">

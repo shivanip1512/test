@@ -66,12 +66,12 @@ function MM_popupMsg(msg) { //v1.0
         <tr> 
           <td  valign="top" width="101">
 		  <% String pageName = "ChangeForm.jsp"; %>
-          <%@ include file="Nav.jsp" %>
+          <%@ include file="include/Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF" align = "center"> 
       		  <% String header = "CHANGE PROGRAM"; %>
-              <%@ include file="InfoSearchBar.jsp" %> 
+              <%@ include file="include/InfoSearchBar.jsp" %> 
           
             <p><span class="MainText">Please complete the following form to change the program:</span> </p>
             <hr width = "90%">

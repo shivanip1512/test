@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -56,7 +56,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "PROGRAMS - " + AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL, "ODDS FOR CONTROL"); %>
-              <%@ include file="InfoSearchBar2.jsp" %>
+              <%@ include file="include/InfoSearchBar2.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
              
               <div align="center"><span class="MainText">Check the appropriate 

@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
 <head>
@@ -50,11 +50,11 @@
         <tr> 
           <td  valign="top" width="101">
 		  <% String pageName = "SOHistory.jsp"; %>
-          <%@ include file="Nav.jsp" %>
+          <%@ include file="include/Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
-            <div align="center"><% String header = "WORK ORDERS - SERVICE HISTORY"; %><%@ include file="InfoSearchBar.jsp" %></div>
+            <div align="center"><% String header = "WORK ORDERS - SERVICE HISTORY"; %><%@ include file="include/InfoSearchBar.jsp" %></div>
             <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
               <tr> 
                 <td width="300" valign="top" bgcolor="#FFFFFF"> 

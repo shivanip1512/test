@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
@@ -79,14 +79,14 @@ function selectInventory(form) {
 <%	if (inWizard) out.print("&nbsp;");
 	else { %>
 		    <% String pageName = "SerialNumber.jsp"; %>
-			<%@ include file="Nav.jsp" %>
+			<%@ include file="include/Nav.jsp" %>
 <%	} %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div class = "MainText" align="center">
               <% String header = "CREATE NEW HARDWARE"; %>
-              <%@ include file="InfoSearchBar.jsp" %>
+              <%@ include file="include/InfoSearchBar.jsp" %>
 			  
               <p>&nbsp;</p>
 			  <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="return validate(this)">

@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <%	if (!AuthFuncs.checkRoleProperty(lYukonUser, com.cannontech.roles.operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
 		|| ecSettings == null) {
@@ -119,7 +119,7 @@ function editAddress(form) {
               
             <div align="center">
               <% String header = "ADMINISTRATION - SERVICE COMPANY"; %>
-              <%@ include file="InfoSearchBar2.jsp" %>
+              <%@ include file="include/InfoSearchBar2.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
             </div>

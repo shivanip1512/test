@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
 <head>
@@ -50,7 +50,7 @@
         <tr> 
           <td  valign="top" width="101">
 		  <% String pageName = "ThermSchedule.jsp"; %>
-          <%@ include file="Nav.jsp" %>
+          <%@ include file="include/Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           
@@ -58,7 +58,7 @@
               
             <div align="center"> 
               <% String header = "THERMOSTAT - SCHEDULE<BR>HINTS AND DETAILS"; %>
-              <%@ include file="InfoSearchBar.jsp" %>
+              <%@ include file="include/InfoSearchBar.jsp" %>
                 <table width="80%" border="1" cellspacing = "0" cellpadding = "2">
                 <tr> 
                     <td align = "center"> 

@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	if (appliances.getStarsApplianceCount() == 0) {
@@ -117,11 +117,11 @@ function deleteAppliance(form) {
         <tr> 
           <td  valign="top" width="101"> 
             <% String pageName = "Appliance.jsp?AppNo=" + appNo; %>
-            <%@ include file="Nav.jsp" %>
+            <%@ include file="include/Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center"><% String header = "APPLIANCES"; %> <%@ include file="InfoSearchBar.jsp" %>
+            <div align="center"><% String header = "APPLIANCES"; %> <%@ include file="include/InfoSearchBar.jsp" %>
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			
               <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">

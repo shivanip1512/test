@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
 <head>
@@ -66,11 +66,11 @@ document.location = "Update.jsp";
           <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"><% String pageName = "PrintExport.jsp"; %><%@ include file="Nav.jsp" %> </td>
+          <td  valign="top" width="101"><% String pageName = "PrintExport.jsp"; %><%@ include file="include/Nav.jsp" %> </td>
           <td width="1" bgcolor="#000000"><img src=""../Images/Icons/VerticalRule.gif"" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
-              <% String header = "PRINT/EXPORT"; %><%@ include file="InfoSearchBar.jsp" %>
+              <% String header = "PRINT/EXPORT"; %><%@ include file="include/InfoSearchBar.jsp" %>
               <form name ="MForm" action = "">
                 <table width="53%" border="1" height="189" cellspacing = "0">
                   <tr bgcolor="#CCCCCC"> 

@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
 <head>
@@ -64,12 +64,12 @@ function MM_popupMsg(msg) { //v1.0
         <tr> 
           <td  valign="top" width="101">
 		  <% String pageName = "OptForm.jsp"; %>
-          <%@ include file="Nav.jsp" %>
+          <%@ include file="include/Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF" align = "center"> 
       		  <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_OPT_OUT, "OPT OUT"); %>
-              <%@ include file="InfoSearchBar.jsp" %> 
+              <%@ include file="include/InfoSearchBar.jsp" %> 
           
             <p><span class="MainText">Please complete the following form to opt out of the program:</span> </p>
             <hr width = "90%">

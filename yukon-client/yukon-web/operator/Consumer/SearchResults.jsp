@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -69,7 +69,7 @@ function selectAccount(accountID) {
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
               
-            <div align="center"><% String header = "SEARCH RESULTS"; %><%@ include file="InfoSearchBar2.jsp" %>
+            <div align="center"><% String header = "SEARCH RESULTS"; %><%@ include file="include/InfoSearchBar2.jsp" %>
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %></div>
 <%
 	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse) user.getAttribute(ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS);
