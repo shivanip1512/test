@@ -697,7 +697,7 @@ CtiCommandMsg* CtiLMGroupBase::createLatchingRequestMsg(LONG rawState, int prior
 
     .
 --------------------------------------------------------------------------*/
-CtiPILRequestMsg* CtiLMGroupBase::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupBase::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -711,7 +711,7 @@ CtiPILRequestMsg* CtiLMGroupBase::createTrueCycleRequestMsg(LONG percent, LONG p
 
     .
 --------------------------------------------------------------------------*/
-CtiPILRequestMsg* CtiLMGroupBase::createSetPointRequestMsg(RWCString settings, LONG minValue, LONG maxValue,
+CtiRequestMsg* CtiLMGroupBase::createSetPointRequestMsg(RWCString settings, LONG minValue, LONG maxValue,
                                                         LONG valueB, LONG valueD, LONG valueF, LONG random,
                                                         LONG valueTA, LONG valueTB, LONG valueTC, LONG valueTD,
                                                         LONG valueTE, LONG valueTF, int priority) const

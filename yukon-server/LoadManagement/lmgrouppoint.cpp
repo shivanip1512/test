@@ -120,10 +120,10 @@ CtiLMGroupPoint& CtiLMGroupPoint::setStartControlRawState(LONG startcontrolstate
 /*-------------------------------------------------------------------------
     createTimeRefreshRequestMsg
 
-    Creates a new CtiPILRequestMsg pointer for a program gear with a control
+    Creates a new CtiRequestMsg pointer for a program gear with a control
     method of time refresh with the appropriate refresh rate and shed time.
 --------------------------------------------------------------------------*/
-CtiPILRequestMsg* CtiLMGroupPoint::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
+CtiRequestMsg* CtiLMGroupPoint::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -135,11 +135,11 @@ CtiPILRequestMsg* CtiLMGroupPoint::createTimeRefreshRequestMsg(LONG refreshRate,
 /*-------------------------------------------------------------------------
     createSmartCycleRequestMsg
 
-    Creates a new CtiPILRequestMsg pointer for a program gear with a control
+    Creates a new CtiRequestMsg pointer for a program gear with a control
     method of smart cycle with the appropriate cycle percent, period length,
     and the default count of periods.
 --------------------------------------------------------------------------*/
-CtiPILRequestMsg* CtiLMGroupPoint::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupPoint::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -151,10 +151,10 @@ CtiPILRequestMsg* CtiLMGroupPoint::createSmartCycleRequestMsg(LONG percent, LONG
 /*-------------------------------------------------------------------------
     createRotationRequestMsg
 
-    Creates a new CtiPILRequestMsg pointer for a program gear with a control
+    Creates a new CtiRequestMsg pointer for a program gear with a control
     method of rotation with the appropriate send rate and shed time.
 --------------------------------------------------------------------------*/
-CtiPILRequestMsg* CtiLMGroupPoint::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
+CtiRequestMsg* CtiLMGroupPoint::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -166,10 +166,10 @@ CtiPILRequestMsg* CtiLMGroupPoint::createRotationRequestMsg(LONG sendRate, LONG 
 /*-------------------------------------------------------------------------
     createMasterCycleRequestMsg
 
-    Creates a new CtiPILRequestMsg pointer for a program gear with a control
+    Creates a new CtiRequestMsg pointer for a program gear with a control
     method of master cycle with the appropriate off time, period length.
 --------------------------------------------------------------------------*/
-CtiPILRequestMsg* CtiLMGroupPoint::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
+CtiRequestMsg* CtiLMGroupPoint::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);

@@ -47,10 +47,10 @@ CtiLMGroupSA305::~CtiLMGroupSA305()
 /*-------------------------------------------------------------------------
   createTimeRefreshRequestMsg
 
-  Creates a new CtiPILRequestMsg pointer for a program gear with a control
+  Creates a new CtiRequestMsg pointer for a program gear with a control
   method of time refresh with the appropriate refresh rate and shed time.
   --------------------------------------------------------------------------*/
-CtiPILRequestMsg* CtiLMGroupSA305::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
+CtiRequestMsg* CtiLMGroupSA305::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
     dout << RWTime() << " - createTimeRefreshRequestMsg() not implemented for SA305 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
@@ -60,11 +60,11 @@ CtiPILRequestMsg* CtiLMGroupSA305::createTimeRefreshRequestMsg(LONG refreshRate,
 /*-------------------------------------------------------------------------
   createSmartCycleRequestMsg
 
-  Creates a new CtiPILRequestMsg pointer for a program gear with a control
+  Creates a new CtiRequestMsg pointer for a program gear with a control
   method of smart cycle with the appropriate cycle percent, period length
   in minutes, and the default count of periods.
   --------------------------------------------------------------------------*/
-CtiPILRequestMsg* CtiLMGroupSA305::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupSA305::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
     dout << RWTime() << " - createSmartCycleRequestMsg() not implemented for SA305 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
@@ -77,7 +77,7 @@ CtiPILRequestMsg* CtiLMGroupSA305::createSmartCycleRequestMsg(LONG percent, LONG
   Creates true cycle request msg which is exactly like a smart cycle but
   with the "truecycle" string at the end of the control string.
   --------------------------------------------------------------------------*/
-CtiPILRequestMsg* CtiLMGroupSA305::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupSA305::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
     dout << RWTime() << " - createTrueCycleRequestMsg() not implemented for SA305 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
@@ -87,10 +87,10 @@ CtiPILRequestMsg* CtiLMGroupSA305::createTrueCycleRequestMsg(LONG percent, LONG 
 /*-------------------------------------------------------------------------
   createRotationRequestMsg
 
-  Creates a new CtiPILRequestMsg pointer for a program gear with a control
+  Creates a new CtiRequestMsg pointer for a program gear with a control
   method of rotation with the appropriate send rate and shed time.
   --------------------------------------------------------------------------*/
-CtiPILRequestMsg* CtiLMGroupSA305::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
+CtiRequestMsg* CtiLMGroupSA305::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
     dout << RWTime() << " - createRotationRequestMsg() not implemented for SA305 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
@@ -100,10 +100,10 @@ CtiPILRequestMsg* CtiLMGroupSA305::createRotationRequestMsg(LONG sendRate, LONG 
 /*-------------------------------------------------------------------------
   createMasterCycleRequestMsg
 
-  Creates a new CtiPILRequestMsg pointer for a program gear with a control
+  Creates a new CtiRequestMsg pointer for a program gear with a control
   method of master cycle with the appropriate off time, period length.
   --------------------------------------------------------------------------*/
-CtiPILRequestMsg* CtiLMGroupSA305::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
+CtiRequestMsg* CtiLMGroupSA305::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
     dout << RWTime() << " - createMasterCycleRequestMsg() not implemented for SA305 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
