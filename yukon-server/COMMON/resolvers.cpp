@@ -9,14 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/10/02 14:58:14 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/10/03 16:04:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 
 #include <rw/db/db.h>
+#include <rw/re.h>
 #include <rw\cstring.h>
 
 #include "dsm2.h"
@@ -24,6 +25,7 @@
 #include "devicetypes.h"
 #include "pointtypes.h"
 #include "logger.h"
+#include "numstr.h"
 #include "yukon.h"
 
 
@@ -1054,8 +1056,18 @@ INT resolveRelayUsage(RWCString str)
          *  First check if we use the other form of relay db string (a. la versacomgroups)
          */
 
+        RWCString numAsStr;
+
         for(int i = 0; i < 8; i++)
         {
+#if 1
+            numAsStr = CtiNumStr(i + 1);
+
+            if(!str.match(numAsStr).isNull())
+            {
+                nRet |= (0x00000001 << i);
+            }
+#else
             if(i < str.mbLength())
             {
                 if( str(i) != ' ' )
@@ -1063,6 +1075,7 @@ INT resolveRelayUsage(RWCString str)
                     nRet |= (0x00000001 << i);
                 }
             }
+#endif
         }
 
         if(nRet == 0)
@@ -1084,6 +1097,13 @@ INT resolveAddressUsage(RWCString str)
     str.toLower();
     // 022801 CGP This is stupid... // str = str.strip(RWCString::both);
 
+    #if 1
+    if(!str.match("u").isNull()) nRet |= 0x08;
+    if(!str.match("s").isNull()) nRet |= 0x04;
+    if(!str.match("c").isNull()) nRet |= 0x02;
+    if(!str.match("d").isNull()) nRet |= 0x01;
+
+    #else
     for(int i = 0; i < 4; i++)
     {
         if(i < str.mbLength())
@@ -1100,6 +1120,7 @@ INT resolveAddressUsage(RWCString str)
             dout << "   The database has returned an invalid ADDRESSUSAGE for a versacom address." << endl;
         }
     }
+    #endif
 
     if(nRet == 0)
     {
