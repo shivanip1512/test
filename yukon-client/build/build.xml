@@ -86,8 +86,10 @@
 		<ant dir="${servlet}" target="${dotarget}"/>
         <ant dir="${stars}" target="${dotarget}"/>
 		<ant dir="${report}" target="${dotarget}"/>
+        <ant dir="${notification}" target="${dotarget}"/>
 
         <ant dir="${resource}" target="${dotarget}"/>
+        <ant dir="${services}" target="${dotarget}"/>
         <ant dir="${yukonappserver}" target="${dotarget}"/>
         <ant dir="${cttp}" target="${dotarget}"/>
         <ant dir="${yukon-web}" target="${dotarget}"/> 
