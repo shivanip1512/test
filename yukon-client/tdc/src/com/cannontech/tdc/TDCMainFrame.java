@@ -1733,6 +1733,11 @@ private javax.swing.JMenu getJMenuFile() {
 			ivjJMenuFile.add(getJSeparator1());
 			ivjJMenuFile.add(getJMenuItemExit());
 			// user code begin {1}
+			
+			
+			//removed since not implemented after 2 years!
+			ivjJMenuFile.remove( getJMenuItemPrint() );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
