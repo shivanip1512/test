@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2002/08/20 22:46:09 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2002/08/28 16:19:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -348,8 +348,15 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             sprintf(tstr, "At Start of Loop -- Will Sleep %d Seconds", NextScan[NEXT_SCAN].seconds() - TimeNow.seconds()  );
 
             {
+                ULONG omc = OutMessageCount();
+
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << TimeNow << " " << tstr << endl;
+                dout << TimeNow << " " << tstr;
+                if(omc > 10)
+                {
+                    dout << ". OM Count = " << omc << " size = " << sizeof(OUTMESS) * omc;
+                }
+                dout << endl;
             }
 
             ObjWait = (NextScan[NEXT_SCAN].seconds() - TimeNow.seconds()) * 1000L;
@@ -753,7 +760,6 @@ VOID ResultThread (VOID *Arg)
     for(;!ScannerQuit;)
     {
         /* Release the Lock Semaphore */
-        // CTIReleaseMutexSem (LockSem);
         if(dwWait == 1) ReleaseMutex(hScannerSyncs[S_LOCK_MUTEX]);
 
         /* Wait for the Nexus to come (?back?) up */
