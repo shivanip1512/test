@@ -360,6 +360,9 @@ private javax.swing.JCheckBox getJCheckBoxHoliday() {
 			ivjJCheckBoxHoliday.setMnemonic('y');
 			ivjJCheckBoxHoliday.setText("Use Holiday");
 			// user code begin {1}
+			
+			ivjJCheckBoxHoliday.setText("Holiday");
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
