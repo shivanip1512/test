@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2004/10/08 20:45:30 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/01/27 17:51:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1463,6 +1463,14 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
      */
     VSTRUCT VStTemplate = aVst;
     adjustVersacomAddress(VStTemplate, sn, fuid, fsec, fcls, fdiv);
+
+    if(parse.getiValue("vcfiller", 0) != 0)
+    {
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        if(VersacomFillerCommand( uid ))
+            removeLastVStruct();
+    }
 
     if((iNum = parse.getiValue("led")) != INT_MIN)
     {
