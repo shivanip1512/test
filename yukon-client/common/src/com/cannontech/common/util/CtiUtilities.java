@@ -693,6 +693,36 @@ public final static java.awt.Window getParentWindow(java.awt.Component comp) {
 	return (java.awt.Window) comp;
 }
 
+/**
+ * This method will return the javax.swing.JRootPane associated with a components parent
+ * If no parent is found with a root panethen null will be returned
+ * @return java.awt.Frame
+ * @param comp java.awt.Component
+ */
+public final static javax.swing.JRootPane getParentRootPane(java.awt.Component comp) {
+	
+	while(comp != null)
+	{
+		if(comp instanceof javax.swing.JFrame) 
+		{
+			return ((javax.swing.JFrame) comp).getRootPane(); 
+		}
+		else 
+		if(comp instanceof javax.swing.JApplet) 
+		{
+			return ((javax.swing.JApplet) comp).getRootPane();
+		}
+		else
+		if(comp instanceof javax.swing.JDialog)
+		{
+			return ((javax.swing.JDialog) comp).getRootPane();
+		}
+	
+		comp = comp.getParent();
+	}
+
+	return null;
+}
 
 /**
  * This method was created by Cannon Technologies Inc.
