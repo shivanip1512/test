@@ -3575,9 +3575,10 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
             for(int i = 0; i < _lmprogramdirectgroups.entries(); i++)
             {
                 CtiLMGroupBase* lm_group = (CtiLMGroupBase*) _lmprogramdirectgroups[i];
-
+                LONG currentOffTime = lm_group->getControlCompleteTime().seconds() - lm_group->getLastControlSent().seconds();
                 // For special group types we might need to give it a boost to achieve the correct control time
-                if( lm_group->doesMasterCycleNeedToBeUpdated(secondsFrom1901, lm_group->getControlCompleteTime().seconds(), lm_group->getControlCompleteTime().seconds() - lm_group->getLastControlSent().seconds()) )                    
+                if( lm_group->getGroupControlState() == CtiLMGroupBase::ActiveState &&
+                    lm_group->doesMasterCycleNeedToBeUpdated(secondsFrom1901, lm_group->getControlCompleteTime().seconds(), currentOffTime))
 //                    if(lm_group->doesMasterCycleNeedToBeUpdated(secondsFrom1901, (lm_group->getLastControlSent().seconds()+off_time), off_time))
                 {
                     //if it is a emetcon switch 450 (7.5 min) is correct
