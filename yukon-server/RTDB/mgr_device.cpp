@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2003/10/10 15:38:28 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2003/11/05 16:45:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -291,12 +291,14 @@ CtiDeviceBase* CtiDeviceManager::RemoteGetEqualbyName (const RWCString &RemoteNa
 }
 
 CtiDeviceManager::CtiDeviceManager() :
-  _includeScanInfo(false),
-  _removeFunc(NULL)
-{}
+_includeScanInfo(false),
+_removeFunc(NULL)
+{
+}
 
 CtiDeviceManager::~CtiDeviceManager()
-{}
+{
+}
 
 void CtiDeviceManager::DeleteList(void)
 {
@@ -1263,7 +1265,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
                     start = start.now();
 
-                    #if 0               // Not sure that anyone(me) knows what valid means for this stuff.
+#if 0               // Not sure that anyone(me) knows what valid means for this stuff.
                     if(paoID == 0)
                     {
                         Map.apply(ApplyInvalidateNotUpdated, NULL);
@@ -1279,7 +1281,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                             }
                         }
                     }
-                    #endif
+#endif
 
                     do
                     {
@@ -1583,9 +1585,9 @@ void CtiDeviceManager::refreshIONMeterGroups(LONG paoID)
         RWDBReader rdr;
         long tmpDeviceID;
         RWCString tmpCollectionGroup,
-                  tmpTestCollectionGroup,
-                  tmpMeterNumber,
-                  tmpBillingGroup;
+        tmpTestCollectionGroup,
+        tmpMeterNumber,
+        tmpBillingGroup;
 
         if(DebugLevel & 0x00020000)
         {
@@ -1593,10 +1595,10 @@ void CtiDeviceManager::refreshIONMeterGroups(LONG paoID)
         }
 
         selector << tblMeterGroup["DeviceID"]
-                 << tblMeterGroup["CollectionGroup"]
-                 << tblMeterGroup["TestCollectionGroup"]
-                 << tblMeterGroup["MeterNumber"]
-                 << tblMeterGroup["BillingGroup"];
+        << tblMeterGroup["CollectionGroup"]
+        << tblMeterGroup["TestCollectionGroup"]
+        << tblMeterGroup["MeterNumber"]
+        << tblMeterGroup["BillingGroup"];
         selector.where((tblMeterGroup["DeviceID"] == tblPAObject["PAObjectID"]) && (tblPAObject["Type"].like("ION%")));
 
         if(paoID)
@@ -1669,14 +1671,20 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
     if(paoID != 0) selector.where( tblGenericMacro["OwnerID"] == RWDBExpr( paoID ) && selector.where() );
     selector.orderBy(tblGenericMacro["ChildOrder"]);
 
-    rdr = selector.reader(conn);
+
+    RWDBResult macroResult = selector.execute(conn);
+    RWDBTable myMacroTable = macroResult.table();
+    long macrocount = macroResult.rowCount();
+
+
     if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
     }
 
-    if(rdr.status().errorCode() == RWDBStatus::ok)
+    if(macrocount > 0 && macroResult.status().errorCode() == RWDBStatus::ok)
     {
+        rdr = myMacroTable.reader();
         Map.apply(ApplyClearMacroDeviceList, NULL);
 
         while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
@@ -1699,7 +1707,7 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Error reading macro subdevices from database: " << rdr.status().errorCode() << endl;
+        dout << "Error reading macro subdevices from database: " << macroResult.status().errorCode() << endl;
     }
 
     if(DebugLevel & 0x00020000)
