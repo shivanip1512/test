@@ -152,6 +152,7 @@ void CtiCapController::controlLoop()
         CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
         registerForPoints(*store->getCCSubstationBuses(RWDBDateTime().seconds()));
         store->setReregisterForPoints(FALSE);
+        store->verifySubBusAndFeedersStates();
 
         RWDBDateTime currentDateTime;
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
@@ -166,9 +167,12 @@ void CtiCapController::controlLoop()
             if(_CC_DEBUG)
             {
                 if( (secondsFromBeginningOfDay%1800) == 0 )
-                {//every five minutes tell the user if the control thread is still alive
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Controller thread pulse" << endl;
+                {//every thirty minutes tell the user if the control thread is still alive
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Controller thread pulse" << endl;
+                    }
+                    store->verifySubBusAndFeedersStates();
                 }
             }
 
@@ -899,6 +903,25 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
                                 currentCapBank->getControlStatus() != (ULONG)value )
                             {
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
+                            }
+
+                            if( currentCapBank->getControlStatus() != (ULONG)value &&
+                                currentSubstationBus->getRecentlyControlledFlag() &&
+                                currentFeeder->getLastCapBankControlledDeviceId() == currentCapBank->getPAOId() )
+                            {
+                                currentSubstationBus->setRecentlyControlledFlag(FALSE);
+                                currentFeeder->setRecentlyControlledFlag(FALSE);
+                                if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
+                                {
+                                    for(ULONG x=0;x<ccFeeders.entries();x++)
+                                    {
+                                        if( ((CtiCCFeeder*)ccFeeders[x])->getRecentlyControlledFlag() )
+                                        {
+                                            currentSubstationBus->setRecentlyControlledFlag(TRUE);
+                                            break;
+                                        }
+                                    }
+                                }
                             }
                             currentCapBank->setControlStatus((ULONG)value);
                             currentCapBank->setTagsControlStatus((ULONG)tags);
