@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2004/05/05 15:31:44 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2004/09/20 22:31:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -214,6 +214,8 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 {
     extern LoadRemoteRoutes(CtiDeviceSPtr RemoteRecord);
 
+    CtiDeviceCCU *ccu = (CtiDeviceCCU *)Dev.get();
+
     INT status = NORMAL;
     INT SocketError = NORMAL;
     ULONG i;
@@ -295,7 +297,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " " << tempstr << endl;
             }
-            IDLCFunction (Dev, 0, DEST_BASE, CLPWR);
+            IDLCFunction(Dev, 0, DEST_BASE, CLPWR);
 
             /* Now send a message to logger */
             _snprintf(Message, 50, "%0.20sPower Fail Detected", Dev->getName());
@@ -402,10 +404,10 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 dout << RWTime() << " " << tempstr << endl;
             }
 
-            IDLCFunction (Dev, 0, DEST_BASE, COLD);
+            IDLCFunction(Dev, 0, DEST_BASE, COLD);
 
             /* Now send a message to logger */
-            if(Dev)
+            if( Dev )
             {
                 _snprintf(Message, 50,  "%0.20sCold Start Sent", Dev->getName());
                 SendTextToLogger ("Inf", Message);
@@ -419,10 +421,10 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 printf ("Fault Detected on Port: %2hd Remote: %3hd... Reloading\n", InMessage->Port, InMessage->Remote);
 
                 /* Yup */
-                IDLCFunction (Dev, 0, DEST_BASE, CLFLT);
+                IDLCFunction(Dev, 0, DEST_BASE, CLFLT);
 
                 /* Now send a message to logger */
-                if(Dev)
+                if( Dev )
                 {
                     _snprintf(Message, 50,  "%0.20sFAULTC Detected", Dev->getName());
                     SendTextToLogger ("Inf", Message);
@@ -436,16 +438,16 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " " << tempstr << endl;
                 }
-                IDLCFunction (Dev, 0, DEST_BASE, CLCLD);
+                IDLCFunction(Dev, 0, DEST_BASE, CLCLD);
 
                 /* Assume this could be a CTIDBG_new chip */
                 pInfo->RColQMin = 0;
 
                 /* Best to flush the queues */
-                QueueFlush (Dev);
+                QueueFlush(Dev);
 
                 /* Now send a message to logger */
-                if(Dev)
+                if( Dev )
                 {
                     _snprintf(Message, 50,  "%0.20sCold Start Detected", Dev->getName());
                     SendTextToLogger ("Inf", Message);
@@ -460,13 +462,13 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                     dout << RWTime() << " " << tempstr << endl;
                 }
 
-                IDLCFunction (Dev, 0, DEST_BASE, CLDMN);
+                IDLCFunction(Dev, 0, DEST_BASE, CLDMN);
 
                 /* Best to flush the queues */
                 QueueFlush(Dev);
 
                 /* Now send a message to logger */
-                if(Dev)
+                if( Dev )
                 {
                     _snprintf(Message, 50,  "%0.20s Deadman Detected", Dev->getName());
                     SendTextToLogger ("Inf", Message);
@@ -477,17 +479,17 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             IDLCSetDelaySets(Dev);
 
             /* set the Base Status List */
-            pInfo->SetStatus (SETSLIST);
+            pInfo->SetStatus(SETSLIST);
 
-            IDLCSetBaseSList (Dev);
+            IDLCSetBaseSList(Dev);
 
-            LoadRemoteRoutes (Dev);
+            LoadRemoteRoutes(Dev);
 
             /* set the time sync Algorithm startup time */
-            IDLCSetTSStores (Dev, 15, 600, 3600); // Priority, trigger time, period
+            IDLCSetTSStores(Dev, 15, 600, 3600); // Priority, trigger time, period
 
             /* Enable the time Sync algorithm */
-            IDLCFunction (Dev, 0,  DEST_TSYNC, ENPRO);
+            IDLCFunction(Dev, 0,  DEST_TSYNC, ENPRO);
 
         }
     }
@@ -504,7 +506,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
         {
             pInfo->SetStatus(SETSLIST);
             /* set the Base Status List */
-            IDLCSetBaseSList (Dev);
+            IDLCSetBaseSList(Dev);
         }
     }
     else
@@ -512,7 +514,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
         /* Make sure we can update list if neccessary */
         pInfo->ClearStatus (SETSLIST);
 
-        if(AlgStatus[DEST_DLC] != ALGO_RUNNING)  /* Check the DLC algorithm status */
+        if(AlgStatus[DEST_DLC] != ALGO_RUNNING && ccu->checkAlgorithmReset(DEST_DLC) )  /* Check the DLC algorithm status */
         {
             IDLCFunction (Dev, 0, DEST_DLC, START);
 
@@ -523,7 +525,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             }
         }
 
-        if( ((CtiDeviceCCU *)Dev.get())->checkForTimeSyncLoop(AlgStatus[DEST_TSYNC]) )
+        if( ccu->checkForTimeSyncLoop(AlgStatus[DEST_TSYNC]) )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -531,18 +533,18 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             }
 
             //  Send a cold start, the time sync algorithm has been set to 0 seconds
-            IDLCFunction (Dev, 0, DEST_BASE, COLD);
+            IDLCFunction(Dev, 0, DEST_BASE, COLD);
         }
         else
         {
             /* Check the time sync Algorithm status */
-            if(AlgStatus[DEST_TSYNC] != ALGO_ENABLED)
+            if(AlgStatus[DEST_TSYNC] != ALGO_ENABLED && ccu->checkAlgorithmReset(DEST_TSYNC))
             {
                 if(AlgStatus[DEST_TSYNC] == ALGO_HALTED)
                 {
-                    IDLCFunction (Dev, 0, DEST_TSYNC, ENPRO);
+                    IDLCFunction(Dev, 0, DEST_TSYNC, ENPRO);
                     /* Now send a message to logger */
-                    if(Dev)
+                    if( Dev )
                     {
                         _snprintf(Message, 50,  "%0.20sTS Alg ENABLED", Dev->getName());
                         SendTextToLogger ("Inf", Message);
@@ -550,18 +552,18 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 }
                 else if(AlgStatus[DEST_TSYNC] == ALGO_RUNNING || AlgStatus[DEST_TSYNC] == ALGO_SUSPENDED)
                 {
-                    IDLCFunction (Dev, 0, DEST_TSYNC, HOPRO);
+                    IDLCFunction(Dev, 0, DEST_TSYNC, HOPRO);
                 }
             }
         }
 
         /* Check the status of the LM algorithm */
-        if(AlgStatus[DEST_LM] != ALGO_ENABLED)
+        if(AlgStatus[DEST_LM] != ALGO_ENABLED && ccu->checkAlgorithmReset(DEST_LM))
         {
-            IDLCFunction (Dev, 0, DEST_LM, ENPRO);
+            IDLCFunction(Dev, 0, DEST_LM, ENPRO);
 
             /* Now send a message to logger */
-            if(Dev)
+            if( Dev )
             {
                 _snprintf(Message, 50,  "%0.20sLM Alg ENPRO", Dev->getName());
                 SendTextToLogger ("Inf", Message);
@@ -600,7 +602,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     if( pInfo->NCsets == 1 && pInfo->NCOcts > 241 )
     {
         //  CCU's queues are messed up and need to be reset
-        IDLCFunction (Dev, 0, DEST_BASE, COLD);
+        IDLCFunction(Dev, 0, DEST_BASE, COLD);
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -946,7 +948,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Error writing to nexus. CCUResponseDecode().  "
-                        << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes" << endl;
+                             << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes" << endl;
                     }
 
                     if(CTINEXUS::CTINexusIsFatalSocketError(SocketError))
@@ -977,8 +979,8 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << Dev->getName() << "'s bookkeeping has gotten out of sync with the field device"<< endl;
-                    dout << RWTime() << "   Attempting to purge queue's and ccu queues."<< endl;
+                    dout << RWTime() << " " << Dev->getName() << "'s bookkeeping has gotten out of sync with the field device" << endl;
+                    dout << RWTime() << "   Attempting to purge queue's and ccu queues." << endl;
                 }
                 CCUQueueFlush(Dev);     /* Flush whatever we think is in the ccu */
 
