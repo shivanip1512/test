@@ -14,6 +14,8 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.Colors;
@@ -27,7 +29,7 @@ import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
-public class TagsEditorPanel extends ManualEntryJPanel implements RowEditorDialogListener
+public class TagsEditorPanel extends ManualEntryJPanel implements RowEditorDialogListener, ListSelectionListener
 {
 
 	/**
@@ -276,7 +278,6 @@ private javax.swing.JSplitPane getJSplitPaneTags() {
 			getJSplitPaneTags().add(getJScrollPaneTags(), "top");
 			// user code begin {1}			
 			
-			getJSplitPaneTags().setOneTouchExpandable(true);
 			getJSplitPaneTags().setDividerSize( 8 );
 
 			// user code end
@@ -322,27 +323,8 @@ private javax.swing.JTable getJTableTags() {
 			ivjJTableTags.setDefaultRenderer( Object.class, new TagTableCellRenderer() );
 			ivjJTableTags.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-
-
-			java.awt.event.MouseAdapter ml = new java.awt.event.MouseAdapter() 
-			{
-				public void mousePressed(java.awt.event.MouseEvent e)
-				{
-					int selRow = getJTableTags().getSelectedRow();
-					
-					if( selRow >= 0 )
-					{
-						getJPanelTagWizard().setTag(
-							getTagTableModel().getRowAt(selRow) );
-					}
-					else
-						getJPanelTagWizard().setTag( null );
-				}
-			};
-
-
-			ivjJTableTags.addMouseListener( ml );
-
+			getJTableTags().getSelectionModel().addListSelectionListener(this);
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -463,7 +445,7 @@ private void initialize() {
 
 	//add a editor for the Tag
 	javax.swing.JScrollPane jScroll = new javax.swing.JScrollPane();
-	jScroll.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	jScroll.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 	jScroll.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);			
 	jScroll.setViewportView(getJPanelTagWizard());
 
@@ -473,10 +455,15 @@ private void initialize() {
 
 	//best way to set the divider for now
 	getJSplitPaneTags().setDividerLocation(
-		(int)(getSize().getHeight() * .65) );
+		(int)(getSize().getHeight() * .75) );
 
 
 	initTagTableData();
+	
+	//set our selected table row
+	if( getStartingValue() != null && getStartingValue() instanceof Integer )
+		getJTableTags().getSelectionModel().setLeadSelectionIndex(
+				((Integer)getStartingValue()).intValue() );				
 	
 	// user code end
 }
@@ -488,8 +475,6 @@ private void initialize() {
  */
 public void JButtonCancelAction_actionPerformed(java.util.EventObject newEvent) 
 {	
-
-
 }
 
 
@@ -500,20 +485,26 @@ public void JButtonCancelAction_actionPerformed(java.util.EventObject newEvent)
  */
 public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent) 
 {
-	// Create new point Here
-	PointData pt = new PointData();
-	pt.setId( getEditorData().getPointID() );
-	pt.setTags( getEditorData().getTags() );
-	pt.setTimeStamp( new java.util.Date() );
-	pt.setTime( new java.util.Date() );
-	pt.setType( getEditorData().getPointType() );
-//	pt.setValue( Double.parseDouble( getJTextFieldValue().getText() ) );
-	pt.setQuality( PointQualities.MANUAL_QUALITY );		
-	pt.setStr("Manual change occured from " + CtiUtilities.getUserName() + " using TDC");
-	pt.setUserName( CtiUtilities.getUserName() );
-
-	// now send the point data	
-	SendData.getInstance().sendPointData( pt );
 }
 
+public void valueChanged(ListSelectionEvent e) 
+{
+	if( !e.getValueIsAdjusting() )  // make sure we have the last event in a
+	{												// sequence of events.		
+		if( e.getSource() == getJTableTags().getSelectionModel() )
+		{
+			int selRow = getJTableTags().getSelectedRow();
+					
+			if( selRow >= 0 )
+			{
+				getJPanelTagWizard().setTag(
+					getTagTableModel().getRowAt(selRow) );
+			}
+			else
+				getJPanelTagWizard().setTag( null );
+		}
+			
+	}
+	
+}
 }

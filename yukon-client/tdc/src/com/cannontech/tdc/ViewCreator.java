@@ -381,8 +381,8 @@ public class ViewCreator
 //				newRow.setElementAt( CommonUtils.createString( rowData[i][8] ), tableModel.getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_DEVICEID));
 
 			// set TagName
-			if( tableModel.getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_TAGS) )
-				newRow.setElementAt( CommonUtils.createString( rowData[i][9] ), tableModel.getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_TAGS));
+			if( tableModel.getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_STATE) )
+				newRow.setElementAt( CommonUtils.createString( rowData[i][9] ), tableModel.getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_STATE));
 
 
 

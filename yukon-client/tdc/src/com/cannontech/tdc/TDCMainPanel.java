@@ -19,8 +19,10 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.TableColumn;
 
@@ -153,8 +155,8 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC8(e);
 	if (e.getSource() == getJMenuItemPopUpManualControl()) 
 		connEtoC11(e);
-//	if (e.getSource() == getJRadioButtonMenuItemInhibitDev()) 
-//		jRadioButtonMenuItemInhibitDev_ActionPerformed(arg1)(e);
+//	if (e.getSource() == getJMenuItemControlDev()) 
+//		jRadioButtonMenuItemInhibitDev_ActionPerformed(e);
 //	if (e.getSource() == getJRadioButtonMenuItemAllowPt()) 
 //		jRadioButtonMenuItemAllowPt_ActionPerformed(e);
 //	if (e.getSource() == getJRadioButtonMenuItemInhibitPt()) 
@@ -166,6 +168,9 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	if( e.getSource() == getJMenuItemGraph() ) 
 		jMenuItemGraph_ActionPerformed( e );
 
+
+	if( e.getSource() == getJMenuItemInhibitDevice() ) 
+		jMenuItemInhibitDev_ActionPerformed(e);
 
 	if( e.getSource() == getJMenuItemCreateTag() ) 
 		jMenuItemCreateTag_ActionPerformed( e );
@@ -1949,7 +1954,6 @@ private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 
 	getJRadioButtonPage1().addActionListener( this );
-	
 	java.awt.event.MouseListener listener = new com.cannontech.clientutils.popup.PopUpMenuShower( getJPopupMenuManual() );
 	getDisplayTable().addMouseListener( listener );
 
@@ -1959,6 +1963,7 @@ private void initConnections() throws java.lang.Exception {
 
 	setTableHeaderListener();
 	
+	getJMenuItemInhibitDevice().addActionListener( this );	
 	getJMenuItemGraph().addActionListener( this );
 	getJMenuItemCreateTag().addActionListener(this);
 
@@ -2687,12 +2692,17 @@ private void jMenutItemTag_Modify( ActionEvent e )
 	int selectedRow = getDisplayTable().getSelectedRow();
 	PointValues pt = getTableDataModel().getPointValue( selectedRow );
 
+	//tells us what row we have selected
+	Integer rowNum =(Integer)
+		((JComponent)e.getSource()).getClientProperty( "tdc_tag_row" );
+
+
 	TagsEditorPanel panel =
 		new TagsEditorPanel( 
-			new EditorDialogData( pt, pt.getAllText() ),
-			getTableDataModel().getPointDynamicValue(selectedRow) );
+			new EditorDialogData(pt, pt.getAllText() ),
+			rowNum );
 
-	d.setSize(680, 330);
+	d.setSize(680, 450);
 	panel.setPreferredSize( new Dimension(
 			(int)(d.getWidth()  * .95),
 			(int)(d.getHeight() * .9) ) );
@@ -2703,12 +2713,14 @@ private void jMenutItemTag_Modify( ActionEvent e )
 	cPanel.fill = java.awt.GridBagConstraints.BOTH;
 	cPanel.anchor = java.awt.GridBagConstraints.CENTER;
 	cPanel.ipadx = 0; cPanel.ipady = 0;
+	cPanel.weightx = 1.0; cPanel.weighty = 1.0;
 	cPanel.insets = new java.awt.Insets(0, 0, 0, 0);
 	d.getContentPane().add(panel, cPanel);
 	
 
 	d.pack();
-	d.setResizable( false );
+	d.setResizable( true );
+
 	d.setTitle( panel.getPanelTitle() );
 	d.setUpdateButtonVisible( false );
 	d.setCancelButtonText("Close");
@@ -2735,6 +2747,7 @@ private void addTagMenuItems( int selRow )
 	Set tags = SendData.getInstance().getTagMgr().getTags(
 			(int)getTableDataModel().getPointID(selRow) );
 	
+	int i = 0;
 	Iterator it = tags.iterator();
 	while( it.hasNext() )
 	{
@@ -2743,7 +2756,10 @@ private void addTagMenuItems( int selRow )
 
 		JMenuItem mi = new JMenuItem(
 				liteTag.getTagName() + " (Level: " + liteTag.getTagLevel() + ")" );
-		
+
+		//tells us what row we have selected
+		mi.putClientProperty( "tdc_tag_row", new Integer(i++) );
+
 		//mi.setForeground( Colors.getColor(liteTag.getColorID()) );
 		if( liteTag.getImageID() > CtiUtilities.NONE_ID )
 			mi.setIcon( 
@@ -2767,35 +2783,10 @@ private void addTagMenuItems( int selRow )
 
 }
 
-
 /**
  * Comment
- */
-public void jRadioButtonMenuItemAllowDev_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
-{
-	int selectedRow = getDisplayTable().getSelectedRow();
-	int deviceID = getTableDataModel().getPointValue(selectedRow).getDeviceID();
-
-	// build up our opArgList for our command	message
-	Vector data = new Vector(4);
-	data.addElement( new Integer(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );  // this is the ClientRegistrationToken
-	data.addElement( new Integer(Command.ABLEMENT_DEVICE_IDTYPE) );
-	data.addElement( new Integer(deviceID) );
-	data.addElement( new Integer(Command.ABLEMENT_ENABLE) );
-
-	// create our command message
-	Command cmd = new Command();
-	cmd.setOperation( Command.CONTROL_ABLEMENT );
-	cmd.setOpArgList( data );
-	cmd.setTimeStamp( new Date() );
-
-	// write the command message to the server
-	SendData.getInstance().sendCommandMsg( cmd );
-
-	return;
-}
-/**
- * Comment
+ * 
+ * @deprecated use new tagging system
  */
 public void jRadioButtonMenuItemAllowPt_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
@@ -2936,30 +2927,51 @@ public void jRadioButtonMenuItemEnbablePt_ItemStateChanged(java.awt.event.ItemEv
 /**
  * Comment
  * 
- * Not Used
- */
-public void jRadioButtonMenuItemInhibitDev_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+ * */
+public void jMenuItemInhibitDev_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	int selectedRow = getDisplayTable().getSelectedRow();
 	int deviceID = getTableDataModel().getPointValue(selectedRow).getDeviceID();
 
-	// build up our opArgList for our command	message
-	Vector data = new Vector(4);
-	data.addElement( new Integer(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );  // this is the ClientRegistrationToken
-	data.addElement( new Integer(Command.ABLEMENT_DEVICE_IDTYPE) );
-	data.addElement( new Integer(deviceID) );
-	data.addElement( new Integer(Command.ABLEMENT_DISABLE) );
-
-	// create our command message
-	Command cmd = new Command();
-	cmd.setOperation( Command.CONTROL_ABLEMENT );
-	cmd.setOpArgList( data );
-	cmd.setTimeStamp( new Date() );
-
-	// write the command message to the server
-	SendData.getInstance().sendCommandMsg( cmd );
+	//assumes inhibiting
+	String cntrlStr = "INHIBIT";
+	int cmdInhib = Command.ABLEMENT_DISABLE;
 	
-	return;
+	if( ((javax.swing.JMenuItem)
+			actionEvent.getSource()).getText().equals("Control on Device: NO") )
+	{
+		cntrlStr = "ALLOW";
+		cmdInhib = Command.ABLEMENT_ENABLE;
+	}
+
+	int res = javax.swing.JOptionPane.showConfirmDialog(
+					this,
+					"Are you sure you want to " + cntrlStr +
+					" control for all points attached to '" +
+						getTableDataModel().getPointValue(selectedRow).getDeviceName() + "'?",
+					cntrlStr + " Control on Device",
+					javax.swing.JOptionPane.OK_CANCEL_OPTION );
+
+	if( res == javax.swing.JOptionPane.OK_OPTION )
+	{	
+		// build up our opArgList for our command	message
+		Vector data = new Vector(4);
+		data.addElement( new Integer(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );  // this is the ClientRegistrationToken
+		data.addElement( new Integer(Command.ABLEMENT_DEVICE_IDTYPE) );
+		data.addElement( new Integer(deviceID) );
+		data.addElement( new Integer(cmdInhib) );
+
+	
+		// create our command message
+		Command cmd = new Command();
+		cmd.setOperation( Command.CONTROL_ABLEMENT );
+		cmd.setOpArgList( data );
+		cmd.setTimeStamp( new Date() );
+	
+		// write the command message to the server
+		SendData.getInstance().sendCommandMsg( cmd );
+	}
+
 }
 
 /**
@@ -2986,9 +2998,12 @@ public void jMenuItemCreateTag_ActionPerformed(java.awt.event.ActionEvent source
 	constraintsPanel.anchor = java.awt.GridBagConstraints.NORTH;
 	constraintsPanel.ipadx = 0; constraintsPanel.ipady = 0;
 	constraintsPanel.insets = new java.awt.Insets(0, 0, 0, 0);
+	constraintsPanel.weightx = 1.0; constraintsPanel.weighty = 1.0;
+
 	d.getContentPane().add(panel, constraintsPanel);
+	
 	d.pack();
-	d.setResizable( false );
+	d.setResizable( true );
 	d.setTitle( panel.getPanelTitle() );
 	d.setUpdateButtonText( "Create" );
 	
@@ -2997,34 +3012,12 @@ public void jMenuItemCreateTag_ActionPerformed(java.awt.event.ActionEvent source
 	d.setLocationRelativeTo( this );		
 	d.setModal( true );		
 	d.show();
-
-
-//	
-//	
-//	int selectedRow = getDisplayTable().getSelectedRow();
-//	int deviceID = getTableDataModel().getPointValue(selectedRow).getDeviceID();
-//
-//	// build up our opArgList for our command	message
-//	Vector data = new Vector(4);
-//	data.addElement( new Integer(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );  // this is the ClientRegistrationToken
-//	data.addElement( new Integer(Command.ABLEMENT_DEVICE_IDTYPE) );
-//	data.addElement( new Integer(deviceID) );
-//	data.addElement( new Integer(Command.ABLEMENT_DISABLE) );
-//
-//	// create our command message
-//	Command cmd = new Command();
-//	cmd.setOperation( Command.CONTROL_ABLEMENT );
-//	cmd.setOpArgList( data );
-//	cmd.setTimeStamp( new Date() );
-//
-//	// write the command message to the server
-//	SendData.getInstance().sendCommandMsg( cmd );
-	
-	return;
 }
 
 /**
  * Comment
+ * 
+ * @deprecated use new tagging system
  */
 public void jRadioButtonMenuItemInhibitPt_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
@@ -3852,6 +3845,8 @@ private void showRowEditor( Object source )
 		constraintsPanel.anchor = java.awt.GridBagConstraints.NORTH;
 		constraintsPanel.ipadx = 0; constraintsPanel.ipady = 0;
 		constraintsPanel.insets = new java.awt.Insets(0, 0, 0, 0);
+		constraintsPanel.weightx = 1.0; constraintsPanel.weighty = 1.0;
+		
 		d.getContentPane().add(panel, constraintsPanel);
 		d.pack();
 		d.setTitle( panel.getPanelTitle() );

@@ -40,7 +40,7 @@ public class CustomDisplay
 	public static final String COLUMN_TYPE_POINTQUALITY = "PointQuality";
 	public static final String COLUMN_TYPE_POINTTIMESTAMP = "PointTimeStamp";
 	public static final String COLUMN_TYPE_UOFM = "UofM";
-	public static final String COLUMN_TYPE_TAGS = "Tags";
+	public static final String COLUMN_TYPE_STATE = "State";
 	public static final String COLUMN_TYPE_POINTIMAGE = "PointImage";
 	public static final String COLUMN_TYPE_QUALITYCNT = "QualityCount";
 

@@ -1899,11 +1899,11 @@ private void setCorrectRowValue( PointValues point, int location )
 			}
 		}
 	
-		if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_TAGS) )
+		if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_STATE) )
 		{
  			dataRow.setElementAt(
 		 			TagUtils.getTagString( (int)point.getTags() ),
-					getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_TAGS) ); 
+					getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_STATE) ); 
 		}
 
 		if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) )
