@@ -8,22 +8,21 @@ package com.cannontech.graph.model;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-
+import com.cannontech.database.db.graph.GraphDataSeries;
 /**
  * A quick and dirty implementation.
  */
-public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormats
+public class YukonDataSetFactory 
 {
     private static java.text.SimpleDateFormat LEGEND_FORMAT = new java.text.SimpleDateFormat("MMM dd");
     private static java.text.SimpleDateFormat CATEGORY_FORMAT = new java.text.SimpleDateFormat(" MMM dd, HH:mm ");
     
-	private int validSeriesLength = -1;
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (8/2/2001 10:46:02 AM)
 	 * @param gModel com.cannontech.graph.model.GraphModel
 	 */
-	public static java.util.TreeMap buildTreeMap(TrendSerie [] tSeries, int validSeriesSize)
+	public static java.util.TreeMap buildTreeMap(TrendSerie [] tSeries, int length)
 	{
 		java.util.TreeMap tree = new java.util.TreeMap();
 
@@ -31,7 +30,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		for( int i = 0; i < tSeries.length; i++ )
 		{
 			TrendSerie serie = tSeries[i];			
-			if(( serie.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == serie.getTypeMask())
+			if(GraphDataSeries.isValidIntervalType( serie.getTypeMask()))
 			{
 				if( serie.getDataPairArray() != null)
 				{
@@ -51,7 +50,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 				 		if( objectValues == null )
 				 		{	
 					 		//objectValues is not in the key already
-					 		objectValues = new Double[ validSeriesSize ];
+					 		objectValues = new Double[ length ];
 					 		tree.put(d,objectValues);
 				 		}
 				 		objectValues[validIndex] = new Double(values[j]);
@@ -75,7 +74,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 			TrendSerie serie = tSeries[i];
 			if( serie != null)
 			{
-				if(( serie.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == serie.getTypeMask())
+				if(GraphDataSeries.isValidIntervalType( serie.getTypeMask()))
 				{
 					com.jrefinery.data.BasicTimeSeries series = 
 						new com.jrefinery.data.BasicTimeSeries(serie.getLabel(), com.jrefinery.data.Second.class);
@@ -95,82 +94,13 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 							}
 						}
 					}
-//					series.setName(serie.getLabel() + "          Load Factor: " + serie.getLoadFactor()+"/n          Min: " + serie.getMinimumValue() + "\n          Max: " + serie.getMaximumValue());
 					dSet.addSeries(series);
 				}
 			}
 		}
 		return dSet;
 	}
-	
-	/**
-     * Creates a horizontally combined chart.
-     */
-/*    public JFreeChart createHorizontallyCombinedChart() {
-
-        // create a default chart based on some sample data...
-        String title = this.resources.getString("combined.horizontal.title");
-        String subtitleStr = this.resources.getString("combined.horizontal.subtitle");
-        String[] domains = this.resources.getStringArray("combined.horizontal.domains");
-        String range = this.resources.getString("combined.horizontal.range");
-
-        // calculate Time Series and Moving Average Dataset
-        MovingAveragePlotFitAlgorithm mavg = new MovingAveragePlotFitAlgorithm();
-        mavg.setPeriod(30);
-        PlotFit pf = new PlotFit(DemoDatasetFactory.createTimeSeriesCollection2(), mavg);
-        XYDataset tempDataset = pf.getFit();
-
-        // create master dataset
-        CombinedDataset data = new CombinedDataset();
-        data.add(tempDataset);                // time series + MA
-
-        // test SubSeriesDataset and CombinedDataset operations
-
-        // decompose data into its two dataset series
-        XYDataset series0 = new SubSeriesDataset(data, 0);
-        XYDataset series1 = new SubSeriesDataset(data, 1);
-
-        JFreeChart chart = null;
-
-        // make a common vertical axis for all the sub-plots
-        NumberAxis valueAxis = new VerticalNumberAxis(range);
-        valueAxis.setAutoRangeIncludesZero(false);  // override default
-        valueAxis.setCrosshairVisible(false);
-
-        // make a horizontally combined plot
-        CombinedXYPlot multiPlot = new CombinedXYPlot(valueAxis, CombinedXYPlot.HORIZONTAL);
-
-        int[] weight = { 1, 1, 1 }; // control horizontal space assigned to each subplot
-
-        // add subplot 1...
-        XYPlot subplot1 = new XYPlot(series0, new HorizontalDateAxis("Date"), null);
-        multiPlot.add(subplot1, weight[0]);
-
-        // add subplot 2...
-        XYPlot subplot2 = new XYPlot(data, new HorizontalDateAxis("Date"), null);
-        multiPlot.add(subplot2, weight[1]);
-
-        // add subplot 3...
-        XYPlot subplot3 = new XYPlot(series0, new HorizontalDateAxis("Date"), null, new VerticalXYBarRenderer(0.20));
-        //chartToCombine = ChartFactory.createCombinableVerticalXYBarChart(timeAxis[2], valueAxis, series0);
-        multiPlot.add(subplot3, weight[2]);
-
-        // call this method after all sub-plots have been added
-        //combinedPlot.adjustPlots();
-
-        // now make tht top level JFreeChart
-        chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, multiPlot, true);
-
-        // then customise it a little...
-        TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 12));
-        chart.addTitle(subtitle);
-        chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white,0, 1000, Color.blue));
-        return chart;
-
-    }	
-	
-	
-	
+		
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (8/2/2001 10:46:02 AM)
@@ -188,7 +118,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		int validSeriesLength = 0;//getValidSeriesLength(tSeries);
 		for( int i = 0; i < tSeries.length; i++)
 		{
-			if(( tSeries[i].getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == tSeries[i].getTypeMask())			
+			if(GraphDataSeries.isValidIntervalType(tSeries[i].getTypeMask()))
 			{
 				if( tSeries[i].getPointId().equals(peakPointId))
 				{	//find the 'graph' point representing the peak point, if it exists!
@@ -216,13 +146,43 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 
 		// Create the dataset of values for each point.
 		Double[][] datasetValues = new Double[validSeriesLength][];
-		for (int i = 0; i < validSeriesLength; i++)
+
+		//This index holder is needed parrallel to i.
+		//When there is a null tSeries[i].getDataPairArray(), we have to ignore the i values interval 
+		//of the tree.get(keyArray[j]).  AKA...the i value can't be incremented, But because i is the 
+		//for loop index of the series, we need another representation of it, hence notNullValuesIndex.
+		int notNullValuesIndex = 0;
+		int allIndex = 0;
+		for (int i = 0; i < tSeries.length; i++)
 		{
-			datasetValues[i] = new Double[keyArray.length];
-			for (int j = 0; j < keyArray.length; j++)
+			if(GraphDataSeries.isValidIntervalType(tSeries[i].getTypeMask()))
 			{
-				Double[] values = (Double[])tree.get(keyArray[j]);
-				datasetValues[i][j] = values[i];
+				datasetValues[allIndex] = new Double[keyArray.length];
+				if( tSeries[i].getDataPairArray() != null)
+				{
+					for (int j = 0; j < keyArray.length; j++)
+					{
+						Double[] values = (Double[])tree.get(keyArray[j]);
+						datasetValues[allIndex][j] = values[notNullValuesIndex];
+					}
+					notNullValuesIndex++;
+					allIndex++;
+				}
+				else
+				{
+					if( tSeries[i].getPointId().equals(peakPointId))
+					{
+						// We take away the fact there is a peak point so that when we sort
+						//  the values, we are able to still show load duration.
+						peakPtIndex = -1;
+					}
+
+					for (int j = 0; j < keyArray.length; j++)
+					{
+						datasetValues[allIndex][j]= null;
+					}
+					allIndex++;
+				}
 			}
 		}
 
@@ -244,95 +204,6 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		return collection;
 	}
 
-
-/*
-	public static com.jrefinery.data.TimeSeriesCollection createMultipleDaysDataSet(TrendSerie[] tSeries,  java.util.Date startDate, java.util.Date compareStart)
-	{
-		if( tSeries == null)
-			return null;
-		com.jrefinery.data.TimeSeriesCollection dSet = new com.jrefinery.data.TimeSeriesCollection();
-		
-		long TRANSLATE_TIME = 86400000;
-		TRANSLATE_TIME = (startDate.getTime() - compareStart.getTime());
-		System.out.println("StartDate = " + startDate + "  CompareStart = " + compareStart);	
-		for ( int i = 0; i < tSeries.length; i++)
-		{
-			TrendSerie serie = tSeries[i];
-			if( serie != null)
-			{
-				boolean firstOne = true;				
-				if(( serie.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == serie.getTypeMask())
-				{
-					com.jrefinery.data.BasicTimeSeries timeSeries = null;// new com.jrefinery.data.BasicTimeSeries(serie.getLabel()+ " - " + LEGEND_FORMAT.format(new java.util.Date(startDate.getTime() -1000)) + " -No Data", com.jrefinery.data.Second.class);
-
-					if( serie.getDataPairArray() != null)
-					{
-						java.util.Date compareToDate = startDate;
-						Number[] valArray =  new Number[serie.getDataPairArray().length];
-
-						for (int j = 0; j < serie.getDataPairArray().length; j++)
-						{
-							com.jrefinery.data.TimeSeriesDataPair dp = (com.jrefinery.data.TimeSeriesDataPair)serie.getDataPairArray(j);
-							java.util.Date dpDate = new java.util.Date(dp.getPeriod().getStart());
-							
-							try
-							{
-								if( dp.getPeriod().getStart() <= (compareToDate.getTime()))
-								{
-									com.jrefinery.data.TimePeriod tp = new com.jrefinery.data.Second(new java.util.Date(dp.getPeriod().getStart() + TRANSLATE_TIME));
-									com.jrefinery.data.TimeSeriesDataPair tempDP = new com.jrefinery.data.TimeSeriesDataPair(tp, dp.getValue());
-									if( timeSeries == null)
-									{
-										timeSeries = new com.jrefinery.data.BasicTimeSeries(serie.getLabel()+ " - " + LEGEND_FORMAT.format(new java.util.Date(compareStart.getTime())), com.jrefinery.data.Second.class);
-									}		
-									timeSeries.add(tempDP);
-								}
-								else		
-								{
-									if( firstOne)
-									{
-										firstOne = false;
-
-										if( timeSeries == null)	//sets up a series if there is no yesterday available.
-										{
-											//subtract an extra 1000 (sec) so we can hit yesterday, otherwise we get the first second of today.
-											timeSeries = new com.jrefinery.data.BasicTimeSeries(serie.getLabel() + " - " + LEGEND_FORMAT.format(new java.util.Date(compareStart.getTime()))+ " -No Data", com.jrefinery.data.Second.class);
-										}
-
-										dSet.addSeries(timeSeries);
-										timeSeries = new com.jrefinery.data.BasicTimeSeries(serie.getLabel() + " - " + LEGEND_FORMAT.format(new java.util.Date(startDate.getTime() )), com.jrefinery.data.Second.class);
-									}
-									timeSeries.add(dp);
-								}
-							}
-							catch(com.jrefinery.data.SeriesException se)
-							{
-								com.cannontech.clientutils.CTILogger.info(" PERIOD = " + new java.util.Date(dp.getPeriod().getStart()));
-							}
-							valArray[j] = dp.getValue();
-						}
-					}
-
-					if( timeSeries == null)
-					{
-						timeSeries = new com.jrefinery.data.BasicTimeSeries(serie.getLabel()+ " - " + LEGEND_FORMAT.format(new java.util.Date(startDate.getTime())), com.jrefinery.data.Second.class);
-					}		
-
-					dSet.addSeries(timeSeries);
-					if( firstOne )	
-					{
-						//Only had data for one day, therefore, we have null data on the other days
-						// and need to make sure we have (2) data sets for each serie.
-						dSet.addSeries( new com.jrefinery.data.BasicTimeSeries(serie.getLabel() + " - " + LEGEND_FORMAT.format(new java.util.Date(startDate.getTime() )) + " -No Data" , com.jrefinery.data.Second.class));
-					}
-		
-				}
-			}
-		}
-		return dSet;
-	}
-*/
-	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (8/2/2001 10:46:02 AM)
@@ -349,14 +220,14 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		
 		for( int i = 0; i < tSeries.length; i++)
 		{
-			if(( tSeries[i].getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == tSeries[i].getTypeMask())
+			if(GraphDataSeries.isValidIntervalType(tSeries[i].getTypeMask()))
 			{
 				tNamesVector.add(tSeries[i].getLabel().toString());
 				validSeriesLength++;
 			}
 		}
 
-		//set the series names up, excluding any not included in the buildTreeMap return.		
+		//set the series names up, excluding any not included in the buildTreeMap return.
 		String[] seriesNames = new String[tNamesVector.size()];		
 		tNamesVector.toArray(seriesNames);
 	
@@ -379,17 +250,40 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		
 		// Set series names for each point.
 		Double[][] datasetValues = new Double[validSeriesLength ][];
-		for (int i = 0; i < validSeriesLength; i++)
+		
+		//This index holder is needed parrallel to i.
+		//When there is a null tSeries[i].getDataPairArray(), we have to ignore the i values interval 
+		//of the tree.get(keyArray[j]).  AKA...the i value can't be incremented, But because i is the 
+		//for loop index of the series, we need another representation of it, hence notNullValuesIndex.
+		int notNullValuesIndex = 0;
+		int allIndex = 0;
+		for (int i = 0; i < tSeries.length; i++)
 		{
-			datasetValues[i] = new Double[keyArray.length];
-			for (int j = 0; j < keyArray.length; j++)
+			if(GraphDataSeries.isValidIntervalType(tSeries[i].getTypeMask()))
 			{
-				Double[] values = (Double[])tree.get(keyArray[j]);
-				datasetValues[i][j] = values[i];
+				datasetValues[allIndex] = new Double[keyArray.length];
+				if( tSeries[i].getDataPairArray() != null)
+				{
+					for (int j = 0; j < keyArray.length; j++)
+					{
+						Double[] values = (Double[])tree.get(keyArray[j]);
+						datasetValues[allIndex][j] = values[notNullValuesIndex];
+					}
+					notNullValuesIndex++;
+					allIndex++;
+				}
+				else
+				{
+					for (int j = 0; j < keyArray.length; j++)
+					{
+						datasetValues[allIndex][j]= null;
+					}
+					allIndex++;
+				}
 			}
 		}
 
-	
+//		com.jrefinery.data.DefaultCategoryDataset dataset = new com.jrefinery.data.DefaultCategoryDataset(getSeriesNames, getCategoryList(), datasetValues);	
 		return (new com.jrefinery.data.DefaultCategoryDataset(seriesNames, categoryList, datasetValues));
 	}
 
@@ -405,7 +299,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		
 		for( int i = 0; i < tSeries.length; i++)
 		{
-			if(( tSeries[i].getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == tSeries[i].getTypeMask())
+			if(GraphDataSeries.isValidIntervalType(tSeries[i].getTypeMask()))
 			{
 				if( tSeries[i].getPointId().equals(peakPointId))
 				{	//find the 'graph' point representing the peak point, if it exists!
@@ -440,13 +334,43 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		
 		// Set series names for each point.
 		Double[][] datasetValues = new Double[validSeriesLength ][];
-		for (int i = 0; i < validSeriesLength; i++)
+		
+		//This index holder is needed parrallel to i.
+		//When there is a null tSeries[i].getDataPairArray(), we have to ignore the i values interval 
+		//of the tree.get(keyArray[j]).  AKA...the i value can't be incremented, But because i is the 
+		//for loop index of the series, we need another representation of it, hence notNullValuesIndex.
+		int notNullValuesIndex = 0;
+		int allIndex = 0;
+		for (int i = 0; i < tSeries.length; i++)
 		{
-			datasetValues[i] = new Double[keyArray.length];
-			for (int j = 0; j < keyArray.length; j++)
+			if(GraphDataSeries.isValidIntervalType(tSeries[i].getTypeMask()))
 			{
-				Double[] values = (Double[])tree.get(keyArray[j]);
-				datasetValues[i][j] = values[i];
+				datasetValues[allIndex] = new Double[keyArray.length];
+				if( tSeries[i].getDataPairArray() != null)
+				{
+					for (int j = 0; j < keyArray.length; j++)
+					{
+						Double[] values = (Double[])tree.get(keyArray[j]);
+						datasetValues[allIndex][j] = values[notNullValuesIndex];
+					}
+					notNullValuesIndex++;
+					allIndex++;
+				}
+				else
+				{
+					if( tSeries[i].getPointId().equals(peakPointId))
+					{
+						// We take away the fact there is a peak point so that when we sort
+						//  the values, we are able to still show load duration.
+						peakPtIndex = -1;
+					}
+						
+					for (int j = 0; j < keyArray.length; j++)
+					{
+						datasetValues[allIndex][j]= null;
+					}
+					allIndex++;
+				}
 			}
 		}
 
@@ -513,13 +437,13 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 			// Have a peak point and need to sort peak values only!  Rest are coincidental on Peak Point!
 			if( dataSetValues[peakPtIndex] != null)
 			{
-				for (int j = 0; j < dataSetValues[peakPtIndex].length; j++)
+				for (int i = 0; i < dataSetValues[peakPtIndex].length; i++)
 				{
-					maxIndex = findMaxIndex(dataSetValues[peakPtIndex], j);
-					if( maxIndex != j)
+					maxIndex = findMaxIndex(dataSetValues[peakPtIndex], i);
+					if( maxIndex != i)
 					{
-						Double tempDataSetValue = dataSetValues[peakPtIndex][j];
-						dataSetValues[peakPtIndex][j] = dataSetValues[peakPtIndex][maxIndex];
+						Double tempDataSetValue = dataSetValues[peakPtIndex][i];
+						dataSetValues[peakPtIndex][i] = dataSetValues[peakPtIndex][maxIndex];
 						dataSetValues[peakPtIndex][maxIndex] = tempDataSetValue;
 						
 						for ( int x = 0; x < dataSetValues.length; x++)
@@ -527,8 +451,8 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 							// For all other points, sort according to the peak values' sorting.
 							if (x != peakPtIndex)
 							{
-								tempDataSetValue = dataSetValues[x][j];
-								dataSetValues[x][j] = dataSetValues[x][maxIndex];
+								tempDataSetValue = dataSetValues[x][i];
+								dataSetValues[x][i] = dataSetValues[x][maxIndex];
 								dataSetValues[x][maxIndex] = tempDataSetValue;
 							}
 						}						
@@ -538,34 +462,4 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		}
 		return dataSetValues;
 	}
-	/*
-	private static int getPeakPointIndex(TrendSerie [] tSeries, Integer peakPointId)
-	{
-		int peakPointIndex = -1;
-		for( int i = 0; i < tSeries.length; i++)
-		{
-			if(( tSeries[i].getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == tSeries[i].getTypeMask())			
-			{
-				if( tSeries[i].getPointId().equals(peakPointId))
-				{	//find the 'graph' point representing the peak point, if it exists!
-					peakPointIndex = validSeriesLength;
-				}
-			}
-		}
-		return peakPointIndex;
-	}
-	private static int getValidSeriesLength(TrendSerie [] tSeries)
-	{
-		int length = 0;
-		for( int i = 0; i < tSeries.length; i++)
-		{
-			if(( tSeries[i].getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == tSeries[i].getTypeMask())			
-			{
-				length++;
-			}
-		}
-		return length;
-	}*/
-
-	
 }
