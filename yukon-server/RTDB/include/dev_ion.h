@@ -39,6 +39,11 @@ protected:
 
     CtiTableDeviceMeterGroup MeterGroup;
 
+    enum IONConstants
+    {
+        IONRetries = 2
+    };
+
 public:
 
     typedef CtiDeviceRemote Inherited;
@@ -51,14 +56,14 @@ public:
     CtiDeviceION& operator=(const CtiDeviceION& aRef);
 
     //-------  these functions are copied from dev_meter to prevent nasty inheritance/decode problems.
-    virtual bool isMeter() const;
+/*    virtual bool isMeter() const;
     virtual RWCString getMeterGroupName() const;
     virtual RWCString getAlternateMeterGroupName() const;
 
     CtiTableDeviceMeterGroup  getMeterGroup() const;
     CtiTableDeviceMeterGroup& getMeterGroup();
     CtiDeviceION& setMeterGroup( const CtiTableDeviceMeterGroup & aMeterGroup );
-    //-------
+*/    //-------
 
     //  getSQL has been modified to left-outer-join the metergroup table so's ION meters can be selected
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
@@ -76,7 +81,7 @@ public:
     INT ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
     INT ErrorDecode (INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
-    virtual void processInboundPoints(RWTPtrSlist<CtiPointDataMsg> &ionPoints, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    virtual void processInboundPoints(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &ionPoints );
 };
 
 #endif //  #ifndef __DEV_ION_H__
