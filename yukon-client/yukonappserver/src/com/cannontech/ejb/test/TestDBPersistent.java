@@ -7,6 +7,8 @@ import javax.ejb.CreateException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import com.cannontech.database.data.device.LCUT3026;
+
 /**
  * @author rneuharth
  * Sep 23, 2002 at 2:55:35 PM
@@ -44,13 +46,13 @@ public class TestDBPersistent
                {
 com.cannontech.ejb.DBPersistent myBean = getHome().create(); //server
 
-com.cannontech.database.data.device.MCT360 y = (com.cannontech.database.data.device.MCT360)
+LCUT3026 y = (LCUT3026)
    com.cannontech.database.data.device.DeviceFactory.createDevice( 
-      com.cannontech.database.data.pao.DeviceTypes.MCT360 );
+      com.cannontech.database.data.pao.DeviceTypes.LCU_T3026);
 
-y.setDeviceID( new Integer(58) );
+y.setDeviceID( new Integer(3) );
       
-myBean.execute( com.cannontech.yukon.IDBPersistent.RETRIEVE, y ); //server
+y = (LCUT3026)myBean.execute( com.cannontech.yukon.IDBPersistent.RETRIEVE, y ); //server
 
 System.out.println( y.getPAOName() );
 
