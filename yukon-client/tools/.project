@@ -4,6 +4,8 @@
 	<comment></comment>
 	<projects>
 		<project>common</project>
+		<project>resource</project>
+		<project>yukonappclient</project>
 		<project>yukonappserver</project>
 	</projects>
 	<buildSpec>
