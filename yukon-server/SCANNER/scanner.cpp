@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/08/05 15:42:46 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/08/05 20:44:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -856,16 +856,7 @@ VOID ResultThread (VOID *Arg)
                     }
                 }
 
-                if(outList.entries())
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-
                 MakePorterRequests(outList);
-
 
                 // Write any results generated back to VanGogh
                 while(retList.entries())
