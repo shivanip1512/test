@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.134 $
-* DATE         :  $Date: 2005/02/20 04:00:06 $
+* REVISION     :  $Revision: 1.135 $
+* DATE         :  $Date: 2005/03/10 19:20:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -906,7 +906,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
         do
         {
             mashcnt = 0;
-        // Now go find any other RBPs that have matching Group and Area code bit patterns.
+            // Now go find any other RBPs that have matching Group and Area code bit patterns.
             while( NULL != (om = GetLGRippleGroupAreaBitMatch(Port, OutMessage)) )
             {
                 mashcnt++;
@@ -1203,51 +1203,53 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         if( Device->isSingle() )
                         {
-                            ds->recvCommRequest(OutMessage);
-                            while( !ds->isTransactionComplete() )
+                            if( !(status = ds->recvCommRequest(OutMessage)) )
                             {
-                                //  ACH - perhaps pass the VanGoghConnection object into the protocol,
-                                //          so it can send messages to Dispatch directly... ?
-                                ds->generate(trx);
-
-                                status = Port->outInMess(trx, Device, traceList);
-
-                                protocolStatus = ds->decode(trx, status);
-
-                                //  if we had no comm errors, copy over the protocol's status -
-                                //    it may've had non-comm-related errors (NACK, bad inbound address, etc)
-                                if( !status )
+                                while( !ds->isTransactionComplete() )
                                 {
-                                    status = protocolStatus;
+                                    //  ACH - perhaps pass the VanGoghConnection object into the protocol,
+                                    //          so it can send messages to Dispatch directly... ?
+                                    ds->generate(trx);
+
+                                    status = Port->outInMess(trx, Device, traceList);
+
+                                    protocolStatus = ds->decode(trx, status);
+
+                                    //  if we had no comm errors, copy over the protocol's status -
+                                    //    it may've had non-comm-related errors (NACK, bad inbound address, etc)
+                                    if( !status )
+                                    {
+                                        status = protocolStatus;
+                                    }
+
+                                    // Prepare for tracing
+                                    if(trx.doTrace(status))
+                                    {
+                                        Port->traceXfer(trx, traceList, Device, status);
+                                    }
+
+                                    DisplayTraceList(Port, traceList, true);
                                 }
 
-                                // Prepare for tracing
-                                if(trx.doTrace(status))
-                                {
-                                    Port->traceXfer(trx, traceList, Device, status);
-                                }
+                                //  send real pointdata messages here
+                                ds->sendDispatchResults(VanGoghConnection);
 
-                                DisplayTraceList(Port, traceList, true);
+                                //  send text results to Commander here via return string
+                                ds->sendCommResult(InMessage);
                             }
-
-                            //  send load profile results here
-                            //ds->sendDispatchResults();
-
-                            //  send results to Commander here via return string
-                            ds->sendCommResult(InMessage);
-
-                            queue< CtiVerificationBase * > verification_queue;
-
-                            ds->getVerificationObjects(verification_queue);
-
-                            PorterVerificationThread.push(verification_queue);
+                            else
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint - error \"" << status << "\" in recvCommRequest() for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+                            }
                         }
                         else
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << RWTime() << " **** Device \'" << Device->getName() << "\' has no protocol object, aborting communication **** " << endl;
+                                dout << RWTime() << " **** Checkpoint - device \'" << Device->getName() << "\' is not a CtiDeviceSingle, aborting communication **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
 
@@ -1264,7 +1266,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         ULONG bytesReceived = 0;
 
                         CtiDeviceKV2 *kv2dev    = ( CtiDeviceKV2 *)Device.get();
-                        CtiProtocolANSI &ansi   = kv2dev->getProtocol();
+                        CtiProtocolANSI &ansi   = kv2dev->getKV2Protocol();
 
                         //allocate some space
                         trx.setInBuffer( inBuffer );
@@ -1344,7 +1346,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         ULONG bytesReceived = 0;
 
                         CtiDeviceSentinel *sentinelDev    = ( CtiDeviceSentinel *)Device.get();
-                        CtiProtocolANSI &ansi   = sentinelDev->getProtocol();
+                        CtiProtocolANSI &ansi   = sentinelDev->getSentinelProtocol();
 
                         //allocate some space
                         trx.setInBuffer( inBuffer );
@@ -1423,7 +1425,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         int    error = 1;
 
                         CtiDeviceMarkV        *markv = ( CtiDeviceMarkV *)Device.get();
-                        CtiProtocolTransdata  &transdata = markv->getProtocol();
+                        CtiProtocolTransdata  &transdata = markv->getTransdataProtocol();
 
                         transdata.recvOutbound( OutMessage );
 
