@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/07/19 13:41:54 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/07/25 20:53:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,12 +71,40 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
     {
         case ControlRequest:
             {
-                int offset = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? 2 : 1;
+                int offset;
+                CtiDNPBinaryOutputControl::ControlCode controltype;
 
-                CtiProtocolDNP::XferPoint controlout;
-                controlout.type   = StatusOutputPointType;
-                controlout.offset = offset;
-                controlout.value  = 1;
+                if( parse.getFlags() & CMD_FLAG_OFFSET )
+                {
+                    offset = parse.getiValue("offset");
+
+                    if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
+                    {
+                        controltype = CtiDNPBinaryOutputControl::PulseOff;
+                    }
+                    else
+                    {
+                        controltype = CtiDNPBinaryOutputControl::PulseOn;
+                    }
+                }
+                else
+                {
+                    offset = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? 2 : 1;
+
+                    controltype = CtiDNPBinaryOutputControl::PulseOn;
+                }
+
+                CtiProtocolDNP::dnp_output_point controlout;
+
+                controlout.type = CtiProtocolDNP::DigitalOutput;
+
+                controlout.dout.control    = controltype;
+                controlout.dout.trip_close = CtiDNPBinaryOutputControl::NUL;
+                controlout.dout.on_time    = 0;
+                controlout.dout.off_time   = 0;
+                controlout.dout.count      = 1;
+                controlout.dout.queue      = false;
+                controlout.dout.clear      = false;
 
                 _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut, &controlout, 1);
 
@@ -111,12 +139,19 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
 
         case PutValueRequest:
             {
-                CtiProtocolDNP::XferPoint analogout;
-                analogout.type   = AnalogOutputPointType;
-                analogout.offset = parse.getiValue("offset");
-                analogout.value  = parse.getdValue("dial");
+                int offset;
 
-                _dnp.setCommand(CtiProtocolDNP::DNP_SetAnalogOut, &analogout, 1);
+                if( parse.getFlags() & CMD_FLAG_PV_ANALOG )
+                {
+                    CtiProtocolDNP::dnp_output_point controlout;
+
+                    controlout.type = CtiProtocolDNP::AnalogOutput;
+
+                    controlout.aout.value = parse.getiValue("analogvalue");
+                    controlout.offset     = parse.getiValue("analogoffset");
+
+                    _dnp.setCommand(CtiProtocolDNP::DNP_SetAnalogOut, &controlout, 1);
+                }
 
                 nRet = NoError;
 
@@ -151,24 +186,36 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
 }
 
 
-INT CtiDeviceCBC6510::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList)
+INT CtiDeviceCBC6510::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
-    RWTPtrSlist<CtiMessage> dnpPoints;
+    RWTPtrSlist<CtiPointDataMsg> dnpPoints;
 
     _dnp.commIn(InMessage, outList);
 
     if( _dnp.hasInboundPoints() )
     {
         _dnp.getInboundPoints(dnpPoints);
-    }
 
-    //  ACH: filter points
+        while( !dnpPoints.isEmpty() )
+        {
+            CtiPointDataMsg *tmpMsg = dnpPoints.removeFirst();
+            CtiPointBase *point;
+
+            //  !!! getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
+            if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
+            {
+                tmpMsg->setId(point->getID());
+
+                retList.append(tmpMsg);
+            }
+        }
+    }
 
     return ErrReturn;
 }
 
-INT CtiDeviceCBC6510::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+INT CtiDeviceCBC6510::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
     INT retCode = NORMAL;
 
