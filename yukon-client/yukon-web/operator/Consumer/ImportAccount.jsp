@@ -90,8 +90,8 @@
                     <td class="MainText"> 
                       <div align="center">Import the INI files before importing 
                         any other file. The S3DATA.INI file only needs to be imported 
-                        once. The STARS3.INI file must be re-imported every time 
-                        your session times out or the web server restarts.</div>
+                        once. The STARS3.INI file must be imported every time 
+                        after a new login.</div>
                     </td>
                   </tr>
                 </table>
