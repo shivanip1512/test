@@ -126,12 +126,14 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	else 
 	if(LOGOUT.equalsIgnoreCase(action)) {
 		HttpSession session = req.getSession();
+		
 		if(session != null) {
 			LiteYukonUser user = (LiteYukonUser) session.getAttribute(YUKON_USER);			
 			java.util.LinkedList savedUsers = (java.util.LinkedList) session.getAttribute(SAVED_YUKON_USERS);
 			session.invalidate();
 			
 			if(user != null) {
+				redirectURI = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_IN_URL);
 				ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged out from " + req.getRemoteAddr());
 			}
 			
@@ -142,29 +144,28 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 				session.setAttribute(YUKON_USER, savedUser);
 				if (savedUsers.size() > 0)
 					session.setAttribute(SAVED_YUKON_USERS, savedUsers);
-				
-				String loginUrl = AuthFuncs.getRolePropertyValue(savedUser, WebClientRole.LOG_IN_URL, LOGIN_URI);
-				Cookie c = new Cookie(LOGIN_URL_COOKIE, loginUrl);
-				c.setPath("/"+req.getContextPath());
-				c.setMaxAge(Integer.MAX_VALUE);
-				resp.addCookie(c);
 			}
 		}
-
+		
 		//Try to send them back to where they logged in from
-		Cookie[] cookies = req.getCookies();
-		if(cookies != null) {		
-			for(int i = 0; i < cookies.length; i++) {
-				Cookie c = cookies[i];
-				if(c.getName().equalsIgnoreCase(LOGIN_URL_COOKIE)) {
-					redirectURI = c.getValue();
+		if (redirectURI == null) {
+			Cookie[] cookies = req.getCookies();
+			if(cookies != null) {		
+				for(int i = 0; i < cookies.length; i++) {
+					Cookie c = cookies[i];
+					if(c.getName().equalsIgnoreCase(LOGIN_URL_COOKIE)) {
+						redirectURI = c.getValue();
+						break;
+					}
 				}
 			}
-		}					
-		
-		if (redirectURI == null) {
-			redirectURI = req.getContextPath() + LOGIN_URI; 
 		}
+		
+		if (redirectURI == null)
+			redirectURI = LOGIN_URI;
+		
+		if (redirectURI.startsWith("/"))
+			redirectURI = req.getContextPath() + redirectURI; 
 		
 		resp.sendRedirect(redirectURI);
 	} 
