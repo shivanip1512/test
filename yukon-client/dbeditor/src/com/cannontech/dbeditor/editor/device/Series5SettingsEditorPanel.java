@@ -344,6 +344,7 @@ private javax.swing.JLabel getJLabelStartCode() {
 			ivjJLabelStartCode.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelStartCode.setText("Start Code: ");
 			// user code begin {1}
+			ivjJLabelStartCode.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -366,6 +367,7 @@ private javax.swing.JLabel getJLabelStopCode() {
 			ivjJLabelStopCode.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelStopCode.setText("Stop Code: ");
 			// user code begin {1}
+			ivjJLabelStopCode.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -556,6 +558,7 @@ private javax.swing.JTextField getJTextFieldStartCode() {
 			ivjJTextFieldStartCode.setPreferredSize(new java.awt.Dimension(45, 20));
 			ivjJTextFieldStartCode.setMinimumSize(new java.awt.Dimension(45, 20));
 			// user code begin {1}
+			ivjJTextFieldStartCode.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -578,6 +581,7 @@ private javax.swing.JTextField getJTextFieldStopCode() {
 			ivjJTextFieldStopCode.setPreferredSize(new java.awt.Dimension(45, 20));
 			ivjJTextFieldStopCode.setMinimumSize(new java.awt.Dimension(45, 20));
 			// user code begin {1}
+			ivjJTextFieldStopCode.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
