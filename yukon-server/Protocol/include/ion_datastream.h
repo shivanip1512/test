@@ -54,7 +54,7 @@ public:
     void clearAndDestroy( void );
 
     CtiIONValue *at( int index ) const;
-    CtiIONValue *operator[]( int index ) const;
+    //CtiIONValue *operator[]( int index ) const;
 
     int  size( void ) const;
     bool empty( void ) const;

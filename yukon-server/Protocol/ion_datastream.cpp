@@ -101,7 +101,7 @@ CtiIONValue *CtiIONDataStream::at( int index ) const
 {
     CtiIONValue *retVal;
 
-    if( index < _streamValues.size() )
+    if( index >= 0 && index < _streamValues.size() )
     {
         retVal = _streamValues.at(index);
     }
@@ -113,12 +113,12 @@ CtiIONValue *CtiIONDataStream::at( int index ) const
     return retVal;
 }
 
-
+/*
 CtiIONValue *CtiIONDataStream::operator[]( int index ) const
 {
     return at(index);
 }
-
+*/
 
 CtiIONDataStream &CtiIONDataStream::push_back( CtiIONValue *toInsert )
 {
