@@ -11,7 +11,7 @@ public class PointLoader implements Runnable {
 	private java.util.ArrayList allPoints = null;
 	private String databaseAlias = null;
 /**
- * DeviceLoader constructor comment.
+ * PointLoader constructor comment.
  */
 public PointLoader(java.util.ArrayList pointArray, String alias) {
 	super();
@@ -39,7 +39,7 @@ timerStart = new java.util.Date();
 		"left outer join unitmeasure um " +
 		"on pu.uomid = um.uomid " +
 		"where p.POINTID > " + PointTypes.SYS_PID_SYSTEM +
-		"ORDER BY p.PAObjectID, p.POINTOFFSET";
+		" ORDER BY p.PAObjectID, p.POINTOFFSET";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
