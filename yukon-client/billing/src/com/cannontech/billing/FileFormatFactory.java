@@ -72,9 +72,10 @@ public final static FileFormatBase createFileFormat(int type)
 			retFFB = new CTIStandard2Format();
 			break;
 
-/*		case FileFormatTypes.MVRS:
+		case FileFormatTypes.MVRS:
 			retFFB =  new MVRSFormat();
 			break;
+/*
 		case FileFormatTypes.CTIStandard2:
 			retFFB = new CTIStandard2Format();
 			break;

@@ -7,6 +7,7 @@ package com.cannontech.billing;
  */
 import com.cannontech.billing.mainprograms.BillingFileDefaults;
 import com.cannontech.billing.record.BillingRecordBase;
+import com.cannontech.billing.record.MVRSRecord;
 
 public abstract class FileFormatBase
 {
@@ -111,13 +112,23 @@ public abstract class FileFormatBase
 	public StringBuffer getOutputAsStringBuffer()
 	{
 		StringBuffer returnBuffer = new StringBuffer();
-		java.util.Vector records = getRecordVector();
 		
-		for(int i=0;i<records.size();i++)
+		if( getBillingDefaults().getFormatID() == FileFormatTypes.MVRS)//special case!!!
 		{
-			String dataString = ((BillingRecordBase)records.get(i)).dataToString();
-			if( dataString != null)
-				returnBuffer.append(dataString);
+		    // create an instance of the record and call the dataToString, this reads a file instead
+		    // of being a preloaded vector of records from the database.
+		    MVRSRecord mvrsRecord = new MVRSRecord();
+		    mvrsRecord.setInputFile(getInputFileName());
+		    mvrsRecord.dataToString();
+		}
+		else
+		{
+			for(int i = 0; i < getRecordVector().size(); i++)
+			{
+				String dataString = ((BillingRecordBase)getRecordVector().get(i)).dataToString();
+				if( dataString != null)
+					returnBuffer.append(dataString);
+			}
 		}
 	
 		return returnBuffer;
