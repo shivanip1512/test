@@ -23,6 +23,7 @@ public final class FileFormatTypes {
 	public static final int CADPXL1 = 8;
 	public static final int CTIStandard2 = 9;
 	public static final int MVRS = 10;
+	public static final int MV_90 = 11;
 /*
 
 	
@@ -39,12 +40,12 @@ public final class FileFormatTypes {
 	//Set DEFAULT array values in case the table doesn't exist.
 	private static int[] validFormatIds =
 	{
-		SEDC, CADP, CADPXL2, WLT_40, CTICSV, OPU, DAFFRON, NCDC
+		SEDC, CADP, CADPXL2, WLT_40, CTICSV, OPU, DAFFRON, NCDC, MV_90
 	};
 	
 	private static String[] validFormatTypes =
 	{
-		"SEDC", "CADP", "CADPXL2", "WLT-40", "CTI-CSV", "OPU", "DAFFRON", "NCDC"
+		"SEDC", "CADP", "CADPXL2", "WLT-40", "CTI-CSV", "OPU", "DAFFRON", "NCDC", "MV-90 DATA Import"
 	};
 /*
 	//***  IF CHANGEING THESE, MUST DOUBLE CHECK THE QUERY THEY USE ***

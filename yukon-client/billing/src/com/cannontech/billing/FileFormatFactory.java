@@ -55,6 +55,10 @@ public final static FileFormatBase createFileFormat(int type)
 		case FileFormatTypes.DAFFRON:
 			retFFB =  new DAFFRONFormat();
 			break;
+
+		case FileFormatTypes.MV_90:
+			retFFB =  new MV_90Format();
+			break;
 			
 		default: //this is bad
 			throw new Error("FileFormatFactory::createFileFormat - Unrecognized file format type");

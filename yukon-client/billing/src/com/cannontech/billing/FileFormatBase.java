@@ -18,30 +18,45 @@ public abstract class FileFormatBase
 	public static BillingFileDefaults billingDefaults = null;
 	public java.util.Hashtable pointIDMultiplierHashTable = null;
 	
+	
 	public static final int validAnalogPtOffsets[] =
 	{
 		2, 3, 4, 5, 6, 7, 8, 9, 22, 24, 26, 28
 	};
 
+	
 	public static final int kwAnalogOffsets[] =
 	{
 		2, 4, 6, 8
 	};
-
+	
 	public static final int kwhAnalogOffsets[] =
 	{
 		3, 5, 7, 9
 	};
-
+	
 	public static final int kvarAnalogOffsets[] =
 	{
 		22, 24, 26, 28
 	};
-
+	
 	public static final int validAccPtOffsets[] =
 	{
 		1
 	};
+	
+	public static final int validDemandAccOffsets[] =
+	{
+		101, 102, 103, 104
+	};
+	
+	public static final int noOffsets_MASK = 0x0000;
+	public static final int validAnalogPtOffsets_MASK = 0x0001;
+	public static final int kwAnalogOffsets_MASK = 0x0002;
+	public static final int kwhAnalogOffsets_MASK = 0x0004;
+	public static final int kvarAnalogPtOffsets_MASK = 0x0008;
+	public static final int validAccPtOffsets_MASK = 0x0016;
+	public static final int kwDemandAccOffsets_MASK = 0x0032;
 
 /**
  * FileFormatBase constructor comment.
@@ -158,6 +173,17 @@ public boolean isKW(int offset)
 	for (int i = 0; i < kwAnalogOffsets.length; i++)
 	{
 		if( offset == kwAnalogOffsets[i])
+			return true;
+	}
+	return false;
+}
+
+
+public boolean isKW_demand(int offset) 
+{
+	for (int i = 0; i < validDemandAccOffsets.length; i++)
+	{
+		if( offset == validDemandAccOffsets[i])
 			return true;
 	}
 	return false;
