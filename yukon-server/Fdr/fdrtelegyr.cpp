@@ -678,6 +678,18 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                   }
                   api_disconnect( _controlCenter.getChannelID(), API_VALID );
                   setConnected( false );
+
+                  //9/27/04   let's just start this whole darn thing over, eh?
+                  int end = api_end();
+
+                  _inited = -1;  
+                  if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+                  {
+                     CtiLockGuard<CtiLogger> doubt_guard(dout);
+                     dout << RWTime::now() << " ---- API shutdown returned " << end << endl;
+                  }
+                  ///
+
                   badMsgCount = 0;
                }
             }
@@ -1190,9 +1202,6 @@ bool CtiFDRTelegyr::loadGroupLists( void )
       // if status is ok, we were able to read the database at least
       if( listStatus.errorCode() == ( RWDBStatus::ok ) )
       {
-         //delete our old list of points
-//         _controlCenter.deleteTelegyrGroupList();
-
          //===================================================================================
          //seeing occasional problems where we get empty data sets back and there should be 
          //info in them,  we're checking this to see if is reasonable if the list may now be 
@@ -1258,25 +1267,6 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                   translationPoint->getDestinationList()[x].setTranslation( pointStr );
 
                }
-/*
-               //we need to spin through the list
-               for( int i = 0; i < _controlCenter.getTelegyrGroupList().size(); i++ )
-               {
-                  RWCString type = _controlCenter.getTelegyrGroupList()[i].getGroupType();
-                  int interval = _controlCenter.getTelegyrGroupList()[i].getInterval();
-                  int size = _controlCenter.getTelegyrGroupList()[i].getPointList().size();
-                  type.toLower();
-                  pointType.toLower();
-
-//                  if(( type == pointType ) && ( interval == atoi( groupStr ) ) && ( size < 127 ))
-                  if( ( type == pointType ) && ( size < 127 ) )
-                  {
-                     _controlCenter.getTelegyrGroupList()[i].getPointList().push_back( *translationPoint );
-                     foundGroup = true;
-                     break;
-                  }
-               }
-*/
                for( int i = 0; i < groupList.size(); i++ )
                {
                   RWCString type = groupList[i].getGroupType();
@@ -1285,8 +1275,7 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                   type.toLower();
                   pointType.toLower();
 
-//                  if(( type == pointType ) && ( interval == atoi( groupStr ) ) && ( size < 127 ))
-                  if( ( type == pointType ) && ( size < 127 ) )
+                  if(( type == pointType ) && ( interval == atoi( groupStr ) ) && ( size < 127 ))
                   {
                      groupList[i].getPointList().push_back( *translationPoint );
                      foundGroup = true;
@@ -1294,7 +1283,6 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                   }
                }
 
-//               foundGroup=true;
                //we didn't stick the point anywhere, make a new group and put it there
                if( !foundGroup )
                {
@@ -1321,11 +1309,9 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                   tempGroup.setGroupID( groupNum );         
                   tempGroup.setGroupName( name );    
 
-//                  tempGroup.setInterval( atoi( groupStr ) );
                   tempGroup.setInterval( 120 );             //just temp until we fix MEC's database
                   tempGroup.setGroupType( pointType );
                   tempGroup.getPointList().push_back( *translationPoint );
-//                  _controlCenter.addToGroupList( tempGroup );
                   groupList.push_back( tempGroup );
                }
                else
