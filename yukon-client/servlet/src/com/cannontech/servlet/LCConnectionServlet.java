@@ -56,9 +56,6 @@ public com.cannontech.web.loadcontrol.LoadcontrolCache getCache() {
  * @return com.cannontech.macs.LClientConnection
  */
 public LoadControlClientConnection getConnection() {
-	System.out.println("returning connection!");
-	if( conn != null )
-		System.out.println("and its not null!");
 	return conn;
 }
 /**
