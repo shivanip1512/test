@@ -41,7 +41,8 @@ import com.cannontech.user.UserUtils;
 import com.cannontech.common.login.ClientSession;
 
 
-public class UserRolePanel extends com.cannontech.common.gui.util.DataInputPanel {
+public class UserRolePanel extends com.cannontech.common.gui.util.DataInputPanel implements TreeSelectionListener
+{
 	private javax.swing.JPanel ivjJPanelLoginDescription = null;
 	private javax.swing.JTree ivjJTreeRoles = null;
 	private javax.swing.JScrollPane ivjJScrollJTree = null;
@@ -457,6 +458,16 @@ private javax.swing.JTree getJTreeRoles() {
 			ivjJTreeRoles.expandPath( new TreePath(root.getPath()) );
 
 			ivjJTreeRoles.addMouseListener( getNodeListener() );
+            
+            ivjJTreeRoles.addMouseListener( new MouseAdapter()
+            {
+                public void mouseClicked(MouseEvent e)
+                {
+                    valueChanged( null );
+                }
+            });
+
+            //setRoleTabledEnabled(false);            
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -709,91 +720,84 @@ private void initConnections()
 	};	
 	getJTableProperties().addMouseListener( tableMl );
 
-
-
-
 	// add the TreeSelectionListener for the JTree
-	TreeSelectionListener treeSl = new TreeSelectionListener()
-	{
-		public void valueChanged(TreeSelectionEvent e) 
-		{
-			if( getJTableProperties().isEditing() )
-				getJTableProperties().getCellEditor().stopCellEditing();
-			
-			int selRow = getJTreeRoles().getMaxSelectionRow();
-			if(selRow != -1) 
-			{
-				TreeNode node = 
-					(TreeNode)getJTreeRoles().getPathForRow( selRow ).getLastPathComponent();
-
-				if( node instanceof LiteBaseNode )
-				{
-					LiteYukonRole ly =
-						(LiteYukonRole)((LiteBaseNode)node).getUserObject();
-					
-					getJTextPaneDescription().setText(
-						//ly.getRoleName() + " : " +
-						ly.getDescription() );
+	getJTreeRoles().addTreeSelectionListener( this );
 
 
-					getJTablePropertyModel().clear();
-					LiteYukonRoleProperty[] props = RoleFuncs.getRoleProperties( ly.getRoleID() );
+}
 
-					//sort by keys
-					Arrays.sort( props, LiteComparators.liteStringComparator );
-					for( int j = 0; j < props.length; j++ )
-						getJTablePropertyModel().addRolePropertyRow(
-								props[j],
-								getRoleValue(props[j].getRolePropertyID(), props[j].getDefaultValue()) );
-				
+public void valueChanged(TreeSelectionEvent e) 
+{
+    if( getJTableProperties().isEditing() )
+        getJTableProperties().getCellEditor().stopCellEditing();
+    
+    int selRow = getJTreeRoles().getMaxSelectionRow();
+    if(selRow != -1) 
+    {
+        TreeNode node = 
+            (TreeNode)getJTreeRoles().getPathForRow( selRow ).getLastPathComponent();
 
-
-					//if we are read only, dont do any enabling/disabling
-					if( isReadOnlyTree() )
-					{
-						//do nothing
-					}					
-					else if( !((CheckNode)node).isSelected() )
-					{
-						//always disable the property if the role is NOT selected
-						getJTableProperties().setEnabled( false );
-					}
-					else if( getRoleContainer() instanceof YukonGroup
-						  && getRoleContainer().getID().intValue() == YukonGroupRoleDefs.GRP_YUKON )
-					{
-						//allow the Yukon Group to edit any properties
-						getJTableProperties().setEnabled( true );
-					}
-					else
-					{
-						//if the ROLE_CATEGORY is SystemReserved, dont allow editing
-						getJTableProperties().setEnabled( 
-							!((LiteBaseNode)node).isSystemReserved() );
-					}
+        if( node instanceof LiteBaseNode )
+        {
+            LiteYukonRole ly =
+                (LiteYukonRole)((LiteBaseNode)node).getUserObject();
+            
+            getJTextPaneDescription().setText(
+                //ly.getRoleName() + " : " +
+                ly.getDescription() );
 
 
-				}
-				else
-				{
-					getJTablePropertyModel().clear();
-					getJTextPaneDescription().setText("");  //clear out any text
-				}
-				
-				
-				//this must fire here because the NodeCheckBox only fires these events
-				if( node instanceof CheckNode && !isReadOnlyTree() )
-					getJTableProperties().setEnabled( 
-								((CheckNode)node).isSelected() );
+            getJTablePropertyModel().clear();
+            LiteYukonRoleProperty[] props = RoleFuncs.getRoleProperties( ly.getRoleID() );
 
-				fireInputUpdate();				
-			}
+            //sort by keys
+            Arrays.sort( props, LiteComparators.liteStringComparator );
+            for( int j = 0; j < props.length; j++ )
+                getJTablePropertyModel().addRolePropertyRow(
+                        props[j],
+                        getRoleValue(props[j].getRolePropertyID(), props[j].getDefaultValue()) );
+        
 
-		}
 
-	};
+            //if we are read only, dont do any enabling/disabling
+            if( isReadOnlyTree() )
+            {
+                //do nothing
+            }                   
+            else if( !((CheckNode)node).isSelected() )
+            {
+                //always disable the property if the role is NOT selected
+                getJTableProperties().setEnabled( false );
+            }
+            else if( getRoleContainer() instanceof YukonGroup
+                  && getRoleContainer().getID().intValue() == YukonGroupRoleDefs.GRP_YUKON )
+            {
+                //allow the Yukon Group to edit any properties
+                getJTableProperties().setEnabled( true );
+            }
+            else
+            {
+                //if the ROLE_CATEGORY is SystemReserved, dont allow editing
+                getJTableProperties().setEnabled( 
+                    !((LiteBaseNode)node).isSystemReserved() );
+            }
 
-	getJTreeRoles().addTreeSelectionListener( treeSl );
 
+        }
+        else
+        {
+            getJTablePropertyModel().clear();
+            getJTextPaneDescription().setText("");  //clear out any text
+        }
+        
+        
+        //this must fire here because the NodeCheckBox only fires these events
+        if( node instanceof CheckNode && !isReadOnlyTree() )
+            getJTableProperties().setEnabled( 
+                        ((CheckNode)node).isSelected() );
+
+        fireInputUpdate();              
+    }
 
 }
 
@@ -883,13 +887,13 @@ public static void main(java.lang.String[] args) {
 		setRoleContainer( rc );
 
 
-/* *******
-
- RoleProperty has the DefaultValue for YukonGroupRole or YukonUserRole.
- YukonGroupRole and YukonUserRole have the exact same row count as RoleProperty 
-    if the user has the given YukonRole.
-    
-*******/ 
+       /* *******
+        *
+        * RoleProperty has the DefaultValue for YukonGroupRole or YukonUserRole.
+        * YukonGroupRole and YukonUserRole have the exact same row count as
+        * RoleProperty if the user has the given YukonRole.
+        *    
+        * *****/ 
 		for( int i = 0; i < rc.getYukonRoles().size(); i++ )
 		{
 			IDefinedYukonRole dbDefRole = (IDefinedYukonRole)rc.getYukonRoles().get(i);			
