@@ -20,5 +20,6 @@ public interface EnergyCompanyRole {
 	public static final int OPTOUT_COMMAND_FILE = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 4;
 	public static final int CUSTOMER_GROUP_IDS = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 5;
 	public static final int OPERATOR_GROUP_IDS = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 6;
+	public static final int TRACK_HARDWARE_ADDRESSING = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 7;
 
 }

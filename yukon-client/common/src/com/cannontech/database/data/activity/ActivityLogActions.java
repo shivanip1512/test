@@ -31,9 +31,14 @@ public interface ActivityLogActions
 	public static final String MANUAL_MACS_SCHEDULE_STOP_ACTION = "Manual MACS Schedule Stop";
 	
 	public static final String HARDWARE_CONFIGURATION_ACTION = "Hardware Configuration";
-	public static final String HARDWARE_SAVE_CONFIGURATION_ACTION = "Hardware Configuration - Save Only";
+	public static final String HARDWARE_CONFIGURATION_ACTION_SAVE_ONLY = "Hardware Configuration (Save Only)";
 	public static final String HARDWARE_ENABLE_ACTION = "Hardware Enable";
 	public static final String HARDWARE_DISABLE_ACTION = "Hardware Disable";
+	
+	public static final String INVENTORY_ADD_RANGE = "Inventory Add Range";
+	public static final String INVENTORY_UPDATE_RANGE = "Inventory Update Range";
+	public static final String INVENTORY_CONFIG_RANGE = "Inventory Config Range";
+	public static final String INVENTORY_DELETE_RANGE = "Inventory Delete Range";
 	
 	public static final String THERMOSTAT_MANUAL_ACTION = "Thermostat Manual";
 	public static final String THERMOSTAT_SCHEDULE_ACTION = "Thermostat Schedule";

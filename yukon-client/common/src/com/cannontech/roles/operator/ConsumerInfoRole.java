@@ -36,7 +36,6 @@ public interface ConsumerInfoRole {
 	public static final int ORDER_NUMBER_AUTO_GEN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 55;
 	public static final int CALL_NUMBER_AUTO_GEN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 56;
 	public static final int OPT_OUT_RULES = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 57;
-	public static final int TRACK_HARDWARE_ADDRESSING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 58;
 	
 	public static final int WEB_LINK_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2;
 	public static final int WEB_LINK_THERM_INSTRUCTIONS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 1;
