@@ -101,7 +101,7 @@ function confirm_form(f) {
                         <td width="21%" class="MainHeader" valign = "top"> 
                           <p align=RIGHT><b>Program:</b> 
                         </td>
-                        <td width="12%" class="MainHeader" valign = "top"><cti:select name="program" selectValues="<%= programIds %>" selectNames="<%= programNames %>" selectedValue="<%= checker.get("program") %>"/></td>
+                        <td width="12%" class="MainHeader" valign = "top"><cti:select name="program" selectValues="<%= programIds %>" selectNames="<%= programNames %>" selectedValue='<%= checker.get("program") %>'/></td>
                         <td width="21%" class="MainHeader" valign = "top"> 
                           <p align=RIGHT><b>Notify Date:</b> 
                         </td>

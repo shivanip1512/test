@@ -98,8 +98,8 @@
                     <input type=hidden name="notifytime" value="<%= notifyTimeStr %>">
                     <input type=hidden name="startdate" value="<%= curtailDateStr %>">
                     <input type=hidden name="starttime" value="<%= curtailTimeStr %>">
-                    <input type=hidden name="duration" value="<%= checker.get("duration") %>">
-                    <input type=hidden name="comments" value="<%= checker.get("comments") %>">
+                    <input type=hidden name="duration" value='<%= checker.get("duration") %>'>
+                    <input type=hidden name="comments" value='<%= checker.get("comments") %>'>
                     <b> NOTIFICATION - NEW</b><br><br>
 
                     <table width="250" border="1" cellspacing="0" cellpadding="4" align="center">

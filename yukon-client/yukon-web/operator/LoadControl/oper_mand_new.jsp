@@ -101,7 +101,7 @@ function confirm_form(f) {
             <td width="150" class="TableCell"> 
               <div align="right">&nbsp;Program:</div>
             </td>
-            <td width="150" class="TableCell"><cti:select name="program" selectValues="<%= programIds %>" selectNames="<%= programNames %>" selectedValue="<%= checker.get("program") %>"/> 
+            <td width="150" class="TableCell"><cti:select name="program" selectValues="<%= programIds %>" selectNames="<%= programNames %>" selectedValue='<%= checker.get("program") %>'/> 
             </td>
           </tr>
           <tr> 

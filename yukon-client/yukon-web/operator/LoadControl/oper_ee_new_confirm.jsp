@@ -98,7 +98,7 @@
 		
           <form action="oper_ee.jsp?tab=newconfirm" method="post"> 
           <input type=hidden name="confirmed" value="true">
-          <input type=hidden name="program" value="<%= checker.get("program") %>">
+          <input type=hidden name="program" value='<%= checker.get("program") %>'>
           <input type=hidden name="date" value="<%= dateStr %>">
           <input type=hidden name="notifydate" value="<%= notifyDateStr %>">
           <input type=hidden name="notifytime" value="<%= notifyTimeStr %>">
