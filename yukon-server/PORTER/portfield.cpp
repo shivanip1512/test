@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.123 $
-* DATE         :  $Date: 2004/11/17 23:44:47 $
+* REVISION     :  $Revision: 1.124 $
+* DATE         :  $Date: 2004/12/07 18:06:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2680,6 +2680,8 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
     case TYPE_CCU700:
     case TYPE_CCU710:
         {
+            unsigned short nack1, nack2;
+
             if(CommResult)
             {
                 InMessage->Buffer.DSt.Time     = InMessage->Time;
@@ -2687,18 +2689,19 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                 break;
             }
 
-            InMessage->InLength = OutMessage->InLength;
-
-            /* The data here is a CCU 700 type result */
-            if(OutMessage->EventCode & AWORD)
+            if( (status = NackTst(InMessage->Buffer.InMessage[0], &nack1, OutMessage->Remote)) ||
+                (status = NackTst(InMessage->Buffer.InMessage[1], &nack2, OutMessage->Remote)) )
             {
-                /* Make sure that we got back Acks */
-
+                nack1 = nack2 = 1;
             }
-            else if(OutMessage->EventCode & BWORD)
+
+
+            if( !nack1 && !nack2 )
             {
-                /* find out if this is a read or a write */
-                if(OutMessage->Buffer.BSt.IO & READ)
+                InMessage->InLength = OutMessage->InLength;
+
+                if( (OutMessage->EventCode     & BWORD) &&
+                    (OutMessage->Buffer.BSt.IO & READ ) )
                 {
                     DSTRUCT        DSt;
 
@@ -2708,10 +2711,10 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     DSt.DSTFlag = InMessage->MilliTime & DSTACTIVE;
                     InMessage->Buffer.DSt = DSt;
                 }
-                else
-                {
-                    /* This is a write so make sure we got back ACKS */
-                }
+            }
+            else
+            {
+                status = NACK1;
             }
 
             break;
