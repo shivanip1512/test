@@ -8,7 +8,6 @@ import com.cannontech.roles.*;
 public interface ConsumerInfoRole {
 	public static final int ROLEID = OperatorRoleDefs.CONSUMER_INFO_ROLEID;
 	
-	public static final int CONSUMER_INFO_NOT_IMPLEMENTED = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE;
 	public static final int CONSUMER_INFO_ACCOUNT_GENERAL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 1;
 	public static final int CONSUMER_INFO_ACCOUNT_RESIDENCE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 2;
 	public static final int CONSUMER_INFO_ACCOUNT_CALL_TRACKING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 3;
@@ -28,7 +27,6 @@ public interface ConsumerInfoRole {
 	public static final int CONSUMER_INFO_THERMOSTATS_ALL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 17;
 	public static final int CONSUMER_INFO_METERING_CREATE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 18;
 	
-	public static final int SUPER_OPERATOR = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 50;
 	public static final int NEW_ACCOUNT_WIZARD = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 51;
 	public static final int IMPORT_CUSTOMER_ACCOUNT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 52;
 	public static final int INVENTORY_CHECKING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 53;
