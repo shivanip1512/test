@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/05/05 15:31:42 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/06/28 16:40:40 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,8 +94,8 @@ void CtiDeviceMacro::getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelecto
 {
     Inherited::getSQL( db, keyTable, selector );
 
-    selector.where( keyTable["paoclass"] == RWDBExpr("GROUP") &&
-                    keyTable["type"]     == RWDBExpr("MACRO GROUP") &&
+    selector.where( rwdbUpper(keyTable["paoclass"]) == RWDBExpr("GROUP") &&
+                    rwdbUpper(keyTable["type"])     == RWDBExpr("MACRO GROUP") &&
                     selector.where( ) );
 }
 

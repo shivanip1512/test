@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_wnd.cpp-arc  $
-*    REVISION     :  $Revision: 1.8 $
-*    DATE         :  $Date: 2003/05/23 22:12:10 $
+*    REVISION     :  $Revision: 1.9 $
+*    DATE         :  $Date: 2004/06/28 16:40:40 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: tbl_dv_wnd.cpp,v $
+      Revision 1.9  2004/06/28 16:40:40  cplender
+      Added toUpper on the string responses to FORCE case insensitivity.
+
       Revision 1.8  2003/05/23 22:12:10  cplender
       Workning on making the alternatescan rate logic scan immediately and then at the alternate interval.
 
@@ -304,7 +307,7 @@ RWDBStatus CtiTableDeviceWindow::Restore()
     table["alternateclose"];
 
 //   selector.where( (table["deviceid"] == getDeviceID())) ;
-    selector.where( (table["deviceid"] == getID() ) && (table["type"] == desolveDeviceWindowType (getType())));
+    selector.where( (table["deviceid"] == getID() ) && (rwdbLower(table["type"]) == desolveDeviceWindowType (getType())));
 
     RWDBReader reader = selector.reader( conn );
 
@@ -378,7 +381,7 @@ RWDBStatus CtiTableDeviceWindow::Delete()
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBDeleter deleter = table.deleter();
 
-    deleter.where( table["deviceid"] == getID() && (table["type"] == desolveDeviceWindowType(getType())));
+    deleter.where( table["deviceid"] == getID() && (rwdbLower(table["type"]) == desolveDeviceWindowType(getType())));
     deleter.execute( conn );
     return deleter.status();
 }

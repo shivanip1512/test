@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/06/23 13:16:58 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/06/28 16:40:40 $
 *
 * HISTORY      :
 * $Log: dev_grp_golay.cpp,v $
+* Revision 1.5  2004/06/28 16:40:40  cplender
+* Added toUpper on the string responses to FORCE case insensitivity.
+*
 * Revision 1.4  2004/06/23 13:16:58  cplender
 * Added control_interval and control_reduction to the grp so the protocol doesn't need to set it.
 *
@@ -136,7 +139,7 @@ void CtiDeviceGroupGolay::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSel
     Inherited::getSQL(db, keyTable, selector);
     CtiTableSASimpleGroup::getSQL(db, keyTable, selector);
 
-    selector.where( keyTable["type"] == RWDBExpr("GOLAY GROUP") && selector.where() );
+    selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("GOLAY GROUP") && selector.where() );
 }
 
 //===================================================================================================================

@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/07/21 22:30:38 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/06/28 16:40:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -104,7 +104,7 @@ void CtiDeviceGroupEnergyPro::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWD
     Inherited::getSQL(db, keyTable, selector);
     CtiTableExpresscomLoadGroup::getSQL(db, keyTable, selector);
 
-    selector.where( keyTable["type"] == RWDBExpr("ENERGYPRO GROUP") && selector.where() );
+    selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("ENERGYPRO GROUP") && selector.where() );
 }
 
 void CtiDeviceGroupEnergyPro::DecodeDatabaseReader(RWDBReader &rdr)

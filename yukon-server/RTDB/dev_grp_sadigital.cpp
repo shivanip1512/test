@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/06/23 14:13:44 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/06/28 16:40:40 $
 *
 * HISTORY      :
 * $Log: dev_grp_sadigital.cpp,v $
+* Revision 1.4  2004/06/28 16:40:40  cplender
+* Added toUpper on the string responses to FORCE case insensitivity.
+*
 * Revision 1.3  2004/06/23 14:13:44  cplender
 * Added control_interval and control_reduction to the grp so the protocol doesn't need to set it.
 *
@@ -133,7 +136,7 @@ void CtiDeviceGroupSADigital::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWD
     Inherited::getSQL(db, keyTable, selector);
     CtiTableSASimpleGroup::getSQL(db, keyTable, selector);
 
-    selector.where( keyTable["type"] == RWDBExpr("SA-DIGITAL GROUP") && selector.where() );
+    selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("SA-DIGITAL GROUP") && selector.where() );
 }
 
 //===================================================================================================================

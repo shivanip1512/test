@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2004/06/23 18:39:32 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2004/06/28 16:41:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -743,7 +743,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         }
                         CtiDeviceIED().getSQL( db, keyTable, selector );
 
-                        selector.where( keyTable["type"] == "SIXNET" && selector.where() );
+                        selector.where( rwdbUpper(keyTable["type"]) == "SIXNET" && selector.where() );
                         if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
                         RWDBReader rdr = selector.reader(conn);
@@ -991,8 +991,8 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         }
                         CtiDeviceDLCBase().getSQL( db, keyTable, selector );
 
-                        selector.where( (keyTable["type"]==RWDBExpr("REPEATER 800") ||
-                                         keyTable["type"]==RWDBExpr("REPEATER")) && selector.where() );   // Need to attach a few conditions!
+                        selector.where( (rwdbUpper(keyTable["type"]) == RWDBExpr("REPEATER 800") ||
+                                         rwdbUpper(keyTable["type"]) == RWDBExpr("REPEATER")) && selector.where() );   // Need to attach a few conditions!
                         if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
                         RWDBReader rdr = selector.reader(conn);
@@ -1522,7 +1522,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for System Devices" << endl;
                         }
                         CtiDevice().getSQL( db, keyTable, selector );
-                        selector.where( keyTable["type"]==RWDBExpr("System") && selector.where() );   // Need to attach a few conditions!
+                        selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("SYSTEM") && selector.where() );   // Need to attach a few conditions!
                         if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
                         RWDBReader rdr = selector.reader(conn);

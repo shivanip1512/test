@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/03/18 22:12:42 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/06/28 16:40:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -104,7 +104,7 @@ void CtiDeviceGroupExpresscom::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RW
     Inherited::getSQL(db, keyTable, selector);
     CtiTableExpresscomLoadGroup::getSQL(db, keyTable, selector);
 
-    selector.where( keyTable["type"] == RWDBExpr("EXPRESSCOM GROUP") && selector.where() );
+    selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("EXPRESSCOM GROUP") && selector.where() );
 }
 
 void CtiDeviceGroupExpresscom::DecodeDatabaseReader(RWDBReader &rdr)

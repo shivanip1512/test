@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/03/13 19:36:03 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/06/28 16:41:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -144,7 +144,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for CCU, LCU, TCU, & CCURPT Routes" << endl;
                 }
                 CtiRouteCCU().getSQL( db, keyTable, selector );
-                selector.where( keyTable["category"] == RWDBExpr("ROUTE") && selector.where());
+                selector.where( rwdbUpper(keyTable["category"]) == RWDBExpr("ROUTE") && selector.where());
                 RWDBReader  rdr = selector.reader(conn);
                 if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {

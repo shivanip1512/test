@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/06/23 18:44:13 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/06/28 16:40:40 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -122,7 +122,7 @@ void CtiDeviceGroupSA205::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSel
     Inherited::getSQL(db, keyTable, selector);
     CtiTableSA205105Group::getSQL(db, keyTable, selector);
 
-    selector.where( keyTable["type"] == RWDBExpr("SA-205 GROUP") && selector.where() );
+    selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("SA-205 GROUP") && selector.where() );
 }
 
 //===================================================================================================================

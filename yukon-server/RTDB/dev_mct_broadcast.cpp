@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/02/11 00:19:03 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/06/28 16:40:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,7 @@ void CtiDeviceMCTBroadcast::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBS
 {
     Inherited::getSQL(db, keyTable, selector);
 
-    selector.where( keyTable["type"] == "MCT Broadcast" && selector.where() );
+    selector.where( rwdbUpper(keyTable["type"]) == "MCT BROADCAST" && selector.where() );
 }
 
 

@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/06/23 18:44:13 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/06/28 16:40:40 $
 *
 * HISTORY      :
 * $Log: dev_grp_sa305.cpp,v $
+* Revision 1.6  2004/06/28 16:40:40  cplender
+* Added toUpper on the string responses to FORCE case insensitivity.
+*
 * Revision 1.5  2004/06/23 18:44:13  cplender
 * Try that last checkin again... it builds right now.
 *
@@ -111,7 +114,7 @@ void CtiDeviceGroupSA305::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSel
     Inherited::getSQL(db, keyTable, selector);
     CtiTableSA305LoadGroup::getSQL(db, keyTable, selector);
 
-    selector.where( keyTable["type"] == RWDBExpr("SA-305 GROUP") && selector.where() );
+    selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("SA-305 GROUP") && selector.where() );
 }
 
 void CtiDeviceGroupSA305::DecodeDatabaseReader(RWDBReader &rdr)

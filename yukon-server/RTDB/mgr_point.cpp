@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2004/02/16 21:03:11 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2004/06/28 16:41:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -157,7 +157,7 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             /* Go after the system defined points! */
             CtiPointBase().getSQL( db, keyTable, selector );
             // Make sure I pick up only those devices which are System devices.
-            selector.where( keyTable["pointtype"] == RWDBExpr("System") && selector.where());
+            selector.where( rwdbUpper(keyTable["pointtype"]) == RWDBExpr("SYSTEM") && selector.where());
             if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
             if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
@@ -269,8 +269,8 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             /* Go after the calc points! */
             CtiPointNumeric().getSQL( db, keyTable, selector );
 
-            selector.where( ( keyTable["pointtype"] == RWDBExpr("Calculated") ||
-                              keyTable["pointtype"] == RWDBExpr("CalcAnalog")) && selector.where());
+            selector.where( ( rwdbUpper(keyTable["pointtype"]) == RWDBExpr("CALCULATED") ||
+                              rwdbUpper(keyTable["pointtype"]) == RWDBExpr("CALCANALOG")) && selector.where());
             if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
             if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
