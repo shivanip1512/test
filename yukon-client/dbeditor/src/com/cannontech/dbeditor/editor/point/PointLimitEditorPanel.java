@@ -741,7 +741,7 @@ private javax.swing.JTextField getLimit1HighTextField() {
 			ivjLimit1HighTextField.setMinimumSize(new java.awt.Dimension(44, 20));
 			// user code begin {1}
 
-			ivjLimit1HighTextField.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(-999999.999999, 999999.999999) );
+			ivjLimit1HighTextField.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(-1000000.999999, 1000000.999999) );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -770,7 +770,7 @@ private javax.swing.JTextField getLimit1LowTextField() {
 			ivjLimit1LowTextField.setMinimumSize(new java.awt.Dimension(44, 20));
 			// user code begin {1}
 
-			ivjLimit1LowTextField.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(-999999.999999, 999999.999999) );
+			ivjLimit1LowTextField.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(-1000000.999999, 1000000.999999) );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -828,7 +828,7 @@ private javax.swing.JTextField getLimit2HighTextField() {
 			ivjLimit2HighTextField.setMinimumSize(new java.awt.Dimension(44, 20));
 			// user code begin {1}
 			
-			ivjLimit2HighTextField.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(-999999.999999, 999999.999999) );
+			ivjLimit2HighTextField.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(-1000000.999999, 1000000.999999) );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -857,7 +857,7 @@ private javax.swing.JTextField getLimit2LowTextField() {
 			ivjLimit2LowTextField.setMinimumSize(new java.awt.Dimension(44, 20));
 			// user code begin {1}
 
-			ivjLimit2LowTextField.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(-999999.999999, 999999.999999) );
+			ivjLimit2LowTextField.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(-1000000.999999, 1000000.999999) );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -958,7 +958,7 @@ public Object getValue(Object val) {
 		}
 		catch( NumberFormatException n3 )
 		{
-			com.cannontech.clientutils.CTILogger.error( n3.getMessage(), n3 );
+			limit1Low = new Double(CtiUtilities.INVALID_MIN_DOUBLE);
 		}
 
 		limits.addElement( new com.cannontech.database.db.point.PointLimit( point.getPoint().getPointID(), 
@@ -986,7 +986,7 @@ public Object getValue(Object val) {
 		}
 		catch( NumberFormatException n5 )
 		{
-			com.cannontech.clientutils.CTILogger.error( n5.getMessage(), n5 );
+			limit2Low = new Double(CtiUtilities.INVALID_MIN_DOUBLE);
 		}
 		
 		limits.addElement( new com.cannontech.database.db.point.PointLimit( point.getPoint().getPointID(), 
@@ -1126,52 +1126,74 @@ public boolean isInputValid()
 		return false;
 	}
 
-
 	//Check limit 1 range
 	if( getLimit1CheckBox().isSelected() )
 	{
 		try
 		{
 			high = new Double(getLimit1HighTextField().getText());
-			low = new Double(getLimit1LowTextField().getText());
-
-			if( high.doubleValue() < low.doubleValue() )
-			{
-				setErrorString("High limit 1 can not be less than the low limit 1");
-				return false;
-			}
 			
 		}
 		catch( NumberFormatException e )
 		{
-			setErrorString("The high limit 1 and the low limit 1 must be numbers");
+			setErrorString("High limit 1 must have a numeric value");
 			return false;
 		}
 	}
 	
-
+	if( getLimit1CheckBox().isSelected() )
+	{
+		try
+		{
+			low = new Double(getLimit1LowTextField().getText());
+		}
+		catch( NumberFormatException e )
+		{
+			//do nothing
+			//low, unlike the high limit, can be unspecified.
+		}
+	}
+		
+	if( high.doubleValue() < low.doubleValue() )
+	{
+		setErrorString("High limit 1 can not be less than the low limit 1");
+		return false;
+	}
+	
 	//Check limit 2 range
 	if( getLimit2CheckBox().isSelected() )
 	{
 		try
 		{
 			high = new Double(getLimit2HighTextField().getText());
-			low = new Double(getLimit2LowTextField().getText());
-
-			if( high.doubleValue() < low.doubleValue() )
-			{
-				setErrorString("High limit 2 can not be less than the low limit 2");
-				return false;
-			}
-			
 		}
 		catch( NumberFormatException e )
 		{
-			setErrorString("The high limit 2 and the low limit 2 must be numbers");
+			setErrorString("High limit 2 must have a numeric value");
 			return false;
 		}
 	}
+	
+	if( getLimit2CheckBox().isSelected() )
+	{
+		try
+		{
+			low = new Double(getLimit2LowTextField().getText());
+		}
 		
+		catch( NumberFormatException e )
+		{
+			//do nothing
+			//low, unlike the high limit, can be unspecified.
+		}
+	}
+	
+	if( high.doubleValue() < low.doubleValue() )
+		{
+			setErrorString("High limit 2 can not be less than the low limit 2");
+			return false;
+		}
+			
 	return true;
 }
 /**
@@ -1244,7 +1266,8 @@ public void setValue(Object val)
 	com.cannontech.database.data.point.ScalarPoint point = (com.cannontech.database.data.point.ScalarPoint) val;
 
 	java.util.Vector limits = point.getPointLimitsVector();
-
+	Double noSpecifiedLow = new Double(CtiUtilities.INVALID_MIN_DOUBLE);
+		
 	//If point limits exist fill in the fields
 	if( limits != null )
 	{		
@@ -1257,11 +1280,12 @@ public void setValue(Object val)
 			{	//Handle Limit 1
 				Double highLimit = pLimit.getHighLimit();
 				Double lowLimit = pLimit.getLowLimit();
+				
 
 				if( highLimit != null )
 					getLimit1HighTextField().setText( highLimit.toString());
 
-				if( lowLimit != null )
+				if( lowLimit != null && !lowLimit.equals(noSpecifiedLow))
 					getLimit1LowTextField().setText( lowLimit.toString() );
 
 				getLimit1CheckBox().setSelected(true);
@@ -1276,7 +1300,7 @@ public void setValue(Object val)
 				if( highLimit != null )
 					getLimit2HighTextField().setText( highLimit.toString());
 
-				if( lowLimit != null )
+				if( lowLimit != null && !lowLimit.equals(noSpecifiedLow))
 					getLimit2LowTextField().setText( lowLimit.toString() );
 
 				getLimit2CheckBox().setSelected(true);
