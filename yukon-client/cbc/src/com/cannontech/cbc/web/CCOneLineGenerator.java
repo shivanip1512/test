@@ -32,6 +32,9 @@ public class CCOneLineGenerator {
 	private static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
 	
 	public static Drawing generateSVGFileFromSubBus(SubBus subBus) {
+		return generateSVGFileFromSubBus(subBus,"../AllSubs.jsp");
+	}
+	public static Drawing generateSVGFileFromSubBus(SubBus subBus, String allSubsJSP) {
 		
 		Drawing d = new Drawing();
 		LxGraph graph = d.getLxGraph();
@@ -231,6 +234,12 @@ public class CCOneLineGenerator {
 		nameString.setFont(new java.awt.Font("arial", java.awt.Font.BOLD, 16));
 		nameString.setPaint(Color.WHITE);
 		nameString.setText("Sub Bus: "+subBus.getCcName());
+
+		StaticImage allSubsLinkBackButton = new StaticImage();
+		allSubsLinkBackButton.setYukonImage("SubListButton.gif");
+		allSubsLinkBackButton.setCenter(1024-subInfoHorzPosition,subLineLevel-(subInfoVertOffset*1.5));
+		allSubsLinkBackButton.setLinkTo(allSubsJSP);
+		graph.add(allSubsLinkBackButton);
 
 		DrawingUpdater updater = new DrawingUpdater(d);
 		updater.updateDrawing();
