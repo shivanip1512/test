@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2004/03/18 19:57:40 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2004/04/29 20:08:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -729,40 +729,44 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                     did = pPoint->getDeviceID();
                                 }
 
-                                CtiPendingPointOperations pendingControlRequest(pPoint->getID());
-                                pendingControlRequest.setType(CtiPendingPointOperations::pendingControl);
-                                pendingControlRequest.setControlState( CtiPendingPointOperations::controlSentToPorter );
-                                pendingControlRequest.setTime( Cmd->getMessageTime() );
-                                pendingControlRequest.setControlCompleteValue( (DOUBLE) rawstate );
-                                pendingControlRequest.setControlTimeout( pPoint->getControlExpirationTime() );
-
-                                pendingControlRequest.getControl().setPAOID( did );
-                                pendingControlRequest.getControl().setStartTime(RWTime(YUKONEOT));
-
-                                RWCString devicename= resolveDeviceName(*pPoint);
-                                CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), Cmd->getUser());
-
-                                if(pFailSig->getSignalCategory() > SignalEvent)
+                                if(isDeviceGroupType(did))      // Only group class paos can accumulate control history.
                                 {
-                                    pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_UNACKNOWLEDGED_ALARM);
-                                    pFailSig->setLogType(AlarmCategoryLogType);
+                                    CtiPendingPointOperations pendingControlRequest(pPoint->getID());
+                                    pendingControlRequest.setType(CtiPendingPointOperations::pendingControl);
+                                    pendingControlRequest.setControlState( CtiPendingPointOperations::controlSentToPorter );
+                                    pendingControlRequest.setTime( Cmd->getMessageTime() );
+                                    pendingControlRequest.setControlCompleteValue( (DOUBLE) rawstate );
+                                    pendingControlRequest.setControlTimeout( pPoint->getControlExpirationTime() );
+
+                                    pendingControlRequest.getControl().setPAOID( did );
+                                    pendingControlRequest.getControl().setStartTime(RWTime(YUKONEOT));
+
+                                    RWCString devicename= resolveDeviceName(*pPoint);
+                                    CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), Cmd->getUser());
+
+                                    if(pFailSig->getSignalCategory() > SignalEvent)
+                                    {
+                                        pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_UNACKNOWLEDGED_ALARM);
+                                        pFailSig->setLogType(AlarmCategoryLogType);
+                                    }
+                                    pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
+
+                                    pendingControlRequest.setSignal( pFailSig );
+
+                                    addToPendingSet(pendingControlRequest, Cmd->getMessageTime());
+
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " " << devicename << " / " << pPoint->getName() << " has gone CONTROL SUBMITTED. Control expires at " << RWTime( Cmd->getMessageTime() + pPoint->getControlExpirationTime()) << endl;
+                                    }
+
+                                    CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", RWCString(), GeneralLogType, SignalEvent, Cmd->getUser());
+                                    MainQueue_.putQueue( pCRP );
+                                    pCRP = 0;
+
+                                    pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
                                 }
-                                pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
 
-                                pendingControlRequest.setSignal( pFailSig );
-
-                                addToPendingSet(pendingControlRequest, Cmd->getMessageTime());
-
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " " << devicename << " / " << pPoint->getName() << " has gone CONTROL SUBMITTED. Control expires at " << RWTime( Cmd->getMessageTime() + pPoint->getControlExpirationTime()) << endl;
-                                }
-
-                                CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", RWCString(), GeneralLogType, SignalEvent, Cmd->getUser());
-                                MainQueue_.putQueue( pCRP );
-                                pCRP = 0;
-
-                                pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
                                 writeControlMessageToPIL(did, rawstate, (CtiPointStatus*)pPoint, Cmd);
                             }
                         }
@@ -1225,7 +1229,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
             {
                 if( aPD.getTime() >= pDyn->getTimeStamp() || (aPD.getTags() & TAG_POINT_FORCE_UPDATE) )
                 {
-                    if( pDyn->getDispatch().getTags() & (MASK_ANY_SERVICE_DISABLE | MASK_ANY_CONTROL_DISABLE) )
+                    if( pDyn->getDispatch().getTags() & MASK_ANY_SERVICE_DISABLE ) // (MASK_ANY_SERVICE_DISABLE | MASK_ANY_CONTROL_DISABLE) )
                     {
                         // This one cannot go unless manual tag is set.
                         if(aPD.getQuality() == ManualQuality)
@@ -2555,17 +2559,27 @@ void CtiVanGogh::writeCommErrorHistoryToDB(bool justdoit)
                 CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                 RWDBConnection conn = getConnection();
                 {
+                    RWDBStatus dbstat = conn.beginTransaction(commError);
 
-                    conn.beginTransaction(commError);
-
-                    while( conn.isValid() && ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _commErrorHistoryQueue.getQueue(0)) != NULL)
+                    while( dbstat.isValid() && conn.isValid() && ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _commErrorHistoryQueue.getQueue(0)) != NULL)
                     {
-                        if(isDeviceIdValid(pTblEntry->getPAOID()))
+                        if(pTblEntry)
                         {
-                            panicCounter++;
-                            pTblEntry->Insert(conn);
+                            if(isDeviceIdValid(pTblEntry->getPAOID()))
+                            {
+                                panicCounter++;
+                                dbstat = pTblEntry->Insert(conn);
+                            }
+                            delete pTblEntry;
+                            pTblEntry = 0;
                         }
-                        delete pTblEntry;
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
                     }
 
                     conn.commitTransaction(commError);
@@ -3916,7 +3930,7 @@ void CtiVanGogh::doPendingOperations()
                             continue;   // iterator has been repositioned!
                         }
                         else if(ppo.getControlState() == CtiPendingPointOperations::controlPending &&
-                           now.seconds() > ppo.getTime().seconds() + (ULONG)ppo.getControlTimeout())
+                                now.seconds() > ppo.getTime().seconds() + (ULONG)ppo.getControlTimeout())
                         {
                             // Post a message about the time out situation.
                             CtiSignalMsg *pOrig = ppo.getSignal();
@@ -4165,6 +4179,18 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
 
                 if(guard.isAcquired())
                 {
+                    if(pChg && pChg->getTypeOfChange() == ChangeTypeDelete)
+                    {
+                        // The device has been deleted.  Knock down all the device lites for a reload!!
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Device delete for PAO id " << pChg->getId() << endl;
+                        }
+
+                        _deviceLiteSet.clear();          // All stategroups will be reloaded on their next usage..  This shouldn't happen very often
+                    }
+
                     id = ((pChg == NULL) ? 0 : pChg->getId());
 
                     Now = Now.now();
@@ -5049,20 +5075,20 @@ void CtiVanGogh::VGDBWriterThread()
         {
             try
             {
-            if(!(++sanity % SANITY_RATE))
-            {
+                if(!(++sanity % SANITY_RATE))
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Dispatch DB Writer Thread Active " << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Dispatch DB Writer Thread Active " << endl;
+                    }
+                    reportOnThreads();
                 }
-                reportOnThreads();
+
+                rwSleep(1000);
+
+                writeLMControlHistoryToDB();
+                writeCommErrorHistoryToDB();
             }
-
-            rwSleep(1000);
-
-            writeLMControlHistoryToDB();
-            writeCommErrorHistoryToDB();
-        }
             catch(...)
             {
                 {
@@ -5125,16 +5151,19 @@ CtiVanGogh::CtiDeviceLiteSet_t::iterator CtiVanGogh::deviceLiteFind(const LONG p
     if( dliteit == _deviceLiteSet.end() )
     {
         // We need to load it up, and/or then insert it!
-        dLite.Restore();
+        RWDBStatus dbstat = dLite.Restore();
 
-        pair< CtiDeviceLiteSet_t::iterator, bool > resultpair;
-
-        // Try to insert. Return indicates success.
-        resultpair = _deviceLiteSet.insert( dLite );
-
-        if(resultpair.second == true)
+        if(dbstat.errorCode() == RWDBStatus::ok)
         {
-            dliteit = resultpair.first;      // Iterator which points to the set entry.
+            pair< CtiDeviceLiteSet_t::iterator, bool > resultpair;
+
+            // Try to insert. Return indicates success.
+            resultpair = _deviceLiteSet.insert( dLite );
+
+            if(resultpair.second == true)
+            {
+                dliteit = resultpair.first;      // Iterator which points to the set entry.
+            }
         }
     }
 
