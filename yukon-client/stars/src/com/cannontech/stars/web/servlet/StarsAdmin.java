@@ -24,6 +24,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -62,6 +63,7 @@ import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.DeleteCustAccountsTask;
 import com.cannontech.stars.util.task.DeleteEnergyCompanyTask;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.action.GetEnergyCompanySettingsAction;
 import com.cannontech.stars.web.action.UpdateThermostatScheduleAction;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.AnswerType;
@@ -80,7 +82,7 @@ import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
-import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
@@ -130,6 +132,29 @@ public class StarsAdmin extends HttpServlet {
 		String action = req.getParameter( "action" );
 		if (action == null) action = "";
 		
+		if (action.equalsIgnoreCase("RefreshCache")) {
+			if (req.getParameter("Range").equalsIgnoreCase("All")) {
+				SOAPServer.refreshCache();
+			}
+			else if (req.getParameter("Range").equalsIgnoreCase("EnergyCompany")) {
+				LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+				energyCompany.clear();
+			}
+		 	
+			if (session != null) session.invalidate();
+			resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL );
+			return;
+		}
+        
+		if (user.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null
+			&& !action.equalsIgnoreCase("SwitchContext")
+			&& !action.equalsIgnoreCase("RestoreContext"))
+		{
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Operation not allowed because you are currently checking information of a member. To make any changes, you must first log into the member energy company through \"Member Management\"." );
+			resp.sendRedirect( referer );
+			return;
+		}
+		
 		if (action.equalsIgnoreCase("DeleteCustAccounts"))
 			deleteCustomerAccounts( user, req, session );
 		else if (action.equalsIgnoreCase("UpdateAddress"))
@@ -168,6 +193,10 @@ public class StarsAdmin extends HttpServlet {
 			deleteOperatorLogin( user, req, session );
 		else if (action.equalsIgnoreCase("MemberLogin"))
 			memberLogin( user, req, session );
+		else if (action.equalsIgnoreCase("SwitchContext"))
+			switchContext( user, req, session );
+		else if (action.equalsIgnoreCase("RestoreContext"))
+			restoreContext( user, req, session );
         
     	resp.sendRedirect( redirect );
 	}
@@ -220,8 +249,8 @@ public class StarsAdmin extends HttpServlet {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
-			StarsGetEnergyCompanySettingsResponse ecSettings =
-					(StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+			StarsEnergyCompanySettings ecSettings =
+					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsCustomerAddress starsAddr = null;
 			
 			int addressID = Integer.parseInt( req.getParameter("AddressID") );
@@ -278,8 +307,8 @@ public class StarsAdmin extends HttpServlet {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
-			StarsGetEnergyCompanySettingsResponse ecSettings =
-					(StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+			StarsEnergyCompanySettings ecSettings =
+					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnergyCompany ec = ecSettings.getStarsEnergyCompany();
         	
 			// Create the data object from the request parameters
@@ -715,8 +744,8 @@ public class StarsAdmin extends HttpServlet {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
         try {
-			StarsGetEnergyCompanySettingsResponse ecSettings =
-					(StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+			StarsEnergyCompanySettings ecSettings =
+					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnrollmentPrograms starsAppCats = ecSettings.getStarsEnrollmentPrograms();
 			
 			int applianceCategoryID = Integer.parseInt( req.getParameter("AppCatID") );
@@ -963,8 +992,8 @@ public class StarsAdmin extends HttpServlet {
         	else
 	        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service company information updated successfully");
         }
-        catch (ServletException se) {
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, se.getMessage());
+        catch (WebClientException we) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, we.getMessage());
 			redirect = referer;
         }
         catch (Exception e) {
@@ -1126,8 +1155,8 @@ public class StarsAdmin extends HttpServlet {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
         try {
-			StarsGetEnergyCompanySettingsResponse ecSettings =
-					(StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+			StarsEnergyCompanySettings ecSettings =
+					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsCustomerFAQs starsFAQs = ecSettings.getStarsCustomerFAQs();
 			
 			String[] subjectIDs = req.getParameterValues("SubjectIDs");
@@ -1165,8 +1194,8 @@ public class StarsAdmin extends HttpServlet {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
         try {
-			StarsGetEnergyCompanySettingsResponse ecSettings =
-					(StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+			StarsEnergyCompanySettings ecSettings =
+					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsCustomerFAQs starsFAQs = ecSettings.getStarsCustomerFAQs();
 			
 			int subjectID = Integer.parseInt( req.getParameter("SubjectID") );
@@ -1281,8 +1310,8 @@ public class StarsAdmin extends HttpServlet {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
         try {
-			StarsGetEnergyCompanySettingsResponse ecSettings =
-					(StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+			StarsEnergyCompanySettings ecSettings =
+					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsCustomerFAQs starsFAQs = ecSettings.getStarsCustomerFAQs();
 			
 			int subjectID = Integer.parseInt( req.getParameter("SubjectID") );
@@ -1338,8 +1367,8 @@ public class StarsAdmin extends HttpServlet {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
         try {
-			StarsGetEnergyCompanySettingsResponse ecSettings =
-					(StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+			StarsEnergyCompanySettings ecSettings =
+					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsExitInterviewQuestions starsExitQuestions = ecSettings.getStarsExitInterviewQuestions();
 			
 			String type = req.getParameter("type");
@@ -1834,6 +1863,8 @@ public class StarsAdmin extends HttpServlet {
 			String operGroupName = "";
 			for (int i = 0; i < operGroupNames.length; i++) {
 				String groupName = operGroupNames[i].trim();
+				if (groupName.equals("")) continue;
+				
 				LiteYukonGroup group = AuthFuncs.getGroup( groupName );
 				if (group == null)
 					throw new WebClientException( "Operator group '" + groupName + "' doesn't exist");
@@ -1849,6 +1880,8 @@ public class StarsAdmin extends HttpServlet {
 			String custGroupName = "";
 			for (int i = 0; i < custGroupNames.length; i++) {
 				String groupName = custGroupNames[i].trim();
+				if (groupName.equals("")) continue;
+				
 				LiteYukonGroup group = AuthFuncs.getGroup( groupName );
 				if (group == null)
 					throw new WebClientException( "Customer group '" + groupName + "' doesn't exist");
@@ -2017,6 +2050,51 @@ public class StarsAdmin extends HttpServlet {
 			e.printStackTrace();
 			redirect = redir;
 		}
+	}
+	
+	public static void doSwitchContext(StarsYukonUser user, int contextID, String backURL) throws WebClientException {
+		if (contextID == user.getEnergyCompanyID()) return;
+		if (backURL == null) backURL = CtiUtilities.STRING_NONE;
+		
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany member = SOAPServer.getEnergyCompany( contextID );
+		
+		ArrayList loginIDs = energyCompany.getMemberLoginIDs();
+		for (int i = 0; i < loginIDs.size(); i++) {
+			LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( ((Integer) loginIDs.get(i)).intValue() );
+			if (EnergyCompanyFuncs.getEnergyCompany( liteUser ).getEnergyCompanyID() == contextID) {
+				StarsYukonUser starsUser = SOAPServer.getStarsYukonUser( liteUser );
+				
+				GetEnergyCompanySettingsAction.storeEnergyCompanySettings(
+						user, member.getStarsEnergyCompanySettings(starsUser) );
+				user.setAttribute( ServletUtils.ATT_CONTEXT_SWITCHED, backURL );
+				return;
+			}
+		}
+		
+		throw new WebClientException( "No login assigned to member '" + member.getName() + "'" );
+	}
+	
+	private void switchContext(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		int contextID = Integer.parseInt( req.getParameter("ContextID") );
+		try {
+			doSwitchContext( user, contextID, referer );
+		}
+		catch (WebClientException e) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
+		}
+	}
+	
+	private void restoreContext(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
+		GetEnergyCompanySettingsAction.storeEnergyCompanySettings(
+				user, energyCompany.getStarsEnergyCompanySettings(user) );
+		
+		String backURL = (String) user.getAttribute( ServletUtils.ATT_CONTEXT_SWITCHED );
+		if (backURL != null) redirect = backURL;
+		
+		user.removeAttribute( ServletUtils.ATT_CONTEXT_SWITCHED );
 	}
 	
 }
