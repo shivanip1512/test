@@ -224,8 +224,7 @@ alter table ContactNotification
 go
 alter TABLE YukonRole add RoleDescription VARCHAR(200) not null DEFAULT '(none)'
 go
-insert into YukonRole values(-104,'WEB_OPERATOR','WebClient','(none)', '(none)')
-go
+
 
 insert into DeviceMeterGroup 
 select paobjectid, 'Default', 'Default', paoname, 'Default' from YukonPAObject
@@ -252,6 +251,31 @@ ConfigurationID
 go
 
 
+delete from yukongrouprole where roleid=-101 or roleid=-102 or roleid=-104;
+delete from yukonuserrole where roleid=-101 or roleid=-102 or roleid=-104;
+delete from yukonrole where roleid=-101 or roleid=-102 or roleid=-104;
+go
+
+
+insert into YukonRole values(-101,'WEB_OPERATOR','WebClient','(none)','(none)');
+insert into YukonRole values(-102,'WEB_RESIDENTIAL_CUSTOMER','WebClient','(none)','(none)');
+insert into YukonRole values(-103,'WEB_CICUSTOMER','WebClient','(none)','(none)');
+
+insert into YukonRole values(-120,'OPERATOR_CONSUMER_INFO','WebClient','(none)','(none)');
+insert into YukonRole values(-121,'OPERATOR_COMMERCIAL_METERING','WebClient','(none)','(none)');
+insert into YukonRole values(-122,'OPERATOR_LOADCONTROL','WebClient','(none)','(none)');
+insert into YukonRole values(-123,'OPERATOR_HARDWARE_INVENTORY','WebClient','(none)','(none)');
+insert into YukonRole values(-124,'OPERATOR_WORK_ORDERS','WebClient','(none)','(none)');
+insert into YukonRole values(-125,'OPERATOR_ADMINISTRATION','WebClient','(none)','(none)');
+
+insert into YukonRole values(-130,'OPERATOR_DIRECT_CONTROL','WebClient','(none)','(none)');
+insert into YukonRole values(-131,'OPERATOR_CURTAILMENT','WebClient','(none)','(none)');
+insert into YukonRole values(-132,'OPERATOR_ENERGY_EXCHANGE','WebClient','(none)','(none)');
+
+insert into YukonRole values(-140,'CICUSTOMER_DIRECT_CONTROL','WebClient','(none)','(none)');
+insert into YukonRole values(-141,'CICUSTOMER_CURTAILMENT','WebClient','(none)','(none)');
+insert into YukonRole values(-142,'CICUSTOMER_ENERGY_EXCHANGE','WebClient','(none)','(none)');
+
 insert into YukonRole values(-150,'LOADCONTROL_CONTROL_ODDS','LoadControl','(none)','(none)');
 insert into YukonRole values(-151,'CONSUMERINFO_NOT_IMPLEMENTED','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-160,'CONSUMERINFO_ACCOUNT','ConsumerInfo','(none)','(none)');
@@ -276,4 +300,82 @@ insert into YukonRole values(-178,'CONSUMERINFO_QUESTIONS','ConsumerInfo','(none
 insert into YukonRole values(-179,'CONSUMERINFO_ACCOUNT_RESIDENCE','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-180,'CONSUMERINFO_QUESTIONS_UTIL','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-181,'CONSUMERINFO_QUESTIONS_FAQ','ConsumerInfo','(none)','(none)');
+go
+
+
+insert into YukonRole values(-1000,'WEB_OPERATOR_SUPER','WebClient','(none)','(none)');
+insert into YukonRole values(-1001,'NEW_ACCOUNT_WIZARD','WebClient','(none)','(none)');
+insert into YukonRole values(-1002,'SWITCH_COMMAND_BATCH','WebClient','(none)','(none)');
+insert into YukonRole values(-1003,'NOTIFICATION_ON_GENERAL_PAGE','WebClient','(none)','(none)');
+insert into YukonRole values(-1004,'HIDE_OPT_OUT_BOX','WebClient','(none)','(none)');
+insert into YukonRole values(-1005,'CUSTOMIZED_FAQ_LINK','WebClient','(none)','(none)');
+insert into YukonRole values(-1006,'CUSTOMIZED_EMAIL_LINK','WebClient','(none)','(none)');
+go
+
+
+
+insert into yukongroup values(-210,'Web Demo Operators');
+insert into yukongroup values(-211,'Web Demo Residential Customers');
+insert into yukongroup values(-212,'Web Demo CICustomers');
+go
+insert into yukongrouprole values(-210,-100,'/operator/Operations.jsp');
+insert into yukongrouprole values(-210,-101,'(none)');
+insert into yukongrouprole values(-210,-120,'(none)');
+insert into yukongrouprole values(-210,-121,'(none)');
+insert into yukongrouprole values(-210,-122,'(none)');
+insert into yukongrouprole values(-210,-123,'(none)');
+insert into yukongrouprole values(-210,-124,'(none)');
+insert into yukongrouprole values(-210,-125,'(none)');
+insert into yukongrouprole values(-210,-130,'(none)');
+insert into yukongrouprole values(-210,-131,'(none)');
+insert into yukongrouprole values(-210,-132,'(none)');
+insert into yukongrouprole values(-210,-150,'(none)');
+insert into yukongrouprole values(-210,-151,'(none)');
+insert into yukongrouprole values(-210,-160,'(none)');
+insert into yukongrouprole values(-210,-161,'(none)');
+insert into yukongrouprole values(-210,-162,'(none)');
+insert into yukongrouprole values(-210,-163,'(none)');
+insert into yukongrouprole values(-210,-164,'(none)');
+insert into yukongrouprole values(-210,-165,'(none)');
+insert into yukongrouprole values(-210,-166,'(none)');
+insert into yukongrouprole values(-210,-167,'(none)');
+insert into yukongrouprole values(-210,-168,'(none)');
+insert into yukongrouprole values(-210,-169,'(none)');
+insert into yukongrouprole values(-210,-170,'(none)');
+insert into yukongrouprole values(-210,-171,'(none)');
+insert into yukongrouprole values(-210,-172,'(none)');
+insert into yukongrouprole values(-210,-173,'(none)');
+insert into yukongrouprole values(-210,-174,'(none)');
+insert into yukongrouprole values(-210,-175,'(none)');
+insert into yukongrouprole values(-210,-176,'(none)');
+insert into yukongrouprole values(-210,-177,'(none)');
+insert into yukongrouprole values(-210,-179,'(none)');
+insert into yukongrouprole values(-210,-181,'(none)');
+insert into yukongrouprole values(-210,-9000,' ');
+insert into yukongrouprole values(-210,-9001,'Energy Exchange');
+insert into yukongrouprole values(-210,-9002,'Energy Exchange');
+insert into yukongrouprole values(-210,-9003,' ');
+insert into yukongrouprole values(-210,-9010,'Notification');
+insert into yukongrouprole values(-210,-9011,'Curtailment Provider');
+insert into yukongrouprole values(-211,-100,'/user/ConsumerStat/stat/General.jsp');
+insert into yukongrouprole values(-211,-102,'(none)');
+insert into yukongrouprole values(-211,-160,'(none)');
+insert into yukongrouprole values(-211,-161,'(none)');
+insert into yukongrouprole values(-211,-163,'(none)');
+insert into yukongrouprole values(-211,-165,'(none)');
+insert into yukongrouprole values(-211,-166,'(none)');
+insert into yukongrouprole values(-211,-167,'(none)');
+insert into yukongrouprole values(-211,-168,'(none)');
+insert into yukongrouprole values(-211,-169,'(none)');
+insert into yukongrouprole values(-211,-175,'(none)');
+insert into yukongrouprole values(-211,-176,'(none)');
+insert into yukongrouprole values(-211,-177,'(none)');
+insert into yukongrouprole values(-211,-178,'(none)');
+insert into yukongrouprole values(-211,-180,'(none)');
+insert into yukongrouprole values(-211,-181,'(none)');
+insert into yukongrouprole values(-212,-100,'/user/CILC/user_trending.jsp');
+insert into yukongrouprole values(-212,-103,'(none)');
+insert into yukongrouprole values(-212,-140,'(none)');
+insert into yukongrouprole values(-212,-141,'(none)');
+insert into yukongrouprole values(-212,-142,'(none)');
 go
