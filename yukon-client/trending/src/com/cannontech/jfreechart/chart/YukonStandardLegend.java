@@ -63,6 +63,7 @@ import java.io.Serializable;
 
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.DrawableLegendItem;
+import org.jfree.chart.Legend;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.StandardLegend;
@@ -85,6 +86,8 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
     public YukonStandardLegend() {
 
         super();
+    	setAnchor(Legend.SOUTH);
+    	setItemFont(new java.awt.Font("dialog", java.awt.Font.BOLD, 10));
     }
 
     /**
