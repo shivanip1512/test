@@ -7,6 +7,7 @@ import java.awt.Dimension;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.device.lm.LMControlArea;
+import com.cannontech.common.util.CtiUtilities;
 
 public class LMControlAreaBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener 
 {
@@ -277,7 +278,7 @@ private javax.swing.JComboBox getJComboBoxMinRespTime() {
 			ivjJComboBoxMinRespTime.setToolTipText("Default operational state");
 			// user code begin {1}
 
-			ivjJComboBoxMinRespTime.addItem("(On New Data Only)");
+			ivjJComboBoxMinRespTime.addItem(CtiUtilities.STRING_NONE);
 			ivjJComboBoxMinRespTime.addItem("1 minute");
 			ivjJComboBoxMinRespTime.addItem("2 minute");
 			ivjJComboBoxMinRespTime.addItem("3 minute");
@@ -664,9 +665,11 @@ public Object getValue(Object o)
 
 
 	controlArea.setName( getJTextFieldName().getText() );
-	controlArea.getControlArea().setControlInterval( 
+	if(((String)getJComboBoxControlInterval().getSelectedItem()).compareTo("(On New Data Only)") != 0)
+		controlArea.getControlArea().setControlInterval( 
 			com.cannontech.common.util.CtiUtilities.getIntervalComboBoxSecondsValue(getJComboBoxControlInterval()) );
 
+	if(((String)getJComboBoxMinRespTime().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) != 0)
 	controlArea.getControlArea().setMinResponseTime( 
 			com.cannontech.common.util.CtiUtilities.getIntervalComboBoxSecondsValue(getJComboBoxMinRespTime()) );
 
