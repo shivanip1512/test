@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     11/6/2002 9:22:09 AM                         */
+/* Created on:     11/8/2002 2:28:02 PM                         */
 /*==============================================================*/
 
 
@@ -66,6 +66,14 @@ if exists (select 1
            where  id = object_id('LMGroupMacroExpander_View')
             and   type = 'V')
    drop view LMGroupMacroExpander_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('Peakpointhistory_View')
+            and   type = 'V')
+   drop view Peakpointhistory_View
 go
 
 
@@ -1838,6 +1846,8 @@ insert into CTIDatabase values('2.33', 'Ryan', '29-AUG-2002', 'Added some column
 insert into CTIDatabase values('2.36', 'Ryan', '9-SEP-2002', 'Changed loadprofile defaults, add column to DynamicPointDispatch, added a row to BillingFileFormats');
 
 insert into CTIDatabase values('2.37', 'Ryan', '24-OCT-2002', 'Added ExpressCom views');
+
+insert into CTIDatabase values('2.38', 'Ryan', '2002-NOV-6', 'Added a column to DynamicLMGroup and a Windows Service row to display');
 
 /*==============================================================*/
 /* Table : CapControlFeeder                                     */
@@ -4111,11 +4121,11 @@ insert into template values( 3, 'Standard - No DevName', 'Third Standard Cannon 
 /*==============================================================*/
 create table TEMPLATECOLUMNS (
 TEMPLATENUM          numeric              not null,
-TITLE                varchar(50)          null,
+TITLE                varchar(50)          not null,
 TYPENUM              numeric              not null,
 ORDERING             numeric              not null,
 WIDTH                numeric              not null,
-constraint PK_TEMPLATECOLUMNS primary key  (TEMPLATENUM)
+constraint PK_TEMPLATECOLUMNS primary key  (TEMPLATENUM, TITLE)
 )
 go
 
@@ -4358,6 +4368,17 @@ LMProgramDirectGroup dg, GenericMacro m
 where y.PAObjectID = d.DEVICEID 
 and d.DEVICEID = g.DeviceID
 and dg.lmgroupdeviceid *= m.ownerid
+go
+
+
+/*==============================================================*/
+/* View: Peakpointhistory_View                                  */
+/*==============================================================*/
+create view Peakpointhistory_View  as
+select rph1.POINTID pointid, rph1.VALUE value, min(rph1.timestamp) timestamp
+from RAWPOINTHISTORY rph1
+where value in ( select max ( value ) from rawpointhistory rph2 where rph1.pointid = rph2.pointid )
+group by pointid, value
 go
 
 

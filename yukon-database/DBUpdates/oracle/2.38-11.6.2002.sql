@@ -27,3 +27,18 @@ alter table DynamicLMGroup
    add constraint FK_DyLmGr_LmPrDGr foreign key (LMProgramID)
       references LMProgramDirect (DeviceID);
 /
+
+create index Indx_SYSLG_PtId on SYSTEMLOG (
+   POINTID ASC
+)
+/
+
+create index Indx_SYSLG_Date on SYSTEMLOG (
+   DATETIME ASC
+)
+/
+
+create index Indx_SYSLG_PtIdDt on SYSTEMLOG (
+   POINTID ASC,
+   DATETIME ASC
+)

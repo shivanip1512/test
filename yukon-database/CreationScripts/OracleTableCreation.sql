@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     11/6/2002 9:21:16 AM                         */
+/* Created on:     11/8/2002 2:28:32 PM                         */
 /*==============================================================*/
 
 
@@ -34,6 +34,10 @@ drop view LMCurtailCustomerActivity_View
 
 
 drop view LMGroupMacroExpander_View
+/
+
+
+drop view Peakpointhistory_View
 /
 
 
@@ -325,19 +329,15 @@ drop table POINTSTATUS cascade constraints
 /
 
 
-drop table PORTRADIOSETTINGS cascade constraints
-/
-
-
 drop table DeviceWindow cascade constraints
 /
 
 
-drop table PORTLOCALSERIAL cascade constraints
+drop table PORTRADIOSETTINGS cascade constraints
 /
 
 
-drop table PORTDIALUPMODEM cascade constraints
+drop table PORTLOCALSERIAL cascade constraints
 /
 
 
@@ -346,6 +346,10 @@ drop index Indx_Start
 
 
 drop table LMControlHistory cascade constraints
+/
+
+
+drop table PORTDIALUPMODEM cascade constraints
 /
 
 
@@ -621,10 +625,6 @@ drop table PAOowner cascade constraints
 /
 
 
-drop table UNITMEASURE cascade constraints
-/
-
-
 drop table CommErrorHistory cascade constraints
 /
 
@@ -634,6 +634,10 @@ drop index Indx_PAO
 
 
 drop table YukonPAObject cascade constraints
+/
+
+
+drop table UNITMEASURE cascade constraints
 /
 
 
@@ -1277,61 +1281,6 @@ create table DateOfHoliday  (
 
 
 /*==============================================================*/
-/* Table : YukonPAObject                                        */
-/*==============================================================*/
-
-
-create table YukonPAObject  (
-   PAObjectID           NUMBER                           not null,
-   Category             VARCHAR2(20)                     not null,
-   PAOClass             VARCHAR2(20)                     not null,
-   PAOName              VARCHAR2(60)                     not null,
-   Type                 VARCHAR2(30)                     not null,
-   Description          VARCHAR2(60)                     not null,
-   DisableFlag          CHAR(1)                          not null,
-   PAOStatistics        VARCHAR2(10)                     not null,
-   constraint PK_YUKONPAOBJECT primary key (PAObjectID)
-)
-/
-
-
-INSERT into YukonPAObject values (0, 'DEVICE', 'System', 'System Device', 'System', 'Reserved System Device', 'N', '-----');
-
-/*==============================================================*/
-/* Index: Indx_PAO                                              */
-/*==============================================================*/
-create unique index Indx_PAO on YukonPAObject (
-   Category ASC,
-   PAOName ASC,
-   PAOClass ASC,
-   Type ASC
-)
-/
-
-
-/*==============================================================*/
-/* Table : CommErrorHistory                                     */
-/*==============================================================*/
-
-
-create table CommErrorHistory  (
-   CommErrorID          NUMBER                           not null,
-   PAObjectID           NUMBER                           not null,
-   DateTime             DATE                             not null,
-   SOE_Tag              NUMBER                           not null,
-   ErrorType            NUMBER                           not null,
-   ErrorNumber          NUMBER                           not null,
-   Command              VARCHAR2(50)                     not null,
-   OutMessage           VARCHAR2(160)                    not null,
-   InMessage            VARCHAR2(160)                    not null,
-   constraint PK_COMMERRORHISTORY primary key (CommErrorID),
-   constraint FK_ComErrHis_YPAO foreign key (PAObjectID)
-         references YukonPAObject (PAObjectID)
-)
-/
-
-
-/*==============================================================*/
 /* Table : UNITMEASURE                                          */
 /*==============================================================*/
 
@@ -1398,6 +1347,61 @@ INSERT INTO UnitMeasure VALUES( 47,'MPH',0,'Miles Per Hour','(none)');
 INSERT INTO UnitMeasure VALUES( 48,'Inches',0,'Inches','(none)');
 INSERT INTO UnitMeasure VALUES( 49,'KPH',0,'Kilometers Per Hour','(none)');
 INSERT INTO UnitMeasure VALUES( 50,'Milibars',0,'Milibars','(none)');
+
+/*==============================================================*/
+/* Table : YukonPAObject                                        */
+/*==============================================================*/
+
+
+create table YukonPAObject  (
+   PAObjectID           NUMBER                           not null,
+   Category             VARCHAR2(20)                     not null,
+   PAOClass             VARCHAR2(20)                     not null,
+   PAOName              VARCHAR2(60)                     not null,
+   Type                 VARCHAR2(30)                     not null,
+   Description          VARCHAR2(60)                     not null,
+   DisableFlag          CHAR(1)                          not null,
+   PAOStatistics        VARCHAR2(10)                     not null,
+   constraint PK_YUKONPAOBJECT primary key (PAObjectID)
+)
+/
+
+
+INSERT into YukonPAObject values (0, 'DEVICE', 'System', 'System Device', 'System', 'Reserved System Device', 'N', '-----');
+
+/*==============================================================*/
+/* Index: Indx_PAO                                              */
+/*==============================================================*/
+create unique index Indx_PAO on YukonPAObject (
+   Category ASC,
+   PAOName ASC,
+   PAOClass ASC,
+   Type ASC
+)
+/
+
+
+/*==============================================================*/
+/* Table : CommErrorHistory                                     */
+/*==============================================================*/
+
+
+create table CommErrorHistory  (
+   CommErrorID          NUMBER                           not null,
+   PAObjectID           NUMBER                           not null,
+   DateTime             DATE                             not null,
+   SOE_Tag              NUMBER                           not null,
+   ErrorType            NUMBER                           not null,
+   ErrorNumber          NUMBER                           not null,
+   Command              VARCHAR2(50)                     not null,
+   OutMessage           VARCHAR2(160)                    not null,
+   InMessage            VARCHAR2(160)                    not null,
+   constraint PK_COMMERRORHISTORY primary key (CommErrorID),
+   constraint FK_ComErrHis_YPAO foreign key (PAObjectID)
+         references YukonPAObject (PAObjectID)
+)
+/
+
 
 /*==============================================================*/
 /* Table : PAOowner                                             */
@@ -1576,6 +1580,8 @@ insert into CTIDatabase values('2.33', 'Ryan', '29-AUG-2002', 'Added some column
 insert into CTIDatabase values('2.36', 'Ryan', '9-SEP-2002', 'Changed loadprofile defaults, add column to DynamicPointDispatch, added a row to BillingFileFormats');
 
 insert into CTIDatabase values('2.37', 'Ryan', '24-OCT-2002', 'Added ExpressCom views');
+
+insert into CTIDatabase values('2.38', 'Ryan', '2002-NOV-6', 'Added a column to DynamicLMGroup and a Windows Service row to display');
 
 /*==============================================================*/
 /* Table : YukonImage                                           */
@@ -1768,11 +1774,11 @@ create index Index_DisNum on DISPLAY2WAYDATA (
 
 create table TEMPLATECOLUMNS  (
    TEMPLATENUM          NUMBER                           not null,
-   TITLE                VARCHAR2(50),
+   TITLE                VARCHAR2(50)                     not null,
    TYPENUM              NUMBER                           not null,
    ORDERING             NUMBER                           not null,
    WIDTH                NUMBER                           not null,
-   constraint PK_TEMPLATECOLUMNS primary key (TEMPLATENUM),
+   constraint PK_TEMPLATECOLUMNS primary key (TEMPLATENUM, TITLE),
    constraint SYS_C0013430 foreign key (TYPENUM)
          references COLUMNTYPE (TYPENUM),
    constraint SYS_C0013429 foreign key (TEMPLATENUM)
@@ -2737,6 +2743,24 @@ create table PortStatistics  (
 
 
 /*==============================================================*/
+/* Table : PORTDIALUPMODEM                                      */
+/*==============================================================*/
+
+
+create table PORTDIALUPMODEM  (
+   PORTID               NUMBER                           not null,
+   MODEMTYPE            VARCHAR2(30)                     not null,
+   INITIALIZATIONSTRING VARCHAR2(50)                     not null,
+   PREFIXNUMBER         VARCHAR2(10)                     not null,
+   SUFFIXNUMBER         VARCHAR2(10)                     not null,
+   constraint PK_PORTDIALUPMODEM primary key (PORTID),
+   constraint SYS_C0013175 foreign key (PORTID)
+         references CommPort (PORTID)
+)
+/
+
+
+/*==============================================================*/
 /* Table : LMControlHistory                                     */
 /*==============================================================*/
 
@@ -2772,24 +2796,6 @@ create index Indx_Start on LMControlHistory (
 
 
 /*==============================================================*/
-/* Table : PORTDIALUPMODEM                                      */
-/*==============================================================*/
-
-
-create table PORTDIALUPMODEM  (
-   PORTID               NUMBER                           not null,
-   MODEMTYPE            VARCHAR2(30)                     not null,
-   INITIALIZATIONSTRING VARCHAR2(50)                     not null,
-   PREFIXNUMBER         VARCHAR2(10)                     not null,
-   SUFFIXNUMBER         VARCHAR2(10)                     not null,
-   constraint PK_PORTDIALUPMODEM primary key (PORTID),
-   constraint SYS_C0013175 foreign key (PORTID)
-         references CommPort (PORTID)
-)
-/
-
-
-/*==============================================================*/
 /* Table : PORTLOCALSERIAL                                      */
 /*==============================================================*/
 
@@ -2799,6 +2805,24 @@ create table PORTLOCALSERIAL  (
    PHYSICALPORT         VARCHAR2(8)                      not null,
    constraint PK_PORTLOCALSERIAL primary key (PORTID),
    constraint SYS_C0013147 foreign key (PORTID)
+         references CommPort (PORTID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : PORTRADIOSETTINGS                                    */
+/*==============================================================*/
+
+
+create table PORTRADIOSETTINGS  (
+   PORTID               NUMBER                           not null,
+   RTSTOTXWAITSAMED     NUMBER                           not null,
+   RTSTOTXWAITDIFFD     NUMBER                           not null,
+   RADIOMASTERTAIL      NUMBER                           not null,
+   REVERSERTS           NUMBER                           not null,
+   constraint PK_PORTRADIOSETTINGS primary key (PORTID),
+   constraint SYS_C0013169 foreign key (PORTID)
          references CommPort (PORTID)
 )
 /
@@ -2819,24 +2843,6 @@ create table DeviceWindow  (
    constraint PK_DEVICEWINDOW primary key (DeviceID, Type),
    constraint FK_DevScWin_Dev foreign key (DeviceID)
          references DEVICE (DEVICEID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : PORTRADIOSETTINGS                                    */
-/*==============================================================*/
-
-
-create table PORTRADIOSETTINGS  (
-   PORTID               NUMBER                           not null,
-   RTSTOTXWAITSAMED     NUMBER                           not null,
-   RTSTOTXWAITDIFFD     NUMBER                           not null,
-   RADIOMASTERTAIL      NUMBER                           not null,
-   REVERSERTS           NUMBER                           not null,
-   constraint PK_PORTRADIOSETTINGS primary key (PORTID),
-   constraint SYS_C0013169 foreign key (PORTID)
-         references CommPort (PORTID)
 )
 /
 
@@ -4191,6 +4197,17 @@ LMProgramDirectGroup dg, GenericMacro m
 where y.PAObjectID = d.DEVICEID 
 and d.DEVICEID = g.DeviceID
 and dg.lmgroupdeviceid = m.ownerid (+)
+/
+
+
+/*==============================================================*/
+/* View: Peakpointhistory_View                                  */
+/*==============================================================*/
+create or replace view Peakpointhistory_View as
+select rph1.POINTID pointid, rph1.VALUE value, min(rph1.timestamp) timestamp
+from RAWPOINTHISTORY rph1
+where value in ( select max ( value ) from rawpointhistory rph2 where rph1.pointid = rph2.pointid )
+group by pointid, value
 /
 
 
