@@ -139,7 +139,7 @@ bool CtiLMConstraintChecker::checkWeekDays(const CtiLMProgramDirect& lm_program,
         } while(++startDate <= stopDate);
     }
 
-    if(!force_holiday)
+    if( !((weekdays[(size_t)7] == 'F' || weekdays[(size_t)7] == 'f') && force_holiday))
     {
         string result;
         do
