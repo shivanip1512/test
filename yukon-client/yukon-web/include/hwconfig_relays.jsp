@@ -1,11 +1,12 @@
 <%--
 Required variables:
+	deviceTypeID: int
 	configuration: StarsLMConfiguration
 --%>
 <%
-	boolean isSA205 = ECUtils.isSA205(inventory.getDeviceType().getEntryID());
-	boolean isSA305 = ECUtils.isSA305(inventory.getDeviceType().getEntryID());
-	boolean isExpressCom = ECUtils.isExpressCom(inventory.getDeviceType().getEntryID());
+	boolean isSA205 = ECUtils.isSA205(deviceTypeID);
+	boolean isSA305 = ECUtils.isSA305(deviceTypeID);
+	boolean isExpressCom = ECUtils.isExpressCom(deviceTypeID);
 	
 	String[] coldLoadPickup = new String[8];
 	Arrays.fill(coldLoadPickup, "");
