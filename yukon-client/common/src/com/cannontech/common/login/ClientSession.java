@@ -44,7 +44,8 @@ public class ClientSession {
 	private static int SESSION_REFRESH_FREQUENCY = 1000*60*15; //15 minutes
 	
 	private static int INVALID_CURRENT_USERID = Integer.MIN_VALUE;
-		
+	private static int DEF_PORT = 8080;
+
 	/*
 	 * SessionRefreshTimerTask refreshes a client session on a periodic basis 
 	 * to avoid session timeouts while the client is still running.  
@@ -195,7 +196,7 @@ public class ClientSession {
             if(u != null)
             {
                 CTILogger.debug("  Assuming SERVER loginID to be " + userID );
-                setSessionInfo(u, Integer.toString(u.getUserID()), "", Integer.MIN_VALUE);      
+                setSessionInfo(u, Integer.toString(u.getUserID()), "", DEF_PORT);      
                 success = true;
             }
             else
@@ -223,7 +224,7 @@ public class ClientSession {
 			//already 'logged in' so just try to use it
 			LiteYukonUser u = YukonUserFuncs.getLiteYukonUser(userID);
 			if(u != null) {
-				setSessionInfo(u, Integer.toString(u.getUserID()), "", Integer.MIN_VALUE);		
+				setSessionInfo(u, Integer.toString(u.getUserID()), "", DEF_PORT);		
 				return true;
 			}
 			//Couldn't find the supposedly logged in user, disregard current login
@@ -234,7 +235,7 @@ public class ClientSession {
 			LiteYukonUser u = AuthFuncs.login(lp.getUsername(), lp.getPassword());
 			if(u != null) {
 				//score! we found them
-				setSessionInfo(u, Integer.toString(u.getUserID()), "", Integer.MIN_VALUE);
+				setSessionInfo(u, Integer.toString(u.getUserID()), "", DEF_PORT);
 				boolean saveInfo = lp.isRememberPassword();
 				prefs.setDefaultRememberPassword(saveInfo);
 				if(saveInfo) {
