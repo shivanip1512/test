@@ -426,6 +426,23 @@ alter table FDRTRANSLATION
    add constraint PK_FDRTrans primary key  (POINTID, InterfaceType, TRANSLATION);
 
 
+insert into display values(50, 'SOE Log', 'Alarms and Events', 'SOE Log Viewer', 'This display shows all the SOE events in the SOE log table for a given day.');
+insert into display values(51, 'TAG Log', 'Alarms and Events', 'TAG Log Viewer', 'This display shows all the TAG events in the TAG log table for a given day.');
+
+insert into displaycolumns values(50, 'Device Name', 5, 1, 70 );
+insert into displaycolumns values(50, 'Point Name', 2, 2, 70 );
+insert into displaycolumns values(50, 'Time Stamp', 11, 3, 60 );
+insert into displaycolumns values(50, 'Description', 12, 4, 180 );
+insert into displaycolumns values(50, 'Additional Info', 10, 5, 180 );
+
+insert into displaycolumns values(51, 'Device Name', 5, 1, 70 );
+insert into displaycolumns values(51, 'Point Name', 2, 2, 70 );
+insert into displaycolumns values(51, 'Time Stamp', 11, 3, 60 );
+insert into displaycolumns values(51, 'Description', 12, 4, 180 );
+insert into displaycolumns values(51, 'Additional Info', 10, 5, 180 );
+insert into displaycolumns values(51, 'User Name', 8, 6, 40 );
+insert into displaycolumns values(51, 'Tag', 13, 7, 60 );
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

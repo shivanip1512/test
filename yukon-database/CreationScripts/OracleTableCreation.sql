@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     9/26/2003 10:07:04 AM                        */
+/* Created on:     10/6/2003 3:15:03 PM                         */
 /*==============================================================*/
 
 
@@ -1586,6 +1586,10 @@ insert into display values(11, 'Priority 7 Alarms', 'Alarms and Events', 'Priori
 insert into display values(12, 'Priority 8 Alarms', 'Alarms and Events', 'Priority 8 Alarm Viewer', 'This display will recieve all priority 8 alarm events as they happen in the system.');
 insert into display values(13, 'Priority 9 Alarms', 'Alarms and Events', 'Priority 9 Alarm Viewer', 'This display will recieve all priority 9 alarm events as they happen in the system.');
 insert into display values(14, 'Priority 10 Alarms', 'Alarms and Events', 'Priority 10 Alarm Viewer', 'This display will recieve all priority 10 alarm events as they happen in the system.');
+
+insert into display values(50, 'SOE Log', 'Alarms and Events', 'SOE Log Viewer', 'This display shows all the SOE events in the SOE log table for a given day.');
+insert into display values(51, 'TAG Log', 'Alarms and Events', 'TAG Log Viewer', 'This display shows all the TAG events in the TAG log table for a given day.');
+
 insert into display values(99, 'Your Custom Display', 'Custom Displays', 'Edit This Display', 'This display is is used to show what a user created display looks like. You may edit this display to fit your own needs.');
 
 
@@ -1723,6 +1727,19 @@ insert into displaycolumns values(14, 'Device Name', 5, 2, 90 );
 insert into displaycolumns values(14, 'Point Name', 2, 3, 90 );
 insert into displaycolumns values(14, 'Text Message', 12, 4, 200 );
 insert into displaycolumns values(14, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(50, 'Device Name', 5, 1, 70 );
+insert into displaycolumns values(50, 'Point Name', 2, 2, 70 );
+insert into displaycolumns values(50, 'Time Stamp', 11, 3, 60 );
+insert into displaycolumns values(50, 'Description', 12, 4, 180 );
+insert into displaycolumns values(50, 'Additional Info', 10, 5, 180 );
+insert into displaycolumns values(51, 'Device Name', 5, 1, 70 );
+insert into displaycolumns values(51, 'Point Name', 2, 2, 70 );
+insert into displaycolumns values(51, 'Time Stamp', 11, 3, 60 );
+insert into displaycolumns values(51, 'Description', 12, 4, 180 );
+insert into displaycolumns values(51, 'Additional Info', 10, 5, 180 );
+insert into displaycolumns values(51, 'User Name', 8, 6, 40 );
+insert into displaycolumns values(51, 'Tag', 13, 7, 60 );
 
 alter table DISPLAYCOLUMNS
    add constraint PK_DISPLAYCOLUMNS primary key (DISPLAYNUM, TITLE)

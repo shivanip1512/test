@@ -1655,17 +1655,28 @@ private void getHistoryDisplayData( Date date )
 
 	try
 	{
+		ViewCreator vc = new ViewCreator( getTableDataModel() );
+		
+
 		if( getCurrentDisplay().getDisplayNumber() == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER ) 
 		{
-			totalPages = getTableDataModel().createRowsForRawPointHistoryView( date, pageNumber );
+			totalPages = vc.createRowsForRawPointHistoryView( date, pageNumber );
 		}
 		else if( getCurrentDisplay().getDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
 		{		
-			totalPages = getTableDataModel().createRowsForHistoricalView( date, pageNumber );
+			totalPages = vc.createRowsForHistoricalView( date, pageNumber );
+		}
+		else if( getCurrentDisplay().getDisplayNumber() == Display.SOE_LOG_DISPLAY_NUMBER )
+		{		
+			totalPages = vc.createRowsForSOELogView( date, pageNumber );
+		}
+		else if( getCurrentDisplay().getDisplayNumber() == Display.TAG_LOG_DISPLAY_NUMBER )
+		{		
+			totalPages = vc.createRowsForTAGLogView( date, pageNumber );
 		}
 		else if( Display.isAlarmDisplay(getCurrentDisplay().getDisplayNumber()) )
 		{		
-			totalPages = getTableDataModel().createRowsForHistoricalAlarmView( 
+			totalPages = vc.createRowsForHistoricalAlarmView( 
 						date,
 						pageNumber,
 						getCurrentDisplay().getDisplayNumber() );
@@ -2965,21 +2976,37 @@ public void jRadioButtonPage_ActionPerformed(java.awt.event.ActionEvent actionEv
 			//Always add 1 milleseconds less than 1 day (86399999L) to see the current day
 			final int MILLI_OFFSET = 86399999;
 			
+			
+			//use to do the view creations
+			ViewCreator vc = new ViewCreator( getTableDataModel() );
+
 			if( getCurrentDisplay().getDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
 			{
-				totalPages = getTableDataModel().createRowsForHistoricalView( 
+				totalPages = vc.createRowsForHistoricalView( 
 								new Date(getPreviousDate().getTime() + MILLI_OFFSET),
 								pageNumber );
 			}
 			else if( getCurrentDisplay().getDisplayNumber() == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER )
 			{
-				totalPages = getTableDataModel().createRowsForRawPointHistoryView( 
+				totalPages = vc.createRowsForRawPointHistoryView( 
 								new Date(getPreviousDate().getTime() + MILLI_OFFSET),
 								pageNumber );
 			}
+			else if( getCurrentDisplay().getDisplayNumber() == Display.SOE_LOG_DISPLAY_NUMBER )
+			{		
+				totalPages = vc.createRowsForSOELogView( 
+						new Date(getPreviousDate().getTime() + MILLI_OFFSET),
+						pageNumber );
+			}			
+			else if( getCurrentDisplay().getDisplayNumber() == Display.TAG_LOG_DISPLAY_NUMBER )
+			{		
+				totalPages = vc.createRowsForTAGLogView( 
+						new Date(getPreviousDate().getTime() + MILLI_OFFSET),
+						pageNumber );
+			}
 			else if( Display.isAlarmDisplay(getCurrentDisplay().getDisplayNumber()) )
 			{
-				totalPages = getTableDataModel().createRowsForHistoricalAlarmView( 
+				totalPages = vc.createRowsForHistoricalAlarmView( 
 								new Date(getPreviousDate().getTime() + MILLI_OFFSET),
 								pageNumber,
 								getCurrentDisplay().getDisplayNumber() );

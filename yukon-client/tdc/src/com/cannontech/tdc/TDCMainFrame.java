@@ -4083,10 +4083,22 @@ public void mainPanel_JComboCurrentDisplayAction_actionPerformed(java.util.Event
 		setTitleFromDisplay();				
 		refreshTDCClient();
 	}
+
+
 		
 	//JMenuItems disabling needs to go here
 	getJMenuItemPrint().setEnabled(
 			Display.isHistoryDisplay(source.getCurrentDisplay().getDisplayNumber())  );
+
+	getJMenuItemEditDisplays().setEnabled(
+			Display.isUserDefinedType(source.getCurrentDisplay().getType())  );
+
+	getJMenuItemMakeCopy().setEnabled(
+			Display.isUserDefinedType(source.getCurrentDisplay().getType())  );
+
+	getJMenuItemRemoveDisplays().setEnabled(
+			Display.isUserDefinedType(source.getCurrentDisplay().getType())  );
+
 
 
 	//we may need to update the filter we have selected
