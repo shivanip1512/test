@@ -206,17 +206,25 @@
 				break;
 			}
 		}
-
 		if (request.getParameter("error") == null)
 		{
 			if (request.getParameter("submitted") == null)
 			{   
-				checker.clear();
+			// NEED TO FIGURE OUT HOW TO MAKE SUER SOMEONE LOGGING IN AS A NEW PERSON DOESN'T SEE THE LAST STUFF!!!
+			  //Attempt to load amount and prices from checker object, otherwise we will init them below (used with 'Cancel' option)
+			  amountStrs = (String[]) checker.getObject("amount");
+  			  priceStrs = (String[]) checker.getObject("prices");
+		 	  checker.clear();
 
-			  //Look up the customer curtailable amount, use this as the default amount
-			  Object[][] gData2 = com.cannontech.util.ServletUtil.executeSQL( session, "select curtailamount from cicustomerbase where customerid=" +  customerID);  
-			  String curtailAmount = gData2[0][0].toString();
+			  if( amountStrs == null  || priceStrs == null)  // assuming one or the other, they both get loaded together so this is lazily checking I guess. SN
+			  {
+				priceStrs = new String[24];	// re-init
+				amountStrs = new String[24]; //re-init
 
+				//Look up the customer curtailable amount, use this as the default amount
+				Object[][] gData2 = com.cannontech.util.ServletUtil.executeSQL( session, "select curtailamount from cicustomerbase where customerid=" +  customerID);  
+				String curtailAmount = gData2[0][0].toString();
+			  
 				for (int i = 0; i < 24; i++)
 				{
 					double price = ((LMEnergyExchangeHourlyOffer) revision.getEnergyExchangeHourlyOffers().elementAt(i)).getPrice().doubleValue() / 100;
@@ -235,11 +243,11 @@
 						amountStrs[i] = "-999";
 					}
 				}
-
-				checker.set("prices", priceStrs);
-				checker.set("amount", amountStrs);
-				checker.set("offer", offerIdStr);
-				checker.set("rev", revisionNumberStr);
+			  }
+			  checker.set("prices", priceStrs);
+			  checker.set("amount", amountStrs);
+			  checker.set("offer", offerIdStr);
+			  checker.set("rev", revisionNumberStr);
 			}
 			else {
 				java.util.Enumeration enum = request.getParameterNames();
@@ -251,14 +259,12 @@
 					else
 						checker.set(name, value);
 				}
-
-				if (checker.validate()) {
+			    if (checker.validate()) {
 					response.sendRedirect("user_ee.jsp?tab=confirm");
 					tab = "";
 				}
 			}
 		}
-
 		priceStrs = (String[]) checker.getObject("prices");
 		newAmountStrs = (String[]) checker.getObject("amount");
 		amountStrs = (String[]) newAmountStrs.clone();
@@ -274,7 +280,12 @@
 				else
 					amountStrs[i] = numberFormat.format(amountVal);
 			}
-			catch (NumberFormatException ne){}
+			catch (NumberFormatException ne){
+			//the "confirm" tab will handle the errors
+			}
+			catch (java.text.ParseException pe) {
+			//the "confirm" tab will handle the errors
+			}
 		}
 	}
 	else if (tab.equalsIgnoreCase("confirm")) {
@@ -290,7 +301,7 @@
 					for (int i = 0; i < 24; i++)
 					{
 						double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();                       
-						if (amountVal == 0)
+						if (amountVal == 0 || amountVal == -999)	//-999 is our init value.
 							amountStrs[i] = "----";
 						else {
 							if( amountVal < 500) {
@@ -314,6 +325,11 @@
 				if( isTooSmall) {
 					checker.setError("amounterror", "Offer amount(s) must be equal to or greater than 500 kW");
 					checker.setError("flag","");
+					response.sendRedirect("user_ee.jsp?tab=accept&error=true");
+					tab = "";
+				}
+				else if (checker.get("initials").equals("")) {
+					checker.setError("initials", "Initials can not be empty");
 					response.sendRedirect("user_ee.jsp?tab=accept&error=true");
 					tab = "";
 				}
