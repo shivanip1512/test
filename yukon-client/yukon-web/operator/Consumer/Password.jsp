@@ -8,14 +8,16 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
 <script language="JavaScript">
-var passwdChanged = false;
-
-function setPasswordChanged() {
-	passwdChanged = true;
-}
-
-function checkPassword(form) {
-	if (passwdChanged && (form.Password.value != form.Password2.value)) {
+function validate(form) {
+	if (form.Username.value == "" && form.Password.value != "") {
+		alert("Username cannot be empty");
+		return false;
+	}
+	if (form.Password.value == "" && form.Username.value != "") {
+		alert("Password cannot be empty");
+		return false;
+	}
+	if (form.Password.value != form.Password2.value) {
 		alert("The passwords you entered don't match, please enter them again");
 		return false;
 	}
@@ -47,31 +49,7 @@ function generatePassword(form) {
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
-        <tr> 
-          <td width="102" height="102" background="../../WebConfig/yukon/ConsumerImage.jpg">&nbsp;</td>
-          <td valign="bottom" height="102"> 
-            <table width="657" cellspacing="0"  cellpadding="0" border="0">
-              <tr> 
-                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
-              </tr>
-              <tr> 
-                  <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
-                    Account Information&nbsp;&nbsp;</td>
-                  
-                <td width="253" valign="middle">&nbsp;</td>
-                  <td width="58" valign="middle"> 
-                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
-                  </td>
-                  <td width="57" valign="middle"> 
-                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
-                  </td>
-              </tr>
-            </table>
-          </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-          </tr>
-      </table>
+      <%@ include file="include/HeaderBar.jsp" %>
     </td>
   </tr>
   <tr>
@@ -96,33 +74,41 @@ function generatePassword(form) {
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			
-            <form method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return checkPassword(this)">
+            <form method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
 			  <input type="hidden" name="action" value="UpdateLogin">
 			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Password.jsp">
 			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Password.jsp">
                 <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                   <tr> 
-                    <td width="100" class="TableCell">
+                    <td width="100" class="TableCell"> 
                       <div align="right">Customer Group: </div>
                     </td>
-                    <td width="200">
+                    <td width="200"> 
                       <select name="CustomerGroup">
-<%	if (userLogin.getUsername().length() > 0) {
+                        <%	if (userLogin.getUsername().length() > 0) {
 		String groupID = userLogin.hasGroupID()? String.valueOf(userLogin.getGroupID()) : "";
 		String groupName = userLogin.hasGroupID()? AuthFuncs.getGroup(userLogin.getGroupID()).getGroupName() : "(none)";
 %>
-					    <option value="<%= groupID %>"><%= groupName %></option>
-<%	} else {
-		com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany liteEnergyCompany = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
+                        <option value="<%= groupID %>"><%= groupName %></option>
+                        <%	} else {
+		LiteStarsEnergyCompany liteEnergyCompany = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 		com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEnergyCompany.getResidentialCustomerGroups();
 		for (int i = 0; i < custGroups.length; i++) {
 %>
-					    <option value="<%= custGroups[i].getGroupID() %>"><%= custGroups[i].getGroupName() %></option>
-<%		}
+                        <option value="<%= custGroups[i].getGroupID() %>"><%= custGroups[i].getGroupName() %></option>
+                        <%		}
 	}
 %>
                       </select>
                     </td>
+                  </tr>
+                  <tr> 
+                    <td width="100" class="TableCell"> 
+                      <div align="right"></div>
+                    </td>
+                    <td width="200" class="TableCell"> 
+                      <input type="checkbox" name="Status" value="<%= StarsLoginStatus.ENABLED.toString() %>" <% if (userLogin.getStatus().getType() == StarsLoginStatus.ENABLED_TYPE) { %>checked<% } %>>
+                      Login Enabled </td>
                   </tr>
                   <tr> 
                     <td width="100" class="TableCell"> 
@@ -137,7 +123,7 @@ function generatePassword(form) {
                       <div align="right">New Password:</div>
                     </td>
                     <td width="200"> 
-                      <input type="password" name="Password" maxlength="20" size="20" value="<%= userLogin.getPassword() %>" onchange="setPasswordChanged()">
+                      <input type="password" name="Password" maxlength="20" size="20">
                     </td>
                   </tr>
                   <tr> 

@@ -20,31 +20,7 @@
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
-        <tr> 
-          <td width="102" height="102" background="../../WebConfig/yukon/ConsumerImage.jpg">&nbsp;</td>
-          <td valign="bottom" height="102"> 
-            <table width="657" cellspacing="0"  cellpadding="0" border="0">
-              <tr> 
-                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
-              </tr>
-              <tr> 
-                  <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
-                    Account Information&nbsp;&nbsp;</td>
-                  
-                <td width="253" valign="middle">&nbsp;</td>
-                  <td width="58" valign="middle"> 
-                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
-                  </td>
-                  <td width="57" valign="middle"> 
-                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
-                  </td>
-              </tr>
-            </table>
-          </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-          </tr>
-      </table>
+      <%@ include file="include/HeaderBar.jsp" %>
     </td>
   </tr>
   <tr>
@@ -67,14 +43,14 @@
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
 			  <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager" <% if (!isStars) { %>enctype="multipart/form-data"<% } %>>
-                <input type="hidden" name="action" value="<%= (isStars)?"PreprocessStarsData":"PreprocessImportData" %>">
-                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/<%= (isStars)?"ImportAccount2.jsp":"ImportAccount1.jsp" %>">
+                <input type="hidden" name="action" value="<%= (isStars)?"PreprocessStarsData":"ImportCustAccounts" %>">
+                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/<%= (isStars)?"ImportAccount2.jsp":"ImportAccount.jsp" %>">
 <%	if (!isStars) { %>
                 <table width="500" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
                     <td class="MainText"> 
-                      <div align="center">Enter the import file name, then click 
-                        &quot;Next&quot;. </div>
+                      <div align="center">Enter the import file(s). Leave the 
+                        box empty if you don't have the corresponding file.</div>
                     </td>
                   </tr>
                 </table>
@@ -82,14 +58,29 @@
                 <table width="400" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                   <tr> 
                     <td width="150"> 
-                      <div align="right">Import File: </div>
+                      <div align="right">Customer File: </div>
                     </td>
                     <td width="250"> 
-                      <input type="file" name="ImportFile" size="35">
+                      <input type="file" name="CustFile" size="35">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="150"> 
+                      <div align="right">Hardware File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="file" name="HwFile" size="35">
                     </td>
                   </tr>
                 </table>
-                <%	} else { // importID="STARS" %>
+                <table width="400" border="0" cellspacing="0" cellpadding="5">
+                  <tr> 
+                    <td align="center"> 
+                      <input type="submit" name="Submit" value="Submit">
+                    </td>
+                  </tr>
+                </table>
+<%	} else { // importID="STARS" %>
                 <table width="500" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
                     <td class="MainText"> 
@@ -253,8 +244,6 @@
                     </td>
                   </tr>
                 </table>
-<%	} %>
-                <br>
                 <table width="400" border="0" cellspacing="0" cellpadding="5">
                   <tr> 
                     <td width="50%" align="right"> 
@@ -265,6 +254,7 @@
                     </td>
                   </tr>
                 </table>
+<%	} %>
               </form>
             </div>
           </td>

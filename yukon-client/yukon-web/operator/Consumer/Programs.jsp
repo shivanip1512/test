@@ -193,31 +193,7 @@ function resendNotEnrolled(form) {
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
-        <tr> 
-          <td width="102" height="102" background="../../WebConfig/yukon/ConsumerImage.jpg">&nbsp;</td>
-          <td valign="bottom" height="102"> 
-            <table width="657" cellspacing="0"  cellpadding="0" border="0">
-              <tr> 
-                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
-              </tr>
-              <tr> 
-                  <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
-                    Account Information&nbsp;&nbsp;</td>
-                  
-                <td width="253" valign="middle">&nbsp;</td>
-                  <td width="58" valign="middle"> 
-                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
-                  </td>
-                  <td width="57" valign="middle"> 
-                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
-                  </td>
-              </tr>
-            </table>
-          </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-          </tr>
-      </table>
+      <%@ include file="include/HeaderBar.jsp" %>
     </td>
   </tr>
   <tr>
@@ -282,16 +258,17 @@ function resendNotEnrolled(form) {
 		
 		for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
 			StarsLMProgram prog = programs.getStarsLMProgram(j);
-			for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
-				if (category.getStarsEnrLMProgram(k).getProgramID() == prog.getProgramID()) {
-					program = prog;
-					programStatus = program.getStatus();
-					numEnrolledProg++;
-					break;
-				}
+			if (prog.getApplianceCategoryID() == category.getApplianceCategoryID()) {
+				program = prog;
+				programStatus = program.getStatus();
+				numEnrolledProg++;
+				break;
 			}
-			if (program != null) break;
 		}
+		
+		String categoryName = category.getStarsWebConfig().getAlternateDisplayName();
+		if (category.getStarsEnrLMProgramCount() == 1)	// Use the program display name instead of the category name
+			categoryName = ServletUtils.getProgramDisplayNames(category.getStarsEnrLMProgram(0))[0];
 %>
                   <tr> 
                     <td width="81" align = "center">
@@ -310,7 +287,7 @@ function resendNotEnrolled(form) {
                             <input type="checkbox" name="AppCat" value="<%= category.getApplianceCategoryID() %>"
 						  onclick="changeCategory(this, <%= numProgCat %>)" <% if (program != null) out.print("checked"); %>>
                           </td>
-                          <td class="TableCell" nowrap><%= category.getStarsWebConfig().getAlternateDisplayName() %></td>
+                          <td class="TableCell" nowrap><%= categoryName %></td>
                         </tr>
                       </table>
 <%
@@ -320,20 +297,20 @@ function resendNotEnrolled(form) {
                       <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
 <%
 			for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
-				StarsEnrLMProgram prog = category.getStarsEnrLMProgram(j);
+				StarsEnrLMProgram enrProg = category.getStarsEnrLMProgram(j);
 				String checkStr = "";
-				if (program != null && prog.getProgramID() == program.getProgramID())
+				if (program != null && enrProg.getProgramID() == program.getProgramID())
 					checkStr = "checked";
 				/* Each row is a program in this category */
 %>
                         <tr> 
                           <td width="37"> 
                             <div align="right"> 
-                              <input type="radio" name="Program<%= numProgCat %>" value="<%= prog.getProgramID() %>"
+                              <input type="radio" name="Program<%= numProgCat %>" value="<%= enrProg.getProgramID() %>"
 							  onclick="changeProgram(this, <%= numProgCat %>)" <%= checkStr %>>
                             </div>
                           </td>
-                          <td class="TableCell" nowrap><%= ServletUtils.getProgramDisplayNames(prog)[1] %></td>
+                          <td class="TableCell" nowrap><%= ServletUtils.getProgramDisplayNames(enrProg)[1] %></td>
                         </tr>
 <%
 			}	// End of program

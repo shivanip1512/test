@@ -1,24 +1,35 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
+<%@ page import="com.cannontech.database.data.lite.LiteContact" %>
+<%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
+<%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
+<%
+	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse)
+			user.getAttribute(ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS);
+	
+	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
+	
+	boolean showEnergyCompany = liteEC.getChildren().size() > 0;
+	ArrayList descendants = null;
+	if (showEnergyCompany) descendants = com.cannontech.stars.util.ECUtils.getAllDescendants(liteEC);
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
-
 <script language="JavaScript">
-<!--
-function MM_reloadPage(init) {  //reloads the window if Nav4 resized
-  if (init==true) with (navigator) {if ((appName=="Netscape")&&(parseInt(appVersion)==4)) {
-    document.MM_pgW=innerWidth; document.MM_pgH=innerHeight; onresize=MM_reloadPage; }}
-  else if (innerWidth!=document.MM_pgW || innerHeight!=document.MM_pgH) location.reload();
-}
-MM_reloadPage(true);
-// -->
-
 function selectAccount(accountID) {
 	var form = document.resultForm;
 	form.AccountID.value = accountID;
+	form.submit();
+}
+
+function selectMemberAccount(accountID, contextID) {
+	var form = document.resultForm;
+	form.AccountID.value = accountID;
+	form.SwitchContext.value = contextID;
 	form.submit();
 }
 </script>
@@ -28,31 +39,7 @@ function selectAccount(accountID) {
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
-        <tr> 
-          <td width="102" height="102" background="../../WebConfig/yukon/ConsumerImage.jpg">&nbsp;</td>
-          <td valign="bottom" height="102"> 
-            <table width="657" cellspacing="0"  cellpadding="0" border="0">
-              <tr> 
-                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
-              </tr>
-              <tr> 
-                  <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
-                    Account Information&nbsp;&nbsp;</td>
-                  
-                <td width="253" valign="middle">&nbsp;</td>
-                  <td width="58" valign="middle"> 
-                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
-                  </td>
-                  <td width="57" valign="middle"> 
-                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
-                  </td>
-              </tr>
-            </table>
-          </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-          </tr>
-      </table>
+      <%@ include file="include/HeaderBar.jsp" %>
     </td>
   </tr>
   <tr>
@@ -72,7 +59,6 @@ function selectAccount(accountID) {
             <div align="center"><% String header = "SEARCH RESULTS"; %><%@ include file="include/InfoSearchBar2.jsp" %>
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %></div>
 <%
-	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse) user.getAttribute(ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS);
 	if (resp != null) {
 		if (resp.getStarsFailure() != null) {
 %>
@@ -93,22 +79,63 @@ function selectAccount(accountID) {
 			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/SearchResults.jsp">
 			  
               <table width="615" border="1" cellspacing="0" cellpadding="3" align="center">
-              <tr> 
-                <td width="187" class="HeaderCell">Name</td>
-                <td width="290" class="HeaderCell">Address</td>
-                <td width="112" class="HeaderCell">Phone#</td>
-              </tr>
+                <tr> 
+                  <td width="15%" class="HeaderCell">Account #</td>
+                  <td width="18%" class="HeaderCell">Name</td>
+                  <td width="17%" class="HeaderCell">Phone#</td>
+                  <td class="HeaderCell">Address</td>
+<% if (showEnergyCompany) { %>
+                  <td width="15%" class="HeaderCell">Energy Company</td>
+				  <input type="hidden" name="SwitchContext" value="">
+<% } %>
+                </tr>
 <%
-			for (int i = 0; i < resp.getStarsCustAccountBriefCount(); i++) {
-				StarsCustAccountBrief acctBrief = resp.getStarsCustAccountBrief(i);
+			for (int i = 0; i < resp.getAccountIDCount(); i++) {
+				LiteStarsEnergyCompany member = liteEC;
+				if (showEnergyCompany) {
+					for (int j = 0; j < descendants.size(); j++) {
+						LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(j);
+						if (company.getBriefCustAccountInfo(resp.getAccountID(i), false) != null) {
+							member = company;
+							break;
+						}
+					}
+				}
+				
+				LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo(resp.getAccountID(i), true);
+				LiteContact contact = member.getContact(liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo);
+				LiteAddress addr = member.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
+				
+				String homePhone = ServerUtils.getNotification(
+						ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
+				String workPhone = ServerUtils.getNotification(
+						ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
+				
+				StringBuffer phoneNo = new StringBuffer();
+				if (homePhone.length() > 0)
+					phoneNo.append( homePhone ).append( "(H)" );
+				if (workPhone.length() > 0) {
+					if (phoneNo.length() > 0) phoneNo.append( ", " );
+					phoneNo.append( workPhone ).append( "(W)" );
+				}
+				if (phoneNo.length() == 0) phoneNo.append( "(none)" );
 %>
-              <tr valign="top"> 
-                <td width="187" class="TableCell">
-				  <a href="" class="Link1" onclick="selectAccount(<%= acctBrief.getAccountID() %>); return false;"><%= acctBrief.getContactName() %></a>
-				</td>
-                <td width="290" class="TableCell"><%= acctBrief.getStreetAddress() %></td>
-                <td width="112" class="TableCell"><%= acctBrief.getContPhoneNumber() %></td>
-              </tr>
+                <tr valign="top"> 
+                  <td width="15%" class="TableCell">
+<% if (showEnergyCompany) { %>
+				    <a href="" class="Link1" onClick="selectMemberAccount(<%= liteAcctInfo.getAccountID() %>, <%= member.getLiteID() %>); return false;"><%= liteAcctInfo.getCustomerAccount().getAccountNumber() %></a> 
+<% } else { %>
+				    <a href="" class="Link1" onClick="selectAccount(<%= liteAcctInfo.getAccountID() %>); return false;"><%= liteAcctInfo.getCustomerAccount().getAccountNumber() %></a> 
+<% } %>
+                  </td>
+                  <td width="18%" class="TableCell"><%= contact.getContLastName() + ", " + contact.getContFirstName() %> 
+                  </td>
+                  <td width="17%" class="TableCell"><%= phoneNo.toString() %></td>
+                  <td class="TableCell"><%= ServerUtils.getOneLineAddress(addr) %></td>
+<% if (showEnergyCompany) { %>
+                  <td width="15%" class="TableCell"><%= member.getName() %></td>
+<% } %>
+                </tr>
 <%
 			}
 %>

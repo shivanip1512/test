@@ -6,6 +6,7 @@
 <%@ page import="com.cannontech.common.constants.YukonSelectionListDefs" %>
 <%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
+<%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.database.data.device.DeviceTypesFuncs" %>
 
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
@@ -54,9 +55,24 @@
 	String confirmMsg = (String) session.getAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
 	session.removeAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
 	
-	StarsYukonUser user = null;
+	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
+	if (user == null || user.getYukonUser() != lYukonUser) {
+		// This is logged in using the normal LoginController, not the StarsLoginController
+		user = SOAPServer.getStarsYukonUser( lYukonUser );
+		if (user != null) {
+			session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
+			
+			// Get the energy company settings
+			GetEnergyCompanySettingsAction action = new GetEnergyCompanySettingsAction();
+			SOAPMessage reqMsg = action.build(request, session);
+			SOAPUtil.logSOAPMsgForOperation( reqMsg, "*** Send Message *** " );
+			SOAPMessage respMsg = action.process(reqMsg, session);
+			SOAPUtil.logSOAPMsgForOperation( respMsg, "*** Receive Message *** " );
+			action.parse(reqMsg, respMsg, session);
+		}
+	}
 	
-	StarsGetEnergyCompanySettingsResponse ecSettings = null;
+	StarsEnergyCompanySettings ecSettings = null;
 	StarsEnergyCompany energyCompany = null;
 	StarsEnrollmentPrograms categories = null;
 	StarsServiceCompanies companies = null;
@@ -84,30 +100,8 @@
 	
 	Object[][] gData = null;
 
-	if (com.cannontech.database.cache.functions.AuthFuncs.checkRole(lYukonUser, ConsumerInfoRole.ROLEID) != null)
-	{
-		user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-		if (user == null || user.getYukonUser() != lYukonUser) {
-			// This is logged in using the normal LoginController, not the StarsLoginController
-			user = SOAPServer.getStarsYukonUser( lYukonUser );
-			if (user == null) {
-				// Something wrong happened when instantiating the StarsYukonUser
-				response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
-				return;
-			}
-			
-			session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
-			
-			GetEnergyCompanySettingsAction action = new GetEnergyCompanySettingsAction();
-			
-			SOAPMessage reqMsg = action.build(request, session);
-			SOAPUtil.logSOAPMsgForOperation( reqMsg, "*** Send Message *** " );
-			SOAPMessage respMsg = action.process(reqMsg, session);
-			SOAPUtil.logSOAPMsgForOperation( respMsg, "*** Receive Message *** " );
-			action.parse(reqMsg, respMsg, session);
-		}
-		
-		ecSettings = (StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+	if (user != null) {
+		ecSettings = (StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 		if (ecSettings != null) {   
 			energyCompany = ecSettings.getStarsEnergyCompany();
 			categories = ecSettings.getStarsEnrollmentPrograms();
@@ -140,6 +134,7 @@
 				userLogin = new StarsUser();
 				userLogin.setUsername("");
 				userLogin.setPassword("");
+				userLogin.setStatus(StarsLoginStatus.DISABLED);
 			}
 		}
 	}
