@@ -24,7 +24,7 @@
 #include "lmcontrolareatrigger.h"
 #include "msg_email.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMProgramCurtailment, CTILMPROGRAMCURTAILMENT_ID )
 
@@ -553,7 +553,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
             stopProgramControl(multiPilMsg,multiDispatchMsg, secondsFrom1901);
             setManualControlReceivedFlag(FALSE);
 
-            if( _LM_DEBUG )
+            if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Curtailment ended in program: " << getPAOName() << endl;
@@ -746,11 +746,11 @@ void CtiLMProgramCurtailment::addLMCurtailProgramActivityTable()
 
                 selector.orderByDescending(lmCurtailProgramActivityTable["curtailreferenceid"]);
 
-                /*if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << selector.asString().data() << endl;
-                }*/
+                }
 
                 RWDBReader rdr = selector.reader(conn);
 
@@ -837,11 +837,11 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(RWDBConnection
 
                 selector.orderByDescending(lmCurtailProgramActivityTable["curtailreferenceid"]);
 
-                /*if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << selector.asString().data() << endl;
-                }*/
+                }
 
                 RWDBReader rdr = selector.reader(conn);
 
@@ -1158,11 +1158,11 @@ void CtiLMProgramCurtailment::restoreDynamicData(RWDBReader& rdr)
 
                 selector.orderByDescending(lmCurtailProgramActivityTable["actiondatetime"]);
 
-                /*if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << selector.asString().data() << endl;
-                }*/
+                }
 
                 RWDBReader rdr = selector.reader(conn);
 

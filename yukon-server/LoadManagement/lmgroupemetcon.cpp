@@ -19,7 +19,7 @@
 #include "logger.h"
 #include "loadmanager.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMGroupEmetcon, CTILMGROUPEMETCON_ID )
 
@@ -58,7 +58,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createTimeRefreshRequestMsg(LONG refreshRate, 
     RWCString controlString = RWCString("control shed ");
     controlString += convertSecondsToEvenTimeString(shedTime);
 
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
@@ -93,7 +93,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createRotationRequestMsg(LONG sendRate, LONG s
     RWCString controlString = RWCString("control shed ");
     controlString += convertSecondsToEvenTimeString(shedTime);
 
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
@@ -126,7 +126,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(LONG offTime, LONG
 
     controlString += convertSecondsToEvenTimeString(shedTime);
 
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;

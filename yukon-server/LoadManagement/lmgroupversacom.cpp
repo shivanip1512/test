@@ -20,7 +20,7 @@
 #include "logger.h"
 #include "loadmanager.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMGroupVersacom, CTILMGROUPVERSACOM_ID )
 
@@ -60,7 +60,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createTimeRefreshRequestMsg(LONG refreshRate,
     RWCString controlString = RWCString("control shed ");
     controlString += convertSecondsToEvenTimeString(shedTime);
 
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
@@ -87,7 +87,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createSmartCycleRequestMsg(LONG percent, LONG
     controlString += " period ";
     controlString += convertSecondsToEvenTimeString(period);
 
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
@@ -106,7 +106,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createRotationRequestMsg(LONG sendRate, LONG 
     RWCString controlString = RWCString("control shed ");
     controlString += convertSecondsToEvenTimeString(shedTime);
 
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
@@ -125,7 +125,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createMasterCycleRequestMsg(LONG offTime, LON
     RWCString controlString = RWCString("control shed ");
     controlString += convertSecondsToEvenTimeString(offTime-60);
 
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;

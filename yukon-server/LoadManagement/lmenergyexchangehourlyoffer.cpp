@@ -21,7 +21,7 @@
 #include "device.h"
 #include "resolvers.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeHourlyOffer, CTILMENERGYEXCHANGEHOURLYOFFER_ID )
 
@@ -296,11 +296,11 @@ void CtiLMEnergyExchangeHourlyOffer::addLMEnergyExchangeHourlyOfferTable()
 
         if( conn.isValid() )
         {
-            /*if( _LM_DEBUG )
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Inserted hourly offer into LMEnergyExchangeHourlyOffer, offer id: " << getOfferId() << " revision number: " << getRevisionNumber() << endl;
-            }*/
+            }
 
             RWDBDatabase db = getDatabase();
             RWDBTable lmEnergyExchangeOfferRevisionTable = db.table("lmenergyexchangehourlyoffer");
@@ -408,11 +408,11 @@ void CtiLMEnergyExchangeHourlyOffer::restoreDynamicData(RWDBReader& rdr)
 
             selector.orderByDescending(lmEnergyExchangeHourlyOfferTable["revisionnumber"]);
 
-            /*if( _LM_DEBUG )
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << selector.asString().data() << endl;
-            }*/
+            }
 
             RWDBReader rdr = selector.reader(conn);
 

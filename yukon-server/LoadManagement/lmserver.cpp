@@ -16,7 +16,7 @@
 #include "logger.h"
 #include "configparms.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 //The singleton instance of the server                                       
 CtiLMServer* CtiLMServer::_instance = NULL;                                                                          
@@ -51,7 +51,7 @@ void CtiLMServer::start()
     if( !(str = gConfigParms.getValueAsString(var)).isNull() )
     {
         _defaultport = atoi(str);
-        if( _LM_DEBUG )
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - " << var << ":  " << str << endl;
@@ -154,11 +154,11 @@ void CtiLMServer::Broadcast(CtiMessage* message)
     }
     _currentmessage = message;
 
-    /*if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_CLIENT )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Outgoing Message has class ID of " << message->isA() << endl;
-    }*/
+    }
 
     setChanged();
     notifyObservers();

@@ -18,7 +18,7 @@
 #include "ctibase.h"
 #include "logger.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 /*---------------------------------------------------------------------------
     Constructor
@@ -63,11 +63,11 @@ CtiLMConnection::CtiLMConnection(RWPortal portal) : _valid(TRUE), _portal(new RW
 ---------------------------------------------------------------------------*/
 CtiLMConnection::~CtiLMConnection()
 {
-    if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Client Connection closing." << endl;
     }
+
     try
     {
         close();
@@ -77,7 +77,7 @@ CtiLMConnection::~CtiLMConnection()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-    if( _LM_DEBUG )
+
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Client Connection closed." << endl;

@@ -16,7 +16,7 @@
 #include "logger.h"
 #include "lmenergyexchangeoffer.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeOffer, CTILMENERGYEXCHANGEOFFER_ID )
 
@@ -201,11 +201,11 @@ void CtiLMEnergyExchangeOffer::addLMEnergyExchangeProgramOfferTable()
 
                 selector.orderByDescending(lmEnergyExchangeProgramOfferTable["offerid"]);
 
-                /*if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << selector.asString().data() << endl;
-                }*/
+                }
 
                 RWDBReader rdr = selector.reader(conn);
 
@@ -287,11 +287,11 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(RWDBConne
 
                 selector.orderByDescending(lmEnergyExchangeProgramOfferTable["offerid"]);
 
-                /*if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << selector.asString().data() << endl;
-                }*/
+                }
 
                 RWDBReader rdr = selector.reader(conn);
 

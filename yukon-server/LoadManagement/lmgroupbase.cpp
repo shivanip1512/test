@@ -21,7 +21,7 @@
 #include "device.h"
 #include "resolvers.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -684,7 +684,7 @@ CtiCommandMsg* CtiLMGroupBase::createLatchingRequestMsg(LONG rawState, int prior
 
     returnCommandMsg->setMessagePriority(priority);
 
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending base latch command, LM Group: " << getPAOName() << ", raw state: " << rawState << ", priority: " << priority << endl;

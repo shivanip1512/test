@@ -25,7 +25,7 @@
 #include "lmenergyexchangecustomerreply.h"
 #include "msg_email.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMProgramEnergyExchange, CTILMPROGRAMENERGYEXCHANGE_ID )
 
@@ -299,7 +299,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::CurtailmentPendingRunStatus);
                     currentOffer->dumpDynamicData();
 
-                    if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Energy Exchange offer expired, curtailment pending in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate().rwtime() << endl;
@@ -315,7 +315,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::CurtailmentPendingRunStatus);
                     currentOffer->dumpDynamicData();
 
-                    if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Energy Exchange offer closed, curtailment pending in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate().rwtime() << endl;
@@ -331,7 +331,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::CurtailmentActiveRunStatus);
                     currentOffer->dumpDynamicData();
 
-                    if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Energy Exchange curtailment period started in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate().rwtime() << endl;
@@ -347,7 +347,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::CompletedRunStatus);
                     currentOffer->dumpDynamicData();
 
-                    if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Energy Exchange curtailment period completed in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate().rwtime() << endl;

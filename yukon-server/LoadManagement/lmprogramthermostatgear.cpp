@@ -23,7 +23,7 @@
 #include "logger.h"
 #include "loadmanager.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMProgramThermoStatGear, CTILMPROGRAMTHERMOSTATGEAR_ID )
 

@@ -46,3 +46,19 @@
 */
 
 
+/* Various debug levels */
+#define LM_DEBUG_NONE              0x00000000
+#define LM_DEBUG_STANDARD          0x00000001
+#define LM_DEBUG_POINT_DATA        0x00000002
+#define LM_DEBUG_DATABASE          0x00000004
+#define LM_DEBUG_CLIENT            0x00000008
+#define LM_DEBUG_CONTROL_PARAMS    0x00000010
+//#define LM_DEBUG_                  0x00000004
+//#define LM_DEBUG_                  0x00000004
+//#define LM_DEBUG_                  0x00000004
+//#define LM_DEBUG_                  0x00000004
+//#define LM_DEBUG_                  0x00000004
+//#define LM_DEBUG_                  0x00000004
+//#define LM_DEBUG_                  0x00000004
+#define LM_DEBUG_EXTENDED          0x10000000
+

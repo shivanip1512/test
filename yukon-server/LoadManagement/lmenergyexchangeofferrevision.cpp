@@ -22,7 +22,7 @@
 #include "device.h"
 #include "resolvers.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeOfferRevision, CTILMENERGYEXCHANGEOFFERREVISION_ID )
 
@@ -404,7 +404,7 @@ void CtiLMEnergyExchangeOfferRevision::addLMEnergyExchangeOfferRevisionTable()
 
         if( conn.isValid() )
         {
-            if( _LM_DEBUG )
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Inserted offer revision into LMEnergyExchangeOfferRevision, offer id: " << getOfferId() << " revision number: " << getRevisionNumber() << endl;
@@ -522,11 +522,11 @@ void CtiLMEnergyExchangeOfferRevision::restoreDynamicData(RWDBReader& rdr)
 
             selector.orderByDescending(lmEnergyExchangeOfferRevisionTable["revisionnumber"]);
 
-            /*if( _LM_DEBUG )
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << selector.asString().data() << endl;
-            }*/
+            }
 
             RWDBReader rdr = selector.reader(conn);
 

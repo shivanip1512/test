@@ -9,7 +9,7 @@
 #include "logger.h"
 
 //Boolean if debug messages are printed
-BOOL _LM_DEBUG;
+ULONG _LM_DEBUG;
 //Boolean if point enevts messages are created and sent to Dispatch
 BOOL _LM_POINT_EVENT_LOGGING;
 
@@ -91,8 +91,22 @@ void CtiLMService::Init()
     if( !(str = gConfigParms.getValueAsString(var)).isNull() )
     {
         str.toLower();
-        _LM_DEBUG = (str=="true"?TRUE:FALSE);
-        if( _LM_DEBUG )
+        _LM_DEBUG = (str=="true"?(LM_DEBUG_STANDARD|LM_DEBUG_POINT_DATA):LM_DEBUG_NONE);
+
+        if( !_LM_DEBUG )
+        {
+            if( str=="false" )
+            {
+                _LM_DEBUG = LM_DEBUG_NONE;
+            }
+            else
+            {
+                char *eptr;
+                _LM_DEBUG = strtoul(str.data(), &eptr, 16);
+            }
+        }
+
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - " << var << ":  " << str << endl;
@@ -109,7 +123,7 @@ void CtiLMService::Init()
     {
         logFile = str;
         dout.setOutputFile(logFile.data());
-        if( _LM_DEBUG )
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - " << var << ":  " << str << endl;
@@ -127,7 +141,7 @@ void CtiLMService::Init()
     {
         str.toLower();
         _LM_POINT_EVENT_LOGGING = (str=="true"?TRUE:FALSE);
-        if( _LM_DEBUG )
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - " << var << ":  " << str << endl;
@@ -144,7 +158,7 @@ void CtiLMService::Init()
 
 void CtiLMService::DeInit()
 {
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime().asString() << " - Load Management shutdown" << endl;
@@ -156,7 +170,7 @@ void CtiLMService::OnStop()
 {
     SetStatus(SERVICE_STOP_PENDING, 2, 5000 );
 
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime().asString() << " - Load Management shutting down...." << endl;
@@ -173,7 +187,7 @@ void CtiLMService::OnStop()
 
     delete executor;
 
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime().asString() << " - Load Management shut down!" << endl;
@@ -212,18 +226,6 @@ void CtiLMService::Run()
             }
             else
             {
-                /*if( _LM_DEBUG )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime().asString() << " - Figuring initial actual var values." << endl;
-                }
-
-                for(LONG i=0;i<strategies.entries();i++)
-                {
-                    CtiLMStrategy *current = (CtiCCStrategy*)strategies[i];
-                    if( current->ActualVarPointId() > 0 )
-                        current->figureActualVarPointValue();
-                }*/
                 trouble = false;
             }
         }
@@ -231,7 +233,7 @@ void CtiLMService::Run()
 
         SetStatus(SERVICE_START_PENDING, 33, 5000 );
 
-        if( _LM_DEBUG )
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime().asString() << " - Starting load manager thread..." << endl;
@@ -241,7 +243,7 @@ void CtiLMService::Run()
 
         SetStatus(SERVICE_START_PENDING, 66, 5000 );
 
-        if( _LM_DEBUG )
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime().asString() << " - Starting client listener thread..." << endl;

@@ -28,7 +28,7 @@
 #include "loadmanager.h"
 #include "resolvers.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMControlArea, CTILMCONTROLAREA_ID )
 
@@ -1015,11 +1015,11 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                 }
                 else
                 {
-                    /*if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_CONTROL_PARAMS )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - LM Program: " << currentLMProgram->getPAOName() << " already fully active, can not control any further, state: " << currentLMProgram->getProgramState() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }*/
+                    }
                 }
             }
         }
@@ -1155,11 +1155,11 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                 }
                 else
                 {
-                    /*if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_CONTROL_PARAMS )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - LM Program: " << currentLMProgram->getPAOName() << " already fully active, can not control any further, state: " << currentLMProgram->getProgramState() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }*/
+                    }
                 }
             }
         }

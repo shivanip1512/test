@@ -22,7 +22,7 @@
 #include "device.h"
 #include "resolvers.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply, CTILMENERGYEXCHANGECUSTOMERREPLY_ID )
 
@@ -420,7 +420,7 @@ void CtiLMEnergyExchangeCustomerReply::addLMEnergyExchangeCustomerReplyTable()
 
         if( conn.isValid() )
         {
-            if( _LM_DEBUG )
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Inserted customer activity into LMEnergyExchangeCustomerReply, customerid: " << getCustomerId() << ", offerid: " << getOfferId() << ", revision: " << getRevisionNumber() << endl;

@@ -21,7 +21,7 @@
 #include "device.h"
 #include "resolvers.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMCurtailCustomer, CTILMCURTAILCUSTOMER_ID )
 
@@ -265,7 +265,7 @@ void CtiLMCurtailCustomer::addLMCurtailCustomerActivityTable()
 
         if( conn.isValid() )
         {
-            if( _LM_DEBUG )
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Inserted customer activity area into LMCurtailCustomerActivity: " << getCompanyName() << endl;
@@ -396,11 +396,11 @@ void CtiLMCurtailCustomer::restoreDynamicData(RWDBReader& rdr)
 
             selector.orderByDescending(lmCurtailCustomerActivityTable["curtailreferenceid"]);
 
-            /*if( _LM_DEBUG )
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << selector.asString().data() << endl;
-            }*/
+            }
 
             RWDBReader rdr = selector.reader(conn);
 

@@ -19,7 +19,7 @@
 #include "logger.h"
 #include "loadmanager.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMGroupPoint, CTILMGROUPPOINT_ID )
 
@@ -198,7 +198,7 @@ CtiCommandMsg* CtiLMGroupPoint::createLatchingRequestMsg(LONG rawState, int prio
 
     returnCommandMsg->setMessagePriority(priority);
 
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending point latch command, LM Group: " << getPAOName() << ", raw state: " << rawState << ", priority: " << priority << endl;

@@ -21,7 +21,7 @@
 #include "device.h"
 #include "resolvers.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 /*---------------------------------------------------------------------------
     Constructors

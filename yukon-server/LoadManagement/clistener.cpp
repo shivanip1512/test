@@ -21,7 +21,7 @@
 
 #include <rw/toolpro/inetaddr.h>
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 CtiLMClientListener* CtiLMClientListener::_instance = NULL;
 
@@ -42,7 +42,7 @@ CtiLMClientListener* CtiLMClientListener::getInstance()
         if( !(str = gConfigParms.getValueAsString(var)).isNull() )
         {
             LONG loadmanagementclientsport = atoi(str.data());
-            if( _LM_DEBUG )
+            if( _LM_DEBUG & LM_DEBUG_CLIENT )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << var << ":  " << loadmanagementclientsport << endl;

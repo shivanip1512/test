@@ -46,7 +46,7 @@
 #include "msg_dbchg.h"
 #include "loadmanager.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 struct id_hash{LONG operator()(LONG x) const { return x; } };
 
@@ -215,7 +215,6 @@ void CtiLMControlAreaStore::reset()
     bool wasAlreadyRunning = false;
     try
     {
-        //if( _LM_DEBUG )
         RWTimer overallTimer;
         overallTimer.start();
         {
@@ -255,11 +254,11 @@ void CtiLMControlAreaStore::reset()
 
                         selector.where( pointStatusTable["controloffset"]==1 );
 
-                        /*if( _LM_DEBUG )
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
-                        }*/
+                        }
 
                         RWDBReader rdr = selector.reader(conn);
 
@@ -336,11 +335,11 @@ void CtiLMControlAreaStore::reset()
                         selector.orderBy( lmGroupMacroExpanderView["grouporder"] );
                         selector.orderBy( lmGroupMacroExpanderView["childorder"] );
 
-                        /*if( _LM_DEBUG )
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
-                        }*/
+                        }
 
                         RWDBReader rdr = selector.reader(conn);
 
@@ -482,12 +481,12 @@ void CtiLMControlAreaStore::reset()
                             }
                         }
                     }//loading direct groups end
-                    /*if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << "DB Load Timer for All Groups is: " << allGroupTimer.elapsedTime() << endl;
                         allGroupTimer.reset();
-                    }*/
+                    }
 
 
                     RWTValHashMap<LONG,CtiLMProgramBase*,id_hash,equal_to<LONG> > directProgramHashMap;
@@ -543,11 +542,11 @@ void CtiLMControlAreaStore::reset()
 
                         selector.orderBy(yukonPAObjectTable["paobjectid"]);
 
-                        /*if( _LM_DEBUG )
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
-                        }*/
+                        }
 
                         RWDBReader rdr = selector.reader(conn);
                         while( rdr() )
@@ -564,12 +563,12 @@ void CtiLMControlAreaStore::reset()
                             directProgramHashMap.insert( newDirProg->getPAOId(), newDirProg );
                         }
                     }//loading direct programs end
-                    /*if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << "DB Load Timer for Direct Programs is: " << dirProgsTimer.elapsedTime() << endl;
                         dirProgsTimer.reset();
-                    }*/
+                    }
 
 
                     RWTimer gearsTimer;
@@ -619,11 +618,11 @@ void CtiLMControlAreaStore::reset()
                         selector.orderBy( lmProgramDirectGearTable["deviceid"] );
                         selector.orderBy( lmProgramDirectGearTable["gearnumber"] );
     
-                        /*if( _LM_DEBUG )
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
-                        }*/
+                        }
     
                         RWDBReader rdr = selector.reader(conn);
                         RWDBNullIndicator isNull;
@@ -650,12 +649,12 @@ void CtiLMControlAreaStore::reset()
                             }
                         }
                     }//loading direct gears end
-                    /*if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << "DB Load Timer for Direct Gears is: " << gearsTimer.elapsedTime() << endl;
                         gearsTimer.reset();
-                    }*/
+                    }
 
 
                     RWTValHashMap<LONG,CtiLMProgramBase*,id_hash,equal_to<LONG> > curtailmentProgramHashMap;
@@ -709,11 +708,11 @@ void CtiLMControlAreaStore::reset()
 
                         selector.orderBy(yukonPAObjectTable["paobjectid"]);
 
-                        /*if( _LM_DEBUG )
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
-                        }*/
+                        }
 
                         RWDBReader rdr = selector.reader(conn);
                         while( rdr() )
@@ -757,11 +756,11 @@ void CtiLMControlAreaStore::reset()
 
                             selector.orderBy( lmProgramCurtailCustomerListTable["customerorder"] );
 
-                            /*if( _LM_DEBUG )
+                            if( _LM_DEBUG & LM_DEBUG_DATABASE )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << RWTime() << " - " << selector.asString().data() << endl;
-                            }*/
+                            }
 
                             RWOrdered& lmProgramCurtailmentCustomers = currentLMProgramCurtailment->getLMProgramCurtailmentCustomers();
                             RWDBReader rdr = selector.reader(conn);
@@ -779,12 +778,12 @@ void CtiLMControlAreaStore::reset()
                             }
                         }
                     }//loading curtailment programs end
-                    /*if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << "DB Load Timer for Curtailment Programs is: " << curtailProgsTimer.elapsedTime() << endl;
                         curtailProgsTimer.reset();
-                    }*/
+                    }
 
 
                     RWTValHashMap<LONG,CtiLMProgramBase*,id_hash,equal_to<LONG> > energyExchangeProgramHashMap;
@@ -837,11 +836,11 @@ void CtiLMControlAreaStore::reset()
 
                         selector.orderBy(yukonPAObjectTable["paobjectid"]);
 
-                        /*if( _LM_DEBUG )
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
-                        }*/
+                        }
 
                         RWDBReader rdr = selector.reader(conn);
                         while( rdr() )
@@ -877,11 +876,11 @@ void CtiLMControlAreaStore::reset()
                                 selector.orderBy(lmEnergyExchangeProgramOfferTable["offerdate"]);
                                 selector.orderBy(lmEnergyExchangeProgramOfferTable["offerid"]);
 
-                                /*if( _LM_DEBUG )
+                                if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << RWTime() << " - " << selector.asString().data() << endl;
-                                }*/
+                                }
 
                                 RWDBReader rdr = selector.reader(conn);
                                 RWOrdered& offers = currentLMProgramEnergyExchange->getLMEnergyExchangeOffers();
@@ -909,11 +908,11 @@ void CtiLMControlAreaStore::reset()
 
                                     selector.orderBy(lmEnergyExchangeOfferRevisionTable["revisionnumber"]);
 
-                                    /*if( _LM_DEBUG )
+                                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
                                         dout << RWTime() << " - " << selector.asString().data() << endl;
-                                    }*/
+                                    }
 
                                     RWDBReader rdr = selector.reader(conn);
                                     RWOrdered& offerRevisions = currentLMEnergyExchangeOffer->getLMEnergyExchangeOfferRevisions();
@@ -941,11 +940,11 @@ void CtiLMControlAreaStore::reset()
 
                                         selector.orderBy(lmEnergyExchangeHourlyOfferTable["hour"]);
 
-                                        /*if( _LM_DEBUG )
+                                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                         {
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
                                             dout << RWTime() << " - " << selector.asString().data() << endl;
-                                        }*/
+                                        }
 
                                         RWDBReader rdr = selector.reader(conn);
                                         RWOrdered& hourlyOffers = currentLMEnergyExchangeOfferRevision->getLMEnergyExchangeHourlyOffers();
@@ -981,11 +980,11 @@ void CtiLMControlAreaStore::reset()
 
                                 selector.orderBy( lmEnergyExchangeCustomerListTable["customerorder"] );
 
-                                /*if( _LM_DEBUG )
+                                if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << RWTime() << " - " << selector.asString().data() << endl;
-                                }*/
+                                }
 
                                 RWOrdered& lmEnergyExchangeCustomers = currentLMProgramEnergyExchange->getLMEnergyExchangeCustomers();
                                 RWDBReader rdr = selector.reader(conn);
@@ -1025,11 +1024,11 @@ void CtiLMControlAreaStore::reset()
                                         selector.orderBy(lmEnergyExchangeCustomerReplyTable["offerid"]);
                                         selector.orderBy(lmEnergyExchangeCustomerReplyTable["revisionnumber"]);
 
-                                        /*if( _LM_DEBUG )
+                                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                         {
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
                                             dout << RWTime() << " - " << selector.asString().data() << endl;
-                                        }*/
+                                        }
 
                                         RWDBReader rdr = selector.reader(conn);
                                         RWOrdered& lmEnergyExchangeCustomerReplies = currentLMEnergyExchangeCustomer->getLMEnergyExchangeCustomerReplies();
@@ -1066,11 +1065,11 @@ void CtiLMControlAreaStore::reset()
                                             selector.orderBy(lmEnergyExchangeHourlyCustomerTable["revisionnumber"]);
                                             selector.orderBy(lmEnergyExchangeHourlyCustomerTable["hour"]);
 
-                                            /*if( _LM_DEBUG )
+                                            if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                             {
                                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                                 dout << RWTime() << " - " << selector.asString().data() << endl;
-                                            }*/
+                                            }
 
                                             RWDBReader rdr = selector.reader(conn);
                                             RWOrdered& hourlyCustomers = currentCustomerReply->getLMEnergyExchangeHourlyCustomers();
@@ -1084,12 +1083,12 @@ void CtiLMControlAreaStore::reset()
                             }
                         }
                     }//loading energy exchange programs end
-                    /*if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << "DB Load Timer for Energy Exchange Programs is: " << eeProgsTimer.elapsedTime() << endl;
                         eeProgsTimer.reset();
-                    }*/
+                    }
 
 
                     RWTimer progWinTimer;
@@ -1108,11 +1107,11 @@ void CtiLMControlAreaStore::reset()
                         selector.orderBy( lmProgramControlWindow["deviceid"] );
                         selector.orderBy( lmProgramControlWindow["windownumber"] );
 
-                        /*if( _LM_DEBUG )
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
-                        }*/
+                        }
 
                         RWDBReader rdr = selector.reader(conn);
                         while( rdr() )
@@ -1134,12 +1133,12 @@ void CtiLMControlAreaStore::reset()
                             }
                         }
                     }//loading program control windows end
-                    /*if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << "DB Load Timer for Program Control Windows is: " << progWinTimer.elapsedTime() << endl;
                         progWinTimer.reset();
-                    }*/
+                    }
 
 
                     RWTimer caTimer;
@@ -1190,11 +1189,11 @@ void CtiLMControlAreaStore::reset()
                         selector.orderBy(lmControlAreaProgramTable["userorder"]);
                         selector.orderByDescending(lmControlAreaProgramTable["stoporder"]);
 
-                        /*if( _LM_DEBUG )
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
-                        }*/
+                        }
 
                         RWDBReader rdr = selector.reader(conn);
 
@@ -1258,12 +1257,12 @@ void CtiLMControlAreaStore::reset()
                             }
                         }
                     }//loading control areas end
-                    /*if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << "DB Load Timer for Control Areas is: " << caTimer.elapsedTime() << endl;
                         caTimer.reset();
-                    }*/
+                    }
 
 
                     RWTimer trigTimer;
@@ -1299,11 +1298,11 @@ void CtiLMControlAreaStore::reset()
                         selector.orderBy(lmControlAreaTriggerTable["deviceid"]);
                         selector.orderBy(lmControlAreaTriggerTable["triggernumber"]);
 
-                        /*if( _LM_DEBUG )
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
-                        }*/
+                        }
 
                         RWDBReader rdr = selector.reader(conn);
                         while( rdr() )
@@ -1327,12 +1326,12 @@ void CtiLMControlAreaStore::reset()
                             }
                         }
                     }//loading control area triggers end
-                    /*if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << "DB Load Timer for Triggers is: " << trigTimer.elapsedTime() << endl;
                         trigTimer.reset();
-                    }*/
+                    }
                 }
                 else
                 {
@@ -1344,12 +1343,12 @@ void CtiLMControlAreaStore::reset()
             }
         }
 
-        /*if( _LM_DEBUG )
+        if( _LM_DEBUG & LM_DEBUG_DATABASE )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << "DB Load Timer for entire LM DB: " << overallTimer.elapsedTime() << endl;
             overallTimer.reset();
-        }*/
+        }
         _isvalid = TRUE;
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1433,7 +1432,7 @@ void CtiLMControlAreaStore::doResetThr()
                 dout << RWTime() << " - " << var << " is ZERO!!!" << endl;
             }
 
-            if( _LM_DEBUG )
+            if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << var << ":  " << str << endl;
@@ -1458,7 +1457,7 @@ void CtiLMControlAreaStore::doResetThr()
             if( RWDBDateTime().seconds() >= nextDatabaseRefresh.seconds() )
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-                if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Periodic restore of control area list from the database" << endl;

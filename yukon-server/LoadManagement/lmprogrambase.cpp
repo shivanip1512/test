@@ -26,7 +26,7 @@
 #include "mgr_holiday.h"
 #include "mgr_season.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 LONG CtiLMProgramBase::numberOfReferences = 0;
 /*---------------------------------------------------------------------------

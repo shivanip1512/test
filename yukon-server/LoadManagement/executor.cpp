@@ -32,7 +32,7 @@
 
 #include <rw/collstr.h>
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 /*===========================================================================
     CtiLMCommandExecutor
@@ -762,7 +762,7 @@ void CtiLMCommandExecutor::RestoreGroup()
                         RWCString controlString = "control restore";
                         CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
 
-                        if( _LM_DEBUG )
+                        if( _LM_DEBUG & LM_DEBUG_STANDARD )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
@@ -909,7 +909,7 @@ void CtiLMCommandExecutor::DisableGroup()
                         RWCString controlString = "control restore";
                         CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
 
-                        if( _LM_DEBUG )
+                        if( _LM_DEBUG & LM_DEBUG_STANDARD )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
@@ -968,7 +968,7 @@ void CtiLMCommandExecutor::ConfirmGroup()
                         if( !(str = gConfigParms.getValueAsString(var)).isNull() )
                         {
                             confirmExpireInSeconds = atoi(str);
-                            /*if( _LM_DEBUG )
+                            /*if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << RWTime() << " - " << var << ":  " << str << endl;
@@ -1001,7 +1001,7 @@ void CtiLMCommandExecutor::ConfirmGroup()
                             RWCString controlString = currentLMGroup->getLastControlString();
                             CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
 
-                            if( _LM_DEBUG )
+                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << RWTime() << " - Sending confirm command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
@@ -1094,7 +1094,7 @@ void CtiLMManualControlMsgExecutor::ScheduledStart()
                         {
                             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                             {
-                                if( _LM_DEBUG )
+                                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     char tempchar[64];
@@ -1145,7 +1145,7 @@ void CtiLMManualControlMsgExecutor::ScheduledStart()
                             }
                             else if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
                             {
-                                if( _LM_DEBUG )
+                                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     char tempchar[64];
@@ -1229,7 +1229,7 @@ void CtiLMManualControlMsgExecutor::ScheduledStop()
                     {
                         if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                         {
-                            if( _LM_DEBUG )
+                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 char tempchar[64];
@@ -1268,7 +1268,7 @@ void CtiLMManualControlMsgExecutor::ScheduledStop()
                         }
                         else if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
                         {
-                            if( _LM_DEBUG )
+                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 char tempchar[64];
@@ -1346,7 +1346,7 @@ void CtiLMManualControlMsgExecutor::StartNow()
                         {
                             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                             {
-                                if( _LM_DEBUG )
+                                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     char tempchar[64];
@@ -1395,7 +1395,7 @@ void CtiLMManualControlMsgExecutor::StartNow()
                             }
                             else if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
                             {
-                                if( _LM_DEBUG )
+                                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     char tempchar[64];
@@ -1490,7 +1490,7 @@ void CtiLMManualControlMsgExecutor::StopNow()
                     {
                         if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                         {
-                            if( _LM_DEBUG )
+                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 char tempchar[64];
@@ -1527,7 +1527,7 @@ void CtiLMManualControlMsgExecutor::StopNow()
                         }
                         else if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
                         {
-                            if( _LM_DEBUG )
+                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 char tempchar[64];
@@ -1620,7 +1620,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
 {
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         char tempchar[64];
@@ -1724,7 +1724,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
 ---------------------------------------------------------------------------*/    
 void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate()
 {
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         char tempchar[64];
@@ -1840,7 +1840,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate()
 ---------------------------------------------------------------------------*/    
 void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
 {
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         char tempchar[64];
@@ -1967,7 +1967,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
 ---------------------------------------------------------------------------*/    
 void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer()
 {
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         char tempchar[64];
@@ -2070,7 +2070,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer()
 ---------------------------------------------------------------------------*/    
 void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer()
 {
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         char tempchar[64];
@@ -2192,7 +2192,7 @@ void CtiLMControlAreaMsgExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
 {
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Curtail acknowledge received." << endl;
@@ -2294,7 +2294,7 @@ void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
 {
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Energy exchange accept received." << endl;
@@ -2488,7 +2488,7 @@ void CtiLMShutdownExecutor::Execute()
 {
     try
     {
-        if( _LM_DEBUG )
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Shutting down client listener thread..." << endl;
@@ -2496,7 +2496,7 @@ void CtiLMShutdownExecutor::Execute()
 
         CtiLMClientListener::getInstance()->stop();
 
-        if( _LM_DEBUG )
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Client listener thread shutdown." << endl;
@@ -2510,7 +2510,7 @@ void CtiLMShutdownExecutor::Execute()
     
     try
     {
-        if( _LM_DEBUG )
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Shutting down load manager thread..." << endl;
@@ -2518,7 +2518,7 @@ void CtiLMShutdownExecutor::Execute()
     
         CtiLoadManager::getInstance()->stop();
 
-        if( _LM_DEBUG )
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Load manager thread shutdown." << endl;
@@ -2532,7 +2532,7 @@ void CtiLMShutdownExecutor::Execute()
 
     try
     {
-        if( _LM_DEBUG )
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Shutting down control area store..." << endl;
@@ -2540,7 +2540,7 @@ void CtiLMShutdownExecutor::Execute()
     
         CtiLMControlAreaStore::deleteInstance();
 
-        if( _LM_DEBUG )
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Control area store shutdown." << endl;

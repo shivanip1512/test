@@ -42,7 +42,7 @@
 
 #include <rw/thr/prodcons.h>
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 extern BOOL _LM_POINT_EVENT_LOGGING;
 
 /* The singleton instance of CtiLoadManager */
@@ -107,7 +107,7 @@ void CtiLoadManager::stop()
     {
         _loadManagerThread.terminate();
 
-        if( _LM_DEBUG )
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Forced to terminate." << endl;
@@ -165,7 +165,7 @@ void CtiLoadManager::controlLoop()
                 LONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
                 ULONG secondsFrom1901 = currentDateTime.seconds();
 
-                if(_LM_DEBUG)
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     if( (secondsFrom1901%1800) == 0 )
                     {//every five minutes tell the user if the manager thread is still alive
@@ -423,7 +423,7 @@ CtiConnection* CtiLoadManager::getDispatchConnection()
             if( !(str = gConfigParms.getValueAsString(var)).isNull() )
             {
                 dispatch_host = str;
-                if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << var << ":  " << str << endl;
@@ -439,7 +439,7 @@ CtiConnection* CtiLoadManager::getDispatchConnection()
             if( !(str = gConfigParms.getValueAsString(var)).isNull() )
             {
                 dispatch_port = atoi(str);
-                if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << var << ":  " << str << endl;
@@ -502,7 +502,7 @@ CtiConnection* CtiLoadManager::getPILConnection()
             if( !(str = gConfigParms.getValueAsString(var)).isNull() )
             {
                 pil_host = str;
-                if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << var << ":  " << str << endl;
@@ -518,7 +518,7 @@ CtiConnection* CtiLoadManager::getPILConnection()
             if( !(str = gConfigParms.getValueAsString(var)).isNull() )
             {
                 pil_port = atoi(str);
-                if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << var << ":  " << str << endl;
@@ -629,7 +629,7 @@ void CtiLoadManager::checkPIL(ULONG secondsFrom1901)
 ---------------------------------------------------------------------------*/
 void CtiLoadManager::registerForPoints(const RWOrdered& controlAreas)
 {
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Registering for point changes." << endl;
@@ -745,24 +745,28 @@ void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
             {
                 pcReturn = (CtiReturnMsg*)message;
                 porterReturnMsg( pcReturn->DeviceId(), pcReturn->CommandString(), pcReturn->Status(), pcReturn->ResultString(), secondsFrom1901 );
+                if( pcReturn->Status() != NORMAL )
+                {
+                    pcReturn->dump();
+                }
             }
             break;
         case MSG_COMMAND:
             {
-                /*if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_EXTENDED )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Command Message received from Dispatch" << endl;
-                }*/
+                }
 
                 cmdMsg = (CtiCommandMsg*)message;
                 if( cmdMsg->getOperation() == CtiCommandMsg::AreYouThere )
                 {
-                    /*if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_EXTENDED )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Replying to Are You There message." << endl;
-                    }*/
+                    }
                     try
                     {
                         getDispatchConnection()->WriteConnQue(cmdMsg->replicateMessage());
@@ -816,7 +820,7 @@ void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
 ---------------------------------------------------------------------------*/
 void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, RWTime& timestamp, ULONG secondsFrom1901 )
 {
-    if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_POINT_DATA )
     {
         char tempchar[80];
         RWCString outString = "Point Data, ID:";
@@ -982,11 +986,11 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
 ---------------------------------------------------------------------------*/
 void CtiLoadManager::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString, ULONG secondsFrom1901 )
 {
-    /*if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_EXTENDED )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Porter return received." << endl;
-    }*/
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -996,7 +1000,7 @@ void CtiLoadManager::porterReturnMsg( long deviceId, RWCString commandString, in
 ---------------------------------------------------------------------------*/
 void CtiLoadManager::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional, ULONG secondsFrom1901 )
 {
-    /*if( _LM_DEBUG )
+    if( _LM_DEBUG & LM_DEBUG_EXTENDED )
     {
         char tempchar[64] = "";
         RWCString outString = "Signal Message received. Point ID:";
@@ -1009,7 +1013,7 @@ void CtiLoadManager::signalMsg( long pointID, unsigned tags, RWCString text, RWC
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - " << outString.data() << "  Text: "
                       << text << " Additional Info: " << additional << endl;
-    }*/
+    }
 }
 
 /*---------------------------------------------------------------------------

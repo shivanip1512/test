@@ -31,7 +31,7 @@
 #include "lmcontrolareatrigger.h"
 #include "lmprogramthermostatgear.h"
 
-extern BOOL _LM_DEBUG;
+extern ULONG _LM_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiLMProgramDirect, CTILMPROGRAMDIRECT_ID )
 
@@ -208,7 +208,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
             if( gearChangeBoolean &&
                 getProgramState() != CtiLMProgramBase::InactiveState )
             {
-                if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Gear Change, LM Program: " << getPAOName() << ", previous gear number: " << previousGearNumber << ", new gear number: " << _currentgearnumber << endl;
@@ -253,7 +253,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         numberOfGroupsToTake = _lmprogramdirectgroups.entries();
                     }
 
-                    if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         if( savedState == CtiLMProgramBase::ActiveState )
                         {
@@ -326,7 +326,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     LONG cycleCount = currentGearObject->getMethodRateCount();
                     RWCString cycleCountDownType = currentGearObject->getMethodOptionType();
 
-                    if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Smart Cycling all groups, LM Program: " << getPAOName() << endl;
@@ -404,7 +404,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     LONG offTime = period * (percent / 100.0);
                     LONG onTime = period - offTime;
 
-                    if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Master Station Cycling groups, LM Program: " << getPAOName() << endl;
@@ -477,7 +477,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         numberOfGroupsToTake = _lmprogramdirectgroups.entries();
                     }
 
-                    if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Controlling rotation groups, LM Program: " << getPAOName() << ", number of groups to control: " << numberOfGroupsToTake << endl;
@@ -520,7 +520,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                 {
                     LONG gearStartRawState = currentGearObject->getMethodRateCount();
 
-                    if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Controlling latch groups, LM Program: " << getPAOName() << endl;
@@ -566,7 +566,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     LONG cycleCount = currentGearObject->getMethodRateCount();
                     RWCString cycleCountDownType = currentGearObject->getMethodOptionType();
 
-                    if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - True Cycling all groups, LM Program: " << getPAOName() << endl;
@@ -665,7 +665,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     LONG valueTE = thermostatGearObject->getValueTe();
                     LONG valueTF = thermostatGearObject->getValueTf();
 
-                    if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Thermostat Set Point command all groups, LM Program: " << getPAOName() << endl;
@@ -762,7 +762,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                 RWCString refreshCountDownType = currentGearObject->getMethodOptionType();
                 LONG maxRefreshShedTime = currentGearObject->getMethodOptionMax();
 
-                if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Controlling all time refresh groups, LM Program: " << getPAOName() << endl;
@@ -833,7 +833,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                 RWCString cycleCountDownType = currentGearObject->getMethodOptionType();
                 LONG maxCycleCount = currentGearObject->getMethodOptionMax();
 
-                if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Smart Cycling all groups, LM Program: " << getPAOName() << endl;
@@ -945,7 +945,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                 LONG offTime = period * (percent / 100.0);
                 LONG onTime = period - offTime;
 
-                if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Master Station Cycling groups, LM Program: " << getPAOName() << endl;
@@ -1014,7 +1014,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                     numberOfGroupsToTake = _lmprogramdirectgroups.entries();
                 }
 
-                if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Controlling rotation groups, LM Program: " << getPAOName() << ", number of groups to control: " << numberOfGroupsToTake << endl;
@@ -1053,7 +1053,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
             {
                 LONG gearStartRawState = currentGearObject->getMethodRateCount();
 
-                if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Controlling latch groups, LM Program: " << getPAOName() << endl;
@@ -1100,7 +1100,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                 RWCString cycleCountDownType = currentGearObject->getMethodOptionType();
                 LONG maxCycleCount = currentGearObject->getMethodOptionMax();
 
-                if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - True Cycling all groups, LM Program: " << getPAOName() << endl;
@@ -1233,7 +1233,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                 LONG valueTE = thermostatGearObject->getValueTe();
                 LONG valueTF = thermostatGearObject->getValueTf();
 
-                if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Thermostat Set Point command all groups, LM Program: " << getPAOName() << endl;
@@ -1779,7 +1779,7 @@ BOOL CtiLMProgramDirect::maintainProgramControl(LONG currentPriority, RWOrdered&
     {
         if( hasGearChanged(currentPriority, controlAreaTriggers, secondsFrom1901, multiDispatchMsg) )
         {
-            if( _LM_DEBUG )
+            if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Gear Change, LM Program: " << getPAOName() << ", previous gear number: " << previousGearNumber << ", new gear number: " << _currentgearnumber << endl;
@@ -1837,7 +1837,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
             RWCString refreshCountDownType = currentGearObject->getMethodOptionType();
             LONG maxRefreshShedTime = currentGearObject->getMethodOptionMax();
 
-            if( _LM_DEBUG )
+            if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Controlling all time refresh groups, LM Program: " << getPAOName() << endl;
@@ -1910,7 +1910,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
             RWCString cycleCountDownType = currentGearObject->getMethodOptionType();
             LONG maxCycleCount = currentGearObject->getMethodOptionMax();
 
-            if( _LM_DEBUG )
+            if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Smart Cycling all groups, LM Program: " << getPAOName() << endl;
@@ -1982,7 +1982,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
             LONG offTime = period * (percent / 100.0);
             LONG onTime = period - offTime;
 
-            if( _LM_DEBUG )
+            if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Master Station Cycling groups, LM Program: " << getPAOName() << endl;
@@ -2050,7 +2050,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                 LONG sendRate = currentGearObject->getMethodRate();
                 LONG shedTime = currentGearObject->getMethodPeriod();
 
-                if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Controlling all rotation groups, LM Program: " << getPAOName() << endl;
@@ -2086,7 +2086,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                     CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
                     int priority = 11;
                     RWCString controlString = "control cycle terminate";
-                    if( _LM_DEBUG )
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Sending cycle terminate command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
@@ -2104,7 +2104,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                     numberOfGroupsToTake = _lmprogramdirectgroups.entries();
                 }
 
-                if( _LM_DEBUG )
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Controlling rotation groups, LM Program: " << getPAOName() << ", number of groups to control: " << numberOfGroupsToTake << endl;
@@ -2156,7 +2156,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
             RWCString cycleCountDownType = currentGearObject->getMethodOptionType();
             LONG maxCycleCount = currentGearObject->getMethodOptionMax();
 
-            if( _LM_DEBUG )
+            if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - True Cycling all groups, LM Program: " << getPAOName() << endl;
@@ -2249,7 +2249,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
             LONG valueTE = thermostatGearObject->getValueTe();
             LONG valueTF = thermostatGearObject->getValueTf();
 
-            if( _LM_DEBUG )
+            if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Thermostat Set Point command all groups, LM Program: " << getPAOName() << endl;
@@ -2565,7 +2565,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                     {
                                         int priority = 11;
                                         RWCString controlString = "control restore";
-                                        if( _LM_DEBUG )
+                                        if( _LM_DEBUG & LM_DEBUG_STANDARD )
                                         {
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
                                             dout << RWTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
@@ -2582,7 +2582,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                     {//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
                                         int priority = 11;
                                         RWCString controlString = "control cycle terminate";
-                                        if( _LM_DEBUG )
+                                        if( _LM_DEBUG & LM_DEBUG_STANDARD )
                                         {
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
                                             dout << RWTime() << " - Sending terminate command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
@@ -2660,7 +2660,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                     {//groups not currently shed need to be set back to inactive state
                         currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
                         currentLMGroup->setControlCompleteTime(RWDBDateTime());
-                        if( _LM_DEBUG )
+                        if( _LM_DEBUG & LM_DEBUG_STANDARD )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Master Cycle group timing-in, LM Group: " << currentLMGroup->getPAOName() << endl;
@@ -2669,7 +2669,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                         {
                             int priority = 11;
                             RWCString controlString = "control restore";
-                            if( _LM_DEBUG )
+                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << RWTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
@@ -2969,7 +2969,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                     {
                                         int priority = 11;
                                         RWCString controlString = "control restore";
-                                        if( _LM_DEBUG )
+                                        if( _LM_DEBUG & LM_DEBUG_STANDARD )
                                         {
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
                                             dout << RWTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
@@ -2986,7 +2986,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                     {//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
                                         int priority = 11;
                                         RWCString controlString = "control cycle terminate";
-                                        if( _LM_DEBUG )
+                                        if( _LM_DEBUG & LM_DEBUG_STANDARD )
                                         {
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
                                             dout << RWTime() << " - Sending terminate command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
@@ -3085,7 +3085,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                         {
                             int priority = 11;
                             RWCString controlString = "control restore";
-                            if( _LM_DEBUG )
+                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << RWTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
@@ -3112,7 +3112,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                         {//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
                             int priority = 11;
                             RWCString controlString = "control terminate";
-                            if( _LM_DEBUG )
+                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << RWTime() << " - Sending terminate command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
@@ -3141,7 +3141,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                         {
                             int priority = 11;
                             RWCString controlString = "control restore";
-                            if( _LM_DEBUG )
+                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << RWTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
