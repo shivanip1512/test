@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/05/21 15:13:21 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/06/30 17:05:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -131,6 +131,7 @@ void CtiMCServer::run()
 
             if( gMacsDebugLevel & MC_DEBUG_EVENTS )
             {
+	        CtiLockGuard<CtiLogger> guard(dout);
                 _scheduler.dumpEventQueue();
                 dout << RWTime() << " Sleeping for " << delay << " millis" << endl;
             }
