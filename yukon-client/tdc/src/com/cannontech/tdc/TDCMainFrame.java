@@ -1705,6 +1705,8 @@ private javax.swing.JMenu getJMenuEdit() {
 			ivjJMenuEdit.setText("Edit");
 			ivjJMenuEdit.setBackground(java.awt.SystemColor.control);
 			ivjJMenuEdit.setForeground(java.awt.SystemColor.controlText);
+			
+			ivjJMenuEdit.add(getJMenuItemCreate());
 			ivjJMenuEdit.add(getJMenuItemEditDisplays());
 			ivjJMenuEdit.add(getJMenuItemMakeCopy());
 			ivjJMenuEdit.add(getJMenuItemRemoveDisplays());
@@ -1738,9 +1740,8 @@ private javax.swing.JMenu getJMenuFile() {
 			ivjJMenuFile.setText("File");
 			ivjJMenuFile.setBackground(java.awt.SystemColor.control);
 			ivjJMenuFile.setForeground(java.awt.SystemColor.controlText);
-			ivjJMenuFile.add(getJMenuItemCreate());
+			
 			ivjJMenuFile.add(getJMenuItemExportDataSet());
-			ivjJMenuFile.add(getJSeparator4());
 			ivjJMenuFile.add(getJMenuItemPrintPreview());
 			ivjJMenuFile.add(getJMenuItemPrint());
 			ivjJMenuFile.add(getJSeparator5());
