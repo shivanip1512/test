@@ -551,11 +551,6 @@ public static void logEvent(String event, int severity)
 		{
 			e.printStackTrace();
 		}
-
-		catch( java.io.IOException e )
-		{
-			e.printStackTrace();
-		}
 	}
 	logger.log( event, severity);
 }

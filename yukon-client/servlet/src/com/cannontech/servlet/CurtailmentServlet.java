@@ -170,11 +170,7 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 		catch( java.io.FileNotFoundException e )
 		{
 			e.printStackTrace();
-		}
-		catch( java.io.IOException ioe )
-		{
-			ioe.printStackTrace();
-		}	
+		}		
 	}
 }
 }
