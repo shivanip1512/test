@@ -207,8 +207,8 @@ function changeAppSelection(chkBox) {
                 <table width="350" border="0" cellspacing="0" cellpadding="0">
                   <tr>
                     <td align="center"> 
-                      <input type="submit" name="UpdateLMHardwareConfig" value="Config">
-                      <input type="button" name="SaveConfig" value="Save Config Only" onClick="sendCommand('SaveLMHardwareConfig')">
+                      <input type="submit" name="UpdateLMHardwareConfig" value="Config Now">
+                      <input type="button" name="SaveConfig" value="Save To Batch" onClick="sendCommand('SaveLMHardwareConfig')">
                     </td>
                   </tr>
                 </table>

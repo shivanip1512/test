@@ -123,14 +123,14 @@ function clearConfig(form) {
                 <br>
                 <table width="64%" border="0" cellspacing="0" cellpadding="3" align="center" bgcolor="#FFFFFF">
                   <tr> 
-                    <td width="169"> 
+                    <td> 
                       <div align="right"> 
                         <input type="submit" name="ConfigNow" value="Configure Now">
                       </div>
                     </td>
-                    <td width="239"> 
+                    <td> 
                       <div align="left"> 
-                        <input type="submit" name="ScheduleConfig" value="Schedule Configuration">
+                        <input type="submit" name="ScheduleConfig" value="Save To Batch">
                       </div>
                     </td>
                   </tr>
@@ -139,12 +139,12 @@ function clearConfig(form) {
                 <table width="64%" border="0" cellspacing="0" cellpadding="3" align="center" bgcolor="#FFFFFF">
                   <tr> 
                     <td> 
-                      <div align="center"> 
-                        <input type="button" name="SendConfig" value="Send Scheduled Configuration" onclick="sendConfig(this.form)">
+                      <div align="right"> 
+                        <input type="button" name="SendConfig" value="Send Batch Configuration" onclick="sendConfig(this.form)">
                       </div>
                     </td>
                     <td>
-                      <input type="button" name="ClearConfig" value="Clear Scheduled Configuration" onClick="clearConfig(this.form)">
+                      <input type="button" name="ClearConfig" value="Clear Batch Configuration" onClick="clearConfig(this.form)">
                     </td>
                   </tr>
                 </table>
