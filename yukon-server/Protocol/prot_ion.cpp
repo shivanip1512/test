@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/04/08 00:03:24 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/04/10 21:30:05 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1311,10 +1311,10 @@ void CtiProtocolION::generateEventLogRead( void )
             //  getting the one immediately following our last position
             start        = CTIDBG_new CtiIONUnsignedInt(_eventLogLastPosition + 1);
 
-            //  41 - 34 - 2 = 5, for example
-            if( (_eventLogCurrentPosition - _eventLogLastPosition - 2) > 5 )
+            //  ((41 - 1) - (35 + 1)) = 5, for example - getting 36, 37, 38, 39, 40
+            if( ((_eventLogCurrentPosition - 1) - (_eventLogLastPosition + 1)) > 5 )
             {
-                end = CTIDBG_new CtiIONUnsignedInt(_eventLogLastPosition + 1 + 5);  //  get a max of 5 at once
+                end = CTIDBG_new CtiIONUnsignedInt(_eventLogLastPosition + 5);  //  get a max of 5 at once
             }
             else
             {
@@ -2052,7 +2052,11 @@ int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
         dout << "tmpOM.event_log_last_position = " << tmpOM.event_log_last_position << endl;
     }
 
-    _eventLogLastPosition = tmpOM.event_log_last_position;
+    if( tmpOM.event_log_last_position >= _eventLogLastPosition )
+    {
+        //  make sure that we don't have collisions between Macs and Scanner
+        _eventLogLastPosition = tmpOM.event_log_last_position;
+    }
 
     _ionState   = State_Init;
     _retryState = _ionState;
