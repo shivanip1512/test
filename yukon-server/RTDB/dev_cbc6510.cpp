@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/09/11 21:27:57 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/10/09 19:46:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,7 +87,7 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
         OutMessage->DeviceID = getID();
         OutMessage->TargetID = getID();
 
-        _dnp.commOut( OutMessage, outList );
+        _dnp.sendCommRequest( OutMessage, outList );
 
         nRet = NoError;
     }

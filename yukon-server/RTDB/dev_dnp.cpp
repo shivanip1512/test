@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/09/18 21:23:17 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/10/09 19:46:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,9 +57,9 @@ CtiDeviceDNP &CtiDeviceDNP::operator=(const CtiDeviceDNP &aRef)
 }
 
 
-CtiProtocolDNP &CtiDeviceDNP::getProtocol( void )
+CtiProtocolBase *CtiDeviceDNP::getProtocol() const
 {
-    return _dnp;
+    return (CtiProtocolBase *)&_dnp;
 }
 
 
@@ -243,7 +243,7 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
     if( nRet == NoError )
     {
-        _dnp.commOut( OutMessage, outList );
+        _dnp.sendCommRequest(OutMessage, outList);
     }
     else
     {
@@ -260,7 +260,7 @@ INT CtiDeviceDNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     RWTPtrSlist<CtiPointDataMsg> dnpPoints;
 
-    _dnp.commIn(InMessage, outList);
+    _dnp.recvCommResult(InMessage, outList);
 
     resetScanPending();
 
@@ -351,11 +351,7 @@ INT CtiDeviceDNP::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
  *****************************************************************************/
 RWCString CtiDeviceDNP::getDescription(const CtiCommandParser &parse) const
 {
-   RWCString tmp;
-
-   //tmp = "CBC Device: " + getName() + " SN: " + CtiNumStr(_cbc.getSerial());
-
-   return tmp;
+   return getName();
 }
 
 
