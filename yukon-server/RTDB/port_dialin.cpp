@@ -1,5 +1,3 @@
-#include "yukon.h"
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   port_dialin
@@ -10,11 +8,11 @@
 *
 * CVS KEYWORDS:
 * REVISION     :  $Revision $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* DATE         :  $Date: 2005/02/17 19:02:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
+#include "yukon.h"
 
 #include "dsm2.h"
 #include "logger.h"

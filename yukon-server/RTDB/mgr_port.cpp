@@ -1,5 +1,3 @@
-#include "yukon.h"
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   mgr_port
@@ -8,12 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/02/17 19:02:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
+#include "yukon.h"
 
 #include <rw/db/db.h>
 

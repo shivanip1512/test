@@ -1,5 +1,3 @@
-#include "yukon.h"
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   mgr_exclusion
@@ -9,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/02/17 19:02:58 $
 *
 * HISTORY      :
 * $Log: mgr_exclusion.cpp,v $
+* Revision 1.5  2005/02/17 19:02:58  mfisher
+* Removed space before CVS comment header, moved #include "yukon.h" after CVS header
+*
 * Revision 1.4  2005/02/10 23:24:02  alauinger
 * Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 *
@@ -29,7 +30,7 @@
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
+#include "yukon.h"
 
 #include "mgr_exclusion.h"
 #include "guard.h"

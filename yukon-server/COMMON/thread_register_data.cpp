@@ -1,5 +1,3 @@
-#include "yukon.h"
-
 /*--------------------------------------------------------------------------------------------*
 *
 * File:   thread_register_data
@@ -10,15 +8,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/10 23:23:45 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/02/17 19:02:59 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
+#include "yukon.h"
+
 #include "thread_register_data.h"
 
 //===========================================================================================================
-// the first 4 args are required 
+// the first 4 args are required
 //===========================================================================================================
 
 CtiThreadRegData::CtiThreadRegData( int id,
@@ -78,7 +78,7 @@ int CtiThreadRegData::getId( void )
 //===========================================================================================================
 //===========================================================================================================
 
-CtiThreadRegData::Behaviours CtiThreadRegData::getBehaviour( void ) 
+CtiThreadRegData::Behaviours CtiThreadRegData::getBehaviour( void )
 {
    return( _behaviourType );
 }
@@ -180,7 +180,7 @@ void CtiThreadRegData::setAlternateFunc( behaviourFuncPtr in )
 {
    _action_two = in;
 }
-   
+
 //===========================================================================================================
 //===========================================================================================================
 
@@ -195,11 +195,11 @@ void CtiThreadRegData::setShutdownArgs( void* args )
 
 void CtiThreadRegData::setShutdownFunc( behaviourFuncPtr in )
 {
-   _action_one = in; 
+   _action_one = in;
 }
 
 //===========================================================================================================
-// this setting tells the monitor what type of action the registered thread would like us to take if there 
+// this setting tells the monitor what type of action the registered thread would like us to take if there
 // is a 'out-to-lunch' episode
 //===========================================================================================================
 

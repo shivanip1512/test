@@ -1,5 +1,3 @@
-#include "yukon.h"
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_ansi_kv2
@@ -10,10 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi_kv2.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:57 $
-*    History: 
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/02/17 19:02:58 $
+*    History:
       $Log: prot_ansi_kv2.cpp,v $
+      Revision 1.7  2005/02/17 19:02:58  mfisher
+      Removed space before CVS comment header, moved #include "yukon.h" after CVS header
+
       Revision 1.6  2005/02/10 23:23:57  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -34,6 +35,7 @@
 
 
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include <rw/cstring.h>
 
@@ -131,13 +133,13 @@ int CtiProtocolANSI_kv2::calculateLPDataBlockStartIndex(ULONG lastLPTime)
     int nbrIntsPerBlock = getNbrIntervalsPerBlock();
     int nbrBlksSet = getNbrValidBlks();
     RWTime currentTime;
-    
+
 
     currentTime.now();
     nbrIntervals =  (abs(currentTime.seconds() - lastLPTime)/60) / getMaxIntervalTime();
     if (nbrIntervals > (((nbrBlksSet-1) * nbrIntsPerBlock) + nbrValidInts))
     {
-        nbrIntervals = (((nbrBlksSet-1) * nbrIntsPerBlock) + nbrValidInts); 
+        nbrIntervals = (((nbrBlksSet-1) * nbrIntsPerBlock) + nbrValidInts);
     }
 
     if (nbrIntervals <= nbrValidInts)
@@ -162,7 +164,7 @@ int CtiProtocolANSI_kv2::calculateLPDataBlockStartIndex(ULONG lastLPTime)
     setCurrentAnsiWantsTableValues(64,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_READ);
     getApplicationLayer().initializeTableRequest (64, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_READ);
       */
-    
+
 }
 
 int CtiProtocolANSI_kv2::calculateLPDataBlockSize(int numChans)
@@ -192,11 +194,11 @@ int CtiProtocolANSI_kv2::snapshotData()
     REQ_DATA_RCD reqData;
     reqData.proc.tbl_proc_nbr = 84;
     reqData.proc.std_vs_mfg_flag = 1;
-    reqData.proc.selector = 0;   
+    reqData.proc.selector = 0;
 
 
     getApplicationLayer().setProcBfld( reqData.proc );
-    
+
     reqData.seq_nbr = getWriteSequenceNbr();
     getApplicationLayer().setWriteSeqNbr( reqData.seq_nbr );
 
@@ -223,42 +225,42 @@ bool CtiProtocolANSI_kv2::retreiveKV2PresentValue( int offset, double *value )
             break;
         }
         case OFFSET_INSTANTANEOUS_PHASE_B_VOLTAGE:
-        case OFFSET_LOADPROFILE_PHASE_B_VOLTAGE:   
+        case OFFSET_LOADPROFILE_PHASE_B_VOLTAGE:
         {
             *value = (_tableOneHundredTen->getVlnFundOnly()[1])/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
             retVal = true;
             break;
         }
-        case OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE: 
-        case OFFSET_LOADPROFILE_PHASE_C_VOLTAGE:   
+        case OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE:
+        case OFFSET_LOADPROFILE_PHASE_C_VOLTAGE:
         {
             *value = (_tableOneHundredTen->getVlnFundOnly()[2])/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
             retVal = true;
             break;
         }
-        case OFFSET_INSTANTANEOUS_PHASE_A_CURRENT: 
-        case OFFSET_LOADPROFILE_PHASE_A_CURRENT:   
+        case OFFSET_INSTANTANEOUS_PHASE_A_CURRENT:
+        case OFFSET_LOADPROFILE_PHASE_A_CURRENT:
         {
             *value = (_tableOneHundredTen->getCurrFundOnly()[0])/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
             retVal = true;
             break;
         }
-        case OFFSET_INSTANTANEOUS_PHASE_B_CURRENT: 
-        case OFFSET_LOADPROFILE_PHASE_B_CURRENT:  
+        case OFFSET_INSTANTANEOUS_PHASE_B_CURRENT:
+        case OFFSET_LOADPROFILE_PHASE_B_CURRENT:
         {
             *value = (_tableOneHundredTen->getCurrFundOnly()[1])/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
             retVal = true;
             break;
         }
-        case OFFSET_INSTANTANEOUS_PHASE_C_CURRENT: 
-        case OFFSET_LOADPROFILE_PHASE_C_CURRENT:   
+        case OFFSET_INSTANTANEOUS_PHASE_C_CURRENT:
+        case OFFSET_LOADPROFILE_PHASE_C_CURRENT:
         {
             *value = (_tableOneHundredTen->getCurrFundOnly()[2])/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
             retVal = true;
             break;
         }
-        case OFFSET_INSTANTANEOUS_NEUTRAL_CURRENT: 
-        case OFFSET_LOADPROFILE_NEUTRAL_CURRENT:   
+        case OFFSET_INSTANTANEOUS_NEUTRAL_CURRENT:
+        case OFFSET_LOADPROFILE_NEUTRAL_CURRENT:
         {
             *value = (_tableOneHundredTen->getImputedNeutralCurr())/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
             retVal = true;

@@ -1,5 +1,3 @@
-#include "yukon.h"
-
 /*****************************************************************************
 *
 *    FILE NAME: mgr_fdrpoint.cpp
@@ -17,11 +15,9 @@
 *
 *
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************
-*/
+****************************************************************************/
+#include "yukon.h"
 
-
-/** include files **/
 #include <rw/db/db.h>
 
 #include "dbaccess.h"

@@ -1,5 +1,3 @@
-#include "yukon.h"
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_wctp
@@ -10,8 +8,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
-
+#include "yukon.h"
 
 #include <windows.h>
 #include <stdio.h>

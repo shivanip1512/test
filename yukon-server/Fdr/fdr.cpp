@@ -1,13 +1,11 @@
-#include "yukon.h"
-
 /*-----------------------------------------------------------------------------*
 *
 * DATE: 8/25/2000
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:50 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/02/17 19:02:58 $
 *
 *
 * AUTHOR: Matt Fisher
@@ -22,17 +20,9 @@
 *
 *
 * Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-*-----------------------------------------------------------------------------*
-*/
+*-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-//
-//$Archive$
-//
-//$Revision: 1.6 $
-//$Date: 2005/02/10 23:23:50 $
-//
-
-/** include files **/
 #include <crtdbg.h>
 #include <windows.h>
 #include <iostream>
@@ -73,10 +63,10 @@ int main( int argc, char *argv[] )
 
     if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, "FDR_EXCLUSION_EVENT")) != NULL )
     {
-	// Oops, fdr is running on this machine already.
-	CloseHandle(hExclusion);
-	cout << "FDR is already running on this machine, exiting." << endl;
-	exit(-1);
+    // Oops, fdr is running on this machine already.
+    CloseHandle(hExclusion);
+    cout << "FDR is already running on this machine, exiting." << endl;
+    exit(-1);
     }
 
     // Set event so to avoid additional copies of FDR on this machine
@@ -87,7 +77,7 @@ int main( int argc, char *argv[] )
        cout << "Couldn't create fdr" << endl;
        exit(-1);
     }
-    
+
 //    InitYukonBaseGlobals();
     identifyProject(CompileInfo);
 

@@ -1,5 +1,3 @@
-#include "yukon.h"
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   std_ansi_tbl_six_one
@@ -11,6 +9,7 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
 #include "math.h"
@@ -22,14 +21,14 @@ CtiAnsiTableSixOne::CtiAnsiTableSixOne( unsigned char *stdTblsUsed, int dimStdTb
 {
     int x = 0;
     int lpTbl[] = {64, 65, 66, 67};
-    
+
     _lpDataSetUsed[0] = false;
     _lpDataSetUsed[1] = false;
     _lpDataSetUsed[2] = false;
     _lpDataSetUsed[3] = false;
 
-    if (dimStdTblsUsed > 8) 
-    {   
+    if (dimStdTblsUsed > 8)
+    {
         int y, yy;
         while (x < 4)
         {
@@ -38,7 +37,7 @@ CtiAnsiTableSixOne::CtiAnsiTableSixOne( unsigned char *stdTblsUsed, int dimStdTb
             {
                 y = y*2;
             }
-            if (stdTblsUsed[(lpTbl[x]/8)] & y) 
+            if (stdTblsUsed[(lpTbl[x]/8)] & y)
             {
                 _lpDataSetUsed[x] = true;
                 {
@@ -60,14 +59,14 @@ CtiAnsiTableSixOne::CtiAnsiTableSixOne( BYTE *dataBlob,  unsigned char *stdTblsU
     int x = 0;
     int offset = 0;
     int lpTbl[] = {64, 65, 66, 67};
-    
+
     _lpDataSetUsed[0] = false;
     _lpDataSetUsed[1] = false;
     _lpDataSetUsed[2] = false;
     _lpDataSetUsed[3] = false;
 
-    if (dimStdTblsUsed > 8) 
-    {   
+    if (dimStdTblsUsed > 8)
+    {
         x=0;
         int y, yy;
         while (x < 4)
@@ -77,7 +76,7 @@ CtiAnsiTableSixOne::CtiAnsiTableSixOne( BYTE *dataBlob,  unsigned char *stdTblsU
             {
                 y = y*2;
             }
-            if (stdTblsUsed[(lpTbl[x]/8)] & y) 
+            if (stdTblsUsed[(lpTbl[x]/8)] & y)
             {
                 _lpDataSetUsed[x] = true;
                 {
@@ -95,15 +94,15 @@ CtiAnsiTableSixOne::CtiAnsiTableSixOne( BYTE *dataBlob,  unsigned char *stdTblsU
     dataBlob +=   sizeof( unsigned char ) * 7;
     _lp_tbl.lp_data_set_info = new LP_DATA_SET[4];
     int xx = 0;
-    for (x = 0; x < 4; x++) 
+    for (x = 0; x < 4; x++)
     {
-        if (_lpDataSetUsed[x]) 
+        if (_lpDataSetUsed[x])
         {
             memcpy( (void *)&_lp_tbl.lp_data_set_info[xx], dataBlob, sizeof( LP_DATA_SET ));
             dataBlob +=   sizeof( LP_DATA_SET );
             xx++;
         }
-    } 
+    }
 }
 
 //=========================================================================================================================================
@@ -135,9 +134,9 @@ void CtiAnsiTableSixOne::generateResultPiece( BYTE **dataBlob )
 
     memcpy( *dataBlob, (void *)&_lp_tbl, sizeof( unsigned char ) * 7);
     *dataBlob +=   sizeof( unsigned char ) * 7;
-    for (int x = 0; x < 4; x++) 
+    for (int x = 0; x < 4; x++)
     {
-        if (_lpDataSetUsed[x]) 
+        if (_lpDataSetUsed[x])
         {
             memcpy( *dataBlob, (void *)&_lp_tbl.lp_data_set_info[xx], sizeof( LP_DATA_SET ));
             *dataBlob +=   sizeof( LP_DATA_SET );
@@ -154,9 +153,9 @@ void CtiAnsiTableSixOne::decodeResultPiece( BYTE **dataBlob )
 
     memcpy( (void *)&_lp_tbl, *dataBlob, sizeof( unsigned char ) * 7);
     *dataBlob +=   sizeof( unsigned char ) * 7;
-    for (int x = 0; x < 4; x++) 
+    for (int x = 0; x < 4; x++)
     {
-        if (_lpDataSetUsed[x]) 
+        if (_lpDataSetUsed[x])
         {
             memcpy( (void *)&_lp_tbl.lp_data_set_info[xx], *dataBlob, sizeof( LP_DATA_SET ));
             *dataBlob +=   sizeof( LP_DATA_SET );
@@ -170,7 +169,7 @@ void CtiAnsiTableSixOne::decodeResultPiece( BYTE **dataBlob )
 //=========================================================================================================================================
 void CtiAnsiTableSixOne::printResult(  )
 {
- 
+
     /**************************************************************
     * its been discovered that if a method goes wrong while having the logger locked
     * unpleasant consquences may happen (application lockup for instance)  Because
@@ -208,7 +207,7 @@ void CtiAnsiTableSixOne::printResult(  )
         dout << "                   inv_ni_fmat2_flag    "<<(bool)_lp_tbl.lp_fmats.inv_ni_fmat2_flag<<endl;
     }
     int offset = 0;
-    for (int x = 0; x < 4; x++) 
+    for (int x = 0; x < 4; x++)
     {
         if (_lpDataSetUsed[x])
         {
@@ -247,7 +246,7 @@ bool * CtiAnsiTableSixOne::getLPDataSetUsedFlags()
 bool CtiAnsiTableSixOne::getLPScalarDivisorFlag( int setNo )
 {
     bool retVal = false;
-    switch (setNo) 
+    switch (setNo)
     {
         case 1:
             retVal = (bool)_lp_tbl.lp_flags.scalar_divisor_flag_set1;
@@ -274,7 +273,7 @@ int CtiAnsiTableSixOne::getNbrBlksSet (int setNbr )
     int setIndex = 0;
 
     for (int x = 0; x < 4; x++)
-    { 
+    {
         if (_lpDataSetUsed[x])
         {
             offset[x] = setIndex;
@@ -296,7 +295,7 @@ int CtiAnsiTableSixOne::getNbrChansSet(int setNbr)
     int setIndex = 0;
 
     for (int x = 0; x < 4; x++)
-    { 
+    {
         if (_lpDataSetUsed[x])
         {
             offset[x] = setIndex;
@@ -317,7 +316,7 @@ int CtiAnsiTableSixOne::getNbrBlkIntsSet( int setNbr)
     int setIndex = 0;
 
     for (int x = 0; x < 4; x++)
-    { 
+    {
         if (_lpDataSetUsed[x])
         {
             offset[x] = setIndex;
@@ -338,7 +337,7 @@ int CtiAnsiTableSixOne::getMaxIntTimeSet( int setNbr)
     int setIndex = 0;
 
     for (int x = 0; x < 4; x++)
-    { 
+    {
         if (_lpDataSetUsed[x])
         {
             offset[x] = setIndex;

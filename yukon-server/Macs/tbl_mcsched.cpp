@@ -1,5 +1,3 @@
-#include "yukon.h"
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_mcsched
@@ -8,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/tbl_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/02/17 19:02:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +24,8 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999, 2001
 ---------------------------------------------------------------------------*/
+#include "yukon.h"
+
 #include "tbl_mcsched.h"
 #include "dbaccess.h"
 

@@ -1,5 +1,3 @@
-#include "yukon.h"
-
 /*****************************************************************************
 *
 *    FILE NAME: fdrdestination.cpp
@@ -15,11 +13,8 @@
 *
 *
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************
-*/
-
-
-/** include files **/
+****************************************************************************/
+#include "yukon.h"
 
 #include <rw/cstring.h>
 #include <rw/ctoken.h>
@@ -42,7 +37,7 @@ CtiFDRDestination::~CtiFDRDestination()
 }
 
 CtiFDRDestination& CtiFDRDestination::operator=( const CtiFDRDestination &other )
-{   
+{
     if(this != &other)
     {
         iDestination = other.getDestination();

@@ -1,5 +1,3 @@
-#include "yukon.h"
-
 /*****************************************************************************
 *
 *    FILE NAME: fdrlodestarinfo.cpp
@@ -15,11 +13,9 @@
 *
 *
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************
-*/
+****************************************************************************/
+#include "yukon.h"
 
-
-/** include files **/
 #include "fdrlodestarinfo.h"
 
 CtiFDR_LodeStarInfoTable::CtiFDR_LodeStarInfoTable(RWCString &aDrivePath, RWCString &aFileName,
@@ -28,14 +24,14 @@ CtiFDR_LodeStarInfoTable::CtiFDR_LodeStarInfoTable(RWCString &aDrivePath, RWCStr
   _lodeStarFileName(aFileName),
   _lodeStarFolderName(aFolderName)
 {
-} 
-    
+}
+
 CtiFDR_LodeStarInfoTable::~CtiFDR_LodeStarInfoTable()
 {
 }
 
 CtiFDR_LodeStarInfoTable &CtiFDR_LodeStarInfoTable::operator=( const CtiFDR_LodeStarInfoTable &other )
-{   
+{
     if(this != &other)
     {
         _lodeStarDrivePath = other.getLodeStarDrivePath();
@@ -47,7 +43,7 @@ CtiFDR_LodeStarInfoTable &CtiFDR_LodeStarInfoTable::operator=( const CtiFDR_Lode
 RWCString & CtiFDR_LodeStarInfoTable::getLodeStarDrivePath(void)
 {
     return _lodeStarDrivePath;
-}    
+}
 RWCString CtiFDR_LodeStarInfoTable::getLodeStarDrivePath(void) const
 {
     return _lodeStarDrivePath;
@@ -57,7 +53,7 @@ CtiFDR_LodeStarInfoTable& CtiFDR_LodeStarInfoTable::setLodeStarDrivePath(RWCStri
     _lodeStarDrivePath = aDrivePath;
     return *this;
 }
-    
+
 RWCString & CtiFDR_LodeStarInfoTable::getLodeStarFileName(void)
 {
     return _lodeStarFileName;
@@ -66,10 +62,10 @@ RWCString CtiFDR_LodeStarInfoTable::getLodeStarFileName(void) const
 {
     return _lodeStarFileName;
 }
-    
+
 CtiFDR_LodeStarInfoTable& CtiFDR_LodeStarInfoTable::setLodeStarFileName(RWCString aFileName)
 {
-    _lodeStarFileName = aFileName; 
+    _lodeStarFileName = aFileName;
     return *this;
 
 }
@@ -82,10 +78,10 @@ RWCString CtiFDR_LodeStarInfoTable::getLodeStarFolderName(void) const
 {
     return _lodeStarFolderName;
 }
-    
+
 CtiFDR_LodeStarInfoTable& CtiFDR_LodeStarInfoTable::setLodeStarFolderName(RWCString aFolderName)
 {
-    _lodeStarFolderName = aFolderName; 
+    _lodeStarFolderName = aFolderName;
     return *this;
 
 }

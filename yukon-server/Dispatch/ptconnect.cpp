@@ -1,5 +1,3 @@
-#include "yukon.h"
-
 /*-----------------------------------------------------------------------------
     Filename:
          pointconnect.cpp
@@ -14,6 +12,8 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
+#include "yukon.h"
+
 #include <iostream>
 using namespace std;
 

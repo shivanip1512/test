@@ -1,5 +1,3 @@
-#include "yukon.h"
-
 /*****************************************************************************
 *
 *    FILE NAME: fdrpoint.cpp
@@ -16,10 +14,13 @@
 *
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrpoint.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2005/02/10 23:23:51 $
-*    History: 
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2005/02/17 19:02:58 $
+*    History:
       $Log: fdrpoint.cpp,v $
+      Revision 1.5  2005/02/17 19:02:58  mfisher
+      Removed space before CVS comment header, moved #include "yukon.h" after CVS header
+
       Revision 1.4  2005/02/10 23:23:51  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -31,11 +32,9 @@
       This is an update due to the freezing of PVCS on 4/13/2002
 
 
-****************************************************************************
-*/
+*****************************************************************************/
+#include "yukon.h"
 
-
-/** include files **/
 #include <rw/rwtime.h>
 using namespace std;
 #include "fdrpoint.h"
@@ -67,7 +66,7 @@ CtiFDRPoint::~CtiFDRPoint()
 
 /*
 BOOL CtiFDRPoint::operator==( const CtiFDRPoint &other ) const
-{   
+{
     return( (
              getPointID() ==        other.getPointID()          &&
              getTranslateName() ==  other.getTranslateName()    &&
@@ -76,8 +75,8 @@ BOOL CtiFDRPoint::operator==( const CtiFDRPoint &other ) const
              getLastTimeStamp() ==  other.getLastTimeStamp()    &&
              getPointType() ==    other.getPointType()    &&
              isControllable() ==    other.isControllable()    &&
-             getOffset() ==         other.getOffset()           
-             ) 
+             getOffset() ==         other.getOffset()
+             )
             );
 }
 */
@@ -89,12 +88,12 @@ BOOL CtiFDRPoint::operator==( const CtiFDRPoint &other ) const
 **************************************************
 */
 CtiFDRPoint& CtiFDRPoint::operator=( const CtiFDRPoint &other )
-{   
+{
     if(this != &other)
     {
         iPointID = other.getPointID();
         iMultiplier = other.getMultiplier();
-        iOffset = other.getOffset();           
+        iOffset = other.getOffset();
         iLastTimeStamp = other.getLastTimeStamp();
         iPointType = other.getPointType();
         iControllable = other.isControllable();
@@ -129,21 +128,21 @@ CtiFDRPoint& CtiFDRPoint::setDestinationList (vector< CtiFDRDestination > &aList
 }
 
 long CtiFDRPoint::getPointID( void ) const
-{   
+{
     return iPointID;
 }
-        
+
 CtiFDRPoint &  CtiFDRPoint::setPointID(const long aPointID)
-{   
+{
     iPointID = aPointID;
     return *this;
 }
-        
+
 double CtiFDRPoint::getMultiplier( void ) const
 {
     return iMultiplier;
 }
-        
+
 
 CtiFDRPoint &  CtiFDRPoint::setMultiplier( const double aMultiplier )
 {
@@ -155,7 +154,7 @@ double CtiFDRPoint::getValue( void ) const
 {
     return iValue;
 }
-        
+
 
 CtiFDRPoint &  CtiFDRPoint::setValue( const double aValue )
 {
@@ -164,12 +163,12 @@ CtiFDRPoint &  CtiFDRPoint::setValue( const double aValue )
 }
 
 
-        
+
 double CtiFDRPoint::getOffset( void ) const
 {
     return iOffset;
 }
-        
+
 CtiFDRPoint &  CtiFDRPoint::setOffset( const double aOffset )
 {
     iOffset = aOffset;
@@ -180,7 +179,7 @@ unsigned CtiFDRPoint::getQuality( void ) const
 {
     return iQuality;
 }
-        
+
 CtiFDRPoint &  CtiFDRPoint::setQuality( const unsigned aQuality )
 {
     iQuality = aQuality;
@@ -191,7 +190,7 @@ RWTime CtiFDRPoint::getLastTimeStamp ( void ) const
 {
     return iLastTimeStamp;
 }
-        
+
 
 CtiFDRPoint &  CtiFDRPoint::setLastTimeStamp( const RWTime & aTimeStamp )
 {
@@ -200,28 +199,28 @@ CtiFDRPoint &  CtiFDRPoint::setLastTimeStamp( const RWTime & aTimeStamp )
 }
 
 bool CtiFDRPoint::isControllable( void ) const
-{   
+{
     return iControllable;
 }
-        
+
 CtiFDRPoint &  CtiFDRPoint::setControllable(const bool aFlag)
-{   
+{
     iControllable = aFlag;
     return *this;
 }
 
-CtiPointType_t CtiFDRPoint::getPointType() const        
-{ 
+CtiPointType_t CtiFDRPoint::getPointType() const
+{
     return iPointType;
 }
 CtiFDRPoint & CtiFDRPoint::setPointType(CtiPointType_t aType)
-{ 
+{
     iPointType = aType;
     return *this;
 }
 
 RWCString CtiFDRPoint::getTranslateName( RWCString &aDestinationName )
-{   
+{
     RWCString retVal;
     int entries = iDestinationList.size();
 
@@ -235,7 +234,7 @@ RWCString CtiFDRPoint::getTranslateName( RWCString &aDestinationName )
 }
 
 RWCString CtiFDRPoint::getTranslateName( int aIndex )
-{   
+{
     RWCString retVal;
 
     if (iDestinationList.size() >= aIndex+1)

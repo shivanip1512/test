@@ -1,5 +1,3 @@
-#include "yukon.h"
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   portdialback
@@ -9,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/02/17 19:02:58 $
 *
 * HISTORY      :
 * $Log: portdialback.cpp,v $
+* Revision 1.4  2005/02/17 19:02:58  mfisher
+* Removed space before CVS comment header, moved #include "yukon.h" after CVS header
+*
 * Revision 1.3  2005/02/10 23:23:54  alauinger
 * Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 *
@@ -26,7 +27,7 @@
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
+#include "yukon.h"
 
 #include <windows.h>
 #include <process.h>

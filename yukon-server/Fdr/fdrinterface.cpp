@@ -1,5 +1,3 @@
-#include "yukon.h"
-
 /*****************************************************************************
 *
 *    FILE NAME: fdrinterface.cpp
@@ -17,10 +15,13 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.16 $
-*    DATE         :  $Date: 2005/02/10 23:23:51 $
+*    REVISION     :  $Revision: 1.17 $
+*    DATE         :  $Date: 2005/02/17 19:02:58 $
 *    History:
       $Log: fdrinterface.cpp,v $
+      Revision 1.17  2005/02/17 19:02:58  mfisher
+      Removed space before CVS comment header, moved #include "yukon.h" after CVS header
+
       Revision 1.16  2005/02/10 23:23:51  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -90,11 +91,9 @@
       This is an update due to the freezing of PVCS on 4/13/2002
 
 
-****************************************************************************
-*/
+****************************************************************************/
+#include "yukon.h"
 
-
-/** include files **/
 #include <rw/db/connect.h>
 #include <rw/db/reader.h>
 #include <rw/db/table.h>
@@ -540,7 +539,7 @@ void CtiFDRInterface::setUpdatePCTimeFlag(const BOOL aChangeFlag)
 BOOL CtiFDRInterface::run( void )
 {
     {
-        CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+        CtiLockGuard<CtiMutex> guard(iDispatchMux);
         connectWithDispatch();
     }
 
@@ -592,7 +591,7 @@ BOOL CtiFDRInterface::stop( void )
     }
 
     // this is throwing an exception sometimes, I'm cheating since its only shutdown
-    try 
+    try
     {
        iDispatchConn->ShutdownConnection();
         {
@@ -620,7 +619,7 @@ BOOL CtiFDRInterface::connectWithDispatch()
     {
         if (iDispatchConn == NULL)
         {
-            { 
+            {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Attempting to connect to dispatch at " << iDispatchMachine << " for " << getInterfaceName() << endl;
             }
@@ -628,7 +627,7 @@ BOOL CtiFDRInterface::connectWithDispatch()
 
             if (iDispatchConn->verifyConnection() != NORMAL)
             {
-                { 
+                {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Attempt to reconnect to dispatch at " << iDispatchMachine;
                     dout << " for " << getInterfaceName() << " failed.  Attempting again" << endl;
@@ -910,7 +909,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                 if (iDispatchConn != NULL)
                 {
                     // unfortunately, the connection is not always valid even if its not zero
-                    try 
+                    try
                     {
                         if ( (iDispatchConn->verifyConnection()) == NORMAL )
                         {
@@ -926,7 +925,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                             }
                             // we're assuming that the send to dispatch will catch the problem
                             {
-                                CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+                                CtiLockGuard<CtiMutex> guard(iDispatchMux);
                                 delete iDispatchConn;
                                 iDispatchConn=NULL;
 
@@ -937,7 +936,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                             pSelf.serviceCancellation( );
                             logEvent (RWCString (getInterfaceName() + RWCString ("'s connection to dispatch has been restarted")),RWCString());
                             registerWithDispatch();
-                        }   
+                        }
                     }
                     catch (...)
                     {
@@ -946,7 +945,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                             dout << RWTime() << " " << getInterfaceName() << "'s connection to dispatch failed by exception in threadFunctionReceiveFromDispatch." << endl;
                         }
                         {
-                            CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+                            CtiLockGuard<CtiMutex> guard(iDispatchMux);
                             delete iDispatchConn;
                             iDispatchConn=NULL;
 
@@ -956,7 +955,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                                 incomingMsg = NULL;
                             }
                         }
-                    }       
+                    }
                 }
                 else
                 {
@@ -968,7 +967,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                     }
                     // we're assuming that the send to dispatch will catch the problem
                     {
-                        CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+                        CtiLockGuard<CtiMutex> guard(iDispatchMux);
                         // possible two minute gap here
                         connectWithDispatch();
                     }
@@ -1205,11 +1204,11 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
     INT retVal=0;
     RWTime timeNow;
     RWTime hourstart;
-    RWTime refreshTime; 
+    RWTime refreshTime;
 
     if (getReloadRate() > 3600)
     {
-        hourstart = RWTime(timeNow.seconds() - (timeNow.seconds() % 3600)); // align to the hour.     
+        hourstart = RWTime(timeNow.seconds() - (timeNow.seconds() % 3600)); // align to the hour.
         refreshTime=RWTime(hourstart.seconds() - ((hourstart.hour()* 3600) % getReloadRate()) + getReloadRate());
     }
     else
@@ -1271,7 +1270,7 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
                     // reset refresh time
                     if (getReloadRate() > 3600)
                     {
-                        hourstart = RWTime(timeNow.seconds() - (timeNow.seconds() % 3600)); // align to the hour.     
+                        hourstart = RWTime(timeNow.seconds() - (timeNow.seconds() % 3600)); // align to the hour.
                         refreshTime=RWTime(hourstart.seconds() - ((hourstart.hour()* 3600) % getReloadRate()) + getReloadRate());
                     }
                     else
@@ -1334,7 +1333,7 @@ bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
 
     {
         // lock the semaphore out here
-        CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+        CtiLockGuard<CtiMutex> guard(iDispatchMux);
         attemptReturned = attemptSend (aMessage);
     }
 
@@ -1348,7 +1347,7 @@ bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
         Sleep (1000);
 
         {
-            CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+            CtiLockGuard<CtiMutex> guard(iDispatchMux);
             attemptReturned = attemptSend (aMessage);
         }
         if (attemptReturned == ConnectionFailed)
@@ -1400,7 +1399,7 @@ int CtiFDRInterface::attemptSend( CtiMessage *aMessage )
     bool retVal=false;
 
     // unfortunately, the connection is not always valid even if its not zero
-    try 
+    try
     {
         // make sure the connection hasn't been deleted first
         if (iDispatchConn != NULL)
@@ -1427,7 +1426,7 @@ int CtiFDRInterface::attemptSend( CtiMessage *aMessage )
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << getInterfaceName() << "'s connection to dispatch failed by exception in attemptSend()." << endl;
         }
-    }       
+    }
 
     return returnValue;
 }
