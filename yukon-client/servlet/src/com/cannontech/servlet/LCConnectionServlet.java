@@ -7,14 +7,25 @@ package com.cannontech.servlet;
  * Creation date: (3/21/2001 11:31:54 AM)
  * @author: Aaron Lauinger
  */
- 
+import java.util.GregorianCalendar;
+import java.util.Hashtable;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
+import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.util.ServletUtil;
+import com.cannontech.web.loadcontrol.LMCmdMsgFactory;
+import com.cannontech.web.loadcontrol.LoadcontrolCache;
+import com.cannontech.web.loadcontrol.WebCmdMsg;
 
 public class LCConnectionServlet extends javax.servlet.http.HttpServlet implements java.util.Observer {
 		
@@ -52,7 +63,7 @@ public void destroy()
  * Creation date: (6/25/2001 1:04:28 PM)
  * @return com.cannontech.web.loadcontrol.LoadcontrolCache
  */
-public com.cannontech.web.loadcontrol.LoadcontrolCache getCache() {
+public LoadcontrolCache getCache() {
 	return cache;
 }
 /**
@@ -112,7 +123,7 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 	}
 
 	// Create a load control cache
-	cache = new com.cannontech.web.loadcontrol.LoadcontrolCache();
+	cache = new LoadcontrolCache();
 	conn.addObserver(cache);
 
 	// Add this to the context so other servlets can access the connection
@@ -188,4 +199,179 @@ public void update(java.util.Observable obs, Object o)
 		CTILogger.info("Warning!  received an update from an unknown observable!");
 	}*/
 }
+
+/**
+ * Allows commands to be executed through a URL interface.
+ * @param req javax.servlet.http.HttpServletRequest
+ * @param resp javax.servlet.http.HttpServletResponse
+ * 
+ * Expected session params:
+ * redirectURL - Where do take the user after the post to the servlet
+ * 
+ * cmd - the string representation of the command selected
+ * 
+ * itemid - the ID of the item that the command will affect
+ * 
+ */
+public void doPost(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException
+{
+//	HttpSession session = req.getSession( false );
+	String redirectURL = req.getParameter("redirectURL");
+	Hashtable optionalProps = new Hashtable(8);
+
+
+	//handle any commands that we may need to send to the server from any page here
+	String cmd = req.getParameter("cmd");
+	String itemid = req.getParameter("itemid");
+	
+	//add any optional properties here
+	optionalProps = getOptionalParams( req );
+
+
+	if( cmd != null )
+	{
+		try
+		{
+			WebCmdMsg msg = LMCmdMsgFactory.createCmdMsg( 
+					cmd, new Integer(itemid), optionalProps, getCache() );
+			
+
+			CTILogger.info(req.getServletPath() +
+				"	  cmd = " + cmd +
+				", itemID = " + itemid +
+				", OptionalProp Cnt = " + optionalProps.size() );
+
+			//send the LMCommand to the LoadControl server
+			if( msg.genLCCmdMsg() != null )
+			{
+				getConnection().write( msg.genLCCmdMsg() );
+				CTILogger.info("   Command was sent");
+			}
+			else
+				CTILogger.info("   Command was not sent since it did not have a message defined for it");
+			
+		}
+		catch( Exception e )
+		{
+			CTILogger.warn( "LC Command was attempted but failed for the following reason:", e );
+		}
+	}
+	else
+		CTILogger.warn( "LC Command servlet was hit, but NO command was sent" );
+	
+
+	//always forward the client to the specified URL
+	if( redirectURL != null )
+		resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
+}
+
+
+	private Hashtable getOptionalParams( HttpServletRequest req )
+	{
+		Hashtable optionalProps = new Hashtable(8);
+		
+		if( req.getParameter("duration") != null )
+			optionalProps.put( "duration",
+				CtiUtilities.getIntervalSecondsValue(req.getParameter("duration")) );
+
+		
+		if( req.getParameter("gearnum") != null )
+			optionalProps.put( "gearnum", new Integer(req.getParameter("gearnum")) );
+
+
+		if( req.getParameter("startbutton") != null
+			 && req.getParameter("startbutton").equals("startat") )
+		{
+			GregorianCalendar gc = new GregorianCalendar();
+			int secs = CtiUtilities.decodeStringToSeconds( req.getParameter("startTime1") );
+			
+			gc.setTime( ServletUtil.parseDateStringLiberally(req.getParameter("startdate")) );
+			gc.set( GregorianCalendar.HOUR, 0 );
+			gc.set( GregorianCalendar.MINUTE, 0 );
+			gc.set( GregorianCalendar.SECOND, secs );
+
+			optionalProps.put( "startdate", gc.getTime() );
+		}
+		else
+		{
+			//assume they want to start now
+			optionalProps.put( "startdate", CtiUtilities.get1990GregCalendar().getTime() );
+		}
+
+
+		if( req.getParameter("stopbutton") != null
+			 && req.getParameter("stopbutton").equals("stopat") )
+		{
+			GregorianCalendar gc = new GregorianCalendar();
+			int secs = CtiUtilities.decodeStringToSeconds( req.getParameter("stopTime1") );
+			
+			gc.setTime( ServletUtil.parseDateStringLiberally(req.getParameter("stopdate")) );
+			gc.set( GregorianCalendar.HOUR, 0 );
+			gc.set( GregorianCalendar.MINUTE, 0 );
+			gc.set( GregorianCalendar.SECOND, secs );
+
+			optionalProps.put( "stopdate", gc.getTime() );
+		}
+		else if( req.getParameter("stopbutton") != null
+					 && req.getParameter("stopbutton").equals("stopnow") )
+		{
+			//assume they want to stop now
+			optionalProps.put( "stopdate", CtiUtilities.get1990GregCalendar().getTime() );
+		}
+		else
+		{
+			//set the stop time to 1 year from now if no stop selected
+			GregorianCalendar c = new GregorianCalendar();
+			c.add( c.YEAR, 1 );
+			optionalProps.put( "stopdate", c.getTime() );
+		}
+
+
+		if( req.getParameterValues("newthreshold") != null )
+		{
+			Double[] threshArr = new Double[req.getParameterValues("newthreshold").length];
+			for( int i = 0; i < req.getParameterValues("newthreshold").length; i++ )
+				threshArr[i] = new Double( req.getParameterValues("newthreshold")[i] );
+			
+			optionalProps.put( "newthreshold", threshArr );
+		}
+
+		if( req.getParameter("newrestore") != null )
+		{
+			Double[] restArr = new Double[req.getParameterValues("newrestore").length];
+			for( int i = 0; i < req.getParameterValues("newrestore").length; i++ )
+				restArr[i] = new Double( req.getParameterValues("newrestore")[i] );
+			
+			optionalProps.put( "newrestore", restArr );
+		}
+		
+		if( req.getParameter("cyclepercent") != null )
+			optionalProps.put( "cyclepercent", new Integer(req.getParameter("cyclepercent")) );
+
+		if( req.getParameter("periodcnt") != null )
+			optionalProps.put( "periodcnt", new Integer(req.getParameter("periodcnt")) );
+		
+		
+		if( req.getParameter("startTime1") != null )
+		{
+			if( req.getParameter("startTime1").length() <= 0 )
+				optionalProps.put("winstarttime", new Integer(LMControlArea.INVAID_INT));
+			else
+				optionalProps.put("winstarttime", new Integer(req.getParameter("startTime1")));
+		}
+		
+		
+		if( req.getParameter("stopTime1") != null )
+		{
+			if( req.getParameter("stopTime1").length() <= 0 )
+				optionalProps.put( "winstoptime", new Integer(LMControlArea.INVAID_INT) );
+			else
+				optionalProps.put( "winstoptime", new Integer(req.getParameter("stopTime1")) );
+		}
+
+		
+		return optionalProps;
+	}
+
+
 }
