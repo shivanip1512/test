@@ -15,25 +15,6 @@
 		invNo = 0;
 
 	StarsLMHardware hardware = inventories.getStarsLMHardware(invNo);
-	ArrayList appList = new ArrayList();
-	StarsServiceCompany company = null;
-	
-	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
-		StarsAppliance app = appliances.getStarsAppliance(i);
-		if (app.getInventoryID() == hardware.getInventoryID())
-			appList.add(app);
-	}
-	
-	StarsAppliance[] starsApps = new StarsAppliance[ appList.size() ];
-	appList.toArray( starsApps );
-	
-	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
-		StarsServiceCompany comp = companies.getStarsServiceCompany(i);
-		if (comp.getCompanyID() == hardware.getInstallationCompany().getEntryID()) {
-			company = comp;
-			break;
-		}
-	}
 %>
 
 <html>
@@ -41,30 +22,6 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
-<script language="JavaScript">
-function sendCommand(cmd) {
-	var form = document.ctrlForm;
-	form.action.value = cmd;
-	form.submit();
-}
-
-function deleteHardware(form) {
-<%
-	if (starsApps.length > 0) {
-%>
-	if (!confirm('To delete the hardware, all programs related with it will be invalidated, do you want to proceed?')) return;
-<%
-	}
-	else {
-%>
-	if (!confirm('Are you sure you would like to delete this hardware?')) return;
-<%
-	}
-%>
-	form.elements('action').value = "DeleteLMHardware";
-	form.submit();
-}
-</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -118,12 +75,7 @@ function deleteHardware(form) {
             <div align="center">
               <% String header = "HARDWARE HISTORY"; %>
               <%@ include file="InfoSearchBar.jsp" %>
-			  <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-			  
-			  <form name="invForm" method="POST" action="/servlet/SOAPClient">
-                <input type="hidden" name="action" value="UpdateLMHardware">
-                <input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
-              </form>
+
             <table width="610" border="0" cellspacing="0" cellpadding="10" align="center" height="66">
               <tr> 
                  <td valign="top" bgcolor="#FFFFFF" height="65"> 
@@ -136,14 +88,14 @@ function deleteHardware(form) {
                         </tr>
                         <%
 	StarsLMHardwareHistory hwHist = hardware.getStarsLMHardwareHistory();
-	for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0 && i >= hwHist.getStarsLMHardwareEventCount() - 5; i--) {
+	for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0; i--) {
 		StarsLMHardwareEvent event = hwHist.getStarsLMHardwareEvent(i);
 %>
                         <tr valign="top"> 
                           <td width="104" class="TableCell" bgcolor="#FFFFFF"><%= datePart.format(event.getEventDateTime()) %></td>
                           <td width="100" class="TableCell" bgcolor="#FFFFFF"><%= event.getEventAction() %></td>
                         </tr>
-                        <%
+<%
 	}
 %>
                       </table>
@@ -157,7 +109,7 @@ function deleteHardware(form) {
               <tr> 
                 <td width="43%"> 
                   <div align="center">
-                    <input type="button" name="Submit" value="Back" onclick="Inventory.jsp">
+                    <input type="button" name="Back" value="Back" onclick="location='Inventory.jsp?InvNo=<%= invNoStr %>'">
                   </div>
                 </td>
               </tr>

@@ -249,10 +249,10 @@
 				<xs:element ref="stars-UpdateServiceRequestResponse" minOccurs="0"/>
 				<xs:element ref="stars-GetServiceRequestHistory" minOccurs="0"/>
 				<xs:element ref="stars-GetServiceRequestHistoryResponse" minOccurs="0"/>
-				<xs:element minOccurs="0" ref="stars-GetEnrollmentPrograms"/>
-				<xs:element ref="stars-GetEnrollmentProgramsResponse" minOccurs="0"/>
-				<xs:element ref="stars-GetCustSelectionLists" minOccurs="0"/>
-				<xs:element ref="stars-GetCustSelectionListsResponse" minOccurs="0"/>
+				
+				
+				
+				
 				<xs:element ref="stars-CreateAppliance" minOccurs="0"/>
 				<xs:element ref="stars-CreateApplianceResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateAppliance" minOccurs="0"/>
@@ -273,8 +273,8 @@
 				<xs:element ref="stars-GetExitInterviewQuestions" minOccurs="0"/>
 				<xs:element ref="stars-GetExitInterviewQuestionsResponse" minOccurs="0"/>
 				<xs:element ref="stars-SendExitInterviewAnswers" minOccurs="0"/>
-				<xs:element ref="stars-GetCustomerFAQs" minOccurs="0"/>
-				<xs:element ref="stars-GetCustomerFAQsResponse" minOccurs="0"/>
+				<xs:element ref="stars-GetEnergyCompanySettings" minOccurs="0"/>
+				<xs:element ref="stars-GetEnergyCompanySettingsResponse" minOccurs="0"/>
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
@@ -701,18 +701,20 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-LMProgramEvent" type="stars-LMCustomerEvent"/><xs:element name="stars-LMProgramHistory">
+	<xs:element name="stars-LMProgramEvent" type="stars-LMCustomerEvent"/>
+	<xs:element name="stars-LMProgramHistory">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" type="stars-LMCustomerEvent" ref="stars-LMProgramEvent"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="stars-LMProgramEvent"/>
 			</xs:sequence>
 			<xs:attribute name="programID" type="xs:int"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-LMHardwareEvent" type="stars-LMCustomerEvent"/><xs:element name="stars-LMHardwareHistory">
+	<xs:element name="stars-LMHardwareEvent" type="stars-LMCustomerEvent"/>
+	<xs:element name="stars-LMHardwareHistory">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" type="stars-LMCustomerEvent" ref="stars-LMHardwareEvent"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="stars-LMHardwareEvent"/>
 			</xs:sequence>
 			<xs:attribute name="inventoryID" type="xs:int" use="optional"/>
 		</xs:complexType>
@@ -747,21 +749,6 @@
 			<xs:attribute name="programID" type="xs:int"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-GetEnrollmentPrograms">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="EnergyCompanyID" minOccurs="0" type="xs:int"/>
-				<xs:element name="Category" type="xs:string" minOccurs="0"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="stars-GetEnrollmentProgramsResponse">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="stars-ApplianceCategory" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="stars-CustSelectionList">
 		<xs:complexType>
 			<xs:sequence>
@@ -772,20 +759,6 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-SelectionListEntry" type="stars-CustListEntry"/>
-	<xs:element name="stars-GetCustSelectionLists">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="EnergyCompanyID" type="xs:int" minOccurs="0"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="stars-GetCustSelectionListsResponse">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="stars-CustSelectionList" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="stars-CustAccountBrief">
 		<xs:complexType>
 			<xs:sequence>
@@ -997,18 +970,28 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-GetCustomerFAQs">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="EnergyCompanyID" type="xs:int" minOccurs="0"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="stars-GetCustomerFAQsResponse">
+	
+	<xs:element name="stars-CustomerFAQs">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="stars-CustomerFAQGroup" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="stars-EnrollmentPrograms">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="stars-ApplianceCategory" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-CustomerSelectionLists">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="stars-CustSelectionList" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-GetEnergyCompanySettings"><xs:complexType><xs:sequence><xs:element name="EnergyCompanyID" minOccurs="0" type="xs:int"/><xs:element name="ProgramCategory" minOccurs="0" type="xs:string"/></xs:sequence></xs:complexType></xs:element>
+	<xs:element name="stars-GetEnergyCompanySettingsResponse"><xs:complexType><xs:sequence><xs:element ref="stars-WebConfig" minOccurs="0"/><xs:element ref="stars-EnrollmentPrograms" minOccurs="0"/><xs:element ref="stars-CustomerSelectionLists" minOccurs="0"/><xs:element ref="stars-CustomerFAQs" minOccurs="0"/></xs:sequence></xs:complexType></xs:element>
 </xs:schema>

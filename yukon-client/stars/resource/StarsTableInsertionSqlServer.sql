@@ -349,5 +349,7 @@ INSERT INTO LMThermostatSeasonEntry VALUES (22,2,1049,30600,72)
 INSERT INTO LMThermostatSeasonEntry VALUES (23,2,1049,61200,72)
 INSERT INTO LMThermostatSeasonEntry VALUES (24,2,1049,75600,72)
 
-/* LMThermostatManualOption */
-INSERT INTO LMThermostatManualOption VALUES (-1,72,'N',1054,1057)	/* mode: cool, fan: auto */
+/* LMThermostatManualEvent */
+INSERT INTO LMCustomerEventBase VALUES (-1,1064,1066,'01-JAN-70','','')
+INSERT INTO LMThermostatManualEvent VALUES (-1,-1,72,'N',1054,1058)
+INSERT INTO ECToLMCustomerEventMapping VALUES (-1,-1)
