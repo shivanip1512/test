@@ -2,15 +2,16 @@
 *
 * File:   dnp_objects
 *
-* Class:
+* Namespace: CtiDNP
+* Class:     Object, ObjectBlock
 * Date:   5/21/2002
 *
 * Author: Matt Fisher
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/03/10 21:03:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,46 +21,52 @@
 
 
 #include <vector>
+#include <queue>
 
 #include <rw/tpslist.h>
 
 #include "dllbase.h"
+
 #include "msg_pdata.h"
 #include "pointtypes.h"
 
 using namespace std;
 
-class CtiDNPTimeCTO;  //  forward declaration
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
 
-class CtiDNPObject
+class TimeCTO;  //  forward declaration
+
+class Object
 {
 protected:
     unsigned char _group, _variation;
 
     bool _valid;
 
-    CtiDNPObject( int group, int variation );
+    Object( int group, int variation );
 
 public:
 
-    virtual ~CtiDNPObject();
+    virtual ~Object();
 
-    int getGroup( void );
-    int getVariation( void );
+    int getGroup( void )     const;
+    int getVariation( void ) const;
 
-    virtual int restore( unsigned char *buf, int len );
-    virtual int restoreBits( unsigned char *buf, int bitpos, int len );
+    virtual int restore( const unsigned char *buf, int len );
+    virtual int restoreBits( const unsigned char *buf, int bitpos, int len );
 
     bool isValid( void );
 
-    virtual int serialize( unsigned char *buf );
-    virtual int getSerializedLen( void );
+    virtual int serialize( unsigned char *buf ) const;
+    virtual int getSerializedLen( void ) const;
 
-    virtual CtiPointDataMsg *getPoint( const CtiDNPTimeCTO *cto );
+    virtual CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
 
 
-class CtiDNPObjectBlock
+class ObjectBlock
 {
     enum QualifierType;
 
@@ -71,24 +78,26 @@ private:
          _variation,
          _qualifier;
 
-    unsigned short _qty, _start;
+    unsigned short _start;
 
-    vector< CtiDNPObject * > _objectList;
-    vector< int > _objectIndices;
+    typedef vector< const Object * > object_vector;
+    typedef vector< int >            index_vector;
+    object_vector _objectList;
+    index_vector  _objectIndices;
 
     void init( QualifierType type, int group, int variation );
 
-    int restoreObject( unsigned char *buf, int len, CtiDNPObject *&obj );
-    int restoreBitObject( unsigned char *buf, int bitpos, int len, CtiDNPObject *&obj );
+    int restoreObject( const unsigned char *buf, int len, Object *&obj );
+    int restoreBitObject( const unsigned char *buf, int bitpos, int len, Object *&obj );
 
-    void eraseObjectList( void );
+    void erase( void );
 
 public:
 
-    CtiDNPObjectBlock();  //  for restoring a serialized object
-    CtiDNPObjectBlock( QualifierType type );
-    CtiDNPObjectBlock( QualifierType type, int group, int variation );
-    ~CtiDNPObjectBlock();
+    ObjectBlock();  //  for restoring a serialized object
+    ObjectBlock( QualifierType type );
+    ObjectBlock( QualifierType type, int group, int variation );
+    ~ObjectBlock();
 
     enum QualifierType
     {
@@ -106,28 +115,34 @@ public:
         ObjectBlockMinSize = 3
     };
 
-    bool addObject( CtiDNPObject *object );
-    bool addObjectIndex( CtiDNPObject *object, int index );
-//    void addRange( CtiDNPObject *objArray, int start, int stop );
+    struct object_descriptor
+    {
+        const Object *object;
+        int index;
+    };
 
-//    CtiDNPObject *getObject( int index );
+    int getGroup( void )     const;
+    int getVariation( void ) const;
+
+    bool addObject( const Object *object );
+    bool addObjectIndex( const Object *object, int index );
+//    void addRange( Object *objArray, int start, int stop );
+
+    int  size( void )  const;
+    bool empty( void ) const;
+    object_descriptor at( unsigned index ) const;
+    object_descriptor operator[]( unsigned index ) const;
 
     int  getSerializedLen( void ) const;
     int  serialize( unsigned char *buf ) const;
 
-    int  restore( unsigned char *buf, int len );
-    bool hasPoints( void );
-    void getPoints( RWTPtrSlist< CtiPointDataMsg > &pointList, const CtiDNPTimeCTO *cto );
+    int  restore( const unsigned char *buf, int len );
 
-    bool isBinaryOutputControl( void )        const;
-    int  getBinaryOutputControlStatus( void ) const;
-    long getBinaryOutputControlOffset( void ) const;
-
-    bool                 isCTO( void )  const;
-    const CtiDNPTimeCTO *getCTO( void ) const;
-
-    bool          isTime( void )         const;
-    unsigned long getTimeSeconds( void ) const;
+    void getPoints( queue< CtiPointDataMsg * > &points, const TimeCTO *cto ) const;
 };
+
+}
+}
+}
 
 #endif // #ifndef __DNP_OBJECTS_H__
