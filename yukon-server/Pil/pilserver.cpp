@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/18 15:04:58 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/18 21:43:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -369,12 +369,6 @@ void CtiPILServer::connectionThread()
                         ConMan->setClientName("DEFAULT");
                         ConMan->setBlockingWrites(TRUE);    // Writes must be blocking into the main queue
 
-                        #if 1       // 041802 CGP.
-
-                        clientConnect( ConMan );      // Make it happen immediately.
-                        ConMan->ThreadInitiate();     // Kick off the connection's communication threads.
-
-                        #else
                         /*
                          *  Need to inform MainThread of the "New Guy" so that he may control its destiny from
                          *  now on.
@@ -397,7 +391,6 @@ void CtiPILServer::connectionThread()
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " ERROR Starting new connection! " << rwThreadId() << endl;
                         }
-                        #endif
                     }
                 }
             }
