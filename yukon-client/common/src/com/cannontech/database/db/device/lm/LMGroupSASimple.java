@@ -17,14 +17,14 @@ public class LMGroupSASimple extends com.cannontech.database.db.DBPersistent
 	private Integer groupID;
 	private Integer routeID;
 	private String operationalAddress;
-	private Integer nominalSwitchTimeout;
-	private Integer virtualSwitchTimeout;
+	private Integer nominalTimeout;
+	private Integer virtualTimeout;
 	
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"GROUPID", "ROUTEID", "OPERATIONALADDRESS", 
-		"NOMINALSWITCHTIMEOUT", "VIRTUALSWITCHTIMEOUT"
+		"NOMINALTIMEOUT", "VIRTUALTIMEOUT"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "groupID" };
@@ -55,8 +55,8 @@ public void add() throws java.sql.SQLException
 	{ 
 		getGroupID(), getRouteID(),
 		getOperationalAddress(),
-		getNominalSwitchTimeout(),
-		getVirtualSwitchTimeout()
+		getNominalTimeout(),
+		getVirtualTimeout()
 		
 	};
 
@@ -121,12 +121,12 @@ public String getOperationalAddress() {
 	return operationalAddress;
 }
 
-public Integer getNominalSwitchTimeout() {
-	return nominalSwitchTimeout;
+public Integer getNominalTimeout() {
+	return nominalTimeout;
 }
 
-public Integer getVirtualSwitchTimeout() {
-	return nominalSwitchTimeout;
+public Integer getVirtualTimeout() {
+	return nominalTimeout;
 }
 
 
@@ -142,8 +142,8 @@ public void retrieve()
 		{
 			setRouteID( (Integer) results[1] );
 			setOperationalAddress( (String) results[2]);
-			setNominalSwitchTimeout( (Integer) results[3]);
-			setVirtualSwitchTimeout( (Integer) results[4]);
+			setNominalTimeout( (Integer) results[3]);
+			setVirtualTimeout( (Integer) results[4]);
 			
 		}
 	else
@@ -168,12 +168,12 @@ public void setOperationalAddress(String newAddress) {
 	operationalAddress = newAddress;
 }
 
-public void setNominalSwitchTimeout(Integer newTimeout) {
-	nominalSwitchTimeout = newTimeout;
+public void setNominalTimeout(Integer newTimeout) {
+	nominalTimeout = newTimeout;
 }
 
-public void setVirtualSwitchTimeout(Integer newTimeout) {
-	virtualSwitchTimeout = newTimeout;
+public void setVirtualTimeout(Integer newTimeout) {
+	virtualTimeout = newTimeout;
 }
 
 
@@ -184,8 +184,8 @@ public void update()
 		getGroupID(),
 		getRouteID(),
 		getOperationalAddress(),
-		getNominalSwitchTimeout(), 
-		getVirtualSwitchTimeout()
+		getNominalTimeout(), 
+		getVirtualTimeout()
 	
 	};
 	
