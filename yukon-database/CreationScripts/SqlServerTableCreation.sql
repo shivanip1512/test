@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     1/22/2003 8:14:44 AM                         */
+/* Created on:     1/24/2003 3:19:52 PM                         */
 /*==============================================================*/
 
 
@@ -1455,6 +1455,15 @@ go
 
 
 /*==============================================================*/
+/* Index: Indx_CSUBVPT                                          */
+/*==============================================================*/
+create   index Indx_CSUBVPT on CAPCONTROLSUBSTATIONBUS (
+CurrentVarLoadPointID
+)
+go
+
+
+/*==============================================================*/
 /* Table : CCFeederBankList                                     */
 /*==============================================================*/
 create table CCFeederBankList (
@@ -1532,62 +1541,36 @@ go
 
 
 insert into CTIDatabase values( '1.01', '(none)',  null, 'The initial database creation script created this.  The DateApplied is (null) because I can not find a way to set it in PowerBuilder!' );
-
 insert into CTIDatabase values('1.02', 'Ryan', '06-JUN-01', 'Added EnergyExhange and FDRInterface tables, also made some columns larger.');
-
 insert into CTIDatabase values('1.03', 'Ryan', '12-JUL-01', 'Remove the historical viewer from TDC, made device names unique, created some new tables for EnergyExchange');
-
 insert into CTIDatabase values('1.04', 'Ryan', '28-JUL-01', 'Changed the structure of FDRINTERFACE and LMPROGRAMENERGYEXCHANGE.  Added the Ripple group to LM and some other tables.');
-
 insert into CTIDatabase values('1.05', 'Ryan', '17-AUG-01', 'Readded the LMGroupRipple table and created the GenericMacro table. Change some data in the TDC tables.');
-
 insert into CTIDatabase values('1.06', 'Ryan', '15-SEP-01', 'Added the sharing columns to the CommPort table and the Alternate Scan rate.');
-
 insert into CTIDatabase values('2.00', 'Ryan', '6-NOV-01', 'Upgrade to Yukon 2.X tables.');
-
 insert into CTIDatabase values('2.01', 'Ryan', '14-DEC-01', 'Added CommandTimeOut to PointStatus and some other minor changes.');
-
 insert into CTIDatabase values('2.02', 'Ryan', '11-JAN-2002', 'Updated a TDC table to allow the new version of LoadManagement Client to work.');
-
 insert into CTIDatabase values('2.03', 'Ryan', '15-JAN-2002', 'Changed the PK_MACROROUTE constraint on the MacroRoute table to use the RouteID and the RouteOrder.');
-
 insert into CTIDatabase values('2.04', 'Ryan', '18-JAN-2002', 'Added the table CustomerBaseLinePoint and deleted EExchange from the display table.');
-
 insert into CTIDatabase values('2.05', 'Ryan', '08-FEB-2002', 'Added DynamicCalcHistoracle table for the CalcHistorical App');
-
 insert into CTIDatabase values('2.06', 'Ryan', '14-FEB-2002', 'Removed a column from the LMProgramDirect table and put it in the LMProgramDirectGear table');
-
 insert into CTIDatabase values('2.07', 'Ryan', '8-MAR-2002', 'Added 2 new FDR Interfaces and remove LMPrograms and LMControlAreas from the device table');
-
 insert into CTIDatabase values('2.08', 'Ryan', '14-MAR-2002', 'Added a LMGroupPoint, remove RecordControlHistory flag from LMGroup and added the DSM2IMPORT interface');
-
 insert into CTIDatabase values('2.09', 'Ryan', '22-MAR-2002', 'Added a column to the LMControlHistory table');
-
 insert into CTIDatabase values('2.10', 'Ryan', '05-APR-2002', 'Added 2 columns to the LMProgramDirectGear table');
-
 insert into CTIDatabase values('2.11', 'Ryan', '12-APR-2002', 'Added the LMDirectOperatorList table');
-
 insert into CTIDatabase values('2.12', 'Ryan', '15-MAY-2002', 'Added some new UOM, modified DyanmicLMControlArea and added BillingsFormat table');
-
 insert into CTIDatabase values('2.13', 'Ryan', '6-JUN-2002', 'Added CustomerLoginSerialGroup table and data for the telegyr interface, added PAOStatistics Table and ExpressCommm Support');
-
 insert into CTIDatabase values('2.14', 'Ryan', '20-JUN-2002', 'Added PAOStatistics to YukonPAObject, dropped a PK from DyanmicPAOStatistics and Display2WayData');
-
 insert into CTIDatabase values('2.15', 'Ryan', '19-JUL-2002', 'Added MCTBroadCast, added column to the LMProgramDirectGear, added columns to CapControlSubStationBus and CapControlFeeder');
-
 insert into CTIDatabase values('2.16', 'Ryan', '26-JUL-2002', 'Added the ImageID to the STATE table and GroupType to the StateGroup table. Created the StateImage table.');
-
 insert into CTIDatabase values('2.31', 'Ryan', '9-AUG-2002', 'Added DeviceDNP table.');
-
 insert into CTIDatabase values('2.33', 'Ryan', '29-AUG-2002', 'Added some columns to capcontrol dynamic tables, add a contraint to BillingFileFormats');
-
 insert into CTIDatabase values('2.36', 'Ryan', '9-SEP-2002', 'Changed loadprofile defaults, add column to DynamicPointDispatch, added a row to BillingFileFormats');
-
 insert into CTIDatabase values('2.37', 'Ryan', '24-OCT-2002', 'Added ExpressCom views');
-
 insert into CTIDatabase values('2.38', 'Ryan', '6-NOV-2002', 'Added a column to DynamicLMGroup and a Windows Service row to display');
-
 insert into CTIDatabase values('2.39', 'Ryan', '20-DEC-2002', 'Added two columns to DynamicCCCapBank, YukonUser, PortDialback and others');
+insert into CTIDatabase values('2.40', 'Ryan', '2-FEB-2003', 'Merged STARS customer structure with Yukon');
+
 
 /*==============================================================*/
 /* Table : CapControlFeeder                                     */
@@ -1602,6 +1585,15 @@ CurrentWattLoadPointID numeric              not null,
 MapLocationID        numeric              not null,
 LowerBandwidth       float                not null,
 constraint PK_CAPCONTROLFEEDER primary key  (FeederID)
+)
+go
+
+
+/*==============================================================*/
+/* Index: Indx_CPCNFDVARPT                                      */
+/*==============================================================*/
+create   index Indx_CPCNFDVARPT on CapControlFeeder (
+CurrentVarLoadPointID
 )
 go
 
@@ -2410,8 +2402,9 @@ go
 /* Table : EnergyCompanyCustomerList                            */
 /*==============================================================*/
 create table EnergyCompanyCustomerList (
-EnergyCompanyID      numeric              null,
-CustomerID           numeric              null
+EnergyCompanyID      numeric              not null,
+CustomerID           numeric              not null,
+constraint PK_ENERGYCOMPANYCUSTOMERLIST primary key  (EnergyCompanyID, CustomerID)
 )
 go
 
@@ -2420,8 +2413,9 @@ go
 /* Table : EnergyCompanyOperatorLoginList                       */
 /*==============================================================*/
 create table EnergyCompanyOperatorLoginList (
-EnergyCompanyID      numeric              null,
-OperatorLoginID      numeric              null
+EnergyCompanyID      numeric              not null,
+OperatorLoginID      numeric              not null,
+constraint PK_ENERGYCOMPANYOPERATORLOGINL primary key  (EnergyCompanyID, OperatorLoginID)
 )
 go
 
@@ -2495,7 +2489,8 @@ POINTID              numeric              not null,
 DIRECTIONTYPE        varchar(20)          not null,
 InterfaceType        varchar(20)          not null,
 DESTINATION          varchar(20)          not null,
-TRANSLATION          varchar(100)         not null
+TRANSLATION          varchar(100)         not null,
+constraint PK_FDRTRANSLATION primary key  (POINTID)
 )
 go
 
@@ -2515,6 +2510,15 @@ go
 create   index Indx_FdrTrnsIntTypDir on FDRTRANSLATION (
 DIRECTIONTYPE,
 InterfaceType
+)
+go
+
+
+/*==============================================================*/
+/* Index: Indx_FdrTrns_PK                                       */
+/*==============================================================*/
+create   index Indx_FdrTrns_PK on FDRTRANSLATION (
+POINTID
 )
 go
 
@@ -2721,7 +2725,8 @@ UserIDName           varchar(40)          not null,
 NameOfAckPerson      varchar(40)          not null,
 CurtailmentNotes     varchar(120)         not null,
 CurrentPDL           float                not null,
-AckLateFlag          char(1)              not null
+AckLateFlag          char(1)              not null,
+constraint PK_LMCURTAILCUSTOMERACTIVITY primary key  (CustomerID, CurtailReferenceID)
 )
 go
 
@@ -2990,8 +2995,9 @@ go
 /* Table : LMMACSScheduleOperatorList                           */
 /*==============================================================*/
 create table LMMACSScheduleOperatorList (
-ScheduleID           numeric              null,
-OperatorLoginID      numeric              null
+ScheduleID           numeric              not null,
+OperatorLoginID      numeric              not null,
+constraint PK_LMMACSSCHEDULEOPERATORLIST primary key  (ScheduleID, OperatorLoginID)
 )
 go
 
@@ -3291,8 +3297,9 @@ go
 /* Table : OperatorLoginGraphList                               */
 /*==============================================================*/
 create table OperatorLoginGraphList (
-OperatorLoginID      numeric              null,
-GraphDefinitionID    numeric              null
+OperatorLoginID      numeric              not null,
+GraphDefinitionID    numeric              not null,
+constraint PK_OPERATORLOGINGRAPHLIST primary key  (OperatorLoginID, GraphDefinitionID)
 )
 go
 
@@ -3515,6 +3522,15 @@ insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonack
 	'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
 	'N',
 	1, 0  from point;
+
+/*==============================================================*/
+/* Index: Indx_POINTALARMING_PK                                 */
+/*==============================================================*/
+create unique  index Indx_POINTALARMING_PK on PointAlarming (
+PointID
+)
+go
+
 
 /*==============================================================*/
 /* Table : PortStatistics                                       */
@@ -4481,12 +4497,6 @@ go
 
 
 alter table GraphCustomerList
-   add constraint FK_GRA_REFG_CIC foreign key (CustomerID)
-      references CICustomerBase (CustomerID)
-go
-
-
-alter table GraphCustomerList
    add constraint FK_GRA_REFG_GRA foreign key (GraphDefinitionID)
       references GRAPHDEFINITION (GRAPHDEFINITIONID)
 go
@@ -4849,6 +4859,12 @@ go
 alter table OperatorLoginGraphList
    add constraint FK_OpLgOpLgGrLs foreign key (GraphDefinitionID)
       references GRAPHDEFINITION (GRAPHDEFINITIONID)
+go
+
+
+alter table GraphCustomerList
+   add constraint FK_GrphCstLst_Cst foreign key (CustomerID)
+      references Customer (CustomerID)
 go
 
 

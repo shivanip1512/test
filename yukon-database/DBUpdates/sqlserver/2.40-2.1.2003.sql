@@ -87,6 +87,8 @@ sp_rename 'CICustomerBase.DeviceID', 'CustomerID', 'COLUMN'
 go
 sp_rename 'CICustomerBase.AddressID', 'MainAddressID', 'COLUMN'
 go
+sp_rename 'CICustomerBase.CustFPL', 'CustomerDemandLevel', 'COLUMN'
+go
 alter table CICustomerBase drop column MainPhoneNumber
 go
 alter table CICustomerBase drop column MainFaxNumber
@@ -104,6 +106,16 @@ where c.CustomerID = y.PAObjectID
 go
 alter table CICustomerBase
    add constraint FK_CstCI_Cst foreign key (CustomerID)
+      references Customer (CustomerID)
+go
+
+
+
+/******************* START GRAPHCUSTOMERLIST CHANGES *******************/
+alter table GraphCustomerList drop constraint RefGrphCstLst_CICstBse
+go
+alter table GraphCustomerList
+   add constraint FK_GrphCstLst_Cst foreign key (CustomerID)
       references Customer (CustomerID)
 go
 
