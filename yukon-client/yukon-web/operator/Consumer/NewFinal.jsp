@@ -6,12 +6,18 @@
 		if (failedAction != null) {
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, errorMsg);
 			
-			if (failedAction instanceof NewCustAccountAction)
+			if (failedAction instanceof NewCustAccountAction) {
 				response.sendRedirect(request.getContextPath() + "/operator/Consumer/New.jsp?Wizard=true");
-			else if (failedAction instanceof CreateLMHardwareAction)
+			}
+			else if (failedAction instanceof CreateLMHardwareAction) {
+				actions.removeAction( NewCustAccountAction.class );
 				response.sendRedirect(request.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true");
-			else if (failedAction instanceof ProgramSignUpAction)
+			}
+			else if (failedAction instanceof ProgramSignUpAction) {
+				actions.removeAction( NewCustAccountAction.class );
+				actions.removeAction( CreateLMHardwareAction.class );
 				response.sendRedirect(request.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true");
+			}
 		}
 		else {
 			session.removeAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);

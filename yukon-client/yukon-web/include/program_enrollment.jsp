@@ -1,6 +1,7 @@
 <%
 /* Required parameters:
  * inWizard: boolean
+ * hasPrevStep: boolean
  * needMoreInfo: boolean
  */
 	boolean isOperator = com.cannontech.stars.util.ECUtils.isOperator(user);
@@ -336,7 +337,7 @@ function confirmCancel() {
                           <input type="submit" name="Submit" value="Done">
                         </td>
                         <td width="20%" align="center"> 
-                          <input type="button" name="Back" value="Back" onclick="location.href='CreateHardware.jsp?Wizard=true'">
+                          <input type="button" name="Back" value="Back" onclick="location.href='CreateHardware.jsp?Wizard=true'" <% if (!hasPrevStep) { %>disabled<% } %>>
                         </td>
                         <td width="40%" align="left"> 
                           <input type="button" name="Cancel" value="Cancel" onclick="confirmCancel()">

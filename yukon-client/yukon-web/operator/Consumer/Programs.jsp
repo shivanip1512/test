@@ -6,12 +6,14 @@
 		return;
 	}
 	
+	boolean hasPrevStep = false;
+	
 	if (inWizard) {
 		programs = new StarsLMPrograms();
 		
 		MultiAction actions = (MultiAction) session.getAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
 		if (actions != null) {
-			SOAPMessage reqMsg = actions.build(request, session);
+			SOAPMessage reqMsg = actions.getRequestMessage( ProgramSignUpAction.class );
 			if (reqMsg != null) {
 				StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation(reqMsg);
 				StarsProgramSignUp progSignUp = reqOper.getStarsProgramSignUp();
@@ -26,20 +28,23 @@
 					}
 				}
 			}
+			
+			hasPrevStep = actions.getRequestMessage( CreateLMHardwareAction.class ) != null;
 		}
 	}
 	
 	if (programs == null) programs = new StarsLMPrograms();
 	
-	int hardwareCnt = 0;
+	boolean autoConfig = AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.AUTOMATIC_CONFIGURATION);
+	boolean needMoreInfo = false;
 	if (!inWizard) {
+		int hardwareCnt = 0;
 		for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
 			if (inventories.getStarsInventory(i).getLMHardware() != null)
 				hardwareCnt++;
 		}
+		needMoreInfo = hardwareCnt > 1 || autoConfig && hardwareCnt > 0;
 	}
-	boolean autoConfig = AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.AUTOMATIC_CONFIGURATION);
-	boolean needMoreInfo = hardwareCnt > 1 || autoConfig && hardwareCnt > 0;
 %>
 <html>
 <head>

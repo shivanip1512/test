@@ -43,8 +43,7 @@
             <table width="610" border="0" cellspacing="0" cellpadding="10" align="center" height="66">
               <tr> 
                  <td valign="top" bgcolor="#FFFFFF" height="65"> 
-                    <div align="center"> <span class="Subtext">Hardware History</span> 
-                      <br>
+                    <div align="center"><br>
                       <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
                         <tr> 
                           <td width="104" class="HeaderCell">Date</td>
