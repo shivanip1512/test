@@ -17,10 +17,16 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.13 $
-*    DATE         :  $Date: 2003/04/22 20:50:18 $
+*    REVISION     :  $Revision: 1.14 $
+*    DATE         :  $Date: 2003/04/24 19:42:50 $
 *    History:
       $Log: fdrinterface.cpp,v $
+      Revision 1.14  2003/04/24 19:42:50  dsutton
+      Added more try catches around the dispatch connection.  Added dispatch
+      mutex in spots it was missing.  After an attempted connection I verify it before
+      returning.  Capped the queue to dispatch at 10000 and now delete the oldest
+      1000 as we go over that cap
+
       Revision 1.13  2003/04/22 20:50:18  dsutton
       Updated dispatch connections to null after deleting them hoping to catch
       the problem CPL has
@@ -600,21 +606,44 @@ BOOL CtiFDRInterface::stop( void )
 
 BOOL CtiFDRInterface::connectWithDispatch()
 {
-    if (iDispatchConn == NULL)
+    BOOL retVal = TRUE;
+    try
     {
-        iDispatchConn = new CtiConnection(VANGOGHNEXUS, iDispatchMachine);
+        if (iDispatchConn == NULL)
+        {
+            { 
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Attempting to connect to dispatch at " << iDispatchMachine << " for " << getInterfaceName() << endl;
+            }
+            iDispatchConn = new CtiConnection(VANGOGHNEXUS, iDispatchMachine);
+
+            if (iDispatchConn->verifyConnection() != NORMAL)
+            {
+                { 
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Attempt to reconnect to dispatch at " << iDispatchMachine;
+                    dout << " for " << getInterfaceName() << " failed.  Attempting again" << endl;
+                }
+                delete iDispatchConn;
+                iDispatchConn=NULL;
+            }
+        }
+    }
+    catch(...)
+    {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Attempting to connect to dispatch at " << iDispatchMachine << " for " << getInterfaceName() << endl;
+            dout << RWTime() << " Attempt to connect to dispatch at " << iDispatchMachine << " for " << getInterfaceName() << " failed by exception " << endl;
         }
-
-        /*******************
-        * we won't lose info this way
-        *******************
-        */
-//        iDispatchConn->setBlockingWrites(TRUE);
+        retVal = FALSE;
+        if (iDispatchConn != NULL)
+        {
+            delete iDispatchConn;
+            iDispatchConn = NULL;
+        }
     }
-    return TRUE;
+
+    return retVal;
 }
 
 BOOL CtiFDRInterface::registerWithDispatch()
@@ -793,11 +822,10 @@ bool CtiFDRInterface::sendPointRegistration( void )
         }
     }
 
-    catch (RWExternalErr e )
+    catch (...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "sendPointRegistration:  " << e.why() << endl;
-        RWTHROW(e);
+        dout << RWTime() << " " << getInterfaceName() << "'s sendRegistration failed by exception." << endl;
     }
 
     return TRUE;
@@ -849,7 +877,7 @@ void CtiFDRInterface::disconnect( void )
 void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
-    CtiMessage      *incomingMsg;
+    CtiMessage      *incomingMsg=NULL;
     int x,cnt=0;
     static int cnt2=0;
 
@@ -870,7 +898,6 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
             {
                 pSelf.serviceCancellation( );
 
-
                 if (iDispatchConn != NULL)
                 {
                     // unfortunately, the connection is not always valid even if its not zero
@@ -886,16 +913,19 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " " << getInterfaceName() << "'s connection to dispatch failed.  Attempting to reconnect" << endl;
+                                dout << RWTime() << " " << getInterfaceName() << "'s connection to dispatch failed verification.  Attempting to reconnect" << endl;
                             }
                             // we're assuming that the send to dispatch will catch the problem
                             {
                                 CtiLockGuard<CtiMutex> guard(iDispatchMux);  
-                                iDispatchConn->ShutdownConnection();
                                 delete iDispatchConn;
                                 iDispatchConn=NULL;
+
+                                pSelf.serviceCancellation( );
+                                // possible two minute gap here
                                 connectWithDispatch();
                             }
+                            pSelf.serviceCancellation( );
                             logEvent (RWCString (getInterfaceName() + RWCString ("'s connection to dispatch has been restarted")),RWCString());
                             registerWithDispatch();
                         }   
@@ -906,10 +936,17 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " " << getInterfaceName() << "'s connection to dispatch failed by exception in threadFunctionReceiveFromDispatch." << endl;
                         }
-                        delete iDispatchConn;
-                        iDispatchConn=NULL;
-                        delete incomingMsg;
-                        incomingMsg = NULL;
+                        {
+                            CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+                            delete iDispatchConn;
+                            iDispatchConn=NULL;
+
+                            if (incomingMsg != NULL)
+                            {
+                                delete incomingMsg;
+                                incomingMsg = NULL;
+                            }
+                        }
                     }       
                 }
                 else
@@ -918,13 +955,15 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << getInterfaceName() << "'s connection to dispatch failed.  Attempting to reconnect" << endl;
+                        dout << RWTime() << " " << getInterfaceName() << "'s connection to dispatch is not initialized.  Attempting to reconnect" << endl;
                     }
                     // we're assuming that the send to dispatch will catch the problem
                     {
                         CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+                        // possible two minute gap here
                         connectWithDispatch();
                     }
+                    pSelf.serviceCancellation( );
                     logEvent (RWCString (getInterfaceName() + RWCString ("'s connection to dispatch has been restarted")),RWCString());
                     registerWithDispatch();
                 }
@@ -1047,7 +1086,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 void CtiFDRInterface::threadFunctionSendToDispatch( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
-    CtiMessage      *incomingMsg;
+    CtiMessage      *incomingMsg=NULL;
     int cnt,entries;
     RWTime checkTime;
     bool hasEntries = true;
@@ -1061,7 +1100,7 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
         }
 
         // create the muli
-        iDispatchQueue.resize(500);
+        iDispatchQueue.resize(1000);
 
         checkTime = RWTime() + getQueueFlushRate();
 
@@ -1383,7 +1422,6 @@ int CtiFDRInterface::attemptSend( CtiMessage *aMessage )
 
     return returnValue;
 }
-
 /************************************************************************
 * Function Name: CtiFDRInterface::queueMessageToDispatch( CtiMessage *)
 *
@@ -1396,49 +1434,27 @@ bool CtiFDRInterface::queueMessageToDispatch( CtiMessage *aMessage )
 {
     bool retVal = true;
 
-    // need to check if one we are full and two, is our connection any good
-    if (iDispatchQueue.isFull())
+    /*************************
+    * completely arbitrary for now but
+    * if we go over 10000 things on the queue, we remove
+    * the oldest 1000 before adding anymore
+    **************************
+    */
+    if (iDispatchQueue.entries() > 10000)
     {
-        // unfortunately, the connection may blow if it was died poorly
-        try
         {
-            // if the connection is ok, grow the queue
-            if ( (iDispatchConn->verifyConnection()) == NORMAL )
-            {
-                iDispatchQueue.resize (100);
-                iDispatchQueue.putQueue (aMessage);
-            }
-            else
-            {
-                // we've got problems, start throwing things away
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Dispatch queue is full and connection is bad - purging current entry for " << getInterfaceName() << endl;
-                }
-                delete aMessage;
-                retVal = false;
-            }
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Dispatch queue is over the 10,000 point threshold for " << getInterfaceName() << ". Purging oldest 1000 entries " << endl;
         }
-        catch (...)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getInterfaceName() << "'s connection to dispatch failed by exception in queueMessageToDispatch()." << endl;
-                dout << RWTime() << " Dispatch queue is full - purging current entry for " << getInterfaceName() << endl;
-            }
-            delete aMessage;
-            retVal = false;
-        }       
-    }
-    else
-    {
-        /**************************
-        * put it on the internal queue for the other thread to send
-        ***************************
-        */
-        iDispatchQueue.putQueue (aMessage);
-    }
+        CtiMessage      *oldMsg=NULL;
 
+        for (int x=0; x < 1000 ;x++)
+        {
+            oldMsg = iDispatchQueue.getQueue();
+            delete oldMsg;
+        }
+    }
+    iDispatchQueue.putQueue (aMessage);
     return retVal;
 }
 
