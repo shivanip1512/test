@@ -14,6 +14,8 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.db.NestedDBPersistent;
 
 import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
+import javax.swing.text.BadLocationException;
 
 import com.cannontech.clientutils.CTILogger;
 
@@ -1413,7 +1415,34 @@ public static Vector NestedDBPersistentComparator(Vector oldList, Vector newList
 	return tempVect;
 }
 	
-	
+
+/**
+ * Returns a string with (best guess) html removed.
+ * Useful for taking text from web pages and using it in java.
+ * @param code
+ * @return string
+ */
+public static String removeHTML( String code )
+{
+	if( code.indexOf("<") > -1 )	//something that looks like html exists...lets parse it!
+	{
+		StringBuffer tempBuff = new StringBuffer(code);
+		JEditorPane tempPane = new JEditorPane("text/html", tempBuff.toString());
+		try
+		{
+			int docLength = tempPane.getDocument().getLength();
+			String text = tempPane.getDocument().getText(0, docLength);
+			return text.trim();
+		}
+		catch (BadLocationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+		
+	return code;
+}	
 }
 
 
