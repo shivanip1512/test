@@ -1402,5 +1402,7 @@ Generation successful
 
 Usage:
   (1) Go to the directory D:\eclipse\head\yukon-database\CreationScripts\
-  (2) Run the database creation script:
-        isql -U<username> -P<password>  < SqlServerTableCreation.sql
+  (2) Start the SQL interpreter:
+        sqlplus <username>/<password>
+  (3) Run the database creation script:
+        start OracleTableCreation.sql
