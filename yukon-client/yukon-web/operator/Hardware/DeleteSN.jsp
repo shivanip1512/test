@@ -1,6 +1,4 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.common.constants.YukonListEntry" %>
-<%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
 <%
 	Properties savedReq = null;
 	if (request.getParameter("failed") != null) {

@@ -1,5 +1,4 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
 <%@ page import="com.cannontech.stars.web.util.ImportManagerUtil" %>
 <%
 	Hashtable unassignedLists = (Hashtable) session.getAttribute(ImportManagerUtil.UNASSIGNED_LISTS);

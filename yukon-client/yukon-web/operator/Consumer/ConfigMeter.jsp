@@ -1,6 +1,5 @@
 <%@ include file="include/StarsHeader.jsp" %>
 
-<%@ page import="com.cannontech.database.cache.functions.PAOFuncs"%>
 <%@ page import="com.cannontech.database.cache.functions.DBPersistentFuncs"%>
 <%@ page import="com.cannontech.database.db.device.DeviceMeterGroup"%>
 <%@ page import="com.cannontech.database.data.device.IDeviceMeterGroup"%>

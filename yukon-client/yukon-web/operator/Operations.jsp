@@ -112,6 +112,7 @@ function confirmDelete() {
 		StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE );
 		for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
+			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_METER_NO) continue;
 			String selectedStr = (lastAcctOption != null && entry.getEntryID() == lastAcctOption.intValue()) ? "selected" : "";
 %>
                 <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
@@ -256,9 +257,13 @@ function confirmDelete() {
 <%
 	if (selectionListTable != null) {
 		Integer lastInvOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_INVENTORY_SEARCH_OPTION);
+		YukonListEntry devTypeMCT = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT);
+		
 		StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY);
 		for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
+			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_METER_NO) continue;
+			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_DEVICE_NAME && devTypeMCT == null) continue;
 			String selectedStr = (lastInvOption != null && entry.getYukonDefID() == lastInvOption.intValue()) ? "selected" : "";
 %>
 			    <option value="<%= entry.getYukonDefID() %>" <%= selectedStr %>><%= entry.getContent() %></option>

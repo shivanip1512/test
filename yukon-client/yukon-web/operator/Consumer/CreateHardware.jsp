@@ -1,7 +1,4 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.common.constants.YukonListEntry" %>
-<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.database.data.pao.RouteTypes" %>
 <%@ page import="com.cannontech.stars.web.util.InventoryManagerUtil" %>

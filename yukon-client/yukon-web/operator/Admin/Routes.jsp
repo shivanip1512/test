@@ -1,5 +1,4 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%
 	LiteYukonPAObject[] inheritedRoutes = null;
 	if (liteEC.getParent() != null)

@@ -1,6 +1,4 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
-<%@ page import="com.cannontech.common.constants.YukonListEntry" %>
 <%
 	String listName = request.getParameter("List");
 	YukonSelectionList list = liteEC.getYukonSelectionList(listName);

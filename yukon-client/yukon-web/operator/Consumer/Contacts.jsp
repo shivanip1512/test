@@ -1,6 +1,4 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.common.constants.YukonListEntry"%>
-<%@ page import="com.cannontech.database.cache.functions.YukonListFuncs"%>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	ArrayList contactTypeList = YukonListFuncs.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE).getYukonListEntries();

@@ -1,6 +1,4 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.common.constants.YukonListEntry" %>
-<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%
 	String action = request.getParameter("action");
 	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);

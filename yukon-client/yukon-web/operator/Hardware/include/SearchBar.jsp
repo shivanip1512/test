@@ -6,15 +6,18 @@
 	    <input type="hidden" name="action" value="SearchInventory">
 		<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/ResultSet.jsp">
         <select name="SearchBy">
-          <%
+<%
 	Integer lastInvOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_INVENTORY_SEARCH_OPTION);
 	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY);
 	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
+		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_METER_NO) continue;
+		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_DEVICE_NAME
+			&& liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) == null) continue;
 		String selectedStr = (lastInvOption != null && entry.getYukonDefID() == lastInvOption.intValue()) ? "selected" : "";
 %>
           <option value="<%= entry.getYukonDefID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
-          <%
+<%
 	}
 %>
         </select>

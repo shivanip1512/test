@@ -1,5 +1,4 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteInventoryBase" %>
 <%
 	int invID = Integer.parseInt(request.getParameter("InvID"));
