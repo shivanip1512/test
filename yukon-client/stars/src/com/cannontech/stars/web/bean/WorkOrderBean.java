@@ -185,6 +185,8 @@ public class WorkOrderBean {
 		int maxPageNo = (int) Math.ceil(soList.size() * 1.0 / pageSize);
 		if (page > maxPageNo) page = maxPageNo;
 		
+		int maxPageDigit = (int)(Math.log(maxPageNo) / Math.log(10)) + 1;
+		
 		int minOrderNo = (page - 1) * pageSize + 1;
 		int maxOrderNo = Math.min(page * pageSize, soList.size());
         
@@ -215,9 +217,19 @@ public class WorkOrderBean {
 			navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(maxPageNo).append("'>Last</a>");
 		
 		StringBuffer htmlBuf = new StringBuffer();
-		htmlBuf.append("<table width='95%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append(LINE_SEPARATOR);
+		htmlBuf.append("<table width='95%' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
-		htmlBuf.append("    <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
+		htmlBuf.append("      <table width='100%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append(LINE_SEPARATOR);
+		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td align='right'>Page(1-").append(maxPageNo).append("): ")
+				.append("<input type='text' id='GoPage' style='border:1px solid #666699; font:11px' size='").append(maxPageDigit).append("' value='").append(page).append("'> ")
+				.append("<input type='button' style='font:11px; margin-bottom:-1px' value='Go' onclick='location.href=\"").append(pageName).append("?page=\" + document.getElementById(\"GoPage\").value;'>")
+				.append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("      </table>").append(LINE_SEPARATOR);
+		htmlBuf.append("    </td>").append(LINE_SEPARATOR);
 		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
@@ -258,7 +270,13 @@ public class WorkOrderBean {
 		htmlBuf.append("    </td>").append(LINE_SEPARATOR);
 		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
-		htmlBuf.append("    <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
+		htmlBuf.append("      <table width='100%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append(LINE_SEPARATOR);
+		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("      </table>").append(LINE_SEPARATOR);
+		htmlBuf.append("    </td>").append(LINE_SEPARATOR);
 		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("</table>").append(LINE_SEPARATOR);
         

@@ -114,6 +114,8 @@ public class DeviceBean {
 		int maxPageNo = (int) Math.ceil(devList.size() * 1.0 / pageSize);
 		if (page > maxPageNo) page = maxPageNo;
 		
+		int maxPageDigit = (int)(Math.log(maxPageNo) / Math.log(10)) + 1;
+		
 		int minInvNo = (page - 1) * pageSize + 1;
 		int maxInvNo = Math.min(page * pageSize, devList.size());
         
@@ -148,9 +150,19 @@ public class DeviceBean {
 		htmlBuf.append("<input type='hidden' name='action' value='SelectDevice'>").append(LINE_SEPARATOR);
 		htmlBuf.append("<input type='hidden' name='CategoryID' value='").append(categoryID).append("'>").append(LINE_SEPARATOR);
 		
-		htmlBuf.append("<table width='50%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append(LINE_SEPARATOR);
+		htmlBuf.append("<table width='50%' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
-		htmlBuf.append("    <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
+		htmlBuf.append("      <table width='100%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append(LINE_SEPARATOR);
+		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td align='right'>Page(1-").append(maxPageNo).append("): ")
+				.append("<input type='text' id='GoPage' style='border:1px solid #666699; font:11px' size='").append(maxPageDigit).append("' value='").append(page).append("'> ")
+				.append("<input type='button' style='font:11px; margin-bottom:-1px' value='Go' onclick='location.href=\"").append(pageName).append("?page=\" + document.getElementById(\"GoPage\").value;'>")
+				.append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("      </table>").append(LINE_SEPARATOR);
+		htmlBuf.append("    </td>").append(LINE_SEPARATOR);
 		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
@@ -177,7 +189,13 @@ public class DeviceBean {
 		htmlBuf.append("    </td>").append(LINE_SEPARATOR);
 		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
-		htmlBuf.append("    <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
+		htmlBuf.append("      <table width='100%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append(LINE_SEPARATOR);
+		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("      </table>").append(LINE_SEPARATOR);
+		htmlBuf.append("    </td>").append(LINE_SEPARATOR);
 		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("</table>").append(LINE_SEPARATOR);
         
