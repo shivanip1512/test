@@ -79,7 +79,7 @@
         <ant dir="${palm}" target="${dotarget}" />
         <ant dir="${tools}" target="${dotarget}" />
 		<ant dir="${servlet}" target="${dotarget}"/>
-<!--		<ant dir="${stars}" target="${dotarget}"/> -->
+		<ant dir="${stars}" target="${dotarget}"/>
 		<ant dir="${report}" target="${dotarget}"/>
 
 		<ant dir="${esub-editor}" target="${dotarget}"/>
