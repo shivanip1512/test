@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2003/05/23 22:10:54 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2003/06/10 21:05:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -854,15 +854,20 @@ INT CtiConnection::verifyConnection()
                 outQueue.clearAndDestroy();
             }
         }
-        else if(Ex != NULL)
+        else
         {
-            if( Ex->In().bad() )
+            TryLockGuard guard(monitor());
+
+            if(guard.isAcquired() && Ex != NULL)
             {
-                ok = InboundSocketBad; // the stream indicates a bad condition.
-            }
-            else if( Ex->Out().bad() )
-            {
-                ok = OutboundSocketBad; // the stream indicates a bad condition.
+                if( Ex->In().bad() )
+                {
+                    ok = InboundSocketBad; // the stream indicates a bad condition.
+                }
+                else if( Ex->Out().bad() )
+                {
+                    ok = OutboundSocketBad; // the stream indicates a bad condition.
+                }
             }
         }
     }
