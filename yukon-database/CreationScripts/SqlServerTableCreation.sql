@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/1/2004 10:05:41 AM                        */
+/* Created on:     12/13/2004 3:59:22 PM                        */
 /*==============================================================*/
 
 
@@ -4123,9 +4123,10 @@ insert into FDRInterface values (11,'TELEGYR','Receive,Receive for control','f')
 insert into FDRInterface values (12,'TEXTIMPORT','Receive,Receive for control','f');
 insert into FDRInterface values (13,'TEXTEXPORT','Send','f');
 
-insert into fdrinterface values(16,'LODESTAR_STD','Receive','f');
-insert into fdrinterface values(17,'LODESTAR_ENH','Receive','f');
+insert into fdrinterface values (16,'LODESTAR_STD','Receive','f');
+insert into fdrinterface values (17,'LODESTAR_ENH','Receive','f');
 insert into fdrinterface values (18, 'DSM2FILEIN', 'Receive,Receive for control', 'f');
+insert into FDRInterface values (19, 'XA21LM','Receive,Send', 't' );
 alter table FDRInterface
    add constraint PK_FDRINTERFACE primary key  (InterfaceID)
 go
@@ -4159,24 +4160,24 @@ insert into FDRInterfaceOption values(6, 'Destination/Source', 3, 'Text', '(none
 insert into FDRInterfaceOption values(7, 'Point', 1, 'Combo', 'SYSTEM LOAD,30 MINUTE AVG' );
 insert into FDRInterfaceOption values(8, 'Translation', 1, 'Text', '(none)' );
 insert into FDRInterfaceOption values(8, 'Destination/Source', 2, 'Text', '(none)' );
-insert into FDRInterfaceOption values(9,'Client',1,'Text','(none)');
-insert into FDRInterfaceOption values(10,'Point',1,'Text','(none)');
+insert into FDRInterfaceOption values(9, 'Client',1,'Text','(none)');
+insert into FDRInterfaceOption values(10, 'Point',1,'Text','(none)');
 insert into FDRInterfaceOption values(11, 'Point', 1, 'Text', '(none)' );
 insert into FDRInterfaceOption values(11, 'Interval (sec)', 2, 'Text', '(none)' );
-insert into FDRInterfaceOption values(12,'Point ID',1,'Text','(none)');
-insert into FDRInterfaceOption values(13,'Point ID',1,'Text','(none)');
+insert into FDRInterfaceOption values(12, 'Point ID',1,'Text','(none)');
+insert into FDRInterfaceOption values(13, 'Point ID',1,'Text','(none)');
 
-insert into fdrinterfaceoption values (16,'Customer',1,'Text','(none)');
-insert into fdrinterfaceoption values (16,'Channel',2,'Text','(none)');
-insert into fdrinterfaceoption values (16,'DrivePath',3,'Text','(none)');
-insert into fdrinterfaceoption values (16,'Filename',4,'Text','(none)');
-insert into fdrinterfaceoption values (17,'Customer',1,'Text','(none)');
-insert into fdrinterfaceoption values (17,'Channel',2,'Text','(none)');
-insert into fdrinterfaceoption values (17,'DrivePath',3,'Text','(none)');
-insert into fdrinterfaceoption values (17,'Filename',4,'Text','(none)');
+insert into fdrinterfaceoption values(16, 'Customer',1,'Text','(none)');
+insert into fdrinterfaceoption values(16, 'Channel',2,'Text','(none)');
+insert into fdrinterfaceoption values(16, 'DrivePath',3,'Text','(none)');
+insert into fdrinterfaceoption values(16, 'Filename',4,'Text','(none)');
+insert into fdrinterfaceoption values(17, 'Customer',1,'Text','(none)');
+insert into fdrinterfaceoption values(17, 'Channel',2,'Text','(none)');
+insert into fdrinterfaceoption values(17, 'DrivePath',3,'Text','(none)');
+insert into fdrinterfaceoption values(17, 'Filename',4,'Text','(none)');
 insert into fdrinterfaceoption values(18, 'Option Number', 1, 'Combo', '1');
 insert into fdrinterfaceoption values(18, 'Point ID', 2, 'Text', '(none)');
-
+insert into FDRInterfaceOption values(19, 'Translation', 1, 'Text', '(none)' );
 alter table FDRInterfaceOption
    add constraint PK_FDRINTERFACEOPTION primary key  (InterfaceID, Ordering)
 go
@@ -7372,6 +7373,11 @@ insert into YukonRole values (-500,'Billing','AMR','Access to billing file gener
 /* Reporting Analysis role */
 insert into YukonRole values (-600,'Reporting','Analysis','Access to reports generation.');
 insert into YukonRole values (-601,'Trending','Analysis','Access to trending functionality.');
+
+/* Capacitor Control roles */
+insert into YukonRole values (-700,'CBC Control','Capacitor Control','Allows the user to control change states of the CapControl system .');
+insert into YukonRole values (-701,'CBC Display','Capacitor Control','Allows alterations to the user interface.');
+
 alter table YukonRole
    add constraint PK_YUKONROLE primary key  (RoleID)
 go
@@ -7413,13 +7419,14 @@ insert into YukonRoleProperty values(-1009,-1,'loadcontrol_port','1920','TCP/IP 
 insert into YukonRoleProperty values(-1010,-1,'smtp_host','127.0.0.1','Name or IP address of the mail server');
 insert into YukonRoleProperty values(-1011,-1,'mail_from_address','yukon@cannontech.com','Name of the FROM email address the mail server will use');
 insert into YukonRoleProperty values(-1012,-1,'print_insert_sql','(none)','File name of where to print all SQL insert statements');
-insert into YukonRoleProperty values(-1013,-1,'stars_soap_server','(none)','Where the soap server is running, the default value is the local host');
+insert into YukonRoleProperty values(-1013,-1,'stars_preload_data','true','Controls whether the STARS application should preload data into the cache.');
 insert into YukonRoleProperty values(-1014,-1,'web_logo','CannonLogo.gif','The logo that is used for the yukon web applications');
 insert into YukonRoleProperty values(-1015,-1,'voice_host','127.0.0.1','Name or IP address of the voice server');
 insert into YukonRoleProperty values(-1016,-1,'notification_host','127.0.0.1','Name or IP address of the Yukon Notification service');
 insert into YukonRoleProperty values(-1017,-1,'notification_port','1515','TCP/IP port of the Yukon Notification service');
 
 /* Energy Company Role Properties */
+insert into YukonRoleProperty values(-1100,-2,'admin_email_address','info@cannontech.com','Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.');
 insert into YukonRoleProperty values(-1101,-2,'optout_notification_recipients','(none)','Recipients of the opt out notification email');
 insert into YukonRoleProperty values(-1102,-2,'default_time_zone','CST','Default time zone of the energy company');
 insert into YukonRoleProperty values(-1105,-2,'customer_group_ids','-300','Group IDs of all the residential customer logins');
@@ -7497,7 +7504,7 @@ insert into YukonRoleProperty values(-10800,-108,'home_url','/default.jsp','The 
 insert into YukonRoleProperty values(-10802,-108,'style_sheet','yukon/CannonStyle.css','The web client cascading style sheet.');
 insert into YukonRoleProperty values(-10803,-108,'nav_bullet_selected','yukon/Bullet.gif','The bullet used when an item in the nav is selected.');
 insert into YukonRoleProperty values(-10804,-108,'nav_bullet_expand','yukon/BulletExpand.gif','The bullet used when an item in the nav can be expanded to show submenu.');
-insert into YukonRoleProperty values(-10805,-108,'header_logo','yukon/DemoHeader.gif','The main header logo');
+insert into YukonRoleProperty values(-10805,-108,'header_logo','yukon/DefaultHeader.gif','The main header logo');
 insert into YukonRoleProperty values(-10806, -108,'log_in_url','/login.jsp','The url where the user login from. It is used as the url to send the users to when they log off.');
 insert into YukonRoleProperty values(-10807,-108,'nav_connector_bottom','yukon/BottomConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of the last hardware under each category');
 insert into YukonRoleProperty values(-10808,-108,'nav_connector_middle','yukon/MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
@@ -7530,7 +7537,6 @@ insert into YukonRoleProperty values(-20154,-201,'Automatic Configuration','fals
 insert into YukonRoleProperty values(-20155,-201,'Order Number Auto Generation','false','Controls whether the order number is automatically generated or entered by user');
 insert into YukonRoleProperty values(-20156,-201,'Call Number Auto Generation','false','Controls whether the call number is automatically generated or entered by user');
 insert into YukonRoleProperty values(-20157,-201,'Opt Out Rules','(none)','Defines the rules for opting out.');
-insert into YukonRoleProperty values(-20158,-201,'Override Hardware','false','Controls whether to allow overriding individual hardware');
 
 /* Operator Administrator Role Properties */
 insert into YukonRoleProperty values(-20000,-200,'Config Energy Company','false','Controls whether to allow configuring the energy company');
@@ -7568,7 +7574,6 @@ insert into YukonRoleProperty values(-20813,-201,'Text Opt Out Noun','opt out','
 insert into YukonRoleProperty values(-20814,-201,'Text Opt Out Verb','opt out of','Verbical form of the term for opt out');
 insert into YukonRoleProperty values(-20815,-201,'Text Opt Out Past','opted out','Past form of the term for opt out');
 insert into YukonRoleProperty values(-20816,-201,'Text Reenable','reenable','Term for reenable');
-insert into YukonRoleProperty values(-20817,-201,'Text Override','override','Term for override');
 insert into YukonRoleProperty values(-20819,-201,'Text Odds for Control','odds for control','Text for odds for control');
 insert into YukonRoleProperty values(-20820,-201,'Text Recommended Settings','Recommended Settings','Text of the Recommended Settings button on the thermostat schedule page');
 
@@ -7778,6 +7783,15 @@ insert into yukonroleproperty values(-60116, -601, 'View Button Label', 'View', 
 insert into yukonroleproperty values(-60117, -601, 'Trending Usage', 'false', 'Allow access to trending time of use.');
 insert into yukonroleproperty values(-60118, -601, 'Default Start Date Offset', '0', 'Offset the start date by this number.');
 insert into yukonroleproperty values(-60119, -601, 'Default Time Period', '(none)', 'Default the time period.');
+
+/* Capacitor Control role properties */
+insert into YukonRoleProperty values(-70000,-700,'Hide Field Controls','false','Sets the visibility of all field controls.');
+insert into YukonRoleProperty values(-70001,-700,'Hide Local Controls','false','Sets the visibility of all local controls.');
+insert into YukonRoleProperty values(-70002,-700,'Allow Control','true','Enables or disables field and local controls for the given user');
+
+insert into YukonRoleProperty values(-70100,-701,'Hide Reports','false','Sets the visibility of reports.');
+insert into YukonRoleProperty values(-70101,-701,'Hide Graphs','false','Sets the visibility of graphs.');
+insert into YukonRoleProperty values(-70102,-701,'Hide One-Lines','false','Sets the visibility of one-line displays.');
 alter table YukonRoleProperty
    add constraint PK_YUKONROLEPROPERTY primary key  (RolePropertyID)
 go
@@ -8264,7 +8278,7 @@ go
 /*==============================================================*/
 /* View: LMProgram_View                                         */
 /*==============================================================*/
-create view LMProgram_View (DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID) as
+create view LMProgram_View as
 select t.DeviceID, t.ControlType, u.ConstraintID, u.ConstraintName, u.AvailableWeekDays, u.MaxHoursDaily, u.MaxHoursMonthly, u.MaxHoursSeasonal, u.MaxHoursAnnually, u.MinActivateTime, u.MinRestartTime, u.MaxDailyOps, u.MaxActivateTime, u.HolidayScheduleID, u.SeasonScheduleID
 from LMPROGRAM t, LMProgramConstraints u
 where u.ConstraintID = t.ConstraintID
