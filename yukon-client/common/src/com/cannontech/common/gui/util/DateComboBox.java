@@ -119,8 +119,9 @@ public class DateComboBox extends JComboBox
    public synchronized void setSelectedItem(Object item)
    {
    	currentItem = item;
-	removeAllItems(); // hides the popup if visible
+	//removeAllItems(); // fires an extra event
     addItem( item );
+    //this keeps adding strings to the Combo, oh well!!
     super.setSelectedItem(item);
    }
 
