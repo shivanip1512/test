@@ -1548,7 +1548,7 @@ private JMenuBar getMenuBar(int whichDatabase) {
 		systemCreateMenu = new SystemCreateMenu();
 		viewMenu = new ViewMenu();
 		helpMenu = new HelpMenu();
-
+      toolsMenu = new ToolsMenu();
 		
 		JMenuItem item;
 		
@@ -1615,12 +1615,13 @@ private JMenuBar getMenuBar(int whichDatabase) {
 			if( item != null )
 				helpMenu.getItem(i).addActionListener(this);
 		}
+
 		for( int i = 0; i < toolsMenu.getItemCount() ; i++ )
 		{
 			item = toolsMenu.getItem(i);
 			if( item != null )
 				toolsMenu.getItem(i).addActionListener(this);
-                }
+      }
 
 		           
 			
