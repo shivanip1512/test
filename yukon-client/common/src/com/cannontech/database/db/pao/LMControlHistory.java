@@ -21,7 +21,7 @@ public class LMControlHistory extends com.cannontech.database.db.DBPersistent
 	
 	public final static String SETTER_COLUMNS[] = 
 	{ 
-		"paObjectID", "StartDateTime", "SOETag", "ControlDuration",
+		"PAObjectID", "StartDateTime", "SOE_Tag", "ControlDuration",
 		"ControlType", "CurrentDailyTime", "CurrentMonthlyTime",
 		"CurrentSeasonalTime", "CurrentAnnualTime", "ActiveRestore",
 		"ReductionValue", "StopDateTime"
