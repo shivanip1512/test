@@ -14,7 +14,7 @@ import com.roguewave.vsj.streamer.SimpleMappings;
 public class DefColl_LMEnergyExchangeCustomerReply implements com.roguewave.vsj.DefineCollectable 
 {
 	//The roguewave class id
-	private static int RW_CLASS_ID = 621;	
+	private static int RW_CLASS_ID = 622;	
 /**
  * DefineCollectableLMEnergyExchangeCustomerReply constructor comment.
  */

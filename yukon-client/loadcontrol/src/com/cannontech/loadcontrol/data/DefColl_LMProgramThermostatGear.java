@@ -10,7 +10,7 @@ import com.roguewave.vsj.streamer.SimpleMappings;
 public class DefColl_LMProgramThermostatGear implements com.roguewave.vsj.DefineCollectable
 {
 	//The roguewave class id
-	private static int CTI_LMPROGRAMTHERMOSTATGEAR_ID = 627;
+	private static int CTI_LMPROGRAMTHERMOSTATGEAR_ID = 628;
 /**
  * DefineCollectableSchedule constructor comment.
  */

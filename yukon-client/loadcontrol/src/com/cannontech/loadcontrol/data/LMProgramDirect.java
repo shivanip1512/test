@@ -1,6 +1,6 @@
 package com.cannontech.loadcontrol.data;
 
-import com.cannontech.loadcontrol.messages.LMManualControlMsg;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 
 /**
  * Insert the type's description here.
@@ -29,9 +29,9 @@ public LMProgramDirect()
  * Insert the method's description here.
  * Creation date: (7/19/2001 8:50:05 AM)
  */
-public LMManualControlMsg createScheduledStartMsg( java.util.Date start, java.util.Date stop, int gearNumber, java.util.Date notifyTime, String additionalInfo )
+public LMManualControlRequest createScheduledStartMsg( java.util.Date start, java.util.Date stop, int gearNumber, java.util.Date notifyTime, String additionalInfo )
 {
-	LMManualControlMsg msg = new LMManualControlMsg();
+	LMManualControlRequest msg = new LMManualControlRequest();
 	java.util.GregorianCalendar cStart = new java.util.GregorianCalendar();
 	java.util.GregorianCalendar cStop = new java.util.GregorianCalendar();
 	cStart.setTime( start );
@@ -47,7 +47,7 @@ public LMManualControlMsg createScheduledStartMsg( java.util.Date start, java.ut
 	msg.setYukonID( getYukonID().intValue() );
 	msg.setStartPriority( getDefaultPriority().intValue() );
 	
-	msg.setCommand( LMManualControlMsg.SCHEDULED_START );		
+	msg.setCommand( LMManualControlRequest.SCHEDULED_START );		
 		
 
 	return msg;
@@ -56,9 +56,9 @@ public LMManualControlMsg createScheduledStartMsg( java.util.Date start, java.ut
  * Insert the method's description here.
  * Creation date: (7/19/2001 8:50:05 AM)
  */
-public LMManualControlMsg createScheduledStopMsg( java.util.Date start, java.util.Date stop, int gearNumber, String additionalInfo )
+public LMManualControlRequest createScheduledStopMsg( java.util.Date start, java.util.Date stop, int gearNumber, String additionalInfo )
 {
-	LMManualControlMsg msg = new LMManualControlMsg();
+	LMManualControlRequest msg = new LMManualControlRequest();
 	java.util.GregorianCalendar cStart = new java.util.GregorianCalendar();
 	java.util.GregorianCalendar cStop = new java.util.GregorianCalendar();
 	cStart.setTime( start );
@@ -75,7 +75,7 @@ public LMManualControlMsg createScheduledStopMsg( java.util.Date start, java.uti
 	msg.setYukonID( getYukonID().intValue() );
 	msg.setStartPriority( getDefaultPriority().intValue() );
 	
-	msg.setCommand( LMManualControlMsg.SCHEDULED_STOP );
+	msg.setCommand( LMManualControlRequest.SCHEDULED_STOP );
 		
 
 	return msg;
@@ -84,9 +84,9 @@ public LMManualControlMsg createScheduledStopMsg( java.util.Date start, java.uti
  * Insert the method's description here.
  * Creation date: (7/19/2001 8:50:05 AM)
  */
-public LMManualControlMsg createStartStopNowMsg( java.util.Date stopTime, int gearNumber, String additionalInfo, boolean isStart )
+public LMManualControlRequest createStartStopNowMsg( java.util.Date stopTime, int gearNumber, String additionalInfo, boolean isStart )
 {
-	LMManualControlMsg msg = new LMManualControlMsg();	
+	LMManualControlRequest msg = new LMManualControlRequest();	
 	java.util.GregorianCalendar cStop = new java.util.GregorianCalendar();
 	cStop.setTime(stopTime);
 
@@ -103,9 +103,9 @@ public LMManualControlMsg createStartStopNowMsg( java.util.Date stopTime, int ge
 	msg.setStartPriority( getDefaultPriority().intValue() );
 
 	if( isStart )
-		msg.setCommand( LMManualControlMsg.START_NOW );
+		msg.setCommand( LMManualControlRequest.START_NOW );
 	else
-		msg.setCommand( LMManualControlMsg.STOP_NOW );
+		msg.setCommand( LMManualControlRequest.STOP_NOW );
 
 	return msg;
 }

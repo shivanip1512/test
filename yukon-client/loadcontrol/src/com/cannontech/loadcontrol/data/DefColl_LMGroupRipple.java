@@ -4,12 +4,11 @@ package com.cannontech.loadcontrol.data;
  * This type was created in VisualAge.
  */
 import com.roguewave.vsj.DefineCollectable;
-import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefColl_LMGroupRipple extends DefColl_LMDirectGroupBase
 {
 	//The roguewave class id
-	private static int CTILMGROUPRIPPLE_ID = 624;
+	private static int CTILMGROUPRIPPLE_ID = 625;
 /**
  * DefineCollectableSchedule constructor comment.
  */

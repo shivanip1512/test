@@ -8,7 +8,7 @@ import com.roguewave.vsj.DefineCollectable;
 public class DefColl_LMGroupMCT extends DefColl_LMDirectGroupBase
 {
 	//The roguewave class id
-	private static int CTILMGROUPMCT_ID = 628;
+	private static int CTILMGROUPMCT_ID = 629;
 /**
  * DefineCollectableSchedule constructor comment.
  */

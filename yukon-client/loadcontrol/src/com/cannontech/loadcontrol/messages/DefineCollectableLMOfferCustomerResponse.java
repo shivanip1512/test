@@ -10,7 +10,7 @@ import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefineCollectableLMOfferCustomerResponse extends DefineCollectableLMMessage {
 	//RogueWave classId
-	public static final int CTILMOFFERCUSTOMERRESPONSEMSG_ID = 615;	
+	public static final int CTILMOFFERCUSTOMERRESPONSE_ID = 615;	
 /**
  * DefineCollectableLMOfferCustomerResponse constructor comment.
  */
@@ -41,7 +41,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator() {
  */
 public int getCxxClassId()
 {
-	return CTILMOFFERCUSTOMERRESPONSEMSG_ID;
+	return CTILMOFFERCUSTOMERRESPONSE_ID;
 }
 /**
  * getCxxStringId method comment.

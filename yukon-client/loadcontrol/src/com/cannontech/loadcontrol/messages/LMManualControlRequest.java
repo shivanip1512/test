@@ -6,7 +6,7 @@ package com.cannontech.loadcontrol.messages;
  * and the server only receives them.
  */
 
-public class LMManualControlMsg extends LMMessage 
+public class LMManualControlRequest extends LMMessage 
 {
 	private int command;
 	private int yukonID;
@@ -35,7 +35,7 @@ public class LMManualControlMsg extends LMMessage
 /**
  * ScheduleCommand constructor comment.
  */
-public LMManualControlMsg() {
+public LMManualControlRequest() {
 	super();
 }
 /**

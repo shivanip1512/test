@@ -7,14 +7,14 @@ import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableLMManualControlMsg extends DefineCollectableLMMessage
+public class DefineCollectableLMManualControlRequest extends DefineCollectableLMMessage
 {
 	//RogueWave classId
-	public static final int CTILMMANUALCONTROLMSG_ID = 612;
+	public static final int CTILMMANUALCONTROLREQUEST_ID = 612;
 /**
  * DefineCollectableScheduleCommand constructor comment.
  */
-public DefineCollectableLMManualControlMsg()
+public DefineCollectableLMManualControlRequest()
 {
 	super();
 }
@@ -23,7 +23,7 @@ public DefineCollectableLMManualControlMsg()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMManualControlMsg();
+	return new LMManualControlRequest();
 }
 /**
  * getComparator method comment.
@@ -43,7 +43,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator() {
  */
 public int getCxxClassId()
 {
-	return CTILMMANUALCONTROLMSG_ID;
+	return CTILMMANUALCONTROLREQUEST_ID;
 }
 /**
  * getCxxStringId method comment.
@@ -55,7 +55,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return LMManualControlMsg.class;
+	return LMManualControlRequest.class;
 }
 /**
  * restoreGuts method comment.
@@ -64,7 +64,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	//Should never be called
 	super.restoreGuts( obj, vstr, polystr );
-	throw new java.lang.Error("LMManualControlMsg restoreGuts should never be receieved by the client" );
+	throw new java.lang.Error("LMManualControlRequest restoreGuts should never be receieved by the client" );
 }
 /**
  * saveGuts method comment.
@@ -73,7 +73,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 {
 	super.saveGuts( obj, vstr, polystr );
 
-	LMManualControlMsg lmManualControlMsg = (LMManualControlMsg) obj;
+	LMManualControlRequest lmManualControlMsg = (LMManualControlRequest) obj;
 
 	vstr.insertUnsignedInt( (long) lmManualControlMsg.getCommand() );
 	vstr.insertUnsignedInt( (long) lmManualControlMsg.getYukonID() );
@@ -83,5 +83,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( (long) lmManualControlMsg.getStartGear() );
 	vstr.insertUnsignedInt( (long) lmManualControlMsg.getStartPriority() );
 	vstr.saveObject( lmManualControlMsg.getAddditionalInfo(), SimpleMappings.CString );	
+	
+	System.out.println(lmManualControlMsg.getStopTime().getTime());
 }
 }

@@ -43,7 +43,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator()
  * getCxxClassId method comment.
  */
 public int getCxxClassId() {
-	return this.CTILMCONTROLAREA_ID;
+	return DefColl_LMControlArea.CTILMCONTROLAREA_ID;
 }
 /**
  * getCxxStringId method comment.

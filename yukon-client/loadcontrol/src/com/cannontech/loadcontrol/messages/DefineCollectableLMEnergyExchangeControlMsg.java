@@ -12,7 +12,7 @@ import com.roguewave.vsj.streamer.SimpleMappings;
 public class DefineCollectableLMEnergyExchangeControlMsg extends DefineCollectableLMMessage 
 {
 	//RogueWave classId
-	public static final int RW_CLASS_ID = 622;
+	public static final int RW_CLASS_ID = 623;
 /**
  * DefineCollectableLMEnergyExchangeControlMsg constructor comment.
  */

@@ -9,7 +9,7 @@ import com.roguewave.vsj.streamer.SimpleMappings;
 public class DefColl_LMProgramCurtailment extends DefColl_LMProgramBase
 {
 	//The roguewave class id
-	private static int CTILMPROGRAMCURTAILMENT_ID = 613;
+	private static int CTILMPROGRAMCURTAILMENT_ID = 614;
 /**
  * DefineCollectableSchedule constructor comment.
  */

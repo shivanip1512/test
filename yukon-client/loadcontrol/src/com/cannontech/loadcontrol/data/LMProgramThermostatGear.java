@@ -1,14 +1,7 @@
 package com.cannontech.loadcontrol.data;
 
-import com.cannontech.database.db.device.lm.LMThermostatGear;
-
 /**
  * @author rneuharth
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
  */
 public class LMProgramThermostatGear extends LMProgramDirectGear 
 {
@@ -26,12 +19,10 @@ public class LMProgramThermostatGear extends LMProgramDirectGear
 	private Integer valueTe = new Integer(0);
 	private Integer valueTf = new Integer(0);
 	
-
 	public LMProgramThermostatGear()
 	{
 		super();
 	}
-		
 
 	/**
 	 * Returns the maxValue.

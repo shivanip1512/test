@@ -14,7 +14,7 @@ import com.roguewave.vsj.streamer.SimpleMappings;
 public class DefColl_LMProgramEnergyExchange extends DefColl_LMProgramBase
 {
 	//The roguewave class id
-	private static int CTILMPROGRAMENERGYEXCHANGE_ID = 616;
+	private static int CTILMPROGRAMENERGYEXCHANGE_ID = 617;
 /**
  * DefineCollectableLMProgramEnergyExchange constructor comment.
  */

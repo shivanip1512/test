@@ -8,7 +8,7 @@ import com.roguewave.vsj.DefineCollectable;
  */
 public class DefColl_LMGroupSA305 extends DefColl_LMDirectGroupBase {
 	//The roguewa class id
-	private static int CTILMGROUPSA305_ID = 631;
+	private static int CTILMGROUPSA305_ID = 632;
 
 	public DefColl_LMGroupSA305() {
 		super();

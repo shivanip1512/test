@@ -8,12 +8,11 @@ import java.util.Vector;
 
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
-import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefColl_LMEnergyExchangeCustomer extends DefColl_LMCICustomerBase
 {
 	//The roguewave class id
-	private static int CTILMENERGYEXCHANGECUSTOMER_ID = 615;	
+	private static int CTILMENERGYEXCHANGECUSTOMER_ID = 616;	
  /**
 	* This method will be called by CollectableStreamer to
 	* create an instance of the object being

@@ -11,7 +11,7 @@ import com.roguewave.vsj.streamer.SimpleMappings;
 public class DefineCollectableLMEnergyExchangeAcceptMsg extends DefineCollectableLMMessage 
 {
 	//RogueWave classId
-	public static final int RW_CLASS_ID = 623;
+	public static final int RW_CLASS_ID = 624;
 /**
  * DefineCollectableLMEnergyExchangeAcceptMsg constructor comment.
  */
@@ -19,7 +19,7 @@ public DefineCollectableLMEnergyExchangeAcceptMsg() {
 	super();
 }
 /**
- * create method comment.
+ * create method comment. 
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
 	return new LMEnergyExchangeAcceptMsg();

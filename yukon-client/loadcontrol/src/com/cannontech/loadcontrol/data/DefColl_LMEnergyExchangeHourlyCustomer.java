@@ -10,7 +10,7 @@ import com.roguewave.vsj.DefineCollectable;
 public class DefColl_LMEnergyExchangeHourlyCustomer implements com.roguewave.vsj.DefineCollectable 
 {
 	//The roguewave class id
-	private static int RW_CLASS_ID = 619;	
+	private static int RW_CLASS_ID = 620;	
 /**
  * DefineCollectableLMEnergyExchangeHourlyCustomer constructor comment.
  */

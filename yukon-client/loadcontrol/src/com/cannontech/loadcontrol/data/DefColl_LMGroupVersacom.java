@@ -4,7 +4,6 @@ package com.cannontech.loadcontrol.data;
  * This type was created in VisualAge.
  */
 import com.roguewave.vsj.DefineCollectable;
-import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefColl_LMGroupVersacom extends DefColl_LMDirectGroupBase
 {

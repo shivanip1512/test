@@ -30,7 +30,7 @@ public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.I
  * getCxxClassId method comment.
  */
 public int getCxxClassId() {
-	return this.CTILMCURTAILCUSTOMER_ID;
+	return DefColl_LMCurtailCustomer.CTILMCURTAILCUSTOMER_ID;
 }
 /**
  * getCxxStringId method comment.
