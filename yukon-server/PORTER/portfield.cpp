@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2003/03/13 19:35:31 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2003/03/31 15:13:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2668,12 +2668,13 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *a
             status = ReturnLoadProfileData ( aPortRecord, aIED, aInMessage, aOutMessage, traceList);
         }
 
-        if(status != NORMAL)
+        if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && status != NORMAL)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  status = " << status << " " << FormatError( status ) << endl;
+                dout << " Device " << aIED->getName() << endl;
+                dout << " status was returned as " << status << ".  This may be a ied state or an actual error status." << endl;
             }
         }
 
