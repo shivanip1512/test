@@ -2,7 +2,6 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 import java.util.Calendar;
-//import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.jfree.report.Boot;
@@ -53,6 +52,7 @@ public class DisconnectReport extends YukonReportBase
 		GregorianCalendar cal = new GregorianCalendar();
 		DisconnectReport.data.setStopTime(cal.getTime().getTime());
 		cal.set(Calendar.MONTH,0);
+		cal.set(Calendar.DAY_OF_MONTH,1);
 	
 		DisconnectReport.data.setStartTime(cal.getTime().getTime());
 		DisconnectReport.data.setCollectionGroups(new String[] {"Cycle 1"});
@@ -70,7 +70,7 @@ public class DisconnectReport extends YukonReportBase
 		JFreeReport report = DisconnectReport.createReport();
 		report.setDefaultPageFormat(pageFormat);
 		report.setData(DisconnectReport.data);
-		//report.addGroup(createDeviceGroup());
+		
 				
 		final PreviewDialog dialog = new PreviewDialog(report);
 		// Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)
@@ -170,67 +170,20 @@ public class DisconnectReport extends YukonReportBase
 		tfactory.setFieldname("Device Name");
 		header.addElement(tfactory.createElement());
 
-		//header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 20, 0, 20)));
+		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(1.0f), new java.awt.geom.Line2D.Float(0, 20, 0, 20)));
 		deviceGroup.setHeader(header);
 		
 		final GroupFooter footer = new GroupFooter();
 		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 12));
 		footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-		//footer.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 4, 0, 4)));
+		footer.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(1.0f), new java.awt.geom.Line2D.Float(0, 4, 0, 4)));
 	
 		deviceGroup.setFooter(footer);
 		return deviceGroup;
 		
 	}
 
-	private Group createPointGroup()
-		{
-			final Group deviceGroup = new Group();
-			deviceGroup.setName("Point Name");
-			deviceGroup.addField("Collection Group");
-			deviceGroup.addField("Device Name");
-			deviceGroup.addField("Point Name");
-		  
-			final GroupHeader header = new GroupHeader();
-
-			header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 22));
-			header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-
-			
-			LabelElementFactory factory = new LabelElementFactory();
-		 	factory.setName("Label Point");
-			 factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(10, 1));
-			 factory.setMinimumSize(new FloatDimension(40, 10));
-			 factory.setHorizontalAlignment(ElementAlignment.LEFT);
-			 factory.setVerticalAlignment(ElementAlignment.BOTTOM);
-		 	factory.setText("POINT:");
-			 header.addElement(factory.createElement());
-	 
 	
-		
-			header.addElement(factory.createElement());
-			final TextFieldElementFactory tfactory = new TextFieldElementFactory();
-			tfactory.setName("Point Name Group Element");
-			tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(60, 1));
-			tfactory.setMinimumSize(new FloatDimension(400, 10));
-			tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
-			tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
-			tfactory.setNullString("<null>");
-			tfactory.setFieldname("Point Name" + "Device Name");
-			header.addElement(tfactory.createElement());
-
-			header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 20, 0, 20)));
-			deviceGroup.setHeader(header);
-		
-			final GroupFooter footer = new GroupFooter();
-			footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 12));
-			footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-			footer.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 4, 0, 4)));
-	
-			deviceGroup.setFooter(footer);
-			return deviceGroup;
-		
-		}
 
 
 	/**
@@ -261,7 +214,6 @@ public class DisconnectReport extends YukonReportBase
 	  final GroupList list = new GroupList();
 	  list.add(createCollGrpGroup());
 	  list.add(createDeviceGroup());
-	  list.add(createPointGroup());
 	  return list;
 	}
 
@@ -321,7 +273,7 @@ public class DisconnectReport extends YukonReportBase
 		items.addElement(factory.createElement());
 		*/
 		
-		for (int i = 3; i < data.getColumnNames().length; i++)
+		for (int i = 2; i < data.getColumnNames().length; i++)
 		{
 			TextFieldElementFactory factory = new TextFieldElementFactory();
 			if( data.getColumnClass(i).equals(String.class))
