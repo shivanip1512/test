@@ -57,15 +57,7 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 		try
 		{	
 	    	out = resp.getOutputStream();
-			if( localBean.getFormat().equalsIgnoreCase("gif") )								
-				localBean.getGraph().encodeGif(out);
-			else if( localBean.getFormat().equalsIgnoreCase("png") )
-				localBean.getGraph().encodePng(out);
-			else if( localBean.getFormat().equalsIgnoreCase("jpg") )
-				;//localBean.getGraph().encodeJPG(out);
-			else if( localBean.getFormat().equalsIgnoreCase("svg") )
-				localBean.getGraph().encodeSVG(out);
-    	
+	    	localBean.encode(out);
 			out.flush();
 		}
 		catch( java.io.IOException ioe )
