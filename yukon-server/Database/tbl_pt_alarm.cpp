@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_alarm.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/02 17:02:36 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/08/19 13:50:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,7 @@ CtiTablePointAlarming& CtiTablePointAlarming::operator=(const CtiTablePointAlarm
 
         for(int i = 0; i < ALARM_STATE_SIZE; i++)
         {
-            setAlarmStates( i, aRef.getAlarmStates(i) );
+            setAlarmCategory( i, aRef.getAlarmCategory(i) );
         }
 
         setExcludeNotifyStates( aRef.getExcludeNotifyStates() );
@@ -78,7 +78,7 @@ RWCString CtiTablePointAlarming::statesAsString( )
 
     for(int i = 0; i < ALARM_STATE_SIZE - 1; i++)
     {
-        str[(size_t)i] = (BYTE)getAlarmStates(i);
+        str[(size_t)i] = (BYTE)getAlarmCategory(i);
     }
 
     return str;
@@ -110,9 +110,9 @@ LONG CtiTablePointAlarming::getRecipientID() const
     return _recipientID;
 }
 
-UINT CtiTablePointAlarming::getAlarmStates(const INT offset) const
+UINT CtiTablePointAlarming::getAlarmCategory(const INT offset) const
 {
-    return _alarmStates[offset];
+    return _alarmCategory[offset];
 }
 UINT CtiTablePointAlarming::getExcludeNotifyStates() const
 {
@@ -140,20 +140,20 @@ CtiTablePointAlarming& CtiTablePointAlarming::setRecipientID( const LONG &aLong 
     return *this;
 }
 
-CtiTablePointAlarming& CtiTablePointAlarming::setAlarmStates( const INT offset, const UINT &aInt )
+CtiTablePointAlarming& CtiTablePointAlarming::setAlarmCategory( const INT offset, const UINT &aInt )
 {
-    _alarmStates[offset] = aInt;
+    _alarmCategory[offset] = aInt;
     return *this;
 }
 
-CtiTablePointAlarming& CtiTablePointAlarming::setAlarmStates( const RWCString str )
+CtiTablePointAlarming& CtiTablePointAlarming::setAlarmCategory( const RWCString str )
 {
     unsigned char tchar;
 
     for(int i = 0; i < str.length() && i < ALARM_STATE_SIZE; i++)
     {
         tchar = (unsigned char)str[(size_t)i];
-        setAlarmStates(i, (UINT)tchar);
+        setAlarmCategory(i, (UINT)tchar);
     }
 
     return *this;
@@ -272,18 +272,17 @@ RWDBStatus CtiTablePointAlarming::Delete()
 
 void CtiTablePointAlarming::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable tbl = db.table( getTableName() );
+    keyTable = db.table( getTableName() );
 
     selector <<
-    tbl["pointid"] <<
-    tbl["alarmstates"] <<
-    tbl["excludenotifystates"] <<
-    tbl["notifyonacknowledge"] <<
-    tbl["recipientid"] <<
-    tbl["notificationgroupid"];
+    keyTable["pointid"] <<
+    keyTable["alarmstates"] <<
+    keyTable["excludenotifystates"] <<
+    keyTable["notifyonacknowledge"] <<
+    keyTable["recipientid"] <<
+    keyTable["notificationgroupid"];
 
-    selector.from(tbl);
-    selector.where( selector.where() );
+    selector.from(keyTable);
 }
 
 void CtiTablePointAlarming::DecodeDatabaseReader(RWDBReader& rdr)
@@ -291,7 +290,7 @@ void CtiTablePointAlarming::DecodeDatabaseReader(RWDBReader& rdr)
     RWCString temp;
 
     rdr["alarmstates"]            >> temp;
-    setAlarmStates( temp );
+    setAlarmCategory( temp );
 
     rdr["excludenotifystates"]    >> temp;
     setExcludeNotifyStates( resolveStates( temp ) );
@@ -311,12 +310,12 @@ CtiTablePointAlarming::~CtiTablePointAlarming()
 
 bool CtiTablePointAlarming::alarmOn( int alarm ) const
 {
-    return( _alarmStates[alarm] > 0 );
+    return( _alarmCategory[alarm] > 0 );
 }
 
 INT CtiTablePointAlarming::alarmPriority( int alarm ) const
 {
-    return _alarmStates[alarm];
+    return _alarmCategory[alarm];
 }
 
 bool CtiTablePointAlarming::isExcluded( int alarm) const
@@ -333,7 +332,7 @@ _notificationGroupID( 0 )
 {
     for(int i = 0; i < ALARM_STATE_SIZE; i++)
     {
-        _alarmStates[i] = 1;            // This is event caliber!
+        _alarmCategory[i] = 1;            // This is event caliber!
     }
 }
 

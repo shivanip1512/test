@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_status.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:07 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/08/19 13:52:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,7 +30,7 @@ bool CtiPointStatus::limitStateCheck( const int limitOrState, double val, INT &d
 
    if(CtiTablePointAlarming::state0 <= stateverify && stateverify <= CtiTablePointAlarming::state9)
    {
-      if( getAlarming().getAlarmStates(stateverify) > SignalEvent)
+      if( getAlarming().getAlarmCategory(stateverify) > SignalEvent)
       {
          if( (int)val == limitOrState )
          {

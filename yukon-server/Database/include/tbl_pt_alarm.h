@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_alarm.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/24 21:37:53 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/08/19 13:50:46 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -105,7 +105,7 @@ protected:
 
    LONG        _pointID;
 
-   UINT        _alarmStates[ ALARM_STATE_SIZE ];
+   UINT        _alarmCategory[ ALARM_STATE_SIZE ];
    UINT        _excludeNotifyStates;
 
    LONG        _recipientID;
@@ -131,7 +131,7 @@ public:
 
    LONG getPointID() const;
    LONG getRecipientID() const;
-   UINT getAlarmStates(const INT offset) const;
+   UINT getAlarmCategory(const INT offset) const;
    UINT getExcludeNotifyStates() const;
    BOOL getNotifyOnAcknowledge() const;
    UINT getNotificationGroupID() const;
@@ -139,8 +139,8 @@ public:
 
    CtiTablePointAlarming& setPointID( const LONG &aLong );
    CtiTablePointAlarming& setRecipientID( const LONG &aLong );
-   CtiTablePointAlarming& setAlarmStates( const INT offset, const UINT &aInt );
-   CtiTablePointAlarming& setAlarmStates( const RWCString str );
+   CtiTablePointAlarming& setAlarmCategory( const INT offset, const UINT &aInt );
+   CtiTablePointAlarming& setAlarmCategory( const RWCString str );
    CtiTablePointAlarming& setExcludeNotifyStates( const UINT &aInt );
    CtiTablePointAlarming& setNotifyOnAcknowledge( const BOOL &aBool );
    CtiTablePointAlarming& setNotificationGroupID( const UINT &aInt );
