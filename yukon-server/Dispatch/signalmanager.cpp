@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/08/22 21:43:28 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/08/25 16:21:30 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -185,34 +185,37 @@ CtiSignalMsg*  CtiSignalManager::setAlarmActive(long pointid, int alarm_conditio
 
             if(pOriginalSig)
             {
-                setDirty(true);
-
-                if(active)
+                if( ((pOriginalSig->getTags() & TAG_ACTIVE_ALARM) != 0) != active )     // We must be changing it!
                 {
-                    pOriginalSig->setTags(TAG_ACTIVE_ALARM);
-                }
-                else
-                {
-                    pOriginalSig->resetTags(TAG_ACTIVE_ALARM);
-                }
+                    setDirty(true);
 
-                tags = ( pOriginalSig->getTags() & MASK_ANY_ALARM );
+                    if(active)
+                    {
+                        pOriginalSig->setTags(TAG_ACTIVE_ALARM);
+                    }
+                    else
+                    {
+                        pOriginalSig->resetTags(TAG_ACTIVE_ALARM);
+                    }
 
-                if(tags == 0)
-                {
-                    didit = true;
+                    tags = ( pOriginalSig->getTags() & MASK_ANY_ALARM );
 
-                    // This guy has already been acknowledged and now has been cleared.  Get it out of the table!
-                    _map.erase( itr );
-                    pSig = pOriginalSig;        // Just return the original.
-                    pOriginalSig = 0;
+                    if(tags == 0)
+                    {
+                        didit = true;
 
-                    CtiTableDynamicPointAlarming::Delete(pointid, alarm_condition);
-                }
-                else
-                {
-                    // Return a copy of the original.
-                    pSig = (CtiSignalMsg*)pOriginalSig->replicateMessage();
+                        // This guy has already been acknowledged and now has been cleared.  Get it out of the table!
+                        _map.erase( itr );
+                        pSig = pOriginalSig;        // Just return the original.
+                        pOriginalSig = 0;
+
+                        CtiTableDynamicPointAlarming::Delete(pointid, alarm_condition);
+                    }
+                    else
+                    {
+                        // Return a copy of the original.
+                        pSig = (CtiSignalMsg*)pOriginalSig->replicateMessage();
+                    }
                 }
             }
         }
@@ -257,35 +260,38 @@ CtiSignalMsg*  CtiSignalManager::setAlarmAcknowledged(long pointid, int alarm_co
 
             if(pOriginalSig)
             {
-                setDirty(true);
-
-                if(acked)
+                if( ((pOriginalSig->getTags() & TAG_UNACKNOWLEDGED_ALARM) != 0) == acked )     // We must be changing it!
                 {
-                    pOriginalSig->resetTags(TAG_UNACKNOWLEDGED_ALARM);
+                    setDirty(true);
+
+                    if(acked)
+                    {
+                        pOriginalSig->resetTags(TAG_UNACKNOWLEDGED_ALARM);
+                    }
+                    else
+                    {
+                        pOriginalSig->setTags(TAG_UNACKNOWLEDGED_ALARM);
+                    }
+
+                    tags = ( pOriginalSig->getTags() & MASK_ANY_ALARM );
+
+                    if(tags == 0)
+                    {
+                        didit = true;
+
+                        // This guy has already cleared and now been acknowledged.  Get it out of the table!
+                        _map.erase( itr );
+                        pSig = pOriginalSig;        // Just return the original.
+                        pOriginalSig = 0;
+
+                        CtiTableDynamicPointAlarming::Delete(pointid, alarm_condition);
+                    }
+                    else
+                    {
+                        // Return a copy of the original.
+                        pSig = (CtiSignalMsg*)pOriginalSig->replicateMessage();
+                    }
                 }
-                else
-                {
-                    pOriginalSig->setTags(TAG_UNACKNOWLEDGED_ALARM);
-                }
-
-                tags = ( pOriginalSig->getTags() & MASK_ANY_ALARM );
-            }
-
-            if(tags == 0)
-            {
-                didit = true;
-
-                // This guy has already cleared and now been acknowledged.  Get it out of the table!
-                _map.erase( itr );
-                pSig = pOriginalSig;        // Just return the original.
-                pOriginalSig = 0;
-
-                CtiTableDynamicPointAlarming::Delete(pointid, alarm_condition);
-            }
-            else
-            {
-                // Return a copy of the original.
-                pSig = (CtiSignalMsg*)pOriginalSig->replicateMessage();
             }
         }
     }

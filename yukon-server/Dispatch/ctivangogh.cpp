@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2003/08/25 13:33:09 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2003/08/25 16:21:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -105,6 +105,31 @@ static const RWTime MAXTime(YUKONEOT);
 static int CntlHistInterval = 3600;
 static int CntlHistPointPostInterval = 60;
 static int CntlStopInterval = 60;
+
+static RWCString AlarmTagsToString(UINT tags)
+{
+    RWCString str;
+
+    if(tags & TAG_ACTIVE_ALARM)
+    {
+        str = "ABNORMAL / ";
+    }
+    else
+    {
+        str = "NORMAL / ";
+    }
+
+    if(tags & TAG_UNACKNOWLEDGED_ALARM)
+    {
+        str += "UNACK: ";
+    }
+    else
+    {
+        str += "ACK: ";
+    }
+
+    return str;
+}
 
 void ApplyBlankDeletedConnection(CtiMessage*&Msg, void *Conn);
 
@@ -642,7 +667,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             {
                                 pSigNew->setUser( Cmd->getUser() );
                                 pSigNew->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
-                                pSigNew->setText(RWCString("ALM ACK: ") + pSigNew->getText());
+                                pSigNew->setText(AlarmTagsToString(pSigNew->getTags()) + pSigNew->getText());
 
                                 if( !pPt->getAlarming().getNotifyOnAcknowledge() )
                                 {
@@ -6418,7 +6443,7 @@ void CtiVanGogh::deactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPoin
         pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
 
         pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
-        pSigActive->setText("ALM CLR: " + pSigActive->getText());
+        pSigActive->setText(AlarmTagsToString(pSigActive->getTags()) + pSigActive->getText());
         pSigActive->setMessageTime( RWTime() );
 
         aWrap.getMulti()->insert( pSigActive );
@@ -6436,9 +6461,12 @@ void CtiVanGogh::reactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPoin
         pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
 
         pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS );
+        pSigActive->setText(AlarmTagsToString(pSigActive->getTags()) + pSigActive->getText());
+        pSigActive->setMessageTime( RWTime() );
 
         aWrap.getMulti()->insert( pSigActive );
         pSigActive = 0;
     }
 }
+
 
