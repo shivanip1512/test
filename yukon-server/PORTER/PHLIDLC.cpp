@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/03/13 19:35:29 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/04/02 16:30:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -633,7 +633,7 @@ IDLCSetDelaySets (CtiDevice *Dev)
         filefound = true;
     }
 
-    if(!filefound)
+    if(!filefound && PorterDebugLevel & PORTER_DEBUG_CCUCONFIG)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
