@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/08 14:28:02 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/30 15:01:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -179,20 +179,9 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
     {
         case LoopbackRequest:
         {
-            int cnt = parse.getiValue("count");
-
-            for(int i = 0; i < cnt; i++)
-            {
-                OUTMESS *OutMTemp = new OUTMESS(*OutMessage);
-
-                if(OutMTemp != NULL)
-                {
-                    // Get a loop done maybe?
-                    CCULoop(OutMTemp);
-                    outList.insert( OutMTemp );
-                }
-            }
-
+            CCULoop(OutMessage);
+            outList.insert( OutMessage );
+            OutMessage = NULL;
             break;
         }
         case PutStatusRequest:
