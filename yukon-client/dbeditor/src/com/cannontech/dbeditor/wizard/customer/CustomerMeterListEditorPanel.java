@@ -159,17 +159,17 @@ private com.cannontech.common.gui.util.AddRemovePanel getMeterListAddRemovePanel
 public Object getValue(Object val) 
 {
 	com.cannontech.database.data.customer.CICustomerBase customer = (com.cannontech.database.data.customer.CICustomerBase)val;
-	customer.getMeterVector().removeAllElements();
+	customer.getDeviceVector().removeAllElements();
 
 	for( int i = 0; i < getMeterListAddRemovePanel().rightListGetModel().getSize(); i++ )
-	{
-		com.cannontech.database.db.pao.PAOowner ownerItem = new com.cannontech.database.db.pao.PAOowner();
-
-		ownerItem.setChildID( new Integer( 
+	{	
+		com.cannontech.database.db.customer.DeviceCustomerList deviceCustomerItem = new com.cannontech.database.db.customer.DeviceCustomerList();
+		
+		deviceCustomerItem.setCustomerID( customer.getCustomerID());
+		deviceCustomerItem.setDeviceID(new Integer( 
 				 ((com.cannontech.database.data.lite.LiteYukonPAObject)getMeterListAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonID()) );
 		
-		ownerItem.setOwnerID( customer.getCustomerID() );
-		customer.getMeterVector().addElement( ownerItem );
+		customer.getDeviceVector().addElement( deviceCustomerItem);
 	}
 	
 	return val;
@@ -436,7 +436,7 @@ public void setValue(Object val)
 		com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = null;
 		
 		availableMeters = new java.util.Vector( devices.size() );
-		usedMeters = new java.util.Vector( customer.getMeterVector().size() );
+		usedMeters = new java.util.Vector( customer.getDeviceVector().size() );
 
 		for(int i=0;i<devices.size();i++)
 		{
@@ -446,11 +446,10 @@ public void setValue(Object val)
 			{
 				availableMeters.add( devices.get(i) );
 				
-				for( int j = 0; j < customer.getMeterVector().size(); j++ )
+				for( int j = 0; j < customer.getDeviceVector().size(); j++ )
 				{				
-					com.cannontech.database.db.pao.PAOowner ownerValue = ((com.cannontech.database.db.pao.PAOowner)customer.getMeterVector().elementAt(j));
-
-					if( ownerValue.getChildID().intValue() == liteDevice.getYukonID() )
+					com.cannontech.database.db.customer.DeviceCustomerList deviceCustomerValue = ((com.cannontech.database.db.customer.DeviceCustomerList)customer.getDeviceVector().elementAt(j));
+					if( deviceCustomerValue.getDeviceID().intValue() == liteDevice.getYukonID() )
 					{
 						availableMeters.remove( devices.get(i) );
 						usedMeters.add( devices.get(i) );
