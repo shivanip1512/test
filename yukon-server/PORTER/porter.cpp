@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/06/21 15:42:34 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/06/25 21:38:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1443,7 +1443,7 @@ void LoadPorterGlobals(void)
     /* Resolve the stuff that we need for DIO24 Output */
     if(!(Temp = gConfigParms.getValueAsString("DIO24")).isNull())
     {
-        strcpy (Info, Temp.data());
+        strncpy (Info, Temp.data(), 49);
         /* Start the parcing process */
         if(sscanf (strtok (Info, ",;"), "%x", &DIO24Base) != 1)
         {
@@ -1453,7 +1453,7 @@ void LoadPorterGlobals(void)
     }
     else if(!(Temp = gConfigParms.getValueAsString("DAS08")).isNull())
     {
-        strcpy (Info, Temp.data());
+        strncpy (Info, Temp.data(), 49);
         /* Start the tokenizing */
         if(sscanf (strtok (Info, ",;"), "%x", &DIO24Base) != 1)
         {
