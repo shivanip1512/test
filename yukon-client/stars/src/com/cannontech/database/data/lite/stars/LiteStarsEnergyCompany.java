@@ -28,8 +28,8 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -1078,15 +1078,15 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				// Use the hardware type id of the default energy company,
 				// so that we won't have a problem deleting a device type
 				YukonListEntry hwType = SOAPServer.getDefaultEnergyCompany().getYukonListEntry(hwTypeDefID);
-	        	int categoryID = ECUtils.getInventoryCategoryID(hwType.getEntryID(), this);
+				int categoryID = ECUtils.getInventoryCategoryID(hwType.getEntryID(), this);
 	        	
-	        	java.sql.Connection conn = null;
-	        	boolean autoCommit = true;
+				java.sql.Connection conn = null;
+				boolean autoCommit = true;
 	        	
-	        	try {
-	        		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-	        		autoCommit = conn.getAutoCommit();
-	        		conn.setAutoCommit( false );
+				try {
+					conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+					autoCommit = conn.getAutoCommit();
+					conn.setAutoCommit( false );
 					
 					com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
 							new com.cannontech.database.data.stars.hardware.LMHardwareBase();
@@ -1128,13 +1128,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 					dftLMHardware = new LiteStarsLMHardware();
 					StarsLiteFactory.setLiteStarsLMHardware( dftLMHardware, hardware );
 					dftLMHardwares.put( new Integer(hwTypeDefID), dftLMHardware );
-	        	}
-	        	finally {
-	        		if (conn != null) {
-	        			conn.setAutoCommit( autoCommit );
-	        			conn.close();
-	        		}
-	        	}
+				}
+				finally {
+					if (conn != null) {
+						conn.setAutoCommit( autoCommit );
+						conn.close();
+					}
+				}
 				
 				CreateLMHardwareAction.populateThermostatTables( dftLMHardware, SOAPServer.getDefaultEnergyCompany() );
 			}
@@ -2206,7 +2206,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 		}
         
-        if (autoLoad) {
+		if (autoLoad) {
 			try {
 				com.cannontech.database.db.stars.report.WorkOrderBase order = new com.cannontech.database.db.stars.report.WorkOrderBase();
 				order.setOrderID( new Integer(orderID) );
@@ -2220,7 +2220,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
-        }
+		}
         
 		return null;
 	}
@@ -2370,7 +2370,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		liteAcctInfo.setCustomerAccount( (LiteCustomerAccount) StarsLiteFactory.createLite(account.getCustomerAccount()) );
 		liteAcctInfo.setAccountSite( (LiteAccountSite) StarsLiteFactory.createLite(site.getAccountSite()) );
 		liteAcctInfo.setSiteInformation( (LiteSiteInformation) StarsLiteFactory.createLite(site.getSiteInformation().getSiteInformation()) );
-		liteAcctInfo.setCustomer( DefaultDatabaseCache.getInstance().getCustomer(account.getCustomerAccount().getCustomerID().intValue()) );
+		liteAcctInfo.setCustomer( (LiteCustomer)DefaultDatabaseCache.getInstance().getAllCustomersMap().get(account.getCustomerAccount().getCustomerID()) );
 		
 		Hashtable contactAcctInfoMap = getContactCustAccountInfoMap();
 		synchronized (contactAcctInfoMap) {
@@ -2464,7 +2464,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				LiteStarsLMProgram prog = new LiteStarsLMProgram( liteProg );
 				
 				prog.setGroupID( liteApp.getAddressingGroupID() );
-	            prog.updateProgramStatus( progHist );
+				prog.updateProgramStatus( progHist );
 				getLMControlHistory( liteApp.getAddressingGroupID() );
 				
 				programs.add( prog );
@@ -2551,10 +2551,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		// Remove customer from the cache
-		if (liteAcctInfo.getCustomer() instanceof LiteCICustomer)
+//		if (liteAcctInfo.getCustomer() instanceof LiteCICustomer)
 			ServerUtils.handleDBChange( liteAcctInfo.getCustomer(), DBChangeMsg.CHANGE_TYPE_DELETE );
-		else
-			DefaultDatabaseCache.getInstance().deleteCustomer( liteAcctInfo.getCustomer().getCustomerID() );
+//		else
+//			DefaultDatabaseCache.getInstance().deleteCustomer( liteAcctInfo.getCustomer().getCustomerID() );
     	
 		// Remote all contacts from the cache
 		deleteContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
