@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:32 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/07 19:52:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1003,18 +1003,10 @@ VOID KickerThread (VOID *Arg)
                               }
                               else
                               {
-                                 sleepTime = (LONG)(nowtime - pInfo->QueTable[i].TimeSent) * 1000L;
-
-                                 if(PorterDebugLevel & 0x00000002)
-                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " Mandatory delay has not elapsed. CCU: " << Dev->getName() << endl;
-                                    dout << "   CCUKickerThread will re-awaken in " << (LONG)(nowtime - pInfo->QueTable[i].TimeSent) << " seconds" << endl;
-                                 }
+                                 sleepTime = 2500L;                             // Wake every 2.5 seconds in this case.
                               }
                            }
                         }
-
                      }
                      else if(pInfo->NCOcts)
                      {
