@@ -1407,7 +1407,7 @@ private void generateDBChangeMsg( com.cannontech.database.db.DBPersistent object
 	if( object instanceof com.cannontech.database.db.CTIDbChange )
 	{
 		com.cannontech.message.dispatch.message.DBChangeMsg[] dbChange = 
-				com.cannontech.database.cache.DefaultDatabaseCache.createDBChangeMessages( 
+				com.cannontech.database.cache.DefaultDatabaseCache.getInstance().createDBChangeMessages(
 					(com.cannontech.database.db.CTIDbChange)object, changeType );
 
                

@@ -737,7 +737,7 @@ public void newEmailButton_ActionPerformed(java.awt.event.ActionEvent actionEven
 			t.execute();
 
 			com.cannontech.message.dispatch.message.DBChangeMsg[] dbChange =
-				com.cannontech.database.cache.DefaultDatabaseCache.createDBChangeMessages(
+				com.cannontech.database.cache.DefaultDatabaseCache.getInstance().createDBChangeMessages(
 							notifRecipient, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD );
 
 			for (int i = 0; i < dbChange.length; i++)
