@@ -16,13 +16,13 @@ import com.cannontech.database.data.lite.LiteContact;
  * 
  * 
 */
-public class CICustomerTableModel extends DBTreeModel 
+public class CICustomerTreeModel extends DBTreeModel 
 {
 /**
  * CICustomerTableModel constructor comment.
  * @param root javax.swing.tree.TreeNode
  */
-public CICustomerTableModel() {
+public CICustomerTreeModel() {
 	super( new DBTreeNode("CI Customers") );
 }
 /**
