@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrftpinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2002/10/14 21:10:53 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2003/10/31 21:15:59 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,12 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrftpinterface.cpp,v $
+      Revision 1.6  2003/10/31 21:15:59  dsutton
+      After a network failure, the STEC and TRISTATE interfaces reported an error
+      connecting to their sites.  After the network came back up, the app stopped
+      retrieving data altogether (some threads were still running).  Updated the locking
+      mechanism in an attempt to minimize how long the data lists were locked
+
       Revision 1.5  2002/10/14 21:10:53  dsutton
       In the database translation routines, if we failed to hit the database
       we called the load routine again just to get the error code.  Whoops
@@ -578,6 +584,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                     desc = "Error connecting to " + getIPAddress();
                     logEvent (desc, action, true);
                     InternetCloseHandle (iInitialHandle);
+                    iInitialHandle = NULL;
 
                     if (tries <= 0)
                     {
@@ -608,8 +615,9 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                         logEvent (desc, action, true);
 
                         // if it was something, shut it down
-                        if (iInitialHandle)
-                            InternetCloseHandle (iInitialHandle);
+//                        if (iInitialHandle)
+                        InternetCloseHandle (iInitialHandle);
+                        iInitialHandle = NULL;
 
                         iThreadInternetConnect.join();
 
@@ -636,6 +644,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                             logEvent (desc, action, true);
 
                             InternetCloseHandle (iInitialHandle);
+                            iInitialHandle = NULL;
 
                             if (tries <= 0)
                             {
@@ -662,8 +671,9 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                                 logEvent (desc, action, true);
 
                                 // if it was something, shut it down
-                                if (iSessionHandle)
-                                    InternetCloseHandle (iSessionHandle);
+//                                if (iSessionHandle)
+                                InternetCloseHandle (iSessionHandle);
+                                iSessionHandle = NULL;
 
                                 // put the smack on it to make sure it dies
                                 iThreadFTPGetFile.join();
@@ -689,6 +699,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                                     desc = "Error retrieving file " + iServerFileName ;
                                     logEvent (desc, action, true);
                                     InternetCloseHandle (iSessionHandle);
+                                    iSessionHandle = NULL;
 
                                     if (tries <= 0)
                                     {
@@ -707,9 +718,11 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                                 }
 
                                 InternetCloseHandle (iSessionHandle);
+                                iSessionHandle = NULL;
                             }
                             InternetCloseHandle (iInitialHandle);
-                        }
+                            iInitialHandle = NULL;
+                        }            
                     }
                 }
             }
