@@ -333,6 +333,65 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
     {
         retVal = _figureDemandAvg(3600);// seconds in avg
     }
+    else if( functionName == "PFbyKW_KVAR" )
+    {
+        DOUBLE kw = _parent->pop();
+        DOUBLE kvar = _parent->pop();
+        DOUBLE newPowerFactorValue = 1.0;
+        DOUBLE kva = 0.0;
+
+        kva = sqrt((kw*kw)+(kvar*kvar));
+
+        if( kva != 0.0 )
+        {
+            newPowerFactorValue = kw / kva;
+            //check if this is leading
+            if( kvar < 0.0 && newPowerFactorValue != 1.0 )
+            {
+                newPowerFactorValue = 2.0-newPowerFactorValue;
+            }
+        }
+        retVal = newPowerFactorValue;
+    }
+    else if( functionName == "PFbyKW_KQ" )
+    {
+
+        DOUBLE kw = _parent->pop();
+        DOUBLE kq = _parent->pop();
+        DOUBLE kvar = ((2.0*kq)-kw)/SQRT3;
+        DOUBLE newPowerFactorValue = 1.0;
+        DOUBLE kva = 0.0;
+
+        kva = sqrt((kw*kw)+(kvar*kvar));
+
+        if( kva != 0.0 )
+        {
+            newPowerFactorValue = kw / kva;
+            //check if this is leading
+            if( kvar < 0.0 && newPowerFactorValue != 1.0 )
+            {
+                newPowerFactorValue = 2.0-newPowerFactorValue;
+            }
+        }
+        retVal = newPowerFactorValue;
+    }
+    else if( functionName == "PFbyKW_KVA" )
+    {
+        DOUBLE kw = _parent->pop();
+        DOUBLE kva = _parent->pop();
+        DOUBLE newPowerFactorValue = 1.0;
+
+        if( kva != 0.0 )
+        {
+            newPowerFactorValue = kw / kva;
+            //check if this is leading
+            /*if( kvar < 0.0 && newPowerFactorValue != 1.0 )
+            {
+                newPowerFactorValue = 2.0-newPowerFactorValue;
+            }*/
+        }
+        retVal = newPowerFactorValue;
+    }
 /*    if( functionName == "otherfunction" )
     {
 
