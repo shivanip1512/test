@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
@@ -253,6 +254,17 @@ public class InventoryManager extends HttpServlet {
 		int devTypeID = Integer.parseInt( req.getParameter("DeviceType") );
 		String searchVal = req.getParameter("SerialNo");
 		
+		if (invCheckTime.equalsIgnoreCase( INVENTORY_CHECKING_TIME_EARLY )) {
+			// Save the search values
+			StarsLMHardware starsHw = (StarsLMHardware) StarsFactory.newStarsInventory(StarsLMHardware.class);
+			starsHw.setLMDeviceType( (LMDeviceType)StarsFactory.newStarsCustListEntry(
+					energyCompany.getYukonListEntry(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, devTypeID),
+					LMDeviceType.class) );
+			starsHw.setManufactureSerialNumber( searchVal );
+			
+			session.setAttribute( STARS_INVENTORY_TEMP, starsHw );
+		}
+		
 		LiteInventoryBase liteInv = null;
 		int categoryID = ECUtils.getInventoryCategoryID( devTypeID, energyCompany );
 		
@@ -331,20 +343,19 @@ public class InventoryManager extends HttpServlet {
 				if (liteInv.getInventoryID() > 0) {
 					starsInv = (StarsInventory) StarsLiteFactory.createStarsInventory( liteInv, energyCompany );
 					starsInv.setRemoveDate( null );
-					starsInv.setInstallDate( new Date() );
-					starsInv.setInstallationNotes( "" );
 				}
 				else {
 					// This is a device to be added to the inventory
 					starsInv = (StarsInventory) StarsLiteFactory.createStarsInventory( liteInv, energyCompany );
-					starsInv.setInstallDate( new Date() );
-					starsInv.setInstallationNotes( "" );
 				}
 			}
 			else {
 				// This is a LM hardware to be added to the inventory
-				starsInv = (StarsInventory) StarsFactory.newStarsInventory(StarsLMHardware.class);
+				starsInv = (StarsInventory) session.getAttribute( STARS_INVENTORY_TEMP );
 			}
+			
+			starsInv.setInstallDate( new Date() );
+			starsInv.setInstallationNotes( "" );
 			
 			String invNo = (String) session.getAttribute(STARS_INVENTORY_NO);
 			session.setAttribute( STARS_INVENTORY_TEMP + invNo, starsInv );
@@ -993,7 +1004,7 @@ public class InventoryManager extends HttpServlet {
 				session.setAttribute(INVENTORY_SET_DESC, "<div class='ErrorMsg' align='center'>No hardwares found matching the search criteria.</div>");
 			}
 			else if (inventoryIDs.length == 1) {
-				redirect = req.getContextPath() + "/operator/Hardware/InventoryDetail.jsp?InvId=" + inventoryIDs[0];
+				redirect = req.getContextPath() + "/operator/Hardware/InventoryDetail.jsp?InvId=" + inventoryIDs[0] + "&src=Search";
 			}
 			else {
 				ArrayList invList = new ArrayList();
@@ -1086,11 +1097,9 @@ public class InventoryManager extends HttpServlet {
 				devList.addAll( allDevices );
 			}
 			else {
-				String pattern = deviceName.replaceAll("\\*", ".*");
-				
 				for (int i = 0; i < allDevices.size(); i++) {
 					LiteYukonPAObject litePao = (LiteYukonPAObject) allDevices.get(i);
-					if (PAOFuncs.getYukonPAOName( litePao.getYukonID() ).matches( pattern ))
+					if (PAOFuncs.getYukonPAOName( litePao.getYukonID() ).startsWith( deviceName ))
 						devList.add( litePao );
 				}
 			}
