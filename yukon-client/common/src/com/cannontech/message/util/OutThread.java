@@ -48,7 +48,6 @@ public void run() {
 				if( (size = out.size()) > 0 ) {
 					
 					for(int i = 0; i < size; i++) {
-						System.out.println(">>" + out.get(i));
 						ostrm.saveObject( out.get(i), streamer );
 					}
 				
