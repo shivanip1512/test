@@ -1,6 +1,6 @@
 /* All the "dummy" entries */
 /* LMProgram: insert an empty line for appliances without a program assigned */
-insert into LMProgram values(0, 'Automatic', 'NNNN', 'NNNNNNNN', 0, 0, 0, 0, 0, 0, 0, 0);
+insert into LMProgram values(0, 'Automatic', 0);
 
 /* Route */
 INSERT INTO Route VALUES (0,0,'N');
