@@ -1,38 +1,21 @@
 package com.cannontech.database.db.contact;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.Transaction;
+import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.notification.NotificationDestination;
 import com.cannontech.database.db.point.PointAlarming;
 
 /**
  * This type was created in VisualAge.
  */
-public class ContactNotification extends com.cannontech.database.db.DBPersistent 
+public class ContactNotification extends NestedDBPersistent 
 {
-//	public static final int EMAIL_NOTIFYTYPE = 1;
-//	public static final int PAGER_NOTIFYTYPE = 2;
-//
-	public static final int DUMMY_CONTACTID = -99999;
-//	public static final String NONE_STRING = "None";
-//
-//	public static final int NONE_RECIPIENT_ID = 0;
-//
-//	//possible values for recipientType
-//	public static final String TYPE_EMAIL = "EMAIL";
-//	public static final String TYPE_PAGER = "PAGER";
-	
 	private Integer contactNotifID = null;
 	private Integer contactID = null;
 	private Integer notificationCatID= null;
 	private String disableFlag = "N";
 	private String notification = CtiUtilities.STRING_NONE;
 	
-	//temp fix for this DB object being inside a DATA object as a set
-	public int opcode = Transaction.UPDATE;
-
-
-
 
 	private final String CONSTRAINT_COLUMNS[] = { "ContactNotifID" };
 	

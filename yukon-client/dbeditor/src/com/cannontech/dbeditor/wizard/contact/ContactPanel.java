@@ -827,10 +827,9 @@ public Object getValue(Object val)
 			new Integer( ((LiteYukonUser)selLg).getLiteID()) );
 	}
 
-	//clear out our old notifications
-	//cnt.getContactNotifVect().removeAllElements();
-	Vector tempVect = new Vector( cnt.getContactNotifVect().size() );
 
+	//create a new vector to store all the notifications we may need to operate on
+	Vector tempVect = new Vector( cnt.getContactNotifVect().size() );
 	for( int j = 0; j < cnt.getContactNotifVect().size(); j++ )
 	{
 		ContactNotification oldNotif = (ContactNotification)cnt.getContactNotifVect().get(j);
@@ -843,7 +842,7 @@ public Object getValue(Object val)
 			if( oldNotif.equals(cNotif) )
 			{
 				// item in OLD list & NEW list, update the cNotif
-				cNotif.opcode = Transaction.UPDATE;
+				cNotif.setOpCode( Transaction.UPDATE );
 				tempVect.add( cNotif );
 				fnd = true;
 				break;
@@ -853,7 +852,7 @@ public Object getValue(Object val)
 		if( !fnd )
 		{
 			// item in OLD list only, delete the oldNotif
-			oldNotif.opcode = Transaction.DELETE;
+			oldNotif.setOpCode( Transaction.DELETE );
 			tempVect.add( oldNotif );
 		}
 
@@ -869,7 +868,7 @@ public Object getValue(Object val)
 			 || !cnt.getContactNotifVect().contains(cNotif) )
 		{
 			// item in NEW list, add the cNotif
-			cNotif.opcode = Transaction.INSERT;
+			cNotif.setOpCode( Transaction.INSERT );
 			tempVect.add( cNotif );
 		}
 	}

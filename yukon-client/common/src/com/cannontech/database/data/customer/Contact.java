@@ -259,30 +259,17 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		setContactID( getContact().getContactID() ); 
 
 		getContact().update();
-		
 
-//		ContactNotification.deleteAllContactNotifications(
-//				getDbConnection(),		 
-//				getContact().getContactID().intValue() );
-//		for( int i = 0; i < getContactNotifVect().size(); i++ )
-//		{
-//			((DBPersistent)getContactNotifVect().get(i)).add();
-//		}
 
 		for( int i = (getContactNotifVect().size()-1); i >= 0; i-- )
 		{
 			ContactNotification cNotif = (ContactNotification)getContactNotifVect().get(i);
 			
-			if( cNotif.opcode == Transaction.INSERT )
-				cNotif.add();
-			else if( cNotif.opcode == Transaction.UPDATE )
-				cNotif.update();
-			else if( cNotif.opcode == Transaction.DELETE )
-			{
-				cNotif.delete();
-				getContactNotifVect().remove( i );
-			}
+			cNotif.executeNestedOp();
 			
+			//remove any deleted items from our list (this is why we must decrement the loop)
+			if( cNotif.getOpCode() == Transaction.DELETE )
+				getContactNotifVect().remove( i );
 		}
 
 	}
