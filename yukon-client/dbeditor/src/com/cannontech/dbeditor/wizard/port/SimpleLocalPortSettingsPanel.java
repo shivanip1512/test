@@ -275,7 +275,8 @@ public Object getValue(Object val)
 	//commonObject must be of the local variety
 	String name = getDescriptionTextField().getText().trim();
 	String physicalPort = (String) getPhysicalPortComboBox().getSelectedItem();
-	Integer baudRate = (Integer) getBaudRateComboBox().getSelectedItem();
+	
+	Integer baudRate = new Integer((String) getBaudRateComboBox().getSelectedItem());
 
 	((DirectPort) val).setPortName( name );
 	((DirectPort) val).getPortSettings().setBaudRate( baudRate );
