@@ -784,7 +784,7 @@ function setStopPixTime()
 
               <td width="20">
                 <div class="TableCell" align="center">
-				  <%= CtiUtilities.decodeSecondsToTime(prg.getStartDelay()) %>
+				  <%= CtiUtilities.decodeSecondsToTime(prg.getStartOffset()) %>
 				</div>
 			  </td>
 
