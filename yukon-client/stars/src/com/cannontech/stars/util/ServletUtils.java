@@ -285,7 +285,6 @@ public class ServletUtils {
 		
 		for (int i = 0; i < starsCtrlHist.getControlHistoryCount(); i++) {
 			ControlHistory ctrlHist = starsCtrlHist.getControlHistory(i);
-			seasonalTime += ctrlHist.getControlDuration();
 			if (ctrlHist.getStartDateTime().after( pastYear )) {
 				annualTime += ctrlHist.getControlDuration();
 				if (ctrlHist.getStartDateTime().after( pastMonth )) {
@@ -295,6 +294,12 @@ public class ServletUtils {
 				}
 			}
 		}
+		
+		// Get the seasonal time from control summary, otherwise, set it the same as annual time
+		if (starsCtrlHist.getControlSummary() != null)
+			seasonalTime = starsCtrlHist.getControlSummary().getSeasonalTime();
+		else
+			seasonalTime = annualTime;
 		
 		summary.setDailyTime( dailyTime );
 		summary.setMonthlyTime( monthlyTime );

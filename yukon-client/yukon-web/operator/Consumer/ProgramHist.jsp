@@ -66,7 +66,7 @@
 		
 		StarsLMControlHistory allCtrlHist = ServletUtils.getAllControlHistory( program, appliances, liteEC );
 		StarsLMControlHistory ctrlHist = ServletUtils.getControlHistory( allCtrlHist, StarsCtrlHistPeriod.ALL, null, tz );
-		ControlSummary summary = allCtrlHist.getControlSummary();
+		ControlSummary summary = ServletUtils.getControlSummary( allCtrlHist, tz );
 %>
                 <tr bgcolor="#FFFFFF"> 
                   <td width="110"> 
