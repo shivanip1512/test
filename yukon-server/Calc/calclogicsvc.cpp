@@ -291,23 +291,37 @@ void CtiCalcLogicService::Run( )
             throw( RWxmsg( "NOT OK...  errors during initialization" ) );
         }
 
-        _conxion = new CtiConnection(_dispatchPort, _dispatchMachine);
-
         SetStatus(SERVICE_START_PENDING, 66, 5000 );
-
-        //  write the registration message (this is only done once, because if the database changes,
-        //    the program name and such doesn't change - only our requested points do.)
-
-        // USE A SINGLE Simple Name - bdw
-        RWCString regStr = "CalcLogic";
-        _conxion->WriteConnQue( new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE) );
 
         // set service as running
         SetStatus(SERVICE_RUNNING, 0, 0,
                   SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
 
+        _conxion = NULL;
+        ULONG attempts = 0;
         while( !UserQuit )
         {
+            if( _conxion == NULL || (_conxion != NULL && _conxion->verifyConnection()) )
+            {
+                if( _conxion != NULL && _conxion->verifyConnection() )
+                {
+                    delete _conxion;
+                    _conxion = NULL;
+                }
+
+                if( _conxion == NULL )
+                {
+                    _conxion = new CtiConnection(_dispatchPort, _dispatchMachine);
+
+                    //  write the registration message (this is only done once, because if the database changes,
+                    //    the program name and such doesn't change - only our requested points do.)
+
+                    // USE A SINGLE Simple Name - bdw
+                    RWCString regStr = "CalcLogic";
+                    _conxion->WriteConnQue( new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE) );
+                }
+            }
+
             calcThread = new CtiCalculateThread;
             readCalcPoints( calcThread );
 
@@ -316,18 +330,26 @@ void CtiCalcLogicService::Run( )
             //     connection to complete.)
             //  FIX_ME:  This became broken when I ported this to be a a service.  It has something
             //             to do with threads.  It makes an ASSERTion fail in RW code.
-            if( !_conxion->valid( ) )
+            if( !_conxion->valid( ) || _conxion->verifyConnection() )
             {
-                {
+                if( attempts % 300 == 0 )
+                {//only say we can't get a Dispatch connection every 5 minutes
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Calc could not establish a connection to Dispatch" << endl;
                 }
-                Sleep(30000);   // sleep for 30 seconds
+                attempts++;
 
                 // try it again
                 delete calcThread;
 
+                Sleep(1000);   // sleep for 1 second
+
                 continue;
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Dispatch connection established." << endl;
             }
 
             //  iterate through the calc points' dependencies, adding them to the registration message
@@ -440,7 +462,10 @@ void CtiCalcLogicService::Run( )
 
         SetStatus(SERVICE_STOP_PENDING, 75, 5000 );
 
-        delete _conxion;
+        if( _conxion != NULL )
+        {
+            delete _conxion;
+        }
     }
     catch( RWxmsg &msg )
     {
