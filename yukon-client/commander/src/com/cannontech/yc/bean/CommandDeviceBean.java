@@ -25,11 +25,24 @@ import com.cannontech.database.db.device.DeviceMeterGroup;
  */
 public class CommandDeviceBean
 {
+    private boolean clear = false;	//flag to clear all selection settings
+    private boolean changed = false;
+    
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+//	private static final int DEFAULT_PAGE_SIZE = 20;
+
+	private int page = 1;
+//	private int pageSize = DEFAULT_PAGE_SIZE;
+
     public static final int SORT_ORDER_ASCENDING = 0;
     public static final int SORT_ORDER_DESCENDING = 1;
 
     private static final String NULL_OBJECT_STRING = "---";
 
+    public static final int DEVICE_NAME_SEARCH_BY = 0;
+    public static final int ADDRESS_SEARCH_BY = 1;
+    public static final int METER_NUM_SEARCH_BY = 2;
+    
     public static final int DEVICE_NAME_SORT_BY = 0;
     public static final int DEVICE_TYPE_SORT_BY = 1;
     public static final int ADDRESS_SORT_BY = 2;
@@ -53,7 +66,12 @@ public class CommandDeviceBean
             ADDRESS_STRING,
             METER_NUMBER_STRING, 
             ROUTE_STRING };
-    
+
+    public static final String[] searchByStrings = new String[] { 
+            DEVICE_NAME_STRING, 
+            ADDRESS_STRING,
+            METER_NUMBER_STRING};
+
     //Contains LiteYukonPaobjects
     private ArrayList deviceList = null;
     public int deviceClass = CtiUtilities.NONE_ZERO_ID;
@@ -61,6 +79,8 @@ public class CommandDeviceBean
     private int sortBy = DEVICE_NAME_SORT_BY;
     private int sortOrder = SORT_ORDER_ASCENDING;
     private int filterBy = NO_FILTER;
+    private int searchBy = DEVICE_NAME_SEARCH_BY;
+    private String searchValue = "";
     
     //List of <int(deviceClass)> values
     public ArrayList validDeviceClasses = null;
@@ -210,10 +230,16 @@ public class CommandDeviceBean
         if (sortBy < 0 || sortBy > sortByStrings.length) return sortByStrings[DEVICE_NAME_SORT_BY];
         return sortByStrings[sortBy];
     }
+    
+    public static String getSearchByString(int searchBy)
+    {
+        if (searchBy < 0 || searchBy > searchByStrings.length) return searchByStrings[DEVICE_NAME_SORT_BY];
+        return searchByStrings[searchBy];
+    }
 
     public ArrayList getDeviceList()
     {
-        if (deviceList == null)
+        if (deviceList == null || isChanged())
         {
             DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
             synchronized (cache)
@@ -225,6 +251,19 @@ public class CommandDeviceBean
                 {
                     boolean isValid = true;
                     LiteYukonPAObject lPao = (LiteYukonPAObject) allPaos.get(i);
+                    if( getSearchValue().length() > 0)
+                    {
+                        if( getSearchBy() == DEVICE_NAME_SEARCH_BY)
+                            isValid = lPao.getPaoName().toLowerCase().startsWith(getSearchValue().toLowerCase());
+                        else if( getSearchBy() == ADDRESS_SEARCH_BY)
+                            isValid = String.valueOf(lPao.getAddress()).toLowerCase().startsWith(getSearchValue().toLowerCase());
+                        else if( getSearchBy() == METER_NUM_SEARCH_BY)
+                        {
+                            LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(lPao.getYukonID());
+                            if (ldmn != null) 
+                                isValid = ldmn.getMeterNumber().toLowerCase().startsWith(getSearchValue().toLowerCase());
+                        }
+                    }
                     if (getFilterBy() == DEVICE_CLASS_FILTER)
                     {
                         if (!(lPao.getPaoClass() == getDeviceClass())) isValid = false;
@@ -237,7 +276,10 @@ public class CommandDeviceBean
 
                     if (isValid) deviceList.add(lPao);
                 }
-                //                organizeDeviceList();
+                //organizeDeviceList();
+                setChanged(false);	//reset the change flag
+                //reset the searchValue, do this after resetting changed flag...this way flag will update if needed
+//                setSearchValue("");
             }
         }
         return deviceList;
@@ -303,52 +345,130 @@ public class CommandDeviceBean
      */
     public void setFilterBy(int filterBy)
     {
+        if( this.filterBy != filterBy)
+            setChanged(true);
         this.filterBy = filterBy;
-        // Update the search result
-        deviceList = null;
         //TODO I guess this is one way to clear them out?! maybe a better way
         // would be to listen for dbchanges
         validCollGroups = null;
     }
 
-    public String getDeviceTableHTML(int startIndex, int endIndex)
+    public String getDeviceTableHTML()
     {
         organizeDeviceList();
         String html = new String();
-        html += "<table width=\'100%\' border=\'1\' cellspacing=\'0\' cellpadding=\'3\'>" + "\r\n";
-        html += "  <tr>" + "\r\n";
+        
+//	  	java.util.List allDevices =	commandDeviceBean.getDeviceList();
+
+//		String uri = req.getRequestURI();
+//		String pageName = uri.substring( uri.lastIndexOf('/') + 1 );
+		
+	    int displaySize = 10;
+	    int endIndex = (getPage() * displaySize);
+	    int startIndex = endIndex - displaySize;
+	    int maxPageNo = (int)Math.ceil(getDeviceList().size() * 1.0 / displaySize);
+	    if( endIndex > getDeviceList().size())
+	    	endIndex = getDeviceList().size();
+
+	    html += "<table width='95%' border='0' cellspacing='0' cellpadding='3'>" + LINE_SEPARATOR;
+	    html += "  <tr>" + LINE_SEPARATOR; 
+        html += "    <td>" + LINE_SEPARATOR;
+        html += "      <table width='100%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>";
+        html += "        <tr>";
+        html += "          <td>" + (startIndex+1) + "-" + (endIndex)+ " of " + getDeviceList().size() +" | ";
+        
+        if (getPage() == 1)
+            html += "<font color='#CCCCCC'>First</font>";
+        else
+            html += "<a class='Link1' href='SelectDevice.jsp?page=1'>First</a>";
+        html += " | ";
+        if (getPage() == 1)
+            html += "<font color='#CCCCCC'>Previous</font>";
+        else
+            html += "<a class='Link1' href='SelectDevice.jsp?page=" + (getPage()-1)+ "'>Previous</a>";
+        html += " | ";
+        if (getPage() == maxPageNo || maxPageNo == 0)
+        	html += "<font color='#CCCCCC'>Next</font>";
+        else
+            html += "<a class='Link1' href='SelectDevice.jsp?page=" + (getPage()+1) + "'>Next</a>";
+        html += " | ";
+        if (getPage() == maxPageNo || maxPageNo == 0)
+        	html += "<font color='#CCCCCC'>Last</font>";
+        else
+            html += "<a class='Link1' href='SelectDevice.jsp?page=" + maxPageNo + "'>Last</a>" + LINE_SEPARATOR;
+        
+        html += "          </td>" + LINE_SEPARATOR;
+        html += "          <td align='right'>Page(" + getPage() + "-" + maxPageNo + "):" + LINE_SEPARATOR;
+        html += "            <input type='text' id='GoPage' style='border:1px solid #666699; font:11px' size='1' value='" + getPage() +"'>" + LINE_SEPARATOR;
+        html += "            <input type='button' style='font:11px; margin-bottom:-1px' value='Go' onclick='location.href=\"SelectDevice.jsp?page_=\" + document.getElementById(\"GoPage\").value;'>" + LINE_SEPARATOR;
+        
+        html += "          </td>" + LINE_SEPARATOR;
+        html += "        </tr>" + LINE_SEPARATOR;
+        html += "      </table>" + LINE_SEPARATOR;
+        html += "    </td>" + LINE_SEPARATOR;
+        html += "  </tr>" + LINE_SEPARATOR;
+        html += "  <tr>" + LINE_SEPARATOR;
+        html += "    <td>" + LINE_SEPARATOR;
+       
+        html += "      <table width=\'100%\' border=\'1\' cellspacing=\'0\' cellpadding=\'3\'>" + LINE_SEPARATOR;
+        html += "        <tr>" + LINE_SEPARATOR;
         String [] columns = getColumnStrings();
         for (int i = 0; i < columns.length; i++)
-        {
-            html += "    <td class=\'HeaderCell\' width=\'"+ getColumnWidth(columns[i]) +"%\'>" + columns[i] +"</td>" + "\r\n";
-        }
-        html += "  </tr>" + "\r\n";
+            html += "          <td class=\'HeaderCell\' width=\'"+ getColumnWidth(columns[i]) +"%\'>" + columns[i] +"</td>" + LINE_SEPARATOR;
+
+        html += "        </tr>" + LINE_SEPARATOR;
 
         for (int i = startIndex; i < endIndex; i++)
         {
-
             LiteYukonPAObject lPao = (LiteYukonPAObject) getDeviceList().get(i);
-            html += "  <tr>" + "\r\n";
-//            html += "    <td class=\'TableCell\' width=\'5%\'>" + "\r\n";
-//            html += "      <input type=\'radio\' name=\'deviceID\' value=\'" + lPao.getYukonID() + "\' ";
-//            if (i == startIndex) //first one
-//                    html += " checked";
-//            html += ">\r\n";
-
-//            html += "    </td>" + "\r\n";
+            html += "        <tr>" + LINE_SEPARATOR;
             for (int j = 0; j < columns.length; j++)
             {
-                html += "    <td class=\'TableCell\' width=\'"+getColumnWidth(columns[j])+"%\'>";
+                html += "          <td class=\'TableCell\' width=\'"+getColumnWidth(columns[j])+"%\'>";
                 if ( j == 0)
                     html += "<a method='post' href='CommandDevice.jsp?deviceID=" + lPao.getYukonID() +"'>" + getAttributeValue(columns[j], lPao) + "</a>";
                 else
                     html += getAttributeValue(columns[j], lPao);
-                html += "</td>" + "\r\n";
-                    
+                html += "          </td>" + LINE_SEPARATOR;
             }
+            html += "        </tr>" + LINE_SEPARATOR;
         }
-        html += "</table>" + "\r\n";
-
+        html += "      </table>" + LINE_SEPARATOR;
+        
+        html += "    </td>" + LINE_SEPARATOR;
+        html += "  </tr>" + LINE_SEPARATOR;
+        html += "  <tr>" + LINE_SEPARATOR;
+        html += "    <td>" + LINE_SEPARATOR;
+        html += "      <table width='100%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>" + LINE_SEPARATOR;
+        html += "        <tr>" + LINE_SEPARATOR;
+        html += "          <td>" + (startIndex+1) + "-" + endIndex + " of " + getDeviceList().size() + " | ";
+        
+        if (getPage() == 1)
+            html += " <font color='#CCCCCC'>First</font>";
+        else
+            html += "<a class='Link1' href='SelectDevice.jsp?page=1'>First</a>|";
+        html += " | ";
+        if (getPage() == 1)
+            html += "<font color='#CCCCCC'>Previous</font>";
+        else
+            html += "<a class='Link1' href='SelectDevice.jsp?page=" + (getPage()-1)+ "'>Previous</a>|";
+        html += " | ";
+        if (getPage() == maxPageNo || maxPageNo == 0)
+        	html += "<font color='#CCCCCC'>Next</font>";
+        else
+            html += "<a class='Link1' href='SelectDevice.jsp?page=" + (getPage()+1) + "'>Next</a>|";
+        html += " | ";
+        if (getPage() == maxPageNo || maxPageNo == 0)
+        	html += "<font color='#CCCCCC'>Last</font>";
+        else
+            html += "<a class='Link1' href='SelectDevice.jsp?page=" + maxPageNo + "'>Last</a>" + LINE_SEPARATOR;
+        
+        html += "          </td>" + LINE_SEPARATOR;
+        html += "        </tr>" + LINE_SEPARATOR;
+        html += "      </table>" + LINE_SEPARATOR;
+        html += "    </td>" + LINE_SEPARATOR;
+        html += "  </tr>" + LINE_SEPARATOR;
+        html += "</table>" + LINE_SEPARATOR;
         return html;
     }
 
@@ -427,6 +547,8 @@ public class CommandDeviceBean
      */
     public void setCollGroup(String collGroup)
     {
+        if(! this.collGroup.equalsIgnoreCase(collGroup))
+            setChanged(true);
         this.collGroup = collGroup;
     }
 
@@ -444,6 +566,8 @@ public class CommandDeviceBean
      */
     public void setDeviceClass(int deviceClass)
     {
+        if( this.deviceClass != deviceClass)
+            setChanged(true);
         this.deviceClass = deviceClass;
 
     }
@@ -506,6 +630,59 @@ public class CommandDeviceBean
             return 25;
         
         return 15;        
+    }
+    public int getSearchBy()
+    {
+        return searchBy;
+    }
+    public void setSearchBy(int searchBy)
+    {
+        if( this.searchBy != searchBy)
+            setChanged(true);
+        this.searchBy = searchBy;
+    }
+    public String getSearchValue()
+    {
+        return searchValue;
+    }
+    public void setSearchValue(String searchValue)
+    {
+        if( !this.searchValue.equalsIgnoreCase(searchValue))
+            setChanged(true);
+        
+        this.searchValue = searchValue;
+    }
+    public boolean isChanged()
+    {
+        return changed;
+    }
+    public void setChanged(boolean changed)
+    {
+        if( changed)//reset the page
+            setPage(1);
+        this.changed = changed;
+    }
+    public boolean isClear()
+    {
+        return clear;
+    }
+    public void setClear(boolean clear)
+    {
+        if( clear )	//clear all previous settings, show all
+        {
+            setSearchValue("");
+            setSearchBy(DEVICE_NAME_SEARCH_BY);
+            setFilterBy(NO_FILTER);
+        }
+        this.clear = clear;
+    }
+    public int getPage()
+    {
+        return page;
+    }
+    public void setPage(int page)
+    {
+        this.page = page;
     }
 }
 
