@@ -1,5 +1,3 @@
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*-----------------------------------------------------------------------------*
 *
 * File:   server_b
@@ -8,18 +6,18 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/06/30 15:12:07 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/10/19 20:23:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-
-#include <rw\thr\mutex.h>
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include "executor.h"
 #include "server_b.h"
 #include "msg_cmd.h"
+#include "numstr.h"
 #include "yukon.h"
 #include "logger.h"
 #include "utility.h"
@@ -46,6 +44,7 @@ void  CtiServer::shutdown()
     Listener = NULL;
 
     mConnectionTable.clearAndDestroy(); // The destructor of the List entries will close the In/OutThreads
+    MainQueue_.clearAndDestroy();
 }
 
 void  CtiServer::clientConnect(CtiConnectionManager *CM)
@@ -128,6 +127,7 @@ int  CtiServer::clientRegistration(CtiConnectionManager *CM)
 
                         CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
 
+                        pCmd->setSource(RWCString("Server")+CtiNumStr(GetCurrentThreadId()));
                         pCmd->insert(-1);
                         pCmd->insert(CompileInfo.major);
                         pCmd->insert(CompileInfo.minor);
@@ -262,7 +262,9 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                 }
                 else  // Client wants to hear from us?
                 {
-                    pConn->WriteConnQue(CTIDBG_new CtiCommandMsg(*Cmd));
+                    RWCString me(RWCString("Server")+CtiNumStr(GetCurrentThreadId()));
+                    if(me != Cmd->getSource())
+                        pConn->WriteConnQue(Cmd->replicateMessage());
                 }
 
                 break;

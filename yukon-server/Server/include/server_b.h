@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*-----------------------------------------------------------------------------*
 *
 * File:   server_b
@@ -7,12 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/server_b.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/08/28 16:11:23 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/10/19 20:23:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #ifndef __SERVER_B_H__
 #define __SERVER_B_H__
