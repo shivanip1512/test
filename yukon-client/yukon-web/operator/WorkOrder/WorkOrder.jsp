@@ -276,7 +276,6 @@ function init() {
 %>
                                     <option value="<%= company.getCompanyID() %>" <%= selected %>><%= company.getCompanyName() %></option>
                                     <%	} %>
-                                    <option>Joe Technician</option>
                                   </select>
                                 </td>
                               </tr>
