@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     4/29/2003 9:51:13 AM                         */
+/* Created on:     5/1/2003 2:19:23 PM                          */
 /*==============================================================*/
 
 
@@ -1369,6 +1369,7 @@ constraint PK_BILLINGFILEFORMATS primary key  (FormatID)
 go
 
 
+insert into billingfileformats values( -11, 'MV_90 DATA Import');
 insert into BillingFileFormats values(-1,'INVALID');
 insert into BillingFileFormats values(0,'SEDC');
 insert into BillingFileFormats values(1,'CAPD');
@@ -1378,10 +1379,10 @@ insert into BillingFileFormats values(4,'CTI-CSV');
 insert into BillingFileFormats values(5,'OPU');
 insert into BillingFileFormats values(6,'DAFRON');
 insert into BillingFileFormats values(7,'NCDC');
-insert into billingfileformats values( -11, 'MV_90 DATA Import');
 insert into billingfileformats values( 12, 'SEDC 5.4');
 insert into billingfileformats values( 13, 'NISC-Turtle');
 insert into billingfileformats values( 14, 'NISC-NCDC');
+
 
 /*==============================================================*/
 /* Table : CALCBASE                                             */

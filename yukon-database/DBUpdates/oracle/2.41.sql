@@ -10,6 +10,8 @@ alter table pointlimits drop constraint PK_POINTLIMITS;
 alter table pointlimits
    add constraint PK__POINTID_LIMITNUM primary key (pointid, limitnumber);
 
+
+insert into billingfileformats values( 12, 'SEDC 5.4');
    
 
 /**** ADD COLUMNS TO THE DynamicLMGroup TABLE ****/

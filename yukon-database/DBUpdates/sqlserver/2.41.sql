@@ -12,6 +12,10 @@ alter table pointlimits
 go
 
 
+insert into billingfileformats values( 12, 'SEDC 5.4');
+go
+
+
 /**** ADD COLUMNS TO THE DynamicLMGroup TABLE ****/
 alter table DynamicLMGroup add ControlStartTime datetime not null DEFAULT '01-JAN-1990'
 go
