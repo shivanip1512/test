@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2004/06/28 20:16:11 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2004/11/03 19:22:03 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.42  2004/11/03 19:22:03  mfisher
+* added RTM and RTC parity settings next to TAP
+*
 * Revision 1.41  2004/06/28 20:16:11  cplender
 * Added cparms
 * # PORTER_RELEASE_IDLE_PORTS : true
@@ -966,6 +969,18 @@ bool CtiPort::setPortForDevice(CtiDeviceSPtr  Device)
 
             setLine(1200, 7, EVENPARITY, ONESTOPBIT);
             enableXONXOFF();
+        }
+        else if(Device->getType() == TYPE_RTM ||
+                Device->getType() == TYPE_RTC)
+        {
+            if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Port is about to communicate with RTM \"" << Device->getName() << "\"." << endl;
+            }
+
+            setLine(1200, 8, ODDPARITY, ONESTOPBIT);
+            disableXONXOFF();
         }
         else
         {
