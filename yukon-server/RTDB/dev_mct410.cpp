@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/04/21 20:54:26 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/04/22 15:08:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -806,7 +806,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
             resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                      ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, quality, DemandAccumulatorPointType, resultString);
+            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, quality, PulseAccumulatorPointType, resultString);
 
             if(pData != NULL)
             {
@@ -916,9 +916,9 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
             ReturnMsg->setResultString(resultString);
         }
 
-        Value = MAKEUSHORT(DSt->Message[7], DSt->Message[6]);
+        Value = MAKEULONG(MAKEUSHORT(DSt->Message[8], DSt->Message[7]), (USHORT)(DSt->Message[6]));
 
-        quality = getDataQuality(MAKEUSHORT(DSt->Message[7], DSt->Message[6] ), 2);
+        quality = getDataQuality(MAKEULONG(MAKEUSHORT(DSt->Message[8], DSt->Message[7]), (USHORT)(DSt->Message[6])), 3);
 
         if( !isValidDataQuality(quality) )
         {
