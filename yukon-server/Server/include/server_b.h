@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/server_b.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/11/05 17:22:30 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/12/06 21:31:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,7 @@ using namespace std;
 
 #include "con_mgr.h"
 #include "cmdopts.h"
+#include "critical_Section.h"
 #include "mutex.h"
 #include "queue.h"
 #include "dlldefs.h"
@@ -46,18 +47,30 @@ struct vg_hash
 };
 
 
+// #define USE_CTIMUTEX TRUE
 
 class IM_EX_CTISVR CtiServer
 {
 public:
    typedef RWTPtrHashMultiSetIterator< CtiConnectionManager, vg_hash, equal_to<CtiConnectionManager> >      iterator;
    typedef RWTPtrHashMultiSet< CtiConnectionManager, vg_hash, equal_to<CtiConnectionManager> >::value_type  val_pair;
+
+   #ifdef USE_CTIMUTEX
+   typedef CtiLockGuard< CtiMutex > CtiServerExclusion;
+   #else
+   typedef CtiLockGuard< CtiCriticalSection > CtiServerExclusion;
+   #endif
+
 private:
 
 protected:
    BOOL                       _listenerAvailable;
 
-   CtiMutex                   _server_mux;       // Mutual exclusion object.
+   #ifdef USE_CTIMUTEX
+   CtiMutex                   _server_exclusion;       // Mutual exclusion object.
+   #else
+   CtiCriticalSection         _server_exclusion;
+   #endif
 
    RWThreadFunction           MainThread_;      // Thread which does work on the MainQueue_
    RWThreadFunction           ConnThread_;      // Thread which accepts connections.

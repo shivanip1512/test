@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/12/01 20:13:51 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/12/06 21:31:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,7 +37,7 @@ DLLEXPORT bool isQuestionable(const CtiConnectionManager *ptr, void *narg)
 
 void  CtiServer::shutdown()
 {
-    CtiLockGuard<CtiMutex> guard(_server_mux);
+    CtiServerExclusion server_guard(_server_exclusion);
 
     _listenerAvailable = FALSE;
     if(Listener) delete Listener;
@@ -49,7 +49,7 @@ void  CtiServer::shutdown()
 
 void  CtiServer::clientConnect(CtiConnectionManager *CM)
 {
-    CtiLockGuard<CtiMutex> guard(_server_mux);
+    CtiServerExclusion server_guard(_server_exclusion);
     mConnectionTable.insert(CM);
 }
 
@@ -57,7 +57,7 @@ void CtiServer::clientShutdown(CtiConnectionManager *&CM)
 {
     if(CM != NULL)
     {
-        CtiLockGuard<CtiMutex> server_guard(_server_mux);      // Get a lock on it.
+        CtiServerExclusion server_guard(_server_exclusion);      // Get a lock on it.
 
         // Must have propagated the shutdown message to the OutThread before this gets called.
         // This call will block until the threads have exited
@@ -84,7 +84,7 @@ int  CtiServer::clientRegistration(CtiConnectionManager *CM)
     RWBoolean   questionedEntry(FALSE);
     CtiConnectionManager *Mgr;
 
-    CtiLockGuard<CtiMutex> server_guard(_server_mux);
+    CtiServerExclusion server_guard(_server_exclusion);
     RWTPtrHashMultiSetIterator< CtiConnectionManager, vg_hash, equal_to<CtiConnectionManager> >  iter(mConnectionTable);
 
     {
@@ -328,7 +328,7 @@ int  CtiServer::clientArbitrationWinner(CtiConnectionManager *CM)
     int status = NORMAL;
     CtiConnectionManager *Mgr;
 
-    CtiLockGuard<CtiMutex> server_guard(_server_mux);      // Get a lock on it.
+    CtiServerExclusion server_guard(_server_exclusion);      // Get a lock on it.
 
     // Now that it is locked, get an iterator
     RWTPtrHashMultiSetIterator< CtiConnectionManager, vg_hash, equal_to<CtiConnectionManager> >  iter(mConnectionTable);
@@ -371,7 +371,7 @@ int  CtiServer::clientConfrontEveryone(PULONG pClientCount)
 
     RWTime      Now;
 
-    CtiLockGuard<CtiMutex> server_guard(_server_mux);      // Get a lock on it.
+    CtiServerExclusion server_guard(_server_exclusion);      // Get a lock on it.
 
     // Now that it is locked, get an iterator
     RWTPtrHashMultiSetIterator< CtiConnectionManager, vg_hash, equal_to<CtiConnectionManager> >  iter(mConnectionTable);
@@ -417,7 +417,7 @@ int  CtiServer::clientPurgeQuestionables(PULONG pDeadClients)
     int status = NORMAL;
     CtiConnectionManager *Mgr;
 
-    CtiLockGuard<CtiMutex> server_guard(_server_mux);      // Get a lock on it.
+    CtiServerExclusion server_guard(_server_exclusion);      // Get a lock on it.
 
     if(pDeadClients != NULL) *pDeadClients = 0;
 
@@ -447,7 +447,7 @@ CtiServer::~CtiServer()
 
 void CtiServer::CmdLine(int argc, char **argv)
 {
-    CtiLockGuard<CtiMutex> guard(_server_mux);
+    CtiServerExclusion server_guard(_server_exclusion);
     Options_.setOpts(argc, argv);
     Options_.Puke();
     return;

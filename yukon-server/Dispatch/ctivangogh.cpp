@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.90 $
-* DATE         :  $Date: 2004/12/01 20:15:03 $
+* REVISION     :  $Revision: 1.91 $
+* DATE         :  $Date: 2004/12/06 21:31:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -462,7 +462,7 @@ void CtiVanGogh::VGMainThread()
                 {
                     if(ConnThread_.getCompletionState() != RW_THR_PENDING)
                     {
-                        CtiLockGuard<CtiMutex> pmguard(_server_mux, 10000);
+                        CtiServerExclusion pmguard(_server_exclusion, 10000);
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -668,7 +668,7 @@ void CtiVanGogh::VGConnectionHandlerThread()
             }
 
             {
-                CtiLockGuard<CtiMutex> guard(_server_mux);
+                CtiServerExclusion guard(_server_exclusion);
 
                 XChg                                = CTIDBG_new CtiExchange(sock);
                 CtiVanGoghConnectionManager *ConMan = CTIDBG_new CtiVanGoghConnectionManager(XChg, &MainQueue_);
@@ -828,7 +828,7 @@ int CtiVanGogh::registration(CtiVanGoghConnectionManager *CM, const CtiPointRegi
     return nRet;
 }
 
-// Assumes lock on _server_mux has been obtained.
+// Assumes lock on _server_exclusion has been obtained.
 int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 {
     int status = NORMAL;
@@ -1146,7 +1146,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
             try
             {
-                CtiLockGuard<CtiMutex> pmguard(_server_mux);
+                CtiServerExclusion pmguard(_server_exclusion);
                 CtiPointClientManager::CtiRTDBIterator  itr(PointMgr.getMap());
 
                 for(;itr();)
@@ -1220,7 +1220,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
 void CtiVanGogh::clientShutdown(CtiConnectionManager *&CM)
 {
-    CtiLockGuard<CtiMutex> guard(_server_mux);
+    CtiServerExclusion guard(_server_exclusion);
 
     try
     {
@@ -1281,7 +1281,7 @@ int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
 
             // Send the message out to every connected client.
             {
-                CtiLockGuard<CtiMutex> guard(_server_mux);
+                CtiServerExclusion guard(_server_exclusion);
                 CtiServer::iterator  iter(mConnectionTable);
 
                 for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
@@ -1545,7 +1545,7 @@ INT CtiVanGogh::archiveSignalMessage(const CtiSignalMsg& aSig)
 
         {
             // See if I know about this point ID
-            CtiLockGuard<CtiMutex> pmguard(_server_mux);
+            CtiServerExclusion pmguard(_server_exclusion);
             CtiPoint *TempPoint = PointMgr.getEqual(aSig.getId());
 
             if(TempPoint != NULL)
@@ -1780,7 +1780,7 @@ INT CtiVanGogh::postMessageToClients(CtiMessage *pMsg)
 
     CtiMultiMsg  *pMulti;
 
-    CtiLockGuard<CtiMutex> guard(_server_mux);
+    CtiServerExclusion guard(_server_exclusion);
     CtiServer::iterator  iter(mConnectionTable);
 
     CtiConnectionManager *Mgr = NULL;
@@ -2270,7 +2270,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
     {
         QueryPerformanceCounter(&startTime);
         CtiPoint *pPoint = NULL;
-        CtiLockGuard<CtiMutex> pmguard(_server_mux);
+        CtiServerExclusion pmguard(_server_exclusion);
         pPoint = PointMgr.getEqual(pMsg->getPointId());
         QueryPerformanceCounter(&t1Time);
 
@@ -2365,7 +2365,7 @@ int CtiVanGogh::processMessage(CtiMessage *pMsg)
     int status = NORMAL;
     CtiMultiWrapper MultiWrapper;
 
-    CtiLockGuard<CtiMutex> guard(_server_mux);
+    CtiServerExclusion guard(_server_exclusion);
 
     checkDataStateQuality(pMsg, MultiWrapper);
     /*
@@ -2398,7 +2398,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
     {
         pMulti->setMessagePriority(15);
 
-        CtiLockGuard<CtiMutex> pmguard(_server_mux);
+        CtiServerExclusion pmguard(_server_exclusion);
         CtiPointClientManager::CtiRTDBIterator  itr(PointMgr.getMap());
 
         for(;itr();)
@@ -2499,7 +2499,7 @@ INT CtiVanGogh::loadPendingSignals()
     INT            status = NORMAL;
     LONG           lTemp;
 
-    CtiLockGuard<CtiMutex> pmguard(_server_mux);
+    CtiServerExclusion pmguard(_server_exclusion);
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
@@ -2837,7 +2837,7 @@ void CtiVanGogh::purifyClientConnectionList()
          */
         if(!(++confrontationCount % CONFRONT_RATE) )    // Only chase the queue once per CONFRONT_RATE seconds.
         {
-            CtiLockGuard<CtiMutex> server_guard(_server_mux, 2500);      // Get a lock on it.
+            CtiServerExclusion server_guard(_server_exclusion, 2500);      // Get a lock on it.
 
             if(server_guard.isAcquired())
             {
@@ -2892,7 +2892,7 @@ void CtiVanGogh::updateRuntimeDispatchTable(bool force)
         {
             unsigned long delay = force ? 30000 : 2500;
 
-            CtiLockGuard<CtiMutex> server_guard(_server_mux, delay);      // Get a lock on it.
+            CtiServerExclusion server_guard(_server_exclusion, delay);      // Get a lock on it.
 
             if(server_guard.isAcquired())
             {
@@ -3097,7 +3097,7 @@ INT CtiVanGogh::checkSignalStateQuality(CtiSignalMsg  *pSig, CtiMultiWrapper &aW
  *
  * Additional messages may be generated and added to the CtiMultiWrapper object.
  *
- * CtiLockGuard<CtiMutex> guard(_server_mux); must have been grabbed already.
+ * CtiServerExclusion guard(_server_exclusion); must have been grabbed already.
  *----------------------------------------------------------------------------*/
 INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrapper &aWrap)
 {
@@ -3225,7 +3225,7 @@ INT CtiVanGogh::commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapp
     {
         LONG did = Op.at((size_t)2);
 
-        CtiLockGuard<CtiMutex> pmguard(_server_mux);
+        CtiServerExclusion pmguard(_server_exclusion);
         CtiPointClientManager::CtiRTDBIterator  itr(PointMgr.getMap());
 
         for(;itr();)
@@ -3240,7 +3240,7 @@ INT CtiVanGogh::commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapp
     }
     else if( Op.at((size_t)1) == RWInteger(OP_POINTID) )
     {
-        CtiLockGuard<CtiMutex> pmguard(_server_mux);
+        CtiServerExclusion pmguard(_server_exclusion);
         CtiPoint *pPoint = PointMgr.getEqual(Op.at((size_t)2));
 
         if(pPoint != NULL)      // We know this point..
@@ -3298,7 +3298,7 @@ CtiVanGoghConnectionManager* CtiVanGogh::getPILConnection()
     CtiVanGoghConnectionManager *Mgr = NULL;
 
     {
-        CtiLockGuard<CtiMutex> guard(_server_mux);
+        CtiServerExclusion guard(_server_exclusion);
         CtiServer::iterator  iter(mConnectionTable);
 
         for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
@@ -3322,7 +3322,7 @@ CtiVanGoghConnectionManager* CtiVanGogh::getScannerConnection()
     CtiVanGoghConnectionManager *Mgr = NULL;
 
     {
-        CtiLockGuard<CtiMutex> guard(_server_mux);
+        CtiServerExclusion guard(_server_exclusion);
         CtiServer::iterator  iter(mConnectionTable);
 
         for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
@@ -3347,7 +3347,7 @@ void CtiVanGogh::validateConnections()
 
     CtiConnectionManager *CM = rwnil;
 
-    CtiLockGuard<CtiMutex> guard(_server_mux);
+    CtiServerExclusion guard(_server_exclusion);
 
     if(MainQueue_.entries() == 0)
     {
@@ -3380,7 +3380,7 @@ void CtiVanGogh::postSignalAsEmail( const CtiSignalMsg &sig )
 
             CtiPoint *pPoint = NULL;
             {
-                CtiLockGuard<CtiMutex> pmguard(_server_mux);
+                CtiServerExclusion pmguard(_server_exclusion);
                 pPoint = PointMgr.getEqual(sig.getId());
 
                 if(pPoint)
@@ -3432,7 +3432,7 @@ void CtiVanGogh::loadAlarmToDestinationTranslation()
 
     try
     {   // Make sure all objects that that store results are out of scope when the release is called
-        CtiLockGuard<CtiMutex> guard(_server_mux, 5000);
+        CtiServerExclusion guard(_server_exclusion, 5000);
 
         if(guard.isAcquired())
         {
@@ -3696,7 +3696,7 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
     RWCString paodescription;
     bool excluded = true;
 
-    CtiLockGuard<CtiMutex> pmguard(_server_mux);
+    CtiServerExclusion pmguard(_server_exclusion);
     if((point =  PointMgr.getEqual(sig.getId())) != NULL)
     {
         {
@@ -3798,7 +3798,7 @@ INT CtiVanGogh::sendMail(const CtiEmailMsg &aMail, const CtiTableContactNotifica
 
 RWCString CtiVanGogh::getAlarmStateName( INT alarm )
 {
-    CtiLockGuard<CtiMutex> guard(_server_mux);
+    CtiServerExclusion guard(_server_exclusion);
     if( _alarmToDestInfo[alarm].grpid < SignalEvent )  // Zero is invalid!
     {
         // OK, prime the array!
@@ -3817,7 +3817,7 @@ int CtiVanGogh::clientPurgeQuestionables(PULONG pDeadClients)
     int status = NORMAL;
     CtiConnectionManager *Mgr;
 
-    CtiLockGuard<CtiMutex> server_guard(_server_mux);      // Get a lock on it.
+    CtiServerExclusion server_guard(_server_exclusion);      // Get a lock on it.
 
     if(MainQueue_.entries() == 0)
     {
@@ -3851,7 +3851,7 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
     RWBoolean   removeMgr(FALSE);
     CtiConnectionManager *Mgr;
 
-    CtiLockGuard<CtiMutex> guard(_server_mux);
+    CtiServerExclusion guard(_server_exclusion);
 
     if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
     {
@@ -3967,7 +3967,7 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
 
     if(removeMgr && Mgr != NULL)
     {
-        CtiLockGuard<CtiMutex> guard(_server_mux);
+        CtiServerExclusion guard(_server_exclusion);
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3994,7 +3994,7 @@ int  CtiVanGogh::clientArbitrationWinner(CtiConnectionManager *CM)
     int status = NORMAL;
     CtiConnectionManager *Mgr;
 
-    CtiLockGuard<CtiMutex> guard(_server_mux);
+    CtiServerExclusion guard(_server_exclusion);
 
     // Now that it is locked, get an iterator
     RWTPtrHashMultiSetIterator< CtiConnectionManager, vg_hash, equal_to<CtiConnectionManager> >  iter(mConnectionTable);
@@ -4117,7 +4117,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
             // This loads up the points that VanGogh will manage.
             if( pChg == NULL || (pChg->getDatabase() == ChangePointDb) )
             {
-                CtiLockGuard<CtiMutex> pmguard(_server_mux, 10000);
+                CtiServerExclusion pmguard(_server_exclusion, 10000);
                 if(pmguard.isAcquired())
                 {
                     if(pChg != NULL && (pChg->getTypeOfChange() == ChangeTypeUpdate || pChg->getTypeOfChange() == ChangeTypeAdd))
@@ -4186,7 +4186,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
 
             if( pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) )
             {
-                CtiLockGuard<CtiMutex> guard(_server_mux, 5000);
+                CtiServerExclusion guard(_server_exclusion, 5000);
 
                 if(guard.isAcquired())
                 {
@@ -4247,7 +4247,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
 
             if(pChg != NULL && (pChg->getDatabase() == ChangeNotificationGroupDb || pChg->getDatabase() == ChangeNotificationRecipientDb))
             {
-                CtiLockGuard<CtiMutex> guard(_server_mux, 1000);
+                CtiServerExclusion guard(_server_exclusion, 1000);
 
                 while(!guard.isAcquired() && !guard.tryAcquire(5000))
                 {
@@ -4537,7 +4537,7 @@ void CtiVanGogh::loadDeviceLites(LONG id)
  */
 void CtiVanGogh::loadDeviceNames()
 {
-    CtiLockGuard<CtiMutex> guard(_server_mux, 10000);
+    CtiServerExclusion guard(_server_exclusion, 10000);
 
     if(guard.isAcquired() && !_deviceLiteSet.empty())
     {
@@ -4567,7 +4567,7 @@ void CtiVanGogh::loadDeviceNames()
 
 void CtiVanGogh::loadCICustomers(LONG id)
 {
-    CtiLockGuard<CtiMutex> guard(_server_mux, 2500);
+    CtiServerExclusion guard(_server_exclusion, 2500);
 
     if(guard.isAcquired())
     {
@@ -4615,7 +4615,7 @@ void CtiVanGogh::loadCICustomers(LONG id)
 CtiTableContactNotification* CtiVanGogh::getContactNotification(LONG cNotifID)
 {
     CtiTableContactNotification* pCNotif = NULL;
-    CtiLockGuard<CtiMutex> guard(_server_mux);
+    CtiServerExclusion guard(_server_exclusion);
     CtiTableContactNotification cNotif(cNotifID);
 
     CtiContactNotificationSet_t::iterator cnit = _contactNotificationSet.find(cNotif);
@@ -4658,7 +4658,7 @@ LONG CtiVanGogh::alarmToNotificationGroup(INT signaltrx)
     LONG ngid;
 
     {
-        CtiLockGuard<CtiMutex> guard(_server_mux);
+        CtiServerExclusion guard(_server_exclusion);
         if( _alarmToDestInfo[signaltrx].grpid < SignalEvent )  // Zero is invalid!
         {
             // OK, prime the array!
@@ -4673,7 +4673,7 @@ LONG CtiVanGogh::alarmToNotificationGroup(INT signaltrx)
 void CtiVanGogh::sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig)
 {
     CtiTableNotificationGroup mygroup( ngid );
-    CtiLockGuard<CtiMutex> guard(_server_mux);
+    CtiServerExclusion guard(_server_exclusion);
 
     CtiNotificationGroupSet_t::iterator git = _notificationGroupSet.find( mygroup );
 
@@ -4714,7 +4714,7 @@ void CtiVanGogh::sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig)
             int cnotifid = *r_iter;
 
             {
-                CtiLockGuard<CtiMutex> guard(_server_mux);
+                CtiServerExclusion guard(_server_exclusion);
                 if( (pCNotif = getContactNotification(cnotifid)) != NULL)
                 {
                     //Now we have it ALL!!! send the email
@@ -4728,7 +4728,7 @@ void CtiVanGogh::sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig)
 void CtiVanGogh::sendEmailToGroup(LONG ngid, const CtiEmailMsg& email)
 {
     CtiTableNotificationGroup mygroup( ngid );
-    CtiLockGuard<CtiMutex> guard(_server_mux);
+    CtiServerExclusion guard(_server_exclusion);
 
     CtiNotificationGroupSet_t::iterator git = _notificationGroupSet.find( mygroup );
 
@@ -4769,7 +4769,7 @@ void CtiVanGogh::sendEmailToGroup(LONG ngid, const CtiEmailMsg& email)
             int cnotifid = *r_iter;
 
             {
-                CtiLockGuard<CtiMutex> guard(_server_mux);
+                CtiServerExclusion guard(_server_exclusion);
                 if( (pCNotif = getContactNotification(cnotifid)) != NULL)
                 {
                     sendMail(email, *pCNotif);
@@ -4782,7 +4782,7 @@ void CtiVanGogh::sendEmailToGroup(LONG ngid, const CtiEmailMsg& email)
 void CtiVanGogh::displayConnections(void)
 {
     CtiVanGoghConnectionManager *Mgr = NULL;
-    CtiLockGuard<CtiMutex> guard(_server_mux);
+    CtiServerExclusion guard(_server_exclusion);
     CtiServer::iterator  iter(mConnectionTable);
 
     for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
@@ -4906,7 +4906,7 @@ CtiTableCICustomerBase* CtiVanGogh::getCustomer( LONG custid )
 {
     CtiTableCICustomerBase *pCustomer = NULL;
 
-    CtiLockGuard<CtiMutex> guard(_server_mux);
+    CtiServerExclusion guard(_server_exclusion);
     CtiTableCICustomerBase customer( custid );
     CtiDeviceCICustSet_t::iterator custit = _ciCustSet.find( customer );
 
@@ -4943,7 +4943,7 @@ int CtiVanGogh::mail(const CtiEmailMsg &aMail)
         {
         case (CtiEmailMsg::CICustomerEmailType):
             {
-                CtiLockGuard<CtiMutex> guard(_server_mux);
+                CtiServerExclusion guard(_server_exclusion);
 
                 CtiTableCICustomerBase *pCustomer = getCustomer( aMail.getID() );
 
@@ -5005,7 +5005,7 @@ int CtiVanGogh::mail(const CtiEmailMsg &aMail)
 CtiVanGogh::CtiVanGogh()
 {
     {
-        CtiLockGuard<CtiMutex> guard(_server_mux);
+        CtiServerExclusion guard(_server_exclusion);
         for(int i = 0; i < MAX_ALARM_TRX; i++)
         {
             _alarmToDestInfo[i].grpid = 0; // Zero is invalid!
@@ -5178,7 +5178,7 @@ CtiVanGogh::CtiDeviceLiteSet_t::iterator CtiVanGogh::deviceLiteFind(const LONG p
     CtiDeviceBaseLite &dLite = CtiDeviceBaseLite(paoId);
     CtiDeviceLiteSet_t::iterator dliteit = _deviceLiteSet.end();
 
-    CtiLockGuard<CtiMutex> guard(_server_mux, 30000);
+    CtiServerExclusion guard(_server_exclusion, 30000);
 
     if(guard.isAcquired())
     {
@@ -5206,7 +5206,7 @@ CtiVanGogh::CtiDeviceLiteSet_t::iterator CtiVanGogh::deviceLiteFind(const LONG p
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Unable to aqcuire the _server_mux for deviceLiteFind() " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " Unable to aqcuire the _server_exclusion for deviceLiteFind() " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return dliteit;
@@ -5216,7 +5216,7 @@ void CtiVanGogh::establishListener()
 {
     try
     {
-        CtiLockGuard<CtiMutex> guard(_server_mux);
+        CtiServerExclusion guard(_server_exclusion);
 
         try
         {
@@ -5278,7 +5278,7 @@ void CtiVanGogh::reportOnThreads()
 
     try
     {
-        CtiLockGuard<CtiMutex> sguard(_server_mux, 1000);
+        CtiServerExclusion sguard(_server_exclusion, 1000);
 
         if(sguard.isAcquired())
         {
@@ -5407,7 +5407,7 @@ void CtiVanGogh::writeMessageToClient(CtiMessage *&pReq, RWCString clientName)
     CtiVanGoghConnectionManager *CM;
     bool bDone = false;
     {
-        CtiLockGuard<CtiMutex> guard(_server_mux);
+        CtiServerExclusion guard(_server_exclusion);
         CtiServer::iterator  iter(mConnectionTable);
 
         for(;(CM = (CtiVanGoghConnectionManager *)iter());)
@@ -5509,7 +5509,7 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, R
     INT status = NORMAL;
     RWCString objtype = resolveDeviceObjectType(did);
 
-    CtiLockGuard<CtiMutex> smguard(_server_mux, 10000);
+    CtiServerExclusion smguard(_server_exclusion, 10000);
     if(smguard.isAcquired())
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -5555,7 +5555,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RW
 {
     INT status = NORMAL;
 
-    CtiLockGuard<CtiMutex> smguard(_server_mux, 10000);
+    CtiServerExclusion smguard(_server_exclusion, 10000);
     if(smguard.isAcquired())
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -5755,7 +5755,7 @@ RWCString CtiVanGogh::resolveEmailMsgDescription( const CtiEmailMsg &aMail )
         }
     case (CtiEmailMsg::CICustomerEmailType):
         {
-            CtiLockGuard<CtiMutex> guard(_server_mux);
+            CtiServerExclusion guard(_server_exclusion);
             CtiTableCICustomerBase *pCustomer = getCustomer( aMail.getID() );
             rstr = RWCString("\r\n\r\n") + resolveDeviceDescription( pCustomer->getID() );
             break;
@@ -6234,7 +6234,7 @@ void CtiVanGogh::acknowledgeAlarmCondition( CtiPointBase *&pPt, const CtiCommand
     CtiSignalMsg *pSigNew = 0;
 
     {
-        CtiLockGuard<CtiMutex> pmguard(_server_mux);
+        CtiServerExclusion pmguard(_server_exclusion);
         pSigNew = _signalManager.setAlarmAcknowledged(pPt->getPointID(), alarmcondition, true);    // Clear the tag, return the signal!
 
         if(pSigNew)
@@ -6525,7 +6525,7 @@ int CtiVanGogh::loadPendingControls()
 
     typedef map< pair<LONG, LONG>, CtiTableLMControlHistory > LMCHMap_t;    // Key is make_pair(PAOID, SOE)
 
-    CtiLockGuard<CtiMutex> pmguard(_server_mux);
+    CtiServerExclusion pmguard(_server_exclusion);
 
     // This block will clean up any non closed control blocks.
     {
