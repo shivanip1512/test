@@ -262,23 +262,27 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		getGraph().setUpdateTrend(true);
 		actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);
 	}
-//	else if( event.getSource() == getOptionsMenu().getSetupMultipleDaysMenuItem())
-//	{
-//		MultipleDaysSetupPanel setupPanel = new MultipleDaysSetupPanel();
-////		setupPanel.setPanelsEnabled(getFileFormatComboBox().getSelectedIndex());
-//		setupPanel.showAdvancedOptions( getGraphParentFrame() );
-//	}
+	/*
+	else if( event.getSource() == getOptionsMenu().getSetupMultipleDaysMenuItem())
+	{
+		MultipleDaysSetupPanel setupPanel = new MultipleDaysSetupPanel();
+//		setupPanel.setPanelsEnabled(getFileFormatComboBox().getSelectedIndex());
+		setupPanel.showAdvancedOptions( getGraphParentFrame() );
+	}
+*/
 
 	else if( event.getSource() == getOptionsMenu().getMultiplierMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getMultiplierMenuItem().isSelected();
-		getGraph().setOptionsMaskHolder(TrendModelType.MULTIPLIER_MASK, isMasked);
+		getGraph().setOptionsMaskHolder(TrendModelType.GRAPH_MULTIPLIER, isMasked);
 	}
+	/*
 	else if( event.getSource() == getOptionsMenu().getDwellMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getDwellMenuItem().isSelected();
 		getGraph().setOptionsMaskHolder(TrendModelType.DWELL_LABELS_MASK, isMasked);
 	}
+	*/
 	else if( event.getSource() == getOptionsMenu().getPlotMinMaxValuesMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getPlotMinMaxValuesMenuItem().isSelected();
@@ -1870,7 +1874,7 @@ private void initializeSwingComponents()
 		//styleSheet.addRule("LeftCell {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFFFFF; background-color: #666699}");
 		//styleSheet.addRule("HeaderCell {  font-family: Arial, Helvetica, sans-serif; font-size: 9pt; font-weight: bold; background-color: blue; color: blue}");
 		//styleSheet.addRule("TableCell {  font-family: Arial, Helvetica, sans-serif; font-size: 12pt; color: green; background-color: green; font-weight: normal}");
-		//styleSheet.loadRules(reader, new java.net.URL("file:d:/yukon/client/bin/CannonStyle.css"));
+		//styleSheet.loadRules(reader, new java.net.URL("file:c:/yukon/client/bin/CannonStyle.css"));
 	}
 	catch(java.io.IOException e){com.cannontech.clientutils.CTILogger.info(e);}
 
