@@ -1,0 +1,388 @@
+package com.cannontech.dbeditor.wizard.device.lmscenario;
+
+import com.cannontech.database.data.device.lm.LMScenario;
+/**
+ * Insert the type's description here.
+ * Creation date: (3/31/2004 9:54:18 AM)
+ * @author: 
+ */
+public class LMControlScenarioBasePanel extends com.cannontech.common.gui.util.DataInputPanel {
+	IvjEventHandler ivjEventHandler = new IvjEventHandler();
+	private javax.swing.JLabel ivjNameJLabel = null;
+	private javax.swing.JTextField ivjNameJTextField = null;
+	private com.cannontech.common.gui.util.AddRemovePanel ivjProgramAddRemovePanel = null;
+
+class IvjEventHandler implements com.cannontech.common.gui.util.AddRemovePanelListener, javax.swing.event.CaretListener {
+		public void addButtonAction_actionPerformed(java.util.EventObject newEvent) {
+			if (newEvent.getSource() == LMControlScenarioBasePanel.this.getProgramAddRemovePanel()) 
+				connEtoC5(newEvent);
+		};
+		public void caretUpdate(javax.swing.event.CaretEvent e) {
+			if (e.getSource() == LMControlScenarioBasePanel.this.getNameJTextField()) 
+				connEtoC1(e);
+		};
+		public void leftListListSelection_valueChanged(java.util.EventObject newEvent) {};
+		public void removeButtonAction_actionPerformed(java.util.EventObject newEvent) {
+			if (newEvent.getSource() == LMControlScenarioBasePanel.this.getProgramAddRemovePanel()) 
+				connEtoC6(newEvent);
+		};
+		public void rightListListSelection_valueChanged(java.util.EventObject newEvent) {};
+		public void rightListMouse_mouseClicked(java.util.EventObject newEvent) {};
+		public void rightListMouse_mouseEntered(java.util.EventObject newEvent) {};
+		public void rightListMouse_mouseExited(java.util.EventObject newEvent) {
+			if (newEvent.getSource() == LMControlScenarioBasePanel.this.getProgramAddRemovePanel()) 
+				connEtoC2(newEvent);
+		};
+		public void rightListMouse_mousePressed(java.util.EventObject newEvent) {
+			if (newEvent.getSource() == LMControlScenarioBasePanel.this.getProgramAddRemovePanel()) 
+				connEtoC3(newEvent);
+		};
+		public void rightListMouse_mouseReleased(java.util.EventObject newEvent) {
+			if (newEvent.getSource() == LMControlScenarioBasePanel.this.getProgramAddRemovePanel()) 
+				connEtoC4(newEvent);
+		};
+		public void rightListMouseMotion_mouseDragged(java.util.EventObject newEvent) {};
+	};
+/**
+ * LMControlScenarioBasePanel constructor comment.
+ */
+public LMControlScenarioBasePanel() {
+	super();
+	initialize();
+}
+/**
+ * connEtoC1:  (NameJTextField.caret.caretUpdate(javax.swing.event.CaretEvent) --> LMControlScenarioBasePanel.fireInputUpdate()V)
+ * @param arg1 javax.swing.event.CaretEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC1(javax.swing.event.CaretEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC2:  (ProgramAddRemovePanel.addRemovePanel.rightListMouse_mouseExited(java.util.EventObject) --> LMControlScenarioBasePanel.programAddRemovePanel_RightListMouse_mouseExited(Ljava.util.EventObject;)V)
+ * @param arg1 java.util.EventObject
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC2(java.util.EventObject arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.programAddRemovePanel_RightListMouse_mouseExited(arg1);
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC3:  (ProgramAddRemovePanel.addRemovePanel.rightListMouse_mousePressed(java.util.EventObject) --> LMControlScenarioBasePanel.programAddRemovePanel_RightListMouse_mousePressed(Ljava.util.EventObject;)V)
+ * @param arg1 java.util.EventObject
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC3(java.util.EventObject arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.programAddRemovePanel_RightListMouse_mousePressed(arg1);
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC4:  (ProgramAddRemovePanel.addRemovePanel.rightListMouse_mouseReleased(java.util.EventObject) --> LMControlScenarioBasePanel.programAddRemovePanel_RightListMouse_mouseReleased(Ljava.util.EventObject;)V)
+ * @param arg1 java.util.EventObject
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC4(java.util.EventObject arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.programAddRemovePanel_RightListMouse_mouseReleased(arg1);
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC5:  (ProgramAddRemovePanel.addRemovePanel.addButtonAction_actionPerformed(java.util.EventObject) --> LMControlScenarioBasePanel.fireInputUpdate()V)
+ * @param arg1 java.util.EventObject
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC5(java.util.EventObject arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * connEtoC6:  (ProgramAddRemovePanel.addRemovePanel.removeButtonAction_actionPerformed(java.util.EventObject) --> LMControlScenarioBasePanel.fireInputUpdate()V)
+ * @param arg1 java.util.EventObject
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC6(java.util.EventObject arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+/**
+ * 
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private static void getBuilderData() {
+/*V1.1
+**start of data**
+	D0CB838494G88G88G2EE2FFB0GGGGGGGGGGGG8CGGGE2F5E9ECE4E5F2A0E4E1F4E13DBBEDD49C57F57494557E01F39C075323F8F5DA5516FDF0CDECDCAB099249BDEACCE34956292903E339119BB56624EA2BA644D1E265D83507953000168FC94425361CE0894402165572ADADC28696A4C0A0A1D8A194AD02E1F70011764B3B4307E4376E3D6F4D1B9D16D990B8B667DC4D3C7B6EFB77635DF75FFDF7C7DC716F57E6E5680BB9AEA30B137F1AB2B82E3409632EA574D5B25C29CA1D01D37D
+	FD88F0107B734B19706C023E18D11D21087B5607B950F6C2BB7E064E705F70FE185B78213981DE22704904BE433F9FEDDF1C4F49914647C05AC9F9C6F896G0C81AE96A0259279EF49AB11718950AE105F91B2749C37368AE94C15A5AAFCF195251360F9AFC0478924F9BD6F085C3F8BF0C843813E788425B543B317C8374AF6CA26F3FEB5015B737C6F747948CBB5BF03B8F9EC127CAC659EA506584FCDB6DD0667197EDB13E7DDFE2F45457BFCFE1FA43826AC6EF141ADCA7E20E5D63C43875D9637B0A33A840B
+	479BF289BEBEA87AED365EBEBB90877D1EC199554E0704FE5EA7F8100799F599284CA1FCC097601DC8F04FD7227D5C707EA9C03C1969730F79E7E4F963EFA5F0BB9FBE98D51FF4B3552338BA2C4F1A273233122BF1FE638123BC4E816DB8GAA0B63G13A54742E47975D124ED0576B0C0C041BFF38C7177C2FBAD40868B1331250249B87C4937393D63ED7A42A8B226D828ECFBADE199CBD21A337E077850E0B67AC17DC9608B6081389FA089A08560FD623BB3A3D570EC9B176CFE2F576FEB8B845ABD6EE01F5F
+	ADF8605DE6039E99B7A0387CC1B778B2197BEA25D9C39E863BCE4E77CD842A5BD50E79D36240931CA4B56933B4F4DB7FF229FE1FBCC711B52C1B430AF6EB2FC23BD9619D47617AD17CE502DF2D425335CAA13E006DCD50E72AE1F69EAEE03274E6BE4495555875868DD9D6FF6F14BE3E064A10D89316055A38BA87ED3C9D70FBG0C35BAC399C087003B1659F873C85DD2B66E067D9074711E416971G9F145A27C50FDB884A36BEF4E0B1DBEB819DD73A6CF154AE89F56AB55A71F43B26DDF6A4D468E3EA29BDD6
+	57066DC2F9DF0B4AFBC36DC25FA8D05670A659935BEA699A6ED77092416FD061695A6EA3FB8B5B3B212F3FCEE720748DE508DFDF9769A39D843F3DAE52C71EBD46FCE49F74CD556B8CF4FDDF4845B8198A6DF4001C865867G2DGCE00C083DB630733CE5E65BE6AD72DAF9D6B4CFE971E421C94643BFDA109773904A108F47C38C788F1B20D100DF69D1FB76EA6595FAE60F1DE7089C1DE927DBE181D778A60CCA1CA934ABE08B4C10174BAC42FG8C3C810E4D7BC976E1F8FA7810F4A56066A5A1CCC17B7FB49B
+	FDE2069F0299E182F85F5C0076721118FBBF3CA7B6B0DB6D4DC3DCE6234EF0241159656D6CC3703CG4EADF8EC368E5105E270415B4CC73B2AD087AB50A78144B4417A1D02BDFADAE758F21A6D531F8DB3FF6C487F86E7FE39CD539F9126EC5437E2EC117EF81570C9G7C9600DDGB94D4087202B191D39BF2C9CD37B63A979BCEB5476D74227A95C0772EA5120AED6559C1457AF66714A151FD9CB6CE9761E9F0566003C97D81B2E4B0491FDFB8A740C85D8574C56663421147AAC9E294CCBAF85414184F7F825
+	A8EDE38E1EC1420C6013BA040060F343CBC87611161C5C307FCE78955F3293BC46B3BBB8D8C841F7679C24F818C33D9BD87FE5524FCBD2D09C1F1604C1C112C45FE4F87CB5A2CBE8DE288C493ACE65232E1BC047D400B4C5571F649CD679E12F5FFFEBBA60409DA67BF3001C5BFB013E688C730740B14C496A15769D528E776B0F8DAF32DEDA00F3ADAF063F3FEC9E7B17C1CBF9B417615EE0F1B5CB46674A7EC4E9FA880D93640F85C884C8855887D056426C31755858A273ACC70725E5CEA33C3478C45B9BAB81
+	6ABBAF67C6777D9D395A3E7F13DCED5F5F153B38EF2767EA79B66DFBB397F5754F7AD4FBE5DFAE46D7175F67934806D506F0B4777E19837590FD22F4D5F4CF8A5220F8C7003BC08B7A7CAA9243FB61FD2C05455A59E3AC56165DF90C5BBCFAC4B3BFDB7DC833FEC38B7565EDAD61D8CBE57AAFF2F791BC02978CE577CF7BA40A5FCF76180C8F6DA738E3C189471AAE42295563GBB1E93850F5B6C0260A0D9483F74DCB25D64E778B9CBE8962CE5A1CBE131E3EFA73ED616D6D71FAD0DFED3B0CF08C1215B9718E6
+	13D58ED5DAA97F63B34904FFFF50BF89A7E71B5BBDA0F87DB372B8FEDE539294A72724DEB1A4757927C34228977F6D1C93A541CD4433CCCB2247C2A43AB4FE9356E3C93982DADCC7872233695564538C7A54D0FD569B3F7F7974698F8A21501720906393DD23DA3A3F8FF38FB4ED79FCBA8D004F71DF06D28A2368DA55D11DFEF06B2BF72F93B45B27A58952CA3247C7F972689702937E20F745EAE9EC0AFA0E597CCF666217E1F3727E650858C04FF9DD8146185D90FB3833BAC349D9F64EFFF6G7B59B9AFA7B3
+	F63F47C343A374FDFA96E35FFDD5452AF8E6BDCBEBAC85CA7FF7B47B1361C97BEDA7347A37AB7D9BB57BF7AB7DE74C0B73371C0C56CF7574980B701C90BE1E96603A00094C8561B64B790D07A27A06F84FF478AE7109914FC90FAA8722F8DF3EF65C1672B16F39254CBF171F4D611D004EC94F19A49E678C84C5AF240C1854493528FB8E28EBD15CC7BA83562DDA6169G20E3EF995F43F3E831C2CFAB4E95D346EAD69E989B8B30CE1EEF67C754B6144EDE4E68FA216D863837155225362A69720EB3BAF39B256B
+	E823F471EDEA3A17943A5DB2DDE6BB25F3342B699E2CE0F4096D14AE39DDCBBE1709511558A91D55BE1FAE560EF4EB143A56C98577B4417D88921ED5196C3E5ED7242E5139C3751AE7B64296BB1DFF07BD320E11D208736E833C31036D25B77255B9F3DBA864F709649AA97B4BDF95284FF30AFB34A08F1E30EFC3D2B7A4CAF34C67928BD0D63CE74AE859EF9EBF5142AD3CB7F7122AA03B1258E7C94CF0786DF0556D823735AB694E10A84CF24C8E7FFBCEDD5B5BD4D829BF90458E259DD47F560E309DF63C581C
+	C5EBF869D54C6EB19D2C2E777189065B20605ED0F0699D4C173FEE43DA0FD62D53C59434CCCE0BA48E42E51817F8925C281353B9FFC1F2A4145B54496A04BFB7633E9C03769C407DG34E6719829E5A05F84406D6CE431A521DA9DBBCA4E51BBCDABBCE9ECAFAAC7FFDAE60AA52FD7F265A13A3E91F1192D41C307DBE53E5B1EF808BB73D91EE66D725E42E23D631C9C6F4E0557E06EDBD5D9F1GD4BFCFB953EF8B50F067F5869AD32C456A18F26ABC55EF8E1EF167190EBFA8C7B9BEEF7EC6F53EB35EC3E25B9F
+	ABD7E3B5273A63CC3FF5A0778EC576870F375D1D6C0B67EA4A9E1B9D3830AC7917CC4DE4795FD264AF6E5299FA3B187C63956DF7A77F92F99913BF6FF26F3264DFBA8B13EBFE95CC7ED810FD13A2FF1529F3217CAB4B41B83656F1A646EB8F70B1F7B3DE3FB4F5E958EA257914DCE32FD51F871BF71A221E876EEE3A77663AA34F037587B18E4583BE211B1D87950587D56741GB064FD1310BDA87764C254897284397DEAA172A5F98247EAD1E7ABB0B6ED02B9378324836474688C269E46E32CE849DAF9675CA2
+	3572DFD5AD27665D5543EA97B3A716B34E290CFBF3D963824A38DFAB7571589E39065E932E8DA5427BE600D4950E562FDD5568C73BFAE87D5A20607D844FDD8863295F7D0A1C9D58AE013ECFAFB07ECF16C54A3D73427C5A543E08B69D774C02F11608F6E96F7CF1F48F17131C071C0B2AE346E68B5F7969797763EAF6261E6AE5F565F8B2B6G6DB800F5G1B8152G38BE1D212C0F794E13C5DA3944FC5F0916C804EB10D44FE0794A6C9333E05C6FA25A9DFDDA7669636FBAEF189F81653CE12A18594D594772
+	86BB79EDA49E5BG49FDEC6DCF9FDF19EE67970C0B54EDC71F56380C0A1571ABDCB0AE125F9ECDFEDBD7486F158563A2FD5BF8D1EB5C83261571DB3BE0DCA43F3288FEF4BF2412BB4099686B3D48FC5FF8906B1EACB6777BC59F5655E85FF78E62FD4D8FA73068E3383FA5B817BFC80A0994F72EA2FA1D332FC23B4EB9D821DD673CD631F80D1F2F08D6872575F8A3492D1D205F9CG455D27606294DC01196156AA38FCA36256C3BBC541A5DDC7DC9A347706679BC15C11CBBAC37DA506FB62866206219DD0F06F
+	54A2AE965AEBAE31BDA412F81B846DEDGE98AFE1A6071EE1A53CF6FF6947F16195571F18CDB4F34CB7357F73930CD9ECFF994D7B39E6A5FG8C1FE3FE961F70798119F76B3B05E4DDA1C18C11E00A3798396FDF255FF29A35E8AC6DF22C2E745332DC1926D3725BEB9459532A97BBC7CD7D8B6DC47D68AFCC51FD769113364FBEEE423D9272CF87DDC224DF7E0D29C4698B1F8E5D1260C5B5A84DC6B2DE62031342823F7E9E99CF7B220DFF41944D77290D9EABD75B28D6311137F8B19B1D5130914D8D3ECD4E01
+	7EFE1A9BE4A8784D846FD461E94E50FD14FD5BB285FD5B7AD92E9AB82E162BCE1177D4059A9F2EA1F2A6B53EC141EF1D07EFD4EC77EAA5721CD35A2F1176ED0E1D11C2DB01E25BCE1FDB8EF234AEF20C44065FE4F29C5683A8EE9D41BD87B8FB86431513F8B18A93EE4CE0721499F1BD83C1E1C2888685B77D09041B3A0C74ADA416D8617D4CE5E607672EE36C7470377D53403FE40054731C6CCE1A88F449G3B813881FAB72572BFB50B777A89384440F28F86849737070CDDB742460EC1DB820887D88F10BA40
+	F87E7D8D9C8B83C56F3417C8C8657B5AA8B98B86F5062EC1C67BEE9D216567A2E8ADF5C8AB81DD0CC23BEF86794E7F750559E5D5A80F75757263D80723787AC25C671A15E10E55AF53EC6A9AC462A035C34AA00B29EFD533581B2660E20B15F86CE0F17319231C627F5FD73DDFBA3A5C5FC51783144754974AA356015F81BEE36514FD714875D2F87A0459D2F23B63E7A5CB076895FC786105296EF40D39342E31C13E632D1DD55F71CE65D922577C9CF24DCFFE466DFFDF5E67EEA75B6745D7A01738427C34E6EC
+	DE2E0E0258EC6703223B1D1F6CA5DECFF34EC4E70EBCBE768A4BB97F094C39895A29G3B2F305F95670E335ADC62238FF13DB16D1A5F5D6DF4D46AB307281C2621701D541C42EAF34F0FB01EEE68DFB304383DA3EADFC3DB7EC8CFF3A95ADFF5C35D0F31976F6561FE673CFE1497AF32617E2F4C6B4FD20D273A3DD04EF45B77C292677926B56AB705E932CEB9D7E55DDEFA0F5B69B911C5FD61355A30AF6C293D9BDF2063387A7038174CF7B30E2E73AFA7CAB84DBB99596D545E6FB76748BA37024C09D791F748
+	523108DFE74932B01803B1F1G3F157B56427BFFE4D07B5079F4450B4D47FE63E7736E01B1B943F4BEEC9F0177675EF9671D96E5BDDE3C2E5E9BC58F1668597936A02F98266BD0BF9CD97FF8239E751E82FC6CB04B3175B5A760B9445FDCD82586A44443009014EED3AC7945C50EA3B71DAB7BFEEFEE05631EDA76B81A8FDC9C413D3BEEB8B2CF38CA70C94311F942CEA5FEEC023E52EB6C3E7E1796742BD8E82F8558G1082108EE07C833365059A8CFC0B5E559D7EC0AFA4F69E5575016A7762484A3EEB7CBB83
+	5B276B3F7B575C06BFCB4F087A7B409F645F876467061477881E6AD7EBC57D8250978710843085E087409EC53F2F551829FE688EED12443B26482FA4CCB97C61A20C46E4C07EE633D9CB371C6BD40EA3579766F83FA77C0006E3FF699FAD443173668392E328BD7E45486CF1647107390ED752B30EC53107D5669BF3BD3CCF1257E7E75D9D6F740FA86FFBB0E514EDD8CFE29635D5C7FDB997E5DF0125FAA0B4517226031FD4463CD90FF2A8B9B45DEEF25F5B75982F711B97117708F748CFD603C0681B24B6F60C
+	A0EF7ABE22FA7F29730B4FA95E79C2F9D07D93AC516FC4CFDA346FC45F34E85F63B7DA967FDE69D9CB746F151E37283FD7226B5E5600EB33817CA895E0AF005189314349764D70C9CC7270EB5905FB2653BD09F7B27CC2D6E27C1B2D51F5ED37AE7DDD6D85AB663863FEC972FBF1FE659BC4AB2E17648F90A4458DD951C664078CCA4A3E5F35222FFB0489022639EC93B9B74F00DE3DCE165F2EE9E6796D30D309150DF876A5C0BB99E097GB722B394831881DA819CGD3GB1G2B819281B683248224816C85B0
+	5EE0769B2F2D0C3617GA9A7F14408C1DEDDA36AEE08EE477E06256DF82D017C968C7ABBEE8764FB6E0D86D2F71A1888894AFA399A0A94DCF7285F9F92F1F7525C65E2B3FEE7A081A39AAFBE41E3DC4E911EEEDEAAC7D0C31CAA6740F8D68A76E1B99915636946687AFE37F1E9FD1FED54761B2D0D8B7D669F9A357DA635D16DB7729D3891774CA42C5330C2774F8A6E1A02FB1D4C09382B22DB1AD2707FC664C2FC17008C997E67C42ED9029B16F1FBD438EBB26EB70D38E6207214DF298B3E5D086BB2A1FABCF2
+	9E5404B4228F16D031072189E594833CCAEE2302C339691A1658F0CD697F1B7A207F47383E7F49E505025C210579EA5BD7DEFDA5F13423D84F693B396CA9A2E7B717B50B8A4F85E0B53DG7704BE667E8F6754EC8539C2E55EEEA2704E19BA5B7E579F5E2F67B2E1D23A005DDCA62E824C9D24BC764382A287AEDBF61A0B68E8E46ECC5945B265DE0344E5639559D62AF453C8CF879E164F5A4A4F54B9695ED505D16FEB4923740C5DBE9A19135EB7007ED2BC26B3D84758FEFF6DF2F5347D8E91F3504BFBBC926F
+	395566F363B95AFEDB9242317B01811CBF44E864CE5A777581147B26EA4C7F83D0CB8788C02211783692GGC8B7GGD0CB818294G94G88G88G2EE2FFB0C02211783692GGC8B7GG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG7092GGGG
+**end of data**/
+}
+/**
+ * Return the NameJLabel property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getNameJLabel() {
+	if (ivjNameJLabel == null) {
+		try {
+			ivjNameJLabel = new javax.swing.JLabel();
+			ivjNameJLabel.setName("NameJLabel");
+			ivjNameJLabel.setText("Name: ");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjNameJLabel;
+}
+/**
+ * Return the NameJTextField property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getNameJTextField() {
+	if (ivjNameJTextField == null) {
+		try {
+			ivjNameJTextField = new javax.swing.JTextField();
+			ivjNameJTextField.setName("NameJTextField");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjNameJTextField;
+}
+/**
+ * Return the ProgramAddRemovePanel property value.
+ * @return com.cannontech.common.gui.util.AddRemovePanel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private com.cannontech.common.gui.util.AddRemovePanel getProgramAddRemovePanel() {
+	if (ivjProgramAddRemovePanel == null) {
+		try {
+			ivjProgramAddRemovePanel = new com.cannontech.common.gui.util.AddRemovePanel();
+			ivjProgramAddRemovePanel.setName("ProgramAddRemovePanel");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjProgramAddRemovePanel;
+}
+/**
+ * This method was created in VisualAge.
+ * @return java.lang.Object
+ * @param o java.lang.Object
+ */
+public Object getValue(Object o) {
+	
+	LMScenario scen = (LMScenario)o;
+	
+	if(scen == null)
+		scen = (LMScenario)com.cannontech.database.data.device.lm.LMFactory.createLoadManagement( com.cannontech.database.data.pao.PAOGroups.LM_SCENARIO );
+		
+	scen.setScenarioName(getNameJTextField().getText());
+	
+	return scen;
+}
+/**
+ * Called whenever the part throws an exception.
+ * @param exception java.lang.Throwable
+ */
+private void handleException(java.lang.Throwable exception) {
+
+	/* Uncomment the following lines to print uncaught exceptions to stdout */
+	// System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	// exception.printStackTrace(System.out);
+}
+/**
+ * Initializes connections
+ * @exception java.lang.Exception The exception description.
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void initConnections() throws java.lang.Exception {
+	// user code begin {1}
+	// user code end
+	getNameJTextField().addCaretListener(ivjEventHandler);
+	getProgramAddRemovePanel().addAddRemovePanelListener(ivjEventHandler);
+}
+/**
+ * Initialize the class.
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void initialize() {
+	try {
+		// user code begin {1}
+		// user code end
+		setName("LMControlScenarioBasePanel");
+		setPreferredSize(new java.awt.Dimension(391, 365));
+		setLayout(new java.awt.GridBagLayout());
+		setSize(391, 365);
+		setMinimumSize(new java.awt.Dimension(391, 365));
+		setMaximumSize(new java.awt.Dimension(391, 365));
+
+		java.awt.GridBagConstraints constraintsNameJTextField = new java.awt.GridBagConstraints();
+		constraintsNameJTextField.gridx = 2; constraintsNameJTextField.gridy = 1;
+		constraintsNameJTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		constraintsNameJTextField.weightx = 1.0;
+		constraintsNameJTextField.ipadx = 245;
+		constraintsNameJTextField.insets = new java.awt.Insets(14, 1, 6, 78);
+		add(getNameJTextField(), constraintsNameJTextField);
+
+		java.awt.GridBagConstraints constraintsNameJLabel = new java.awt.GridBagConstraints();
+		constraintsNameJLabel.gridx = 1; constraintsNameJLabel.gridy = 1;
+		constraintsNameJLabel.ipadx = 6;
+		constraintsNameJLabel.insets = new java.awt.Insets(19, 17, 7, 1);
+		add(getNameJLabel(), constraintsNameJLabel);
+
+		java.awt.GridBagConstraints constraintsProgramAddRemovePanel = new java.awt.GridBagConstraints();
+		constraintsProgramAddRemovePanel.gridx = 1; constraintsProgramAddRemovePanel.gridy = 2;
+		constraintsProgramAddRemovePanel.gridwidth = 2;
+		constraintsProgramAddRemovePanel.fill = java.awt.GridBagConstraints.BOTH;
+		constraintsProgramAddRemovePanel.weightx = 1.0;
+		constraintsProgramAddRemovePanel.weighty = 1.0;
+		constraintsProgramAddRemovePanel.ipadx = -29;
+		constraintsProgramAddRemovePanel.ipady = 30;
+		constraintsProgramAddRemovePanel.insets = new java.awt.Insets(7, 4, 3, 6);
+		add(getProgramAddRemovePanel(), constraintsProgramAddRemovePanel);
+		initConnections();
+	} catch (java.lang.Throwable ivjExc) {
+		handleException(ivjExc);
+	}
+	// user code begin {2}
+	// user code end
+}
+/**
+ * main entrypoint - starts the part when it is run as an application
+ * @param args java.lang.String[]
+ */
+public static void main(java.lang.String[] args) {
+	try {
+		javax.swing.JFrame frame = new javax.swing.JFrame();
+		LMControlScenarioBasePanel aLMControlScenarioBasePanel;
+		aLMControlScenarioBasePanel = new LMControlScenarioBasePanel();
+		frame.setContentPane(aLMControlScenarioBasePanel);
+		frame.setSize(aLMControlScenarioBasePanel.getSize());
+		frame.addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowClosing(java.awt.event.WindowEvent e) {
+				System.exit(0);
+			};
+		});
+		frame.show();
+		java.awt.Insets insets = frame.getInsets();
+		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
+		frame.setVisible(true);
+	} catch (Throwable exception) {
+		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
+		exception.printStackTrace(System.out);
+	}
+}
+/**
+ * Comment
+ */
+public void programAddRemovePanel_RightListMouse_mouseExited(java.util.EventObject newEvent) {
+	
+	return;
+}
+/**
+ * Comment
+ */
+public void programAddRemovePanel_RightListMouse_mousePressed(java.util.EventObject newEvent) {
+	return;
+}
+/**
+ * Comment
+ */
+public void programAddRemovePanel_RightListMouse_mouseReleased(java.util.EventObject newEvent) {
+	return;
+}
+/**
+ * This method was created in VisualAge.
+ * @param o java.lang.Object
+ */
+public void setValue(Object o) {}
+}

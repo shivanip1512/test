@@ -16,8 +16,8 @@ import com.cannontech.common.wizard.WizardPanel;
  */
 public class LMScenarioWizardPanel extends WizardPanel 
 {
-	
-	private LMControlScenarioPanel lmControlScenarioPanel;
+	private LMControlScenarioBasePanel lmControlScenarioBasePanel;
+	private LMScenarioProgramSettingsPanel lmScenarioProgramSettingsPanel;
 	/**
 	 * LMGroupWizardPanel constructor comment.
 	 */
@@ -47,12 +47,20 @@ public class LMScenarioWizardPanel extends WizardPanel
 	 * Creation date: (3/2/2004 4:01:28 PM)
 	 * @return com.cannontech.dbeditor.wizard.device.lmcontrolarea.LMControlScenarioPanel
 	 */
-	public LMControlScenarioPanel getLmControlScenarioPanel() 
+	public LMControlScenarioBasePanel getLmControlScenarioPanel() 
 	{
-		if( lmControlScenarioPanel == null )
-			lmControlScenarioPanel = new LMControlScenarioPanel();
+		if( lmControlScenarioBasePanel == null )
+			lmControlScenarioBasePanel = new LMControlScenarioBasePanel();
 		
-		return lmControlScenarioPanel;
+		return lmControlScenarioBasePanel;
+	}
+	
+	public LMScenarioProgramSettingsPanel getLmScenarioProgramSettingsPanel() 
+	{
+		if( lmScenarioProgramSettingsPanel == null )
+			lmScenarioProgramSettingsPanel = new LMScenarioProgramSettingsPanel();
+		
+		return lmScenarioProgramSettingsPanel;
 	}
 	
 	
@@ -74,6 +82,10 @@ public class LMScenarioWizardPanel extends WizardPanel
 		{
 			return getLmControlScenarioPanel();
 		}
+		if( currentInputPanel == getLmControlScenarioPanel())
+		{
+			return getLmScenarioProgramSettingsPanel();
+		}
 		
 		return null;
 	}
@@ -84,7 +96,7 @@ public class LMScenarioWizardPanel extends WizardPanel
 	 */
 	protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) 
 	{
-		return (currentPanel == getLmControlScenarioPanel() );
+		return (currentPanel == getLmScenarioProgramSettingsPanel() );
 	}
 	
 
