@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/06/24 21:05:04 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/08/29 16:32:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -296,6 +296,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     {
         nRet = TYPE_SES92RTU;
     }
+    else if(rwsTemp == "rtu-dnp")
+    {
+        nRet = TYPE_DNPRTU;
+    }
     else if(rwsTemp == "davis weather")
     {
         nRet = TYPE_DAVIS;
@@ -468,7 +472,7 @@ INT resolveDeviceType(RWCString rwsTemp)
     {
         nRet = TYPE_MACRO;
     }
-    else if(rwsTemp == "cbc-6510")
+    else if(rwsTemp == "cbc 6510")
     {
         nRet = TYPECBC6510;
     }
@@ -920,6 +924,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPE_ILEXRTU:
     case TYPE_WELCORTU:
     case TYPE_SES92RTU:
+    case TYPE_DNPRTU:
     case TYPE_LCU415:
     case TYPE_LCU415LG:
     case TYPE_LCU415ER:
