@@ -23,7 +23,17 @@ import com.cannontech.util.ServletUtil;
  * RETRIEVE_PROPERTIES
  * 
  * Odd Ducks:
- * REDIRECT - Currently only has an effect on a LOGOUT, indicates where to redirect the browser after logging out 
+ * REDIRECT - When used with a LOGIN, specifies where to redirect the brower
+ * if login failed. When used with a LOGOUT, indicates where to redirect the
+ * browser after logging out.
+ * 
+ * SAVE_CURRENT_USER - Only has an effect on a LOGIN, when specified, the
+ * old user will be saved to the top of a stack, and then login with the
+ * new username/password. When the new user logs off, the user from the top
+ * of the stack will be restored in the session.
+ * 
+ * REFERRER - Works with SAVE_CURRENT_USER, specifies when to redirect the
+ * browser when the new user logs off.
  * 
  * @author aaron
   */
@@ -33,6 +43,7 @@ public interface LoginController {
 	public static final String PASSWORD = "PASSWORD";
 	public static final String ACTION = "ACTION";
 	public static final String REDIRECT = ServletUtil.ATT_REDIRECT;
+	public static final String REFERRER = ServletUtil.ATT_REFERRER;
 	public static final String SAVE_CURRENT_USER = "SAVE_CURRENT_USER";
 	
 	/* Possible Action Values */

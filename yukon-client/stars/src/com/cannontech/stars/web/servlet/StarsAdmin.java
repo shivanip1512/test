@@ -2149,20 +2149,12 @@ public class StarsAdmin extends HttpServlet {
 	private void memberLogin(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		int userID = Integer.parseInt( req.getParameter("UserID") );
 		LiteYukonUser memberLogin = YukonUserFuncs.getLiteYukonUser( userID );
-		String redir = req.getParameter( ServletUtils.ATT_REDIRECT );
 		
-		try {
-			redirect = req.getContextPath() + "/servlet/LoginController?" +
-					LoginController.ACTION + "=" + LoginController.LOGIN + "&" +
-					LoginController.USERNAME + "=" + memberLogin.getUsername() + "&" +
-					LoginController.PASSWORD + "=" + memberLogin.getPassword() + "&" +
-					LoginController.REDIRECT + "=" + java.net.URLEncoder.encode(redir, "UTF-8") + "&" +
-					LoginController.SAVE_CURRENT_USER + "=true";
-		}
-		catch (java.io.UnsupportedEncodingException e) {
-			CTILogger.error( e.getMessage(), e );
-			redirect = redir;
-		}
+		redirect = req.getContextPath() + "/servlet/LoginController?" +
+				LoginController.ACTION + "=" + LoginController.LOGIN + "&" +
+				LoginController.USERNAME + "=" + memberLogin.getUsername() + "&" +
+				LoginController.PASSWORD + "=" + memberLogin.getPassword() + "&" +
+				LoginController.SAVE_CURRENT_USER + "=true";
 	}
 	
 	public static void doSwitchContext(StarsYukonUser user, HttpSession session, int contextID, String backURL) throws WebClientException {

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -36,6 +37,7 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 	private static final String PASSWORD = com.cannontech.common.constants.LoginController.PASSWORD;
 	
 	private static final String REDIRECT = com.cannontech.common.constants.LoginController.REDIRECT;
+	private static final String REFERRER = com.cannontech.common.constants.LoginController.REFERRER;
 	private static final String SAVE_CURRENT_USER = com.cannontech.common.constants.LoginController.SAVE_CURRENT_USER;
 	
 	private static final String YUKON_USER = com.cannontech.common.constants.LoginController.YUKON_USER;
@@ -60,7 +62,8 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 {	
 	String action = req.getParameter(ACTION).toString();
 	String redirectURI = req.getParameter(REDIRECT);
-	String referer = req.getHeader("referer");
+	String referer = req.getParameter(REFERRER);
+	if (referer == null) referer = req.getHeader("referer");
 	
 	if(LOGIN.equalsIgnoreCase(action)) {
 		String username = req.getParameter(USERNAME);
@@ -74,31 +77,34 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			
 			try {
 				if (req.getParameter(SAVE_CURRENT_USER) != null) {
-					// Add the current user to the end of the saved user list
-					LiteYukonUser currentUser = (LiteYukonUser) session.getAttribute( YUKON_USER );
-					if (currentUser != null) { 
+					LiteYukonUser oldUser = (LiteYukonUser) session.getAttribute( YUKON_USER );
+					if (oldUser != null) { 
 						java.util.LinkedList savedUsers = (java.util.LinkedList) session.getAttribute( SAVED_YUKON_USERS );
 						if (savedUsers == null) {
 							savedUsers = new java.util.LinkedList();
 							session.setAttribute( SAVED_YUKON_USERS, savedUsers );
 						}
-						savedUsers.addLast( currentUser );
+						
+						// Save the old user and where to direct the browser when the new user logs off
+						savedUsers.addLast( new Pair(oldUser, referer) );
 					}
 				}
 				else {
 					// If SAVED_CURRENT_USER is not specified, "forget" all the saved users
 					session.removeAttribute( SAVED_YUKON_USERS );
+					
+					//stash a cookie that might tell us later where they log in at								
+					String loginUrl = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_IN_URL, LOGIN_URI);
+					if (loginUrl.startsWith("/")) loginUrl = req.getContextPath() + loginUrl;
+					
+					Cookie c = new Cookie(LOGIN_URL_COOKIE, loginUrl);
+					c.setPath("/"+req.getContextPath());
+					c.setMaxAge(Integer.MAX_VALUE);
+					resp.addCookie(c);
 				}
 				
 				initSession(user, session);
 				ActivityLogger.logEvent(user.getUserID(), LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + req.getRemoteAddr());
-				
-				//stash a cookie that might tell us later where they log in at								
-				String loginUrl = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_IN_URL, LOGIN_URI);
-				Cookie c = new Cookie(LOGIN_URL_COOKIE, loginUrl);
-				c.setPath("/"+req.getContextPath());
-				c.setMaxAge(Integer.MAX_VALUE);
-				resp.addCookie(c);
 				
 			} catch(TransactionException e) {
 				session.invalidate();
@@ -139,7 +145,10 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			
 			if (savedUsers != null) {
 				// Restore saved yukon user into session after logging off
-				LiteYukonUser savedUser = (LiteYukonUser) savedUsers.removeLast();
+				Pair p = (Pair) savedUsers.removeLast();
+				LiteYukonUser savedUser = (LiteYukonUser) p.getFirst();
+				redirectURI = (String) p.getSecond();
+				
 				session = req.getSession( true );
 				session.setAttribute(YUKON_USER, savedUser);
 				if (savedUsers.size() > 0)
@@ -162,10 +171,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 		}
 		
 		if (redirectURI == null)
-			redirectURI = LOGIN_URI;
-		
-		if (redirectURI.startsWith("/"))
-			redirectURI = req.getContextPath() + redirectURI; 
+			redirectURI = req.getContextPath() + LOGIN_URI;
 		
 		resp.sendRedirect(redirectURI);
 	} 
