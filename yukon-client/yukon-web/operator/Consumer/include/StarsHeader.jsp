@@ -82,9 +82,6 @@
 	StarsServiceRequestHistory serviceHist = null;
 	StarsUser userLogin = null;
 	
-	//METERING PARAMETERS
-	int energyCompanyID = 0;
-	LiteYukonUser primContactYukonUser = null;
 	Object[][] gData = null;
 
 	if (com.cannontech.database.cache.functions.AuthFuncs.checkRole(lYukonUser, ConsumerInfoRole.ROLEID) != null)
@@ -112,9 +109,6 @@
 			customerFAQs = ecSettings.getStarsCustomerFAQs();
 			exitQuestions = ecSettings.getStarsExitInterviewQuestions();
 			dftThermoSettings = ecSettings.getStarsDefaultThermostatSettings();
-			
-			// METERING PARAMTERS
-			energyCompanyID = energyCompany.getEnergyCompanyID();
 		}
 		
 		selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
@@ -160,12 +154,12 @@
 	dateTimeFormat.setTimeZone(tz);
 	histDateFormat.setTimeZone(tz);
 	
-if( primContactYukonUser != null)
+if( account != null)
 {
     Class[] types = { Integer.class,String.class };  
     java.lang.String sqlString =  "SELECT DISTINCT GDEF.GRAPHDEFINITIONID, GDEF.NAME " +
                                   " FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL "+
-                                  " WHERE GCL.CUSTOMERID = " + primContactYukonUser.getUserID()+ 
+                                  " WHERE GCL.CUSTOMERID = " + account.getCustomerID()+ 
                                   " AND GDEF.GRAPHDEFINITIONID = GCL.GRAPHDEFINITIONID " +
                                   " ORDER BY GDEF.NAME";
 
