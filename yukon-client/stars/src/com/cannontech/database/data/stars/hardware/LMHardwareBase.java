@@ -42,15 +42,16 @@ public class LMHardwareBase extends InventoryBase {
 	
 	public void deleteLMHardwareBase() throws java.sql.SQLException {
 		clearLMHardware( getInventoryBase().getInventoryID().intValue() );
+		getLMHardwareBase().delete();
 		
 		// delete from LMConfigurationBase
-		com.cannontech.database.data.stars.hardware.LMConfigurationBase config =
-				new com.cannontech.database.data.stars.hardware.LMConfigurationBase();
-		config.setConfigurationID( getLMHardwareBase().getConfigurationID() );
-		config.setDbConnection( getDbConnection() );
-		config.delete();
-		
-		getLMHardwareBase().delete();
+		if (getLMHardwareBase().getConfigurationID().intValue() > 0) {
+			com.cannontech.database.data.stars.hardware.LMConfigurationBase config =
+					new com.cannontech.database.data.stars.hardware.LMConfigurationBase();
+			config.setConfigurationID( getLMHardwareBase().getConfigurationID() );
+			config.setDbConnection( getDbConnection() );
+			config.delete();
+		}
 	}
 
 	public void delete() throws java.sql.SQLException {
