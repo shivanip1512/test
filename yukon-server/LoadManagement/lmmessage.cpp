@@ -127,6 +127,26 @@ DOUBLE CtiLMCommand::getValue() const
     return _value;
 }
     
+/*---------------------------------------------------------------------------
+    getCount
+
+    Returns the count (normally cycle count) that is associated with command.
+---------------------------------------------------------------------------*/
+LONG CtiLMCommand::getCount() const
+{
+    return _count;
+}
+    
+/*---------------------------------------------------------------------------
+    getAuxId
+
+    Returns the auxilary id (normally route id) that is associated with command.
+---------------------------------------------------------------------------*/
+LONG CtiLMCommand::getAuxId() const
+{
+    return _auxid;
+}
+    
 /*-------------------------------------------------------------------------
     restoreGuts
     
@@ -138,7 +158,9 @@ void CtiLMCommand::restoreGuts(RWvistream& strm)
     strm >> _command
          >> _paoid
          >> _number
-         >> _value;
+         >> _value
+         >> _count
+         >> _auxid;
  
     return;
 }
@@ -155,7 +177,9 @@ void CtiLMCommand::saveGuts(RWvostream& strm) const
     strm << _command
          << _paoid
          << _number
-         << _value;
+         << _value
+         << _count
+         << _auxid;
 
     return;
 }
@@ -171,6 +195,8 @@ CtiLMCommand& CtiLMCommand::operator=(const CtiLMCommand& right)
         _paoid = right._paoid;
         _number = right._number;
         _value = right._value;
+        _count = right._count;
+        _auxid = right._auxid;
     }
 
     return *this;
