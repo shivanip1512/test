@@ -94,11 +94,15 @@ public interface RoleTypes {
 
 	//Readmeter category
 	public static final int READMETER_MAIN_LOGO = -300;
-	// Used for testing
+	
+	// Used for testing in STARS
 	public static final int WEB_OPERATOR_SUPER = -1000;
 	public static final int NEW_ACCOUNT_WIZARD = -1001;
 	public static final int SWITCH_COMMAND_BATCH = -1002;
 	public static final int NOTIFICATION_ON_GENERAL_PAGE = -1003;
+	public static final int HIDE_OPT_OUT_BOX = -1004;
+	public static final int CUSTOMIZED_FAQ_LINK = -1005;
+	public static final int CUSTOMIZED_EMAIL_LINK = -1006;
 
 	// WebText category
 	// text formerly specified in text.properties, sorta belongs near energy exchange and curtailment stuff
