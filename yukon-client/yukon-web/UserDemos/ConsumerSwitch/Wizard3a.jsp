@@ -73,28 +73,19 @@
                   </tr>
                 </table>
                 <br>
-                <table width="520" border="0" cellspacing="10" bgcolor="#666699" cellpadding="0">
+                <table width="540" border="0" cellspacing="15" bgcolor="#666699" cellpadding="0">
                   <tr> 
                     <td width="251" background="PriceStand.gif" height="113"> 
                       <table width="220" border="0" align="center">
                         <tr> 
                           <td> 
                             <select name="select2">
-                              <option>10</option>
-                              <option>15</option>
-                              <option>20</option>
-                              <option>25</option>
-                              <option>30</option>
-                              <option>35</option>
-                              <option>40</option>
-                              <option>45</option>
-                              <option>50</option>
                               <option>None</option>
-							  </select>
+                            </select>
                           </td>
                           <td> 
-                            <div align="right">
-                              <input type="text" name="textfield2" size="4" maxlength="6" value="$10.00">
+                            <div align="right"> 
+                              <input type="text" name="textfield232" size="4" maxlength="6" value="$0.00">
                             </div>
                           </td>
                         </tr>
@@ -105,7 +96,8 @@
                         <tr> 
                           <td> 
                             <select name="select3">
-                              <option>10</option>
+                              <option>None</option>
+							  <option>10</option>
                               <option>15</option>
                               <option>20</option>
                               <option>25</option>
@@ -132,6 +124,7 @@
                         <tr> 
                           <td> 
                             <select name="select">
+                              <option>None</option>
                               <option>10</option>
                               <option>15</option>
                               <option>20</option>
@@ -141,8 +134,7 @@
                               <option>40</option>
                               <option>45</option>
                               <option>50</option>
-                              <option>None</option>
-                            </select>
+                              </select>
                           </td>
                           <td> 
                             <div align="right"> 
@@ -157,6 +149,7 @@
                         <tr> 
                           <td> 
                             <select name="select4">
+                              <option>None</option>
                               <option>10</option>
                               <option>15</option>
                               <option>20</option>
