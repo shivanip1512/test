@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/09/15 20:49:09 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/01/18 19:11:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,6 +39,8 @@ _controlOutMessage(0),
 _primed(false),
 _deviceSN(sn)
 {
+    _lastRuntimeRead = YUKONEOT;
+
     _allowedSystemSwitch._utime = YUKONEOT;
     _battery._utime = YUKONEOT;
     _clock._utime = YUKONEOT;
@@ -683,6 +685,19 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
 
             postAnalogOutputPoint(Type, PO_CoolRuntime, _runtime._coolRuntime );
             postAnalogOutputPoint(Type, PO_HeatRuntime, _runtime._heatRuntime );
+
+            if( _lastRuntimeRead != RWTime(YUKONEOT) )
+            {
+                ULONG elapsedTime = (_runtime._utime - _lastRuntimeRead + 60) / 60;  // Elapsed time in minutes (round up always)!
+
+                postAnalogOutputPoint(Type, PO_CoolRuntimePercentage, ((_runtime._coolRuntime - _lastCoolRuntime) / elapsedTime) );
+                postAnalogOutputPoint(Type, PO_HeatRuntimePercentage, ((_runtime._heatRuntime - _lastHeatRuntime) / elapsedTime) );
+            }
+
+            // Get ready for the next read and "usage calc"
+            _lastCoolRuntime = _runtime._coolRuntime;
+            _lastHeatRuntime = _runtime._heatRuntime;
+            _lastRuntimeRead = _runtime._utime;
 
             break;
         }

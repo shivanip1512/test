@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/09/15 20:49:09 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/01/18 19:11:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -216,9 +216,14 @@ private:
         PO_UtilCoolSetpoint,
         PO_UtilHeatSetpoint,
         PO_Filter,
-        PO_Battery
+        PO_Battery,
+        PO_CoolRuntimePercentage,
+        PO_HeatRuntimePercentage
     };
 
+    ULONG _lastRuntimeRead;             // utime representing the last time the gw runtimes were collected.
+    USHORT _lastCoolRuntime;
+    USHORT _lastHeatRuntime;
 
     CtiMultiMsg *_pMulti;
     CtiOutMessage *_controlOutMessage;
