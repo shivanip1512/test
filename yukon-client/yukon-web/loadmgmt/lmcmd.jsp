@@ -1,11 +1,6 @@
 <%@ include file="lm_header.jsp" %>
 
 <%
-if( request.getParameter("submit") != null )
-{
-	lmSession.setRefreshRate(LMSession.REF_SECONDS_PEND);
-	return;
-}
 
 String cmd = request.getParameter("cmd");
 String itemid = request.getParameter("itemid");
@@ -48,10 +43,6 @@ function update()
 	
 	/* Post to the actual servlet to do the work (must do first to ensure the command gets out) */
 	document.cmdForm.attributes["action"].value = "/servlet/LCConnectionServlet";
-	document.cmdForm.submit();
-	
-	/* Post to ourself lastly */
-	document.cmdForm.attributes["action"].value = "lmcmd.jsp?submit=true";
 	document.cmdForm.submit();
 	
 	self.close();
@@ -204,10 +195,11 @@ function setStopPixTime()
 				<% 	java.util.List gearList = 
 							( prg instanceof IGearProgram
 								? ((IGearProgram)prg).getDirectGearVector()
-								: new java.util.Vector(0) );
+								: new java.util.Vector() );
 
 						if( gearList.size() <= 0 )
-							gearList.toArray( new String[]{"Gear 1","Gear 2","Gear 3","Gear 4"} );
+							gearList = java.util.Arrays.asList(
+								new String[]{"Gear 1","Gear 2","Gear 3","Gear 4"} );
 
 						for( int i = 0; i < gearList.size(); i++ )
 						{
@@ -251,15 +243,6 @@ function setStopPixTime()
 						onMouseOut="window.status='';return true;"> 
 						<img src="<%=request.getContextPath()%>/Images/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a></td>
             </tr>
-<!--
-/*
-javascript:show_calendar('cmdForm.date')
-javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-digit Year], 
-						[Format like 'MM/DD/YYYY'], 'POPUP', sPopUpLoc );
-						onMouseOver="window.status='Pop Calendar';return true;"
-						onMouseOut="window.status='';return true;">
-*/
--->			
             <tr> 
               <td width="85" height="85">&nbsp; </td>
   	            <td width="25" height="85">&nbsp;</td>
@@ -291,7 +274,8 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
 <%	
 	}
 	
-	if( ILCCmds.PROG_START.equals(cmd) || ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_START_PROGS.equals(cmd) )
+	if( ILCCmds.PROG_START.equals(cmd) || ILCCmds.PROG_STOP.equals(cmd) 
+		|| ILCCmds.AREA_START_PROGS.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) )
 	{
 %>
 	<div class="TableCell"> 
@@ -303,12 +287,12 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
           <table width="350" border="0" cellspacing="0" cellpadding="3" align="center">
             <tr valign="top"> 
               <td width="81"> 
-                <div align="right" class="TableCell"><b><%= (ILCCmds.PROG_STOP.equals(cmd) ? "Stop now: " : "Manual stop: ") %></b></div>
+                <div align="right" class="TableCell"><b><%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) ? "Stop now: " : "Manual stop: ") %></b></div>
               </td>
               <td width="17"> 
                 <input type="radio" name="stopbutton"
-				value="<%= (ILCCmds.PROG_STOP.equals(cmd) ? "stopnow" : "stopmanual") %>"
-				<%= (ILCCmds.PROG_STOP.equals(cmd) ? "checked" : "") %>>
+				value="<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) ? "stopnow" : "stopmanual") %>"
+				<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) ? "checked" : "") %>>
                 <br>
               </td>
               <td width="34">&nbsp;</td>
@@ -321,7 +305,7 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
               <td width="17"> 
                 <input type="radio" name="stopbutton" 
 				value="stopat"
-				<%= (ILCCmds.PROG_START.equals(cmd) ? "checked" : "") %>>
+				<%= (ILCCmds.PROG_START.equals(cmd) || ILCCmds.AREA_START_PROGS.equals(cmd) ? "checked" : "") %>>
               </td>
               <td width="34"> 
                 <div align="right" class="TableCell">Date: </div>
@@ -510,7 +494,7 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
               <td width="25">&nbsp;</td>
               <td width="36">&nbsp;</td>
               <td width="179">
-			  	<input type="text" name="newthreshold" value="<%= trigger.getThreshold() %>" size="10">
+			  	<input type="text" name="dblarray1" value="<%= trigger.getThreshold() %>" size="10">
               </td>
             </tr>
 
@@ -521,7 +505,7 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
               <td width="25">&nbsp;</td>
               <td width="36">&nbsp;</td>
               <td width="179">
-			  	<input type="text" name="newrestore" value="<%= trigger.getMinRestoreOffset() %>" size="10">
+			  	<input type="text" name="dblarray2" value="<%= trigger.getMinRestoreOffset() %>" size="10">
               </td>
             </tr>
 
@@ -603,7 +587,7 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
 <%	
 	}
 
-	if( ILCCmds.AREA_START_PROGS.equals(cmd) )
+	if( ILCCmds.AREA_START_PROGS.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) )
 	{
 		LMControlArea cntrlArea = (LMControlArea)lcCache.getControlArea( new Integer(itemid) );
 %>
@@ -616,12 +600,16 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
           <table width="350" border="1" cellspacing="0" cellpadding="3" align="center">
 
 		  <tr valign="top" class="HeaderCell"> 
-			<td width="20"><div align="center">
-				<input type="checkbox" name="allChks" value="true" onClick="this.form.submit()">
-				Selected</div>
+			<td width="40"><div align="center">
+				<input type="checkbox" name="allChks" value="true" onClick="checkAll(cmdForm.allChks, cmdForm.dblarray1)">
+				All</div>
 			</td>
-			<td width="167"><div align="center">Program</div></td>
+			<td width="147"><div align="center">Program</div></td>
+
+<% if( ILCCmds.AREA_START_PROGS.equals(cmd) ) { %>			
 			<td width="34"><div align="center">Gear</div></td>
+<% } %>
+
 			<td width="81"><div align="center">State</div></td>
 		  </tr>
 
@@ -635,20 +623,21 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
 		{
 			LMProgramBase prg = (LMProgramBase)progList.get(i);
 %>
-            <tr valign="top"> 
-              <td width="20">
-				<input type="checkbox" name="progid" value=<%= prg.getYukonID() %> onClick="this.form.submit()" >
+            <tr valign="top">
+              <td width="40">
+				<input type="checkbox" name="dblarray1" value=<%= prg.getYukonID() %> >
               </td>
-              <td width="167">
+              <td width="147">
                 <div class="TableCell">
 				<%= LCUtils.getProgramValueAt(prg, ProgramTableModel.PROGRAM_NAME) %>
 				</div>
               </td>
+<% if( ILCCmds.AREA_START_PROGS.equals(cmd) ) { %>
               <td width="34"> 
                 <div align="right" class="TableCell">
-                <select name="duration">
+                <select name="dblarray2">
                 <%
-					for( int j = 1; j <= 8; j++ )
+					for( int j = 1; j <= 4; j++ )
 					{
 				%>				
                   <option value="<%= j %>" <%= (j == 1 ? "selected" : "") %> > 
@@ -659,18 +648,20 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
 				%>
                 </select></div>			
               </td>
+<% } %>
               <td width="81">
-                <div class="TableCell">
+                <div class="TableCell" align="center"><font color="<%= LCUtils.getFgColor(prg) %>">
 				  <%= LCUtils.getProgramValueAt(prg, ProgramTableModel.CURRENT_STATUS) %>
-				</div>
+				</font></div>
 			  </td>
             </tr>
-          </table>
-        </td>
-      </tr>
 <%
 		}
 %>
+			
+          </table>
+        </td>
+      </tr>
 	  
     </table>
 <%

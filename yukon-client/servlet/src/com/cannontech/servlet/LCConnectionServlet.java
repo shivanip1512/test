@@ -12,6 +12,7 @@ import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -24,6 +25,7 @@ import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.loadcontrol.LMCmdMsgFactory;
+import com.cannontech.web.loadcontrol.LMSession;
 import com.cannontech.web.loadcontrol.LoadcontrolCache;
 import com.cannontech.web.loadcontrol.WebCmdMsg;
 
@@ -260,118 +262,143 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 		CTILogger.warn( "LC Command servlet was hit, but NO command was sent" );
 	
 
+	//sets optional session variables
+	setSessionInfo( req );
+
+
 	//always forward the client to the specified URL
 	if( redirectURL != null )
 		resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
 }
 
-
-	private Hashtable getOptionalParams( HttpServletRequest req )
+/**
+ * Only sets variables if they are found in the session.
+ * @param req
+ */
+private void setSessionInfo( HttpServletRequest req )
+{
+	//if the session has a LMSession, let us force it to a new refresh rate
+	HttpSession session = req.getSession( false );
+	if( session.getAttribute("lmSession") != null )
 	{
-		Hashtable optionalProps = new Hashtable(8);
-		
-		if( req.getParameter("duration") != null )
-			optionalProps.put( "duration",
-				CtiUtilities.getIntervalSecondsValue(req.getParameter("duration")) );
-
-		
-		if( req.getParameter("gearnum") != null )
-			optionalProps.put( "gearnum", new Integer(req.getParameter("gearnum")) );
-
-
-		if( req.getParameter("startbutton") != null
-			 && req.getParameter("startbutton").equals("startat") )
-		{
-			GregorianCalendar gc = new GregorianCalendar();
-			int secs = CtiUtilities.decodeStringToSeconds( req.getParameter("startTime1") );
-			
-			gc.setTime( ServletUtil.parseDateStringLiberally(req.getParameter("startdate")) );
-			gc.set( GregorianCalendar.HOUR, 0 );
-			gc.set( GregorianCalendar.MINUTE, 0 );
-			gc.set( GregorianCalendar.SECOND, secs );
-
-			optionalProps.put( "startdate", gc.getTime() );
-		}
-		else
-		{
-			//assume they want to start now
-			optionalProps.put( "startdate", CtiUtilities.get1990GregCalendar().getTime() );
-		}
-
-
-		if( req.getParameter("stopbutton") != null
-			 && req.getParameter("stopbutton").equals("stopat") )
-		{
-			GregorianCalendar gc = new GregorianCalendar();
-			int secs = CtiUtilities.decodeStringToSeconds( req.getParameter("stopTime1") );
-			
-			gc.setTime( ServletUtil.parseDateStringLiberally(req.getParameter("stopdate")) );
-			gc.set( GregorianCalendar.HOUR, 0 );
-			gc.set( GregorianCalendar.MINUTE, 0 );
-			gc.set( GregorianCalendar.SECOND, secs );
-
-			optionalProps.put( "stopdate", gc.getTime() );
-		}
-		else if( req.getParameter("stopbutton") != null
-					 && req.getParameter("stopbutton").equals("stopnow") )
-		{
-			//assume they want to stop now
-			optionalProps.put( "stopdate", CtiUtilities.get1990GregCalendar().getTime() );
-		}
-		else
-		{
-			//set the stop time to 1 year from now if no stop selected
-			GregorianCalendar c = new GregorianCalendar();
-			c.add( c.YEAR, 1 );
-			optionalProps.put( "stopdate", c.getTime() );
-		}
-
-
-		if( req.getParameterValues("newthreshold") != null )
-		{
-			Double[] threshArr = new Double[req.getParameterValues("newthreshold").length];
-			for( int i = 0; i < req.getParameterValues("newthreshold").length; i++ )
-				threshArr[i] = new Double( req.getParameterValues("newthreshold")[i] );
-			
-			optionalProps.put( "newthreshold", threshArr );
-		}
-
-		if( req.getParameter("newrestore") != null )
-		{
-			Double[] restArr = new Double[req.getParameterValues("newrestore").length];
-			for( int i = 0; i < req.getParameterValues("newrestore").length; i++ )
-				restArr[i] = new Double( req.getParameterValues("newrestore")[i] );
-			
-			optionalProps.put( "newrestore", restArr );
-		}
-		
-		if( req.getParameter("cyclepercent") != null )
-			optionalProps.put( "cyclepercent", new Integer(req.getParameter("cyclepercent")) );
-
-		if( req.getParameter("periodcnt") != null )
-			optionalProps.put( "periodcnt", new Integer(req.getParameter("periodcnt")) );
-		
-		
-		if( req.getParameter("startTime1") != null )
-		{
-			if( req.getParameter("startTime1").length() <= 0 )
-				optionalProps.put("winstarttime", new Integer(LMControlArea.INVAID_INT));
-			else
-				optionalProps.put("winstarttime", new Integer(req.getParameter("startTime1")));
-		}
-		
-		
-		if( req.getParameter("stopTime1") != null )
-		{
-			if( req.getParameter("stopTime1").length() <= 0 )
-				optionalProps.put( "winstoptime", new Integer(LMControlArea.INVAID_INT) );
-			else
-				optionalProps.put( "winstoptime", new Integer(req.getParameter("stopTime1")) );
-		}
-
-		
-		return optionalProps;
+		LMSession lmSession = (LMSession)session.getAttribute("lmSession");
+		lmSession.setRefreshRate(LMSession.REF_SECONDS_PEND);
 	}
+
+}
+
+private Hashtable getOptionalParams( HttpServletRequest req )
+{
+	Hashtable optionalProps = new Hashtable(8);
+	
+	if( req.getParameter("duration") != null )
+		optionalProps.put( "duration",
+			CtiUtilities.getIntervalSecondsValue(req.getParameter("duration")) );
+
+	
+	if( req.getParameter("gearnum") != null )
+		optionalProps.put( "gearnum", new Integer(req.getParameter("gearnum")) );
+
+
+	if( req.getParameter("startbutton") != null
+		 && req.getParameter("startbutton").equals("startat") )
+	{
+		GregorianCalendar gc = new GregorianCalendar();
+		int secs = CtiUtilities.decodeStringToSeconds( req.getParameter("startTime1") );
+		
+		gc.setTime( ServletUtil.parseDateStringLiberally(req.getParameter("startdate")) );
+		gc.set( GregorianCalendar.HOUR, 0 );
+		gc.set( GregorianCalendar.MINUTE, 0 );
+		gc.set( GregorianCalendar.SECOND, secs );
+
+		optionalProps.put( "startdate", gc.getTime() );
+	}
+	else
+	{
+		//assume they want to start now
+		optionalProps.put( "startdate", CtiUtilities.get1990GregCalendar().getTime() );
+	}
+
+
+	if( req.getParameter("stopbutton") != null
+		 && req.getParameter("stopbutton").equals("stopat") )
+	{
+		GregorianCalendar gc = new GregorianCalendar();
+		int secs = CtiUtilities.decodeStringToSeconds( req.getParameter("stopTime1") );
+		
+		gc.setTime( ServletUtil.parseDateStringLiberally(req.getParameter("stopdate")) );
+		gc.set( GregorianCalendar.HOUR, 0 );
+		gc.set( GregorianCalendar.MINUTE, 0 );
+		gc.set( GregorianCalendar.SECOND, secs );
+
+		optionalProps.put( "stopdate", gc.getTime() );
+	}
+	else if( req.getParameter("stopbutton") != null
+				 && req.getParameter("stopbutton").equals("stopnow") )
+	{
+		//assume they want to stop now
+		optionalProps.put( "stopdate", CtiUtilities.get1990GregCalendar().getTime() );
+	}
+	else
+	{
+		//set the stop time to 1 year from now if no stop selected
+		GregorianCalendar c = new GregorianCalendar();
+		c.add( c.YEAR, 1 );
+		optionalProps.put( "stopdate", c.getTime() );
+	}
+
+
+	if( req.getParameterValues("dblarray1") != null )
+	{
+		Double[] threshArr = new Double[req.getParameterValues("dblarray1").length];
+		for( int i = 0; i < req.getParameterValues("dblarray1").length; i++ )
+			threshArr[i] = new Double( req.getParameterValues("dblarray1")[i] );
+		
+		optionalProps.put( "dblarray1", threshArr );
+	}
+
+	if( req.getParameter("dblarray2") != null )
+	{
+		Double[] restArr = new Double[req.getParameterValues("dblarray2").length];
+		for( int i = 0; i < req.getParameterValues("dblarray2").length; i++ )
+			restArr[i] = new Double( req.getParameterValues("dblarray2")[i] );
+		
+		optionalProps.put( "dblarray2", restArr );
+	}
+	
+	if( req.getParameter("cyclepercent") != null )
+		optionalProps.put( "cyclepercent", new Integer(req.getParameter("cyclepercent")) );
+
+	if( req.getParameter("periodcnt") != null )
+		optionalProps.put( "periodcnt", new Integer(req.getParameter("periodcnt")) );
+	
+	
+	if( req.getParameter("startTime1") != null )
+	{
+		if( req.getParameter("startTime1").length() <= 0 )
+			optionalProps.put("starttime", new Integer(LMControlArea.INVAID_INT));
+		else
+		{
+			optionalProps.put("starttime",
+				new Integer( CtiUtilities.decodeStringToSeconds( req.getParameter("startTime1") )) );
+		}
+	}
+	
+	
+	if( req.getParameter("stopTime1") != null )
+	{
+		if( req.getParameter("stopTime1").length() <= 0 )
+			optionalProps.put( "stoptime", new Integer(LMControlArea.INVAID_INT) );
+		else
+		{
+			optionalProps.put( "stoptime",
+				new Integer( CtiUtilities.decodeStringToSeconds( req.getParameter("stopTime1") )) );
+		}
+	}
+
+	
+	return optionalProps;
+}
 
 
 }

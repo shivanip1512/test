@@ -1,7 +1,9 @@
 package com.cannontech.web.loadcontrol;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
@@ -21,10 +23,10 @@ public final class LMCmdMsgFactory
 {
 	//local references to any optional parameters 
 	private static Integer duration = null, gearnum = null, 
-		cyclepercent = null, periodcnt = null, winstarttime = null, winstoptime = null;
+		cyclepercent = null, periodcnt = null, starttime = null, stoptime = null;
 
 	private static Date startdate = null, stopdate = null;
-	private static Double newthreshold[] = null, newrestore[] = null;
+	private static Double dblarray1[] = null, dblarray2[] = null;
 
 
 	/**
@@ -51,8 +53,10 @@ public final class LMCmdMsgFactory
 	 * 	stopdate -> Date
 	 * 	cyclepercent -> Integer
 	 * 	periodcnt -> Integer
-	 * 	winstarttime -> Integer
-	 * 	winstoptime -> Integer
+	 * 	starttime -> Integer
+	 * 	stoptime -> Integer
+	 * 	dblarray1 -> Double[]
+	 * 	dblarray2 -> Double[]
 	 */
 	public static synchronized WebCmdMsg createCmdMsg( 
 			String cmdStr, Integer itemid,
@@ -109,10 +113,11 @@ public final class LMCmdMsgFactory
 			startdate = (Date)optionalProps.get("startdate");
 			stopdate = (Date)optionalProps.get("stopdate");
 			cyclepercent = (Integer)optionalProps.get("cyclepercent");
-			periodcnt = (Integer)optionalProps.get("periodcnt");
-
-			newthreshold = (Double[])optionalProps.get("newthreshold");
-			newrestore = (Double[])optionalProps.get("newrestore");
+			periodcnt = (Integer)optionalProps.get("periodcnt");			
+			starttime = (Integer)optionalProps.get("starttime");
+			stoptime = (Integer)optionalProps.get("stoptime");
+			dblarray1 = (Double[])optionalProps.get("dblarray1");
+			dblarray2 = (Double[])optionalProps.get("dblarray2");
 
 		}			
 
@@ -182,9 +187,80 @@ public final class LMCmdMsgFactory
 		}
 		else if( ILCCmds.AREA_START_PROGS.equals(cmdMsg.getCmd()) )
 		{
+			cmdMsg.setHTMLTextMsg( cmdMsg.getHTMLTextMsg() +
+				"Are you sure you want to <font class=boldMsg>START PROGRAMS" +
+				"</font> in the selected CONTROL AREA?<BR>");
+
+			if( optionalProps != null )
+			{
+				Multi multi = new Multi();
+				List progIDs = Arrays.asList( dblarray1 );
+			
+				for( int i = 0; i < lmCntrArea.getLmProgramVector().size(); i++ )
+				{
+					LMProgramBase prg = 
+							(LMProgramBase)lmCntrArea.getLmProgramVector().get(i);
+
+					if( !progIDs.contains( new Double(prg.getYukonID().doubleValue()) ) )
+						continue;					
+				
+				
+					if( startdate.equals(CtiUtilities.get1990GregCalendar().getTime()) )
+						multi.getVector().add( prg.createStartStopNowMsg(
+									stopdate,
+									dblarray2[i].intValue(), 
+									null, true) );
+					else
+						multi.getVector().add( prg.createScheduledStartMsg(
+									startdate,
+									stopdate,
+									dblarray2[i].intValue(),
+									null, null) );					
+				}
+
+				if( multi.getVector().size() > 0 )
+					cmdMsg.setGenLCMsg( multi );
+			}
+
 		}
 		else if( ILCCmds.AREA_STOP_PROGS.equals(cmdMsg.getCmd()) )
 		{
+			cmdMsg.setHTMLTextMsg( cmdMsg.getHTMLTextMsg() +
+				"Are you sure you want to <font class=boldMsg>STOP PROGRAMS" +
+				"</font> in the selected CONTROL AREA?<BR>");
+
+			if( optionalProps != null )
+			{
+				Multi multi = new Multi();
+				List progIDs = Arrays.asList( dblarray1 );
+				
+				for( int i = 0; i < lmCntrArea.getLmProgramVector().size(); i++ )
+				{
+					LMProgramBase prg = 
+							(LMProgramBase)lmCntrArea.getLmProgramVector().get(i);
+
+					if( !progIDs.contains( new Double(prg.getYukonID().doubleValue()) ) )
+						continue;					
+					
+
+					//does the stop now
+					if( stopdate.equals(CtiUtilities.get1990GregCalendar().getTime()) )
+						multi.getVector().add( 
+							prg.createStartStopNowMsg(
+									stopdate,
+									1, null, false) );
+					else					
+						multi.getVector().add(
+							prg.createScheduledStopMsg(
+									startdate, 
+									stopdate,
+									1, null) );
+				}
+
+				if( multi.getVector().size() > 0 )
+					cmdMsg.setGenLCMsg( multi );
+			}
+
 		}
 		else if( ILCCmds.AREA_TRIG_CHG.equals(cmdMsg.getCmd()) )
 		{
@@ -205,7 +281,7 @@ public final class LMCmdMsgFactory
 							LMCommand.CHANGE_RESTORE_OFFSET,
 							lmCntrArea.getYukonID().intValue(),
 							i+1,  //the trigger number
-							newrestore[i].doubleValue() );
+							dblarray2[i].doubleValue() );
 		
 					//only add changes when the value is different
 					if( offsetCmd.getValue() != oldTrig.getMinRestoreOffset().doubleValue() )
@@ -216,7 +292,7 @@ public final class LMCmdMsgFactory
 							LMCommand.CHANGE_THRESHOLD,
 							lmCntrArea.getYukonID().intValue(),
 							i+1,  //the trigger number
-							newthreshold[i].doubleValue() );
+							dblarray1[i].doubleValue() );
 			
 					//only add changes when the value is different
 					if( threshCmd.getValue() != oldTrig.getThreshold().doubleValue() )
@@ -240,20 +316,20 @@ public final class LMCmdMsgFactory
 				Multi multi = new Multi();
 				
 				//send a message to the server telling it to change the START time
-				if( winstarttime.intValue() != LMControlArea.INVAID_INT )
+				if( starttime.intValue() != LMControlArea.INVAID_INT )
 					multi.getVector().add(
 							new LMCommand( LMCommand.CHANGE_CURRENT_START_TIME,
 											lmCntrArea.getYukonID().intValue(),
 											0, 
-											(double)winstarttime.intValue()) );
+											(double)starttime.intValue()) );
 
 				//send a message to the server telling it to change the STOP time
-				if( winstoptime.intValue() != LMControlArea.INVAID_INT )
+				if( stoptime.intValue() != LMControlArea.INVAID_INT )
 					multi.getVector().add(
 								new LMCommand( LMCommand.CHANGE_CURRENT_STOP_TIME,
 											lmCntrArea.getYukonID().intValue(),
 											0,
-											(double)winstoptime.intValue()) );
+											(double)stoptime.intValue()) );
 				
 				if( multi.getVector().size() > 0 )
 					cmdMsg.setGenLCMsg( multi );

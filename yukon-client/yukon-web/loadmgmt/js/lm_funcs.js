@@ -149,6 +149,11 @@ function menuAppear(event, divId)
 	element.style.visibility = 'visible';
 }
 
+function checkAll( chkAll, fields)
+{
+	for (i = 0; i < fields.length; i++)
+		fields[i].checked = chkAll.checked;
+}
 
 /**
 *
