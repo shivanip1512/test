@@ -740,8 +740,10 @@ public void setLxView(LxView v) {
 	if( v.getMagneticGridDisplayPolicy() == LxView.GRID_POINTS ) {
 		getDisplayPointsRadioButton().setSelected(true);
 	}
-
+	
+	getVisibleCheckBox().setSelected(v.isMagneticGridVisible());
 	getActivatedCheckBox().setSelected(v.isMagneticGridEnabled());
+	
 	synchButtons();
 }
 /**
