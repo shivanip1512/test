@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_alarm.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/09/02 18:45:17 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/05/19 14:51:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -103,6 +103,7 @@ protected:
    LONG        _recipientID;
 
    BOOL        _notifyOnAcknowledge;
+   BOOL        _notifyOnClear;
    UINT        _notificationGroupID;
 
 private:
@@ -126,6 +127,7 @@ public:
    UINT getAlarmCategory(const INT offset) const;
    UINT getExcludeNotifyStates() const;
    BOOL getNotifyOnAcknowledge() const;
+   BOOL getNotifyOnClear() const;
    UINT getNotificationGroupID() const;
 
 
@@ -135,6 +137,7 @@ public:
    CtiTablePointAlarming& setAlarmCategory( const RWCString str );
    CtiTablePointAlarming& setExcludeNotifyStates( const UINT &aInt );
    CtiTablePointAlarming& setNotifyOnAcknowledge( const BOOL &aBool );
+   CtiTablePointAlarming& setNotifyOnClear( const BOOL &aBool );
    CtiTablePointAlarming& setNotificationGroupID( const UINT &aInt );
 
 

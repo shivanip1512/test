@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_alarm.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/08/19 13:50:45 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/05/19 14:51:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -128,6 +128,11 @@ BOOL CtiTablePointAlarming::getNotifyOnAcknowledge() const
     return _notifyOnAcknowledge;
 }
 
+BOOL CtiTablePointAlarming::getNotifyOnClear() const
+{
+    return _notifyOnClear;
+}
+
 CtiTablePointAlarming& CtiTablePointAlarming::setPointID( const LONG &aLong )
 {
     _pointID = aLong;
@@ -168,6 +173,12 @@ CtiTablePointAlarming& CtiTablePointAlarming::setExcludeNotifyStates( const UINT
 CtiTablePointAlarming& CtiTablePointAlarming::setNotifyOnAcknowledge( const BOOL &aBool )
 {
     _notifyOnAcknowledge = aBool;
+    return *this;
+}
+
+CtiTablePointAlarming& CtiTablePointAlarming::setNotifyOnClear( const BOOL &aBool )
+{
+    _notifyOnClear = aBool;
     return *this;
 }
 
@@ -297,9 +308,10 @@ void CtiTablePointAlarming::DecodeDatabaseReader(RWDBReader& rdr)
 
     rdr["notifyonacknowledge"]    >> temp;
     temp.toLower();
-    setNotifyOnAcknowledge( temp(0) == 'y' );
+    setNotifyOnAcknowledge( temp(0) == 'a' || temp(0) == 'b' || temp(0) == 'y' );
+    setNotifyOnClear( temp(0) == 'c' || temp(0) == 'b' );
 
-    rdr["recipientid"]             >> _recipientID;
+    rdr["recipientid"]            >> _recipientID;
     rdr["notificationgroupid"]    >> _notificationGroupID;
 }
 
