@@ -32,7 +32,10 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.CTILogger;
 
 public class GraphGenerator extends javax.servlet.http.HttpServlet {
-	
+		
+	// Maybe this could be moved to a location so that it can
+	// be shared by various clients (jsps/servlets) of the GraphBean
+	private static final String GRAPH_BEAN_SESSION_KEY = "graphBean";	
 	
 /**
  * 
@@ -48,11 +51,11 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 	{	 	
 		HttpSession session = req.getSession(false);
 				
-		com.cannontech.graph.GraphBean localBean = (com.cannontech.graph.GraphBean)session.getAttribute("graphBean");
+		com.cannontech.graph.GraphBean localBean = (com.cannontech.graph.GraphBean)session.getAttribute(GRAPH_BEAN_SESSION_KEY);
 		if(localBean == null)
 		{
-			session.setAttribute("graphBean", new com.cannontech.graph.GraphBean());
-			localBean = (com.cannontech.graph.GraphBean)session.getAttribute("graphBean");
+			session.setAttribute(GRAPH_BEAN_SESSION_KEY, new com.cannontech.graph.GraphBean());
+			localBean = (com.cannontech.graph.GraphBean)session.getAttribute(GRAPH_BEAN_SESSION_KEY);
 		}
 
 		{			
