@@ -81,9 +81,9 @@
 					out.println(graphBean.getHtmlString());
 				}
 				else if( graphBean.getViewType() == TrendModelType.TABULAR_VIEW )
-				{
-					graphBean.updateCurrentPane();
-					out.println(graphBean.getHtmlString());
+				{%>
+					<%@ include file="../../trending_tabular.jsp" %>					
+					<%
 				}
 				else // "graph" is default
 				{%>
