@@ -29,7 +29,11 @@
 %>
         </select>
         <input type="text" name="SearchValue" size = "15">
-        <input type="submit" name="Submit2" value="Search">
+        <input type="submit" name="Search" value="Search">
+		<cti:checkRole name="WEB_OPERATOR_SUPER">
+		  <input type="submit" name="Refresh" value="Refresh" onclick="javascript:this.form.action.value='ReloadCustAccount'">
+		  <input type="submit" name="Delete" value="Delete" onclick="javascript:this.form.action.value='DeleteCustAccount'">
+		</cti:checkRole>
         </b></span></td>
     </tr>
   </table>

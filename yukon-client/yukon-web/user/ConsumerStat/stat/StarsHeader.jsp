@@ -29,7 +29,6 @@
 	StarsLMPrograms programs = null;
 	StarsThermostatSettings thermoSettings = null;
 	StarsDefaultThermostatSettings dftThermoSettings = null;
-	StarsGetEnrollmentProgramsResponse categories = null;
 	
 	accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 	if (accountInfo != null) {
@@ -42,13 +41,16 @@
 		programs = accountInfo.getStarsLMPrograms();
 		thermoSettings = accountInfo.getStarsThermostatSettings();
 		dftThermoSettings = accountInfo.getStarsDefaultThermostatSettings();
-		categories = (StarsGetEnrollmentProgramsResponse) user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
 		
-		TimeZone tz = TimeZone.getTimeZone( account.getTimeZone() );
-		datePart.setTimeZone(tz);
-		dateFormat.setTimeZone(tz);
-		histDateFormat.setTimeZone(tz);
+		if (account.getTimeZone() != null && !account.getTimeZone().equals("") && !account.getTimeZone().equals("(none)")) {
+			TimeZone tz = TimeZone.getTimeZone( account.getTimeZone() );
+			datePart.setTimeZone(tz);
+			dateFormat.setTimeZone(tz);
+			histDateFormat.setTimeZone(tz);
+		}
 	}
+	
+	StarsGetEnrollmentProgramsResponse categories = (StarsGetEnrollmentProgramsResponse) user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
 	
 	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
