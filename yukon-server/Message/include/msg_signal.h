@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/12/12 20:36:25 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/10/19 20:18:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,6 +40,8 @@ protected:
 
 
 private:
+
+    static unsigned int _instanceCount;
 
 public:
 
@@ -100,6 +102,6 @@ public:
    unsigned getLogID() const;
    CtiSignalMsg& setLogID(const unsigned lid);
 
-
+   static unsigned int getInstanceCount() { return _instanceCount; }
 };
 #endif // #ifndef __MSG_SIGNAL_H__

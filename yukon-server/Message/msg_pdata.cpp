@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pdata.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/12/12 20:35:36 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/10/19 20:18:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 
 RWDEFINE_COLLECTABLE( CtiPointDataMsg, MSG_POINTDATA );
+
+unsigned int CtiPointDataMsg::_instanceCount = 0;
 
 CtiPointDataMsg::CtiPointDataMsg(long id,
                                  double     value       ,
@@ -51,6 +53,7 @@ CtiPointDataMsg::CtiPointDataMsg(long id,
    //_millis(millis)  //  set below so the time can be rounded
    CtiMessage(pri)
 {
+    _instanceCount++;
     setMillis(millis);
 
     if(_type == StatusPointType)
@@ -61,11 +64,13 @@ CtiPointDataMsg::CtiPointDataMsg(long id,
 
 CtiPointDataMsg::CtiPointDataMsg(const CtiPointDataMsg &aRef)
 {
+    _instanceCount++;
    *this = aRef;
 }
 
 CtiPointDataMsg::~CtiPointDataMsg()
 {
+    _instanceCount--;
 }
 
 CtiPointDataMsg& CtiPointDataMsg::operator=(const CtiPointDataMsg& aRef)

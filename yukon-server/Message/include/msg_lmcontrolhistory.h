@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_lmcontrolhistory.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/04/21 20:11:49 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/10/19 20:18:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,8 @@ protected:
    double      _reductionValue;         // kW reduction on this group.
 
 private:
+
+    static unsigned int _instanceCount;
 
 public:
 
@@ -94,5 +96,7 @@ public:
    virtual void dump() const;
 
    virtual bool isValid();
+
+   static unsigned int getInstanceCount() { return _instanceCount; }
 };
 #endif // #ifndef __MSG_LMCONTROLHISTORY_H__

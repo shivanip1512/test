@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/12/12 20:36:25 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/10/19 20:18:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 RWDEFINE_COLLECTABLE( CtiSignalMsg, MSG_SIGNAL );
 
+unsigned int CtiSignalMsg::_instanceCount = 0;
+
 CtiSignalMsg::CtiSignalMsg(long pid, int soe, RWCString text, RWCString addl, int lt, unsigned cls, RWCString usr, unsigned tag, int pri, unsigned millis) :
    Inherited(pri),
    _id(pid),
@@ -39,16 +41,21 @@ CtiSignalMsg::CtiSignalMsg(long pid, int soe, RWCString text, RWCString addl, in
    _logid(0),
    _signalMillis(millis)
 {
+   _instanceCount++;
    Inherited::setSOE(soe);
    Inherited::setUser(usr);
 }
 
 CtiSignalMsg::CtiSignalMsg(const CtiSignalMsg& aRef)
 {
+    _instanceCount++;
    *this = aRef;
 }
 
-CtiSignalMsg::~CtiSignalMsg() {}
+CtiSignalMsg::~CtiSignalMsg()
+{
+    _instanceCount--;
+}
 
 CtiSignalMsg& CtiSignalMsg::operator=(const CtiSignalMsg& aRef)
 {

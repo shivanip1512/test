@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_lmcontrolhistory.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/12/12 01:03:00 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/10/19 20:18:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 RWDEFINE_COLLECTABLE( CtiLMControlHistoryMsg, MSG_LMCONTROLHISTORY );
 
+unsigned int CtiLMControlHistoryMsg::_instanceCount = 0;
 
 void CtiLMControlHistoryMsg::saveGuts(RWvostream &aStream) const
 {
@@ -191,14 +192,19 @@ Inherited(pri), _paoId(paoid), _pointId(pointid), _rawState(raw), _startDateTime
 _controlDuration(dur), _reductionRatio(redrat), _controlType(type), _activeRestore(restore),
 _reductionValue(reduce)
 {
+    _instanceCount++;
 }
 
 CtiLMControlHistoryMsg::CtiLMControlHistoryMsg(const CtiLMControlHistoryMsg& aRef)
 {
+    _instanceCount++;
     *this = aRef;
 }
 
-CtiLMControlHistoryMsg::~CtiLMControlHistoryMsg() {}
+CtiLMControlHistoryMsg::~CtiLMControlHistoryMsg()
+{
+    _instanceCount--;
+}
 
 CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::operator=(const CtiLMControlHistoryMsg& aRef)
 {
