@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/09/09 21:45:12 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/09/16 21:51:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,7 +81,7 @@ ApplyClearMacroDeviceList(const CtiHashKey *key, CtiDeviceBase *&pDevice, void *
 }
 
 
-void CtiDeviceManager::RefreshList(LONG paoID)
+void CtiDeviceManager::RefreshList(LONG paoID, RWCString category, RWCString devicetype)
 {
     CtiHashKey key(paoID);
     bool rowFound = false;
@@ -89,34 +89,59 @@ void CtiDeviceManager::RefreshList(LONG paoID)
 
     if(pDev)
     {
-        if(_includeScanInfo)
+        /*
+         *  This is the code to handle change type.
+         */
+        if(resolvePAOType(category, devicetype) != pDev->getType())
         {
-            RefreshScanRates( paoID );
-            RefreshDeviceWindows( paoID );
-        }
-
-        {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
-            RWDBDatabase db = getDatabase();
-
-            RWDBTable   keyTable;
-            RWDBSelector selector = db.selector();
-
-            pDev->getSQL( db, keyTable, selector );
-
-            selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
-            RWDBReader rdr = selector.reader(conn);
-
-            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << pDev->getName() << " has changed type to " << devicetype << " from " << desolveDeviceType(pDev->getType()) << endl;
             }
 
-            RefreshDevices(rowFound, rdr, DeviceFactory);
-
+            if( orphan(paoID) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Done reloading " << pDev->getName() << endl;
+                if(DebugLevel & 0x00020000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Old device object has been orphaned " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                // I don't know who the old guy is anymore!
+                RefreshList();
+            }
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+                RWDBConnection conn = getConnection();
+                RWDBDatabase db = getDatabase();
+
+                RWDBTable   keyTable;
+                RWDBSelector selector = db.selector();
+
+                pDev->getSQL( db, keyTable, selector );
+
+                selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+                RWDBReader rdr = selector.reader(conn);
+
+                if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                }
+
+                RefreshDevices(rowFound, rdr, DeviceFactory);
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Done reloading " << pDev->getName() << endl;
+                }
+            }
+
+            if(_includeScanInfo)
+            {
+                RefreshScanRates( paoID );
+                RefreshDeviceWindows( paoID );
             }
         }
     }
@@ -127,7 +152,12 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
     CtiDeviceBase *pTempCtiDevice = NULL;
     bool rowFound = false;
 
-    RWTime start, stop, querytime;;
+    RWTime start, stop, querytime;
+
+    if(removeFunc != NULL)
+    {
+        _removeFunc = removeFunc;
+    }
 
     try
     {
@@ -710,21 +740,11 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                 else if(rowFound)
                 {
                     start = start.now();
-                    #if 1
 
-                    removeAndDestroy(removeFunc, arg);
-
-                    #else
-                    do
+                    if(_removeFunc)
                     {
-                        pTempCtiDevice = remove(removeFunc, arg);
-                        if(pTempCtiDevice != NULL)
-                        {
-                            delete pTempCtiDevice;
-                        }
-
-                    } while(pTempCtiDevice != NULL);
-                    #endif
+                        removeAndDestroy(_removeFunc, arg);
+                    }
 
                     stop = stop.now();
                     if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
@@ -945,7 +965,8 @@ CtiDeviceBase* CtiDeviceManager::RemoteGetEqualbyName (const RWCString &RemoteNa
 }
 
 CtiDeviceManager::CtiDeviceManager() :
-  _includeScanInfo(false)
+  _includeScanInfo(false),
+  _removeFunc(NULL)
 {}
 
 CtiDeviceManager::~CtiDeviceManager()
@@ -1013,14 +1034,14 @@ void CtiDeviceManager::RefreshScanRates(LONG id)
         if(id > 0)
         {
             pTempCtiDevice = getEqual(id);
-            pTempCtiDevice->invalidateScanRates();     // Mark all Scan Rate elements as needing refresh..
+            if(pTempCtiDevice) pTempCtiDevice->invalidateScanRates();     // Mark all Scan Rate elements as needing refresh..
         }
         else
         {
             for(;itr();)
             {
                 pTempCtiDevice = itr.value();
-                pTempCtiDevice->invalidateScanRates();     // Mark all Scan Rate elements as needing refresh..
+                if(pTempCtiDevice) pTempCtiDevice->invalidateScanRates();     // Mark all Scan Rate elements as needing refresh..
             }
         }
     }

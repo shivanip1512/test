@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2002/09/16 14:36:19 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2002/09/16 21:51:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1277,37 +1277,29 @@ INT RefreshPorterRTDB(void *ptr)
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(DeviceManager.getMux());
 
+        RWCString category;
+        RWCString devicetype;
+
         if(pChg != NULL)
         {
             CtiDevice *changeddev;
 
             id = pChg->getId();
+
             if(NULL == (changeddev = DeviceManager.getEqual(id)))
             {
                 id = 0;
             }
-            else if(changeddev && resolvePAOType(pChg->getCategory(), pChg->getObjectType()) != changeddev->getType())
+            else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << changeddev->getName() << " has changed type to " << pChg->getObjectType() << " from " << desolveDeviceType(changeddev->getType()) << endl;
-                }
-
-                if( DeviceManager.orphan(id) )
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    id = 0; // This should force a reload of all devices!
-                }
+                category = pChg->getCategory();
+                devicetype = pChg->getObjectType();
             }
         }
 
         if(id)
         {
-            DeviceManager.RefreshList(id);
+            DeviceManager.RefreshList(id, category, devicetype);
         }
         else
         {

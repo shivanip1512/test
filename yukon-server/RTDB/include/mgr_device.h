@@ -11,12 +11,11 @@
  * Originated by:
  *     Corey G. Plender    7/7/99
  *
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_device.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/09/09 21:45:19 $
-*
+ *
+ * PVCS KEYWORDS:
+ * REVISION     :  $Revision: 1.10 $
+ * DATE         :  $Date: 2002/09/16 21:51:31 $
+ *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -38,6 +37,7 @@ class IM_EX_DEVDB CtiDeviceManager : public CtiRTDB<CtiDeviceBase>
 {
 private:
 
+   bool (*_removeFunc)(CtiDeviceBase*,void*);
    bool _includeScanInfo;
 
    // Inherit "List" from Parent
@@ -52,7 +52,7 @@ public:
    CtiDeviceManager();
    virtual ~CtiDeviceManager();
 
-   void RefreshList(LONG paoID);
+   void RefreshList(LONG paoID, RWCString category = RWCString(""), RWCString devicetype = RWCString(""));
    void RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, bool (*removeFunc)(CtiDeviceBase*,void*) = isNotADevice, void *d = NULL);
 
    void DumpList(void);
