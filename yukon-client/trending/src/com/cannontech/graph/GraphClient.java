@@ -86,6 +86,7 @@ private class TrendDataAutoUpdater extends Thread
 		}
 	}
 }
+	private int savedViewType = TrendModelType.LINE_VIEW;
 	private static Graph graphClass = null;
 	private static javax.swing.JFrame graphClientFrame = null;
 	private final java.lang.String DB_ALIAS = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
@@ -183,16 +184,16 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		getGraph().setUpdateTrend(true);	
 		
 		com.cannontech.clientutils.CTILogger.info(" don't change model");
-		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);		
+		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 	}
 	else if (event.getSource() == getStartDateComboBox())
 	{
 		// Need to make sure the date has changed otherwise we are doing a billion updates on the one stateChange.
-		if( currentStartDate.compareTo((Object)ivjStartDateComboBox.getSelectedDate()) != 0 )
+		if( getCurrentStartDate().compareTo((Object)ivjStartDateComboBox.getSelectedDate()) != 0 )
 		{
 			com.cannontech.clientutils.CTILogger.info("Changing Date!");
 			actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
-			currentStartDate = ivjStartDateComboBox.getSelectedDate();
+			setCurrentStartDate(ivjStartDateComboBox.getSelectedDate());
 		}
 	}
 	else if( event.getSource() == getViewMenu().getLineGraphRadioButtonItem() )
@@ -492,27 +493,28 @@ public void actionPerformed_ExitMenuItem()
 public void actionPerformed_ExportMenuItem()
 {
 	com.cannontech.graph.exportdata.SaveAsJFileChooser chooser = null;
-	switch(  getTabbedPane().getSelectedIndex()  )
+	
+	switch(  getGraph().getViewType()  )
 	{
-		case GRAPH_PANE:
+		case TrendModelType.TABULAR_VIEW:
 			chooser = new com.cannontech.graph.exportdata.SaveAsJFileChooser(
-				CtiUtilities.getExportDirPath(), GRAPH_PANE, 
-				getFreeChart(),	getGraph().getTrendModel().getChartName().toString(), getGraph().getTrendModel());
-				break;
-				
-		case TABULAR_PANE:
-			chooser = new com.cannontech.graph.exportdata.SaveAsJFileChooser(
-				CtiUtilities.getExportDirPath(), TABULAR_PANE, 
+				CtiUtilities.getExportDirPath(), getGraph().getViewType(), 
 				getGraph().getHtmlString(), getGraph().getTrendModel().getChartName().toString(), getGraph().getTrendModel());
 				break;
 				
-		case SUMMARY_PANE:
+		case TrendModelType.SUMMARY_VIEW:
 			chooser = new com.cannontech.graph.exportdata.SaveAsJFileChooser(
-				CtiUtilities.getExportDirPath(), SUMMARY_PANE, 
+				CtiUtilities.getExportDirPath(), getGraph().getViewType(), 
 				getGraph().getHtmlString(), getGraph().getTrendModel().getChartName().toString());
 				break;
-	}		
 
+		default:
+			chooser = new com.cannontech.graph.exportdata.SaveAsJFileChooser(
+				CtiUtilities.getExportDirPath(), getGraph().getViewType(), 
+				getFreeChart(),	getGraph().getTrendModel().getChartName().toString(), getGraph().getTrendModel());
+				break;
+				
+	}		
 }
 /**
  * Insert the method's description here.
@@ -522,7 +524,10 @@ public void actionPerformed_ExportMenuItem()
 public void actionPerformed_GetRefreshButton( int refreshModelType )
 {
 	if( refreshModelType >= 0 )
+	{
 		getGraph().setViewType( refreshModelType );
+		savedViewType = refreshModelType;
+	}
 	
 	java.awt.Cursor savedCursor = null;
 
@@ -1097,7 +1102,18 @@ private String getDirectory()
 	return directory;
 }
 	//private OptionsMenu optionsMenu = null;
-
+private Date getCurrentStartDate()
+{
+	if( currentStartDate == null)
+	{
+		currentStartDate = ServletUtil.getToday();	//init to today.
+	}
+	return currentStartDate;
+}
+private void setCurrentStartDate(Date newStartDate)
+{
+	currentStartDate = newStartDate;
+}
 private FileMenu getFileMenu()
 {
 	if (fileMenu == null)
@@ -1117,6 +1133,7 @@ private com.cannontech.jfreechart.chart.YukonChartPanel getFreeChartPanel()
 	{
 		freeChartPanel = new com.cannontech.jfreechart.chart.YukonChartPanel(getFreeChart());
 		freeChartPanel.setVisible(true);
+		freeChartPanel.setPopupMenu(null);	//DISABLE popup properties menu
 	}
 
 	// turn all zoom on
@@ -1314,8 +1331,8 @@ private com.cannontech.common.gui.util.DateComboBox getStartDateComboBox() {
 			ivjStartDateComboBox.setName("StartDateComboBox");
 			ivjStartDateComboBox.setMinimumSize(new java.awt.Dimension(50, 23));
 			// user code begin {1}
-			currentStartDate = ivjStartDateComboBox.getSelectedDate();
-			com.cannontech.clientutils.CTILogger.info(" DAY -> "+ivjStartDateComboBox.getSelectedDate() + " and  " + currentStartDate);
+			setCurrentStartDate(ivjStartDateComboBox.getSelectedDate());
+			com.cannontech.clientutils.CTILogger.info(" DAY -> "+ivjStartDateComboBox.getSelectedDate() + " and  " + getCurrentStartDate());
 			ivjStartDateComboBox.addActionListener(this);
 			ivjStartDateComboBox.setEnabled(false);
 			// user code end
@@ -2222,83 +2239,75 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 {
 	if( event.getSource() == getTabbedPane())
 	{
-		if( getTabbedPane().getSelectedComponent() == getGraphTabPanel())
+		java.awt.Cursor savedCursor = null;
+		try
 		{
-			com.cannontech.clientutils.CTILogger.info("GRAPH TAB");
-		}
-		else if( getTabbedPane().getSelectedComponent() == getTabularTabScrollPane())
-		{
-			com.cannontech.clientutils.CTILogger.info("TABULAR TAB");
-		}
-		else if( getTabbedPane().getSelectedComponent() == getSummaryTabScrollPane())
-		{
-			com.cannontech.clientutils.CTILogger.info("SUMMARY TAB");
-		}
-	}			
-
-	java.awt.Cursor savedCursor = null;
-	try
-	{
-		// set the cursor to a waiting cursor
-		savedCursor = this.getCursor();
-		this.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
-
-		if( getTabbedPane().getSelectedIndex() == GRAPH_PANE )
-		{
-			if( getTreeViewPanel().getSelectedNode().getParent() == null)	//has no parent, therefore is the root.
-			{
-				showPopupMessage("Please Select a Trend From the list", javax.swing.JOptionPane.WARNING_MESSAGE);
-			}
-			getGraph().update();
-		}
-			
-		else if( getTabbedPane().getSelectedIndex()  == TABULAR_PANE )
-		{
-			if( getTreeViewPanel().getSelectedNode().getParent() == null)
-			{
-				getTabularEditorPane().setText("<CENTER>Please Select a Trend from the list");
-				getSliderPanel().setVisible(false);
-				return;
-			}
-			if (!getTabularSlider().getModel().getValueIsAdjusting())
-			{
-				getGraph().update();
-				StringBuffer buf = new StringBuffer();
-				buf.append( buildHTMLBuffer(new TabularHtml()));
-				buf.append("</CENTER></HTML>");
-				getTabularEditorPane().setText( buf.toString() );
-				getTabularEditorPane().setCaretPosition(0);
-				getGraph().setHtmlString(buf);
-			}
-		}
+			// set the cursor to a waiting cursor
+			savedCursor = this.getCursor();
+			this.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 	
-		else if( getTabbedPane().getSelectedIndex()  == SUMMARY_PANE )
-		{
-			if( getTreeViewPanel().getSelectedNode().getParent() == null)
-				getSummaryEditorPane().setText("<CENTER>Please Select a Trend from the list");
-			else
+			if( getTabbedPane().getSelectedComponent() == getGraphTabPanel())
 			{
-				StringBuffer buf = new StringBuffer();
+				com.cannontech.clientutils.CTILogger.info("GRAPH TAB");
+				getGraph().setViewType(savedViewType);
+				if( getTreeViewPanel().getSelectedNode().getParent() == null)	//has no parent, therefore is the root.
+				{
+					showPopupMessage("Please Select a Trend From the list", javax.swing.JOptionPane.WARNING_MESSAGE);
+				}
 				getGraph().update();
-				buf.append( buildHTMLBuffer( new PeakHtml()));
-				buf.append( buildHTMLBuffer(new UsageHtml()));
-	
-				buf.append("</CENTER></HTML>");
-				getSummaryEditorPane().setText(buf.toString());
-				getSummaryEditorPane().setCaretPosition(0);
-				getGraph().setHtmlString(buf);
+			}
+				
+			else if( getTabbedPane().getSelectedComponent() == getTabularTabScrollPane())
+			{
+				com.cannontech.clientutils.CTILogger.info("TABULAR TAB");
+				getGraph().setViewType(TrendModelType.TABULAR_VIEW);
+				if( getTreeViewPanel().getSelectedNode().getParent() == null)
+				{
+					getTabularEditorPane().setText("<CENTER>Please Select a Trend from the list");
+					getSliderPanel().setVisible(false);
+					return;
+				}
+				if (!getTabularSlider().getModel().getValueIsAdjusting())
+				{
+					getGraph().update();
+					StringBuffer buf = new StringBuffer();
+					buf.append( buildHTMLBuffer(new TabularHtml()));
+					buf.append("</CENTER></HTML>");
+					getTabularEditorPane().setText( buf.toString() );
+					getTabularEditorPane().setCaretPosition(0);
+					getGraph().setHtmlString(buf);
+				}
+			}
+			else if( getTabbedPane().getSelectedComponent() == getSummaryTabScrollPane())
+			{
+				com.cannontech.clientutils.CTILogger.info("SUMMARY TAB");
+				getGraph().setViewType(TrendModelType.SUMMARY_VIEW);
+				
+				if( getTreeViewPanel().getSelectedNode().getParent() == null)
+					getSummaryEditorPane().setText("<CENTER>Please Select a Trend from the list");
+				else
+				{
+					StringBuffer buf = new StringBuffer();
+					getGraph().update();
+					buf.append( buildHTMLBuffer( new PeakHtml()));
+					buf.append( buildHTMLBuffer(new UsageHtml()));
+		
+					buf.append("</CENTER></HTML>");
+					getSummaryEditorPane().setText(buf.toString());
+					getSummaryEditorPane().setCaretPosition(0);
+					getGraph().setHtmlString(buf);
+				}
 			}
 		}
-	}
-	catch( Exception e)
-	{
-		e.printStackTrace();
-	}
-	finally
-	{
-		this.setCursor( savedCursor );
+		catch( Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			this.setCursor( savedCursor );
+		}	
 	}	
-	
 }
 /**
  * Calls the appropriate update function according to the tab selected.
@@ -2314,14 +2323,15 @@ public void updateCurrentPane()
 	Object selectedItem = getTreeViewPanel().getSelectedItem();
 	if( selectedItem != null)
 	{
-		if( getTabbedPane().getSelectedIndex()  == GRAPH_PANE )
+		if( getTabbedPane().getSelectedComponent() == getGraphTabPanel())
 		{
+			getGraph().setViewType(savedViewType);
 			getGraph().update();
 			getFreeChartPanel().setChart(getFreeChart());
 		}
-		
-		else if( getTabbedPane().getSelectedIndex()  == TABULAR_PANE )
+		else if( getTabbedPane().getSelectedComponent() == getTabularTabScrollPane())
 		{
+			getGraph().setViewType(TrendModelType.TABULAR_VIEW);
 			getGraph().update();
 			StringBuffer buf =  new StringBuffer();
 			buf.append(buildHTMLBuffer(new TabularHtml()));
@@ -2330,13 +2340,12 @@ public void updateCurrentPane()
 			getTabularEditorPane().setText( buf.toString() );
 			getTabularEditorPane().setCaretPosition(0);
 			getGraph().setHtmlString(buf);
-			
 		}
-	
-		else if( getTabbedPane().getSelectedIndex()  == SUMMARY_PANE )
+		else if( getTabbedPane().getSelectedComponent() == getSummaryTabScrollPane())
 		{
 			StringBuffer buf = new StringBuffer();
 
+			getGraph().setViewType(TrendModelType.SUMMARY_VIEW);
 			getGraph().update();
 			buf.append(buildHTMLBuffer(new PeakHtml()));
 			buf.append(buildHTMLBuffer(new UsageHtml()));

@@ -22,12 +22,11 @@ public class GraphBean implements GraphDefines
 	private Graph graphClass = null;
 
 	private String period = ServletUtil.historicalPeriods[0];
-	private String tab = GRAPH_PANE_STRING;
 	private int gdefid = -1;
 	private Date start = null;
 	private Date stop = null;
 	private int viewType = TrendModelType.LINE_VIEW;
-	private int options = 0x000;
+	private int options = 0x0000;
 	private String format = "png";
 	
 	private int page = 1;
@@ -158,14 +157,6 @@ public class GraphBean implements GraphDefines
 		}
 	}
 	/**
-	 * Method getTab.
-	 * @return String
-	 */
-	public String getTab()
-	{
-		return tab;
-	}
-	/**
 	 * Method getWidth.
 	 * @return int
 	 */
@@ -182,14 +173,6 @@ public class GraphBean implements GraphDefines
 		return getGraph().getHeight();
 	}
 		
-	/**
-	 * Method setTab.
-	 * @param newTab java.lang.String
-	 */
-	public void setTab(String newTab)
-	{
-		tab = newTab;
-	}
 	/**
 	 * Method setGdefid.
 	 * @param newGdefid int
@@ -250,7 +233,7 @@ public class GraphBean implements GraphDefines
 	 * Method getStop.
 	 * @return Date
 	 */
-	public Date getStop()
+	private Date getStop()
 	{
 		stop = com.cannontech.util.ServletUtil.getEndingDateOfInterval( getStart(), getPeriod());
 		return stop;
@@ -388,12 +371,7 @@ public class GraphBean implements GraphDefines
 	public void updateCurrentPane()
 	{
 		setGraphDefinitionDates(null, null);
-		if( getTab().equalsIgnoreCase(GRAPH_PANE_STRING) )
-		{
-			getGraph().update();
-		}
-		
-		else if( getTab().equalsIgnoreCase(TABULAR_PANE_STRING) )
+		if( getViewType() == TrendModelType.TABULAR_VIEW)
 		{
 			getGraph().update();
 			
@@ -403,9 +381,8 @@ public class GraphBean implements GraphDefines
 			buf.append("</CENTER></HTML>");
 			getGraph().setHtmlString(buf);
 		}
-	
-		else if( getTab().equalsIgnoreCase(SUMMARY_PANE_STRING ))
-		{
+		else if( getViewType() == TrendModelType.SUMMARY_VIEW)
+		{			
 			StringBuffer buf = new StringBuffer();
 	
 			getGraph().update();
@@ -414,6 +391,10 @@ public class GraphBean implements GraphDefines
 			buf.append("</CENTER></HTML>");
 			
 			getGraph().setHtmlString(buf);
+		}
+		else
+		{
+			getGraph().update();
 		}
 	}
 	/**
