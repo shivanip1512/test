@@ -11,6 +11,8 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.application.BillingRole;
+import com.cannontech.roles.application.DBEditorRole;
 
 /**
  * @author alauinger
@@ -116,13 +118,26 @@ public class AuthDump {
 	    		}
 	    	}
 	    }
-	    	   	    
+	    	   	   
 	    LiteYukonUser yukonUser = AuthFuncs.login("yukon", "yukon");
 	    if(yukonUser != null) {
 	    	System.out.println("yukon/yukon is a valid login");
 	    }
 	    else {
 	    	System.out.println("yukon/yukon failed to login");
+	    }
+	    
+	    if(AuthFuncs.checkRole(yukonUser, DBEditorRole.ROLEID) != null) {
+	    	System.out.println("yukon/yukon has database editor role");
+	    	if(AuthFuncs.checkRoleProperty(yukonUser, DBEditorRole.POINT_ID_EDIT)) {
+	    		System.out.println("yukon/yukon has property database editor point id edit is true, value is:"  + AuthFuncs.getRolePropertyValue(yukonUser, DBEditorRole.POINT_ID_EDIT));
+	    	}
+	    	else {
+	    		System.out.println("yukon/yukon, database editor point id edit is not true, value is: " + AuthFuncs.getRolePropertyValue(yukonUser, DBEditorRole.POINT_ID_EDIT));
+	    	}
+	    }
+	    else {
+	    	System.out.println("yukon/yukon does _not_ have database editor role POINT_ID_EDIT");
 	    }
 	    
 	    yukonUser = AuthFuncs.login("yukon", "yuKon");
