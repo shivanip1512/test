@@ -68,7 +68,7 @@ public DBConverter()
 
 public String getName()
 {
-	return "DBConverter";
+	return "DSM2/Converter";
 }
 
 public String getParamText()
