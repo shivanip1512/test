@@ -158,10 +158,10 @@ private:
 public:
 
     CtiIONWaveform( vector< CtiIONValue * > structValues );
-    CtiIONWaveform( CtiIONNumeric *samplingFrequency,
+/*    CtiIONWaveform( CtiIONNumeric *samplingFrequency,
                     CtiIONNumeric *offset,
                     CtiIONNumeric *scale );
-
+*/
     enum Elements
     {
         SamplingFrequency,

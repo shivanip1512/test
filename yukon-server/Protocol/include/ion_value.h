@@ -93,7 +93,8 @@ public:
     bool         isValueType ( ValueTypes type ) const;
     ValueTypes   getValueType( void ) const;
 
-    virtual bool isNumeric( void ) const;
+    virtual bool   isNumeric( void ) const;
+    virtual double getNumericValue( void ) const;
 
     static bool  isFixed( CtiIONValue *toCheck );
     bool         isFixed( void ) const;

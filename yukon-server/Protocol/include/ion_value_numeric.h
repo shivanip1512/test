@@ -17,20 +17,18 @@
 
 #include "ctitypes.h"
 
-#include "ion_value_fixed.h"
-
 class CtiIONNumeric
 {
 private:
+
 protected:
+
 public:
 
-    CtiIONNumeric( ) { };
+    CtiIONNumeric( )  { };
     ~CtiIONNumeric( ) { };
 
-    virtual double getNumericValue( void ) const = 0;
-
-    bool isNumeric( void ) const  {  return true;  };
+    virtual double getNumericValue( void ) const;
 };
 
 

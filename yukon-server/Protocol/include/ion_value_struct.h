@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/02/12 01:14:54 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/02/14 16:53:50 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,6 +65,8 @@ protected:
 
     void putSerialized( unsigned char *buf ) const;
     unsigned int getSerializedLength( void ) const;
+
+    unsigned char getStructClassDescriptor( void ) const;
 
     friend CtiIONValue *CtiIONValue::restoreObject( unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
 

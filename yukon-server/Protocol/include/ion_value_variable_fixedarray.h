@@ -33,6 +33,21 @@ private:
 
     FixedArrayTypes _arrayType;
 
+    enum FixedArrayItemsDescriptor
+    {
+        ItemsDescriptor_ItemsNibbleMax  = 0xd,
+        ItemsDescriptor_ItemsNextByte   = 0xe,
+        ItemsDescriptor_ItemsNext4Bytes = 0xf
+    };
+
+    enum FixedArrayLengthDescriptor
+    {
+        LengthDescriptor_LengthNibbleMax  = 0xc,
+        LengthDescriptor_LengthNextByte   = 0xd,
+        LengthDescriptor_LengthNext4Bytes = 0xe,
+        LengthDescriptor_Reserved         = 0xf
+    };
+
     enum FixedArrayClassDescriptor
     {
         ClassDescriptor_FixedArray_Char        = 0xa,
@@ -41,7 +56,10 @@ private:
         ClassDescriptor_FixedArray_SignedInt   = 0xd,
         ClassDescriptor_FixedArray_UnsignedInt = 0xe
     };
-
+/*
+    unsigned char low_nibble ( unsigned char byte )  {  return  (byte & 0x0f);        };
+    unsigned char high_nibble( unsigned char byte )  {  return ((byte & 0xf0) >> 4);  };
+*/
 protected:
 
     vector< CtiIONFixedArrayElement * > _array;

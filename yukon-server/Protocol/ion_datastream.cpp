@@ -46,7 +46,7 @@ void CtiIONDataStream::parseByteStream( unsigned char *buf, unsigned long len )
 
     while( pos < len )
     {
-        tmpValue = CtiIONValue::restoreObject(buf + pos, len, &itemLength);
+        tmpValue = CtiIONValue::restoreObject((buf + pos), (len - pos), &itemLength);
 
         if( tmpValue != NULL && tmpValue->isValid() )
         {

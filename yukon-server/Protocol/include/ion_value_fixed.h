@@ -13,13 +13,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/02/12 01:14:53 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/02/14 16:53:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "ion_value.h"
+#include "ion_value_numeric.h"
 
 //  ACH:  sometime, make the Fixed types into templatized versions...  the code repetition is kind of silly
 
@@ -52,6 +53,8 @@ protected:
 
     void putSerializedHeader( unsigned char *buf ) const;
     unsigned int getSerializedHeaderLength( void ) const;
+
+    unsigned char getFixedIONClassType( void ) const;
 
     virtual void putSerializedValue( unsigned char *buf ) const = 0;
     virtual unsigned int getSerializedValueLength( void ) const = 0;
@@ -86,5 +89,6 @@ public:
         Fixed_UnsignedInt,
     };
 };
+
 
 #endif // #ifndef __ION_VALUE_FIXED_H__

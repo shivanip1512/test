@@ -16,11 +16,10 @@
  *-----------------------------------------------------------------------------*/
 
 #include "ion_value_variable.h"
-#include "ion_value_numeric.h"
 #include "ion_value_variable_fixedarray_element.h"
 
 
-class CtiIONBoolean : public CtiIONValueVariable, public CtiIONNumeric, public CtiIONFixedArrayElement
+class CtiIONBoolean : public CtiIONValueVariable, /*public CtiIONNumeric, */public CtiIONFixedArrayElement
 {
 private:
 
@@ -50,7 +49,8 @@ public:
     CtiIONBoolean &setValue( bool value );
     bool           getValue( void ) const;
 
-    double         getNumericValue( void ) const;
+    virtual bool isNumeric( void ) const  {  return true;  };
+    double getNumericValue( void ) const;
 };
 
 

@@ -19,7 +19,7 @@
 #include "ion_value_numeric.h"
 #include "ion_value_variable_fixedarray_element.h"
 
-class CtiIONUnsignedInt : public CtiIONValueFixed, public CtiIONNumeric, public CtiIONFixedArrayElement
+class CtiIONUnsignedInt : public CtiIONValueFixed, /*public CtiIONNumeric, */public CtiIONFixedArrayElement
 {
 private:
 
@@ -47,8 +47,8 @@ public:
     CtiIONUnsignedInt &setValue( unsigned long value );
     unsigned long      getValue( void ) const;
 
-    double             getNumericValue( void ) const;
-
+    virtual bool isNumeric( void ) const  {  return true;  };
+    double getNumericValue( void ) const;
 };
 
 #endif  //  #ifndef __ION_VALUE_FIXED_INTUNSIGNED_H__

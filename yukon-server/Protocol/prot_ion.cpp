@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/02/12 01:15:05 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/02/14 16:53:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -732,7 +732,7 @@ void CtiProtocolION::decodeExceptionScan( void )
         {
             if( inputIsValid(_appLayer, _dsIn) )
             {
-                CtiIONBoolean        *tmpValue;
+                CtiIONBoolean        *tmpBoolean;
                 ion_pointdata_struct  pdata;
                 RWTime Now;
 
@@ -743,13 +743,13 @@ void CtiProtocolION::decodeExceptionScan( void )
 
                     for( int i = 0; i < _dsIn.size(); i++ )
                     {
-                        tmpValue = (CtiIONBoolean *)(_dsIn[i]);
+                        tmpBoolean = (CtiIONBoolean *)(_dsIn[i]);
 
                         //  MAGIC NUMBER:  1-based offset
                         pdata.offset = i + 1;
                         pdata.time   = Now.seconds();
                         pdata.type   = StatusPointType;
-                        pdata.value  = tmpValue->getValue();
+                        pdata.value  = tmpBoolean->getValue();
 
                         _snprintf(pdata.name, 19, "Digital Input %d", pdata.offset);
                         pdata.name[19] = 0;
@@ -916,7 +916,6 @@ void CtiProtocolION::decodeIntegrityScan( void )
             if( inputIsValid(_appLayer, _dsIn) )
             {
                 int i;
-                CtiIONNumeric *tmpNumeric;
                 CtiIONBoolean *tmpBoolean;
                 ion_pointdata_struct pdata;
                 RWTime Now;
@@ -939,111 +938,91 @@ void CtiProtocolION::decodeIntegrityScan( void )
                     _pointData.push_back(pdata);
                 }
 
-                tmpNumeric = (CtiIONNumeric *)(_dsIn[i++]);
-
                 pdata.offset = OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KW;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = tmpNumeric->getNumericValue();
+                pdata.value  = _dsIn[i++]->getNumericValue();
                 _snprintf(pdata.name, 19, "KW");
                 pdata.name[19] = 0;
 
                 _pointData.push_back(pdata);
 
-                tmpNumeric = (CtiIONNumeric *)(_dsIn[i++]);
-
                 pdata.offset = OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVA;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = tmpNumeric->getNumericValue();
+                pdata.value  = _dsIn[i++]->getNumericValue();
                 _snprintf(pdata.name, 19, "KVA");
                 pdata.name[19] = 0;
 
                 _pointData.push_back(pdata);
 
-                tmpNumeric = (CtiIONNumeric *)(_dsIn[i++]);
-
                 pdata.offset = OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVAR;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = tmpNumeric->getNumericValue();
+                pdata.value  = _dsIn[i++]->getNumericValue();
                 _snprintf(pdata.name, 19, "KVAR");
                 pdata.name[19] = 0;
 
                 _pointData.push_back(pdata);
 
-                tmpNumeric = (CtiIONNumeric *)(_dsIn[i++]);
-
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_A_VOLTAGE;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = tmpNumeric->getNumericValue();
+                pdata.value  = _dsIn[i++]->getNumericValue();
                 _snprintf(pdata.name, 19, "Phase A Volts");
                 pdata.name[19] = 0;
 
                 _pointData.push_back(pdata);
 
-                tmpNumeric = (CtiIONNumeric *)(_dsIn[i++]);
-
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_B_VOLTAGE;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = tmpNumeric->getNumericValue();
+                pdata.value  = _dsIn[i++]->getNumericValue();
                 _snprintf(pdata.name, 19, "Phase B Volts");
                 pdata.name[19] = 0;
 
                 _pointData.push_back(pdata);
 
-                tmpNumeric = (CtiIONNumeric *)(_dsIn[i++]);
-
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = tmpNumeric->getNumericValue();
+                pdata.value  = _dsIn[i++]->getNumericValue();
                 _snprintf(pdata.name, 19, "Phase C Volts");
                 pdata.name[19] = 0;
 
                 _pointData.push_back(pdata);
 
-                tmpNumeric = (CtiIONNumeric *)(_dsIn[i++]);
-
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_A_CURRENT;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = tmpNumeric->getNumericValue();
+                pdata.value  = _dsIn[i++]->getNumericValue();
                 _snprintf(pdata.name, 19, "Phase A Current");
                 pdata.name[19] = 0;
 
                 _pointData.push_back(pdata);
 
-                tmpNumeric = (CtiIONNumeric *)(_dsIn[i++]);
-
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_B_CURRENT;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = tmpNumeric->getNumericValue();
+                pdata.value  = _dsIn[i++]->getNumericValue();
                 _snprintf(pdata.name, 19, "Phase B Current");
                 pdata.name[19] = 0;
 
                 _pointData.push_back(pdata);
 
-                tmpNumeric = (CtiIONNumeric *)(_dsIn[i++]);
-
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_C_CURRENT;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = tmpNumeric->getNumericValue();
+                pdata.value  = _dsIn[i++]->getNumericValue();
                 _snprintf(pdata.name, 19, "Phase C Current");
                 pdata.name[19] = 0;
 
                 _pointData.push_back(pdata);
 
-                tmpNumeric = (CtiIONNumeric *)(_dsIn[i++]);
-
                 pdata.offset = 100;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = tmpNumeric->getNumericValue();
+                pdata.value  = _dsIn[i++]->getNumericValue();
                 _snprintf(pdata.name, 19, "Power Factor");
                 pdata.name[19] = 0;
 
@@ -1217,16 +1196,13 @@ void CtiProtocolION::decodeEventLogRead( void )
         {
             if( inputIsValid(_appLayer, _dsIn) )
             {
-                CtiIONNumeric        *tmpValue;
                 ion_pointdata_struct  pdata;
                 RWTime Now;
 
                 if( _dsIn.size() > 0 && _dsIn[0]->isNumeric() )
                 {
-                    tmpValue = (CtiIONNumeric *)(_dsIn[0]);
-
                     //  MAGIC NUMBER WARNING:  subtract 1 because it's a look-ahead counter
-                    _eventLogCurrentPosition = tmpValue->getNumericValue() - 1;
+                    _eventLogCurrentPosition = _dsIn[0]->getNumericValue() - 1;
 
                     if( _eventLogLastPosition == 0 && _eventLogDepth == 0 )
                     {
@@ -1242,7 +1218,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "Invalid event handle return, aborting" << endl;
+                        dout << "Invalid event log position return, aborting" << endl;
                     }
 
                     _ionState = State_Abort;
@@ -1273,15 +1249,12 @@ void CtiProtocolION::decodeEventLogRead( void )
         {
             if( inputIsValid(_appLayer, _dsIn) )
             {
-                CtiIONNumeric        *tmpValue;
                 ion_pointdata_struct  pdata;
                 RWTime Now;
 
                 if( _dsIn.size() > 0 && _dsIn[0]->isNumeric() )
                 {
-                    tmpValue = (CtiIONNumeric *)(_dsIn[0]);
-
-                    _eventLogDepth = tmpValue->getNumericValue();
+                    _eventLogDepth = _dsIn[0]->getNumericValue();
 
                     _ionState = State_RequestEventLogRecords;
                 }
@@ -1290,7 +1263,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "Invalid event handle return, aborting" << endl;
+                        dout << "Invalid event log depth return, aborting" << endl;
                     }
 
                     _ionState = State_Abort;
@@ -1321,16 +1294,13 @@ void CtiProtocolION::decodeEventLogRead( void )
         {
             if( inputIsValid(_appLayer, _dsIn) )
             {
-                CtiIONNumeric        *tmpValue;
                 ion_pointdata_struct  pdata;
                 RWTime Now;
 
                 _ionState = State_Complete;
-/*                if( _dsIn.itemIs(0, CtiIONValue::IONNumeric) )
+/*                if( _dsIn[0].isNumeric() )
                 {
-                    tmpValue = (CtiIONNumeric *)(_dsIn[0]);
-
-                    _eventLogDepth = tmpValue->getNumericValue();
+                    _eventLogDepth = _dsIn[0]->getNumericValue();
 
                     _ionState = State_RequestEventLogDepth;
                 }
@@ -1339,7 +1309,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "Invalid event handle return, aborting" << endl;
+                        dout << "Invalid event log record return, aborting" << endl;
                     }
 
                     _ionState = State_Abort;

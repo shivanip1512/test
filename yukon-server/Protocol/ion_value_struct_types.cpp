@@ -188,7 +188,7 @@ CtiIONException::CtiIONException( vector< CtiIONValue * > structValues ) :
     }
 }
 
-
+/*
 CtiIONException::CtiIONException( CtiIONUnsignedInt *exceptionCode,
                                   CtiIONValue       *exceptionValue,
                                   CtiIONCharArray   *reason ) :
@@ -202,7 +202,7 @@ CtiIONException::CtiIONException( CtiIONUnsignedInt *exceptionCode,
 
     init(values);
 }
-
+*/
 
 CtiIONWaveform::CtiIONWaveform( vector< CtiIONValue * > structValues ) :
     CtiIONStruct(StructType_Waveform, 5)

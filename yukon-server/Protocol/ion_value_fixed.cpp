@@ -88,6 +88,34 @@ CtiIONValueFixed::FixedTypes CtiIONValueFixed::getFixedType( void ) const
 }
 
 
+unsigned char CtiIONValueFixed::getFixedIONClassType( void ) const
+{
+    unsigned char retVal;
+
+    switch( getFixedType() )
+    {
+        case Fixed_Char:        retVal = IONClass_Char;         break;
+        case Fixed_Float:       retVal = IONClass_Float;        break;
+        case Fixed_SignedInt:   retVal = IONClass_SignedInt;    break;
+        case Fixed_UnsignedInt: retVal = IONClass_UnsignedInt;  break;
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            retVal = 0xff;
+
+            break;
+        }
+    }
+
+    return retVal;
+}
+
+
 void CtiIONValueFixed::putSerialized( unsigned char *buf ) const
 {
     unsigned int offset = 0;
@@ -122,17 +150,17 @@ void CtiIONValueFixed::putSerializedHeader( unsigned char *buf ) const
 
     if( tmpLength <= 12 )
     {
-        *buf++ = make_byte(getFixedType(), tmpLength);
+        *buf++ = make_byte(getFixedIONClassType(), tmpLength);
     }
     else if( tmpLength <= 255 )
     {
-        *buf++ = make_byte(getFixedType(), ClassDescriptor_LengthNextByte);
+        *buf++ = make_byte(getFixedIONClassType(), ClassDescriptor_LengthNextByte);
 
         *buf++ = tmpLength & 0xFF;
     }
     else
     {
-        *buf++ = make_byte(getFixedType(), ClassDescriptor_LengthNext4Bytes);
+        *buf++ = make_byte(getFixedIONClassType(), ClassDescriptor_LengthNext4Bytes);
 
         *buf++ = tmpLength & 0xFF;
 

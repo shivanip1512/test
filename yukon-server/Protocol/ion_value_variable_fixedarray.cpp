@@ -284,12 +284,12 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
     tmp8b = buf[pos++];
     tmp4b = (tmp8b & 0xF0) >> 4;  //  high nibble of the byte
 
-    if( tmp4b <= 0xD )
+    if( tmp4b <= ItemsDescriptor_ItemsNibbleMax )
     {
         //  item count = value
         itemCount = tmp4b;
     }
-    else if( tmp4b == 0xE )
+    else if( tmp4b == ItemsDescriptor_ItemsNextByte )
     {
         //  item count = next 8 bits
         itemCount   = tmp8b & 0x0F;         //  4 bits written
@@ -297,19 +297,23 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
         itemCount <<= 4;
         itemCount  |= (tmp8b & 0xF0) >> 4;    //  8 bits written
     }
-    else  //  tmp4b == 0xF
+    else  //  if( tmp4b == ItemsDescriptor_ItemsNext4Bytes )
     {
         //  item count = next 32 bits
         itemCount   = tmp8b & 0x0F;         //  4 bits written
+
         tmp8b       = buf[pos++];
         itemCount <<= 8;
         itemCount  |= tmp8b;                //  12 bits written
+
         tmp8b       = buf[pos++];
         itemCount <<= 8;
         itemCount  |= tmp8b;                //  20 bits written
+
         tmp8b       = buf[pos++];
         itemCount <<= 8;
         itemCount  |= tmp8b;                //  28 bits written
+
         tmp8b       = buf[pos++];
         itemCount <<= 4;
         itemCount  |= (tmp8b & 0xF0) >> 4;  //  32 bits written
@@ -317,17 +321,17 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
 
     tmp4b = tmp8b & 0x0F;
 
-    if( tmp4b <= 0xC )
+    if( tmp4b <= LengthDescriptor_LengthNibbleMax )
     {
         //  array length = value
         arrayLength = tmp4b;
     }
-    else if( tmp4b == 0xD )
+    else if( tmp4b == LengthDescriptor_LengthNextByte )
     {
         //  array length = next 8 bits
         arrayLength   = buf[pos++];
     }
-    else if( tmp4b == 0xE )
+    else if( tmp4b == LengthDescriptor_LengthNext4Bytes )
     {
         //  array length = next 32 bits
         arrayLength   = buf[pos++];  //  8 bits written
@@ -338,7 +342,7 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
         arrayLength <<= 8;
         arrayLength  |= buf[pos++];  //  32 bits written
     }
-    else  //  tmp4b == 0xF - currently reserved, i don't know how to read it
+    else  //  tmp4b == LengthDescriptor_Reserved
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);

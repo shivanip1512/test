@@ -70,6 +70,12 @@ bool CtiIONValue::isNumeric( void ) const
 }
 
 
+double CtiIONValue::getNumericValue( void ) const
+{
+    return 0;
+}
+
+
 bool CtiIONValue::isFixed( void ) const
 {
     return getValueType() == ValueType_Fixed;
@@ -176,6 +182,8 @@ CtiIONValue *CtiIONValue::restoreObject( unsigned char *buf, unsigned long len, 
     ionClass        = (buf[pos] & 0xf0) >> 4;
     classDescriptor = (buf[pos] & 0x0f);
 
+    pos++;
+
     switch( ionClass )
     {
         case IONClass_Fixed0:
@@ -184,7 +192,7 @@ CtiIONValue *CtiIONValue::restoreObject( unsigned char *buf, unsigned long len, 
         case IONClass_Fixed3:
         case IONClass_Fixed4:
         {
-            newObject = Fixed::restoreFixed(ionClass, classDescriptor, buf, len, &tmpLength);
+            newObject = Fixed::restoreFixed(ionClass, classDescriptor, (buf + pos), (len - pos), &tmpLength);
 
             pos += tmpLength;
 
@@ -193,7 +201,7 @@ CtiIONValue *CtiIONValue::restoreObject( unsigned char *buf, unsigned long len, 
 
         case IONClass_VariableSize:
         {
-            newObject = Variable::restoreVariable(ionClass, classDescriptor, buf, len, &tmpLength);
+            newObject = Variable::restoreVariable(ionClass, classDescriptor, (buf + pos), (len - pos), &tmpLength);
 
             pos += tmpLength;
 
@@ -202,7 +210,7 @@ CtiIONValue *CtiIONValue::restoreObject( unsigned char *buf, unsigned long len, 
 
         case IONClass_Struct:
         {
-            newObject = Struct::restoreStruct(ionClass, classDescriptor, buf, len, &tmpLength);
+            newObject = Struct::restoreStruct(ionClass, classDescriptor, (buf + pos), (len - pos), &tmpLength);
 
             pos += tmpLength;
 
@@ -211,7 +219,7 @@ CtiIONValue *CtiIONValue::restoreObject( unsigned char *buf, unsigned long len, 
 
         case IONClass_StructArray:
         {
-            newObject = StructArray::restoreStructArray(ionClass, classDescriptor, buf, len, &tmpLength);
+            newObject = StructArray::restoreStructArray(ionClass, classDescriptor, (buf + pos), (len - pos), &tmpLength);
 
             pos += tmpLength;
 

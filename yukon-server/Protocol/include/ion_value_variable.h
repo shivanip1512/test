@@ -13,13 +13,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/02/12 01:14:54 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/02/14 16:53:50 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "ion_value.h"
+#include "ion_value_numeric.h"
 
 class CtiIONValueVariable : public CtiIONValue
 {

@@ -33,6 +33,7 @@ CtiIONStruct::~CtiIONStruct( )
 
 }
 
+
 CtiIONStruct::StructTypes CtiIONStruct::getStructType( void ) const
 {
     return _structType;
@@ -85,6 +86,41 @@ void CtiIONStruct::init( vector< CtiIONValue * > &structValues )
 }
 
 
+unsigned char CtiIONStruct::getStructClassDescriptor( void ) const
+{
+    unsigned char retVal;
+
+    switch( getStructType() )
+    {
+        case StructType_LogRecord:      retVal = StructClassDescriptor_LogRecord;   break;
+        case StructType_Alarm:          retVal = StructClassDescriptor_Alarm;       break;
+        case StructType_Event:          retVal = StructClassDescriptor_Event;       break;
+        case StructType_Range:          retVal = StructClassDescriptor_Range;       break;
+        case StructType_List:           retVal = StructClassDescriptor_List;        break;
+        case StructType_Exception:      retVal = StructClassDescriptor_Exception;   break;
+        case StructType_Waveform:       retVal = StructClassDescriptor_Waveform;    break;
+        case StructType_Date:           retVal = StructClassDescriptor_Date;        break;
+        case StructType_Calendar:       retVal = StructClassDescriptor_Calendar;    break;
+        case StructType_Profile:        retVal = StructClassDescriptor_Profile;     break;
+        case StructType_StringArray:    retVal = StructClassDescriptor_StringArray; break;
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            retVal = 0xff;
+
+            break;
+        }
+    }
+
+    return retVal;
+}
+
+
 unsigned int CtiIONStruct::getSerializedLength( void ) const
 {
     unsigned int length = 0;
@@ -109,7 +145,7 @@ void CtiIONStruct::putSerialized( unsigned char *buf ) const
 
     CtiIONStructEnd structEnd;
 
-    buf[pos++] = make_byte(IONClass_Struct, getStructType());
+    buf[pos++] = make_byte(IONClass_Struct, getStructClassDescriptor());
 
     for( ionStructIterator_const itr = _structElements.begin(); itr != _structElements.end(); itr++ )
     {
