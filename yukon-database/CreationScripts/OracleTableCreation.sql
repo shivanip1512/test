@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     4/27/2004 11:59:12 AM                        */
+/* Created on:     4/28/2004 11:58:40 AM                        */
 /*==============================================================*/
 
 
@@ -1118,12 +1118,13 @@ create table CTIDatabase  (
    Version              VARCHAR2(6)                      not null,
    CTIEmployeeName      VARCHAR2(30)                     not null,
    DateApplied          DATE,
-   Notes                VARCHAR2(300)
+   Notes                VARCHAR2(300),
+   Build                NUMBER                           not null
 )
 /
 
 
-insert into CTIDatabase values('3.00', 'Ryan', '17-FEB-2004', 'Many changes to a major version jump');
+insert into CTIDatabase values('3.00', 'Ryan', '22-APR-2004', 'Many changes to a major version jump', 12);
 
 alter table CTIDatabase
    add constraint PK_CTIDATABASE primary key (Version)
@@ -2508,6 +2509,8 @@ create table EnergyCompany  (
 /
 
 
+insert into EnergyCompany VALUES (-1,'Default Energy Company',0,-100);
+
 alter table EnergyCompany
    add constraint PK_ENERGYCOMPANY primary key (EnergyCompanyID)
 /
@@ -2550,6 +2553,8 @@ create table EnergyCompanyOperatorLoginList  (
 )
 /
 
+
+INSERT INTO EnergyCompanyOperatorLoginList VALUES (-1,-100);
 
 alter table EnergyCompanyOperatorLoginList
    add constraint PK_ENERGYCOMPANYOPERATORLOGINL primary key (EnergyCompanyID, OperatorLoginID)
@@ -6285,7 +6290,8 @@ create table YukonUser  (
 
 insert into YukonUser values(-1,'admin','admin',0,'01-JAN-00','Enabled');
 insert into YukonUser values(-2,'yukon','yukon',0,'01-JAN-00','Enabled');
-insert into YukonUser values (-9999,'(none)','(none)',0,'01-JAN-00','Disabled');
+insert into YukonUser values(-100,'DefaultCTI','$cti_default',0,'01-JAN-00','Enabled');
+insert into YukonUser values(-9999,'(none)','(none)',0,'01-JAN-00','Disabled');
 
 alter table YukonUser
    add constraint PK_YUKONUSER primary key (UserID)

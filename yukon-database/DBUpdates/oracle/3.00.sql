@@ -1439,6 +1439,9 @@ alter table DeviceLoadProfile modify VoltageDmdRate not null;
 update yukonpaobject set type = 'MCT-410iLE' where type = 'MCT-410 kWh Only';
 
 
+alter table CTIDatabse add Build number;
+update CTIDatabse set Build = 0;
+alter table CTIDatabse modify Build not null;
 
 
 
@@ -1453,4 +1456,4 @@ update yukonpaobject set type = 'MCT-410iLE' where type = 'MCT-410 kWh Only';
 /******************************************************************************/
 /* VERSION INFO                                                               */
 /******************************************************************************/
-insert into CTIDatabase values('3.00', 'Ryan', '22-APR-2004', 'Many changes to a major version jump');
+insert into CTIDatabase values('3.00', 'Ryan', '22-APR-2004', 'Many changes to a major version jump', 12);
