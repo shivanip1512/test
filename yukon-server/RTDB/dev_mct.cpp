@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2002/08/20 22:44:16 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2002/08/28 16:13:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -693,6 +693,7 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
 
     if(OutMessage != NULL)
     {
+        if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
