@@ -85,16 +85,26 @@ public class UpdateUtil {
 		
 		if( (displayAttrib & PointAttributes.LOW_LIMIT) != 0 ) {
 			LitePointLimit lpl = PointFuncs.getPointLimit(pointID);
-			if( lpl != null ) {
-				text += Integer.toString(lpl.getLowLimit());
+			LitePointUnit lpu = PointFuncs.getPointUnit(pointID);
+			
+			if( lpl != null && lpu != null) {			
+				DecimalFormat f = new DecimalFormat();
+				f.setMaximumFractionDigits(lpu.getDecimalPlaces());
+				f.setMinimumFractionDigits(lpu.getDecimalPlaces());
+				text += f.format(lpl.getLowLimit());
 				prev = true;
 			}
 		}
 		
 		if( (displayAttrib & PointAttributes.HIGH_LIMIT) != 0 ) {
 			LitePointLimit lpl = PointFuncs.getPointLimit(pointID);
-			if( lpl != null ) {
-				text += Integer.toString(lpl.getHighLimit());
+			LitePointUnit lpu = PointFuncs.getPointUnit(pointID);
+			
+			if( lpl != null && lpu != null) {
+				DecimalFormat f = new DecimalFormat();
+				f.setMaximumFractionDigits(lpu.getDecimalPlaces());
+				f.setMinimumFractionDigits(lpu.getDecimalPlaces());
+				text += f.format(lpl.getHighLimit());
 				prev = true;
 			}
 		}
@@ -180,4 +190,11 @@ public class UpdateUtil {
 		LiteYukonImage img = YukonImageFuncs.getLiteYukonImage(ls.getImageID());
 		return img.getImageName();
 	}	
+	
+	public static boolean isControllable(int pointID) {
+		PointChangeCache pcc = PointChangeCache.getPointChangeCache();
+		long tags = pcc.getTags(pointID);
+		return ((tags & Signal.TAG_ATTRIB_CONTROL_AVAILABLE) != 0) &&
+				!((tags & Signal.MASK_ANY_CONTROL_DISABLE) != 0);
+	}
 }
