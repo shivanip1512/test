@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2004/05/14 01:07:05 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2004/06/02 15:41:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4217,6 +4217,7 @@ void CtiDeviceMCT::setConfigData( const RWCString &configName, int configType, c
     else if( !configMode.compareTo("minmax", RWCString::ignoreCase) )    _peakMode = PeakModeMinMax;
     else
     {
+        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint - invalid peak mode string \"" + configMode + "\" - defaulting to minmax **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
