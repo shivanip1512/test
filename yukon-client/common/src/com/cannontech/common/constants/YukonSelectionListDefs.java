@@ -53,7 +53,7 @@ public interface YukonSelectionListDefs {
 	public static final String YUK_LIST_NAME_ENERGY_SOURCE = "EnergySource";
 	public static final String YUK_LIST_NAME_SWITCH_OVER_TYPE = "SwitchOverType";
 	public static final String YUK_LIST_NAME_TRANSFER_SWITCH_TYPE = "TransferSwitchType";
-	public static final String YUK_LIST_NAME_TRANSFER_SWITCH_MFG = "TranferSwitchMfg";
+	public static final String YUK_LIST_NAME_TRANSFER_SWITCH_MFG = "TransferSwitchMfg";
 	public static final String YUK_LIST_NAME_DRYER_TYPE = "DryerType";
 	public static final String YUK_LIST_NAME_BIN_SIZE = "BinSize";
 	public static final String YUK_LIST_NAME_HORSE_POWER = "HorsePower";
