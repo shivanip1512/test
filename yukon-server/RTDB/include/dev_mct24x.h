@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct2xx.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/10/27 22:04:06 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/10/30 17:45:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,10 @@ protected:
         MCT24X_StatusLen =    1,
 
         MCT250_StatusPos = 0x43,  //  get the 4 status inputs
-        MCT250_StatusLen =    3
+        MCT250_StatusLen =    3,
+
+        MCT24X_Status_Open   = 0x41,
+        MCT24X_Status_Closed = 0x42
     };
 
 private:
