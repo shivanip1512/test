@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.132 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.133 $
+* DATE         :  $Date: 2005/02/17 23:29:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -275,6 +275,7 @@ VOID PortThread(void *pid)
             {
                 ticks = GetTickCount() - ticks;
 
+                if( ticks > 1000 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Profiling - getWork() took " << ticks << " ms **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -291,6 +292,7 @@ VOID PortThread(void *pid)
             {
                 ticks = GetTickCount() - ticks;
 
+                if( ticks > 1000 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Profiling - getWork() took " << ticks << " ms **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -410,6 +412,7 @@ VOID PortThread(void *pid)
         {
             ticks = GetTickCount() - ticks;
 
+            if( ticks > 1000 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Profiling - CommunicateDevice took " << ticks << " ms for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -908,10 +911,6 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
             while( NULL != (om = GetLGRippleGroupAreaBitMatch(Port, OutMessage)) )
             {
                 mashcnt++;
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** MASH IT, MASH IT GOOD! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
 
                 BYTE *pGroup = (BYTE*)(OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
                 BYTE *pMatch = (BYTE*)(om->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
@@ -2477,7 +2476,10 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
     }
     catch(...)
     {
-        autopsy( __FILE__, __LINE__);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION PROCESSING COMMS TO " << Device->getName() << " **** " << __FILE__ << " (" << __LINE__ << ") " << endl;
+        }
     }
 
     return status;
@@ -3923,7 +3925,7 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
     /*
      *  This is a Read from the CTI queueing structures which will originate from
      *  some other requestor.  This is where this thread blocks and waits if there are
-     *  no entries on the queue.  Note that the readQueue call mallocs space for the
+     *  no entries on the queue.  Note that the readQueue call allocs space for the
      *  OutMessage pointer, and fills it from it's queue entries!
      */
 
@@ -4069,6 +4071,7 @@ CtiOutMessage *GetLGRippleGroupAreaBitMatch(CtiPortSPtr Port, CtiOutMessage *&Ou
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Error Reading Port Queue " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
+            match = 0;
         }
     }
 
