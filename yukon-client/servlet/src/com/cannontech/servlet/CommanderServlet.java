@@ -37,7 +37,7 @@ import com.cannontech.yc.gui.YC;
 
 public class CommanderServlet extends javax.servlet.http.HttpServlet 
 {
-	private static final String YC_BEAN_SESSION_KEY = "ycBean";	
+	public static final String YC_BEAN_SESSION_KEY = "ycBean";	
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException
 	{	
@@ -46,28 +46,29 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		//I'm sure I need this for something but not sure what yet.  SN 12/18/03
 		LiteYukonUser user = (LiteYukonUser) session.getAttribute("YUKON_USER");
 
-		//Create a YC bean for the session if one does not already exist.
+		/**Create a YC bean for the session if one does not already exist.*/
 		YC localBean = (YC)session.getAttribute(YC_BEAN_SESSION_KEY);
 		if(localBean == null)
 		{
 			session.setAttribute(YC_BEAN_SESSION_KEY, new YC());
 			localBean = (YC)session.getAttribute(YC_BEAN_SESSION_KEY);
 		}
+		
 
-		//Debug print of all parameter names.
+		/**Debug print of all parameter names.*/
 		java.util.Enumeration enum1 = req.getParameterNames();
 		  while (enum1.hasMoreElements()) {
 			 System.out.println(" --" + enum1.nextElement());
 		 }
 		
-		//deviceID(opt1) or Serial(opt2) number must exist!
-		//deviceID/serialNumber command is sent
+		/**deviceID(opt1) or SerialNumber(opt2) must exist!
+		 * deviceID/serialNumber command is sent. */
 		String deviceID = req.getParameter("deviceID");
 		String serialNumber = req.getParameter("serialNumber");
 		
-		//Specific route to send on, only used in the case of loops or serial number is used
-		// When sending to a device, the route is ignored and the porter connection takes care
-		// of sending the command on the device's assigned route.
+		/** Specific route to send on, only used in the case of loops or serial number is used
+		 * When sending to a device, the route is ignored and the porter connection takes care
+		 * of sending the command on the device's assigned route. */
 		String routeID = req.getParameter("routeID");
 		//Flag to clear the resultText, no commands sent
 		String clear = req.getParameter("clearText");
@@ -78,8 +79,8 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		{					
 			String function = req.getParameter("function");	//user friendly command string
 			String command = req.getParameter("command");	//system command string
-			//Time to wait for return to calling jsp
-			//Wait is used to <hope to> assure there is some resultText to display when we do go back. 
+			/** Time to wait for return to calling jsp
+			 * Wait is used to <hope to> assure there is some resultText to display when we do go back. */ 
 			String waitTime = req.getParameter("waitTime");
 	
 			//Set our yc bean command string
@@ -87,9 +88,9 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 				localBean.setCommand(command);
 			if( command == null )
 			{
-				//If we have no command string, see if there is a function and find it's 
-				// corresponding command string.  (Will substitute based on key=value
-				// pairs found in the commands file directory for a particular device. 
+				/** If we have no command string, see if there is a function and find it's
+				 * corresponding command string.  (Will substitute based on key=value
+				 * pairs found in the commands file directory for a particular device. */ 
 				if( function != null)
 				{
 					command = localBean.substituteCommand(function);
