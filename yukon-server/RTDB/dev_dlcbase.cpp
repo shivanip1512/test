@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/10/30 17:37:17 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/12/09 21:05:27 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -248,8 +248,8 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Wrong Address:  " << getName() << " " << InMessage->Buffer.DSt.Address << endl;
-                dout << " MCT Address " << getAddress() << " != " << InMessage->Buffer.DSt.Address << endl;
+                dout << RWTime() << " **** Checkpoint - Wrong DLC Address: \"" << getName() << "\" ";
+                dout << "(" << getAddress() << ") != (" << InMessage->Buffer.DSt.Address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
