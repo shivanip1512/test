@@ -42,6 +42,18 @@
 			cache = sw.toString();
 		}
 	}
+	else if (request.getParameter("ReloadAcct") != null) {
+		String acctNo = request.getParameter("AcctNo");
+		LiteStarsCustAccountInformation liteAcctInfo = liteEC.searchByAccountNo( acctNo );
+		if (liteAcctInfo == null) {
+			cache = "<font color='red'>No customer account found for account #" + acctNo + "!</font>";
+		}
+		else {
+			liteEC.reloadCustAccountInformation(liteAcctInfo);
+			liteEC.deleteStarsCustAccountInformation(liteAcctInfo.getAccountID());
+			cache = "Account #" + acctNo + " has been reloaded";
+		}
+	}
 	else if (request.getParameter("ReloadInv") != null) {
 		liteEC.setInventoryLoaded(false);
 		liteEC.loadAllInventory(false);
@@ -56,10 +68,10 @@
 
 <body bgcolor="#FFFFFF" text="#000000">
 <form name="form1" method="post" action="">
-  <table width="300" border="0" cellspacing="0" cellpadding="0">
+  <table width="400" border="0" cellspacing="0" cellpadding="0">
     <tr> 
       <td width="230">Energy Company Settings:</td>
-      <td width="70"> 
+      <td width="170"> 
         <input type="submit" name="ShowEC" value="Show">
       </td>
     </tr>
@@ -67,14 +79,14 @@
       <td width="230">Acct #: 
         <input type="text" name="AcctNo">
       </td>
-      <td width="70"> 
-        <input type="submit" name="ShowAcct" value="Show"
-		  onclick="if (this.form.AcctNo.value == '') { alert('Account # cannot be empty!'); return false; }">
+      <td width="170"> 
+        <input type="submit" name="ShowAcct" value="Show" onclick="if (this.form.AcctNo.value == '') { alert('Account # cannot be empty!'); return false; }">
+        <input type="submit" name="ReloadAcct" value="Reload" onclick="if (this.form.AcctNo.value == '') { alert('Account # cannot be empty!'); return false; }">
       </td>
     </tr>
     <tr> 
       <td width="230">Inventory:</td>
-      <td width="70"> 
+      <td width="170"> 
         <input type="submit" name="ReloadInv" value="Reload">
       </td>
     </tr>

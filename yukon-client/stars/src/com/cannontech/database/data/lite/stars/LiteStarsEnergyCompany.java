@@ -2467,6 +2467,19 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 	}
 	
+	public LiteStarsCustAccountInformation reloadCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo) {
+		// Remove all addresses from the cache
+		deleteAddress( liteAcctInfo.getCustomerAccount().getBillingAddressID() );
+		deleteAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
+		
+		// Reload the customer account into cache
+		Hashtable custAcctMap = getCustAccountInfoMap();
+		synchronized (custAcctMap) {
+			custAcctMap.remove( new Integer(liteAcctInfo.getAccountID()) );
+			return getBriefCustAccountInfo( liteAcctInfo.getAccountID(), true );
+		}
+	}
+	
 	/**
 	 * Search customer account by account # within the energy company.
 	 */
