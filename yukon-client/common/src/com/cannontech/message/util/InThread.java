@@ -6,6 +6,7 @@ package com.cannontech.message.util;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.message.porter.message.Return;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.VirtualInputStream;
 
@@ -40,9 +41,7 @@ public void run() {
 		{
 			Object o = istrm.restoreObject( streamer );
 			
-			
 			processMsg( o );
-
 
 			if( this.isInterrupted() )
 			{
@@ -60,7 +59,9 @@ public void run() {
 
 public void processMsg( Object o )
 {
-	if( o instanceof Multi )
+	System.out.println(o);
+
+	if( o instanceof Multi && !(o instanceof Return))
 	{           
 		Multi mpc = (Multi)o;
 
