@@ -447,6 +447,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			if( pointOffset == 20 && pointType == PointTypes.PULSE_ACCUMULATOR_POINT)
 			{
 				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"powerfail count");
+				if( pd == null)
+				    pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"Blink Counter");
 				if( pd == null)	//if we still haven't found it... PointUndefinedInDatabase
 				{				
 					String key = "";
