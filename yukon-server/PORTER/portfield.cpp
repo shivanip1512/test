@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/08 14:28:06 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/05/17 18:50:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,7 +106,6 @@ using namespace std;
 
 #define INF_LOOP_COUNT 10000
 
-DLLIMPORT extern RWMutexLock coutMux;
 
 /*
  *  gQueSlot is used by dialup ports to pluck the next item from within the queue's guts.
@@ -114,7 +113,7 @@ DLLIMPORT extern RWMutexLock coutMux;
 static ULONG   gQueSlot = 0;
 
 extern void DisplayTraceList( CtiPort *Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
-extern HCTIQUEUE*   QueueHandle(LONG pid);
+extern HCTIQUEUE* QueueHandle(LONG pid);
 
 /*
  *  This structure describes the port instance in use here.
@@ -137,7 +136,6 @@ void commFail(CtiDeviceBase *Device, INT state);
 BOOL areAnyOutMessagesForMyDevID(void *pId, void* d);
 BOOL areAnyOutMessagesForMyRteID(void *pId, void* d);
 BOOL areAnyOutMessagesForCRCID(void *pId, void* d);
-
 BOOL isTAPTermPort(LONG PortNumber);
 INT RequeueReportError(INT status, OUTMESS *OutMessage);
 INT PostCommToDialup(CtiPort *Port, CtiDevice *Device, OUTMESS *OutMessage);
@@ -152,23 +150,10 @@ INT EstablishConnection(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, C
 INT DevicePreprocessing(CtiPort  *Port, OUTMESS *&OutMessage, CtiDevice *Device);
 INT CommunicateDevice(CtiPort  *Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
 INT NonWrapDecode(INMESS *InMessage, CtiDevice *Device);
-INT CheckAndRetryMessage(INT              CommResult,
-                         CtiPort          *Port,
-                         INMESS           *InMessage,
-                         OUTMESS          *&OutMessage,
-                         CtiDevice        *Device);
-INT DoProcessInMessage(INT                CommResult,
-                       CtiPort            *Port,
-                       INMESS             *InMessage,
-                       OUTMESS            *OutMessage,
-                       CtiDevice          *Device);
-INT ReturnResultMessage(INT               CommResult,
-                        INMESS            *InMessage,
-                        OUTMESS           *OutMessage);
-INT UpdatePerformanceData(INT             CommResult,
-                          CtiPort         *Port,
-                          CtiDevice       *Device);
-
+INT CheckAndRetryMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDevice *Device);
+INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
+INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *OutMessage);
+INT UpdatePerformanceData(INT CommResult, CtiPort *Port, CtiDevice *Device);
 INT InitializeHandshake (CtiPort *aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSlist< CtiMessage > &traceList);
 INT TerminateHandshake (CtiPort *aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSlist< CtiMessage > &traceList);
 INT PerformRequestedCmd ( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
@@ -211,17 +196,6 @@ VOID PortThread (VOID *arg)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " PortThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
     }
-
-#if 0 // FIX FIX FIX CGP 071999 Add later
-    /* setup memory for this port's stats */
-    if((PortStats[Port.ThreadPortNumber] = (PORTSTATS*)malloc (sizeof(PORTSTATS))) == NULL)
-    {
-        printf("1;31m Error Allocating Memory\n0m");
-        // _endthread ();
-    }
-
-    PortStats[Port.ThreadPortNumber]->Stats = Port.Port.Stats;
-#endif
 
     /* make it clear who is the boss */
     CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
@@ -466,9 +440,6 @@ VOID PortThread (VOID *arg)
             RequeueReportError(status, OutMessage);
             continue;
         }
-
-        /* Update the performance stats for this remote */
-        UpdatePerformanceData(i, Port, Device);
 
         if( Port->getType() == TCPIPSERVER )
         {
@@ -1235,7 +1206,6 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
                     }
 
                     IED->allocateDataBins(OutMessage);
-
                     IED->setInitialState(oldid);
 
                     if( (status = InitializeHandshake (Port, IED, traceList)) == NORMAL )
@@ -2073,6 +2043,9 @@ INT CheckAndRetryMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTME
     ERRSTRUCT      ErrStruct;
     bool           iscommfailed = (CommResult == NORMAL);      // Prime with the communication status
 
+    /* Update the performance stats for this remote */
+    UpdatePerformanceData(CommResult, Port, Device);
+
     if(Device->adjustCommCounts( iscommfailed, OutMessage->Retry > 0 ))
     {
         commFail(Device, (iscommfailed ? CLOSED : OPENED));
@@ -2135,8 +2108,6 @@ INT CheckAndRetryMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTME
                 {
                     /* decrement the retry counter */
                     --OutMessage->Retry;
-
-                    UpdatePerformanceData(CommResult, Port, Device);
 
                     /* If this was a VTU message we need to slide things back over */
                     if(Port->getProtocol() == ProtocolWrapIDLC)
@@ -2391,7 +2362,7 @@ INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS
                 if(!CommResult && (InMessage->Buffer.InMessage[4] & VCUOVERQUE))
                 {
                     /* we need to reque this one  */
-                    /* Update the statistics for this ccu */
+                    /* Update the statistics for this TCU */
                     UpdatePerformanceData(NORMAL, Port, Device);
 
                     /* Drop the priority an notch so we don't hog the channel */
@@ -2414,11 +2385,12 @@ INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS
             if(OutMessage->EventCode & VERSACOM)
             {
                 /* Lets check if this command needs to be queued again */
-                if(!CommResult && (InMessage->Buffer.InMessage[4] & VCUOVERQUE))
+                if(!CommResult && (InMessage->Buffer.InMessage[4] & VCUOVERQUE) && !gIgnoreTCU5000QueFull)
                 {
+                    if(PorterDebugLevel & PORTER_DEBUG_VERSACOM)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " TCU queue full.  Will resubmit." << endl;
+                        dout << RWTime() << " " << Device->getName() << " queue full.  Will resubmit." << endl;
                     }
                     /* Update the statistics for this TCU */
                     UpdatePerformanceData(NORMAL, Port, Device);
@@ -2501,17 +2473,6 @@ INT UpdatePerformanceData(INT CommResult, CtiPort *Port, CtiDevice *Device)
         /* Log the error */
         ReportRemoteError (Device,&ErrStruct);
     }
-
-#ifdef OLD_WAY // FIX FIX FIX This needs to merge with the Remotes somehow...
-    else
-    {
-        memcpy (DevicePerf.DeviceName, DeviceRecord.DeviceName, STANDNAMLEN);
-        DevicePerf.Error = (USHORT)CommResult;
-
-        DevicePerfUpdate (&DevicePerf, &ErrStruct);
-        ReportDeviceError (&DeviceRecord, &(Port), &ErrStruct);
-    }
-#endif
 
     return status;
 }
