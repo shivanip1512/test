@@ -1,7 +1,5 @@
 
 
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   connection
@@ -10,12 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2004/03/04 23:07:53 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2004/03/18 19:50:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
+#pragma warning( disable : 4786)
 #include <windows.h>
 #include <limits.h>
 #include <iostream>
@@ -276,7 +275,12 @@ void CtiConnection::InThread()
                     }
                     else
                     {
-                        ResetConnection();      // Make us prepare for reconnect or die trying...
+                        if(getDebugLevel() & 0x00001000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "**** Resetting the connection **** " << who() << endl;
+                        }
+                        cleanExchange();      // Make us prepare for reconnect or die trying...
                     }
 
                     continue;
@@ -481,7 +485,7 @@ void CtiConnection::OutThread()
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " Attempting a connection reset with " << who() << endl;
                         }
-                        ResetConnection();
+                        cleanExchange();
                     }
                     else if(_bQuit)
                     {
@@ -909,7 +913,7 @@ INT CtiConnection::establishConnection(INT freq)
             * added because of turnaround time observed on Progress Energy's system
             **************************
             */
-            Sleep(1000);         
+            Sleep(1000);
 
             if(!ConnectPortal())
             {
