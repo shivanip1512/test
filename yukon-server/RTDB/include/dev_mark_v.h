@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __DEV_MARK_V_H__
-#define __DEV_MARK_V_H__
-
 /*---------------------------------------------------------------------------------*
 *
 * File:   dev_mark_v
@@ -14,16 +9,20 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/01/20 19:06:01 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/03/10 19:31:01 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+#ifndef __DEV_MARK_V_H__
+#define __DEV_MARK_V_H__
+
 
 #include <rw/rwtime.h>
 #include <rw/rwdate.h>
 
-#include "prot_transdata.h"  
+#include "prot_transdata.h"
 #include "dev_meter.h"
 #include "dlldefs.h"
 #include "dsm2.h"
@@ -32,11 +31,11 @@
 #include "mgr_point.h"
 #include "device.h"
 #include "pt_numeric.h"
-#include "connection.h" 
+#include "connection.h"
 #include "msg_cmd.h"
 
 class IM_EX_DEVDB CtiDeviceMarkV : public CtiDeviceMeter
-{                                        
+{
 private:
 
   enum
@@ -78,7 +77,7 @@ private:
 
    CtiProtocolTransdata       _transdataProtocol;
    CtiProtocolTransdata::llp  _llp;
-   
+
 protected:
 
 public:
@@ -106,7 +105,7 @@ public:
                               RWTPtrSlist< CtiMessage >  &retList,
                               RWTPtrSlist< OUTMESS >     &outList,
                               INT                        ScanPriority=MAXPRIORITY-4);
-   
+
    virtual INT ExecuteRequest(CtiRequestMsg              *pReq,
                               CtiCommandParser           &parse,
                               OUTMESS                    *&OutMessage,
@@ -114,7 +113,7 @@ public:
                               RWTPtrSlist< CtiMessage >  &retList,
                               RWTPtrSlist< OUTMESS >     &outList,
                               INT                        ScanPriority=MAXPRIORITY-4);
-   
+
    virtual INT ResultDecode(INMESS                    *InMessage,
                             RWTime                    &TimeNow,
                             RWTPtrSlist< CtiMessage > &vgList,
@@ -139,11 +138,11 @@ public:
    void CtiDeviceMarkV::correctValue( CtiTransdataTracker::lpRecord rec, int yyMap, int &value, int &quality );
    int getChannelOffset( int index );
 
-   CtiProtocolTransdata & getProtocol( void );
+   CtiProtocolTransdata & getTransdataProtocol( void );
    RWTime getMsgTime( int timeID, int dateID, vector<CtiTransdataData *> transVector );
-   
+
    CtiPointDataMsg* fillPDMsg( vector<CtiTransdataData *> transVector,
-                               CtiPointBase *point, 
+                               CtiPointBase *point,
                                int index,
                                int timeID,
                                int dateID );
