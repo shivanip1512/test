@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_lm_controlhist.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/24 21:37:52 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/13 16:45:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,12 +76,12 @@ public:
                             const RWTime&    start   = RWTime(),
                             LONG             soe     = 0,
                             INT              dur     = 0,
-                            const RWCString& type    = RWCString(),
+                            const RWCString& type    = RWCString("Unavailable"),
                             LONG             daily   = 0,
                             LONG             month   = 0,
                             LONG             season  = 0,
                             LONG             annual  = 0,
-                            const RWCString& restore = RWCString(),
+                            const RWCString& restore = RWCString(' '),
                             DOUBLE           reduce  = 0.0,
                             LONG             lmchid  = 0L);
 
