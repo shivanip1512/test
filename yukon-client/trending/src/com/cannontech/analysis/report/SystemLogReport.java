@@ -22,6 +22,7 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.database.db.point.SystemLog;
@@ -32,26 +33,25 @@ import com.cannontech.database.db.point.SystemLog;
  * Groups data by Date.  Orders asc/desc based on tableModel definition.  
  * @author snebben
  */
-public class LMControlLogReport extends YukonReportBase
+public class SystemLogReport extends YukonReportBase
 {
 	/**
 	 * Constructor for Report.
 	 * Data Base for this report type is instanceOf SystemLogModel.
 	 */
-	public LMControlLogReport()
+	public SystemLogReport()
 	{
-		super();
+		this(new SystemLogModel());
 	}
 	/**
 	 * Constructor for Report.
 	 * Data Base for this report type is instanceOf SystemLogModel.
 	 * @param data_ - SystemLogModel TableModel data
 	 */
-	public LMControlLogReport(SystemLogModel model_)
+	public SystemLogReport(SystemLogModel model_)
 	{
 		super();
-		model = model_;
-		model.setReportType(ReportTypes.LM_CONTROL_LOG_DATA);
+		setModel(model_);
 	}
 	/**
 	 * Constructor for Report.
@@ -61,7 +61,7 @@ public class LMControlLogReport extends YukonReportBase
 	 * @param logType_ - SystemLog.TYPE_x, type of logging to report on. 
 	 * 
 	 */
-	public LMControlLogReport(long startTime_, long stopTime_, Integer logType_)
+	public SystemLogReport(long startTime_, long stopTime_, Integer logType_)
 	{
 		this(new SystemLogModel( startTime_, stopTime_,  logType_));
 	}
@@ -77,7 +77,7 @@ public class LMControlLogReport extends YukonReportBase
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		//Define start and stop parameters for a default 90 day report.
-		LMControlLogReport lmControlLogReport= new LMControlLogReport();
+		YukonReportBase sysLogReport = ReportFuncs.createYukonReport(ReportTypes.SYSTEM_LOG_DATA);
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 		cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
 		cal.set(java.util.Calendar.MINUTE, 0);
@@ -89,21 +89,12 @@ public class LMControlLogReport extends YukonReportBase
 		long start = cal.getTimeInMillis();
 
 		//Initialize the report data and populate the TableModel (collectData).
-		lmControlLogReport.setModel( new SystemLogModel(start, stop, new Integer(SystemLog.TYPE_LOADMANAGEMENT)));
-		lmControlLogReport.getModel().setReportType(ReportTypes.LM_CONTROL_LOG_DATA); 
-//		lmControlLogReport.data = new LMControlLog(start, stop, new Integer(SystemLog.TYPE_LOADMANAGEMENT));
-		lmControlLogReport.getModel().collectData();
+		sysLogReport.setModel( new SystemLogModel(start, stop, new Integer(SystemLog.TYPE_LOADMANAGEMENT)));
+		sysLogReport.getModel().collectData();
 
-		//Define the report Paper properties and format.
-		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
-		reportPaper.setImageableArea(30, 40, 552, 712);	//8.5 x 11 -> 612w 792h
-		java.awt.print.PageFormat pageFormat = new java.awt.print.PageFormat();
-		pageFormat.setPaper(reportPaper);
-		
 		//Create the report
-		JFreeReport report = lmControlLogReport.createReport();
-		report.setDefaultPageFormat(pageFormat);
-		report.setData(lmControlLogReport.getModel());
+		JFreeReport report = sysLogReport.createReport();
+		report.setData(sysLogReport.getModel());
 		
 		final PreviewDialog dialog = new PreviewDialog(report);
 		// Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)
