@@ -104,13 +104,15 @@ function validate(form) {
                           <td align="right" width="120">Duration:</td>
                           <td width="168">
                             <select name="Duration">
-                              <option value="1">1 Day</option>
-                              <option value="2">2 Days</option>
-                              <option value="3">3 Days</option>
-                              <option value="4">4 Days</option>
-                              <option value="5">5 Days</option>
-                              <option value="6">6 Days</option>
-                              <option value="7">7 Days</option>
+<%
+	StarsCustSelectionList optOutList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD );
+	for (int i = 0; i < optOutList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = optOutList.getStarsSelectionListEntry(i);
+%>
+                              <option value="<%= entry.getYukonDefID() %>"><%= entry.getContent() %></option>
+<%
+	}
+%>
                             </select>
                           </td>
                         </tr>

@@ -304,11 +304,7 @@ function init() {
                         <td width="85%" class="TableCell"> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
-                              <td class="MainText" width="50%"><%= listName %> 
-<% if (listName.equals(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD)) { %>
-                                <b>(For consumer side only)</b> 
-<% } %>
-                              </td>
+                              <td class="MainText" width="50%"><%= listName %></td>
                               <td class="MainText" width="50%"> 
 <% if (liteEC.getParent() != null) { %>
                                 <input type="checkbox" name="Inherited" value="true" <% if (inherited) out.print("checked"); %> onclick="setInherited(this.checked)">

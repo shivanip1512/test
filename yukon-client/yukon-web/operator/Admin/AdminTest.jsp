@@ -356,7 +356,7 @@ function removeAllMembers(form) {
                             <td> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                 <%
-	ArrayList userLists = liteEC.getAllSelectionLists(user);
+	ArrayList userLists = StarsAdminUtil.getSelectionListsInUse(liteEC, user);
 	for (int i = 0; i < userLists.size(); i++) {
 		com.cannontech.common.constants.YukonSelectionList cList = (com.cannontech.common.constants.YukonSelectionList) userLists.get(i);
 		if (cList.getUserUpdateAvailable() == null || !cList.getUserUpdateAvailable().equalsIgnoreCase("Y")) continue;

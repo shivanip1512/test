@@ -96,9 +96,6 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_FAN_STAT_DEFAULT				= 2501;
 	public static final int YUK_DEF_ID_FAN_STAT_AUTO				= 2502;
 	public static final int YUK_DEF_ID_FAN_STAT_ON					= 2503;
-	public static final int YUK_DEF_ID_OPTOUT_PERIOD_TOMORROW		= 2601;
-	public static final int YUK_DEF_ID_OPTOUT_PERIOD_TODAY			= 2602;
-	public static final int YUK_DEF_ID_OPTOUT_PERIOD_REPEAT_LAST	= 2699;
 	public static final int YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO		= 2701;
 	public static final int YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO		= 2702;
 	public static final int YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO		= 2703;

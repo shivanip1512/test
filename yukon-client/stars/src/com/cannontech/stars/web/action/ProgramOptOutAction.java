@@ -16,7 +16,6 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
@@ -86,35 +85,7 @@ public class ProgramOptOutAction implements ActionBase {
 					optOut.addInventoryID( Integer.parseInt(invIDs[i]) );
 			}
 			
-			if (req.getParameter("OptOutPeriod") != null) {
-				int period = 0;
-				try {
-					period = Integer.parseInt( req.getParameter("OptOutPeriod") );
-				}
-				catch (NumberFormatException e) {}
-				if (period == 0)
-					session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " period" );
-	            
-				if (period < 0) {	// Negative period is the number of days to be opted out
-					optOut.setPeriod( Math.abs(period) * 24 );
-				}
-				else {	// This is a special entry, e.g. "Today"
-					int periodDefID = YukonListFuncs.getYukonListEntry( period ).getYukonDefID();
-	            	
-					if (periodDefID == YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TOMORROW) {
-						optOut.setStartDateTime( ServletUtil.getTomorrow(energyCompany.getDefaultTimeZone()) );
-						optOut.setPeriod( 24 );
-					}
-					else if (periodDefID == YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TODAY) {
-						int offHours = (int)((ServletUtil.getTomorrow(tz).getTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
-						optOut.setPeriod( offHours );
-					}
-					else if (periodDefID == YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_REPEAT_LAST) {
-						optOut.setPeriod( REPEAT_LAST );
-					}
-				}
-			}
-			else if (req.getParameter("action").equalsIgnoreCase("RepeatLastOptOut")) {
+			if (req.getParameter("action").equalsIgnoreCase("RepeatLastOptOut")) {
 				optOut.setPeriod( REPEAT_LAST );
 			}
 			else {
@@ -136,7 +107,7 @@ public class ProgramOptOutAction implements ActionBase {
 				}
 				else {
 					optOut.setStartDateTime( startDate );
-					optOut.setPeriod( duration * 24 );
+					optOut.setPeriod( duration );
 				}
 			}
 

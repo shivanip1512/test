@@ -334,8 +334,6 @@ public final class YukonListFuncs implements YukonListEntryTypes
 			return YukonSelectionListDefs.YUK_LIST_NAME_INV_SORT_BY;
 		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO)
 			return YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TOMORROW)
-			return YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD;
 		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_DEFAULT)
 			return YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_FAN_STATE;
 		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT)
