@@ -401,55 +401,79 @@ void CtiCapController::controlLoop()
 ---------------------------------------------------------------------------*/
 CtiConnection* CtiCapController::getDispatchConnection()
 {
-    if( _dispatchConnection == NULL )
+    try
     {
-        RWCString str;
-        char var[128];
-        RWCString dispatch_host = "127.0.0.1";
-
-        strcpy(var, "DISPATCH_MACHINE");
-        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+        if( _dispatchConnection == NULL || (_dispatchConnection != NULL && _dispatchConnection->verifyConnection()) )
         {
-            dispatch_host = str.data();
-            if( _CC_DEBUG )
+            RWCString str;
+            char var[128];
+            RWCString dispatch_host = "127.0.0.1";
+
+            strcpy(var, "DISPATCH_MACHINE");
+            if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+            {
+                dispatch_host = str.data();
+                if( _CC_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - " << var << ":  " << dispatch_host << endl;
+                }
+            }
+            else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << var << ":  " << dispatch_host << endl;
+                dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
             }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-        }
 
-        int dispatch_port = VANGOGHNEXUS;
+            int dispatch_port = VANGOGHNEXUS;
 
-        strcpy(var, "DISPATCH_PORT");
-        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
-        {
-            dispatch_port = atoi(str.data());
-            if( _CC_DEBUG )
+            strcpy(var, "DISPATCH_PORT");
+            if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+            {
+                dispatch_port = atoi(str.data());
+                if( _CC_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - " << var << ":  " << dispatch_port << endl;
+                }
+            }
+            else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << var << ":  " << dispatch_port << endl;
+                dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+            }
+
+            //throw away the old connection if there was one that couldn't be verified
+            if( _dispatchConnection != NULL && _dispatchConnection->verifyConnection() )
+            {
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Dispatch Connection Hickup in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+                delete _dispatchConnection;
+                _dispatchConnection = NULL;
+            }
+
+            if( _dispatchConnection == NULL )
+            {
+                //Connect to Dispatch
+                _dispatchConnection = new CtiConnection( dispatch_port, dispatch_host );
+
+                //Send a registration message to Dispatch
+                CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("CapController", 0, FALSE );
+                _dispatchConnection->WriteConnQue( registrationMsg );
             }
         }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-        }
 
-        //Connect to Dispatch
-        _dispatchConnection = new CtiConnection( dispatch_port, dispatch_host );
-
-        //Send a registration message to Dispatch
-        CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("CapController", 0, FALSE );
-        _dispatchConnection->WriteConnQue( registrationMsg );
+        return _dispatchConnection;
     }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
 
-    return _dispatchConnection;
+        return NULL;
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -459,55 +483,79 @@ CtiConnection* CtiCapController::getDispatchConnection()
 ---------------------------------------------------------------------------*/
 CtiConnection* CtiCapController::getPILConnection()
 {
-    if( _pilConnection == NULL )
+    try
     {
-        RWCString str;
-        char var[128];
-        RWCString pil_host = "127.0.0.1";
-
-        strcpy(var, "PIL_MACHINE");
-        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+        if( _pilConnection == NULL || (_pilConnection != NULL && _pilConnection->verifyConnection()) )
         {
-            pil_host = str.data();
-            if( _CC_DEBUG )
+            RWCString str;
+            char var[128];
+            RWCString pil_host = "127.0.0.1";
+
+            strcpy(var, "PIL_MACHINE");
+            if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+            {
+                pil_host = str.data();
+                if( _CC_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - " << var << ":  " << pil_host << endl;
+                }
+            }
+            else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << var << ":  " << pil_host << endl;
+                dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
             }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-        }
 
-        INT pil_port = PORTERINTERFACENEXUS;
+            INT pil_port = PORTERINTERFACENEXUS;
 
-        strcpy(var, "PIL_PORT");
-        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
-        {
-            pil_port = atoi(str.data());
-            if( _CC_DEBUG )
+            strcpy(var, "PIL_PORT");
+            if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+            {
+                pil_port = atoi(str.data());
+                if( _CC_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - " << var << ":  " << pil_port << endl;
+                }
+            }
+            else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << var << ":  " << pil_port << endl;
+                dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+            }
+
+            //throw away the old connection if there was one that couldn't be 
+            if( _pilConnection != NULL && _pilConnection->verifyConnection() )
+            {
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Porter Connection Hickup in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+                delete _pilConnection;
+                _pilConnection = NULL;
+            }
+
+            if( _pilConnection == NULL )
+            {
+                //Connect to Pil
+                _pilConnection = new CtiConnection( pil_port, pil_host );
+
+                //Send a registration message to Pil
+                CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("CapController", 0, FALSE );
+                _pilConnection->WriteConnQue( registrationMsg );
             }
         }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-        }
 
-        //Connect to Pil
-        _pilConnection = new CtiConnection( pil_port, pil_host );
-
-        //Send a registration message to Pil
-        CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("CapController", 0, FALSE );
-        _pilConnection->WriteConnQue( registrationMsg );
+        return _pilConnection;
     }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
 
-    return _pilConnection;
+        return NULL;
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -518,17 +566,26 @@ CtiConnection* CtiCapController::getPILConnection()
 void CtiCapController::checkDispatch(ULONG secondsFrom1901)
 {
     BOOL done = FALSE;
+    CtiConnection* tempPtrDispatchConn = getDispatchConnection();
     do
     {
-        CtiMessage* in = (CtiMessage*) getDispatchConnection()->ReadConnQue(0);
-
-        if ( in != NULL )
+        try
         {
-            parseMessage(in,secondsFrom1901);
-            delete in;
+            CtiMessage* in = (CtiMessage*) tempPtrDispatchConn->ReadConnQue(0);
+
+            if ( in != NULL )
+            {
+                parseMessage(in,secondsFrom1901);
+                delete in;
+            }
+            else
+                done = TRUE;
         }
-        else
-            done = TRUE;
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
     }
     while(!done);
 }
@@ -541,17 +598,26 @@ void CtiCapController::checkDispatch(ULONG secondsFrom1901)
 void CtiCapController::checkPIL(ULONG secondsFrom1901)
 {
     BOOL done = FALSE;
+    CtiConnection* tempPtrPorterConn = getPILConnection();
     do
     {
-        CtiMessage* in = (CtiMessage*) getPILConnection()->ReadConnQue(0);
-
-        if ( in != NULL )
+        try
         {
-            parseMessage(in,secondsFrom1901);
-            delete in;
+            CtiMessage* in = (CtiMessage*) tempPtrPorterConn->ReadConnQue(0);
+
+            if ( in != NULL )
+            {
+                parseMessage(in,secondsFrom1901);
+                delete in;
+            }
+            else
+                done = TRUE;
         }
-        else
-            done = TRUE;
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
     }
     while(!done);
 }
@@ -622,7 +688,15 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
         LONG pid = regMsg->operator [](x);
         dout << RWTime() << " - Registered for Point Id: " << pid << endl;
     }*/
-    getDispatchConnection()->WriteConnQue(regMsg);
+    try
+    {
+        getDispatchConnection()->WriteConnQue(regMsg);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
     regMsg = NULL;
 }
 
@@ -686,13 +760,19 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                     cmdMsg = (CtiCommandMsg *)message;
                     if( cmdMsg->getOperation() == CtiCommandMsg::AreYouThere )
                     {
+                        try
                         {
                             getDispatchConnection()->WriteConnQue(cmdMsg->replicateMessage());
+                            if( _CC_DEBUG )
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Replied to Are You There message." << endl;
+                            }
                         }
-                        if( _CC_DEBUG )
+                        catch(...)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Replied to Are You There message." << endl;
+                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
                     }
                     else
@@ -1136,7 +1216,15 @@ void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, R
 void CtiCapController::sendMessageToDispatch( CtiMessage* message )
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    getDispatchConnection()->WriteConnQue(message);
+    try
+    {
+        getDispatchConnection()->WriteConnQue(message);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -1147,9 +1235,17 @@ void CtiCapController::sendMessageToDispatch( CtiMessage* message )
 void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg )
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    getPILConnection()->WriteConnQue(pilRequest);
-    if( multiMsg->getCount() > 0 )
-        getDispatchConnection()->WriteConnQue(multiMsg);
+    try
+    {
+        getPILConnection()->WriteConnQue(pilRequest);
+        if( multiMsg->getCount() > 0 )
+            getDispatchConnection()->WriteConnQue(multiMsg);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -1162,5 +1258,13 @@ void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMulti
 void CtiCapController::confirmCapBankControl( CtiRequestMsg* pilRequest )
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    getPILConnection()->WriteConnQue(pilRequest);
+    try
+    {
+        getPILConnection()->WriteConnQue(pilRequest);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 }
