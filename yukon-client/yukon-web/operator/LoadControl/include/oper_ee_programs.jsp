@@ -55,8 +55,8 @@
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"> 
-                        <table width="101" border="0" cellspacing="0" cellpadding="6" height="200">
+          <td valign="top" width="101"> 
+			<table width="101" border="0" cellspacing="0" cellpadding="6" height="200">
               <tr> 
                 <td height="20" valign="top" align="center"> 
                   <form name="form1" method="get" action="oper_ee.jsp?tab=current">
@@ -86,33 +86,37 @@
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <p align="center" class="TitleHeader"><br>
-              <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - PROGRAMS</p>
-        <table width="600" border="0" cellspacing="0" cellpadding="0" align="center">
+ 			<table width="657 border="0" cellspacing="0" cellpadding="0">
+			  <tr> 
+            	<td width="650" class="TitleHeader"valign="top"> 
+             	  <p align="center"><br>
+				  <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - PROGRAMS<br>
+                  <br>          
+				  <table width="620" border="0" cellspacing="0" cellpadding="0" align="center">
           <%
                for( int i = 0; i < programs.length; i += 2 )
                {
                     LMProgramEnergyExchange p = programs[i];   
           %>
-          <tr> 
-            <td valign="top"> 
-              <table width="250" border="1" cellspacing="0" cellpadding="5" align="center">
-                <tr> 
-                  <td class="HeaderCell" width="50%"><%= p.getYukonName() %></td>
-                </tr>
+					<tr> 
+					  <td valign="top"> 
+						<table width="250" border="1" cellspacing="0" cellpadding="5" align="center">
+						  <tr> 
+							<td class="HeaderCell" width="50%"><%= p.getYukonName() %></td>
+						  </tr>
                 <%
                     LMEnergyExchangeCustomer[] custs = cache.getEnergyExchangeCustomers(p.getYukonID().longValue() );
                     for( int j = 0; j < custs.length; j++ )
                     {                    
                 %>
-                <tr> 
-                  <td class="TableCell" width="50%"><a href="oper_ee.jsp?tab=profile&customerid=<%= custs[j].getCustomerID() %>" class="Link1"><%= custs[j].getCompanyName() %></a></td>
-                </tr>
+						  <tr> 
+							<td class="TableCell" width="50%"><a href="oper_ee.jsp?tab=profile&customerid=<%= custs[j].getCustomerID() %>" class="Link1"><%= custs[j].getCompanyName() %></a></td>
+						  </tr>
                 <%
                     }
                  %>
-              </table>
-            </td>
+					  	</table>
+					  </td>
             <%
                     if( i+1 < programs.length )
                     {
@@ -120,36 +124,37 @@
                         p = programs[i+1];
 
                %>
-            <td valign="top"> 
-              <table width="250" border="1" cellspacing="0" cellpadding="5" align="center">
-                <tr> 
-                  <td class="HeaderCell" width="50%" height="29"><%= p.getYukonName() %></td>
-                </tr>
+					  <td valign="top"> 
+						<table width="250" border="1" cellspacing="0" cellpadding="5" align="center">
+						  <tr> 
+							<td class="HeaderCell" width="50%" height="29"><%= p.getYukonName() %></td>
+						  </tr>
                 <%
                     custs = cache.getEnergyExchangeCustomers(p.getYukonID().longValue() );
                     for( int j = 0; j < custs.length; j++ )
                     {                    
                 %>
-                <tr > 
-                  <td class="TableCell" width="50%"><a href="oper_ee.jsp?tab=profile&customerid=<%= custs[j].getCustomerID() %>" class="Link1"><%= custs[j].getCompanyName() %></a></td>
-                </tr>
+						  <tr> 
+							<td class="TableCell" width="50%"><a href="oper_ee.jsp?tab=profile&customerid=<%= custs[j].getCustomerID() %>" class="Link1"><%= custs[j].getCompanyName() %></a></td>
+						  </tr>
                 <%
                      }
                     }
                }
                 %>
-              </table>
-            </td>
-          </tr>
-        </table>
-            <p align="center" class="Subtext"> <br>
-              <br>
-            </td>
-        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-    </tr>
-      </table>
+						</table>
+					  </td>
+					</tr>
+				  </table>
+				</td>
+				<td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+			  </tr>
+			</table>
+		  </td>
+		</tr>
+	  </table>
     </td>
-	</tr>
+  </tr>
 </table>
 <br>
 </body>
