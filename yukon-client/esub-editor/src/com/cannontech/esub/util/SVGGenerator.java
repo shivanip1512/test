@@ -12,6 +12,7 @@ import java.io.Writer;
 import java.util.Date;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
+import org.apache.batik.svggen.SVGGraphics2D;
 
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -31,6 +32,7 @@ import com.cannontech.esub.editor.element.DynamicText;
 import com.cannontech.esub.editor.element.StateImage;
 import com.cannontech.esub.editor.element.StaticImage;
 import com.cannontech.esub.editor.element.StaticText;
+import com.cannontech.graph.Graph;
 import com.cannontech.graph.model.TrendModel;
 import com.loox.jloox.LxAbstractStyle;
 import com.loox.jloox.LxComponent;
@@ -308,55 +310,16 @@ public class SVGGenerator {
 			
 		Element retElement = null;
 		
-		com.cannontech.database.data.graph.GraphDefinition gDef = new com.cannontech.database.data.graph.GraphDefinition();
-		gDef.getGraphDefinition().setGraphDefinitionID(new Integer(graph.getGraphDefinitionID()));
-	
-		if (gDef != null)
-		{		
-			java.sql.Connection conn = null;
-			try
-			{
-				conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-				gDef.setDbConnection(conn);
-				gDef.retrieve();
-
-				// Lose the reference to the connection
-				gDef.setDbConnection(null);
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();		 
-			}
-			finally
-			{   //make sure to close the connection
-				try { if( conn != null ) conn.close(); } catch( java.sql.SQLException e2 ) { e2.printStackTrace(); };
-			}
-					
-			gDef.getGraphDefinition().setStartDate( new Date("9/5/2002") );
-			gDef.getGraphDefinition().setStopDate( new Date("9/8/2002") );
+		graph.updateGraph();
+		SVGGraphics2D svgGenerator = new SVGGraphics2D(doc);
+		graph.getCTIGraph().getFreeChart().draw(svgGenerator, new Rectangle(width,height));
+		retElement = svgGenerator.getRoot();
 						
-			com.cannontech.graph.Graph ctiGraph = new com.cannontech.graph.Graph();
-			ctiGraph.setDatabaseAlias(CtiUtilities.getDatabaseAlias());
-			ctiGraph.setSize(width,height);
-			ctiGraph.setCurrentGraphDefinition(gDef);
-			ctiGraph.setSeriesType( com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
-
-			ctiGraph.setModelType(0);
-			
-			ctiGraph.update();			
-
-			org.apache.batik.svggen.SVGGraphics2D svgGenerator = 
-				new org.apache.batik.svggen.SVGGraphics2D(doc);
-		
-			ctiGraph.getFreeChart().draw(svgGenerator, new Rectangle(width,height));
-			retElement = svgGenerator.getRoot();
-			
-			retElement.setAttributeNS(null, "x", Integer.toString(x));
-			retElement.setAttributeNS(null, "y", Integer.toString(y));
-			retElement.setAttributeNS(null, "width", Integer.toString(width));
-			retElement.setAttributeNS(null, "height", Integer.toString(height));
-			
-	}
+		retElement.setAttributeNS(null, "x", Integer.toString(x));
+		retElement.setAttributeNS(null, "y", Integer.toString(y));
+		retElement.setAttributeNS(null, "width", Integer.toString(width));
+		retElement.setAttributeNS(null, "height", Integer.toString(height));			
+	
 		return retElement;
 	}
 	
