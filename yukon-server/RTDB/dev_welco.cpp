@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/06/20 19:58:02 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/08/18 15:22:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -261,7 +261,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
             StatusFirst = StatusLast = 0;
         }
 
-        if(isScanFrozen() || isScanFreezeFailed())
+        if(!useScanFlags() || (isScanFrozen() || isScanFreezeFailed()))
         {
             /*
              *  This is our big hint that the message needs accums to be included!
@@ -318,7 +318,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
         EstablishOutMessagePriority( OutMessage, ScanPriority );
         OutMessage->TimeOut               = 2;
 
-        if(isScanFrozen() || isScanFreezeFailed())
+        if(!useScanFlags() || (isScanFrozen() || isScanFreezeFailed()))
         {
             OutMessage->OutLength = 16;
         }
@@ -738,19 +738,26 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                     resetScanFreezeFailed();
                     resetScanFreezePending();
                 }
-                else if(isScanFrozen())
+                else if(isScanFrozen() || !useScanFlags())
                 {
                     Pointer = 1;
 
-                    /* Calculate the part of an hour involved here */
-                    PartHour = (FLOAT)(getLastFreezeTime().seconds() - getPrevFreezeTime().seconds());
-                    PartHour /= (3600.0);
+                    if(useScanFlags())
+                    {
+                        /* Calculate the part of an hour involved here */
+                        PartHour = (FLOAT)(getLastFreezeTime().seconds() - getPrevFreezeTime().seconds());
+                        PartHour /= (3600.0);
+                    }
+                    else
+                    {
+                        PartHour = 1;
+                    }
 
                     for(PointOffset = (USHORT)StartPoint; PointOffset <= FinishPoint; PointOffset++)
                     {
                         Pointer += 2;
 
-                        if( PartHour != 0.0 && (PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)) != NULL)
+                        if( useScanFlags() && PartHour != 0.0 && (PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)) != NULL)
                         {
                             pAccumPoint = (CtiPointAccumulator *)PointRecord;
 
