@@ -751,6 +751,8 @@ public class StarsLiteFactory {
 	
 	public static void setLMHardwareBase(com.cannontech.database.data.stars.hardware.LMHardwareBase hw, LiteStarsLMHardware liteHw) {
 		setInventoryBase( hw.getInventoryBase(), liteHw );
+		
+		hw.setInventoryID( hw.getInventoryBase().getInventoryID() );
 		hw.getLMHardwareBase().setManufacturerSerialNumber( liteHw.getManufactureSerialNumber() );
 		hw.getLMHardwareBase().setLMHardwareTypeID( new Integer(liteHw.getLmHardwareTypeID()) );
 	}
