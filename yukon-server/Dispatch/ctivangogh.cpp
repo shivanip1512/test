@@ -1,7 +1,3 @@
-
-
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   ctivangogh
@@ -10,12 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2003/09/26 03:31:16 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2003/09/29 13:28:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include <windows.h>
 #include <iomanip>
@@ -736,6 +733,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 if(pFailSig->getSignalCategory() > SignalEvent)
                                 {
                                 pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_UNACKNOWLEDGED_ALARM);
+                                    pFailSig->setLogType(AlarmCategoryLogType);
                                 }
                                 pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
 
@@ -1949,6 +1947,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 if(pFailSig->getSignalCategory() > SignalEvent)
                 {
                 pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_UNACKNOWLEDGED_ALARM);
+                    pFailSig->setLogType(AlarmCategoryLogType);
                 }
                 pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
 
