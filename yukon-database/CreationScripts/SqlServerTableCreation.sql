@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     8/6/2002 2:49:40 PM                          */
+/* Created on:     8/9/2002 12:22:29 PM                         */
 /*==============================================================*/
 
 
@@ -454,6 +454,14 @@ if exists (select 1
            where  id = object_id('DeviceCBC')
             and   type = 'U')
    drop table DeviceCBC
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DeviceDNP')
+            and   type = 'U')
+   drop table DeviceDNP
 go
 
 
@@ -1743,6 +1751,8 @@ insert into CTIDatabase values('2.15', 'Ryan', '19-JUL-2002', 'Added MCTBroadCas
 
 insert into CTIDatabase values('2.16', 'Ryan', '26-JUL-2002', 'Added the ImageID to the STATE table and GroupType to the StateGroup table. Created the StateImage table.');
 
+insert into CTIDatabase values('2.31', 'Ryan', '9-AUG-2002', 'Added DeviceDNP table.');
+
 /*==============================================================*/
 /* Table : CapControlFeeder                                     */
 /*==============================================================*/
@@ -2301,6 +2311,19 @@ create table DeviceCBC (
 DEVICEID             numeric              not null,
 SERIALNUMBER         numeric              not null,
 ROUTEID              numeric              not null
+)
+go
+
+
+/*==============================================================*/
+/* Table : DeviceDNP                                            */
+/*==============================================================*/
+create table DeviceDNP (
+DeviceID             numeric              not null,
+MasterAddress        numeric              not null,
+SlaveAddress         numeric              not null,
+PostCommWait         numeric              not null,
+constraint PK_DEVICEDNP primary key  (DeviceID)
 )
 go
 
@@ -4587,6 +4610,12 @@ go
 
 alter table DeviceWindow
    add constraint FK_DevScWin_Dev foreign key (DeviceID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DeviceDNP
+   add constraint FK_Dev_DevDNP foreign key (DeviceID)
       references DEVICE (DEVICEID)
 go
 
