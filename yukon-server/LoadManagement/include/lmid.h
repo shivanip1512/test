@@ -40,6 +40,7 @@
 #define CTILMGROUPPOINT_ID                      625
 #define CTILMGROUPEXPRESSCOM_ID                 626
 #define CTILMPROGRAMTHERMOSTATGEAR_ID           627
+#define CTILMGROUPMCT_ID                        628
 
 /*
 #define CTILM_ID                        62

@@ -31,6 +31,7 @@
 #include "lmgroupversacom.h"
 #include "lmgroupemetcon.h"
 #include "lmgroupexpresscom.h"
+#include "lmgroupmct.h"
 #include "lmgroupripple.h"
 #include "lmgrouppoint.h"
 #include "lmcontrolareatrigger.h"
@@ -450,6 +451,10 @@ void CtiLMControlAreaStore::reset()
                                 else if( tempTypeInt == TYPE_LMGROUP_EXPRESSCOM )
                                 {
                                     currentLMGroupBase = new CtiLMGroupExpresscom(rdr);
+                                }
+                                else if( tempTypeInt == TYPE_LMGROUP_MCT )
+                                {
+                                    currentLMGroupBase = new CtiLMGroupMCT(rdr);
                                 }
                                 else
                                 {

@@ -60,6 +60,7 @@ private:
 
     BOOL _refreshsent;
 
+protected:
     void restore(RWDBReader& rdr);
 };
 #endif
