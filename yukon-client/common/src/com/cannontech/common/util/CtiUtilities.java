@@ -6,8 +6,11 @@ import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.MenuComponent;
+import java.text.DecimalFormat;
 
 import javax.swing.JComboBox;
+
+import com.cannontech.clientutils.CTILogger;
 
 public final class CtiUtilities 
 {
@@ -26,6 +29,10 @@ public final class CtiUtilities
 	public static final Character trueChar = new Character('Y');
 	public static final Character falseChar = new Character('N');
 	private static java.util.GregorianCalendar gc1990 = null;
+	
+	//a universal formatter for numbers
+	private static DecimalFormat numberFormatter = null;
+	
 
 	// image extensions
 	public final static String jpeg = "jpeg";
@@ -213,6 +220,15 @@ public final static void setJComboBoxSelection( JComboBox box, Object value )
       box.setSelectedItem( value );
    }
    
+}
+
+
+public static DecimalFormat getDecimalFormatter()
+{
+	if( numberFormatter == null )
+		numberFormatter = new DecimalFormat();
+
+	return numberFormatter;
 }
 
 /**
@@ -541,6 +557,7 @@ public final static Integer getIntervalComboBoxSecondsValue(JComboBox comboBox)
 public final static Integer getIntervalSecondsValue(String selectedString) 
 {
 	Integer retVal = null;
+	int multiplier = 1;
 
 	if( selectedString == null )
 	{
@@ -548,47 +565,37 @@ public final static Integer getIntervalSecondsValue(String selectedString)
 	}
 	else if( selectedString.toLowerCase().indexOf("second") != -1 )
 	{
-		for( int i = 0; i < 60; i++ )
-			if( selectedString.toLowerCase().equals( i + " second")
-				 || selectedString.toLowerCase().equals( i + " seconds") )
-			{
-			 retVal = new Integer(i);
-			 break;
-			}
+		multiplier = 1;
 	}
 	else if( selectedString.toLowerCase().indexOf("minute") != -1 )
 	{
-		for( int i = 0; i < 60; i++ )
-			if( selectedString.toLowerCase().equals( i + " minute")
-				 || selectedString.toLowerCase().equals( i + " minutes") )
-			{
-			 retVal = new Integer(i*60); //second in a minute
-			 break;
-			}
+		multiplier = 60;
 	}
 	else if( selectedString.toLowerCase().indexOf("hour") != -1 )
 	{
-		for( int i = 0; i < 24; i++ )
-			if( selectedString.toLowerCase().equals( i + " hour")
-				 || selectedString.toLowerCase().equals( i + " hours") )
-			{
-			 retVal = new Integer(i*3600); //seconds in a hour
-			 break;
-			}
+		multiplier = 3600;
 	}
 	else if( selectedString.toLowerCase().indexOf("day") != -1 )
 	{
-		for( int i = 0; i < 365; i++ )
-			if( selectedString.toLowerCase().equals( i + " day")
-				 || selectedString.toLowerCase().equals( i + " days") )
-			{
-			 retVal = new Integer(i*86400); //seconds in a day
-			 break;
-			}
+		multiplier = 86400;
 	}
 	else
-		retVal = new Integer(0);  //we have no idea, just use zero
+		multiplier = 0;  //we have no idea, just use zero
 		
+	
+	try
+	{
+		int loc = selectedString.toLowerCase().indexOf(" ");
+	
+		retVal = new Integer( 
+			multiplier * Integer.parseInt(
+				          selectedString.toLowerCase().substring( 0, loc ) ));
+	}
+	catch( Exception e )
+	{
+		CTILogger.error( "Unable to parse combo box text string into seconds, using ZERO", e );
+		retVal = new Integer(0);
+	}
 
 	return retVal;
 }
@@ -837,18 +844,31 @@ public static void setCheckBoxState(javax.swing.JCheckBox cBox, Integer state ) 
  * @param comboBox javax.swing.JComboBox
  * @param scanRateSecs int
  */
-public static final void setIntervalComboBoxSelectedItem(JComboBox comboBox, int scanRateSecs) {
+public static final void setIntervalComboBoxSelectedItem(JComboBox comboBox, double scanRateSecs) 
+{
 	String scanRateString = null;
 	boolean found = false;
-	
+
+	//when we divide the scanRateSecs value, we must use a double formatted number
+	// so we are returned a double value (Ex: getDecimalFormatter().format(scanRateSecs/60.0) 
+
 	if( scanRateSecs < 60 )
-		scanRateString = Integer.toString(scanRateSecs) + " second";
+	{
+		scanRateString = getDecimalFormatter().format(scanRateSecs) + " second";
+	}
 	else if( scanRateSecs < 3600 )
-		scanRateString = Integer.toString(scanRateSecs/60) + " minute";
+	{
+		scanRateString = getDecimalFormatter().format(scanRateSecs/60.0) + " minute";
+	}
 	else if( scanRateSecs < 86400 )
-		scanRateString = Integer.toString(scanRateSecs/3600) + " hour";
+	{
+		scanRateString = getDecimalFormatter().format(scanRateSecs/3600.0) + " hour";
+	}
 	else
-		scanRateString = Integer.toString(scanRateSecs/86400) + " day";
+	{
+		scanRateString = getDecimalFormatter().format(scanRateSecs/86400.0) + " day";
+	}
+	
 
 	for(int i=0;i<comboBox.getModel().getSize();i++)
 	{
