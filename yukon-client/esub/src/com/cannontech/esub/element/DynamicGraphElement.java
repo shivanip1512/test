@@ -16,10 +16,10 @@ import com.cannontech.database.cache.functions.GraphFuncs;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
+import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistDynamicGraphElement;
 import com.cannontech.graph.Graph;
-import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.util.ServletUtil;
 import com.loox.jloox.LxAbstractRectangle;
  
@@ -72,7 +72,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	}
 	private void initialize() {
 		setGraphDefinition(new LiteGraphDefinition(INVALID_GRAPH_DEFINITION));
-		setTrendType(TrendModelType.LINE_VIEW);
+		setTrendType(GraphRenderers.LINE);
 		setDisplayPeriod(ServletUtil.TODAY);
 		resetDisplayRange();
 		setSize(DEFAULT_SIZE.getWidth(), DEFAULT_SIZE.getHeight());
