@@ -45,14 +45,17 @@ public class TestDBPersistent
                try
                {
 com.cannontech.ejb.DBPersistent myBean = getHome().create(); //server
+//(com.cannontech.yukon.IDBPersistent)
+//                  ((com.cannontech.ejb.DBPersistentHome)initialContext.lookup(
+//                           com.cannontech.ejb.DBPersistentHome.JNDI_NAME) ).create();
 
 LCUT3026 y = (LCUT3026)
    com.cannontech.database.data.device.DeviceFactory.createDevice( 
       com.cannontech.database.data.pao.DeviceTypes.LCU_T3026);
 
-y.setDeviceID( new Integer(3) );
-      
-y = (LCUT3026)myBean.execute( com.cannontech.yukon.IDBPersistent.RETRIEVE, y ); //server
+y.setDeviceID( new Integer(2) );
+//y = (LCUT3026)myBean.execute( com.cannontech.yukon.IDBPersistent.RETRIEVE, y ); //server
+y.retrieve();    
 
 System.out.println( y.getPAOName() );
 
