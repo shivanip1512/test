@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/10/14 20:39:09 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/10/19 20:26:46 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.12  2004/10/19 20:26:46  cplender
+* Extended the control shed functionality for all combos of stime/ctime.
+*
 * Revision 1.11  2004/10/14 20:39:09  cplender
 * Added config205 and tamper205 and coldLoad205 to the party.
 *
@@ -338,7 +341,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse, CtiOutMessag
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** ACH ??CONTROL RESTORE?? Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     else if(CtlReq == CMD_FLAG_CTL_TERMINATE)
@@ -1133,9 +1136,10 @@ void CtiProtocolSA3rdParty::computeShedTimes(int shed_time)
     int oactime[] = { 3, 0, 1, 2 };                 // These are the available timeout times in "matrix"
     int oastime[] = { 5, 5, 5, 5 };                 // These are the available cycle times in "matrix"
 #else
-    int ctimes[] = { 450, 900, 1800, 3600 };    // These are the available cycle times in seconds
-    int oactime[] = { 0, 1, 3, 7 };             // These are the available timeout times in "matrix"
-    int oastime[] = { 0, 1, 3, 7 };             // These are the available cycle times in "matrix"
+    int ctimes[] = { 450, 900, 1350, 1800, 2250, 2700, 3150, 3600 };        // These are the available cycle times in seconds
+    // int ctimes[] = { 450, 900, 1800, 3600 };    // These are the available cycle times in seconds
+    int oactime[] = { 0, 1, 2, 3, 4, 5, 6, 7 };    // These are the available timeout times in "matrix"
+    int oastime[] = { 0, 1, 2, 3, 4, 5, 6, 7  };   // These are the available cycle times in "matrix"
 #endif
 
     int bestoffset = 0;                             // Pick a 450 scond shed by default?
