@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2003/06/10 21:07:15 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2003/07/21 22:13:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3584,7 +3584,7 @@ INT CtiVanGogh::sendMail(const CtiEmailMsg &aMail, const CtiTableContactNotifica
     RWCString mailstr = "\r" + aMail.getText() + resolveEmailMsgDescription( aMail );
 
     sm.lpszHost          = gSMTPServer;                   // Global loaded by ctibase.dll.
-    sm.lpszSender        = aMail.getSender();
+    sm.lpszSender        = ( aMail.getSender().isNull() ? gEmailFrom : aMail.getSender() )  ;
     sm.lpszSenderName    = NULL;
     sm.lpszRecipient     = cNotif.getNotification();
     //    sm.lpszRecipientName = recip.getRecipientName();
