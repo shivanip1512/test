@@ -18,34 +18,22 @@ import com.cannontech.message.dispatch.message.Command;
 
 public final class CalcHistorical
 {
-	private String databaseAlias = "yukon";
-	private static final String VERSION = "2.1.11";
-
 	private Integer aggregationInterval = null;//interval in seconds between calculations
-	private static com.cannontech.message.dispatch.ClientConnection dispatchConnection = null;
+	private com.cannontech.message.dispatch.ClientConnection dispatchConnection = null;
 	private GregorianCalendar nextCalcTime = null;
-
-	//public static LitePoint litePoint = null;
-	public static int pointID = 0;
-	public static com.cannontech.message.dispatch.message.Multi multiMsg = null;
-	public static Vector calcComponentVector = null;
-
-
-	public static Vector calcBasePoints;
-	public static java.util.List allHistoricalCalcComponentsList;
 
 	public static boolean isService = true;
 	public static Thread sleepThread = null;
 	private static com.cannontech.common.util.LogWriter logger = null;
 	
-	private static final int KW_UNITMEASURE = 0;
-	private static final int KVA_UNITMEASURE = 2;
-	private static final int KVAR_UNITMEASURE = 3;
-	private static final int KQ_UNITMEASURE = 7;
+	private final int KW_UNITMEASURE = 0;
+	private final int KVA_UNITMEASURE = 2;
+	private final int KVAR_UNITMEASURE = 3;
+	private final int KQ_UNITMEASURE = 7;
 	
-	private static final int KW_KVAR_PFTYPE = 0;
-	private static final int KW_KQ_PFTYPE = 1;
-	private static final int KW_KVA_PFTYPE = 2;
+	private final int KW_KVAR_PFTYPE = 0;
+	private final int KW_KQ_PFTYPE = 1;
+	private final int KW_KVA_PFTYPE = 2;
 	
 	private class PF
 	{
@@ -77,26 +65,6 @@ public final class CalcHistorical
 		return value;
 	}
 */	
-	
-//	private java.util.List pointUnits = null;
-	//private GregorianCalendar nextBaselineCalcTime = null;
-	
-	//private Integer baselineCalcTime = null;//time to start calcs in seconds from midnight (14400 = 4am)
-	//private Integer daysPreviousToCollect = null;//time to start calcs in seconds from midnight (14400 = 4am)
-	//private Vector calcDatesUsedForBaselineVector = null;
-
-	//private Integer [] dailyHoursArray = null;
-	//private Double [] dailyValuesArray = null;
-	//private java.util.TreeMap baselineTreeMap = null;
-
-	//private int[] skipDaysArray = {java.util.Calendar.SATURDAY, java.util.Calendar.SUNDAY};
-
-	////DEFAULT VALUES!!!
-	//private int daysUsed = 30;
-	//private int percentWindow = 80;
-	//private int calcDays = 5;
-	//private char[] excludedWeekdays = {'N', 'N', 'N', 'N', 'N', 'Y', 'Y'};
-	//private int holidaysUsed = 0;
 /**
  * PointCalculationModule constructor comment.
  */
@@ -143,7 +111,8 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 //	double kwValue = 0; 
 //	double kvarValue = 0;
 	PF powerFactor = null;
-	
+
+//	Vector pushVector = null;	//calc-logic way of processing power factor.
 	
 	for(int i=0;i<calcComponentVector.size();i++)
 	{
@@ -178,6 +147,36 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 							return null;
 						}
 					}
+/*				//Calc-logic way of processing power factor.  CalcHistorical uses the setup of powerfactor_xx_xx_function.
+                    else if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase("push") )
+					{
+						if( powerFactor == null)
+						{
+							powerFactor = new PF();
+						}
+						
+						com.cannontech.database.data.lite.LitePointUnit ltPU = 
+							new com.cannontech.database.data.lite.LitePointUnit( ((CalcComponent)calcComponentVector.get(i)).getComponentPointID().intValue());
+						ltPU.retrieve(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+					
+					
+						if( ltPU.getUomID() == KW_UNITMEASURE)
+						{
+							powerFactor.kw_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
+						}
+						else if( ltPU.getUomID() == KVAR_UNITMEASURE)
+						{
+							powerFactor.kvar_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
+						}
+						else if( ltPU.getUomID() == KQ_UNITMEASURE)
+						{
+							powerFactor.kq_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
+						}
+						else if( ltPU.getUomID() == KVA_UNITMEASURE)
+						{
+							powerFactor.kva_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
+						}
+					}	*/
 					else
 					{
 						logEvent("Can not determine the Operation in CalcHistorical::figurePointDataMsgValue()", com.cannontech.common.util.LogWriter.ERROR);
@@ -229,9 +228,10 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 				if( powerFactor == null)
 				{
 					powerFactor = new PF();
-					powerFactor.pfType = KW_KVAR_PFTYPE;
 				}
-				
+				powerFactor.pfType = KW_KVAR_PFTYPE;				
+
+                //Original way of processing Power Fail.  It is done using push in calc-logic.				
 				com.cannontech.database.data.lite.LitePointUnit ltPU = 
 					new com.cannontech.database.data.lite.LitePointUnit( ((CalcComponent)calcComponentVector.get(i)).getComponentPointID().intValue());
 				ltPU.retrieve(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
@@ -250,7 +250,7 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 							powerFactor.kvar_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
 						}
 					}
-				}
+				}				
 			}
 
 			else if( ((CalcComponent)calcComponentVector.get(i)).getFunctionName().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION) )
@@ -258,8 +258,8 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 				if( powerFactor == null)
 				{
 					powerFactor = new PF();
-					powerFactor.pfType = KW_KQ_PFTYPE;
 				}
+				powerFactor.pfType = KW_KQ_PFTYPE;
 				
 				com.cannontech.database.data.lite.LitePointUnit ltPU = 
 					new com.cannontech.database.data.lite.LitePointUnit( ((CalcComponent)calcComponentVector.get(i)).getPointID().intValue());
@@ -272,15 +272,15 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 						powerFactor.kw_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
 					else if( ltPU.getUomID() == KQ_UNITMEASURE)
 						powerFactor.kq_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
-				}
+				}				
 			}
 			else if( ((CalcComponent)calcComponentVector.get(i)).getFunctionName().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION) )
 			{
 				if( powerFactor == null)
 				{
 					powerFactor = new PF();
-					powerFactor.pfType = KW_KVA_PFTYPE;
 				}
+				powerFactor.pfType = KW_KVA_PFTYPE;
 				
 				com.cannontech.database.data.lite.LitePointUnit ltPU = 
 					new com.cannontech.database.data.lite.LitePointUnit( ((CalcComponent)calcComponentVector.get(i)).getPointID().intValue());
@@ -316,7 +316,7 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 			return null;
 		}
 	}
-	if( powerFactor != null)
+	if( powerFactor != null)	//aka power factor being computed here, using !null as a flag
 	{
 		returnValue = calculatePowerFactor(powerFactor);
 	}
@@ -355,7 +355,7 @@ public java.lang.Integer getAggregationInterval()
  * Insert the method's description here.
  * Creation date: (12/4/2000 2:27:20 PM)
  */
-public GregorianCalendar getCalcHistoricalLastUpdateTimeStamp(int calcPointID, String databaseAlias)
+public static GregorianCalendar getCalcHistoricalLastUpdateTimeStamp(int calcPointID)
 {
 	//January 1, 1980
 	GregorianCalendar returnTimeStamp = new GregorianCalendar(1980, 0, 1, 0, 0);
@@ -365,7 +365,7 @@ public GregorianCalendar getCalcHistoricalLastUpdateTimeStamp(int calcPointID, S
 	java.sql.ResultSet rset = null;
 	try
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection( databaseAlias );
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection( com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 		preparedStatement = conn.prepareStatement("SELECT LASTUPDATE FROM DYNAMICCALCHISTORICAL WHERE POINTID = " + String.valueOf(calcPointID));
 		rset = preparedStatement.executeQuery();
 		
@@ -420,15 +420,10 @@ public GregorianCalendar getCalcHistoricalLastUpdateTimeStamp(int calcPointID, S
  * Insert the method's description here.
  * Creation date: (12/4/2000 2:27:20 PM)
  */
-public Vector getCalcHistoricalPointDataMsgVector(int ptID,
-	Vector calcComponentVector,
-	GregorianCalendar lastCalcPointRawPointHistoryTimeStamp,
-	String databaseAlias)
+public Vector getRawPointHistoryVectorOfVectors(Vector calcComponentVector, GregorianCalendar lastCalcPointRawPointHistoryTimeStamp)
 {
 	//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "] ENTER getCalcHistoricalPointDataMsgVector");
 	
-	Vector returnVector = null;
-
 	Vector tempRawPointHistoryVector = null;
 	Vector rawPointHistoryVectorOfVectors = new Vector();
 
@@ -437,7 +432,7 @@ public Vector getCalcHistoricalPointDataMsgVector(int ptID,
 	java.sql.ResultSet rset = null;
 	try
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(databaseAlias);
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 		preparedStatement =	conn.prepareStatement("SELECT CHANGEID, POINTID, TIMESTAMP, QUALITY, VALUE FROM RAWPOINTHISTORY WHERE POINTID = ? AND TIMESTAMP > ? ORDER BY TIMESTAMP");
 		for (int i = 0; i < calcComponentVector.size(); i++)
 		{
@@ -479,10 +474,6 @@ public Vector getCalcHistoricalPointDataMsgVector(int ptID,
 				tempRawPointHistoryVector = null;
 			}
 		}
-
-		//MOVED TO END OF FUNCTION.. hoping to solve a dispatch block.
-//		returnVector =
-		//	parseAndCalculateRawPointHistories(rawPointHistoryVectorOfVectors, litePoint, calcComponentVector, lastCalcPointRawPointHistoryTimeStamp);
 	}
 	catch (java.sql.SQLException e)
 	{
@@ -505,9 +496,8 @@ public Vector getCalcHistoricalPointDataMsgVector(int ptID,
 		}
 	}
 
-	returnVector = parseAndCalculateRawPointHistories(rawPointHistoryVectorOfVectors);
 	//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "'] EXIT getCalcHistoricalPointDataMsgVector");
-	return returnVector;
+	return rawPointHistoryVectorOfVectors;
 }
 /**
  * Insert the method's description here.
@@ -565,18 +555,18 @@ public com.cannontech.message.dispatch.ClientConnection getDispatchConnection()
  * Insert the method's description here.
  * Creation date: (12/4/2000 2:27:20 PM)
  */
-public java.util.List getHistoricalCalcComponents(String databaseAlias)
+public Vector retrieveHistoricalCalcComponents()
 {
-	java.util.ArrayList returnList = new java.util.ArrayList();
+	//contains com.cannontech.database.db.point.calculation.CalcComponent values.
+	Vector calcComponents = new Vector();
 
 	java.sql.PreparedStatement preparedStatement = null;
 	java.sql.Connection conn = null;
 	java.sql.ResultSet rset = null;
 	try
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection( databaseAlias );
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection( com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 		// don't collect componenttype = 'Function'
-
 
 		String statement = ("SELECT CC.POINTID, CC.COMPONENTORDER, CC.COMPONENTTYPE, CC.COMPONENTPOINTID, CC.OPERATION, CC.CONSTANT, CC.FUNCTIONNAME "+
 							"FROM CALCCOMPONENT CC, POINT P, YUKONPAOBJECT PAO, CALCBASE CB "+
@@ -605,20 +595,8 @@ public java.util.List getHistoricalCalcComponents(String databaseAlias)
 			CalcComponent cc = new CalcComponent( pointID, componentOrder,
 							componentType, componentPointID, operation, constant, functionName );
 
-			returnList.add(cc);
+			calcComponents.add(cc);
 		}
-
-
-		//Store just the distinct CalcPoint ID's
-		calcBasePoints = new Vector();
-		for ( int i = 0; i < returnList.size(); i++)
-		{
-			Integer ptID = ((CalcComponent)returnList.get(i)).getPointID();
-			if ( !calcBasePoints.contains(ptID))
-				calcBasePoints.add(ptID);		
-		}
-		
-		
 	}
 	catch( java.sql.SQLException e )
 	{
@@ -641,8 +619,76 @@ public java.util.List getHistoricalCalcComponents(String databaseAlias)
 		}
 	}
 
-	return returnList;
+	return calcComponents;
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (12/4/2000 2:27:20 PM)
+ */
+/*public Vector retrieveBaselineCalcComponents()
+{
+	//contains com.cannontech.database.db.point.calculation.CalcComponent values.
+	Vector calcComponents = new Vector();
+	
+	java.sql.PreparedStatement preparedStatement = null;
+	java.sql.Connection conn = null;
+	java.sql.ResultSet rset = null;
+	try
+	{
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias());
+		preparedStatement = conn.prepareStatement("SELECT CC.POINTID, CC.COMPONENTORDER, "+
+			" CC.COMPONENTTYPE, CC.COMPONENTPOINTID, CC.OPERATION, CC.CONSTANT, CC.FUNCTIONNAME "+
+			" FROM CALCCOMPONENT CC, CALCBASE CB, POINT P, YUKONPAOBJECT PAO "+
+			" WHERE CC.COMPONENTPOINTID = P.POINTID " +
+			" AND CC.POINTID = CB.POINTID "+
+			" AND P.PAOBJECTID = PAO.PAOBJECTID"+
+			" AND PAO.DISABLEFLAG = 'N' "+
+			" AND FUNCTIONNAME = 'Baseline' "+
+			" AND CB.UPDATETYPE = 'Historical' "+
+			" ORDER BY CC.POINTID, CC.COMPONENTORDER");
+
+		rset = preparedStatement.executeQuery();
+		while (rset.next())
+		{
+			Integer pointID = new Integer(rset.getInt(1));
+			Integer componentOrder = new Integer(rset.getInt(2));
+			String componentType = rset.getString(3);
+			Integer componentPointID = new Integer(rset.getInt(4));
+			String operation = rset.getString(5);
+			Double constant = new Double(rset.getDouble(6));
+			String functionName = rset.getString(7);
+	
+			CalcComponent cc = new CalcComponent( pointID, componentOrder,
+							componentType, componentPointID, operation, constant, functionName );
+	
+			calcComponents.add(cc);
+		}
+	}
+	catch( java.sql.SQLException e )
+	{
+		e.printStackTrace();
+	}
+	finally
+	{
+		try
+		{
+			if( preparedStatement != null )
+				preparedStatement.close();
+			if (rset != null)
+				rset.close();
+			if( conn != null )
+				conn.close();
+		}
+		catch( java.sql.SQLException e )
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	return calcComponents;
+}
+*/	
 /**
  * Insert the method's description here.
  * Creation date: (12/4/2000 2:27:20 PM)
@@ -693,15 +739,7 @@ private double calculatePowerFactor(PF pFactor)
 	}
 	return pfValue;
 }
-/**
- * Insert the method's description here.
- * Creation date: (2/1/2002 11:13:14 AM)
- * @return com.cannontech.database.data.lite.LitePoint
- */
-public static int getPointID()
-{
-	return pointID;
-}
+
 public static void logEvent(String event, int severity)
 {
 	if (logger == null)
@@ -720,7 +758,7 @@ public static void logEvent(String event, int severity)
 			logger = new com.cannontech.common.util.LogWriter(className, com.cannontech.common.util.LogWriter.DEBUG, writer);
 
 			logger.log("Starting up " + className, com.cannontech.common.util.LogWriter.INFO );
-			logger.log("Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() +VERSION+ ".", com.cannontech.common.util.LogWriter.INFO );
+			logger.log("Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() + ".", com.cannontech.common.util.LogWriter.INFO );
 
 		}
 		catch( java.io.FileNotFoundException e )
@@ -739,35 +777,18 @@ public static void main(java.lang.String[] args)
 	CalcHistorical calcHistorical = new CalcHistorical();
 	Baseline baseLine = new Baseline();
 
-	
-	String databaseAlias;
-	if (args.length > 0)
-	{
-		databaseAlias = args[0];
-	}
-	else
-	{
-		databaseAlias = new String("yukon");
-		calcHistorical.setDatabaseAlias(databaseAlias);
-	}
-
 	GregorianCalendar lastCalcPointRawPointHistoryTimeStamp;
-	int calcComponentIndex = 0;
 
 	Vector tempPointDataMsgVector = null;
 	java.util.Date now = null;
-
 	
 	calcHistorical.figureNextCalcTime();
 	baseLine.figureNextBaselineCalcTime();
 	
-	com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Calc Historical (Version: " + VERSION + ") Started.");
-	com.cannontech.clientutils.CTILogger.info(" DISCLAIMER:  Percent Window is not yet functional in determining the Baseline for a point.");
+	com.cannontech.clientutils.CTILogger.info("Calc Historical Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION()+ " Started.");
+	logEvent("Calc Historical (Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION()+ ") Started.", com.cannontech.common.util.LogWriter.INFO);
 
-	logEvent("Calc Historical (Version: " + VERSION + ") Started.", com.cannontech.common.util.LogWriter.INFO);
-	logEvent(" DISCLAIMER:  Percent Window is not yet functional in determining the Baseline for a point.", com.cannontech.common.util.LogWriter.INFO);
-
-	calcHistorical.sleepThread = new Thread();
+	sleepThread = new Thread();
 
 	do
 	{
@@ -780,35 +801,40 @@ public static void main(java.lang.String[] args)
 			
 			// Get a list of all 'Historical' CalcPoints and their fields from Point table in database. 
 			// Get a list of all CalcComponents and their fields from calcComponent table in database
-			allHistoricalCalcComponentsList = calcHistorical.getHistoricalCalcComponents(databaseAlias);
-			
+			//contains com.cannontech.database.db.point.calculation.CalcComponent values.
+			Vector allHistoricalCalcComponentsList = calcHistorical.retrieveHistoricalCalcComponents();
+			//contains 
+			Vector calcBasePoints = calcHistorical.getCalcBasePoints(allHistoricalCalcComponentsList);
+						
+			//calcBasePoints, Vector of Integer pointIds for distinct calcBase points.
+			 
 			for (int i = 0; i < calcBasePoints.size(); i++)
 			{
-				if( calcHistorical.isService)	//Check for service exit
+				if( isService)	//Check for service exit
 				{
-					calcHistorical.setPointID(((Integer)calcBasePoints.get(i)).intValue());
-		
-					calcComponentVector = new Vector();
-					while (calcComponentIndex < allHistoricalCalcComponentsList.size())
+					int pointID = ((Integer)calcBasePoints.get(i)).intValue();
+					
+					//contains CalcComponent values.
+					Vector currentCalcComponents = new Vector();
+					for(int j = 0; j < allHistoricalCalcComponentsList.size(); j++)
 					{
 						// Find the calcComponents entries with pointIds matching the LitePoint (current CalcBase pointId).
-						if ( getPointID() == ((CalcComponent) allHistoricalCalcComponentsList.get(calcComponentIndex)).getPointID().intValue())
+						if ( pointID == ((CalcComponent) allHistoricalCalcComponentsList.get(j)).getPointID().intValue())
 						{
-							calcComponentVector.add(allHistoricalCalcComponentsList.get(calcComponentIndex));
-							calcComponentIndex++;
+							currentCalcComponents.add(allHistoricalCalcComponentsList.get(j));
 						}
 						else
 						{
 							break;
 						}
 					}
-					if ( !calcComponentVector.isEmpty() )
+					if ( !currentCalcComponents.isEmpty() )
 					{
-						lastCalcPointRawPointHistoryTimeStamp = calcHistorical.getCalcHistoricalLastUpdateTimeStamp(getPointID(), databaseAlias);
-						//lastCalcPointRawPointHistoryTimeStamp = calcHistorical.getLastCalcPointRawPointHistoryTimeStamp(litePoint.getPointID(), databaseAlias);
+						lastCalcPointRawPointHistoryTimeStamp = getCalcHistoricalLastUpdateTimeStamp(pointID);
 		
-						tempPointDataMsgVector = calcHistorical.getCalcHistoricalPointDataMsgVector(getPointID(), calcComponentVector, lastCalcPointRawPointHistoryTimeStamp, databaseAlias);
-						calcHistorical.writeMultiMessage( tempPointDataMsgVector );
+						Vector rphDataVectorOfVectors = calcHistorical.getRawPointHistoryVectorOfVectors(currentCalcComponents, lastCalcPointRawPointHistoryTimeStamp);
+						tempPointDataMsgVector = calcHistorical.parseAndCalculateRawPointHistories(rphDataVectorOfVectors, pointID, currentCalcComponents);
+						calcHistorical.writeMultiMessage( tempPointDataMsgVector, pointID);
 					}
 					//else
 						//com.cannontech.clientutils.CTILogger.info("Skipping point "+ litePoint.getPointID());
@@ -827,7 +853,6 @@ public static void main(java.lang.String[] args)
 
 			// Clear out the lists.
 			allHistoricalCalcComponentsList.clear();
-			calcComponentIndex = 0;
 		}
 
 		// CALCULATE BASELINE TOTALS.
@@ -836,17 +861,25 @@ public static void main(java.lang.String[] args)
 			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Starting baseline calculation of baseline calc points.");
 			logEvent("Starting baseline calculation of baseline calc points.", com.cannontech.common.util.LogWriter.INFO);
 
-			tempPointDataMsgVector = baseLine.main();
+			// Get a list of all 'Historical' & 'Baseline' CalcPoints and their fields from Point table in database.
+			//contains com.cannontech.database.db.point.calculation.CalcComponent values. 
+			Vector allBaselineCalcComponents = calcHistorical.retrieveHistoricalCalcComponents();
+			Vector calcBasePoints = calcHistorical.getCalcBasePoints(allBaselineCalcComponents);
+			baseLine.setHistoricalCalcComponents(allBaselineCalcComponents);
 			
-			calcHistorical.writeMultiMessage(tempPointDataMsgVector);
+			// Loop through each calcBase point(ID).	
+			for (int i = 0; i < calcBasePoints.size(); i++)
+			{
+				//Kind of hackery to init this thing here...but it works for now.
+				baseLine.returnPointDataMsgVector = new Vector();
+				Integer pointID = ((Integer)calcBasePoints.get(i));				
+				tempPointDataMsgVector = baseLine.main(pointID);
+				calcHistorical.writeMultiMessage(tempPointDataMsgVector, pointID.intValue());
+			}
 
 			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Done with baseline calculation of baseline calc points.");
 			logEvent("Done with baseline calculation of baseline calc points.", com.cannontech.common.util.LogWriter.INFO);
 			baseLine.figureNextBaselineCalcTime();
-			
-			// Clear out the lists.
-			allHistoricalCalcComponentsList.clear();
-			calcComponentIndex = 0;
 		}
 
 		try
@@ -896,8 +929,8 @@ public static void main(java.lang.String[] args)
 
 	try
 	{
-		dispatchConnection.disconnect();
-		dispatchConnection = null;
+		calcHistorical.getDispatchConnection().disconnect();
+		calcHistorical.dispatchConnection = null;
 	}
 	catch(java.io.IOException ioe)
 	{
@@ -912,10 +945,26 @@ public static void main(java.lang.String[] args)
 	logEvent("Exiting Calc Historical...at end", com.cannontech.common.util.LogWriter.INFO);
 }
 /**
+ * @param allHistoricalCalcComponentsList
+ * @return
+ */
+private Vector getCalcBasePoints(Vector calcComponents)
+{
+	//Store just the distinct CalcPoint ID's
+	Vector calcBasePoints = new Vector();
+	for ( int i = 0; i < calcComponents.size(); i++)
+	{
+		Integer ptID = ((CalcComponent)calcComponents.get(i)).getPointID();
+		if ( !calcBasePoints.contains(ptID))
+			calcBasePoints.add(ptID);		
+	}
+	return calcBasePoints;
+}
+/**
  * Insert the method's description here.
  * Creation date: (12/4/2000 2:27:20 PM)
  */
-public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfVectors )
+public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfVectors, int pointID, Vector calcComponents)
 {
 	//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "] ENTER parseAndCalculateRawPointHistories");
 	if (rawPointHistoryVectorOfVectors.size() == 0)
@@ -1008,11 +1057,11 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 			&& tempRawPointHistoryVector.size() > 0
 			&& tempRawPointHistoryVector.size() == rawPointHistoryVectorOfVectors.size())
 		{
-			Double value = figurePointDataMsgValue(calcComponentVector, tempRawPointHistoryVector);
+			Double value = figurePointDataMsgValue(calcComponents, tempRawPointHistoryVector);
 			if( value != null)
 			{
 				pointDataMsg = new com.cannontech.message.dispatch.message.PointData();
-				pointDataMsg.setId(getPointID());
+				pointDataMsg.setId(pointID);
 				pointDataMsg.setValue(value.doubleValue());
 				pointDataMsg.setTimeStamp(((RawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp().getTime());
 				pointDataMsg.setTime(((RawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp().getTime());
@@ -1022,7 +1071,7 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 				pointDataMsg.setStr("Calc Historical");
 	
 				returnVector.addElement(pointDataMsg);
-				updateDynamicCalcHistorical(pointDataMsg.getTimeStamp());
+				updateDynamicCalcHistorical(pointDataMsg.getTimeStamp(), pointID);
 				
 			}	
 			for (int i = 0; i < rawPointHistoryVectorOfVectors.size(); i++)
@@ -1038,49 +1087,14 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 	//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "] EXIT parseAndCalculateRawPointHistories");
 	return returnVector;
 }
-/**
- * Insert the method's description here.
- * Creation date: (2/1/2002 11:05:54 AM)
- * @param calcCompVector java.util.Vector
- */
-public static void setCalcComponentVector(Vector newCalcCompVector)
-{
-	calcComponentVector = newCalcCompVector;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/1/2002 10:35:23 AM)
- * @param dbAlias java.lang.String
- */
-public void setDatabaseAlias(String dbAlias)
-{
-	databaseAlias = dbAlias;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/1/2002 11:05:20 AM)
- * @param msg com.cannontech.message.dispatch.message.Multi
- */
-public static void setMultiMsg(com.cannontech.message.dispatch.message.Multi newMultiMsg)
-{
-	multiMsg = newMultiMsg;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/1/2002 11:04:48 AM)
- * @param ltPt com.cannontech.database.data.lite.LitePoint
- */
-public static void setPointID(int newPointID)
-{
-	pointID = newPointID;
-}
-public static void stopApplication()
+
+public void stopApplication()
 {
 	logEvent("Forced stopApplication.", com.cannontech.common.util.LogWriter.INFO);
 	isService = false;
 	try
 	{
-		dispatchConnection.disconnect();
+		getDispatchConnection().disconnect();
 	}
 	catch(java.io.IOException ioe)
 	{
@@ -1097,16 +1111,16 @@ public static void stopApplication()
  * Creation date: (2/5/2002 3:53:38 PM)
  * @param lastUpdate java.util.Date
  */
-public void updateDynamicCalcHistorical(java.util.Date lastUpdate)
+public static void updateDynamicCalcHistorical(java.util.Date lastUpdate, int pointID)
 {
 	//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "] ENTER updateDynamicCalcHistorica");
-	StringBuffer pSql = new StringBuffer("UPDATE DYNAMICCALCHISTORICAL SET LASTUPDATE =? WHERE POINTID = " + getPointID());
+	StringBuffer pSql = new StringBuffer("UPDATE DYNAMICCALCHISTORICAL SET LASTUPDATE =? WHERE POINTID = " + pointID);
 	
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.Connection conn = null;
 	try
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection( databaseAlias );
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection( com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 		pstmt = conn.prepareStatement(pSql.toString());
 		pstmt.setTimestamp(1, new java.sql.Timestamp(lastUpdate.getTime()));
 		pstmt.executeUpdate();
@@ -1139,13 +1153,14 @@ public void updateDynamicCalcHistorical(java.util.Date lastUpdate)
  * Insert the method's description here.
  * Creation date: (2/1/2002 10:50:47 AM)
  */
-public void writeMultiMessage(Vector pointDataMsgVector)
+public void writeMultiMessage(Vector pointDataMsgVector, int pointID)
 {
 	//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "] ENTER writeMultiMessage");
 	if (pointDataMsgVector != null)
 	{
-		multiMsg = new com.cannontech.message.dispatch.message.Multi();
+		com.cannontech.message.dispatch.message.Multi multiMsg = new com.cannontech.message.dispatch.message.Multi();
 		multiMsg.getVector().addAll(pointDataMsgVector);
+		
 		if( pointDataMsgVector != null)
 			pointDataMsgVector.clear();
 		
@@ -1153,14 +1168,14 @@ public void writeMultiMessage(Vector pointDataMsgVector)
 		{
 			if (multiMsg.getVector().size() > 0)
 			{
-				com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Sending " + multiMsg.getVector().size() + " point changes to Dispatch for pointID: " + getPointID());
-				logEvent("Sending " + multiMsg.getVector().size() + " point changes to Dispatch for pointID: " + getPointID(), com.cannontech.common.util.LogWriter.INFO);
+				com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Sending " + multiMsg.getVector().size() + " point changes to Dispatch for pointID: " + pointID);
+				logEvent("Sending " + multiMsg.getVector().size() + " point changes to Dispatch for pointID: " + pointID, com.cannontech.common.util.LogWriter.INFO);
 				getDispatchConnection().write(multiMsg);
 			}
 			else
 			{
-				com.cannontech.clientutils.CTILogger.info( "[" + new java.util.Date() + "]  Dispatch connection valid, but no Point Changes to send at this time for pointID: " + getPointID() );
-				logEvent( "Dispatch connection valid, but no Point Changes to send at this time for pointID: " + getPointID(), com.cannontech.common.util.LogWriter.INFO);
+				com.cannontech.clientutils.CTILogger.info( "[" + new java.util.Date() + "]  Dispatch connection valid, but no Point Changes to send at this time for pointID: " + pointID );
+				logEvent( "Dispatch connection valid, but no Point Changes to send at this time for pointID: " + pointID, com.cannontech.common.util.LogWriter.INFO);
 			}
 		}
 		else
@@ -1170,8 +1185,8 @@ public void writeMultiMessage(Vector pointDataMsgVector)
 		}
 	}
 
-	if( calcComponentVector != null)	
-		calcComponentVector.clear();
+//	if( calcComponentVector != null)	
+//		calcComponentVector.clear();
 
 	if (getDispatchConnection().isValid())
 	{
