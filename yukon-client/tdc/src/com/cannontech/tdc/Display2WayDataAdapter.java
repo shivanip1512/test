@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.tags.TagUtils;
@@ -549,7 +550,7 @@ public int createRowsForHistoricalView(java.util.Date date, int page)
 					  " where s.pointid=p.pointid and y.PAObjectID=p.PAObjectID " +
 					  " and s.datetime >= ? " +
 					  " and s.datetime < ? " +
-                 " and s.logid >= ? " +
+                 " and s.logid > ? " +
                  " and s.logid <= ? " +
 		 			  " order by s.datetime, s.soe_tag";
    
@@ -558,6 +559,7 @@ public int createRowsForHistoricalView(java.util.Date date, int page)
    lowerCal.set( lowerCal.HOUR_OF_DAY, 0 );
    lowerCal.set( lowerCal.MINUTE, 0 );
    lowerCal.set( lowerCal.SECOND, 0 );
+   lowerCal.set( lowerCal.MILLISECOND, 000 );
    
    java.util.GregorianCalendar upperCal = new java.util.GregorianCalendar();
    upperCal.setTime( date );
@@ -598,9 +600,7 @@ public int createRowsForHistoricalView(java.util.Date date, int page)
 
    qMin = qMin >= qMax ? qMin : (qMax - TDCDefines.MAX_ROWS);
 /********* Page checking and processing ends here *******/
-
-
-
+	
    objs = new Object[4];
    objs[0] = lowerCal.getTime();
    objs[1] = upperCal.getTime();
@@ -616,6 +616,15 @@ public int createRowsForHistoricalView(java.util.Date date, int page)
 	if( rowData == null )
 		return -1;
 
+	StringBuffer b = new StringBuffer(rowQuery);
+	for( int i = 0; i < objs.length; i++ )
+		b.replace( b.indexOf("?"), b.indexOf("?")+1, objs[i].toString() );
+
+
+	CTILogger.debug("   TDC Page=" + page + ", PageCnt=" + pageCount +
+					", min=" + qMin +", max=" + qMax );		
+	CTILogger.debug("   TDC query=" + b.toString() );
+	CTILogger.debug("   TDC rowCnt=" + rowData.length );
 
 	java.util.Date prevDate = null;
 	java.util.GregorianCalendar currentCalendar = null;
