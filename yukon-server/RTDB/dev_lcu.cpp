@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/02/11 22:37:03 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/03/14 01:31:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1521,9 +1521,11 @@ CtiDeviceLCU& CtiDeviceLCU::setLastControlMessage(const OUTMESS *pOutMessage)
         _lastControlMessage = 0;
     }
 
+    if(pOutMessage)
+    {
     _lastControlMessage = CTIDBG_new OUTMESS( *pOutMessage );
-
     _lastCommand = RWCString( _lastControlMessage->Request.CommandStr );
+    }
 
     return *this;
 }
@@ -1918,11 +1920,7 @@ INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, Cti
                                  *  If we get to this point we must assume that this LCU completed his control command
                                  */
 
-                                if(getLastControlMessage() != NULL)
-                                {
                                     resetFlags(LCUTRANSMITSENT | LCUWASTRANSMITTING);
-                                }
-
                                 resultCode = eLCUDeviceControlComplete;
                             }
                             else if(getLastControlMessage() != NULL)
@@ -1997,6 +1995,10 @@ bool CtiDeviceLCU::isLCULockedOut( INMESS *InMessage )
             }
             _lockedOut = true;
         }
+        else
+        {
+            _lockedOut = false;
+        }
     }
     else if( _lcuType == LCU_EASTRIVER )
     {
@@ -2007,6 +2009,10 @@ bool CtiDeviceLCU::isLCULockedOut( INMESS *InMessage )
                 dout << RWTime() << " Local (MnA_TESTMODE) Mode is set on the LCU! " << getName() << endl;
             }
             _lockedOut = true;
+        }
+        else
+        {
+            _lockedOut = false;
         }
     }
 

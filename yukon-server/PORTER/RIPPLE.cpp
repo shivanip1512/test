@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/02/18 14:35:55 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/03/14 01:31:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -135,10 +135,6 @@ bool findExclusionBlockage(const long key, CtiDeviceSPtr Dev, void* ptr)
 
             if( pOtherLCU->getLastControlMessage() != NULL && pOtherLCU->getNextCommandTime() < Now )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
                 pOtherLCU->lcuResetFlagsAndTags();
             }
 
@@ -203,7 +199,9 @@ void ApplyPortXLCUSet(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
 {
     CtiDeviceLCU *lcu = (CtiDeviceLCU*)vpTXlcu;     // This is the transmitting lcu...  Might be the broadcast LCU (yeah, LCUGLOBAL.. how lazy is that)
 
-    if( isLCU(Dev->getType()) && Dev->getPortID() == lcu->getPortID() &&
+    if( isLCU(Dev->getType()) &&
+        !Dev->isInhibited() &&
+        Dev->getPortID() == lcu->getPortID() &&
         Dev->getAddress() != LCUGLOBAL )            // CGP 12202004 Added on a whim.  Be very alert here...
     {
         CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
@@ -408,13 +406,13 @@ LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceSPtr Dev, ULON
 
             if(lcu->getAddress() == LCUGLOBAL)
             {
-                ReportCompletionStateToLMGroup(lcu);
+                // 20050307 CGP Removed. // ReportCompletionStateToLMGroup(lcu);
             }
         }
 
         if( lcu->getAddress() != LCUGLOBAL )  /* Check if this decode is the result of a scan */
         {
-            if( !(Result) )            // Successful communication
+            if( Result == NORMAL )            // Successful communication
             {
                 RWTPtrSlist< CtiMessage >       vgList;
                 CtiDeviceLCU::CtiLCUResult_t    resultCode;
@@ -563,6 +561,14 @@ SendDOToLogger (const CHAR *DeviceName, const BYTE *Telegraph)
 
     case 0203:
         strcat (Message, "2.02    ");
+        break;
+
+    case 0320:
+        strcat (Message, "2.03    ");
+        break;
+
+    case 0602:
+        strcat (Message, "2.04    ");
         break;
 
     case 0111:
@@ -763,6 +769,7 @@ static bool findWorkingLCU(const long unusedid, CtiDeviceSPtr Dev, void *ptrlcu)
     CtiDeviceLCU *lcu = (CtiDeviceLCU *)ptrlcu;
 
     if(isLCU(Dev->getType())                    &&
+       !Dev->isInhibited()                      &&
        Dev->getPortID()     == lcu->getPortID() &&
        Dev->getID()         != lcu->getID()     &&
        Dev->getAddress()    != LCUGLOBAL           )
@@ -1008,6 +1015,7 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
                         }
                         else
                         {
+                            ReportCompletionStateToLMGroup(GlobalLCUDev);
                             Send4PartToDispatch ("Rsc", (char*)GlobalLCUDev->getName().data(), "Sequence Complete", "Normal");
 //                            SendTelegraphStatusToMPC (TELEGRAPHEND_NORMAL, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
                             SendTelegraphStatusToMPC (TELEGRAPHEND_NORMAL, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
@@ -1058,6 +1066,11 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
             }
             else
             {
+                if(GlobalLCUDev != NULL && GlobalLCUDev->getFlags() & LCUTRANSMITSENT)
+                {
+                    ReportCompletionStateToLMGroup(GlobalLCUDev);
+                }
+
                 Send4PartToDispatch ("Inf", (char*)lcu->getName().data(), "Command Complete", "Normal");    // 20041220 CGP Added.
                 lcu->lcuResetFlagsAndTags();
             }
@@ -1077,11 +1090,6 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
         }
     case (CtiDeviceLCU::eLCUDeviceControlCompleteAllowTimeout):
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
             if(lcu->getNextCommandTime() < RWTime())
             {
                 {
@@ -1141,6 +1149,7 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
                         }
                         else
                         {
+                            ReportCompletionStateToLMGroup(GlobalLCUDev);
                             Send4PartToDispatch ("Rsc", (char*)GlobalLCUDev->getName().data(), "Sequence Complete", "Normal");
 //                            SendTelegraphStatusToMPC (TELEGRAPHEND_NORMAL, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
                             SendTelegraphStatusToMPC (TELEGRAPHEND_NORMAL, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
@@ -1171,6 +1180,7 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
                         }
                         else
                         {
+                            ReportCompletionStateToLMGroup(lcu);
                             Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "Normal");
 //                            SendTelegraphStatusToMPC (TELEGRAPHEND_NORMAL, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
                             SendTelegraphStatusToMPC (TELEGRAPHEND_NORMAL, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
@@ -1531,7 +1541,7 @@ bool AnyLCUCanExecute( OUTMESS *&OutMessage, CtiDeviceLCU *lcu, RWTime &Now )
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " **** EX Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return bSubstitutionMade;
@@ -1603,7 +1613,7 @@ bool LCUPortHasAnLCUScan( OUTMESS *&OutMessage, CtiDeviceLCU *lcu, RWTime &Now )
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " **** EX Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return bSubstitutionMade;
@@ -1653,6 +1663,7 @@ static void applyQueueForScanTrue(const long unusedid, CtiDeviceSPtr Dev, void *
     CtiDeviceLCU *lcu = (CtiDeviceLCU *)plcu;
 
     if(isLCU(Dev->getType()) &&
+       !Dev->isInhibited() &&
        Dev->getPortID() == lcu->getPortID() &&
        Dev->getID() != lcu->getID() &&
        Dev->getAddress() != LCUGLOBAL )
@@ -1667,6 +1678,7 @@ static void applyQueueForScanFalse(const long unusedid, CtiDeviceSPtr Dev, void 
     CtiDeviceLCU *lcu = (CtiDeviceLCU *)plcu;
 
     if(isLCU(Dev->getType()) &&
+       !Dev->isInhibited() &&
        Dev->getPortID() == lcu->getPortID() &&
        Dev->getID() != lcu->getID() &&
        Dev->getAddress() != LCUGLOBAL )
