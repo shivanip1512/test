@@ -233,6 +233,84 @@ insert into YukonUserRole values (870,-1,-201,-20870,'(none)');
 
 
 
+insert into YukonRole values(-3,'Logging','Yukon','Settings for how Yukon logs output. Edit this role from the Yukon SetUp page.');
+
+/* Yukon Logging Role Properties */
+insert into YukonRoleProperty values(-1200,-3,'dbeditor_log_level','INFO','Logging level for DBEditor functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1201,-3,'database_log_level','INFO','Logging level for the Database. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1202,-3,'tdc_log_level','INFO','Logging level for TDC functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1203,-3,'commander_log_level','INFO','Logging level for Yukon Commander functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1204,-3,'billing_log_level','INFO','Logging level for Billing functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1205,-3,'calchist_log_level','INFO','Logging level for Calc Historical functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1206,-3,'cap_control_log_level','INFO','Logging level for Cap Control functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1207,-3,'esub_log_level','INFO','Logging level for Esubstation functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1208,-3,'export_log_level','INFO','Logging level for Export functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1209,-3,'load_control_log_level','INFO','Logging level for Load Control functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1210,-3,'macs_log_level','INFO','Logging level for MACS functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1211,-3,'notification_log_level','INFO','Logging level for Notification functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1212,-3,'reporting_log_level','INFO','Logging level for Reporting functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1213,-3,'trending_log_level','INFO','Logging level for Trending functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1214,-3,'stars_log_level','INFO','Logging level for STARS functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1215,-3,'general_log_level','INFO','Logging level for all functionality that is not otherwise defined. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+
+/* Logging default Yukon group */
+insert into YukonGroupRole values(50,-1,-3,-1200,'(none)');
+insert into YukonGroupRole values(51,-1,-3,-1201,'(none)');
+insert into YukonGroupRole values(52,-1,-3,-1202,'(none)');
+insert into YukonGroupRole values(53,-1,-3,-1203,'(none)');
+insert into YukonGroupRole values(54,-1,-3,-1204,'(none)');
+insert into YukonGroupRole values(55,-1,-3,-1205,'(none)');
+insert into YukonGroupRole values(56,-1,-3,-1206,'(none)');
+insert into YukonGroupRole values(57,-1,-3,-1207,'(none)');
+insert into YukonGroupRole values(58,-1,-3,-1208,'(none)');
+insert into YukonGroupRole values(59,-1,-3,-1209,'(none)');
+insert into YukonGroupRole values(60,-1,-3,-1210,'(none)');
+insert into YukonGroupRole values(61,-1,-3,-1211,'(none)');
+insert into YukonGroupRole values(62,-1,-3,-1212,'(none)');
+insert into YukonGroupRole values(63,-1,-3,-1213,'(none)');
+insert into YukonGroupRole values(64,-1,-3,-1214,'(none)');
+insert into YukonGroupRole values(65,-1,-3,-1215,'(none)');
+
+
+/* Delete all the deprecated LOG_LEVEL */
+delete from yukongrouprole where rolepropertyid = -10006;
+delete from yukongrouprole where rolepropertyid = -10110;
+delete from yukongrouprole where rolepropertyid = -10201;
+delete from yukongrouprole where rolepropertyid = -10403;
+delete from yukongrouprole where rolepropertyid = -10502;
+delete from yukongrouprole where rolepropertyid = -10602;
+delete from yukongrouprole where rolepropertyid = -10801;
+
+delete from yukonuserrole where rolepropertyid = -10006;
+delete from yukonuserrole where rolepropertyid = -10110;
+delete from yukonuserrole where rolepropertyid = -10201;
+delete from yukonuserrole where rolepropertyid = -10403;
+delete from yukonuserrole where rolepropertyid = -10502;
+delete from yukonuserrole where rolepropertyid = -10602;
+delete from yukonuserrole where rolepropertyid = -10801;
+
+delete from yukonroleproperty where rolepropertyid = -10006;
+delete from yukonroleproperty where rolepropertyid = -10110;
+delete from yukonroleproperty where rolepropertyid = -10201;
+delete from yukonroleproperty where rolepropertyid = -10403;
+delete from yukonroleproperty where rolepropertyid = -10502;
+delete from yukonroleproperty where rolepropertyid = -10602;
+delete from yukonroleproperty where rolepropertyid = -10801;
+
+
+/* Update the roles that only have 1 property, the deprecated LOG_LEVEL */
+update YukonRoleProperty set keyname='msg_priority', defaultvalue='14', description='Tells commander what the outbound priority of messages are (low)1 - 14(high)' where rolepropertyid=-10300;
+update YukonRoleProperty set keyname='default', defaultvalue='false', description='The default esub editor property' where rolepropertyid=-10700;
+
+insert into YukonRoleProperty values(-1010,-1,'smtp_host','127.0.0.1','Name or IP address of the mail server');
+insert into YukonRoleProperty values(-1011,-1,'mail_from_address','yukon@cannontech.com','Name of the FROM email address the mail server will use');
+insert into YukonRoleProperty values(-1012,-1,'print_insert_sql','(none)','File name of where to print all SQL insert statements');
+insert into YukonRoleProperty values(-1216,-3,'log_to_file','false','Tells all logging that it needs to go to a file');
+
+insert into YukonGroupRole values(11,-1,-1,-1010,'(none)');
+insert into YukonGroupRole values(12,-1,-1,-1011,'(none)');
+insert into YukonGroupRole values(13,-1,-1,-1012,'(none)');
+insert into YukonGroupRole values(66,-1,-3,-1216,'(none)');
 
 
 
@@ -241,6 +319,27 @@ insert into YukonUserRole values (870,-1,-201,-20870,'(none)');
 
 
 
+/*Add the CICustomer user-control role*/
+insert into yukonrole values (-306, 'User Control', 'CICustomer', 'Customer access to user control operations.');
+
+/*Add the CICustomer user-control properties */
+insert into yukonroleproperty values(-30600, -306, 'User Control Label', 'User-Control', 'The customer specific name for user control');
+insert into yukonroleproperty values(-30601, -306, 'Auto Control', 'true', 'Controls access to auto control.');
+insert into yukonroleproperty values(-30602, -306, 'Time Based Control', 'true', 'Controls access to time based control');
+insert into yukonroleproperty values(-30603, -306, 'Switch Command Control', 'true', 'Controls acces to switch commands');
+
+/*Add the user-control properties to the Web Client Customers group */
+/* REPLACE the 985-989 ids with the proper grouproleid values */
+insert into yukongrouprole values ( 985, -302, -306, -30600, '(none)');
+insert into yukongrouprole values ( 986, -302, -306, -30601, 'true)');
+insert into yukongrouprole values ( 987, -302, -306, -30602, 'true');
+insert into yukongrouprole values ( 988, -302, -306, -30603, 'true');
+
+/*Add the user-control properties to the user */
+insert into yukonuserrole values ( 985, -1, -306, -30600, '(none)');
+insert into yukonuserrole values ( 986, -1, -306, -30601, 'true)');
+insert into yukonuserrole values ( 987, -1, -306, -30602, 'true');
+insert into yukonuserrole values ( 988, -1, -306, -30603, 'true');
 
 
 /******************************************************************************/
