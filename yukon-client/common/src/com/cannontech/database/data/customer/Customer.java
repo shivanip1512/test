@@ -152,7 +152,8 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 	 */
 	public void retrieve() throws java.sql.SQLException 
 	{
-		getCustomer().retrieve();
+		if (getCustomer().getCustomerID() == null)
+			getCustomer().retrieve();
 	
 		try
 		{
