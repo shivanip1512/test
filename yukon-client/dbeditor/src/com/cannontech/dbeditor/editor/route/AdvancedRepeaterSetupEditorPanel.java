@@ -560,7 +560,8 @@ private com.klg.jclass.field.JCSpinField getRepeaterVariableBits1() {
 			ivjRepeaterVariableBits1.setBackground(java.awt.Color.white);
 			ivjRepeaterVariableBits1.setMinimumSize(new java.awt.Dimension(50, 22));
 			// user code begin {1}
-			ivjRepeaterVariableBits1.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(6), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
+			ivjRepeaterVariableBits1.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(6), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 4, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
+			//ivjRepeaterVariableBits1.setEditable(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -584,7 +585,7 @@ private com.klg.jclass.field.JCSpinField getRepeaterVariableBits2() {
 			ivjRepeaterVariableBits2.setBackground(java.awt.Color.white);
 			ivjRepeaterVariableBits2.setMinimumSize(new java.awt.Dimension(50, 22));
 			// user code begin {1}
-			ivjRepeaterVariableBits2.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(6), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
+			ivjRepeaterVariableBits2.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(6), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 4, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -608,7 +609,7 @@ private com.klg.jclass.field.JCSpinField getRepeaterVariableBits3() {
 			ivjRepeaterVariableBits3.setBackground(java.awt.Color.white);
 			ivjRepeaterVariableBits3.setMinimumSize(new java.awt.Dimension(50, 22));
 			// user code begin {1}
-			ivjRepeaterVariableBits3.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(6), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
+			ivjRepeaterVariableBits3.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(6), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 4, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -632,7 +633,7 @@ private com.klg.jclass.field.JCSpinField getRepeaterVariableBits4() {
 			ivjRepeaterVariableBits4.setBackground(java.awt.Color.white);
 			ivjRepeaterVariableBits4.setMinimumSize(new java.awt.Dimension(50, 22));
 			// user code begin {1}
-			ivjRepeaterVariableBits4.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(6), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
+			ivjRepeaterVariableBits4.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(6), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 4, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -656,7 +657,7 @@ private com.klg.jclass.field.JCSpinField getRepeaterVariableBits5() {
 			ivjRepeaterVariableBits5.setBackground(java.awt.Color.white);
 			ivjRepeaterVariableBits5.setMinimumSize(new java.awt.Dimension(50, 22));
 			// user code begin {1}
-			ivjRepeaterVariableBits5.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(6), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
+			ivjRepeaterVariableBits5.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(6), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 4, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -680,7 +681,7 @@ private com.klg.jclass.field.JCSpinField getRepeaterVariableBits6() {
 			ivjRepeaterVariableBits6.setBackground(java.awt.Color.white);
 			ivjRepeaterVariableBits6.setMinimumSize(new java.awt.Dimension(50, 22));
 			// user code begin {1}
-			ivjRepeaterVariableBits6.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(6), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
+			ivjRepeaterVariableBits6.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(6), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 4, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -704,7 +705,7 @@ private com.klg.jclass.field.JCSpinField getRepeaterVariableBits7() {
 			ivjRepeaterVariableBits7.setBackground(java.awt.Color.white);
 			ivjRepeaterVariableBits7.setMinimumSize(new java.awt.Dimension(50, 22));
 			// user code begin {1}
-			ivjRepeaterVariableBits7.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(6), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
+			ivjRepeaterVariableBits7.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(6), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 4, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
