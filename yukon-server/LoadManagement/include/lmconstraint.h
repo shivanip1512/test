@@ -30,7 +30,8 @@ public:
     bool checkMaxDailyOps(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
     bool checkMaxActivateTime(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
     bool checkControlWindows(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
- 
+
+    bool checkMasterActive(const CtiLMProgramDirect& lm_program, vector<string>* results = 0);
     
 
 //    bool checkWeekDays(const CtiLMProgram

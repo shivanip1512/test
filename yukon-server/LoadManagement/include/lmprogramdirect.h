@@ -65,6 +65,9 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     
     RWOrdered& getLMProgramDirectGears();
     RWOrdered& getLMProgramDirectGroups();
+
+    set<CtiLMProgramDirect*>& getMasterPrograms();
+    set<CtiLMProgramDirect*>& getSubordinatePrograms();
     
     set<int>&  getNotificationGroupIDs();
 
@@ -148,7 +151,10 @@ private:
     
     RWOrdered _lmprogramdirectgears;
     RWOrdered _lmprogramdirectgroups;
-    
+
+    set<CtiLMProgramDirect*> _master_programs;
+    set<CtiLMProgramDirect*> _subordinate_programs;
+                                     
     set<int> _notificationgroupids;
 
     //don't stream/don't save

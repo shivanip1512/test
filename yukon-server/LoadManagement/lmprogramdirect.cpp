@@ -245,6 +245,27 @@ RWOrdered& CtiLMProgramDirect::getLMProgramDirectGroups()
 }
 
 /*----------------------------------------------------------------------------
+  getMasterPrograms
+
+  Returns a set of pointers to the programs that this program is considered
+  subordinate to.
+----------------------------------------------------------------------------*/
+set<CtiLMProgramDirect*>& CtiLMProgramDirect::getMasterPrograms() 
+{
+    return _master_programs;
+}
+
+/*----------------------------------------------------------------------------
+  getSubordinateProgrmas
+
+  Returns a set of pointers to this programs subordinate programs.
+----------------------------------------------------------------------------*/
+set<CtiLMProgramDirect*>& CtiLMProgramDirect::getSubordinatePrograms() 
+{
+    return _subordinate_programs;
+}
+
+/*----------------------------------------------------------------------------
   getNotificationGroups
 
   Returns a set of notification group ids
@@ -5028,7 +5049,24 @@ void CtiLMProgramDirect::restoreGuts(RWvistream& istrm)
 void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
 {
     CtiLMProgramBase::saveGuts( ostrm );
-
+    
+    // Only send active master/subordinate programs
+    RWOrdered* active_masters = new RWOrdered();
+    for(set<CtiLMProgramDirect*>::const_iterator m_iter = _master_programs.begin();
+        m_iter != _master_programs.end();
+        m_iter++)
+    {
+        active_masters->insert(*m_iter);
+    }
+    
+    RWOrdered* active_subordinates = new RWOrdered();
+    for(set<CtiLMProgramDirect*>::const_iterator s_iter = _subordinate_programs.begin();
+        s_iter != _subordinate_programs.end();
+        s_iter++)
+    {
+        active_subordinates->insert(*s_iter);
+    }
+    
     ostrm << (_currentgearnumber+1)
           << _lastgroupcontrolled
           << _directstarttime.rwtime()
@@ -5037,8 +5075,13 @@ void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
           << _notifytime.rwtime()
           << _startedrampingout.rwtime()
           << _lmprogramdirectgears
-          << _lmprogramdirectgroups;
+          << _lmprogramdirectgroups
+          << active_masters
+          << active_subordinates;
 
+    delete active_masters;
+    delete active_subordinates;
+    
     return;
 }
 
@@ -5070,6 +5113,10 @@ CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& righ
          {
              _lmprogramdirectgroups.insert(right._lmprogramdirectgroups[j]);
          }
+
+         _master_programs = right._master_programs;
+         _subordinate_programs = right._subordinate_programs;
+         
         
 //        _lmprogramdirectgears.clearAndDestroy();
 //         for(LONG i=0;i<right._lmprogramdirectgears.entries();i++)

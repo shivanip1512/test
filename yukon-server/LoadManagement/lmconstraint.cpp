@@ -36,6 +36,7 @@ bool CtiLMConstraintChecker::checkConstraints(const CtiLMProgramDirect& lm_progr
     ret_val = (checkMaxDailyOps(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
     ret_val = (checkMaxActivateTime(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
     ret_val = (checkControlWindows(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
+    ret_val = (checkMasterActive(lm_program, &results) && ret_val);
     
     if( _LM_DEBUG & LM_DEBUG_CONSTRAINTS )
     {
@@ -433,4 +434,24 @@ bool CtiLMConstraintChecker::checkControlWindows(const CtiLMProgramDirect& lm_pr
     }
     return false;
 }
-                                                 
+
+bool CtiLMConstraintChecker::checkMasterActive(const CtiLMProgramDirect& lm_program, vector<string>* results)
+{
+    bool master_active = false;
+    set<CtiLMProgramDirect*>& master_set = ((CtiLMProgramDirect&)lm_program).getMasterPrograms();
+    
+    for(set<CtiLMProgramDirect*>::iterator master_iter = master_set.begin();
+        master_iter != master_set.end();
+        master_iter++)
+    {
+        if((*master_iter)->getProgramState() != CtiLMProgramBase::InactiveState)
+        {
+            string result = "The program cannot since its master program, ";
+            result += (*master_iter)->getPAOName();
+            result += " is active";
+            results->push_back(result);
+            master_active = true;
+        }
+    }
+    return !master_active;
+}

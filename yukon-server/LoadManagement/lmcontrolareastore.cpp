@@ -59,6 +59,7 @@
 #include "lmfactory.h"
 #include "utility.h"
 #include "rwutil.h"
+#include "tbl_paoexclusion.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -482,6 +483,7 @@ void CtiLMControlAreaStore::reset()
             /* Attach any points necessary to groups */
             {
                 temp_point_group_map.clear();
+
                 RWDBTable pointTable = db.table("point");
                 RWDBTable lmGroupTable = db.table("lmgroup");
 
@@ -1486,26 +1488,6 @@ void CtiLMControlAreaStore::reset()
                                 }
                             }
                         }
-
-                        /* delete any groups that were not assigned to programs */
-/*                      for(map<long,CtiLMGroupBase*>::iterator iter = all_assigned_group_map.begin();
-                            iter != all_assigned_group_map.end();
-                            iter++)
-                        {
-                            _all_group_map.erase(iter->first);
-                        }
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                        {
-                            CtiLockGuard<CtiLogger> dout_guard(dout);
-                            dout << _all_group_map.size() << " lm groups were not assigned to programs, deleting them now." << endl;
-                        }
-                        for(map<long,CtiLMGroupBase*>::iterator del_iter = _all_group_map.begin();
-                            del_iter != _all_group_map.end();
-                            del_iter++)
-                        {
-                            delete del_iter->second;
-                        }
-*/
                     }//loading direct programs end
                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
@@ -1514,8 +1496,60 @@ void CtiLMControlAreaStore::reset()
                         dirProgsTimer.reset();
                     }
 
+                    RWTimer masterSubordinateTimer;
+                    masterSubordinateTimer.start();
+                    
+                { // loading master - subordinate direct program relationships
+                    RWDBTable paoExclusionTable = db.table("paoexclusion");
+                    RWDBSelector selector = db.selector();
+                    selector << paoExclusionTable["paoid"]
+                             << paoExclusionTable["excludedpaoid"];
+                    selector.from(paoExclusionTable);
+                    selector.where(paoExclusionTable["functionid"] == CtiTablePaoExclusion::ExFunctionLMSubordination);
 
-                    RWTimer gearsTimer;
+                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - " << selector.asString().data() << endl;
+                    }
+
+                    RWDBReader rdr = selector.reader(conn);
+                    while( rdr() )
+                    {
+                        long master_program_id;
+                        long subordinate_program_id;
+                        rdr["paoid"] >> master_program_id;
+                        rdr["excludedpaoid"] >> subordinate_program_id;
+                        
+                        CtiLMProgramBase* master_program = 0;
+                        CtiLMProgramBase* subordinate_program = 0;
+                        
+                        if(directProgramHashMap.findValue(master_program_id, master_program) &&
+                           directProgramHashMap.findValue(subordinate_program_id, subordinate_program))
+                        {
+                            ((CtiLMProgramDirect*)master_program)->getSubordinatePrograms().insert((CtiLMProgramDirect*)subordinate_program);
+                            ((CtiLMProgramDirect*)subordinate_program)->getMasterPrograms().insert((CtiLMProgramDirect*)master_program);
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> dout_guard(dout);
+                            dout << RWTime() << " **Checkpoint** " <<  "Unable to find either master program with id: " <<
+                                master_program_id << " or subordinate program with id: " << subordinate_program_id <<
+                                " -- This suggests that database constraints on table PAOExclusion aren't correct or that we failed to load one or both of the programs."  <<
+                                __FILE__ << "(" << __LINE__ << ")" << endl;
+                        }
+                        
+                    }
+                }
+
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << "DB Load Timer for associating master/subordinate programs is: " << dirProgsTimer.elapsedTime() << endl;
+                    dirProgsTimer.reset();
+                }
+                    
+                RWTimer gearsTimer;
                     gearsTimer.start();
                     {//loading direct gears start
                         RWDBTable lmProgramDirectGearTable = db.table("lmprogramdirectgear");
