@@ -743,9 +743,9 @@ public class InventoryBean {
 	 * @param filterBy The filterBy to set
 	 */
 	public void setFilterBy(int filterBy) {
-		// Update the search result
-		if (this.filterBy != filterBy) inventoryList = null;
 		this.filterBy = filterBy;
+		// Update the search result
+		inventoryList = null;
 	}
 
 	/**
@@ -919,11 +919,16 @@ public class InventoryBean {
 	 * @param i
 	 */
 	public void setSearchBy(int i) {
-		searchBy = i;
-		inventoryList = null;
-		inventorySet = null;
-		filterBy = CtiUtilities.NONE_ID;
-		htmlStyle |= HTML_STYLE_INVENTORY_SET;
+		if (searchBy != CtiUtilities.NONE_ID || i != CtiUtilities.NONE_ID) {
+			searchBy = i;
+			inventoryList = null;
+			inventorySet = null;
+		}
+		
+		if (searchBy != CtiUtilities.NONE_ID) {
+			filterBy = CtiUtilities.NONE_ID;
+			htmlStyle |= HTML_STYLE_INVENTORY_SET;
+		}
 	}
 
 	/**

@@ -285,9 +285,9 @@ public class DeviceBean {
 	 * @param i
 	 */
 	public void setFilter(int i) {
-		// Update the search result
-		if (filter != i) deviceList = null;
 		filter = i;
+		// Update the search result
+		deviceList = null;
 	}
 
 	/**

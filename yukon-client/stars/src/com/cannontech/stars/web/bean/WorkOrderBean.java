@@ -364,9 +364,9 @@ public class WorkOrderBean {
 	 * @param i
 	 */
 	public void setFilterBy(int i) {
-		// Search result must be updated
-		if (filterBy != i) workOrderList = null;
 		filterBy = i;
+		// Search result should be updated
+		workOrderList = null;
 	}
 
 	/**
