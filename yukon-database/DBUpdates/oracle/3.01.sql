@@ -748,16 +748,16 @@ alter table DynamicVerification
    add constraint FK_DynV_Dev1 foreign key (ReceiverID)
       references DEVICE (DEVICEID);
 
-update YukonRoleProperty values set description = '(No settings yet)' where rolepropertyid = -10100;
-update YukonRoleProperty values set description = 'The following settings are valid: CREATE_SCHEDULE(0x0000000C), ENABLE_SCHEDULE(0x000000C0), ABLE_TO_START_SCHEDULE(0x00000C00)' where rolepropertyid = -10101;
+update YukonRoleProperty set description = '(No settings yet)' where rolepropertyid = -10100;
+update YukonRoleProperty set description = 'The following settings are valid: CREATE_SCHEDULE(0x0000000C), ENABLE_SCHEDULE(0x000000C0), ABLE_TO_START_SCHEDULE(0x00000C00)' where rolepropertyid = -10101;
 
-update YukonRoleProperty values set description = 'The number of rows shown before creating a new page of data' where rolepropertyid = -10103;
-update YukonRoleProperty values set description = 'The following settings are valid: HIDE_MACS(0x00001000), HIDE_CAPCONTROL(0x00002000), HIDE_LOADCONTROL(0x00004000), HIDE_ALL_DISPLAYS(0x0000F000), CONTROL_YUKON_SERVICES(0x00010000), HIDE_ALARM_COLORS(0x80000000)' where rolepropertyid = -10104;
+update YukonRoleProperty set description = 'The number of rows shown before creating a new page of data' where rolepropertyid = -10103;
+update YukonRoleProperty set description = 'The following settings are valid: HIDE_MACS(0x00001000), HIDE_CAPCONTROL(0x00002000), HIDE_LOADCONTROL(0x00004000), HIDE_ALL_DISPLAYS(0x0000F000), CONTROL_YUKON_SERVICES(0x00010000), HIDE_ALARM_COLORS(0x80000000)' where rolepropertyid = -10104;
 
-update YukonRoleProperty values set description = 'What text will be added onto CBC names when they are created' where rolepropertyid = -10106;
-update YukonRoleProperty values set description = 'Total number alarms that are displayed in the quick access list' where rolepropertyid = -10107;
-update YukonRoleProperty values set description = 'How many decimal places to show for real values' where rolepropertyid = -10108;
-update YukonRoleProperty values set description = 'How many decimal places to show for real values for PowerFactor' where rolepropertyid = -10109;
+update YukonRoleProperty set description = 'What text will be added onto CBC names when they are created' where rolepropertyid = -10106;
+update YukonRoleProperty set description = 'Total number alarms that are displayed in the quick access list' where rolepropertyid = -10107;
+update YukonRoleProperty set description = 'How many decimal places to show for real values' where rolepropertyid = -10108;
+update YukonRoleProperty set description = 'How many decimal places to show for real values for PowerFactor' where rolepropertyid = -10109;
 
 
 
