@@ -1365,6 +1365,36 @@ insert into fdrinterfaceoption values(18, 'Point ID', 2, 'Text', '(none)');
 update fdrinterfaceoption set OptionValues='PSEUDO,REAL,CALCULATED' where interfaceid=2 and optionlabel='Category';
 
 
+create table TOUSchedule  (
+   TOUScheduleID        NUMBER                           not null,
+   TOUScheduleName      VARCHAR2(32)                     not null
+);
+alter table TOUSchedule
+   add constraint PK_TOUSCHEDULE primary key (TOUScheduleID);
+
+create table TOUDeviceMapping  (
+   TOUScheduleID        NUMBER                           not null,
+   DeviceID             NUMBER                           not null
+);
+alter table TOUDeviceMapping
+   add constraint PK_TOUDEVICEMAPPING primary key (TOUScheduleID, DeviceID);
+alter table TOUDeviceMapping
+   add constraint FK_TOU_Dev foreign key (DeviceID)
+      references DEVICE (DEVICEID);
+alter table TOUDeviceMapping
+   add constraint FK_TOUd_TOUSc2 foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID);
+
+create table TOURateOffset  (
+   TOUScheduleID        NUMBER                           not null,
+   SwitchRate           VARCHAR2(4)                      not null,
+   SwitchOffset         NUMBER                           not null
+);
+alter table TOURateOffset
+   add constraint PK_TOURATEOFFSET primary key (TOUScheduleID, SwitchOffset);
+alter table TOURateOffset
+   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID);
 
 
 /******************************************************************************/

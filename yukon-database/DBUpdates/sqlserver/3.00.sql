@@ -1439,6 +1439,48 @@ update fdrinterfaceoption set OptionValues='PSEUDO,REAL,CALCULATED' where interf
 
 
 
+create table TOUSchedule (
+TOUScheduleID        numeric              not null,
+TOUScheduleName      varchar(32)          not null
+);
+go
+alter table TOUSchedule
+   add constraint PK_TOUSCHEDULE primary key  (TOUScheduleID);
+go
+
+create table TOUDeviceMapping (
+TOUScheduleID        numeric              not null,
+DeviceID             numeric              not null
+);
+go
+alter table TOUDeviceMapping
+   add constraint PK_TOUDEVICEMAPPING primary key  (TOUScheduleID, DeviceID);
+go
+alter table TOUDeviceMapping
+   add constraint FK_TOU_Dev foreign key (DeviceID)
+      references DEVICE (DEVICEID);
+go
+alter table TOUDeviceMapping
+   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID);
+go
+
+create table TOURateOffset (
+TOUScheduleID        numeric              not null,
+SwitchRate           varchar(4)           not null,
+SwitchOffset         numeric              not null
+);
+go
+alter table TOURateOffset
+   add constraint PK_TOURATEOFFSET primary key  (TOUScheduleID, SwitchOffset);
+go
+alter table TOURateOffset
+   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID);
+go
+
+
+
 
 
 

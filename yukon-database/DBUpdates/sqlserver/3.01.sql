@@ -973,7 +973,54 @@ insert into YukonGroupRole values(-72,-1,-5,-1402,'(none)');
 insert into YukonRoleProperty values(-20004,-200,'View Batch Commands','false','Controls whether to allow monitoring all the batched switch commands');
 insert into YukonRoleProperty values(-20005,-200,'View Opt Out Events','false','Controls whether to allow monitoring all the scheduled opt out events');
 
+/* @error ignore */
+create table TOUSchedule (
+TOUScheduleID        numeric              not null,
+TOUScheduleName      varchar(32)          not null
+);
+go
+/* @error ignore */
+alter table TOUSchedule
+   add constraint PK_TOUSCHEDULE primary key  (TOUScheduleID);
+go
 
+/* @error ignore */
+create table TOUDeviceMapping (
+TOUScheduleID        numeric              not null,
+DeviceID             numeric              not null
+);
+go
+/* @error ignore */
+alter table TOUDeviceMapping
+   add constraint PK_TOUDEVICEMAPPING primary key  (TOUScheduleID, DeviceID);
+go
+/* @error ignore */
+alter table TOUDeviceMapping
+   add constraint FK_TOU_Dev foreign key (DeviceID)
+      references DEVICE (DEVICEID);
+go
+/* @error ignore */
+alter table TOUDeviceMapping
+   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID);
+go
+
+/* @error ignore */
+create table TOURateOffset (
+TOUScheduleID        numeric              not null,
+SwitchRate           varchar(4)           not null,
+SwitchOffset         numeric              not null
+);
+go
+/* @error ignore */
+alter table TOURateOffset
+   add constraint PK_TOURATEOFFSET primary key  (TOUScheduleID, SwitchOffset);
+go
+/* @error ignore */
+alter table TOURateOffset
+   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID);
+go
 
 
 

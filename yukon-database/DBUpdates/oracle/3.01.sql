@@ -863,6 +863,45 @@ insert into YukonRoleProperty values(-20004,-200,'View Batch Commands','false','
 insert into YukonRoleProperty values(-20005,-200,'View Opt Out Events','false','Controls whether to allow monitoring all the scheduled opt out events');
 
 
+/* @error ignore */
+create table TOUSchedule  (
+   TOUScheduleID        NUMBER                           not null,
+   TOUScheduleName      VARCHAR2(32)                     not null
+);
+/* @error ignore */
+alter table TOUSchedule
+   add constraint PK_TOUSCHEDULE primary key (TOUScheduleID);
+
+/* @error ignore */
+create table TOUDeviceMapping  (
+   TOUScheduleID        NUMBER                           not null,
+   DeviceID             NUMBER                           not null
+);
+/* @error ignore */
+alter table TOUDeviceMapping
+   add constraint PK_TOUDEVICEMAPPING primary key (TOUScheduleID, DeviceID);
+/* @error ignore */
+alter table TOUDeviceMapping
+   add constraint FK_TOU_Dev foreign key (DeviceID)
+      references DEVICE (DEVICEID);
+/* @error ignore */
+alter table TOUDeviceMapping
+   add constraint FK_TOUd_TOUSc2 foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID);
+
+/* @error ignore */
+create table TOURateOffset  (
+   TOUScheduleID        NUMBER                           not null,
+   SwitchRate           VARCHAR2(4)                      not null,
+   SwitchOffset         NUMBER                           not null
+);
+/* @error ignore */
+alter table TOURateOffset
+   add constraint PK_TOURATEOFFSET primary key (TOUScheduleID, SwitchOffset);
+/* @error ignore */
+alter table TOURateOffset
+   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID);
 
 
 
