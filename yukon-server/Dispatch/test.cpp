@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:26 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/28 17:59:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_ptreg.h"
 #include "msg_email.h"
 #include "connection.h"
+#include "counter.h"
 #include "pointtypes.h"
 
 BOOL           bQuit = FALSE;
@@ -72,6 +73,26 @@ void DoTheNasty(int argc, char **argv);
 void main(int argc, char **argv)
 {
    INT point_type;
+
+
+#if 0
+
+   // An ugly little test of the counter class.
+   CtiCounter cnt1, cnt2;
+
+   cnt1.inc(1);
+   cnt1.inc(1);
+   cnt1.inc(1);
+   cnt1.inc(1);
+   cnt1.inc(1);
+   cnt2 = cnt1;
+
+   cnt1.resetAll();
+
+   cout << " cnt2 = " << cnt2.get(1) << " cnt1 = " << cnt1.get(1) << endl;
+
+   return;
+#endif
 
    if(argc < 5)
    {
