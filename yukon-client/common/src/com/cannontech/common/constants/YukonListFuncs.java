@@ -16,8 +16,8 @@ import com.cannontech.common.util.CtiUtilities;
 public final class YukonListFuncs implements YukonListEntryTypes 
 {
 
-	public static Properties yukonListEntries = new Properties();
-	public static Properties yukonSelectionLists = new Properties();
+	private static Properties yukonListEntries = new Properties();
+	private static Properties yukonSelectionLists = new Properties();
 	
 	
 	//let us init all of this instantly!
@@ -34,6 +34,7 @@ public final class YukonListFuncs implements YukonListEntryTypes
 		super();
 	}
 
+	 
 	public synchronized static YukonListEntry getYukonListEntry( int entryID_ )
 	{
 		YukonListEntry entry = 
@@ -49,9 +50,14 @@ public final class YukonListFuncs implements YukonListEntryTypes
 			return entry;
 	}
 	
-	private static Properties getYukonListEntries()
+	public static Properties getYukonListEntries()
 	{
 		return yukonListEntries;
+	}
+
+	public static Properties getYukonSelectionLists()
+	{
+		return yukonSelectionLists;
 	}
 
 	private static void initAllConstants()
@@ -191,9 +197,6 @@ public final class YukonListFuncs implements YukonListEntryTypes
 			return list;
     }
     
-    private static Properties getYukonSelectionLists() {
-    	return yukonSelectionLists;
-    }
     
     private static ArrayList getAllListEntries(int listID, java.sql.Connection conn) {
     	YukonSelectionList list = new YukonSelectionList();
