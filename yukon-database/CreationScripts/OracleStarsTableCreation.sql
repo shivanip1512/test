@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/30/2004 1:01:44 PM                        */
+/* Created on:     12/30/2004 3:44:16 PM                        */
 /*==============================================================*/
 
 
@@ -1259,12 +1259,12 @@ alter table "LMProgramWebPublishing"
       references "YukonListEntry" ("EntryID");
 
 alter table "LMProgramWebPublishing"
-   add constraint "FK_LMprApp_App" foreign key ("ApplianceCategoryID")
-      references "ApplianceCategory" ("ApplianceCategoryID");
+   add constraint "FK_LMPrgW_LMPr" foreign key ("DeviceID")
+      references LMPROGRAM ("DeviceID");
 
 alter table "LMProgramWebPublishing"
-   add constraint "FK_LMprApp_LMPrg" foreign key ("ProgramID")
-      references LMPROGRAM ("DeviceID");
+   add constraint "FK_LMprApp_App" foreign key ("ApplianceCategoryID")
+      references "ApplianceCategory" ("ApplianceCategoryID");
 
 alter table "LMProgramWebPublishing"
    add constraint "FK_YkWC_LMPrWPb" foreign key ("WebsettingsID")
@@ -1277,6 +1277,10 @@ alter table "LMThermostatManualEvent"
 alter table "LMThermostatManualEvent"
    add constraint "FK_CsLsE_LThMnO1" foreign key ("OperationStateID")
       references "YukonListEntry" ("EntryID");
+
+alter table "LMThermostatManualEvent"
+   add constraint "FK_LMTh_InvB" foreign key ("InventoryID")
+      references "InventoryBase" ("InventoryID");
 
 alter table "LMThermostatManualEvent"
    add constraint "FK_LmThrS_LmCstEv" foreign key ("EventID")
@@ -1303,7 +1307,7 @@ alter table "LMThermostatSeason"
       references "YukonWebConfiguration" ("ConfigurationID");
 
 alter table "LMThermostatSeasonEntry"
-   add constraint "FK_CsLsE_LThSE" foreign key ("EntryID")
+   add constraint "FK_CsLsE_LThSE" foreign key ("TimeOfWeekID")
       references "YukonListEntry" ("EntryID");
 
 alter table "LMThermostatSeasonEntry"
@@ -1333,6 +1337,10 @@ alter table "WorkOrderBase"
 alter table "WorkOrderBase"
    add constraint "FK_CsLsE_WkB" foreign key ("WorkTypeID")
       references "YukonListEntry" ("EntryID");
+
+alter table "WorkOrderBase"
+   add constraint "Ref_WrkOB_CstAc" foreign key ("AccountID")
+      references "CustomerAccount" ("AccountID");
 
 alter table "WorkOrderBase"
    add constraint "FK_WrkOr_SrvC" foreign key ("ServiceCompanyID")

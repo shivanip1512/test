@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/30/2004 1:00:20 PM                        */
+/* Created on:     12/30/2004 3:42:55 PM                        */
 /*==============================================================*/
 
 
@@ -417,18 +417,6 @@ if exists (select 1
            where  id = object_id('WorkOrderBase')
             and   type = 'U')
    drop table WorkOrderBase
-go
-
-
-if exists(select 1 from systypes where name='YUKON (int)')
-   execute sp_droptype "YUKON (int)"
-go
-
-
-/*==============================================================*/
-/* Domain: "YUKON (int)"                                        */
-/*==============================================================*/
-execute sp_addtype "YUKON (int)", 'int'
 go
 
 
@@ -1963,14 +1951,14 @@ go
 
 
 alter table LMProgramWebPublishing
-   add constraint FK_LMprApp_App foreign key (ApplianceCategoryID)
-      references ApplianceCategory (ApplianceCategoryID)
+   add constraint FK_LMPrgW_LMPr foreign key (DeviceID)
+      references LMPROGRAM (DeviceID)
 go
 
 
 alter table LMProgramWebPublishing
-   add constraint FK_LMprApp_LMPrg foreign key (ProgramID)
-      references LMPROGRAM (DeviceID)
+   add constraint FK_LMprApp_App foreign key (ApplianceCategoryID)
+      references ApplianceCategory (ApplianceCategoryID)
 go
 
 
@@ -1989,6 +1977,12 @@ go
 alter table LMThermostatManualEvent
    add constraint FK_CsLsE_LThMnO1 foreign key (OperationStateID)
       references YukonListEntry (EntryID)
+go
+
+
+alter table LMThermostatManualEvent
+   add constraint FK_LMTh_InvB foreign key (InventoryID)
+      references InventoryBase (InventoryID)
 go
 
 
@@ -2029,7 +2023,7 @@ go
 
 
 alter table LMThermostatSeasonEntry
-   add constraint FK_CsLsE_LThSE foreign key (EntryID)
+   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
       references YukonListEntry (EntryID)
 go
 
@@ -2073,6 +2067,12 @@ go
 alter table WorkOrderBase
    add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
       references YukonListEntry (EntryID)
+go
+
+
+alter table WorkOrderBase
+   add constraint Ref_WrkOB_CstAc foreign key (AccountID)
+      references CustomerAccount (AccountID)
 go
 
 
