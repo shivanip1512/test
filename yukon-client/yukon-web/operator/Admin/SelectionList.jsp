@@ -44,8 +44,10 @@ var dftListIndices = new Array();
 <%
 	for (int i = 0; i < list.getYukonListEntries().size(); i++) {
 		YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
+		int entryID = entry.getEntryID();
+		if (isOptOutPeriodCus && sameAsOp) entryID = 0;
 %>
-	entryIDs[<%= i %>] = <%= entry.getEntryID() %>;
+	entryIDs[<%= i %>] = <%= entryID %>;
 	entryTexts[<%= i %>] = "<%= entry.getEntryText() %>";
 	entryYukDefIDs[<%= i %>] = <%= entry.getYukonDefID() %>;
 	dftListIndices[<%= i %>] = getDefaultListIndex(entryTexts[<%= i %>], entryYukDefIDs[<%= i %>]);
@@ -224,7 +226,6 @@ function setSameAsOp(form, checked) {
 	form.Delete.disabled = checked;
 	form.Default.disabled = checked;
 	form.EntryText.disabled = checked;
-	form.SetYukonDefID.disabled = checked;
 	form.YukonDefID.disabled = checked;
 	form.Save.disabled = checked;
 	form.DefaultListEntries.disabled = checked;
