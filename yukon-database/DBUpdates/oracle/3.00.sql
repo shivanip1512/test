@@ -65,6 +65,9 @@ alter table rawpointhistory add millis smallint;
 update rawpointhistory set millis = 0;
 alter table rawpointhistory modify millis not null;
 
+alter table dynamicpointdispatch add millis smallint;
+update dynamicpointdispatch set millis = 0;
+alter table dynamicpointdispatch modify millis smallint not null;
 
 
 /* Default user for STARS customers who don't have a login */
