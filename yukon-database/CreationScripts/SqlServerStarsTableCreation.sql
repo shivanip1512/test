@@ -469,7 +469,7 @@ go
 /*==============================================================*/
 create table ApplianceWaterHeater (
 ApplianceID          numeric              not null,
-NumberOfGallons      numeric              not null,
+NumberOfGallonsID    numeric              not null,
 EnergySourceID       numeric              not null,
 NumberOfElements     numeric              not null,
 constraint PK_APPLIANCEWATERHEATER primary key  (ApplianceID)
@@ -1003,6 +1003,12 @@ go
 alter table ApplianceIrrigation
    add constraint FK_AppIrr_YkLst5 foreign key (SoilTypeID)
       references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceWaterHeater
+   add constraint FK_AppWtHt_YkLst foreign key (NumberOfGallonsID)
+      reference YukonListEntry (EntryID)
 go
 
 
