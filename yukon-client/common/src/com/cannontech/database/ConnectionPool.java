@@ -212,14 +212,14 @@ public class ConnectionPool
 		 if (!conn.isClosed())
 		 {
 		 	//something used to query the DB, works for all drivers
-		 	conn.getMetaData().getTypeInfo();		 	
+		 	conn.getMetaData().getTypeInfo().close();
 		 }
 		 else
 		 {
 			return false;
 		 }
 	  }
-	  catch (SQLException e)
+	  catch (Exception e)
 	  {
 		 CTILogger.info( "Pooled Connection was NOT okay" );
 		 CTILogger.error( "Pooled Connection was NOT okay", e );

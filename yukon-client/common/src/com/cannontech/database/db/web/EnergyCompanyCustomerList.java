@@ -86,6 +86,7 @@ public static long[] getCustomerIDs(long energyCompanyID, String dbAlias) {
 	{
 		try
 		{
+			if( rset != null ) rset.close();
 			if( pstmt != null ) pstmt.close();
 			if( conn != null ) conn.close();
 		}
@@ -147,6 +148,7 @@ public static long[] getEnergyCompanyIDs(long customerID, String dbAlias) {
 	{
 		try
 		{
+			if( rset != null ) rset.close();
 			if( pstmt != null ) pstmt.close();
 			if( conn != null ) conn.close();
 		}
