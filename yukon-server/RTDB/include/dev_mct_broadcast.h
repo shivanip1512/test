@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/10/27 22:04:07 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/10/30 17:41:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,8 +27,6 @@ using namespace std;
 
 #include "dev_dlcbase.h"
 
-#define LEADMETER_OFFSET 4186112 - 1
-
 class IM_EX_DEVDB CtiDeviceMCTBroadcast : public CtiDeviceDLCBase
 {
 protected:
@@ -41,6 +39,8 @@ protected:
         MCTBCAST_FreezeZero         = 0x51,
         MCTBCAST_FreezeOne          = 0x52,
         MCTBCAST_FreezeLen          =    0,
+
+        MCTBCAST_LeadMeterOffset    = 4186111  //  4186112 - 1
     };
 
 private:
@@ -69,6 +69,8 @@ public:
 
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
+
+    virtual LONG getAddress() const;
 };
 
 #endif // #ifndef __DEV_MCT_BROADCAST_H__
