@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2003/07/18 21:46:14 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2003/08/18 20:28:37 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.4  2003/08/18 20:28:37  jwolberg
+      Fixed a problem where an invalid customer id or channel would cause fdr to insert the values into rawpointhistory with the previous pointid.
+
       Revision 1.3  2003/07/18 21:46:14  jwolberg
       Fixes based on answers to questions asked of Xcel.
 
@@ -313,15 +316,20 @@ bool CtiFDR_LodeStarImport::decodeFirstHeaderRecord(RWCString& aLine,RWCString& 
                         }
                         else
                         {
-                            if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Translation for point " << lsCustomerIdentifier << " from file " << getFileName() << " was not found" << endl;
+                                dout << RWTime() << " Translation for Customer Id: " << lsCustomerIdentifier << " and Channel: " << lsCustomerIdentifier << " from file " << getFileName() << " was not found" << endl;
                             }
-                            CHAR action[80];
-                            RWCString desc = getFileName() + RWCString (" point is not listed in the translation table");
-                            _snprintf(action,80,"%s", lsCustomerIdentifier);
-                            logEvent (desc,RWCString (action));
+                            CHAR tempIdStr[80];
+                            CHAR tempChanStr[80];
+                            RWCString desc = RWCString ("Lodestar point is not listed in the translation table");
+                            _snprintf(tempIdStr,80,"%s", lsCustomerIdentifier);
+                            _snprintf(tempChanStr,80,"%d", lsChannel);
+                            CHAR tempBigStr[256];
+                            _snprintf(tempBigStr,256,"%s%s%s%s", "Customer Id: ",tempIdStr, "; Channel: ", tempChanStr);
+                            RWCString action = RWCString(tempBigStr);
+                            logEvent (desc,action);
+                            pointId = 0;
                         }
                         break;
                     }
@@ -654,7 +662,7 @@ bool CtiFDR_LodeStarImport::decodeDataRecord(RWCString& aLine, long pointId, dou
             pointOffset = fdrPoint.getOffset();
         }
 
-        while (getToken(&tempCharPtr,tempString1) && isDataRecordFlag && dataRecordValidFlag)
+        while( pointId > 0 && getToken(&tempCharPtr,tempString1) && isDataRecordFlag && dataRecordValidFlag )
         {
             if( fieldNumber == 1 )
             {
