@@ -542,8 +542,8 @@ public Object getValue(Object o)
 	String val = getShedTimeComboBox().getSelectedItem().toString();
 		
 	if( !CONT_LATCH.equalsIgnoreCase(val) )
-		shedTime = CtiUtilities.getIntervalComboBoxSecondsValue( 
-							getShedTimeComboBox() );
+		shedTime = CtiUtilities.getIntervalSecondsValueFromDecimal( 
+							getShedTimeComboBox().getSelectedItem().toString() );
 		
 	group.getLmGroupRipple().setControl(controlBuffer.toString());
 	group.getLmGroupRipple().setRestore(restoreBuffer.toString());
@@ -664,9 +664,12 @@ public void setValue(Object val)
 		String restore = ((com.cannontech.database.data.device.lm.LMGroupRipple) val).getLmGroupRipple().getRestore();
 
 
-      CtiUtilities.setIntervalComboBoxSelectedItem(
-      		getShedTimeComboBox(), shedTimeSec.intValue() );
-
+		if(shedTimeSec.intValue() == 0)
+			getShedTimeComboBox().setSelectedItem(CONT_LATCH);
+	  	
+		else
+			CtiUtilities.setIntervalComboBoxSelectedItem(
+				getShedTimeComboBox(), shedTimeSec.intValue() );
 
 		//set the Control Bits
 		javax.swing.JToggleButton controlToggleButtons[]= getControlBitToggle().getToggleButtons();
@@ -674,8 +677,8 @@ public void setValue(Object val)
 		{
 			if (control.charAt(i) == '1')
 				controlToggleButtons[i].setSelected(true);
-
 		}
+		
 		javax.swing.JToggleButton controlToggleButtons1[] = getControlBitToggle1().getToggleButtons();
 		for (int i = 0; i < 25; i++)
 		{
@@ -683,7 +686,6 @@ public void setValue(Object val)
 				controlToggleButtons1[i].setSelected(true);
 
 		}
-
 
 		//set the Restore bits
 		javax.swing.JToggleButton restoreToggleButtons[] = getRestoreBitToggle().getToggleButtons();
@@ -700,9 +702,7 @@ public void setValue(Object val)
 				restoreToggleButtons1[i].setSelected(true);
 
 		}
-
 	}
-
 }
 /**
  * 
