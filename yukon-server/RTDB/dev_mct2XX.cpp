@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/01/26 21:55:10 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/03/19 20:33:50 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -440,26 +440,6 @@ INT CtiDeviceMCT2XX::decodeGetStatusInternal( INMESS *InMessage, RWTime &TimeNow
         if( geneBuf[6] & 0x04 ) resultString += "  Short Power Fail/Reset\n";
         if( geneBuf[6] & 0x08 ) resultString += "  Tamper latched\n";
         if( geneBuf[6] & 0x10 ) resultString += "  Self Test Error\n";
-
-        if( getType() == TYPEMCT250 )  //  only 250s have external statuses
-        {
-            resultString += "  External Status 1: ";
-            if( geneBuf[6] & 0x40 ) resultString += "Closed\n";
-            else                    resultString += "Open\n";
-
-            resultString += "  External Status 2: ";
-            if( geneBuf[6] & 0x80 ) resultString += "Closed\n";
-            else                    resultString += "Open\n";
-
-            resultString += "  External Status 3: ";
-            if( geneBuf[8] & 0x02 ) resultString += "Closed\n";
-            else                    resultString += "Open\n";
-
-            resultString += "  External Status 4: ";
-            if( geneBuf[8] & 0x04 ) resultString += "Closed\n";
-            else                    resultString += "Open\n";
-        }
-
         if( geneBuf[7] & 0x01 ) resultString += "  NovRam Fault\n";
         if( geneBuf[7] & 0x02 ) resultString += "  \n";
         if( geneBuf[7] & 0x04 ) resultString += "  Bad opcode\n";
