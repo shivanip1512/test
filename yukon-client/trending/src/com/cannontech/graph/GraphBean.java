@@ -41,6 +41,7 @@ public class GraphBean extends Graph
 	 */
 	public GraphBean() {
 		super();
+		System.setProperty("cti.app.name", "Trending_Web");		
 		initialize();
 	}
 	
@@ -183,7 +184,6 @@ public class GraphBean extends Graph
 	 */
 	public static void main(String[] args)
 	{
-		System.setProperty("cti.app.name", "Trending");
 		GraphBean gb = new GraphBean();
 	}
 	/**
