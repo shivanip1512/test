@@ -73,8 +73,8 @@ class CtiLMManualControlRequestExecutor : public CtiLMExecutor
 {
 public:
     CtiLMManualControlRequestExecutor(CtiLMManualControlRequest* controlMsg,
-				  CtiServerRequestMsg* serverReq)
-	: _controlMsg(controlMsg), _request(serverReq) { };
+                                  CtiServerRequestMsg* serverReq)
+        : _controlMsg(controlMsg), _request(serverReq) { };
     virtual ~CtiLMManualControlRequestExecutor() { delete _controlMsg; delete _request; };
 
     virtual void Execute();

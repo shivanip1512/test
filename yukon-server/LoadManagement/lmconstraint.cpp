@@ -102,7 +102,7 @@ bool CtiLMConstraintChecker::checkSeason(const CtiLMProgramDirect& lm_program,
             }
             return false;
         }
-    } while(startDate++ <= stopDate);
+    } while(++startDate <= stopDate);
 
     return true;
 }
