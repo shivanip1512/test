@@ -337,12 +337,12 @@ private String buildHTMLBuffer( HTMLBuffer htmlBuffer)
 
 			if ( htmlBuffer instanceof TabularHtml)
 			{
-				((TabularHtml) htmlBuffer).setTabularStartDate(tModel.getStartDate());
-				((TabularHtml) htmlBuffer).setTabularEndDate(tModel.getStopDate());
+				((TabularHtml) htmlBuffer).setTabularStartDate(new Date(tModel.getStartDate().getTime() + (86400000 * (new Integer(page -1).longValue()) )) );
+				((TabularHtml) htmlBuffer).setTabularEndDate(new Date(tModel.getStartDate().getTime() + (86400000 * (new Integer(page).longValue()) )) );
 
 				sliderValueSelected = formatDateRangeSlider(tModel, (TabularHtml)htmlBuffer);
-				System.out.println("SLIDER VALUE = " + sliderValueSelected);
-				System.out.println("Tabular Start = " + tModel.getStartDate() + " | Tabular Stop = " + tModel.getStopDate());
+//				System.out.println("SLIDER VALUE = " + sliderValueSelected);
+//				System.out.println("Tabular Start = " + ((TabularHtml)htmlBuffer).getTabularStartDate() + " | Tabular Stop = " + ((TabularHtml)htmlBuffer).getTabularEndDate());
 			}
 
 			htmlBuffer.getHtml( returnBuffer );
@@ -675,7 +675,7 @@ public void setStart(String newStart)
 	setStart(ServletUtil.parseDateStringLiberally(newStart));
 }
 
-public void setStart(java.util.Date newStart)
+private void setStart(java.util.Date newStart)
 {
 	if(start == null || start.compareTo((Object)newStart) != 0 )	//date changed
 	{
@@ -969,6 +969,7 @@ public void updateCurrentPane()
 	else if( getTab().equalsIgnoreCase(TABULAR_PANE_STRING) )
 	{
 		getGraph().update();
+		
 		StringBuffer buf =  new StringBuffer();
 		buf.append(buildHTMLBuffer(new TabularHtml()));
 
