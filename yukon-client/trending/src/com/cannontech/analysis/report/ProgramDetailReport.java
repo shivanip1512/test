@@ -180,7 +180,8 @@ public class ProgramDetailReport extends YukonReportBase
 		hideItem.setProperty("element", ProgramDetailModel.PROGRAM_NAME_STRING+" Element");
 		expressions.add(hideItem);
 
-		ElementVisibilityEvalFunction action = new ElementVisibilityEvalFunction(ProgramDetailModel.STATUS_COLUMN, "Not Enrolled", showNotEnrolled);
+		//We negate the showNotEnrolled flag because if true, then we DO NOT want to hide the item.
+		ElementVisibilityEvalFunction action = new ElementVisibilityEvalFunction(ProgramDetailModel.STATUS_COLUMN, "Not Enrolled", !isShowNotEnrolled());
 		action.setName("Hide Not Enrolled String");
 		action.setProperty("element", ProgramDetailModel.STATUS_STRING +" Element");
 		expressions.add(action);
