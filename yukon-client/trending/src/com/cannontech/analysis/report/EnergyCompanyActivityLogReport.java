@@ -59,12 +59,12 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 	 * Data Base for this report type is instanceOf SystemLogModel.
 	 * @param startTime_ - startTime in millis for data query
 	 * @param stopTime_ - stopTime in millis for data query
-	 * @param logType_ - SystemLog.TYPE_x, type of logging to report on. 
 	 * 
 	 */
-	public EnergyCompanyActivityLogReport(long startTime_, long stopTime_, Integer logType_)
+	public EnergyCompanyActivityLogReport(long startTime_, long stopTime_)
 	{
-		this(new ActivityModel( ));
+		this(new ActivityModel(startTime_, stopTime_ ));
+		
 	}
 	/**
 	 * Runs this report and shows a preview dialog.
@@ -90,7 +90,9 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 		long start = cal.getTimeInMillis();
 
 		//Initialize the report data and populate the TableModel (collectData).
-		ecActivityLogReport.setModel( new ActivityModel(start, stop));
+		ActivityModel model = new ActivityModel(start, stop);
+//		model.setEnergyCompanyID(new Integer(1004));
+		ecActivityLogReport.setModel(model);
 		ecActivityLogReport.getModel().setReportType(ReportTypes.ENERGY_COMPANY_ACTIVITY_LOG_DATA); 
 		ecActivityLogReport.getModel().collectData();
 
@@ -150,6 +152,12 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 		hideItem.setName(ActivityLog.ACCOUNT_NUMBER_STRING + " Hidden");
 		hideItem.setProperty("field", ActivityLog.ACCOUNT_NUMBER_STRING);
 		hideItem.setProperty("element", ActivityLog.ACCOUNT_NUMBER_STRING+" Element");
+		functions.add(hideItem);
+		
+		hideItem = new org.jfree.report.function.ItemHideFunction();
+		hideItem.setName(ActivityLog.USERNAME_STRING + " Hidden");
+		hideItem.setProperty("field", ActivityLog.USERNAME_STRING);
+		hideItem.setProperty("element", ActivityLog.USERNAME_STRING+" Element");
 		functions.add(hideItem);
 		
 		return functions;
