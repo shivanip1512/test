@@ -109,6 +109,7 @@ void CtiCCClientConnection::close()
     if( _portal == NULL )
         return;
 
+    _valid = FALSE;
     delete sinbuf;
     delete soubuf;
     delete oStream;
@@ -226,8 +227,6 @@ void CtiCCClientConnection::_recvthr()
 {
     RWRunnable runnable;
 
-    RWCollectable* current = NULL;
-
     CtiCCExecutorFactory f;
 
     try
@@ -237,7 +236,7 @@ void CtiCCClientConnection::_recvthr()
         do
         {
             //cout << RWTime()  << "waiting to receive - thr:  " << rwThreadId() << endl;
-            RWCollectable* c = NULL;
+            RWCollectable* current = NULL;
 
             *iStream >> current;
 

@@ -105,6 +105,7 @@ void CtiLMConnection::close()
     if( _portal == NULL )
         return;
 
+    _valid = FALSE;
     delete sinbuf;
     delete soubuf;
     delete oStream;
@@ -222,8 +223,6 @@ void CtiLMConnection::_recvthr()
 {
     RWRunnable runnable;
 
-    RWCollectable* current = NULL;
-
     CtiLMExecutorFactory f;
 
     try
@@ -233,7 +232,7 @@ void CtiLMConnection::_recvthr()
         do
         {
             //cout << RWTime()  << "waiting to receive - thr:  " << rwThreadId() << endl;
-            RWCollectable* c = NULL;
+            RWCollectable* current = NULL;
 
             *iStream >> current;
 
