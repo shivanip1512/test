@@ -522,7 +522,7 @@ dev_ion.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h os2_2w32.h \
 		pt_status.h tbl_pt_status.h pt_analog.h pt_numeric.h \
 		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
 		tbl_pt_analog.h pt_accum.h tbl_pt_accum.h \
-		tbl_pt_accumhistory.h msg_cmd.h dupreq.h
+		tbl_pt_accumhistory.h msg_cmd.h dllyukon.h numstr.h
 dev_kv2.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h porter.h dsm2err.h \
 		devicetypes.h queues.h logger.h thread.h dev_kv2.h \
@@ -1025,12 +1025,12 @@ mgr_port.obj:	mgr_port.h dlldefs.h smartmap.h dllbase.h os2_2w32.h \
 		ctidbgmem.h collectable.h tbl_pao.h tbl_rtcomm.h dbaccess.h \
 		sema.h resolvers.h pointtypes.h yukon.h db_entry_defines.h \
 		desolvers.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
-		queues.h utility.h tbl_port_base.h porttypes.h \
-		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
-		tbl_port_statistics.h slctprt.h pt_base.h pointdefs.h \
-		pt_dyn_base.h tbl_pt_base.h port_direct.h port_dialable.h \
-		port_modem.h tbl_port_dialup.h tbl_port_serial.h \
-		port_dialout.h port_tcpip.h tbl_port_tcpip.h tcpsup.h
+		queues.h utility.h tbl_port_base.h tbl_port_settings.h \
+		tbl_port_timing.h xfer.h dialup.h tbl_port_statistics.h \
+		slctprt.h pt_base.h pointdefs.h pt_dyn_base.h tbl_pt_base.h \
+		port_direct.h port_dialable.h port_modem.h tbl_port_dialup.h \
+		tbl_port_serial.h port_dialout.h port_tcpip.h \
+		tbl_port_tcpip.h tcpsup.h
 mgr_route.obj:	mgr_route.h repeaterrole.h dlldefs.h rte_base.h dsm2.h \
 		mutex.h guard.h dbmemobject.h cmdparse.h parsevalue.h \
 		ctibase.h ctinexus.h dllbase.h os2_2w32.h types.h cticalls.h \
@@ -1065,10 +1065,10 @@ porttest.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h \
 		ctidbgmem.h collectable.h tbl_pao.h tbl_rtcomm.h dbaccess.h \
 		sema.h resolvers.h pointtypes.h yukon.h db_entry_defines.h \
 		desolvers.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
-		queues.h utility.h tbl_port_base.h porttypes.h \
-		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
-		tbl_port_statistics.h slctprt.h pt_base.h pointdefs.h \
-		pt_dyn_base.h tbl_pt_base.h rtdb.h
+		queues.h utility.h tbl_port_base.h tbl_port_settings.h \
+		tbl_port_timing.h xfer.h dialup.h tbl_port_statistics.h \
+		slctprt.h pt_base.h pointdefs.h pt_dyn_base.h tbl_pt_base.h \
+		rtdb.h
 port_base.obj:	port_base.h dev_base.h dsm2.h mutex.h dlldefs.h guard.h \
 		cmdparse.h parsevalue.h rte_base.h dbmemobject.h ctibase.h \
 		ctinexus.h dllbase.h os2_2w32.h types.h cticalls.h message.h \
@@ -1076,8 +1076,8 @@ port_base.obj:	port_base.h dev_base.h dsm2.h mutex.h dlldefs.h guard.h \
 		sema.h resolvers.h pointtypes.h yukon.h db_entry_defines.h \
 		desolvers.h logger.h thread.h tbl_base.h tbl_2way.h \
 		tbl_stats.h tbl_scanrate.h queues.h utility.h tbl_port_base.h \
-		porttypes.h tbl_port_settings.h tbl_port_timing.h xfer.h \
-		dialup.h tbl_port_statistics.h dsm2err.h color.h porter.h \
+		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
+		tbl_port_statistics.h dsm2err.h color.h porter.h \
 		devicetypes.h msg_trace.h numstr.h
 port_dialable.obj:	port_dialable.h port_base.h dev_base.h dsm2.h \
 		mutex.h dlldefs.h guard.h cmdparse.h parsevalue.h rte_base.h \
@@ -1086,9 +1086,9 @@ port_dialable.obj:	port_dialable.h port_base.h dev_base.h dsm2.h \
 		tbl_pao.h tbl_rtcomm.h dbaccess.h sema.h resolvers.h \
 		pointtypes.h yukon.h db_entry_defines.h desolvers.h logger.h \
 		thread.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
-		queues.h utility.h tbl_port_base.h porttypes.h \
-		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
-		tbl_port_statistics.h port_modem.h tbl_port_dialup.h
+		queues.h utility.h tbl_port_base.h tbl_port_settings.h \
+		tbl_port_timing.h xfer.h dialup.h tbl_port_statistics.h \
+		port_modem.h tbl_port_dialup.h
 port_dialin.obj:	dsm2.h mutex.h dlldefs.h guard.h logger.h thread.h \
 		port_dialin.h port_base.h dev_base.h cmdparse.h parsevalue.h \
 		rte_base.h dbmemobject.h ctibase.h ctinexus.h dllbase.h \
@@ -1096,10 +1096,9 @@ port_dialin.obj:	dsm2.h mutex.h dlldefs.h guard.h logger.h thread.h \
 		collectable.h tbl_pao.h tbl_rtcomm.h dbaccess.h sema.h \
 		resolvers.h pointtypes.h yukon.h db_entry_defines.h \
 		desolvers.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
-		queues.h utility.h tbl_port_base.h porttypes.h \
-		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
-		tbl_port_statistics.h port_dialable.h port_modem.h \
-		tbl_port_dialup.h
+		queues.h utility.h tbl_port_base.h tbl_port_settings.h \
+		tbl_port_timing.h xfer.h dialup.h tbl_port_statistics.h \
+		port_dialable.h port_modem.h tbl_port_dialup.h
 port_dialout.obj:	dsm2.h mutex.h dlldefs.h guard.h logger.h thread.h \
 		port_dialout.h port_base.h dev_base.h cmdparse.h parsevalue.h \
 		rte_base.h dbmemobject.h ctibase.h ctinexus.h dllbase.h \
@@ -1107,10 +1106,9 @@ port_dialout.obj:	dsm2.h mutex.h dlldefs.h guard.h logger.h thread.h \
 		collectable.h tbl_pao.h tbl_rtcomm.h dbaccess.h sema.h \
 		resolvers.h pointtypes.h yukon.h db_entry_defines.h \
 		desolvers.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
-		queues.h utility.h tbl_port_base.h porttypes.h \
-		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
-		tbl_port_statistics.h port_dialable.h port_modem.h \
-		tbl_port_dialup.h
+		queues.h utility.h tbl_port_base.h tbl_port_settings.h \
+		tbl_port_timing.h xfer.h dialup.h tbl_port_statistics.h \
+		port_dialable.h port_modem.h tbl_port_dialup.h
 port_direct.obj:	port_direct.h port_base.h dev_base.h dsm2.h mutex.h \
 		dlldefs.h guard.h cmdparse.h parsevalue.h rte_base.h \
 		dbmemobject.h ctibase.h ctinexus.h dllbase.h os2_2w32.h \
@@ -1118,10 +1116,10 @@ port_direct.obj:	port_direct.h port_base.h dev_base.h dsm2.h mutex.h \
 		tbl_pao.h tbl_rtcomm.h dbaccess.h sema.h resolvers.h \
 		pointtypes.h yukon.h db_entry_defines.h desolvers.h logger.h \
 		thread.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
-		queues.h utility.h tbl_port_base.h porttypes.h \
-		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
-		tbl_port_statistics.h port_dialable.h port_modem.h \
-		tbl_port_dialup.h tbl_port_serial.h
+		queues.h utility.h tbl_port_base.h tbl_port_settings.h \
+		tbl_port_timing.h xfer.h dialup.h tbl_port_statistics.h \
+		port_dialable.h port_modem.h tbl_port_dialup.h \
+		tbl_port_serial.h
 port_modem.obj:	numstr.h dlldefs.h port_modem.h port_base.h dev_base.h \
 		dsm2.h mutex.h guard.h cmdparse.h parsevalue.h rte_base.h \
 		dbmemobject.h ctibase.h ctinexus.h dllbase.h os2_2w32.h \
@@ -1129,9 +1127,8 @@ port_modem.obj:	numstr.h dlldefs.h port_modem.h port_base.h dev_base.h \
 		tbl_pao.h tbl_rtcomm.h dbaccess.h sema.h resolvers.h \
 		pointtypes.h yukon.h db_entry_defines.h desolvers.h logger.h \
 		thread.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
-		queues.h utility.h tbl_port_base.h porttypes.h \
-		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
-		tbl_port_statistics.h
+		queues.h utility.h tbl_port_base.h tbl_port_settings.h \
+		tbl_port_timing.h xfer.h dialup.h tbl_port_statistics.h
 port_tcpip.obj:	cparms.h dlldefs.h logger.h thread.h mutex.h guard.h \
 		port_tcpip.h port_base.h dev_base.h dsm2.h cmdparse.h \
 		parsevalue.h rte_base.h dbmemobject.h ctibase.h ctinexus.h \
@@ -1139,10 +1136,10 @@ port_tcpip.obj:	cparms.h dlldefs.h logger.h thread.h mutex.h guard.h \
 		collectable.h tbl_pao.h tbl_rtcomm.h dbaccess.h sema.h \
 		resolvers.h pointtypes.h yukon.h db_entry_defines.h \
 		desolvers.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
-		queues.h utility.h tbl_port_base.h porttypes.h \
-		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
-		tbl_port_statistics.h port_dialable.h port_modem.h \
-		tbl_port_dialup.h tbl_port_tcpip.h tcpsup.h
+		queues.h utility.h tbl_port_base.h tbl_port_settings.h \
+		tbl_port_timing.h xfer.h dialup.h tbl_port_statistics.h \
+		port_dialable.h port_modem.h tbl_port_dialup.h \
+		tbl_port_tcpip.h tcpsup.h
 pt_base.obj:	pt_base.h dbmemobject.h dlldefs.h resolvers.h types.h \
 		pointtypes.h yukon.h ctidbgmem.h dllbase.h os2_2w32.h \
 		cticalls.h dsm2.h mutex.h guard.h db_entry_defines.h \
@@ -1288,13 +1285,12 @@ slctprt.obj:	port_dialout.h dsm2.h mutex.h dlldefs.h guard.h \
 		tbl_pao.h tbl_rtcomm.h dbaccess.h sema.h resolvers.h \
 		pointtypes.h yukon.h db_entry_defines.h desolvers.h logger.h \
 		thread.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
-		queues.h utility.h tbl_port_base.h porttypes.h \
-		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
-		tbl_port_statistics.h port_dialable.h port_modem.h \
-		tbl_port_dialup.h port_dialin.h port_direct.h \
-		tbl_port_serial.h port_tcpip.h tbl_port_tcpip.h tcpsup.h \
-		devicetypes.h slctprt.h pt_base.h pointdefs.h pt_dyn_base.h \
-		tbl_pt_base.h
+		queues.h utility.h tbl_port_base.h tbl_port_settings.h \
+		tbl_port_timing.h xfer.h dialup.h tbl_port_statistics.h \
+		port_dialable.h port_modem.h tbl_port_dialup.h port_dialin.h \
+		port_direct.h tbl_port_serial.h port_tcpip.h tbl_port_tcpip.h \
+		tcpsup.h devicetypes.h slctprt.h pt_base.h pointdefs.h \
+		pt_dyn_base.h tbl_pt_base.h
 tcpsup.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		mutex.h guard.h porter.h dsm2err.h devicetypes.h tcpsup.h \
 		ctinexus.h c_port_interface.h group.h elogger.h alarmlog.h \
@@ -1304,6 +1300,6 @@ tcpsup.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		sema.h resolvers.h pointtypes.h yukon.h db_entry_defines.h \
 		desolvers.h logger.h thread.h tbl_base.h tbl_2way.h \
 		tbl_stats.h tbl_scanrate.h utility.h tbl_port_base.h \
-		porttypes.h tbl_port_settings.h tbl_port_timing.h xfer.h \
-		dialup.h tbl_port_statistics.h
+		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
+		tbl_port_statistics.h
 #ENDUPDATE#
