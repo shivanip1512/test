@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ptdispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/02 17:02:36 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/21 23:14:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,7 @@ using namespace std;
 
 CtiTablePointDispatch::CtiTablePointDispatch() :
 iPointID(0),
-iTimeStamp( RWDBDateTime( (UINT)1990, (UINT)11, (UINT)10 ) ),
+iTimeStamp( RWDBDateTime( (UINT)1990, (UINT)1, (UINT)1) ),
 iQuality(UnintializedQuality),
 iValue(0),
 iTags(0),

@@ -55,7 +55,7 @@ private:
     CtiTablePointDispatch(LONG pointid,
                           DOUBLE value = 0,
                           UINT quality = UnintializedQuality,
-                          const RWDBDateTime& timestamp = RWDBDateTime( (UINT)1990, (UINT)11, (UINT)10 ) );
+                          const RWDBDateTime& timestamp = RWDBDateTime( (UINT)1990, (UINT)1, (UINT)1 ) );
 
     CtiTablePointDispatch(const CtiTablePointDispatch& aRef);
 
