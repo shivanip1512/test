@@ -12,268 +12,295 @@
 
 #include "calcthread.h"
 
+extern BOOL _CALC_DEBUG;
 
 void CtiCalculateThread::pointChange( long changedID, double newValue, RWTime &newTime, unsigned newQuality, unsigned newTags )
 {
-    RWMutexLock::LockGuard msgLock(_pointDataMutex);
-//    RWTValHashSetIterator<depStore, depStore, depStore> *dependentIterator;
-    RWTValHashSetIterator<depStore, depStore, depStore> *dependentIterator;
-    CtiHashKey hashKey(changedID);
-    //not sure about this --> BOOL informDependents = FALSE;
-
-    CtiPointStore* pointStore = CtiPointStore::getInstance();
-    CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
+    try
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " - Point Data ID: " << changedID << " Val: " << newValue << " Time: " << newTime << " Quality: " << newQuality << endl;
-    }
-
-    if( newTime > pointPtr->getPointTime() || pointPtr->getPointQuality() == NonUpdatedQuality || pointPtr->getPointTags() & (TAG_DISABLE_DEVICE_BY_DEVICE | TAG_DISABLE_POINT_BY_POINT) )
-    {
-        pointPtr->setPointValue( newValue, newTime, newQuality, newTags );
-        dependentIterator = pointPtr->getDependents( );
-
-        // not sure about this --> for( ; (*dependentIterator)( ) && informDependents; )
-
-        for( ; (*dependentIterator)( ); )
+        RWMutexLock::LockGuard msgLock(_pointDataMutex);
+    //    RWTValHashSetIterator<depStore, depStore, depStore> *dependentIterator;
+        RWTValHashSetIterator<depStore, depStore, depStore> *dependentIterator;
+        CtiHashKey hashKey(changedID);
+        //not sure about this --> BOOL informDependents = FALSE;
+    
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
+        CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
+        if( _CALC_DEBUG )
         {
-    //  currently, we don't have any other types that require knowing about dependencies, but who knows.  I had had this
-    //    piece of code in here until i realized that there will likely only be one update type that cares whether a point's
-    //    been updated - the allupdate type.
-    //        switch( dependentIterator->key( ).updateType )
-    //        {
-    //            case allUpdate:
-                    //  this is a bit of a hack - I'm counting on the probability that there will be fewer components 
-                    //    to check than possible affected points to insert into, to search for a duplicate in a set.
-                    //    either way, I will be doing some extra work for each point that depends on multiple calc
-                    //    points.
-                    _auAffectedPoints.append( dependentIterator->key( ).dependentID );
-    //        }
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - Point Data ID: " << changedID << " Val: " << newValue << " Time: " << newTime << " Quality: " << newQuality << endl;
         }
-
-        delete dependentIterator;
+    
+        if( newTime > pointPtr->getPointTime() || pointPtr->getPointQuality() == NonUpdatedQuality || pointPtr->getPointTags() & (TAG_DISABLE_DEVICE_BY_DEVICE | TAG_DISABLE_POINT_BY_POINT) )
+        {
+            pointPtr->setPointValue( newValue, newTime, newQuality, newTags );
+            dependentIterator = pointPtr->getDependents( );
+    
+            // not sure about this --> for( ; (*dependentIterator)( ) && informDependents; )
+    
+            for( ; (*dependentIterator)( ); )
+            {
+        //  currently, we don't have any other types that require knowing about dependencies, but who knows.  I had had this
+        //    piece of code in here until i realized that there will likely only be one update type that cares whether a point's
+        //    been updated - the allupdate type.
+        //        switch( dependentIterator->key( ).updateType )
+        //        {
+        //            case allUpdate:
+                        //  this is a bit of a hack - I'm counting on the probability that there will be fewer components 
+                        //    to check than possible affected points to insert into, to search for a duplicate in a set.
+                        //    either way, I will be doing some extra work for each point that depends on multiple calc
+                        //    points.
+                        _auAffectedPoints.append( dependentIterator->key( ).dependentID );
+        //        }
+            }
+    
+            delete dependentIterator;
+        }
+        else if( pointPtr->getNumUpdates() == 0 )
+        {
+            pointPtr->firstPointValue( newValue, newTime, newQuality, newTags );
+        }
     }
-    else if( pointPtr->getNumUpdates() == 0 )
+    catch(...)
     {
-        pointPtr->firstPointValue( newValue, newTime, newQuality, newTags );
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
 
 void CtiCalculateThread::periodicLoop( void )
 {
-    float msLeftThisSecond;
-    RWTime newTime, tempTime;
-    RWTPtrHashMapIterator<CtiHashKey, CtiCalc, my_hash<CtiHashKey> , equal_to<CtiHashKey> > periodicIter( _periodicPoints );
-    RWRunnableSelf _pSelf = rwRunnable( );
-    BOOL interrupted = FALSE, messageInMulti;
-    clock_t now;
-
-    while( !interrupted )
+    try
     {
-        //  while it's still the same second /and/ i haven't been interrupted
-        for( ; newTime == tempTime && !interrupted; )
+        float msLeftThisSecond;
+        RWTime newTime, tempTime;
+        RWTPtrHashMapIterator<CtiHashKey, CtiCalc, my_hash<CtiHashKey> , equal_to<CtiHashKey> > periodicIter( _periodicPoints );
+        RWRunnableSelf _pSelf = rwRunnable( );
+        BOOL interrupted = FALSE, messageInMulti;
+        clock_t now;
+    
+        while( !interrupted )
         {
-//            {
-//                RWMutexLock::LockGuard coutGuard(coutMux);
-//                cout << "(periodicloop keepalive) ";
-//            }
-            tempTime = RWTime( );
-            if( _pSelf.serviceInterrupt( ) )
-                interrupted = TRUE;
-            else
-                _pSelf.sleep( 200 );
-        } 
-
-        if( interrupted )
-            continue;
-        
-        now = clock( );
-
-        long pointId;
-        CtiCalc *calcPoint;
-        double newPointValue;
-
-        CtiMultiMsg *periodicMultiMsg = new CtiMultiMsg;
-        char pointDescription[80];
-
-        periodicIter.reset( );
-        messageInMulti = FALSE;
-
-        for( ; periodicIter( ); )
-        {
-            calcPoint = (CtiCalc *)(periodicIter.value( ));
-            if( !calcPoint->ready( ) )
+            //  while it's still the same second /and/ i haven't been interrupted
+            for( ; newTime == tempTime && !interrupted; )
             {
-                continue;  // for
-            }
-
-            messageInMulti = TRUE;
-
-            pointId = calcPoint->getPointId( );
-
+    //            {
+    //                RWMutexLock::LockGuard coutGuard(coutMux);
+    //                cout << "(periodicloop keepalive) ";
+    //            }
+                tempTime = RWTime( );
+                if( _pSelf.serviceInterrupt( ) )
+                    interrupted = TRUE;
+                else
+                    _pSelf.sleep( 200 );
+            } 
+    
+            if( interrupted )
+                continue;
+            
+            now = clock( );
+    
+            long pointId;
+            CtiCalc *calcPoint;
+            double newPointValue;
+    
+            CtiMultiMsg *periodicMultiMsg = new CtiMultiMsg;
+            char pointDescription[80];
+    
+            periodicIter.reset( );
+            messageInMulti = FALSE;
+    
+            for( ; periodicIter( ); )
             {
-                RWMutexLock::LockGuard msgLock(_pointDataMutex);
-                newPointValue = calcPoint->calculate( );
-            }
-
-            calcPoint->setNextInterval(calcPoint->getUpdateInterval());
-
-            //if( calcPoint->getSendFlag() )
-            {
-                sprintf( pointDescription, "calc point %ul update", pointId );
-
-                CtiPointDataMsg *pointData = new CtiPointDataMsg(pointId, newPointValue, NormalQuality,
-                                                                 CalculatedPointType, pointDescription);
-
-                periodicMultiMsg->getData( ).insert( pointData );
-
+                calcPoint = (CtiCalc *)(periodicIter.value( ));
+                if( !calcPoint->ready( ) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " PeriodCalc setting Calc Point ID: " << pointId << " to New Value: " << newPointValue << endl;
+                    continue;  // for
+                }
+    
+                messageInMulti = TRUE;
+    
+                pointId = calcPoint->getPointId( );
+    
+                {
+                    RWMutexLock::LockGuard msgLock(_pointDataMutex);
+                    newPointValue = calcPoint->calculate( );
+                }
+    
+                calcPoint->setNextInterval(calcPoint->getUpdateInterval());
+    
+                //if( calcPoint->getSendFlag() )
+                {
+                    sprintf( pointDescription, "calc point %ul update", pointId );
+    
+                    CtiPointDataMsg *pointData = new CtiPointDataMsg(pointId, newPointValue, NormalQuality,
+                                                                     CalculatedPointType, pointDescription);
+    
+                    periodicMultiMsg->getData( ).insert( pointData );
+    
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " PeriodCalc setting Calc Point ID: " << pointId << " to New Value: " << newPointValue << endl;
+                    }
                 }
             }
-        }
-
-        //  post message 
-        if( messageInMulti )
-        {
+    
+            //  post message 
+            if( messageInMulti )
             {
-                RWMutexLock::LockGuard calcMsgGuard(outboxMux);
-                _outbox.append( periodicMultiMsg );
+                {
+                    RWMutexLock::LockGuard calcMsgGuard(outboxMux);
+                    _outbox.append( periodicMultiMsg );
+                }
+    
+                //{
+                //    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                //    dout << RWTime( ) << " - periodicLoop posting a message - took " << (clock( ) - now) << " ticks" << endl;
+                //}
             }
-
-            //{
-            //    CtiLockGuard<CtiLogger> doubt_guard(dout);
-            //    dout << RWTime( ) << " - periodicLoop posting a message - took " << (clock( ) - now) << " ticks" << endl;
-            //}
+            else
+            {
+                delete periodicMultiMsg;
+            }
+    
+            newTime = tempTime;
         }
-        else
+    
         {
-            delete periodicMultiMsg;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime( ) << " - Calc periodicLoop interrupted" << endl;
         }
-
-        newTime = tempTime;
     }
-
+    catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime( ) << " - Calc periodicLoop interrupted" << endl;
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
 void CtiCalculateThread::onUpdateLoop( void )
 {
-    long pointIDChanged, recalcPointID;
-    double recalcValue;
-    char pointDescription[80];
-    BOOL interrupted = FALSE, pointsInMulti;
-    CtiMultiMsg *pChg;
-    CtiCalc *calcPoint;
-    RWRunnableSelf _auSelf = rwRunnable( );
-
-    while( !interrupted )
+    try
     {
-        //  this is the cleanest way to do it;  i know it's a do-while, but that gets rid of an unnecessary if statement
-        do
+        long pointIDChanged, recalcPointID;
+        double recalcValue;
+        char pointDescription[80];
+        BOOL interrupted = FALSE, pointsInMulti;
+        CtiMultiMsg *pChg;
+        CtiCalc *calcPoint;
+        RWRunnableSelf _auSelf = rwRunnable( );
+    
+        while( !interrupted )
         {
-            if( _auSelf.serviceInterrupt( ) )
+            //  this is the cleanest way to do it;  i know it's a do-while, but that gets rid of an unnecessary if statement
+            do
             {
-                interrupted = TRUE;
-            }
-            else
-            {
-                _auSelf.sleep( 66 );
-            }
-
-        } while( !_auAffectedPoints.entries( ) && !interrupted );
-
-        //  if I was interrupted while I was sleeping, I don't care about any points I may have received - it's time to go.
-        if( interrupted )
-            continue;
-
-        pChg = new CtiMultiMsg;
-        pointsInMulti = FALSE;
-        
-        //  get the mutex while we're accessing the _auAffectedPoints collection
-        //  (it's accessed by pointChange as well)
-        {
-            RWMutexLock::LockGuard msgLock(_pointDataMutex);
-            while( _auAffectedPoints.entries( ) )
-            {
-                recalcPointID = _auAffectedPoints.removeFirst( );
-                CtiHashKey recalcKey(recalcPointID);
-                calcPoint = (CtiCalc *)(_onUpdatePoints[&recalcKey]);
-                
-                //  if not ready
-                if( !calcPoint->ready( ) )
-                    continue;  // for
-
-                recalcValue = calcPoint->calculate( );
-
-                CtiPointDataMsg *pData = NULL;
-
-                if( calcPoint->getPointCalcWindowEndTime() > RWTime(RWDate(1,1,1991)) )
+                if( _auSelf.serviceInterrupt( ) )
                 {
-                    CtiHashKey pointHashKey(calcPoint->getPointId());
-                    CtiPointStore* pointStore = CtiPointStore::getInstance();
-                    CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&pointHashKey]);
-
-                    if( RWTime() >= calcPoint->getPointCalcWindowEndTime() )
-                    {
-                        /*{
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << __FILE__ << " (" << __LINE__ << ") RWTime() >= calcPoint->getPointCalcWindowEndTime()" << endl;
-                        }*/
-                        pData = new CtiPointDataMsg(recalcPointID, pointPtr->getPointValue(), NormalQuality, CalculatedPointType, pointDescription);
-                        pData->setTime(calcPoint->getPointCalcWindowEndTime());
-                    }
-
-                    pointPtr->setPointValue( recalcValue, RWTime(), InvalidQuality, 0 );
+                    interrupted = TRUE;
                 }
                 else
                 {
-                    pData = new CtiPointDataMsg(recalcPointID, recalcValue, NormalQuality, CalculatedPointType, pointDescription);
+                    _auSelf.sleep( 66 );
                 }
-
-                if( pData != NULL )
+    
+            } while( !_auAffectedPoints.entries( ) && !interrupted );
+    
+            //  if I was interrupted while I was sleeping, I don't care about any points I may have received - it's time to go.
+            if( interrupted )
+                continue;
+    
+            pChg = new CtiMultiMsg;
+            pointsInMulti = FALSE;
+            
+            //  get the mutex while we're accessing the _auAffectedPoints collection
+            //  (it's accessed by pointChange as well)
+            {
+                RWMutexLock::LockGuard msgLock(_pointDataMutex);
+                while( _auAffectedPoints.entries( ) )
                 {
-                    pointsInMulti = TRUE;
-                    sprintf( pointDescription, "calc point %ul update", recalcPointID );
-                    pChg->getData( ).insert( pData );
+                    recalcPointID = _auAffectedPoints.removeFirst( );
+                    CtiHashKey recalcKey(recalcPointID);
+                    calcPoint = (CtiCalc *)(_onUpdatePoints[&recalcKey]);
+                    
+                    //  if not ready
+                    if( !calcPoint->ready( ) )
+                        continue;  // for
+    
+                    recalcValue = calcPoint->calculate( );
+    
+                    CtiPointDataMsg *pData = NULL;
+    
+                    if( calcPoint->getPointCalcWindowEndTime() > RWTime(RWDate(1,1,1991)) )
+                    {
+                        CtiHashKey pointHashKey(calcPoint->getPointId());
+                        CtiPointStore* pointStore = CtiPointStore::getInstance();
+                        CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&pointHashKey]);
+    
+                        if( RWTime() >= calcPoint->getPointCalcWindowEndTime() )
+                        {
+                            /*{
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << __FILE__ << " (" << __LINE__ << ") RWTime() >= calcPoint->getPointCalcWindowEndTime()" << endl;
+                            }*/
+                            pData = new CtiPointDataMsg(recalcPointID, pointPtr->getPointValue(), NormalQuality, CalculatedPointType, pointDescription);
+                            pData->setTime(calcPoint->getPointCalcWindowEndTime());
+                        }
+    
+                        pointPtr->setPointValue( recalcValue, RWTime(), InvalidQuality, 0 );
+                    }
+                    else
+                    {
+                        pData = new CtiPointDataMsg(recalcPointID, recalcValue, NormalQuality, CalculatedPointType, pointDescription);
+                    }
+    
+                    if( pData != NULL )
+                    {
+                        pointsInMulti = TRUE;
+                        sprintf( pointDescription, "calc point %ul update", recalcPointID );
+                        pChg->getData( ).insert( pData );
+                    }
+    
+                    if( _CALC_DEBUG )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " onUpdateLoop setting Calc Point ID: " << recalcPointID << " to New Value: " << recalcValue << endl;
+                    }
+    
                 }
-
+            }
+    
+            if( pointsInMulti )
+            {
+                {
+                    RWMutexLock::LockGuard outboxGuard(outboxMux);
+                    _outbox.append( pChg );
+                }
+                
+                //  i kinda want to keep away from having a hold on both of the mutexes, as a little programming error
+                //    earlier earned me a touch of the deadlock.
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " onUpdateLoop setting Calc Point ID: " << recalcPointID << " to New Value: " << recalcValue << endl;
+                    dout << RWTime( ) << " - onUpdateLoop posting a message" << endl;
                 }
-
+            }
+            else
+            {
+                delete pChg;
             }
         }
-
-        if( pointsInMulti )
+        
         {
-            {
-                RWMutexLock::LockGuard outboxGuard(outboxMux);
-                _outbox.append( pChg );
-            }
-            
-            //  i kinda want to keep away from having a hold on both of the mutexes, as a little programming error
-            //    earlier earned me a touch of the deadlock.
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " - onUpdateLoop posting a message" << endl;
-            }
-        }
-        else
-        {
-            delete pChg;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime( ) << " - Calc onUpdateLoop interrupted" << endl;
         }
     }
-    
+    catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime( ) << " - Calc onUpdateLoop interrupted" << endl;
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
