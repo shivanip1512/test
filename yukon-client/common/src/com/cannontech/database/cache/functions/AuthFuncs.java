@@ -119,14 +119,16 @@ public class AuthFuncs {
 			Map lookupMap = cache.getYukonGroupRolePropertyMap();
 			Map roleMap = (Map) lookupMap.get( group_ );
 			
-			Iterator rIter = roleMap.entrySet().iterator(); 
-			while(rIter.hasNext()) {
-				Map propMap = (Map) ((Map.Entry) rIter.next()).getValue(); //Iter.next();
-				String val = (String) propMap.get(getRoleProperty(rolePropertyID));
-				if(val != null) return val;
+			if(roleMap != null) {			
+				Iterator rIter = roleMap.entrySet().iterator(); 
+				while(rIter.hasNext()) {
+					Map propMap = (Map) ((Map.Entry) rIter.next()).getValue(); //Iter.next();
+					String val = (String) propMap.get(getRoleProperty(rolePropertyID));
+					if(val != null) return val;
+				}
 			}
 		}
-		return defaultValue;			
+		return defaultValue;		 	
 	}
 	
 	/**
