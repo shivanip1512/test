@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2005/03/01 14:06:33 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2005/03/10 20:26:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,6 +51,8 @@
 #include "resolvers.h"
 #include "slctdev.h"
 #include "rtdb.h"
+
+using namespace Cti;  //  in preparation for moving devices to their own namespace
 
 
 bool findExecutingAndExcludedDevice(const long key, CtiDeviceSPtr devsptr, void* d)
@@ -761,7 +763,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for DNP/ION/LMI Devices" << endl;
                         }
-                        CtiDeviceDNP().getSQL( db, keyTable, selector );
+                        Device::DNP().getSQL( db, keyTable, selector );
                         if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
                         RWDBReader rdr = selector.reader(conn);
