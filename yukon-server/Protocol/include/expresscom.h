@@ -13,8 +13,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/10/23 21:06:09 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/10/31 17:56:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,6 +101,9 @@ private:
     INT assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &OutMessage);
     INT assemblePutStatus(CtiCommandParser &parse, CtiOutMessage &OutMessage);
 
+    INT parseSchedule(CtiCommandParser &parse);
+    INT schedulePoint(vector< BYTE > &schedule);
+
     INT sync();
     INT timeSync(RWTime &gmt);
 
@@ -123,7 +126,7 @@ private:
      *  BYTE deltafallbackpercent = 0);       // If the temperature is changing too quickly we switch to this rate.
      *
      */
-    INT thermostatLoadControl(UINT loadMask, BYTE cyclepercent, BYTE periodminutes, BYTE cyclecount, USHORT delay = 0, INT controltemperature = 0, BYTE limittemperature = 0, BYTE limitfallbackpercent = 0, CHAR maxdeltaperhour = 0, BYTE deltafallbackpercent = 0);
+    INT thermostatLoadControl(UINT loadMask, BYTE cyclepercent, BYTE periodminutes, BYTE cyclecount, USHORT delay = 0, INT controltemperature = 0, BYTE limittemperature = 0, BYTE limitfallbackpercent = 0, CHAR maxdeltaperhour = 0, BYTE deltafallbackpercent = 0, bool noramp = false);
 
     /*  Ok, this really requires the document, but here's some ASCII art too.
      *
@@ -161,7 +164,7 @@ private:
      *  BYTE delta_S_f);
      *
      */
-    INT thermostatSetpointControl(BYTE minTemp = 0, BYTE maxTemp = 0, USHORT T_r = 0, USHORT T_a = 0, USHORT T_b = 0, BYTE delta_S_b = 0, USHORT T_c = 0, USHORT T_d = 0, BYTE delta_S_d = 0, USHORT T_e = 0, USHORT T_f = 0, BYTE delta_S_f = 0);
+    INT thermostatSetpointControl(BYTE minTemp = 0, BYTE maxTemp = 0, USHORT T_r = 0, USHORT T_a = 0, USHORT T_b = 0, BYTE delta_S_b = 0, USHORT T_c = 0, USHORT T_d = 0, BYTE delta_S_d = 0, USHORT T_e = 0, USHORT T_f = 0, BYTE delta_S_f = 0, bool hold = false);
     INT configuration(BYTE configNumber, BYTE length, PBYTE data);
     INT rawconfiguration(RWCString str);
     INT rawmaintenance(RWCString str);
@@ -172,6 +175,9 @@ private:
     INT data(RWCString str);
     INT data(PBYTE data, BYTE length, BYTE dataTransmitType = 0, BYTE targetPort = 0);
     INT capControl(BYTE action, BYTE subAction, BYTE data1 = 0x00, BYTE data2 = 0x00);
+
+    INT configureGeoAddressing(CtiCommandParser &parse);
+    INT configureLoadAddressing(CtiCommandParser &parse);
 
 public:
 

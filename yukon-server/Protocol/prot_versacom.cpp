@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/07/01 17:54:57 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/10/31 17:56:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1731,7 +1731,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
     if(CtlReq == CMD_FLAG_CTL_SHED)
     {
         UINT hasrand  = parse.isKeyValid("shed_rand");
-        UINT hasdelay = parse.isKeyValid("shed_delay");
+        UINT hasdelay = parse.isKeyValid("delaytime_sec");
 
         relay = (relay  == INT_MIN) ? 0  : relay ;     // If zero it means all of them!
 
@@ -1749,7 +1749,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
         else
         {
             INT rand  = parse.getiValue("shed_rand");
-            INT delay = parse.getiValue("shed_delay");
+            INT delay = parse.getiValue("delaytime_sec");
 
             // If not specified, uses the last sent data.  Acts as a modification.
             rand   = (rand == INT_MIN) ? 120  : rand;       // If not specified, it will continue the command in progress, modifying the other parameters

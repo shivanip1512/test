@@ -11,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/10/23 21:06:09 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/10/31 17:56:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,25 +94,15 @@ bool CtiProtocolExpresscom::parseAddressing(CtiCommandParser &parse)
 {
     bool status = false;
 
-    INT serial      = parse.getiValue("xc_serial");
-    INT spid        = parse.getiValue("xc_spid");
-    INT geo         = parse.getiValue("xc_geo");
-    INT substation  = parse.getiValue("xc_sub");
-    INT feeder      = parse.getiValue("xc_feeder");
-    INT zip         = parse.getiValue("xc_zip");
-    INT uda         = parse.getiValue("xc_uda");
-    INT program     = parse.getiValue("xc_program");
-    INT splinter    = parse.getiValue("xc_splinter");
-
-    _uniqueAddress      = ( serial != -1 ? serial : 0 );
-    _spidAddress        = ( spid != -1 ? spid : 0);
-    _geoAddress         = ( geo != -1 ? geo : 0);
-    _substationAddress  = ( substation != -1 ? substation : 0);
-    _feederAddress      = ( feeder != -1 ? feeder : 0);
-    _zipAddress         = ( zip != -1 ? zip : 0);
-    _udaAddress         = ( uda != -1 ? uda : 0);
-    _programAddress     = ( program != -1 ? program : 0);
-    _splinterAddress    = ( splinter != -1 ? splinter : 0);
+    _uniqueAddress      = parse.getiValue("xc_serial", 0);   //( serial != -1 ? serial : 0 );
+    _spidAddress        = parse.getiValue("xc_spid", 0);     //( spid != -1 ? spid : 0);
+    _geoAddress         = parse.getiValue("xc_geo", 0);      //( geo != -1 ? geo : 0);
+    _substationAddress  = parse.getiValue("xc_sub", 0);      //( substation != -1 ? substation : 0);
+    _feederAddress      = parse.getiValue("xc_feeder", 0);   //( feeder != -1 ? feeder : 0);
+    _zipAddress         = parse.getiValue("xc_zip", 0);      //( zip != -1 ? zip : 0);
+    _udaAddress         = parse.getiValue("xc_uda", 0);      //( uda != -1 ? uda : 0);
+    _programAddress     = parse.getiValue("xc_program", 0);  //( program != -1 ? program : 0);
+    _splinterAddress    = parse.getiValue("xc_splinter", 0); //( splinter != -1 ? splinter : 0);
 
     resolveAddressLevel();
 
@@ -384,19 +374,19 @@ INT CtiProtocolExpresscom::cycleLoadControl(UINT loadMask, BYTE cyclepercent, BY
 }
 
 
-INT CtiProtocolExpresscom::thermostatLoadControl(UINT loadMask, BYTE cyclepercent, BYTE periodminutes, BYTE cyclecount, USHORT delay, INT controltemperature, BYTE limittemperature, BYTE limitfallbackpercent, CHAR maxdeltaperhour, BYTE deltafallbackpercent)
+INT CtiProtocolExpresscom::thermostatLoadControl(UINT loadMask, BYTE cyclepercent, BYTE periodminutes, BYTE cyclecount, USHORT delay, INT controltemperature, BYTE limittemperature, BYTE limitfallbackpercent, CHAR maxdeltaperhour, BYTE deltafallbackpercent, bool noramp)
 {
     INT status = NoError;
 
     BYTE flaghi = (_heatingMode ? 0x10 : 0x00) | (_coolingMode ? 0x08 : 0x00) | (_celsiusMode ? 0x04 : 0x00);
-    BYTE flaglo;
+    BYTE flaglo = (noramp ? 0x80 : 0x00);
     BYTE load;
 
     for(load = 1; load < 15; load++)
     {
         if(loadMask & (0x01 << (load - 1)))         // We have a message to be build up here!
         {
-            flaglo = (load & 0x0f);                  // Pick up the load designator;
+            flaglo |= (load & 0x0f);                  // Pick up the load designator;
             _message.push_back( mtThermostatLoadControl );
             size_t flaghipos = _message.size();
             _message.push_back( flaghi );
@@ -477,12 +467,12 @@ INT CtiProtocolExpresscom::thermostatLoadControl(UINT loadMask, BYTE cyclepercen
  *  BYTE delta_S_f);
  *
  */
-INT CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp, USHORT T_r, USHORT T_a, USHORT T_b, BYTE delta_S_b, USHORT T_c, USHORT T_d, BYTE delta_S_d, USHORT T_e, USHORT T_f, BYTE delta_S_f)
+INT CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp, USHORT T_r, USHORT T_a, USHORT T_b, BYTE delta_S_b, USHORT T_c, USHORT T_d, BYTE delta_S_d, USHORT T_e, USHORT T_f, BYTE delta_S_f, bool hold)
 {
     INT status = NoError;
 
     BYTE flaghi = 0x00;
-    BYTE flaglo = 0x00;
+    BYTE flaglo = (hold ? 0x80 : 0x00);
 
     bool twobytetimes = false;
 
@@ -927,7 +917,7 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
     INT  i;
     INT  status = NORMAL;
     UINT CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
-    INT  relaymask  = parse.getiValue("relaymask", 0);
+    INT  relaymask  = parse.getiValue("relaymask", 0x00000001);
 
     if(CtlReq == CMD_FLAG_CTL_SHED)
     {
@@ -936,15 +926,15 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
         parse.setValue("control_reduction", 100 );
 
         INT rand  = parse.getiValue("shed_rand", 0);
-        INT delay = parse.getiValue("shed_delay", 0);
+        INT delay = parse.getiValue("delaytime_sec", 0) / 60;
 
         timedLoadControl(relaymask, parse.getiValue("shed"), rand, delay);
     }
-    else if(CtlReq == CMD_FLAG_CTL_CYCLE && !parse.isKeyValid("xctstat"))
+    else if(CtlReq == CMD_FLAG_CTL_CYCLE && !parse.isKeyValid("xctcycle"))
     {
         INT period     = parse.getiValue("cycle_period", 30);
         INT repeat     = parse.getiValue("cycle_count", 8);
-        INT delay      = parse.getiValue("xcdelaytime", 0);
+        INT delay      = parse.getiValue("delaytime_sec", 0) / 60;
 
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
@@ -955,12 +945,12 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
     else if(CtlReq == CMD_FLAG_CTL_RESTORE)
     {
         INT rand  = parse.getiValue("xcrandstart", 0);
-        INT delay = parse.getiValue("xcdelaytime", 0);
+        INT delay = parse.getiValue("delaytime_sec", 0) / 60;
         restoreLoadControl(relaymask, rand, delay);
     }
     else if(CtlReq == CMD_FLAG_CTL_TERMINATE)
     {
-        INT delay = parse.getiValue("xcdelaytime", 0);
+        INT delay = parse.getiValue("delaytime_sec", 0) / 60;
         cycleLoadControl(relaymask, 0, 1, 1, delay);
     }
     else if(CtlReq == CMD_FLAG_CTL_OPEN)
@@ -972,41 +962,43 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
     {
         capControl(ccControl, ccControlClose);
     }
-    else if(parse.isKeyValid("xctstat"))
+    else if(parse.isKeyValid("xctcycle"))
     {
-        // Thermostat controls apply here...
-        if(CtlReq == CMD_FLAG_CTL_CYCLE)        // tstat cycle
-        {
-            // Add these two items to the list for control accounting!
-            parse.setValue("control_reduction", parse.getiValue("cycle") );
-            parse.setValue("control_interval", 60 * parse.getiValue("cycle_period", 30) * parse.getiValue("cycle_count", 8));
+        // Add these two items to the list for control accounting!
+        parse.setValue("control_reduction", parse.getiValue("cycle") );
+        parse.setValue("control_interval", 60 * parse.getiValue("cycle_period", 30) * parse.getiValue("cycle_count", 8));
 
-            thermostatLoadControl( relaymask,
-                                   parse.getiValue("cycle", 0),
-                                   parse.getiValue("cycle_period", 30),
-                                   parse.getiValue("cycle_count", 8),
-                                   parse.getiValue("xcdelaytime", 0),
-                                   parse.getiValue("xcctrltemp", 0),
-                                   parse.getiValue("xclimittemp", 0),
-                                   parse.getiValue("xclimitfbp", 0),
-                                   parse.getiValue("xcmaxdperh", 0),
-                                   parse.getiValue("xcmaxdperhfbp", 0));
-        }
-        else // tstat setpoint!  holy cow, lets dance.
-        {
-            thermostatSetpointControl( parse.getiValue("xcmintemp", 0),
-                                       parse.getiValue("xcmaxtemp", 0),
-                                       parse.getiValue("xctr", 0),
-                                       parse.getiValue("xcta", 0),
-                                       parse.getiValue("xctb", 0),
-                                       parse.getiValue("xcdsb", 0),
-                                       parse.getiValue("xctc", 0),
-                                       parse.getiValue("xctd", 0),
-                                       parse.getiValue("xcdsd", 0),
-                                       parse.getiValue("xcte", 0),
-                                       parse.getiValue("xctf", 0),
-                                       parse.getiValue("xcdsf", 0));
-        }
+        bool noramp = ( parse.getiValue("xcnoramp", 0) ? true : false );
+
+        thermostatLoadControl( relaymask,
+                               parse.getiValue("cycle", 0),
+                               parse.getiValue("cycle_period", 30),
+                               parse.getiValue("cycle_count", 8),
+                               parse.getiValue("delaytime_sec", 0) / 60,
+                               parse.getiValue("xcctrltemp", 0),
+                               parse.getiValue("xclimittemp", 0),
+                               parse.getiValue("xclimitfbp", 0),
+                               parse.getiValue("xcmaxdperh", 0),
+                               parse.getiValue("xcmaxdperhfbp", 0),
+                               noramp);
+    }
+    else if(parse.isKeyValid("xcsetpoint"))
+    {
+        bool hold = ( parse.getiValue("xcholdtemp", 0) ? true : false);
+
+        thermostatSetpointControl( parse.getiValue("xcmintemp", 0),
+                                   parse.getiValue("xcmaxtemp", 0),
+                                   parse.getiValue("xctr", 0),
+                                   parse.getiValue("xcta", 0),
+                                   parse.getiValue("xctb", 0),
+                                   parse.getiValue("xcdsb", 0),
+                                   parse.getiValue("xctc", 0),
+                                   parse.getiValue("xctd", 0),
+                                   parse.getiValue("xcdsd", 0),
+                                   parse.getiValue("xcte", 0),
+                                   parse.getiValue("xctf", 0),
+                                   parse.getiValue("xcdsf", 0),
+                                   hold);
     }
     else
     {
@@ -1021,6 +1013,15 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
 INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &OutMessage)
 {
     INT status = NORMAL;
+
+    int serial = parse.getiValue("xc_serial", 0);
+
+
+    if(serial != 0 && parse.isKeyValid("xcaddress"))
+    {
+        configureGeoAddressing(parse);
+        configureLoadAddressing(parse);
+    }
 
     if(parse.isKeyValid("xcsync"))
     {
@@ -1058,6 +1059,10 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
                                    (bool)parse.getiValue("xctservicebitp"),
                                    (bool)parse.getiValue("xctservicebitl") );
     }
+    else if(parse.isKeyValid("xcschedule"))
+    {
+        status = parseSchedule(parse);
+    }
 
     return status;
 }
@@ -1080,3 +1085,181 @@ INT CtiProtocolExpresscom::assemblePutStatus(CtiCommandParser &parse, CtiOutMess
 
     return status;
 }
+
+INT CtiProtocolExpresscom::parseSchedule(CtiCommandParser &parse)
+{
+    INT status = NoError;
+
+    BYTE dow;
+    BYTE pod;
+
+    vector< BYTE > schedule;
+
+    schedule.push_back(0);      // This is the number of schedule points!
+
+    for(dow = 0; dow < 10; dow ++)
+    {
+        for(pod = 0; pod < 16; pod ++)
+        {
+            BYTE per = ( (dow) << 4 | (pod & 0x0f) );
+            RWCString hhstr("xctodshh_" + CtiNumStr(per));
+            RWCString mmstr("xctodsmm_" + CtiNumStr(per));
+            RWCString heatstr("xctodsheat_" + CtiNumStr(per));
+            RWCString coolstr("xctodscool_" + CtiNumStr(per));
+
+            BYTE hh = (BYTE)parse.getiValue(hhstr, 0xff);
+            BYTE mm = (BYTE)parse.getiValue(mmstr, 0xff);
+            BYTE heat = (BYTE)parse.getiValue(heatstr, 0xff);
+            BYTE cool = (BYTE)parse.getiValue(coolstr, 0xff);
+
+            if(hh != 0xff || mm != 0xff || heat != 0xff || cool != 0xff)
+            {
+                // One of them were defined!
+#if 0
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << hhstr << " " << (int)hh << endl;
+                    dout << mmstr << " " << (int)mm << endl;
+                    dout << heatstr << " " << (int)heat << endl;
+                    dout << coolstr << " " << (int)cool << endl;
+                }
+#endif
+                schedule.push_back(per);
+                schedule.push_back(hh);
+                schedule.push_back(mm);
+                schedule.push_back(heat);
+                schedule.push_back(cool);
+
+                schedule[0] = schedule[0] + 1;
+            }
+        }
+    }
+
+    schedulePoint(schedule);
+
+    return status;
+}
+
+INT CtiProtocolExpresscom::schedulePoint(vector< BYTE > &schedule)
+{
+    INT status = NoError;
+
+    if(schedule.size() > 1)
+    {
+        BYTE data[1024];
+
+        for(int i = 0; i < schedule.size(); i++)
+        {
+            data[i] = schedule[i];
+        }
+
+        // OK, lets build a configuration message.
+
+        status = configuration( 0x26, i, data);
+    }
+
+    return status;
+}
+
+INT CtiProtocolExpresscom::configureGeoAddressing(CtiCommandParser &parse)
+{
+    INT status = NoError;
+
+    BYTE length = 1;
+    BYTE raw[20];
+
+    raw[0] = (parse.isKeyValid("xca_spid") ? 0x80 : 0x00) |
+        (parse.isKeyValid("xca_geo") ? 0x40 : 0x00) |
+        (parse.isKeyValid("xca_sub") ? 0x20 : 0x00) |
+        (parse.isKeyValid("xca_feeder") ? 0x10 : 0x00) |
+        (parse.isKeyValid("xca_zip") ? 0x08 : 0x00) |
+        (parse.isKeyValid("xca_uda") ? 0x04 : 0x00);
+
+    if(raw[0] != 0)
+    {
+        if(raw[0] & 0x80)
+        {
+            USHORT spid = (USHORT)parse.getiValue("xca_spid", 0);
+            raw[length++] = HIBYTE(spid);
+            raw[length++] = LOBYTE(spid);
+        }
+        if(raw[0] & 0x40)
+        {
+            USHORT geo = (USHORT)parse.getiValue("xca_geo", 0);
+            raw[length++] = HIBYTE(geo);
+            raw[length++] = LOBYTE(geo);
+        }
+        if(raw[0] & 0x20)
+        {
+            USHORT sub = (USHORT)parse.getiValue("xca_sub", 0);
+            raw[length++] = HIBYTE(sub);
+            raw[length++] = LOBYTE(sub);
+        }
+        if(raw[0] & 0x10)
+        {
+            USHORT feeder = (USHORT)parse.getiValue("xca_feeder", 0);
+            raw[length++] = HIBYTE(feeder);
+            raw[length++] = LOBYTE(feeder);
+        }
+        if(raw[0] & 0x08)
+        {
+            int zip = (USHORT)parse.getiValue("xca_zip", 0);
+            raw[length++] = LOBYTE(HIWORD(zip));
+            raw[length++] = HIBYTE(LOWORD(zip));
+            raw[length++] = LOBYTE(LOWORD(zip));
+        }
+        if(raw[0] & 0x04)
+        {
+            USHORT uda = (USHORT)parse.getiValue("xca_uda", 0);
+            raw[length++] = HIBYTE(uda);
+            raw[length++] = LOBYTE(uda);
+        }
+
+        status = configuration( 0x01, length, raw );
+    }
+
+    return status;
+}
+
+INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
+{
+    INT status = NoError;
+
+    BYTE length = 1;
+    BYTE raw[8];
+
+    BYTE prog       = (BYTE)parse.getiValue("xca_program", 0);
+    BYTE splinter   = (BYTE)parse.getiValue("xca_splinter", 0);
+    BYTE loadmask   = ((BYTE)parse.getiValue("xca_loadmask", 0) & 0x0f);
+    BYTE load;
+
+    for(load = 0; load < 15; load++)
+    {
+        if(loadmask & (0x01 << load))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " Load " << load + 1 << "found" << endl;
+            }
+            length = 1;
+            raw[0] = (prog ? 0x20 : 0x00) | (splinter ? 0x10 : 0x00) | (load+1);
+
+            if(raw[0] != 0)
+            {
+                if(prog)
+                {
+                    raw[length++] = prog;
+                }
+                if(splinter)
+                {
+                    raw[length++] = splinter;
+                }
+                status = configuration( 0x07, length, raw );
+            }
+        }
+    }
+
+    return status;
+}
+

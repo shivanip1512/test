@@ -8,7 +8,6 @@ using namespace std;
 
 #include <rw\rwtime.h>
 #include <rw\cstring.h>
-#include <rw\ctoken.h>
 #include <rw\re.h>
 
 #include <limits.h>
@@ -100,6 +99,7 @@ void  CtiCommandParser::doParse(RWCString Cmd)
             CmdStr.replace(regexp, "");
         }
     }
+#if 0  // 103102
     else if(CmdStr.contains(" address"))
     {
         RWCRExpr regexp("address[= ]+[0-9a-f]+");
@@ -119,6 +119,7 @@ void  CtiCommandParser::doParse(RWCString Cmd)
             CmdStr.replace(regexp, "");
         }
     }
+#endif
 
 
     if(CmdStr.contains(" select"))
@@ -602,6 +603,49 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
 
     if(!token.isNull() && token == "control")
     {
+        if(CmdStr.contains(" delay"))
+        {
+            RWCString   valStr;
+
+            if(!(temp2 = CmdStr.match(" delay ?time +[0-9]+")).isNull())
+            {
+                if(!(valStr = temp2.match("[0-9]+")).isNull())
+                {
+                    iValue = atoi(valStr.data());
+                    _cmd["delaytime_sec"] = CtiParseValue( iValue * 60 );
+                }
+            }
+
+            if(!(temp2 = CmdStr.match(" delay ?until +[0-9]?[0-9]:[0-9][0-9]")).isNull())
+            {
+                INT hh = 0;
+                INT mm = 0;
+                INT ofm = 0;      // Offset from Midnight in seconds.
+
+                if(!(valStr = temp2.match("[0-9]?[0-9]:")).isNull())
+                {
+                    hh = atoi(valStr.data());
+                }
+
+                if(!(valStr = temp2.match(":[0-9][0-9]")).isNull())
+                {
+                    mm = atoi(valStr.data() + 1);
+                }
+
+
+                iValue = (RWTime(hh, mm).seconds() - RWTime().seconds());
+
+                if(iValue > 0)
+                {
+                    _cmd["delaytime_sec"] = CtiParseValue( iValue );
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
 
         if(!(token = CmdStr.match(" open")).isNull())            // Sourcing from CmdStr, which is the entire command string.
         {
@@ -704,32 +748,6 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
                     _cmd["shed_rand"] = CtiParseValue( _num );
                 }
             }
-
-            if(!(token = CmdStr.match(" delay +[0-9][0-9]:[0-9][0-9]")).isNull())
-            {
-                INT hh = 0;
-                INT mm = 0;
-                INT ofm = 0;      // Offset from Midnight in seconds.
-
-                if(!(temp2 = token.match("[0-9][0-9]:")).isNull())
-                {
-                    hh = atoi(temp2.data());
-                }
-
-                if(!(temp2 = token.match(":[0-9][0-9]")).isNull())
-                {
-                    mm = atoi(temp2.data() + 1);
-                }
-
-
-                _num = RWTime(hh, mm).seconds() - RWTime().seconds();
-
-                if(_num > 0)
-                {
-                    _cmd["shed_delay"] = CtiParseValue( _num );
-                }
-            }
-
         }
         else if(!(token = CmdStr.match(" cycle +[0-9]+")).isNull())      // Sourcing from CmdStr, which is the entire command string.
         {
@@ -767,32 +785,6 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
                 }
             }
 
-            if(!(token = CmdStr.match(" delay +[0-9][0-9]:[0-9][0-9]")).isNull())
-            {
-                INT hh = 0;
-                INT mm = 0;
-                INT ofm = 0;      // Offset from Midnight in seconds.
-
-                if(!(temp2 = token.match("[0-9][0-9]:")).isNull())
-                {
-                    hh = atoi(temp2.data());
-                }
-
-                if(!(temp2 = token.match(":[0-9][0-9]")).isNull())
-                {
-                    mm = atoi(temp2.data() + 1);
-                }
-
-
-                _num = RWTime(hh, mm).seconds() - RWTime().seconds();
-
-                if(_num > 0)
-                {
-                    _cmd["cycle_delay"] = CtiParseValue( _num );
-                }
-            }
-
-
             _cmd["cycle"] = CtiParseValue( (iValue) );
             _snprintf(tbuf, sizeof(tbuf), "CYCLE %d%%", iValue);
         }
@@ -817,9 +809,9 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
         /*
          *  Try to find out if a relay has been specified for the control operation!
          */
-        if(!(token = CmdStr.match("relay")).isNull())
+        if(!(token = CmdStr.match("(relay)|(load)")).isNull())
         {
-            if(!(token = CmdStr.match("relay +[0-9]+( *, *[0-9]+)*")).isNull())
+            if(!(token = CmdStr.match("(relay)|(load) +[0-9]+( *, *[0-9]+)*")).isNull())
             {
                 INT i;
                 INT mask = 0;
@@ -2682,7 +2674,7 @@ void  CtiCommandParser::doParseExpresscomControl(const RWCString &CmdStr)
     INT         _num;
     UINT        flag   = 0;
     UINT        offset = 0;
-    UINT        iValue = 0;
+    INT         iValue = 0;
     DOUBLE      dValue = 0.0;
 
     CHAR        tbuf[80];
@@ -2701,6 +2693,12 @@ void  CtiCommandParser::doParseExpresscomControl(const RWCString &CmdStr)
     {
         _cmd["xcdelta"] = CtiParseValue( TRUE );    // Temperatures are delta offsets
     }
+
+    if(CmdStr.contains("noramp"))
+    {
+        _cmd["xcnoramp"] = CtiParseValue( TRUE );
+    }
+
 
     if(CmdStr.contains(" celsius"))
     {
@@ -2747,230 +2745,221 @@ void  CtiCommandParser::doParseExpresscomControl(const RWCString &CmdStr)
         }
     }
 
-    if(CmdStr.contains(" delay"))
+    if(!(token = CmdStr.match(" tcycle +[0-9]+")).isNull())
     {
-        if(!(temp = CmdStr.match(" delay ?time +[0-9]+")).isNull())
+        _cmd["xctcycle"] = CtiParseValue( TRUE );
+
+        if(!(temp = token.match(re_num)).isNull())
+        {
+            iValue = atoi(temp.data());
+        }
+        else
+        {
+            // Something went kinda wrong....
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Command Parameter Assumed.  Cycle control at 50 percent cycle. " << endl;
+            }
+            iValue = 50;
+        }
+
+        _cmd["cycle"] = CtiParseValue( (iValue) );
+        _snprintf(tbuf, sizeof(tbuf), "CYCLE %d%%", iValue);
+
+        if(!(token = CmdStr.match(" period +[0-9]+")).isNull())
+        {
+            if(!(temp = token.match(re_num)).isNull())
+            {
+                INT _num = atoi(temp.data());
+                _cmd["cycle_period"] = CtiParseValue( _num );
+            }
+        }
+
+        if(!(token = CmdStr.match(" count +[0-9]+")).isNull())
+        {
+            if(!(temp = token.match(re_num)).isNull())
+            {
+                INT _num = atoi(temp.data());
+                _cmd["cycle_count"] = CtiParseValue( _num );
+            }
+        }
+
+        if(!(temp = CmdStr.match("ctrl +temp +[0-9]+")).isNull())
         {
             if(!(valStr = temp.match("[0-9]+")).isNull())
             {
                 iValue = atoi(valStr.data());
-                _cmd["xcdelaytime"] = CtiParseValue( iValue );
+                _cmd["xcctrltemp"] = CtiParseValue( iValue );
             }
         }
 
-        if(!(temp = CmdStr.match(" delay ?until +[0-9]?[0-9]:[0-9][0-9]")).isNull())
+        if(!(temp = CmdStr.match(" limit +[0-9]+")).isNull())
         {
-            INT hh = 0;
-            INT mm = 0;
-            INT ofm = 0;      // Offset from Midnight in seconds.
-
-            if(!(valStr = temp.match("[0-9]?[0-9]:")).isNull())
+            if(!(valStr = temp.match("[0-9]+")).isNull())
             {
-                hh = atoi(valStr.data());
+                iValue = atoi(valStr.data());
+                _cmd["xclimittemp"] = CtiParseValue( iValue );
             }
 
-            if(!(valStr = temp.match(":[0-9][0-9]")).isNull())
+            // We need to look for the fallback %
+            if(!(temp = CmdStr.match(" afallback +[0-9]+")).isNull())
             {
-                mm = atoi(valStr.data() + 1);
+                if(!(valStr = temp.match("[0-9]+")).isNull())
+                {
+                    iValue = atoi(valStr.data());
+                    _cmd["xclimitfbp"] = CtiParseValue( iValue );
+                }
+            }
+        }
+
+        if(!(temp = CmdStr.match(" maxrate +[0-9]+")).isNull())
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
+                _cmd["xcmaxdperh"] = CtiParseValue( iValue );
             }
 
-
-            iValue = (RWTime(hh, mm).seconds() - RWTime().seconds()) / 60 + 1;
-
-            if(iValue > 0)
+            // We need to look for the fallback %
+            if(!(temp = CmdStr.match(" bfallback +[0-9]+")).isNull())
             {
-                _cmd["xcdelaytime"] = CtiParseValue( iValue );
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                if(!(valStr = temp.match("[0-9]+")).isNull())
+                {
+                    iValue = atoi(valStr.data());
+                    _cmd["xcmaxdperhfbp"] = CtiParseValue( iValue );
+                }
             }
         }
     }
-
-    if(CmdStr.contains(" tstat") || CmdStr.contains(" thermostat"))
+    else if(CmdStr.contains(" setpoint"))
     {
-        _cmd["xctstat"] = CtiParseValue( TRUE );        // This informs us that the normal cycle command is NOT to be used!
+        _cmd["xcsetpoint"] = CtiParseValue( TRUE );
 
-        if(CmdStr.contains(" cycle"))
+        if(!(CmdStr.match(" hold")).isNull())
         {
-            _cmd["xctstat"] = CtiParseValue( TRUE );        // This informs us that the normal cycle command is NOT to be used!
+            _cmd["xcholdtemp"] = CtiParseValue( TRUE );
+        }
 
-            if(!(temp = CmdStr.match("ctrl +temp +[0-9]+")).isNull())
+        if(!(temp = CmdStr.match(" min +[0-9]+")).isNull())
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
             {
-                if(!(valStr = temp.match("[0-9]+")).isNull())
-                {
-                    iValue = atoi(valStr.data());
-                    _cmd["xcctrltemp"] = CtiParseValue( iValue );
-                }
+                iValue = atoi(valStr.data());
+                _cmd["xcmintemp"] = CtiParseValue( iValue );
+            }
+        }
+
+        if(!(temp = CmdStr.match(" max +[0-9]+")).isNull())
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
+                _cmd["xcmaxtemp"] = CtiParseValue( iValue );
+            }
+        }
+
+        if(!(temp = CmdStr.match(" tr +[0-9]+")).isNull())
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
+                _cmd["xctr"] = CtiParseValue( iValue );
+            }
+        }
+
+        if(!(temp = CmdStr.match(" ta +[0-9]+")).isNull())
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
+                _cmd["xcta"] = CtiParseValue( iValue );
+            }
+        }
+
+        if(!(temp = CmdStr.match(" tb +[0-9]+")).isNull() && CmdStr.contains(" dsb"))
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
+                _cmd["xctb"] = CtiParseValue( iValue );
             }
 
-            if(!(temp = CmdStr.match(" limit +[0-9]+")).isNull())
+            if(!(temp = CmdStr.match(" dsb +-?[0-9]+")).isNull())
             {
-                if(!(valStr = temp.match("[0-9]+")).isNull())
+                if(!(valStr = temp.match("-?[0-9]+")).isNull())
                 {
                     iValue = atoi(valStr.data());
-                    _cmd["xclimittemp"] = CtiParseValue( iValue );
-                }
-
-                // We need to look for the fallback %
-                if(!(temp = CmdStr.match(" afallback +[0-9]+")).isNull())
-                {
-                    if(!(valStr = temp.match("[0-9]+")).isNull())
-                    {
-                        iValue = atoi(valStr.data());
-                        _cmd["xclimitfbp"] = CtiParseValue( iValue );
-                    }
-                }
-            }
-
-            if(!(temp = CmdStr.match(" maxrate +[0-9]+")).isNull())
-            {
-                if(!(valStr = temp.match("[0-9]+")).isNull())
-                {
-                    iValue = atoi(valStr.data());
-                    _cmd["xcmaxdperh"] = CtiParseValue( iValue );
-                }
-
-                // We need to look for the fallback %
-                if(!(temp = CmdStr.match(" bfallback +[0-9]+")).isNull())
-                {
-                    if(!(valStr = temp.match("[0-9]+")).isNull())
-                    {
-                        iValue = atoi(valStr.data());
-                        _cmd["xcmaxdperhfbp"] = CtiParseValue( iValue );
-                    }
+                    _cmd["xcdsb"] = CtiParseValue( iValue );
                 }
             }
         }
-        else if(CmdStr.contains(" setpoint"))
+
+        if(!(temp = CmdStr.match(" tc +[0-9]+")).isNull())
         {
-            if(!(temp = CmdStr.match(" min +[0-9]+")).isNull())
+            if(!(valStr = temp.match("[0-9]+")).isNull())
             {
-                if(!(valStr = temp.match("[0-9]+")).isNull())
-                {
-                    iValue = atoi(valStr.data());
-                    _cmd["xcmintemp"] = CtiParseValue( iValue );
-                }
+                iValue = atoi(valStr.data());
+                _cmd["xctc"] = CtiParseValue( iValue );
+            }
+        }
+
+        if(!(temp = CmdStr.match(" td +[0-9]+")).isNull() && CmdStr.contains(" dsd"))
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
+                _cmd["xctd"] = CtiParseValue( iValue );
             }
 
-            if(!(temp = CmdStr.match(" max +[0-9]+")).isNull())
+            if(!(temp = CmdStr.match(" dsd +-?[0-9]+")).isNull())
             {
-                if(!(valStr = temp.match("[0-9]+")).isNull())
+                if(!(valStr = temp.match("-?[0-9]+")).isNull())
                 {
                     iValue = atoi(valStr.data());
-                    _cmd["xcmaxtemp"] = CtiParseValue( iValue );
-                }
-            }
-
-            if(!(temp = CmdStr.match(" tr +[0-9]+")).isNull())
-            {
-                if(!(valStr = temp.match("[0-9]+")).isNull())
-                {
-                    iValue = atoi(valStr.data());
-                    _cmd["xctr"] = CtiParseValue( iValue );
-                }
-            }
-
-            if(!(temp = CmdStr.match(" ta +[0-9]+")).isNull())
-            {
-                if(!(valStr = temp.match("[0-9]+")).isNull())
-                {
-                    iValue = atoi(valStr.data());
-                    _cmd["xcta"] = CtiParseValue( iValue );
-                }
-            }
-
-            if(!(temp = CmdStr.match(" tb +[0-9]+")).isNull() && CmdStr.contains(" dsb"))
-            {
-                if(!(valStr = temp.match("[0-9]+")).isNull())
-                {
-                    iValue = atoi(valStr.data());
-                    _cmd["xctb"] = CtiParseValue( iValue );
-                }
-
-                if(!(temp = CmdStr.match(" dsb +[0-9]+")).isNull())
-                {
-                    if(!(valStr = temp.match("[0-9]+")).isNull())
-                    {
-                        iValue = atoi(valStr.data());
-                        _cmd["xcdsb"] = CtiParseValue( iValue );
-                    }
-                }
-            }
-
-            if(!(temp = CmdStr.match(" tc +[0-9]+")).isNull())
-            {
-                if(!(valStr = temp.match("[0-9]+")).isNull())
-                {
-                    iValue = atoi(valStr.data());
-                    _cmd["xctc"] = CtiParseValue( iValue );
-                }
-            }
-
-            if(!(temp = CmdStr.match(" td +[0-9]+")).isNull() && CmdStr.contains(" dsd"))
-            {
-                if(!(valStr = temp.match("[0-9]+")).isNull())
-                {
-                    iValue = atoi(valStr.data());
-                    _cmd["xctd"] = CtiParseValue( iValue );
-                }
-
-                if(!(temp = CmdStr.match(" dsd +[0-9]+")).isNull())
-                {
-                    if(!(valStr = temp.match("[0-9]+")).isNull())
-                    {
-                        iValue = atoi(valStr.data());
-                        _cmd["xcdsd"] = CtiParseValue( iValue );
-                    }
-                }
-            }
-
-            if(!(temp = CmdStr.match(" te +[0-9]+")).isNull())
-            {
-                if(!(valStr = temp.match("[0-9]+")).isNull())
-                {
-                    iValue = atoi(valStr.data());
-                    _cmd["xcte"] = CtiParseValue( iValue );
-                }
-            }
-
-            if(!(temp = CmdStr.match(" tf +[0-9]+")).isNull() && CmdStr.contains(" dsf"))
-            {
-                if(!(valStr = temp.match("[0-9]+")).isNull())
-                {
-                    iValue = atoi(valStr.data());
-                    _cmd["xctf"] = CtiParseValue( iValue );
-                }
-
-                if(!(temp = CmdStr.match(" dsf +[0-9]+")).isNull())
-                {
-                    if(!(valStr = temp.match("[0-9]+")).isNull())
-                    {
-                        iValue = atoi(valStr.data());
-                        _cmd["xcdsf"] = CtiParseValue( iValue );
-                    }
+                    _cmd["xcdsd"] = CtiParseValue( iValue );
                 }
             }
         }
-        else
+
+        if(!(temp = CmdStr.match(" te +[0-9]+")).isNull())
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
+                _cmd["xcte"] = CtiParseValue( iValue );
+            }
         }
 
+        if(!(temp = CmdStr.match(" tf +[0-9]+")).isNull() && CmdStr.contains(" dsf"))
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
+                _cmd["xctf"] = CtiParseValue( iValue );
+            }
+
+            if(!(temp = CmdStr.match(" dsf +-?[0-9]+")).isNull())
+            {
+                if(!(valStr = temp.match("-?[0-9]+")).isNull())
+                {
+                    iValue = atoi(valStr.data());
+                    _cmd["xcdsf"] = CtiParseValue( iValue );
+                }
+            }
+        }
     }
 }
 
 
 void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
 {
+    CHAR *p;
     INT         _num;
     UINT        flag   = 0;
     UINT        offset = 0;
     UINT        iValue = 0;
     DOUBLE      dValue = 0.0;
+    CHAR        tbuf[80];
 
     RWCString   str;
     RWCString   temp;
@@ -2991,6 +2980,20 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
         _cmd["xctimesync"] = CtiParseValue( TRUE );  // Temperatures are celsius
     }
 
+    if(!(token = CmdStr.match("template +((\"|')[^\"']+(\"|'))")).isNull())
+    {
+        size_t nstart;
+        size_t nstop;
+        nstart = token.index("template +", &nstop);
+
+        nstop += nstart;
+
+        if(!(token = token.match("(\"|')[^\"']+(\"|')", nstop)).isNull())   // get the template name...
+        {
+            token = token((size_t)1, (size_t)token.length() - 2);
+            _cmd["template"] = CtiParseValue( token );
+        }
+    }
 
     if(!(token = CmdStr.match(" raw( +(0x)?[0-9a-f]+)+")).isNull())
     {
@@ -3020,6 +3023,118 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
         if(!(str = token.match("( +(0x)?[0-9a-f]+)+")).isNull())
         {
             _cmd["xcrawmaint"] = CtiParseValue( str );
+        }
+    }
+
+    if(!(token = CmdStr.match("((assign)|(address))")).isNull())
+    {
+        if(!(token = CmdStr.match("((assign)|(address))"\
+                                  "( +[sgbfzupr][ =]*(0x)?[0-9a-f]+)" \
+                                  "( +[sgbfzupr][ =]*(0x)?[0-9a-f]+)?" \
+                                  "( +[sgbfzupr][ =]*(0x)?[0-9a-f]+)?" \
+                                  "( +[sgbfzupr][ =]*(0x)?[0-9a-f]+)?" \
+                                  "( +[sgbfzupr][ =]*(0x)?[0-9a-f]+)?" \
+                                  "( +[sgbfzupr][ =]*(0x)?[0-9a-f]+)?" \
+                                  "( +[sgbfzupr][ =]*(0x)?[0-9a-f]+)?" \
+                                  "( +[sgbfzupr][ =]*(0x)?[0-9a-f]+)?")).isNull())
+        {
+            _cmd["xcaddress"] = TRUE;
+
+
+            if(!(valStr = token.match(" s[ =]*(0x)?[0-9a-f]+")).isNull())
+            {
+                _num = strtol(valStr.match(re_anynum).data(), &p, 0);
+
+                _cmd["xca_spid"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG SPID = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+            if(!(valStr = token.match(" +g[ =]*[0-9]+")).isNull())
+            {
+                _num = strtol(valStr.match(re_num).data(), &p, 10);
+                _cmd["xca_geo"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG GEO = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+            if(!(valStr = token.match(" +b[ =]*[0-9]+")).isNull())
+            {
+                _num = strtol(valStr.match(re_num).data(), &p, 10);
+                _cmd["xca_sub"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG SUBSTATION = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+            if(!(valStr = token.match(" +f[ =]*[0-9]+")).isNull())
+            {
+                _num = strtol(valStr.match(re_num).data(), &p, 10);
+                _cmd["xca_feeder"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG FEEDER = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+            if(!(valStr = token.match(" +z[ =]*[0-9]+")).isNull())
+            {
+                _num = strtol(valStr.match(re_num).data(), &p, 10);
+                _cmd["xca_zip"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG ZIP = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+            if(!(valStr = token.match(" +u[ =]*[0-9]+")).isNull())
+            {
+                _num = strtol(valStr.match(re_num).data(), &p, 10);
+                _cmd["xca_uda"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG UDA = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+            if(!(valStr = token.match(" +p[ =]*[0-9]+")).isNull())
+            {
+                _num = strtol(valStr.match(re_num).data(), &p, 10);
+                _cmd["xca_program"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG PROGRAM = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+            if(!(valStr = token.match(" +r[ =]*[0-9]+")).isNull())
+            {
+                _num = strtol(valStr.match(re_num).data(), &p, 10);
+                _cmd["xca_splinter"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG SPLINTER = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+            if(!(valStr = token.match(" +r[ =]*[0-9]+")).isNull())
+            {
+                _num = strtol(valStr.match(re_num).data(), &p, 10);
+                _cmd["xca_splinter"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG SPLINTER = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+
+            if(!(token = CmdStr.match("(relay)|(load) +[0-9]+( *, *[0-9]+)*")).isNull())
+            {
+                INT i;
+                INT mask = 0;
+
+                for(i = 0; i < 15; i++)
+                {
+                    RWCString numstr = CtiNumStr(i+1);
+                    if(!(temp = token.match(numstr)).isNull())
+                    {
+                        mask |= (0x01 << i);
+                    }
+                }
+
+                if(mask)
+                {
+                    _cmd["xca_loadmask"] = CtiParseValue( mask );
+                }
+            }
+
         }
     }
 
@@ -3092,6 +3207,11 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
             _cmd["xcpservice"] = CtiParseValue( flag );
             _actionItems.insert(tbuf);
         }
+    }
+    else if(CmdStr.contains("schedule"))
+    {
+        _cmd["xcschedule"] = TRUE;
+        doParsePutConfigExpresscomSchedule(CmdStr);
     }
 }
 
@@ -3177,6 +3297,172 @@ void  CtiCommandParser::doParsePutStatusExpresscom(const RWCString &CmdStr)
 
         _snprintf(tbuf, sizeof(tbuf), "OVUV %s", op_name);
         _actionItems.insert(tbuf);
+    }
+}
+
+void CtiCommandParser::doParsePutConfigExpresscomSchedule(const RWCString &CmdStr)
+{
+    RWCString   str;
+    RWCString   temp;
+    RWCString   valStr;
+    RWCString   token;
+
+    RWCTokenizer   tok(CmdStr);
+
+    {
+        INT key;
+        bool inc = true;
+
+        token = tok(" ,");              // Prime it up.. Shoud be a putconfig.
+
+        while(!token.isNull())
+        {
+            key = isTokenExpresscomScheduleDOW(token);
+            while(key >= 0)
+            {
+                doParsePutConfigExpresscomScheduleDOW(tok,key);     // This method should finish the rest of this key!
+            }
+
+            token = tok(" ,"); // Move us forward.
+        }
+    }
+}
+
+INT CtiCommandParser::isTokenExpresscomScheduleDOW(RWCString &token)
+{
+    INT dow = -1;
+
+    if(token == "weekday")
+    {
+        dow = 7;
+    }
+    else if(token == "weekend")
+    {
+        dow = 8;
+    }
+    else if(token == "all")
+    {
+        dow = 9;
+    }
+    else if(token == "sun")
+    {
+        dow = 0;
+    }
+    else if(token == "mon")
+    {
+        dow = 1;
+    }
+    else if(token == "tue")
+    {
+        dow = 2;
+    }
+    else if(token == "wed")
+    {
+        dow = 3;
+    }
+    else if(token == "thu")
+    {
+        dow = 4;
+    }
+    else if(token == "fri")
+    {
+        dow = 5;
+    }
+    else if(token == "sat")
+    {
+        dow = 6;
+    }
+
+    return dow;
+}
+
+void CtiCommandParser::doParsePutConfigExpresscomScheduleDOW(RWTokenizer &tok, INT &key)
+{
+    RWCString token;
+    INT currentkey = key;   // The key which got us here.
+    int pod = 0;            // Period of the day on which we begin!.
+    int component = 0;
+    BYTE hh = 0xff;
+    BYTE mm = 0xff;
+    BYTE heat = 0xff;
+    BYTE cool = 0xff;
+
+    while( !(token = tok(" :,")).isNull()  )
+    {
+        if((key = isTokenExpresscomScheduleDOW(token)) >= 0)
+        {
+            // The current token is a NEW key!
+            break;
+        }
+
+        switch(component)
+        {
+        case 0:
+            {
+                // This is the hh section of the time
+                if(!token.match("[0-9]+").isNull())
+                    hh = atoi(token.data());
+                break;
+            }
+        case 1:
+            {
+                // This is the mm section of the time
+                if(!token.match("[0-9]+").isNull())
+                    mm = atoi(token.data());
+                break;
+            }
+        case 2:
+            {
+                // This is the heat temperature section
+                if(!token.match("[0-9]+").isNull())
+                    heat = atoi(token.data());
+                break;
+            }
+        case 3:
+            {
+                // This is the cool temperature section
+                if(!token.match("[0-9]+").isNull())
+                    cool = atoi(token.data());
+                break;
+            }
+        default:
+            {
+                break;
+            }
+        }
+        component++;
+
+        if(component > 3)       // We got them all!
+        {
+            BYTE per = ( ((BYTE)currentkey) << 4 | ((BYTE)pod & 0x0f) );
+
+            RWCString hhstr("xctodshh_" + CtiNumStr(per));
+            RWCString mmstr("xctodsmm_" + CtiNumStr(per));
+            RWCString heatstr("xctodsheat_" + CtiNumStr(per));
+            RWCString coolstr("xctodscool_" + CtiNumStr(per));
+
+            _cmd[hhstr]   = hh;
+            _cmd[mmstr]   = mm;
+            _cmd[heatstr] = heat;
+            _cmd[coolstr] = cool;
+
+#if 0
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << hhstr << " " << (int)hh << endl;
+                dout << mmstr << " " << (int)mm << endl;
+                dout << heatstr << " " << (int)heat << endl;
+                dout << coolstr << " " << (int)cool << endl;
+            }
+#endif
+
+            component = 0;
+            pod++;  // Look for next period of the day!
+            hh = 0xff;
+            mm = 0xff;
+            heat = 0xff;
+            cool = 0xff;
+        }
     }
 }
 

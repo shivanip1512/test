@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/10/23 21:06:08 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/10/31 17:56:36 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -238,15 +238,26 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
 
 RWCString CtiDeviceGroupExpresscom::getPutConfigAssignment(UINT level)
 {
+    RWCString assign = RWCString("assign") +
+        " S" + CtiNumStr(_expresscomGroup.getServiceProvider()) +
+        " G" + CtiNumStr(_expresscomGroup.getGeo()) +
+        " B" + CtiNumStr(_expresscomGroup.getSubstation()) +
+        " F" + CtiNumStr(_expresscomGroup.getFeeder()) +
+        " Z" + CtiNumStr(_expresscomGroup.getZip()) +
+        " U" + CtiNumStr(_expresscomGroup.getUda()) +
+        " P" + CtiNumStr(_expresscomGroup.getProgram()) +
+        " R" + CtiNumStr(_expresscomGroup.getSplinter()) + " Load ";
+
+    for(int i = 0; i < 15; i++)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        if(_expresscomGroup.getLoadMask() & (0x01 << i))
+        {
+            assign += CtiNumStr(i+1) + " ";
+        }
     }
 
-    return RWCString();
+    return  assign;
 }
-
-
 
 bool CtiDeviceGroupExpresscom::checkForEmptyParseAddressing( CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &retList )
 {

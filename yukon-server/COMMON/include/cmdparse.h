@@ -23,6 +23,7 @@ using namespace std;
 #include <rw/cstring.h>
 #include <rw/rwdate.h>
 #include <rw/tvslist.h>
+#include <rw\ctoken.h>
 
 #include "dlldefs.h"
 #include "parsevalue.h"
@@ -65,8 +66,12 @@ private:
     void    doParsePutConfigExpresscom(const RWCString &CmdStr);
     void    doParsePutStatusExpresscom(const RWCString &CmdStr);
 
+    void    doParsePutConfigExpresscomSchedule(const RWCString &CmdStr);
 
-    INT      convertTimeInputToSeconds(const RWCString& inStr) const;
+    INT     convertTimeInputToSeconds(const RWCString& inStr) const;
+    INT     isTokenExpresscomScheduleDOW(RWCString &token);
+    void    doParsePutConfigExpresscomScheduleDOW(RWTokenizer &tok, INT &key);
+
 
 public:
 
