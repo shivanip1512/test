@@ -14,7 +14,7 @@ public class GraphDefinition extends com.cannontech.database.db.DBPersistent imp
 	private java.lang.Character autoScaleRightAxis = new Character('Y');
 		
 	private java.util.Date startDate = com.cannontech.util.ServletUtil.getToday();
-	private java.util.Date stopDate = com.cannontech.util.ServletUtil.getTommorow();
+	private java.util.Date stopDate = com.cannontech.util.ServletUtil.getTomorrow();
 
 	private java.lang.Double leftMin = new Double(0.0);
 	private java.lang.Double leftMax = new Double(0.0);
