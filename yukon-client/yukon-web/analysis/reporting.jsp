@@ -1,10 +1,18 @@
 <!- This is setup to run with OPERATOR side only, as of now anyway 8/24/04-->
 <html>
-<%@ include file="../operator/Consumer/include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.roles.application.WebClientRole" %>
+<%@ page import="com.cannontech.analysis.*" %>
+<%@ page import="com.cannontech.roles.analysis.ReportingRole" %>
+<%@ page import="com.cannontech.util.ServletUtil" %>
+<%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
+<%
+	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
+%>
+<cti:checklogin/>
+
 <!-- Java script needed for the Calender Function--->
 <SCRIPT  LANGUAGE="JavaScript" SRC="../JavaScript/calendar.js"></SCRIPT>
 <head>
-
 <title>Consumer Energy Services</title>
 <link rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css"> 
@@ -72,10 +80,7 @@ function loadTarget(form)
           <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"> 
-            <% String pageName = "reporting.jsp"; %>
-<!--            <%@ include file="../operator/Consumer/include/Nav.jsp" %>-->
-          </td>
+          <td  valign="top" width="101"></td>
           <td width="1" bgcolor="#000000"><img src="../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF" > 
             <table width="575" border="0" align="center" cellpadding="4" cellspacing="0">
@@ -89,7 +94,7 @@ function loadTarget(form)
                       <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
                       <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
                       <input type="hidden" name="ACTION" value="DownloadReport">
-                      <table width="538" border="0" cellspacing="2" cellpadding="0">
+                      <table width="500" border="0" cellspacing="2" cellpadding="0">
                         <tr> 
                           <td class = "TableCell" width="50%" valign = "top" align="left" height="100%"> 
                             <table width="100%" border="1" cellspacing="0" cellpadding="0" class="TableCell">
@@ -127,6 +132,9 @@ function loadTarget(form)
                           </td>
                         </tr>
                         <tr> 
+                          <td>&nbsp;</td>
+                        </tr>                        
+                        <tr> 
                           <td width="50%" height="100%" valign="top"> 
                             <table width="100%" border="1" cellspacing="0" cellpadding="0" class="TableCell">
                               <tr> 
@@ -161,6 +169,9 @@ function loadTarget(form)
                             </table>
                           </td>
                         </tr>
+                        <tr> 
+                          <td>&nbsp;</td>
+                        </tr>                        
                         <tr> 
                           <td width="50%" height="100%" valign="top"> 
                             <table width="100%" border="1" cellspacing="0" cellpadding="0" class="TableCell">
