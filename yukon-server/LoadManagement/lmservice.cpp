@@ -130,6 +130,7 @@ void CtiLMService::DeInit()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime().asString() << " - Load Management shutdown" << endl;
     }
+    CService::DeInit();
 }
 
 void CtiLMService::OnStop()

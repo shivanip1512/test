@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/14 21:01:43 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/01/22 19:33:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,6 +80,7 @@ void CtiScannerService::Init()
 
 void CtiScannerService::DeInit()
 {
+    CService::DeInit();
 }
 
 void CtiScannerService::OnStop()

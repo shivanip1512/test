@@ -160,6 +160,7 @@ void CtiCCService::DeInit()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Cap Control shutdown" << endl;
     }
+    CService::DeInit();
 }
 
 void CtiCCService::OnStop()
