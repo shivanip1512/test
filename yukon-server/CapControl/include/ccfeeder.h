@@ -86,7 +86,6 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     const RWDBDateTime& getLastCurrentVarPointUpdateTime() const;
     ULONG getEstimatedVarLoadPointId() const;
     DOUBLE getEstimatedVarLoadPointValue() const;
-    BOOL getStatusesReceivedFlag() const;
     ULONG getDailyOperationsAnalogPointId() const;
     ULONG getCurrentDailyOperations() const;
     BOOL getRecentlyControlledFlag() const;
@@ -121,7 +120,6 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setLastCurrentVarPointUpdateTime(const RWDBDateTime& lastpointupdate);
     CtiCCFeeder& setEstimatedVarLoadPointId(ULONG estimatedvarid);
     CtiCCFeeder& setEstimatedVarLoadPointValue(DOUBLE estimatedvarval);
-    CtiCCFeeder& setStatusesReceivedFlag(BOOL statusesreceived);
     CtiCCFeeder& setDailyOperationsAnalogPointId(ULONG opspointid);
     CtiCCFeeder& setCurrentDailyOperations(ULONG operations);
     CtiCCFeeder& setRecentlyControlledFlag(BOOL recentlycontrolled);
@@ -144,9 +142,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL checkForAndProvideNeededIndividualControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, BOOL peakTimeFlag, ULONG decimalPlaces, const RWCString& controlUnits);
     CtiCCFeeder& figureEstimatedVarLoadPointValue();
     BOOL isAlreadyControlled(ULONG minConfirmPercent);
-    BOOL areAllCapBankStatusesReceived();
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
-    void figureKVARSolution(const RWCString& controlUnits, DOUBLE setPoint);
     void dumpDynamicData();
 
     //Members inherited from RWCollectable
@@ -190,7 +186,6 @@ private:
     RWDBDateTime _lastcurrentvarpointupdatetime;
     ULONG _estimatedvarloadpointid;
     DOUBLE _estimatedvarloadpointvalue;
-    BOOL _statusesreceivedflag;
     ULONG _dailyoperationsanalogpointid;
     ULONG _currentdailyoperations;
     BOOL _recentlycontrolledflag;

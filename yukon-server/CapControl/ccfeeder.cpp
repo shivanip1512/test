@@ -286,17 +286,6 @@ DOUBLE CtiCCFeeder::getEstimatedVarLoadPointValue() const
 }
 
 /*---------------------------------------------------------------------------
-    getStatusesReceivedFlag
-
-    Returns the statuses received flag of the feeder
----------------------------------------------------------------------------*/
-BOOL CtiCCFeeder::getStatusesReceivedFlag() const
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    return _statusesreceivedflag;
-}
-
-/*---------------------------------------------------------------------------
     getDailyOperationsAnalogPointId
 
     Returns the daily operations point id of the feeder
@@ -668,18 +657,6 @@ CtiCCFeeder& CtiCCFeeder::setEstimatedVarLoadPointValue(DOUBLE estimatedvarval)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _estimatedvarloadpointvalue = estimatedvarval;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setStatusesReceivedFlag
-
-    Sets the statuses received flag of the feeder
----------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setStatusesReceivedFlag(BOOL statusesreceived)
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    _statusesreceivedflag = statusesreceived;
     return *this;
 }
 
@@ -1153,23 +1130,24 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
                 }
             }
         }
+        if( request != NULL )
+        {
+            pilMessages.insert(request);
+            setLastOperationTime(currentDateTime);
+            if( getEstimatedVarLoadPointId() > 0 )
+            {
+                pointChanges.insert(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+            }
+            returnBoolean = TRUE;
+        }
     }
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Invalid control untis: " << controlUnits << ", in feeder: " << getPAOName() << endl;
+        dout << RWTime() << " - Invalid control units: " << controlUnits << ", in feeder: " << getPAOName() << endl;
     }
 
     return returnBoolean;
-}
-
-/*---------------------------------------------------------------------------
-    figureKVARSolution
-
-    
----------------------------------------------------------------------------*/
-void CtiCCFeeder::figureKVARSolution(const RWCString& controlUnits, DOUBLE setPoint)
-{
 }
 
 /*---------------------------------------------------------------------------
@@ -1301,36 +1279,6 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minC
     setRecentlyControlledFlag(FALSE);
 
     return returnBoolean;
-}
-
-/*---------------------------------------------------------------------------
-    areAllCapBankStatusesReceived
-
-    Returns a boolean if all the cap banks in the feeder have updated statuses
----------------------------------------------------------------------------*/
-BOOL CtiCCFeeder::areAllCapBankStatusesReceived()
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
-    BOOL tempBoolean = TRUE;
-
-    if( !_statusesreceivedflag )
-    {
-        if( _cccapbanks.entries() > 0 )
-        {
-            for(ULONG i=0;i<_cccapbanks.entries();i++)
-            {
-                if( !((CtiCCCapBank*)_cccapbanks[i])->getStatusReceivedFlag() )
-                {
-                    tempBoolean = FALSE;
-                    break;
-                }
-            }
-        }
-    }
-
-    _statusesreceivedflag = tempBoolean;
-    return _statusesreceivedflag;
 }
 
 /*---------------------------------------------------------------------------
@@ -1483,7 +1431,9 @@ void CtiCCFeeder::dumpDynamicData()
             << dynamicCCFeederTable["lastcapbankdeviceid"].assign( getLastCapBankControlledDeviceId() )
             << dynamicCCFeederTable["busoptimizedvarcategory"].assign( getBusOptimizedVarCategory() )
             << dynamicCCFeederTable["busoptimizedvaroffset"].assign( getBusOptimizedVarOffset() )
-            << dynamicCCFeederTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime);
+            << dynamicCCFeederTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime)
+            << dynamicCCFeederTable["powerfactorvalue"].assign( getPowerFactorValue() )
+            << dynamicCCFeederTable["kvarsolution"].assign( getKVARSolution() );
 
             updater.where(dynamicCCFeederTable["feederid"]==getPAOId());
 
@@ -1511,7 +1461,9 @@ void CtiCCFeeder::dumpDynamicData()
             << getLastCapBankControlledDeviceId()
             << getBusOptimizedVarCategory()
             << getBusOptimizedVarOffset()
-            << currentDateTime;
+            << currentDateTime
+            << getPowerFactorValue()
+            << getKVARSolution();
 
             /*if( _CC_DEBUG )
             {
@@ -1538,6 +1490,7 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     RWTime tempTime1;
     RWTime tempTime2;
     ULONG numberOfCapBanks;
+    BOOL pleaseRemoveMe;
     CtiCCCapBank* currentCapBank = NULL;
 
     RWCollectable::restoreGuts( istrm );
@@ -1563,7 +1516,7 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> tempTime1
     >> _estimatedvarloadpointid
     >> _estimatedvarloadpointvalue
-    >> _statusesreceivedflag
+    >> pleaseRemoveMe
     >> _dailyoperationsanalogpointid
     >> _currentdailyoperations
     >> _recentlycontrolledflag
@@ -1615,7 +1568,7 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _lastcurrentvarpointupdatetime.rwtime()
     << _estimatedvarloadpointid
     << _estimatedvarloadpointvalue
-    << _statusesreceivedflag
+    << TRUE
     << _dailyoperationsanalogpointid
     << _currentdailyoperations
     << _recentlycontrolledflag
@@ -1661,7 +1614,6 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _lastcurrentvarpointupdatetime = right._lastcurrentvarpointupdatetime;
         _estimatedvarloadpointid = right._estimatedvarloadpointid;
         _estimatedvarloadpointvalue = right._estimatedvarloadpointvalue;
-        _statusesreceivedflag = right._statusesreceivedflag;
         _dailyoperationsanalogpointid = right._dailyoperationsanalogpointid;
         _currentdailyoperations = right._currentdailyoperations;
         _recentlycontrolledflag = right._recentlycontrolledflag;
@@ -1743,7 +1695,6 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     rdr["displayorder"] >> _displayorder;
 
     setEstimatedVarLoadPointId(0);
-    setStatusesReceivedFlag(FALSE);
     setDailyOperationsAnalogPointId(0);
 
     rdr["currentvarpointvalue"] >> isNull;
@@ -1765,13 +1716,9 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
         rdr["lastcapbankdeviceid"] >> _lastcapbankcontrolleddeviceid;
         rdr["busoptimizedvarcategory"] >> _busoptimizedvarcategory;
         rdr["busoptimizedvaroffset"] >> _busoptimizedvaroffset;
-		//HACK 
-        //rdr["powerfactorvalue"] >> _powerfactorvalue;
-        //rdr["kvarsolution"] >> _kvarsolution;
-        setPowerFactorValue(-1000000.0);
-        setKVARSolution(0.0);
-		//HACK 
         rdr["ctitimestamp"] >> dynamicTimeStamp;
+        rdr["powerfactorvalue"] >> _powerfactorvalue;
+        rdr["kvarsolution"] >> _kvarsolution;
 
         //if dynamic timestamp from yesterday, zero out operation count
         if( dynamicTimeStamp.rwdate() < currentDateTime.rwdate() ||
