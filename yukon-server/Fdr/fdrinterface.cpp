@@ -17,10 +17,14 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.12 $
-*    DATE         :  $Date: 2003/03/24 23:00:10 $
+*    REVISION     :  $Revision: 1.13 $
+*    DATE         :  $Date: 2003/04/22 20:50:18 $
 *    History:
       $Log: fdrinterface.cpp,v $
+      Revision 1.13  2003/04/22 20:50:18  dsutton
+      Updated dispatch connections to null after deleting them hoping to catch
+      the problem CPL has
+
       Revision 1.12  2003/03/24 23:00:10  dsutton
       Added some try catch blocks around writing to the dispatch connection.
       Sometimes the connection goes away and there is no cleanup done behind
@@ -153,7 +157,7 @@ iTimeSyncVariation (30),
 iUpdatePCTimeFlag(true),
 iDebugMode(false)
 {
-    iDispatchConn = 0;
+    iDispatchConn = NULL;
     iOutBoundPoints = 0;
 }
 
@@ -596,7 +600,7 @@ BOOL CtiFDRInterface::stop( void )
 
 BOOL CtiFDRInterface::connectWithDispatch()
 {
-    if (iDispatchConn == 0)
+    if (iDispatchConn == NULL)
     {
         iDispatchConn = new CtiConnection(VANGOGHNEXUS, iDispatchMachine);
         {
@@ -752,7 +756,7 @@ bool CtiFDRInterface::sendPointRegistration( void )
     CtiMultiMsg             *multiMsg;
     CtiPointRegistrationMsg *ptRegMsg=NULL;
 
-    if (iOutBoundPoints == 0 || iDispatchConn == 0)
+    if (iOutBoundPoints == 0 || iDispatchConn == NULL)
     {
         // not started correctly
         return FALSE;
@@ -867,7 +871,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                 pSelf.serviceCancellation( );
 
 
-                if (iDispatchConn != 0)
+                if (iDispatchConn != NULL)
                 {
                     // unfortunately, the connection is not always valid even if its not zero
                     try 
@@ -889,7 +893,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                                 CtiLockGuard<CtiMutex> guard(iDispatchMux);  
                                 iDispatchConn->ShutdownConnection();
                                 delete iDispatchConn;
-                                iDispatchConn=0;
+                                iDispatchConn=NULL;
                                 connectWithDispatch();
                             }
                             logEvent (RWCString (getInterfaceName() + RWCString ("'s connection to dispatch has been restarted")),RWCString());
@@ -903,7 +907,8 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                             dout << RWTime() << " " << getInterfaceName() << "'s connection to dispatch failed by exception in threadFunctionReceiveFromDispatch." << endl;
                         }
                         delete iDispatchConn;
-                        iDispatchConn=0;
+                        iDispatchConn=NULL;
+                        delete incomingMsg;
                         incomingMsg = NULL;
                     }       
                 }
@@ -1350,7 +1355,7 @@ int CtiFDRInterface::attemptSend( CtiMessage *aMessage )
     try 
     {
         // make sure the connection hasn't been deleted first
-        if (iDispatchConn != 0)
+        if (iDispatchConn != NULL)
         {
             if ( (iDispatchConn->verifyConnection()) == NORMAL )
             {
