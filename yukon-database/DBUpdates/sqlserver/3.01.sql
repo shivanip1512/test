@@ -492,14 +492,8 @@ go
 
 
 alter table DateOfSeason
-   add constraint PK_DATEOFSEASON primary key  (SeasonScheduleID);
+   add constraint PK_DATEOFSEASON primary key  (SeasonScheduleID, SeasonName);
 go
-
-create unique  index Indx_DATOFSEAS_NAM on DateOfSeason (
-SeasonName
-);
-go
-
 
 alter table DateOfSeason
    add constraint FK_DaOfSe_SeSc foreign key (SeasonScheduleID)
