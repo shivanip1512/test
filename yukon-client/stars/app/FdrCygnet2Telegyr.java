@@ -8,7 +8,6 @@
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.TreeMap;
 
 import com.cannontech.stars.util.ServerUtils;
 
@@ -36,7 +35,7 @@ public class FdrCygnet2Telegyr {
 		}
 		
 		File inputFile = new File( args[0] );
-		ArrayList lines = ServerUtils.readFile( inputFile );
+		String[] lines = ServerUtils.readFile( inputFile, false );
 		if (lines == null) {
 			System.out.println( "Failed to read input file '" + args[0] + "'" );
 			return;
@@ -47,9 +46,8 @@ public class FdrCygnet2Telegyr {
 		//TreeMap telegyrGrps = new TreeMap();
 		int maxGrpNum = 0;
 		
-		for (int i = 1; i < lines.size(); i++) {
-			String line = (String) lines.get(i);
-			String[] fields = line.split(",");
+		for (int i = 1; i < lines.length; i++) {
+			String[] fields = lines[i].split(",");
 			
 			char pointType = fields[EMS_TREN_NAME].charAt(0);
 			int pointID = Integer.parseInt( fields[YUKON_POINT_ID] );
@@ -91,7 +89,9 @@ public class FdrCygnet2Telegyr {
 		}
 		
 		try {
-			ServerUtils.writeFile( outputFile, sqlStmts );
+			String[] sql = new String[ sqlStmts.size() ];
+			sqlStmts.toArray( sql );
+			ServerUtils.writeFile( outputFile, sql );
 		}
 		catch (IOException e) {
 			System.out.println("Failed to write to output file '" + outputFile.getPath() + "'");
