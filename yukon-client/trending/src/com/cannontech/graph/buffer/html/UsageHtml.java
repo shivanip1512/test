@@ -6,7 +6,7 @@ package com.cannontech.graph.buffer.html;
  * @author: 
  */
 import com.cannontech.graph.model.TrendSerie;
-//import com.cannontech.graph.GraphDataFormats;
+
 public class UsageHtml extends HTMLBuffer
 {
 /**
@@ -18,8 +18,7 @@ public StringBuffer getHtml(StringBuffer buf)
 {
 	if( model.getTrendSeries() == null)
 		return buf;
-//	com.cannontech.clientutils.CTILogger.info("Usage HTML getHtml()");
-//	long timer = System.currentTimeMillis();
+
 	/* The usage will be determined by taking the first available
 	   USAGE_SERIES value and subtracting it from the last.
 	   In the case that there is only one reading available
@@ -57,8 +56,6 @@ public StringBuffer getHtml(StringBuffer buf)
 
 				values = serie.getValuesArray();
 				times = serie.getPeriodsArray();
-//				xSeries = model.getXSeries(i);
-//				ySeries = model.getYSeries(i);
 
 				String label = serie.getLabel();
 				usageLabels.add( label );
@@ -137,89 +134,70 @@ public StringBuffer getHtml(StringBuffer buf)
 	
 	
 		usageCount = usageLabels.size();
-		if( usageCount == 0)
-		{
-//			return buf;
-		}
 		
 		//table label description
-		buf.append("<CENTER><TABLE BORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\">\n");
-		buf.append("  <TR>\n");
-		buf.append("	<TD BGCOLOR=\"#ffffff\" class=\"Main\"><P><CENTER>&nbsp;<B><FONT SIZE=\"-1\" FACE=\"Arial\">");
-		buf.append("Current Usage Table</FONT></B></CENTER></TD></TR></TABLE></CENTER>\n");	
-
-		//buf.append("\r\n<!-- Begin usage html generation -->\r\n");
-		buf.append("<CENTER><TABLE BORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"0\">\r\n");
-		buf.append("  <TR>\n");
-
-//		if( usageCount == 0 )
-//		{	// put this exit thing in the middle here for a reason, this way we get the formatting for the
-			//	  table that we need before we return out of this method.
-//			buf.append("    <TD ALIGN=CENTER BGCOLOR=\"#999966\"><FONT SIZE=\"-1\" FACE=\"Arial\">");
-//			buf.append("No Usage points defined\r\n");
-//			buf.append("</FONT></CENTER></TD>\r\n");
-//			buf.append("  </TR>\n</CENTER></TABLE>\n");
-//			return buf;
-//		}
-
-		buf.append("    <TD ALIGN=LEFT WIDTH=\"50\" BGCOLOR=\"#999966\" class=\"HeaderCell\"><B><FONT SIZE=\"-1\" FACE=\"Arial\"></FONT></B></TD>\r\n");
-		
-		for( int i = 0; i < usageCount; i++ )	
-		{		
-			buf.append("    <TD ALIGN=CENTER BGCOLOR=\"#999966\" class=\"HeaderCell\"><B><FONT SIZE=\"-1\" FACE=\"Arial\">");
-			buf.append(usageLabels.get(i));
-			buf.append("</FONT></B></CENTER></TD>\r\n");		
-		}
-		
-		buf.append("  </TR>\r\n  <TR>\r\n");
-		buf.append("    <TD ALIGN=LEFT WIDTH=\"50\" BGCOLOR=\"#999966\" class=\"HeaderCell\"><B><FONT SIZE=\"-1\" FACE=\"Arial\">");
-		buf.append("Start:");	
-		buf.append("</FONT></B></CENTER></TD>\r\n");
+		buf.append("<p bgcolor=\""+TITLE_HEADER_BGCOLOR+"\" align=\"center\" class=\"titleheader\"><b><font size=\"-1\" face=\"arial\"><span class=\"titleheader\">Current Usage Table</span></font></b>\n");
 			
-		for( int i = 0; i < usageCount; i++ )
+
+		buf.append("<table valign=\"middle\" border=\"1\" cellspacing=\"0\" cellpadding=\"0\">\n");
+		buf.append("<tr>\n");
+		if( usageCount == 0)
 		{
-			buf.append("    <TD ALIGN=CENTER BGCOLOR=\"#CCCC99\" class=\"TableCell\"><FONT SIZE=\"-1\" FACE=\"Arial\">");
-			buf.append( startValues.get(i));
-			buf.append("</FONT></CENTER></TD>\r\n");
-		}
-		
-		buf.append("  </TR>\r\n  <TR>\r\n");
-		buf.append("    <TD ALIGN=LEFT WIDTH=\"50\" BGCOLOR=\"#999966\" class=\"HeaderCell\"><B><FONT SIZE=\"-1\" FACE=\"Arial\">");
-		buf.append("End:");	
-		buf.append("</FONT></B></CENTER></TD>\r\n");
-		
-		for( int i = 0; i < usageCount; i++ )
-		{
-			buf.append("    <TD ALIGN=CENTER BGCOLOR=\"#CCCC99\" class=\"TableCell\"><FONT SIZE=\"-1\" FACE=\"Arial\">");
-			buf.append( endValues.get(i));	
-			buf.append("</FONT></CENTER></TD>\r\n");		
-		}
-		
-		buf.append("  </TR>\r\n  <TR>\r\n");
-	
-		buf.append("    <TD ALIGN=LEFT WIDTH=\"50\" BGCOLOR=\"#999966\" class=\"HeaderCell\"><B><FONT SIZE=\"-1\" FACE=\"Arial\">");
-		buf.append("Total:");	
-		buf.append("</FONT></B></CENTER></TD>\r\n");
-		for( int i = 0; i < usageCount; i++ )
-		{
-			buf.append("    <TD ALIGN=CENTER BGCOLOR=\"#CCCC99\" class=\"TableCell\"><FONT SIZE=\"-1\" FACE=\"Arial\">");
-			buf.append( totalValues.get(i));	
-			buf.append("</FONT></CENTER></TD>\r\n");		
+			buf.append("<td align=\"center\" bgcolor=\""+HEADER_CELL_BGCOLOR+"\" class=\"headercell\"><font size=\"-1\" face=\"arial\"><span class=\"headercell\">");
+			buf.append("&nbsp;No Usage Information to Report&nbsp;\n");
+			buf.append("</span></font></td></tr>\r\n");
+			buf.append("</table>\r\n");
+			return buf;
 		}
 
-		buf.append("  </TR>\n</CENTER></TABLE>\n");
+		buf.append("<td align=\"center\" width=\"50\" bgcolor=\""+HEADER_CELL_BGCOLOR+"\" class=\"headercell\"><b><font size=\"-1\" face=\"arial\"><span class=\"headercell\"></span></font></b></td>\n");
+
+		for( int i = 0; i < usageCount; i++ )	
+		{
+			buf.append("<td align=\"center\" width=\"80\" bgcolor=\""+HEADER_CELL_BGCOLOR+"\" class=\"headercell\"><b><font size=\"-1\" face=\"arial\"><span class=\"headercell\">");
+			buf.append(usageLabels.get(i));
+			buf.append("</span></font></b></td>\n");
+		}
+		
+		buf.append("</tr><tr>\n");
+		buf.append("<td align=\"left\" width=\"50\" bgcolor=\""+HEADER_CELL_BGCOLOR+"\" class=\"headercell\"><b><font size=\"-1\" face=\"arial\"><span class=\"headercell\">&nbsp;Start:</span></font></b></td>\n");
+		for( int i = 0; i < usageCount; i++ )
+		{
+			buf.append("<td align =\"center\" bgcolor=\""+TABLE_CELL_BGCOLOR+"\" class=\"tablecell\"><font size=\"-1\" face=\"arial\"><span class=\"tablecell\">");
+			buf.append( startValues.get(i));
+			buf.append("</span></font></td>\n");
+		}
+		
+		buf.append("</tr><tr>\n");
+		buf.append("<td align=\"left\" width=\"50\" bgcolor=\""+HEADER_CELL_BGCOLOR+"\" class=\"headercell\"><b><font size=\"-1\" face=\"arial\"><span class=\"headercell\">&nbsp;End:</span></font></b></td>\n");		
+		for( int i = 0; i < usageCount; i++ )
+		{
+			buf.append("<td align =\"center\" bgcolor=\""+TABLE_CELL_BGCOLOR+"\" class=\"tablecell\"><font size=\"-1\" face=\"arial\"><span class=\"tablecell\">");
+			buf.append( endValues.get(i));
+			buf.append("</span></font></td>\n");
+		}
+		
+		buf.append("</tr><tr>\n");
+		buf.append("<td align=\"left\" width=\"50\" bgcolor=\""+HEADER_CELL_BGCOLOR+"\" class=\"headercell\"><b><font size=\"-1\" face=\"arial\"><span class=\"headercell\">&nbsp;Total:</span></font></b></td>\n");
+		for( int i = 0; i < usageCount; i++ )
+		{
+			buf.append("<td align =\"center\" bgcolor=\""+TABLE_CELL_BGCOLOR+"\" class=\"tablecell\"><font size=\"-1\" face=\"arial\"><span class=\"tablecell\">");
+			buf.append( totalValues.get(i));
+			buf.append("</span></font></td>\n");
+		}
+
+		buf.append("</tr></table>\n");
 
 		if( endNotes.size() > 0 )
 		{
 			for( int i = 0; i < endNotes.size(); i++ )
 			{
-				buf.append("<BR><FONT ALIGN=LEFT SIZE=\"-1\" FACE=\"Arial\"> ");
+				buf.append("<p bgcolor=\""+TITLE_HEADER_BGCOLOR+"\" align=\"center\" class=\"subtext\"><font size=\"-1\" face=\"arial\"><span class=\"subtext\">");				
 				buf.append(endNotes.get(i));
-				buf.append(" </FONT>\n");
-			}		
+				buf.append("</span></font>\n");
+			}
 		}
 	
-	//buf.append("<!-- End usage html generation -->\r\n");
 	return buf;
 	}//end try block
 	catch( Exception e)
@@ -229,9 +207,5 @@ public StringBuffer getHtml(StringBuffer buf)
 		e.printStackTrace();
 		return buf;
 	}	
-//	finally
-//	{
-//		com.cannontech.clientutils.CTILogger.info(" @USAGE HTML - Took " + (System.currentTimeMillis() - timer) +" millis to build html buffer.");
-//	}
 }
 }

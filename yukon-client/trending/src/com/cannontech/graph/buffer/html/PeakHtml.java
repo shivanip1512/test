@@ -29,8 +29,6 @@ public StringBuffer getHtml(StringBuffer buf)
 	if( model.getTrendSeries() == null)
 		return buf;
 
-//	com.cannontech.clientutils.CTILogger.info("Usage HTML getHtml()");
-//	long timer = System.currentTimeMillis();
 	int primaryPointIndex = -1;
 	// Find the primary point
 	try
@@ -44,12 +42,11 @@ public StringBuffer getHtml(StringBuffer buf)
 			}	
 		}
 
-		buf.append("<CENTER><TABLE BORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\">\n");
-		buf.append("<TR><TD BGCOLOR=\"#ffffff\" class=\"Main\"><CENTER>&nbsp;<B><FONT FACE=\"Arial\">");
+		buf.append("<center>\n");
+		buf.append("<p bgcolor=\""+TITLE_HEADER_BGCOLOR+"\" align=\"center\" class=\"titleheader\">&nbsp;<b><font face=\"arial\"><span class=\"titleheader\">\n");
 		buf.append( model.getChartName());
-		buf.append("</FONT></B>\n");
-	
-		buf.append("	<BR><B><FONT FACE=\"Arial\">");
+		buf.append("<br>\n");
+		
 		if( com.cannontech.common.util.TimeUtil.differenceInDays( model.getStartDate(), model.getStopDate() ) == 1 )
 		{
 			buf.append( dateFormat.format( model.getStartDate()) );
@@ -60,29 +57,27 @@ public StringBuffer getHtml(StringBuffer buf)
 	 		buf.append( " - " );
  			buf.append( dateFormat.format( model.getStopDate() ) );
 		}
- 		buf.append("</FONT></B>\n");
-	 	buf.append("	<BR><BR><B><FONT SIZE=\"-1\" FACE=\"ARIAL\">Current Peaks Table</FONT></B>\n");
-		buf.append("</CENTER></TD></TR></TABLE></CENTER>\n");
-	
-		buf.append("<CENTER><TABLE BORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"0\">\r\n");
-		buf.append("  <TR>\r\n");
+ 		buf.append("</span></font></b></p>\n");
+	 	buf.append("<p bgcolor=\""+TITLE_HEADER_BGCOLOR+"\" align=\"center\" class=\"titleheader\"><b><font size=\"-1\" face=\"arial\"><span class=\"titleheader\">Current Peaks Table</span></font></b>\n");
+			
+		buf.append("<table valign=\"middle\" border=\"1\" cellspacing=\"0\" cellpadding=\"0\">\n");
+		buf.append("<tr>\n");
 
 		// Only continue if a peak point exists, otherwise, draw an imcomplete data table.
 		if( primaryPointIndex == -1 )
 		{
-			buf.append("	<TD ALIGN=CENTER BGCOLOR=\"#999966\" class=\"HeaderCell\"><FONT SIZE=\"-1\" FACE=\"Arial\">");
-			buf.append("No Primary Point Defined\r\n");
-			buf.append("</FONT></CENTER></TD></TR>\r\n");
-			buf.append("</CENTER></TABLE>\r\n");
+			buf.append("<td align=\"center\" bgcolor=\""+HEADER_CELL_BGCOLOR+"\" class=\"headercell\"><font size=\"-1\" face=\"arial\"><span class=\"headercell\">");
+			buf.append("&nbsp;No Primary Point Defined&nbsp;\n");
+			buf.append("</span></font></td></tr>\r\n");
+			buf.append("</table><br>\r\n");
 			return buf;
 		}
 
-		buf.append("    <TD ALIGN=CENTER WIDTH=\"120\" BGCOLOR=\"#999966\" class=\"HeaderCell\"><CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">Time</FONT></B></CENTER></TD>\r\n");
-		buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#999966\" class=\"HeaderCell\"><CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">");
-
+		buf.append("<td align=\"center\" width=\"130\" bgcolor=\""+HEADER_CELL_BGCOLOR+"\" class=\"headercell\"><b><font size=\"-1\" face=\"arial\"><span class=\"headercell\">Time</span></font></b></td>\n");
+		buf.append("<td align=\"center\" width=\"80\" bgcolor=\""+HEADER_CELL_BGCOLOR+"\" class=\"headercell\"><b><font size=\"-1\" face=\"arial\"><span class=\"headercell\">");
 
 		buf.append("* " +  model.getTrendSeries()[primaryPointIndex].getLabel());
-		buf.append("</FONT></B></CENTER></TD>\r\n");	 
+		buf.append("</span></font></b></td>\n");	 
 	
 		//List all graph points
 		for( int i = 0; i < model.getTrendSeries().length; i++ )
@@ -93,14 +88,14 @@ public StringBuffer getHtml(StringBuffer buf)
 			{
 				if( !(com.cannontech.database.db.graph.GraphDataSeries.isPrimaryType(serie.getTypeMask())))
 				{
-					buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#999966\" class=\"HeaderCell\"><CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">");
+					buf.append("<td align=\"center\" width=\"80\" bgcolor=\""+HEADER_CELL_BGCOLOR+"\" class=\"headercell\"><b><font size=\"-1\" face=\"arial\"><span class=\"headercell\">");
 					buf.append(serie.getLabel());
-					buf.append("</FONT></B></CENTER></TD>\r\n");
+					buf.append("</span></font></b></td>\n");
 				}
 			}
 		}
 
-		buf.append("  </TR>\r\n");
+		buf.append("</tr>\r\n");
 	
 		// Set the number of decimal places that will display for each point.
 		int decimals = model.getTrendSeries()[primaryPointIndex].getDecimalPlaces();
@@ -130,14 +125,14 @@ public StringBuffer getHtml(StringBuffer buf)
 	
 		for( int i = keyArray.length-1; i >= 0; i-- )
 		{
-			buf.append("  <TR>\r\n");
-			buf.append("    <TD ALIGN=CENTER WIDTH=\"120\" BGCOLOR=\"#CCCC99\" class=\"TableCell\">&nbsp;<FONT SIZE=\"-1\" FACE=\"Arial\">");
+			buf.append("<tr valign=\"middle\">\r\n");
+			buf.append("<td valign=\"middle\" align=\"center\" width=\"130\" bgcolor=\""+TABLE_CELL_BGCOLOR+"\" class=\"tablecell\">&nbsp;<font size=\"-1\" face=\"arial\"><span class=\"tablecell\">");
 			buf.append( dateTimeformat.format(new java.util.Date(((Long)peakMap.get(keyArray[i])).longValue())));
-			buf.append("</FONT></TD>\r\n");
+			buf.append("</span></font></td>\r\n");
 	
-			buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\">&nbsp;<FONT SIZE=\"-1\" FACE=\"Arial\">");
+			buf.append("<td valign=\"middle\" align=\"center\" width=\"80\" bgcolor=\""+TABLE_CELL_BGCOLOR+"\" class=\"tablecell\">&nbsp;<font size=\"-1\" face=\"arial\"><span class=\"tablecell\">");
 			buf.append( valueFormat.format(( (Double)keyArray[i]).doubleValue()));
-			buf.append("</FONT></TD>\r\n");
+			buf.append("</span></font></td>\r\n");
 			
 			for( int j = 0; j < model.getTrendSeries().length; j++ )
 			{
@@ -145,15 +140,11 @@ public StringBuffer getHtml(StringBuffer buf)
 
 				if(com.cannontech.database.db.graph.GraphDataSeries.isGraphType(serie.getTypeMask()))
 				{
-//					if( !(serie.getPointId().intValue() == model.getTrendSeries()[(int)peakPointIndex].getPointId().intValue() &&
-//						(com.cannontech.database.db.graph.GraphDataSeries.isGraphType(serie.getTypeMask()))))
 					if( !(com.cannontech.database.db.graph.GraphDataSeries.isPrimaryType(serie.getTypeMask())))
 					{
-	
 						// Set the number of decimal places that are displayed for each point (series).
 						decimals = serie.getDecimalPlaces();
-						//setFractionDigits( decimals );
-						setFractionDigits( 3);
+						setFractionDigits( decimals );
 	
 						double[] vals = serie.getValuesArray();
 						long[] times = serie.getPeriodsArray();
@@ -166,30 +157,29 @@ public StringBuffer getHtml(StringBuffer buf)
 	
 						if( index >= 0 )
 						{	
-							buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\">&nbsp;<FONT SIZE=\"-1\" FACE=\"Arial\">");			
+							buf.append("<td align=\"center\" width=\"80\" bgcolor=\""+TABLE_CELL_BGCOLOR+"\" class=\"tablecell\">&nbsp;<font size=\"-1\" face=\"arial\"><span class=\"tablecell\">");			
 							buf.append( valueFormat.format( vals[index] ));
-							buf.append("</FONT></TD>\r\n");
+							buf.append("</span></font></td>\n");
 						}
 						else
 						{
-							buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\">&nbsp;<FONT SIZE=\"-1\" FACE=\"Arial\">");			
-							buf.append("</FONT></TD>\r\n");
+							buf.append("<td align=\"center\" width=\"80\" bgcolor=\""+TABLE_CELL_BGCOLOR+"\" class=\"tablecell\">&nbsp;<font size=\"-1\" face=\"arial\"><span class=\"tablecell\">");			
+							buf.append("</span></font></td>\n");
 						}
 					}
 				}
 			}
-	
-			buf.append("  </TR>\r\n");
+			buf.append("</tr>\n");
 		}
 
-		buf.append("</CENTER></TABLE>\r\n");
+		buf.append("</table>\n");
 		return buf;
 	}
 	catch( Exception e)
 	{
-		buf.append("    <TR><TD ALIGN=CENTER WIDTH=\"120\" BGCOLOR=\"#CCCC99\" class=\"TableCell\"><CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">");
-		buf.append("No Data Obtained</FONT></TD>\r\n");
-		buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\"><CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">N/A</FONT></CENTER></TD>\r\n");
+		buf.append("<tr><td align=\"center\" width=\"130\" bgcolor=\""+TABLE_CELL_BGCOLOR+"\" class=\"tablecell\"><font size=\"-1\" face=\"arial\"><span class=\"tablecell\">");
+		buf.append("No Data Obtained</span></font></td>\n");
+		buf.append("<td align=\"center\" width=\"80\" bgcolor=\""+TABLE_CELL_BGCOLOR+"\" class=\"tablecell\"><font size=\"-1\" face=\"arial\"><span class=\"tablecell\">N/A</span></font></td>\n");
 		for( int i = 0; i < model.getTrendSeries().length; i++ )
 		{
 			com.cannontech.graph.model.TrendSerie serie = model.getTrendSeries()[i];
@@ -197,17 +187,12 @@ public StringBuffer getHtml(StringBuffer buf)
 			{
 				if( !(com.cannontech.database.db.graph.GraphDataSeries.isPrimaryType(serie.getTypeMask())))
 				{
-					buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\"><CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">N/A</FONT></CENTER></TD>\r\n");
+					buf.append("<td align=\"center\" width=\"80\" bgcolor=\""+TABLE_CELL_BGCOLOR+"\" class=\"tablecell\"><font size=\"-1\" face=\"arial\"><span class=\"tablecell\">N/A</span></font></td>\r\n");
 				}
 			}
 		}
-		buf.append("</TR></CENTER></TABLE>\r\n");		
+		buf.append("</tr></table>\n");
 		return buf;
 	}
-//	finally
-//	{
-//		com.cannontech.clientutils.CTILogger.info(" @PEAK HTML - Took " + (System.currentTimeMillis() - timer) +" millis to build html buffer.");
-//	}
-
 }
 }
