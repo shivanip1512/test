@@ -43,7 +43,8 @@
 	}
 	else
 	{
-		if( connServlet.getAreaNames().size() > 0 )
+		//if we are just starting, we must have an area
+		if( connServlet.getAreaNames().size() > 0 && cbcSession.getLastArea() == null)
 			cbcSession.setLastArea( connServlet.getAreaNames().get(0).toString() );	
 	}
 	
