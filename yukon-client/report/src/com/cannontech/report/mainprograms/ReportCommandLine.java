@@ -35,6 +35,8 @@ public static void main(String[] args)
 	java.util.Date tempStopDate = new java.util.Date();
 	java.util.GregorianCalendar startDate = new java.util.GregorianCalendar();
 	java.util.GregorianCalendar stopDate = new java.util.GregorianCalendar();
+	boolean setStartDateFlag = false;
+	boolean setStopDateFlag = false;
 	boolean printFlag = true;
 	boolean validArguments = true;
 	java.text.SimpleDateFormat[] dateFormatArray =
@@ -73,6 +75,7 @@ public static void main(String[] args)
 				try
 				{
 					tempStartDate = dateFormatArray[j].parse( args[i].substring(10) );
+                                        setStartDateFlag = true;
 					break;
 				}
 				catch( java.text.ParseException pe )
@@ -90,6 +93,7 @@ public static void main(String[] args)
 				try
 				{
 					tempStopDate = dateFormatArray[j].parse( args[i].substring(9) );
+                                        setStopDateFlag = true;
 					break;
 				}
 				catch( java.text.ParseException pe )
@@ -125,7 +129,8 @@ public static void main(String[] args)
 		{
 			startDate = new java.util.GregorianCalendar();
 			startDate.setTime(tempStartDate);
-			startDate.add(java.util.Calendar.DAY_OF_YEAR,-1);
+                        if( !setStartDateFlag )
+                            startDate.add(java.util.Calendar.DAY_OF_YEAR,-1);
 			startDate.set(java.util.Calendar.HOUR_OF_DAY,0);
 			startDate.set(java.util.Calendar.MINUTE,0);
 			startDate.set(java.util.Calendar.SECOND,0);
@@ -133,7 +138,9 @@ public static void main(String[] args)
 
 			stopDate = new java.util.GregorianCalendar();
 			stopDate.setTime(tempStartDate);
-			stopDate.set(java.util.Calendar.HOUR_OF_DAY,0);
+                        if( setStopDateFlag )
+                            stopDate.add(java.util.Calendar.DAY_OF_YEAR,1);
+                        stopDate.set(java.util.Calendar.HOUR_OF_DAY,0);
 			stopDate.set(java.util.Calendar.MINUTE,0);
 			stopDate.set(java.util.Calendar.SECOND,0);
 			stopDate.set(java.util.Calendar.MILLISECOND,0);
