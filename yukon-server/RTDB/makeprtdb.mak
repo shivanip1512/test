@@ -69,7 +69,7 @@ ctiprtdb.dll:   $(YUKONPORTDLLOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONPORTDLLOBJS) id_prtdll.obj -link $(RWLIBS) $(PRTDBLIBS)
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONPORTDLLOBJS) id_prtdll.obj -link $(RWLIBS) $(BOOSTLIBS) $(PRTDBLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

@@ -9,6 +9,7 @@ INCLPATHS+= \
 -I$(PROT)\include \
 -I$(CPARMS)\include \
 -I$(RW) \
+-I$(BOOST) \
 
 
 .PATH.cpp = .
@@ -121,7 +122,7 @@ ctidbsrc.dll:   $(YUKONDLLOBJS) Makefile
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ \
-$(YUKONDLLOBJS) -link $(RWLIBS) $(DBLIBS)
+$(YUKONDLLOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(DBLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

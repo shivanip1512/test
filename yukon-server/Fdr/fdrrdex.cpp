@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrdex.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2004/06/08 19:22:07 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2004/09/24 14:36:53 $
 *
 *
 *    AUTHOR: David Sutton
@@ -24,6 +24,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrdex.cpp,v $
+      Revision 1.6  2004/09/24 14:36:53  eschmit
+      Added Boost includes and libraries, misc fixes for ptime support
+
       Revision 1.5  2004/06/08 19:22:07  dsutton
       The timestamp being sent wasn't setting the daylight savings flag correctly
 
@@ -1029,7 +1032,7 @@ RWTime CtiFDR_Rdex::ForeignToYukonTime (PCHAR aTime)
     RWTime returnTime(&ts);
 
     // if RWTime can't make a time ???
-    if ((returnTime.seconds() > (RWTime().seconds() + getTimestampReasonabilityWindow())) || (!returnTime.isValid()))
+    if ((returnTime.seconds() > (RWTime::now().seconds() + getTimestampReasonabilityWindow())) || (!returnTime.isValid()))
     {
         return(RWTime(rwEpoch));
     }

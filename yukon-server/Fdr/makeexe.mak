@@ -12,6 +12,7 @@ INCLPATHS+= \
 -I$(PROCLOG)\include \
 -I$(SERVICE)\include \
 -I$(RW) \
+-I$(BOOST) \
 
 
 .PATH.cpp = .;$(R_FDR)
@@ -70,7 +71,7 @@ fdr.exe:    $(FDROBJS) makeexe.mak
         @echo Compiling ..\$@
         @%cd $(OBJ)
         $(RWCPPINVOKE) /Fm $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-        $(FDROBJS) -link $(RWLIBS) $(FDRLIBS)
+        $(FDROBJS) -link $(RWLIBS) $(BOOSTLIBS) $(FDRLIBS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2004/05/10 20:52:22 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2004/09/24 14:36:52 $
 *
 *
 *    AUTHOR: David Sutton
@@ -24,6 +24,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdracs.cpp,v $
+      Revision 1.7  2004/09/24 14:36:52  eschmit
+      Added Boost includes and libraries, misc fixes for ptime support
+
       Revision 1.6  2004/05/10 20:52:22  dsutton
       Interface was not distinguishing between a status point  with remote 11 point 2
       and an analog point remote 11 point 2.  Added code so the point type is part
@@ -1314,8 +1317,8 @@ RWTime CtiFDR_ACS::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
         else
         {
             // if RWTime can't make a time or we are outside the window
-            if ((returnTime.seconds() > (RWTime().seconds() + getTimestampReasonabilityWindow())) ||
-                (returnTime.seconds() < (RWTime().seconds() - getTimestampReasonabilityWindow())) ||
+            if ((returnTime.seconds() > (RWTime::now().seconds() + getTimestampReasonabilityWindow())) ||
+                (returnTime.seconds() < (RWTime::now().seconds() - getTimestampReasonabilityWindow())) ||
                 (!returnTime.isValid()))
         //    if ((returnTime.seconds() > (RWTime().seconds() + getTimestampReasonabilityWindow())) || (!returnTime.isValid()))
             {

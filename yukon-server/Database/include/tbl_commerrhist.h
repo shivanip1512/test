@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_commerrhist.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/10/11 14:08:07 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/09/24 14:36:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,15 +59,15 @@ public:
 
    //CtiTableCommErrorHistory();
 
-   CtiTableCommErrorHistory(LONG             paoid   = 0,
-                            const RWTime&    date    = RWTime(),
-                            LONG             soe     = 0,
-                            LONG             type    = 0,
-                            LONG             number  = 0,
-                            const RWCString& cmd     = RWCString("none"),
-                            const RWCString& out     = RWCString("none"),
-                            const RWCString& in      = RWCString("none"),
-                            LONG             ceid    = CommErrorHistoryIdGen());
+   CtiTableCommErrorHistory(LONG             paoid    = 0,
+                            const RWTime&    datetime = RWTime(),
+                            LONG             soe      = 0,
+                            LONG             type     = 0,
+                            LONG             number   = 0,
+                            const RWCString& cmd      = RWCString("none"),
+                            const RWCString& out      = RWCString("none"),
+                            const RWCString& in       = RWCString("none"),
+                            LONG             ceid     = CommErrorHistoryIdGen());
 
    CtiTableCommErrorHistory(const CtiTableCommErrorHistory& aRef);
 

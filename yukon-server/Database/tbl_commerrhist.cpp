@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_commerrhist.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/04/26 22:45:19 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/09/24 14:36:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,12 +22,12 @@
 
 //CtiTableCommErrorHistory::CtiTableCommErrorHistory() {}
 
-CtiTableCommErrorHistory::CtiTableCommErrorHistory(LONG paoid, const RWTime& date,
+CtiTableCommErrorHistory::CtiTableCommErrorHistory(LONG paoid, const RWTime& datetime,
                                                    LONG soe, LONG type, LONG number,
                                                    const RWCString& cmd,
                                                    const RWCString& out,
                                                    const RWCString& in, LONG ceid) :
-_commErrorID(ceid), _paoID(paoid), _dateTime(date), _soeTag(soe), _errorType(type),
+_commErrorID(ceid), _paoID(paoid), _dateTime(datetime), _soeTag(soe), _errorType(type),
 _errorNumber(number), _command(cmd), _outMessage(out), _inMessage(in)
 {
 }

@@ -12,7 +12,7 @@ INCLPATHS+= \
 -I$(DISPATCH)\include \
 -I$(MSG)\include \
 -I$(RW) \
-
+-I$(BOOST) \
 
 .PATH.cpp = .;$(R_SERVER)
 
@@ -56,7 +56,7 @@ ctisvr.dll:     $(SERVEROBJS) makesvr.mak
                 @$(MAKE) -nologo -f $(_InputFile) id
                 @echo Building  $@
                 @%cd $(OBJ)
-                $(CC) $(DLLFLAGS) $(SERVEROBJS) id_svr.obj $(INCLPATHS) $(RWLIBS) $(SVRLIBS) /Fe..\$@
+                $(CC) $(DLLFLAGS) $(SERVEROBJS) id_svr.obj $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(SVRLIBS) /Fe..\$@
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2003/10/31 21:16:17 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2004/09/24 14:36:53 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.6  2004/09/24 14:36:53  eschmit
+      Added Boost includes and libraries, misc fixes for ptime support
+
       Revision 1.5  2003/10/31 21:16:17  dsutton
       Interface would apply a multiplier and offset to a status point if one was
       imported.  Probably wouldn't cause a problem but was moved anyway.
@@ -812,7 +815,7 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
                     DeleteFile (fileName);
                 }
 
-                refreshTime = RWTime() - (RWTime().seconds() % getInterval()) + getInterval();
+                refreshTime = RWTime() - (RWTime::now().seconds() % getInterval()) + getInterval();
             }
         }
     }

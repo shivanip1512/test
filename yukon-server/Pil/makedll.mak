@@ -59,7 +59,7 @@ ALL:            ctipil.dll
 ctipil.dll:     $(DLLOBJS) makedll.mak
                 @echo Building  $@
                 @%cd $(OBJ)
-                $(CC) $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(RWLIBS) $(DLLLIBS) -Fe..\$@
+                $(CC) $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(DLLLIBS) -Fe..\$@
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

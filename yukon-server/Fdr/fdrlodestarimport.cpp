@@ -8,8 +8,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2004/08/18 21:46:01 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2004/09/24 14:36:52 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -21,6 +21,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.11  2004/09/24 14:36:52  eschmit
+      Added Boost includes and libraries, misc fixes for ptime support
+
       Revision 1.10  2004/08/18 21:46:01  jrichter
       1.  Added try{} catch(..) blocks to threadReadFromFile function to try and pinpoint where thread was killed.
       2.  Cleared out fileInfoList to get a fresh list of files upon each loadTranslationList call (so files aren't read once the point they reference is deleted from database).
@@ -745,7 +748,7 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                          charPtr = recordVector[lineCnt].data();
                                          for (int xyz = 0; xyz < recordVector[lineCnt].length(); xyz++)
                                          {
-                                             if (!isspace(*charPtr))
+                                             if (!::isspace(*charPtr))
                                              {
                                                  CtiLockGuard<CtiLogger> doubt_guard(dout);
                                                  dout << "Invalid record type in interface " << getInterfaceName() << " record:" << recordVector[lineCnt] << " line number: " << lineCnt << endl;
@@ -822,7 +825,7 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                          dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                      }
                  }
-                 refreshTime = RWTime() - (RWTime().seconds() % getInterval()) + getInterval();
+                 refreshTime = RWTime() - (RWTime::now().seconds() % getInterval()) + getInterval();
              }
         }
     }

@@ -12,6 +12,8 @@ INCLPATHS+= \
 -I$(RTDB)\include \
 -I$(TCLINC) \
 -I$(RW) \
+-I$(BOOST) \
+
 
 
 .PATH.cpp = .;$(R_MCCMD)
@@ -57,7 +59,7 @@ ALL:            mccmd.dll
 mccmd.dll:  $(DLLOBJS) Makedll.mak
             @echo Building  $@
             @%cd $(OBJ)
-            $(CC) $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(LIBS) $(RWLIBS) /Fe..\$@ -link /def:$(DLLDEF)
+            $(CC) $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(LIBS) $(RWLIBS) $(BOOSTLIBS) /Fe..\$@ -link /def:$(DLLDEF)
             -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
             -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
             -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

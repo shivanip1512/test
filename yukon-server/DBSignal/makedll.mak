@@ -5,6 +5,7 @@ INCLPATHS+= \
 -I$(DATABASE)\include \
 -I$(COMMON)\include \
 -I$(RW) \
+-I$(BOOST) \
 -I$(R_COMMON)\include \
 -I$(R_DATABASE)\include \
 
@@ -62,7 +63,8 @@ ctidbres.dll:  $(DLLOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(DLLOBJS) -link $(RWLIBS) $(DBLIBS)
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(DLLOBJS) -link $(RWLIBS) $(BOOSTLIBS) \
+$(DBLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

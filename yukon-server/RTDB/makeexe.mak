@@ -64,7 +64,7 @@ porttest.exe:   $(TESTOBJS) makeexe.mak
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(RWLINKFLAGS) $(INCLPATHS) -o ..\$@ \
 $(TESTOBJS) \
--link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctiprtdb.lib $(COMPILEBASE)\lib\ctisvr.lib $(RWLIBS)
+-link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctiprtdb.lib $(COMPILEBASE)\lib\ctisvr.lib $(RWLIBS) $(BOOSTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo:
@@ -91,7 +91,7 @@ pointtest.exe:  $(PTTESTOBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ $(PTTESTOBJS) \
--link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctipntdb.lib  $(RWLIBS)
+-link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctipntdb.lib  $(RWLIBS) $(BOOSTLIBS) 
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo:
@@ -104,7 +104,7 @@ devtest.exe:    $(DEVTESTOBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ $(DEVTESTOBJS) \
--link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS)
+-link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOSTLIBS) 
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo:
@@ -117,7 +117,7 @@ memtest.exe:    memtest.obj makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ memtest.obj \
--link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib  $(RWLIBS)
+-link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib  $(RWLIBS) $(BOOSTLIBS) 
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo:
@@ -130,7 +130,7 @@ routetest.exe:   $(RTESTOBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ $(RTESTOBJS) \
--link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS)
+-link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOSTLIBS) 
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo:

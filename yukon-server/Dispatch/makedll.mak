@@ -73,7 +73,7 @@ ctivg.dll:      $(DLLOBJS) Makedll.mak
                 @$(MAKE) -nologo -f $(_InputFile) id
                 @echo Building  ..\$@
                 @%cd $(OBJ)
-                $(CC) $(DLLFLAGS) $(DLLOBJS) id_vgdll.obj $(INCLPATHS) $(RWLIBS) $(CTIVGLIBS) /Fe..\$@
+                $(CC) $(DLLFLAGS) $(DLLOBJS) id_vgdll.obj $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(CTIVGLIBS) /Fe..\$@
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrvalmet.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2003/10/31 21:15:41 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2004/09/24 14:36:53 $
 *
 *
 *    AUTHOR: David Sutton
@@ -24,6 +24,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrvalmet.cpp,v $
+      Revision 1.5  2004/09/24 14:36:53  eschmit
+      Added Boost includes and libraries, misc fixes for ptime support
+
       Revision 1.4  2003/10/31 21:15:41  dsutton
       Updated to allow us to send and receive accumlator points to other systems.
       Oversite from the original implementation
@@ -1084,8 +1087,8 @@ RWTime CtiFDR_Valmet::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
     else
     {
         // if RWTime can't make a time or we are outside the window
-        if ((returnTime.seconds() > (RWTime().seconds() + getTimestampReasonabilityWindow())) ||
-            (returnTime.seconds() < (RWTime().seconds() - getTimestampReasonabilityWindow())) ||
+        if ((returnTime.seconds() > (RWTime::now().seconds() + getTimestampReasonabilityWindow())) ||
+            (returnTime.seconds() < (RWTime::now().seconds() - getTimestampReasonabilityWindow())) ||
             (!returnTime.isValid()))
     //    if ((returnTime.seconds() > (RWTime().seconds() + getTimestampReasonabilityWindow())) || (!returnTime.isValid()))
         {

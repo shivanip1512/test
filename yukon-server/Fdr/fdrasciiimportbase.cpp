@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrasciiimportbase.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2002/10/14 21:10:53 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2004/09/24 14:36:52 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrasciiimportbase.cpp,v $
+      Revision 1.6  2004/09/24 14:36:52  eschmit
+      Added Boost includes and libraries, misc fixes for ptime support
+
       Revision 1.5  2002/10/14 21:10:53  dsutton
       In the database translation routines, if we failed to hit the database
       we called the load routine again just to get the error code.  Whoops
@@ -445,7 +448,7 @@ void CtiFDRAsciiImportBase::threadFunctionReadFromFile( void )
                     DeleteFile (fileName);
                 }
 
-                refreshTime = RWTime() - (RWTime().seconds() % iImportInterval) + iImportInterval;
+                refreshTime = RWTime() - (RWTime::now().seconds() % iImportInterval) + iImportInterval;
             }
         }
     }

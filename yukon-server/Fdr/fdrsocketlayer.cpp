@@ -533,7 +533,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
                     }
                     else
                     {
-                        if ((logTime.seconds()+120) <= RWTime().seconds())
+                        if ((logTime.seconds()+120) <= RWTime::now().seconds())
                         {
                             {
                                CtiLockGuard<CtiLogger> doubt_guard(dout);

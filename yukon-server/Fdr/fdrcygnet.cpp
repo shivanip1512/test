@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive$
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2002/05/24 18:01:32 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2004/09/24 14:36:52 $
 *
 *
 *    AUTHOR: Ben Wallace
@@ -24,6 +24,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrcygnet.cpp,v $
+      Revision 1.5  2004/09/24 14:36:52  eschmit
+      Added Boost includes and libraries, misc fixes for ptime support
+
       Revision 1.4  2002/05/24 18:01:32  alauinger
       ben change
 
@@ -389,7 +392,7 @@ void CtiFDRCygnet::threadFunctionGetDataFromCygnet( void )
 
             //  while i'm not getting anything
             nextScanTime = calculateNextSendTime();
-            time (&timeNow);
+            ::std::time (&timeNow);
 
             do
             {
@@ -397,7 +400,7 @@ void CtiFDRCygnet::threadFunctionGetDataFromCygnet( void )
                 pSelf.sleep(1000);
 
                 // get now
-                time (&timeNow);
+                ::std::time (&timeNow);
 
             } while ( timeNow < nextScanTime );
 
@@ -750,7 +753,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
                         //returnValue = 1;  // test Nonupdated block
 
                         // fake time
-                        time(&CygnetResponse.recs[0].time);
+                        ::std::time(&CygnetResponse.recs[0].time);
 
                         CygnetResponse.header.err = 0;
                         CygnetResponse.header.count = 1;
@@ -1037,7 +1040,7 @@ bool CtiFDRCygnet::retreiveStatusPoints()
                     CygnetResponse.header.count = 1;
 
                     // fake time
-                    time(&CygnetResponse.recs[0].time);
+                    ::std::time(&CygnetResponse.recs[0].time);
 
                     //CygnetResponse.recs[0].time -= 300;  // test 5 minutes behind
 
@@ -1397,7 +1400,7 @@ ULONG CtiFDRCygnet::calculateNextSendTime()
 
     ULONG    tempTime;
     // get now
-    time (&timeNow);
+    ::std::time (&timeNow);
 
     // check where we sit
     secondsPastHour = timeNow % 3600L;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/09/20 20:27:34 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/09/24 14:35:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -95,10 +95,10 @@ bool CtiDeviceCCU::checkAlgorithmReset(int alg)
 
     if( alg >= 0 && alg < AlgorithmCount )
     {
-        if( (::time(0) - _algorithmCommandTime[alg]) > AlgorithmRepeatInterval )
+        if( (::std::time(0) - _algorithmCommandTime[alg]) > AlgorithmRepeatInterval )
         {
             retval = true;
-            _algorithmCommandTime[alg] = ::time(0);
+            _algorithmCommandTime[alg] = ::std::time(0);
         }
     }
 

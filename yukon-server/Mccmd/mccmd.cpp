@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2004/08/30 20:28:55 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2004/09/24 14:36:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1149,7 +1149,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 
 int isHoliday(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    time_t t = time(NULL);
+    time_t t = ::std::time(NULL);
     int id = 0;
 
     if( argc >= 2 )
@@ -1172,7 +1172,7 @@ int isHoliday(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     }
 
     CtiHolidayManager& mgr = CtiHolidayManager::getInstance();
-    if( mgr.isHoliday(RWDate(localtime(&t)), id) )
+    if( mgr.isHoliday(RWDate(::std::localtime(&t)), id) )
     {
         Tcl_SetResult(interp, "true", NULL );
         return TCL_OK;
@@ -1318,9 +1318,9 @@ int Wait(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     }
 
     long delay = atol(argv[1]);
-    time_t start = time(NULL);
+    time_t start = ::std::time(NULL);
 
-    while( start + delay > time(NULL) )
+    while( start + delay > ::std::time(NULL) )
     {
         //Check for cancellation
         if( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 )
@@ -1469,7 +1469,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
     if( timeout == 0 ) // Not waiting for responses so we're done
         return TCL_OK;
 
-    long start = time(NULL);
+    long start = ::std::time(NULL);
 
     // Some structures to sort the responses
     PILReturnMap device_map;
@@ -1488,7 +1488,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
             if( msg->isA() == MSG_PCRETURN )
             {
                 // received a message, reset the timeout
-                start = time(NULL);
+                start = ::std::time(NULL);
 
                 CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
                 DumpReturnMessage(*ret_msg);
@@ -1515,7 +1515,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
             break;
         }
 
-        if( time(NULL) > start + timeout )
+        if( ::std::time(NULL) > start + timeout )
         {
             RWCString info("timed out: ");
             info += cmd_line;

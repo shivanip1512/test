@@ -50,7 +50,7 @@ tcpsup.dll:    $(TCPOBJS) $(COMPILEBASE)\lib\ctidbsrc.lib Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(TCPOBJS) id_tcpdll.obj -link $(RWLIBS) $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctiprtdb.lib $(COMPILEBASE)\lib\ctidbsrc.lib
+                $(RWCPPINVOKE) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(TCPOBJS) id_tcpdll.obj -link $(RWLIBS) $(BOOSTLIBS) $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctiprtdb.lib $(COMPILEBASE)\lib\ctidbsrc.lib
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

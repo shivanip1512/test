@@ -77,7 +77,7 @@ pilhost.exe:    $(PILOBJS) Makefile
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(PILOBJS) -link $(RWLIBS) $(VGLIBS)
+$(PILOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(VGLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
                @%cd $(CWD)
@@ -88,7 +88,7 @@ piltest.exe:    $(TESTOBJS) Makefile
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(TESTOBJS) -link $(RWLIBS) $(TESTLIBS)
+$(TESTOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
@@ -98,7 +98,7 @@ parsetest.exe:    $(PARSETESTOBJS) Makefile
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(PARSETESTOBJS) -link $(RWLIBS) $(PARSETESTLIBS)
+$(PARSETESTOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(PARSETESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)

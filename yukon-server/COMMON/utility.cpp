@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <iomanip>
 #include <iostream>
+#include <ctime>
 using namespace std;
 
 #if _MSC_VER > 1000
@@ -36,7 +37,6 @@ using namespace std;
 #include <winsock.h>
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
 #include <sys/types.h>
 #include <sys/timeb.h>
 
@@ -681,8 +681,8 @@ int SendMailMessage( SENDMAIL *pMail )
     VERIFY_RET_VAL( Receive( s, szBuff, MAX_LINE_SIZE, 0, "354" ); )
 
 // construct date string
-    tTime = time( NULL );
-    ptm   = localtime( &tTime );
+    tTime = ::std::time( NULL );
+    ptm   = ::std::localtime( &tTime );
 
     strftime( szTime, MAX_NAME_SIZE, "%a, %d %b %Y %H:%M:%S %Z", ptm );
 

@@ -7,6 +7,7 @@ INCLPATHS+= \
 -I$(DATABASE)\include \
 -I$(RTDB)\include \
 -I$(RW) \
+-I$(BOOST) \
 -I$(R_SERVER)\include \
 -I$(R_COMMON)\include \
 -I$(R_DATABASE)\include \

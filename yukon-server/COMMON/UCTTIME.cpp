@@ -249,7 +249,7 @@ IM_EX_CTIBASE INT UCTSetFTime (struct timeb *TimeBuffer)
         TimeBuffer->time -= Flags->DSTFixOffset;
     }
 
-    Temp = localtime (&TimeBuffer->time);
+    Temp = ::std::localtime (&TimeBuffer->time);
     CTIGetDateTime(&Date);
     Date.year     = Temp->tm_year + 1900;
     Date.month    = Temp->tm_mon + 1;
@@ -301,7 +301,7 @@ IM_EX_CTIBASE INT UCTFTime (struct timeb *TimeBuffer)
 }
 
 
-/* Routine to convert a UCT time into a localtime structure  */
+/* Routine to convert a UCT time into a ::localtime structure  */
 IM_EX_CTIBASE struct tm * UCTLocalTime (time_t Time, USHORT MyDSTFlag)
 {
     struct tm *TheLocalTime;
@@ -318,20 +318,20 @@ IM_EX_CTIBASE struct tm * UCTLocalTime (time_t Time, USHORT MyDSTFlag)
     }
 
     /* get the local time value */
-    if((TheLocalTime = localtime (&Time)) != NULL)
+    if((TheLocalTime = ::std::localtime (&Time)) != NULL)
     {
         /* check and see if our dst flags agree */
         if(MyDSTFlag && !(TheLocalTime->tm_isdst))
         {
             /* move back an hour */
             Time += Flags->DSTFixOffset;
-            TheLocalTime = localtime (&Time);
+            TheLocalTime = ::std::localtime (&Time);
         }
         else if(!(MyDSTFlag) && TheLocalTime->tm_isdst)
         {
             /* move ahead an hour */
             Time -= Flags->DSTFixOffset;
-            TheLocalTime = localtime (&Time);
+            TheLocalTime = ::std::localtime (&Time);
         }
 
         /* restore the dst flag */

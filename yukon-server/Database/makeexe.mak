@@ -9,7 +9,7 @@ INCLPATHS+= \
 -I$(PORTER)\include \
 -I$(COMMON)\include \
 -I$(RW) \
-
+-I$(BOOST) \
 
 .PATH.cpp = .
 
@@ -50,7 +50,7 @@ tabletest.exe:  $(BASEOBJS) Makefile
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(TABLETESTLIBS)
+$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(TABLETESTLIBS)
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
@@ -62,7 +62,7 @@ almtest.exe:    almtest.obj Makefile
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-almtest.obj -link $(LIBS) $(RWLIBS) $(TABLETESTLIBS) $(COMPILEBASE)\lib\ctidbsrc.lib
+almtest.obj -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(TABLETESTLIBS) $(COMPILEBASE)\lib\ctidbsrc.lib
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)

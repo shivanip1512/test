@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrftpinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2004/02/13 20:36:42 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2004/09/24 14:36:52 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrftpinterface.cpp,v $
+      Revision 1.8  2004/09/24 14:36:52  eschmit
+      Added Boost includes and libraries, misc fixes for ptime support
+
       Revision 1.7  2004/02/13 20:36:42  dsutton
       Number of tries were not being decremented correctly on a failure.  This may
       have caused the problem where the STEC or TRISTATE interface would
@@ -596,7 +599,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                     if (tries <= 0)
                     {
                         tries = getTries();
-                        refreshTime = RWTime() - (RWTime().seconds() % iDownloadInterval) + iDownloadInterval;
+                        refreshTime = RWTime() - (RWTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
                         fail();
                     }
                 }
@@ -632,7 +635,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                         if (tries <= 0)
                         {
                             tries = getTries();
-                            refreshTime = RWTime() - (RWTime().seconds() % iDownloadInterval) + iDownloadInterval;
+                            refreshTime = RWTime() - (RWTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
                             fail();
                         }
                     }
@@ -658,7 +661,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                             if (tries <= 0)
                             {
                                 tries = getTries();
-                                refreshTime = RWTime() - (RWTime().seconds() % iDownloadInterval) + iDownloadInterval;
+                                refreshTime = RWTime() - (RWTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
                                 fail();
                             }
                         }
@@ -691,7 +694,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                                 if (tries <= 0)
                                 {
                                     tries = getTries();
-                                    refreshTime = RWTime() - (RWTime().seconds() % iDownloadInterval) + iDownloadInterval;
+                                    refreshTime = RWTime() - (RWTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
                                     fail();
                                 }
                             }
@@ -715,7 +718,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                                     if (tries <= 0)
                                     {
                                         tries = getTries();
-                                        refreshTime = RWTime() - (RWTime().seconds() % iDownloadInterval) + iDownloadInterval;
+                                        refreshTime = RWTime() - (RWTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
                                         fail();
                                     }
                                 }
@@ -724,7 +727,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                                     if (decodeFile())
                                         fail();
 
-                                    refreshTime = RWTime() - (RWTime().seconds() % iDownloadInterval) + iDownloadInterval;
+                                    refreshTime = RWTime() - (RWTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
                                     tries = getTries();
                                 }
 

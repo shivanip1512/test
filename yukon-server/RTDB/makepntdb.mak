@@ -63,7 +63,7 @@ ctipntdb.dll:   $(YUKONPNTDLLOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONPNTDLLOBJS) id_pntdll.obj -link $(RWLIBS) $(PNTDBLIBS)
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONPNTDLLOBJS) id_pntdll.obj -link $(RWLIBS) $(BOOSTLIBS) $(PNTDBLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

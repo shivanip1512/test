@@ -66,7 +66,7 @@ void CtiIONApplicationLayer::initInPacketReserved( void )
 
 void CtiIONApplicationLayer::setToTimeSync( void )
 {
-    CtiIONTimeSync ts(RWTime().seconds() - rwEpoch);
+    CtiIONTimeSync ts(RWTime::now().seconds() - rwEpoch);
 
     freeOutPacketMemory();
     initOutPacketReserved();

@@ -5,6 +5,7 @@ INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
 -I$(RW) \
+-I$(BOOST) \
 -I$(R_COMMON)\include \
 -I$(R_CPARMS)\include \
 
@@ -14,6 +15,7 @@ INCLPATHS+= \
 .\include \
 ;$(COMMON)\include \
 ;$(RW) \
+;$(BOOST) \
 ;$(R_COMMON)\include \
 ;$(CPARMS)\include \
 ;$(R_CPARMS)\include \
@@ -37,7 +39,7 @@ cmdline.dll:    $(CMDOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 %cd $(OBJ)
-                $(CC) $(CMDOBJS) $(DLLFLAGS) $(RWLIBS) /Fe..\$@
+                $(CC) $(CMDOBJS) $(DLLFLAGS) $(RWLIBS) $(BOOSTLIBS) /Fe..\$@
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

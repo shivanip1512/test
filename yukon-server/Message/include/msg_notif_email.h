@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/03/04 16:03:55 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/09/24 14:36:54 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -50,6 +50,7 @@ public:
    typedef CtiEmailMsg Inherited;
 
    CtiNotifEmailMsg();
+   //NEED TO ADD A COPY CONSTRUCTOR!
    virtual ~CtiNotifEmailMsg();
 
    void saveGuts( RWvostream &aStream ) const;

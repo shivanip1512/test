@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/05/05 15:31:44 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/09/24 14:36:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -139,7 +139,7 @@ VOID PerfThread (VOID *Arg)
             /* do some checking to see if we just changed over by looking
                ahead 2 hours and see it things it DST */
             SysTimeB.time += 7200;
-            TStruct = localtime (&SysTimeB.time);
+            TStruct = ::std::localtime (&SysTimeB.time);
             if(TStruct->tm_isdst)
             {
                 /* it say it is so must be DST */

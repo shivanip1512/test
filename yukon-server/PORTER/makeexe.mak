@@ -131,7 +131,7 @@ traceset.obj -link $(LIBS) $(COMPILEBASE)\lib\portglob.lib
 contest.exe:    contest.obj
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-contest.obj -link $(LIBS) $(RWLIBS) $(COMPILEBASE)\lib\ctibase.lib
+contest.obj -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(COMPILEBASE)\lib\ctibase.lib
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/03/25 17:43:49 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2004/09/24 14:36:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1166,8 +1166,8 @@ unsigned long CtiMCServer::secondsToNextMinute() const
 {
     struct tm* b_time;
 
-    time_t now = time(NULL);
-    b_time = localtime(&now);
+    time_t now = ::std::time(NULL);
+    b_time = ::std::localtime(&now);
     return (60 - b_time->tm_sec);
 }
 

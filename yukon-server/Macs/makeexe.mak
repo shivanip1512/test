@@ -15,7 +15,8 @@ INCLPATHS+= \
 -I$(MSG)\include \
 -I$(INTERP)\include \
 -I$(TCLINC) \
--I$(RW)
+-I$(RW) \
+-I$(BOOST)
 
 
 
@@ -80,7 +81,7 @@ macs.exe:     $(BASEOBJS) Makefile
               @echo Compiling $@
               @%cd $(OBJ)
               $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(BASEOBJS) -link $(LIBS) $(RWLIBS)
+$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) 
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)

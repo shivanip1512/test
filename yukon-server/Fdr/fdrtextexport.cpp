@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextexport.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2003/10/20 20:28:17 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2004/09/24 14:36:53 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextexport.cpp,v $
+      Revision 1.4  2004/09/24 14:36:53  eschmit
+      Added Boost includes and libraries, misc fixes for ptime support
+
       Revision 1.3  2003/10/20 20:28:17  dsutton
       Bug:  The application wasn't locking the point list down before looking for a
       point.  The database reload does lock the list down before reloading.  If the
@@ -629,7 +632,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                     }
                     fclose(fptr);
                 }
-                refreshTime = RWTime() - (RWTime().seconds() % getInterval()) + getInterval();
+                refreshTime = RWTime() - (RWTime::now().seconds() % getInterval()) + getInterval();
             }
         }
     }
