@@ -16,7 +16,6 @@ import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsLogin;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
-import com.cannontech.stars.xml.serialize.types.StarsLoginType;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -40,10 +39,6 @@ public class LoginAction implements ActionBase {
 	        StarsLogin login = new StarsLogin();
 	        login.setUsername( req.getParameter("USERNAME") );
 	        login.setPassword( req.getParameter("PASSWORD") );
-	        if (req.getParameter("action").equalsIgnoreCase("OperatorLogin"))
-	        	login.setLoginType( StarsLoginType.OPERATORLOGIN );
-	        else if (req.getParameter("action").equalsIgnoreCase("UserLogin"))
-	        	login.setLoginType( StarsLoginType.CONSUMERLOGIN );
 	        
 	        StarsOperation operation = new StarsOperation();
 	        operation.setStarsLogin( login );
@@ -76,18 +71,6 @@ public class LoginAction implements ActionBase {
             }
             
             StarsYukonUser starsUser = SOAPServer.getStarsYukonUser( user );
-            
-            // check whether the login type matches the role
-            boolean typeMatch = false;
-            if (login.getLoginType().getType() == StarsLoginType.OPERATORLOGIN_TYPE)
-        		typeMatch = ServerUtils.isOperator( starsUser );
-            else if (login.getLoginType().getType() == StarsLoginType.CONSUMERLOGIN_TYPE)
-        		typeMatch = ServerUtils.isResidentialCustomer( starsUser );
-            if (!typeMatch) {
-                respOper.setStarsFailure( StarsFactory.newStarsFailure(
-                		StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Login failed, please check your username and password") );
-                return SOAPUtil.buildSOAPMessage( respOper );
-            }
             
             initSession( user, session );
 			session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, starsUser);

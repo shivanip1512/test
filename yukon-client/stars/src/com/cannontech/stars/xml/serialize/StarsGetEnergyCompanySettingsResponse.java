@@ -34,6 +34,8 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
 
     private StarsEnergyCompany _starsEnergyCompany;
 
+    private StarsWebConfig _starsWebConfig;
+
     private StarsEnrollmentPrograms _starsEnrollmentPrograms;
 
     private StarsCustomerSelectionLists _starsCustomerSelectionLists;
@@ -129,6 +131,16 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
     {
         return this._starsServiceCompanies;
     } //-- StarsServiceCompanies getStarsServiceCompanies() 
+
+    /**
+     * Returns the value of field 'starsWebConfig'.
+     * 
+     * @return the value of field 'starsWebConfig'.
+    **/
+    public StarsWebConfig getStarsWebConfig()
+    {
+        return this._starsWebConfig;
+    } //-- StarsWebConfig getStarsWebConfig() 
 
     /**
     **/
@@ -243,6 +255,16 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
     {
         this._starsServiceCompanies = starsServiceCompanies;
     } //-- void setStarsServiceCompanies(StarsServiceCompanies) 
+
+    /**
+     * Sets the value of field 'starsWebConfig'.
+     * 
+     * @param starsWebConfig the value of field 'starsWebConfig'.
+    **/
+    public void setStarsWebConfig(StarsWebConfig starsWebConfig)
+    {
+        this._starsWebConfig = starsWebConfig;
+    } //-- void setStarsWebConfig(StarsWebConfig) 
 
     /**
      * 

@@ -46,21 +46,7 @@ public class InventoryBase extends DBPersistent {
     	LMHardwareBase hw = new LMHardwareBase();
     	hw.setInventoryID( getInventoryBase().getInventoryID() );
     	hw.setDbConnection( getDbConnection() );
-    	hw.deleteLMHardwareBase();
-    	
-    	LMThermostatSeason[] thermSeasons = LMThermostatSeason.getAllLMThermostatSeasons( getInventoryBase().getInventoryID() );
-    	if (thermSeasons != null) {
-	    	for (int i = 0; i < thermSeasons.length; i++) {
-	    		thermSeasons[i].setDbConnection( getDbConnection() );
-	    		thermSeasons[i].delete();
-	    	}
-    	}
-    	
-    	com.cannontech.database.db.stars.event.LMThermostatManualEvent thermOption =
-    			new com.cannontech.database.db.stars.event.LMThermostatManualEvent();
-    	thermOption.setInventoryID( getInventoryBase().getInventoryID() );
-    	thermOption.setDbConnection( getDbConnection() );
-    	thermOption.delete();
+    	hw.deleteLMHardwareBase( true );
     	
     	deleteInventoryBase();
     }

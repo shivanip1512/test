@@ -38,6 +38,8 @@ public class StarsProgramReenableResponse implements java.io.Serializable {
 
     private java.util.Vector _starsLMHardwareHistoryList;
 
+    private java.lang.String _description;
+
 
       //----------------/
      //- Constructors -/
@@ -113,6 +115,16 @@ public class StarsProgramReenableResponse implements java.io.Serializable {
     {
         return _starsLMProgramHistoryList.elements();
     } //-- java.util.Enumeration enumerateStarsLMProgramHistory() 
+
+    /**
+     * Returns the value of field 'description'.
+     * 
+     * @return the value of field 'description'.
+    **/
+    public java.lang.String getDescription()
+    {
+        return this._description;
+    } //-- java.lang.String getDescription() 
 
     /**
      * 
@@ -258,6 +270,16 @@ public class StarsProgramReenableResponse implements java.io.Serializable {
         _starsLMProgramHistoryList.removeElementAt(index);
         return (StarsLMProgramHistory) obj;
     } //-- StarsLMProgramHistory removeStarsLMProgramHistory(int) 
+
+    /**
+     * Sets the value of field 'description'.
+     * 
+     * @param description the value of field 'description'.
+    **/
+    public void setDescription(java.lang.String description)
+    {
+        this._description = description;
+    } //-- void setDescription(java.lang.String) 
 
     /**
      * 

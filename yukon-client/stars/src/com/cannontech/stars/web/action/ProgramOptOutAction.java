@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -20,6 +21,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -28,7 +30,9 @@ import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsCustListEntry;
 import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsLMHardware;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareEvent;
@@ -56,6 +60,8 @@ public class ProgramOptOutAction implements ActionBase {
 	
 	public static final int REPEAT_LAST = -1;
 	public static final int OPTOUT_TODAY = -2;
+	
+	public static final String ERROR_MSG_LABEL = "ERROR:";
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
@@ -64,44 +70,55 @@ public class ProgramOptOutAction implements ActionBase {
         try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
+			
+			StarsGetEnergyCompanySettingsResponse ecSettings = (StarsGetEnergyCompanySettingsResponse)
+					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
             
             StarsProgramOptOut optOut = new StarsProgramOptOut();
             
-            if (req.getParameter("OptOutDate") != null) {
-            	int startDateID = Integer.parseInt( req.getParameter("OptOutDate") );
-            	if (startDateID == ServletUtils.getStarsCustListEntry(
-            			selectionLists,
-            			YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD,
-            			YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TOMORROW
-            			).getEntryID() )
-            		optOut.setStartDateTime( com.cannontech.util.ServletUtil.getTomorrow() );
-            	else if (startDateID == ServletUtils.getStarsCustListEntry(
-            			selectionLists,
-            			YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD,
-            			YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TODAY
-            			).getEntryID() )
-            		optOut.setPeriod( OPTOUT_TODAY );
-            	else if (startDateID == ServletUtils.getStarsCustListEntry(
-            			selectionLists,
-            			YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD,
-            			YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_REPEAT_LAST
-            			).getEntryID() )
-            		optOut.setPeriod( REPEAT_LAST );
+            int period = 0;
+            if (req.getParameter("OptOutPeriod") != null) {
+	            String periodStr = req.getParameter("OptOutPeriod");
+	            if (periodStr != null)
+	                try {
+	                    period = Integer.parseInt(periodStr);
+	                }
+	                catch (NumberFormatException e) {}
             }
+            if (period == 0) return null;
             
-            if (optOut.getPeriod() != OPTOUT_TODAY && optOut.getPeriod() != REPEAT_LAST) {
-	            int period = 1;
-	            if (req.getParameter("OptOutPeriod") != null) {
-		            String periodStr = req.getParameter("OptOutPeriod");
-		            if (periodStr != null)
-		                try {
-		                    period = Integer.parseInt(periodStr);
-		                }
-		                catch (NumberFormatException e) {}
-		            if (period == 0) return null;
-	            }
-	            optOut.setPeriod( period );
+            if (period < 0) {	// -period is the number of days to be opted out
+            	optOut.setPeriod( Math.abs(period) );
+            }
+            else {	// This is a special entry, e.g. "Today"
+            	StarsCustListEntry entryTomorrow = ServletUtils.getStarsCustListEntry(
+            			selectionLists,
+            			YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD,
+            			YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TOMORROW );
+            	StarsCustListEntry entryToday = ServletUtils.getStarsCustListEntry(
+            			selectionLists,
+            			YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD,
+            			YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TODAY );
+            	StarsCustListEntry entryRepeatLast = ServletUtils.getStarsCustListEntry(
+            			selectionLists,
+            			YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD,
+            			YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_REPEAT_LAST );
+            			
+            	if (entryTomorrow != null && period == entryTomorrow.getEntryID() )
+            	{
+            		java.util.TimeZone tz = java.util.TimeZone.getTimeZone( ecSettings.getStarsEnergyCompany().getTimeZone() );
+            		optOut.setStartDateTime( ServletUtils.getTomorrow(tz) );
+            		optOut.setPeriod( 1 );
+            	}
+            	else if (entryToday != null && period == entryToday.getEntryID() )
+            	{
+            		optOut.setPeriod( OPTOUT_TODAY );
+            	}
+            	else if (entryRepeatLast != null && period == entryRepeatLast.getEntryID() )
+            	{
+            		optOut.setPeriod( REPEAT_LAST );
+            	}
             }
 
             StarsOperation operation = new StarsOperation();
@@ -122,6 +139,7 @@ public class ProgramOptOutAction implements ActionBase {
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
         StarsOperation respOper = new StarsOperation();
+        LiteStarsEnergyCompany energyCompany = null;
         
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
@@ -141,8 +159,10 @@ public class ProgramOptOutAction implements ActionBase {
         	}
 			
             int energyCompanyID = user.getEnergyCompanyID();
-        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+        	energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
+			TimeZone tz = TimeZone.getTimeZone( energyCompany.getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE) );
+			
             StarsProgramOptOut optOut = reqOper.getStarsProgramOptOut();
             StarsProgramOptOutResponse resp = new StarsProgramOptOutResponse();
 			
@@ -163,17 +183,17 @@ public class ProgramOptOutAction implements ActionBase {
             	event.setCommand( cmd.toString() );
             	energyCompany.getOptOutEventQueue().addEvent( event );
             	
-            	resp.setDescription( "Opt out command has been sent out successfully" );
+            	resp.setDescription( "The " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_NOUN) + " event has been scheduled" );
             }
             else if (optOut.getPeriod() == OPTOUT_TODAY) {
-            	int offHours = (int)((com.cannontech.util.ServletUtil.getTomorrow().getTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
+            	int offHours = (int)((ServletUtils.getTomorrow(tz).getTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
 				String[] commands = getOptOutCommands( liteAcctInfo, energyCompany, offHours );
             	for (int i = 0; i < commands.length; i++)
             		ServerUtils.sendCommand( commands[i] );
             	
             	OptOutEventQueue.OptOutEvent event = new OptOutEventQueue.OptOutEvent();
-            	event.setStartDateTime( com.cannontech.util.ServletUtil.getTomorrow().getTime() );
-            	event.setPeriod( -1 );	// Reenable event
+            	event.setStartDateTime( ServletUtils.getTomorrow(tz).getTime() );
+            	event.setPeriod( OptOutEventQueue.PERIOD_REENABLE );
             	event.setAccountID( liteAcctInfo.getCustomerAccount().getAccountID() );
             	
 				commands = ProgramReenableAction.getReenableCommands( liteAcctInfo, energyCompany );
@@ -187,11 +207,17 @@ public class ProgramOptOutAction implements ActionBase {
             	energyCompany.getOptOutEventQueue().addEvent( event );
             	
             	resp = processOptOut( liteAcctInfo, energyCompany, optOut );
+		        if (ServerUtils.isOperator( user ))
+			        resp.setDescription( ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_NOUN)) + " command has been sent out successfully" );
+			    else
+			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_PAST) );
             }
             else if (optOut.getPeriod() == REPEAT_LAST) {
             	// Repeat the last opt out command
-            	repeatLast( liteAcctInfo, energyCompany );
-            	resp.setDescription( "The last opt out command has been resent" );
+            	if (repeatLast( liteAcctInfo, energyCompany ))
+	            	resp.setDescription( "The last " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_NOUN) + " command has been resent" );
+	            else
+	            	resp.setDescription( ERROR_MSG_LABEL + "There is no active " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_NOUN) + " event, command not sent" );
             }
             else {
             	// Send opt out commands immediately, and store the reenable command in memory
@@ -203,7 +229,7 @@ public class ProgramOptOutAction implements ActionBase {
 				Calendar cal = Calendar.getInstance();
 				cal.add( Calendar.DATE, optOut.getPeriod() );
             	event.setStartDateTime( cal.getTime().getTime() );
-            	event.setPeriod( -1 );	// Reenable event
+            	event.setPeriod( OptOutEventQueue.PERIOD_REENABLE );
             	event.setAccountID( liteAcctInfo.getCustomerAccount().getAccountID() );
             	
 				commands = ProgramReenableAction.getReenableCommands( liteAcctInfo, energyCompany );
@@ -217,6 +243,10 @@ public class ProgramOptOutAction implements ActionBase {
             	energyCompany.getOptOutEventQueue().addEvent( event );
             	
             	resp = processOptOut( liteAcctInfo, energyCompany, optOut );
+		        if (ServerUtils.isOperator( user ))
+			        resp.setDescription( ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_NOUN)) + " command has been sent out successfully" );
+			    else
+			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_PAST) );
             }
 
         	respOper.setStarsProgramOptOutResponse( resp );
@@ -227,7 +257,7 @@ public class ProgramOptOutAction implements ActionBase {
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot opt out the programs") );
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_VERB) + " the programs") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
@@ -256,36 +286,40 @@ public class ProgramOptOutAction implements ActionBase {
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
 			if (resp.getDescription() != null) {
-				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, resp.getDescription() );
-				return 0;
+				if (resp.getDescription().startsWith( ERROR_MSG_LABEL ))
+					session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, resp.getDescription().substring(ERROR_MSG_LABEL.length()) );
+				else
+					session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, resp.getDescription() );
 			}
             
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             
             // Update program history
-			StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
-            for (int i = 0; i < resp.getStarsLMProgramHistoryCount(); i++) {
-            	StarsLMProgramHistory progHist = resp.getStarsLMProgramHistory(i);
-            	
-            	for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
-            		StarsLMProgram program = programs.getStarsLMProgram(j);
-            		if (program.getProgramID() == progHist.getProgramID()) {
-            			program.setStarsLMProgramHistory( progHist );
-            			program.setStatus( ServletUtils.OUT_OF_SERVICE );
-            		}
-            	}
+            if (resp.getStarsLMProgramHistoryCount() > 0) {
+				StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
+	            for (int i = 0; i < resp.getStarsLMProgramHistoryCount(); i++) {
+	            	StarsLMProgramHistory progHist = resp.getStarsLMProgramHistory(i);
+	            	
+	            	for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
+	            		StarsLMProgram program = programs.getStarsLMProgram(j);
+	            		if (program.getProgramID() == progHist.getProgramID()) {
+	            			program.setStarsLMProgramHistory( progHist );
+	            			program.setStatus( ServletUtils.OUT_OF_SERVICE );
+	            		}
+	            	}
+	            }
+	            ServletUtils.removeProgramHistory( accountInfo.getStarsCustomerAccount().getAccountID() );
             }
-            ServletUtils.removeProgramHistory( accountInfo.getStarsCustomerAccount().getAccountID() );
             
-            if (ServerUtils.isOperator( user )) {
+            // Update hardware history
+            if (resp.getStarsLMHardwareHistoryCount() > 0 && accountInfo.getStarsInventories() != null) {
 				Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 				DeviceStatus hwStatus = (DeviceStatus) StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntry(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL),
 						DeviceStatus.class );
             	
-	            // Update hardware history
 				StarsInventories inventories = accountInfo.getStarsInventories();
 	            for (int i = 0; i < resp.getStarsLMHardwareHistoryCount(); i++) {
 		            StarsLMHardwareHistory hwHist = resp.getStarsLMHardwareHistory(i);
@@ -335,56 +369,35 @@ public class ProgramOptOutAction implements ActionBase {
     		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
     			throw new Exception( "The manufacturer serial # of the hardware cannot be empty" );
 
-            commands[i] = "putconfig xcom serial " + liteHw.getManufactureSerialNumber() +
+            commands[i] = "putconfig serial " + liteHw.getManufactureSerialNumber() +
             			" service out temp offhours " + String.valueOf(offHours) + routeStr;
         }
         
         return commands;
 	}
 	
-	private void repeatLast(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) throws Exception {
-		/* If we find an opt out event under the same account in memory,
-		 * we don't need to resend the command (since it hasn't been sent out yet).
+	boolean repeatLast(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) throws Exception {
+		/* We will only resend the command if there is no opt out event in the event queue
+		 * (otherwise the command hasn't been sent out yet), and there is a reenable event
+		 * (the opt out event is still active)
 		 */
-		OptOutEventQueue.OptOutEvent event = energyCompany.getOptOutEventQueue().findEvent( liteAcctInfo.getCustomerAccount().getAccountID() );
-		if (event != null) return;
+		OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
+		OptOutEventQueue.OptOutEvent e1 = queue.findOptOutEvent( liteAcctInfo.getCustomerAccount().getAccountID() );
+		OptOutEventQueue.OptOutEvent e2 = queue.findReenableEvent( liteAcctInfo.getCustomerAccount().getAccountID() );
+		if (e1 != null || e2 == null) return false;
 		
-		/* Check to see if the last program event is opt out,
-		 * and it hasn't expired yet (the last entry in program event table is future activation)
-		 */
-		boolean isLastEventOptOut = true;
-		LiteLMProgramEvent lastEvent = null;
-		int futureActEntryID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION ).getEntryID();
-		
-		for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
-			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
-			ArrayList progHist = liteProg.getProgramHistory();
-			if (progHist.size() == 0) {
-				isLastEventOptOut = false;
-				break;
-			}
-			
-			LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) progHist.get( progHist.size() - 1 );
-			if (liteEvent.getActionID() != futureActEntryID) {
-				isLastEventOptOut = false;
-				break;
-			}
-			lastEvent = liteEvent;
-		}
-		
-		if (isLastEventOptOut) {
-			int offHours = (int) ((lastEvent.getEventDateTime() - new Date().getTime()) * 0.001 / 3600);
-			if (offHours > 0) {
-				String[] commands = getOptOutCommands( liteAcctInfo, energyCompany, offHours );
-            	for (int i = 0; i < commands.length; i++)
-            		ServerUtils.sendCommand( commands[i] );
-			}
-		}
+		int offHours = (int) ((e2.getStartDateTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
+		String[] commands = getOptOutCommands( liteAcctInfo, energyCompany, offHours );
+    	for (int i = 0; i < commands.length; i++)
+    		ServerUtils.sendCommand( commands[i] );
+    		
+    	return true;
 	}
 	
 	private static StarsProgramOptOutResponse processOptOut(
 			LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, StarsProgramOptOut optOut)
 	{
+		TimeZone tz = TimeZone.getTimeZone( energyCompany.getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE) );
 		StarsProgramOptOutResponse resp = new StarsProgramOptOutResponse();
 		
         Integer hwEventEntryID = new Integer(
@@ -400,15 +413,16 @@ public class ProgramOptOutAction implements ActionBase {
 		
 		Date optOutDate = optOut.getStartDateTime();
 		if (optOutDate == null) optOutDate = new Date();
+		
 		Date reenableDate = null;
-		if (optOut.getPeriod() == OPTOUT_TODAY) {
-			reenableDate = com.cannontech.util.ServletUtil.getTomorrow();
-		}
-		else {
+		if (optOut.getPeriod() > 0) {
 	        Calendar cal = Calendar.getInstance();
 	        cal.setTime( optOutDate );
 	        cal.add( Calendar.DATE, optOut.getPeriod() );
 	        reenableDate = cal.getTime();
+		}
+		else if (optOut.getPeriod() == OPTOUT_TODAY) {
+			reenableDate = ServletUtils.getTomorrow(tz);
 		}
         
         // List of hardware IDs to be disabled
@@ -429,7 +443,7 @@ public class ProgramOptOutAction implements ActionBase {
         	Integer invID = (Integer) hwIDList.get(i);
         	LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
         
-    		ServerUtils.removeLMCustomEvents( liteHw.getLmHardwareHistory(), futureActEntryID.intValue() );
+    		ServerUtils.removeFutureActivationEvents( liteHw.getLmHardwareHistory(), energyCompany );
     		com.cannontech.database.data.multi.MultiDBPersistent multiDB = new com.cannontech.database.data.multi.MultiDBPersistent();
     		
     		// Add "Temp Opt Out" and "Future Activation" to hardware events
@@ -465,13 +479,9 @@ public class ProgramOptOutAction implements ActionBase {
 	            if (appliance.getLmProgramID() == 0) continue;
             	Integer programID = new Integer( appliance.getLmProgramID() );
             	
-            	for (int k = 0; k < liteAcctInfo.getLmPrograms().size(); k++) {
-                	LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(k);
-                	if (liteProg.getLmProgram().getProgramID() == programID.intValue()) {
-                		ServerUtils.replaceLMCustomEvents( liteProg.getProgramHistory(), futureActEntryID.intValue(), actCompEntryID.intValue() );
-                		break;
-                	}
-            	}
+            	LiteStarsLMProgram liteProg = ServerUtils.getLMProgram( liteAcctInfo, programID.intValue() );
+            	if (liteProg != null)
+            		ServerUtils.removeFutureActivationEvents( liteProg.getProgramHistory(), energyCompany );
 	            
 	            com.cannontech.database.data.stars.event.LMProgramEvent event1 =
 	            		new com.cannontech.database.data.stars.event.LMProgramEvent();
@@ -536,10 +546,8 @@ public class ProgramOptOutAction implements ActionBase {
 						(com.cannontech.database.data.stars.event.LMProgramEvent) multiDB.getDBPersistentVector().get(eventNo);
 				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event1 );
 				
-				for (int j = 0; j < liteAcctInfo.getLmPrograms().size(); j++) {
-					LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(j);
-					if (liteProg.getLmProgram().getProgramID() != event1.getLMProgramEvent().getLMProgramID().intValue()) continue;
-					
+				LiteStarsLMProgram liteProg = ServerUtils.getLMProgram( liteAcctInfo, event1.getLMProgramEvent().getLMProgramID().intValue() );
+				if (liteProg != null) {
 					liteProg.getProgramHistory().add( liteEvent );
 					event1 = (com.cannontech.database.data.stars.event.LMProgramEvent) multiDB.getDBPersistentVector().get(eventNo+1);
 					liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event1 );

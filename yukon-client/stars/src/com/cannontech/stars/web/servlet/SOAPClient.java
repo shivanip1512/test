@@ -36,7 +36,7 @@ import com.cannontech.stars.web.action.ProgramReenableAction;
 import com.cannontech.stars.web.action.ProgramSignUpAction;
 import com.cannontech.stars.web.action.ReloadCustAccountAction;
 import com.cannontech.stars.web.action.SearchCustAccountAction;
-import com.cannontech.stars.web.action.SendInterviewAnswersAction;
+import com.cannontech.stars.web.action.SendOptOutNotificationAction;
 import com.cannontech.stars.web.action.SendOddsForControlAction;
 import com.cannontech.stars.web.action.UpdateApplianceAction;
 import com.cannontech.stars.web.action.UpdateCallReportAction;
@@ -94,30 +94,34 @@ public class SOAPClient extends HttpServlet {
 	public void init() throws ServletException {
 		super.init();
 		try {
+			// If "soap_server" is defined in config.properties, it means SOAPServer is running remotely
 			java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle( "config" );
 			SOAP_SERVER_URL = bundle.getString( "soap_server" );
-			CTILogger.info( "SOAP Server is remotely at \"" + SOAP_SERVER_URL + "\"" );
+			CTILogger.info( "SOAP Server resides remotely at " + SOAP_SERVER_URL );
+
+        	StarsOperation respOper = sendRecvOperation( new StarsOperation() );
+        	if (respOper == null)	// This is not good!
+        		CTILogger.error( "Cannot connect to SOAPServer, following operations may not function properly!" );
 			
-			// "soap_server" is defined in config.properties, which means SOAPServer is running remotely
 			setServerLocal( false );
 			SOAPServer.setClientLocal( false );
 			
 			soapMsgr = new SOAPMessenger( SOAP_SERVER_URL );
 		}
 		catch (java.util.MissingResourceException mre) {
-			SOAP_SERVER_URL = "/servlet/SOAPServer";
-			CTILogger.info( "SOAP Server is locally at \"" + SOAP_SERVER_URL + "\"" );
+			setServerLocal( true );
+			SOAPServer.setClientLocal( true );
 		}
 		
 	}
 	
-	private SOAPMessenger getSOAPMessenger() {
+	private static SOAPMessenger getSOAPMessenger() {
 		if (soapMsgr == null)
 			soapMsgr = new SOAPMessenger( SOAP_SERVER_URL );
 		return soapMsgr;
 	}
 
-    private StarsOperation sendRecvOperation(StarsOperation operation) {
+    private static StarsOperation sendRecvOperation(StarsOperation operation) {
         try {
             StringWriter sw = new StringWriter();
             operation.marshal( sw );
@@ -135,6 +139,20 @@ public class SOAPClient extends HttpServlet {
         }
 
         return null;
+    }
+    
+    public static void initSOAPServer(HttpServletRequest req) {
+        if (isServerLocal() && SOAPServer.getInstance() == null) {
+        	// SOAPServer not initiated yet, let's wake it up!
+        	//String reqURL = req.getRequestURL();
+        	String reqURL = javax.servlet.http.HttpUtils.getRequestURL( req ).toString();
+        	SOAP_SERVER_URL = reqURL.substring( 0, reqURL.lastIndexOf("/servlet") ) + "/servlet/SOAPServer";
+			CTILogger.info( "SOAP Server resides locally at " + SOAP_SERVER_URL );
+        	
+        	StarsOperation respOper = sendRecvOperation( new StarsOperation() );
+        	if (respOper == null)	// This is not good!
+        		CTILogger.error( "Cannot initiate SOAPServer, following operations may not function properly!" );
+        }
     }
 
     public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException {
@@ -155,15 +173,7 @@ public class SOAPClient extends HttpServlet {
         	resp.sendRedirect( req.getContextPath() + loginURL ); return;
         }
         
-        if (isServerLocal() && SOAPServer.getInstance() == null) {
-        	// SOAPServer not initiated yet, let's wake it up!
-        	SOAP_SERVER_URL = req.getRequestURL().toString().replaceFirst( "SOAPClient", "SOAPServer" );
-        	//SOAP_SERVER_URL = javax.servlet.http.HttpUtils.getRequestURL( req ).toString().replaceFirst( "SOAPClient", "SOAPServer" );
-        	
-        	StarsOperation respOper = sendRecvOperation( new StarsOperation() );
-        	if (respOper == null)	// This is not good!
-        		CTILogger.error( "Cannot initiate SOAPServer, following operations may not function properly!" );
-        }
+        initSOAPServer( req );
     	
         SOAPMessage reqMsg = null;
         SOAPMessage respMsg = null;
@@ -193,14 +203,9 @@ public class SOAPClient extends HttpServlet {
         	errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
         }
 		else if (action.equalsIgnoreCase("NewCustAccount")) {
-			MultiAction actions = new MultiAction();
-			actions.addAction( new NewCustAccountAction(), req, session );
-			if (req.getParameter("Username") != null && req.getParameter("Username").length() > 0)
-				actions.addAction( new UpdateLoginAction(), req, session );
-				
-			clientAction = (ActionBase) actions;
+			clientAction = new NewCustAccountAction();
 			if (req.getParameter("Wizard") != null) {
-				destURL = req.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true";
+				destURL = req.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true";
 				errorURL = req.getContextPath() + "/operator/Consumer/New.jsp?Wizard=true";
 			}
 			else {
@@ -209,15 +214,9 @@ public class SOAPClient extends HttpServlet {
 			}
 		}
 		else if (action.equalsIgnoreCase("ProgramSignUp")) {
-            MultiAction actions = new MultiAction();
-            if (Boolean.valueOf( req.getParameter("SignUpChanged") ).booleanValue())
-            	actions.addAction( new ProgramSignUpAction(), req, session );
-			if (req.getParameter("Email") != null)
-	            actions.addAction( new UpdateControlNotificationAction(), req, session );
-	            
-			clientAction = (ActionBase) actions;
+			clientAction = new ProgramSignUpAction();
 			if (req.getParameter("Wizard") != null) {
-				destURL = req.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true";
+				destURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
 				errorURL = req.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true";
 			}
 			else {
@@ -271,14 +270,14 @@ public class SOAPClient extends HttpServlet {
             	return;
             }
             else {	// if no exit interview questions, then skip the next page and send out the command immediately
-	    		actions.addAction( new SendInterviewAnswersAction(), req, session );
+	    		actions.addAction( new SendOptOutNotificationAction(), req, session );
 	    		clientAction = actions;
             }
         }
-        else if (action.equalsIgnoreCase("SendExitAnswers")) {
+        else if (action.equalsIgnoreCase("SendOptOutNotification")) {
         	MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_OVER_PAGE_ACTION );
         	session.removeAttribute( ServletUtils.ATT_OVER_PAGE_ACTION );
-        	actions.addAction( new SendInterviewAnswersAction(), req, session );
+        	actions.addAction( new SendOptOutNotificationAction(), req, session );
         	
         	clientAction = actions;
             destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
@@ -294,10 +293,9 @@ public class SOAPClient extends HttpServlet {
             destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
             errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         }
-        else if (action.equalsIgnoreCase("Config")) {
+        else if (action.equalsIgnoreCase("UpdateLMHardwareConfig")) {
         	MultiAction actions = new MultiAction();
-        	if (Boolean.valueOf( req.getParameter("ConfigChanged") ).booleanValue())
-        		actions.addAction( new UpdateLMHardwareConfigAction(), req, session );
+    		actions.addAction( new UpdateLMHardwareConfigAction(), req, session );
         	actions.addAction( new YukonSwitchCommandAction(), req, session );
         		
         	clientAction = (ActionBase) actions;
@@ -358,7 +356,7 @@ public class SOAPClient extends HttpServlet {
         else if (action.equalsIgnoreCase("CreateLMHardware")) {
         	clientAction = new CreateLMHardwareAction();
         	if (req.getParameter("Wizard") != null) {
-        		destURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
+        		destURL = req.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true";
         		errorURL = req.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true";
         	}
         	else {
@@ -450,7 +448,7 @@ public class SOAPClient extends HttpServlet {
         resp.sendRedirect( nextURL );
     }
     
-    private void setErrorMsg(HttpSession session, int status) {
+    public static void setErrorMsg(HttpSession session, int status) {
     	if (status == StarsConstants.FAILURE_CODE_RUNTIME_ERROR)
     		session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to process response message" );
     	else if (status == StarsConstants.FAILURE_CODE_REQUEST_NULL)

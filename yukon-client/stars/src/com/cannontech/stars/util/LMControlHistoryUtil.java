@@ -2,6 +2,7 @@ package com.cannontech.stars.util;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import com.cannontech.database.db.pao.LMControlHistory;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
@@ -26,31 +27,28 @@ public class LMControlHistoryUtil {
         cal.set(Calendar.SECOND, 0);
     }
 
-    private static Date getPeriodStartTime(StarsCtrlHistPeriod period) {
-            Calendar nowCal = Calendar.getInstance();
-
-            if (period.equals( StarsCtrlHistPeriod.PASTDAY )) {
-                clearTime(nowCal);
-            }
-            else if (period.equals( StarsCtrlHistPeriod.PASTWEEK )) {
-                nowCal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-                clearTime(nowCal);
-            }
-            else if (period.equals( StarsCtrlHistPeriod.PASTMONTH )) {
-                nowCal.set(Calendar.DAY_OF_MONTH, 1);
-                clearTime(nowCal);
-            }
-            else if (period.equals( StarsCtrlHistPeriod.PASTYEAR )) {
-                nowCal.set(Calendar.MONTH, Calendar.JANUARY);
-                nowCal.set(Calendar.DAY_OF_MONTH, 1);
-                clearTime(nowCal);
-            }
-            else if (period.equals( StarsCtrlHistPeriod.ALL )) {
-                nowCal = null;
-            }
-
-            if (nowCal != null) return nowCal.getTime();
-            return null;
+    public static Date getPeriodStartTime(StarsCtrlHistPeriod period, TimeZone tz) {
+    	Date date = new Date(0);
+    	Calendar cal = Calendar.getInstance();
+    	cal.setTime( ServletUtils.getToday(tz) );
+    	
+    	if (period.getType() == StarsCtrlHistPeriod.PASTDAY_TYPE) {
+    		date = cal.getTime();
+    	}
+    	else if (period.getType() == StarsCtrlHistPeriod.PASTWEEK_TYPE) {
+    		cal.add( Calendar.WEEK_OF_YEAR, -1 );
+    		date = cal.getTime();
+    	}
+    	else if (period.getType() == StarsCtrlHistPeriod.PASTMONTH_TYPE) {
+    		cal.add( Calendar.MONTH, -1 );
+    		date = cal.getTime();
+    	}
+    	else if (period.getType() == StarsCtrlHistPeriod.PASTYEAR_TYPE) {
+    		cal.add( Calendar.YEAR, -1 );
+    		date = cal.getTime();
+    	}
+    	
+    	return date;
     }
 
     public static com.cannontech.database.db.pao.LMControlHistory[] getLMControlHistory(Integer groupID, StarsCtrlHistPeriod period) {
@@ -64,7 +62,7 @@ public class LMControlHistoryUtil {
                         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
             if (conn == null) return null;
 
-            Date dateFrom = getPeriodStartTime(period);
+            Date dateFrom = getPeriodStartTime(period, TimeZone.getDefault());
 
 			StringBuffer sql = new StringBuffer("SELECT LMCTRLHISTID");
 			for (int i = 0; i < LMControlHistory.SETTER_COLUMNS.length; i++)

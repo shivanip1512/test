@@ -56,6 +56,9 @@ public class SearchCustAccountAction implements ActionBase {
             searchBy.setEntryID( Integer.parseInt(req.getParameter("SearchBy")) );
             searchAccount.setSearchBy( searchBy );
             searchAccount.setSearchValue( req.getParameter("SearchValue") );
+            
+            // Remember the last search option
+            user.setAttribute( ServletUtils.ATT_LAST_SEARCH_OPTION, new Integer(searchBy.getEntryID()) );
 
             StarsOperation operation = new StarsOperation();
             operation.setStarsSearchCustomerAccount( searchAccount );
@@ -127,6 +130,7 @@ public class SearchCustAccountAction implements ActionBase {
 	            StarsCustAccountInformation starsAcctInfo = null;
 	            if (SOAPServer.isClientLocal()) {
 	            	starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
+					ServletUtils.removeTransientAttributes( user );
 	            	user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
 	            }
 	            else	
@@ -223,15 +227,15 @@ public class SearchCustAccountAction implements ActionBase {
     public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
+			
+			StarsSearchCustomerAccountResponse resp = operation.getStarsSearchCustomerAccountResponse();
+            if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
-			StarsFailure failure = operation.getStarsFailure();
+			StarsFailure failure = resp.getStarsFailure();
 			if (failure != null) {
 				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
 				return failure.getStatusCode();
 			}
-			
-			StarsSearchCustomerAccountResponse resp = operation.getStarsSearchCustomerAccountResponse();
-            if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (resp.getStarsCustAccountInformation() != null) {

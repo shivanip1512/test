@@ -39,32 +39,33 @@ public class CustomerAccount extends DBPersistent {
         super();
     }
 
-    public static CustomerAccount searchByAccountNumber(Integer energyCompanyID, String accountNumber) {
+    public static CustomerAccount[] searchByAccountNumber(Integer energyCompanyID, String accountNumber) {
         String sql = "SELECT acct.AccountID, acct.AccountSiteID, acct.AccountNumber, acct.CustomerID, acct.BillingAddressID, acct.AccountNotes, acct.LoginID "
         		   + "FROM ECToAccountMapping map, " + TABLE_NAME + " acct "
                    + "WHERE map.EnergyCompanyID = " + energyCompanyID.toString()
-                   + " AND UPPER(acct.AccountNumber) = UPPER('" + accountNumber + "') AND map.AccountID = acct.AccountID";
+                   + " AND UPPER(acct.AccountNumber) LIKE UPPER('" + accountNumber + "') AND map.AccountID = acct.AccountID";
         com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
         		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
         try
         {
 			stmt.execute();
-			
-			if (stmt.getRowCount() > 0) {
-				Object[] row = stmt.getRow(0);
-				CustomerAccount account = new CustomerAccount();
+    		CustomerAccount[] accounts = new CustomerAccount[ stmt.getRowCount() ];
+    		
+    		for (int i = 0; i < accounts.length; i++) {
+				Object[] row = stmt.getRow(i);
+				accounts[i] = new CustomerAccount();
 
-                account.setAccountID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-                account.setAccountSiteID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
-                account.setAccountNumber( (String) row[2] );
-                account.setCustomerID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
-                account.setBillingAddressID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
-                account.setAccountNotes( (String) row[5] );
-                account.setLoginID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
-
-                return account;
+                accounts[i].setAccountID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+                accounts[i].setAccountSiteID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+                accounts[i].setAccountNumber( (String) row[2] );
+                accounts[i].setCustomerID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+                accounts[i].setBillingAddressID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+                accounts[i].setAccountNotes( (String) row[5] );
+                accounts[i].setLoginID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
             }
+    		
+    		return accounts;
         }
         catch( Exception e )
         {

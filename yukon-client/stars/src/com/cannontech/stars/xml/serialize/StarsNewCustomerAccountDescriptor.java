@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsNewCustomerAccountDescriptor.java,v 1.43 2003/05/22 20:05:07 zyao Exp $
+ * $Id: StarsNewCustomerAccountDescriptor.java,v 1.44 2003/06/20 17:08:42 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.43 $ $Date: 2003/05/22 20:05:07 $
+ * @version $Revision: 1.44 $ $Date: 2003/06/20 17:08:42 $
 **/
 public class StarsNewCustomerAccountDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -123,35 +123,35 @@ public class StarsNewCustomerAccountDescriptor extends org.exolab.castor.xml.uti
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
-        //-- _starsLogin
-        desc = new XMLFieldDescriptorImpl(StarsLogin.class, "_starsLogin", "stars-Login", NodeType.Element);
+        //-- _starsUpdateLogin
+        desc = new XMLFieldDescriptorImpl(StarsUpdateLogin.class, "_starsUpdateLogin", "stars-UpdateLogin", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsNewCustomerAccount target = (StarsNewCustomerAccount) object;
-                return target.getStarsLogin();
+                return target.getStarsUpdateLogin();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsNewCustomerAccount target = (StarsNewCustomerAccount) object;
-                    target.setStarsLogin( (StarsLogin) value);
+                    target.setStarsUpdateLogin( (StarsUpdateLogin) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsLogin();
+                return new StarsUpdateLogin();
             }
         } );
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsLogin
+        //-- validation code for: _starsUpdateLogin
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

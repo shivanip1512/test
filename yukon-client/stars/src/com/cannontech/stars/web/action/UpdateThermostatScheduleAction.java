@@ -190,11 +190,25 @@ public class UpdateThermostatScheduleAction implements ActionBase {
     		StarsUpdateThermostatScheduleResponse resp = new StarsUpdateThermostatScheduleResponse();
     		
 			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( updateSched.getInventoryID(), true );
-    		if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The manufacturer serial # of the hardware cannot be empty") );
+    		if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
+    			if (ServerUtils.isOperator( user ))
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The thermostat is currently out of service, schedule is not sent") );
+    			else
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Your thermostat is currently out of service, schedule is not sent.<br>Please go to the \"Contact Us\" page if you want to contact our CSRs for further information.") );
             	return SOAPUtil.buildSOAPMessage( respOper );
     		}
+    		if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
+    			if (ServerUtils.isOperator( user ))
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The manufacturer serial # of the hardware cannot be empty") );
+	            else
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Not able to send out the schedule to your thermostat.<br>Please go to the \"Contact Us\" page if you want to contact our CSRs for further information.") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+    		}
+    		
 			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
 			
 			LiteStarsThermostatSettings liteSettings = liteAcctInfo.getThermostatSettings();
@@ -573,6 +587,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
             	}
             }
             
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "The thermostat schedule has been updated");
             return 0;
         }
         catch (Exception e) {

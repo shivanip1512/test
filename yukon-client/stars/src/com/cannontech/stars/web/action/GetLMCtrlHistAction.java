@@ -82,10 +82,11 @@ public class GetLMCtrlHistAction implements ActionBase {
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
 
             StarsGetLMControlHistory getHist = reqOper.getStarsGetLMControlHistory();
+            StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
 
             LiteStarsLMControlHistory liteCtrlHist = energyCompany.getLMControlHistory( getHist.getGroupID() );
-            StarsLMControlHistory starsCtrlHist = StarsLiteFactory.createStarsLMControlHistory(
-            		liteCtrlHist, getHist.getPeriod(), getHist.getGetSummary() );
+            if (liteCtrlHist != null)
+	            StarsLiteFactory.setStarsLMControlHistory( starsCtrlHist, liteCtrlHist, getHist.getPeriod(), getHist.getGetSummary() );
                 
             StarsGetLMControlHistoryResponse response = new StarsGetLMControlHistoryResponse();
             response.setStarsLMControlHistory( starsCtrlHist );

@@ -20,7 +20,8 @@ import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.servlet.PILConnectionServlet;
-import com.cannontech.stars.util.task.DailyTimerTask;
+import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.task.HourlyTimerTask;
 import com.cannontech.stars.util.task.LMControlHistoryTimerTask;
 import com.cannontech.stars.util.task.StarsTimerTask;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -58,7 +59,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     private static Timer timer = new Timer();
     
     private StarsTimerTask[] timerTasks = {
-    	new DailyTimerTask(),
+    	new HourlyTimerTask(),
     	new LMControlHistoryTimerTask()
     };
 	
@@ -85,6 +86,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	starsUserList = null;
     	
     	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
+    	com.cannontech.common.constants.YukonListFuncs.releaseAllConstants();
     }
 
     public SOAPServer() {
@@ -360,12 +362,21 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		synchronized (userList) { userList.add( user ); }
 	}
 	
+	public static void deleteStarsYukonUser(int userID) {
+		ArrayList userList = getAllStarsYukonUsers();
+		synchronized (userList) {
+			for (int i = 0; i < userList.size(); i++) {
+				StarsYukonUser user = (StarsYukonUser) userList.get(i);
+				if (user.getUserID() == userID) {
+					userList.remove(i);
+					return;
+				}
+			}
+		}
+	}
+	
 	public static void updateLMControlHistory(LiteStarsLMControlHistory liteCtrlHist) {
 		ArrayList ctrlHist = liteCtrlHist.getLmControlHistory();
-		if (ctrlHist == null) {
-			ctrlHist = new ArrayList();
-			liteCtrlHist.setLmControlHistory( ctrlHist );
-		}
 		
 		int lastCtrlHistID = 0;
 		if (ctrlHist.size() > 0)

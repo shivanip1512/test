@@ -6,15 +6,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteCustomerAccount;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -88,47 +89,53 @@ public class UpdateLoginAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
+	        int userID = liteAcctInfo.getCustomerAccount().getLoginID();
+	        LiteYukonUser liteUser = null;
+	        if (userID != com.cannontech.user.UserUtils.USER_YUKON_ID)
+	        	liteUser = YukonUserFuncs.getLiteYukonUser( userID );
+	        
             StarsUpdateLogin updateLogin = reqOper.getStarsUpdateLogin();
-            if (updateLogin.getUsername().length() == 0 || updateLogin.getPassword().length() == 0) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Username and password cannot be empty") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
+            String username = updateLogin.getUsername();
+            String password = updateLogin.getPassword();
+	        	
+            if (userID == com.cannontech.user.UserUtils.USER_YUKON_ID) {
+            	// Create new customer login
+		        if (username.trim().length() == 0 || password.trim().length() == 0) {
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Username and password cannot be empty") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+		        }
+		        
+		        if (!checkLogin( updateLogin )) {
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Username already exists, please enter a different one") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+		        }
+		        
+            	createLogin( liteAcctInfo.getCustomerAccount(), energyCompany, updateLogin );
             }
-            
-            LiteYukonUser liteUser = null;
-            int loginID = liteAcctInfo.getCustomerAccount().getLoginID();
-            if (loginID != com.cannontech.user.UserUtils.USER_YUKON_ID)
-            	liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( loginID );
-            	
-            if (liteUser == null || !liteUser.getUsername().equalsIgnoreCase( updateLogin.getUsername() )) {
-	            // Check to see if the username already exists
-	            DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-	            synchronized (cache) {
-	            	Iterator it = cache.getAllYukonUsers().iterator();
-	            	while (it.hasNext()) {
-	            		LiteYukonUser lUser = (LiteYukonUser) it.next();
-	            		if (lUser.getUsername().equalsIgnoreCase( updateLogin.getUsername() )) {
-			            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-			            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The username already exists, please enter a different one.") );
-			            	return SOAPUtil.buildSOAPMessage( respOper );
-	            		}
-	            	}
-	            }
-            }
-            
-            if (loginID == com.cannontech.user.UserUtils.USER_YUKON_ID) {
-            	createLogin( liteAcctInfo.getCustomerAccount(),
-	            		updateLogin.getUsername(),
-	            		updateLogin.getPassword(),
-	            		energyCompany.getEnergyCompanySetting(EnergyCompanyRole.CUSTOMER_GROUP_NAME)
-	            		);
+            else if (username.trim().length() == 0) {
+            	// Remove customer login
+		        if (password.trim().length() > 0) {
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Username is empty. To remove the login, clear both username and password") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+		        }
+		        
+		        deleteLogin( liteAcctInfo.getCustomerAccount(), userID );
             }
             else {
+            	// Update customer login
+		        if (!liteUser.getUsername().equalsIgnoreCase(username) && !checkLogin(updateLogin) ) {
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Username already exists, please enter a different one") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+		        }
+
 		        com.cannontech.database.db.user.YukonUser dbUser = (com.cannontech.database.db.user.YukonUser)
 		        		StarsLiteFactory.createDBPersistent( liteUser );
-	            
-	            dbUser.setUsername( updateLogin.getUsername() );
-	            dbUser.setPassword( updateLogin.getPassword() );
+	            dbUser.setUsername( username );
+	            dbUser.setPassword( password );
 	            dbUser = (com.cannontech.database.db.user.YukonUser)
 	            		Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
 	            
@@ -200,11 +207,28 @@ public class UpdateLoginAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static void createLogin(LiteCustomerAccount liteAccount, String username, String password, String groupName)
-	throws com.cannontech.database.TransactionException {
+	/**
+	 * Check to see if the username already exists
+	 */
+	public static boolean checkLogin(StarsUpdateLogin login) {
+        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        synchronized (cache) {
+        	Iterator it = cache.getAllYukonUsers().iterator();
+        	while (it.hasNext()) {
+        		LiteYukonUser lUser = (LiteYukonUser) it.next();
+        		if (lUser.getUsername().equalsIgnoreCase( login.getUsername() ))
+        			return false;
+        	}
+        }
+        
+        return true;
+	}
+	
+	public static void createLogin(LiteCustomerAccount liteAccount, LiteStarsEnergyCompany energyCompany, StarsUpdateLogin login) throws Exception {
         com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
         com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();
         
+        String groupName = energyCompany.getEnergyCompanySetting(EnergyCompanyRole.CUSTOMER_GROUP_NAME);
         DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
         LiteYukonGroup liteGroup = null;
         
@@ -223,8 +247,8 @@ public class UpdateLoginAction implements ActionBase {
         dbGroup.setGroupID( new Integer(liteGroup.getGroupID()) );
         dataUser.getYukonGroups().addElement( dbGroup );
         
-    	dbUser.setUsername( username );
-    	dbUser.setPassword( password );
+    	dbUser.setUsername( login.getUsername() );
+    	dbUser.setPassword( login.getPassword() );
     	dbUser.setStatus( com.cannontech.user.UserUtils.STATUS_ENABLED );
         
     	dataUser = (com.cannontech.database.data.user.YukonUser)
@@ -233,7 +257,7 @@ public class UpdateLoginAction implements ActionBase {
         		dbUser.getUserID().intValue(),
         		dbUser.getUsername(),
         		dbUser.getPassword(),
-        		dbUser.getStatus()
+        		com.cannontech.user.UserUtils.STATUS_ENABLED
         		);
         ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD );
         
@@ -241,6 +265,25 @@ public class UpdateLoginAction implements ActionBase {
         com.cannontech.database.db.stars.customer.CustomerAccount account =
         		(com.cannontech.database.db.stars.customer.CustomerAccount) StarsLiteFactory.createDBPersistent( liteAccount );
         Transaction.createTransaction(Transaction.UPDATE, account).execute();
+	}
+	
+	public static void deleteLogin(LiteCustomerAccount liteAccount, int userID) throws Exception {
+		if (liteAccount != null) {
+	        liteAccount.setLoginID( com.cannontech.user.UserUtils.USER_YUKON_ID );
+	        com.cannontech.database.db.stars.customer.CustomerAccount account =
+	        		(com.cannontech.database.db.stars.customer.CustomerAccount) StarsLiteFactory.createDBPersistent( liteAccount );
+	        Transaction.createTransaction(Transaction.UPDATE, account).execute();
+		}
+        
+		com.cannontech.database.data.user.YukonUser yukonUser = new com.cannontech.database.data.user.YukonUser();
+		yukonUser.setUserID( new Integer(userID) );
+		Transaction.createTransaction(Transaction.DELETE, yukonUser).execute();
+		
+		SOAPServer.deleteStarsYukonUser( userID );
+		ServerUtils.handleDBChange(
+				YukonUserFuncs.getLiteYukonUser( userID ),
+				com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE
+				);
 	}
 
 }

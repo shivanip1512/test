@@ -13,6 +13,11 @@ import java.util.*;
  */
 public class OptOutEventQueue {
 	
+	public static final int PERIOD_REENABLE = -1;
+	private static final int PERIOD_REENABLE2 = -2;
+	
+	private static final long OVERLAP_INTERVAL = 1000 * 60 * 30;	// 30 minutes: if two events are apart for less than this interval, we consider they are overlapping
+	
 	public static class OptOutEvent {
 		private long startDateTime = 0;
 		private int period = 0;
@@ -100,10 +105,20 @@ public class OptOutEventQueue {
 		}
 	}
 	
-	public OptOutEvent findEvent(int accountID) {
+	public OptOutEvent findOptOutEvent(int accountID) {
 		for (int i = 0; i < optOutEvents.size(); i++) {
 			OptOutEvent e = (OptOutEvent) optOutEvents.get(i);
-			if (e.getAccountID() == accountID)
+			if (e.getAccountID() == accountID && e.getPeriod() >= 0)
+				return e;
+		}
+		return null;
+	}
+	
+	public OptOutEvent findReenableEvent(int accountID) {
+		for (int i = 0; i < optOutEvents.size(); i++) {
+			OptOutEvent e = (OptOutEvent) optOutEvents.get(i);
+			if (e.getAccountID() == accountID
+				&& (e.getPeriod() == PERIOD_REENABLE || e.getPeriod() == PERIOD_REENABLE2))
 				return e;
 		}
 		return null;
@@ -155,20 +170,67 @@ public class OptOutEventQueue {
 		newEvents.clear();
 	}
 	
+	/**
+	 * Add an opt out or reenable event to the event queue. There can be at most one
+	 * scheduled opt out event and one reenable event in the queue at the same time,
+	 * the new event will replace the old one if necessary.
+	 * 
+	 * @param event The opt out event to add to the queue
+	 * @param writeThrough Controls whether to write to the disk file immediately
+	 * 
+	 * To increase efficiency, this functions can be called in series with writeThrough
+	 * set to false, followed by a call with writeThrough set to true, and event set
+	 * to null.
+	 */
 	public synchronized void addEvent(OptOutEvent event, boolean writeThrough) {
 		if (event == null) {
 			if (writeThrough) syncToFile();
 			return;
 		}
 		
-		OptOutEvent e = findEvent( event.getAccountID() );
-		if (e != null) {
-			reCreateFile = true;
-			e.setStartDateTime( event.getStartDateTime() );
-			e.setPeriod( event.getPeriod() );
-			e.setCommand( event.getCommand() );
+		OptOutEvent e1 = findOptOutEvent( event.getAccountID() );
+		OptOutEvent e2 = findReenableEvent( event.getAccountID() );
+		
+		if (event.getPeriod() >= 0) {	// This is an opt out event
+			if (e1 != null) {
+				/* Replace any existing scheduled opt out event */
+				optOutEvents.remove( e1 );
+				reCreateFile = true;
+			}
+			optOutEvents.add( event );
+			newEvents.add( event );
+			if (e2 != null && e2.getStartDateTime() > event.getStartDateTime() - OVERLAP_INTERVAL) {
+				/* If an existing reenable event overlaps with this opt out event,
+				 * change the period of the reenable event to PERIOD_REENABLE2,
+				 * which means it won't cause a command being sent, and is left there
+				 * just to keep record of the program status.
+				 */
+				e2.setPeriod( PERIOD_REENABLE2 );
+				reCreateFile = true;
+			}
 		}
-		else {
+		else {		// This is a reenable event
+			if (e2 != null) {
+				/* Replace any existing reenable event */
+				optOutEvents.remove( e2 );
+				reCreateFile = true;
+			}
+			if (e1 != null && event.getStartDateTime() > e1.getStartDateTime() - OVERLAP_INTERVAL) {
+				/* If an existing scheduled opt out event overlaps with this reenable event ... */
+				Calendar cal = Calendar.getInstance();
+				cal.setTime( new Date(e1.getStartDateTime()) );
+				cal.add( Calendar.DATE, e1.getPeriod() );
+				
+				if (cal.getTime().getTime() < event.getStartDateTime() + OVERLAP_INTERVAL) {
+					/* If the extension of the opt out event is shorter than this reenable event, remove it */
+					optOutEvents.remove( e1 );
+					reCreateFile = true;
+				}
+				else {
+					/* Otherwise set the period of the reenable event to PERIOD_REENABLE2 */
+					event.setPeriod( PERIOD_REENABLE2 );
+				}
+			}
 			optOutEvents.add( event );
 			newEvents.add( event );
 		}
@@ -180,26 +242,40 @@ public class OptOutEventQueue {
 		addEvent( event, true );
 	}
 	
-	public synchronized void removeEvent(int accountID) {
-		OptOutEvent e = findEvent( accountID );
-		if (e != null) {
-			optOutEvents.remove( e );
-			reCreateFile = true;
-			syncToFile();
-		}
-	}
-	
-	public synchronized ArrayList consumeEvents(long timeLimit) {
-		ArrayList dueEvents = new ArrayList();
+	public synchronized void removeEvents(int accountID) {
 		for (int i = optOutEvents.size() - 1; i >= 0; i--) {
-			OptOutEvent event = (OptOutEvent) optOutEvents.get(i);
-			if (event.getStartDateTime() <= timeLimit) {
-				dueEvents.add( event );
-				optOutEvents.remove( event );
+			OptOutEvent e = (OptOutEvent) optOutEvents.get(i);
+			if (e.getAccountID() == accountID) {
+				optOutEvents.remove(i);
 				reCreateFile = true;
 			}
 		}
-		if (dueEvents.size() > 0) syncToFile();
+		if (reCreateFile) syncToFile();
+	}
+	
+	/**
+	 * Return all the events in the queue that are due in ascending order of
+	 * their start time. An event is said due if it's earlier than a given
+	 * period of time from now.
+	 */
+	public synchronized OptOutEvent[] getDueEvents(long timeLimit) {
+		TreeMap eventTree = new TreeMap();
+		long now = new Date().getTime();
+		
+		for (int i = optOutEvents.size() - 1; i >= 0; i--) {
+			OptOutEvent event = (OptOutEvent) optOutEvents.get(i);
+			if (event.getStartDateTime() - now <= timeLimit) {
+				if (event.getPeriod() != PERIOD_REENABLE2)
+					eventTree.put( new Long(event.getStartDateTime()), event );
+				optOutEvents.remove( i );
+				reCreateFile = true;
+			}
+		}
+		
+		if (reCreateFile) syncToFile();
+		
+		OptOutEvent[] dueEvents = new OptOutEvent[ eventTree.size() ];
+		eventTree.values().toArray( dueEvents );
 		return dueEvents;
 	}
 	

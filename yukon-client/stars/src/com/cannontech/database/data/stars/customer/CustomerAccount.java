@@ -48,19 +48,15 @@ public class CustomerAccount extends DBPersistent {
         // delete from the mapping table
         delete( "ECToAccountMapping", "AccountID", getCustomerAccount().getAccountID() );
     	
-/* Don't delete hardware information from the database
-		//com.cannontech.database.db.stars.hardware.InventoryBase[] hws = com.cannontech.database.db.stars.hardware.InventoryBase.getAllInventories(
-		//		getCustomerAccount().getAccountID(), getDbConnection() );
-        com.cannontech.database.data.stars.hardware.InventoryBase hw = new com.cannontech.database.data.stars.hardware.InventoryBase();
-        for (int i = 0; i < getInventoryVector().size(); i++) {
-            hw.setInventoryBase( (com.cannontech.database.db.stars.hardware.InventoryBase) getInventoryVector().get(i) );
-            hw.setDbConnection( getDbConnection() );
-            hw.delete();
-        }
-*/
-		Vector invVector = getInventoryVector();
-		for (int i = 0; i < invVector.size(); i++) {
-			com.cannontech.database.db.stars.hardware.InventoryBase inv = (com.cannontech.database.db.stars.hardware.InventoryBase) invVector.get(i);
+        com.cannontech.database.data.stars.hardware.LMHardwareBase hw = new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+		for (int i = 0; i < getInventoryVector().size(); i++) {
+			com.cannontech.database.db.stars.hardware.InventoryBase inv =
+					(com.cannontech.database.db.stars.hardware.InventoryBase) getInventoryVector().get(i);
+			hw.setInventoryID( inv.getInventoryID() );
+			hw.setDbConnection( getDbConnection() );
+			// Don't delete hardware information from the database
+			hw.deleteLMHardwareBase( false );
+			
 			inv.setAccountID( new Integer(com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT) );
 			inv.setDbConnection( getDbConnection() );
 			inv.update();
@@ -69,13 +65,13 @@ public class CustomerAccount extends DBPersistent {
         com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
             getCustomerAccount().getAccountID(), getDbConnection() );
 
-		//com.cannontech.database.db.stars.appliance.ApplianceBase[] apps =
-        //		com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAppliances( getCustomerAccount().getAccountID() );
         for (int i = 0; i < getApplianceVector().size(); i++) {
 			com.cannontech.database.data.stars.appliance.ApplianceBase app =
-        		(com.cannontech.database.data.stars.appliance.ApplianceBase) getApplianceVector().get(i);
-            app.setDbConnection( getDbConnection() );
-            app.delete();
+        			(com.cannontech.database.data.stars.appliance.ApplianceBase) getApplianceVector().get(i);
+        	// hardware configuration has already been deleted, so we just need to use the DB object here
+        	com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
+            appDB.setDbConnection( getDbConnection() );
+            appDB.delete();
         }
         
         getCustomerAccount().delete();
@@ -170,14 +166,21 @@ public class CustomerAccount extends DBPersistent {
         setDbConnection(null);
     }
 
+    /**
+     * This function will return at most one customer account for now,
+     * because the search customer account action expect at most one result.
+     * Although the underlying searchByAccountNumber() function supports
+     * wildcard character (*) and may return multiple results, only the
+     * first of the them (if there is any) will be returned.
+     */
     public static CustomerAccount searchByAccountNumber(Integer energyCompanyID, String accountNumber) {
         try {
-            com.cannontech.database.db.stars.customer.CustomerAccount accountDB =
+            com.cannontech.database.db.stars.customer.CustomerAccount[] accounts =
                         com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber( energyCompanyID, accountNumber );
-            if (accountDB == null) return null;
+            if (accounts == null || accounts.length == 0) return null;
 
             CustomerAccount accountData = new CustomerAccount();
-            accountData.setAccountID( accountDB.getAccountID() );
+            accountData.setAccountID( accounts[0].getAccountID() );
             accountData = (CustomerAccount) Transaction.createTransaction( Transaction.RETRIEVE, accountData ).execute();
             
             return accountData;

@@ -18,6 +18,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -60,9 +61,6 @@ public class ProgramReenableAction implements ActionBase {
 			if (user == null) return null;
 
             StarsProgramReenable reEnable = new StarsProgramReenable();
-            if (req.getParameter("OptOutDate") != null)
-            	reEnable.setContent( "1" );	// Add any string here to indicate "OptOutDate" field is not empty
-
             StarsOperation operation = new StarsOperation();
             operation.setStarsProgramReenable( reEnable );
             
@@ -81,6 +79,7 @@ public class ProgramReenableAction implements ActionBase {
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
         StarsOperation respOper = new StarsOperation();
+        LiteStarsEnergyCompany energyCompany = null;
         
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
@@ -100,17 +99,31 @@ public class ProgramReenableAction implements ActionBase {
         	}
 			
             int energyCompanyID = user.getEnergyCompanyID();
-        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+        	energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
-            StarsProgramReenable reEnable = reqOper.getStarsProgramReenable();
+            StarsProgramReenable reenable = reqOper.getStarsProgramReenable();
+			StarsProgramReenableResponse resp = new StarsProgramReenableResponse();
+			
 			String[] commands = getReenableCommands( liteAcctInfo, energyCompany );
         	for (int i = 0; i < commands.length; i++)
         		ServerUtils.sendCommand( commands[i] );
-			StarsProgramReenableResponse resp = processReenable( liteAcctInfo, energyCompany, reEnable );
+        	
+        	// Send out reenable notification
+        	SendOptOutNotificationAction.sendReenableNotification( energyCompany, liteAcctInfo, reqOper );
 			
-            if (reEnable.getContent() != null)
-            	energyCompany.getOptOutEventQueue().removeEvent( liteAcctInfo.getCustomerAccount().getAccountID() );
-
+			String desc = ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(EnergyCompanyRole.TERM_REENABLE)) + " command has been sent out successfully";
+			
+			OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
+			OptOutEventQueue.OptOutEvent e1 = queue.findOptOutEvent( liteAcctInfo.getCustomerAccount().getAccountID() );
+			OptOutEventQueue.OptOutEvent e2 = queue.findReenableEvent( liteAcctInfo.getCustomerAccount().getAccountID() );
+			queue.removeEvents( liteAcctInfo.getCustomerAccount().getAccountID() );
+			
+			if (e1 != null)
+				desc += ", a scheduled " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_NOUN) + " event is canceled";
+			if (e2 != null)
+				resp = processReenable( liteAcctInfo, energyCompany, reenable );
+			resp.setDescription( desc );
+			
             respOper.setStarsProgramReenableResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
@@ -119,7 +132,7 @@ public class ProgramReenableAction implements ActionBase {
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot reenable the programs") );
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.TERM_REENABLE) + " the programs") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
@@ -147,32 +160,37 @@ public class ProgramReenableAction implements ActionBase {
             if (resp == null)
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             
+            if (resp.getDescription() != null)
+            	session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, resp.getDescription() );
+            
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             
             // Update program history
-			StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
-            for (int i = 0; i < resp.getStarsLMProgramHistoryCount(); i++) {
-            	StarsLMProgramHistory progHist = resp.getStarsLMProgramHistory(i);
-            	
-            	for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
-            		StarsLMProgram program = programs.getStarsLMProgram(j);
-            		if (program.getProgramID() == progHist.getProgramID()) {
-            			program.setStarsLMProgramHistory( progHist );
-            			program.setStatus( ServletUtils.IN_SERVICE );
-            		}
-            	}
+            if (resp.getStarsLMProgramHistoryCount() > 0) {
+				StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
+	            for (int i = 0; i < resp.getStarsLMProgramHistoryCount(); i++) {
+	            	StarsLMProgramHistory progHist = resp.getStarsLMProgramHistory(i);
+	            	
+	            	for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
+	            		StarsLMProgram program = programs.getStarsLMProgram(j);
+	            		if (program.getProgramID() == progHist.getProgramID()) {
+	            			program.setStarsLMProgramHistory( progHist );
+	            			program.setStatus( ServletUtils.IN_SERVICE );
+	            		}
+	            	}
+	            }
+	        	ServletUtils.removeProgramHistory( accountInfo.getStarsCustomerAccount().getAccountID() );
             }
-        	ServletUtils.removeProgramHistory( accountInfo.getStarsCustomerAccount().getAccountID() );
             
-            if (ServerUtils.isOperator( user )) {
+            // Update hardware history
+            if (resp.getStarsLMHardwareHistoryCount() > 0 && accountInfo.getStarsInventories() != null) {
 				Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 				DeviceStatus hwStatus = (DeviceStatus) StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntry(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL),
 						DeviceStatus.class );
             	
-	            // Update hardware history
 				StarsInventories inventories = accountInfo.getStarsInventories();
 	            for (int i = 0; i < resp.getStarsLMHardwareHistoryCount(); i++) {
 		            StarsLMHardwareHistory hwHist = resp.getStarsLMHardwareHistory(i);
@@ -222,7 +240,7 @@ public class ProgramReenableAction implements ActionBase {
     		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
     			throw new Exception( "The manufacturer serial # of the hardware cannot be empty" );
 
-            commands[i] = "putconfig xcom service in temp serial " + liteHw.getManufactureSerialNumber() + routeStr;
+            commands[i] = "putconfig service in temp serial " + liteHw.getManufactureSerialNumber() + routeStr;
         }
         
         return commands;
@@ -257,13 +275,9 @@ public class ProgramReenableAction implements ActionBase {
         for (int i = 0; i < hwIDList.size(); i++) {
         	Integer invID = (Integer) hwIDList.get(i);
         	LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
-        	
-    		// if device status is not temporarily unavailable, then do nothing
-    		if (liteHw.getDeviceStatus() != YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL) continue;
 			
+			ServerUtils.removeFutureActivationEvents( liteHw.getLmHardwareHistory(), energyCompany );
 			com.cannontech.database.data.multi.MultiDBPersistent multiDB = new com.cannontech.database.data.multi.MultiDBPersistent();
-			
-			ServerUtils.removeLMCustomEvents( liteHw.getLmHardwareHistory(), futureActEntryID.intValue() );
     		
     		// Add "Activation Completed" to hardware events
     		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
@@ -285,20 +299,12 @@ public class ProgramReenableAction implements ActionBase {
                 
 	            if (appliance.getLmProgramID() == 0) continue;
             	Integer programID = new Integer( appliance.getLmProgramID() );
-            	
-            	LiteStarsLMProgram liteProg = null;
-            	for (int k = 0; k < liteAcctInfo.getLmPrograms().size(); k++) {
-                	LiteStarsLMProgram lProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(k);
-                	if (lProg.getLmProgram().getProgramID() == programID.intValue()) {
-                		liteProg = lProg;
-                		break;
-                	}
-            	}
+            	LiteStarsLMProgram liteProg = ServerUtils.getLMProgram( liteAcctInfo, programID.intValue() );
             	
             	// If program is already in service, do nothing
         		if (liteProg == null || liteProg.isInService()) continue;
         		
-        		ServerUtils.removeLMCustomEvents( liteProg.getProgramHistory(), futureActEntryID.intValue() );
+        		ServerUtils.removeFutureActivationEvents( liteProg.getProgramHistory(), energyCompany );
 	            
 	            com.cannontech.database.data.stars.event.LMProgramEvent event1 =
 	            		new com.cannontech.database.data.stars.event.LMProgramEvent();
@@ -347,9 +353,8 @@ public class ProgramReenableAction implements ActionBase {
 						(com.cannontech.database.data.stars.event.LMProgramEvent) multiDB.getDBPersistentVector().get(eventNo);
 				liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event1 );
 				
-				for (int k = 0; k < liteAcctInfo.getLmPrograms().size(); k++) {
-					LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(k);
-					if (liteProg.getLmProgram().getProgramID() != event1.getLMProgramEvent().getLMProgramID().intValue()) continue;
+				LiteStarsLMProgram liteProg = ServerUtils.getLMProgram( liteAcctInfo, event1.getLMProgramEvent().getLMProgramID().intValue() );
+				if (liteProg != null) {
 					liteProg.getProgramHistory().add( liteEvent );
 					liteProg.setInService( true );
 					

@@ -1,6 +1,8 @@
 package com.cannontech.database.data.lite.stars;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import com.cannontech.database.data.lite.LiteBase;
 
@@ -19,7 +21,7 @@ public class LiteStarsLMControlHistory extends LiteBase {
 	private int currentMonthStartIndex = 0;
 	private int currentWeekStartIndex = 0;
 	private int currentDayStartIndex = 0;
-	private java.util.ArrayList lmControlHistory = null;
+	private ArrayList lmControlHistory = null;
 	
 	public LiteStarsLMControlHistory() {
 		super();
@@ -38,10 +40,10 @@ public class LiteStarsLMControlHistory extends LiteBase {
 		setLiteID( groupID );
 	}
 	
-	public void updateStartIndices() {
+	public void updateStartIndices(TimeZone tz) {
 		if (lmControlHistory == null) return;
 		
-		java.util.Date endOfDay = com.cannontech.util.ServletUtil.getTomorrow();
+		java.util.Date endOfDay = com.cannontech.stars.util.ServletUtils.getTomorrow( tz );
 		if (Math.abs(timeBase - endOfDay.getTime()) < 1000) return;	// The time stamp is on the same day
 		timeBase = endOfDay.getTime();
 		Calendar limitCal = Calendar.getInstance();
@@ -140,7 +142,9 @@ public class LiteStarsLMControlHistory extends LiteBase {
 	 * Returns the lmControlHistory.
 	 * @return java.util.ArrayList
 	 */
-	public java.util.ArrayList getLmControlHistory() {
+	public ArrayList getLmControlHistory() {
+		if (lmControlHistory == null)
+			lmControlHistory = new ArrayList();
 		return lmControlHistory;
 	}
 
@@ -188,7 +192,7 @@ public class LiteStarsLMControlHistory extends LiteBase {
 	 * Sets the lmControlHistory.
 	 * @param lmControlHistory The lmControlHistory to set
 	 */
-	public void setLmControlHistory(java.util.ArrayList lmControlHistory) {
+	public void setLmControlHistory(ArrayList lmControlHistory) {
 		this.lmControlHistory = lmControlHistory;
 	}
 

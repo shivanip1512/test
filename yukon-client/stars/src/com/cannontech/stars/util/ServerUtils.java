@@ -2,8 +2,10 @@ package com.cannontech.stars.util;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import javax.mail.Address;
 import javax.mail.Message;
@@ -25,6 +27,7 @@ import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
@@ -90,60 +93,22 @@ public class ServerUtils {
 		}
     }
 	
-	public static void replaceLMCustomEvents(ArrayList custEventHist, int oldActionID, int newActionID) {
+	public static void removeFutureActivationEvents(ArrayList custEventHist, LiteStarsEnergyCompany energyCompany) {
+		int futureActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION ).getEntryID();
+		int termID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION ).getEntryID();
+		
 		try {
-			ArrayList eventToBeRemoved = new ArrayList();
-			
-			for (int i = 0; i < custEventHist.size(); i++) {
+			for (int i = custEventHist.size() - 1; i >= 0; i--) {
 				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) custEventHist.get(i);
-				if (liteEvent.getActionID() == oldActionID) {
-					com.cannontech.database.data.stars.event.LMCustomerEventBase event = (com.cannontech.database.data.stars.event.LMCustomerEventBase)
-							StarsLiteFactory.createDBPersistent( liteEvent );
-					com.cannontech.database.db.stars.event.LMCustomerEventBase eventDB = event.getLMCustomerEventBase();
-							
-					if (liteEvent.getEventDateTime() < new Date().getTime()) {
-						// Future activation time earlier than current time, change the entry to "Activation Completed"
-						eventDB = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
-								Transaction.createTransaction( Transaction.RETRIEVE, eventDB ).execute();
-						eventDB.setActionID( new Integer(newActionID) );
-						eventDB = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
-								Transaction.createTransaction( Transaction.UPDATE, eventDB ).execute();
-								
-						liteEvent.setActionID( newActionID );
-					}
-					else {
-						// Future activation time not reached yet, delete the entry
-						Transaction.createTransaction( Transaction.DELETE, event ).execute();
-						eventToBeRemoved.add( liteEvent );
-					}
-				}
-			}
-			
-			for (int i = 0; i < eventToBeRemoved.size(); i++)
-				custEventHist.remove( eventToBeRemoved.get(i) );
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static void removeLMCustomEvents(ArrayList custEventHist, int actionID) {
-		try {
-			ArrayList eventToBeRemoved = new ArrayList();
-			
-			for (int i = 0; i < custEventHist.size(); i++) {
-				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) custEventHist.get(i);
-				if (liteEvent.getActionID() == actionID) {
+				if (liteEvent.getActionID() == termID) break;
+				
+				if (liteEvent.getActionID() == futureActID) {
 					com.cannontech.database.data.stars.event.LMCustomerEventBase event = (com.cannontech.database.data.stars.event.LMCustomerEventBase)
 							StarsLiteFactory.createDBPersistent( liteEvent );
 					Transaction.createTransaction( Transaction.DELETE, event ).execute();
-					
-					eventToBeRemoved.add( liteEvent );
+					custEventHist.remove( i );
 				}
 			}
-			
-			for (int i = 0; i < eventToBeRemoved.size(); i++)
-				custEventHist.remove( eventToBeRemoved.get(i) );
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -209,7 +174,11 @@ public class ServerUtils {
 		Transport.send( emailMsg );
 	}
 	
-	public static String formatDate(Date date) {
+	public static String formatDate(Date date, TimeZone tz) {
+		if (tz != null)
+			dateFormat.setTimeZone( tz );
+		else
+			dateFormat.setTimeZone( TimeZone.getDefault() );
 		return dateFormat.format( date );
 	}
 	
@@ -371,6 +340,15 @@ public class ServerUtils {
 	public static Date translateDate(long time) {
 		if (time < VERY_EARLY_TIME) return null;
 		return new Date(time);
+	}
+	
+	public static LiteStarsLMProgram getLMProgram(LiteStarsCustAccountInformation liteAcctInfo, int programID) {
+		for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
+			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
+			if (liteProg.getLmProgram().getProgramID() == programID)
+				return liteProg;
+		}
+		return null;
 	}
 
 }

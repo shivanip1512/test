@@ -12,15 +12,19 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
+import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.db.stars.hardware.LMHardwareConfiguration;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.action.YukonSwitchCommandAction;
+import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.SULMProgram;
@@ -28,6 +32,8 @@ import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsAppliances;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsInventories;
+import com.cannontech.stars.xml.serialize.StarsLMHardware;
 import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsLogin;
 import com.cannontech.stars.xml.serialize.StarsOperation;
@@ -59,19 +65,29 @@ public class ProgramSignUpAction implements ActionBase {
 			if (req.getParameter("AcctNo") != null)
 				progSignUp.setAccountNumber( req.getParameter("AcctNo") );
 			
-			String[] catIDs = req.getParameterValues( "CatID" );
-			String[] progIDs = req.getParameterValues( "ProgID" );
-			StarsSULMPrograms programs = new StarsSULMPrograms();
-			if (progIDs != null)
-				for (int i = 0; i < progIDs.length; i++) {
-					if (progIDs[i].length() == 0) continue;
-					
-					SULMProgram program = new SULMProgram();
-					program.setProgramID( Integer.parseInt(progIDs[i]) );
-					program.setApplianceCategoryID( Integer.parseInt(catIDs[i]) );
-					programs.addSULMProgram( program );
-				}
-			progSignUp.setStarsSULMPrograms( programs );
+			String notEnrolled = req.getParameter( "NotEnrolled" );
+			if (notEnrolled == null) {
+				StarsSULMPrograms programs = new StarsSULMPrograms();
+				progSignUp.setStarsSULMPrograms( programs );
+				
+				String[] catIDs = req.getParameterValues( "CatID" );
+				String[] progIDs = req.getParameterValues( "ProgID" );
+				if (progIDs != null)
+					for (int i = 0; i < progIDs.length; i++) {
+						if (progIDs[i].length() == 0) continue;
+						
+						SULMProgram program = new SULMProgram();
+						program.setProgramID( Integer.parseInt(progIDs[i]) );
+						program.setApplianceCategoryID( Integer.parseInt(catIDs[i]) );
+						programs.addSULMProgram( program );
+					}
+			}
+			else if (Boolean.valueOf( notEnrolled ).booleanValue()) {
+				StarsSULMPrograms programs = new StarsSULMPrograms();
+				progSignUp.setStarsSULMPrograms( programs );
+			}
+			// else if (notEnrolled.equalsIgnoreCase( "Resend" ))
+				// Resend the not enrolled command
 			
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsProgramSignUp( progSignUp );
@@ -111,10 +127,16 @@ public class ProgramSignUpAction implements ActionBase {
             LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
             LiteStarsCustAccountInformation liteAcctInfo = null;
-            if (user != null)
-            	liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-            else
+            if (progSignUp.getAccountNumber() != null)
             	liteAcctInfo = energyCompany.searchByAccountNumber( progSignUp.getAccountNumber() );
+            else
+            	liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+            
+            if (progSignUp.getStarsSULMPrograms() == null) {
+            	// Resend the not enrolled command
+            	respOper.setStarsProgramSignUpResponse( resendNotEnrolled(energyCompany, liteAcctInfo) );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
 	        	
         	// Get action & event type IDs
         	Integer progEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID() );
@@ -123,10 +145,18 @@ public class ProgramSignUpAction implements ActionBase {
         	Integer dftLocationID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_LOC_UNKNOW).getEntryID() );
         	Integer dftManufacturerID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_MANU_UNKNOWN).getEntryID() );
         	
+        	// If there is only one hardware in this account, use it as the default hardware, and assign all programs to it
+        	Integer dftInvID = null;
+        	if (liteAcctInfo.getInventories().size() == 1)
+        		dftInvID = (Integer) liteAcctInfo.getInventories().get(0);
+        	
         	ArrayList progList = liteAcctInfo.getLmPrograms();
         	ArrayList appList = liteAcctInfo.getAppliances();
         	ArrayList newAppList = new ArrayList();
         	ArrayList newProgList = new ArrayList();
+        	
+        	ArrayList hwIDsToConfig = new ArrayList();
+        	ArrayList hwIDsToDisable = new ArrayList();
         	
 			com.cannontech.database.data.stars.event.LMProgramEvent event =
 					new com.cannontech.database.data.stars.event.LMProgramEvent();
@@ -171,10 +201,7 @@ public class ProgramSignUpAction implements ActionBase {
 						// Add the program to the program list of the account
 		                LiteLMProgram liteProg = energyCompany.getLMProgram( program.getProgramID() );
 		                LiteStarsLMProgram liteStarsProg = new LiteStarsLMProgram( liteProg );
-		                if (liteApp.getInventoryID() > 0) {
-		                	if (liteProg.getGroupIDs() != null || liteProg.getGroupIDs().length > 0)
-		                		liteStarsProg.setGroupID( liteProg.getGroupIDs()[0] );
-		                }
+		                
 		                com.cannontech.database.data.stars.event.LMProgramEvent[] events =
 		                		com.cannontech.database.data.stars.event.LMProgramEvent.getAllLMProgramEvents(
 		                			new Integer(liteAcctInfo.getCustomerAccount().getAccountID()), new Integer(program.getProgramID()) );
@@ -186,6 +213,19 @@ public class ProgramSignUpAction implements ActionBase {
 		                }
 		                liteStarsProg.setInService( true );
 		                newProgList.add( liteStarsProg );
+		                
+		                if (liteApp.getInventoryID() == 0 && dftInvID != null)
+		                	liteApp.setInventoryID( dftInvID.intValue() );
+		                if (liteApp.getInventoryID() > 0) {
+		                	int groupID = 0;
+		                	if (liteProg.getGroupIDs() != null && liteProg.getGroupIDs().length > 0)
+		                		groupID =  liteProg.getGroupIDs()[0];
+		                	liteApp.setAddressingGroupID( groupID );
+	                		liteStarsProg.setGroupID( groupID );
+	                		
+	                		Integer hwID = new Integer( liteApp.getInventoryID() );
+	                		if (!hwIDsToConfig.contains( hwID )) hwIDsToConfig.add( hwID );
+		                }
 						
     					liteApp.setLmProgramID( program.getProgramID() );
     					com.cannontech.database.data.stars.appliance.ApplianceBase app =
@@ -194,6 +234,10 @@ public class ProgramSignUpAction implements ActionBase {
     				}
     				else if (liteApp.getLmProgramID() != program.getProgramID()) {
     					// Add "termination" event to the old program
+    					LiteStarsLMProgram liteStarsProg = ServerUtils.getLMProgram( liteAcctInfo, liteApp.getLmProgramID() );
+    					if (liteStarsProg != null)
+    						ServerUtils.removeFutureActivationEvents( liteStarsProg.getProgramHistory(), energyCompany );
+    					
     					event.setEventID( null );
 						event.setEnergyCompanyID( new Integer(energyCompanyID) );
 						eventDB.setAccountID( accountID );
@@ -211,11 +255,8 @@ public class ProgramSignUpAction implements ActionBase {
 						
 						// Update the program list of the account
 		                LiteLMProgram liteProg = energyCompany.getLMProgram( program.getProgramID() );
-		                LiteStarsLMProgram liteStarsProg = new LiteStarsLMProgram( liteProg );
-		                if (liteApp.getInventoryID() > 0) {
-		                	if (liteProg.getGroupIDs() != null || liteProg.getGroupIDs().length > 0)
-		                		liteStarsProg.setGroupID( liteProg.getGroupIDs()[0] );
-		                }
+		                liteStarsProg = new LiteStarsLMProgram( liteProg );
+		                
 		                com.cannontech.database.data.stars.event.LMProgramEvent[] events =
 		                		com.cannontech.database.data.stars.event.LMProgramEvent.getAllLMProgramEvents(
 		                			new Integer(liteAcctInfo.getCustomerAccount().getAccountID()), new Integer(program.getProgramID()) );
@@ -227,6 +268,19 @@ public class ProgramSignUpAction implements ActionBase {
 		                }
 		                liteStarsProg.setInService( true );
 		                newProgList.add( liteStarsProg );
+		                
+		                if (liteApp.getInventoryID() == 0 && dftInvID != null)
+		                	liteApp.setInventoryID( dftInvID.intValue() );
+		                if (liteApp.getInventoryID() > 0) {
+		                	int groupID = 0;
+		                	if (liteProg.getGroupIDs() != null && liteProg.getGroupIDs().length > 0)
+		                		groupID =  liteProg.getGroupIDs()[0];
+		                	liteApp.setAddressingGroupID( groupID );
+	                		liteStarsProg.setGroupID( groupID );
+		                	
+	                		Integer hwID = new Integer( liteApp.getInventoryID() );
+	                		if (!hwIDsToConfig.contains( hwID )) hwIDsToConfig.add( hwID );
+		                }
 						
     					liteApp.setLmProgramID( program.getProgramID() );
     					com.cannontech.database.data.stars.appliance.ApplianceBase app =
@@ -235,13 +289,9 @@ public class ProgramSignUpAction implements ActionBase {
     				}
     				else {
     					// Just copy the program to the new program list of the account
-    					for (int k = 0; k < progList.size(); k++) {
-    						LiteStarsLMProgram liteStarsProg = (LiteStarsLMProgram) progList.get(k);
-    						if (liteStarsProg.getLmProgram().getProgramID() == program.getProgramID()) {
-    							newProgList.add( liteStarsProg );
-    							break;
-    						}
-    					}
+    					LiteStarsLMProgram liteStarsProg = ServerUtils.getLMProgram( liteAcctInfo, program.getProgramID() );
+    					if (liteStarsProg != null)
+    						newProgList.add( liteStarsProg );
     				}
 					
 					appList.remove( liteApp );
@@ -264,6 +314,7 @@ public class ProgramSignUpAction implements ActionBase {
 					// Add the program to the program list of the account
 	                LiteLMProgram liteProg = energyCompany.getLMProgram( program.getProgramID() );
 	                LiteStarsLMProgram liteStarsProg = new LiteStarsLMProgram( liteProg );
+	                
 	                com.cannontech.database.data.stars.event.LMProgramEvent[] events =
 	                		com.cannontech.database.data.stars.event.LMProgramEvent.getAllLMProgramEvents(
 	                			new Integer(liteAcctInfo.getCustomerAccount().getAccountID()), new Integer(program.getProgramID()) );
@@ -284,6 +335,20 @@ public class ProgramSignUpAction implements ActionBase {
 	        		appDB.setLMProgramID( new Integer(program.getProgramID()) );
 	        		appDB.setLocationID( dftLocationID );
 	        		appDB.setManufacturerID( dftManufacturerID );
+	        		
+	        		if (dftInvID != null) {
+	        			int groupID = 0;
+	        			if (liteProg.getGroupIDs() != null && liteProg.getGroupIDs().length > 0)
+	        				groupID = liteProg.getGroupIDs()[0];
+	        			liteStarsProg.setGroupID( groupID );
+	        				
+	        			LMHardwareConfiguration hwConfig = new LMHardwareConfiguration();
+	        			hwConfig.setInventoryID( dftInvID );
+	        			hwConfig.setAddressingGroupID( new Integer(groupID) );
+	        			app.setLMHardwareConfig( hwConfig );
+	        			
+	        			if (!hwIDsToConfig.contains( dftInvID )) hwIDsToConfig.add( dftInvID );
+	        		}
 	        		app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
 	        				Transaction.createTransaction(Transaction.INSERT, app).execute();
 	        		
@@ -298,6 +363,10 @@ public class ProgramSignUpAction implements ActionBase {
     			
     			if (liteApp.getLmProgramID() != 0) {
 					// Add "termination" event to the old program
+					LiteStarsLMProgram liteStarsProg = ServerUtils.getLMProgram( liteAcctInfo, liteApp.getLmProgramID() );
+					if (liteStarsProg != null)
+						ServerUtils.removeFutureActivationEvents( liteStarsProg.getProgramHistory(), energyCompany );
+					
 					event.setEventID( null );
 					event.setEnergyCompanyID( new Integer(energyCompanyID) );
 					eventDB.setAccountID( accountID );
@@ -306,6 +375,11 @@ public class ProgramSignUpAction implements ActionBase {
 					eventBase.setActionID( termEntryID );
 					eventBase.setEventDateTime( now );
 					Transaction.createTransaction(Transaction.INSERT, event).execute();
+					
+					if (liteApp.getInventoryID() > 0) {
+                		Integer hwID = new Integer( liteApp.getInventoryID() );
+                		if (!hwIDsToDisable.contains( hwID )) hwIDsToDisable.add( hwID );
+					}
 					
 	    			liteApp.setInventoryID( 0 );
 	    			liteApp.setLmProgramID( 0 );
@@ -319,65 +393,121 @@ public class ProgramSignUpAction implements ActionBase {
     			newAppList.add( liteApp );
     		}
     		
+    		// Go through the list of hardware "to be disabled", and move the fake ones to the "to be configured" list
+    		for (int i = 0; i < hwIDsToDisable.size(); i++) {
+    			int invID = ((Integer) hwIDsToDisable.get(i)).intValue();
+    			for (int j = 0; j < newAppList.size(); j++) {
+    				LiteStarsAppliance liteApp = (LiteStarsAppliance) newAppList.get(j);
+    				if (liteApp.getInventoryID() == invID) {
+    					Integer id = (Integer) hwIDsToDisable.remove(i);
+    					if (!hwIDsToConfig.contains( id )) hwIDsToConfig.add( id );
+    					break;
+    				}
+    			}
+    		}
+    		
     		liteAcctInfo.setAppliances( newAppList );
     		liteAcctInfo.setLmPrograms( newProgList );
+			
+			// Send out the config/disable command
+			StarsInventories starsInvs = new StarsInventories();
+			for (int i = 0; i < hwIDsToConfig.size(); i++) {
+				int invID = ((Integer) hwIDsToConfig.get(i)).intValue();
+				StarsLMHardware starsHw = YukonSwitchCommandAction.sendConfigCommand( energyCompany, invID, false );
+				starsInvs.addStarsLMHardware( starsHw );
+			}
+			for (int i = 0; i < hwIDsToDisable.size(); i++) {
+				int invID = ((Integer) hwIDsToDisable.get(i)).intValue();
+				StarsLMHardware starsHw = YukonSwitchCommandAction.sendDisableCommand( energyCompany, invID );
+				starsInvs.addStarsLMHardware( starsHw );
+			}
             
-            if (user != null) {
-				StarsProgramSignUpResponse resp = new StarsProgramSignUpResponse();
-				
-				ArrayList liteProgs = liteAcctInfo.getLmPrograms();
-				StarsLMPrograms starsProgs = new StarsLMPrograms();
-				resp.setStarsLMPrograms( starsProgs );
-				
-				for (int i = 0; i < liteProgs.size(); i++) {
-					LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteProgs.get(i);
-					LiteStarsAppliance liteApp = null;
-					
-					ArrayList liteApps = liteAcctInfo.getAppliances();
-					for (int k = 0; k < liteApps.size(); k++) {
-						LiteStarsAppliance lApp = (LiteStarsAppliance) liteApps.get(k);
-						if (lApp.getLmProgramID() == liteProg.getLmProgram().getProgramID()) {
-							liteApp = lApp;
-							break;
-						}
-					}
-					
-					starsProgs.addStarsLMProgram( StarsLiteFactory.createStarsLMProgram(liteProg, liteApp, energyCompanyID) );
-				}
-				
-				if (SOAPServer.isClientLocal() || ServerUtils.isOperator( user )) {
-					ArrayList liteApps = liteAcctInfo.getAppliances();
-					StarsAppliances starsApps = new StarsAppliances();
-					resp.setStarsAppliances( starsApps );
-					
-					TreeMap tmap = new TreeMap();
-					for (int i = 0; i < liteApps.size(); i++) {
-						LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(i);
-						StarsAppliance starsApp = (StarsAppliance) StarsLiteFactory.createStarsAppliance(liteApp, energyCompanyID);
-						
-						ArrayList list = (ArrayList) tmap.get( starsApp.getDescription() );
-						if (list == null) {
-							list = new ArrayList();
-							tmap.put( starsApp.getDescription(), list );
-						}
-						list.add( starsApp );
-					}
-					
-					Iterator it = tmap.values().iterator();
-					while (it.hasNext()) {
-						ArrayList list = (ArrayList) it.next();
-						for (int i = 0; i < list.size(); i++)
-							starsApps.addStarsAppliance( (StarsAppliance) list.get(i) );
-					}
-				}
-				
-				respOper.setStarsProgramSignUpResponse( resp );
-            }
-            else {
+            if (user == null) {
 	            StarsSuccess success = new StarsSuccess();
 	            respOper.setStarsSuccess( success );
+	            return SOAPUtil.buildSOAPMessage( respOper );
             }
-
+            
+			StarsProgramSignUpResponse resp = new StarsProgramSignUpResponse();
+			
+			String desc = "Program enrollment updated successfully";
+			if (ServerUtils.isOperator( user ))
+				desc += ", please check the hardware configuration";
+			resp.setDescription( desc );
+			
+			ArrayList liteProgs = liteAcctInfo.getLmPrograms();
+			StarsLMPrograms starsProgs = new StarsLMPrograms();
+			resp.setStarsLMPrograms( starsProgs );
+			
+			for (int i = 0; i < liteProgs.size(); i++) {
+				LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteProgs.get(i);
+				LiteStarsAppliance liteApp = null;
+				
+				ArrayList liteApps = liteAcctInfo.getAppliances();
+				for (int k = 0; k < liteApps.size(); k++) {
+					LiteStarsAppliance lApp = (LiteStarsAppliance) liteApps.get(k);
+					if (lApp.getLmProgramID() == liteProg.getLmProgram().getProgramID()) {
+						liteApp = lApp;
+						break;
+					}
+				}
+				
+				starsProgs.addStarsLMProgram( StarsLiteFactory.createStarsLMProgram(liteProg, liteApp, energyCompanyID) );
+			}
+			
+			if (SOAPServer.isClientLocal() || ServerUtils.isOperator( user )) {
+				ArrayList liteApps = liteAcctInfo.getAppliances();
+				StarsAppliances starsApps = new StarsAppliances();
+				resp.setStarsAppliances( starsApps );
+				
+				TreeMap tmap = new TreeMap();
+				for (int i = 0; i < liteApps.size(); i++) {
+					LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(i);
+					StarsAppliance starsApp = (StarsAppliance) StarsLiteFactory.createStarsAppliance(liteApp, energyCompanyID);
+					
+					ArrayList list = (ArrayList) tmap.get( starsApp.getDescription() );
+					if (list == null) {
+						list = new ArrayList();
+						tmap.put( starsApp.getDescription(), list );
+					}
+					list.add( starsApp );
+				}
+				
+				Iterator it = tmap.values().iterator();
+				while (it.hasNext()) {
+					ArrayList list = (ArrayList) it.next();
+					for (int i = 0; i < list.size(); i++)
+						starsApps.addStarsAppliance( (StarsAppliance) list.get(i) );
+				}
+				
+				resp.setStarsInventories( starsInvs );
+			}
+			
+			if (SOAPServer.isClientLocal()) {
+				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
+				
+				if (resp.getStarsLMPrograms() != null)
+					starsAcctInfo.setStarsLMPrograms( resp.getStarsLMPrograms() );
+				if (resp.getStarsAppliances() != null && starsAcctInfo.getStarsAppliances() != null)
+					starsAcctInfo.setStarsAppliances( resp.getStarsAppliances() );
+				
+				if (resp.getStarsInventories() != null && starsAcctInfo.getStarsInventories() != null) {
+					for (int i = 0; i < resp.getStarsInventories().getStarsLMHardwareCount(); i++) {
+			            StarsLMHardware starsHw = resp.getStarsInventories().getStarsLMHardware(i);
+						
+						StarsInventories inventories = starsAcctInfo.getStarsInventories();
+						for (int j = 0; j < inventories.getStarsLMHardwareCount(); j++) {
+							StarsLMHardware hw = inventories.getStarsLMHardware(j);
+							if (hw.getInventoryID() == starsHw.getInventoryID()) {
+								inventories.setStarsLMHardware(j, starsHw);
+								break;
+							}
+						}
+					}
+				}
+			}
+			
+			respOper.setStarsProgramSignUpResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -411,12 +541,34 @@ public class ProgramSignUpAction implements ActionBase {
 			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user != null) {
-				StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+				StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+						user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 				ServletUtils.removeProgramHistory( accountInfo.getStarsCustomerAccount().getAccountID() );
 				
 				StarsProgramSignUpResponse resp = operation.getStarsProgramSignUpResponse();
-				accountInfo.setStarsLMPrograms( resp.getStarsLMPrograms() );
-				accountInfo.setStarsAppliances( resp.getStarsAppliances() );
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, resp.getDescription() );
+				
+				if (!SOAPClient.isServerLocal()) {
+					if (resp.getStarsLMPrograms() != null)
+						accountInfo.setStarsLMPrograms( resp.getStarsLMPrograms() );
+					if (resp.getStarsAppliances() != null && accountInfo.getStarsAppliances() != null)
+						accountInfo.setStarsAppliances( resp.getStarsAppliances() );
+					
+					if (resp.getStarsInventories() != null && accountInfo.getStarsInventories() != null) {
+						for (int i = 0; i < resp.getStarsInventories().getStarsLMHardwareCount(); i++) {
+				            StarsLMHardware starsHw = resp.getStarsInventories().getStarsLMHardware(i);
+							
+							StarsInventories inventories = accountInfo.getStarsInventories();
+							for (int j = 0; j < inventories.getStarsLMHardwareCount(); j++) {
+								StarsLMHardware hw = inventories.getStarsLMHardware(j);
+								if (hw.getInventoryID() == starsHw.getInventoryID()) {
+									inventories.setStarsLMHardware(j, starsHw);
+									break;
+								}
+							}
+						}
+					}
+				}
 			}
 			else {
 	            if (operation.getStarsSuccess() == null)
@@ -430,6 +582,26 @@ public class ProgramSignUpAction implements ActionBase {
         }
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+	}
+	
+	/* For every hardware that's out of service, resend a disable command
+	 */
+	StarsProgramSignUpResponse resendNotEnrolled(LiteStarsEnergyCompany energyCompany, LiteStarsCustAccountInformation liteAcctInfo) throws Exception {
+		StarsProgramSignUpResponse resp = new StarsProgramSignUpResponse();
+		
+		StarsInventories starsInvs = new StarsInventories();
+		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
+			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
+			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID, true );
+			if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
+				YukonSwitchCommandAction.sendDisableCommand( energyCompany, invID );
+				starsInvs.addStarsLMHardware( StarsLiteFactory.createStarsLMHardware(liteHw, energyCompany.getLiteID()) );
+			}
+		}
+		
+		resp.setStarsInventories( starsInvs );
+    	resp.setDescription( "Not enrolled command has been resent successfully" );
+		return resp;
 	}
 
 }

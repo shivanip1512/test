@@ -85,13 +85,11 @@ public class StarsProgramSignUpResponseDescriptor extends org.exolab.castor.xml.
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsLMPrograms
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsAppliances
@@ -124,6 +122,76 @@ public class StarsProgramSignUpResponseDescriptor extends org.exolab.castor.xml.
         
         //-- validation code for: _starsAppliances
         fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsInventories
+        desc = new XMLFieldDescriptorImpl(StarsInventories.class, "_starsInventories", "stars-Inventories", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsProgramSignUpResponse target = (StarsProgramSignUpResponse) object;
+                return target.getStarsInventories();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsProgramSignUpResponse target = (StarsProgramSignUpResponse) object;
+                    target.setStarsInventories( (StarsInventories) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsInventories();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsInventories
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _description
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_description", "Description", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsProgramSignUpResponse target = (StarsProgramSignUpResponse) object;
+                return target.getDescription();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsProgramSignUpResponse target = (StarsProgramSignUpResponse) object;
+                    target.setDescription( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _description
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsProgramSignUpResponseDescriptor()

@@ -28,9 +28,10 @@ import com.cannontech.stars.xml.serialize.StarsProgramReenable;
  * @author yao
  * Run at midnight every day
  */
-public class DailyTimerTask extends StarsTimerTask {
+public class HourlyTimerTask extends StarsTimerTask {
 	
-	private static final long TIMER_PERIOD = 1000 * 60 * 60 * 24;	// 1 day
+	private static final long TIMER_PERIOD = 1000 * 60 * 60;	// 1 hour
+	private static final long TIME_LIMIT = 1000 * 60 * 30;	// 30 minutes
 
 	/**
 	 * @see com.cannontech.stars.util.timertask.StarsTimerTask#isFixedRate()
@@ -50,55 +51,60 @@ public class DailyTimerTask extends StarsTimerTask {
 	 * @see com.cannontech.stars.util.timer.StarsTimer#getNextScheduledTime()
 	 */
 	public Date getNextScheduledTime() {
-		return com.cannontech.util.ServletUtil.getTomorrow();	// Run at every midnight
+		Calendar cal = Calendar.getInstance();
+		cal.set( Calendar.SECOND, 0 );
+		cal.set( Calendar.MINUTE, 0 );
+		cal.add( Calendar.HOUR_OF_DAY, 1 );
+		return cal.getTime();
 	}
 
 	/**
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		CTILogger.info( "*** Daily timer task start ***" );
+		CTILogger.info( "*** Hourly timer task start ***" );
 		
 		/* Check for opted out programs that should be reactivated */
 		LiteStarsEnergyCompany[] companies = SOAPServer.getAllEnergyCompanies();
 		if (companies == null) return;
 		
 		Date now = new Date();
-		Calendar timeLimit = Calendar.getInstance();
-		timeLimit.add(Calendar.HOUR_OF_DAY, 1);	// Give the time limit a one hour margin
-		
 		for (int i = 0; i < companies.length; i++) {
-			ArrayList dueEvents = companies[i].getOptOutEventQueue().consumeEvents( timeLimit.getTime().getTime() );
-			for (int j = 0; j < dueEvents.size(); j++) {
-				OptOutEventQueue.OptOutEvent event = (OptOutEventQueue.OptOutEvent) dueEvents.get(j);
-
+			OptOutEventQueue.OptOutEvent[] dueEvents = companies[i].getOptOutEventQueue().getDueEvents(TIME_LIMIT);
+			
+			for (int j = 0; j < dueEvents.length; j++) {
+				// If the opt out event has already expired, then do nothing
+				if (dueEvents[j].getPeriod() >= 0) {
+					Calendar cal = Calendar.getInstance();
+					cal.add( Calendar.DATE, dueEvents[j].getPeriod() );
+					if (cal.getTime().getTime() - now.getTime() < TIME_LIMIT) continue;
+				}
+				LiteStarsCustAccountInformation liteAcctInfo = companies[i].getCustAccountInformation( dueEvents[j].getAccountID(), true );
+				
 				try {
-					// Execute "opt out" and "reenable" commands
-					StringTokenizer st = new StringTokenizer( event.getCommand(), "," );
+					// Execute "opt out"/"reenable" command
+					StringTokenizer st = new StringTokenizer( dueEvents[j].getCommand(), "," );
 					while (st.hasMoreTokens())
 						ServerUtils.sendCommand( st.nextToken() );
 					
-					// Update the lite and stars objects
-					LiteStarsCustAccountInformation liteAcctInfo = companies[i].getCustAccountInformation( event.getAccountID(), false );
-					if (liteAcctInfo == null) break;
-					if (event.getPeriod() == -1) {	// This is a "reenable" event
+					if (dueEvents[j].getPeriod() == OptOutEventQueue.PERIOD_REENABLE) {	// This is a "reenable" event
 						StarsProgramReenable reEnable = new StarsProgramReenable();
 						ProgramReenableAction.updateCustAccountInfo( liteAcctInfo, companies[i], reEnable );
 					}
 					else {	// This is a "opt out" event
 						StarsProgramOptOut optOut = new StarsProgramOptOut();
-						optOut.setStartDateTime( new Date(event.getStartDateTime()) );
-						optOut.setPeriod( event.getPeriod() );
+						optOut.setStartDateTime( new Date(dueEvents[j].getStartDateTime()) );
+						optOut.setPeriod( dueEvents[j].getPeriod() );
 						ProgramOptOutAction.updateCustAccountInfo( liteAcctInfo, companies[i], optOut );
 						
 						// Insert a corresponding "reenable" event back into the queue
 						OptOutEventQueue.OptOutEvent e = new OptOutEventQueue.OptOutEvent();
 						Calendar cal = Calendar.getInstance();
-						cal.setTime( new Date(event.getStartDateTime()) );
-						cal.add( Calendar.DATE, event.getPeriod() );
+						cal.setTime( new Date(dueEvents[j].getStartDateTime()) );
+						cal.add( Calendar.DATE, dueEvents[j].getPeriod() );
 						e.setStartDateTime( cal.getTime().getTime() );
-						e.setPeriod( -1 );	// "Reenable" event
-						e.setAccountID( event.getAccountID() );
+						e.setPeriod( OptOutEventQueue.PERIOD_REENABLE );
+						e.setAccountID( dueEvents[j].getAccountID() );
 		            	
 						String[] commands = ProgramReenableAction.getReenableCommands( liteAcctInfo, companies[i] );
 		            	StringBuffer cmd = new StringBuffer();
@@ -120,7 +126,7 @@ public class DailyTimerTask extends StarsTimerTask {
 			companies[i].getOptOutEventQueue().addEvent( null, true );
 		}
 		
-		CTILogger.info( "*** Daily timer task stop ***" );
+		CTILogger.info( "*** Hourly timer task stop ***" );
 	}
 
 }

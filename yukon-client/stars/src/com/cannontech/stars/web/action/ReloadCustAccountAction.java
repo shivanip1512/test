@@ -81,7 +81,7 @@ public class ReloadCustAccountAction implements ActionBase {
             
 			StarsCustAccountInformation starsAcctInfo = null;
 			if (SOAPServer.isClientLocal()) {
-				energyCompany.updateCustAccountInformation( liteAcctInfo );
+				//energyCompany.updateCustAccountInformation( liteAcctInfo );
 				starsAcctInfo = energyCompany.updateStarsCustAccountInformation( liteAcctInfo );
 				user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
 			}

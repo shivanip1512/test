@@ -36,6 +36,10 @@ public class StarsProgramSignUpResponse implements java.io.Serializable {
 
     private StarsAppliances _starsAppliances;
 
+    private StarsInventories _starsInventories;
+
+    private java.lang.String _description;
+
 
       //----------------/
      //- Constructors -/
@@ -51,6 +55,16 @@ public class StarsProgramSignUpResponse implements java.io.Serializable {
     //-----------/
 
     /**
+     * Returns the value of field 'description'.
+     * 
+     * @return the value of field 'description'.
+    **/
+    public java.lang.String getDescription()
+    {
+        return this._description;
+    } //-- java.lang.String getDescription() 
+
+    /**
      * Returns the value of field 'starsAppliances'.
      * 
      * @return the value of field 'starsAppliances'.
@@ -59,6 +73,16 @@ public class StarsProgramSignUpResponse implements java.io.Serializable {
     {
         return this._starsAppliances;
     } //-- StarsAppliances getStarsAppliances() 
+
+    /**
+     * Returns the value of field 'starsInventories'.
+     * 
+     * @return the value of field 'starsInventories'.
+    **/
+    public StarsInventories getStarsInventories()
+    {
+        return this._starsInventories;
+    } //-- StarsInventories getStarsInventories() 
 
     /**
      * Returns the value of field 'starsLMPrograms'.
@@ -108,6 +132,16 @@ public class StarsProgramSignUpResponse implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'description'.
+     * 
+     * @param description the value of field 'description'.
+    **/
+    public void setDescription(java.lang.String description)
+    {
+        this._description = description;
+    } //-- void setDescription(java.lang.String) 
+
+    /**
      * Sets the value of field 'starsAppliances'.
      * 
      * @param starsAppliances the value of field 'starsAppliances'.
@@ -116,6 +150,16 @@ public class StarsProgramSignUpResponse implements java.io.Serializable {
     {
         this._starsAppliances = starsAppliances;
     } //-- void setStarsAppliances(StarsAppliances) 
+
+    /**
+     * Sets the value of field 'starsInventories'.
+     * 
+     * @param starsInventories the value of field 'starsInventories'
+    **/
+    public void setStarsInventories(StarsInventories starsInventories)
+    {
+        this._starsInventories = starsInventories;
+    } //-- void setStarsInventories(StarsInventories) 
 
     /**
      * Sets the value of field 'starsLMPrograms'.

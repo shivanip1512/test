@@ -1,10 +1,12 @@
 package com.cannontech.database.data.lite.stars;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.TimeZone;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -16,8 +18,8 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -35,12 +37,15 @@ import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.operator.OddsForControlRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
+import com.cannontech.stars.xml.serialize.ControlHistory;
+import com.cannontech.stars.xml.serialize.ControlSummary;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsCustomerFAQs;
@@ -50,9 +55,12 @@ import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
+import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
+import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsWebConfig;
+import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
 
 /**
@@ -102,8 +110,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private StarsExitInterviewQuestions starsExitQuestions = null;
 	private StarsDefaultThermostatSettings starsThermSettings = null;
 	private Hashtable starsCustSelLists = null;	// Map String(list name) to StarsSelectionListEntry
+	private Hashtable starsCustSelListsCus = null;
 	private Hashtable starsWebConfigs = null;		// Map Integer(web config ID) to StarsWebConfig
 	private Hashtable starsCustAcctInfos = null;	// Map Integer(account ID) to StarsCustAccountInformation
+	private Hashtable starsLMCtrlHists = null;	// Map Integer(group ID) to StarsLMControlHistory
 	
 	
 	public LiteStarsEnergyCompany() {
@@ -307,8 +317,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		starsExitQuestions = null;
 		starsThermSettings = null;
 		starsCustSelLists = null;
+		starsCustSelListsCus = null;
 		starsWebConfigs = null;
 		starsCustAcctInfos = null;
+		starsLMCtrlHists = null;
 	}
 	
 	public String getEnergyCompanySetting(int rolePropertyID) {
@@ -1006,15 +1018,18 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public LiteStarsLMControlHistory getLMControlHistory(int groupID) {
-		ArrayList lmCtrlHistList = getAllLMControlHistory();
+		if (groupID == CtiUtilities.NONE_ID) return null;
+		
+		TimeZone tz = TimeZone.getTimeZone( getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE) );
 		LiteStarsLMControlHistory lmCtrlHist = null;
 		
+		ArrayList lmCtrlHistList = getAllLMControlHistory();
 		synchronized (lmCtrlHistList) {
 			for (int i = 0; i < lmCtrlHistList.size(); i++) {
 				lmCtrlHist = (LiteStarsLMControlHistory) lmCtrlHistList.get(i);
 				if (lmCtrlHist.getGroupID() == groupID) {
-					SOAPServer.updateLMControlHistory( lmCtrlHist );
-					lmCtrlHist.updateStartIndices();
+					//SOAPServer.updateLMControlHistory( lmCtrlHist );
+					//lmCtrlHist.updateStartIndices( tz );
 					return lmCtrlHist;
 				}
 			}
@@ -1028,7 +1043,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		lmCtrlHist = new LiteStarsLMControlHistory( groupID );
 		lmCtrlHist.setLmControlHistory( ctrlHistList );
-		lmCtrlHist.updateStartIndices();
+		//lmCtrlHist.updateStartIndices( tz );
 		
 		synchronized (lmCtrlHistList) { lmCtrlHistList.add( lmCtrlHist ); }
 		return lmCtrlHist;
@@ -1102,7 +1117,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			for (int i = 0; i < custAcctInfoList.size(); i++) {
 				accountInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
 				if (accountInfo.getCustomerAccount().getAccountID() == accountID) {
-					updateCustAccountInformation( accountInfo );
+					//updateCustAccountInformation( accountInfo );
 					return accountInfo;
 				}
 			}
@@ -1193,28 +1208,28 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	                	StarsLiteFactory.setLiteAppGenerator( (LiteStarsAppGenerator) liteApp, app );
                 	}
                 }
-                else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
+                else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER).getEntryID()) {
                 	ApplianceGrainDryer app = ApplianceGrainDryer.getApplianceGrainDryer( appliance.getApplianceBase().getApplianceID() );
                 	if (app != null) {
 	                	liteApp = new LiteStarsAppGrainDryer();
 	                	StarsLiteFactory.setLiteAppGrainDryer( (LiteStarsAppGrainDryer) liteApp, app );
                 	}
                 }
-                else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
+                else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT).getEntryID()) {
                 	ApplianceStorageHeat app = ApplianceStorageHeat.getApplianceStorageHeat( appliance.getApplianceBase().getApplianceID() );
                 	if (app != null) {
 	                	liteApp = new LiteStarsAppStorageHeat();
 	                	StarsLiteFactory.setLiteAppStorageHeat( (LiteStarsAppStorageHeat) liteApp, app );
                 	}
                 }
-                else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
+                else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP).getEntryID()) {
                 	ApplianceHeatPump app = ApplianceHeatPump.getApplianceHeatPump( appliance.getApplianceBase().getApplianceID() );
                 	if (app != null) {
 	                	liteApp = new LiteStarsAppHeatPump();
 	                	StarsLiteFactory.setLiteAppHeatPump( (LiteStarsAppHeatPump) liteApp, app );
                 	}
                 }
-                else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
+                else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION).getEntryID()) {
                 	ApplianceIrrigation app = ApplianceIrrigation.getApplianceIrrigation( appliance.getApplianceBase().getApplianceID() );
                 	if (app != null) {
 	                	liteApp = new LiteStarsAppIrrigation();
@@ -1438,6 +1453,30 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return starsList;
 	}
 	
+	private StarsCustSelectionList getStarsCustSelectionListCus(String listName) {
+		if (starsCustSelListsCus == null) starsCustSelListsCus = new Hashtable();
+		StarsCustSelectionList starsList = (StarsCustSelectionList) starsCustSelListsCus.get( listName );
+		
+		if (starsList == null) {
+			YukonSelectionList yukonList = getYukonSelectionList( listName );
+			if (yukonList != null) {
+				starsList = StarsLiteFactory.createStarsCustSelectionList( yukonList );
+				if (listName.equals( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD )) {
+					// Consumer side opt out period list shouldn't include "repeat last" entry
+					for (int i = starsList.getStarsSelectionListEntryCount() - 1; i >= 0; i--) {
+						if (starsList.getStarsSelectionListEntry(i).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_REPEAT_LAST) {
+							starsList.removeStarsSelectionListEntry(i);
+							break;
+						}
+					}
+				}
+				starsCustSelListsCus.put( starsList.getListName(), starsList );
+			}
+		}
+		
+		return starsList;
+	}
+	
 	public StarsCustomerSelectionLists getStarsCustomerSelectionLists(StarsYukonUser starsUser) {
 		StarsCustomerSelectionLists starsLists = new StarsCustomerSelectionLists();
 		LiteYukonUser liteUser = starsUser.getYukonUser();
@@ -1566,10 +1605,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 		}
 		else if (ServerUtils.isResidentialCustomer( starsUser )) {
+			// Currently the consumer side only need opt out period list and hardware status list
 			if (AuthFuncs.checkRoleProperty( liteUser, ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT )
 				&& !AuthFuncs.checkRoleProperty( liteUser, ResidentialCustomerRole.HIDE_OPT_OUT_BOX )) {
-				StarsCustSelectionList list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
+				StarsCustSelectionList list = getStarsCustSelectionListCus(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
 				if (list != null) starsLists.addStarsCustSelectionList( list );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS) );
 			}
 		}
 		
@@ -1696,6 +1737,73 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public void deleteStarsCustAccountInformation(int accountID) {
 		Hashtable starsCustAcctInfos = getStarsCustAcctInfos();
 		synchronized (starsCustAcctInfos) { starsCustAcctInfos.remove( new Integer(accountID) ); }
+	}
+	
+	public Hashtable getStarsLMCtrlHists() {
+		if (starsLMCtrlHists == null)
+			starsLMCtrlHists = new Hashtable();
+		return starsLMCtrlHists;
+	}
+	
+	private void setControlSummary(StarsLMControlHistory starsCtrlHist, TimeZone tz) {
+		ControlSummary summary = new ControlSummary();
+		int dailyTime = 0;
+		int monthlyTime = 0;
+		int seasonalTime = 0;
+		int annualTime = 0;
+		
+		Date pastDay = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTDAY, tz );
+		Date pastMonth = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTMONTH, tz );
+		Date pastYear = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTYEAR, tz );
+		
+		for (int i = 0; i < starsCtrlHist.getControlHistoryCount(); i++) {
+			ControlHistory ctrlHist = starsCtrlHist.getControlHistory(i);
+			seasonalTime += ctrlHist.getControlDuration();
+			if (ctrlHist.getStartDateTime().after( pastYear )) {
+				annualTime += ctrlHist.getControlDuration();
+				if (ctrlHist.getStartDateTime().after( pastMonth )) {
+					monthlyTime += ctrlHist.getControlDuration();
+					if (ctrlHist.getStartDateTime().after( pastDay ))
+						dailyTime += ctrlHist.getControlDuration();
+				}
+			}
+		}
+		
+		summary.setDailyTime( dailyTime );
+		summary.setMonthlyTime( monthlyTime );
+		summary.setSeasonalTime( seasonalTime );
+		summary.setAnnualTime( annualTime );
+		starsCtrlHist.setControlSummary( summary );
+	}
+	
+	public StarsLMControlHistory getStarsLMControlHistory(LiteStarsLMControlHistory liteCtrlHist) {
+		Hashtable starsLMCtrlHists = getStarsLMCtrlHists();
+		synchronized (starsLMCtrlHists) {
+			Integer groupID = new Integer(liteCtrlHist.getGroupID());
+			StarsLMControlHistory starsCtrlHist = (StarsLMControlHistory) starsLMCtrlHists.get( groupID );
+			if (starsCtrlHist == null) {
+				starsCtrlHist = StarsLiteFactory.createStarsLMControlHistory(
+						liteCtrlHist, StarsCtrlHistPeriod.ALL, false );
+				setControlSummary( starsCtrlHist, TimeZone.getTimeZone(getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE)) );
+				starsLMCtrlHists.put( groupID, starsCtrlHist );
+			}
+			
+			return starsCtrlHist;
+		}
+	}
+	
+	public StarsLMControlHistory updateStarsLMControlHistory(LiteStarsLMControlHistory liteCtrlHist) {
+		Hashtable starsLMCtrlHists = getStarsLMCtrlHists();
+		synchronized (starsLMCtrlHists) {
+			Integer groupID = new Integer(liteCtrlHist.getGroupID());
+			StarsLMControlHistory starsCtrlHist = (StarsLMControlHistory) starsLMCtrlHists.get( groupID );
+			if (starsCtrlHist != null) {
+				StarsLiteFactory.setStarsLMControlHistory( starsCtrlHist, liteCtrlHist, StarsCtrlHistPeriod.ALL, false );
+				setControlSummary( starsCtrlHist, TimeZone.getTimeZone(getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE)) );
+			}
+			
+			return starsCtrlHist;
+		}
 	}
 
 }

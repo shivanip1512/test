@@ -19,9 +19,9 @@ import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.task.SendConfigCommandTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
@@ -85,7 +85,7 @@ public class YukonSwitchCommandAction implements ActionBase {
                 service.setInventoryID( invID );
                 command.setStarsEnableService( service );
             }
-            else if (action.equalsIgnoreCase("Config")) {
+            else if (action.equalsIgnoreCase("UpdateLMHardwareConfig")) {
             	if (invID < 0) return null;
             	StarsConfig service = new StarsConfig();
             	service.setInventoryID( invID );
@@ -131,174 +131,20 @@ public class YukonSwitchCommandAction implements ActionBase {
             StarsYukonSwitchCommand command = reqOper.getStarsYukonSwitchCommand();
             StarsYukonSwitchCommandResponse cmdResp = new StarsYukonSwitchCommandResponse();
             
-            // Get list entry IDs
-            Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
-            Integer tempTermEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION).getEntryID() );
-            Integer futureActEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION).getEntryID() );
-            Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
-            Integer configEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID() );
-            		
-			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
-            
             if (command.getStarsDisableService() != null) {
-                StarsDisableService service = command.getStarsDisableService();
-                Integer invID = new Integer( service.getInventoryID() );
-        		LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
-        		
-        		if (liteHw == null) {
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the hardware to be disabled") );
-	            	return SOAPUtil.buildSOAPMessage( respOper );
-        		}
-        		if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The manufacturer serial # of the hardware cannot be empty") );
-	            	return SOAPUtil.buildSOAPMessage( respOper );
-        		}
-
-                String cmd = "putconfig service out serial " + liteHw.getManufactureSerialNumber() + routeStr;
-                ServerUtils.sendCommand( cmd );
-        		
-        		// Add "Temp Opt Out" to hardware events
-        		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-        		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-        		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
-        		
-        		eventDB.setInventoryID( invID );
-        		eventBase.setEventTypeID( hwEventEntryID );
-        		eventBase.setActionID( tempTermEntryID );
-        		eventBase.setEventDateTime( new Date() );
-        		
-        		event.setEnergyCompanyID( new Integer(energyCompanyID) );
-        		event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-        				Transaction.createTransaction( Transaction.INSERT, event ).execute();
-				
-				// Update lite object and create response
-				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-				liteHw.getLmHardwareHistory().add( liteEvent );
-				liteHw.setDeviceStatus( YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL );
-				
-				StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
-				hwHist.setInventoryID( liteHw.getInventoryID() );
-				for (int k = 0; k < liteHw.getLmHardwareHistory().size(); k++) {
-					liteEvent = (LiteLMCustomerEvent) liteHw.getLmHardwareHistory().get(k);
-					StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
-					StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
-					hwHist.addStarsLMHardwareEvent( starsEvent );
-				}
-				cmdResp.setStarsLMHardwareHistory( hwHist );
+            	int invID = command.getStarsDisableService().getInventoryID();
+            	StarsLMHardware starsHw = sendDisableCommand(energyCompany, invID);
+            	cmdResp.setStarsLMHardware( starsHw );
             }
             else if (command.getStarsEnableService() != null) {
-                StarsEnableService service = command.getStarsEnableService();
-                Integer invID = new Integer( service.getInventoryID() );
-        		LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
-        		
-        		if (liteHw == null) {
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the hardware to be enabled") );
-	            	return SOAPUtil.buildSOAPMessage( respOper );
-        		}
-        		if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The manufacturer serial # of the hardware cannot be empty") );
-	            	return SOAPUtil.buildSOAPMessage( respOper );
-        		}
-
-                String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber() + routeStr;
-                ServerUtils.sendCommand( cmd );
-        		
-        		// Add "Activation Completed" to hardware events
-        		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-        		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-        		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
-        		
-        		eventDB.setInventoryID( invID );
-        		eventBase.setEventTypeID( hwEventEntryID );
-        		eventBase.setActionID( actCompEntryID );
-        		eventBase.setEventDateTime( new Date() );
-        		
-        		event.setEnergyCompanyID( new Integer(energyCompanyID) );
-        		event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-        				Transaction.createTransaction( Transaction.INSERT, event ).execute();
-				
-				// Update lite object and create response
-				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-				liteHw.getLmHardwareHistory().add( liteEvent );
-				liteHw.setDeviceStatus( YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL );
-				
-				StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
-				hwHist.setInventoryID( liteHw.getInventoryID() );
-				for (int k = 0; k < liteHw.getLmHardwareHistory().size(); k++) {
-					liteEvent = (LiteLMCustomerEvent) liteHw.getLmHardwareHistory().get(k);
-					StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
-					StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
-					hwHist.addStarsLMHardwareEvent( starsEvent );
-				}
-				cmdResp.setStarsLMHardwareHistory( hwHist );
+            	int invID = command.getStarsEnableService().getInventoryID();
+            	StarsLMHardware starsHw = sendEnableCommand(energyCompany, invID);
+            	cmdResp.setStarsLMHardware( starsHw );
             }
             else if (command.getStarsConfig() != null) {
-                StarsConfig service = command.getStarsConfig();
-                Integer invID = new Integer( service.getInventoryID() );
-        		LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
-        		
-        		if (liteHw == null) {
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the hardware to be enabled") );
-	            	return SOAPUtil.buildSOAPMessage( respOper );
-        		}
-        		if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The manufacturer serial # of the hardware cannot be empty") );
-	            	return SOAPUtil.buildSOAPMessage( respOper );
-        		}
-        		
-        		com.cannontech.database.db.stars.hardware.LMHardwareConfiguration[] configs =
-        				com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getALLHardwareConfigs( invID );
-        		if (configs == null) {
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the hardware configuration information") );
-	            	return SOAPUtil.buildSOAPMessage( respOper );
-        		}
-        		
-        		ArrayList cmdList = new ArrayList();
-        		for (int i = 0; i < configs.length; i++) {
-        			if (configs[i].getAddressingGroupID().intValue() == 0) continue;
-        			
-        			String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( configs[i].getAddressingGroupID().intValue() );
-	                String cmd = "putconfig serial " + liteHw.getManufactureSerialNumber() + " template '" + groupName + "'" + routeStr;
-	                cmdList.add( cmd );
-        		}
-        		String[] commands = new String[ cmdList.size() ];
-        		cmdList.toArray( commands );
-                sendSwitchCommand( user, commands );
-	            
-	            // Add "Config" to hardware events
-        		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-        		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-        		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
-        		
-        		eventDB.setInventoryID( invID );
-        		eventBase.setEventTypeID( hwEventEntryID );
-        		eventBase.setActionID( configEntryID );
-        		eventBase.setEventDateTime( new Date() );
-        		
-        		event.setEnergyCompanyID( new Integer(energyCompanyID) );
-        		event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-        				Transaction.createTransaction( Transaction.INSERT, event ).execute();
-				
-				// Update lite object and create response
-				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-				liteHw.getLmHardwareHistory().add( liteEvent );
-					
-				StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
-				hwHist.setInventoryID( liteHw.getInventoryID() );
-				for (int k = 0; k < liteHw.getLmHardwareHistory().size(); k++) {
-					liteEvent = (LiteLMCustomerEvent) liteHw.getLmHardwareHistory().get(k);
-					StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
-					StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
-					hwHist.addStarsLMHardwareEvent( starsEvent );
-				}
-				cmdResp.setStarsLMHardwareHistory( hwHist );
+                int invID = command.getStarsConfig().getInventoryID();
+                StarsLMHardware starsHw = sendConfigCommand( energyCompany, invID, true );
+				cmdResp.setStarsLMHardware( starsHw );
             }
 
             respOper.setStarsYukonSwitchCommandResponse( cmdResp );
@@ -337,38 +183,15 @@ public class YukonSwitchCommandAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			
-			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
-			
-			DeviceStatus availStatus = (DeviceStatus) StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntry(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL),
-						DeviceStatus.class );
-			DeviceStatus unavailStatus = (DeviceStatus) StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntry(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL),
-						DeviceStatus.class );
-			
-            // Update hardware history
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsLMHardwareHistory hwHist = resp.getStarsLMHardwareHistory();
+            StarsLMHardware hardware = resp.getStarsLMHardware();
 			
 			StarsInventories inventories = accountInfo.getStarsInventories();
-			for (int j = 0; j < inventories.getStarsLMHardwareCount(); j++) {
-				StarsLMHardware hw = inventories.getStarsLMHardware(j);
-				if (hw.getInventoryID() == hwHist.getInventoryID()) {
-					if (reqOper.getStarsYukonSwitchCommand().getStarsEnableService() != null) {
-						hw.setDeviceStatus( availStatus );
-					}
-					else if (reqOper.getStarsYukonSwitchCommand().getStarsDisableService() != null) {
-						hw.setDeviceStatus( unavailStatus );
-					}
-					else if (reqOper.getStarsYukonSwitchCommand().getStarsConfig() != null) {
-						/* If hardware history is empty, set status to available, otherwise unchanged */
-						if (hw.getStarsLMHardwareHistory() == null || hw.getStarsLMHardwareHistory().getStarsLMHardwareEventCount() == 0)
-							hw.setDeviceStatus( availStatus );
-					}
-					
-					hw.setStarsLMHardwareHistory( hwHist );
+			for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
+				StarsLMHardware hw = inventories.getStarsLMHardware(i);
+				if (hw.getInventoryID() == hardware.getInventoryID()) {
+					inventories.setStarsLMHardware(i, hardware);
+					break;
 				}
 			}
 			
@@ -381,30 +204,158 @@ public class YukonSwitchCommandAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
     }
     
-    private void sendSwitchCommand(StarsYukonUser user, String command) throws IOException {
-    	sendSwitchCommand( user, new String[] { command } );
-    }
+	public static StarsLMHardware sendDisableCommand(LiteStarsEnergyCompany energyCompany, int invID) throws Exception {
+		LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID, true );
+		if (liteHw == null)
+			throw new Exception( "Cannot find the hardware to be configured" );
+		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
+			throw new Exception( "The manufacturer serial # of the hardware cannot be empty" );
+        
+        Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
+        Integer termEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID() );
+        java.util.Date now = new java.util.Date();
+
+		String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
+		
+        String cmd = "putconfig service out serial " + liteHw.getManufactureSerialNumber() + routeStr;
+        ServerUtils.sendCommand( cmd );
+		
+		// Add "Termination" to hardware events
+		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+		
+		eventDB.setInventoryID( new Integer(invID) );
+		eventBase.setEventTypeID( hwEventEntryID );
+		eventBase.setActionID( termEntryID );
+		eventBase.setEventDateTime( new Date() );
+		
+		event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+		event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+				Transaction.createTransaction( Transaction.INSERT, event ).execute();
+		
+		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+		liteHw.getLmHardwareHistory().add( liteEvent );
+		liteHw.setDeviceStatus( YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL );
+		
+		StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany.getLiteID() );
+		return starsHw;
+	}
     
-    private void sendSwitchCommand(StarsYukonUser user, String[] commands) throws IOException {
-    	if (true) {
-    		for (int i = 0; i < commands.length; i++)
-    			ServerUtils.sendCommand( commands[i] );
-    	}
-    	else {
-    		String batchCmdFile = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() )
-    				.getEnergyCompanySetting( EnergyCompanyRole.SWITCH_COMMAND_FILE );
-    		if (batchCmdFile != null) {
-				File f = new File( batchCmdFile );
-				if (!f.exists()) {
-					File dir = new File( f.getParent() );
-					if (!dir.exists()) dir.mkdirs();
-					f.createNewFile();
-				}
-	    		PrintWriter fw = new PrintWriter( new FileWriter(f), true );
-    			for (int i = 0; i < commands.length; i++)
-    				fw.println( commands[i] );
-    			fw.close();
-    		}
-    	}
-    }
+	public static StarsLMHardware sendEnableCommand(LiteStarsEnergyCompany energyCompany, int invID) throws Exception {
+		LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID, true );
+		if (liteHw == null)
+			throw new Exception( "Cannot find the hardware to be configured" );
+		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
+			throw new Exception( "The manufacturer serial # of the hardware cannot be empty" );
+        
+        Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
+        Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
+        java.util.Date now = new java.util.Date();
+
+		String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
+		
+        String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber() + routeStr;
+        ServerUtils.sendCommand( cmd );
+		
+		// Add "Activation Completed" to hardware events
+		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+		
+		eventDB.setInventoryID( new Integer(invID) );
+		eventBase.setEventTypeID( hwEventEntryID );
+		eventBase.setActionID( actCompEntryID );
+		eventBase.setEventDateTime( new Date() );
+		
+		event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+		event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+				Transaction.createTransaction( Transaction.INSERT, event ).execute();
+		
+		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+		liteHw.getLmHardwareHistory().add( liteEvent );
+		liteHw.setDeviceStatus( YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL );
+		
+		StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany.getLiteID() );
+		return starsHw;
+	}
+	
+	public static StarsLMHardware sendConfigCommand(LiteStarsEnergyCompany energyCompany, int invID, boolean forceInService) throws Exception {
+		LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID, true );
+		if (liteHw == null)
+			throw new Exception( "Cannot find the hardware to be configured" );
+		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
+			throw new Exception( "The manufacturer serial # of the hardware cannot be empty" );
+        
+        Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
+        Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
+        Integer configEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID() );
+        java.util.Date now = new java.util.Date();
+        
+		com.cannontech.database.db.stars.hardware.LMHardwareConfiguration[] configs =
+				com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getALLHardwareConfigs( new Integer(invID) );
+		String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
+		
+        if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService) {
+        	if (configs.length > 0) {
+        		// Send an in service command followed by a config command
+				new Thread( new SendConfigCommandTask(energyCompany, liteHw) ).start();
+        	}
+			else {
+				// Only send an in service command
+		        String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber() + routeStr;
+		        ServerUtils.sendCommand( cmd );
+			}
+			
+			// Add "Activation Completed" to hardware events
+			com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+			com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+			
+			eventDB.setInventoryID( new Integer(invID) );
+			eventBase.setEventTypeID( hwEventEntryID );
+			eventBase.setActionID( actCompEntryID );
+			eventBase.setEventDateTime( now );
+			
+			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+			event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+					Transaction.createTransaction( Transaction.INSERT, event ).execute();
+			
+			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+			liteHw.getLmHardwareHistory().add( liteEvent );
+			liteHw.setDeviceStatus( YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL );
+        }
+        else {
+        	// Only send a config command
+			for (int i = 0; i < configs.length; i++) {
+				if (configs[i].getAddressingGroupID().intValue() == 0) continue;
+				
+				String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( configs[i].getAddressingGroupID().intValue() );
+	            String cmd = "putconfig serial " + liteHw.getManufactureSerialNumber() + " template '" + groupName + "'" + routeStr;
+	            ServerUtils.sendCommand( cmd );
+			}
+        }
+		
+		if (configs.length > 0) {
+			// Add "Config" to hardware events
+			com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+			com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+			
+			eventDB.setInventoryID( new Integer(invID) );
+			eventBase.setEventTypeID( hwEventEntryID );
+			eventBase.setActionID( configEntryID );
+			eventBase.setEventDateTime( now );
+			
+			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+			event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+					Transaction.createTransaction( Transaction.INSERT, event ).execute();
+			
+			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+			liteHw.getLmHardwareHistory().add( liteEvent );
+		}
+		
+		StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany.getLiteID() );
+		return starsHw;
+	}
 }

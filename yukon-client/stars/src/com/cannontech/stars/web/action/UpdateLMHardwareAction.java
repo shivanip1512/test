@@ -63,10 +63,6 @@ public class UpdateLMHardwareAction implements ActionBase {
 			volt.setContent( req.getParameter("Voltage") );
 			updateHw.setVoltage( volt );
 			
-			DeviceStatus status = new DeviceStatus();
-			status.setEntryID( Integer.parseInt(req.getParameter("Status")) );
-			updateHw.setDeviceStatus( status );
-			
 			InstallationCompany company = new InstallationCompany();
 			company.setEntryID( Integer.parseInt(req.getParameter("ServiceCompany")) );
 			updateHw.setInstallationCompany( company );
@@ -77,16 +73,10 @@ public class UpdateLMHardwareAction implements ActionBase {
 			updateHw.setAltTrackingNumber( req.getParameter("AltTrackNo") );
 			if (req.getParameter("ReceiveDate") != null && req.getParameter("ReceiveDate").length() > 0)
 				updateHw.setReceiveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("ReceiveDate")) );
-			else
-				updateHw.setReceiveDate( new Date(0) );
 			if (req.getParameter("InstallDate") != null && req.getParameter("InstallDate").length() > 0)
 				updateHw.setInstallDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("InstallDate")) );
-			else
-				updateHw.setInstallDate( new Date(0) );
 			if (req.getParameter("RemoveDate") != null && req.getParameter("RemoveDate").length() > 0)
 				updateHw.setRemoveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("RemoveDate")) );
-			else
-				updateHw.setRemoveDate( new Date(0) );
 			updateHw.setNotes( req.getParameter("Notes") );
 			updateHw.setInstallationNotes( req.getParameter("InstallNotes") );
 			
@@ -136,9 +126,18 @@ public class UpdateLMHardwareAction implements ActionBase {
             		(com.cannontech.database.data.stars.hardware.LMHardwareBase) StarsLiteFactory.createDBPersistent( liteHw );
             hw.getLMHardwareBase().setManufacturerSerialNumber( updateHw.getManufactureSerialNumber() );
             hw.getInventoryBase().setAlternateTrackingNumber( updateHw.getAltTrackingNumber() );
-            hw.getInventoryBase().setInstallDate( updateHw.getInstallDate() );
-            hw.getInventoryBase().setReceiveDate( updateHw.getReceiveDate() );
-            hw.getInventoryBase().setRemoveDate( updateHw.getRemoveDate() );
+            if (updateHw.getInstallDate() != null)
+	            hw.getInventoryBase().setInstallDate( updateHw.getInstallDate() );
+	        else
+	        	hw.getInventoryBase().setInstallDate( new Date(0) );
+	        if (updateHw.getReceiveDate() != null)
+	            hw.getInventoryBase().setReceiveDate( updateHw.getReceiveDate() );
+	        else
+	        	hw.getInventoryBase().setReceiveDate( new Date(0) );
+	        if (updateHw.getRemoveDate() != null)
+	            hw.getInventoryBase().setRemoveDate( updateHw.getRemoveDate() );
+	        else
+	        	hw.getInventoryBase().setRemoveDate( new Date(0) );
             hw.getInventoryBase().setNotes( updateHw.getNotes() );
             hw.getInventoryBase().setInstallationCompanyID( new Integer(updateHw.getInstallationCompany().getEntryID()) );
             

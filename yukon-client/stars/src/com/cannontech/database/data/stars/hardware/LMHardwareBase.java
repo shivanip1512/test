@@ -29,20 +29,34 @@ public class LMHardwareBase extends InventoryBase {
     /**
      * This method is to be called from com.cannontech.database.data.stars.hardware.InventoryBase.delete()
      */
-    public void deleteLMHardwareBase() throws java.sql.SQLException {
+    public void deleteLMHardwareBase(boolean deleteHwInfo) throws java.sql.SQLException {
         // delete from LMHardwareEvent
         com.cannontech.database.data.stars.event.LMHardwareEvent.deleteAllLMHardwareEvents(
-            getInventoryBase().getInventoryID(), getDbConnection() );
+            	getInventoryBase().getInventoryID(), getDbConnection() );
 
         // delete from LMHardwareConfiguration
         com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.deleteAllLMHardwareConfiguration(
-            getInventoryBase().getInventoryID(), getDbConnection() );
+            	getInventoryBase().getInventoryID(), getDbConnection() );
+    	
+    	// delete from LMThermostatSeason
+    	LMThermostatSeason[] thermSeasons = LMThermostatSeason.getAllLMThermostatSeasons( getInventoryBase().getInventoryID() );
+    	if (thermSeasons != null) {
+	    	for (int i = 0; i < thermSeasons.length; i++) {
+	    		thermSeasons[i].setDbConnection( getDbConnection() );
+	    		thermSeasons[i].delete();
+	    	}
+    	}
+    	
+    	// delete from LMThermostatManualEvent
+    	com.cannontech.database.data.stars.event.LMThermostatManualEvent.deleteAllLMThermostatManualEvents(
+    			getInventoryBase().getInventoryID(), getDbConnection() );
 
-        getLMHardwareBase().delete();
+        // deleteHwInfo controls whether to delete the hardware permanantly from the database
+        if (deleteHwInfo) getLMHardwareBase().delete();
     }
 
     public void delete() throws java.sql.SQLException {
-    	deleteLMHardwareBase();
+    	deleteLMHardwareBase( true );
         super.deleteInventoryBase();
     }
 

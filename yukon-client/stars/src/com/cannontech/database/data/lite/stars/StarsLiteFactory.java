@@ -1,6 +1,7 @@
 package com.cannontech.database.data.lite.stars;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -20,12 +21,14 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
+import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
 
 /**
@@ -156,6 +159,7 @@ public class StarsLiteFactory {
 		liteHw.setLmHardwareTypeID( hw.getLMHardwareBase().getLMHardwareTypeID().intValue() );
 		
 		ArrayList hwHist = liteHw.getLmHardwareHistory();
+		hwHist.clear();
 		com.cannontech.database.data.stars.event.LMHardwareEvent[] events =
 				com.cannontech.database.data.stars.event.LMHardwareEvent.getAllLMHardwareEvents( hw.getInventoryBase().getInventoryID() );
 		for (int i = 0; i < events.length; i++) {
@@ -440,6 +444,8 @@ public class StarsLiteFactory {
 		contact.getContact().setContactID( new Integer(liteContact.getContactID()) );
 		contact.getContact().setContLastName( liteContact.getLastName() );
 		contact.getContact().setContFirstName( liteContact.getFirstName() );
+		contact.getContact().setAddressID( new Integer(
+				ContactFuncs.getContact( liteContact.getContactID() ).getAddressID()) );
 		
 		if (liteContact.getHomePhone() != null && liteContact.getHomePhone().length() > 0) {
 			com.cannontech.database.db.contact.ContactNotification notif = new com.cannontech.database.db.contact.ContactNotification();
@@ -726,12 +732,12 @@ public class StarsLiteFactory {
 	
 	public static void setStarsCustomerAddress(StarsCustomerAddress starsAddr, LiteAddress liteAddr) {
 		starsAddr.setAddressID( liteAddr.getAddressID() );
-		starsAddr.setStreetAddr1( forceNotNull(liteAddr.getLocationAddress1()) );
-		starsAddr.setStreetAddr2( forceNotNull(liteAddr.getLocationAddress2()) );
-		starsAddr.setCity( forceNotNull(liteAddr.getCityName()) );
-		starsAddr.setState( forceNotNull(liteAddr.getStateCode()) );
-		starsAddr.setZip( forceNotNull(liteAddr.getZipCode()) );
-		starsAddr.setCounty( forceNotNull(liteAddr.getCounty()) );
+		starsAddr.setStreetAddr1( forceNotNone(liteAddr.getLocationAddress1()) );
+		starsAddr.setStreetAddr2( forceNotNone(liteAddr.getLocationAddress2()) );
+		starsAddr.setCity( forceNotNone(liteAddr.getCityName()) );
+		starsAddr.setState( forceNotNone(liteAddr.getStateCode()) );
+		starsAddr.setZip( forceNotNone(liteAddr.getZipCode()) );
+		starsAddr.setCounty( forceNotNone(liteAddr.getCounty()) );
 	}
 	
 	public static void setStarsLMCustomerEvent(StarsLMCustomerEvent starsEvent, LiteLMCustomerEvent liteEvent) {
@@ -1011,6 +1017,102 @@ public class StarsLiteFactory {
 	        }
 		}
 	}
+	
+	public static void setStarsLMControlHistory(StarsLMControlHistory starsCtrlHist, LiteStarsLMControlHistory liteCtrlHist, StarsCtrlHistPeriod period, boolean getSummary) {
+		starsCtrlHist.removeAllControlHistory();
+        starsCtrlHist.setBeingControlled( false );
+        
+        if (period.getType() != StarsCtrlHistPeriod.NONE_TYPE) {
+	        int startIndex = 0;
+	        if (period.getType() == StarsCtrlHistPeriod.PASTDAY_TYPE)
+	        	startIndex = liteCtrlHist.getCurrentDayStartIndex();
+	        else if (period.getType() == StarsCtrlHistPeriod.PASTWEEK_TYPE)
+	        	startIndex = liteCtrlHist.getCurrentWeekStartIndex();
+	        else if (period.getType() == StarsCtrlHistPeriod.PASTMONTH_TYPE)
+	        	startIndex = liteCtrlHist.getCurrentMonthStartIndex();
+	        else if (period.getType() == StarsCtrlHistPeriod.PASTYEAR_TYPE)
+	        	startIndex = liteCtrlHist.getCurrentYearStartIndex();
+	        
+        	ControlHistory hist = null;
+        	long lastStartTime = 0;
+        	long lastStopTime = 0;
+	        for (int i = startIndex; i < liteCtrlHist.getLmControlHistory().size(); i++) {
+	        	LiteLMControlHistory lmCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(i);
+
+                /*
+                 * ActiveRestore is defined as below:
+                 * N - This is the first entry for any new control.
+                 * C - Previous command was repeated extending the current control interval.
+                 * T - Control terminated based on time set in load group.
+                 * M - Control terminated because of an active restore or terminate command being sent.
+                 * O - Control terminated because a new command of a different nature was sent to this group.
+                 * L - Time log
+                 */
+                if (lmCtrlHist.getActiveRestore().equals("N")) {
+                	if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) > 1000) {
+                		// This is a new control
+	                	lastStartTime = lmCtrlHist.getStartDateTime();
+	                	lastStopTime = lmCtrlHist.getStopDateTime();
+	                	
+	                	hist = new ControlHistory();
+	                	hist.setStartDateTime( new Date(lmCtrlHist.getStartDateTime()) );
+			            hist.setControlDuration( 0 );
+	                	starsCtrlHist.addControlHistory( hist );
+                	}
+                	else {	// This is the continuation of the last control
+                		lastStopTime = lmCtrlHist.getStopDateTime();
+                	}
+                }
+                else if (lmCtrlHist.getActiveRestore().equals("C")
+                		|| lmCtrlHist.getActiveRestore().equals("L"))
+                {
+                	if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) < 1000) {
+                		if (hist != null)
+	                		hist.setControlDuration( (int)(lmCtrlHist.getStopDateTime() - lastStartTime) / 1000 );
+                	}
+                }
+	        	else if (lmCtrlHist.getActiveRestore().equals("M")
+	        			|| lmCtrlHist.getActiveRestore().equals("T")
+	        			|| lmCtrlHist.getActiveRestore().equals("O"))
+	        	{
+	        		if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) < 1000) {
+	        			lastStopTime = lmCtrlHist.getStopDateTime();
+	        			if (hist != null)
+				            hist.setControlDuration( (int)(lmCtrlHist.getStopDateTime() - lastStartTime) / 1000 );
+	        		}
+		            hist = null;
+	        	}
+	        }
+	        
+	        starsCtrlHist.setBeingControlled( new Date().getTime() < lastStopTime );
+        }
+        
+        /* This is wrong!!!
+         * Now the summary is computed at run time from the control history 
+         */
+        if (getSummary) {
+            ControlSummary summary = new ControlSummary();
+            int dailyTime = 0;
+            int monthlyTime = 0;
+            int seasonalTime = 0;
+            int annualTime = 0;
+            
+            int size = liteCtrlHist.getLmControlHistory().size();
+            if (size > 0) {
+            	LiteLMControlHistory lastCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(size - 1);
+            	dailyTime = (int) lastCtrlHist.getCurrentDailyTime();
+            	monthlyTime = (int) lastCtrlHist.getCurrentMonthlyTime();
+            	seasonalTime = (int) lastCtrlHist.getCurrentSeasonalTime();
+            	annualTime = (int) lastCtrlHist.getCurrentAnnualTime();
+            }
+            
+            summary.setDailyTime( dailyTime );
+            summary.setMonthlyTime( monthlyTime );
+            summary.setSeasonalTime( seasonalTime );
+            summary.setAnnualTime( annualTime );
+            starsCtrlHist.setControlSummary( summary );
+        }
+	}
 		
 	
 	public static StarsCustAccountInformation createStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo, int energyCompanyID, boolean isOperator) {
@@ -1128,101 +1230,7 @@ public class StarsLiteFactory {
 	
 	public static StarsLMControlHistory createStarsLMControlHistory(LiteStarsLMControlHistory liteCtrlHist, StarsCtrlHistPeriod period, boolean getSummary) {
         StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
-        starsCtrlHist.setBeingControlled( false );
-        
-        if (period.getType() != StarsCtrlHistPeriod.NONE_TYPE) {
-	        int startIndex = 0;
-	        if (period.getType() == StarsCtrlHistPeriod.PASTDAY_TYPE)
-	        	startIndex = liteCtrlHist.getCurrentDayStartIndex();
-	        else if (period.getType() == StarsCtrlHistPeriod.PASTWEEK_TYPE)
-	        	startIndex = liteCtrlHist.getCurrentWeekStartIndex();
-	        else if (period.getType() == StarsCtrlHistPeriod.PASTMONTH_TYPE)
-	        	startIndex = liteCtrlHist.getCurrentMonthStartIndex();
-	        else if (period.getType() == StarsCtrlHistPeriod.PASTYEAR_TYPE)
-	        	startIndex = liteCtrlHist.getCurrentYearStartIndex();
-	        
-        	ControlHistory hist = null;
-        	long lastStartTime = 0;
-        	long lastStopTime = 0;
-	        for (int i = startIndex; i < liteCtrlHist.getLmControlHistory().size(); i++) {
-	        	LiteLMControlHistory lmCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(i);
-
-                /*
-                 * ActiveRestore is defined as below:
-                 * N - This is the first entry for any new control.
-                 * C - Previous command was repeated extending the current control interval.
-                 * T - Control terminated based on time set in load group.
-                 * M - Control terminated because of an active restore or terminate command being sent.
-                 * O - Control terminated because a new command of a different nature was sent to this group.
-                 * L - Time log
-                 */
-                if (lmCtrlHist.getActiveRestore().equals("N")) {
-                	if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) > 1000) {
-                		// This is a new control
-	                	lastStartTime = lmCtrlHist.getStartDateTime();
-	                	lastStopTime = lmCtrlHist.getStopDateTime();
-	                	
-	                	hist = new ControlHistory();
-	                	hist.setStartDateTime( new Date(lmCtrlHist.getStartDateTime()) );
-			            hist.setControlDuration( 0 );
-	                	starsCtrlHist.addControlHistory( hist );
-                	}
-                	else {	// This is the continuation of the last control
-                		lastStopTime = lmCtrlHist.getStopDateTime();
-                	}
-                }
-                else if (lmCtrlHist.getActiveRestore().equals("C")
-                		|| lmCtrlHist.getActiveRestore().equals("L"))
-                {
-                	if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) < 1000) {
-                		if (hist != null)
-	                		hist.setControlDuration( (int)(lmCtrlHist.getStopDateTime() - lastStartTime) / 1000 );
-                	}
-                }
-	        	else if (lmCtrlHist.getActiveRestore().equals("M")
-	        			|| lmCtrlHist.getActiveRestore().equals("T")
-	        			|| lmCtrlHist.getActiveRestore().equals("O"))
-	        	{
-	        		if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) < 1000) {
-	        			lastStopTime = lmCtrlHist.getStopDateTime();
-	        			if (hist != null)
-				            hist.setControlDuration( (int)(lmCtrlHist.getStopDateTime() - lastStartTime) / 1000 );
-	        		}
-		            hist = null;
-	        	}
-	        }
-	        
-	        starsCtrlHist.setBeingControlled( new Date().getTime() < lastStopTime );
-        }
-        
-        if (getSummary) {
-            ControlSummary summary = new ControlSummary();
-            int dailyTime = 0;
-            int monthlyTime = 0;
-            int seasonalTime = 0;
-            int annualTime = 0;
-            
-            int size = liteCtrlHist.getLmControlHistory().size();
-            if (size > 0) {
-            	LiteLMControlHistory lastCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(size - 1);
-            	seasonalTime = (int) lastCtrlHist.getCurrentSeasonalTime();
-            	if (liteCtrlHist.getCurrentYearStartIndex() < size) {
-            		annualTime = (int) lastCtrlHist.getCurrentAnnualTime();
-            		if (liteCtrlHist.getCurrentMonthStartIndex() < size) {
-            			monthlyTime = (int) lastCtrlHist.getCurrentMonthlyTime();
-		            	if (liteCtrlHist.getCurrentDayStartIndex() < size)
-		            		dailyTime = (int) lastCtrlHist.getCurrentDailyTime();
-            		}
-            	}
-            }
-            
-            summary.setDailyTime( dailyTime );
-            summary.setMonthlyTime( monthlyTime );
-            summary.setSeasonalTime( seasonalTime );
-            summary.setAnnualTime( annualTime );
-            starsCtrlHist.setControlSummary( summary );
-        }
-
+        setStarsLMControlHistory( starsCtrlHist, liteCtrlHist, period, getSummary );
         return starsCtrlHist;
 	}
 	
@@ -1242,7 +1250,9 @@ public class StarsLiteFactory {
 		
 		LiteStarsLMControlHistory liteCtrlHist = energyCompany.getLMControlHistory( liteProg.getGroupID() );
 		if (liteCtrlHist != null)
-			starsProg.setStarsLMControlHistory( createStarsLMControlHistory(liteCtrlHist, StarsCtrlHistPeriod.PASTDAY, true) );
+			starsProg.setStarsLMControlHistory( energyCompany.getStarsLMControlHistory(liteCtrlHist) );
+		else
+			starsProg.setStarsLMControlHistory( new StarsLMControlHistory() );
 		
 		if (liteProg.getProgramHistory() != null) {
 			StarsLMProgramHistory progHist = new StarsLMProgramHistory();
@@ -1314,12 +1324,16 @@ public class StarsLiteFactory {
 		StarsServiceCompany starsCompany = new StarsServiceCompany();
 		starsCompany.setCompanyID( liteCompany.getCompanyID() );
 		starsCompany.setCompanyName( forceNotNull(liteCompany.getCompanyName()) );
-		starsCompany.setMainPhoneNumber( forceNotNull(liteCompany.getMainPhoneNumber()) );
-		starsCompany.setMainFaxNumber( forceNotNull(liteCompany.getMainFaxNumber()) );
+		starsCompany.setMainPhoneNumber( forceNotNone(liteCompany.getMainPhoneNumber()) );
+		starsCompany.setMainFaxNumber( forceNotNone(liteCompany.getMainFaxNumber()) );
+		starsCompany.setCompanyAddress( (CompanyAddress) StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
 		
-		CompanyAddress companyAddr = new CompanyAddress();
-		setStarsCustomerAddress( companyAddr, SOAPServer.getEnergyCompany(energyCompanyID).getAddress( liteCompany.getAddressID()) );
-		starsCompany.setCompanyAddress( companyAddr );
+		if (liteCompany.getAddressID() != CtiUtilities.NONE_ID) {
+			LiteAddress liteAddr = SOAPServer.getEnergyCompany(energyCompanyID).getAddress( liteCompany.getAddressID());
+			CompanyAddress companyAddr = new CompanyAddress();
+			setStarsCustomerAddress( companyAddr, liteAddr );
+			starsCompany.setCompanyAddress( companyAddr );
+		}
 		
 		return starsCompany;
 	}
@@ -1566,27 +1580,30 @@ public class StarsLiteFactory {
 		starsCompany.setMainPhoneNumber( "" );
 		starsCompany.setMainFaxNumber( "" );
 		starsCompany.setEmail( "" );
+		starsCompany.setCompanyAddress( (CompanyAddress) StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
+		starsCompany.setTimeZone( liteCompany.getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE) );
 		
-		LiteContact liteContact = ContactFuncs.getContact( liteCompany.getPrimaryContactID() );
-		if (liteContact != null) {
-			for (int i = 0; i < liteContact.getLiteContactNotifications().size(); i++) {
-				LiteContactNotification liteNotif = (LiteContactNotification) liteContact.getLiteContactNotifications().get(i);
-				if (liteNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_PHONE)
-					starsCompany.setMainPhoneNumber( liteNotif.getNotification() );
-				else if (liteNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_FAX)
-					starsCompany.setMainFaxNumber( liteNotif.getNotification() );
-				else if (liteNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_EMAIL)
-					starsCompany.setEmail( liteNotif.getNotification() );
+		if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ID) {
+			LiteContact liteContact = ContactFuncs.getContact( liteCompany.getPrimaryContactID() );
+			if (liteContact != null) {
+				for (int i = 0; i < liteContact.getLiteContactNotifications().size(); i++) {
+					LiteContactNotification liteNotif = (LiteContactNotification) liteContact.getLiteContactNotifications().get(i);
+					if (liteNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_PHONE)
+						starsCompany.setMainPhoneNumber( liteNotif.getNotification() );
+					else if (liteNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_FAX)
+						starsCompany.setMainFaxNumber( liteNotif.getNotification() );
+					else if (liteNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_EMAIL)
+						starsCompany.setEmail( liteNotif.getNotification() );
+				}
+				
+				if (liteContact.getAddressID() != CtiUtilities.NONE_ID) {
+					LiteAddress liteAddr = liteCompany.getAddress( liteContact.getAddressID() );
+					CompanyAddress starsAddr = new CompanyAddress();
+					setStarsCustomerAddress( starsAddr, liteAddr );
+					starsCompany.setCompanyAddress( starsAddr );
+				}
 			}
-			
-			LiteAddress liteAddr = liteCompany.getAddress( liteContact.getAddressID() );
-			CompanyAddress starsAddr = new CompanyAddress();
-			setStarsCustomerAddress( starsAddr, liteAddr );
-			starsCompany.setCompanyAddress( starsAddr );
 		}
-		
-		starsCompany.setTimeZone(
-				liteCompany.getEnergyCompanySetting(com.cannontech.roles.yukon.EnergyCompanyRole.DEFAULT_TIME_ZONE) );
 		
 		return starsCompany;
 	}
@@ -1681,7 +1698,12 @@ public class StarsLiteFactory {
 	
 	
 	public static String forceNotNull(String str) {
-		return (str == null) ? "" : str;
+		return (str == null) ? "" : str.trim();
+	}
+	
+	public static String forceNotNone(String str) {
+		String str1 = forceNotNull(str);
+		return (str1.equalsIgnoreCase("(none)")) ? "" : str1;
 	}
 	
 	

@@ -57,6 +57,7 @@ public class LMControlHistoryTimerTask extends StarsTimerTask {
 			for (int j = 0; j < ctrlHistList.size(); j++) {
 				LiteStarsLMControlHistory liteCtrlHist = (LiteStarsLMControlHistory) ctrlHistList.get(j);
 				SOAPServer.updateLMControlHistory( liteCtrlHist );
+				companies[i].updateStarsLMControlHistory( liteCtrlHist );
 			}
 		}
 		

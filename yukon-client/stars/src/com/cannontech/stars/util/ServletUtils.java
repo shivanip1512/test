@@ -24,6 +24,7 @@ import com.cannontech.stars.xml.serialize.StarsLMProgramEvent;
 import com.cannontech.stars.xml.serialize.StarsLMProgramHistory;
 import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
+import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 
 /**
  * <p>Title: </p>
@@ -88,6 +89,7 @@ public class ServletUtils {
 	public static final String ATT_ORDER_TRACKING_NUMBER = "ORDER_TRACKING_NUMBER";
 	public static final String ATT_NEW_ACCOUNT_WIZARD = "NEW_ACCOUNT_WIZARD";
 	public static final String ATT_NEW_CUSTOMER_ACCOUNT = "NEW_CUSTOMER_ACCOUNT";
+	public static final String ATT_LAST_SEARCH_OPTION = "LAST_SEARCH_OPTION";
 	
 	public static final String IN_SERVICE = "In Service";
 	public static final String OUT_OF_SERVICE = "Out of Service";
@@ -104,6 +106,11 @@ public class ServletUtils {
     public static final String WEB_TEXT_CONTROL = "web_text_control";
     public static final String WEB_TEXT_CONTROLLED = "web_text_controlled";
     public static final String WEB_TEXT_CONTROLLING = "web_text_controlling";
+    public static final String WEB_TEXT_OPT_OUT_NOUN = "web_text_opt_out_noun";
+    public static final String WEB_TEXT_OPT_OUT_VERB = "web_text_opt_out_verb";
+    public static final String WEB_TEXT_OPT_OUT_PAST = "web_text_opt_out_past";
+    public static final String WEB_TEXT_ODDS_FOR_CONTROL = "web_text_odds_for_control";
+    public static final String WEB_TEXT_REENABLE = "web_text_reenable";
     public static final String WEB_TEXT_REC_SET_BTN = "web_text_recommended_settings_button";
     public static final String WEB_TEXT_GENERAL_TITLE = "web_text_general_title";
     public static final String WEB_TEXT_THERM_SCHED_TITLE = "web_text_thermostat_schedule_title";
@@ -114,19 +121,20 @@ public class ServletUtils {
     public static final String WEB_TEXT_ENROLL_TITLE = "web_text_enrollment_title";
     public static final String WEB_TEXT_OPT_OUT_TITLE = "web_text_opt_out_title";
     public static final String WEB_TEXT_UTIL_TITLE = "web_text_utility_title";
-    public static final String WEB_TEXT_FAQ_TITLE = "web_text_faq_title";
-    public static final String WEB_TEXT_CHG_PASSWD_TITLE = "web_text_change_password_title";
-    public static final String WEB_TEXT_GENERAL_LINK = "web_text_general_link";
+    public static final String WEB_TEXT_THERM_SCHED_LINK = "web_text_thermostat_schedule_link";
+    public static final String WEB_TEXT_THERM_MANUAL_LINK = "web_text_thermostat_manual_link";
     public static final String WEB_TEXT_CTRL_HIST_LINK = "web_text_control_history_link";
     public static final String WEB_TEXT_ENROLL_LINK = "web_text_enrollment_link";
     public static final String WEB_TEXT_OPT_OUT_LINK = "web_text_opt_out_link";
     public static final String WEB_TEXT_OPT_OUT_DESC = "web_text_opt_out_desc";
+    public static final String LOG_OFF_URL = "log_off_url";
     
     private static final String DEFAULT_PROPERTY_FILE = "/default.config.properties";
     
     private static final String TEXT_FORMAT_UPPER = "upper";
     private static final String TEXT_FORMAT_LOWER = "lower";
-    private static final String TEXT_FORMAT_CAPITALIZED = "capitalized";
+    private static final String TEXT_FORMAT_CAPITAL = "capital";
+    private static final String TEXT_FORMAT_CAPITAL2 = "capital2";
 
     private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
     
@@ -197,7 +205,8 @@ public class ServletUtils {
     				while (j < starsProgHist.getStarsLMProgramEventCount() - 1) {
 	    				StarsLMProgramEvent event2 = starsProgHist.getStarsLMProgramEvent(++j);
 	    				if (event2.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION
-	    					|| event2.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED)
+	    					|| event2.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED
+	    					|| event2.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION)
 	    				{
 	    					progHist.duration = getDurationString( event.getEventDateTime(), event2.getEventDateTime() );
 	    					foundDuration = true;
@@ -246,14 +255,15 @@ public class ServletUtils {
     	return format.format( date );
     }
     
-    public static StarsLMControlHistory getTodaysControlHistory(StarsLMControlHistory ctrlHist) {
+    public static StarsLMControlHistory getControlHistory(StarsLMControlHistory ctrlHist, StarsCtrlHistPeriod period, TimeZone tz) {
+    	Date date = LMControlHistoryUtil.getPeriodStartTime( period, tz );
+    	
         StarsLMControlHistory ctrlHistToday = new StarsLMControlHistory();
         ctrlHistToday.setBeingControlled( ctrlHist.getBeingControlled() );
         
-        Date today = com.cannontech.util.ServletUtil.getToday();
         for (int i = ctrlHist.getControlHistoryCount() - 1; i >= 0; i--) {
         	ControlHistory hist = ctrlHist.getControlHistory(i);
-        	if ( hist.getStartDateTime().before(today) ) break;
+        	if ( hist.getStartDateTime().before(date) ) break;
         	ctrlHistToday.addControlHistory( hist );
         }
         
@@ -402,6 +412,20 @@ public class ServletUtils {
     public static String capitalize(String word) {
     	return word.substring(0,1).toUpperCase().concat( word.substring(1).toLowerCase() );
     }
+    
+    public static String capitalize2(String phrase) {
+    	StringTokenizer st = new StringTokenizer( phrase, " ", true );
+    	StringBuffer sb = new StringBuffer();
+    	while (st.hasMoreTokens()) {
+    		String word = st.nextToken();
+    		if (word.equals(" "))
+    			sb.append( word );
+    		else
+    			sb.append( word.substring(0,1).toUpperCase() ).append( word.substring(1).toLowerCase() );
+    	}
+    	
+    	return sb.toString();
+    }
 
 	public static StarsCustListEntry getStarsCustListEntry(java.util.Hashtable selectionLists, String listName, int yukonDefID) {
 		StarsCustSelectionList list = (StarsCustSelectionList) selectionLists.get( listName );
@@ -467,11 +491,36 @@ public class ServletUtils {
 				value = value.toUpperCase();
 			else if (format.equalsIgnoreCase( TEXT_FORMAT_LOWER ))
 				value = value.toLowerCase();
-			else if (format.equalsIgnoreCase( TEXT_FORMAT_CAPITALIZED ))
+			else if (format.equalsIgnoreCase( TEXT_FORMAT_CAPITAL ))
 				value = capitalize( value );
+			else if (format.equalsIgnoreCase( TEXT_FORMAT_CAPITAL2 ))
+				value = capitalize2( value );
 		}
 		
 		return value;
+	}
+	
+	public static Date getToday(TimeZone tz) {
+		Calendar cal = Calendar.getInstance();
+		if (tz != null) cal.setTimeZone( tz );
+		
+	 	cal.set( java.util.Calendar.HOUR_OF_DAY, 0 );
+		cal.set( java.util.Calendar.MINUTE, 0 );
+		cal.set( java.util.Calendar.SECOND, 0 );
+		
+		return cal.getTime();
+	}
+	
+	public static Date getTomorrow(TimeZone tz) {
+		Calendar cal = Calendar.getInstance();
+		if (tz != null) cal.setTimeZone( tz );
+		
+		cal.set( java.util.Calendar.DAY_OF_YEAR, cal.get( java.util.Calendar.DAY_OF_YEAR ) + 1 );
+	 	cal.set( java.util.Calendar.HOUR_OF_DAY, 0 );
+		cal.set( java.util.Calendar.MINUTE, 0 );
+		cal.set( java.util.Calendar.SECOND, 0 );
+		
+		return cal.getTime();
 	}
 
 }

@@ -6,12 +6,7 @@
 			<xs:pattern value="[0-9]{3}-[0-9]{3}-[0-9]{4}"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="stars-LoginType">
-		<xs:restriction base="xs:NMTOKEN">
-			<xs:enumeration value="OperatorLogin"/>
-			<xs:enumeration value="ConsumerLogin"/>
-		</xs:restriction>
-	</xs:simpleType>
+	
 	<xs:simpleType name="stars-SearchByType">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="AccountNumber"/>
@@ -400,7 +395,7 @@
 			<xs:all>
 				<xs:element ref="stars-CustomerAccount"/>
 				<xs:element ref="stars-SULMPrograms" minOccurs="0"/>
-				<xs:element ref="stars-Login" minOccurs="0"/>
+				<xs:element ref="stars-UpdateLogin" minOccurs="0"/>
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
@@ -409,7 +404,7 @@
 			<xs:sequence>
 				<xs:element name="EnergyCompanyID" type="xs:int" minOccurs="0"/>
 				<xs:element name="AccountNumber" type="xs:string" minOccurs="0"/>
-				<xs:element ref="stars-SULMPrograms"/>
+				<xs:element ref="stars-SULMPrograms" minOccurs="0"/>
 				
 			</xs:sequence>
 		</xs:complexType>
@@ -417,9 +412,9 @@
 	<xs:element name="stars-ProgramSignUpResponse">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="stars-LMPrograms"/>
+				<xs:element ref="stars-LMPrograms" minOccurs="0"/>
 				<xs:element ref="stars-Appliances" minOccurs="0"/>
-			</xs:sequence>
+			<xs:element ref="stars-Inventories" minOccurs="0" maxOccurs="1"/><xs:element name="Description" minOccurs="0" type="xs:string"/></xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-LMPrograms">
@@ -540,17 +535,7 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-User" type="stars-Usr"/>
-	<xs:element name="stars-Login">
-		<xs:complexType>
-			<xs:complexContent>
-				<xs:extension base="stars-Usr">
-					<xs:sequence>
-						<xs:element name="LoginType" type="stars-LoginType"/>
-					</xs:sequence>
-				</xs:extension>
-			</xs:complexContent>
-		</xs:complexType>
-	</xs:element>
+	<xs:element name="stars-Login" type="stars-Usr"/>
 	<xs:element name="stars-LoginResponse">
 		<xs:complexType>
 			<xs:sequence>
@@ -772,7 +757,7 @@
 	<xs:element name="stars-YukonSwitchCommandResponse">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="stars-LMHardwareHistory"/>
+				<xs:element ref="stars-LMHardware"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -991,7 +976,7 @@
 			<xs:sequence>
 				<xs:element ref="stars-LMProgramHistory" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="stars-LMHardwareHistory" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
+			<xs:element name="Description" minOccurs="0" type="xs:string"/></xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-ServiceCompany">

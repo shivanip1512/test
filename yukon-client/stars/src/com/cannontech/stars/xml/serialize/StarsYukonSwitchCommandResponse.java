@@ -32,7 +32,7 @@ public class StarsYukonSwitchCommandResponse implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private StarsLMHardwareHistory _starsLMHardwareHistory;
+    private StarsLMHardware _starsLMHardware;
 
 
       //----------------/
@@ -49,14 +49,14 @@ public class StarsYukonSwitchCommandResponse implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'starsLMHardwareHistory'.
+     * Returns the value of field 'starsLMHardware'.
      * 
-     * @return the value of field 'starsLMHardwareHistory'.
+     * @return the value of field 'starsLMHardware'.
     **/
-    public StarsLMHardwareHistory getStarsLMHardwareHistory()
+    public StarsLMHardware getStarsLMHardware()
     {
-        return this._starsLMHardwareHistory;
-    } //-- StarsLMHardwareHistory getStarsLMHardwareHistory() 
+        return this._starsLMHardware;
+    } //-- StarsLMHardware getStarsLMHardware() 
 
     /**
     **/
@@ -96,15 +96,14 @@ public class StarsYukonSwitchCommandResponse implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'starsLMHardwareHistory'.
+     * Sets the value of field 'starsLMHardware'.
      * 
-     * @param starsLMHardwareHistory the value of field
-     * 'starsLMHardwareHistory'.
+     * @param starsLMHardware the value of field 'starsLMHardware'.
     **/
-    public void setStarsLMHardwareHistory(StarsLMHardwareHistory starsLMHardwareHistory)
+    public void setStarsLMHardware(StarsLMHardware starsLMHardware)
     {
-        this._starsLMHardwareHistory = starsLMHardwareHistory;
-    } //-- void setStarsLMHardwareHistory(StarsLMHardwareHistory) 
+        this._starsLMHardware = starsLMHardware;
+    } //-- void setStarsLMHardware(StarsLMHardware) 
 
     /**
      * 

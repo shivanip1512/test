@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLoginDescriptor.java,v 1.43 2003/05/22 20:05:10 zyao Exp $
+ * $Id: StarsLoginDescriptor.java,v 1.44 2003/06/20 17:08:49 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.43 $ $Date: 2003/05/22 20:05:10 $
+ * @version $Revision: 1.44 $ $Date: 2003/06/20 17:08:49 $
 **/
-public class StarsLoginDescriptor extends com.cannontech.stars.xml.serialize.StarsUsrDescriptor {
+public class StarsLoginDescriptor extends StarsUsrDescriptor {
 
 
       //--------------------------/
@@ -49,52 +49,14 @@ public class StarsLoginDescriptor extends com.cannontech.stars.xml.serialize.Sta
 
     public StarsLoginDescriptor() {
         super();
-        setExtendsWithoutFlatten(new com.cannontech.stars.xml.serialize.StarsUsrDescriptor());
+        setExtendsWithoutFlatten(new StarsUsrDescriptor());
         xmlName = "stars-Login";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
-        
-        //-- _loginType
-        desc = new XMLFieldDescriptorImpl(com.cannontech.stars.xml.serialize.types.StarsLoginType.class, "_loginType", "LoginType", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsLogin target = (StarsLogin) object;
-                return target.getLoginType();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsLogin target = (StarsLogin) object;
-                    target.setLoginType( (com.cannontech.stars.xml.serialize.types.StarsLoginType) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler( new EnumFieldHandler(com.cannontech.stars.xml.serialize.types.StarsLoginType.class, handler));
-        desc.setImmutable(true);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _loginType
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsLoginDescriptor()
 

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsNewCustomerAccount.java,v 1.43 2003/05/22 20:05:08 zyao Exp $
+ * $Id: StarsNewCustomerAccount.java,v 1.44 2003/06/20 17:08:44 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Create new customer account
  * 
- * @version $Revision: 1.43 $ $Date: 2003/05/22 20:05:08 $
+ * @version $Revision: 1.44 $ $Date: 2003/06/20 17:08:44 $
 **/
 public class StarsNewCustomerAccount implements java.io.Serializable {
 
@@ -36,7 +36,7 @@ public class StarsNewCustomerAccount implements java.io.Serializable {
 
     private StarsSULMPrograms _starsSULMPrograms;
 
-    private StarsLogin _starsLogin;
+    private StarsUpdateLogin _starsUpdateLogin;
 
 
       //----------------/
@@ -63,16 +63,6 @@ public class StarsNewCustomerAccount implements java.io.Serializable {
     } //-- StarsCustomerAccount getStarsCustomerAccount() 
 
     /**
-     * Returns the value of field 'starsLogin'.
-     * 
-     * @return the value of field 'starsLogin'.
-    **/
-    public StarsLogin getStarsLogin()
-    {
-        return this._starsLogin;
-    } //-- StarsLogin getStarsLogin() 
-
-    /**
      * Returns the value of field 'starsSULMPrograms'.
      * 
      * @return the value of field 'starsSULMPrograms'.
@@ -81,6 +71,16 @@ public class StarsNewCustomerAccount implements java.io.Serializable {
     {
         return this._starsSULMPrograms;
     } //-- StarsSULMPrograms getStarsSULMPrograms() 
+
+    /**
+     * Returns the value of field 'starsUpdateLogin'.
+     * 
+     * @return the value of field 'starsUpdateLogin'.
+    **/
+    public StarsUpdateLogin getStarsUpdateLogin()
+    {
+        return this._starsUpdateLogin;
+    } //-- StarsUpdateLogin getStarsUpdateLogin() 
 
     /**
     **/
@@ -131,16 +131,6 @@ public class StarsNewCustomerAccount implements java.io.Serializable {
     } //-- void setStarsCustomerAccount(StarsCustomerAccount) 
 
     /**
-     * Sets the value of field 'starsLogin'.
-     * 
-     * @param starsLogin the value of field 'starsLogin'.
-    **/
-    public void setStarsLogin(StarsLogin starsLogin)
-    {
-        this._starsLogin = starsLogin;
-    } //-- void setStarsLogin(StarsLogin) 
-
-    /**
      * Sets the value of field 'starsSULMPrograms'.
      * 
      * @param starsSULMPrograms the value of field
@@ -150,6 +140,16 @@ public class StarsNewCustomerAccount implements java.io.Serializable {
     {
         this._starsSULMPrograms = starsSULMPrograms;
     } //-- void setStarsSULMPrograms(StarsSULMPrograms) 
+
+    /**
+     * Sets the value of field 'starsUpdateLogin'.
+     * 
+     * @param starsUpdateLogin the value of field 'starsUpdateLogin'
+    **/
+    public void setStarsUpdateLogin(StarsUpdateLogin starsUpdateLogin)
+    {
+        this._starsUpdateLogin = starsUpdateLogin;
+    } //-- void setStarsUpdateLogin(StarsUpdateLogin) 
 
     /**
      * 

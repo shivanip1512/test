@@ -102,13 +102,28 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
 			
 			StarsUpdateThermostatManualOption starsOption = reqOper.getStarsUpdateThermostatManualOption();
+			StarsUpdateThermostatManualOptionResponse resp = new StarsUpdateThermostatManualOptionResponse();
 			
 			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( starsOption.getInventoryID(), true );
-    		if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The manufacturer serial # of the hardware cannot be empty") );
+    		if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
+    			if (ServerUtils.isOperator( user ))
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The thermostat is currently out of service, settings are not sent") );
+    			else
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Your thermostat is currently out of service, settings are not sent.<br>Please go to the \"Contact Us\" page if you want to contact our CSRs for further information.") );
             	return SOAPUtil.buildSOAPMessage( respOper );
     		}
+    		if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
+    			if (ServerUtils.isOperator( user ))
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The manufacturer serial # of the hardware cannot be empty") );
+	            else
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Not able to send out the settings to your thermostat.<br>Please go to the \"Contact Us\" page if you want to contact our CSRs for further information.") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+    		}
+    		
 			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID()) + " load 1";
 			
 			StringBuffer cmd = new StringBuffer("putconfig xcom setstate");
@@ -151,7 +166,6 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 			liteAcctInfo.getThermostatSettings().getThermostatManualEvents().add( liteEvent );
 			
 			StarsThermostatManualEvent starsEvent = StarsLiteFactory.createStarsThermostatManualEvent( liteEvent );
-			StarsUpdateThermostatManualOptionResponse resp = new StarsUpdateThermostatManualOptionResponse();
 			resp.setStarsThermostatManualEvent( starsEvent );
 			
 			respOper.setStarsUpdateThermostatManualOptionResponse( resp );
@@ -196,6 +210,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             		user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             accountInfo.getStarsThermostatSettings().addStarsThermostatManualEvent( event );
             
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "The thermostat settings have been updated");
             return 0;
         }
         catch (Exception e) {
