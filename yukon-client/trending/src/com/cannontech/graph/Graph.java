@@ -9,6 +9,10 @@ package com.cannontech.graph;
  */
 import java.awt.Rectangle;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.w3c.dom.Element;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -18,21 +22,13 @@ import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
-import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.util.ServletUtil;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.time.TimeSeriesCollection;
 
 public class Graph implements GraphDefines
 {
 	private long lastUpdateTime = 0;
 
-	private int viewType = TrendModelType.LINE_VIEW;
-
 	private java.util.Date startDate = ServletUtil.getToday();	
-	private int seriesMask = 0x00;
 	
 	private static final int DEFAULT_GIF_WIDTH = 556;
 	private static final int DEFAULT_GIF_HEIGHT = 433;
@@ -40,25 +36,21 @@ public class Graph implements GraphDefines
 	private int height = DEFAULT_GIF_HEIGHT;
 	private int width = DEFAULT_GIF_WIDTH;
 
-	private boolean showLoadFactor = true;
-	private final int LF_DECIMAL_PLACES = 3;
-
 	private JFreeChart freeChart = null;
 	private TrendModel trendModel = null;
 
 	private GraphDefinition graphDefinition = null;
-//	private int graphDefinitionID = -1;
 	private String period = ServletUtil.ONEDAY;
 	private java.lang.String title = null;
 		
 	private static final int DEFAULT_INTERVAL_RATE = 300;  //rate is in seconds
 	private int minIntervalRate = DEFAULT_INTERVAL_RATE;
 
-	private int options_mask_holder = 0x00;	
 	private boolean updateTrend = true;
 	private StringBuffer htmlString = null;
 	
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
+	private com.cannontech.graph.model.TrendProperties trendProperties;
 
 /**
  * Graph constructor comment.
@@ -160,7 +152,7 @@ public void encodeCSV(java.io.OutputStream out) throws java.io.IOException
 	{
 		com.cannontech.graph.exportdata.ExportDataFile eDataFile = 
 			new com.cannontech.graph.exportdata.ExportDataFile(
-			viewType,
+			getViewType(),
 			getFreeChart(), 
 			getTrendModel().getChartName(), 
 			getTrendModel());
@@ -450,22 +442,12 @@ public int getMinIntervalRate(	)
  */
 public int getViewType()
 {
-	return viewType;
+	return getTrendProperties().getViewType();
 }
-public int getOptionsMaskHolder()
+public int getOptionsMaskSettings()
 {
-	return options_mask_holder;
+	return getTrendProperties().getOptionsMaskSettings();
 }
-
-/**
- * Insert the method's description here.
- * Creation date: (9/13/2001 3:05:18 PM)
- * @return boolean
- */
-public boolean getShowLoadFactor() {
-	return showLoadFactor;
-}
-
 /**
  * Insert the method's description here.
  * Creation date: (1/24/00 10:08:37 AM)
@@ -642,7 +624,7 @@ public void setMinIntervalRate( int newRate)
 public void setViewType(int newViewType)
 {
 //	setUpdateTrend(true);
-	viewType = newViewType;
+	getTrendProperties().setViewType(newViewType);
 }
 
 public void setStartDate(java.util.Date newStartDate)
@@ -664,41 +646,7 @@ public java.util.Date getStopDate()
 {
 	return com.cannontech.util.ServletUtil.getEndingDateOfInterval( startDate, getPeriod() );
 }
-public void setOptionsMaskHolder(int newMask, boolean setMasked)
-{
-	// when setMasked = true, the newMask will be added to the options_mask
-	// when setMasked = false, the newMask will be removed from the options_mask
-	if( setMasked)
-		options_mask_holder |= newMask;
-	else
-	{
-		//check to make sure it's there if we are going to remove it
-		if( (options_mask_holder & newMask) != 0)
-		{
-			options_mask_holder ^= newMask;
-		}
-	}
-	if( getTrendModel() != null)
-		getTrendModel().setOptionsMask(getOptionsMaskHolder());
-}
 
-public void setOptionsMaskHolder(int newMask)
-{
-	//this method does a true set of the mask, overwriting any old mask values.	
-	options_mask_holder = newMask;
-	if( getTrendModel() != null)
-		getTrendModel().setOptionsMask(getOptionsMaskHolder());
-	
-}	
-/**
- * Insert the method's description here.
- * Creation date: (9/13/2001 3:03:38 PM)
- * @param value boolean
- */
-public void setShowLoadFactor(boolean value)
-{
-	showLoadFactor = value;
-}
 /**
  ** Both Server and Client use **
  * Insert the method's description here.
@@ -780,11 +728,12 @@ public void update()
 	if( isUpdateTrend())
 	{
 		
-		TrendModel newModel = new TrendModel(getGraphDefinition(), getStartDate(), getStopDate(), getOptionsMaskHolder()); 
+		TrendModel newModel = new TrendModel(getGraphDefinition(), getStartDate(), getStopDate(), getTrendProperties()); 
 		setTrendModel( newModel );
 		updateTrend = false;		
 	}
-	freeChart = getTrendModel().refresh(getViewType());
+	getTrendModel().setTrendProps( getTrendProperties());
+	freeChart = getTrendModel().refresh();
 }
 
 /** Send a command message to dispatch to scan paobjects (or all meters if paobjects is null)
@@ -824,4 +773,22 @@ public void getDataNow(java.util.List paobjects)
 	if( multi.getVector().size() > 0 )
 		getClientConnection().write(multi);
 }
+	/**
+	 * @return
+	 */
+	public com.cannontech.graph.model.TrendProperties getTrendProperties()
+	{
+		if( trendProperties == null)
+			trendProperties = new com.cannontech.graph.model.TrendProperties();
+		return trendProperties;
+	}
+
+	/**
+	 * @param properties
+	 */
+	public void setTrendProperties(	com.cannontech.graph.model.TrendProperties properties)
+	{
+		trendProperties = properties;
+	}
+
 }
