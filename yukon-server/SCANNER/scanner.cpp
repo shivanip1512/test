@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/05/28 21:12:00 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/06/10 21:18:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1091,6 +1091,21 @@ void InitScannerGlobals(void)
         }
     }
 
+    if(gConfigParms.isOpt("SCANNER_QUEUE"))
+    {
+        RWCString Temp = gConfigParms.getValueAsString("SCANNER_QUEUE");
+        Temp.toLower();
+
+        if(Temp == "true" || Temp == "yes")
+        {
+            CCUNoQueue = FALSE;
+        }
+        else
+        {
+            CCUNoQueue = TRUE;
+        }
+    }
+
     if(gConfigParms.isOpt("SCANNER_QUEUE_SCANS"))
     {
         RWCString Temp = gConfigParms.getValueAsString("SCANNER_QUEUE_SCANS");
@@ -1098,11 +1113,11 @@ void InitScannerGlobals(void)
 
         if(Temp == "true" || Temp == "yes")
         {
-            CCUNoQueueScans = TRUE;
+            CCUNoQueueScans = FALSE;
         }
         else
         {
-            CCUNoQueueScans = FALSE;
+            CCUNoQueueScans = TRUE;
         }
     }
 
