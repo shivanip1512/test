@@ -11,6 +11,8 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -22,6 +24,7 @@ import com.cannontech.database.data.device.IDeviceMeterGroup;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -416,6 +419,81 @@ public class InventoryManagerUtil {
 					(CTIDbChange)dbPer, DBChangeMsg.CHANGE_TYPE_DELETE );
 			for (int i = 0; i < dbChange.length; i++)
 				ServerUtils.handleDBChangeMsg( dbChange[i] );
+		}
+	}
+	
+	/**
+	 * Get all the hardware/devices for the given accounts in the inventory
+	 * @param accounts List of LiteStarsCustAccountInformation, or Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany)
+	 * @return List of LiteInventoryBase or Pair(LiteInventoryBase, LiteStarsEnergyCompany), based on the element type of accounts
+	 */
+	private static ArrayList getInventoryByAccounts(ArrayList accounts, LiteStarsEnergyCompany energyCompany) {
+		ArrayList invList = new ArrayList();
+		
+		for (int i = 0; i < accounts.size(); i++) {
+			if (accounts.get(i) instanceof Pair) {
+				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) ((Pair)accounts.get(i)).getFirst();
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) ((Pair)accounts.get(i)).getSecond();
+				
+				for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
+					int invID = ((Integer)liteAcctInfo.getInventories().get(j)).intValue();
+					LiteInventoryBase liteInv = company.getInventoryBrief( invID, true );
+					invList.add( new Pair(liteInv, company) );
+				}
+			}
+			else {
+				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) accounts.get(i);
+				for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
+					int invID = ((Integer)liteAcctInfo.getInventories().get(j)).intValue();
+					invList.add( energyCompany.getInventoryBrief(invID, true) );
+				}
+			}
+		}
+		
+		return invList;
+	}
+	
+	/**
+	 * Search the inventory for hardware/devices by the given search type and value.
+	 * If searchMembers is true, returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
+	 * otherwise, returns a list of LiteInventoryBase
+	 */
+	public static ArrayList searchInventory(LiteStarsEnergyCompany energyCompany, int searchBy, String searchValue, boolean searchMembers)
+		throws WebClientException
+	{
+		if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO) {
+			return energyCompany.searchInventoryBySerialNo( searchValue, searchMembers );
+		}
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_DEVICE_NAME) {
+			return energyCompany.searchInventoryByDeviceName( searchValue, searchMembers );
+		}
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ALT_TRACK_NO) {
+			return energyCompany.searchInventoryByAltTrackNo( searchValue, searchMembers );
+		}
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO) {
+			ArrayList accounts = energyCompany.searchAccountByAccountNo( searchValue, searchMembers );
+			return getInventoryByAccounts( accounts, energyCompany );
+		}
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO) {
+			String phoneNo = ServletUtils.formatPhoneNumber( searchValue );
+			ArrayList accounts = energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers );
+			return getInventoryByAccounts( accounts, energyCompany );
+		}
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_LAST_NAME) {
+			ArrayList accounts = energyCompany.searchAccountByLastName( searchValue, searchMembers );
+			return getInventoryByAccounts( accounts, energyCompany );
+		}
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ORDER_NO) {
+			// TODO: The WorkOrderBase table doesn't have InventoryID column, maybe should be added
+			ArrayList accounts = energyCompany.searchAccountByOrderNo( searchValue, searchMembers );
+			return getInventoryByAccounts( accounts, energyCompany );
+		}
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ADDRESS) {
+			ArrayList accounts = energyCompany.searchAccountByAddress( searchValue, searchMembers );
+			return getInventoryByAccounts( accounts, energyCompany );
+		}
+		else {
+			throw new WebClientException("Unrecognized search type");
 		}
 	}
 }

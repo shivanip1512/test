@@ -1609,8 +1609,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			if (!(liteInv instanceof LiteStarsLMHardware)) continue;
 			
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
-			if (YukonListFuncs.getYukonListEntry( liteHw.getLmHardwareTypeID() ).getYukonDefID() == devTypeDefID &&
-				liteHw.getManufacturerSerialNumber().equalsIgnoreCase( serialNo ))
+			if (YukonListFuncs.getYukonListEntry( liteHw.getLmHardwareTypeID() ).getYukonDefID() == devTypeDefID
+				&& liteHw.getManufacturerSerialNumber().equalsIgnoreCase( serialNo ))
 			{
 				return new Pair(liteHw, this);
 			}
@@ -1620,6 +1620,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			try {
 				com.cannontech.database.db.stars.hardware.LMHardwareBase[] hardwares =
 						com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber( serialNo, getLiteID() );
+				if (hardwares == null) return null;
 				
 				for (int i = 0; i < hardwares.length; i++) {
 					if (YukonListFuncs.getYukonListEntry( hardwares[i].getLMHardwareTypeID().intValue() ).getYukonDefID() == devTypeDefID) {
@@ -1683,38 +1684,72 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	/**
-	 * Search for device with the specified category and device name.
-	 * If the device belongs to another energy company, the ObjectInOtherEnergyCompanyException is thrown. 
+	 * @return Pair(LiteInventoryBase, LiteStarsEnergyCompany)
 	 */
-	public LiteInventoryBase searchForDevice(int categoryID, String deviceName)
+	private Pair searchForDevice(int categoryID, String deviceName, LiteStarsEnergyCompany referer)
 		throws ObjectInOtherEnergyCompanyException
 	{
 		ArrayList inventory = getAllInventory();
 		for (int i = 0; i < inventory.size(); i++) {
 			LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-			if (liteInv.getInventoryID() < 0) continue;
-			if (liteInv.getDeviceID() == CtiUtilities.NONE_ZERO_ID) continue;
-			
-			if (liteInv.getCategoryID() == categoryID &&
-				PAOFuncs.getYukonPAOName( liteInv.getDeviceID() ).equalsIgnoreCase( deviceName ))
-				return liteInv;
+			if (liteInv.getDeviceID() > 0 && liteInv.getCategoryID() == categoryID
+				&& PAOFuncs.getYukonPAOName( liteInv.getDeviceID() ).equalsIgnoreCase( deviceName ))
+			{
+				return new Pair(liteInv, this);
+			}
 		}
 		
-		if (!isInventoryLoaded() || !ECUtils.isSingleEnergyCompany(this))
+		if (!isInventoryLoaded())
 		{
-			int[] val = com.cannontech.database.db.stars.hardware.InventoryBase.searchForDevice( categoryID, deviceName );
+			com.cannontech.database.db.stars.hardware.InventoryBase[] invList =
+				com.cannontech.database.db.stars.hardware.InventoryBase.searchForDevice( deviceName, getLiteID() );
+			if (invList == null) return null;
 			
-			if (val != null) {
-				if (val[1] == getLiteID()) {
-					return getInventoryBrief( val[0], true );
-				}
-				else {
-					LiteStarsEnergyCompany company = StarsDatabaseCache.getInstance().getEnergyCompany( val[1] );
-					LiteInventoryBase liteInv = company.getInventoryBrief( val[0], true );
-					throw new ObjectInOtherEnergyCompanyException( liteInv, company );
+			for (int i = 0; i < invList.length; i++) {
+				if (invList[i].getCategoryID().intValue() == categoryID) {
+					LiteInventoryBase liteInv = new LiteInventoryBase();
+					StarsLiteFactory.setLiteInventoryBase( liteInv, invList[i] );
+					addInventory( liteInv );
+					
+					return new Pair( liteInv, this );
 				}
 			}
 		}
+		
+		// Search the device in the child energy companies
+		ArrayList children = getChildren();
+		synchronized (children) {
+			for (int i = 0; i < children.size(); i++) {
+				LiteStarsEnergyCompany liteCompany = (LiteStarsEnergyCompany) children.get(i);
+				if (!liteCompany.equals( referer )) {
+					Pair p = liteCompany.searchForDevice( categoryID, deviceName, this );
+					if (p != null)
+						throw new ObjectInOtherEnergyCompanyException( (LiteInventoryBase)p.getFirst(), (LiteStarsEnergyCompany)p.getSecond() );
+				}
+			}
+		}
+		
+		// Search the device in the parent energy company
+		if (getParent() != null && !getParent().equals( referer )) {
+			Pair p = getParent().searchForDevice( categoryID, deviceName, this );
+			if (p != null)
+				throw new ObjectInOtherEnergyCompanyException( (LiteInventoryBase)p.getFirst(), (LiteStarsEnergyCompany)p.getSecond() );
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Search for device with the specified category and device name.
+	 * If this energy company is a part of an energy company hierarchy,
+	 * and the device belongs to another company in the hierarchy,
+	 * the ObjectInOtherEnergyCompanyException is thrown. 
+	 */
+	public LiteInventoryBase searchForDevice(int categoryID, String deviceName)
+		throws ObjectInOtherEnergyCompanyException
+	{
+		Pair p = searchForDevice( categoryID, deviceName, this );
+		if (p != null) return (LiteInventoryBase)p.getFirst();
 		
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		
@@ -1869,6 +1904,55 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		return invList;
+	}
+	
+	/**
+	 * Search the inventory by device name. If searchMembers is true,
+	 * it returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
+	 * otherwise it returns a list of LiteInventoryBase.
+	 */
+	public ArrayList searchInventoryByDeviceName(String deviceName, boolean searchMembers) {
+		ArrayList devList = new ArrayList();
+		
+		if (isInventoryLoaded()) {
+			ArrayList inventory = getAllInventory();
+			
+			for (int i = 0; i < inventory.size(); i++) {
+				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
+				if (liteInv.getDeviceID() > 0 && PAOFuncs.getYukonPAOName( liteInv.getDeviceID() ).equalsIgnoreCase( deviceName )) {
+					if (searchMembers)
+						devList.add( new Pair(liteInv, this) );
+					else
+						devList.add( liteInv );
+				}
+			}
+		}
+		else {
+			com.cannontech.database.db.stars.hardware.InventoryBase[] invList =
+				com.cannontech.database.db.stars.hardware.InventoryBase.searchForDevice( deviceName, getLiteID() );
+			if (invList == null) return null;
+			
+			for (int i = 0; i < invList.length; i++) {
+				LiteInventoryBase liteInv = getInventoryBrief( invList[i].getInventoryID().intValue(), true );
+				if (searchMembers)
+					devList.add( new Pair(liteInv, this) );
+				else
+					devList.add( liteInv );
+			}
+		}
+		
+		if (searchMembers) {
+			ArrayList children = getChildren();
+			synchronized (children) {
+				for (int i = 0; i < children.size(); i++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
+					ArrayList memberList = company.searchInventoryByDeviceName( deviceName, searchMembers );
+					devList.addAll( memberList );
+				}
+			}
+		}
+		
+		return devList;
 	}
 	
 	public LiteStarsThermostatSettings getThermostatSettings(LiteStarsLMHardware liteHw) {

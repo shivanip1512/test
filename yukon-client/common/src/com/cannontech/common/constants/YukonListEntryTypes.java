@@ -69,6 +69,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_SEARCH_TYPE_MAP_NO			= 1605;
 	public static final int YUK_DEF_ID_SEARCH_TYPE_ADDRESS			= 1606;
 	public static final int YUK_DEF_ID_SEARCH_TYPE_ALT_TRACK_NO		= 1607;
+	public static final int YUK_DEF_ID_SEARCH_TYPE_METER_NO			= 1608;
 	public static final int YUK_DEF_ID_DEV_STAT_AVAIL				= 1701;
 	public static final int YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL		= 1702;
 	public static final int YUK_DEF_ID_DEV_STAT_UNAVAIL				= 1703;
@@ -103,6 +104,8 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_INV_SEARCH_BY_ORDER_NO		= 2705;
 	public static final int YUK_DEF_ID_INV_SEARCH_BY_ADDRESS		= 2706;
 	public static final int YUK_DEF_ID_INV_SEARCH_BY_ALT_TRACK_NO	= 2707;
+	public static final int YUK_DEF_ID_INV_SEARCH_BY_METER_NO		= 2708;
+	public static final int YUK_DEF_ID_INV_SEARCH_BY_DEVICE_NAME	= 2709;
 	public static final int YUK_DEF_ID_INV_SORT_BY_SERIAL_NO		= 2801;
 	public static final int YUK_DEF_ID_INV_SORT_BY_INST_DATE		= 2802;
 	public static final int YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE		= 2901;

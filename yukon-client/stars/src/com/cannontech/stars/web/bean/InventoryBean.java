@@ -31,9 +31,10 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StreetAddress;
-import com.cannontech.util.ServletUtil;
 
 /**
  * @author yao
@@ -191,7 +192,7 @@ public class InventoryBean {
 		return energyCompany;
 	}
 	
-	private ArrayList getHardwareList(boolean showEnergyCompany) {
+	private ArrayList getHardwareList(boolean showEnergyCompany) throws WebClientException {
 		if (inventoryList != null) return inventoryList;
 		
 		ArrayList hardwares = null;
@@ -201,13 +202,17 @@ public class InventoryBean {
 		else if (showEnergyCompany) {
 			if (getMember() >= 0) {
 				LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( getMember() );
-				ArrayList inventory = member.loadAllInventory( true );
+				ArrayList inventory = null;
+				if (getSearchBy() == 0)
+					inventory = member.loadAllInventory( true );
+				else
+					inventory = InventoryManagerUtil.searchInventory( member, getSearchBy(), getSearchValue(), false );
 				
 				hardwares = new ArrayList();
 				for (int i = 0; i < inventory.size(); i++)
 					hardwares.add( new Pair(inventory.get(i), member) );
 			}
-			else {
+			else if (getSearchBy() == 0) {
 				ArrayList members = ECUtils.getAllDescendants( getEnergyCompany() );
 				hardwares = new ArrayList();
 				
@@ -218,55 +223,25 @@ public class InventoryBean {
 						hardwares.add( new Pair(inventory.get(j), member) );
 				}
 			}
+			else {
+				hardwares = InventoryManagerUtil.searchInventory( getEnergyCompany(), getSearchBy(), getSearchValue(), true );
+			}
 		}
 		else {
-			hardwares = getEnergyCompany().loadAllInventory( true );
+			if (getSearchBy() == 0)
+				hardwares = getEnergyCompany().loadAllInventory( true );
+			else
+				hardwares = InventoryManagerUtil.searchInventory( getEnergyCompany(), getSearchBy(), getSearchValue(), false );
 		}
 		
-		if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
-			|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
-		{
-			if ((getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0) {
-				Iterator it = hardwares.iterator();
-				while (it.hasNext()) {
-					Object invObj = it.next();
-					if (invObj instanceof Pair)
-						invObj = ((Pair)invObj).getFirst();
-					if (!(invObj instanceof LiteStarsLMHardware))
-						it.remove();
-				}
-			}
-			
-			if (getSearchBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO) {
-				inventorySet = new ArrayList();
-				for (int i = 0; i < hardwares.size(); i++) {
-					Object invObj = hardwares.get(i);
-					if (invObj instanceof Pair)
-						invObj = ((Pair)invObj).getFirst();
-					if (invObj instanceof LiteStarsLMHardware
-						&& ((LiteStarsLMHardware)invObj).getManufacturerSerialNumber().startsWith( getSearchValue() ))
-						inventorySet.add( hardwares.get(i) );
-				}
-				
-				hardwares = inventorySet;
-				setSortBy( YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO );
-			}
-			else if (getSearchBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_INST_DATE) {
-				Date instDate = ServletUtil.parseDateStringLiberally( getSearchValue(), getEnergyCompany().getDefaultTimeZone() );
-				
-				inventorySet = new ArrayList();
-				if (instDate != null) {
-					for (int i = 0; i < hardwares.size(); i++) {
-						Object invObj = hardwares.get(i);
-						if (invObj instanceof Pair)
-							invObj = ((Pair)invObj).getFirst();
-						if (((LiteInventoryBase)invObj).getInstallDate() > instDate.getTime())
-							inventorySet.add( invObj );
-					}
-				}
-				
-				hardwares = inventorySet;
-				setSortBy( YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_INST_DATE );
+		if ((getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0) {
+			Iterator it = hardwares.iterator();
+			while (it.hasNext()) {
+				Object invObj = it.next();
+				if (invObj instanceof Pair)
+					invObj = ((Pair)invObj).getFirst();
+				if (!(invObj instanceof LiteStarsLMHardware))
+					it.remove();
 			}
 		}
 		
@@ -417,11 +392,21 @@ public class InventoryBean {
 				showEnergyCompany = true;
 		}
 		
-		ArrayList hwList = getHardwareList( showEnergyCompany );
+		ArrayList hwList = null;
+		String errorMsg = null;
+		try {
+			hwList = getHardwareList( showEnergyCompany );
+			if (hwList == null || hwList.size() == 0)
+				errorMsg = "No hardware found.";
+		}
+		catch (WebClientException e) {
+			errorMsg = e.getMessage();
+		}
+		
 		StringBuffer htmlBuf = new StringBuffer();
 		
-		if (hwList == null || hwList.size() == 0) {
-			htmlBuf.append("<p class='ErrorMsg'>No hardware found.</p>").append(LINE_SEPARATOR);
+		if (errorMsg != null) {
+			htmlBuf.append("<p class='ErrorMsg'>").append(errorMsg).append("</p>").append(LINE_SEPARATOR);
 			if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) == 0) {
 				htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='0'>").append(LINE_SEPARATOR);
 				htmlBuf.append("  <tr>").append(LINE_SEPARATOR);

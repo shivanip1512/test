@@ -1167,41 +1167,14 @@ public class InventoryManager extends HttpServlet {
 		
 		boolean searchMembers = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 				&& (energyCompany.getChildren().size() > 0);
-		ArrayList invList = null; 
 		
-		if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO) {
-			invList = energyCompany.searchInventoryBySerialNo( searchValue, searchMembers );
+		ArrayList invList = null;
+		try {
+			invList = InventoryManagerUtil.searchInventory( energyCompany, searchBy, searchValue, searchMembers ); 
 		}
-		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ALT_TRACK_NO) {
-			invList = energyCompany.searchInventoryByAltTrackNo( searchValue, searchMembers );
-		}
-		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO) {
-			ArrayList accounts = energyCompany.searchAccountByAccountNo( searchValue, searchMembers );
-			invList = getInventoryByAccounts( accounts, energyCompany );
-		}
-		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO) {
-			try {
-				String phoneNo = ServletUtils.formatPhoneNumber( searchValue );
-				ArrayList accounts = energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers );
-				invList = getInventoryByAccounts( accounts, energyCompany );
-			}
-			catch (WebClientException e) {
-				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
-				return;
-			}
-		}
-		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_LAST_NAME) {
-			ArrayList accounts = energyCompany.searchAccountByLastName( searchValue, searchMembers );
-			invList = getInventoryByAccounts( accounts, energyCompany );
-		}
-		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ORDER_NO) {
-			// TODO: The WorkOrderBase table doesn't have InventoryID column, maybe should be added
-			ArrayList accounts = energyCompany.searchAccountByOrderNo( searchValue, searchMembers );
-			invList = getInventoryByAccounts( accounts, energyCompany );
-		}
-		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ADDRESS) {
-			ArrayList accounts = energyCompany.searchAccountByAddress( searchValue, searchMembers );
-			invList = getInventoryByAccounts( accounts, energyCompany );
+		catch (WebClientException e) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
+			return;
 		}
 		
 		if (invList == null || invList.size() == 0) {
@@ -1318,37 +1291,6 @@ public class InventoryManager extends HttpServlet {
 		session.setAttribute(InventoryManagerUtil.DEVICE_SELECTED, litePao);
 		
 		redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
-	}
-	
-	/**
-	 * Get all the hardwares in inventory for accounts
-	 * @param accounts List of LiteStarsCustAccountInformation, or Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany)
-	 * @return List of LiteInventoryBase or Pair(LiteInventoryBase, LiteStarsEnergyCompany), based on the element type of accounts
-	 */
-	private ArrayList getInventoryByAccounts(ArrayList accounts, LiteStarsEnergyCompany energyCompany) {
-		ArrayList invList = new ArrayList();
-		
-		for (int i = 0; i < accounts.size(); i++) {
-			if (accounts.get(i) instanceof Pair) {
-				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) ((Pair)accounts.get(i)).getFirst();
-				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) ((Pair)accounts.get(i)).getSecond();
-				
-				for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
-					int invID = ((Integer)liteAcctInfo.getInventories().get(j)).intValue();
-					LiteInventoryBase liteInv = company.getInventoryBrief( invID, true );
-					invList.add( new Pair(liteInv, company) );
-				}
-			}
-			else {
-				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) accounts.get(i);
-				for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
-					int invID = ((Integer)liteAcctInfo.getInventories().get(j)).intValue();
-					invList.add( energyCompany.getInventoryBrief(invID, true) );
-				}
-			}
-		}
-		
-		return invList;
 	}
 	
 }

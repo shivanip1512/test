@@ -172,14 +172,14 @@ public class InventoryBase extends DBPersistent {
 	}
 	
 	/**
-	 * @return (InventoryID, EnergyCompanyID)
+	 * @return list of InventoryBase
 	 */
-	public static int[] searchForDevice(int categoryID, String deviceName) {
-		String sql = "SELECT inv.InventoryID, map.EnergyCompanyID " +
-				"FROM " + TABLE_NAME + " inv, ECToInventoryMapping map, YukonPAObject pao " +
-				"WHERE inv.CategoryID = ? AND inv.DeviceID > 0 " +
-				"AND inv.DeviceID = pao.PAObjectID AND UPPER(pao.PAOName) LIKE UPPER(?) " +
-				"AND inv.InventoryID = map.InventoryID";
+	public static InventoryBase[] searchForDevice(String deviceName, int energyCompanyID) {
+		String sql = "SELECT inv.InventoryID, AccountID, InstallationCompanyID, CategoryID, ReceiveDate, " +
+			"InstallDate, RemoveDate, AlternateTrackingNumber, VoltageID, Notes, DeviceID, DeviceLabel " +
+			"FROM " + TABLE_NAME + " inv, ECToInventoryMapping map, YukonPAObject pao " +
+			"WHERE inv.DeviceID > 0 AND inv.DeviceID = pao.PAObjectID AND UPPER(pao.PAOName) LIKE UPPER(?) " +
+			"AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = ?";
 		
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement stmt = null;
@@ -189,17 +189,31 @@ public class InventoryBase extends DBPersistent {
 			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
     		
 			stmt = conn.prepareStatement( sql );
-			stmt.setInt( 1, categoryID );
-			stmt.setString( 2, deviceName );
+			stmt.setString( 1, deviceName );
+			stmt.setInt( 2, energyCompanyID );
 			rset = stmt.executeQuery();
 			
-			if (rset.next()) {
-				int[] retVal = new int[2];
-				retVal[0] = rset.getInt(1);
-				retVal[1] = rset.getInt(2);
-				
-				return retVal;
+			java.util.ArrayList resList = new java.util.ArrayList();
+			while (rset.next()) {
+				InventoryBase inv = new InventoryBase();
+				inv.setInventoryID( new Integer(rset.getInt(1)) );
+				inv.setAccountID( new Integer(rset.getInt(2)) );
+				inv.setInstallationCompanyID( new Integer(rset.getInt(3)) );
+				inv.setCategoryID( new Integer(rset.getInt(4)) );
+				inv.setReceiveDate( rset.getDate(5) );
+				inv.setInstallDate( rset.getDate(6) );
+				inv.setRemoveDate( rset.getDate(7) );
+				inv.setAlternateTrackingNumber( rset.getString(8) );
+				inv.setVoltageID( new Integer(rset.getInt(9)) );
+				inv.setNotes( rset.getString(10) );
+				inv.setDeviceID( new Integer(rset.getInt(11)) );
+				inv.setDeviceLabel( rset.getString(12) );
+				resList.add( inv );
 			}
+			
+			InventoryBase[] invList = new InventoryBase[ resList.size() ];
+			resList.toArray( invList );
+			return invList;
 		}
 		catch (java.sql.SQLException e) {
 			CTILogger.error( e.getMessage(), e );
