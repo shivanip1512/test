@@ -14,6 +14,7 @@ import javax.swing.JComboBox;
 import com.cannontech.common.gui.util.ComboBoxTableEditor;
 import java.awt.Component;
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.common.gui.util.TextFieldDocument;
 
 /**
  * Insert the type's description here.
@@ -328,6 +329,10 @@ private javax.swing.JTextField getNameJTextField() {
 			ivjNameJTextField = new javax.swing.JTextField();
 			ivjNameJTextField.setName("NameJTextField");
 			// user code begin {1}
+			ivjNameJTextField.setDocument(
+					new TextFieldDocument(
+						TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
+						TextFieldDocument.INVALID_CHARS_PAO) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -718,7 +723,7 @@ public void populateAvailableList()
 		allGears.addAll(cache.getAllGears());
 		try
 		{
-			System.out.println("Evil, plodding for loop starting.");
+			//this baby takes some time
 			for( int i = 0; i < progs.size(); i++ )
 			{ 
 				Integer progID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)).getLiteID());
@@ -729,7 +734,7 @@ public void populateAvailableList()
 					availablePrograms.addElement(((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)));
 				}				
 			}
-			System.out.println("Evil, plodding for loop ending.");
+			//at last, the end of the evil plodding for loop
 		}
 		catch (java.sql.SQLException e2)
 		{
@@ -827,4 +832,17 @@ public void userWantsTheirGears()
 				currentRow, LMControlScenarioProgramTableModel.STARTGEAR_COLUMN);
 
 }
+
+public boolean isInputValid() 
+{
+	if( getNameJTextField().getText() == null || getNameJTextField().getText().length() <= 0 )
+	{
+		setErrorString("The Name text field must be filled in");
+		return false;
+	}
+
+
+	return true;
+}
+
 }
