@@ -9,6 +9,7 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.clientutils.AlarmFileWatchDog;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
+import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
@@ -125,6 +126,9 @@ public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.t
 
    private SignalAlarmHandler alarmHandler = null;
    
+	private javax.swing.JMenuItem jMenuItemResetCntrlHrs = null;
+
+
 /**
  * TDCFrame constructor comment.
  */
@@ -230,6 +234,10 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		executeAlarm_ActionPerformed( muted );
 	}
 	
+	if( e.getSource() == getJMenuItemResetCntrlHrs() )
+		jMenuItemResetCntrlHrs_ActionPerformed( e );
+
+
 	// user code end
 }
 
@@ -1467,7 +1475,7 @@ public javax.swing.JCheckBoxMenuItem getJCheckBoxMenuItemShowToolBar() {
 		try {
 			ivjJCheckBoxMenuItemShowToolBar = new javax.swing.JCheckBoxMenuItem();
 			ivjJCheckBoxMenuItemShowToolBar.setName("JCheckBoxMenuItemShowToolBar");
-			ivjJCheckBoxMenuItemShowToolBar.setMnemonic('b');
+			ivjJCheckBoxMenuItemShowToolBar.setMnemonic('r');
 			ivjJCheckBoxMenuItemShowToolBar.setText("Show ToolBar");
 			ivjJCheckBoxMenuItemShowToolBar.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_R, java.awt.Event.CTRL_MASK));
 			ivjJCheckBoxMenuItemShowToolBar.setBackground(java.awt.SystemColor.control);
@@ -2161,6 +2169,28 @@ private javax.swing.JMenuItem getJMenuItemMakeCopy() {
 	return ivjJMenuItemMakeCopy;
 }
 
+/**
+ * Return the JMenuItemMakeCopy property value.
+ * @return javax.swing.JMenuItem
+ */
+private javax.swing.JMenuItem getJMenuItemResetCntrlHrs() 
+{
+	if( jMenuItemResetCntrlHrs == null )
+	{
+		try {
+			jMenuItemResetCntrlHrs = new javax.swing.JMenuItem();
+			jMenuItemResetCntrlHrs.setName("jMenuItemResetCntrlHrs");
+			jMenuItemResetCntrlHrs.setMnemonic('e');
+			jMenuItemResetCntrlHrs.setText("Reset Season Cntrl Hrs");
+			jMenuItemResetCntrlHrs.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_E, java.awt.Event.CTRL_MASK));
+			jMenuItemResetCntrlHrs.setBackground(java.awt.SystemColor.control);
+			jMenuItemResetCntrlHrs.setForeground(java.awt.SystemColor.controlText);
+		} catch (java.lang.Throwable ivjExc) {
+			handleException(ivjExc);
+		}
+	}
+	return jMenuItemResetCntrlHrs;
+}
 
 /**
  * Return the JMenuItemPrint property value.
@@ -2426,6 +2456,9 @@ private javax.swing.JMenu getJMenuTools() {
 			ivjJMenuTools.add(getJMenuTemplates());
 			ivjJMenuTools.add(getJMenuItemExportCreatedDisplay());
 			// user code begin {1}
+			
+			ivjJMenuTools.add( getJMenuItemResetCntrlHrs() );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -2842,6 +2875,8 @@ private void initConnections() throws java.lang.Exception {
 	getJRadioButtonCustomDisplays().addActionListener(
 		new com.cannontech.tdc.bookmark.SelectionHandler(this.getMainPanel()) );
 	
+	getJMenuItemResetCntrlHrs().addActionListener(this);
+	
 	// user code end
 	getJMenuItemCreate().addActionListener(this);
 	getJMenuItemFont().addActionListener(this);
@@ -3201,6 +3236,31 @@ public void jMenuItemCreate_ActionPerformed(java.awt.event.ActionEvent actionEve
 	return;
 }
 
+public void jMenuItemResetCntrlHrs_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	int res = JOptionPane.showConfirmDialog(
+		this,
+		"Are you sure you want to reset all the Seasonal Control Hours in the system?",
+		"Reset Season Control Hours",
+		JOptionPane.OK_CANCEL_OPTION );
+
+	if( res == JOptionPane.OK_OPTION )
+	{
+		// build up our opArgList for our command	message
+		Vector data = new Vector(1);
+		data.addElement( new Integer(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );  // this is the ClientRegistrationToken	
+
+		// create our command message
+		Command cmd = new Command();
+		cmd.setOperation( Command.RESET_CNTRL_HOURS );
+		cmd.setOpArgList( data );
+		cmd.setTimeStamp( new Date() );
+
+		// write the command message to the server
+		SendData.getInstance().sendCommandMsg( cmd );		
+	}
+	
+}
 
 /**
  * Comment

@@ -23,8 +23,10 @@ public class Command extends com.cannontech.message.util.Message
 	public static final int COMM_STATUS =14; // Vector contains token, deviceid,status (communication result in porter, 0 = NORMAL).
 	public static final int ALTERNATE_SCAN_RATE = 15;
 	public static final int CONTROL_ABLEMENT = 16;
-
-	public static final int LAST_COMMAND = 17; //Always increment this value when adding any new commands
+	public static final int RESET_CNTRL_HOURS = 17; //Resets the Seasonal control history hours to zero
+	
+	
+	public static final int LAST_COMMAND = 18; //Always increment this value when adding any new commands
 
 
 	// ABLEMTENT_TOGGLE used variables
