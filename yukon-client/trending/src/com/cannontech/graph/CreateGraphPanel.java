@@ -6,8 +6,6 @@ package com.cannontech.graph;
  * Creation date: (10/23/00 3:24:57 PM)
  * @author: 
  */
-import java.util.Vector;
-
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.graph.gds.tablemodel.GDSTableModel;
@@ -1006,7 +1004,13 @@ public Object getValue(Object object)
 		gDefInfo = new com.cannontech.database.db.graph.GraphDefinition();
 	}
 
-	gDefInfo.setName(getNameTextField().getText().trim());
+	String trendName = getNameTextField().getText().trim();
+	if( trendName.length() > 40)
+	{
+		trendName = trendName.substring(0, 39);
+	}
+		
+	gDefInfo.setName(trendName);
 
 	if (!getAxisPanel().getLeftAutoScalingCheckBox().isSelected())
 	{
