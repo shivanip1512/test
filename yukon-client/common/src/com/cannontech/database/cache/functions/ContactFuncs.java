@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -39,6 +41,90 @@ public final class ContactFuncs
 			{
 				if( contactID_ == ((LiteContact)cstCnts.get(j)).getContactID() )
 					return (LiteContact)cstCnts.get(j);
+			}
+		}
+	
+		return null;
+	}
+
+	/**
+	 * Returns the LiteContact for firstName_.
+	 * @return com.cannontech.database.data.lite.LiteContact
+	 * @param contactID_ int
+	 */
+	public static LiteContact getContactByFName( String firstName_ ) 
+	{
+		if( firstName_ == null )
+			return null;
+
+		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		synchronized( cache )
+		{
+			List cstCnts = cache.getAllContacts();
+			
+			for( int j = 0; j < cstCnts.size(); j++ )
+			{
+				if( firstName_.equalsIgnoreCase( ((LiteContact)cstCnts.get(j)).getContFirstName() ) )
+					return (LiteContact)cstCnts.get(j);
+			}
+		}
+	
+		return null;
+	}
+	
+	/**
+	 * Returns the LiteContact for lastName_.
+	 * @return com.cannontech.database.data.lite.LiteContact
+	 * @param contactID_ int
+	 */
+	public static LiteContact getContactByLName( String lastName_ ) 
+	{
+		if( lastName_ == null )
+			return null;
+
+		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		synchronized( cache )
+		{
+			List cstCnts = cache.getAllContacts();
+			
+			for( int j = 0; j < cstCnts.size(); j++ )
+			{
+				if( lastName_.equalsIgnoreCase( ((LiteContact)cstCnts.get(j)).getContFirstName() ) )
+					return (LiteContact)cstCnts.get(j);
+			}
+		}
+	
+		return null;
+	}
+
+	/**
+	 * Returns the LiteContact for email_.
+	 * @return com.cannontech.database.data.lite.LiteContact
+	 * @param contactID_ int
+	 */
+	public static LiteContact getContactByEmailNotif( String email_ ) 
+	{
+		if( email_ == null )
+			return null;
+
+
+		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		synchronized( cache )
+		{
+			List cstCnts = cache.getAllContacts();
+			
+			for( int i = 0; i < cstCnts.size(); i++ )
+			{
+				LiteContact ltCntact = (LiteContact)cstCnts.get(i);
+				for( int j = 0; j < ltCntact.getLiteContactNotifications().size(); j++ )
+				{
+					LiteContactNotification ltNotif = 
+						(LiteContactNotification)ltCntact.getLiteContactNotifications().get(j);
+
+					if( ltNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL
+						 && email_.equalsIgnoreCase(ltNotif.getNotification()) )
+						return (LiteContact)cstCnts.get(i);
+				}
 			}
 		}
 	

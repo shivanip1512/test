@@ -39,6 +39,28 @@ public final class YukonUserFuncs
       }	
    }
 
+	public static LiteYukonUser getLiteYukonUser( String userName_ )
+	{
+		if( userName_ == null )
+			return null;
+
+
+		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+      
+		synchronized( cache )
+		{
+			java.util.List users = cache.getAllYukonUsers();
+         
+			for( int j = 0; j < users.size(); j++ )
+			{
+				if( userName_.equalsIgnoreCase( ((LiteYukonUser)users.get(j)).getUsername() ) )
+					return (LiteYukonUser)users.get(j);
+			}
+   
+			return null;
+		}	
+	}
+	
    public static LiteContact getLiteContact ( int userID_ )
    {
       com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
