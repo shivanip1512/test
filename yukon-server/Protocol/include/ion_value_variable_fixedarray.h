@@ -94,7 +94,9 @@ public:
 
     //  heh, all of the other functions here are const or static - who cares if they can instantiate an orphan copy of the class
     CtiIONFixedArray();
-    ~CtiIONFixedArray();
+
+    //  make sure this always gets called
+    virtual ~CtiIONFixedArray();
 
     FixedArrayTypes getFixedArrayType( void ) const;
     static bool     isFixedArrayType ( CtiIONValue *toCheck, FixedArrayTypes arrayType );
@@ -185,6 +187,8 @@ protected:
                 }
                 else
                 {
+                    delete tmpValue;
+
                     setValid(false);
                     pos = len;
                 }
