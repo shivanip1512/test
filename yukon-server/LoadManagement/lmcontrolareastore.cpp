@@ -34,9 +34,11 @@
 #include "lmgroupmct.h"
 #include "lmgroupripple.h"
 #include "lmgrouppoint.h"
+#include "lmgroupsa105.h"
+#include "lmgroupsa205.h"
 #include "lmgroupsa305.h"
-#include "lmgroupsa205or105.h"
-#include "lmgroupsadigitalorgolay.h"
+#include "lmgroupsadigital.h"
+#include "lmgroupgolay.h"
 #include "lmcontrolareatrigger.h"
 #include "lmprogramdirectgear.h"
 #include "lmprogramcontrolwindow.h"
@@ -107,6 +109,46 @@ RWOrdered* CtiLMControlAreaStore::getControlAreas(ULONG secondsFrom1901)
     }
 
     return _controlAreas;
+}
+
+
+/*---------------------------------------------------------------------------
+    findProgram
+
+    Returns true if program exists with the given programID, false otherwise.
+    
+    If program isn't NULL it is set to point to the program with programID.
+    
+    If controlArea isn't NULL it is set to point to the control area that
+    the program with programID is in.
+---------------------------------------------------------------------------*/
+bool CtiLMControlAreaStore::findProgram(LONG programID, CtiLMProgramBase** program, CtiLMControlArea** controlArea)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWOrdered* controlAreas = getControlAreas(RWDBDateTime().seconds());
+    for(LONG i=0; i < controlAreas->entries(); i++)
+    {
+	CtiLMControlArea* currentControlArea = (CtiLMControlArea*) (*controlAreas)[i];
+	RWOrdered lmPrograms = currentControlArea->getLMPrograms();
+	for(LONG j=0; j < lmPrograms.entries(); j++)
+	{
+	    CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*) lmPrograms[j];
+	    if(programID == currentLMProgram->getPAOId())
+	    {
+		if(controlArea != NULL)
+		{
+		    *controlArea = currentControlArea;
+		}
+		if(program != NULL)
+		{
+		    *program = currentLMProgram;
+		}
+		return true;
+	    }
+	}
+    }
+    return false;
+
 }
 
 /*---------------------------------------------------------------------------
@@ -462,17 +504,25 @@ void CtiLMControlAreaStore::reset()
                                 {
                                     currentLMGroupBase = new CtiLMGroupMCT(rdr);
                                 }
+                                else if( tempTypeInt == TYPE_LMGROUP_SA105 )
+                                {
+                                    currentLMGroupBase = new CtiLMGroupSA105(rdr);
+                                }
+                                else if( tempTypeInt == TYPE_LMGROUP_SA205 )
+                                {
+                                    currentLMGroupBase = new CtiLMGroupSA205(rdr);
+                                }
                                 else if( tempTypeInt == TYPE_LMGROUP_SA305 )
                                 {
                                     currentLMGroupBase = new CtiLMGroupSA305(rdr);
                                 }
-                                else if( tempTypeInt == TYPE_LMGROUP_SA105 || tempTypeInt == TYPE_LMGROUP_SA205 )
+                                else if( tempTypeInt == TYPE_LMGROUP_SADIGITAL )
                                 {
-                                    currentLMGroupBase = new CtiLMGroupSA205OR105(rdr);
+                                    currentLMGroupBase = new CtiLMGroupSADigital(rdr);
                                 }
-                                else if( tempTypeInt == TYPE_LMGROUP_GOLAY || tempTypeInt == TYPE_LMGROUP_SADIGITAL )
+                                else if( tempTypeInt == TYPE_LMGROUP_GOLAY )
                                 {
-                                    currentLMGroupBase = new CtiLMGroupSADigitalORGolay(rdr);
+                                    currentLMGroupBase = new CtiLMGroupGolay(rdr);
                                 }
                                 else
                                 {

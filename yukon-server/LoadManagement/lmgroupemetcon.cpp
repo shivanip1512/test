@@ -56,7 +56,7 @@ CtiLMGroupEmetcon::~CtiLMGroupEmetcon()
 CtiRequestMsg* CtiLMGroupEmetcon::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control shed ");
-    controlString += convertSecondsToEvenTimeString(shedTime);
+    controlString += buildShedString(shedTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -91,7 +91,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createSmartCycleRequestMsg(LONG percent, LONG 
 CtiRequestMsg* CtiLMGroupEmetcon::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control shed ");
-    controlString += convertSecondsToEvenTimeString(shedTime);
+    controlString += buildShedString(shedTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -141,7 +141,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(LONG offTime, LONG
         shedTime = 3600;
     }
 
-    controlString += convertSecondsToEvenTimeString(shedTime);
+    controlString += buildShedString(shedTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

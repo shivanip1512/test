@@ -11,6 +11,9 @@
 -----------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
+#include "msg_server_req.h"
+#include "msg_server_resp.h"
+
 #include "executor.h"
 #include "clistener.h"
 #include "lmcontrolareastore.h"
@@ -1050,576 +1053,321 @@ void CtiLMCommandExecutor::ConfirmGroup()
     Executes the command and places any resulting messages on the result
     queue.
 ---------------------------------------------------------------------------*/
-void CtiLMManualControlMsgExecutor::Execute()
+void CtiLMManualControlRequestExecutor::Execute()
 {
+    CtiLMProgramBase* program = NULL;
+    CtiLMControlArea* controlArea = NULL;
+
+    CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    if(!store->findProgram(_controlMsg->getPAOId(), &program, &controlArea))
+    {
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " - Received a manual control message that specified a program that doesn't exist, program id was: " << _controlMsg->getPAOId() << endl;
+        dout << RWTime() << " - Send a response messge here!" << endl;
+	return;
+    }
+    }
+
+    //move the disabled checks into general constraint checking
+    if( controlArea->getDisableFlag() )
+    {
+	if( _request != NULL)
+	{
+	    CtiServerResponseMsg* resp = new CtiServerResponseMsg(_request->getID(), CtiServerResponseMsg::ERR, " Control Area is disabled");
+	    CtiLMManualControlResponse* lmResp = new CtiLMManualControlResponse();
+	    resp->setPayload(lmResp);
+	    CtiLoadManager::getInstance()->sendMessageToClients(resp);
+	    return;
+	}
+    }
+
+    if( program->getDisableFlag() )
+    {
+	if( _request != NULL)
+	{
+	    CtiServerResponseMsg* resp = new CtiServerResponseMsg(_request->getID(), CtiServerResponseMsg::ERR, " Program is disabled");
+    	    CtiLMManualControlResponse* lmResp = new CtiLMManualControlResponse();
+	    resp->setPayload(lmResp);
+	    CtiLoadManager::getInstance()->sendMessageToClients(resp);
+	    return;
+	}
+    }
+    
     switch ( _controlMsg->getCommand() )
     {
-    case CtiLMManualControlMsg::SCHEDULED_START:
-        ScheduledStart();
+    case CtiLMManualControlRequest::START_NOW:
+    case CtiLMManualControlRequest::SCHEDULED_START:
+	//CheckConstraints();
+        StartProgram(program, controlArea);
         break;
 
-    case CtiLMManualControlMsg::SCHEDULED_STOP:
-        ScheduledStop();
-        break;
-
-    case CtiLMManualControlMsg::START_NOW:
-        StartNow();
-        break;
-
-    case CtiLMManualControlMsg::STOP_NOW:
-        StopNow();
+    case CtiLMManualControlRequest::STOP_NOW:
+    case CtiLMManualControlRequest::SCHEDULED_STOP:
+	//CheckConstraints();
+	StopProgram(program, controlArea);
         break;
 
     default:
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - executor.cpp::Execute - unknown command type at: " << __LINE__ << endl;
+            dout << RWTime() << " - Send a response messge here!" << endl;
         }
 
+    }
+
+    
+    CtiServerResponseMsg* resp = new CtiServerResponseMsg(_request->getID(), CtiServerResponseMsg::OK, " Success ");
+    CtiLMManualControlResponse* lmResp = new CtiLMManualControlResponse();
+    resp->setPayload(lmResp);
+    CtiLoadManager::getInstance()->sendMessageToClients(resp);
+
+}
+
+void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBase* program, CtiLMControlArea* controlArea)
+{
+
+    if( program->getPAOType() == TYPE_LMPROGRAM_DIRECT )
+    {
+	if( _LM_DEBUG & LM_DEBUG_STANDARD )
+	{ //TODO: pull this out into an operator
+	    CtiLockGuard<CtiLogger> logger_guard(dout);
+	    char tempchar[64];
+	    dout << RWTime() << " - Manual direct control scheduled start received." << endl;
+	    _ltoa(_controlMsg->getPAOId(),tempchar,10);
+	    dout << "pao id: " << tempchar << endl;
+	    dout << "start time: " << _controlMsg->getStartTime().asString() << endl;
+	    dout << "stop time: " << _controlMsg->getStopTime().asString() << endl;
+	    _ltoa(_controlMsg->getStartGear(),tempchar,10);
+	    dout << "start gear: " << tempchar << endl;
+	    _ltoa(_controlMsg->getStartPriority(),tempchar,10);
+	    dout << "start priority: " << tempchar << endl;
+	    dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
+	}
+	CtiLMProgramDirect* directProgram = (CtiLMProgramDirect*) program;
+	StartDirectProgram(directProgram, controlArea);
+
+	RWCString text = RWCString("Scheduled Manual Start, LM Program: ");
+	text += directProgram->getPAOName();
+	RWCString additional = RWCString("Start: ");
+	additional += directProgram->getDirectStartTime().asString();
+	additional += ", Stop: ";
+	additional += directProgram->getDirectStopTime().asString();
+	CtiLoadManager::getInstance()->sendMessageToDispatch( new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_controlMsg->getUser()) );
+    {
+	CtiLockGuard<CtiLogger> logger_guard(dout);
+	dout << RWTime() << " - " << text << ", " << additional << endl;
+    }
+    } // end program->getPAOType() == TYPE_LMPROGRAM_DIRECT 
+    else if(program->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT)
+    {
+	if( _LM_DEBUG & LM_DEBUG_STANDARD )
+	{
+	    CtiLockGuard<CtiLogger> logger_guard(dout);
+	    char tempchar[64];
+	    dout << RWTime() << " - Manual curtail scheduled start received." << endl;
+	    _ltoa(_controlMsg->getPAOId(),tempchar,10);
+	    dout << "pao id: " << tempchar << endl;
+	    dout << "notify time: " << _controlMsg->getNotifyTime().asString() << endl;
+	    dout << "start time: " << _controlMsg->getStartTime().asString() << endl;
+	    dout << "stop time: " << _controlMsg->getStopTime().asString() << endl;
+	    dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
+	}
+
+	CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)program;
+	StartCurtailmentProgram(lmProgramCurtailment, controlArea);
+	    
+	lmProgramCurtailment->setManualControlReceivedFlag(FALSE);
+	lmProgramCurtailment->setProgramState(CtiLMProgramBase::ScheduledState);
+	lmProgramCurtailment->setCurtailReferenceId(0);// This forces the program to create a new ref id
+	lmProgramCurtailment->setActionDateTime(RWDBDateTime());
+	lmProgramCurtailment->setNotificationDateTime(_controlMsg->getNotifyTime());
+	lmProgramCurtailment->setCurtailmentStartTime(_controlMsg->getStartTime());
+	lmProgramCurtailment->setStartedControlling(_controlMsg->getStartTime());
+	lmProgramCurtailment->setCurtailmentStopTime(_controlMsg->getStopTime());
+	lmProgramCurtailment->setRunStatus(CtiLMProgramCurtailment::ScheduledRunStatus);
+	if( _controlMsg->getAdditionalInfo().length() > 0 )
+	{
+	    lmProgramCurtailment->setAdditionalInfo(_controlMsg->getAdditionalInfo());
+	}
+	else
+	{
+	    lmProgramCurtailment->setAdditionalInfo("none");
+	}
+	lmProgramCurtailment->addLMCurtailProgramActivityTable();
+	lmProgramCurtailment->setManualControlReceivedFlag(TRUE);
+	controlArea->setUpdatedFlag(TRUE);
+    }
+    else
+    {
+    {
+	CtiLockGuard<CtiLogger> dout_guard(dout);
+	dout << RWTime() << " **Checkpoint** " << __FILE__ << "(" << __LINE__ << ")" << endl;
+	dout << RWTime() << " send a response message here" << __FILE__ << "(" << __LINE__ << ")" << endl;
+    }
+    }
+
+}
+
+void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBase* program, CtiLMControlArea* controlArea)
+{
+    if(program->getPAOType() == TYPE_LMPROGRAM_DIRECT)
+    {
+	if( _LM_DEBUG & LM_DEBUG_STANDARD )
+	{
+	    CtiLockGuard<CtiLogger> logger_guard(dout);
+	    char tempchar[64];
+	    dout << RWTime() << " - Manual direct control scheduled stop received." << endl;
+	    _ltoa(_controlMsg->getPAOId(),tempchar,10);
+	    dout << "pao id: " << tempchar << endl;
+	    dout << "stop time: " << _controlMsg->getStopTime().asString() << endl;
+	    dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
+	}
+
+	CtiLMProgramDirect* lmProgramDirect = (CtiLMProgramDirect*) program;
+	StopDirectProgram(lmProgramDirect, controlArea);
+
+	RWCString text = RWCString("Scheduled Manual Stop, LM Program: ");
+	text += lmProgramDirect->getPAOName();
+	RWCString additional = RWCString("Stop: ");
+	additional += lmProgramDirect->getDirectStopTime().asString();
+	CtiLoadManager::getInstance()->sendMessageToDispatch( new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_controlMsg->getUser()) );
+    {
+	CtiLockGuard<CtiLogger> logger_guard(dout);
+	dout << RWTime() << " - " << text << ", " << additional << endl;
+    }
+
+    }
+    else if(program->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT)
+    {
+	
+	if( _LM_DEBUG & LM_DEBUG_STANDARD )
+	{
+	    CtiLockGuard<CtiLogger> logger_guard(dout);
+	    char tempchar[64];
+	    dout << RWTime() << " - Manual curtail scheduled stop received." << endl;
+	    _ltoa(_controlMsg->getPAOId(),tempchar,10);
+	    dout << "pao id: " << tempchar << endl;
+	    dout << "notify time: " << _controlMsg->getNotifyTime().asString() << endl;
+	    dout << "stop time: " << _controlMsg->getStopTime().asString() << endl;
+	    dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
+	}
+	CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)program;
+	StopCurtailmentProgram(lmProgramCurtailment, controlArea);
+	
+    }
+    else
+    {
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " **Checkpoint** " <<  __FILE__ << "(" << __LINE__ << ")" << endl;
+        dout << RWTime() << " send a response message here" << __FILE__ << "(" << __LINE__ << ")" << endl;
+    }
     }
 }
 
-/*---------------------------------------------------------------------------
-    ScheduledStart
----------------------------------------------------------------------------*/    
-void CtiLMManualControlMsgExecutor::ScheduledStart()
+void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirect* lmProgramDirect, CtiLMControlArea* controlArea)
 {
-    BOOL found = FALSE;
-    LONG directProgramID = _controlMsg->getPAOId();
-    CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
-
-    if( controlAreas.entries() > 0 )
+    RWDBDateTime startTime;
+    if(_controlMsg->getCommand() == CtiLMManualControlRequest::SCHEDULED_START)
     {
-        for(LONG i=0;i<controlAreas.entries();i++)
-        {
-            CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-            if( !currentControlArea->getDisableFlag() )
-            {
-                RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
-                if( lmPrograms.entries() > 0 )
-                {
-                    for(LONG j=0;j<lmPrograms.entries();j++)
-                    {
-                        CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
-                        if( directProgramID == currentLMProgramBase->getPAOId() )
-                        {
-                            if( !currentLMProgramBase->getDisableFlag() )
-                            {
-                                if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
-                                {
-                                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        char tempchar[64];
-                                        dout << RWTime() << " - Manual direct control scheduled start received." << endl;
-                                        _ltoa(_controlMsg->getPAOId(),tempchar,10);
-                                        dout << "pao id: " << tempchar << endl;
-                                        dout << "start time: " << _controlMsg->getStartTime().asString() << endl;
-                                        dout << "stop time: " << _controlMsg->getStopTime().asString() << endl;
-                                        _ltoa(_controlMsg->getStartGear(),tempchar,10);
-                                        dout << "start gear: " << tempchar << endl;
-                                        _ltoa(_controlMsg->getStartPriority(),tempchar,10);
-                                        dout << "start priority: " << tempchar << endl;
-                                        dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
-                                    }
-                                    CtiLMProgramDirect* lmProgramDirect = (CtiLMProgramDirect*)currentLMProgramBase;
-                                    lmProgramDirect->setManualControlReceivedFlag(FALSE);
-                                    lmProgramDirect->setProgramState(CtiLMProgramBase::ScheduledState);
-                                    //lmProgramDirect->setCurtailReferenceId(0);// This forces the program to create a new ref id
-                                    //lmProgramDirect->setActionDateTime(RWDBDateTime());
-                                    //lmProgramDirect->setNotificationDateTime(_controlMsg->getNotifyTime());
-                                    lmProgramDirect->setDirectStartTime(_controlMsg->getStartTime());
-                                    lmProgramDirect->setStartedControlling(_controlMsg->getStartTime());
-                                    if( _controlMsg->getStopTime().seconds() < RWDBDateTime(1991,1,1,0,0,0,0).seconds() )
-                                    {//saves us from stopping immediately after starting if client is dumb enough to send us a stop time of 1990
-                                        RWDBDateTime pluggedStopTime(lmProgramDirect->getDirectStartTime());
-                                        pluggedStopTime = pluggedStopTime.addDays(1);
-                                        lmProgramDirect->setDirectStopTime(pluggedStopTime);
-                                    }
-                                    else
-                                    {
-                                        lmProgramDirect->setDirectStopTime(_controlMsg->getStopTime());
-                                    }
-                                    lmProgramDirect->setCurrentGearNumber(_controlMsg->getStartGear()-1);
-                                    if( _controlMsg->getStartPriority() > currentControlArea->getCurrentPriority() )
-                                    {
-                                        currentControlArea->setCurrentPriority(_controlMsg->getStartPriority());
-                                    }
-                                    //lmProgramDirect->setRunStatus(CtiLMProgramCurtailment::ScheduledRunStatus);
-                                    //lmProgramDirect->setAdditionalInfo(_controlMsg->getAdditionalInfo());
-                                    //lmProgramDirect->addLMCurtailProgramActivityTable();
-                                    //lmProgramDirect->dumpDynamicData();
-                                    {
-                                        RWCString text = RWCString("Scheduled Manual Start, LM Program: ");
-                                        text += lmProgramDirect->getPAOName();
-                                        RWCString additional = RWCString("Start: ");
-                                        additional += lmProgramDirect->getDirectStartTime().asString();
-                                        additional += ", Stop: ";
-                                        additional += lmProgramDirect->getDirectStopTime().asString();
-                                        CtiLoadManager::getInstance()->sendMessageToDispatch( new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_controlMsg->getUser()) );
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << RWTime() << " - " << text << ", " << additional << endl;
-                                        }
-                                    }
-                                    lmProgramDirect->setManualControlReceivedFlag(TRUE);
-                                    currentControlArea->setUpdatedFlag(TRUE);
-                                }
-                                else if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
-                                {
-                                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        char tempchar[64];
-                                        dout << RWTime() << " - Manual curtail scheduled start received." << endl;
-                                        _ltoa(_controlMsg->getPAOId(),tempchar,10);
-                                        dout << "pao id: " << tempchar << endl;
-                                        dout << "notify time: " << _controlMsg->getNotifyTime().asString() << endl;
-                                        dout << "start time: " << _controlMsg->getStartTime().asString() << endl;
-                                        dout << "stop time: " << _controlMsg->getStopTime().asString() << endl;
-                                        dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
-                                    }
-                                    CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)currentLMProgramBase;
-                                    lmProgramCurtailment->setManualControlReceivedFlag(FALSE);
-                                    lmProgramCurtailment->setProgramState(CtiLMProgramBase::ScheduledState);
-                                    lmProgramCurtailment->setCurtailReferenceId(0);// This forces the program to create a new ref id
-                                    lmProgramCurtailment->setActionDateTime(RWDBDateTime());
-                                    lmProgramCurtailment->setNotificationDateTime(_controlMsg->getNotifyTime());
-                                    lmProgramCurtailment->setCurtailmentStartTime(_controlMsg->getStartTime());
-                                    lmProgramCurtailment->setStartedControlling(_controlMsg->getStartTime());
-                                    lmProgramCurtailment->setCurtailmentStopTime(_controlMsg->getStopTime());
-                                    lmProgramCurtailment->setRunStatus(CtiLMProgramCurtailment::ScheduledRunStatus);
-                                    if( _controlMsg->getAdditionalInfo().length() > 0 )
-                                    {
-                                        lmProgramCurtailment->setAdditionalInfo(_controlMsg->getAdditionalInfo());
-                                    }
-                                    else
-                                    {
-                                        lmProgramCurtailment->setAdditionalInfo("none");
-                                    }
-                                    lmProgramCurtailment->addLMCurtailProgramActivityTable();
-                                    lmProgramCurtailment->setManualControlReceivedFlag(TRUE);
-                                    currentControlArea->setUpdatedFlag(TRUE);
-                                }
-                                else
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - CtiLMManualControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
-                                }
-                            }
-                            else
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - Cannot manually start a disabled LM Program: " << currentLMProgramBase->getPAOName() << " Pao Id:" << currentLMProgramBase->getPAOId() << endl;
-                            }
-                            found = TRUE;
-                            break;
-                        }
-                    }
-                }
-                if( found )
-                {
-                    break;
-                }
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Cannot manually schedule to start a LM Program in a disabled Control Area: " << currentControlArea->getPAOName() << " Pao Id:" << currentControlArea->getPAOId() << endl;
-            }
-        }
+	startTime = _controlMsg->getStartTime();
     }
+    lmProgramDirect->setManualControlReceivedFlag(FALSE);
+    lmProgramDirect->setProgramState(CtiLMProgramBase::ScheduledState);
+    
+    lmProgramDirect->setDirectStartTime(startTime);
+    lmProgramDirect->setStartedControlling(startTime);
+
+    if( _controlMsg->getStopTime().seconds() < RWDBDateTime(1991,1,1,0,0,0,0).seconds() )
+    {//saves us from stopping immediately after starting if client is dumb enough to send us a stop time of 1990
+	RWDBDateTime pluggedStopTime(lmProgramDirect->getDirectStartTime());
+	pluggedStopTime = pluggedStopTime.addDays(1);
+	lmProgramDirect->setDirectStopTime(pluggedStopTime);
+    }
+    else
+    {
+	lmProgramDirect->setDirectStopTime(_controlMsg->getStopTime());
+    }
+    
+    lmProgramDirect->setCurrentGearNumber(_controlMsg->getStartGear()-1);
+    if( _controlMsg->getStartPriority() > controlArea->getCurrentPriority() )
+    {
+	controlArea->setCurrentPriority(_controlMsg->getStartPriority());
+    }
+    
+    lmProgramDirect->setManualControlReceivedFlag(TRUE);
+    controlArea->setUpdatedFlag(TRUE);
 }
 
-/*---------------------------------------------------------------------------
-    ScheduledStop
----------------------------------------------------------------------------*/    
-void CtiLMManualControlMsgExecutor::ScheduledStop()
+void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirect* lmProgramDirect, CtiLMControlArea* controlArea)
 {
-    BOOL found = FALSE;
-    LONG directProgramID = _controlMsg->getPAOId();
-    CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
-
-    if( controlAreas.entries() > 0 )
+    RWDBDateTime stopTime;
+    if(_controlMsg->getCommand() == CtiLMManualControlRequest::SCHEDULED_STOP)
     {
-        for(LONG i=0;i<controlAreas.entries();i++)
-        {
-            CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-            RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
-            if( lmPrograms.entries() > 0 )
-            {
-                for(LONG j=0;j<lmPrograms.entries();j++)
-                {
-                    CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
-                    if( directProgramID == currentLMProgramBase->getPAOId() )
-                    {
-                        if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
-                        {
-                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                char tempchar[64];
-                                dout << RWTime() << " - Manual direct control scheduled stop received." << endl;
-                                _ltoa(_controlMsg->getPAOId(),tempchar,10);
-                                dout << "pao id: " << tempchar << endl;
-                                dout << "stop time: " << _controlMsg->getStopTime().asString() << endl;
-                                dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
-                            }
-                            CtiLMProgramDirect* lmProgramDirect = (CtiLMProgramDirect*)currentLMProgramBase;
-                            lmProgramDirect->setManualControlReceivedFlag(FALSE);
-                            //lmProgramDirect->setProgramState(CtiLMProgramBase::StoppingState);
-                            //lmProgramDirect->setCurtailReferenceId(0);// This forces the program to create a new ref id
-                            //lmProgramDirect->setActionDateTime(RWDBDateTime());
-                            //lmProgramDirect->setNotificationDateTime(_controlMsg->getNotifyTime());
-                            //lmProgramDirect->setDirectStartTime(_controlMsg->getStartTime());
-                            //lmProgramDirect->setStartedControlling(_controlMsg->getStartTime());
-                            lmProgramDirect->setDirectStopTime(_controlMsg->getStopTime());
-                            //lmProgramDirect->setRunStatus(CtiLMProgramCurtailment::ScheduledRunStatus);
-                            //lmProgramDirect->setAdditionalInfo(_controlMsg->getAdditionalInfo());
-                            //lmProgramDirect->addLMCurtailProgramActivityTable();
-                            //lmProgramDirect->dumpDynamicData();
-                            {
-                                RWCString text = RWCString("Scheduled Manual Stop, LM Program: ");
-                                text += lmProgramDirect->getPAOName();
-                                RWCString additional = RWCString("Stop: ");
-                                additional += lmProgramDirect->getDirectStopTime().asString();
-                                CtiLoadManager::getInstance()->sendMessageToDispatch( new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_controlMsg->getUser()) );
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - " << text << ", " << additional << endl;
-                                }
-                            }
-                            lmProgramDirect->setManualControlReceivedFlag(TRUE);
-                            currentControlArea->setUpdatedFlag(TRUE);
-                        }
-                        else if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
-                        {
-                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                char tempchar[64];
-                                dout << RWTime() << " - Manual curtail scheduled stop received." << endl;
-                                _ltoa(_controlMsg->getPAOId(),tempchar,10);
-                                dout << "pao id: " << tempchar << endl;
-                                dout << "notify time: " << _controlMsg->getNotifyTime().asString() << endl;
-                                dout << "stop time: " << _controlMsg->getStopTime().asString() << endl;
-                                dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
-                            }
-                            CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)currentLMProgramBase;
-                            lmProgramCurtailment->setManualControlReceivedFlag(FALSE);
-                            //lmProgramCurtailment->setProgramState(CtiLMProgramBase::ScheduledState);
-                            //lmProgramCurtailment->setCurtailReferenceId(0);// This forces the program to create a new ref id
-                            //lmProgramCurtailment->setActionDateTime(RWDBDateTime());
-                            //lmProgramCurtailment->setNotificationDateTime(_controlMsg->getNotifyTime());
-                            //lmProgramCurtailment->setCurtailmentStartTime(_controlMsg->getStartTime());
-                            //lmProgramCurtailment->setStartedControlling(_controlMsg->getStartTime());
-                            lmProgramCurtailment->setCurtailmentStopTime(_controlMsg->getStopTime());
-                            //lmProgramCurtailment->setRunStatus(CtiLMProgramCurtailment::ScheduledRunStatus);
-                            if( _controlMsg->getAdditionalInfo().length() > 0 )
-                            {
-                                lmProgramCurtailment->setAdditionalInfo(_controlMsg->getAdditionalInfo());
-                            }
-                            else if( lmProgramCurtailment->getAdditionalInfo().length() == 0 )
-                            {
-                                lmProgramCurtailment->setAdditionalInfo("none");
-                            }
-                            lmProgramCurtailment->setManualControlReceivedFlag(TRUE);
-                            currentControlArea->setUpdatedFlag(TRUE);
-                        }
-                        else
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - CtiLMManualControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
-                        }
-                        found = TRUE;
-                        break;
-                    }
-                }
-            }
-            if( found )
-            {
-                break;
-            }
-        }
+	stopTime = _controlMsg->getStopTime();
     }
+    lmProgramDirect->setManualControlReceivedFlag(FALSE);
+    lmProgramDirect->setDirectStopTime(stopTime);
+
+    lmProgramDirect->setManualControlReceivedFlag(TRUE);
+    controlArea->setUpdatedFlag(TRUE);
 }
 
-/*---------------------------------------------------------------------------
-    StartNow
----------------------------------------------------------------------------*/    
-void CtiLMManualControlMsgExecutor::StartNow()
+void CtiLMManualControlRequestExecutor::StartCurtailmentProgram(CtiLMProgramCurtailment* lmProgramCurtailment, CtiLMControlArea* controlArea)
 {
-    BOOL found = FALSE;
-    LONG directProgramID = _controlMsg->getPAOId();
-    CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
-
-    if( controlAreas.entries() > 0 )
+    RWDBDateTime startTime;
+    RWDBDateTime notificationTime;
+    if(_controlMsg->getCommand() == CtiLMManualControlRequest::SCHEDULED_START)
     {
-        for(LONG i=0;i<controlAreas.entries();i++)
-        {
-            CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-            if( !currentControlArea->getDisableFlag() )
-            {
-                RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
-                if( lmPrograms.entries() > 0 )
-                {
-                    for(LONG j=0;j<lmPrograms.entries();j++)
-                    {
-                        CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
-                        if( directProgramID == currentLMProgramBase->getPAOId() )
-                        {
-                            if( !currentLMProgramBase->getDisableFlag() )
-                            {
-                                if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
-                                {
-                                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        char tempchar[64];
-                                        dout << RWTime() << " - Manual direct control start now received." << endl;
-                                        _ltoa(_controlMsg->getPAOId(),tempchar,10);
-                                        dout << "pao id: " << tempchar << endl;
-                                        dout << "start time: " << _controlMsg->getStartTime().asString() << endl;
-                                        dout << "stop time: " << _controlMsg->getStopTime().asString() << endl;
-                                        _ltoa(_controlMsg->getStartGear(),tempchar,10);
-                                        dout << "start gear: " << tempchar << endl;
-                                        _ltoa(_controlMsg->getStartPriority(),tempchar,10);
-                                        dout << "start priority: " << tempchar << endl;
-                                        dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
-                                    }
-                                    CtiLMProgramDirect* lmProgramDirect = (CtiLMProgramDirect*)currentLMProgramBase;
-                                    lmProgramDirect->setManualControlReceivedFlag(FALSE);
-                                    lmProgramDirect->setProgramState(CtiLMProgramBase::ScheduledState);
-                                    //lmProgramDirect->setCurtailReferenceId(0);// This forces the program to create a new ref id
-                                    //lmProgramDirect->setActionDateTime(RWDBDateTime());
-                                    //lmProgramDirect->setNotificationDateTime(_controlMsg->getNotifyTime());
-                                    lmProgramDirect->setDirectStartTime(RWDBDateTime());
-                                    lmProgramDirect->setStartedControlling(RWDBDateTime());
-                                    if( _controlMsg->getStopTime().seconds() < RWDBDateTime(1991,1,1,0,0,0,0).seconds() )
-                                    {//saves us from stopping immediately after starting if client is dumb enough to send us a stop time of 1990
-                                        RWDBDateTime pluggedStopTime(lmProgramDirect->getDirectStartTime());
-                                        pluggedStopTime = pluggedStopTime.addDays(1);
-                                        lmProgramDirect->setDirectStopTime(pluggedStopTime);
-                                    }
-                                    else
-                                    {
-                                        lmProgramDirect->setDirectStopTime(_controlMsg->getStopTime());
-                                    }
-                                    lmProgramDirect->setCurrentGearNumber(_controlMsg->getStartGear()-1);
-                                    if( _controlMsg->getStartPriority() > currentControlArea->getCurrentPriority() )
-                                    {
-                                        currentControlArea->setCurrentPriority(_controlMsg->getStartPriority());
-                                    }
-                                    //lmProgramDirect->setRunStatus(CtiLMProgramCurtailment::ScheduledRunStatus);
-                                    //lmProgramDirect->setAdditionalInfo(_controlMsg->getAdditionalInfo());
-                                    //lmProgramDirect->addLMCurtailProgramActivityTable();
-                                    //lmProgramDirect->dumpDynamicData();
-                                    {
-                                        RWCString text = RWCString("Manual Start, LM Program: ");
-                                        text += lmProgramDirect->getPAOName();
-                                        RWCString additional = RWCString("Start: Immediately, Stop: ");
-                                        additional += lmProgramDirect->getDirectStopTime().asString();
-                                        CtiLoadManager::getInstance()->sendMessageToDispatch( new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_controlMsg->getUser()) );
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << RWTime() << " - " << text << ", " << additional << endl;
-                                        }
-                                    }
-                                    lmProgramDirect->setManualControlReceivedFlag(TRUE);
-                                    currentControlArea->setUpdatedFlag(TRUE);
-                                }
-                                else if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
-                                {
-                                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        char tempchar[64];
-                                        dout << RWTime() << " - Manual curtail start now received." << endl;
-                                        _ltoa(_controlMsg->getPAOId(),tempchar,10);
-                                        dout << "pao id: " << tempchar << endl;
-                                        dout << "notify time: " << _controlMsg->getNotifyTime().asString() << endl;
-                                        dout << "start time: " << _controlMsg->getStartTime().asString() << endl;
-                                        dout << "stop time: " << _controlMsg->getStopTime().asString() << endl;
-                                        dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
-                                    }
-                                    CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)currentLMProgramBase;
-                                    lmProgramCurtailment->setManualControlReceivedFlag(FALSE);
-                                    lmProgramCurtailment->setProgramState(CtiLMProgramBase::ScheduledState);
-                                    lmProgramCurtailment->setCurtailReferenceId(0);// This forces the program to create a new ref id
-                                    lmProgramCurtailment->setActionDateTime(RWDBDateTime());
-                                    lmProgramCurtailment->setNotificationDateTime(RWDBDateTime());
-                                    lmProgramCurtailment->setCurtailmentStartTime(_controlMsg->getStartTime());
-                                    lmProgramCurtailment->setStartedControlling(_controlMsg->getStartTime());
-                                    lmProgramCurtailment->setCurtailmentStopTime(_controlMsg->getStopTime());
-                                    lmProgramCurtailment->setRunStatus(CtiLMProgramCurtailment::ScheduledRunStatus);
-                                    if( _controlMsg->getAdditionalInfo().length() > 0 )
-                                    {
-                                        lmProgramCurtailment->setAdditionalInfo(_controlMsg->getAdditionalInfo());
-                                    }
-                                    else
-                                    {
-                                        lmProgramCurtailment->setAdditionalInfo("none");
-                                    }
-                                    lmProgramCurtailment->addLMCurtailProgramActivityTable();
-                                    {
-                                        RWCString text = RWCString("Manual Start, LM Program: ");
-                                        text += lmProgramCurtailment->getPAOName();
-                                        RWCString additional = RWCString("Start: Immediately, Stop: ");
-                                        additional += lmProgramCurtailment->getCurtailmentStopTime().asString();
-                                        CtiLoadManager::getInstance()->sendMessageToDispatch( new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_controlMsg->getUser()) );
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << RWTime() << " - " << text << ", " << additional << endl;
-                                        }
-                                    }
-                                    lmProgramCurtailment->setManualControlReceivedFlag(TRUE);
-                                    currentControlArea->setUpdatedFlag(TRUE);
-                                }
-                                else
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - CtiLMManualControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
-                                }
-                            }
-                            else
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - Cannot manually start a disabled LM Program: " << currentLMProgramBase->getPAOName() << " Pao Id:" << currentLMProgramBase->getPAOId() << endl;
-                            }
-                            found = TRUE;
-                            break;
-                        }
-                    }
-                }
-                if( found )
-                {
-                    break;
-                }
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Cannot manually start a LM Program in a disabled Control Area: " << currentControlArea->getPAOName() << " Pao Id:" << currentControlArea->getPAOId() << endl;
-            }
-        }
+	startTime = _controlMsg->getStartTime();
+	notificationTime = _controlMsg->getNotifyTime();
     }
+    lmProgramCurtailment->setManualControlReceivedFlag(FALSE);
+    lmProgramCurtailment->setProgramState(CtiLMProgramBase::ScheduledState);
+    lmProgramCurtailment->setCurtailReferenceId(0);// This forces the program to create a new ref id
+    lmProgramCurtailment->setActionDateTime(RWDBDateTime());
+    lmProgramCurtailment->setNotificationDateTime(notificationTime);
+    lmProgramCurtailment->setCurtailmentStartTime(startTime);
+    lmProgramCurtailment->setStartedControlling(startTime);
+    lmProgramCurtailment->setCurtailmentStopTime(_controlMsg->getStopTime());
+    lmProgramCurtailment->setRunStatus(CtiLMProgramCurtailment::ScheduledRunStatus);
+    if( _controlMsg->getAdditionalInfo().length() > 0 )
+    {
+	lmProgramCurtailment->setAdditionalInfo(_controlMsg->getAdditionalInfo());
+    }
+    else
+    {
+	lmProgramCurtailment->setAdditionalInfo("none");
+    }
+    lmProgramCurtailment->addLMCurtailProgramActivityTable();
+    lmProgramCurtailment->setManualControlReceivedFlag(TRUE);
+    controlArea->setUpdatedFlag(TRUE);
 }
 
-/*---------------------------------------------------------------------------
-    StopNow
----------------------------------------------------------------------------*/    
-void CtiLMManualControlMsgExecutor::StopNow()
+void CtiLMManualControlRequestExecutor::StopCurtailmentProgram(CtiLMProgramCurtailment* lmProgramCurtailment, CtiLMControlArea* controlArea)
 {
-    BOOL found = FALSE;
-    LONG directProgramID = _controlMsg->getPAOId();
-    CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
-
-    if( controlAreas.entries() > 0 )
+    RWDBDateTime stopTime;
+    if(_controlMsg->getCommand() == CtiLMManualControlRequest::SCHEDULED_STOP)
     {
-        for(LONG i=0;i<controlAreas.entries();i++)
-        {
-            CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-            RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
-            if( lmPrograms.entries() > 0 )
-            {
-                for(LONG j=0;j<lmPrograms.entries();j++)
-                {
-                    CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
-                    if( directProgramID == currentLMProgramBase->getPAOId() )
-                    {
-                        if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
-                        {
-                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                char tempchar[64];
-                                dout << RWTime() << " - Manual direct control stop now received." << endl;
-                                _ltoa(_controlMsg->getPAOId(),tempchar,10);
-                                dout << "pao id: " << tempchar << endl;
-                                dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
-                            }
-                            CtiLMProgramDirect* lmProgramDirect = (CtiLMProgramDirect*)currentLMProgramBase;
-                            lmProgramDirect->setManualControlReceivedFlag(FALSE);
-                            //lmProgramDirect->setProgramState(CtiLMProgramBase::StoppingState);
-                            //lmProgramDirect->setCurtailReferenceId(0);// This forces the program to create a new ref id
-                            //lmProgramDirect->setActionDateTime(RWDBDateTime());
-                            //lmProgramDirect->setNotificationDateTime(_controlMsg->getNotifyTime());
-                            //lmProgramDirect->setDirectStartTime(_controlMsg->getStartTime());
-                            //lmProgramDirect->setStartedControlling(_controlMsg->getStartTime());
-                            lmProgramDirect->setDirectStopTime(RWDBDateTime());
-                            //lmProgramDirect->setRunStatus(CtiLMProgramCurtailment::ScheduledRunStatus);
-                            //lmProgramDirect->setAdditionalInfo(_controlMsg->getAdditionalInfo());
-                            //lmProgramDirect->addLMCurtailProgramActivityTable();
-                            //lmProgramDirect->dumpDynamicData();
-                            {
-                                RWCString text = RWCString("Manual Stop, LM program: ");
-                                text += lmProgramDirect->getPAOName();
-                                RWCString additional = RWCString("Stop: Immediately");
-                                CtiLoadManager::getInstance()->sendMessageToDispatch( new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_controlMsg->getUser()) );
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - " << text << ", " << additional << endl;
-                                }
-                            }
-                            lmProgramDirect->setManualControlReceivedFlag(TRUE);
-                            currentControlArea->setUpdatedFlag(TRUE);
-                        }
-                        else if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
-                        {
-                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                char tempchar[64];
-                                dout << RWTime() << " - Manual curtail- stop now received." << endl;
-                                _ltoa(_controlMsg->getPAOId(),tempchar,10);
-                                dout << RWTime() << " - pao id: " << tempchar << endl;
-                                dout << RWTime() << " - additional info: " << _controlMsg->getAdditionalInfo() << endl;
-                            }
-                            CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)currentLMProgramBase;
-                            lmProgramCurtailment->setManualControlReceivedFlag(FALSE);
-                            lmProgramCurtailment->setProgramState(CtiLMProgramBase::StoppingState);
-                            //lmProgramCurtailment->setCurtailReferenceId(0);// This forces the program to create a new ref id
-                            //lmProgramCurtailment->setActionDateTime(RWDBDateTime());
-                            //lmProgramCurtailment->setNotificationDateTime(_controlMsg->getNotifyTime());
-                            //lmProgramCurtailment->setCurtailmentStartTime(_controlMsg->getStartTime());
-                            //lmProgramCurtailment->setStartedControlling(_controlMsg->getStartTime());
-                            //lmProgramCurtailment->setCurtailmentStopTime(RWDBDateTime());
-                            //lmProgramCurtailment->setRunStatus(CtiLMProgramCurtailment::ScheduledRunStatus);
-                            if( _controlMsg->getAdditionalInfo().length() > 0 )
-                            {
-                                lmProgramCurtailment->setAdditionalInfo(_controlMsg->getAdditionalInfo());
-                            }
-                            else if( lmProgramCurtailment->getAdditionalInfo().length() == 0 )
-                            {
-                                lmProgramCurtailment->setAdditionalInfo("none");
-                            }
-                            lmProgramCurtailment->setManualControlReceivedFlag(TRUE);
-                            currentControlArea->setUpdatedFlag(TRUE);
-                        }
-                        else
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - CtiLMManualControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
-                        }
-                        found = TRUE;
-                        break;
-                    }
-                }
-            }
-            if( found )
-            {
-                break;
-            }
-        }
+	stopTime = _controlMsg->getStopTime();
     }
+    lmProgramCurtailment->setManualControlReceivedFlag(FALSE);
+    lmProgramCurtailment->setCurtailmentStopTime(_controlMsg->getStopTime());
+
+    if( _controlMsg->getAdditionalInfo().length() > 0 )
+    {
+	lmProgramCurtailment->setAdditionalInfo(_controlMsg->getAdditionalInfo());
+    }
+    else if( lmProgramCurtailment->getAdditionalInfo().length() == 0 )
+    {
+	lmProgramCurtailment->setAdditionalInfo("none");
+    }
+    lmProgramCurtailment->setManualControlReceivedFlag(TRUE);
+    controlArea->setUpdatedFlag(TRUE);    
 }
 
 
@@ -2702,7 +2450,22 @@ void CtiLMShutdownExecutor::Execute()
 CtiLMExecutor* CtiLMExecutorFactory::createExecutor(const CtiMessage* message)
 {
     CtiLMExecutor* ret_val = 0;
+    CtiServerRequestMsg* request = 0;
     LONG classId = message->isA();
+
+//     A message could come in wrapped in a server request message.
+    if( classId == MSG_SERVER_REQUEST )
+    {
+	request = (CtiServerRequestMsg*) message;
+	message = (CtiMessage*) request->getPayload();
+	if( message  == NULL )
+	{
+	    CtiLockGuard<CtiLogger> dout_guard(dout);
+	    dout << RWTime() << " **Checkpoint** " << "CtiLMServerRequest received but it contains no payload, doing nothing!" << __FILE__ << "(" << __LINE__ << ")" << endl;
+	    return 0;
+	}
+	classId = message->isA();
+    }
 
     switch ( classId )
     {
@@ -2714,8 +2477,8 @@ CtiLMExecutor* CtiLMExecutorFactory::createExecutor(const CtiMessage* message)
             ret_val = new CtiLMControlAreaMsgExecutor( (CtiLMControlAreaMsg*)message );
             break;
     
-        case CTILMMANUALCONTROLMSG_ID:
-            ret_val = new CtiLMManualControlMsgExecutor( (CtiLMManualControlMsg*)message );
+        case CTILMMANUALCONTROLREQUEST_ID:
+            ret_val = new CtiLMManualControlRequestExecutor( (CtiLMManualControlRequest*)message, request );
             break;
     
         case CTILMENERGYEXCHANGECONTROLMSG_ID:

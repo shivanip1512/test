@@ -20,6 +20,7 @@
 #include "loadmanager.h"
 #include "device.h"
 #include "resolvers.h"
+#include "numstr.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -860,11 +861,11 @@ int CtiLMGroupBase::operator!=(const CtiLMGroupBase& right) const
 }
 
 /*---------------------------------------------------------------------------
-    convertSecondsToEvenTimeString
+    buildShedString
 
-    
+    Builds a shed time string given a period of time in seconds.
 ---------------------------------------------------------------------------*/
-RWCString CtiLMGroupBase::convertSecondsToEvenTimeString(LONG shedTime) const
+RWCString CtiLMGroupBase::buildShedString(LONG shedTime) const
 {
     char tempchar[64];
     RWCString retStr;
@@ -891,6 +892,18 @@ RWCString CtiLMGroupBase::convertSecondsToEvenTimeString(LONG shedTime) const
     }
 
     return retStr;
+}
+
+/*---------------------------------------------------------------------------
+    buildPeriodString
+
+    Builds a period time string given a period of time in seconds.
+    Period strings are always in terms of minutes!
+    i.e. 61 seconds is 1m
+---------------------------------------------------------------------------*/
+RWCString CtiLMGroupBase::buildPeriodString(LONG periodTime) const
+{
+    return CtiNumStr(periodTime/(LONG)60);
 }
 
 /*---------------------------------------------------------------------------

@@ -57,7 +57,7 @@ CtiLMGroupExpresscom::~CtiLMGroupExpresscom()
 CtiRequestMsg* CtiLMGroupExpresscom::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control xcom shed ");
-    controlString += convertSecondsToEvenTimeString(shedTime);
+    controlString += buildShedString(shedTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -84,7 +84,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LO
     _ltoa(defaultCount,tempchar,10);
     controlString += tempchar;
     controlString += " period ";
-    controlString += convertSecondsToEvenTimeString(period);
+    controlString += buildPeriodString(period);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -110,7 +110,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LON
     _ltoa(defaultCount,tempchar,10);
     controlString += tempchar;
     controlString += " period ";
-    controlString += convertSecondsToEvenTimeString(period);
+    controlString += buildPeriodString(period);
     controlString += " truecycle";
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -130,8 +130,8 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LON
 CtiRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control xcom shed ");
-    controlString += convertSecondsToEvenTimeString(shedTime);
-
+    controlString += buildShedString(shedTime);
+    
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -147,9 +147,9 @@ CtiRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(LONG sendRate, LON
     method of master cycle with the appropriate off time, period length.
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
-{
+{ 
     RWCString controlString = RWCString("control xcom shed ");
-    controlString += convertSecondsToEvenTimeString(offTime-60);
+    controlString += buildShedString(offTime-60);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

@@ -1037,7 +1037,8 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
         }
         //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
         else if( currentLMProgram->getControlType().compareTo(CtiLMProgramBase::ManualOnlyType,RWCString::ignoreCase) &&
-                 currentLMProgram->getControlType().compareTo(CtiLMProgramBase::AutomaticType,RWCString::ignoreCase) )
+                 currentLMProgram->getControlType().compareTo(CtiLMProgramBase::AutomaticType,RWCString::ignoreCase) &&
+	         currentLMProgram->getControlType().compareTo(CtiLMProgramBase::TimedType,RWCString::ignoreCase) )
         {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Unknown LM Program Control Type: " << currentLMProgram->getControlType() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -1047,7 +1048,8 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
     for(LONG j=0;j<_lmprograms.entries();j++)
     {
         if( ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
-            ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState )
+            ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState ||
+	    ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState )
         {
             fullyActivePrograms++;
             activePrograms++;
@@ -1195,7 +1197,8 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                 //possibly attemping control state?
             }
         }
-        else if( currentLMProgram->getControlType().compareTo(CtiLMProgramBase::ManualOnlyType,RWCString::ignoreCase) )
+        else if( currentLMProgram->getControlType().compareTo(CtiLMProgramBase::ManualOnlyType,RWCString::ignoreCase) &&
+	         currentLMProgram->getControlType().compareTo(CtiLMProgramBase::TimedType,RWCString::ignoreCase))
         {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Unknown LM Program Control Type in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -1260,8 +1263,9 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, UL
                 returnBoolean = TRUE;
             }
 		}
-        if( currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ||
-            currentLMProgram->getProgramState() == CtiLMProgramBase::ManualActiveState )
+        if( currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState  ||
+            currentLMProgram->getProgramState() == CtiLMProgramBase::ManualActiveState ||
+	    currentLMProgram->getProgramState() == CtiLMProgramBase::TimedActiveState )
         {
             numberOfFullyActivePrograms++;
             numberOfActivePrograms++;
@@ -1367,8 +1371,9 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
                 }
             }
         }
-        if( currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ||
-            currentLMProgram->getProgramState() == CtiLMProgramBase::ManualActiveState )
+        if( currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState  ||
+            currentLMProgram->getProgramState() == CtiLMProgramBase::ManualActiveState ||
+	    currentLMProgram->getProgramState() == CtiLMProgramBase::TimedActiveState )
         {
             numberOfFullyActivePrograms++;
             numberOfActivePrograms++;
@@ -1438,8 +1443,9 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
                 setUpdatedFlag(TRUE);
             }
         }
-        if( currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ||
-            currentLMProgram->getProgramState() == CtiLMProgramBase::ManualActiveState )
+        if( currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState  ||
+            currentLMProgram->getProgramState() == CtiLMProgramBase::ManualActiveState ||
+	    currentLMProgram->getProgramState() == CtiLMProgramBase::TimedActiveState)
         {
             numberOfFullyActivePrograms++;
             numberOfActivePrograms++;
@@ -1517,7 +1523,123 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
     }
 }
 
+/*---------------------------------------------------------------------------
+    handleTimeBasedControl
 
+    Check if we have any time based control programs that need to do
+    something and then do it.
+---------------------------------------------------------------------------*/
+void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+{
+
+    // for all timed programs
+    // if active and not in a control windows
+    // then stop the program
+    // if !active and in a control window
+    // then start the program
+    
+    LONG previousControlAreaState = getControlAreaState();
+    LONG numberOfActivePrograms = 0;
+    LONG numberOfFullyActivePrograms = 0;
+    for(LONG i=0;i<_lmprograms.entries();i++)
+    {
+        CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
+
+	if(currentLMProgram->getControlType() == CtiLMProgramBase::TimedType )
+	{
+	    //  if( currentLMProgram->isReadyForTimedControl(secondsFromBeginningOfDay) )
+//	    {
+	    /*    {
+		CtiLockGuard<CtiLogger> dout_guard(dout);
+		dout << RWTime() << " **Checkpoint** " << "Program in handling timed control" << __FILE__ << "(" << __LINE__ << ")" << endl;
+	    }
+	    */
+	    if(currentLMProgram->handleTimedControl(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg))
+	    {
+		setUpdatedFlag(TRUE);
+	    }
+//	    }
+	}
+	
+        if( currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState  ||
+            currentLMProgram->getProgramState() == CtiLMProgramBase::ManualActiveState ||
+	    currentLMProgram->getProgramState() == CtiLMProgramBase::TimedActiveState )
+        {
+            numberOfFullyActivePrograms++;
+            numberOfActivePrograms++;
+        }
+        else if( currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState )
+        {
+            numberOfActivePrograms++;
+        }
+    }
+
+    if( numberOfFullyActivePrograms > 0 &&
+        numberOfFullyActivePrograms == _lmprograms.entries() )
+    {
+        if( getControlAreaState() != CtiLMControlArea::FullyActiveState )
+        {
+            setControlAreaState(CtiLMControlArea::FullyActiveState);
+            if( previousControlAreaState == CtiLMControlArea::InactiveState )
+            {
+                RWCString text = RWCString("Timed Start, LM Control Area: ");
+                text += getPAOName();
+                RWCString additional = RWCString("");
+                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                signal->setSOE(1);
+
+                multiDispatchMsg->insert(signal);
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - " << text << ", " << additional << endl;
+                }
+            }
+            setUpdatedFlag(TRUE);
+        }
+    }
+    else if( numberOfActivePrograms == 0 )
+    {
+        setControlAreaState(CtiLMControlArea::InactiveState);
+        if( previousControlAreaState != CtiLMControlArea::InactiveState )
+        {
+            RWCString text = RWCString("Timed Stop, LMControl Area: ");
+            text += getPAOName();
+            RWCString additional = RWCString("");
+            CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+            signal->setSOE(1);
+
+            multiDispatchMsg->insert(signal);
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << text << ", " << additional << endl;
+            }
+            setCurrentPriority(-1);
+            setUpdatedFlag(TRUE);
+        }
+    }
+    else
+    {
+        if( getControlAreaState() != CtiLMControlArea::ActiveState )
+        {
+            setControlAreaState(CtiLMControlArea::ActiveState);
+            if( previousControlAreaState == CtiLMControlArea::InactiveState )
+            {
+                RWCString text = RWCString("Timed Start, LM Control Area: ");
+                text += getPAOName();
+                RWCString additional = RWCString("");
+                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                signal->setSOE(1);
+
+                multiDispatchMsg->insert(signal);
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - " << text << ", " << additional << endl;
+                }
+	            setUpdatedFlag(TRUE);
+            }
+        }
+    }
+}
 /*---------------------------------------------------------------------------
     createControlStatusPointUpdates
 
