@@ -309,7 +309,7 @@ public class ProgramOptOutAction implements ActionBase {
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_VERB) + " the programs.") );
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_VERB) + " the programs.") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {

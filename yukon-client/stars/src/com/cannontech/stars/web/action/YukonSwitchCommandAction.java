@@ -176,7 +176,7 @@ public class YukonSwitchCommandAction implements ActionBase {
             
 			try {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to send the switch command") );
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to send the switch command.") );
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			catch (Exception e2) {

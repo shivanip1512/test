@@ -395,7 +395,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
             
 			try {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to update thermostat schedules") );
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to update thermostat schedules.") );
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			catch (Exception e2) {

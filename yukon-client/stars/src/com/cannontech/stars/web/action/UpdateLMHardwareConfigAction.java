@@ -145,7 +145,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
             
 			try {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to update the hardware configuration") );
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to update the hardware configuration.") );
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			catch (Exception e2) {

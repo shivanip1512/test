@@ -187,7 +187,7 @@ public class ProgramReenableAction implements ActionBase {
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) + " the programs") );
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) + " the programs.") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
