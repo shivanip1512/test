@@ -602,7 +602,7 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
             RWDate nowDate;
             CHAR   timeStamp[20];
 
-            _snprintf(timeStamp, 19, "%04d-%02d-%02dT%02d:%02d:%02d",
+            _snprintf(timeStamp, 20, "%04d-%02d-%02dT%02d:%02d:%02d",
                       nowDate.year(), nowDate.month(), nowDate.dayOfMonth(),
                       nowTime.hour(), nowTime.minute(), nowTime.second());
 
@@ -642,6 +642,11 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
             strcat(out, xmlMsg);
 
             xfer.setOutCount( strlen(out) );
+
+            if(xfer.doTrace(DEBUGLEVEL_WCTP_PROTOCOL))
+            {
+                traceOut( xmlMsg, strlen(xmlMsg), traceList);
+            }
 
             if(xfer.doTrace(0))
             {
@@ -832,7 +837,7 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, R
                     // and store the modified message in xml buffer
                     /*
                      * !!!NOTICE: If we keep the "!DOCTYPE", the parser will throw an exception
-                     * for not being able to access the DTC file via internet
+                     * for not being able to access the DTD file via internet
                      */
                     CHAR* xmlMsg = getXMLBuffer();
                     removeDocType(wctpMsg, xmlMsg);
@@ -875,6 +880,10 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, R
 
                     if(xfer.doTrace(commReturnValue))
                     {
+                        if (xfer.doTrace(DEBUGLEVEL_WCTP_PROTOCOL)) {
+                            traceIn(xmlMsg, strlen(xmlMsg), traceList, TRUE);
+                        }
+
                         _snprintf(buf, 255, "WCTP response: %d %s\n%s",
                                   handler->getResponseCode(),
                                   handler->getResponseText(),
