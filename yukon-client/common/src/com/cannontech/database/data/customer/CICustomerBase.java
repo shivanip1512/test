@@ -23,7 +23,7 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 
 
 	//----------------------------------------------------------------------------------
-	//--------------- TODO:  NO LONGER, MUST ADD A MAPPING TABLE FOR METERS-------------
+	//--------------- NO LONGER, MUST ADD A MAPPING TABLE FOR METERS-------------
 	//----------------------------------------------------------------------------------
 	//contains com.cannontech.database.db.customer.DeviceCustomerList
 		private java.util.Vector deviceVector = null;
@@ -273,7 +273,7 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		try
 		{
 	//----------------------------------------------------------------------------------
-	//--------------- TODO:  NO LONGER, MUST ADD A MAPPING TABLE FOR METERS-------------
+	//--------------- NO LONGER, MUST ADD A MAPPING TABLE FOR METERS-------------
 	//----------------------------------------------------------------------------------
 			DeviceCustomerList[] devices = DeviceCustomerList.getAllDeviceCustomerList( 
 					getCustomerID(), getDbConnection() );
@@ -362,7 +362,7 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 
 	
 	//----------------------------------------------------------------------------------
-	//--------------- TODO:  NO LONGER, MUST ADD A MAPPING TABLE FOR METERS-------------
+	//--------------- NO LONGER, MUST ADD A MAPPING TABLE FOR METERS-------------
 	//----------------------------------------------------------------------------------
 		for (int i = 0; i < getDeviceVector().size(); i++)
 			((com.cannontech.database.db.DBPersistent) getDeviceVector().elementAt(i)).setDbConnection(conn);
@@ -405,7 +405,7 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	
 	
 	//----------------------------------------------------------------------------------
-	//--------------- TODO:  NO LONGER, MUST ADD A MAPPING TABLE FOR METERS-------------
+	//--------------- NO LONGER, MUST ADD A MAPPING TABLE FOR METERS-------------
 	//----------------------------------------------------------------------------------
 		// delete all the ownership of meters for this customer
 		DeviceCustomerList.deleteDeviceCustomerList( 

@@ -719,6 +719,7 @@ public synchronized void update(java.util.Observable o, java.lang.Object arg)
 			conn = (com.cannontech.loadcontrol.LoadControlClientConnection) e.target;
 
 		// e.arg is assumed to be a LMControlArea
+		//TODO (TESTING NEEDED): test the handling of DELETING and ADDING ControlAreas
 		if( e.id == LCChangeEvent.DELETE )
 		{
 			LMControlArea lmArea = (LMControlArea)e.arg;

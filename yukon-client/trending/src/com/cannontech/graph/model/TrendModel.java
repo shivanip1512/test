@@ -1293,7 +1293,7 @@ public Dataset getDataset(int index)
 	/*Dataset dSet = null;
 	for (int i = 0; i < getTrendSeries().length; i++)
 	{
-		if( getTrendSeries()[i].getAxis().equals(axisChars[index]) )//TODO && getTrendSeries()[i].getRenderer() == GraphRenderers.LINE)
+		if( getTrendSeries()[i].getAxis().equals(axisChars[index]) )//&& getTrendSeries()[i].getRenderer() == GraphRenderers.LINE)
 		{
 			if( getTrendSeries()[i].getDataSeries() instanceof XYSeries)
 			{

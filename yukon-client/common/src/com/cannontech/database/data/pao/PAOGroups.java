@@ -476,7 +476,7 @@ public final static String getPAOTypeString(int type)
  */
 public final static int getPAOClass( String category, String paoClass )
 {
-	//TODO: Change the DeciceClass to PAOClasses and have every PaoClass int be unique
+	//Maybe change the DeviceClass to PAOClasses and have every PaoClass int be unique
 	if( paoClass.equalsIgnoreCase(PAOGroups.STRING_CAT_CAPCONTROL) )
 	{
 		return PAOGroups.CLASS_CAPCONTROL;

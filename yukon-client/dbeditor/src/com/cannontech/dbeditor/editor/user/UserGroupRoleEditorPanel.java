@@ -778,8 +778,8 @@ public static void main(java.lang.String[] args) {
 		
 		checkBoxAction();
 		
-		//special case if we are the admin (yukon user)
-		if( login.getYukonUser().getUserID().intValue() == UserUtils.USER_YUKON_ID )
+		//special case if we are the admin
+		if( login.getYukonUser().getUserID().intValue() == UserUtils.USER_ADMIN_ID )
 		{
 			getJTableRoleGroup().setEnabled( false );
 		}

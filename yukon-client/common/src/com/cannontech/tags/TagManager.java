@@ -260,7 +260,7 @@ public class TagManager implements MessageListener {
 	 *
 	 */
 	private TagManager() {
-		//TODO: BAD!
+		//BAD!
 		getDispatchConn().addMessageListener(this);
 		getDispatchConn().write(getDispatchConn().getRegistrationMsg());
 	}

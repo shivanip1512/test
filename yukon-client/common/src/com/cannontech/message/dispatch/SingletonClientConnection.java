@@ -130,7 +130,7 @@ public class SingletonClientConnection implements DBChangeListener
 	public void valueBound(HttpSessionBindingEvent arg0)
 	{
 		
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 
@@ -139,7 +139,7 @@ public class SingletonClientConnection implements DBChangeListener
 	 */
 	public void valueUnbound(HttpSessionBindingEvent arg0)
 	{
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}	
 }

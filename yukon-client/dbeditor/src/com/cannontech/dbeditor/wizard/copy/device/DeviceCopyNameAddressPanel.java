@@ -447,7 +447,7 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 	 * This method was created in VisualAge.
 	 * @return java.lang.Object
 	 * @param val java.lang.Object
-	 * TODO: Cap Bank pointID assignment should be handled by utilizing a CommonMulti
+	 * Note: Cap Bank pointID assignment should be handled by utilizing a CommonMulti
 	 */
 	public Object getValue(Object val)
 	{

@@ -328,7 +328,7 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 	}	
 
 
-	/* TODO add SystemRole,YukonRoleProperty */
+	/* add SystemRole,YukonRoleProperty */
 	else if( val instanceof com.cannontech.database.data.pao.YukonPAObject )
 	{
 		returnLite = new LiteYukonPAObject( 

@@ -20,7 +20,7 @@ public AddRemoveButtonsHorizontalPanel() {
 	 */
 	public void actionPerformed(ActionEvent e)
 	{
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 /**

@@ -225,7 +225,7 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		}
 		else if( e.getSource() == getMenuItemProperties() )
 		{
-			//TODO:do the properties action here
+			//do the properties action here
 		}
 		else if( e.getSource() == getMenuItemTDC() )
 		{

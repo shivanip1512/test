@@ -352,7 +352,7 @@ public class SetupServlet extends HttpServlet
 	 */
 	private void writeToDispatch( Multi msg ) throws Exception
 	{
-		//TODO: We Should at some point create a DispatchServlet that we could use
+		//We Should at some point create a DispatchServlet that we could use
 		String host =
 			RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
 

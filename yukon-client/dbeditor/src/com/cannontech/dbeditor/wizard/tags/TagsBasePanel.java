@@ -748,7 +748,7 @@ public void setValue(Object o)
 
 
 public void inputUpdate(PropertyPanelEvent event) {
-	// TODO Auto-generated method stub
+	// Auto-generated method stub
 
 }
 
