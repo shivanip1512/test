@@ -37,6 +37,8 @@
 #include "pointdefs.h"
 #include "pointtypes.h"
 #include "resolvers.h"
+#include "devicetypes.h"
+#include "lmprogramdirect.h"
 
 #include <rw/thr/prodcons.h>
 
@@ -100,10 +102,21 @@ void CtiLoadManager::start()
 ---------------------------------------------------------------------------*/
 void CtiLoadManager::stop()
 {
-    if( _LM_DEBUG )
     {
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+        if( _dispatchConnection!=NULL && _dispatchConnection->valid() )
+        {
+            _dispatchConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            _dispatchConnection->ShutdownConnection();
+        }
+        if( _pilConnection!=NULL && _pilConnection->valid() )
+        {
+            _pilConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            _pilConnection->ShutdownConnection();
+        }
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Shutting down Load Manager thread..." << endl;
+        dout.interrupt(CtiThread::SHUTDOWN);
+        dout.join();
     }
 
     if ( _loadManagerThread.isValid() && _loadManagerThread.requestCancellation() == RW_THR_ABORTED )
@@ -119,23 +132,6 @@ void CtiLoadManager::stop()
     else
     {
         _loadManagerThread.join();
-
-        if( _LM_DEBUG )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Load Manager thread shutdown" << endl;
-        }
-    }
-
-    {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        getDispatchConnection()->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
-        getDispatchConnection()->ShutdownConnection();
-        getPILConnection()->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
-        getPILConnection()->ShutdownConnection();
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout.interrupt(CtiThread::SHUTDOWN);
-        dout.join();
     }
 }
 
@@ -450,52 +446,6 @@ CtiConnection* CtiLoadManager::getDispatchConnection()
             dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
 
-        /*HINSTANCE hLib = LoadLibrary("cparms.dll");
-
-        if (hLib)
-        {
-            char temp[80];
-
-            CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
-
-            bool trouble = FALSE;
-
-            if ( (*fpGetAsString)("DISPATCH_MACHINE", temp, 80) )
-            {
-                if( _LM_DEBUG )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Dispatch Machine:   " << temp << endl;
-                }
-                dispatch_host = temp;
-            } else
-                trouble = TRUE;
-
-            if ( (*fpGetAsString)("DISPATCH_PORT", temp, 80) )
-            {
-                if( _LM_DEBUG )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Dispatch Port:   " << temp << endl;
-                }
-                dispatch_port = atoi(temp);
-            } else
-                trouble = TRUE;
-
-
-            if ( trouble )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Unable to find one or more config values for dispatch machine connection." << endl;
-            }
-
-            FreeLibrary(hLib);
-        } else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unable to load cparms dll." << endl;
-        }*/
-
         //Connect to Dispatch
         _dispatchConnection = new CtiConnection( dispatch_port, dispatch_host );
 
@@ -555,52 +505,6 @@ CtiConnection* CtiLoadManager::getPILConnection()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
-
-        /*HINSTANCE hLib = LoadLibrary("cparms.dll");
-
-        if (hLib)
-        {
-            char temp[80];
-
-            CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
-
-            bool trouble = FALSE;
-
-            if ( (*fpGetAsString)("PIL_MACHINE", temp, 80) )
-            {
-                if( _LM_DEBUG )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Pil Machine:   " << temp << endl;
-                }
-                pil_host = temp;
-            } else
-                trouble = TRUE;
-
-            if ( (*fpGetAsString)("PIL_PORT", temp, 80) )
-            {
-                if( _LM_DEBUG )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Pil Port:   " << temp << endl;
-                }
-                pil_port = atoi(temp);
-            } else
-                trouble = TRUE;
-
-
-            if ( trouble )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Unable to find one or more config values for pil machine connection." << endl;
-            }
-
-            FreeLibrary(hLib);
-        } else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unable to load cparms dll." << endl;
-        }*/
 
         //Connect to Pil
         _pilConnection = new CtiConnection( pil_port, pil_host );
@@ -692,6 +596,37 @@ void CtiLoadManager::registerForPoints(const RWOrdered& controlAreas)
             if( currentTrigger->getPeakPointId() > 0 )
             {
                 regMsg->insert(currentTrigger->getPeakPointId());
+            }
+        }
+
+        RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
+
+        for(UINT k=0;k<lmPrograms.entries();k++)
+        {
+            CtiLMProgramBase* currentProgram = (CtiLMProgramBase*)lmPrograms[k];
+            if( currentProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
+            {
+                RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentProgram)->getLMProgramDirectGroups();
+                for(UINT l=0;l<lmGroups.entries();l++)
+                {
+                    CtiLMGroupBase* currentGroup = (CtiLMGroupBase*)lmGroups[l];
+                    if( currentGroup->getHoursDailyPointId() > 0 )
+                    {
+                        regMsg->insert(currentGroup->getHoursDailyPointId());
+                    }
+                    if( currentGroup->getHoursMonthlyPointId() > 0 )
+                    {
+                        regMsg->insert(currentGroup->getHoursMonthlyPointId());
+                    }
+                    if( currentGroup->getHoursSeasonalPointId() > 0 )
+                    {
+                        regMsg->insert(currentGroup->getHoursSeasonalPointId());
+                    }
+                    if( currentGroup->getHoursAnnuallyPointId() > 0 )
+                    {
+                        regMsg->insert(currentGroup->getHoursAnnuallyPointId());
+                    }
+                }
             }
         }
     }
@@ -885,6 +820,41 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                 }
                 currentTrigger->setPeakPointValue(value);
                 currentControlArea->setUpdatedFlag(TRUE);
+            }
+        }
+
+        RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
+
+        for(UINT k=0;k<lmPrograms.entries();k++)
+        {
+            CtiLMProgramBase* currentProgram = (CtiLMProgramBase*)lmPrograms[k];
+            if( currentProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
+            {
+                RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentProgram)->getLMProgramDirectGroups();
+                for(UINT l=0;l<lmGroups.entries();l++)
+                {
+                    CtiLMGroupBase* currentGroup = (CtiLMGroupBase*)lmGroups[l];
+                    if( currentGroup->getHoursDailyPointId() == pointID )
+                    {
+                        currentGroup->setCurrentHoursDaily(value);
+                        currentControlArea->setUpdatedFlag(TRUE);
+                    }
+                    if( currentGroup->getHoursMonthlyPointId() == pointID )
+                    {
+                        currentGroup->setCurrentHoursMonthly(value);
+                        currentControlArea->setUpdatedFlag(TRUE);
+                    }
+                    if( currentGroup->getHoursSeasonalPointId() == pointID )
+                    {
+                        currentGroup->setCurrentHoursSeasonal(value);
+                        currentControlArea->setUpdatedFlag(TRUE);
+                    }
+                    if( currentGroup->getHoursAnnuallyPointId() == pointID )
+                    {
+                        currentGroup->setCurrentHoursAnnually(value);
+                        currentControlArea->setUpdatedFlag(TRUE);
+                    }
+                }
             }
         }
     }
