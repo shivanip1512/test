@@ -4,6 +4,8 @@ package com.cannontech.dbeditor.wizard.copy.point;
  * This type was created in VisualAge.
  */
 
+import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.dbeditor.wizard.point.PointPhysicalSettingsPanel;
@@ -236,28 +238,13 @@ public void setCopyObject(com.cannontech.database.db.DBPersistent newObject)
  */
 public void setPointDeviceID(Object val)
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
-		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	java.util.List allPoints = cache.getAllPoints();
-	PointBase point = ((PointBase) val);
+	PointBase point = (PointBase)val;
 
-	//matches pointIDs and grabs DeviceID from point in the cache
-	synchronized (cache)
-	{
-
-		for (int j = 0; j < allPoints.size(); j++)
-		{
-			if (((com.cannontech.database.data.lite.LitePoint) allPoints.get(j)).getPointID() == point.getPoint().getPointID().intValue())
-			{
-				pointDeviceID = ((com.cannontech.database.data.lite.LitePoint) allPoints.get(j)).getPaobjectID();
-				break;
-
-			}
-
-		}
-	}
-
+	LitePoint lPoint = PointFuncs.getLitePoint( point.getPoint().getPointID().intValue() );
+	
+	pointDeviceID = lPoint.getPaobjectID();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (6/5/2001 9:41:41 AM)

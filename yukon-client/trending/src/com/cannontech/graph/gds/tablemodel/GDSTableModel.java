@@ -2,6 +2,7 @@ package com.cannontech.graph.gds.tablemodel;
 
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.graph.GraphDataSeries;
 
@@ -153,17 +154,13 @@ public Object getGDSAttribute(int index, GraphDataSeries gds) {
 			
 			synchronized(cache)
 			{
-				java.util.List points = DefaultDatabaseCache.getInstance().getAllPoints();
-				java.util.Iterator iter = points.iterator();
-				while( iter.hasNext() )
-				{
-					LitePoint pt = (LitePoint) iter.next();
-					if( pt.getPointID() == id.intValue() )
-						return pt.getPointName();	
-				}
 				//must not have found it so we'll try some predefined points too.
 				if( id.intValue() == com.cannontech.database.data.point.PointTypes.SYS_PID_THRESHOLD)
 					return "Threshold";
+				
+				LitePoint pt = PointFuncs.getLitePoint( id.intValue() );
+				if( pt != null )
+					return pt.getPointName();	
 			}
 		break;
 		case LABEL_NAME_COLUMN:

@@ -6,12 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
-import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.persist.PersistDynamicText;
@@ -136,16 +133,11 @@ public void setPoint(com.cannontech.database.data.lite.LitePoint newPoint) {
  * Creation date: (12/18/2001 12:47:22 PM)
  * @param newPointID int
  */
-public void setPointID(int newPointID) {
-	List pList = DefaultDatabaseCache.getInstance().getAllPoints();
-	Iterator iter = pList.iterator();
-	while( iter.hasNext() ) {
-		LitePoint lp = (LitePoint) iter.next();
-		if( lp.getPointID() == newPointID ) {
-			point = lp;
-		}			
-	}
+public void setPointID(int newPointID) 
+{
+	point = PointFuncs.getLitePoint( newPointID );
 }
+
 	/**
 	 * @see com.cannontech.esub.editor.element.DrawingElement#getDrawing()
 	 */

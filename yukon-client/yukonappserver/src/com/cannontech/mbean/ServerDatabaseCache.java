@@ -10,6 +10,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -345,23 +346,18 @@ public synchronized java.util.List getAllGraphTaggedPoints()
 			   {
 					int pointID = rset.getInt(1);
 					String formula = rset.getString(2);
+					LitePoint point = PointFuncs.getLitePoint( pointID );
 
-					for( int i = 0; i < getAllPoints().size(); i++ )
-					{
-						 LitePoint point =((LitePoint)getAllPoints().get(i));
-						 if( point.getPointID() == pointID )
-						 {
-							  // tags may need to be changed here if there
-										//  are more tags added to this bit field
-							  long tags = LitePoint.POINT_UOFM_GRAPH;      //default value of tags for now.
+					// tags may need to be changed here if there
+ 					//  are more tags added to this bit field
+					long tags = LitePoint.POINT_UOFM_GRAPH;      //default value of tags for now.
 
-							  if( formula.equalsIgnoreCase("usage"))
-								   tags = LitePoint.POINT_UOFM_USAGE;
+					if( formula.equalsIgnoreCase("usage"))
+						tags = LitePoint.POINT_UOFM_USAGE;
 
-							  point.setTags( tags );
-							  allGraphTaggedPoints.add(  point );
-						 }
-					}
+					point.setTags( tags );
+					allGraphTaggedPoints.add(  point );
+
 			   }
 			   // Grab all status points too...!
 			   for (int i = 0; i < getAllPoints().size(); i++)
@@ -1823,16 +1819,9 @@ private synchronized LiteBase handlePointChange( int changeType, int id )
 	switch(changeType)
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
-				for(int i=0;i<allPoints.size();i++)
-				{
-					if( ((LitePoint)allPoints.get(i)).getPointID() == id )
-					{
-						alreadyAdded = true;
-						lBase = (LiteBase)allPoints.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
+		
+				lBase = (LiteBase)allPointsMap.get( new Integer(id) );				
+				if( lBase == null )
 				{
 					LitePoint lp = new LitePoint(id);
 					lp.retrieve(databaseAlias);
@@ -1842,18 +1831,17 @@ private synchronized LiteBase handlePointChange( int changeType, int id )
 					lBase = lp;
 				}
 				break;
+
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-				for(int i=0;i<allPoints.size();i++)
-				{
-					if( ((LitePoint)allPoints.get(i)).getPointID() == id )
-					{
-						((LitePoint)allPoints.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allPoints.get(i);
-						break;
-					}
-				}
+		
+				LitePoint lp = (LitePoint)allPointsMap.get( new Integer(id) );				
+				lp.retrieve( databaseAlias );
+				
+				lBase = lp;
 				break;
+
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
+
 				for(int i=0;i<allPoints.size();i++)
 				{
 					if( ((LitePoint)allPoints.get(i)).getPointID() == id )
@@ -1864,6 +1852,7 @@ private synchronized LiteBase handlePointChange( int changeType, int id )
 					}
 				}
 				break;
+
 		default:
 				releaseAllPoints();
 				break;

@@ -74,16 +74,13 @@ public static LitePoint[] getLitePointsByUOMID(int[] uomIDs)
       {
          com.cannontech.common.util.NativeIntVector ptIds = 
             com.cannontech.database.db.point.PointUnit.getAllPointIDsByUOMID( uomIDs );
-      
+
          for( int i = 0; i < ptIds.size(); i++ )
          {      
-            for( int j = 0; j < points.size(); j++ )
-            {
-               LitePoint litePoint = (LitePoint)points.get(j);
-                  
-               if( ptIds.elementAt(i) == litePoint.getPointID() )
-                  pointList.add( litePoint );
-            }
+				LitePoint litePoint = PointFuncs.getLitePoint( ptIds.elementAt(i) );
+				
+            if( litePoint != null )
+               pointList.add( litePoint );
          }
       }
       catch( java.sql.SQLException sq )

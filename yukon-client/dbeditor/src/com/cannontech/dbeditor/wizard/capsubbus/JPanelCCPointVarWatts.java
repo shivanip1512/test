@@ -1,4 +1,7 @@
 package com.cannontech.dbeditor.wizard.capsubbus;
+
+import com.cannontech.database.cache.functions.PointFuncs;
+
 /**
  * Insert the type's description here.
  * Creation date: (7/19/2002 10:42:43 AM)
@@ -1125,22 +1128,10 @@ private void setPointComboBoxes( int currentVarPtID, int currentWattPtID )
 	com.cannontech.database.data.lite.LitePoint wattPoint = null;
 
 	//find the var point we have assigned to the sub bus
-	for( int i = 0; i < ALL_POINTS.length; i++ )
-	{
-		if( currentVarPtID == ALL_POINTS[i].getPointID() )
-		{
-			varPoint = ALL_POINTS[i];
-		}
+	
+	varPoint = PointFuncs.getLitePoint( currentVarPtID );
+	wattPoint = PointFuncs.getLitePoint( currentWattPtID );
 
-		if( currentWattPtID == ALL_POINTS[i].getPointID() )
-		{
-			wattPoint = ALL_POINTS[i];
-		}
-
-		if( varPoint != null && wattPoint != null )
-			break; //help speed up this loop
-
-	}
 
    if( varPoint == null )
       getJComboBoxVarDevice().setSelectedItem( com.cannontech.database.data.lite.LiteYukonPAObject.LITEPAOBJECT_NONE );

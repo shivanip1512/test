@@ -2,6 +2,8 @@ package com.cannontech.yukon.server.cache;
 
 import java.util.Map;
 
+import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 
 /**
@@ -55,8 +57,8 @@ private void executeNonSQL92Query()
          int pointOffset = rset.getInt(5);
          int stateGroupID = rset.getInt(6);
                            
-         com.cannontech.database.data.lite.LitePoint lp =
-            new com.cannontech.database.data.lite.LitePoint( 
+         LitePoint lp =
+            new LitePoint( 
                   pointID, pointName, 
                   com.cannontech.database.data.point.PointTypes.getType(pointType),
                   paobjectID, pointOffset, stateGroupID );
@@ -127,15 +129,15 @@ timerStart = new java.util.Date();
 			int paobjectID = rset.getInt(4);
 			int pointOffset = rset.getInt(5);
 			int stateGroupID = rset.getInt(6);
-			long tags = com.cannontech.database.data.lite.LitePoint.POINT_UOFM_GRAPH;
+			long tags = LitePoint.POINT_UOFM_GRAPH;
 			String formula = rset.getString(7);
 			
          //process all the bit mask tags here
          if( "usage".equalsIgnoreCase(formula) )
-				tags = com.cannontech.database.data.lite.LitePoint.POINT_UOFM_USAGE;
+				tags = LitePoint.POINT_UOFM_USAGE;
 									
-			com.cannontech.database.data.lite.LitePoint lp =
-				new com.cannontech.database.data.lite.LitePoint( pointID, pointName, com.cannontech.database.data.point.PointTypes.getType(pointType),
+			LitePoint lp =
+				new LitePoint( pointID, pointName, com.cannontech.database.data.point.PointTypes.getType(pointType),
 																						paobjectID, pointOffset, stateGroupID, tags );
 
 			allPoints.add(lp);
@@ -224,23 +226,20 @@ private synchronized void loadPointTags()
 			int pointID = rset.getInt(1);
 			String formula = rset.getString(2);
 
-			for( int i = 0; i < allPoints.size(); i++ )
+			LitePoint point = PointFuncs.getLitePoint( pointID );
+			if( point != null )
 			{
-				 com.cannontech.database.data.lite.LitePoint point =((com.cannontech.database.data.lite.LitePoint)allPoints.get(i));
-				 if( point.getPointID() == pointID )
-				 {
-					// tags may need to be changed here if there are more tags added to this bit field
-					long tags = com.cannontech.database.data.lite.LitePoint.POINT_UOFM_GRAPH;      //default value of tags for now.
-
-					if( formula.equalsIgnoreCase("usage"))
-					{
-						 tags = com.cannontech.database.data.lite.LitePoint.POINT_UOFM_USAGE;
-						 ptUpdateCnt++;
-					}
-
-					((com.cannontech.database.data.lite.LitePoint)allPoints.get(i)).setTags(tags);
-					break;
-				 }
+				// tags may need to be changed here if there are more tags added to this bit field
+				long tags = LitePoint.POINT_UOFM_GRAPH;      //default value of tags for now.
+			
+				if( formula.equalsIgnoreCase("usage"))
+				{
+					 tags = LitePoint.POINT_UOFM_USAGE;
+					 ptUpdateCnt++;
+				}
+			
+				point.setTags(tags);
+				break;
 			}
 		}
 	}
