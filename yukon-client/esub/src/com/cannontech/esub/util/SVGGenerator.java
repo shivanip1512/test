@@ -242,7 +242,7 @@ public class SVGGenerator {
 		Color c = rect.getStyle().getLineColor();
 		Shape[] s = rect.getShape();
 		float opacity = rect.getStyle().getTransparency();
-		
+	
 		String pathStr = getPathString(s, rect.getCenterX(), rect.getCenterY());
 		float width = rect.getStyle().getLineThickness();
 		
@@ -282,7 +282,8 @@ public class SVGGenerator {
 	
 	private Element createDynamicGraph(SVGDocument doc, DynamicGraphElement graph) {
 			
-		Rectangle2D r = graph.getStrokedBounds2D();
+		//Rectangle2D r = graph.getStrokedBounds2D();
+		Rectangle2D r = graph.getBounds2D();
 		int x = (int) r.getMinX();
 		int y = (int) r.getMinY();
 		
