@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2004/02/13 20:37:04 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2004/05/10 20:52:22 $
 *
 *
 *    AUTHOR: David Sutton
@@ -24,6 +24,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdracs.cpp,v $
+      Revision 1.6  2004/05/10 20:52:22  dsutton
+      Interface was not distinguishing between a status point  with remote 11 point 2
+      and an analog point remote 11 point 2.  Added code so the point type is part
+      of the translation string so all should be fine
+
       Revision 1.5  2004/02/13 20:37:04  dsutton
       Added a new cparm for ACS interface that allows the user to filter points
       being routed to ACS by timestamp.  The filter is the number of seconds
@@ -326,6 +331,7 @@ bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDes
     RWCString           tempString2;
     RWCString           translationName;
     bool                foundPoint = false;
+    char                wb[20];
 
     try
     {
@@ -380,7 +386,7 @@ bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDes
                             if ( !tempString2.isNull() )
                             {
                                 // put category in final name
-                                translationName= translationName + "P"+ tempString2;
+                                translationName= "T" + RWCString (itoa(translationPoint->getPointType(),wb,10)) + translationName + "P"+ tempString2;
         
                                 // add this point ID and the translated ID
                                 translationPoint->getDestinationList()[aDestinationIndex].setTranslation (translationName);
@@ -622,9 +628,11 @@ int CtiFDR_ACS::processValueMessage(CHAR *aData)
     bool                 flag = true;
     RWCString           desc;
     CHAR               action[60];
+    CHAR                wb[20];
 
     // convert to our name
     translationName = ForeignToYukonId (data->Value.RemoteNumber,data->Value.CategoryCode,data->Value.PointNumber);
+    translationName = "T" + RWCString (itoa(AnalogPointType,wb,10)) + translationName;
 
     // see if the point exists
      flag = findTranslationNameInList (translationName, getReceiveFromList(), point);
@@ -743,10 +751,12 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
 
     RWCString           desc;
     CHAR                action[60];
+    CHAR                wb[20];
 
 
     // convert to our name
     translationName = ForeignToYukonId (data->Status.RemoteNumber,data->Status.CategoryCode,data->Status.PointNumber);
+    translationName = "T" + RWCString (itoa(StatusPointType,wb,10)) + translationName;
 
     // see if the point exists
     flag = findTranslationNameInList (translationName, getReceiveFromList(), point);
@@ -891,9 +901,11 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
     bool                 flag = true;
     RWCString           desc;
     CHAR                action[60];
+    CHAR                wb[20];
 
     // convert to our name
     translationName = ForeignToYukonId (data->Control.RemoteNumber,data->Control.CategoryCode,data->Control.PointNumber);
+    translationName = "T" + RWCString (itoa(StatusPointType,wb,10)) + translationName;
 
     // see if the point exists
     flag = findTranslationNameInList (translationName, getReceiveFromList(), point);
@@ -1162,7 +1174,7 @@ RWCString CtiFDR_ACS::ForeignToYukonId (USHORT remote, CHAR category, USHORT poi
 
 int CtiFDR_ACS::YukonToForeignId (RWCString aPointName, USHORT &aRemoteNumber, CHAR &aCategory, USHORT &aPointNumber)
 {
-	USHORT tmp_remote, tmp_point;
+	USHORT tmp_remote, tmp_point, tmp_type;
 	CHAR tmp_category;
     CHAR pointName[100];
 
@@ -1170,7 +1182,7 @@ int CtiFDR_ACS::YukonToForeignId (RWCString aPointName, USHORT &aRemoteNumber, C
     strcpy (pointName, aPointName);
 
     // Read the values out of point name
-    if (sscanf (pointName, "R%hdC%cP%hd", &tmp_remote, &tmp_category, &tmp_point) != 3)
+    if (sscanf (pointName, "T%hdR%hdC%cP%hd", &tmp_type, &tmp_remote, &tmp_category, &tmp_point) != 4)
         return (!NORMAL);
 
 	// put these into our values
