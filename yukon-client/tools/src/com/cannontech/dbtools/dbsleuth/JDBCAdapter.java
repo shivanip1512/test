@@ -1,24 +1,8 @@
 package com.cannontech.dbtools.dbsleuth;
 
-/*
- * @(#)JDBCAdapter.java	1.9 98/08/26
- *
- * Copyright 1997, 1998 by Sun Microsystems, Inc.,
- * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of Sun Microsystems, Inc. ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with Sun.
- */
-
 /**
  * An adaptor, transforming the JDBC interface to the TableModel interface.
  *
- * @version 1.20 09/25/97
- * @author Philip Milne
  */
 
 import java.sql.Connection;
@@ -31,52 +15,56 @@ import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 
-public class JDBCAdapter extends AbstractTableModel {
-	Connection          connection;
-	Statement           statement;
-	ResultSet           resultSet;
-	String[]            columnNames = {};
-	Vector		rows = new Vector();
-	ResultSetMetaData   metaData;
-
-	public JDBCAdapter()
-	{
-		try
-		{
-			com.cannontech.clientutils.CTILogger.info("Opening db connection");
-
-			connection = PoolManager.getInstance().getConnection(
-				CtiUtilities.getDatabaseAlias() );
-
-			statement = connection.createStatement();
-		}
-		catch (SQLException ex) {
-			System.err.println("Cannot connect to this database.");
-			System.err.println(ex);
-		}
-		catch( Exception e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		
-	 } 
-public void close() throws SQLException 
+public class JDBCAdapter extends AbstractTableModel
 {
-	com.cannontech.clientutils.CTILogger.info("Closing db connection");
+    private Connection connection;
+	private Statement statement;
+	private ResultSet resultSet;
+	private String[] columnNames = {};
+	private Vector rows = new Vector();
+	private ResultSetMetaData metaData;
 
-	if( resultSet != null )
-		resultSet.close();
-		
-	if( statement != null )
-		statement.close();
-		
-	if( connection != null )
-		connection.close();
-}
-	public String dbRepresentation(int column, Object value) {
+    public JDBCAdapter()
+    {
+    	try
+    	{
+    		CTILogger.info("Opening db connection");
+    
+    		connection = PoolManager.getInstance().getConnection(
+    			CtiUtilities.getDatabaseAlias() );
+    
+    		statement = connection.createStatement();
+    	}
+    	catch (SQLException ex) {
+    		CTILogger.error("Cannot connect to this database.", ex);
+    	}
+    	catch( Exception e )
+    	{
+    		CTILogger.error( e.getMessage(), e );
+    	}
+    	
+    }
+
+    public void close() throws SQLException 
+    {
+    	CTILogger.info("Closing db connection");
+    
+    	if( resultSet != null )
+    		resultSet.close();
+    		
+    	if( statement != null )
+    		statement.close();
+    		
+    	if( connection != null )
+    		connection.close();
+    }
+
+	public String dbRepresentation(int column, Object value)
+    {
 		int type;
 
 		if (value == null) {
@@ -104,54 +92,59 @@ public void close() throws SQLException
 		}
 
 	}
-public void executeQuery(String query)
-{
-   if (connection == null || statement == null)
-   {
-	  System.err.println("There is no database to execute the query.");
-	  return;
-   }
 
- 
-   try
-   {
-	  resultSet = statement.executeQuery(query);
-	  metaData = resultSet.getMetaData();
+    public void executeQuery(String query)
+    {
+       if (connection == null || statement == null)
+       {
+          CTILogger.info("There is no database to execute the query.");
+    	  return;
+       }
+    
+     
+       try
+       {
+    	  resultSet = statement.executeQuery(query);
+    	  metaData = resultSet.getMetaData();
+    
+    	  int numberOfColumns = metaData.getColumnCount();
+    	  columnNames = new String[numberOfColumns];
+    	  // Get the column names and cache them.
+    	  // Then we can close the connection.
+    	  for (int column = 0; column < numberOfColumns; column++)
+    	  {
+    		 columnNames[column] = metaData.getColumnLabel(column + 1);
+    	  }
+    
+    	  // Get all rows.
+    	  rows = new Vector();
+    	  while (resultSet.next())
+    	  {
+    		 Vector newRow = new Vector();
+    		 for (int i = 1; i <= getColumnCount(); i++)
+    		 {
+    			newRow.addElement(resultSet.getObject(i));
+    		 }
+    		 rows.addElement(newRow);
+    	  }
+    	  //  close(); Need to copy the metaData, bug in jdbc:odbc driver.
+    	  fireTableChanged(null); // Tell the listeners a new table has arrived.
+    
+       }
+       catch (SQLException ex)
+       {
+           CTILogger.error("An error has occured", ex);
+       }
+    }
 
-	  int numberOfColumns = metaData.getColumnCount();
-	  columnNames = new String[numberOfColumns];
-	  // Get the column names and cache them.
-	  // Then we can close the connection.
-	  for (int column = 0; column < numberOfColumns; column++)
-	  {
-		 columnNames[column] = metaData.getColumnLabel(column + 1);
-	  }
-
-	  // Get all rows.
-	  rows = new Vector();
-	  while (resultSet.next())
-	  {
-		 Vector newRow = new Vector();
-		 for (int i = 1; i <= getColumnCount(); i++)
-		 {
-			newRow.addElement(resultSet.getObject(i));
-		 }
-		 rows.addElement(newRow);
-	  }
-	  //  close(); Need to copy the metaData, bug in jdbc:odbc driver.
-	  fireTableChanged(null); // Tell the listeners a new table has arrived.
-
-   }
-   catch (SQLException ex)
-   {
-	  System.err.println(ex);
-   }
-}
-	protected void finalize() throws Throwable {
+	protected void finalize() throws Throwable
+    {
 		close();
 		super.finalize();
 	}
-	public Class getColumnClass(int column) {
+
+	public Class getColumnClass(int column)
+    {
 		int type;
 		try {
 			type = metaData.getColumnType(column+1);
@@ -188,7 +181,9 @@ public void executeQuery(String query)
 			return Object.class;
 		}
 	}
-	public int getColumnCount() {
+
+	public int getColumnCount()
+    {
 		return columnNames.length;
 	}
 	//////////////////////////////////////////////////////////////////////////
@@ -223,52 +218,55 @@ public void executeQuery(String query)
 			return false;
 		}
 	}
-public void setValueAt(Object value, int row, int column)
-{
-   try
-   {
-	  String tableName = metaData.getTableName(column + 1);
-	  // Some of the drivers seem buggy, tableName should not be null.
-	  if (tableName == null)
-	  {
-		 com.cannontech.clientutils.CTILogger.info("Table name returned null.");
-	  }
-	  String columnName = getColumnName(column);
-	  String query =
-		 "update "
-			+ tableName
-			+ " set "
-			+ columnName
-			+ " = "
-			+ dbRepresentation(column, value)
-			+ " where ";
-	  // We don't have a model of the schema so we don't know the
-	  // primary keys or which columns to lock on. To demonstrate
-	  // that editing is possible, we'll just lock on everything.
-	  for (int col = 0; col < getColumnCount(); col++)
-	  {
-		 String colName = getColumnName(col);
-		 if (colName.equals(""))
-		 {
-			continue;
-		 }
-		 if (col != 0)
-		 {
-			query = query + " and ";
-		 }
-		 query = query + colName + " = " + dbRepresentation(col, getValueAt(row, col));
-	  }
-	  com.cannontech.clientutils.CTILogger.info(query);
-	  com.cannontech.clientutils.CTILogger.info("Not sending update to database");
-	  // statement.executeQuery(query);
-   }
-   catch (SQLException e)
-   {
-	  //     com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	  System.err.println("Update failed");
-   }
-   Vector dataRow = (Vector) rows.elementAt(row);
-   dataRow.setElementAt(value, column);
 
-}
+    public void setValueAt(Object value, int row, int column)
+    {
+       try
+       {
+    	  String tableName = metaData.getTableName(column + 1);
+    	  // Some of the drivers seem buggy, tableName should not be null.
+    	  if (tableName == null)
+    	  {
+    		 CTILogger.info("Table name returned null.");
+    	  }
+    	  String columnName = getColumnName(column);
+    	  String query =
+    		 "update "
+    			+ tableName
+    			+ " set "
+    			+ columnName
+    			+ " = "
+    			+ dbRepresentation(column, value)
+    			+ " where ";
+    	  // We don't have a model of the schema so we don't know the
+    	  // primary keys or which columns to lock on. To demonstrate
+    	  // that editing is possible, we'll just lock on everything.
+    	  for (int col = 0; col < getColumnCount(); col++)
+    	  {
+    		 String colName = getColumnName(col);
+    		 if (colName.equals(""))
+    		 {
+    			continue;
+    		 }
+    		 if (col != 0)
+    		 {
+    			query = query + " and ";
+    		 }
+    		 query = query + colName + " = " + dbRepresentation(col, getValueAt(row, col));
+    	  }
+    	  CTILogger.info(query);
+    	  CTILogger.info("Not sending update to database");
+    	  // statement.executeQuery(query);
+       }
+       catch (SQLException e)
+       {
+    	  //     CTILogger.error( e.getMessage(), e );
+           CTILogger.error("Update failed", e);
+       }
+
+       Vector dataRow = (Vector) rows.elementAt(row);
+       dataRow.setElementAt(value, column);
+    
+    }
+
 }
