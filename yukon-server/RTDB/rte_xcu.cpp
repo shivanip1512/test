@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2004/06/03 23:09:00 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2004/10/14 20:39:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -874,7 +874,7 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << RWTime() << "  Cannot send SA PROTOCOLS to TYPE:" << _transmitterDevice->getType() << endl;
+                dout << RWTime() << "  Cannot send SA PROTOCOLS to TYPE: " << _transmitterDevice->getType() << endl;
             }
 
             break;
@@ -884,7 +884,7 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << RWTime() << "  Cannot send v to TYPE:" << _transmitterDevice->getType() << endl;
+                dout << RWTime() << "  Cannot send to TYPE:" << _transmitterDevice->getType() << endl;
             }
 
             break;
@@ -936,7 +936,6 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
     OutMessage->Port     = _transmitterDevice->getPortID();
     OutMessage->TimeOut  = 2;
     OutMessage->InLength = -1;
-
 
     switch(_transmitterDevice->getType())
     {
