@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/12 17:14:35 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/04/12 19:26:16 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -27,6 +27,7 @@ class CtiVerficationWork : public CtiVerification
 {
 
 public:
+
    CtiVerficationWork();
    CtiVerficationWork( const CtiVerficationWork& aRef );
    ~CtiVerficationWork();
@@ -34,16 +35,19 @@ public:
    int getWorkPriority( void );
    void setWorkPriority( int aPri );
    RWTime getTransmitTime( void );
-   void setTransmitTime( RWTime );
+   void setTransmitTime( RWTime aTime );
    RWTime getExpriationTime( void );
-   void setExpirationTime( RWTime );
+   void setExpirationTime( RWTime aTime );
+   void decrementRetries( void );
+   OUTMESS getOutMessage( void );
+   void setOutMessage( OUTMESS sent );
 
 private:
 
    int      _workPriority;    //we'll override the Outmess's priority
    RWTime   _txTime;
    RWTime   _expTime;         //at this time, the message won't be valid anymore and we won't send it
-   OUTMESS  *_OutMessage;
+   OUTMESS  _outMessage;
 
 protected:
 
