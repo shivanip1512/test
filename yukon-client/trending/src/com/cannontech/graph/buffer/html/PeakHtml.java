@@ -31,25 +31,19 @@ public StringBuffer getHtml(StringBuffer buf)
 
 //	com.cannontech.clientutils.CTILogger.info("Usage HTML getHtml()");
 //	long timer = System.currentTimeMillis();
-	long peakPointIndex = -1;
-	// Find the peak point
+	int primaryPointIndex = -1;
+	// Find the primary point
 	try
 	{
 		for( int i = 0; i < model.getTrendSeries().length; i++ )
 		{
 			if(com.cannontech.database.db.graph.GraphDataSeries.isPrimaryType( model.getTrendSeries()[i].getTypeMask()))
 			{
-				peakPointIndex = i;
+				primaryPointIndex = i;
 				break;
 			}	
 		}
 
-		//if( peakPointIndex == -1 )
-		//{
-			//buf.append("No peak point defined\r\n");
-			//return buf;
-		//}
-	
 		buf.append("<CENTER><TABLE BORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\">\n");
 		buf.append("<TR><TD BGCOLOR=\"#ffffff\" class=\"Main\"><CENTER>&nbsp;<B><FONT FACE=\"Arial\">");
 		buf.append( model.getChartName());
@@ -74,10 +68,10 @@ public StringBuffer getHtml(StringBuffer buf)
 		buf.append("  <TR>\r\n");
 
 		// Only continue if a peak point exists, otherwise, draw an imcomplete data table.
-		if( peakPointIndex == -1 )
+		if( primaryPointIndex == -1 )
 		{
 			buf.append("	<TD ALIGN=CENTER BGCOLOR=\"#999966\" class=\"HeaderCell\"><FONT SIZE=\"-1\" FACE=\"Arial\">");
-			buf.append("No Peak Point Defined\r\n");
+			buf.append("No Primary Point Defined\r\n");
 			buf.append("</FONT></CENTER></TD></TR>\r\n");
 			buf.append("</CENTER></TABLE>\r\n");
 			return buf;
@@ -87,7 +81,7 @@ public StringBuffer getHtml(StringBuffer buf)
 		buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#999966\" class=\"HeaderCell\"><CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">");
 
 
-		buf.append("PEAK" +  model.getTrendSeries()[(int) peakPointIndex].getLabel());
+		buf.append("* " +  model.getTrendSeries()[primaryPointIndex].getLabel());
 		buf.append("</FONT></B></CENTER></TD>\r\n");	 
 	
 		//List all graph points
@@ -97,8 +91,6 @@ public StringBuffer getHtml(StringBuffer buf)
 			
 			if(com.cannontech.database.db.graph.GraphDataSeries.isGraphType(serie.getTypeMask()))
 			{
-//				if( !(serie.getPointId().intValue() == model.getTrendSeries()[(int)peakPointIndex].getPointId().intValue() &&
-//					(com.cannontech.database.db.graph.GraphDataSeries.isGraphType(serie.getTypeMask()))))
 				if( !(com.cannontech.database.db.graph.GraphDataSeries.isPrimaryType(serie.getTypeMask())))
 				{
 					buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#999966\" class=\"HeaderCell\"><CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">");
@@ -111,12 +103,12 @@ public StringBuffer getHtml(StringBuffer buf)
 		buf.append("  </TR>\r\n");
 	
 		// Set the number of decimal places that will display for each point.
-		int decimals = model.getTrendSeries()[(int) peakPointIndex].getDecimalPlaces();
+		int decimals = model.getTrendSeries()[primaryPointIndex].getDecimalPlaces();
 		setFractionDigits( decimals );
 		
-		// Find the 6 peaks for the peak point
-		double[] peakData = model.getTrendSeries()[(int) peakPointIndex].getValuesArray();
-		long[] peakTimeStamps = model.getTrendSeries()[(int) peakPointIndex].getPeriodsArray();
+		// Find the 6 peak values for the primary point
+		double[] peakData = model.getTrendSeries()[primaryPointIndex].getValuesArray();
+		long[] peakTimeStamps = model.getTrendSeries()[primaryPointIndex].getPeriodsArray();
 
 		// Using a sorted tree map to find the 6 peak values and timestamps
 		// THIS IS DIFFERENT THAN MOST OUR TREE MAPS, KEY IS VALUE, NOT TIMESTAMP
@@ -203,8 +195,6 @@ public StringBuffer getHtml(StringBuffer buf)
 			com.cannontech.graph.model.TrendSerie serie = model.getTrendSeries()[i];
 			if(com.cannontech.database.db.graph.GraphDataSeries.isGraphType(serie.getTypeMask()))
 			{
-//				if( !(serie.getPointId().intValue() == model.getTrendSeries()[(int)peakPointIndex].getPointId().intValue() &&
-//					(com.cannontech.database.db.graph.GraphDataSeries.isGraphType(serie.getTypeMask()))))
 				if( !(com.cannontech.database.db.graph.GraphDataSeries.isPrimaryType(serie.getTypeMask())))
 				{
 					buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\"><CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">N/A</FONT></CENTER></TD>\r\n");
