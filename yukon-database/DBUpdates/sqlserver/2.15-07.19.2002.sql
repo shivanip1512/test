@@ -14,9 +14,9 @@ go
 alter table CapControlSubstationBus ADD LowerBandwidth FLOAT not null DEFAULT 0.0;
 alter table CapControlFeeder ADD LowerBandwidth FLOAT not null DEFAULT 0.0;
 go
-UPDATE CapControlSubstationBus SET UpperBandwidth=LowerBandwidth;
+UPDATE CapControlSubstationBus SET LowerBandwidth=UpperBandwidth;
 go
-UPDATE CapControlFeeder SET UpperBandwidth=LowerBandwidth;
+UPDATE CapControlFeeder SET LowerBandwidth=UpperBandwidth;
 go
 alter table CapControlSubstationBus ADD ControlUnits VARCHAR(20) not null DEFAULT 'KVAR';
 go
