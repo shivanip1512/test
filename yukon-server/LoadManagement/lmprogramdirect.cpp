@@ -3302,6 +3302,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                 else if( numberOfActiveGroups == 0 )
                 {
                     setProgramState(CtiLMProgramBase::InactiveState);
+                    ResetGroups();
                 }
                 else
                 {
@@ -3512,6 +3513,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                     else if( numberOfActiveGroups == 0 )
                     {
                         setProgramState(CtiLMProgramBase::InactiveState);
+                        ResetGroups();
                     }
                     else
                     {
@@ -4187,7 +4189,8 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
         if( !is_ramping_out && returnBool )
         {
             setReductionTotal(0.0);
-            setProgramState(CtiLMProgramBase::InactiveState);  
+            setProgramState(CtiLMProgramBase::InactiveState);
+            ResetGroups();
             for(int i = 0; i < _lmprogramdirectgroups.entries(); i++)
             {
                 CtiLMGroupBase* lm_group = (CtiLMGroupBase*) _lmprogramdirectgroups[i];
@@ -4466,6 +4469,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
                 }
 //NOTE more ?
                     setProgramState(CtiLMProgramBase::InactiveState);
+                    ResetGroups();
                     setManualControlReceivedFlag(FALSE);
                 }
             }
@@ -4496,6 +4500,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
 
             setReductionTotal(0.0);
             setProgramState(CtiLMProgramBase::InactiveState);
+            ResetGroups();
             setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
             setDirectStopTime(RWDBDateTime());
         }
@@ -4594,6 +4599,7 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
             }
 
                 setProgramState(CtiLMProgramBase::InactiveState);
+                ResetGroups();
                 setManualControlReceivedFlag(FALSE);
                 return true;
             } //end finshed ramping out
@@ -4728,6 +4734,7 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
                 }
 
                 setProgramState(CtiLMProgramBase::InactiveState);
+                ResetGroups();
                 setManualControlReceivedFlag(FALSE);
                 return ret_val;
                 }
