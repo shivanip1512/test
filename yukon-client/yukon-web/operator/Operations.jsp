@@ -78,10 +78,16 @@ function confirmDelete() {
               <a href = 'Consumer/New.jsp<cti:checkProperty propertyid="<%= ConsumerInfoRole.NEW_ACCOUNT_WIZARD %>">?Wizard=true</cti:checkProperty>' class = "Link1" style = "text-decoration:none;">New Account</a>
             </div>
           </td>
-          <td  class = "MainText" width="25%" >&nbsp;</td>
+          <td class="MainText" width="25%">
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT %>">
+            <div align = "center" style = "border:solid 1px #666999;">
+			  <a href="Consumer/ImportAccount.jsp" class = "Link1" style = "text-decoration:none;">Import Accounts</a>
+			</div>
+</cti:checkProperty>
+		  </td>
           <form name = "custSearchForm" method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient">
             <input type="hidden" name="action" value="SearchCustAccount">
-            <td  class = "MainText" width="43%" align = "right" nowrap> 
+            <td class = "MainText" width="43%" align = "right" nowrap> 
               <select name="SearchBy">
 <%
 	Integer lastOption = (Integer) user.getAttribute(ServletUtils.ATT_LAST_SEARCH_OPTION);
