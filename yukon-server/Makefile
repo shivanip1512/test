@@ -110,6 +110,14 @@ all:
         @echo Building in $(COMPILEBASE)\mccmd
         @echo:
         @$(MAKE) -nologo
+
+        @%cd $(COMPILEBASE)\logic
+        @echo:
+        @title Building in $(COMPILEBASE)\logic
+        @echo Building in $(COMPILEBASE)\logic
+        @echo:
+        @$(MAKE) -nologo
+
         @%cd $(COMPILEBASE)\macs
         @echo:
         @title Building in $(COMPILEBASE)\macs
