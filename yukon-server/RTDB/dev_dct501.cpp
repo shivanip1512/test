@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/07/12 19:30:37 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/12/07 17:53:57 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -698,7 +698,7 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                             quality = DeviceFillerQuality;
                             value = 0.0;
                         }
-                        else if( checkLoadProfileQuality( pulses, quality, bad_data ) )
+                        else if( checkDemandQuality( pulses, quality, bad_data ) )
                         {
                             value = 0.0;
                         }
