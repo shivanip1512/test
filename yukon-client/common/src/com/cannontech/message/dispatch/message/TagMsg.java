@@ -19,8 +19,9 @@ public class TagMsg extends Message {
 	public static final int ADD_TAG_ACTION = 0;
 	public static final int REMOVE_TAG_ACTION = 1;
 	public static final int UPDATE_TAG_ACTION = 2;
+	public static final int REPORT_TAG_ACTION = 3;
 	
-	private Tag _tag;
+	private Tag _tag = new Tag();
 	private int _action;
 	private int _clientMessageID;
 	
@@ -87,9 +88,10 @@ public class TagMsg extends Message {
 	 * @param i
 	 */
 	public void setAction(int action) {
-		if(action == ADD_TAG_ACTION 	||
-		   action == REMOVE_TAG_ACTION 	||
-		   action == UPDATE_TAG_ACTION ) {
+		if( !(action == ADD_TAG_ACTION 		||
+		      action == REMOVE_TAG_ACTION 	||
+		      action == UPDATE_TAG_ACTION)  ||
+		      action == REPORT_TAG_ACTION ) {
 		   	throw new IllegalArgumentException("Action must be one of ADD_TAG_ACTION, REMOVE_TAG_ACTION, or UPDATE_TAG_ACTION");
 		   }
 		   
@@ -181,6 +183,11 @@ public class TagMsg extends Message {
 	 */
 	public void setClientMessageID(int i) {
 		_clientMessageID = i;
+	}
+
+	public void setUserName(String newUserName) {
+		super.setUserName(newUserName);
+		_tag.setUsername(newUserName);
 	}
 
 }
