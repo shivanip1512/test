@@ -14,6 +14,18 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
 <script language="JavaScript">
+function deleteHardware(form) {
+<% if (liteHw.getAccountID() == 0) { %>
+	if (!confirm('Are you sure you want to delete the hardware from inventory?'))
+<% } else { %>
+	if (!confirm('The hardware is currently assigned to a customer account. Are you sure you want to remove it from the account and delete it from inventory?'))
+<% } %>
+		return;
+	form.action.value = "DeleteInventory";
+	form.REDIRECT.value = "<%= request.getContextPath() %>/operator/Hardware/Inventory.jsp";
+	form.submit();
+}
+
 function validate(form) {
 	if (form.SerialNo.value == "") {
 		alert("Serial # cannot be empty");
@@ -66,7 +78,10 @@ function validate(form) {
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101">&nbsp;</td>
+          <td  valign="top" width="101">
+            <% String pageName = "InventoryDetail.jsp"; %>
+            <%@ include file="include/Nav.jsp" %>
+          </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
@@ -75,7 +90,10 @@ function validate(form) {
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
               <form name="invForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="return validate(this)">
+			    <input type="hidden" name="action" value="UpdateInventory">
                 <input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
+				<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/InventoryDetail.jsp?InvId=<%= invID %>">
+				<input type="hidden" name="REFERRER" value="<%= request.getContextPath() %>/operator/Hardware/InventoryDetail.jsp?InvId=<%= invID %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                   <tr> 
                     <td width="300" valign="top" bgcolor="#FFFFFF"> 
@@ -88,26 +106,14 @@ function validate(form) {
                                 <td width="88" class="TableCell"> 
                                   <div align="right">Type:</div>
                                 </td>
-                                <td width="210"> 
-                                  <select name="DeviceType">
-                                    <%
-	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
-	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
-		String selected = (entry.getEntryID() == hardware.getLMDeviceType().getEntryID())? "selected" : "";
-%>
-                                    <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
-                                    <%
-	}
-%>
-                                  </select>
-                                </td>
+								<input type="hidden" name="DeviceType" value="<%= hardware.getLMDeviceType().getEntryID() %>">
+                                <td width="210" class="MainText"><%= hardware.getLMDeviceType().getContent() %></td>
                               </tr>
                               <tr> 
                                 <td width="88" class="TableCell"> 
                                   <div align="right"> Serial #:</div>
                                 </td>
-                                <td width="210"> 
+                                <td width="210">
                                   <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= hardware.getManufactureSerialNumber() %>">
                                 </td>
                               </tr>
@@ -194,7 +200,7 @@ function validate(form) {
                                   <div align="right">Date Installed:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="InstallDate2" maxlength="30" size="24" value="<%= ServletUtils.formatDate(hardware.getInstallDate(), datePart) %>">
+                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(hardware.getInstallDate(), datePart) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -202,7 +208,7 @@ function validate(form) {
                                   <div align="right">Service Company:</div>
                                 </td>
                                 <td width="210"> 
-                                  <select name="select">
+                                  <select name="ServiceCompany">
                                     <%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany company = companies.getStarsServiceCompany(i);
@@ -270,17 +276,17 @@ function validate(form) {
                 </table>
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                   <tr> 
-                    <td width="42%"> 
+                    <td width="43%"> 
                       <div align="right"> 
                         <input type="submit" name="Save" value="Save">
                       </div>
                     </td>
                     <td width="15%"> 
                       <div align="center"> 
-                        <input type="reset" name="Cancel" value="Cancel">
+                        <input type="button" name="Delete" value="Delete" onclick="deleteHardware(this.form)">
                       </div>
                     </td>
-                    <td width="43%"> 
+                    <td width="42%"> 
                       <div align="left"> 
                         <input type="button" name="Back" value="Back" onclick="history.back()">
                       </div>
