@@ -60,8 +60,10 @@ public static final LMEnergyExchangeCustomerList[] getAllCustomerList(Integer pr
 	java.sql.ResultSet rset = null;
 
 	
-	String sql = "select l.deviceid, l.CustomerID, l.customerorder " +
-				 "from LMEnergyExchangeCustomerList l where l.deviceid = ? " +
+	String sql = "select l.ProgramID, l.CustomerID, l.customerorder " +
+				 "from " +
+				 LMEnergyExchangeCustomerList.TABLE_NAME + " l " +
+				 "where l.ProgramID = ? " +
 				 "order by l.customerorder";
 
 	try
@@ -84,7 +86,7 @@ public static final LMEnergyExchangeCustomerList[] getAllCustomerList(Integer pr
 			{
 				LMEnergyExchangeCustomerList customer = new LMEnergyExchangeCustomerList();
 				
-				customer.setDeviceID( new Integer(rset.getInt("DeviceID")) );
+				customer.setDeviceID( new Integer(rset.getInt("ProgramID")) );
 				customer.setCustomerID( new Integer(rset.getInt("CustomerID")) );
 				customer.setCustomerOrder( new Integer(rset.getInt("CustomerOrder")) );
 
