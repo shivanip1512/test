@@ -41,6 +41,8 @@ public final class ModelFactory
 	public static final int LOGIN_GROUPS = 30;
 	public static final int BASELINE = 31;
 
+	public static final int LMGROUPEXPRESSCOM = 32;
+
 	//The above is an enumeration of indices into
 	//the following array
 	private static Class[] typeToClassMap =
@@ -76,7 +78,8 @@ public final class ModelFactory
 	  	MCTBroadcastGroupTreeModel.class,
 	  	LoginTreeModel.class,
 		LoginGroupTreeModel.class,
-		BaselineModel.class
+		BaselineModel.class,
+		LMGroupExpresscomModel.class
 	};
 
 /**

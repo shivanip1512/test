@@ -105,8 +105,9 @@ public class DatabaseEditor
 	private static final Integer[] LM_MODELS =
 		{
 			new Integer(ModelFactory.LMGROUPS),
-			new Integer(ModelFactory.LMGROUPVERSACOM),
 			new Integer(ModelFactory.LMGROUPEMETCON),
+			new Integer(ModelFactory.LMGROUPEXPRESSCOM),
+			new Integer(ModelFactory.LMGROUPVERSACOM),
 			new Integer(ModelFactory.LMPROGRAM),
 			new Integer(ModelFactory.LMCONTROLAREA)
 		};
