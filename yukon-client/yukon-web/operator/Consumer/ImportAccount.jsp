@@ -1,6 +1,11 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%
-	String importID = ServerUtils.forceNotNone(AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT));
+	String importID = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT);
+	if (importID == null || importID.equals("(none)")) {
+		response.sendRedirect("../Operations.jsp");
+		return;
+	}
+	
 	boolean isStars = importID.equalsIgnoreCase("STARS");
 %>
 <html>
