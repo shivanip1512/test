@@ -75,7 +75,7 @@ public class BillingFile extends java.util.Observable implements Runnable
 					String subString = argLowerCase.substring(startIndex);
 					billingFile.getBillingDefaults().setDemandDaysPrev(Integer.valueOf(subString).intValue());
 				}
-				else if( argLowerCase.startsWith("ener"))
+				else if( argLowerCase.startsWith("ene"))
 				{//BillingFileDefaults.energyDaysPrevious
 					String subString = argLowerCase.substring(startIndex);
 					billingFile.getBillingDefaults().setEnergyDaysPrev(Integer.valueOf(subString).intValue());
