@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2004/12/07 18:13:08 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/02/21 21:48:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,9 +25,9 @@
 class IM_EX_DEVDB CtiDeviceMCT : public CtiDeviceCarrier
 {
 public:
-    enum Channels
+    enum
     {
-        ChannelCount = 3
+        MCTConfig_ChannelCount = 4
     };
 
 private:
@@ -41,9 +41,9 @@ protected:
         WireConfigInvalid   = 0,
         WireConfigTwoWire   = 2,
         WireConfigThreeWire = 3
-    } _wireConfig[ChannelCount];
+    } _wireConfig[MCTConfig_ChannelCount];
 
-    double _mpkh[ChannelCount];
+    double _mpkh[MCTConfig_ChannelCount];
 
     enum PeakMode
     {
@@ -192,7 +192,7 @@ public:
     bool isLoadProfile( int type );
     bool hasVariableDemandRate( int type, int sspec );
 
-    void setConfigData( const RWCString &configName, int configType, const RWCString &configMode, const int mctwire[ChannelCount], const double mpkh[ChannelCount] );
+    void setConfigData( const RWCString &configName, int configType, const RWCString &configMode, const int mctwire[MCTConfig_ChannelCount], const double mpkh[MCTConfig_ChannelCount] );
 
     static  DOUBLE translateStatusValue( INT PointOffset, INT PointType, INT DeviceType, PUSHORT DataValueArray );
     static  INT extractStatusData( INMESS *InMessage, INT type, USHORT *StatusData );

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2005/02/21 21:48:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,7 @@ using namespace std;
 #include "dev_mct210.h"
 #include "dev_mct31x.h"  //  for IED scanning capability
 #include "dev_mct410.h"
+#include "dev_mct470.h"
 #include "dev_mct_lmt2.h"
 #include "logger.h"
 #include "mgr_point.h"
@@ -49,7 +50,7 @@ CtiDeviceMCT::CtiDeviceMCT() :
     _peakMode(PeakModeInvalid),
     _disconnectAddress(0)
 {
-    for( int i = 0; i < ChannelCount; i++ )
+    for( int i = 0; i < MCTConfig_ChannelCount; i++ )
     {
         _mpkh[i] = -1.0;
         _wireConfig[i] = WireConfigInvalid;
@@ -82,6 +83,10 @@ INT CtiDeviceMCT::getSSpec() const
 
 bool CtiDeviceMCT::sspecIsValid( int sspec )
 {
+    //  note that the LMT-2 sspec relies only on the lower byte, so anything with
+    //    36 (0x24) as the lower-order byte will need to be watched...
+    //  36, 292, 548, 804, 1060, 1316, 1572, 1828, 2084, 2340, 2596, 2852, 3108, 3364, 3620, 3876, ...
+
     bool valid = false;
 
     set< pair<int, int> > mct_sspec;
@@ -893,6 +898,7 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         case CtiProtocolEmetcon::GetConfig_Multiplier:
         case CtiProtocolEmetcon::GetConfig_Multiplier2:
         case CtiProtocolEmetcon::GetConfig_Multiplier3:
+        case CtiProtocolEmetcon::GetConfig_Multiplier4:
         case CtiProtocolEmetcon::GetConfig_GroupAddress:
         {
             status = decodeGetConfig(InMessage, TimeNow, vgList, retList, outList);
@@ -1024,7 +1030,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
                         case TYPEMCT318L:
                         case TYPEMCT360:
                         case TYPEMCT370:
-                        case TYPEMCT410:
+                        case TYPEMCT470:
                             insertPointFail( InMessage, retMsg, ScanRateStatus, 8, StatusPointType );
                             insertPointFail( InMessage, retMsg, ScanRateStatus, 7, StatusPointType );
                             insertPointFail( InMessage, retMsg, ScanRateStatus, 6, StatusPointType );
@@ -1098,6 +1104,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
                 {
                     switch( getType() )
                     {
+                        case TYPEMCT470:
                         case TYPEMCT410:
                         {
                             int channel = parse.getiValue("loadprofile_channel", 0);
@@ -1508,15 +1515,29 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
 
             if( getType() == TYPEMCT318 || getType() == TYPEMCT318L || getType() == TYPEMCT360 || getType() == TYPEMCT370 )
             {
-                //  if pulse input 3 isn't defined
-                if( !getDevicePointOffsetTypeEqual(3, PulseAccumulatorPointType ) )
+                for( int i = CtiDeviceMCT31X::MCT31X_ChannelCount; i > 1; i-- )
                 {
-                    OutMessage->Buffer.BSt.Length -= 3;
-
-                    //  if pulse input 2 isn't defined
-                    if( !getDevicePointOffsetTypeEqual(2, PulseAccumulatorPointType ) )
+                    if( !getDevicePointOffsetTypeEqual(i, PulseAccumulatorPointType ) )
                     {
                         OutMessage->Buffer.BSt.Length -= 3;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+            else if( getType() == TYPEMCT470 )
+            {
+                for( int i = CtiDeviceMCT470::MCT470_ChannelCount; i > 1; i-- )
+                {
+                    if( !getDevicePointOffsetTypeEqual(i, PulseAccumulatorPointType ) )
+                    {
+                        OutMessage->Buffer.BSt.Length -= 3;
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
             }
@@ -1739,10 +1760,32 @@ INT CtiDeviceMCT::executeGetStatus(CtiRequestMsg                  *pReq,
         function = CtiProtocolEmetcon::GetStatus_Internal;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
-    else if(parse.getFlags() & CMD_FLAG_GS_LOADSURVEY)
+    else if(parse.getFlags() & CMD_FLAG_GS_LOADPROFILE)
     {
         function = CtiProtocolEmetcon::GetStatus_LoadProfile;
+
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        if( found && parse.isKeyValid("loadprofile_offset") )
+        {
+            if( getType() == TYPEMCT470 )
+            {
+                if( parse.getiValue("loadprofile_offset") == 1 ||
+                    parse.getiValue("loadprofile_offset") == 2 )
+                {
+                    OutMessage->Buffer.BSt.Function = CtiDeviceMCT470::MCT470_FuncRead_LPStatusCh1Ch2Pos;
+                }
+                else if( parse.getiValue("loadprofile_offset") == 3 ||
+                         parse.getiValue("loadprofile_offset") == 4 )
+                {
+                    OutMessage->Buffer.BSt.Function = CtiDeviceMCT470::MCT470_FuncRead_LPStatusCh3Ch4Pos;
+                }
+                else
+                {
+                    found = false;
+                }
+            }
+        }
     }
     else if(parse.getFlags() & CMD_FLAG_GS_IED)
     {
@@ -1803,7 +1846,7 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
         function = CtiProtocolEmetcon::PutStatus_Reset;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
-        if( getType() != TYPEMCT410 )
+        if( getType() != TYPEMCT410 && getType() != TYPEMCT470 )
         {
             OutMessage->Buffer.BSt.Message[0] = 0;
             OutMessage->Buffer.BSt.Message[1] = 0;
@@ -1984,9 +2027,7 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
     }
     else if(parse.isKeyValid("multiplier"))
     {
-        function = CtiProtocolEmetcon::GetConfig_Multiplier;
-
-        if( parse.isKeyValid("multchannel") )
+        if( getType() != TYPEMCT470 && parse.isKeyValid("multchannel") )
         {
             switch( parse.getiValue("multchannel") )
             {
@@ -1999,16 +2040,40 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
                 case 3:
                     function = CtiProtocolEmetcon::GetConfig_Multiplier3;
                     break;
+                case 4:
+                    function = CtiProtocolEmetcon::GetConfig_Multiplier4;
+                    break;
             }
+        }
+        else
+        {
+            function = CtiProtocolEmetcon::GetConfig_Multiplier;
         }
 
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        if( getType() == TYPEMCT470 && parse.isKeyValid("multchannel") )
+        {
+            if( parse.getiValue("multchannel") >= 1 &&
+                parse.getiValue("multchannel") <= CtiDeviceMCT470::MCT470_ChannelCount )
+            {
+                OutMessage->Buffer.BSt.Function += (parse.getiValue("multchannel") - 1) * CtiDeviceMCT470::MCT470_Memory_ChannelOffset;
+            }
+            else
+            {
+                found = false;
+            }
+        }
     }
     else if(parse.isKeyValid("interval"))
     {
         temp = parse.getsValue("interval");
 
-        if( temp == "lp" )
+        if( temp == "intervals" )
+        {
+            function = CtiProtocolEmetcon::GetConfig_Intervals;
+        }
+        else if( temp == "lp" )
         {
             function = CtiProtocolEmetcon::GetConfig_LoadProfileInterval;
         }
@@ -2446,10 +2511,19 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
             function = CtiProtocolEmetcon::PutConfig_Intervals;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
-            OutMessage->Buffer.BSt.Message[0] = getLoadProfile().getLastIntervalDemandRate() / 60;
-            OutMessage->Buffer.BSt.Message[1] = getLoadProfile().getLoadProfileDemandRate()  / 60;
-            OutMessage->Buffer.BSt.Message[2] = getLoadProfile().getVoltageDemandInterval()  / 15;
-            OutMessage->Buffer.BSt.Message[3] = getLoadProfile().getVoltageLoadProfileRate() / 60;
+            if( getType() == TYPEMCT410 )
+            {
+                OutMessage->Buffer.BSt.Message[0] = getLoadProfile().getLastIntervalDemandRate() / 60;
+                OutMessage->Buffer.BSt.Message[1] = getLoadProfile().getLoadProfileDemandRate()  / 60;
+                OutMessage->Buffer.BSt.Message[2] = getLoadProfile().getVoltageDemandInterval()  / 15;
+                OutMessage->Buffer.BSt.Message[3] = getLoadProfile().getVoltageLoadProfileRate() / 60;
+            }
+            else
+            {
+                OutMessage->Buffer.BSt.Message[0] = getLoadProfile().getLastIntervalDemandRate() / 60;
+                OutMessage->Buffer.BSt.Message[1] = getLoadProfile().getLoadProfileDemandRate()  / 60;
+                OutMessage->Buffer.BSt.Message[2] = getLoadProfile().getLoadProfileDemandRate()  / 60;
+            }
         }
         else if( temp == "lp" )
         {
@@ -2563,7 +2637,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
 
         unsigned char ticper12hr, ticper5min, ticper15sec;
 
-        if( getType() == TYPEMCT410 )
+        if( getType() == TYPEMCT410 || getType() == TYPEMCT470 )
         {
             unsigned long time = NowTime.seconds() - rwEpoch;
 
@@ -2598,45 +2672,141 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
     {
         unsigned long multbytes;
 
-
-        multbytes  = (unsigned long)(parse.getdValue("multiplier") * 100.0);
-
-        if( multbytes == 100 )
+        if( getType() == TYPEMCT470 )
         {
-            multbytes = 1000;  //  change it into the "pulses" value
-        }
-        else if( multbytes >= 1000 )
-        {
-            if( errRet )
+            double multiplier = parse.getdValue("multiplier");
+            int numerator, denominator;
+
+            function = CtiProtocolEmetcon::PutConfig_Multiplier;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+            if( found )
             {
-                temp = "Multiplier too large - must be less than 10";
-                errRet->setResultString( temp );
-                errRet->setStatus(NoMethod);
-                retList.insert( errRet );
-                errRet = NULL;
+                //  this is broken - you can't accumulate 50,000 pulses before acknowledging 40,000 pulses
+                //    so this is a faulty algorithm
+
+                /*
+
+                If Mp is greater than Kh, then the accumulator will accrue the difference, Mp - Kh, whenever a pulse is received.
+                If Mp = Kh + 1, then the accumulator will be able to hold Kh - 1 as a maximum before the pulse is moved to the reading.
+                However, on that next pulse, the meter will add Mp to Kh - 1, so the maximum in the accumulator can be stated as:
+
+                Mp + Kh - 1
+
+                The maximum range of the accumulator is:
+
+                65535
+
+                So the relationship between Mp and Kh can at most be:
+
+                Mp + Kh - 1 = 65535
+                Mp + Kh     = 65536
+
+                So I choose to fix the upper bound for the denominator at 10,000 and allow the numerator to range from 1-50,000.
+
+
+                   Mp    Kh
+                     1/10000 =     0.0001
+                     9/10000 =     0.0009
+                    99/10000 =     0.0099
+                   999/10000 =     0.0999
+                  9999/10000 =     0.9999
+                 49999/10000 =     4.9999
+                 49999/ 1000 =    49.999
+                 49999/  100 =   499.99
+                 49999/   10 =  4999.9
+                 49999/    1 = 49999.
+
+                */
+
+
+                if( multiplier > 50000 )
+                {
+                    temp = "Multiplier too large - must be less than 50000";
+                    errRet->setResultString( temp );
+                    errRet->setStatus(NoMethod);
+                    retList.insert( errRet );
+                    errRet = NULL;
+                }
+                else if( multiplier < 0.0001 )
+                {
+                    temp = "Multiplier too small - must be at least 0.0001";
+                    errRet->setResultString( temp );
+                    errRet->setStatus(NoMethod);
+                    retList.insert( errRet );
+                    errRet = NULL;
+                }
+
+                denominator = 10000;
+
+                //  ex:  multiplier = 4.097, denominator = 10000
+                //         result = 40,970 <--  suitable numerator
+                //       multiplier = 689,   denominator = 10000
+                //         result = 6,890,000  <--  unsuitable numerator, divide denominator by 10
+                //       multiplier = 689,   denominator =  1000
+                //         result = 689,000    <--  unsuitable numerator, divide denominator by 10
+                //       multiplier = 689,   denominator =   100
+                //         result = 68,900     <--  unsuitable numerator, divide denominator by 10
+                //       multiplier = 689,   denominator =    10
+                //         result = 6,890      <--  suitable numerator
+
+                while( (multiplier * denominator) > 50000 )
+                {
+                    denominator /= 10;
+                }
+
+                numerator = (int)(multiplier * denominator);
+
+                OutMessage->Buffer.BSt.Message[0] = (numerator   >> 8) & 0xff;
+                OutMessage->Buffer.BSt.Message[1] =  numerator         & 0xff;
+
+                OutMessage->Buffer.BSt.Message[2] = (denominator >> 8) & 0xff;
+                OutMessage->Buffer.BSt.Message[3] =  denominator       & 0xff;
+
+                OutMessage->Buffer.BSt.Function += (parse.getiValue("multoffset") - 1) * CtiDeviceMCT470::MCT470_Memory_ChannelOffset;
             }
         }
-
-        OutMessage->Buffer.BSt.Message[0] = (multbytes >> 8) & 0xFF;  //  bits 15-8
-        OutMessage->Buffer.BSt.Message[1] =  multbytes       & 0xFF;  //  bits  7-0
-
-        switch( parse.getiValue("multoffset") )
+        else
         {
-            default:
-            case 1:
-                function = CtiProtocolEmetcon::PutConfig_Multiplier;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-                break;
+            multbytes  = (unsigned long)(parse.getdValue("multiplier") * 100.0);
 
-            case 2:
-                function = CtiProtocolEmetcon::PutConfig_Multiplier2;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-                break;
+            if( multbytes == 100 )
+            {
+                multbytes = 1000;  //  change it into the "pulses" value
+            }
+            else if( multbytes >= 1000 )
+            {
+                if( errRet )
+                {
+                    temp = "Multiplier too large - must be less than 10";
+                    errRet->setResultString( temp );
+                    errRet->setStatus(NoMethod);
+                    retList.insert( errRet );
+                    errRet = NULL;
+                }
+            }
 
-            case 3:
-                function = CtiProtocolEmetcon::PutConfig_Multiplier3;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-                break;
+            OutMessage->Buffer.BSt.Message[0] = (multbytes >> 8) & 0xFF;  //  bits 15-8
+            OutMessage->Buffer.BSt.Message[1] =  multbytes       & 0xFF;  //  bits  7-0
+
+            switch( parse.getiValue("multoffset") )
+            {
+                default:
+                case 1:
+                    function = CtiProtocolEmetcon::PutConfig_Multiplier;
+                    found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                    break;
+
+                case 2:
+                    function = CtiProtocolEmetcon::PutConfig_Multiplier2;
+                    found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                    break;
+
+                case 3:
+                    function = CtiProtocolEmetcon::PutConfig_Multiplier3;
+                    found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                    break;
+            }
         }
     }
     else if(parse.isKeyValid("rawloc"))
@@ -2987,6 +3157,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             case CtiProtocolEmetcon::GetConfig_Multiplier:
             case CtiProtocolEmetcon::GetConfig_Multiplier2:
             case CtiProtocolEmetcon::GetConfig_Multiplier3:
+            case CtiProtocolEmetcon::GetConfig_Multiplier4:
             {
                 resultStr  = getName() + " / ";
 
@@ -3009,15 +3180,29 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                 multnum <<= 8;
                 multnum  |= (int)DSt->Message[1];
 
-                if( multnum == 1000 )
+                if( getType() == TYPEMCT470 )
                 {
-                    resultStr += " multiplier: 1.000 (pulses)\n";
+                    int k;
+
+                    k   = (int)DSt->Message[2];
+                    k <<= 8;
+                    k  |= (int)DSt->Message[3];
+
+                    resultStr = "Mp: " + CtiNumStr((int)multnum) + ", Kh: " + CtiNumStr((int)k) +
+                                ", metering ratio: " + CtiNumStr((double)multnum/(double)k, 3) + "\n";
                 }
                 else
                 {
-                    mult = (double)multnum;
-                    mult /= 100.0;
-                    resultStr += " multiplier: " + CtiNumStr::CtiNumStr(mult,3) + "\n";
+                    if( multnum == 1000 )
+                    {
+                        resultStr += " multiplier: 1.000 (pulses)\n";
+                    }
+                    else
+                    {
+                        mult = (double)multnum;
+                        mult /= 100.0;
+                        resultStr += " multiplier: " + CtiNumStr::CtiNumStr(mult, 3) + "\n";
+                    }
                 }
 
                 ReturnMsg->setResultString( resultStr );
@@ -3323,6 +3508,9 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                 //  LMT-2 sspec - it only has 1 sspec byte...
                 //    make sure any additional sspec rev numbers do not have 36 as their least-significant byte,
                 //    or this will have to change.
+                //
+                //  36, 292, 548, 804, 1060, 1316, 1572, 1828, 2084, 2340, 2596, 2852, 3108, 3364, 3620, 3876, ...
+
                 if( DSt->Message[0] == 36 )
                 {
                     sspec = DSt->Message[0];
@@ -4333,7 +4521,7 @@ bool CtiDeviceMCT::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
 }
 
 
-void CtiDeviceMCT::setConfigData( const RWCString &configName, int configType, const RWCString &configMode, const int mctwire[ChannelCount], const double mpkh[ChannelCount] )
+void CtiDeviceMCT::setConfigData( const RWCString &configName, int configType, const RWCString &configMode, const int mctwire[MCTConfig_ChannelCount], const double mpkh[MCTConfig_ChannelCount] )
 {
     _configName = configName;
 
@@ -4419,7 +4607,7 @@ void CtiDeviceMCT::setConfigData( const RWCString &configName, int configType, c
         _peakMode = PeakModeInvalid;
     }
 
-    for( int i = 0; i < ChannelCount; i++ )
+    for( int i = 0; i < MCTConfig_ChannelCount; i++ )
     {
         _mpkh[i] = mpkh[i];
 
