@@ -167,7 +167,7 @@ public class YukonDataSetFactory
 					{
 						if( serie.getAxis().equals(axisChars[datasetIndex]))
 						{	
-							com.jrefinery.data.TimeSeries series = new com.jrefinery.data.TimeSeries(serie.getLabel(), com.jrefinery.data.Second.class);
+							com.jrefinery.data.TimeSeries series = new com.jrefinery.data.TimeSeries(serie.getLabel(), com.jrefinery.data.Millisecond.class);
 
 							if( serie.getDataPairArray() != null)
 							{
