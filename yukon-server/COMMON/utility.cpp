@@ -1230,16 +1230,15 @@ void autopsy(char *calleefile, int calleeline)
 
             if(doubt_guard.isAcquired())
             {
-                identifyProject(CompileInfo);
                 dout << endl << RWTime() << " **** STACK TRACE **** called from " << calleefile << " line: " << calleeline << endl;
-                dout << endl << " Thread 0x" << hex << GetCurrentThreadId() << dec << "  " << GetCurrentThreadId() << endl;
+                dout << endl << "Thread 0x" << hex << GetCurrentThreadId() << dec << "  " << GetCurrentThreadId() << endl;
                 ShowStack( hThread, c );
                 dout << RWTime() << " **** STACK TRACE ENDS ****" << endl << endl ;
             }
             else    // This is a bit rough!
             {
                 dout << endl << RWTime() << " **** STACK TRACE **** called from " << calleefile << " line: " << calleeline << endl;
-                dout << endl << " Thread 0x" << hex << GetCurrentThreadId() << dec << "  " << GetCurrentThreadId() << endl;
+                dout << endl << "Thread 0x" << hex << GetCurrentThreadId() << dec << "  " << GetCurrentThreadId() << endl;
                 ShowStack( hThread, c );
                 dout << RWTime() << " **** STACK TRACE ENDS ****" << endl << endl ;
                 dout.flush();
