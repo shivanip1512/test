@@ -50,7 +50,11 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../demostyle.css" type="text/css">
+<link id="CssLink" rel="stylesheet" href="../demostyle.css" type="text/css">
+<% if (ecWebSettings.getURL().length() > 0) { %>
+	<script language="JavaScript">document.getElementById("CssLink").href = "../<%= ecWebSettings.getURL() %>";</script>
+<% } %>
+
 <script language="JavaScript">
 function deleteAppliance(form) {
 <%
@@ -81,7 +85,10 @@ function deleteAppliance(form) {
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
+                <td id="Header" colspan="4" height="74" background="../Header.gif">&nbsp;</td>
+<% if (ecWebSettings.getLogoLocation().length() > 0) { %>
+	<script language="JavaScript">document.getElementById("Header").background = "../<%= ecWebSettings.getLogoLocation() %>";</script>
+<% } %>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -143,14 +150,14 @@ function deleteAppliance(form) {
                           </td>
                           <td width="200"> 
                             <select name="Manufacturer">
-<%
+                              <%
 	StarsCustSelectionList manuList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER );
 	for (int i = 0; i < manuList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = manuList.getStarsSelectionListEntry(i);
 		String selectedStr = (entry.getEntryID() == appliance.getManufacturer().getEntryID()) ? "selected" : "";
 %>
-							  <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
-<%
+                              <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+                              <%
 	}
 %>
                             </select>
@@ -160,8 +167,8 @@ function deleteAppliance(form) {
                           <td width="100" class="TableCell"> 
                             <div align="right">Model #:</div>
                           </td>
-                          <td width="200">
-                            <input type="text" name="ModelNo" maxlength="40" size="30" value="">
+                          <td width="200"> 
+                            <input type="text" name="ModelNo" maxlength="40" size="30" value="<%= appliance.getModelNumber() %>">
                           </td>
                         </tr>
                         <tr> 
@@ -178,14 +185,14 @@ function deleteAppliance(form) {
                           </td>
                           <td width="200"> 
                             <select name="Location">
-<%
+                              <%
 	StarsCustSelectionList locationList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_LOCATION );
 	for (int i = 0; i < locationList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = locationList.getStarsSelectionListEntry(i);
 		String selectedStr = (entry.getEntryID() == appliance.getLocation().getEntryID()) ? "selected" : "";
 %>
-							  <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
-<%
+                              <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+                              <%
 	}
 %>
                             </select>

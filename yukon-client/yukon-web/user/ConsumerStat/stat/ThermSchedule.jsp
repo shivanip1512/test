@@ -59,7 +59,11 @@
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../../demostyle.css" type="text/css">
+<link id="CssLink" rel="stylesheet" href="../../demostyle.css" type="text/css">
+<% if (ecWebSettings.getURL().length() > 0) { %>
+	<script language="JavaScript">document.getElementById("CssLink").href = "../../<%= ecWebSettings.getURL() %>";</script>
+<% } %>
+
 <script langauge = "JavaScript">
 function updateLayout(hour1, min1, temp1, hour2, min2, temp2, hour3, min3, temp3, hour4, min4, temp4) {
 	moveLayer('MovingLayer1', hour1, min1);
@@ -139,7 +143,10 @@ MM_reloadPage(true);
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
+                <td id="Header" colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
+<% if (ecWebSettings.getLogoLocation().length() > 0) { %>
+	<script language="JavaScript">document.getElementById("Header").background = "../../<%= ecWebSettings.getLogoLocation() %>";</script>
+<% } %>
               </tr>
               <tr> 
 				  <td width="265" height="28">&nbsp;</td>
@@ -176,25 +183,12 @@ MM_reloadPage(true);
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               
             <div align="center"><br>
-              <table width="600" border="0" cellspacing="0">
-                <tr> 
-                  <td width="202"> 
-                    <table width="200" border="0" cellspacing="0" cellpadding="3">
-                      <tr> 
-                        <td><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
-                          <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
-                          <!--<%= account.getCompany() %><br> -->
-                          <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>
-                          <%= propAddr.getCity() %>, <%= propAddr.getState() %> <%= propAddr.getZip() %><br>
-                          <%= primContact.getHomePhone() %></span></td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td width="187" valign="top"> 
-                    <div align="center"><b><span class="Main">THERMOSTAT - SCHEDULE</span></b></div>
-                  </td>
-                  <td valign="top" width="205" align = "right"><%@ include file="Notice.jsp" %> 
-                    
+              <% String header = "THERMOSTAT - SCHEDULE"; %>
+              <%@ include file="InfoBar.jsp" %>
+              <table width="600" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <hr>
                   </td>
                 </tr>
               </table>
@@ -302,7 +296,7 @@ MM_reloadPage(true);
                       <br>
                     
                     <img src="TempBG.gif" style ="position:relative;">
-                    <div id="MovingLayer1" style="position:absolute; width:25px; height:162px; left:309px; z-index:1; top: 380px">
+                    <div id="MovingLayer1" style="position:absolute; width:25px; height:162px; left:309px; z-index:1; top: 400px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
@@ -314,7 +308,7 @@ MM_reloadPage(true);
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer2" style="position:absolute; width:21px; height:162px; left:354px; z-index:2; top: 380px">
+                    <div id="MovingLayer2" style="position:absolute; width:21px; height:162px; left:354px; z-index:2; top: 400px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
@@ -326,7 +320,7 @@ MM_reloadPage(true);
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer3" style="position:absolute;  width:21px; height:162px; left:507px; z-index:3; top: 380px">
+                    <div id="MovingLayer3" style="position:absolute;  width:21px; height:162px; left:507px; z-index:3; top: 400px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
@@ -338,7 +332,7 @@ MM_reloadPage(true);
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer4" style="position:absolute;  width:21px; height:162px; left:578px; z-index:4; top: 380px">
+                    <div id="MovingLayer4" style="position:absolute;  width:21px; height:162px; left:578px; z-index:4; top: 400px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>

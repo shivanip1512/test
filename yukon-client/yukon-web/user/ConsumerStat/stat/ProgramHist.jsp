@@ -3,7 +3,11 @@
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../../demostyle.css" type="text/css">
+<link id="CssLink" rel="stylesheet" href="../../demostyle.css" type="text/css">
+<% if (ecWebSettings.getURL().length() > 0) { %>
+	<script language="JavaScript">document.getElementById("CssLink").href = "../../<%= ecWebSettings.getURL() %>";</script>
+<% } %>
+
 <script language="JavaScript">
 function setRedirect(form, progNo) {
 	if (form.Period.value == 'None')
@@ -24,7 +28,10 @@ function setRedirect(form, progNo) {
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
+                <td id="Header" colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
+<% if (ecWebSettings.getLogoLocation().length() > 0) { %>
+	<script language="JavaScript">document.getElementById("Header").background = "../../<%= ecWebSettings.getLogoLocation() %>";</script>
+<% } %>
               </tr>
               <tr> 
                   <td width="265" height="28">&nbsp;</td>

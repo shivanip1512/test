@@ -1,10 +1,16 @@
 <%@ page import="com.cannontech.common.constants.RoleTypes" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
+<%@ include file="Consumer/StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="demostyle.css" type="text/css">
+<link id="CssLink" rel="stylesheet" href="demostyle.css" type="text/css">
+<cti:checkRole roleid="<%= RoleTypes.OPERATOR_CONSUMER_INFO %>">
+<% if (ecWebSettings.getURL().length() > 0) { %>
+	<script language="JavaScript">document.getElementById("CssLink").href = "<%= ecWebSettings.getURL() %>";</script>
+<% } %>
+</cti:checkRole>
 </head>
 <body bgcolor="#666699" text="#000000" leftmargin="0" topmargin="0" link="#000000" vlink="#000000" alink="#000000">
 <table width="658" border="0" cellspacing="0" height="102" cellpadding="0">
@@ -12,7 +18,12 @@
     <td width="657"valign="bottom">
       <table width="657" border="0" cellspacing="0" cellpadding="3" height="102">
         <tr> 
-          <td  background="Header.gif" height="77" >&nbsp;</td>
+          <td id="Header" background="Header.gif" height="77" >&nbsp;</td>
+<cti:checkRole roleid="<%= RoleTypes.OPERATOR_CONSUMER_INFO %>">
+<% if (ecWebSettings.getLogoLocation().length() > 0) { %>
+	<script language="JavaScript">document.getElementById("Header").background = "<%= ecWebSettings.getLogoLocation() %>";</script>
+<% } %>
+</cti:checkRole>
         </tr>
         <tr>
           <form name="form2" method="post" action="/login.jsp"><td>
@@ -53,7 +64,6 @@
             <td  class = "Main" width="109" >&nbsp;</td>
             <td  class = "Main" width="250" align = "right"> 
               <select name="SearchBy">
-<%@ include file="Consumer/StarsHeader.jsp" %>
 <%
 	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE );
 	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {

@@ -22,7 +22,10 @@
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../../demostyle.css" type="text/css">
+<link id="CssLink" rel="stylesheet" href="../../demostyle.css" type="text/css">
+<% if (ecWebSettings.getURL().length() > 0) { %>
+	<script language="JavaScript">document.getElementById("CssLink").href = "../../<%= ecWebSettings.getURL() %>";</script>
+<% } %>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -35,7 +38,10 @@
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
+                <td id="Header" colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
+<% if (ecWebSettings.getLogoLocation().length() > 0) { %>
+	<script language="JavaScript">document.getElementById("Header").background = "../../<%= ecWebSettings.getLogoLocation() %>";</script>
+<% } %>
               </tr>
               <tr> 
                   <td width="265" height="28">&nbsp;</td>
@@ -70,29 +76,8 @@
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
-              <table width="600" border="0" cellspacing="0">
-                <tr> 
-                  <td width="202"> 
-                    <table width="200" border="0" cellspacing="0" cellpadding="3">
-                      <tr> 
-                        <td><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
-                          <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
-                          <!--<%= account.getCompany() %><br> -->
-                          <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>
-                          <%= propAddr.getCity() %>, <%= propAddr.getState() %> <%= propAddr.getZip() %><br>
-                          <%= primContact.getHomePhone() %></span></td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td width="187" valign="top"> 
-                    <div align="center"><b><span class="Main">PROGRAMS - CONTROL 
-                      HISTORY </span></b></div>
-                  </td>
-                  <td valign="top" width="205" align = "right"><%@ include file="Notice.jsp" %>
-                    
-                  </td>
-                </tr>
-              </table>
+              <% String header = "PROGRAMS - CONTROL HISTORY"; %>
+              <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
                   <td> 

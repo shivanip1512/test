@@ -3,7 +3,11 @@
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../../demostyle.css" type="text/css">
+<link id="CssLink" rel="stylesheet" href="../../demostyle.css" type="text/css">
+<% if (ecWebSettings.getURL().length() > 0) { %>
+	<script language="JavaScript">document.getElementById("CssLink").href = "../../<%= ecWebSettings.getURL() %>";</script>
+<% } %>
+
 <script language="JavaScript">
 function changeCategory(checkbox, index) {
 	form = checkbox.form;
@@ -45,7 +49,10 @@ function changeProgram(radioBtn, index) {
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
+                <td id="Header" colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
+<% if (ecWebSettings.getLogoLocation().length() > 0) { %>
+	<script language="JavaScript">document.getElementById("Header").background = "../../<%= ecWebSettings.getLogoLocation() %>";</script>
+<% } %>
               </tr>
               <tr> 
                   <td width="265" height="28">&nbsp;</td>
@@ -97,8 +104,7 @@ function changeProgram(radioBtn, index) {
                 <td align = "center"><span class="Main"> </span><span class="TableCell"> 
                   Select the check boxes and corresponding radio button of the 
                   programs you would like to be enrolled in.<br> <br></span><b><span class="Main"></span></b>
-				  <form action = "ProgramDetails.jsp">
-                  <input type="submit" name="Details" value="Program Details"></form>
+                  <input type="button" value="Program Details" onclick="location='ProgramDetails.jsp'">
                 
 				<form method="post" action="/servlet/SOAPClient">
 				  <input type="hidden" name="action" value="ProgramSignUp">

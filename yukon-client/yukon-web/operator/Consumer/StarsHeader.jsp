@@ -12,16 +12,19 @@
 <%@ page import="com.cannontech.common.constants.RoleTypes" %>
 
 <%
+	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
+	if (lYukonUser == null) {
+		response.sendRedirect("/login.jsp"); return;
+	}
+	
+	if (com.cannontech.database.cache.functions.AuthFuncs.checkRole(lYukonUser, RoleTypes.OPERATOR_CONSUMER_INFO) == null)
+		return;
+			
     java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
 	String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
-	
-	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
-	if (lYukonUser == null) {
-		response.sendRedirect("/login.jsp"); return;
-	}
 	
 	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 	if (user == null || user.getYukonUser().getUserID() != lYukonUser.getUserID()) {	// This is logged in using the normal LoginController, not the StarsLoginController
@@ -39,6 +42,7 @@
 	}
 	
 	StarsEnergyCompany energyCompany = (StarsEnergyCompany) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY );
+	StarsWebConfig ecWebSettings = (StarsWebConfig) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_WEB_CONFIG );
 	Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 	StarsEnrollmentPrograms categories = (StarsEnrollmentPrograms) user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
 	
