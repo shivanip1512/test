@@ -4,18 +4,18 @@
 insert into CTIDatabase values('2.41', 'Ryan', '20-MAY-2003', 'Major changes to roles,groups. Added SeasonSchedule, modified LMProgram,DynamicLMGroup,EnergyCompany, PAOExclusion, LMGroupMCT');
 
 /**** CHANGE THE FDRTranslation PK ****/
-alter table FDRTRANSLATION drop constraint PK_FDRTRANSLATION
+alter table FDRTRANSLATION drop constraint PK_FDRTRANSLATION;
 go
 alter table FDRTRANSLATION add
-  constraint PK_FDRTrans primary key  (POINTID, TRANSLATION)
+  constraint PK_FDRTrans primary key  (POINTID, TRANSLATION);
 go
 
 
 /**** CHANGE THE POINT LIMITS PK ****/
-alter table pointlimits drop constraint PK_POINTLIMITS
+alter table pointlimits drop constraint PK_POINTLIMITS;
 go
 alter table pointlimits 
-	add constraint PK__POINTID_LIMITNUM primary key (pointid, limitnumber)
+	add constraint PK__POINTID_LIMITNUM primary key (pointid, limitnumber);
 go
 
 
@@ -24,28 +24,28 @@ go
 
 
 /**** ADD COLUMNS TO THE DynamicLMGroup TABLE ****/
-alter table DynamicLMGroup add ControlStartTime datetime not null DEFAULT '01-JAN-1990'
+alter table DynamicLMGroup add ControlStartTime datetime not null DEFAULT '01-JAN-1990';
 go
-alter table DynamicLMGroup add ControlCompleteTime datetime not null DEFAULT '01-JAN-1990'
+alter table DynamicLMGroup add ControlCompleteTime datetime not null DEFAULT '01-JAN-1990';
 go
 
 
 
 /**** ADD COLUMN TO THE EnergyCompany TABLE ****/
-alter table EnergyCompany add PrimaryContactID numeric not null DEFAULT 0
+alter table EnergyCompany add PrimaryContactID numeric not null DEFAULT 0;
 go
 alter table EnergyCompany
    add constraint FK_EnCm_Cnt foreign key (PrimaryContactID)
-      references Contact (ContactID)
+      references Contact (ContactID);
 go
 
 
 
 /**** CHANGE THE LMProgramControlWindow PK ****/
-alter table LMProgramControlWindow drop constraint PK_LMPROGRAMCONTROLWINDOW
+alter table LMProgramControlWindow drop constraint PK_LMPROGRAMCONTROLWINDOW;
 go
 alter table LMProgramControlWindow 
-    add constraint PK_LMPROGRAMCNTRLWINDOW primary key (DeviceID, WindowNumber)
+    add constraint PK_LMPROGRAMCNTRLWINDOW primary key (DeviceID, WindowNumber);
 go
 
 
@@ -63,39 +63,39 @@ FallDay              numeric              not null,
 WinterMonth          numeric              not null,
 WinterDay            numeric              not null,
 constraint PK_SEASONSCHEDULE primary key  (ScheduleID)
-)
+);
 go
 
 insert into SeasonSchedule values(0,'Default Season Schedule',3,15,5,1,8,15,11,1);
 
 create unique  index Indx_SeasSchd_PK on SeasonSchedule (
 ScheduleID
-)
+);
 go
 
 
 
 /**** MODIFY THE TABLE EnergyCompany ****/
-alter table EnergyCompany drop constraint FK_EnCmpRt
+alter table EnergyCompany drop constraint FK_EnCmpRt;
 go
-alter table EnergyCompany drop constraint FK_YkWbC_EnC
+alter table EnergyCompany drop constraint FK_YkWbC_EnC;
 go
-alter table EnergyCompany drop column RouteID
-alter table EnergyCompany drop column WebConfigID
+alter table EnergyCompany drop column RouteID;
+alter table EnergyCompany drop column WebConfigID;
 go
-alter table EnergyCompany ADD UserID numeric not null DEFAULT -1
+alter table EnergyCompany ADD UserID numeric not null DEFAULT -1;
 go
 alter table EnergyCompany
    add constraint FK_EngCmp_YkUs foreign key (UserID)
-      references YukonUser (UserID)
+      references YukonUser (UserID);
 go
 
 
 
 /**** ADD NEW COLUMNS TO THE TABLE LMProgram ****/
-alter table LMProgram add HolidayScheduleID numeric not null DEFAULT 0
+alter table LMProgram add HolidayScheduleID numeric not null DEFAULT 0;
 go
-alter table LMProgram add SeasonScheduleID numeric not null DEFAULT 0
+alter table LMProgram add SeasonScheduleID numeric not null DEFAULT 0;
 go
 
 
@@ -104,11 +104,11 @@ go
 /**** ADD NEW REFERENCES TO THE TABLE LMProgram ****/
 alter table LMPROGRAM
    add constraint FK_SesSch_LmPr foreign key (SeasonScheduleID)
-      references SeasonSchedule (ScheduleID)
+      references SeasonSchedule (ScheduleID);
 go
 alter table LMPROGRAM
    add constraint FK_HlSc_LmPr foreign key (HolidayScheduleID)
-      references HolidaySchedule (HolidayScheduleID)
+      references HolidaySchedule (HolidayScheduleID);
 go
 
 
@@ -126,24 +126,24 @@ FunctionID           numeric              not null,
 FuncName             varchar(100)         not null,
 FuncRequeue          numeric              not null,
 constraint PK_PAOEXCLUSION primary key  (ExclusionID)
-)
+);
 go
 create unique  index Indx_PAOExclus on PAOExclusion (
 PaoID,
 ExcludedPaoID
-)
+);
 go
 alter table PAOExclusion
    add constraint FK_PAOEx_YkPAO foreign key (PaoID)
-      references YukonPAObject (PAObjectID)
+      references YukonPAObject (PAObjectID);
 go
 alter table PAOExclusion
    add constraint FK_PAO_REF__YUK foreign key (ExcludedPaoID)
-      references YukonPAObject (PAObjectID)
+      references YukonPAObject (PAObjectID);
 go
 alter table PAOExclusion
    add constraint FK_PAOEx_Pt foreign key (PointID)
-      references POINT (POINTID)
+      references POINT (POINTID);
 go
 
 
@@ -159,19 +159,19 @@ RelayUsage           char(7)              not null,
 RouteID              numeric              not null,
 MCTDeviceID          numeric              not null,
 constraint PK_LMGrpMCTPK primary key  (DeviceID)
-)
+);
 go
 alter table LMGroupMCT
    add constraint FK_LMGrMC_Rt foreign key (RouteID)
-      references Route (RouteID)
+      references Route (RouteID);
 go
 alter table LMGroupMCT
    add constraint FK_LMGrMC_Dev foreign key (DeviceID)
-      references DEVICE (DEVICEID)
+      references DEVICE (DEVICEID);
 go
 alter table LMGroupMCT
    add constraint FK_LMGrMC_YkP foreign key (MCTDeviceID)
-      references YukonPAObject (PAObjectID)
+      references YukonPAObject (PAObjectID);
 go
 
 
@@ -189,7 +189,7 @@ delete from YukonGroup;
 go
 
 
-alter table YukonRole drop column DefaultValue
+alter table YukonRole drop column DefaultValue;
 go
 
 
@@ -200,20 +200,20 @@ KeyName              varchar(100)         not null,
 DefaultValue         varchar(1000)        not null,
 Description          varchar(1000)        not null,
 constraint PK_YUKONROLEPROPERTY primary key  (RolePropertyID)
-)
+);
 go
 create unique  index Indx_YukRolPrp_PK on YukonRoleProperty (
 RolePropertyID
-)
+);
 go
 alter table YukonRoleProperty
    add constraint FK_YkRlPrp_YkRle foreign key (RoleID)
-      references YukonRole (RoleID)
+      references YukonRole (RoleID);
 go
 
 
 
-drop table YukonUserRole
+drop table YukonUserRole;
 go
 create table YukonUserRole (
 UserRoleID           numeric              not null,
@@ -222,24 +222,24 @@ RoleID               numeric              not null,
 RolePropertyID       numeric              not null,
 Value                varchar(1000)        not null,
 constraint PK_YKONUSRROLE primary key  (UserRoleID)
-)
+);
 go
 alter table YukonUserRole
    add constraint FK_YkUsRlr_YkUsr foreign key (UserID)
-      references YukonUser (UserID)
+      references YukonUser (UserID);
 go
 alter table YukonUserRole
    add constraint FK_YkUsRl_YkRol foreign key (RoleID)
-      references YukonRole (RoleID)
+      references YukonRole (RoleID);
 go
 alter table YukonUserRole
    add constraint FK_YkUsRl_RlPrp foreign key (RolePropertyID)
-      references YukonRoleProperty (RolePropertyID)
+      references YukonRoleProperty (RolePropertyID);
 go
 
 
 
-drop table YukonGroupRole
+drop table YukonGroupRole;
 go
 create table YukonGroupRole (
 GroupRoleID          numeric              not null,
@@ -248,25 +248,25 @@ RoleID               numeric              not null,
 RolePropertyID       numeric              not null,
 Value                varchar(1000)        not null,
 constraint PK_YUKONGRPROLE primary key  (GroupRoleID)
-)
+);
 go
 alter table YukonGroupRole
    add constraint FK_YkGrRl_YkGrp foreign key (GroupID)
-      references YukonGroup (GroupID)
+      references YukonGroup (GroupID);
 go
 alter table YukonGroupRole
    add constraint FK_YkGrRl_YkRle foreign key (RoleID)
-      references YukonRole (RoleID)
+      references YukonRole (RoleID);
 go
 alter table YukonGroupRole
    add constraint FK_YkGrpR_YkRlPr foreign key (RolePropertyID)
-      references YukonRoleProperty (RolePropertyID)
+      references YukonRoleProperty (RolePropertyID);
 go
 
 
 
 /**** ADD A COLUMN TO THE YukonGroup TABLE  ****/
-alter table YukonGroup add GroupDescription varchar(200) not null DEFAULT '(none)'
+alter table YukonGroup add GroupDescription varchar(200) not null DEFAULT '(none)';
 go
 
 
