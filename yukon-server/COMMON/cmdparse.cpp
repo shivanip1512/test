@@ -884,7 +884,7 @@ void  CtiCommandParser::doParsePutValue(const RWCString &CmdStr)
     RWCRExpr   re_reading("reading *[0-9]+(\\.[0-9]*)?");
     RWCRExpr   re_numfloat("[0-9]+(\\.[0-9]*)?");
     RWCRExpr   re_kyzoffset("kyz *[123]");   //  if there's a kyz offset specified
-    RWCRExpr   re_analog("analog +[0-9]+ +\\-?[0-9]+");  //  if there's a non-kyz offset specified
+    RWCRExpr   re_analog("analog +[0-9]+ +-?[0-9]+");
 
 
     RWCTokenizer   tok(CmdStr);
