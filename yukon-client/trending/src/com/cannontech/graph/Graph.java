@@ -13,7 +13,7 @@ package com.cannontech.graph;
  * @author:  Aaron Lauinger 
  */
 import com.klg.jclass.chart.JCChart;
-import com.cannontech.vangogh.messages.*;
+import com.cannontech.message.dispatch.message.*;
 import com.cannontech.graph.model.*;
 import com.cannontech.graph.buffer.html.*;
 import com.cannontech.graph.GraphDataCalculations;

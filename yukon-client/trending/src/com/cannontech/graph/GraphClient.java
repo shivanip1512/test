@@ -8,11 +8,11 @@ package com.cannontech.graph;
 
 import com.klg.jclass.chart.JCChart;
 import javax.swing.event.*;
-import com.cannontech.vangogh.messages.*;
+import com.cannontech.message.dispatch.message.*;
 import com.cannontech.graph.model.*;
 import com.cannontech.graph.menu.*;
 import com.cannontech.graph.buffer.html.*;
-import com.cannontech.web.util.*;
+import com.cannontech.util.*;
  
 public class GraphClient extends javax.swing.JPanel implements com.cannontech.database.cache.DBChangeListener, GraphDataFormats, GraphDefines, GraphModelType, com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, ChangeListener, TreeSelectionListener {
 private class PointDataUpdater extends Thread
