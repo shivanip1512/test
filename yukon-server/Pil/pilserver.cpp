@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2004/01/13 23:27:57 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2004/01/20 19:31:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -627,13 +627,19 @@ void CtiPILServer::resultThread()
 
                         if((Conn = ((CtiConnection*)InMessage->Return.Connection)) != NULL)
                         {
+                            if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
+                            {
+                                pRet->dump();
+                            }
+
                             Conn->WriteConnQue(pRet);
                         }
                         else
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << RWTime() << " Notice: Request message did not indicate return path. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << RWTime() << " Response to client will be discarded." << endl;
                             }
                             delete pRet;
                         }
@@ -1044,7 +1050,9 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " ERROR : Request Message did not indicate return path." << endl;
+                dout << RWTime() << " Notice: Request Message did not indicate return path." << endl;
+                dout << RWTime() << " Response will be discarded." << endl;
+                dout << RWTime() << " Command String: " << pcRet->CommandString() << endl;
             }
 
             delete pcRet;

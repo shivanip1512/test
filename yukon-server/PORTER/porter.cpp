@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2003/10/28 16:04:02 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2004/01/20 19:31:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -159,6 +159,9 @@ using namespace std;
 #include "trx_711.h"
 #include "utility.h"
 #include "dllyukon.h"
+
+#include "pilserver.h"
+#include "msg_pcrequest.h"
 
 #define DO_GATEWAYTHREAD               1
 #define DO_PORTERINTERFACETHREAD       1
@@ -1199,6 +1202,10 @@ void DebugKeyEvent(KEY_EVENT_RECORD *ke)
 
 INT RefreshPorterRTDB(void *ptr)
 {
+    extern CtiPILServer     PIL;
+    bool autoRole = false;                              // Set to true if routes might have changed and or we need to download based on time!
+    static RWTime lastAutoRole = RWTime() + 300;        // This time is used to trigger timed downloads of repeater roles.
+
     INT   i;
     INT   status = NORMAL;
     DWORD dwWait;
@@ -1258,6 +1265,18 @@ INT RefreshPorterRTDB(void *ptr)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Reloading all routes based upon db change" << endl;
+                    dout << RWTime() << " All repeaters will have their role table refreshed." << endl;
+                }
+                autoRole = true;
+            }
+
+            if(gConfigParms.getValueAsULong("PORTER_AUTOROLE_RATE", 0) > 0 && RWTime().seconds() < lastAutoRole.seconds() + gConfigParms.getValueAsULong("PORTER_AUTOROLE_RATE") )
+            {
+                autoRole = true;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " AutoRole Download timer (master.cfg: PORTER_AUTOROLE_RATE) expired." << endl;
+                    dout << RWTime() << " All repeaters will have their role table refreshed." << endl;
                 }
             }
 
@@ -1268,6 +1287,30 @@ INT RefreshPorterRTDB(void *ptr)
         /* Make routes associate with devices */
         attachRouteManagerToDevices(&DeviceManager, &RouteManager);
         attachTransmitterDeviceToRoutes(&DeviceManager, &RouteManager);
+
+        if(autoRole)
+        {
+            lastAutoRole = lastAutoRole.now();      // Update our static variable.
+
+            RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(DeviceManager.getMap());
+
+            for(; ++itr_dev ;)
+            {
+                CtiDeviceBase *autoRoleDevice = itr_dev.value();
+
+                if( (autoRoleDevice->getType() == TYPE_REPEATER800 || autoRoleDevice->getType() == TYPE_REPEATER900) && !autoRoleDevice->isInhibited())
+                {
+                    // We should fire off a message to PIL asking for a role configuration!
+                    PIL.putQueue( new CtiRequestMsg(autoRoleDevice->getID(), "putconfig emetcon install") );
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << autoRoleDevice->getName() << " role table being refreshed" << endl;
+                    }
+                }
+            }
+        }
 
         if(pChg != NULL && (pChg->getDatabase() == ChangePointDb))
         {
