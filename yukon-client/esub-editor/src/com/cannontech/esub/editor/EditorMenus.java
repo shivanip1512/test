@@ -11,6 +11,7 @@ import java.beans.PropertyChangeEvent;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JSeparator;
 
 import com.loox.jloox.LxAbstractAction;
 
@@ -75,6 +76,9 @@ private void initialize(EditorActions actions) {
 	action = actions.getAction(EditorActions.SAVE_AS_DRAWING);
 	JMenuItem saveAsItem = createMenuItem(action.getLabel(), action);
 
+	action = actions.getAction(EditorActions.EXPORT_DRAWING);
+	JMenuItem exportItem = createMenuItem(action.getLabel(), action);
+	
 	action = actions.getAction(EditorActions.EXIT_EDITOR);
 	JMenuItem exitItem = createMenuItem(action.getLabel(), action);
 
@@ -82,7 +86,9 @@ private void initialize(EditorActions actions) {
 	fileMenu.add(openItem);
 	fileMenu.add(saveItem);
 	fileMenu.add(saveAsItem);
-	fileMenu.add(new javax.swing.JSeparator());
+	fileMenu.add(new JSeparator());
+	fileMenu.add(exportItem);
+	fileMenu.add(new JSeparator());
 	fileMenu.add(exitItem);
 
 	JMenu editMenu = new JMenu("Edit");

@@ -8,7 +8,9 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.Writer;
 
+import com.cannontech.esub.editor.element.DynamicText;
 import com.cannontech.esub.editor.element.LinkedElement;
+import com.cannontech.esub.editor.element.StateImage;
 import com.cannontech.esub.editor.element.StaticImage;
 import com.cannontech.esub.editor.element.StaticText;
 
@@ -73,6 +75,14 @@ public class SVGGenerator {
 				generateStaticText(writer, (StaticText) c[i]);
 			}
 			
+			if( c[i] instanceof DynamicText ) {
+				generateDynamicText(writer, (DynamicText) c[i]);
+			}
+			
+			if( c[i] instanceof StateImage ) {
+				generateStateImage(writer, (StateImage) c[i]);
+			}
+			
 			if( c[i] instanceof LinkedElement &&
 				((LinkedElement) c[i]).getLinkTo() != null &&
 				((LinkedElement) c[i]).getLinkTo().length() > 0 ) {
@@ -103,6 +113,31 @@ public class SVGGenerator {
 		writer.write("</a>\n");
 	}
 	
+	private void generateDynamicText(Writer writer, DynamicText text) throws IOException {
+		//Ignore stroke color for now, always use fill color
+		//could become a problem, pay attention
+		Rectangle2D r = text.getBounds2D();
+		int x = (int) r.getMinX();
+		int y = (int) r.getMinY();
+
+		LxAbstractStyle style = text.getStyle();
+		
+		Color fillColor = (Color) style.getPaint();
+		
+		String fontStyleStr = "normal";
+		if( text.getFont().isItalic() ) {
+			fontStyleStr = "italic";
+		}
+			
+		String fontWeightStr = "normal";
+		if( text.getFont().isBold() ) {
+			fontWeightStr = "bold";
+		}
+		
+		float opacity = text.getStyle().getTransparency();
+		
+		writer.write("<text id=\"" + text.getName() + "\" style=\"fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";\" transform=\"translate(" + x + "," + y + ")\" >" + text.getText() + "</text>\n");		
+	}
 	/**
 	 * Writes out an svg path given an LxLine
 	 * @param writer
@@ -161,6 +196,16 @@ public class SVGGenerator {
 		int height = (int) r.getMaxY() - y;
 		
 		writer.write("<image id=\"" + img.getName() + "\" xlink:href=\"" + img.getImageName() + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\" />\n");
+	}
+	
+	private void generateStateImage(Writer writer, StateImage img) throws IOException {
+			Rectangle2D r = img.getBounds2D();
+		int x = (int) r.getMinX();
+		int y = (int) r.getMinY();
+		int width = (int) r.getMaxX() - x;
+		int height = (int) r.getMaxY() - y;
+		
+		writer.write("<image id=\"" + img.getName() + "\" xlink:href=\"" + StateImage.INVALID_STATE_IMAGE_NAME + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\" />\n");
 	}
 	
 	/**

@@ -221,6 +221,8 @@ editPopup.add(deletePopupItem);
 
 	
 	deletePopupItem.addActionListener(editorActions.getAction(EditorActions.SET_DYNAMIC_TEXT_COLOR));
+	
+	editorActions.getAction(EditorActions.NEW_DRAWING).processAction(null);
 }
 /**
  * URL to a .jlx file
@@ -301,7 +303,7 @@ public static void main(String[] args)
 	}
 		
 	//editor.loadDrawing("c:/temp/test.jlx");
-	
+}
 /*try
 {
     URL u = new URL("http://demo.readmeter.com/esub2/test.jlx");
@@ -314,6 +316,35 @@ public static void main(String[] args)
 	//t.setBlinkingEnabled(true);
 	//editor.lxGraph.setBlinking(true);
 
+
+void saveFile(String fileName){
+	String jlxFileName = fileName;
+	
+	if( !jlxFileName.endsWith("*.jlx") ) {
+		jlxFileName = jlxFileName.concat(".jlx");
+	}
+	
+	lxGraph.save(jlxFileName);
+	
+	String svgFileName = fileName;
+	if( svgFileName.endsWith("*.jlx") ) {
+		svgFileName = svgFileName.substring(0, svgFileName.length()-3);		
+	}
+	
+	svgFileName = svgFileName.concat(".svg");
+
+	try {
+		SVGGenerator gen2 = new SVGGenerator();
+		FileWriter fw = new FileWriter(svgFileName);
+		
+		
+		gen2.generate(fw, lxGraph);
+		fw.close();
+		} catch(IOException e ) {
+			e.printStackTrace();
+		}	
+		
+	setOpenFile(jlxFileName);							
 }
 /**
  * Creation date: (12/12/2001 3:29:49 PM)
@@ -331,26 +362,7 @@ void saveFile(){
 	if(returnVal == JFileChooser.APPROVE_OPTION){
 		openFile = fileChooser.getSelectedFile().getPath();
 				
-		if( !openFile.endsWith("*.jlx") ) {
-			openFile = openFile.concat(".jlx");
-		}
-			
-		lxGraph.save(openFile);
-		
-		//svg
-		LxSVGGenerator gen = new LxSVGGenerator();		
-		gen.saveAsSVG(lxGraph, openFile.concat("j.svg"));
-		
-		try {
-		SVGGenerator gen2 = new SVGGenerator();
-		FileWriter fw = new FileWriter( openFile.concat("c.svg"));
-		
-		
-		gen2.generate(fw, lxGraph);
-		fw.close();
-		} catch(IOException e ) {
-			e.printStackTrace();
-		}
+		saveFile(openFile);
 		
 		try {
 			EditorPrefs.getPreferences().setWorkingDir(
@@ -358,9 +370,7 @@ void saveFile(){
 			}
 			catch(IOException ioe) {
 				ioe.printStackTrace();
-			}		
-		
-		setOpenFile(openFile);							
+			}				
        }
 
 	// Just saved so graph is not modified.
@@ -406,8 +416,17 @@ void setBehavior(LxComponent elem) {
  * @param newOpenFile java.lang.String
  */
 void setOpenFile(java.lang.String newOpenFile) {
-	Frame f = CtiUtilities.getParentFrame(this);
-	f.setTitle(newOpenFile);
+	Frame f = CtiUtilities.getParentFrame(this);	
 	openFile = newOpenFile;
+	
+	if( f != null ) {
+		if( openFile != null ) {
+			f.setTitle(openFile);
+		}
+		else {
+			f.setTitle("Untitled");
+		}
+	}
+	
 }
 }

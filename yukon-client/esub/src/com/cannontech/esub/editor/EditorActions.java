@@ -26,6 +26,7 @@ class EditorActions {
 	public static final String OPEN_DRAWING = "OPEN DRAWING";
 	public static final String SAVE_DRAWING = "SAVE DRAWING";
 	public static final String SAVE_AS_DRAWING = "SAVE AS DRAWING";
+	public static final String EXPORT_DRAWING = "EXPORT DRAWING";
 	public static final String EXIT_EDITOR = "EXIT EDITOR";
 
 	public static final String DELETE_ELEMENT = "DELETE ELEMENT";
@@ -125,6 +126,13 @@ class EditorActions {
 			editor.saveFile();
 		}
 	};
+
+	private final LxAbstractAction exportDrawingAction = 
+		new LxAbstractAction(EXPORT_DRAWING, "Export...", "Export drawings to svg", null, true ) {
+			public void processAction(ActionEvent evt) {
+				
+			}
+		};
 
 	private final LxAbstractAction exitEditorAction = 
 		new LxAbstractAction(EXIT_EDITOR, "Exit", "Exit the editor", null, true) {
@@ -261,6 +269,7 @@ class EditorActions {
 		actionMap.put(OPEN_DRAWING, openDrawingAction);
 		actionMap.put(SAVE_DRAWING, saveDrawingAction);
 		actionMap.put(SAVE_AS_DRAWING, saveDrawingAsAction);
+		actionMap.put(EXPORT_DRAWING, exportDrawingAction);
 		actionMap.put(EXIT_EDITOR, exitEditorAction);
 
 		actionMap.put(DELETE_ELEMENT, deleteElementAction);
