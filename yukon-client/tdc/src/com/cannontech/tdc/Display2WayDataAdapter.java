@@ -334,7 +334,11 @@ private void checkForLimboPoints(Vector existingPoints)
  */
 private void checkRowExceedance() 
 {
-	if( getRowCount() >= TDCDefines.MAX_ROWS )
+   long totalMax = 
+      TDCDefines.MAX_ROWS + (TDCDefines.MAX_ROWS / TDCDefines.ROW_BREAK_COUNT);
+
+
+	if( getRowCount() >= totalMax )
 	{
 		// remove the bottom row
 		removeRow( getRowCount() - 1, false );
@@ -559,14 +563,21 @@ private void createRowForEventViewer( Signal signal )
  */
 public int createRowsForHistoricalView(java.util.Date date, int page) 
 {
-	
+   String rowCountQuery = "select min(s.logid), max(s.logid)" +
+                 " from systemlog s, YukonPAObject y, point p" +
+                 " where s.pointid=p.pointid and y.PAObjectID=p.PAObjectID" +
+                 " and s.datetime >= ?" +
+                 " and s.datetime < ?";
+
 	String rowQuery = "select s.datetime, y.PAOName, p.pointname, s.description, s.action, " +
 					  " s.username, s.pointid, s.soe_tag " +
 					  " from systemlog s, YukonPAObject y, point p " +
 					  " where s.pointid=p.pointid and y.PAObjectID=p.PAObjectID " +
 					  " and s.datetime >= ? " +
-					  " and s.datetime < ? " +					  
-		 			  " order by s.datetime desc, s.soe_tag desc";
+					  " and s.datetime < ? " +
+                 " and s.logid >= ? " +
+                 " and s.logid <= ? " +
+		 			  " order by s.datetime, s.soe_tag";
    
    java.util.GregorianCalendar lowerCal = new java.util.GregorianCalendar();
    lowerCal.setTime( date );
@@ -582,44 +593,61 @@ public int createRowsForHistoricalView(java.util.Date date, int page)
    upperCal.set( upperCal.MILLISECOND, 999 );
 
 
+
    Object[] objs = new Object[2];
 	objs[0] = lowerCal.getTime();
    objs[1] = upperCal.getTime();
+
+   //get the row count, min, max   
+   Object[][] rowCount = DataBaseInteraction.queryResults( rowCountQuery, objs );
+   int qMin = new Integer( rowCount[0][0].toString().length() > 0 ? rowCount[0][0].toString() : "0" ).intValue();
+   int qMax = new Integer( rowCount[0][1].toString().length() > 0 ? rowCount[0][1].toString() : "0" ).intValue();
+   int qRowCnt = (qMax == qMin ? 0 : qMax - qMin + 1);
+
+/********* Page checking and processing starts here *******/
+   int pageCount = 1;
+   
+   if( qRowCnt > TDCDefines.MAX_ROWS )
+   {
+      pageCount = qRowCnt / TDCDefines.MAX_ROWS;
+
+      if( (qRowCnt - (pageCount * TDCDefines.MAX_ROWS)) > 0 )
+         pageCount++;
+   }
+
+   if( page > pageCount )
+      page = 1;
+   else if( page < 1 )
+      page = pageCount;
+
+   qMax = qMax - ( (page - 1) * TDCDefines.MAX_ROWS );
+
+   qMin = qMin >= qMax ? qMin : (qMax - TDCDefines.MAX_ROWS);
+/********* Page checking and processing ends here *******/
+
+
+
+   objs = new Object[4];
+   objs[0] = lowerCal.getTime();
+   objs[1] = upperCal.getTime();
+   objs[2] = new Integer(qMin);
+   objs[3] = ( qRowCnt <= TDCDefines.MAX_ROWS
+               ? new Integer(qRowCnt)
+               : new Integer(qMin + TDCDefines.MAX_ROWS) );
+
+   //get the actual data
 	Object[][] rowData = DataBaseInteraction.queryResults( rowQuery, objs );
 
 
 	if( rowData == null )
 		return -1;
 
-/********* Page checking and processing starts here *******/
-	int maxDataRows = TDCDefines.MAX_ROWS - (TDCDefines.MAX_ROWS / TDCDefines.ROW_BREAK_COUNT);
-	int rowCount = rowData.length;
-	int pageCount = 1;
-	
-	if( rowCount > maxDataRows )
-	{
-		pageCount = rowCount / maxDataRows;
-
-		if( (rowCount - (pageCount * maxDataRows)) > 0 )
-			pageCount++;
-	}
-
-	if( page > pageCount )
-		page = 1;
-	else if( page < 1 )
-		page = pageCount;
-
-	int firstValue = (page - 1) * maxDataRows; // what row we should start at to get the data
-	int endingValueIndex = (rowData.length > (firstValue + maxDataRows)) ? 
-						   (firstValue + maxDataRows) - 1 : rowData.length - 1;
-/********* Page checking and processing ends here *******/
-
 
 	java.util.Date prevDate = null;
 	java.util.GregorianCalendar currentCalendar = null;
 	java.util.GregorianCalendar prevCalendar = null;
 	
-	for( int i = endingValueIndex; i >= firstValue; i-- )
+	for( int i = 0; i < rowData.length; i++ )
 	{
 		Vector newRow = new Vector( getColumnCount() );
 		for( int j = 0; j < getColumnCount(); j++ )
