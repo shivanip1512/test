@@ -38,9 +38,8 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <script language="JavaScript">
 function submitIt(filterBy) {
-	var form = document.getElementById("MForm");
-	form.FilterBy.value = filterBy;
-	form.submit();
+	document.MForm.FilterBy.value = filterBy;
+	document.MForm.submit();
 }
 </script>
 </head>
@@ -106,11 +105,10 @@ function submitIt(filterBy) {
                             of the hardware you want to select, then click Select.</td>
                           <td class="MainText" align="right" width="20%"> 
                             <% if (selectInvBean.getFilterBy() != 0) { %>
-                            <span class="Clickable" style="color:blue" onClick="submitIt(0)">Show 
-                            All</span> 
+                            <a href="#" onclick="submitIt(0); return false;">Show All</a> 
                             <%	} else { %>
-                            <span class="Clickable" style="color:blue" onClick="submitIt(<%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>)">Show 
-                            Warehouse</span> 
+                            <a href="#" onclick="submitIt(<%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>)"; return false;>Show 
+                            Warehouse</a> 
                             <%	} %>
                           </td>
                         </tr>
