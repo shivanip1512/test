@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2002/11/20 22:28:39 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2002/12/03 17:55:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1156,10 +1156,16 @@ int CtiDeviceMCT::insertPointFail( INMESS *InMessage, CtiReturnMsg *pPIL, int sc
         pMsg->insert( InMessage->EventCode );  // The error number from dsm2.h or yukon.h which was reported.
 
         pPIL->PointData().insert(pMsg);
+        pMsg = NULL;
     }
     else
     {
         failed = TRUE;
+    }
+
+    if(pMsg)
+    {
+        delete pMsg;
     }
 
     return failed;

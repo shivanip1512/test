@@ -8,8 +8,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/11/15 14:08:17 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2002/12/03 17:55:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -768,7 +768,14 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                         //retMsg->setResultString(resultString);
 
                         vgList.append(retMsg);
+                        retMsg = 0;
                     }
+                }
+
+                if(retMsg)
+                {
+                    delete retMsg;
+                    retMsg = 0;
                 }
             }
 
