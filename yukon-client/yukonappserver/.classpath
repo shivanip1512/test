@@ -4,7 +4,6 @@
     <classpathentry kind="src" path="ejbsrc"/>
     <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
     <classpathentry kind="var" path="JDK_TOOLS"/>
-    <classpathentry kind="lib" path="/third-party/jnp-client.jar"/>
     <classpathentry kind="lib" path="/third-party/rwav.jar"/>
     <classpathentry kind="src" path="/common"/>
     <classpathentry kind="lib" path="/third-party/mx4j-jmx.jar"/>
