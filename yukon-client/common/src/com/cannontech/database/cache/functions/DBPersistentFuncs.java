@@ -13,7 +13,7 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.message.dispatch.SingletonClientConnection;
+import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
@@ -24,11 +24,6 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
  */
 public class DBPersistentFuncs
 {
-	private DBPersistentFuncs()
-	{
-		super();
-	}
-	
 	public static DBPersistent retrieveDBPersistent(LiteBase liteObject)
 	{
 		//create a DBPersistent from a liteBase object
@@ -46,55 +41,43 @@ public class DBPersistentFuncs
 		}
 		return dbPersistent;
 	}
-
 	/**
-	 * Create an INSERT Transaction and execute.
-	 * Write a DBChangeMsg for database CHANGE_TYPE_ADD
+	 * Create an UPDATE Transaction and execute.
+	 * Write a DBChangeMsg for database CHANGE_TYPE_UPDATE
 	 * @param item
 	 */
-	public static void create(DBPersistent item) 
+	public static void performDBChange(DBPersistent item, ClientConnection connToDispatch, int transactionType)
 	{
-		if( item != null )
+		int dbChangeType = -1;
+		
+		switch(transactionType)
 		{
-			try
-			{
-				Transaction t = Transaction.createTransaction(Transaction.INSERT, item);
-				item = t.execute();
-
-				//write the DBChangeMessage out to Dispatch since it was a Successfull ADD
-				DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DBChangeMsg.CHANGE_TYPE_ADD);
-			
-				for( int i = 0; i < dbChange.length; i++)
-				{
-					DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
-					SingletonClientConnection.getInstance().getClientConnection().write(dbChange[i]);
-				}
-			}
-			catch( com.cannontech.database.TransactionException e )
-			{
-				CTILogger.error( e.getMessage(), e );
-			}
+			case Transaction.INSERT:
+				dbChangeType = DBChangeMsg.CHANGE_TYPE_ADD;
+				break;
+			case Transaction.DELETE:
+				dbChangeType = DBChangeMsg.CHANGE_TYPE_DELETE;
+				break;
+			case Transaction.UPDATE:
+				dbChangeType = DBChangeMsg.CHANGE_TYPE_UPDATE;
+				break;
+			default:
+				CTILogger.info("Unknown Transaction type " + transactionType + ", no transaction performed");
+				return;
 		}
-	}
-	/**
-	 * Create a DELETE Transaction and execute.
-	 * Write a DBChangeMsg for database CHANGE_TYPE_DELETE
-	 * @param item
-	 */
-	public static void delete(DBPersistent item)
-	{
+
 		try
 		{
-			Transaction t = Transaction.createTransaction( Transaction.DELETE, item);
+			Transaction t = Transaction.createTransaction( transactionType, item);
 			item = t.execute();
 			
-			//write the DBChangeMessage out to Dispatch since it was a Successfull DELETE
-			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DBChangeMsg.CHANGE_TYPE_DELETE);
+			//write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
+			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, dbChangeType);
 					
 			for( int i = 0; i < dbChange.length; i++)
 			{
 				DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
-				SingletonClientConnection.getInstance().getClientConnection().write(dbChange[i]);
+				connToDispatch.write(dbChange[i]);
 			}
 		}
 		catch( com.cannontech.database.TransactionException e )
@@ -102,54 +85,4 @@ public class DBPersistentFuncs
 			CTILogger.error( e.getMessage(), e );
 		}
 	}
-	/**
-	 * Create an UPDATE Transaction and execute.
-	 * Write a DBChangeMsg for database CHANGE_TYPE_UPDATE
-	 * @param item
-	 */
-	public static void update(DBPersistent item)
-	{
-		try
-		{
-			Transaction t = Transaction.createTransaction( Transaction.UPDATE, item);
-			item = t.execute();
-			
-			//write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
-			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DBChangeMsg.CHANGE_TYPE_UPDATE);
-					
-			for( int i = 0; i < dbChange.length; i++)
-			{
-				DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
-				SingletonClientConnection.getInstance().getClientConnection().write(dbChange[i]);
-			}
-		}
-		catch( com.cannontech.database.TransactionException e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-	}
-	
-	/**
-	 * Valid transType are from com.cannontech.database.Transaction.[UPDATE|INSERT|DELETE|...|]
-	 * @param item
-	 */
-	public static void executeTransaction(DBPersistent item, int transType)
-	{
-		switch(transType)
-		{
-			case Transaction.INSERT:
-				create(item);
-				break;
-			case Transaction.DELETE:
-				delete(item);
-				break;
-			case Transaction.UPDATE:
-				update(item);
-				break;
-			default:
-				CTILogger.info("Unknown Transaction type " + transType + ", no transaction performed");
-		}
-	}
-
-
 }
