@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2004/10/22 20:58:54 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/01/27 17:52:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,6 +76,7 @@ static CtiMutex             gDeviceStatMapMux;
 
 static CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId);
 bool statisticsDoTargetId(long deviceid, long targetid);
+
 
 /* Thread to copy statistics hourly and clear at midnight */
 VOID PerfThread (VOID *Arg)
@@ -843,10 +844,10 @@ CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
     return dstatitr;
 }
 
-#define DONOSTATS PLEASE_DONT
-
 void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
 {
+    if( !gConfigParms.getValueAsString("PORTER_NOSTATISTICS").contains("true", RWCString::ignoreCase) )
+    {
 #ifndef DONOSTATS
     CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
 
@@ -882,9 +883,12 @@ void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
     }
 #endif
 }
+}
 
 void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, int result)
 {
+    if( !gConfigParms.getValueAsString("PORTER_NOSTATISTICS").contains("true", RWCString::ignoreCase) )
+    {
 #ifndef DONOSTATS
     CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
 
@@ -927,9 +931,12 @@ void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, in
     }
 #endif
 }
+}
 
 void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid, int result)
 {
+    if( !gConfigParms.getValueAsString("PORTER_NOSTATISTICS").contains("true", RWCString::ignoreCase) )
+    {
 #ifndef DONOSTATS
     CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
 
@@ -965,6 +972,7 @@ void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid,
         }
     }
 #endif
+}
 }
 
 void statisticsRecord()
