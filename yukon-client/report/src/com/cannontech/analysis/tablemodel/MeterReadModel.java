@@ -319,7 +319,15 @@ public class MeterReadModel extends ReportModelBase
 	 */
 	public String getTitleString()
 	{
-		return title;
+	   switch (getMeterReadType())
+	   {
+		   case SUCCESS_METER_READ_TYPE:
+			   return "Succesful " + title;
+		   case MISSED_METER_READ_TYPE:
+				return "Missed " + title;		   
+		   default :
+				return title;
+	   }
 	}
 	/**
 	 * @return
