@@ -6,13 +6,14 @@
 	<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="resultSetBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
 	<jsp:setProperty name="resultSetBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
-	<jsp:setProperty name="resultSetBean" property="htmlStyle" value="<%= InventoryBean.HTML_STYLE_HARDWARE_SET %>"/>
+	<jsp:setProperty name="resultSetBean" property="htmlStyle" value="<%= InventoryBean.HTML_STYLE_INVENTORY_SET %>"/>
 </jsp:useBean>
 	
 <% if (request.getParameter("page") == null) { %>
 	<%-- intialize bean properties --%>
 	<jsp:setProperty name="resultSetBean" property="page" value="1"/>
 	<jsp:setProperty name="resultSetBean" property="referer" value="<%= session.getAttribute(ServletUtils.ATT_REFERRER) %>"/>
+	<% resultSetBean.resetInventoryList(); %>
 <% } %>
 
 <%-- Grab the search criteria --%>
@@ -87,9 +88,9 @@
               </table>
               <br>
 <%
-		ArrayList hardwareSet = (ArrayList) session.getAttribute(InventoryManager.INVENTORY_SET);
-		if (hardwareSet != null) {
-			resultSetBean.setHardwareSet(hardwareSet);
+		ArrayList inventorySet = (ArrayList) session.getAttribute(InventoryManager.INVENTORY_SET);
+		if (inventorySet != null) {
+			resultSetBean.setInventorySet(inventorySet);
 %>
               <%= resultSetBean.getHTML(request) %> 
 <%

@@ -6,8 +6,13 @@
 	<jsp:setProperty name="inventoryBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
 	<jsp:setProperty name="inventoryBean" property="sortOrder" value="<%= InventoryBean.SORT_ORDER_ASCENDING %>"/>
 	<jsp:setProperty name="inventoryBean" property="filterBy" value="0"/>
-	<jsp:setProperty name="inventoryBean" property="page" value="1"/>
 </jsp:useBean>
+
+<% if (request.getParameter("page") == null) { %>
+	<%-- intialize bean properties --%>
+	<jsp:setProperty name="inventoryBean" property="page" value="1"/>
+	<% inventoryBean.resetInventoryList(); %>
+<% } %>
 
 <%-- Grab the search criteria --%>
 <jsp:setProperty name="inventoryBean" property="sortBy" param="SortBy"/>
@@ -229,8 +234,9 @@ function showAll(form) {
               </form>
 			  <table width="80%" border="0" cellspacing="0" cellpadding="0" class="MainText">
                 <tr>
-                  <td>Click on a serial # to view the hardware details, or click 
-                    on an account # (if available) to view the account information.</td>
+                  <td>Click on a serial # (device name) to view the hardware details, 
+                    or click on an account # (if available) to view the account 
+                    information.</td>
                 </tr>
               </table>
 			  <br>
@@ -244,7 +250,7 @@ function showAll(form) {
                   <td> 
                     <table width='100%' border='1' cellspacing='0' cellpadding='3'>
                       <tr> 
-                        <td class='HeaderCell' width='17%'>Serial #</td>
+                        <td class='HeaderCell' width='17%'>Serial # / Device Name</td>
                         <td class='HeaderCell' width='17%'>Device Type</td>
                         <td class='HeaderCell' width='17%'>Install Date</td>
                         <td class='HeaderCell' width='49%'>Location</td>

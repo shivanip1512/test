@@ -11,17 +11,20 @@
 	
 	int devTypeID = 0;
 	String devTypeStr = null;
-	String valStr = null;
+	String devName = null;
+	String labelName = null;
 	
 	if (inventory instanceof StarsLMHardware) {
 		devTypeID = ((StarsLMHardware)inventory).getLMDeviceType().getEntryID();
 		devTypeStr = ((StarsLMHardware)inventory).getLMDeviceType().getContent();
-		valStr = ((StarsLMHardware)inventory).getManufactureSerialNumber();
+		devName = ((StarsLMHardware)inventory).getManufactureSerialNumber();
+		labelName = "Serial #";
 	}
 	else if (inventory instanceof StarsMCT) {
 		devTypeID = devTypeMCT.getEntryID();
 		devTypeStr = devTypeMCT.getContent();
-		valStr = ((StarsMCT)inventory).getDeviceName();
+		devName = ((StarsMCT)inventory).getDeviceName();
+		labelName = "Device Name";
 	}
 	
 	String src = request.getParameter("src");
@@ -42,6 +45,13 @@
 	}
 	else if (!src.equalsIgnoreCase("SelectInv")) {
 		referer = request.getHeader("referer");
+		if (referer.indexOf("page=") < 0) {
+			if (referer.indexOf("?") < 0)
+				referer += "?page=1";
+			else
+				referer += "&page=1";
+		}
+		
 		session.setAttribute(ServletUtils.ATT_REFERRER2, referer);
 	}
 %>
@@ -72,19 +82,10 @@ function validate(form) {
 	}
 	return true;
 }
-
-function changeDeviceType() {
-<% if (devTypeMCT != null) { %>
-	if (document.MForm.DeviceType.value == <%= devTypeMCT.getEntryID() %>)
-		document.getElementById("NameLabel").innerText = "Device Name";
-	else
-		document.getElementById("NameLabel").innerText = "Serial #";
-<% } %>
-}
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0" onload="changeDeviceType">
+<body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -129,7 +130,7 @@ function changeDeviceType() {
           <td  valign="top" width="101">
 <% if (!src.equalsIgnoreCase("SelectInv")) { %>
             <div align="center" class="TableCell1"><br>
-              <a href="Inventory.jsp" class="Link2">Back to List</a></div>
+              <a href="<%= referer %>" class="Link2">Back to List</a></div>
 <% } %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
@@ -161,10 +162,10 @@ function changeDeviceType() {
                               </tr>
                               <tr> 
                                 <td width="88" class="TableCell"> 
-                                  <div align="right"><span id="NameLabel">Serial #</span>:</div>
+                                  <div align="right"><%= labelName %>:</div>
                                 </td>
                                 <td width="210">
-                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= valStr %>">
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= devName %>">
                                 </td>
                               </tr>
                               <tr> 
