@@ -1,6 +1,6 @@
 package com.cannontech.loadcontrol.messages;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * LMManualControlResponse is sent in response to a LMManualControlRequest
@@ -9,8 +9,8 @@ import java.util.Set;
 
 public class LMManualControlResponse extends LMMessage 
 {
-	// Set<String> - A String for each constraint violated
-	private Set _constraintViolations;
+	// List<String> - A String for each constraint violated
+	private List _constraintViolations;
 
 /**
  * ScheduleCommand constructor comment.
@@ -22,14 +22,14 @@ public LMManualControlResponse() {
 	/**
 	 * @return
 	 */
-	public Set getConstraintViolations() {
+	public List getConstraintViolations() {
 		return _constraintViolations;
 	}
 
 	/**
 	 * @param set
 	 */
-	public void setConstraintViolations(Set set) {
+	public void setConstraintViolations(List set) {
 		_constraintViolations = set;
 	}
 
