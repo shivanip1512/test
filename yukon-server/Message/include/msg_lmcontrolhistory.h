@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_lmcontrolhistory.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 18:25:15 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/04/21 20:11:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,8 +50,8 @@ public:
                           RWTime     start      = RWTime(),
                           int        dur        = 0,
                           int        redrat     = 100,
-                          RWCString  type       = RWCString(),
-                          RWCString  restore    = RWCString(),
+                          RWCString  type       = RWCString("N/A"),
+                          RWCString  restore    = RWCString('N'),
                           double     reduce     = 0.0,
                           int        pri        = 7);
 
