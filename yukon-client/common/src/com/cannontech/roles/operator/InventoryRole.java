@@ -18,5 +18,6 @@ public interface InventoryRole {
 	public static final int SN_UPDATE_RANGE = OperatorRoleDefs.INVENTORY_PROPERTYID_BASE - 2;
 	public static final int SN_CONFIG_RANGE = OperatorRoleDefs.INVENTORY_PROPERTYID_BASE - 3;
 	public static final int SN_DELETE_RANGE = OperatorRoleDefs.INVENTORY_PROPERTYID_BASE - 4;
+	public static final int INVENTORY_CREATE_HARDWARE = OperatorRoleDefs.INVENTORY_PROPERTYID_BASE - 5;
 
 }

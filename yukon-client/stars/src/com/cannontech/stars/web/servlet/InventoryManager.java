@@ -52,6 +52,7 @@ import com.cannontech.stars.xml.serialize.LMHardware;
 import com.cannontech.stars.xml.serialize.MCT;
 import com.cannontech.stars.xml.serialize.SA205;
 import com.cannontech.stars.xml.serialize.SA305;
+import com.cannontech.stars.xml.serialize.StarsCreateLMHardware;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsInv;
@@ -148,7 +149,7 @@ public class InventoryManager extends HttpServlet {
 			session.setAttribute( ServletUtils.ATT_REDIRECT, redir );
 			deleteInventory( user, req, session );
 		}
-		else if (action.equalsIgnoreCase("ConfigLMHardware"))
+		else if (action.equalsIgnoreCase("ConfigHardware"))
 			configLMHardware( user, req, session );
 		else if (action.equalsIgnoreCase("ConfirmCheck"))
 			confirmCheck( user, req, session );
@@ -168,6 +169,8 @@ public class InventoryManager extends HttpServlet {
 			clearSwitchCommands( user, req, session );
 		else if (action.equalsIgnoreCase("SearchInventory"))
 			searchInventory( user, req, session );
+		else if (action.equalsIgnoreCase("CreateHardware"))
+			createLMHardware( user, req, session );
 		
 		resp.sendRedirect( redirect );
 	}
@@ -459,11 +462,11 @@ public class InventoryManager extends HttpServlet {
 			}
 		}
 		catch (WebClientException e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update hardware information");
 		}
 	}
@@ -487,7 +490,7 @@ public class InventoryManager extends HttpServlet {
 				energyCompany.deleteInventory( invID );
 			}
 			catch (TransactionException e) {
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 			}
 		}
 		else {
@@ -526,7 +529,7 @@ public class InventoryManager extends HttpServlet {
 			session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration updated successfully" );
 		}
 		catch (WebClientException e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
 		}
 	}
@@ -887,7 +890,7 @@ public class InventoryManager extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Batched switch commands sent out successfully");
 		}
 		catch (WebClientException e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
 		}
 	}
@@ -967,12 +970,38 @@ public class InventoryManager extends HttpServlet {
 		}
 	}
 	
+	private void createLMHardware(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
+		try {
+			StarsCreateLMHardware createHw = new StarsCreateLMHardware();
+			setStarsInv( createHw, req, energyCompany.getDefaultTimeZone() );
+			LiteInventoryBase liteInv = CreateLMHardwareAction.addInventory( createHw, null, energyCompany );
+			
+			if (req.getParameter("UseHardwareAddressing") != null) {
+				StarsLMConfiguration starsCfg = new StarsLMConfiguration();
+				setStarsLMConfiguration( starsCfg, req );
+				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, (LiteStarsLMHardware)liteInv );
+			}
+			
+			// Append inventory ID to the redirect URL
+			redirect += String.valueOf( liteInv.getInventoryID() );
+		}
+		catch (WebClientException e) {
+			CTILogger.error( e.getMessage(), e );
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
+		}
+	}
+	
 	/**
 	 * Store hardware information entered by user into a StarsLMHw object 
 	 */
 	public static void setStarsInv(StarsInv starsInv, HttpServletRequest req, TimeZone tz) throws WebClientException {
 		if (req.getParameter("InvID") != null)
 			starsInv.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
+		else
+			starsInv.setInventoryID( -1 );
+		
 		if (req.getParameter("DeviceID") != null)
 			starsInv.setDeviceID( Integer.parseInt(req.getParameter("DeviceID")) );
 		if (req.getParameter("DeviceLabel") != null)
