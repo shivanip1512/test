@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     8/9/2002 12:22:29 PM                         */
+/* Created on:     8/16/2002 9:48:39 AM                         */
 /*==============================================================*/
 
 
@@ -1752,6 +1752,8 @@ insert into CTIDatabase values('2.15', 'Ryan', '19-JUL-2002', 'Added MCTBroadCas
 insert into CTIDatabase values('2.16', 'Ryan', '26-JUL-2002', 'Added the ImageID to the STATE table and GroupType to the StateGroup table. Created the StateImage table.');
 
 insert into CTIDatabase values('2.31', 'Ryan', '9-AUG-2002', 'Added DeviceDNP table.');
+
+insert into CTIDatabase values('2.32', 'Ryan', '16-AUG-2002', 'Added the ImageName to the StateImage table.');
 
 /*==============================================================*/
 /* Table : CapControlFeeder                                     */
@@ -4800,9 +4802,9 @@ alter table OperatorSerialGroup
 go
 
 
-alter table OperatorLogin
+alter table OperatorSerialGroup
    add constraint FK_OpSGrp_OpLg foreign key (LoginID)
-      references OperatorSerialGroup (LoginID)
+      references OperatorLogin (LoginID)
 go
 
 
