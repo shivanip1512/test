@@ -114,8 +114,8 @@ void CtiCalculateThread::periodicLoop( void )
     
             for( ; periodicIter( ); )
             {
-                calcPoint = (CtiCalc *)(periodicIter.value( ));
-                if( !calcPoint->ready( ) )
+               calcPoint = (CtiCalc *)(periodicIter.value( ));
+               if( calcPoint==NULL || !calcPoint->ready( ) )
                 {
                     continue;  // for
                 }
@@ -226,7 +226,7 @@ void CtiCalculateThread::onUpdateLoop( void )
                     calcPoint = (CtiCalc *)(_onUpdatePoints[&recalcKey]);
                     
                     //  if not ready
-                    if( !calcPoint->ready( ) )
+                    if( calcPoint==NULL || !calcPoint->ready( ) )
                         continue;  // for
     
                     recalcValue = calcPoint->calculate( );
