@@ -23,32 +23,32 @@ Required variables:
       <table width="80%" border="0" cellspacing="3" cellpadding="0">
         <tr> 
           <td width="60%" align="center"> 
-            <input type="text" name="SA205_Slot1" value="<%= ServletUtils.hideUnsetNumber(sa205.getSlot1(), 0) %>" size="15" maxlength="15">
+            <input type="text" name="SA205_Slot1" value="<%= ServletUtils.hideUnsetNumber(sa205.getSlot1(), 0) %>" size="15" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
           <td width="60%" align="center"> 
-            <input type="text" name="SA205_Slot2" value="<%= ServletUtils.hideUnsetNumber(sa205.getSlot2(), 0) %>" size="15" maxlength="15">
+            <input type="text" name="SA205_Slot2" value="<%= ServletUtils.hideUnsetNumber(sa205.getSlot2(), 0) %>" size="15" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
           <td width="60%" align="center"> 
-            <input type="text" name="SA205_Slot3" value="<%= ServletUtils.hideUnsetNumber(sa205.getSlot3(), 0) %>" size="15" maxlength="15">
+            <input type="text" name="SA205_Slot3" value="<%= ServletUtils.hideUnsetNumber(sa205.getSlot3(), 0) %>" size="15" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
           <td width="60%" align="center"> 
-            <input type="text" name="SA205_Slot4" value="<%= ServletUtils.hideUnsetNumber(sa205.getSlot4(), 0) %>" size="15" maxlength="15">
+            <input type="text" name="SA205_Slot4" value="<%= ServletUtils.hideUnsetNumber(sa205.getSlot4(), 0) %>" size="15" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
           <td width="60%" align="center"> 
-            <input type="text" name="SA205_Slot5" value="<%= ServletUtils.hideUnsetNumber(sa205.getSlot5(), 0) %>" size="15" maxlength="15">
+            <input type="text" name="SA205_Slot5" value="<%= ServletUtils.hideUnsetNumber(sa205.getSlot5(), 0) %>" size="15" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
           <td width="60%" align="center"> 
-            <input type="text" name="SA205_Slot6" value="<%= ServletUtils.hideUnsetNumber(sa205.getSlot6(), 0) %>" size="15" maxlength="15">
+            <input type="text" name="SA205_Slot6" value="<%= ServletUtils.hideUnsetNumber(sa205.getSlot6(), 0) %>" size="15" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
       </table>
@@ -69,25 +69,25 @@ Required variables:
         <tr> 
           <td align="right" class="MainText" width="55%">Utility:</td>
           <td width="45%"> 
-            <input type="text" name="SA305_Utility" value="<%= sa305.getUtility() %>" size="6" maxlength="15">
+            <input type="text" name="SA305_Utility" value="<%= sa305.getUtility() %>" size="6" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
           <td align="right" class="MainText" width="55%">Group:</td>
           <td width="45%"> 
-            <input type="text" name="SA305_Group" value="<%= ServletUtils.hideUnsetNumber(sa305.getGroup(), 0) %>" size="6" maxlength="15">
+            <input type="text" name="SA305_Group" value="<%= ServletUtils.hideUnsetNumber(sa305.getGroup(), 0) %>" size="6" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
           <td align="right" class="MainText" width="55%">Division:</td>
           <td width="45%"> 
-            <input type="text" name="SA305_Division" value="<%= ServletUtils.hideUnsetNumber(sa305.getDivision(), 0) %>" size="6" maxlength="15">
+            <input type="text" name="SA305_Division" value="<%= ServletUtils.hideUnsetNumber(sa305.getDivision(), 0) %>" size="6" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
           <td align="right" class="MainText" width="55%">Substation:</td>
           <td width="45%"> 
-            <input type="text" name="SA305_Substation" value="<%= ServletUtils.hideUnsetNumber(sa305.getSubstation(), 0) %>" size="6" maxlength="15">
+            <input type="text" name="SA305_Substation" value="<%= ServletUtils.hideUnsetNumber(sa305.getSubstation(), 0) %>" size="6" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
@@ -98,20 +98,20 @@ Required variables:
         <tr> 
           <td align="right" class="MainText" width="55%">Family:</td>
           <td width="45%"> 
-            <input type="text" name="SA305_RateFamily" value="<%= sa305.getRateFamily() %>" size="6" maxlength="15">
+            <input type="text" name="SA305_RateFamily" value="<%= sa305.getRateFamily() %>" size="6" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
           <td align="right" class="MainText" width="55%">Member:</td>
           <td width="45%"> 
-            <input type="text" name="SA305_RateMember" value="<%= sa305.getRateMember() %>" size="6" maxlength="15">
+            <input type="text" name="SA305_RateMember" value="<%= sa305.getRateMember() %>" size="6" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
           <td align="right" class="MainText" width="55%"> 
             Hierarchy:</td>
           <td width="45%"> 
-            <input type="text" name="SA305_RateHierarchy" value="<%= sa305.getRateHierarchy() %>" size="6" maxlength="15">
+            <input type="text" name="SA305_RateHierarchy" value="<%= sa305.getRateHierarchy() %>" size="6" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
       </table>
@@ -144,13 +144,13 @@ Required variables:
         <tr> 
           <td align="right" class="MainText" width="20%">Utility:</td>
           <td width="80%"> 
-            <input type="text" name="VCOM_Utility" value="<%= vcom.getUtility() %>" size="6" maxlength="15">
+            <input type="text" name="VCOM_Utility" value="<%= vcom.getUtility() %>" size="6" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
           <td align="right" class="MainText" width="20%">Section:</td>
           <td width="80%"> 
-            <input type="text" name="VCOM_Section" value="<%= ServletUtils.hideUnsetNumber(vcom.getSection(), 0) %>" size="6" maxlength="15">
+            <input type="text" name="VCOM_Section" value="<%= ServletUtils.hideUnsetNumber(vcom.getSection(), 0) %>" size="6" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
@@ -174,28 +174,28 @@ Required variables:
               </tr>
               <tr align="center"> 
                 <td> 
-                  <input type="checkbox" name="VCOM_Class" value="1" <%= classChecked[0] %>>
+                  <input type="checkbox" name="VCOM_Class" value="1" <%= classChecked[0] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Class" value="2" <%= classChecked[1] %>>
+                  <input type="checkbox" name="VCOM_Class" value="2" <%= classChecked[1] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Class" value="4" <%= classChecked[2] %>>
+                  <input type="checkbox" name="VCOM_Class" value="4" <%= classChecked[2] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Class" value="8" <%= classChecked[3] %>>
+                  <input type="checkbox" name="VCOM_Class" value="8" <%= classChecked[3] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Class" value="16" <%= classChecked[4] %>>
+                  <input type="checkbox" name="VCOM_Class" value="16" <%= classChecked[4] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Class" value="32" <%= classChecked[5] %>>
+                  <input type="checkbox" name="VCOM_Class" value="32" <%= classChecked[5] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Class" value="64" <%= classChecked[6] %>>
+                  <input type="checkbox" name="VCOM_Class" value="64" <%= classChecked[6] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Class" value="128" <%= classChecked[7] %>>
+                  <input type="checkbox" name="VCOM_Class" value="128" <%= classChecked[7] %> onclick="setContentChanged(true)">
                 </td>
               </tr>
               <tr align="center"> 
@@ -210,28 +210,28 @@ Required variables:
               </tr>
               <tr align="center"> 
                 <td> 
-                  <input type="checkbox" name="VCOM_Class" value="256" <%= classChecked[8] %>>
+                  <input type="checkbox" name="VCOM_Class" value="256" <%= classChecked[8] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Class" value="512" <%= classChecked[9] %>>
+                  <input type="checkbox" name="VCOM_Class" value="512" <%= classChecked[9] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Class" value="1024" <%= classChecked[10] %>>
+                  <input type="checkbox" name="VCOM_Class" value="1024" <%= classChecked[10] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Class" value="2048" <%= classChecked[11] %>>
+                  <input type="checkbox" name="VCOM_Class" value="2048" <%= classChecked[11] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Class" value="4096" <%= classChecked[12] %>>
+                  <input type="checkbox" name="VCOM_Class" value="4096" <%= classChecked[12] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Class" value="8192" <%= classChecked[13] %>>
+                  <input type="checkbox" name="VCOM_Class" value="8192" <%= classChecked[13] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Class" value="16384" <%= classChecked[14] %>>
+                  <input type="checkbox" name="VCOM_Class" value="16384" <%= classChecked[14] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Class" value="32768" <%= classChecked[15] %>>
+                  <input type="checkbox" name="VCOM_Class" value="32768" <%= classChecked[15] %> onclick="setContentChanged(true)">
                 </td>
               </tr>
             </table>
@@ -258,28 +258,28 @@ Required variables:
               </tr>
               <tr align="center"> 
                 <td> 
-                  <input type="checkbox" name="VCOM_Division" value="1" <%= divisionChecked[0] %>>
+                  <input type="checkbox" name="VCOM_Division" value="1" <%= divisionChecked[0] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Division" value="2" <%= divisionChecked[1] %>>
+                  <input type="checkbox" name="VCOM_Division" value="2" <%= divisionChecked[1] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Division" value="4" <%= divisionChecked[2] %>>
+                  <input type="checkbox" name="VCOM_Division" value="4" <%= divisionChecked[2] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Division" value="8" <%= divisionChecked[3] %>>
+                  <input type="checkbox" name="VCOM_Division" value="8" <%= divisionChecked[3] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Division" value="16" <%= divisionChecked[4] %>>
+                  <input type="checkbox" name="VCOM_Division" value="16" <%= divisionChecked[4] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Division" value="32" <%= divisionChecked[5] %>>
+                  <input type="checkbox" name="VCOM_Division" value="32" <%= divisionChecked[5] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Division" value="64" <%= divisionChecked[6] %>>
+                  <input type="checkbox" name="VCOM_Division" value="64" <%= divisionChecked[6] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Division" value="128" <%= divisionChecked[7] %>>
+                  <input type="checkbox" name="VCOM_Division" value="128" <%= divisionChecked[7] %> onclick="setContentChanged(true)">
                 </td>
               </tr>
               <tr align="center"> 
@@ -294,28 +294,28 @@ Required variables:
               </tr>
               <tr align="center"> 
                 <td> 
-                  <input type="checkbox" name="VCOM_Division" value="256" <%= divisionChecked[8] %>>
+                  <input type="checkbox" name="VCOM_Division" value="256" <%= divisionChecked[8] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Division" value="512" <%= divisionChecked[9] %>>
+                  <input type="checkbox" name="VCOM_Division" value="512" <%= divisionChecked[9] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Division" value="1024" <%= divisionChecked[10] %>>
+                  <input type="checkbox" name="VCOM_Division" value="1024" <%= divisionChecked[10] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Division" value="2048" <%= divisionChecked[11] %>>
+                  <input type="checkbox" name="VCOM_Division" value="2048" <%= divisionChecked[11] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Division" value="4096" <%= divisionChecked[12] %>>
+                  <input type="checkbox" name="VCOM_Division" value="4096" <%= divisionChecked[12] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Division" value="8192" <%= divisionChecked[13] %>>
+                  <input type="checkbox" name="VCOM_Division" value="8192" <%= divisionChecked[13] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Division" value="16384" <%= divisionChecked[14] %>>
+                  <input type="checkbox" name="VCOM_Division" value="16384" <%= divisionChecked[14] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="VCOM_Division" value="32768" <%= divisionChecked[15] %>>
+                  <input type="checkbox" name="VCOM_Division" value="32768" <%= divisionChecked[15] %> onclick="setContentChanged(true)">
                 </td>
               </tr>
             </table>
@@ -347,19 +347,19 @@ Required variables:
         <tr> 
           <td align="right" class="MainText" width="20%">SPID:</td>
           <td width="80%"> 
-            <input type="text" name="XCOM_SPID" value="<%= xcom.getServiceProvider() %>" size="6" maxlength="15">
+            <input type="text" name="XCOM_SPID" value="<%= xcom.getServiceProvider() %>" size="6" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
           <td align="right" class="MainText" width="20%">GEO:</td>
           <td width="80%"> 
-            <input type="text" name="XCOM_GEO" value="<%= ServletUtils.hideUnsetNumber(xcom.getGEO(), 0) %>" size="6" maxlength="15">
+            <input type="text" name="XCOM_GEO" value="<%= ServletUtils.hideUnsetNumber(xcom.getGEO(), 0) %>" size="6" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
           <td align="right" class="MainText" width="20%">SUB:</td>
           <td width="80%"> 
-            <input type="text" name="XCOM_SUB" value="<%= ServletUtils.hideUnsetNumber(xcom.getSubstation(), 0) %>" size="6" maxlength="15">
+            <input type="text" name="XCOM_SUB" value="<%= ServletUtils.hideUnsetNumber(xcom.getSubstation(), 0) %>" size="6" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
@@ -383,28 +383,28 @@ Required variables:
               </tr>
               <tr align="center"> 
                 <td> 
-                  <input type="checkbox" name="XCOM_FEED" value="1" <%= checked[0] %>>
+                  <input type="checkbox" name="XCOM_FEED" value="1" <%= checked[0] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="XCOM_FEED" value="2" <%= checked[1] %>>
+                  <input type="checkbox" name="XCOM_FEED" value="2" <%= checked[1] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="XCOM_FEED" value="4" <%= checked[2] %>>
+                  <input type="checkbox" name="XCOM_FEED" value="4" <%= checked[2] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="XCOM_FEED" value="8" <%= checked[3] %>>
+                  <input type="checkbox" name="XCOM_FEED" value="8" <%= checked[3] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="XCOM_FEED" value="16" <%= checked[4] %>>
+                  <input type="checkbox" name="XCOM_FEED" value="16" <%= checked[4] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="XCOM_FEED" value="32" <%= checked[5] %>>
+                  <input type="checkbox" name="XCOM_FEED" value="32" <%= checked[5] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="XCOM_FEED" value="64" <%= checked[6] %>>
+                  <input type="checkbox" name="XCOM_FEED" value="64" <%= checked[6] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="XCOM_FEED" value="128" <%= checked[7] %>>
+                  <input type="checkbox" name="XCOM_FEED" value="128" <%= checked[7] %> onclick="setContentChanged(true)">
                 </td>
               </tr>
               <tr align="center"> 
@@ -419,28 +419,28 @@ Required variables:
               </tr>
               <tr align="center"> 
                 <td> 
-                  <input type="checkbox" name="XCOM_FEED" value="256" <%= checked[8] %>>
+                  <input type="checkbox" name="XCOM_FEED" value="256" <%= checked[8] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="XCOM_FEED" value="512" <%= checked[9] %>>
+                  <input type="checkbox" name="XCOM_FEED" value="512" <%= checked[9] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="XCOM_FEED" value="1024" <%= checked[10] %>>
+                  <input type="checkbox" name="XCOM_FEED" value="1024" <%= checked[10] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="XCOM_FEED" value="2048" <%= checked[11] %>>
+                  <input type="checkbox" name="XCOM_FEED" value="2048" <%= checked[11] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="XCOM_FEED" value="4096" <%= checked[12] %>>
+                  <input type="checkbox" name="XCOM_FEED" value="4096" <%= checked[12] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="XCOM_FEED" value="8192" <%= checked[13] %>>
+                  <input type="checkbox" name="XCOM_FEED" value="8192" <%= checked[13] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="XCOM_FEED" value="16384" <%= checked[14] %>>
+                  <input type="checkbox" name="XCOM_FEED" value="16384" <%= checked[14] %> onclick="setContentChanged(true)">
                 </td>
                 <td> 
-                  <input type="checkbox" name="XCOM_FEED" value="32768" <%= checked[15] %>>
+                  <input type="checkbox" name="XCOM_FEED" value="32768" <%= checked[15] %> onclick="setContentChanged(true)">
                 </td>
               </tr>
             </table>
@@ -454,13 +454,13 @@ Required variables:
         <tr> 
           <td align="right" class="MainText" width="20%">ZIP:</td>
           <td width="80%"> 
-            <input type="text" name="XCOM_ZIP" value="<%= ServletUtils.hideUnsetNumber(xcom.getZip(), 0) %>" size="6" maxlength="15">
+            <input type="text" name="XCOM_ZIP" value="<%= ServletUtils.hideUnsetNumber(xcom.getZip(), 0) %>" size="6" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
           <td align="right" class="MainText" width="20%">USER:</td>
           <td width="80%"> 
-            <input type="text" name="XCOM_USER" value="<%= ServletUtils.hideUnsetNumber(xcom.getUserAddress(), 0) %>" size="6" maxlength="15">
+            <input type="text" name="XCOM_USER" value="<%= ServletUtils.hideUnsetNumber(xcom.getUserAddress(), 0) %>" size="6" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
       </table>

@@ -66,6 +66,7 @@ function addRoutes(form) {
 		if (oOption.selected && oOption.value > 0) {
 			form.RoutesAvailable.options.remove(i);
 			form.RoutesAssigned.options.add(oOption, insertIdx);
+			setContentChanged(true);
 		}
 	}
 	
@@ -98,6 +99,7 @@ function removeRoutes(form) {
 		if (oOption.selected && oOption.value > 0) {
 			form.RoutesAssigned.options.remove(i);
 			form.RoutesAvailable.options.add(oOption, insertIdx);
+			setContentChanged(true);
 		}
 	}
 	
@@ -184,7 +186,7 @@ function prepareSubmit(form) {
                                       </select>
                                     </td>
                                     <td width="10%"> 
-                                      <input type="button" id="AddButton" name="AddButton" value=" >> " onClick="addRoutes(this.form)">
+                                      <input type="button" id="AddButton" name="AddButton" value=" >> " onclick="addRoutes(this.form)">
                                       <br>
                                       <input type="button" id="RemoveButton" name="RemoveButton" value=" << " onclick="removeRoutes(this.form)">
                                     </td>
@@ -227,7 +229,7 @@ function prepareSubmit(form) {
                     <input type="button" name="Reset" value="Reset" onclick="location.reload()">
                   </td>
                   <td width="75" align="right"> 
-                    <input type="button" name="Back" value="Back" onclick="location.href='AdminTest.jsp'">
+                    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='AdminTest.jsp'">
                   </td>
                 </tr>
               </table>

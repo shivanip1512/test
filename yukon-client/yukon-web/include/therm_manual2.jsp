@@ -87,6 +87,7 @@ function setTemp(curTemp) {
 var timeoutId = -1;
 
 function setChanged() {
+	setContentChanged(true);
 	if (timeoutId != -1) {
 		clearTimeout(timeoutId);
 		timeoutId = setTimeout("location.reload()", 300000);
@@ -111,7 +112,7 @@ function incTemp() {
 <% if (curSettings != null) { %>
 		setTemp(curTemp);
 <% } %>
-		setChanged();
+		resetTimer();
 	}
 }
 
@@ -122,7 +123,7 @@ function decTemp() {
 <% if (curSettings != null) { %>
 		setTemp(curTemp);
 <% } %>
-		setChanged();
+		resetTimer();
 	}
 }
 
@@ -171,7 +172,7 @@ function modeChange(mode) {
 	document.getElementById("IncTemp").disabled = disableFlag;
 	document.getElementById("DecTemp").disabled = disableFlag;
 
-	setChanged();
+	resetTimer();
 }
 
 function fanChange(fan) {
@@ -188,7 +189,7 @@ function fanChange(fan) {
 		document.MForm.fan.value = "";
 	}
 	
-	setChanged();
+	resetTimer();
 }
 
 function submitIt() {
@@ -252,15 +253,15 @@ function prepareSubmit() {
                               <table width="18%" border="0" cellspacing = "0" cellpadding ="0" height="60" >
                                 <tr> 
                                   <td width="52%" height="53"> 
-                                    <input type="text" name="tempField" maxlength="2" class="tempText1" value="<%= setpoint %>" onBlur="validateTemp()" onChange="setChanged()">
+                                    <input type="text" name="tempField" maxlength="2" class="tempText1" value="<%= setpoint %>" onblur="validateTemp()" onchange="setChanged()">
                                   </td>
                                   <td width="48%" height="53"> 
                                     <table width="41%" border="0" cellspacing = "0" cellpadding = "0">
                                       <tr> 
-                                        <td><img class="Clickable" id="IncTemp" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/UpBk.gif" width="21" height="21" onclick = "incTemp()"></td>
+                                        <td><img class="Clickable" id="IncTemp" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/UpBk.gif" width="21" height="21" onclick = "incTemp();setChanged();"></td>
                                       </tr>
                                       <tr> 
-                                        <td><img class="Clickable" id="DecTemp" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/DownBk.gif" width="21" height="21" onclick = "decTemp()"></td>
+                                        <td><img class="Clickable" id="DecTemp" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/DownBk.gif" width="21" height="21" onclick = "decTemp();setChanged();"></td>
                                       </tr>
                                     </table>
                                   </td>
@@ -328,15 +329,15 @@ function prepareSubmit() {
                                 <tr> 
                                   <td width="60%"  height="59" valign = "bottom"> 
                                     <table width="35%" border="0" cellpadding = "2" cellspacing = "0" height="41">
-                                      <tr onClick="modeChange('<%= StarsThermoModeSettings.COOL.toString() %>')"> 
+                                      <tr onclick="modeChange('<%= StarsThermoModeSettings.COOL.toString() %>');setChanged();"> 
                                         <td><img id="<%= StarsThermoModeSettings.COOL.toString() %>" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
                                         <td><img class="Clickable" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/Cool.gif"></td>
                                       </tr>
-                                      <tr onClick="modeChange('<%= StarsThermoModeSettings.HEAT.toString() %>')"> 
+                                      <tr onclick="modeChange('<%= StarsThermoModeSettings.HEAT.toString() %>');setChanged();"> 
                                         <td><img id="<%= StarsThermoModeSettings.HEAT.toString() %>" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
                                         <td><img class="Clickable" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/Heat.gif"></td>
                                       </tr>
-                                      <tr onClick="modeChange('<%= StarsThermoModeSettings.OFF.toString() %>')"> 
+                                      <tr onclick="modeChange('<%= StarsThermoModeSettings.OFF.toString() %>');setChanged();"> 
                                         <td><img id="<%= StarsThermoModeSettings.OFF.toString() %>" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
                                         <td><img class="Clickable" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/Off.gif"></td>
                                       </tr>
@@ -344,11 +345,11 @@ function prepareSubmit() {
                                   </td>
                                   <td width="40%" height="59" valign = "bottom"> 
                                     <table width="34%" border="0" cellpadding = "2" cellspacing = "0">
-                                      <tr onClick="fanChange('<%= StarsThermoFanSettings.AUTO.toString() %>')"> 
+                                      <tr onclick="fanChange('<%= StarsThermoFanSettings.AUTO.toString() %>');setChanged();"> 
                                         <td ><img id="<%= StarsThermoFanSettings.AUTO.toString() %>" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
                                         <td><img class="Clickable" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/Auto.gif"></td>
                                       </tr>
-                                      <tr onClick="fanChange('<%= StarsThermoFanSettings.ON.toString() %>')"> 
+                                      <tr onclick="fanChange('<%= StarsThermoFanSettings.ON.toString() %>');setChanged();"> 
                                         <td><img id="<%= StarsThermoFanSettings.ON.toString() %>" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
                                         <td><img class="Clickable" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/On.gif"></td>
                                       </tr>

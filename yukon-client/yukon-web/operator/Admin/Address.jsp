@@ -69,38 +69,38 @@
                         <td width="25%" align="right" class="TableCell">Street 
                           Address 1:</td>
                         <td width="75%" class="TableCell">
-                          <input type="text" name="StreetAddr1" value="<%= address.getStreetAddr1() %>">
+                          <input type="text" name="StreetAddr1" value="<%= address.getStreetAddr1() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Street 
                           Address 2:</td>
                         <td width="75%" class="TableCell">
-                          <input type="text" name="StreetAddr2" value="<%= address.getStreetAddr2() %>">
+                          <input type="text" name="StreetAddr2" value="<%= address.getStreetAddr2() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">City:</td>
                         <td width="75%" class="TableCell">
-                          <input type="text" name="City" value="<%= address.getCity() %>">
+                          <input type="text" name="City" value="<%= address.getCity() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">State:</td>
                         <td width="75%" class="TableCell">
-                          <input type="text" name="State" value="<%= address.getState() %>">
+                          <input type="text" name="State" value="<%= address.getState() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell"> Zip Code:</td>
                         <td width="75%" class="TableCell">
-                          <input type="text" name="Zip" value="<%= address.getZip() %>">
+                          <input type="text" name="Zip" value="<%= address.getZip() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell" height="2">County:</td>
                         <td width="75%" class="TableCell" height="2"> 
-                          <input type="text" name="County" value="<%= address.getCounty() %>">
+                          <input type="text" name="County" value="<%= address.getCounty() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                     </table>
@@ -113,10 +113,10 @@
                     <input type="submit" name="Submit" value="Submit">
                   </td>
                   <td width="205"> 
-                    <input type="reset" name="Reset" value="Reset">
+                    <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                   </td>
                   <td width="75" align="right"> 
-                    <input type="button" name="Back" value="Back" onclick="location.href='<%= referer %>'">
+                    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='<%= referer %>'">
                   </td>
                 </tr>
               </table>

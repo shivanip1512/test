@@ -127,21 +127,21 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Company Name:</td>
                               <td width="75%"> 
-                                <input type="text" name="CompanyName" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("CompanyName")) %>">
+                                <input type="text" name="CompanyName" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("CompanyName")) %>" onchange="setContentChanged(true)">
                                 <span class="ErrorMsg">*</span> </td>
                             </tr>
 <% if (!ECUtils.isDefaultEnergyCompany(liteEC)) { %>
                             <tr>
                               <td width="25%" align="right">&nbsp;</td>
                               <td width="75%">
-                                <input type="checkbox" name="AddMember" value="true" <% if (savedReq.getProperty("AddMember") != null) { %>checked<% } %>>
+                                <input type="checkbox" name="AddMember" value="true" <% if (savedReq.getProperty("AddMember") != null) { %>checked<% } %> onclick="setContentChanged(true)">
                                 Add as a member of the current energy company</td>
                             </tr>
 <% } %>
                             <tr> 
                               <td width="25%" align="right">Email:</td>
                               <td width="75%"> 
-                                <input type="text" name="Email" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("Email")) %>">
+                                <input type="text" name="Email" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("Email")) %>" onchange="setContentChanged(true)">
                                 <font color="#FF0000">(Required for password request)</font> 
                               </td>
                             </tr>
@@ -158,7 +158,7 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Operator Groups:</td>
                               <td width="75%"> 
-                                <input type="text" name="OperatorGroup" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("OperatorGroup")) %>">
+                                <input type="text" name="OperatorGroup" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("OperatorGroup")) %>" onchange="setContentChanged(true)">
                                 <span class="ErrorMsg">*</span></td>
                             </tr>
                             <tr> 
@@ -174,13 +174,13 @@ function addCustomerGroup(form) {
 	}
 %>
                                 </select>
-                                <input type="button" name="AddOperGrp" value="Add" onClick="addOperatorGroup(this.form)">
+                                <input type="button" name="AddOperGrp" value="Add" onclick="addOperatorGroup(this.form);setContentChanged(true);">
                               </td>
                             </tr>
                             <tr> 
                               <td width="25%" align="right">Res. Customer Groups:</td>
                               <td width="75%"> 
-                                <input type="text" name="CustomerGroup" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("CustomerGroup")) %>">
+                                <input type="text" name="CustomerGroup" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("CustomerGroup")) %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                             <tr> 
@@ -196,7 +196,7 @@ function addCustomerGroup(form) {
 	}
 %>
                                 </select>
-                                <input type="button" name="AddCustGrp" value="Add" onClick="addCustomerGroup(this.form)">
+                                <input type="button" name="AddCustGrp" value="Add" onclick="addCustomerGroup(this.form);setContentChanged(true);">
                               </td>
                             </tr>
                           </table>
@@ -213,13 +213,13 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Username:</td>
                               <td width="75%"> 
-                                <input type="text" name="Username" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("Username")) %>">
+                                <input type="text" name="Username" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("Username")) %>" onchange="setContentChanged(true)">
                                 <span class="ErrorMsg">*</span> </td>
                             </tr>
                             <tr> 
                               <td width="25%" align="right">Password:</td>
                               <td width="75%"> 
-                                <input type="password" name="Password" size="30">
+                                <input type="password" name="Password" size="30" onchange="setContentChanged(true)">
                                 <span class="ErrorMsg">*</span> </td>
                             </tr>
                             <tr> 
@@ -241,13 +241,13 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Username:</td>
                               <td width="75%"> 
-                                <input type="text" name="Username2" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("Username2")) %>">
+                                <input type="text" name="Username2" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("Username2")) %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                             <tr> 
                               <td width="25%" align="right">Password:</td>
                               <td width="75%"> 
-                                <input type="password" name="Password2" size="30">
+                                <input type="password" name="Password2" size="30" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                             <tr> 
@@ -269,7 +269,7 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Default Route:</td>
                               <td width="75%"> 
-                                <select name="Route">
+                                <select name="Route" onchange="setContentChanged(true)">
                                   <option value="<%= LiteStarsEnergyCompany.INVALID_ROUTE_ID %>">(none)</option>
 <%
 	LiteYukonPAObject[] routes = PAOFuncs.getAllLiteRoutes();
@@ -311,10 +311,10 @@ function addCustomerGroup(form) {
                     <input type="submit" name="Submit" value="Submit">
                   </td>
                   <td width="205"> 
-                    <input type="reset" name="Reset" value="Reset">
+                    <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                   </td>
                   <td width="75" align="right"> 
-                    <input type="button" name="Back" value="Back" onclick="location.href='../Operations.jsp'">
+                    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='../Operations.jsp'">
                   </td>
                 </tr>
               </table>

@@ -24,7 +24,7 @@
 		}
 		else {
 			linkImg = "";
-			linkHtml = "<a href='" + linkPairs[i][0] + "' class='Link2'><span class='NavText'>" + linkPairs[i][1] + "</span></a>";
+			linkHtml = "<a href='" + linkPairs[i][0] + "' class='Link2' onclick='return warnUnsavedChanges();'><span class='NavText'>" + linkPairs[i][1] + "</span></a>";
 		}
 		links.put(linkPairs[i][0], new String[] {linkImg, linkHtml});
 	}

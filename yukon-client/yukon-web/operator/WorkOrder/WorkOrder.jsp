@@ -173,7 +173,7 @@ function init() {
         <tr> 
           <td  valign="top" width="101"> 
             <div align="center" class="TableCell1"><br>
-              <a href="SOList.jsp" class="Link2">Back to List</a></div>
+              <a href="SOList.jsp" class="Link2" onclick="return warnUnsavedChanges()">Back to List</a></div>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
@@ -207,9 +207,9 @@ function init() {
                                   <div align="right">Date Reported:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <input type="text" name="DateReported" size="14" value="<%= ServletUtils.formatDate(order.getDateReported(), datePart) %>">
+                                  <input type="text" name="DateReported" size="14" value="<%= ServletUtils.formatDate(order.getDateReported(), datePart) %>" onchange="setContentChanged(true)">
                                   -
-                                  <input type="text" name="TimeReported" size="8" value="<%= ServletUtils.formatDate(order.getDateReported(), timeFormat) %>">
+                                  <input type="text" name="TimeReported" size="8" value="<%= ServletUtils.formatDate(order.getDateReported(), timeFormat) %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -217,7 +217,7 @@ function init() {
                                   <div align="right">Service Type:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <select name="ServiceType">
+                                  <select name="ServiceType" onchange="setContentChanged(true)">
                                     <%
 	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
 	for (int i = 0; i < serviceTypeList.getStarsSelectionListEntryCount(); i++) {
@@ -234,7 +234,7 @@ function init() {
                                   <div align="right">Ordered By:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <input type="text" name="OrderedBy" size="14" value="<%= order.getOrderedBy() %>">
+                                  <input type="text" name="OrderedBy" size="14" value="<%= order.getOrderedBy() %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -242,7 +242,7 @@ function init() {
                                   <div align="right">Assigned to:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <select name="ServiceCompany">
+                                  <select name="ServiceCompany" onchange="setContentChanged(true)">
                                     <%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany company = companies.getStarsServiceCompany(i);
@@ -258,7 +258,7 @@ function init() {
                                   <div align="right">Description:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell"><%= order.getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
+                                  <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"><%= order.getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                                 </td>
                               </tr>
 							</table>
@@ -276,7 +276,7 @@ function init() {
                                   <div align="right">Status:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <select name="CurrentState" onChange="changeStatus(this.form)">
+                                  <select name="CurrentState" onchange="changeStatus(this.form);setContentChanged(true);">
                                     <%
 	StarsCustSelectionList serviceStatusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS );
 	for (int i = 0; i < serviceStatusList.getStarsSelectionListEntryCount(); i++) {
@@ -286,7 +286,7 @@ function init() {
                                     <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
                                     <%	} %>
                                   </select>
-                                  <input type="button" name="Schedule" value="Schedule" onClick="scheduleOrder(this.form)" disabled>
+                                  <input type="button" name="Schedule" value="Schedule" onclick="scheduleOrder(this.form);setContentChanged(true);" disabled>
                                 </td>
                               </tr>
                             </table>
@@ -299,9 +299,9 @@ function init() {
                             <td width="30%" align="right" class="TableCell">Date 
                               Scheduled:</td>
                             <td width="70%"> 
-                              <input type="text" name="DateScheduled" size="14" value="<%= ServletUtils.formatDate(order.getDateScheduled(), datePart) %>" disabled>
+                              <input type="text" name="DateScheduled" size="14" value="<%= ServletUtils.formatDate(order.getDateScheduled(), datePart) %>" disabled onchange="setContentChanged(true)">
                               - 
-                              <input type="text" name="TimeScheduled" size="8" value="<%= ServletUtils.formatDate(order.getDateScheduled(), timeFormat) %>" disabled>
+                              <input type="text" name="TimeScheduled" size="8" value="<%= ServletUtils.formatDate(order.getDateScheduled(), timeFormat) %>" disabled onchange="setContentChanged(true)">
                             </td>
                           </tr>
                         </table>
@@ -311,9 +311,9 @@ function init() {
                           <td width="30%" align="right" class="TableCell">Date 
                             Closed:</td>
                           <td width="70%"> 
-                            <input type="text" name="DateCompleted" size="14" value="<%= ServletUtils.formatDate(order.getDateCompleted(), datePart) %>" disabled>
+                            <input type="text" name="DateCompleted" size="14" value="<%= ServletUtils.formatDate(order.getDateCompleted(), datePart) %>" disabled onchange="setContentChanged(true)">
                             - 
-                            <input type="text" name="TimeCompleted" size="8" value="<%= ServletUtils.formatDate(order.getDateCompleted(), timeFormat) %>" disabled>
+                            <input type="text" name="TimeCompleted" size="8" value="<%= ServletUtils.formatDate(order.getDateCompleted(), timeFormat) %>" disabled onchange="setContentChanged(true)">
                           </td>
                         </tr>
                       </table>
@@ -323,7 +323,7 @@ function init() {
                             <div align="right">Action Taken:</div>
                           </td>
                           <td width="70%"> 
-                            <textarea name="ActionTaken" rows="3" wrap="soft" cols="35" class = "TableCell"><%= order.getActionTaken().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
+                            <textarea name="ActionTaken" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"><%= order.getActionTaken().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                           </td>
                         </tr>
                       </table>
@@ -354,7 +354,7 @@ function init() {
                             <hr>
                             <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
-                                <td class="TableCell"><a href="" onClick="document.cusForm.submit(); return false;"> 
+                                <td class="TableCell"><a href="" onclick="if (warnUnsavedChanges()) {document.cusForm.submit();return false;}"> 
                                   Account # <%= liteAccount.getAccountNumber() %></a><br>
                                   <% if (name.length() > 0) { %><%= name %><br><% } %>
                                   <% if (homePhone.length() > 0) { %>Home #: <%= homePhone %><br><% } %>
@@ -397,7 +397,7 @@ function init() {
                                 <td class="TableCell" width="30%" align="right">Account 
                                   #: </td>
                                 <td class="TableCell" width="70%">
-                                  <input type="text" name="AcctNo" size="14">
+                                  <input type="text" name="AcctNo" size="14" onchange="setContentChanged(true)">
                                   <input type="button" name="Submit" value="Submit" onclick="searchAccount(this.form)">
                                 </td>
                               </tr>
@@ -415,7 +415,7 @@ function init() {
                       <input type="submit" name="Save" value="Save">
                     </td>
                     <td width="15%" align="center"> 
-                      <input type="reset" name="Reset" value="Reset">
+                      <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                     </td>
                     <td width="43%"> 
                       <input type="button" name="Delete" value="Delete" onclick="deleteWorkOrder(this.form)">

@@ -1,3 +1,5 @@
+<script language="JavaScript" src="<%= request.getContextPath() %>/JavaScript/change_monitor.js"></script>
+
 <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
   <tr> 
     <td width="102" height="102" background="../../../WebConfig/<cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_IMG_CORNER %>"/>">&nbsp;</td>
@@ -11,7 +13,7 @@
 		  <td width="253" valign="middle">&nbsp;</td>
 		  <td width="58" valign="middle">&nbsp;</td>
 		  <td width="57" valign="middle" align="left"> 
-			<span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span>
+			<span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3" onclick="return warnUnsavedChanges();">Log Off</a>&nbsp;</span>
 		  </td>
 	    </tr>
 	  </table>

@@ -86,8 +86,10 @@ function sameAsDispName(form, checked) {
 }
 
 var progChanged = false;
+
 function setProgramChanged() {
 	progChanged = true;
+	setContentChanged(true);
 }
 
 var progID = new Array();
@@ -202,6 +204,7 @@ function addProgram(form) {
 		
 		progList.selectedIndex = progList.length - 1;
 		showProgramConfig(form);
+		setContentChanged(true);
 	}
 }
 
@@ -238,6 +241,7 @@ function removeProgram(form) {
 		}
 		
 		assgnProgList.remove(assgnProgList.selectedIndex);
+		setContentChanged(true);
 	}
 }
 
@@ -373,6 +377,7 @@ function moveUp(form) {
 		var oOption = assgnProgList.options[idx];
 		assgnProgList.options.remove(idx);
 		assgnProgList.options.add(oOption, idx-1);
+		setContentChanged(true);
 	}
 }
 
@@ -383,6 +388,7 @@ function moveDown(form) {
 		var oOption = assgnProgList.options[idx];
 		assgnProgList.options.remove(idx);
 		assgnProgList.options.add(oOption, idx+1);
+		setContentChanged(true);
 	}
 }
 
@@ -470,21 +476,21 @@ function init() {
                         <td width="15%" align="right" class="TableCell">Category 
                           Name:</td>
                         <td width="85%" class="TableCell"> 
-                          <input type="text" name="Name" value="<%= category.getDescription() %>">
+                          <input type="text" name="Name" value="<%= category.getDescription() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="15%" align="right" class="TableCell">Display 
                           Name:</td>
                         <td width="85%" class="TableCell"> 
-                          <input type="text" name="DispName" value="<%= category.getStarsWebConfig().getAlternateDisplayName() %>">
-                          <input type="checkbox" name="SameAsName" value="true" onClick="sameAsName(this.form, this.checked)" <%= viewOnly %>>
+                          <input type="text" name="DispName" value="<%= category.getStarsWebConfig().getAlternateDisplayName() %>" onchange="setContentChanged(true)">
+                          <input type="checkbox" name="SameAsName" value="true" onclick="sameAsName(this.form, this.checked);setContentChanged(true);" <%= viewOnly %>>
                           Same as category name </td>
                       </tr>
                       <tr> 
                         <td width="15%" align="right" class="TableCell" height="7">Type:</td>
                         <td width="85%" class="TableCell" valign="middle" height="7"> 
-                          <select name="Category">
+                          <select name="Category" onchange="setContentChanged(true)">
                             <%
 	StarsCustSelectionList categoryList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY );
 	for (int i = 0; i < categoryList.getStarsSelectionListEntryCount(); i++) {
@@ -502,7 +508,7 @@ function init() {
                           <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
                               <td width="50%"> 
-                                <input type="text" name="IconName" size="20" value="<%= category.getStarsWebConfig().getLogoLocation() %>">
+                                <input type="text" name="IconName" size="20" value="<%= category.getStarsWebConfig().getLogoLocation() %>" onchange="setContentChanged(true)">
                                 <input type="button" name="Preview" value="Preview" onClick="changeIcon(this.form)" <%= viewOnly %>>
                               </td>
                               <td width="50%"> <img id="CategoryIcon" align="middle"></td>
@@ -720,7 +726,7 @@ function init() {
                     <input type="button" name="Reset" value="Reset" onclick="location.reload()" <%= viewOnly %>>
                   </td>
                   <td width="75" align="right"> 
-                    <input type="button" name="Back" value="Back" onclick="location.href='AdminTest.jsp'">
+                    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='AdminTest.jsp'">
                   </td>
                 </tr>
               </table>

@@ -116,6 +116,7 @@ function saveEntry(form) {
 	}
 	entries.options[curIdx].innerText = entryTexts[curIdx];
 	showEntry(form);
+	setContentChanged(true);
 }
 
 function moveUp(form) {
@@ -138,6 +139,7 @@ function moveUp(form) {
 		dftListIndices[idx] = dftListIndices[idx-1];
 		dftListIndices[idx-1] = value;
 		curIdx--;
+		setContentChanged(true);
 	}
 }
 
@@ -161,6 +163,7 @@ function moveDown(form) {
 		dftListIndices[idx] = dftListIndices[idx+1];
 		dftListIndices[idx+1] = value;
 		curIdx++;
+		setContentChanged(true);
 	}
 }
 
@@ -176,6 +179,7 @@ function deleteEntry(form) {
 		dftListIndices.splice(idx, 1);
 		entries.selectedIndex = entries.options.length - 1;
 		showEntry(form);
+		setContentChanged(true);
 	}
 }
 
@@ -191,6 +195,7 @@ function deleteAllEntries(form) {
 		dftListIndices.splice(0, dftListIndices.length);
 		entries.selectedIndex = 0;
 		showEntry(form);
+		setContentChanged(true);
 	}
 }
 
@@ -217,6 +222,7 @@ function restoreDefault(form) {
 
 	entries.selectedIndex = entries.options.length - 1;
 	showEntry(form);
+	setContentChanged(true);
 }
 
 function prepareSubmit(form) {
@@ -318,7 +324,7 @@ function init() {
                               <td width="30%" class="MainText"><%= listName %></td>
                               <td width="70%" class="TableCell"> 
                                 <% if (isOptOutPeriodCus) { %>
-                                <input type="checkbox" name="SameAsOp" value="true" onClick="setSameAsOp(this.form, this.checked)" <%= viewOnly %>>
+                                <input type="checkbox" name="SameAsOp" value="true" onclick="setSameAsOp(this.form, this.checked);setContentChanged(true);" <%= viewOnly %>>
                                 Same As Operator Side List 
                                 <% } %>
                               </td>
@@ -345,13 +351,13 @@ function init() {
 					  <tr> 
                         <td width="15%" align="right" class="TableCell">Description:</td>
                         <td width="85%" class="TableCell"> 
-                          <input type="text" name="WhereIsList" size="50" value="<%= list.getWhereIsList() %>">
+                          <input type="text" name="WhereIsList" size="50" value="<%= list.getWhereIsList() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="15%" align="right" class="TableCell" height="7">Ordering:</td>
                         <td width="85%" class="TableCell" valign="middle" height="7"> 
-                          <select name="Ordering" onchange="changeOrdering(this.form)">
+                          <select name="Ordering" onchange="changeOrdering(this.form);setContentChanged(true);">
                             <option value="A" <%= list.getOrdering().equalsIgnoreCase("A")? "selected" : "" %>>Alphabetical</option>
                             <option value="O" <%= list.getOrdering().equalsIgnoreCase("O")? "selected" : "" %>>List 
                             Order</option>
@@ -361,7 +367,7 @@ function init() {
                       <tr> 
                         <td width="15%" align="right" class="TableCell"> Label:</td>
                         <td width="85%" class="TableCell"> 
-                          <input type="text" name="Label" size="30" value="<%= list.getSelectionLabel() %>">
+                          <input type="text" name="Label" size="30" value="<%= list.getSelectionLabel() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
 <%	} %>
@@ -371,7 +377,7 @@ function init() {
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                             <tr> 
                               <td width="50%">
-							    <select name="ListEntries" size="7" style="width:200" onClick="showEntry(this.form)">
+							    <select name="ListEntries" size="7" style="width:200" onclick="showEntry(this.form)">
 <%
 	for (int i = 0; i < list.getYukonListEntries().size(); i++) {
 		YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
@@ -418,7 +424,7 @@ function init() {
                             </tr>
                             <tr class="TableCell" valign="top"> 
                               <td width="50%"> 
-                                <select name="DefaultListEntries" size="7" style="width:200" onClick="showDefaultEntry(this.form)">
+                                <select name="DefaultListEntries" size="7" style="width:200" onclick="showDefaultEntry(this.form)">
                                   <%
 	for (int i = 0; i < dftList.getYukonListEntries().size(); i++) {
 		YukonListEntry entry = (YukonListEntry) dftList.getYukonListEntries().get(i);
@@ -453,7 +459,7 @@ function init() {
                                   </tr>
                                 </table>
                                 <div align="center"> 
-                                  <input type="button" name="Save" value="Add" onClick="saveEntry(this.form)" <%= viewOnly %>>
+                                  <input type="button" name="Save" value="Add" onclick="saveEntry(this.form)" <%= viewOnly %>>
                                 </div>
                               </td>
                             </tr>
@@ -470,10 +476,10 @@ function init() {
                     <input type="submit" name="Submit" value="Submit" <%= viewOnly %>>
                   </td>
                   <td width="205"> 
-                    <input type="reset" name="Reset" value="Reset" <%= viewOnly %>>
+                    <input type="reset" name="Reset" value="Reset" <%= viewOnly %> onclick="setContentChanged(false)">
                   </td>
                   <td width="75" align="right"> 
-                    <input type="button" name="Back" value="Back" onclick="location.href='AdminTest.jsp'">
+                    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='AdminTest.jsp'">
                   </td>
                 </tr>
               </table>

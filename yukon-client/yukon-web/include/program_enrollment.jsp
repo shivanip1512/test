@@ -11,11 +11,6 @@
 <script language="JavaScript">
 var numEnrolledProg = 0;
 
-var signUpChanged = false;
-function setSignUpChanged() {
-	signUpChanged = true;
-}
-
 function changeCategory(checkBox, index) {
 	var programs, catIDs, progIDs, defProgIDs;
 	
@@ -46,8 +41,6 @@ function changeCategory(checkBox, index) {
 		if (document.getElementById("NotEnrolled") != null && numEnrolledProg == 0)
 			document.getElementById("NotEnrolled").checked = true;
 	}
-	
-	setSignUpChanged();
 }
 
 function changeProgram(radioBtn, index) {
@@ -66,7 +59,6 @@ function changeProgram(radioBtn, index) {
 	categories[index].checked = true;
 	catIDs[index].value = categories[index].value;
 	progIDs[index].value = radioBtn.value;
-	setSignUpChanged();
 }
 
 function setNotEnrolled() {
@@ -90,7 +82,6 @@ function confirmSubmit(form) {
 	if (form.NotEnrolled != null && form.NotEnrolled.checked)
 		form.elements["<%= ServletUtils.NEED_MORE_INFORMATION %>"].value = "false";
 <% if (request.getParameter("Wizard") == null) { %>
-	//if (!signUpChanged) return false;
 	return confirm('Are you sure you would like to modify these program options?');
 <% } %>
 	return true;
@@ -120,7 +111,7 @@ function confirmCancel() {
 				    <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
 				    <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
 <% if (needMoreInfo) { %>
-				    <input type="hidden" name="<%= ServletUtils.NEED_MORE_INFORMATION %>">
+				    <input type="hidden" name="<%= ServletUtils.NEED_MORE_INFORMATION %>" value="true">
 				    <input type="hidden" name="REDIRECT2" value="<%= request.getContextPath() %>/operator/Consumer/Programs2.jsp">
 <% } %>
 				    <% if (inWizard) { %><input type="hidden" name="Wizard" value="true"><% } %>
@@ -182,7 +173,7 @@ function confirmCancel() {
                               </td>
                               <td width="3%" valign="top"> 
                                 <input type="checkbox" name="AppCat" value="<%= category.getApplianceCategoryID() %>" <%= checkBoxDisabled %>
-								onclick="changeCategory(this, <%= numProgCat %>)" <% if (program != null) { %>checked<% } %>>
+								onclick="changeCategory(this, <%= numProgCat %>);setContentChanged(true);" <% if (program != null) { %>checked<% } %>>
                               <td width="82%" valign="top"> 
                                 <table width="100%" border="0" cellspacing="3" cellpadding="0">
                                   <input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>">
@@ -227,7 +218,7 @@ function confirmCancel() {
                           </table>
                         </td>
                                     <td class="TableCell" width="17%" align="right" valign="top"> 
-                                      <input type="button" name="Details" value="Details" onclick="location.href='ProgramDetails.jsp?Cat=<%= i %><%= inWizardStr %>'">
+                                      <input type="button" name="Details" value="Details" onclick="if (warnUnsavedChanges()) location.href='ProgramDetails.jsp?Cat=<%= i %><%= inWizardStr %>'">
                                     </td>
                                   </tr>
 <%
@@ -249,7 +240,7 @@ function confirmCancel() {
                                   <tr> 
                                     <td width="3%" valign="top"> 
                                       <input type="radio" name="Program<%= numProgCat %>" value="<%= prog.getProgramID() %>" <%= radioBtnDisabled %>
-									  onclick="changeProgram(this, <%= numProgCat %>)" <%= checked %>>
+									  onclick="changeProgram(this, <%= numProgCat %>);setContentChanged(true);" <%= checked %>>
                                     </td>
                                     <td> 
                                       <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
@@ -279,7 +270,7 @@ function confirmCancel() {
                                       </table>
                                     </td>
                                     <td class="TableCell" width="17%" align="right" valign="top"> 
-                                      <input type="button" name="Details" value="Details" onclick="location.href='ProgramDetails.jsp?Cat=<%= i %>&Prog=<%= j %><%= inWizardStr %>'">
+                                      <input type="button" name="Details" value="Details" onclick="if (warnUnsavedChanges()) location.href='ProgramDetails.jsp?Cat=<%= i %>&Prog=<%= j %><%= inWizardStr %>'">
                                     </td>
                                   </tr>
 <%
@@ -307,7 +298,7 @@ function confirmCancel() {
                 <tr> 
                   <td width="15%">&nbsp;</td>
                   <td width="3%"> 
-                    <input type="checkbox" id="NotEnrolled" name="NotEnrolled" value="true" onclick="setNotEnrolled()"
+                    <input type="checkbox" id="NotEnrolled" name="NotEnrolled" value="true" onclick="setNotEnrolled();setContentChanged(true);"
 								<% if (numEnrolledProg == 0) { %>checked<% } %>>
                   <td>
                     <table width="100%" border="0" cellspacing="0" cellpadding="1">
@@ -357,7 +348,7 @@ function confirmCancel() {
                           <input type="submit" name="Submit" value="Submit">
                         </td>
                         <td width="40%" align="left"> 
-                          <input type="reset" name="Reset" value="Reset">
+                          <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                         </td>
                       </tr>
                     </table>

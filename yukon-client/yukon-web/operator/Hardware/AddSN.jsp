@@ -13,7 +13,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -55,6 +54,30 @@
                   <tr> 
                     <td> 
                       <table width="100%" border="0" class="TableCell">
+<%
+	if (liteEC.getChildren().size() > 0 && AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) {
+%>
+                        <tr>
+                          <td width="25%" align="right">Member:</td>
+                          <td width="75%">
+                            <select name="Member">
+                              <option value="<%= liteEC.getLiteID() %>">(Self)</option>
+<%
+	ArrayList descendants = ECUtils.getAllDescendants(liteEC);
+	for (int i = 0; i < descendants.size(); i++) {
+		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+		if (company.equals(liteEC)) continue;
+%>
+                              <option value="<%= company.getLiteID() %>"><%= company.getName() %></option>
+<%
+	}
+%>
+                            </select>
+                          </td>
+                        </tr>
+<%
+	}
+%>
                         <tr> 
                           <td width="25%"> 
                             <div align="right">Range:</div>
@@ -71,7 +94,7 @@
                           </td>
                           <td width="75%"> 
                             <select name="DeviceType">
-<%
+                              <%
 	int savedDeviceType = 0;
 	if (savedReq.getProperty("DeviceType") != null)
 		savedDeviceType = Integer.parseInt(savedReq.getProperty("DeviceType"));
@@ -83,7 +106,7 @@
 		String selected = (entry.getEntryID() == savedDeviceType)? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
-<%
+                              <%
 	}
 %>
                             </select>
@@ -95,8 +118,7 @@
                           </td>
                           <td width="75%"> 
                             <input type="text" name="ReceiveDate" size="24" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("ReceiveDate")) %>">
-                            <span class="DefaultText">(MM/DD/YYYY)</span>
-                          </td>
+                            <span class="DefaultText">(MM/DD/YYYY)</span> </td>
                         </tr>
                         <tr> 
                           <td width="25%"> 
@@ -104,7 +126,7 @@
                           </td>
                           <td width="75%"> 
                             <select name="Voltage">
-<%
+                              <%
 	int savedVoltage = 0;
 	if (savedReq.getProperty("Voltage") != null)
 		savedVoltage = Integer.parseInt(savedReq.getProperty("Voltage"));
@@ -115,7 +137,7 @@
 		String selected = (entry.getEntryID() == savedVoltage)? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
-<%
+                              <%
 	}
 %>
                             </select>
@@ -127,7 +149,7 @@
                           </td>
                           <td width="75%"> 
                             <select name="ServiceCompany">
-<%
+                              <%
 	int savedServiceCompany = 0;
 	if (savedReq.getProperty("ServiceCompany") != null)
 		savedServiceCompany = Integer.parseInt(savedReq.getProperty("ServiceCompany"));
@@ -137,20 +159,20 @@
 		String selected = (servCompany.getCompanyID() == savedServiceCompany)? "selected" : "";
 %>
                               <option value="<%= servCompany.getCompanyID() %>" <%= selected %>><%= servCompany.getCompanyName() %></option>
-<%
+                              <%
 	}
 %>
                             </select>
                           </td>
                         </tr>
-                        <tr>
-                          <td width="25%">
+                        <tr> 
+                          <td width="25%"> 
                             <div align="right">Route:</div>
                           </td>
-                          <td width="75%">
+                          <td width="75%"> 
                             <select name="Route">
                               <option value="0">(Default Route)</option>
-<%
+                              <%
 	int savedRoute = 0;
 	if (savedReq.getProperty("Route") != null)
 		savedRoute = Integer.parseInt(savedReq.getProperty("Route"));
@@ -160,7 +182,7 @@
 		String selected = (routes[i].getYukonID() == savedRoute)? "selected" : "";
 %>
                               <option value="<%= routes[i].getYukonID() %>" <%= selected %>><%= routes[i].getPaoName() %></option>
-<%
+                              <%
 	}
 %>
                             </select>

@@ -75,6 +75,9 @@ function editAddress(form) {
   <tr>
     <td>
       <%@ include file="include/HeaderBar.jsp" %>
+<% if (company.getCompanyID() < 0 && !address.equals("(none)")) %>
+      <script language="JavaScript">setContentChanged(true);</script>
+<% } %>
     </td>
   </tr>
   <tr>
@@ -110,21 +113,21 @@ function editAddress(form) {
                         <td width="25%" align="right" class="TableCell">Company 
                           Name:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="CompanyName" value="<%= sc.getCompanyName() %>">
+                          <input type="text" name="CompanyName" value="<%= sc.getCompanyName() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Main Phone 
                           #:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="PhoneNo" value="<%= sc.getMainPhoneNumber() %>">
+                          <input type="text" name="PhoneNo" value="<%= sc.getMainPhoneNumber() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Main Fax 
                           #:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="FaxNo" value="<%= sc.getMainFaxNumber() %>">
+                          <input type="text" name="FaxNo" value="<%= sc.getMainFaxNumber() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -134,10 +137,10 @@ function editAddress(form) {
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                             <tr> 
                               <td>Last Name: 
-                                <input type="text" name="ContactLastName" value="<%= sc.getPrimaryContact().getLastName() %>" size=14>
+                                <input type="text" name="ContactLastName" value="<%= sc.getPrimaryContact().getLastName() %>" size=14 onchange="setContentChanged(true)">
                               </td>
                               <td>First Name: 
-                                <input type="text" name="ContactFirstName" value="<%= sc.getPrimaryContact().getFirstName() %>" size=14>
+                                <input type="text" name="ContactFirstName" value="<%= sc.getPrimaryContact().getFirstName() %>" size=14 onchange="setContentChanged(true)">
                               </td>
                             </tr>
                           </table>
@@ -176,10 +179,10 @@ function editAddress(form) {
                     <input type="submit" name="Submit" value="Submit" <%= viewOnly %>>
                   </td>
                   <td width="205"> 
-                    <input type="reset" name="Reset" value="Reset" <%= viewOnly %>>
+                    <input type="reset" name="Reset" value="Reset" <%= viewOnly %> onclick="setContentChanged(false)">
                   </td>
                   <td width="75" align="right"> 
-                    <input type="button" name="Back" value="Back" onclick="location.href='AdminTest.jsp'">
+                    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='AdminTest.jsp'">
                   </td>
                 </tr>
               </table>

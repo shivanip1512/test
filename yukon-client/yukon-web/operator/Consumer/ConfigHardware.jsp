@@ -140,12 +140,12 @@ function changeProgSelection(chkBox) {
 %>
                   <tr> 
                     <td width="5%" height="2"> 
-                      <input type="checkbox" name="ProgID" value="<%= program.getProgramID() %>" checked onclick="changeProgSelection(this)">
+                      <input type="checkbox" name="ProgID" value="<%= program.getProgramID() %>" checked onclick="changeProgSelection(this);setContentChanged(true);">
                     </td>
                     <td width="35%" class="TableCell" height="2"><%= program.getProgramName() %></td>
 <% if (!useHardwareAddressing) { %>
                     <td width="35%" height="2"> 
-                      <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID">
+                      <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID" onchange="setContentChanged(true)">
 <%
 		for (int j = 0; j < enrProg.getAddressingGroupCount(); j++) {
 			AddressingGroup group = enrProg.getAddressingGroup(j);
@@ -161,7 +161,7 @@ function changeProgSelection(chkBox) {
                     <input type="hidden" name="GroupID" value="0">
 <% } %>
                     <td width="25%" height="2">
-                      <select id="Load_Prog<%= program.getProgramID() %>" name="LoadNo">
+                      <select id="Load_Prog<%= program.getProgramID() %>" name="LoadNo" onchange="setContentChanged(true)">
                         <option value="0">(none)</option>
 <%
 		int numRelays = (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM)? 8 : 4;
@@ -184,12 +184,12 @@ function changeProgSelection(chkBox) {
 %>
                   <tr> 
                     <td width="5%" height="2"> 
-                      <input type="checkbox" name="ProgID" value="<%= program.getProgramID() %>" onclick="changeProgSelection(this)">
+                      <input type="checkbox" name="ProgID" value="<%= program.getProgramID() %>" onclick="changeProgSelection(this);setContentChanged(true);">
                     </td>
                     <td width="35%" class="TableCell" height="2"><%= program.getProgramName() %></td>
 <% if (!useHardwareAddressing) { %>
                     <td width="35%" height="2"> 
-                      <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID" disabled="true">
+                      <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID" disabled onchange="setContentChanged(true)">
 <%
 			for (int j = 0; j < enrProg.getAddressingGroupCount(); j++) {
 				AddressingGroup group = enrProg.getAddressingGroup(j);
@@ -204,7 +204,7 @@ function changeProgSelection(chkBox) {
                     <input type="hidden" name="GroupID" value="0">
 <% } %>
                     <td width="25%" height="2">
-                      <select id="Load_Prog<%= program.getProgramID() %>" name="LoadNo" disabled="true">
+                      <select id="Load_Prog<%= program.getProgramID() %>" name="LoadNo" disabled onchange="setContentChanged(true)">
                         <option value="0">(none)</option>
 <%
 		int numRelays = (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM)? 8 : 4;

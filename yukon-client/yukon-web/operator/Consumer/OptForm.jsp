@@ -26,6 +26,7 @@ function MM_popupMsg(msg) { //v1.0
   <tr>
     <td>
       <%@ include file="include/HeaderBar.jsp" %>
+      <script language="JavaScript">setContentChanged(true);</script>
     </td>
   </tr>
   <tr>

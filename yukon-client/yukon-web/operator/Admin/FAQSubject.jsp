@@ -66,6 +66,7 @@ function moveUp(form) {
 		answers[idx] = answers[idx-1];
 		answers[idx-1] = value;
 		curIdx--;
+		setContentChanged(true);
 	}
 }
 
@@ -83,6 +84,7 @@ function moveDown(form) {
 		answers[idx] = answers[idx+1];
 		answers[idx+1] = value;
 		curIdx++;
+		setContentChanged(true);
 	}
 }
 
@@ -96,6 +98,7 @@ function deleteFAQ(form) {
 		answers.splice(idx, 1);
 		faqs.selectedIndex = faqs.options.length - 1;
 		showFAQ(form);
+		setContentChanged(true);
 	}
 }
 
@@ -109,6 +112,7 @@ function deleteAllFAQs(form) {
 		answers.splice(0, answers.length);
 		faqs.selectedIndex = faqs.options.length - 1;
 		showFAQ(form);
+		setContentChanged(true);
 	}
 }
 
@@ -123,6 +127,7 @@ function saveFAQ(form) {
 	}
 	faqs.options[curIdx].innerText = getFAQString(curIdx);
 	showFAQ(form);
+	setContentChanged(true);
 }
 
 function prepareSubmit(form) {
@@ -175,7 +180,7 @@ function prepareSubmit(form) {
                       <tr> 
                         <td width="15%" align="right" class="TableCell">Subject:</td>
                         <td width="85%" class="TableCell" colspan="2"> 
-                          <input type="text" name="Subject" value="<%= group.getSubject() %>" size="40">
+                          <input type="text" name="Subject" value="<%= group.getSubject() %>" size="40" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -204,7 +209,7 @@ function prepareSubmit(form) {
                                 <br>
                                 <input type="button" name="Delete" value="Delete" onclick="deleteFAQ(this.form)">
                                 <br>
-                                <input type="button" name="DeleteAll" value="Delete All" onClick="deleteAllFAQs(this.form)">
+                                <input type="button" name="DeleteAll" value="Delete All" onclick="deleteAllFAQs(this.form)">
                               </td>
                             </tr>
                           </table>
@@ -236,7 +241,7 @@ function prepareSubmit(form) {
                                 </table>
                               </td>
                               <td class="TableCell" width="20%"> 
-                                <input type="button" name="Save" value="Add" onClick="saveFAQ(this.form)">
+                                <input type="button" name="Save" value="Add" onclick="saveFAQ(this.form)">
                               </td>
                             </tr>
                           </table>
@@ -252,10 +257,10 @@ function prepareSubmit(form) {
                     <input type="submit" name="Submit" value="Submit">
                   </td>
                   <td width="205"> 
-                    <input type="reset" name="Reset" value="Reset">
+                    <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                   </td>
                   <td width="75" align="right"> 
-                    <input type="button" name="Done" value="Done" onclick="location.href='CustomerFAQ.jsp'">
+                    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='CustomerFAQ.jsp'">
                   </td>
                 </tr>
               </table>

@@ -162,27 +162,27 @@ function addCustomerGroup(form) {
                         <td width="25%" align="right" class="TableCell">Company 
                           Name:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="CompanyName" value="<%= ec.getCompanyName() %>" size="30">
+                          <input type="text" name="CompanyName" value="<%= ec.getCompanyName() %>" size="30" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Main Phone 
                           #:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="PhoneNo" value="<%= ec.getMainPhoneNumber() %>" size="30">
+                          <input type="text" name="PhoneNo" value="<%= ec.getMainPhoneNumber() %>" size="30" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Main Fax 
                           #:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="FaxNo" value="<%= ec.getMainFaxNumber() %>" size="30">
+                          <input type="text" name="FaxNo" value="<%= ec.getMainFaxNumber() %>" size="30" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Email:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="Email" value="<%= ec.getEmail() %>" size="30">
+                          <input type="text" name="Email" value="<%= ec.getEmail() %>" size="30" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -214,14 +214,14 @@ function addCustomerGroup(form) {
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Time Zone:</td>
                         <td class="TableCell"> 
-                          <input type="text" name="TimeZone" value="<%= ec.getTimeZone() %>" size="14">
+                          <input type="text" name="TimeZone" value="<%= ec.getTimeZone() %>" size="14" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Default 
                           Route:</td>
                         <td class="TableCell"> 
-                          <select name="Route">
+                          <select name="Route" onchange="setContentChanged(true)">
                             <option value="<%= LiteStarsEnergyCompany.INVALID_ROUTE_ID %>">(none)</option>
 <%
 	int routeID = liteEC.getDefaultRouteID();
@@ -243,7 +243,7 @@ function addCustomerGroup(form) {
                         <td width="25%" align="right" class="TableCell">Operator 
                           Groups: </td>
                         <td class="TableCell"> 
-                          <input type="text" name="OperatorGroup" size="50" value="<%= operGroup %>">
+                          <input type="text" name="OperatorGroup" size="50" value="<%= operGroup %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -259,14 +259,14 @@ function addCustomerGroup(form) {
 	}
 %>
                           </select>
-                          <input type="button" name="AddOperGrp" value="Add" onClick="addOperatorGroup(this.form)">
+                          <input type="button" name="AddOperGrp" value="Add" onclick="addOperatorGroup(this.form);setContentChanged(true);">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Res. Customer 
                           Groups:</td>
                         <td class="TableCell"> 
-                          <input type="text" name="CustomerGroup" size="50" value="<%= custGroup %>">
+                          <input type="text" name="CustomerGroup" size="50" value="<%= custGroup %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr>
@@ -282,21 +282,21 @@ function addCustomerGroup(form) {
 	}
 %>
                           </select>
-                          <input type="button" name="AddCustGrp" value="Add" onClick="addCustomerGroup(this.form)">
+                          <input type="button" name="AddCustGrp" value="Add" onclick="addCustomerGroup(this.form);setContentChanged(true);">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Admin. Email 
                           Sender:</td>
                         <td class="TableCell"> 
-                          <input type="text" name="AdminEmail" size="50" value="<%= adminEmail %>">
+                          <input type="text" name="AdminEmail" size="50" value="<%= adminEmail %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Opt out 
                           Notif. Recipients:</td>
                         <td class="TableCell"> 
-                          <input type="text" name="OptOutNotif" size="50" value="<%= optOutNotif %>">
+                          <input type="text" name="OptOutNotif" size="50" value="<%= optOutNotif %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                     </table>
@@ -310,10 +310,10 @@ function addCustomerGroup(form) {
                     <input type="submit" name="Submit" value="Submit">
                   </td>
                   <td width="205"> 
-                    <input type="reset" name="Reset" value="Reset">
+                    <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                   </td>
                   <td width="75" align="right"> 
-                    <input type="button" name="Back" value="Back" onclick="location.href='AdminTest.jsp'">
+                    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='AdminTest.jsp'">
                   </td>
                 </tr>
               </table>

@@ -51,19 +51,19 @@ Required variables:
         <tr align="center"> 
           <td width="30" class="HeaderCell"><%= i+1 %></td>
           <td width="65"> 
-            <input type="text" name="ColdLoadPickup" value="<%= coldLoadPickup[i] %>" size="4" maxlength="10">
+            <input type="text" name="ColdLoadPickup" value="<%= coldLoadPickup[i] %>" size="4" maxlength="10" onchange="setContentChanged(true)">
           </td>
 <% if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305) { %>
           <td width="65"> 
-            <input type="text" name="TamperDetect" value="<%= tamperDetect[i] %>" size="4" maxlength="10">
+            <input type="text" name="TamperDetect" value="<%= tamperDetect[i] %>" size="4" maxlength="10" onchange="setContentChanged(true)">
           </td>
 <% } %>
 <% if (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM) { %>
           <td width="65"> 
-            <input type="text" name="XCOM_Program" value="<%= program[i] %>" size="4" maxlength="10">
+            <input type="text" name="XCOM_Program" value="<%= program[i] %>" size="4" maxlength="10" onchange="setContentChanged(true)">
           </td>
           <td width="65"> 
-            <input type="text" name="XCOM_Splinter" value="<%= splinter[i] %>" size="4" maxlength="10">
+            <input type="text" name="XCOM_Splinter" value="<%= splinter[i] %>" size="4" maxlength="10" onchange="setContentChanged(true)">
           </td>
 <% } %>
         </tr>

@@ -101,6 +101,8 @@ function prepareSubmit(form) {
   <tr>
     <td>
       <%@ include file="include/HeaderBar.jsp" %>
+      <!-- This is not the first page in a wizard, so always set the content changed to be true -->
+      <script language="JavaScript">setContentChanged(true);</script>
     </td>
   </tr>
   <tr>

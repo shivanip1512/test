@@ -54,13 +54,13 @@
                             <tr>
                               <td width="100" align="right">Last Name:</td>
                               <td width="192">
-                                <input type="text" name="LastName" size="24" value="<%= primContact.getLastName() %>">
+                                <input type="text" name="LastName" size="24" value="<%= primContact.getLastName() %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                             <tr>
                               <td width="100" align="right">First Name:</td>
                               <td width="192">
-                                <input type="text" name="FirstName" size="24" value="<%= primContact.getFirstName() %>">
+                                <input type="text" name="FirstName" size="24" value="<%= primContact.getFirstName() %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                           </table>
@@ -73,7 +73,7 @@
 %>
                             <tr>
                               <td width="146" align="right">
-                                <select name="NotifCat">
+                                <select name="NotifCat" onchange="setContentChanged(true)">
                                   <option value="0">(none)</option>
 <%
 		for (int j = 0; j < contactTypeList.size(); j++) {
@@ -87,7 +87,7 @@
                                 </select>
                               </td>
                               <td width="146">
-                                <input type="text" name="Notification" size="24" value="<%= contNotif.getNotification() %>">
+                                <input type="text" name="Notification" size="24" value="<%= contNotif.getNotification() %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
 <%
@@ -96,7 +96,7 @@
 %>
                             <tr>
                               <td width="146" align="right">
-                                <select name="NotifCat">
+                                <select name="NotifCat" onchange="setContentChanged(true)">
                                   <option value="0">(none)</option>
 <%
 		for (int j = 0; j < contactTypeList.size(); j++) {
@@ -109,7 +109,7 @@
                                 </select>
                               </td>
                               <td width="146">
-                                <input type="text" name="Notification" size="24">
+                                <input type="text" name="Notification" size="24" onchange="setContentChanged(true)">
                               </td>
                             </tr>
 <%
@@ -148,13 +148,13 @@
                             <tr>
                               <td width="100" align="right">Last Name:</td>
                               <td width="192">
-                                <input type="text" name="LastName" size="24" value="<%= contact.getLastName() %>">
+                                <input type="text" name="LastName" size="24" value="<%= contact.getLastName() %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                             <tr>
                               <td width="100" align="right">First Name:</td>
                               <td width="192">
-                                <input type="text" name="FirstName" size="24" value="<%= contact.getFirstName() %>">
+                                <input type="text" name="FirstName" size="24" value="<%= contact.getFirstName() %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                           </table>
@@ -167,7 +167,7 @@
 %>
                             <tr>
                               <td width="146" align="right">
-                                <select name="NotifCat">
+                                <select name="NotifCat" onchange="setContentChanged(true)">
                                   <option value="0">(none)</option>
 <%
 			for (int k = 0; k < contactTypeList.size(); k++) {
@@ -181,7 +181,7 @@
                                 </select>
                               </td>
                               <td width="146">
-                                <input type="text" name="Notification" size="24" value="<%= contNotif.getNotification() %>">
+                                <input type="text" name="Notification" size="24" value="<%= contNotif.getNotification() %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
 <%
@@ -190,7 +190,7 @@
 %>
                             <tr>
                               <td width="146" align="right">
-                                <select name="NotifCat">
+                                <select name="NotifCat" onchange="setContentChanged(true)">
                                   <option value="0">(none)</option>
 <%
 			for (int k = 0; k < contactTypeList.size(); k++) {
@@ -203,7 +203,7 @@
                                 </select>
                               </td>
                               <td width="146">
-                                <input type="text" name="Notification" size="24">
+                                <input type="text" name="Notification" size="24" onchange="setContentChanged(true)">
                               </td>
                             </tr>
 <%
@@ -244,13 +244,13 @@
                             <tr>
                               <td width="100" align="right">Last Name:</td>
                               <td width="192">
-                                <input type="text" name="LastName" size="24">
+                                <input type="text" name="LastName" size="24" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                             <tr>
                               <td width="100" align="right">First Name:</td>
                               <td width="192">
-                                <input type="text" name="FirstName" size="24">
+                                <input type="text" name="FirstName" size="24" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                           </table>
@@ -262,7 +262,7 @@
 %>
                             <tr> 
                               <td width="146" align="right"> 
-                                <select name="NotifCat">
+                                <select name="NotifCat" onchange="setContentChanged(true)">
                                   <option value="0">(none)</option>
 <%
 		for (int j = 0; j < contactTypeList.size(); j++) {
@@ -275,7 +275,7 @@
                                 </select>
                               </td>
                               <td width="146"> 
-                                <input type="text" name="Notification" size="24">
+                                <input type="text" name="Notification" size="24" onchange="setContentChanged(true)">
                               </td>
                             </tr>
 <%

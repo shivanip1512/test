@@ -79,7 +79,7 @@ function validate(form) {
                         <td width="25%" align="right" class="TableCell">Operator 
                           Group: </td>
                         <td width="75%" class="TableCell"> 
-                          <select name="OperatorGroup">
+                          <select name="OperatorGroup" onchange="setContentChanged(true)">
 <%
 		com.cannontech.database.data.lite.LiteYukonGroup[] operGroups = liteEC.getWebClientOperatorGroups();
 		for (int i = 0; i < operGroups.length; i++) {
@@ -95,19 +95,19 @@ function validate(form) {
                       <tr>
                         <td width="25%" align="right" class="TableCell">&nbsp;</td>
                         <td width="75%" class="TableCell">
-                          <input type="checkbox" name="Status" value="true" <%= checked %>>
+                          <input type="checkbox" name="Status" value="true" <%= checked %> onclick="setContentChanged(true)">
                           Login Enabled</td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Username:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="Username" value="<%= liteUser.getUsername() %>">
+                          <input type="text" name="Username" value="<%= liteUser.getUsername() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Password:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="Password" name="Password">
+                          <input type="Password" name="Password" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -127,10 +127,10 @@ function validate(form) {
                     <input type="submit" name="Submit" value="Submit">
                   </td>
                   <td width="205"> 
-                    <input type="reset" name="Reset" value="Reset">
+                    <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                   </td>
                   <td width="75" align="right"> 
-                    <input type="button" name="Back" value="Back" onclick="location.href='AdminTest.jsp'">
+                    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='AdminTest.jsp'">
                   </td>
                 </tr>
               </table>

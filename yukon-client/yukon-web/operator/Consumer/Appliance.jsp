@@ -123,7 +123,7 @@ function deleteAppliance(form) {
                             <div align="right">Model #:</div>
                           </td>
                           <td width="200" height="5"> 
-                            <input type="text" name="ModelNo" maxlength="40" size="24" value="<%= appliance.getModelNumber() %>">
+                            <input type="text" name="ModelNo" maxlength="40" size="24" value="<%= appliance.getModelNumber() %>" onchange="setContentChanged(true)">
                           </td>
                         </tr>
                         <tr> 
@@ -131,7 +131,7 @@ function deleteAppliance(form) {
                             <div align="right">Location:</div>
                           </td>
                           <td width="200"> 
-                            <select name="Location">
+                            <select name="Location" onchange="setContentChanged(true)">
 <%
 	StarsCustSelectionList locationList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION );
 	for (int i = 0; i < locationList.getStarsSelectionListEntryCount(); i++) {
@@ -150,7 +150,7 @@ function deleteAppliance(form) {
                             <div align="right">Manufacturer:</div>
                           </td>
                           <td width="200"> 
-                            <select name="Manufacturer">
+                            <select name="Manufacturer" onchange="setContentChanged(true)">
                               <%
 	StarsCustSelectionList manuList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER );
 	for (int i = 0; i < manuList.getStarsSelectionListEntryCount(); i++) {
@@ -169,7 +169,7 @@ function deleteAppliance(form) {
                             <div align="right">Year Manufactured:</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="ManuYear" maxlength="14" size="14" value="<%= yearMade %>">
+                            <input type="text" name="ManuYear" maxlength="14" size="14" value="<%= yearMade %>" onchange="setContentChanged(true)">
                           </td>
                         </tr>
                         <tr> 
@@ -177,7 +177,7 @@ function deleteAppliance(form) {
                             <div align="right">KW Capacity:</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="KWCapacity" maxlength="14" size="14" value="<%= kwCap %>">
+                            <input type="text" name="KWCapacity" maxlength="14" size="14" value="<%= kwCap %>" onchange="setContentChanged(true)">
                           </td>
                         </tr>
                         <tr> 
@@ -185,7 +185,7 @@ function deleteAppliance(form) {
                             <div align="right">Efficiency Rating:</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="EffRating" maxlength="14" size="14" value="<%= effRate %>">
+                            <input type="text" name="EffRating" maxlength="14" size="14" value="<%= effRate %>" onchange="setContentChanged(true)">
                           </td>
                         </tr>
                         <tr> 
@@ -193,7 +193,7 @@ function deleteAppliance(form) {
                             <div align="right">Notes:</div>
                           </td>
                           <td width="200"> 
-                            <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= appliance.getNotes().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
+                            <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell" onchange="setContentChanged(true)"><%= appliance.getNotes().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                           </td>
                         </tr>
                       </table>
@@ -206,7 +206,7 @@ function deleteAppliance(form) {
                             <div align="right">Tonnage:</div>
                           </td>
                           <td width="200"> 
-                            <select name="AC_Tonnage">
+                            <select name="AC_Tonnage" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList tonnageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_AC_TONNAGE );
 		int tonnageID = (appliance.getAirConditioner().getTonnage() != null)? appliance.getAirConditioner().getTonnage().getEntryID() : 0;
@@ -226,7 +226,7 @@ function deleteAppliance(form) {
                             <div align="right">Type:</div>
                           </td>
                           <td width="200"> 
-                            <select name="AC_Type">
+                            <select name="AC_Type" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList typeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_AC_TYPE );
 		int typeID = (appliance.getAirConditioner().getACType() != null)? appliance.getAirConditioner().getACType().getEntryID() : 0;
@@ -255,7 +255,7 @@ function deleteAppliance(form) {
                             <div align="right"># Gallons:</div>
                           </td>
                           <td width="200"> 
-                            <select name="WH_GallonNum">
+                            <select name="WH_GallonNum" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList gallonNumList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_WH_NUM_OF_GALLONS );
 		int numGalID = (appliance.getWaterHeater().getNumberOfGallons() != null)? appliance.getWaterHeater().getNumberOfGallons().getEntryID() : 0;
@@ -275,7 +275,7 @@ function deleteAppliance(form) {
                             <div align="right">Energy Source:</div>
                           </td>
                           <td width="200"> 
-                            <select name="WH_EnergySrc">
+                            <select name="WH_EnergySrc" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList energySrcList1 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_WH_ENERGY_SOURCE );
 		int energySrcID = (appliance.getWaterHeater().getEnergySource() != null)? appliance.getWaterHeater().getEnergySource().getEntryID() : 0;
@@ -295,7 +295,7 @@ function deleteAppliance(form) {
                             <div align="right"># Heating Coils:</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="WH_ElementNum" maxlength="14" size="14" value="<%= numElmt %>">
+                            <input type="text" name="WH_ElementNum" maxlength="14" size="14" value="<%= numElmt %>" onchange="setContentChanged(true)">
                           </td>
                         </tr>
                       </table>
@@ -312,7 +312,7 @@ function deleteAppliance(form) {
                             <div align="right">Switch-over Type:</div>
                           </td>
                           <td width="200"> 
-                            <select name="DF_SwitchOverType">
+                            <select name="DF_SwitchOverType" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList switchOverTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DF_SWITCH_OVER_TYPE );
 		int soTypeID = (appliance.getDualFuel().getSwitchOverType() != null)? appliance.getDualFuel().getSwitchOverType().getEntryID() : 0;
@@ -332,7 +332,7 @@ function deleteAppliance(form) {
                             <div align="right">Secondary KW Capacity:</div>
                           </td>
                           <td width="200" height="2"> 
-                            <input type="text" name="DF_KWCapacity2" maxlength="14" size="14" value="<%= kwCap2 %>">
+                            <input type="text" name="DF_KWCapacity2" maxlength="14" size="14" value="<%= kwCap2 %>" onchange="setContentChanged(true)">
                           </td>
                         </tr>
                         <tr> 
@@ -340,7 +340,7 @@ function deleteAppliance(form) {
                             <div align="right">Secondary Energy Source:</div>
                           </td>
                           <td width="200" height="2"> 
-                            <select name="DF_SecondarySrc">
+                            <select name="DF_SecondarySrc" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList energySrcList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DF_SECONDARY_SOURCE );
 		int energySrcID = (appliance.getDualFuel().getSecondaryEnergySource() != null)? appliance.getDualFuel().getSecondaryEnergySource().getEntryID() : 0;
@@ -377,7 +377,7 @@ function deleteAppliance(form) {
                             <div align="right">Transfer switch Type:</div>
                           </td>
                           <td width="200"> 
-                            <select name="GEN_TranSwitchType">
+                            <select name="GEN_TranSwitchType" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList tranSwitchTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_TYPE );
 		int tsTypeID = (appliance.getGenerator().getTransferSwitchType() != null)? appliance.getGenerator().getTransferSwitchType().getEntryID() : 0;
@@ -397,7 +397,7 @@ function deleteAppliance(form) {
                             <div align="right">Transfer Switch Manufacturer:</div>
                           </td>
                           <td width="200"> 
-                            <select name="GEN_TranSwitchMfg">
+                            <select name="GEN_TranSwitchMfg" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList tranSwitchMfgList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_MFG );
 		int tsMfgID = (appliance.getGenerator().getTransferSwitchManufacturer() != null)? appliance.getGenerator().getTransferSwitchManufacturer().getEntryID() : 0;
@@ -417,7 +417,7 @@ function deleteAppliance(form) {
                             <div align="right">Peak KW Capacity:</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="GEN_KWCapacity" maxlength="14" size="14" value="<%= peakKW %>">
+                            <input type="text" name="GEN_KWCapacity" maxlength="14" size="14" value="<%= peakKW %>" onchange="setContentChanged(true)">
                           </td>
                         </tr>
                         <tr> 
@@ -425,7 +425,7 @@ function deleteAppliance(form) {
                             <div align="right">Fuel Capacity (gal):</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="GEN_FuelCapGal" maxlength="14" size="14" value="<%= fuelCap %>">
+                            <input type="text" name="GEN_FuelCapGal" maxlength="14" size="14" value="<%= fuelCap %>" onchange="setContentChanged(true)">
                           </td>
                         </tr>
                         <tr> 
@@ -433,7 +433,7 @@ function deleteAppliance(form) {
                             <div align="right">Start Delay (sec):</div>
                           </td>
                           <td width="200" height="2"> 
-                            <input type="text" name="GEN_StartDelaySec" maxlength="14" size="14" value="<%= startDelay %>">
+                            <input type="text" name="GEN_StartDelaySec" maxlength="14" size="14" value="<%= startDelay %>" onchange="setContentChanged(true)">
                           </td>
                         </tr>
                       </table>
@@ -447,7 +447,7 @@ function deleteAppliance(form) {
                             <div align="right">Dryer Type:</div>
                           </td>
                           <td width="200" height="17"> 
-                            <select name="GD_DryerType">
+                            <select name="GD_DryerType" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList dryerTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GRAIN_DRYER_TYPE );
 		int typeID = (appliance.getGrainDryer().getDryerType() != null)? appliance.getGrainDryer().getDryerType().getEntryID() : 0;
@@ -467,7 +467,7 @@ function deleteAppliance(form) {
                             <div align="right">Bin Size:</div>
                           </td>
                           <td width="200"> 
-                            <select name="GD_BinSize">
+                            <select name="GD_BinSize" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList binSizeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GD_BIN_SIZE );
 		int binSizeID = (appliance.getGrainDryer().getBinSize() != null)? appliance.getGrainDryer().getBinSize().getEntryID() : 0;
@@ -487,7 +487,7 @@ function deleteAppliance(form) {
                             <div align="right">Blower Energy Source:</div>
                           </td>
                           <td width="200"> 
-                            <select name="GD_BlowerEenrgySrc">
+                            <select name="GD_BlowerEenrgySrc" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList energySrcList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GD_ENERGY_SOURCE );
 		int energySrcID = (appliance.getGrainDryer().getBlowerEnergySource() != null)? appliance.getGrainDryer().getBlowerEnergySource().getEntryID() : 0;
@@ -507,7 +507,7 @@ function deleteAppliance(form) {
                             <div align="right">Blower Horse Power:</div>
                           </td>
                           <td width="200">
-                            <select name="GD_BlowerHorsePower">
+                            <select name="GD_BlowerHorsePower" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList horsePowerList1 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GD_HORSE_POWER );
 		int horsePwrID = (appliance.getGrainDryer().getBlowerHorsePower() != null)? appliance.getGrainDryer().getBlowerHorsePower().getEntryID() : 0;
@@ -527,7 +527,7 @@ function deleteAppliance(form) {
                             <div align="right">Blower Heat Source:</div>
                           </td>
                           <td width="200" height="2">
-                            <select name="GD_BlowerHeatSrc">
+                            <select name="GD_BlowerHeatSrc" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList heatSrcList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GD_HEAT_SOURCE );
 		int heatSrcID = (appliance.getGrainDryer().getBlowerHeatSource() != null)? appliance.getGrainDryer().getBlowerHeatSource().getEntryID() : 0;
@@ -560,7 +560,7 @@ function deleteAppliance(form) {
                             <div align="right">Storage Type:</div>
                           </td>
                           <td width="200"> 
-                            <select name="SH_StorageType">
+                            <select name="SH_StorageType" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList storageTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_HEAT_TYPE );
 		int typeID = (appliance.getStorageHeat().getStorageType() != null)? appliance.getStorageHeat().getStorageType().getEntryID() : 0;
@@ -580,7 +580,7 @@ function deleteAppliance(form) {
                             <div align="right">Peak KW Capacity:</div>
                           </td>
                           <td width="200">
-                            <input type="text" name="SH_KWCapacity" maxlength="14" size="14" value="<%= peakKW %>">
+                            <input type="text" name="SH_KWCapacity" maxlength="14" size="14" value="<%= peakKW %>" onchange="setContentChanged(true)">
                           </td>
                         </tr>
                         <tr> 
@@ -588,7 +588,7 @@ function deleteAppliance(form) {
                             <div align="right">Recharge Time (hr):</div>
                           </td>
                           <td width="200">
-                            <input type="text" name="SH_RechargeHour" maxlength="14" size="14" value="<%= rechargeTime %>">
+                            <input type="text" name="SH_RechargeHour" maxlength="14" size="14" value="<%= rechargeTime %>" onchange="setContentChanged(true)">
                           </td>
                         </tr>
                       </table>
@@ -605,7 +605,7 @@ function deleteAppliance(form) {
                             <div align="right">Pump Type:</div>
                           </td>
                           <td width="200"> 
-                            <select name="HP_PumpType">
+                            <select name="HP_PumpType" onchange="setContentChanged(true)">
                               <%
 		StarsCustSelectionList pumpTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_TYPE );
 		int typeID = (appliance.getHeatPump().getPumpType() != null)? appliance.getHeatPump().getPumpType().getEntryID() : 0;
@@ -625,7 +625,7 @@ function deleteAppliance(form) {
                             <div align="right">Pump Size:</div>
                           </td>
                           <td width="200"> 
-                            <select name="HP_PumpSize">
+                            <select name="HP_PumpSize" onchange="setContentChanged(true)">
                               <%
 		StarsCustSelectionList pumpSizeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_SIZE );
 		int sizeID = (appliance.getHeatPump().getPumpSize() != null)? appliance.getHeatPump().getPumpSize().getEntryID() : 0;
@@ -645,7 +645,7 @@ function deleteAppliance(form) {
                             <div align="right">Stand-by Source:</div>
                           </td>
                           <td width="200"> 
-                            <select name="HP_StandbySrc">
+                            <select name="HP_StandbySrc" onchange="setContentChanged(true)">
                               <%
 		StarsCustSelectionList standbySrcList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_HP_STANDBY_SOURCE );
 		int standbySrcID = (appliance.getHeatPump().getStandbySource() != null)? appliance.getHeatPump().getStandbySource().getEntryID() : 0;
@@ -665,7 +665,7 @@ function deleteAppliance(form) {
                             <div align="right">Restart Delay (sec):</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="HP_RestartDelaySec" maxlength="14" size="14" value="<%= restartDelay %>">
+                            <input type="text" name="HP_RestartDelaySec" maxlength="14" size="14" value="<%= restartDelay %>" onchange="setContentChanged(true)">
                           </td>
                         </tr>
                       </table>
@@ -679,7 +679,7 @@ function deleteAppliance(form) {
                             <div align="right">Irrigation Type:</div>
                           </td>
                           <td width="200" height="17"> 
-                            <select name="IRR_IrrigationType">
+                            <select name="IRR_IrrigationType" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList irrTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRRIGATION_TYPE );
 		int typeID = (appliance.getIrrigation().getIrrigationType() != null)? appliance.getIrrigation().getIrrigationType().getEntryID() : 0;
@@ -699,7 +699,7 @@ function deleteAppliance(form) {
                             <div align="right">Horse Power:</div>
                           </td>
                           <td width="200"> 
-                            <select name="IRR_HorsePower">
+                            <select name="IRR_HorsePower" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList horsePowerList2 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_HORSE_POWER );
 		int horsePwrID = (appliance.getIrrigation().getHorsePower() != null)? appliance.getIrrigation().getHorsePower().getEntryID() : 0;
@@ -719,7 +719,7 @@ function deleteAppliance(form) {
                             <div align="right">Energy Source:</div>
                           </td>
                           <td width="200"> 
-                            <select name="IRR_EnergySrc">
+                            <select name="IRR_EnergySrc" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList energySrcList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_ENERGY_SOURCE );
 		int energySrcID = (appliance.getIrrigation().getEnergySource() != null)? appliance.getIrrigation().getEnergySource().getEntryID() : 0;
@@ -739,7 +739,7 @@ function deleteAppliance(form) {
                             <div align="right">Soil Type:</div>
                           </td>
                           <td width="200"> 
-                            <select name="IRR_SoilType">
+                            <select name="IRR_SoilType" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList soilTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_SOIL_TYPE );
 		int soilTypeID = (appliance.getIrrigation().getSoilType() != null)? appliance.getIrrigation().getSoilType().getEntryID() : 0;
@@ -759,7 +759,7 @@ function deleteAppliance(form) {
                             <div align="right">Meter Location:</div>
                           </td>
                           <td width="200" height="2"> 
-                            <select name="IRR_MeterLoc">
+                            <select name="IRR_MeterLoc" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList meterLocList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_METER_LOCATION );
 		int meterLocID = (appliance.getIrrigation().getMeterLocation() != null)? appliance.getIrrigation().getMeterLocation().getEntryID() : 0;
@@ -779,7 +779,7 @@ function deleteAppliance(form) {
                             <div align="right">Meter Voltage:</div>
                           </td>
                           <td width="200" height="2"> 
-                            <select name="IRR_MeterVolt">
+                            <select name="IRR_MeterVolt" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList meterVoltList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_METER_VOLTAGE );
 		int meterVoltID = (appliance.getIrrigation().getMeterVoltage() != null)? appliance.getIrrigation().getMeterVoltage().getEntryID() : 0;
@@ -865,7 +865,7 @@ function deleteAppliance(form) {
                   </td>
                     <td width="33%" align = "center"> 
                       <div>
-                        <input type="button" name="Reset" value="Reset" onclick="document.form1.reset()">
+                        <input type="button" name="Reset" value="Reset" onclick="document.form1.reset();setContentChanged(false);">
                       </div>
                     </td>
                     <td width="33%"> 

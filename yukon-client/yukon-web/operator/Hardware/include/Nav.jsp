@@ -23,7 +23,7 @@
 		}
 		else {
 			linkImg = "";
-			linkHtml = "<a href='" + linkTable[i][0] + "' class='Link2'><span class='NavText'>" + linkTable[i][1] + "</span></a>";
+			linkHtml = "<a href='" + linkTable[i][0] + "' class='Link2' onclick='return warnUnsavedChanges();'><span class='NavText'>" + linkTable[i][1] + "</span></a>";
 		}
 		links.put(linkPageName, new String[] {linkImg, linkHtml});
 	}

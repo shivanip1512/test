@@ -62,6 +62,7 @@ function moveUp(form) {
 			answerTypes[idx] = answerTypes[idx-1];
 			answerTypes[idx-1] = value;
 			showQuestion(form);
+			setContentChanged(true);
 		}
 	}
 }
@@ -81,6 +82,7 @@ function moveDown(form) {
 			answerTypes[idx] = answerTypes[idx+1];
 			answerTypes[idx+1] = value;
 			showQuestion(form);
+			setContentChanged(true);
 		}
 	}
 }
@@ -95,6 +97,7 @@ function deleteQuestion(form) {
 		answerTypes.splice(idx, 1);
 		qList.selectedIndex = qList.options.length - 1;
 		showQuestion(form);
+		setContentChanged(true);
 	}
 }
 
@@ -108,6 +111,7 @@ function deleteAllQuestions(form) {
 		answerTypes.splice(0, answerTypes.length);
 		qList.selectedIndex = qList.options.length - 1;
 		showQuestion(form);
+		setContentChanged(true);
 	}
 }
 
@@ -122,6 +126,7 @@ function saveQuestion(form) {
 	}
 	qList.options[curIdx].innerText = getQuestionString(curIdx);
 	showQuestion(form);
+	setContentChanged(true);
 }
 
 function prepareSubmit(form) {
@@ -266,10 +271,10 @@ function prepareSubmit(form) {
                     <input type="submit" name="Submit" value="Submit">
                   </td>
                   <td width="205"> 
-                    <input type="reset" name="Reset" value="Reset">
+                    <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                   </td>
                   <td width="75" align="right"> 
-                    <input type="button" name="Back" value="Back" onclick="location.href='AdminTest.jsp'">
+                    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='AdminTest.jsp'">
                   </td>
                 </tr>
               </table>

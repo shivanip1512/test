@@ -94,6 +94,7 @@ function confirmCancel() {
   <tr> 
     <td> 
       <%@ include file="include/HeaderBar.jsp" %>
+      <script language="JavaScript">setContentChanged(<%= inWizard %>);</script>
     </td>
   </tr>
   <tr> 

@@ -94,7 +94,7 @@ function init() {
                     <td class="TableCell" width="15%"><%= call.getCallNumber() %></td>
                     <td class="TableCell" width="15%"><%= ServletUtils.formatDate(call.getCallDate(), dateTimeFormat) %></td>
                     <td class="TableCell" width="15%"> 
-                      <select name="CallType_" class="TableCell">
+                      <select name="CallType_" class="TableCell" onchange="setContentChanged(true)">
 <%
 	StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE );
 	for (int j = 0; j < callTypeList.getStarsSelectionListEntryCount(); j++) {
@@ -108,7 +108,7 @@ function init() {
                       </select>
                     </td>
                     <td class="TableCell" width="40%"> 
-                      <textarea name="Description_" rows="3" wrap="soft" cols="35" class="TableCell"><%= call.getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
+                      <textarea name="Description_" rows="3" wrap="soft" cols="35" class="TableCell" onchange="setContentChanged(true)"><%= call.getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                     </td>
                     <td class="TableCell" width="10%"><%= call.getTakenBy() %></td>
                   </tr>
@@ -126,12 +126,12 @@ function init() {
                     </td>
 					<td width="15%">
 					  <div align="center"> 
-                        <input type="reset" name="Reset" value="Reset">
+                        <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                       </div>
 					</td>
                     <td width="42%"> 
                       <div align="left">
-                        <input type="button" name="Delete" value="Delete" onClick="deleteCall(this.form)">
+                        <input type="button" name="Delete" value="Delete" onclick="deleteCall(this.form)">
                       </div>
                     </td>
                   </tr>

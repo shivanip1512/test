@@ -98,7 +98,7 @@ function deleteLogin(form) {
                       <div align="right">Customer Group: </div>
                     </td>
                     <td width="268"> 
-                      <select name="CustomerGroup">
+                      <select name="CustomerGroup" onchange="setContentChanged(true)">
 <%
 	com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
 	if (custGroups == null || custGroups.length == 0) {
@@ -123,7 +123,7 @@ function deleteLogin(form) {
                       <div align="right"></div>
                     </td>
                     <td width="268" class="TableCell"> 
-                      <input type="checkbox" name="Status" value="<%= StarsLoginStatus.ENABLED.toString() %>"
+                      <input type="checkbox" name="Status" value="<%= StarsLoginStatus.ENABLED.toString() %>" onclick="setContentChanged(true)"
                         <% if (login.getStatus().getType() == StarsLoginStatus.ENABLED_TYPE) { %>checked<% } %>>
                       Login Enabled </td>
                   </tr>
@@ -132,7 +132,7 @@ function deleteLogin(form) {
                       <div align="right">New User Name: </div>
                     </td>
                     <td width="268"> 
-                      <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>">
+                      <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>" onchange="setContentChanged(true)">
                     </td>
                   </tr>
                   <tr> 
@@ -140,7 +140,7 @@ function deleteLogin(form) {
                       <div align="right">New Password:</div>
                     </td>
                     <td width="268"> 
-                      <input type="password" name="Password" maxlength="20" size="20">
+                      <input type="password" name="Password" maxlength="20" size="20" onchange="setContentChanged(true)">
                     </td>
                   </tr>
                   <tr> 
@@ -165,7 +165,7 @@ function deleteLogin(form) {
                       <input type="submit" name="Submit" value="Save">
                     </td>
                     <td width="20%" align="center"> 
-                      <input type="reset" name="Reset" value="Reset">
+                      <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                     </td>
                     <td width="40%">
                       <input type="button" name="Delete" value="Delete" onclick="deleteLogin(this.form)" <% if (userLogin == null) { %>disabled<% } %>>

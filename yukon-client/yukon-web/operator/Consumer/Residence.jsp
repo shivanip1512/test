@@ -47,7 +47,7 @@
                           <div align="right">Residence Type:</div>
                         </td>
                         <td width="184" valign="top"> 
-                          <select name="ResidenceType">
+                          <select name="ResidenceType" onchange="setContentChanged(true)">
 <%
 	StarsCustSelectionList resTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_RESIDENCE_TYPE );
 	for (int i = 0; i < resTypeList.getStarsSelectionListEntryCount(); i++) {
@@ -66,7 +66,7 @@
                           <div align="right">Construction Material: </div>
                         </td>
                         <td width="184"> 
-                          <select name="ConstMaterial">
+                          <select name="ConstMaterial" onchange="setContentChanged(true)">
 <%
 	StarsCustSelectionList constMtrlList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_CONSTRUCTION_MATERIAL );
 	for (int i = 0; i < constMtrlList.getStarsSelectionListEntryCount(); i++) {
@@ -85,7 +85,7 @@
                           <div align="right">Decade Built:</div>
                         </td>
                         <td width="184"> 
-                          <select name="DecadeBuilt">
+                          <select name="DecadeBuilt" onchange="setContentChanged(true)">
 <%
 	StarsCustSelectionList decadeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DECADE_BUILT );
 	for (int i = 0; i < decadeList.getStarsSelectionListEntryCount(); i++) {
@@ -104,7 +104,7 @@
                           <div align="right">Square Feet:</div>
                         </td>
                         <td width="184"> 
-                          <select name="SquareFeet">
+                          <select name="SquareFeet" onchange="setContentChanged(true)">
 <%
 	StarsCustSelectionList sqrFeetList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SQUARE_FEET );
 	for (int i = 0; i < sqrFeetList.getStarsSelectionListEntryCount(); i++) {
@@ -123,7 +123,7 @@
                           <div align="right">Insulation Depth:</div>
                         </td>
                         <td width="184"> 
-                          <select name="InsulationDepth">
+                          <select name="InsulationDepth" onchange="setContentChanged(true)">
 <%
 	StarsCustSelectionList inslDepthList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_INSULATION_DEPTH );
 	for (int i = 0; i < inslDepthList.getStarsSelectionListEntryCount(); i++) {
@@ -142,7 +142,7 @@
                           <div align="right">General Condition:</div>
                         </td>
                         <td width="184"> 
-                          <select name="GeneralCondition">
+                          <select name="GeneralCondition" onchange="setContentChanged(true)">
 <%
 	StarsCustSelectionList conditionList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GENERAL_CONDITION );
 	for (int i = 0; i < conditionList.getStarsSelectionListEntryCount(); i++) {
@@ -166,7 +166,7 @@
                           <div align="right">Main Cooling System:</div>
                         </td>
                         <td width="184"> 
-                          <select name="CoolingSystem">
+                          <select name="CoolingSystem" onchange="setContentChanged(true)">
 <%
 	StarsCustSelectionList coolSysList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_COOLING_SYSTEM );
 	for (int i = 0; i < coolSysList.getStarsSelectionListEntryCount(); i++) {
@@ -185,7 +185,7 @@
                           <div align="right">Main Heating System:</div>
                         </td>
                         <td width="184"> 
-                          <select name="HeatingSystem">
+                          <select name="HeatingSystem" onchange="setContentChanged(true)">
 <%
 	StarsCustSelectionList heatSysList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_HEATING_SYSTEM );
 	for (int i = 0; i < heatSysList.getStarsSelectionListEntryCount(); i++) {
@@ -204,7 +204,7 @@
                           <div align="right"># of Occupants:</div>
                         </td>
                         <td width="184"> 
-                          <select name="OccupantNum">
+                          <select name="OccupantNum" onchange="setContentChanged(true)">
 <%
 	StarsCustSelectionList occpNumList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_NUM_OF_OCCUPANTS );
 	for (int i = 0; i < occpNumList.getStarsSelectionListEntryCount(); i++) {
@@ -223,7 +223,7 @@
                           <div align="right">Ownership Type:</div>
                         </td>
                         <td width="184"> 
-                          <select name="OwnershipType">
+                          <select name="OwnershipType" onchange="setContentChanged(true)">
 <%
 	StarsCustSelectionList ownTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_OWNERSHIP_TYPE );
 	for (int i = 0; i < ownTypeList.getStarsSelectionListEntryCount(); i++) {
@@ -242,7 +242,7 @@
                           <div align="right">Main Fuel Type:</div>
                         </td>
                         <td width="184"> 
-                          <select name="FuelType">
+                          <select name="FuelType" onchange="setContentChanged(true)">
 <%
 	StarsCustSelectionList fuelTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_FUEL_TYPE );
 	for (int i = 0; i < fuelTypeList.getStarsSelectionListEntryCount(); i++) {
@@ -261,7 +261,7 @@
                           <div align="right">Notes:</div>
                         </td>
                         <td width="184"> 
-                          <textarea name="Notes" rows="6" wrap="soft" cols="26" class = "TableCell"><%
+                          <textarea name="Notes" rows="6" wrap="soft" cols="26" class = "TableCell" onchange="setContentChanged(true)"><%
 						  	if (residence != null) out.write(residence.getNotes().replaceAll("<br>", System.getProperty("line.separator")));
 						  %></textarea>
                         </td>
@@ -279,7 +279,7 @@
                   </td>
                   <td width="194"> 
                     <div align="left"> 
-                      <input type="reset" name="Reset" value="Reset">
+                      <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                     </div>
                   </td>
               </tr>

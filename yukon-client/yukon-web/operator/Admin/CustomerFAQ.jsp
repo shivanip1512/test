@@ -35,6 +35,7 @@ function moveUp(form) {
 		var oOption = subjects[idx];
 		subjects.options.remove(idx);
 		subjects.options.add(oOption, idx-1);
+		setContentChanged(true);
 	}
 }
 
@@ -45,6 +46,7 @@ function moveDown(form) {
 		var oOption = subjects[idx];
 		subjects.options.remove(idx);
 		subjects.options.add(oOption, idx+1);
+		setContentChanged(true);
 	}
 }
 
@@ -136,9 +138,9 @@ function newFAQSubject(form) {
 %>
                               <tr> 
                                 <td width="75%"> 
-                                  <input type="checkbox" name="CustomizedFAQ" value="true" onClick="this.form.FAQLink.disabled = !this.checked" <%= checkedStr %>>
+                                  <input type="checkbox" name="CustomizedFAQ" value="true" onclick="this.form.FAQLink.disabled = !this.checked;setContentChanged(true);" <%= checkedStr %>>
                                   Use a link to your company's website: 
-                                  <input type="text" name="FAQLink" size="30" value="<%= faqLink %>" <%= disabledStr %>>
+                                  <input type="text" name="FAQLink" size="30" value="<%= faqLink %>" <%= disabledStr %> onchange="setContentChanged(true)">
                                 </td>
                                 <td width="25%"> 
                                   <input type="submit" name="SubmitFAQLink" value="Submit">
@@ -192,16 +194,16 @@ function newFAQSubject(form) {
                                   <table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
                                     <tr> 
                                       <td width="15%"> 
-                                        <input type="button" name="Edit" value="Edit" onClick="editFAQSubject(this.form)">
+                                        <input type="button" name="Edit" value="Edit" onclick="editFAQSubject(this.form)">
                                       </td>
                                       <td width="15%"> 
-                                        <input type="button" name="New" value="New" onClick="newFAQSubject(this.form)">
+                                        <input type="button" name="New" value="New" onclick="newFAQSubject(this.form)">
                                       </td>
                                       <td width="15%"> 
-                                        <input type="button" name="Delete" value="Delete" onClick="deleteFAQSubject(this.form)">
+                                        <input type="button" name="Delete" value="Delete" onclick="deleteFAQSubject(this.form)">
                                       </td>
                                       <td width="55%"> 
-                                        <input type="button" name="DeleteAll" value="Delete All" onClick="deleteAllFAQSubjects(this.form)">
+                                        <input type="button" name="DeleteAll" value="Delete All" onclick="deleteAllFAQSubjects(this.form)">
                                       </td>
                                     </tr>
                                   </table>
@@ -219,7 +221,7 @@ function newFAQSubject(form) {
                     <td width="290" align="right">&nbsp; </td>
                     <td width="205">&nbsp; </td>
                     <td width="75" align="right"> 
-                      <input type="button" name="Back" value="Back" onClick="location.href='AdminTest.jsp'">
+                      <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='AdminTest.jsp'">
                     </td>
                   </tr>
                 </table>

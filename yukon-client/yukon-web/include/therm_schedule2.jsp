@@ -151,11 +151,10 @@ function updateLayout(hour1, min1, temp1C, temp1H, hour2, min2, temp2C, temp2H, 
 	showTemp(4);
 }
 
-var changed = false;
 var timeoutId = -1;
 
 function setChanged() {
-	changed = true;
+	setContentChanged(true);
 	if (timeoutId != -1) {
 		clearTimeout(timeoutId);
 		timeoutId = setTimeout("location.reload()", 300000);
@@ -167,23 +166,13 @@ function prepareSubmit(form) {
 	form.tempval2.value = document.getElementById('temp2').innerHTML.substr(0,2);
 	form.tempval3.value = document.getElementById('temp3').innerHTML.substr(0,2);
 	form.tempval4.value = document.getElementById('temp4').innerHTML.substr(0,2);
-	changed = false;
 <%	if (curSettings != null) { %>
 	document.getElementById("PromptMsg").style.display = "";
 <%	} %>
 }
 
 function switchSettings(day, mode) {
-	var form = document.form1;
-	form.REDIRECT.value = "<%= request.getRequestURI() %>?<%= thermNoStr %>&day=" + day + "&mode=" + mode;
-	if (changed && confirm('You have made changes to the thermostat schedule. Click "Ok" to submit these changes before leaving the page, or click "Cancel" to discard them.'))
-	{
-		var form = document.form1;
-		prepareSubmit(form);
-		form.submit();
-		return;
-	}
-	location.href = form.REDIRECT.value;
+	location.href = "<%= request.getRequestURI() %>?<%= thermNoStr %>&day=" + day + "&mode=" + mode;
 }
 
 function setToDefault() {
@@ -228,11 +217,10 @@ function setToDefault() {
 	toggleThermostat(2, <%= !dftSkip2 %>);
 	toggleThermostat(3, <%= !dftSkip3 %>);
 	toggleThermostat(4, <%= !dftSkip4 %>);
-	setChanged();
 }
 
 function saveSchedule() {
-	if (changed && confirm("You have made changes to the thermostat schedule. Would you like to save those changes first?")) {
+	if (isContentChanged() && confirm("You have made changes to the thermostat schedule. Would you like to save those changes first?")) {
 		var form = document.form1;
 <%
 	int lastSlashPos = request.getRequestURI().lastIndexOf("/");
@@ -336,43 +324,43 @@ function init() {
                             <% if (daySetting.getType() == StarsThermoDaySettings.MONDAY_TYPE) { %>
                             <b><span class="Header2">Mon</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.MONDAY.toString() %>', '<%= modeSetting.toString() %>')">Mon</span> 
+                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.MONDAY.toString() %>', '<%= modeSetting.toString() %>')">Mon</span> 
                             <% } %>
                             &nbsp;&nbsp; 
                             <% if (daySetting.getType() == StarsThermoDaySettings.TUESDAY_TYPE) { %>
                             <b><span class="Header2">Tue</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.TUESDAY.toString() %>', '<%= modeSetting.toString() %>')">Tue</span> 
+                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.TUESDAY.toString() %>', '<%= modeSetting.toString() %>')">Tue</span> 
                             <% } %>
                             &nbsp;&nbsp; 
                             <% if (daySetting.getType() == StarsThermoDaySettings.WEDNESDAY_TYPE) { %>
                             <b><span class="Header2">Wed</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.WEDNESDAY.toString() %>', '<%= modeSetting.toString() %>')">Wed</span> 
+                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.WEDNESDAY.toString() %>', '<%= modeSetting.toString() %>')">Wed</span> 
                             <% } %>
                             &nbsp;&nbsp; 
                             <% if (daySetting.getType() == StarsThermoDaySettings.THURSDAY_TYPE) { %>
                             <b><span class="Header2">Thu</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.THURSDAY.toString() %>', '<%= modeSetting.toString() %>')">Thu</span> 
+                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.THURSDAY.toString() %>', '<%= modeSetting.toString() %>')">Thu</span> 
                             <% } %>
                             &nbsp;&nbsp; 
                             <% if (daySetting.getType() == StarsThermoDaySettings.FRIDAY_TYPE) { %>
                             <b><span class="Header2">Fri</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.FRIDAY.toString() %>', '<%= modeSetting.toString() %>')">Fri</span> 
+                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.FRIDAY.toString() %>', '<%= modeSetting.toString() %>')">Fri</span> 
                             <% } %>
                             &nbsp;&nbsp; 
                             <% if (daySetting.getType() == StarsThermoDaySettings.SATURDAY_TYPE) { %>
                             <b><span class="Header2">Sat</span> </b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>', '<%= modeSetting.toString() %>')">Sat</span> 
+                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>', '<%= modeSetting.toString() %>')">Sat</span> 
                             <% } %>
                             &nbsp;&nbsp; 
                             <% if (daySetting.getType() == StarsThermoDaySettings.SUNDAY_TYPE) { %>
                             <b><span class="Header2">Sun</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeSetting.toString() %>')">Sun</span> 
+                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeSetting.toString() %>')">Sun</span> 
                             <% } %>
                           <td class = "Background" align = "right" width="50%"> 
 <%
@@ -381,9 +369,9 @@ function init() {
 	String weekendChecked = (String) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND);
 	if (weekendChecked == null || isRecommended) weekendChecked = "";
 %>
-                            <input type="checkbox" name="ApplyToWeekdays" value="true" <%= weekdaysChecked %>>
+                            <input type="checkbox" name="ApplyToWeekdays" value="true" <%= weekdaysChecked %> onclick="setChanged()">
                             <span class="TableCell1">Apply to weekdays </span> 
-                            <input type="checkbox" name="ApplyToWeekend" value="true" <%= weekendChecked %>>
+                            <input type="checkbox" name="ApplyToWeekend" value="true" <%= weekendChecked %> onclick="setChanged()">
                             <span class="TableCell1">Apply to weekends </span> 
 						  </td>
                         </tr>
@@ -403,14 +391,19 @@ function init() {
 <%
 	String instrLink = (isOperator)? AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_THERM_INSTRUCTIONS) :
 			AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LINK_THERM_INSTRUCTIONS);
-	String target = "target='instructions'";
 	if (ServerUtils.forceNotNone(instrLink).length() == 0) {
-		instrLink = "Instructions.jsp";
-		target = "";
+%>
+                              <a class="Link1" href="Instructions.jsp" onclick="return warnUnsavedChanges()">Click 
+                              for hints and details</a>.
+<%
+	}
+	else {
+%>
+                              <a class="Link1" href="<%= instrLink %>" target="instructions">Click 
+                              for hints and details</a>.
+<%
 	}
 %>
-                              <a class="Link1" href="<%= instrLink %>" <%= target %>>Click 
-                              for hints and details</a>.
                             </div>
                           </td>
                           <td class = "TableCell" width="29%" height="4" align = "left" valign="top" > 
@@ -428,10 +421,10 @@ function init() {
                               </span> </div>
                           </td>
                           <td width="31"><span class="TableCell"> 
-                            <input type="radio" name="radiobutton" value="radiobutton" <% if (isCooling) { %>checked<% } else { %>onclick="switchSettings('<%= daySetting.toString() %>', '<%= StarsThermoModeSettings.COOL.toString() %>')"<% } %>>
+                            <input type="radio" name="radiobutton" value="radiobutton" <% if (isCooling) { %>checked<% } else { %>onclick="if (warnUnsavedChanges()) switchSettings('<%= daySetting.toString() %>', '<%= StarsThermoModeSettings.COOL.toString() %>')"<% } %>>
                             </span></td>
 						  <td width="20"> 
-                            <input type="radio" name="radiobutton" value="radiobutton" <% if (!isCooling) { %>checked<% } else { %>onclick="switchSettings('<%= daySetting.toString() %>', '<%= StarsThermoModeSettings.HEAT.toString() %>')"<% } %>>
+                            <input type="radio" name="radiobutton" value="radiobutton" <% if (!isCooling) { %>checked<% } else { %>onclick="if (warnUnsavedChanges()) switchSettings('<%= daySetting.toString() %>', '<%= StarsThermoModeSettings.HEAT.toString() %>')"<% } %>>
                           </td>
                           <td width="56"><img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif"> 
                             <span class="TableCell"><font color="FF0000">Heating</font></span></td>
@@ -454,13 +447,13 @@ function init() {
                                 <tr> 
                                   <td width="50%"> 
                                     <div id="div1C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow1C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(1)','vertical','div1C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow1C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(1)','vertical','div1C');setChanged();"<% } %> style="visibility:<%= visibleC %>"><br>
                                       <img id="arrow1C_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
                                     </div>
                                   </td>
                                   <td width="50%"> 
                                     <div id="div1H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow1H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(1)','vertical','div1H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow1H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(1)','vertical','div1H');setChanged();"<% } %> style="visibility:<%= visibleH %>"><br>
                                       <img id="arrow1H_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
                                     </div>
                                   </td>
@@ -489,7 +482,7 @@ function init() {
                                   </td>
                                   <td width="50%"> 
                                     <div id="div2H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow2H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(2)','vertical','div2H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow2H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(2)','vertical','div2H');setChanged();"<% } %> style="visibility:<%= visibleH %>"><br>
                                       <img id="arrow2H_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
                                     </div>
                                   </td>
@@ -512,13 +505,13 @@ function init() {
                                 <tr> 
                                   <td width="50%"> 
                                     <div id="div3C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow3C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(3)','vertical','div3C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow3C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(3)','vertical','div3C');setChanged();"<% } %> style="visibility:<%= visibleC %>"><br>
                                       <img id="arrow3C_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
                                     </div>
                                   </td>
                                   <td width="50%"> 
                                     <div id="div3H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow3H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(3)','vertical','div3H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow3H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(3)','vertical','div3H');setChanged();"<% } %> style="visibility:<%= visibleH %>"><br>
                                       <img id="arrow3H_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
                                     </div>
                                   </td>
@@ -541,13 +534,13 @@ function init() {
                                 <tr> 
                                   <td width="50%"> 
                                     <div id="div4C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow4C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(4)','vertical','div4C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow4C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(4)','vertical','div4C');setChanged();"<% } %> style="visibility:<%= visibleC %>"><br>
                                       <img id="arrow4C_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
                                     </div>
                                   </td>
                                   <td width="50%"> 
                                     <div id="div4H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow4H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(4)','vertical','div4H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow4H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(4)','vertical','div4H');setChanged();"<% } %> style="visibility:<%= visibleH %>"><br>
                                       <img id="arrow4H_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
                                     </div>
                                   </td>
@@ -562,7 +555,7 @@ function init() {
                         <tr> 
                           <td width="10%" class="MainText"> 
                             <div align="right">
-                              <input type="checkbox" id="WakeEnabled" onclick="toggleThermostat(1, this.checked);setChanged();" disabled>
+                              <input type="checkbox" id="WakeEnabled" onclick="toggleThermostat(1, this.checked);setChanged()" disabled>
                             </div>
                           </td>
                           <td class = "TitleHeader" align = "left" width="15%"> 
@@ -668,12 +661,12 @@ function init() {
                     <input type="button" value="Save/Apply Schedule" onclick="saveSchedule()">
                     <p>
 <% } %>
-                    <input type="button" id="Default" value="Recommended Settings" onclick="setToDefault()">
+                    <input type="button" id="Default" value="Recommended Settings" onclick="setToDefault();setChanged();">
 <% } %>
                   </td>
 <% if (isRecommended) { %>
 				  <td width="15%" align = "right" class = "TableCell">
-				    <input type="button" name="Back" value="Back" onclick="location.href='AdminTest.jsp'">
+				    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='AdminTest.jsp'">
 				  </td>
 <% } %>
                 </tr>

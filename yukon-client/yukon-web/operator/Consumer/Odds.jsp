@@ -91,7 +91,7 @@
 %>
                         <tr> 
                           <td height="25"> 
-                            <select name="ControlOdds">
+                            <select name="ControlOdds" onchange="setContentChanged(true)">
                               <%
 			for (int k = 0; k < oddsList.getStarsSelectionListEntryCount(); k++) {
 				StarsSelectionListEntry entry = oddsList.getStarsSelectionListEntry(k);
