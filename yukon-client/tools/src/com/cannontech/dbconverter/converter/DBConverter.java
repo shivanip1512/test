@@ -565,9 +565,9 @@ public boolean processAccumulatorPoints()
 		
 	    accumPoint.getPoint().setPointName( tokenizer.nextElement().toString() );
 
-		Integer deviceID = new Integer( Integer.parseInt(tokenizer.nextElement().toString()) );
+		Integer deviceID = new Integer(Integer.parseInt(tokenizer.nextElement().toString()));
 
-		accumPoint.getPoint().setPaoID( deviceID );
+		accumPoint.getPoint().setPaoID(deviceID);
 		
 		// advance token but this is not used
 		tokenizer.nextElement();	//pseudoflag?

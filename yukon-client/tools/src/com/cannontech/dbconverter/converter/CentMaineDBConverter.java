@@ -4,11 +4,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
+import com.cannontech.database.data.device.MCT210;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.data.device.DeviceFactory;
+import com.cannontech.database.data.device.MCT210;
 import com.cannontech.database.data.device.Series5LMI;
+import com.cannontech.database.data.device.CCU711;
+import com.cannontech.database.db.device.DeviceIDLCRemote;
+import com.cannontech.database.data.device.Repeater900;
+import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMGroupGolay;
 import com.cannontech.database.data.device.lm.LMProgramBase;
@@ -25,6 +32,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.LocalDialupPort;
 import com.cannontech.database.data.port.LocalDirectPort;
+import com.cannontech.database.data.port.LocalSharedPort;
 import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.route.RouteFactory;
@@ -35,6 +43,7 @@ import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointLimit;
+import com.cannontech.database.db.port.CommPort;
 import com.cannontech.dbtools.updater.MessageFrameAdaptor;
 import com.cannontech.tools.gui.*;
 
@@ -52,26 +61,13 @@ public class CentMaineDBConverter extends MessageFrameAdaptor
 	 * 
 	 * HashMaps used for storing database objects that are needed
 	 * for a relationships to other tables (for example, the items
-	 * ID in the Hashmap may be needed to forma a foreign key relationship
+	 * ID in the Hashmap may be needed to form a foreign key relationship
 	 * with another table.
 	 * ______________________________________________________________________________*/
-	private HashMap stateGrpMap = new HashMap(32);
+
 	private HashMap deviceIDsMap = new HashMap(32);
 	private HashMap routeIDsMap = new HashMap(32);
-	
-	//example KEY<String> VALUES< ArrayList(LMGroups) >
-	private HashMap grpStratMap = new HashMap(32);
-
-	//example KEY<String> VALUES<LMProgramConstraint>
-	private HashMap constByNameMap = new HashMap(64);
-
-	//example KEY<Integer> VALUES<LMProgramControlWindow>
-	private HashMap constToWindowMap = new HashMap(64);
-
-	//example KEY<String> VALUES< int[] )>
-	private HashMap gearNameToShedPerc = new HashMap(64);
-
-
+	private HashMap macroRouteIDsMap = new HashMap(32);
 
 	/* ______________________________________________________________________________
 	 * 
@@ -83,30 +79,28 @@ public class CentMaineDBConverter extends MessageFrameAdaptor
 
 	private int PORTID_OFFSET = 2000;
 
-	private int GROUPID_OFFSET = 3000;
-	private int START_GROUP_ID = GROUPID_OFFSET + 1;
-
-	private int PROGRAMID_OFFSET = 10000;
-	private int START_PROGRAM_ID = PROGRAMID_OFFSET + 1;
-
-	private int START_PTID = 500;
-	private int START_CONSTRAINT_ID = 1;
-
+	private int DEMAND_POINT_ID = 16000;		// I made this
+	private int PULSE_POINT_ID = 18000;			// I made this
+	
+	private int CCUID_OFFSET = 4000; 			// I made this
+	private int RPTID_OFFSET = 5000; 			// I made this
+	private int ROUTE_ID = 10000;   		 	// I made this
+	private int MACRO_ROUTE_ID = 12000; 		// I made this
+	private int MCT_ID = 14000;					// I made this
+	private int MACRO_ROUTE_ID_OFFSET = 6000;  	// I made this
+	private static final int MAX_DSM2_MACRO_COUNT = 30;
 
 	/* ______________________________________________________________________________
 	 * 
 	 * File names that are read in by this application
 	 * ______________________________________________________________________________*/
-	private String analogPointFileName = "cti-analog.txt";
-	private String transmitterFileName = "cti-transmitter.txt";	
-	private String statusPointFileName = "cti-status.txt";
-	private String routeMacroFileName = "cti-users.txt";
-	private String routeEntriesFileName = "cti-usertransmitter.txt";
-	private String groupFileName = "cti-code_groups.txt";
-	private String progToGroupsFileName = "cti-programs_groups.txt";
-	private String progConstTimeFileName = "cti-sttime.txt";
-	private String progConstDateFileName = "cti-stdate.txt";
-	private String progConstTypeFileName = "cti-sttype.txt";
+	 
+	private String commListFileName = "comm list.txt";
+	private String transmitterFileName = "ccu list by name.txt";
+	private String repeaterFileName = "repeaters by name.txt";
+	private String routeFileName = "routelist without rptr.txt";
+	private String routeMacroFileName = "zonlst.txt";	
+	private String mctFileName = "device by id.txt";
 
 
 /**
@@ -128,7 +122,7 @@ public String getParamText()
 }
 
 /**
- * Executs all db inserts that are needed. If a failure occurs,
+ * Executes all db inserts that are needed. If a failure occurs,
  * then execution stops.
  */
 public void run()
@@ -138,11 +132,13 @@ public void run()
 
 	if( s ) s = processTransmitterFile();
 
-	if( s ) s = processLoadGroups();
+	if( s ) s = processRepeaterFile();
 
-	if( s ) s = processLoadProgramConstraints();
+	if( s ) s = processRouteFile();
 
-	if( s ) s = processLoadPrograms();
+	if( s ) s = processRouteMacrosFile();
+	
+	if( s ) s = processMCTFile();
 	
 
 	getIMessageFrame().addOutput("");
@@ -213,7 +209,6 @@ private void handleLocalDialupPort( com.cannontech.database.data.port.LocalDirec
 public static void main(String[] args) 
 {
 	String filePathName;
-	
 	if( args.length > 0 )
 	{
 		filePathName = args[0];
@@ -224,7 +219,7 @@ public static void main(String[] args)
 
 		CentMaineDBConverter converter = new CentMaineDBConverter();
 		converter.run();
-
+		
 	}
 	else
 	{
@@ -232,8 +227,6 @@ public static void main(String[] args)
 		CTILogger.info("Please enter a directory path for the location of conversion files");
 		CTILogger.info("Syntax: CentMaineDBConverter c:/yukon/client/bin");
 	}
-
-	
 }
 
 
@@ -242,435 +235,11 @@ public static void main(String[] args)
  * Creation date: (6/11/2001 11:56:45 AM)
  * @return boolean
  */
-public boolean processLoadPrograms() 
-{	
-	CTILogger.info("Starting Load Program file process...");
-	getIMessageFrame().addOutput("Starting Load Program file process (" + progToGroupsFileName + ")...");
 
-	
-	String aFileName = getFullFileName(progToGroupsFileName);
-	java.util.ArrayList lines = readFile(aFileName);
 
-	if( lines == null )
-		return true; //continue the process
-	
-	//create an object to hold all of our DBPersistant objects
-	MultiDBPersistent multi = new MultiDBPersistent();
-	multi.setCreateNewPAOIDs( false );
-		
-	for( int i = 0; i < lines.size(); i++ )
-	{
-		String[] line = lines.get(i).toString().split(",");
 
-		//ignore title line
-		if( i <= 2 || line.length <= 9 )
-			continue;
-		
-		CTILogger.info("LOAD_PROGRAM line: " + lines.get(i).toString());
 
 
-		LMProgramDirect lmProgram =
-			(LMProgramDirect)LMFactory.createLoadManagement( DeviceTypes.LM_DIRECT_PROGRAM );
-
-		lmProgram.setName( line[4].trim() + " " + line[0].trim() );
-		lmProgram.getProgram().setControlType( LMProgramBase.OPSTATE_MANUALONLY );
-
-		//set our unique own deviceID
-		lmProgram.setPAObjectID( new Integer(START_PROGRAM_ID++) );
-
-		
-		/* Create a default gear */
-		TimeRefreshGear gear = (TimeRefreshGear)LMProgramDirectGear.createGearFactory(
-									LMProgramDirectGear.CONTROL_TIME_REFRESH );
-		gear.setGearName("Refresh");
-		gear.setDeviceID( lmProgram.getPAObjectID() );
-		gear.setShedTime( new Integer(900) ); //15 minutes
-		gear.setRefreshRate( new Integer(600) ); //10 minutes
-		gear.setMethodStopType( LMProgramDirectGear.STOP_TIME_IN );
-		gear.setGroupSelectionMethod( LMProgramDirectGear.SELECTION_LAST_CONTROLLED );
-		gear.setRampInInterval( new Integer(300) );
-		gear.setRampOutInterval( new Integer(300) );
-
-
-
-
-		//assign all the Groups to this Program
-		String stratID = line[4].trim(); //lmProgram.getPAOName();
-		ArrayList grpList = (ArrayList)grpStratMap.get( stratID );
-		for( int j = 0; grpList != null && j < grpList.size(); j++ )
-		{
-			LMGroupGolay golay = (LMGroupGolay)grpList.get(j);
-			if( golay.getRouteID() == null )
-				continue; //ignore if we have no route
-
-			LMProgramDirectGroup dirGrp = new LMProgramDirectGroup();
-			dirGrp.setLmGroupDeviceID( golay.getPAObjectID() );
-			dirGrp.setDeviceID( lmProgram.getPAObjectID() );
-			dirGrp.setGroupOrder( new Integer(lmProgram.getLmProgramStorageVector().size()+1) );
-			lmProgram.getLmProgramStorageVector().add( dirGrp );
-		}
-
-
-		String constrName = line[0].trim();
-		LMProgramConstraint constraint = (LMProgramConstraint)constByNameMap.get( constrName );
-		if( constraint != null )
-		{
-			lmProgram.getProgram().setConstraintID( constraint.getConstraintID() );
-
-			//store ramp % using the original constraint name 
-			int[] rampPerc = (int[])gearNameToShedPerc.get( constrName );
-			gear.setRampInPercent( new Integer(rampPerc[0]) );
-			gear.setRampOutPercent( new Integer(rampPerc[1]) );
-
-
-
-			LMProgramControlWindow lmWindow = 
-				(LMProgramControlWindow)constToWindowMap.get(constraint.getConstraintID());
-
-			if( lmWindow != null )
-			{
-				try
-				{
-					//must make a new instance/deep clone of original Window
-					LMProgramControlWindow realWindow = 
-						(LMProgramControlWindow)CtiUtilities.copyObject( lmWindow );
-	
-					realWindow.setDeviceID( lmProgram.getPAObjectID() );
-					
-					lmProgram.getLmProgramControlWindowVector().add( realWindow );
-				}
-				catch( Exception ex ) {}
-			}		
-		}
-		
-
-		lmProgram.getLmProgramDirectGearVector().add( gear );
-		multi.getDBPersistentVector().add( lmProgram );
-
-	}
-
-
-	//boolean success = true;
-	boolean success = writeToSQLDatabase(multi);
-
-	if( success )
-	{
-		CTILogger.info(" Load Program file was processed and inserted Successfully");
-		getIMessageFrame().addOutput("Load Program file was processed and inserted Successfully");
-		
-		CTILogger.info(" " + multi.getDBPersistentVector().size() + " Load Program were added to the database");
-		getIMessageFrame().addOutput(multi.getDBPersistentVector().size() + " Load Program were added to the database");
-	}
-	else
-		getIMessageFrame().addOutput(" Load Program failed adding to the database");
-
-
-	return success;
-}
-
-
-
-/**
- * Insert the method's description here.
- * Creation date: (6/11/2001 11:56:45 AM)
- * @return boolean
- */
-public boolean processLoadGroups() 
-{	
-	CTILogger.info("Starting Load Group file process...");
-	getIMessageFrame().addOutput("Starting Load Group file process (" + groupFileName + ")...");
-	
-	String aFileName = getFullFileName(groupFileName);
-	java.util.ArrayList lines = readFile(aFileName);
-
-	if( lines == null )
-		return true; //continue the process
-	
-	//create an object to hold all of our DBPersistant objects
-	MultiDBPersistent multi = new MultiDBPersistent();
-	multi.setCreateNewPAOIDs( false );
-		
-	for( int i = 0; i < lines.size(); i++ )
-	{
-		String[] line = lines.get(i).toString().split(",");
-
-		//ignore title line
-		if( i <= 2 || line.length <= 12 || line[2].length() <= 0 )
-			continue;
-		
-		CTILogger.info("LOAD_GRP (GOLAY) line: " + lines.get(i).toString());
-
-
-		LMGroupGolay lmGroupGolay = null;
-		lmGroupGolay = (LMGroupGolay)LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_GOLAY );
-		
-		//set our unique own deviceID
-		lmGroupGolay.setDeviceID( new Integer(START_GROUP_ID++) );
-		
-		lmGroupGolay.getLMGroupSASimple().setOperationalAddress( line[2].trim() );
-		
-		String stratID = line[10].trim();
-		if( grpStratMap.containsKey(stratID) )
-		{
-			ArrayList grpList = (ArrayList)grpStratMap.get(stratID);
-			grpList.add( lmGroupGolay );
-		}
-		else
-		{
-			ArrayList grpList = new ArrayList(8);
-			grpList.add( lmGroupGolay );
-			grpStratMap.put( stratID, grpList );
-		}
-		
-		String name = line[12].trim();
-		name = name.replaceAll("\"", ""); //remove double quotes
-		name = name.replaceAll("\\.", ""); //remove periods
-		
-		lmGroupGolay.setPAOName(
-			name.replaceAll("([ ])+", " ") + " " +
-			lmGroupGolay.getLMGroupSASimple().getOperationalAddress() );
-
-
-		lmGroupGolay.getLMGroupSASimple().setNominalTimeout( new Integer(900) );
-
-		multi.getDBPersistentVector().add( lmGroupGolay );
-	}
-
-
-
-	/* Start reading through our Group to Route mapping file */		
-	String prgToGrpFile = getFullFileName(progToGroupsFileName);
-	java.util.ArrayList progToGrpLines = readFile(prgToGrpFile);
-	for( int i = 0; i < progToGrpLines.size(); i++ )
-	{
-		String[] line = progToGrpLines.get(i).toString().split(",");
-
-		//ignore title line
-		if( i <= 2 || line.length <= 8 || line[4].length() <= 0 )
-			continue;
-
-		String key = line[4].trim();
-		Integer routeID = 
-			new Integer(pInt(line[8].trim()).intValue() + ROUTE_OFFSET);
-		
-		if( routeIDsMap.get(routeID) != null 
-			&& grpStratMap.containsKey(key) )
-		{
-			ArrayList grpList = (ArrayList)grpStratMap.get(key);
-			for( int j = 0; j < grpList.size(); j++ )
-				((LMGroupGolay)grpList.get(j)).getLMGroupSASimple().setRouteID(
-					new Integer(routeID.intValue()) );				
-		}
-	}
-
-
-	for( int i = multi.getDBPersistentVector().size()-1; i >= 0; i-- )
-	{
-		if( ((LMGroupGolay)multi.getDBPersistentVector().get(i)).getLMGroupSASimple().getRouteID() == null )
-		{
-			CTILogger.info( "  No route found for Group: " +
-				multi.getDBPersistentVector().get(i) +
-				", group insertion canceled");
-
-			multi.getDBPersistentVector().remove(i);
-		}
-	}
-
-
-	//boolean success = true;
-	boolean success = writeToSQLDatabase(multi);
-
-	if( success )
-	{
-		CTILogger.info(" Load Group file was processed and inserted Successfully");
-		getIMessageFrame().addOutput("Load Group file was processed and inserted Successfully");
-		
-		CTILogger.info(" " + multi.getDBPersistentVector().size() + " Load Groups were added to the database");
-		getIMessageFrame().addOutput(multi.getDBPersistentVector().size() + " Load Groups were added to the database");
-	}
-	else
-		getIMessageFrame().addOutput(" Load Groups failed adding to the database");
-
-
-	return success;
-}
-
-
-/**
- * Insert the method's description here.
- * Creation date: (6/11/2001 11:56:45 AM)
- * @return boolean
- */
-public boolean processLoadProgramConstraints() 
-{	
-	CTILogger.info("Starting Load Program Constraints file process...");
-	getIMessageFrame().addOutput("Starting Load Program Constraints file process (" + progConstTimeFileName + ")...");
-
-	String aFileName = getFullFileName(progConstTimeFileName);
-	java.util.ArrayList lines = readFile(aFileName);
-	
-	//example KEY<typeID> VALUES< List(LMProgramConstraint) >
-	HashMap constMapByType = new HashMap(64);
-
-	if( lines == null )
-		return true; //continue the process
-	
-	//create an object to hold all of our DBPersistant objects
-	MultiDBPersistent multi = new MultiDBPersistent();
-	multi.setCreateNewPAOIDs( false );
-		
-	for( int i = 0; i < lines.size(); i++ )
-	{
-		String[] line = lines.get(i).toString().split(",");
-
-		//ignore title line
-		if( i <= 2 || line.length <= 10 || line[0].trim().length() <= 0 )
-			continue;
-		
-		if( line[3].trim().charAt(0) == 'Y' || line[3].trim().charAt(0) == 'N' )
-		{
-			CTILogger.info("LOAD_PROG_TIME_CONSTRAINTS line: " + lines.get(i).toString());
-	
-	
-			LMProgramConstraint lmProgConst = new LMProgramConstraint();
-			String constrName = line[0].trim();		
-			lmProgConst.setConstraintName( constrName + " " + line[11].trim() );
-			lmProgConst.setConstraintID( new Integer(START_CONSTRAINT_ID++) );
-	
-			StringBuffer day = new StringBuffer("NNNNNNNN");
-			day.setCharAt( 0, line[3].trim().charAt(0) );
-			day.setCharAt( 1, line[4].trim().charAt(0) );
-			day.setCharAt( 2, line[5].trim().charAt(0) );
-			day.setCharAt( 3, line[6].trim().charAt(0) );
-			day.setCharAt( 4, line[7].trim().charAt(0) );
-			day.setCharAt( 5, line[8].trim().charAt(0) );
-			day.setCharAt( 6, line[9].trim().charAt(0) );
-			day.setCharAt( 7, line[10].trim().charAt(0) );		
-			lmProgConst.setAvailableWeekdays( day.toString() );
-
-			//all constraints have their own time window
-			LMProgramControlWindow lmWindow = new LMProgramControlWindow();
-			lmWindow.setWindowNumber( new Integer(1) );
-			lmWindow.setAvailableStartTime( decodeStringToSeconds(line[1].trim()) );
-			lmWindow.setAvailableStopTime( decodeStringToSeconds(line[2].trim()) );			
-			constToWindowMap.put( lmProgConst.getConstraintID(), lmWindow );
-
-			multi.getDBPersistentVector().add( lmProgConst );
-			constByNameMap.put( constrName, lmProgConst );
-		}
-	}
-
-
-
-	/* Start reading through our Constraint to Date mapping file */		
-	String constDateFile = getFullFileName(progConstDateFileName);
-	lines = readFile(constDateFile);
-	for( int i = 0; i < lines.size(); i++ )
-	{
-		String[] line = lines.get(i).toString().split(",");
-
-		//ignore title line
-		if( i <= 2 || line.length <= 3 || line[0].length() <= 0 )
-			continue;
-
-		String key = line[0].trim();
-		String typeID = line[3].trim();
-
-		if( constByNameMap.containsKey(key) ) 
-		{
-			LMProgramConstraint progConst = 
-					(LMProgramConstraint)constByNameMap.get( key );
-
-			if( constMapByType.containsKey(typeID) )
-			{
-				ArrayList typeList = (ArrayList)constMapByType.get(typeID);
-				typeList.add( progConst );
-			}
-			else
-			{
-				ArrayList typeList = new ArrayList(8);
-				typeList.add( progConst );
-				constMapByType.put( typeID, typeList );
-			}
-		}
-
-
-	}
-
-
-	/* Start reading through our ConstraintType to ConstraintValue mapping file */		
-	String constTypeFile = getFullFileName(progConstTypeFileName);
-	java.util.ArrayList typeLines = readFile(constTypeFile);
-	for( int i = 0; i < typeLines.size(); i++ )
-	{
-		String[] line = typeLines.get(i).toString().split(",");
-
-		//ignore title line
-		if( i <= 2 || line.length < 9 || line[0].length() <= 0 )
-			continue;
-
-		String typeID = line[0].trim();
-
-
-		ArrayList typeList = (ArrayList)constMapByType.get(typeID);
-		for( int j = 0; typeList != null && j < typeList.size(); j++ )
-		{
-			LMProgramConstraint constr =
-				(LMProgramConstraint)typeList.get(j);
-
-			//store shed % using the original gear name 
-			gearNameToShedPerc.put( 
-				constr.getConstraintName().substring(0,constr.getConstraintName().indexOf(' ')).trim(),
-				new int[] 
-				{ pInt(line[1].trim()).intValue(), pInt(line[4].trim()).intValue() } );
-
-
-			//convert minutes to hours
-			constr.setMinRestartTime(
-				new Integer(pInt(line[7].trim()).intValue() / 60) );
-
-			//convert minutes to hours
-			constr.setMaxHoursDaily(
-				new Integer(pInt(line[8].trim()).intValue() / 60) );
-			
-			if( line.length >= 10 )
-				constr.setMaxDailyOps(
-					new Integer(pInt(line[9].trim()).intValue()) );
-
-			
-			/*
-				lmProgConst.setMinActivateTime()
-	
-				lmProgConst.setMaxHoursSeasonal()
-				lmProgConst.setMaxHoursMonthly()
-				lmProgConst.setMaxActivateTime()
-
-				lmProgConst.setMaxActivateTime()
-	
-				lmProgConst.setAvailableSeasons()
-			*/			
-		}
-
-
-	}
-
-
-	boolean success = writeToSQLDatabase(multi);
-
-	if( success )
-	{
-		CTILogger.info(" Load Program Constraints file was processed and inserted Successfully");
-		getIMessageFrame().addOutput("Load Program Constraints file was processed and inserted Successfully");
-		
-		CTILogger.info(" " + multi.getDBPersistentVector().size() + " Load Program Constraints were added to the database");
-		getIMessageFrame().addOutput(multi.getDBPersistentVector().size() + " Load Program Constraints were added to the database");
-	}
-	else
-		getIMessageFrame().addOutput(" Load Program Constraints failed adding to the database");
-
-
-	return success;
-}
 
 /**
  * Translates a given string into an Integer of seconds
@@ -719,18 +288,18 @@ public static Integer decodeFunkySeconds( String string )
 	 	+ (string.toUpperCase().endsWith("PM") ? 43200 : 0));
 }
 
-private DirectPort createDirectPort( Integer portID )
+private LocalSharedPort createDirectPort( Integer portID )
 {
-	DirectPort port = null;
+	LocalSharedPort port = null;
 
 	try
 	{
 		//this createPort() call actually queries the database for a new unique portID!!
 		// let this happen for now, but, a performance issue may occur
-		port = PortFactory.createPort( PortTypes.LOCAL_SHARED );
+		port = (LocalSharedPort)PortFactory.createPort( PortTypes.LOCAL_SHARED );
 
 
-		//set our unique own portID
+		//set our own unique portID
 		port.setPortName( "Port #" + (portID.intValue() - PORTID_OFFSET) );
 		port.setPortID(portID);
 
@@ -738,7 +307,7 @@ private DirectPort createDirectPort( Integer portID )
 	}
 	catch( java.sql.SQLException e )
 	{
-		CTILogger.error( e.getMessage(), e );
+		CTILogger.error(e.getMessage(), e);
 	}
 
 	
@@ -754,9 +323,9 @@ private DirectPort createDirectPort( Integer portID )
 public boolean processPortFile() 
 {
 	CTILogger.info("Starting Port file process...");
-	getIMessageFrame().addOutput("Starting Port file process (" + transmitterFileName + ")...");
+	getIMessageFrame().addOutput("Starting Port file process (" + commListFileName + ")...");
 	
-	String aFileName = getFullFileName(transmitterFileName);
+	String aFileName = getFullFileName(commListFileName);
 	java.util.ArrayList lines = readFile(aFileName);
 	NativeIntVector commChannels = new NativeIntVector(16);
 
@@ -770,17 +339,16 @@ public boolean processPortFile()
 	
 	for( int i = 0; i < lines.size(); i++ )
 	{
-		String[] line = lines.get(i).toString().split(",");
+		String[] line = lines.get(i).toString().split("|");
 
 		//ignore title line
-		if( i == 0 || line.length <= 20 )
+		if( i <= 2)
 			continue;
 		
 		CTILogger.info("PORT (Local Serial Port) line: " + lines.get(i).toString());
 
-			
 		Integer portID = new Integer(
-				pInt(line[3].toString()).intValue() 
+				pInt(line[0].trim().toString()).intValue() 
 				+ PORTID_OFFSET );
 
 		//ingore this, we already have it
@@ -788,11 +356,13 @@ public boolean processPortFile()
 			continue;
 
 
-		DirectPort port = createDirectPort( portID );
+		LocalSharedPort port = (LocalSharedPort)createDirectPort( portID );
+		port.getPortLocalSerial().setPhysicalPort( "Com" + line[4].trim().toString() );
 		
-
-		commChannels.add( portID.intValue() );
-		multi.getDBPersistentVector().add( port );
+		port.getPortSettings().setLineSettings("8N1");
+		port.getPortSettings().setBaudRate(new Integer(1200));
+		commChannels.add(portID.intValue());
+		multi.getDBPersistentVector().add(port);
 	}
 
 	//boolean success = true; //writeToSQLDatabase(multi);
@@ -830,122 +400,121 @@ public boolean processTransmitterFile()
 		
 	for( int i = 0; i < lines.size(); i++ )
 	{
-		String[] line = lines.get(i).toString().split(",");
+		String[] line = lines.get(i).toString().split("|");
 
 		//ignore title line
-		if( i == 0 || line.length <= 20 )
+		if( i <= 2)
 			continue;
 			
 		CTILogger.info("TRANSMITTER line: " + lines.get(i).toString());
 
-		Integer deviceID = pInt(line[0].trim());
+		Integer deviceID = new Integer(pInt((line[0].trim()).substring(0,3)).intValue()+CCUID_OFFSET);
 				
-		String deviceType = DeviceTypes.STRING_SERIES_5_LMI[0];
-		Series5LMI device = null;
+		String deviceType = DeviceTypes.STRING_CCU_711[0];
+		CCU711 device = null;
 
-		device = (Series5LMI)DeviceFactory.createDevice( PAOGroups.getDeviceType( deviceType ) );
+		device = (CCU711)DeviceFactory.createDevice( PAOGroups.getDeviceType( deviceType ) );
 		device.setDeviceID(deviceID);
 		
 		//replace all blanks with a single space
-		String name = line[1].trim().replaceAll("([ ])+", " ");
-		device.setPAOName( name.substring(2, name.length() - 2) );
+		String name = line[0].trim();
+		device.setPAOName(name);
 
 		device.getDeviceDirectCommSettings().setPortID( 
-			new Integer(pInt(line[2].trim()).intValue() + PORTID_OFFSET) );
+			new Integer(pInt(line[1].substring(0,2)).intValue() + PORTID_OFFSET) );
 
-		device.getSeries5().setSlaveAddress( pInt(line[3].trim()) );
+		device.assignAddress(pInt(line[1].trim().substring(2,2)) );
 		
-		device.getSeries5RTU().setStartCode( pInt(line[4].trim()) );
-		device.getSeries5RTU().setStopCode( pInt(line[5].trim()) );
-		device.getSeries5RTU().setTransmitOffset( pInt(line[6].trim()) );
+		device.getDeviceIDLCRemote().setCcuAmpUseType(DeviceIDLCRemote.AMPUSE_ALTERNATING);
+		
+//		device.getSeries5RTU().setStartCode( pInt(line[4].trim()) );
+//		device.getSeries5RTU().setStopCode( pInt(line[5].trim()) );
+//		device.getSeries5RTU().setTransmitOffset( pInt(line[6].trim()) );
 
 		//CycleTime:#,Offset:#,TransmitTime:#,MaxTime:#
-		device.getPAOExclusionVector().add(
-			PAOExclusion.createExclusTiming(
-				device.getPAObjectID(),
-				new Integer(300),
-				device.getSeries5RTU().getTransmitOffset(),
-				new Integer(60) ) );
+//		device.getPAOExclusionVector().add(
+//			PAOExclusion.createExclusTiming(
+//				device.getPAObjectID(),
+//				new Integer(300),
+//				device.getSeries5RTU().getTransmitOffset(),
+//				new Integer(60) ) );
 
-
-		String dis = line[7].trim();
-		device.setDisableFlag( new Character(
-				(dis.equalsIgnoreCase("N") ? 'Y' : 'N')) );
-
-		device.getSeries5RTU().setSaveHistory( line[8].trim().toUpperCase() );
-
-		device.getSeries5RTU().setPowerValueMultiplier( pDbl(line[9].trim()) );
-		device.getSeries5RTU().setPowerValueOffset( pDbl(line[10].trim()) );
-		
-		//15
-		device.getSeries5RTU().setPowerValueHighLimit( pInt(line[15].trim()) );
-		device.getSeries5RTU().setPowerValueLowLimit( pInt(line[16].trim()) );
-		
-		device.getSeries5RTU().setRetries( pInt(line[19].trim()) );
-		
+//		String dis = line[7].trim();
+//		device.setDisableFlag( new Character(
+//				(dis.equalsIgnoreCase("N") ? 'Y' : 'N')) );
+//
+//		device.getSeries5RTU().setSaveHistory( line[8].trim().toUpperCase() );
+//
+//		device.getSeries5RTU().setPowerValueMultiplier( pDbl(line[9].trim()) );
+//		device.getSeries5RTU().setPowerValueOffset( pDbl(line[10].trim()) );
+//		
+//		//15
+//		device.getSeries5RTU().setPowerValueHighLimit( pInt(line[15].trim()) );
+//		device.getSeries5RTU().setPowerValueLowLimit( pInt(line[16].trim()) );
+//		
+//		device.getSeries5RTU().setRetries( pInt(line[19].trim()) );
 		
 		//create a route
-		RouteBase route = null;
-		route = RouteFactory.createRoute( RouteTypes.ROUTE_SERIES_5_LMI );
-
-		route.setRouteID( new Integer(START_ROUTE_ID++) );
-		route.setRouteName( device.getPAOName() + " Rt");
-		route.setDeviceID( deviceID );
-		route.setDefaultRoute("N");
+//		RouteBase route = null;
+//		route = RouteFactory.createRoute( RouteTypes.ROUTE_SERIES_5_LMI );
+//
+//		route.setRouteID( new Integer(START_ROUTE_ID++) );
+//		route.setRouteName( device.getPAOName() + " Rt");
+//		route.setDeviceID( deviceID );
+//		route.setDefaultRoute("N");
 
 		if( device.getDeviceDirectCommSettings().getPortID().intValue() > PORTID_OFFSET )
 		{
 			multi.getDBPersistentVector().add( device );
-			multi.getDBPersistentVector().add( route );
+//			multi.getDBPersistentVector().add( route );
 			deviceIDsMap.put( device.getDevice().getDeviceID(), device.getDevice().getDeviceID() );
-			routeIDsMap.put( route.getRouteID(), route.getRouteID() );
+//			routeIDsMap.put( route.getRouteID(), route.getRouteID() );
 			
 			
 			//Create the PowerValue point
-			AnalogPoint pvPoint = 
-				(AnalogPoint)PointFactory.createPoint( PointTypes.ANALOG_POINT );
-
-			pvPoint.setPointID( new Integer(START_PTID) );
-			pvPoint.getPoint().setPaoID( deviceID );
-			pvPoint.getPoint().setPointOffset( new Integer(1000) );
-			pvPoint.getPoint().setPointName( "Power Value" );
-
-			pvPoint.getPointAnalog().setMultiplier( device.getSeries5RTU().getPowerValueMultiplier() );
-			pvPoint.getPointAnalog().setDataOffset( device.getSeries5RTU().getPowerValueOffset() );
-
-			PointLimit myPointLimit = new PointLimit();
-			myPointLimit.setPointID( pvPoint.getPoint().getPointID() );
-			myPointLimit.setHighLimit( new Double(device.getSeries5RTU().getPowerValueHighLimit().doubleValue()) );
-			myPointLimit.setLowLimit( new Double(device.getSeries5RTU().getPowerValueLowLimit().doubleValue()) );
-			myPointLimit.setLimitDuration( new Integer(0) );
-			myPointLimit.setLimitNumber( new Integer(1) );
-
-
-			if( myPointLimit.getLowLimit().doubleValue() != 0.0
-				 && myPointLimit.getHighLimit().doubleValue() != 0.0 )
-			{
-				Vector v = new Vector(1);
-				v.add( myPointLimit );
-				pvPoint.setPointLimitsVector(v);
-			}
-
-			// set default settings for the point
-			pvPoint.getPoint().setServiceFlag(new Character('N'));
-			pvPoint.getPoint().setAlarmInhibit(new Character('N'));
-			pvPoint.getPointAlarming().setAlarmStates( PointAlarming.DEFAULT_ALARM_STATES );
-			pvPoint.getPointAlarming().setExcludeNotifyStates( PointAlarming.DEFAULT_EXCLUDE_NOTIFY );
-			pvPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
-			pvPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
-			pvPoint.getPoint().setArchiveType("None");
-			pvPoint.getPoint().setArchiveInterval( new Integer(0) );
-			pvPoint.getPoint().setStateGroupID( new Integer(-1) );
-			pvPoint.getPointUnit().setDecimalPlaces(new Integer(2));
-			pvPoint.getPointAnalog().setDeadband(new Double(0.0));
-			pvPoint.getPointAnalog().setTransducerType( new String("none") );
-			pvPoint.getPointUnit().setUomID( new Integer(8) );
-
-			multi.getDBPersistentVector().add( pvPoint );		
-			++START_PTID;
+//			AnalogPoint pvPoint = (AnalogPoint)PointFactory.createPoint( PointTypes.ANALOG_POINT );
+//
+//			pvPoint.setPointID( new Integer(START_PTID) );
+//			pvPoint.getPoint().setPaoID( deviceID );
+//			pvPoint.getPoint().setPointOffset( new Integer(1000) );
+//			pvPoint.getPoint().setPointName( "Power Value" );
+//
+//			pvPoint.getPointAnalog().setMultiplier( device.getSeries5RTU().getPowerValueMultiplier() );
+//			pvPoint.getPointAnalog().setDataOffset( device.getSeries5RTU().getPowerValueOffset() );
+//
+//			PointLimit myPointLimit = new PointLimit();
+//			myPointLimit.setPointID( pvPoint.getPoint().getPointID() );
+//			myPointLimit.setHighLimit( new Double(device.getSeries5RTU().getPowerValueHighLimit().doubleValue()) );
+//			myPointLimit.setLowLimit( new Double(device.getSeries5RTU().getPowerValueLowLimit().doubleValue()) );
+//			myPointLimit.setLimitDuration( new Integer(0) );
+//			myPointLimit.setLimitNumber( new Integer(1) );
+//
+//
+//			if( myPointLimit.getLowLimit().doubleValue() != 0.0
+//				 && myPointLimit.getHighLimit().doubleValue() != 0.0 )
+//			{
+//				Vector v = new Vector(1);
+//				v.add( myPointLimit );
+//				pvPoint.setPointLimitsVector(v);
+//			}
+//
+//			// set default settings for the point
+//			pvPoint.getPoint().setServiceFlag(new Character('N'));
+//			pvPoint.getPoint().setAlarmInhibit(new Character('N'));
+//			pvPoint.getPointAlarming().setAlarmStates( PointAlarming.DEFAULT_ALARM_STATES );
+//			pvPoint.getPointAlarming().setExcludeNotifyStates( PointAlarming.DEFAULT_EXCLUDE_NOTIFY );
+//			pvPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
+//			pvPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
+//			pvPoint.getPoint().setArchiveType("None");
+//			pvPoint.getPoint().setArchiveInterval( new Integer(0) );
+//			pvPoint.getPoint().setStateGroupID( new Integer(-1) );
+//			pvPoint.getPointUnit().setDecimalPlaces(new Integer(2));
+//			pvPoint.getPointAnalog().setDeadband(new Double(0.0));
+//			pvPoint.getPointAnalog().setTransducerType( new String("none") );
+//			pvPoint.getPointUnit().setUomID( new Integer(8) );
+//
+//			multi.getDBPersistentVector().add( pvPoint );		
+//			++START_PTID;
 		}		
 	}
 
@@ -963,6 +532,389 @@ public boolean processTransmitterFile()
 
 	return success;
 }
+
+public boolean processRepeaterFile() 
+{
+	CTILogger.info("Starting Repeater file process...");
+	getIMessageFrame().addOutput("Starting Repeater file process (" + repeaterFileName + ")...");
+	
+	String aFileName = getFullFileName(repeaterFileName);
+	java.util.ArrayList lines = readFile(aFileName);
+
+	if( lines == null )
+		return true; //continue the process
+
+	//create an object to hold all of our DBPersistant objects
+	MultiDBPersistent multi = new MultiDBPersistent();
+	multi.setCreateNewPAOIDs( false );
+		
+	for( int i = 0; i < lines.size(); i++ )
+	{
+		String[] line = lines.get(i).toString().split("|");
+
+		//ignore title line
+		if( i <= 8)
+			continue;
+			
+		CTILogger.info("REPEATER line: " + lines.get(i).toString());
+		
+		Integer deviceID = new Integer(pInt((line[0].trim()).substring(3,3)).intValue()+RPTID_OFFSET);		
+		String deviceType = DeviceTypes.STRING_REPEATER[0];
+		Repeater900 device = null;
+		
+		device = (Repeater900)DeviceFactory.createDevice( PAOGroups.getDeviceType( deviceType ) );
+		device.setDeviceID(deviceID);
+		
+		//replace all blanks with a single space
+		String name = line[0].trim();
+		device.setPAOName(name);
+		// assign address of zero, manually entered later
+		device.assignAddress(new Integer(0));
+	}
+	
+	boolean success = writeToSQLDatabase(multi);
+
+	if( success )
+	{
+		CTILogger.info(" Repeater file processed and inserted Successfully");
+		getIMessageFrame().addOutput(" Repeater file processed and inserted Successfully");
+	}
+	else
+		getIMessageFrame().addOutput(" Repeater file failed insertion");
+
+	return success;
+}
+
+public boolean processRouteFile() 
+{
+	CTILogger.info("Starting Route file process...");
+	getIMessageFrame().addOutput("Starting Route file process (" + routeFileName + ")...");
+	
+	String aFileName = getFullFileName(routeFileName);
+	java.util.ArrayList lines = readFile(aFileName);
+
+	if( lines == null )
+		return true; //continue the process
+
+	//create an object to hold all of our DBPersistant objects
+	MultiDBPersistent multi = new MultiDBPersistent();
+	multi.setCreateNewPAOIDs( false );
+		
+	for( int i = 0; i < lines.size(); i++ )
+	{
+		String[] line = lines.get(i).toString().split("|");
+
+		//ignore title line
+		if( i <= 7)
+			continue;
+			
+		CTILogger.info("ROUTE line: " + lines.get(i).toString());
+		
+			
+		String routeType = RouteTypes.STRING_CCU;
+		CCURoute route = null;
+		Integer deviceID = new Integer(pInt((line[3].trim()).substring(0,3)).intValue()+CCUID_OFFSET);
+		route = (CCURoute)com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.PAOGroups.getRouteType( routeType ));
+		route.setDeviceID(deviceID);
+		
+		//replace all blanks with a single space
+		String name = line[0].trim();
+		route.setRouteName(name);
+		route.setRouteID(new Integer(ROUTE_ID));
+		ROUTE_ID++;
+		Integer busNum = null;
+		if((line[2].trim()).substring(4,2)== "00"){
+			busNum = new Integer(0);
+		}else{
+			busNum = new Integer(1);
+		}
+		route.getCarrierRoute().setBusNumber(busNum);
+		route.setDefaultRoute("Y");
+		
+		routeIDsMap.put( route.getRouteName(), route.getRouteID() );
+	}
+	
+	boolean success = writeToSQLDatabase(multi);
+
+	if( success )
+	{
+		CTILogger.info(" Repeater file processed and inserted Successfully");
+		getIMessageFrame().addOutput(" Repeater file processed and inserted Successfully");
+	}
+	else
+		getIMessageFrame().addOutput(" Repeater file failed insertion");
+
+	return success;
+}
+
+public boolean processRouteMacrosFile() 
+{
+	CTILogger.info("Starting Route Macro file process...");
+	getIMessageFrame().addOutput("Starting Route Macro file process...");
+	
+	String aFileName = getFullFileName(routeMacroFileName);
+	
+	java.util.ArrayList lines = readFile(aFileName);
+
+	if( lines == null )
+		return true; //continue the process
+
+	//create an object to hold all of our DBPersistant objects
+	com.cannontech.database.data.multi.MultiDBPersistent multi = new com.cannontech.database.data.multi.MultiDBPersistent();
+	multi.setCreateNewPAOIDs( false );	
+	int addCount = 0;
+		
+	for( int i = 0; i < lines.size(); i++ )
+	{
+		String[] line = lines.get(i).toString().split("|");
+
+		//ignore title lines and route list lines
+		if( i <= 5 || line[0].trim() == null)
+			continue;
+			
+		CTILogger.info("ROUTE line: " + lines.get(i).toString());
+		
+		String routeType = RouteTypes.STRING_MACRO;
+
+		com.cannontech.database.data.route.MacroRoute route = (com.cannontech.database.data.route.MacroRoute)com.cannontech.database.data.route.RouteFactory.createRoute(routeType);
+
+		//set our unique own routeID
+
+		String name = "@"+line[0].trim();
+		route.setRouteName(name);
+		Integer routeID = new Integer(MACRO_ROUTE_ID);
+		route.setRouteID(routeID);
+		MACRO_ROUTE_ID++;
+		//route.setDeviceID( new Integer(0) );
+		route.setDefaultRoute(new String("N"));
+		
+		// make a vector for the routes in the macro
+		java.util.Vector RouteMacroVector = new java.util.Vector();
+	
+		//com.cannontech.database.db.route.MacroRoute MacroRoute = null;
+
+		// set our list of routes
+		for(int count = 0; count < MAX_DSM2_MACRO_COUNT; count++)
+		{   	
+			String[] line2 = lines.get(i+1+count).toString().split("|");
+			
+			if (line2[6].trim() ==  null)
+			{
+				// no more route ids in list
+				break;
+			}
+			Object myRouteID = routeIDsMap.get(line2[6].trim());
+			com.cannontech.database.db.route.MacroRoute
+				MacroRoute = new com.cannontech.database.db.route.MacroRoute();
+		
+			MacroRoute.setRouteID(routeID);
+			MacroRoute.setSingleRouteID((Integer) myRouteID );
+			MacroRoute.setRouteOrder(new Integer( count + 1 ) );
+
+			RouteMacroVector.addElement( MacroRoute );
+		}
+
+		// stuff the repeaters into the CCU Route
+		route.setMacroRouteVector(RouteMacroVector);
+		
+		macroRouteIDsMap.put(route.getRouteName(),route.getRouteID());
+		
+		multi.getDBPersistentVector().add( route );
+		++addCount;
+	}
+
+
+	boolean success = writeToSQLDatabase(multi);
+
+	if( success )
+	{
+		CTILogger.info(" Route Macro file was processed and inserted Successfully");
+		getIMessageFrame().addOutput("Route Macro file was processed and inserted Successfully");
+		
+		CTILogger.info(" " + addCount + " Macro Routes were added to the database");
+		getIMessageFrame().addOutput(addCount + " Macro Routes were added to the database");
+	}
+	else
+		getIMessageFrame().addOutput(" Macro Routes failed addition to the database");	
+	return success;
+
+}
+
+public boolean processMCTFile() 
+{
+	CTILogger.info("Starting MCT Device file process...");
+	getIMessageFrame().addOutput("Starting MCT Device file process...");
+	
+	String aFileName = getFullFileName(mctFileName);
+	java.util.ArrayList lines = readFile(aFileName);
+
+	if( lines == null )
+		return true; //continue the process
+
+	//create an object to hold all of our DBPersistant objects
+	com.cannontech.database.data.multi.MultiDBPersistent multi = new com.cannontech.database.data.multi.MultiDBPersistent();
+	multi.setCreateNewPAOIDs( false );
+	int addCount = 0;
+		
+	for( int i = 0; i < lines.size(); i++ )
+	{
+		CTILogger.info("MCT line: " + lines.get(i).toString());
+		
+		String[] line = lines.get(i).toString().split("|");
+			
+		Integer deviceID = new Integer(MCT_ID);
+		MCT_ID++;
+		String deviceType = null;
+		if(line[1].equalsIgnoreCase("MC210I")){
+			deviceType = DeviceTypes.STRING_MCT_210[0];
+		}else if(line[1].equalsIgnoreCase("MC240I") || line[1].equalsIgnoreCase("MC240P")){
+			deviceType = DeviceTypes.STRING_MCT_240[0];
+		}else if(line[1].equalsIgnoreCase("MC250P")){
+			deviceType = DeviceTypes.STRING_MCT_250[0];
+		}else if(line[1].equalsIgnoreCase("MC248P")){
+			deviceType = DeviceTypes.STRING_MCT_248[0];
+		}else if(line[1].equalsIgnoreCase("DCT501")){
+			deviceType = DeviceTypes.STRING_DCT_501[0];
+		}
+		if(deviceType == DeviceTypes.STRING_DCT_501[0]){
+			// do something
+		}else{
+			com.cannontech.database.data.device.MCTBase device = null;
+					
+			device = (com.cannontech.database.data.device.MCTBase)com.cannontech.database.data.device.DeviceFactory.createDevice( com.cannontech.database.data.pao.PAOGroups.getDeviceType( deviceType ) );
+			
+			//set our unique deviceID
+			device.setDeviceID(deviceID);
+			
+			device.setDeviceClass( "CARRIER" );
+	
+			device.setDeviceType( deviceType );
+	
+			device.setPAOName(line[0].trim());
+			
+			deviceIDsMap.put( device.getPAOName(), device.getPAObjectID());
+			
+			// address,routeid,group1,group2,LsInt
+			// set the MCT address
+			device.getDeviceCarrierSettings().setAddress(new Integer(line[5].trim()));
+	
+			// set this devices route
+			Object myRouteID = macroRouteIDsMap.get("@"+line[2].trim());
+			device.getDeviceRoutes().setRouteID((Integer)myRouteID);
+		    		
+			// set group info
+			device.getDeviceMeterGroup().setCollectionGroup(line[3].trim());
+	
+			device.getDeviceMeterGroup().setTestCollectionGroup(line[4].trim());
+
+			device.getDeviceMeterGroup().setMeterNumber("10"+line[5].trim());
+	
+			//added
+			device.getDeviceMeterGroup().setBillingGroup( device.getDeviceMeterGroup().getBillingGroup() );
+	
+		    
+			if (deviceType.equals(new String("MCT-240"))  ||
+				deviceType.equals(new String("MCT-248"))  ||
+				deviceType.equals(new String("MCT-250")))
+			{
+				// just guess that these are devices collect load profile
+				device.getDeviceLoadProfile().setLoadProfileCollection( new String("YNNN") );
+			}
+			else
+			{
+				device.getDeviceLoadProfile().setLoadProfileCollection( new String("NNNN") );
+			}
+			
+			// construct demand accumulator point
+			com.cannontech.database.data.point.AccumulatorPoint accumPoint =(com.cannontech.database.data.point.AccumulatorPoint)com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT);
+			if(line[0].trim().substring((line[0].trim().length())-2,2).equalsIgnoreCase("KQ")){
+				accumPoint.getPoint().setPointName("KQ");
+				accumPoint.getPointUnit().setUomID( new Integer( 7 ) );
+			}else{ 
+				accumPoint.getPoint().setPointName("KW");
+				accumPoint.getPointUnit().setUomID( new Integer( 0 ) );
+			}
+			accumPoint.getPoint().setPointType("Demand");
+			
+			// default state group ID
+			accumPoint.getPoint().setPointID(new Integer(DEMAND_POINT_ID));
+			DEMAND_POINT_ID++;
+			accumPoint.getPoint().setStateGroupID( new Integer(-2) );
+			accumPoint.getPoint().setPaoID( deviceID );
+			accumPoint.getPoint().setArchiveType("On Update");
+			accumPoint.getPointAccumulator().setDataOffset(new Double(1));
+			if(String.valueOf(line[1].charAt(5)).equalsIgnoreCase("I")){
+				accumPoint.getPointAccumulator().setMultiplier(new Double(0.01));
+			}else accumPoint.getPointAccumulator().setMultiplier(new Double(1.0));
+			
+			// set default settings for BASE point
+			accumPoint.getPoint().setServiceFlag(new Character('N'));
+			accumPoint.getPoint().setAlarmInhibit(new Character('N'));
+			
+			// set default settings for point ALARMING
+			accumPoint.getPointAlarming().setAlarmStates( PointAlarming.DEFAULT_ALARM_STATES );
+			accumPoint.getPointAlarming().setExcludeNotifyStates( PointAlarming.DEFAULT_EXCLUDE_NOTIFY );
+			accumPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
+			accumPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
+			accumPoint.getPointUnit().setDecimalPlaces(new Integer(2));
+			
+			// contruct pulse accumulator point
+			com.cannontech.database.data.point.AccumulatorPoint pulseAccumPoint = (com.cannontech.database.data.point.AccumulatorPoint)com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT);
+			if(line[0].trim().substring((line[0].trim().length())-2,2).equalsIgnoreCase("KQ")){
+				pulseAccumPoint.getPoint().setPointName("KQh");
+				pulseAccumPoint.getPointUnit().setUomID( new Integer( 7 ) );
+			}else{ 
+				pulseAccumPoint.getPoint().setPointName("KWh");
+				pulseAccumPoint.getPointUnit().setUomID( new Integer( 0 ) );
+			}
+			pulseAccumPoint.getPoint().setPointType("Dial Read");
+			pulseAccumPoint.getPoint().setPointID(new Integer(DEMAND_POINT_ID));
+			DEMAND_POINT_ID++;
+			pulseAccumPoint.getPoint().setStateGroupID( new Integer(-2) );
+			pulseAccumPoint.getPoint().setPaoID( deviceID );
+			pulseAccumPoint.getPoint().setArchiveType("On Update");
+			pulseAccumPoint.getPointAccumulator().setDataOffset(new Double(1));
+			if(String.valueOf(line[1].charAt(5)).equalsIgnoreCase("I")){
+				pulseAccumPoint.getPointAccumulator().setMultiplier(new Double(0.01));
+			}else pulseAccumPoint.getPointAccumulator().setMultiplier(new Double(1.0));
+			
+			// set default settings for BASE point
+			pulseAccumPoint.getPoint().setServiceFlag(new Character('N'));
+			pulseAccumPoint.getPoint().setAlarmInhibit(new Character('N'));
+			
+			// set default settings for point ALARMING
+			pulseAccumPoint.getPointAlarming().setAlarmStates( PointAlarming.DEFAULT_ALARM_STATES );
+			pulseAccumPoint.getPointAlarming().setExcludeNotifyStates( PointAlarming.DEFAULT_EXCLUDE_NOTIFY );
+			pulseAccumPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
+			pulseAccumPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
+			pulseAccumPoint.getPointUnit().setDecimalPlaces(new Integer(2));
+			device.getDeviceLoadProfile().setLastIntervalDemandRate(new Integer(300));
+			device.getDeviceLoadProfile().setLoadProfileDemandRate(new Integer(300));
+			if(line[8].equalsIgnoreCase("T")){
+				device.setDisableFlag(new Character('Y'));
+			}
+			multi.getDBPersistentVector().add(device);
+			multi.getDBPersistentVector().add(accumPoint);
+			multi.getDBPersistentVector().add(pulseAccumPoint);
+			++addCount;
+		}
+	}
+
+	boolean success = writeToSQLDatabase(multi);
+
+	if( success )
+	{
+		CTILogger.info(" MCT Device file was processed and inserted Successfully");
+		getIMessageFrame().addOutput("MCT Device file was processed and inserted Successfully");
+		
+		CTILogger.info(" " + addCount + " MCT Devices were added to the database");
+		getIMessageFrame().addOutput(addCount + " MCT Devices were added to the database");
+	}
+	else
+		getIMessageFrame().addOutput(" MCT Devices failed adding to the database");
+	return success;
+}
+
 
 /**
  * Parses a given String into an Integer, if any problem occurs,

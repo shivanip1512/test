@@ -1031,11 +1031,11 @@ public boolean processPortFile()
 		tokenizer.nextToken();
 			
 		Integer portID = new Integer(
-				pInt(tokenizer.nextToken()).intValue() 
+				pInt(tokenizer.nextToken()).intValue()
 				+ PORTID_OFFSET );
 
 		//ingore this, we already have it
-		if( portID.intValue() == PORTID_OFFSET || commChannels.contains(portID.intValue()) )
+		if( portID.intValue() == PORTID_OFFSET || commChannels.contains(portID.intValue()))
 			continue;
 
 
