@@ -8,34 +8,38 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/02/10 23:23:56 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/03/10 21:26:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
+#include "dllbase.h"
 #include "logger.h"
 #include "porter.h"
 #include "prot_dnp.h"
 #include "dnp_datalink.h"
 
-CtiDNPDatalink::CtiDNPDatalink()
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+Datalink::Datalink()
 {
     _io_state      = State_IO_Uninitialized;
     _control_state = State_Control_Ready;
     _dl_confirm    = false;
 }
 
-CtiDNPDatalink::CtiDNPDatalink(const CtiDNPDatalink &aRef)
+Datalink::Datalink(const Datalink &aRef)
 {
     *this = aRef;
 }
 
-CtiDNPDatalink::~CtiDNPDatalink()   {}
+Datalink::~Datalink()   {}
 
-CtiDNPDatalink &CtiDNPDatalink::operator=(const CtiDNPDatalink &aRef)
+Datalink &Datalink::operator=(const Datalink &aRef)
 {
     if( this != &aRef )
     {
@@ -49,23 +53,23 @@ CtiDNPDatalink &CtiDNPDatalink::operator=(const CtiDNPDatalink &aRef)
 }
 
 
-void CtiDNPDatalink::setAddresses( unsigned short dst, unsigned short src)
+void Datalink::setAddresses( unsigned short dst, unsigned short src)
 {
     _dst = dst;
     _src = src;
 }
 
 
-void CtiDNPDatalink::setOptions(int options)
+void Datalink::setOptions(int options)
 {
-    if( options & CtiProtocolDNP::DatalinkConfirm )
+    if( options & DNPInterface::Options_DatalinkConfirm )
     {
         _dl_confirm = true;
     }
 }
 
 
-void CtiDNPDatalink::resetLink( void )
+void Datalink::resetLink( void )
 {
     _reset_sent = false;
 /*    _fcb_in     = false;
@@ -73,7 +77,7 @@ void CtiDNPDatalink::resetLink( void )
 }
 
 
-void CtiDNPDatalink::setToOutput(unsigned char *buf, unsigned int len)
+void Datalink::setToOutput(unsigned char *buf, unsigned int len)
 {
     //  if it's too big or there's nothing to copy, set our buffer to zip
     if( len > Packet_MaxPayloadLen || buf == NULL )
@@ -111,7 +115,7 @@ void CtiDNPDatalink::setToOutput(unsigned char *buf, unsigned int len)
 }
 
 
-void CtiDNPDatalink::setToInput( void )
+void Datalink::setToInput( void )
 {
     _io_state       = State_IO_Input;
 
@@ -128,7 +132,7 @@ void CtiDNPDatalink::setToInput( void )
 }
 
 
-int CtiDNPDatalink::generate( CtiXfer &xfer )
+int Datalink::generate( CtiXfer &xfer )
 {
     int retVal = NoError;
 
@@ -186,7 +190,7 @@ int CtiDNPDatalink::generate( CtiXfer &xfer )
 }
 
 
-int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
+int Datalink::decode( CtiXfer &xfer, int status )
 {
     int retVal = NoError;
     int toCopy, srcLen, packetSize;
@@ -343,7 +347,7 @@ int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
 }
 
 
-void CtiDNPDatalink::constructDataPacket( dnp_datalink_packet &packet, unsigned char *buf, unsigned long len )
+void Datalink::constructDataPacket( datalink_packet &packet, unsigned char *buf, unsigned long len )
 {
     int pos, block_len, num_blocks;
     unsigned short crc;
@@ -402,7 +406,7 @@ void CtiDNPDatalink::constructDataPacket( dnp_datalink_packet &packet, unsigned 
 }
 
 
-void CtiDNPDatalink::constructPrimaryControlPacket( dnp_datalink_packet &packet, PrimaryControlFunction function, bool fcv, bool fcb )
+void Datalink::constructPrimaryControlPacket( datalink_packet &packet, PrimaryControlFunction function, bool fcv, bool fcb )
 {
     unsigned short crc;
 
@@ -426,7 +430,7 @@ void CtiDNPDatalink::constructPrimaryControlPacket( dnp_datalink_packet &packet,
 }
 
 
-void CtiDNPDatalink::constructSecondaryControlPacket( dnp_datalink_packet &packet, SecondaryControlFunction function, bool dfc )
+void Datalink::constructSecondaryControlPacket( datalink_packet &packet, SecondaryControlFunction function, bool dfc )
 {
     unsigned short crc;
 
@@ -450,7 +454,7 @@ void CtiDNPDatalink::constructSecondaryControlPacket( dnp_datalink_packet &packe
 }
 
 
-void CtiDNPDatalink::sendPacket( dnp_datalink_packet &packet, CtiXfer &xfer )
+void Datalink::sendPacket( datalink_packet &packet, CtiXfer &xfer )
 {
     xfer.setOutBuffer((unsigned char *)&packet);
     xfer.setOutCount(calcPacketLength(packet.header.fmt.len));
@@ -462,7 +466,7 @@ void CtiDNPDatalink::sendPacket( dnp_datalink_packet &packet, CtiXfer &xfer )
 }
 
 
-void CtiDNPDatalink::recvPacket( dnp_datalink_packet &packet, CtiXfer &xfer)
+void Datalink::recvPacket( datalink_packet &packet, CtiXfer &xfer)
 {
     if( _in_recv < Packet_HeaderLen )
     {
@@ -526,13 +530,13 @@ void CtiDNPDatalink::recvPacket( dnp_datalink_packet &packet, CtiXfer &xfer)
 }
 
 
-bool CtiDNPDatalink::isControlPending( void )
+bool Datalink::isControlPending( void )
 {
     return (_control_state != State_Control_Ready);
 }
 
 
-bool CtiDNPDatalink::processControl( const dnp_datalink_packet &packet )
+bool Datalink::processControl( const datalink_packet &packet )
 {
     bool retVal = false;
 
@@ -682,7 +686,7 @@ bool CtiDNPDatalink::processControl( const dnp_datalink_packet &packet )
 }
 
 
-void CtiDNPDatalink::generateControl( CtiXfer &xfer )
+void Datalink::generateControl( CtiXfer &xfer )
 {
     switch( _control_state )
     {
@@ -765,7 +769,7 @@ void CtiDNPDatalink::generateControl( CtiXfer &xfer )
 }
 
 
-void CtiDNPDatalink::decodeControl( CtiXfer &xfer, int status )
+void Datalink::decodeControl( CtiXfer &xfer, int status )
 {
     if( !status )
     {
@@ -896,7 +900,7 @@ void CtiDNPDatalink::decodeControl( CtiXfer &xfer, int status )
 }
 
 
-bool CtiDNPDatalink::isValidDataPacket( const dnp_datalink_packet &packet )
+bool Datalink::isValidDataPacket( const datalink_packet &packet )
 {
     bool retVal = false;
 
@@ -921,7 +925,7 @@ bool CtiDNPDatalink::isValidDataPacket( const dnp_datalink_packet &packet )
 }
 
 
-bool CtiDNPDatalink::isValidAckPacket( const dnp_datalink_packet &packet )
+bool Datalink::isValidAckPacket( const datalink_packet &packet )
 {
     bool retVal = false;
 
@@ -941,7 +945,7 @@ bool CtiDNPDatalink::isValidAckPacket( const dnp_datalink_packet &packet )
 }
 
 
-bool CtiDNPDatalink::isTransactionComplete( void )
+bool Datalink::isTransactionComplete( void )
 {
     bool retVal;
 
@@ -966,13 +970,13 @@ bool CtiDNPDatalink::isTransactionComplete( void )
 }
 
 
-bool CtiDNPDatalink::errorCondition( void )
+bool Datalink::errorCondition( void )
 {
     return _io_state == State_IO_Failed;
 }
 
 
-int CtiDNPDatalink::calcPacketLength( int headerLen )
+int Datalink::calcPacketLength( int headerLen )
 {
     int packetLength, dataLength, numBlocks;
 
@@ -997,7 +1001,7 @@ int CtiDNPDatalink::calcPacketLength( int headerLen )
 }
 
 
-bool CtiDNPDatalink::isEntirePacket( const dnp_datalink_packet &packet, unsigned long in_recv )
+bool Datalink::isEntirePacket( const datalink_packet &packet, unsigned long in_recv )
 {
     bool retVal = false;
 
@@ -1013,19 +1017,19 @@ bool CtiDNPDatalink::isEntirePacket( const dnp_datalink_packet &packet, unsigned
 }
 
 
-int CtiDNPDatalink::getInPayloadLength( void )
+int Datalink::getInPayloadLength( void )
 {
     return _in_data_len;
 }
 
 
-void CtiDNPDatalink::getInPayload( unsigned char *buf )
+void Datalink::getInPayload( unsigned char *buf )
 {
     memcpy(buf, _in_data, _in_data_len);
 }
 
 
-bool CtiDNPDatalink::areCRCsValid( const dnp_datalink_packet &packet )
+bool Datalink::areCRCsValid( const datalink_packet &packet )
 {
     bool valid;
 
@@ -1080,7 +1084,7 @@ bool CtiDNPDatalink::areCRCsValid( const dnp_datalink_packet &packet )
 }
 
 
-void CtiDNPDatalink::putPacketPayload( const dnp_datalink_packet &packet, unsigned char *buf, int *len )
+void Datalink::putPacketPayload( const datalink_packet &packet, unsigned char *buf, int *len )
 {
     unsigned const char *current_block;
     int payload_len, block_len, pos;
@@ -1123,7 +1127,7 @@ void CtiDNPDatalink::putPacketPayload( const dnp_datalink_packet &packet, unsign
 }
 
 
-unsigned short CtiDNPDatalink::computeCRC( const unsigned char *buf, int len )
+unsigned short Datalink::computeCRC( const unsigned char *buf, int len )
 {
     //  this table and code taken from the DNP docs.
     //    original author Jim McFadyen
@@ -1177,5 +1181,7 @@ unsigned short CtiDNPDatalink::computeCRC( const unsigned char *buf, int len )
     return ~crc;
 }
 
-
+}
+}
+}
 
