@@ -230,8 +230,8 @@ public class ProgramOptOutAction implements ActionBase {
             	resp.setDescription( "The " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event has been scheduled." );
             	
 				logMsg = "Start Date/Time:" + ServerUtils.formatDate(optOut.getStartDateTime(), tz) +
-            			", Duration:" + ServletUtils.getDurationFromHours( optOut.getPeriod() ) + " Hours, ";
-				logMsg += "Serial #:" + ((LiteStarsLMHardware) hardwares.get(0)).getManufacturerSerialNumber();
+            			", Duration:" + ServletUtils.getDurationFromHours( optOut.getPeriod() );
+				logMsg += ", Serial #:" + ((LiteStarsLMHardware) hardwares.get(0)).getManufacturerSerialNumber();
 				for (int i = 1; i < hardwares.size(); i++)
 					logMsg += "," + ((LiteStarsLMHardware) hardwares.get(i)).getManufacturerSerialNumber();
             }
@@ -310,8 +310,8 @@ public class ProgramOptOutAction implements ActionBase {
 			    else
 			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_PAST) + "." );
 			    
-				logMsg = "Start Date/Time:(Immediately), Duration:" + ServletUtils.getDurationFromHours( optOut.getPeriod() ) + " Hours, ";
-				logMsg += "Serial #:" + ((LiteStarsLMHardware) hardwares.get(0)).getManufacturerSerialNumber();
+				logMsg = "Start Date/Time:(Immediately), Duration:" + ServletUtils.getDurationFromHours( optOut.getPeriod() );
+				logMsg += ", Serial #:" + ((LiteStarsLMHardware) hardwares.get(0)).getManufacturerSerialNumber();
 				for (int i = 1; i < hardwares.size(); i++)
 					logMsg += "," + ((LiteStarsLMHardware) hardwares.get(i)).getManufacturerSerialNumber();
             }
