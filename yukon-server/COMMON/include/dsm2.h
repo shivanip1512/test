@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/05/09 15:44:43 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/05/15 22:32:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -807,6 +807,7 @@ public:
    UINT               Command;
    UINT               Function;
    UINT               EventCode;
+   UINT               MessageFlags;
 
    LONG               DeviceIDofLMGroup;           // 091300 CGP Helps us track lm command's success
    UINT               TrxID;                       // 091300 CGP Helps us track lm command's success
@@ -882,6 +883,7 @@ public:
          Command           = aRef.Command;
          Function          = aRef.Function;
          EventCode         = aRef.EventCode;
+         MessageFlags      = aRef.MessageFlags;
 
          DeviceIDofLMGroup = aRef.DeviceIDofLMGroup;
          TrxID             = aRef.TrxID;
