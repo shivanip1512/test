@@ -276,7 +276,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
     //  params:  Thermal Age Hours - the current thermal age of the transformer
     //           HotSpotTemp - the hot spot temperature of the transformer, calculated elsewhere
     //           UpdateFreq - the minutes between updates of the thermal age
-    if( functionName == "XfrmThermAge" )
+    if( !functionName.compareTo("XfrmThermAge",RWCString::ignoreCase) )
     {
         double ThermalAgeHours, HotSpotTemp, UpdateFreq, tmp;
         ThermalAgeHours = _parent->pop( );
@@ -298,7 +298,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
 
     //  Hot Spot Calculation
     //  params:  
-    else if( functionName == "HotSpot" )
+    else if( !functionName.compareTo("HotSpot",RWCString::ignoreCase) )
     {
         double HotSpotTemp, OilTemp, TempRise, Load; 
         double Rating, Mfactor, LoadWatts, LoadVARs;
@@ -321,19 +321,19 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
 
         retVal = HotSpotTemp;
     }
-    else if( functionName == "DemandAvg15" )
+    else if( !functionName.compareTo("DemandAvg15",RWCString::ignoreCase) )
     {
         retVal = _figureDemandAvg(900);// seconds in avg
     }
-    else if( functionName == "DemandAvg30" )
+    else if( !functionName.compareTo("DemandAvg30",RWCString::ignoreCase) )
     {
         retVal = _figureDemandAvg(1800);// seconds in avg
     }
-    else if( functionName == "DemandAvg60" )
+    else if( !functionName.compareTo("DemandAvg60",RWCString::ignoreCase) )
     {
         retVal = _figureDemandAvg(3600);// seconds in avg
     }
-    else if( functionName == "P-Factor KW/KVar" )
+    else if( !functionName.compareTo("P-Factor KW/KVar",RWCString::ignoreCase) )
     {
         DOUBLE kvar = _parent->pop();
         DOUBLE kw = _parent->pop();
@@ -349,15 +349,10 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
                 kw = -kw;
             }
             newPowerFactorValue = kw / kva;
-            //check if this is leading
-            /*if( kvar < 0.0 && newPowerFactorValue != 1.0 )
-            {
-                newPowerFactorValue = 2.0-newPowerFactorValue;
-            }*/
         }
         retVal = newPowerFactorValue;
     }
-    else if( functionName == "P-Factor KW/KQ" )
+    else if( !functionName.compareTo("P-Factor KW/KQ",RWCString::ignoreCase) )
     {
         DOUBLE kq = _parent->pop();
         DOUBLE kw = _parent->pop();
@@ -374,15 +369,10 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
                 kw = -kw;
             }
             newPowerFactorValue = kw / kva;
-            //check if this is leading
-            /*if( kvar < 0.0 && newPowerFactorValue != 1.0 )
-            {
-                newPowerFactorValue = 2.0-newPowerFactorValue;
-            }*/
         }
         retVal = newPowerFactorValue;
     }
-    else if( functionName == "P-Factor KW/KVa" )
+    else if( !functionName.compareTo("P-Factor KW/KVa",RWCString::ignoreCase) )
     {
         DOUBLE kva = _parent->pop();
         DOUBLE kw = _parent->pop();
@@ -403,10 +393,74 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         }
         retVal = newPowerFactorValue;
     }
-/*    if( functionName == "otherfunction" )
+    //added 3/4/03 JW
+    else if( !functionName.compareTo("KVar from KW/KQ",RWCString::ignoreCase) )
     {
+        DOUBLE kq = _parent->pop();
+        DOUBLE kw = _parent->pop();
+        DOUBLE kvar = ((2.0*kq)-kw)/SQRT3;
 
-    }*/
+        retVal = kvar;
+    }
+    else if( !functionName.compareTo("KVa from KW/KVar",RWCString::ignoreCase) )
+    {
+        DOUBLE kvar = _parent->pop();
+        DOUBLE kw = _parent->pop();
+        DOUBLE kva = sqrt((kw*kw)+(kvar*kvar));
+
+        retVal = kva;
+    }
+    else if( !functionName.compareTo("KVa from KW/KQ",RWCString::ignoreCase) )
+    {
+        DOUBLE kq = _parent->pop();
+        DOUBLE kw = _parent->pop();
+        DOUBLE kvar = ((2.0*kq)-kw)/SQRT3;
+        DOUBLE kva = sqrt((kw*kw)+(kvar*kvar));
+
+        retVal = kva;
+    }
+    else if( !functionName.compareTo("Squared",RWCString::ignoreCase) )
+    {
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
+
+        CtiHashKey componentHashKey(_componentPointId);
+        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
+
+        DOUBLE componentPointValue = componentPointPtr->getPointValue();
+
+        retVal = componentPointValue*componentPointValue;
+    }
+    else if( !functionName.compareTo("Square Root",RWCString::ignoreCase) )
+    {
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
+
+        CtiHashKey componentHashKey(_componentPointId);
+        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
+
+        DOUBLE componentPointValue = componentPointPtr->getPointValue();
+
+        retVal = sqrt(componentPointValue);
+    }
+    else if( !functionName.compareTo("COS from P/Q",RWCString::ignoreCase) )
+    {
+        DOUBLE q = _parent->pop();
+        DOUBLE p = _parent->pop();
+        DOUBLE temp = p/q;
+        retVal = cos(temp);
+    }
+    else if( !functionName.compareTo("ArcTan",RWCString::ignoreCase) )
+    {
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
+
+        CtiHashKey componentHashKey(_componentPointId);
+        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
+
+        DOUBLE componentPointValue = componentPointPtr->getPointValue();
+
+        retVal = atan(componentPointValue);
+    }
+    //added 3/4/03 JW
+
     return retVal;
 }
 
