@@ -94,8 +94,7 @@ if( lmSession.getResponseProgs() == null )
 						<input type="checkbox" name="allChks" value="true" onClick="checkAll(cmdForm.allChks, cmdForm.dblarray1)">
 						Override All</div>
   					  </td>
-                      <td width="82"><div align="center"><%= ConstraintTableModel.COL_NAMES[ConstraintTableModel.COL_STATUS]%></div></td>
-                      <td width="234"><div align="center"><%= ConstraintTableModel.COL_NAMES[ConstraintTableModel.COL_VIOLATION]%></div></td>					  
+                      <td width="316"><div align="center"><%= ConstraintTableModel.COL_NAMES[ConstraintTableModel.COL_VIOLATION]%></div></td>					  
                     </tr>
 <%
 	ResponseProg[] respProgs = lmSession.getResponseProgs();
@@ -108,10 +107,7 @@ if( lmSession.getResponseProgs() == null )
 						<input type="checkbox" name="dblarray1" value=<%= prg.getLmProgramBase().getYukonID() %> >
 						<%= prg.getLmProgramBase().getYukonName() %>
 					  </td>					  
-                      <td width="82" class="TableCell" align="center">
-					  <%= ServerResponseMsg.getStatusStr(prg.getStatus()) %>
-					  </td>					  
-					  <td width="234" class="TableCell" align="left">
+					  <td width="316" class="TableCell" align="left">
 					  <%= prg.getViolationsAsString() %>
 					  </td>					  
                     </tr>
