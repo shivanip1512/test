@@ -1,5 +1,10 @@
 package com.cannontech.graph.gds.tablemodel;
 
+import com.cannontech.common.gui.util.Colors;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.db.graph.GraphDataSeries;
+
 /**
  * Insert the type's description here.
  * Creation date: (10/23/2001 9:10:18 AM)
@@ -60,7 +65,7 @@ public GDSTableModel()
  * Adds the Peak_Series gds to model.excludedRows array
  * Creation date: (10/25/00 11:21:21 AM)
  */
-public void addRow(com.cannontech.database.db.graph.GraphDataSeries gds) 
+public void addRow(GraphDataSeries gds) 
 {
 	getRows().add(gds);
 	fireTableDataChanged();
@@ -70,19 +75,18 @@ public void addRow(com.cannontech.database.db.graph.GraphDataSeries gds)
  * Creation date: (2/6/2001 11:03:39 AM)
  * @return com.cannontech.database.db.graph.GraphDataSeries[]
  */
-public com.cannontech.database.db.graph.GraphDataSeries[] getAllDataSeries()
+public GraphDataSeries[] getAllDataSeries()
 {
 	int gdsArraySize = getRowCount();
 		
-	com.cannontech.database.db.graph.GraphDataSeries[] retVal =
-		new com.cannontech.database.db.graph.GraphDataSeries[ gdsArraySize];
+	GraphDataSeries[] retVal = new GraphDataSeries[ gdsArraySize];
 
 	java.util.Iterator iter = getRows().iterator();
 
 	int i = 0;
 	while( iter.hasNext() )
 	{
-		retVal[i++] = (com.cannontech.database.db.graph.GraphDataSeries) iter.next();
+		retVal[i++] = (GraphDataSeries) iter.next();
 	}
 
 	return retVal;
@@ -137,23 +141,23 @@ public Class[] getColumnTypes()
  * @return java.lang.Object
  * @param index int
  */
-public Object getGDSAttribute(int index, com.cannontech.database.db.graph.GraphDataSeries gds) {
+public Object getGDSAttribute(int index, GraphDataSeries gds) {
 	switch( index )
 	{
 		case DEVICE_NAME_COLUMN:
 			return gds.getDeviceName();
 			
 		case POINT_NAME_COLUMN:
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			Integer id = gds.getPointID();
 			
 			synchronized(cache)
 			{
-				java.util.List points = com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPoints();
+				java.util.List points = DefaultDatabaseCache.getInstance().getAllPoints();
 				java.util.Iterator iter = points.iterator();
 				while( iter.hasNext() )
 				{
-					com.cannontech.database.data.lite.LitePoint pt = (com.cannontech.database.data.lite.LitePoint) iter.next();
+					LitePoint pt = (LitePoint) iter.next();
 					if( pt.getPointID() == id.intValue() )
 						return pt.getPointName();	
 				}
@@ -166,7 +170,7 @@ public Object getGDSAttribute(int index, com.cannontech.database.db.graph.GraphD
 			return gds.getLabel();
 			
 		case COLOR_NAME_COLUMN:	
-			return com.cannontech.common.gui.util.Colors.getColorString(gds.getColor().intValue());
+			return Colors.getColorString(gds.getColor().intValue());
 		
 		
 		case AXIS_NAME_COLUMN:
@@ -180,7 +184,17 @@ public Object getGDSAttribute(int index, com.cannontech.database.db.graph.GraphD
 		case TYPE_NAME_COLUMN:
 		{
 			//Display the String value of the int
-			return com.cannontech.database.db.graph.GraphDataSeries.getType(gds.getType().intValue());
+			String type = GraphDataSeries.getType(gds.getType().intValue());
+			if( type.equalsIgnoreCase(GraphDataSeries.DATE_TYPE_STRING))
+			{
+				java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MM/dd/yy");
+				//get timestamp from database;
+				if( gds.getMoreData().longValue() > 0)
+					type = format.format(gds.getSpecificDate());
+				else
+					type = "mm/dd/yy";
+			}
+			return type;
 		}
 		case MULT_NAME_COLUMN:
 			return gds.getMultiplier();
@@ -198,9 +212,9 @@ public Object getGDSAttribute(int index, com.cannontech.database.db.graph.GraphD
  * @return com.cannontech.database.db.graph.GraphDataSeries
  * @param row int
  */
-public com.cannontech.database.db.graph.GraphDataSeries getRow(int row)
+public GraphDataSeries getRow(int row)
 {
-	return ( row < getRows().size() ? (com.cannontech.database.db.graph.GraphDataSeries) getRows().get(row) : null );
+	return ( row < getRows().size() ? (GraphDataSeries) getRows().get(row) : null );
 }
 /**
  * getRowCount method comment.
@@ -225,7 +239,7 @@ public Object getValueAt(int row, int col)
 {
 	if( row < getRows().size() && col < getColumnCount() )
 	{
-		return getGDSAttribute(col, (com.cannontech.database.db.graph.GraphDataSeries) getRows().get(row) );
+		return getGDSAttribute(col, (GraphDataSeries) getRows().get(row) );
 	}
 	else
 		return null;
@@ -250,10 +264,11 @@ public boolean isCellEditable(int row, int column)
 	}
 	else if( column == TYPE_NAME_COLUMN )
 	{
-		//When type column value is 'THRESHOLD' or 'DATE', the combo box is NOT editable.
-		if( !((String)getValueAt(row, column)).equalsIgnoreCase( com.cannontech.database.db.graph.GraphDataSeries.THRESHOLD_TYPE_STRING))
-			editable = true;
+		String value = ((String)getValueAt(row,column));
 		
+		//When type column value is 'THRESHOLD', the combo box is NOT editable.
+		if( !value.equalsIgnoreCase( GraphDataSeries.THRESHOLD_TYPE_STRING))
+			editable = true;
 	}
 		
 	
@@ -293,7 +308,7 @@ public void removeRow(int row)
  * Creation date: (10/25/00 11:26:04 AM)
  * @param gds com.cannontech.database.db.graph.GraphDataSeries[]
  */
-public void setDataSeries(com.cannontech.database.db.graph.GraphDataSeries[] gds) {}
+public void setDataSeries(GraphDataSeries[] gds) {}
 /**
  * Insert the method's description here.
  * Creation date: (11/6/00 10:07:31 AM)
@@ -303,7 +318,7 @@ public void setDataSeries(com.cannontech.database.db.graph.GraphDataSeries[] gds
  */
 public void setValueAt(Object value, int row, int col) 
 {	
-	com.cannontech.database.db.graph.GraphDataSeries gds = getRow(row);
+	GraphDataSeries gds = getRow(row);
 	
 	switch( col )
 	{
@@ -314,7 +329,7 @@ public void setValueAt(Object value, int row, int col)
 			gds.setLabel( valueString );
 		break;
 		case COLOR_NAME_COLUMN:
-			gds.setColor( new Integer(com.cannontech.common.gui.util.Colors.getColorID(com.cannontech.common.gui.util.Colors.getColor(value.toString()))));
+			gds.setColor( new Integer(Colors.getColorID(com.cannontech.common.gui.util.Colors.getColor(value.toString()))));
 			
 		break;		
 		case AXIS_NAME_COLUMN:
@@ -324,7 +339,22 @@ public void setValueAt(Object value, int row, int col)
 		case TYPE_NAME_COLUMN:
 		{
 			//Save the Integer value of the String.
-			gds.setType( new Integer(com.cannontech.database.db.graph.GraphDataSeries.getTypeInt(new String(value.toString()))));
+			gds.setType( new Integer(GraphDataSeries.getTypeInt(new String(value.toString()))));
+			if( GraphDataSeries.isDateType(gds.getType().intValue()))
+			{
+				java.util.Date date = com.cannontech.util.ServletUtil.parseDateStringLiberally(value.toString());
+				Double moreData = new Double(0.0);
+				if(date != null)
+				{
+					Long ts = new Long(date.getTime());
+					moreData = new Double(ts.doubleValue());
+					gds.setMoreData(moreData);
+				}
+			}
+			else
+			{
+				gds.setMoreData(new Double(0.0));
+			}
 		}
 		break;
 		
