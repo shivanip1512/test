@@ -1899,7 +1899,6 @@ public void setDeviceType(int type)
          !(type == PAOGroups.LMT_2
           || type == PAOGroups.RTUILEX
           || type == PAOGroups.RTU_DNP
-          || type == PAOGroups.DNP_CBC_6510
           || type == PAOGroups.LCU415) );
 		
       setHealthObjectsVisible( 
@@ -1908,6 +1907,7 @@ public void setDeviceType(int type)
       
 		setAccumulatorObjectsVisible( 
 				!(type == PAOGroups.DCT_501 
+               || type == PAOGroups.DNP_CBC_6510
 					|| type == PAOGroups.LCU_T3026) );
 		
 

@@ -35,7 +35,7 @@ public void addPartial() throws java.sql.SQLException
 	super.addPartial();
 	//getDeviceMeterGroupDefaults().add();
 	getDeviceMeterGroup().add();
-	getDeviceLoadProfileDefaults().add();
+	getDeviceLoadProfile().add();
 }
 /**
  * This method was created in VisualAge.
@@ -66,20 +66,6 @@ public DeviceLoadProfile getDeviceLoadProfile()
  		deviceLoadProfile = new DeviceLoadProfile();
  		
 	return deviceLoadProfile;
-}
-/**
- * Insert the method's description here.
- * Creation date: (6/18/2001 11:35:05 AM)
- * @return com.cannontech.database.db.device.DeviceLoadProfile
- */
-public DeviceLoadProfile getDeviceLoadProfileDefaults()
-{
-
-	getDeviceLoadProfile().setLastIntervalDemandRate(new Integer(0));
-	getDeviceLoadProfile().setLoadProfileDemandRate(new Integer(0));
-	getDeviceLoadProfile().setLoadProfileCollection("NNNN");
-
-	return getDeviceLoadProfile();
 }
 /**
  * This method was created in VisualAge.

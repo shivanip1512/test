@@ -242,40 +242,26 @@ private final static DeviceBase setDeviceDefaults( int type, DeviceBase returnDe
 	else if( DeviceTypesFuncs.isMeter(type) )
 	{
 		returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_METER);
-		((IEDMeter) returnDevice).getDeviceLoadProfile().setLastIntervalDemandRate(new Integer(0));
-		((IEDMeter) returnDevice).getDeviceLoadProfile().setLoadProfileCollection("NNNN");
-		((IEDMeter) returnDevice).getDeviceLoadProfile().setLoadProfileDemandRate(new Integer(0));
 	}
 	else if (type == PAOGroups.DAVISWEATHER)
 	{
 		returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_IED);
-		((IEDMeter) returnDevice).getDeviceLoadProfile().setLastIntervalDemandRate(new Integer(0));
-		((IEDMeter) returnDevice).getDeviceLoadProfile().setLoadProfileCollection("NNNN");
-		((IEDMeter) returnDevice).getDeviceLoadProfile().setLoadProfileDemandRate(new Integer(0));
 	}
 	else if( DeviceTypesFuncs.isCarrier(type) )
 	{
 		returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_CARRIER);
 		
-		if ( DeviceTypesFuncs.isMCT(type) )
+		if( DeviceTypesFuncs.isMCT(type)
+          && (type == PAOGroups.MCT360 || type == PAOGroups.MCT370) )
 		{
-			if( type == PAOGroups.LMT_2 || type == PAOGroups.DCT_501 )
-				((MCTBase) returnDevice).getDeviceLoadProfile().setLastIntervalDemandRate(new Integer(300));
-			else
-				((MCTBase) returnDevice).getDeviceLoadProfile().setLastIntervalDemandRate(new Integer(0));
-			
-			((MCTBase) returnDevice).getDeviceLoadProfile().setLoadProfileCollection("NNNN");
-			((MCTBase) returnDevice).getDeviceLoadProfile().setLoadProfileDemandRate(new Integer(0));
-			if (type == PAOGroups.MCT360 || type == PAOGroups.MCT370)
-			{
-				((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setConnectedIED("None");
-				((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setIEDScanRate(new Integer(60));
-				((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setDefaultDataClass(new Integer(0));
-				((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setDefaultDataOffset(new Integer(0));
-				((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setPassword("None");
-				((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setRealTimeScan(new Character('N'));
-			}
+			((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setConnectedIED("None");
+			((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setIEDScanRate(new Integer(60));
+			((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setDefaultDataClass(new Integer(0));
+			((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setDefaultDataOffset(new Integer(0));
+			((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setPassword("None");
+			((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setRealTimeScan(new Character('N'));
 		}
+
 	}
 	else if ( DeviceTypesFuncs.isRTU(type) )
 	{

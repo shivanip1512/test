@@ -9,7 +9,7 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 	private String collectionGroup = com.cannontech.common.util.CtiUtilities.STRING_DEFAULT;
 	private String testCollectionGroup = com.cannontech.common.util.CtiUtilities.STRING_DEFAULT;
 	private String meterNumber = com.cannontech.common.util.CtiUtilities.STRING_DEFAULT;
-	private String billingGroup = "MainCycle";
+	private String billingGroup = com.cannontech.common.util.CtiUtilities.STRING_DEFAULT;
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
@@ -71,25 +71,49 @@ public java.lang.String getBillingGroup() {
 public java.lang.String getCollectionGroup() {
 	return collectionGroup;
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer[]
- */
-public final static String[] getDeviceCollectionGroups() throws java.sql.SQLException{
 
-	return getDeviceCollectionGroups(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-}
 /**
  * This method was created in VisualAge.
  * @return java.lang.Integer[]
  */
-public final static String[] getDeviceCollectionGroups(String databaseAlias) throws java.sql.SQLException
+public final static String[] getDeviceBillingGroups() throws java.sql.SQLException
+{
+   String retVal[] = null; 
+   
+   com.cannontech.database.SqlStatement stmt =
+      new com.cannontech.database.SqlStatement(
+         "SELECT DISTINCT BillingGroup FROM " + TABLE_NAME, 
+         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+                                     
+   try
+   {                                
+      stmt.execute();
+
+      retVal = new String[stmt.getRowCount()];
+   
+      for( int i = 0; i < stmt.getRowCount(); i++ )
+         retVal[i] = new String( ((String)stmt.getRow(i)[0]) );   
+   }
+   catch( Exception e )
+   {
+      com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+   }  
+
+   return retVal;
+}
+
+/**
+ * This method was created in VisualAge.
+ * @return java.lang.Integer[]
+ */
+public final static String[] getDeviceCollectionGroups() throws java.sql.SQLException
 {
 	String retVal[] = null;	
  	
  	com.cannontech.database.SqlStatement stmt =
  		new com.cannontech.database.SqlStatement(
-	 		"SELECT DISTINCT CollectionGroup FROM " + TABLE_NAME, databaseAlias );
+	 		"SELECT DISTINCT CollectionGroup FROM " + TABLE_NAME, 
+         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
  												 
  	try
  	{											
@@ -174,25 +198,19 @@ public final static Integer[] getDeviceIDs_TestCollectionGroups(String databaseA
 
  	return retVal;
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer[]
- */
-public final static String[] getDeviceTestCollectionGroups() throws java.sql.SQLException{
 
-	return getDeviceTestCollectionGroups(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-}
 /**
  * This method was created in VisualAge.
  * @return java.lang.Integer[]
  */
-public final static String[] getDeviceTestCollectionGroups(String databaseAlias) throws java.sql.SQLException
+public final static String[] getDeviceTestCollectionGroups() throws java.sql.SQLException
 {
 	String retVal[] = null;	
  	
  	com.cannontech.database.SqlStatement stmt =
  		new com.cannontech.database.SqlStatement(
-	 		"SELECT DISTINCT TestCollectionGroup FROM " + TABLE_NAME, databaseAlias );
+	 		"SELECT DISTINCT TestCollectionGroup FROM " + TABLE_NAME, 
+         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
  												 
  	try
  	{											

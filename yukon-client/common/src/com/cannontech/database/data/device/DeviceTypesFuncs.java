@@ -230,6 +230,7 @@ public final static boolean isLoadProfile1Channel(int deviceType)
 		case MCT240:
 		case MCT248:
 		case MCT250:
+      case MCT310IL:
 		case LMT_2:
 			return true;
 	
@@ -243,13 +244,10 @@ public final static boolean isLoadProfile1Channel(int deviceType)
  * @return boolean
  * @param deviceType int
  */
-public final static boolean isLoadProfileMultiChannel(int deviceType) 
+public final static boolean isLoadProfile4Channel(int deviceType) 
 {
 	switch(deviceType)
 	{	
-		case MCT310IL:
-      case MCT310CT:
-      case MCT310IM:
 		case MCT318L:
 		case DCT_501:
 			return true;
@@ -258,6 +256,26 @@ public final static boolean isLoadProfileMultiChannel(int deviceType)
 			return false;
 	}
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (1/15/2001 1:46:22 PM)
+ * @return boolean
+ * @param deviceType int
+ */
+public final static boolean isLoadProfile3Channel(int deviceType) 
+{
+   switch(deviceType)
+   {  
+      case MCT310CT:
+      case MCT310IM:
+         return true;
+   
+      default:
+         return false;
+   }
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/15/2001 1:46:22 PM)

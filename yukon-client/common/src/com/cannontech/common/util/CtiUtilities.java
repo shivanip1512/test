@@ -828,41 +828,6 @@ public static final void setIntervalComboBoxSelectedItem(JComboBox comboBox, int
 
 
 /**
- * Insert the method's description here.
- * Creation date: (4/27/00 1:08:43 PM)
- * @param comboBox javax.swing.JComboBox
- * @param scanRateSecs int
- */
-public void setScanRateComboBoxSelectedItem(JComboBox comboBox, int scanRateSecs) {
-	String scanRateString = null;
-	boolean found = false;
-	
-	if( scanRateSecs < 60 )
-		scanRateString = Integer.toString(scanRateSecs) + " second";
-	else if( scanRateSecs < 3600 )
-		scanRateString = Integer.toString(scanRateSecs/60) + " minute";
-	else if( scanRateSecs < 86400 )
-		scanRateString = Integer.toString(scanRateSecs/3600) + " hour";
-
-	for(int i=0;i<comboBox.getModel().getSize();i++)
-	{
-		if( ((String)comboBox.getItemAt(i)).equalsIgnoreCase(scanRateString) )
-		{
-			comboBox.setSelectedIndex(i);
-			found = true;
-			break;
-		}
-	}
-
-	if( !found )
-	{
-		comboBox.addItem("User Defined");
-		comboBox.setSelectedItem("User Defined");
-	}
-}
-
-
-/**
  * This method was created in VisualAge.
  * @param comboBox javax.swing.JComboBox
  * @param val java.lang.Object

@@ -5,42 +5,16 @@ package com.cannontech.database.db.device;
  */
 public class DeviceLoadProfile extends com.cannontech.database.db.DBPersistent {
 	private Integer deviceID = null;
-	private Integer lastIntervalDemandRate = new Integer(0);
-	private Integer loadProfileDemandRate = new Integer(0);
+	private Integer lastIntervalDemandRate = new Integer(300);
+	private Integer loadProfileDemandRate = new Integer(300);
 	private String loadProfileCollection = "NNNN";
 /**
  * DeviceLoadProfile constructor comment.
  */
 public DeviceLoadProfile() {
 	super();
-	initialize( null, null, null, null );
 }
-/**
- * DeviceCarrierSettings constructor comment.
- */
-public DeviceLoadProfile(Integer deviceID) {
-	super();
-	initialize( deviceID, null, null, null );
-}
-/**
- * DeviceCarrierSettings constructor comment.
- */
-public DeviceLoadProfile(Integer deviceID, Integer lastIntervalDemandRate ) {
-	super();
-	initialize( deviceID, lastIntervalDemandRate, null, null );
-}
-/**
- * Insert the method's description here.
- * Creation date: (6/18/2001 11:38:01 AM)
- * @param deviceID java.lang.Integer
- * @param b java.lang.Integer
- * @param c java.lang.Integer
- * @param a java.lang.String
- */
-public DeviceLoadProfile(Integer deviceID, Integer lastIntervalDemandRate, Integer loadProfileDemandRate, String loadProfileCollection) 
-{	super();
-	initialize( deviceID, lastIntervalDemandRate, loadProfileDemandRate, loadProfileCollection);
-}
+
 /**
  * add method comment.
  */
@@ -85,19 +59,7 @@ public String getLoadProfileCollection() {
 public Integer getLoadProfileDemandRate() {
 	return loadProfileDemandRate;
 }
-/**
- * This method was created in VisualAge.
- * @param deviceID java.lang.Integer
- * @param address java.lang.Integer
- * @param demandInterval Intger
- */
-public void initialize( Integer deviceID, Integer lastIntervalDemandRate, Integer loadProfileDemandRate, String loadProfileCollection ) {
 
-	setDeviceID( deviceID );
-	setLastIntervalDemandRate(lastIntervalDemandRate);
-	setLoadProfileDemandRate(loadProfileDemandRate);
-	setLoadProfileCollection(loadProfileCollection);
-}
 /**
  * retrieve method comment.
  */
