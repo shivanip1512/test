@@ -685,11 +685,11 @@ public final static String getLogDirPath()
 	final String fs = System.getProperty("file.separator");	
 	if(isRunningAsClient()) 
 	{
-		return yb + fs + "client" + fs + "log";
+		return yb + fs + "client" + fs + "log" + fs;
 	}
 	else 
 	{
-		return yb + fs + "server" + fs + "log";
+		return yb + fs + "server" + fs + "log" + fs;
 	}
 }
 
