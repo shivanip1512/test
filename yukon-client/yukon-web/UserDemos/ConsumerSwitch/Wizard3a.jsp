@@ -64,54 +64,72 @@
                 <table width="600" border="0">
                   <tr>
                     <td>
-                      <div align="center"><font face="Arial, Helvetica, sans-serif" size="2">Select 
-                        the Price/kWh for each Price Point level. Your Estimated 
-                        Annual Rebate is shown at right. Be sure that as the Price 
-                        Point increases, your Price/kWh increases as well.</font> 
+                      <div align="center"> 
+                        <p class="Main">Select the Price/kWh for each Price Point 
+                          level. <br>
+                          Be sure that as the Price Point increases, your Price/kWh 
+                          increases as well. 
                       </div>
                     </td>
                   </tr>
                 </table>
-                <br>
-                <table width="540" border="0" cellspacing="15" bgcolor="#666699" cellpadding="0">
+                <table width="605" border="0" cellspacing="15" cellpadding="0">
                   <tr> 
-                    <td width="251" background="PriceStand.gif" height="113"> 
-                      <table width="220" border="0" align="center">
+                    <td width="280" background="PriceStand.gif" height="125"> 
+                      <br>
+                      <table width="250" border="0" align="center">
                         <tr> 
-                          <td> 
+                          <td width="80"> 
                             <select name="select2">
                               <option>None</option>
-                            </select>
+                              </select>
                           </td>
-                          <td> 
-                            <div align="right"> 
-                              <input type="text" name="textfield232" size="4" maxlength="6" value="$0.00">
+                          <td width="11"> 
+                            <div align="right"> </div>
+                          </td>
+                          <td width="68"> 
+                            <div align="center"> 
+                              <input type="text" name="textfield223" size="4" maxlength="6" value="0 hrs">
+                            </div>
+                          </td>
+                          <td width="12">&nbsp;</td>
+                          <td width="57"> 
+                            <div align="center"> 
+                              <input type="text" name="textfield2222" size="4" maxlength="6" value="$0.00">
                             </div>
                           </td>
                         </tr>
                       </table>
                     </td>
-                    <td width="250" background="PriceLow.gif" height="113"> 
-                      <table width="220" border="0" align="center">
+                    <td width="280" background="PriceLow.gif" height="125"> <br>
+                      <table width="250" border="0" align="center">
                         <tr> 
-                          <td> 
+                          <td width="80"> 
                             <select name="select3">
                               <option>None</option>
-							  <option>10</option>
-                              <option>15</option>
-                              <option>20</option>
-                              <option>25</option>
-                              <option>30</option>
-                              <option>35</option>
-                              <option>40</option>
-                              <option>45</option>
-                              <option>50</option>
-                              <option>None</option>
+                              <option>.10</option>
+                              <option>.15</option>
+                              <option>.20</option>
+                              <option>.25</option>
+                              <option>.30</option>
+                              <option>.35</option>
+                              <option>.40</option>
+                              <option>.45</option>
+                              <option>.50</option>
                             </select>
                           </td>
-                          <td> 
-                            <div align="right"> 
-                              <input type="text" name="textfield23" size="4" maxlength="6" value="$15.00">
+                          <td width="11"> 
+                            <div align="right"> </div>
+                          </td>
+                          <td width="68"> 
+                            <div align="center"> 
+                              <input type="text" name="textfield224" size="4" maxlength="6" value="100 hrs">
+                            </div>
+                          </td>
+                          <td width="12">&nbsp;</td>
+                          <td width="57"> 
+                            <div align="center"> 
+                              <input type="text" name="textfield2223" size="4" maxlength="6" value="$20.00">
                             </div>
                           </td>
                         </tr>
@@ -119,52 +137,69 @@
                     </td>
                   </tr>
                   <tr> 
-                    <td width="251" background="PriceMed.gif" height="113"> 
-                      <table width="220" border="0" align="center">
+                    <td width="280" background="PriceMed.gif" height="125"> <br>
+                      <table width="250" border="0" align="center">
                         <tr> 
-                          <td> 
+                          <td width="80"> 
                             <select name="select">
                               <option>None</option>
-                              <option>10</option>
-                              <option>15</option>
-                              <option>20</option>
-                              <option>25</option>
-                              <option>30</option>
-                              <option>35</option>
-                              <option>40</option>
-                              <option>45</option>
-                              <option>50</option>
-                              </select>
+                              <option>.10</option>
+                              <option>.15</option>
+                              <option>.20</option>
+                              <option>.25</option>
+                              <option>.30</option>
+                              <option>.35</option>
+                              <option>.40</option>
+                              <option>.45</option>
+                              <option>.50</option>
+                            </select>
                           </td>
-                          <td> 
-                            <div align="right"> 
-                              <input type="text" name="textfield22" size="4" maxlength="6" value="$20.00">
+                          <td width="11"> 
+                            <div align="right"> </div>
+                          </td>
+                          <td width="68"> 
+                            <div align="center">
+                              <input type="text" name="textfield22" size="4" maxlength="6" value="50 hrs">
+                            </div>
+                          </td>
+                          <td width="12">&nbsp;</td>
+                          <td width="57"> 
+                            <div align="center">
+                              <input type="text" name="textfield222" size="4" maxlength="6" value="$30.00">
                             </div>
                           </td>
                         </tr>
                       </table>
                     </td>
-                    <td width="250" background="PriceHigh.gif"> 
-                      <table width="220" border="0" align="center">
+                    <td width="280" background="PriceHigh.gif" height="125"> <br>
+                      <table width="250" border="0" align="center">
                         <tr> 
-                          <td> 
+                          <td width="80"> 
                             <select name="select4">
                               <option>None</option>
-                              <option>10</option>
-                              <option>15</option>
-                              <option>20</option>
-                              <option>25</option>
-                              <option>30</option>
-                              <option>35</option>
-                              <option>40</option>
-                              <option>45</option>
-                              <option>50</option>
-                              <option>None</option>
+                              <option>.10</option>
+                              <option>.15</option>
+                              <option>.20</option>
+                              <option>.25</option>
+                              <option>.30</option>
+                              <option>.35</option>
+                              <option>.40</option>
+                              <option>.45</option>
+                              <option>.50</option>
                             </select>
                           </td>
-                          <td> 
-                            <div align="right"> 
-                              <input type="text" name="textfield24" size="4" maxlength="6" value="$25.00">
+                          <td width="11"> 
+                            <div align="right"> </div>
+                          </td>
+                          <td width="68"> 
+                            <div align="center"> 
+                              <input type="text" name="textfield225" size="4" maxlength="6" value="20 hrs">
+                            </div>
+                          </td>
+                          <td width="12">&nbsp;</td>
+                          <td width="57"> 
+                            <div align="center"> 
+                              <input type="text" name="textfield2224" size="4" maxlength="6" value="$40.00">
                             </div>
                           </td>
                         </tr>
