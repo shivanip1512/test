@@ -1,8 +1,14 @@
 package com.comopt.windows;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.Vector;
+
+import javax.jms.IllegalStateException;
+import javax.sound.midi.SysexMessage;
 import javax.swing.table.AbstractTableModel;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 
 
 /**
@@ -18,6 +24,7 @@ public class ServiceTableModel extends AbstractTableModel implements com.cannont
 	private Vector rows = null;
    private boolean showOnlyYukon = true;
    private Vector serviceChangers = new Vector(10);
+   private boolean hasConnected = false;
 
 	//The columns and their column index	
 	//public static final int COL_INDEX = 0;
@@ -63,13 +70,14 @@ public class ServiceTableModel extends AbstractTableModel implements com.cannont
    public ServiceTableModel() 
    {
    	super();      
-      
-      initTable();
    }
 
-   public void initTable()
+   public void initTable() throws java.lang.IllegalStateException
    {
-      setServiceData( JNTServices.getInstance().getAllServices() );
+      setServiceData();
+      
+      if( !hasConnected )
+      	throw new java.lang.IllegalStateException("Unable to connect to the service control manager");
    }
    
    public int findServiceIndex( String serviceName )
@@ -83,18 +91,17 @@ public class ServiceTableModel extends AbstractTableModel implements com.cannont
 
    public void propertyChange( java.beans.PropertyChangeEvent e )
    {
-      //setServiceData( JNTServices.getInstance().getAllServices() );
       javax.swing.JComponent src = (javax.swing.JComponent)e.getSource();
       String destState = e.getOldValue().toString();
       String serviceName = e.getNewValue().toString();
       
       startRefresh( destState, serviceName, src );
-            
-      //fireTableDataChanged();      
    }
    
    private void startRefresh( final String destState, final String serviceName, final javax.swing.JComponent src )
    {
+   	if( !hasConnected )
+   		return;
     
       //start the refresh thread of the service that changed
       new Thread( new Runnable()
@@ -106,6 +113,8 @@ public class ServiceTableModel extends AbstractTableModel implements com.cannont
                refreshRow(serviceName, false, -1);
                               
                int ret = 0;
+               boolean refresh = "refresh".equalsIgnoreCase(destState);
+
                if( IServiceConstants.STATE_RUNNING.equalsIgnoreCase(destState) )
                {
                   ret = JNTServices.getInstance().start(
@@ -115,10 +124,11 @@ public class ServiceTableModel extends AbstractTableModel implements com.cannont
                }
                else if( IServiceConstants.STATE_STOPPED.equalsIgnoreCase(destState) )
                {
+               	//does not return until the service has stopped or timed out
                   ret = JNTServices.getInstance().stop(
                                  serviceName,
-                                 1,
-                                 1);
+                                 6,
+                                 10000);
 
                }
 
@@ -129,30 +139,32 @@ public class ServiceTableModel extends AbstractTableModel implements com.cannont
                   com.cannontech.clientutils.CTILogger.info( error );
                   
                   javax.swing.JOptionPane.showMessageDialog( src, error );
-               }
-               else
-               {
-                  int secsTimeOut = 60, to = 0;
-
-                  do
-                  {
-                     int state = JNTServices.getInstance().getStatus( serviceName );
-                     
-                     refreshRow(serviceName, false, state );
-                     
-                     Thread.currentThread().sleep(1000);
-                     to++;
-                  }
-                  while( to < secsTimeOut 
-                          && (!getRowAt(findServiceIndex(serviceName)).getCurrentStateString().equalsIgnoreCase(destState))
-                          && (!"refresh".equalsIgnoreCase(destState)) );
+                  CTILogger.info( "ERROR : " + error + " (" + ret + ")" );
                   
-                  com.cannontech.clientutils.CTILogger.info("Refresh of service done");
+                  //force a refresh of the row
+                  refresh = true;
                }
+
+
+              int secsTimeOut = 60, to = 0;
+
+              do
+              {
+                 int state = JNTServices.getInstance().getStatus( serviceName );
+                 
+                 refreshRow(serviceName, false, state );
+                 
+                 Thread.currentThread().sleep(1000);
+              }
+              while( to++ < secsTimeOut 
+                      && (!getRowAt(findServiceIndex(serviceName)).getCurrentStateString().equalsIgnoreCase(destState))
+                      && (!refresh) );
+              
+              CTILogger.info("Refresh of service done");
             }
             catch( Exception e ) 
             {
-               com.cannontech.clientutils.CTILogger.error( "Error in refresh service.", e );
+               CTILogger.error( "Error in refresh service.", e );
             }
             finally
             {
@@ -175,7 +187,8 @@ public class ServiceTableModel extends AbstractTableModel implements com.cannont
       
       if( state >= 0 )
          getRowAt(i).setCurrentState( state );
-      
+
+
       if( remove )
       {
          serviceChangers.removeElement( serviceName );
@@ -339,22 +352,39 @@ public class ServiceTableModel extends AbstractTableModel implements com.cannont
     * Creation date: (10/9/2002 10:03:14 PM)
     * @param data java.lang.String[]
     */
-   private void setServiceData(String[] data) 
+   private void setServiceData() 
    {
+   	
    	//remove all the current rows
    	getRows().clear();
    	
-   	if( data == null)
-   		return;
-   
-   	for( int i = 0; i < data.length; i++ )
+   	try
    	{
-   		NTService service = new NTService( data[i] );
-   
-         if( isServiceValid(service) )
-            getRows().add( service );
+	   	String[] data = JNTServices.getInstance().getAllServices();
+	   	
+System.out.println("*** = " + data );
+
+	   	if( data == null)
+	   		return;
+	   
+	   	//sort by the string values of each serice (full name first)   	
+	   	Arrays.sort( data );
+	
+	   	for( int i = 0; i < data.length; i++ )
+	   	{
+	   		NTService service = new NTService( data[i] );
+	   
+	         if( isServiceValid(service) )
+	            getRows().add( service );
+	   	}
+	   	
+	   	hasConnected = true;
    	}
-   	
+   	catch( Exception e )
+   	{
+   		CTILogger.error( "Problem with the data returned from the Service Manager", e );
+   	}   	
+		
       fireTableDataChanged();
    }
    
@@ -366,8 +396,12 @@ public class ServiceTableModel extends AbstractTableModel implements com.cannont
    public void setYukonFilter( boolean value )
    {
       showOnlyYukon = value;
+
+
+   	if( !hasConnected )
+   		return;
    
-      setServiceData( JNTServices.getInstance().getAllServices() );
+      setServiceData();
    }
    
    private boolean isServiceValid( NTService service )

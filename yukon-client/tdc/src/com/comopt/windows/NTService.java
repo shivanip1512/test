@@ -107,37 +107,20 @@ public class NTService
 	public String getServiceTypeString()
 	{
 		// Look at service type
-		switch( serviceType )
-		{
-			case JNTServices.SERVICE_TYPE_ADAPTER_DRIVER :
-				return "Adapter Driver";
-			case JNTServices.SERVICE_TYPE_ALL_PROCESS :
-				return "All Process";
-			case JNTServices.SERVICE_TYPE_FILE_SYSTEM_DRIVER :
-				return "File System Driver";
-				
-			case JNTServices.SERVICE_TYPE_INTERACTIVE_PROCESS :
-				return "Interactive Process";
-			case JNTServices.SERVICE_TYPE_KERNEL_DRIVER :
-				return "Kernel Driver";
-
-			case JNTServices.SERVICE_TYPE_RECOGNIZER_DRIVER :
-				return "Recognizer Driver";
-
-			case JNTServices.SERVICE_TYPE_SERVICE_DRIVER :
-				return "Service Driver";
-			case JNTServices.SERVICE_TYPE_WIN32 :
-				return "Win32";
-
-			case JNTServices.SERVICE_TYPE_WIN32_OWN_PROCESS :
-				return "Win32 Own Process";
-			case JNTServices.SERVICE_TYPE_WIN32_SHARE_PROCESS :
-				return "Win32 Share Prcoess";
-				
-			default :
-				return "(Unknown)";
-		}
+		StringBuffer buff = new StringBuffer();
 		
+		if( (serviceType & JNTServices.SERVICE_TYPE_SERVICE_DRIVER) != 0 )
+			buff.append("Service Driver");
+		else if( (serviceType & JNTServices.SERVICE_TYPE_WIN32) != 0 )
+			buff.append("Win32");
+		
+		if( (serviceType & JNTServices.SERVICE_TYPE_WIN32_SHARE_PROCESS) != 0 )
+			buff.append( " (Shared)");
+
+		if( (serviceType & JNTServices.SERVICE_TYPE_INTERACTIVE_PROCESS) != 0 )
+			buff.append( " (Interactive)");
+			
+		return buff.toString();
 	}
 	/**
 	 * Returns the stringValue.

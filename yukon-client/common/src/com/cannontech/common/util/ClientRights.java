@@ -7,17 +7,21 @@ package com.cannontech.common.util;
  */
 public interface ClientRights 
 {
-	public static final int CREATABLE         = 0x0000000C;
-	public static final int ENABLEABLE        = 0x000000C0;
-	public static final int STARTABLE         = 0x00000C00;
+	public static final int CREATABLE			= 0x0000000C;
+	public static final int ENABLEABLE			= 0x000000C0;
+	public static final int STARTABLE			= 0x00000C00;
 
 
 	/* hide clients by name */
-	public static final int HIDE_MACS         = 0x00001000;
-	public static final int HIDE_CAPCONTROL   = 0x00002000;
-	public static final int HIDE_LOADCONTROL  = 0x00004000;
-	public static final int HIDE_ALL          = 0x0000F000;
+	public static final int HIDE_MACS			= 0x00001000;
+	public static final int HIDE_CAPCONTROL	= 0x00002000;
+	public static final int HIDE_LOADCONTROL	= 0x00004000;
+	public static final int HIDE_ALL				= 0x0000F000;
+	
+	/* Enable clients by name */
+	public static final int ENABLE_SERVICES	= 0x00010000;
+
    
    /* miscealanous params */
-   public static final int HIDE_ALARM_COLORS = 0x80000000;
+   public static final int HIDE_ALARM_COLORS	= 0x80000000;
 }

@@ -3,7 +3,9 @@ package com.cannontech.dbeditor;
 /**
  * This type was created in VisualAge.
  */
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -28,6 +30,7 @@ import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
+import javax.swing.UIManager;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.PopupMenuEvent;
@@ -2284,8 +2287,13 @@ public static void main(String[] args) {
 
       f.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
 
-	
-		com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow(f, "ctismall.gif");
+
+		com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow(
+			f,
+			"ctismall.gif",
+			"Loading " + System.getProperty("cti.app.name") + "...",
+			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
+
 
       /* Cache loads as needed, do not load it all here!! --RWN */
 		//com.cannontech.database.cache.DefaultDatabaseCache.getInstance().loadAllCache();

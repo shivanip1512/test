@@ -11,7 +11,10 @@ import com.cannontech.tdc.bookmark.BookMarkBase;
 import javax.swing.UIManager;
 import com.cannontech.tdc.fonteditor.*;
 import com.cannontech.clientutils.CommonUtils;
+
+import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Font;
 import java.io.StringReader;
 import com.klg.jclass.page.awt.*;
 import com.klg.jclass.page.*;
@@ -103,7 +106,7 @@ public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.t
  */
 public TDCMainFrame() {
 	super();
-	initialize();
+	//initialize();
 }
 
 
@@ -121,7 +124,7 @@ public TDCMainFrame(String[] parameters)
 		startingViewType = parameters[1];
 	}
 	
-	initialize();
+	//initialize();
 }
 
 
@@ -2859,10 +2862,17 @@ private void initConnections() throws java.lang.Exception {
  * Initialize the class.
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initialize() {
+public void initialize() {
 	try {
 		// user code begin {1}
 
+		com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow(
+			this,
+			"d:/yukon/client/bin/ctismall.gif",
+			"Loading " + System.getProperty("cti.app.name") + "...",
+			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
+
+				
 		getExternalResources();
 		getAboutBox();  // init our about box
 		
@@ -2873,7 +2883,7 @@ private void initialize() {
 		setSize(569, 368);
 		setJMenuBar(getTDCFrameJMenuBar());
 		setContentPane(getJFrameContentPane());
-		initConnections();
+		initConnections();		
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
@@ -3281,7 +3291,7 @@ public void jMenuItemFont_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		display.show();
 
 		if( getMainPanel().isClientDisplay() )
-			getMainPanel().getCurrentSpecailChild().setFont( display.getSelectedFont() );
+			getMainPanel().getCurrentSpecailChild().setTableFont( display.getSelectedFont() );
 			
 		if( display.isDisplayable() )
 			getMainPanel().setTableFont( display.getSelectedFont() );
@@ -3800,10 +3810,12 @@ public void JToolBarJCDateChange_actionPerformed(java.beans.PropertyChangeEvent 
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
  */
-public static void main(java.lang.String[] args)
+public static void main(final java.lang.String[] args)
 {
 	try
 	{
+		System.setProperty("cti.app.name", "TDC");
+		
 		com.cannontech.clientutils.CTILogger.info("Syntax for optional parameters is as follows:");
 		com.cannontech.clientutils.CTILogger.info("   TDCMainFrame view=<value> display=<value>");
 
@@ -3811,22 +3823,26 @@ public static void main(java.lang.String[] args)
       
 		javax.swing.ToolTipManager.sharedInstance().setDismissDelay(2000);
 
-		CommandLineParser parser = null;
-		TDCMainFrame aTDCFrame = null;
-		com.cannontech.tdc.spawn.TDCOverSeeer overSeer = new com.cannontech.tdc.spawn.TDCOverSeeer();
+		final CommandLineParser parser;
+		final TDCMainFrame aTDCFrame;
+		final com.cannontech.tdc.spawn.TDCOverSeeer overSeer = new com.cannontech.tdc.spawn.TDCOverSeeer();
 
 		if( args.length > 1 )  // the user tried to enter some params
 		{
 			com.cannontech.clientutils.CTILogger.info("Remember when entering parameters be sure to surrond parameters with spaces with double quotes.");
 			com.cannontech.clientutils.CTILogger.info("Example:  TDCMainFrame view=Core \"display=Event Viewer\" ");
 			
-			parser = new CommandLineParser( TDCMainFrame.COMMAND_LINE_PARAM_NAMES );						
+			parser = new CommandLineParser( TDCMainFrame.COMMAND_LINE_PARAM_NAMES );
+						
 			aTDCFrame = overSeer.createTDCMainFrame( parser.parseArgs( args ) );
+
 		}
 		else
+		{
 			aTDCFrame = overSeer.createTDCMainFrame();
-
-
+		}
+		
+		
 		aTDCFrame.visibilityInitialization();
 	}
 	catch (Throwable exception)

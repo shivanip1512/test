@@ -42,6 +42,9 @@ public TDCMainFrame createTDCMainFrame( String[] parameters )
 		newTDCMainFrame = new TDCMainFrame();
 	else
 		newTDCMainFrame = new TDCMainFrame( parameters );
+
+	//init our Frame
+	newTDCMainFrame.initialize();
 		
 	// add a listener to the new tdc frame
 	newTDCMainFrame.addTDCMainFrameSpawnListener( this );

@@ -212,17 +212,6 @@ public java.lang.String getType() {
 }
 /**
  * Insert the method's description here.
- * Creation date: (8/1/2001 9:39:21 AM)
- * @return boolean
- */
-//Returns true if the display type passed it does not
-// require a reload for displays from the database
-public static boolean needsNoIniting( String type )
-{
-	return ( type.equalsIgnoreCase(Display.DISPLAY_TYPES[Display.LOAD_CONTROL_CLIENT_TYPE_INDEX]) );
-}
-/**
- * Insert the method's description here.
  * Creation date: (1/24/2002 9:38:17 AM)
  * @param newColumnData ColumnData[]
  */

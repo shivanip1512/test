@@ -1,4 +1,7 @@
 package com.comopt.windows;
+
+import javax.swing.JOptionPane;
+
 /**
  * Insert the type's description here.
  * Creation date: (10/9/2002 9:47:26 PM)
@@ -18,9 +21,13 @@ public class WinServicePanel extends javax.swing.JPanel implements com.cannontec
  */
 public WinServicePanel() {
 	super();
-	initialize();
+	//initialize();
 }
 
+public void initChild()
+{
+	initialize();
+}
 
 public void addActionListenerToJComponent( javax.swing.JComponent component ) 
 {
@@ -28,12 +35,18 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
    {
       comboBox = (javax.swing.JComboBox)component;
 
+		comboBox.removeAllItems();
       comboBox.addItem("Yukon Servers Only");
       comboBox.addItem("All Servers");
 
       comboBox.addActionListener( this );
    }
 
+}
+
+public boolean needsComboIniting()
+{
+	return false;
 }
 
 public void setRowColors(java.awt.Color[] foreGroundColors, java.awt.Color bgColor ) {}
@@ -76,7 +89,8 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 
    if( event.getSource() == comboBox )
    {
-      System.out.println("CBSEL = " + comboBox.getSelectedItem().toString() );
+      getJTableModel().setYukonFilter(
+			"Yukon Servers Only".equalsIgnoreCase(comboBox.getSelectedItem().toString()) );
    }
 
 }
@@ -220,7 +234,7 @@ public javax.swing.JTable[] getJTables()
    return tables;
 }
 
-public void setFont(java.awt.Font font ) 
+public void setTableFont(java.awt.Font font ) 
 {
    super.setFont( font );
 
@@ -263,14 +277,17 @@ private javax.swing.JTable getJTableServices() {
    			ivjJTableServices.setModel( 
    				new com.cannontech.common.gui.util.SortTableModelWrapper(
    					new ServiceTableModel()) );
+				
+				getJTableModel().initTable();
          }
          catch( Exception e )
          {
             com.cannontech.clientutils.CTILogger.error(
                "Exception occured when opening the Service Manager." + System.getProperty("line.separator") +
-               "Be sure you have access and user rights to operator the Yukon Server services",
+               "Be sure you have access and user rights to operate the Yukon Server services",
                e );
-   
+ 				
+ 				JOptionPane.showMessageDialog( this, "Be sure you have access and user rights to operate the Yukon Server services" );
          }
 
 			
@@ -520,7 +537,7 @@ private void setTableHeaderListener()
 	javax.swing.table.JTableHeader hdr = 
 			(javax.swing.table.JTableHeader)getJTableServices().getTableHeader();
 
-	hdr.setToolTipText("Dbl Click on a column header to sort");
+/*	hdr.setToolTipText("Dbl Click on a column header to sort");
 
 	// The actual listener is defined here
 	hdr.addMouseListener( new java.awt.event.MouseAdapter() 
@@ -554,6 +571,9 @@ private void setTableHeaderListener()
 		};
 		
 	});	
+*/
 	
 }
+
+
 }

@@ -280,6 +280,16 @@ public static boolean isEnableable( final long readOnlyInteger )
  * Creation date: (3/5/2001 11:32:59 AM)
  * @return boolean
  */
+public static boolean isClientEnabled( final long readOnlyInteger )
+{
+	return (readOnlyInteger & ENABLE_SERVICES) != 0;
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (3/5/2001 11:32:59 AM)
+ * @return boolean
+ */
 public static boolean isHiddenCapControl( final long readOnlyInteger )
 {
 	return (readOnlyInteger & HIDE_CAPCONTROL) != 0;

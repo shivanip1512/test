@@ -8,6 +8,7 @@ package com.cannontech.tdc;
 import java.awt.Cursor;
 import java.util.Vector;
 
+import javax.sound.midi.SysexMessage;
 import javax.swing.JPanel;
 
 import com.cannontech.clientutils.CommonUtils;
@@ -813,8 +814,13 @@ public void fireBookMarkSelected( Object source )
 			}
 
 
-			if( !Display.needsNoIniting(getCurrentDisplay().getType()) )
-				initComboCurrentDisplay();
+			//!Display.needsNoIniting(getCurrentDisplay().getType()) )
+			if( getCurrentSpecailChild() == null
+				 || (getCurrentSpecailChild() != null && getCurrentSpecailChild().needsComboIniting()) )
+			{			
+				initComboCurrentDisplay();				
+			}
+
 			
 			try
 			{
@@ -1916,11 +1922,14 @@ private void initClientDisplays()
 
 		synchronized( getCurrentSpecailChild() )
 		{
+			//init the new special child right away!
+			getCurrentSpecailChild().initChild();
+			
 			JPanel p = getCurrentSpecailChild().getMainJPanel();
 			
 			add(p, getScrollPaneGridBagConstraints() );
 			alarmToolBar.setCurrentComponents( getCurrentSpecailChild().getJButtons() );
-			getCurrentSpecailChild().setFont( getDisplayTable().getFont() );
+			getCurrentSpecailChild().setTableFont( getDisplayTable().getFont() );
 			getCurrentSpecailChild().setGridLines( getDisplayTable().getShowHorizontalLines(), 
 											  getDisplayTable().getShowVerticalLines() );
 			
@@ -2020,11 +2029,13 @@ public boolean initComboCurrentDisplay()
 				boolean enabled = true;
             
             if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.CAP_CONTROL_CLIENT_TYPE_INDEX]) )
-					 enabled = !com.cannontech.common.util.CtiProperties.isHiddenCapControl(TDCDefines.USER_RIGHTS);
+					enabled = !com.cannontech.common.util.CtiProperties.isHiddenCapControl(TDCDefines.USER_RIGHTS);
 				else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.LOAD_CONTROL_CLIENT_TYPE_INDEX]) )
-					 enabled = !com.cannontech.common.util.CtiProperties.isHiddenLoadControl(TDCDefines.USER_RIGHTS);
+					enabled = !com.cannontech.common.util.CtiProperties.isHiddenLoadControl(TDCDefines.USER_RIGHTS);
             else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.SCHEDULER_CLIENT_TYPE_INDEX]) )
-					 enabled = !com.cannontech.common.util.CtiProperties.isHiddenMACS(TDCDefines.USER_RIGHTS);
+					enabled = !com.cannontech.common.util.CtiProperties.isHiddenMACS(TDCDefines.USER_RIGHTS);
+            else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.STATIC_CLIENT_TYPE_INDEX]) )
+					enabled = com.cannontech.common.util.CtiProperties.isClientEnabled(TDCDefines.USER_RIGHTS);
 
 				clientList.add( getAllDisplays()[i].getTitle() );					
 				addClientRadioButtons( getAllDisplays()[i].getTitle(), i, enabled );
@@ -3466,7 +3477,7 @@ public void setTableFont( java.awt.Font newFont )
 	//set any clients font to the initialized font, this is important
 	// to do here if start up begins with a client display.
 	if( getCurrentSpecailChild() != null )
-		getCurrentSpecailChild().setFont( getDisplayTable().getFont() );
+		getCurrentSpecailChild().setTableFont( getDisplayTable().getFont() );
 		
 	getDisplayTable().revalidate();
 	getDisplayTable().repaint();

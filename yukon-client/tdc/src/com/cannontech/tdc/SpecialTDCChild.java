@@ -78,6 +78,10 @@ javax.swing.JPanel getMainJPanel();
 
 // Overide this method so TDC knows what the name of the special child is
 String getName();
+
+//a method used to fully init this object
+void initChild();
+
 /**
  * Insert the method's description here.
  * Creation date: (8/14/00 4:26:01 PM)
@@ -104,7 +108,8 @@ void removeActionListenerFromJComponent( javax.swing.JComponent component );/**
  * Insert the method's description here.
  * Creation date: (8/4/00 8:59:17 AM)
  */
-void setFont( java.awt.Font font );
+void setTableFont( java.awt.Font font );
+
 /**
  * Insert the method's description here.
  * Creation date: (8/4/00 8:59:17 AM)
@@ -134,4 +139,11 @@ void setJButtons(javax.swing.JButton[] buttons);
  */
 void setRowColors(java.awt.Color[] foreGroundColors, java.awt.Color bgColor );
 void setSound(boolean soundToggle);
+
+/** 
+ * Returns a boolean telling any callser that the ComboBox for this
+ * display needs to go through the typical initialization process.  
+ * @return boolean
+ */
+boolean needsComboIniting();
 }

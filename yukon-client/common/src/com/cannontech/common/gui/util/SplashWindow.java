@@ -13,7 +13,8 @@ import java.awt.Window;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
- public class SplashWindow extends Window {
+ public class SplashWindow extends Window 
+ {
    private Image splashImage;   
    private int imgWidth, imgHeight;
   
@@ -24,51 +25,61 @@ import java.awt.event.WindowEvent;
    private Color borderColor;
    Toolkit tk;
   
-   private String displayText = "";
+   private String displayText = " ";
    private Color textColor;
-   public SplashWindow(Frame f, String imgName  ) {
-	 super(f);
-	 initialize( f, imgName, "Loading...", new java.awt.Font("dialog", 0, 12), Color.black, Color.black, 1  );
-	 
+   
+   public SplashWindow(Frame f, String imgName  ) 
+   {
+		super(f);
+		initialize( f, imgName, "Loading...", new java.awt.Font("dialog", 0, 12), Color.black, Color.black, 1  );
+   }
+   
+	public SplashWindow(Frame f, String imgName, String displayText, Font displayFont, Color textColor, Color borderColor, int borderSize ) 
+	{
+		super(f);
+		initialize( f, imgName, displayText, displayFont, textColor, borderColor, borderSize ); 
+	} 
+
+   public SplashWindow(Frame f, String imgName, String displayText )
+   {
+		super(f);
+		initialize( f, imgName, displayText, new java.awt.Font("dialog", 0, 12), Color.black, Color.black, 1  );			 
 	 } 
-   public SplashWindow(Frame f, String imgName, String displayText, Font displayFont, Color textColor, Color borderColor, int borderSize ) {
-	 super(f);
-	 initialize( f, imgName, displayText, displayFont, textColor, borderColor, borderSize );
-	 
-	 } 
-/**
- * This method was created in VisualAge.
- * @param f java.awt.Frame
- * @param imgName java.lang.String
- * @param borderColor java.awt.Color
- * @param borderSize int
- */
-private void initialize( Frame f, String imgName, String displayText, Font displayFont, Color textColor, Color borderColor, int borderSize) {
-	this.imgName = imgName;
-	this.textColor = textColor;
-	this.borderColor = borderColor;
-	this.borderSize = borderSize;
+
+	/**
+	 * This method was created in VisualAge.
+	 * @param f java.awt.Frame
+	 * @param imgName java.lang.String
+	 * @param borderColor java.awt.Color
+	 * @param borderSize int
+	 */
+	private void initialize( Frame f, String imgName, String displayText, Font displayFont, Color textColor, Color borderColor, int borderSize) {
+		this.imgName = imgName;
+		this.textColor = textColor;
+		this.borderColor = borderColor;
+		this.borderSize = borderSize;
+		
+		tk = Toolkit.getDefaultToolkit();
+		 splashImage = loadSplashImage();
 	
-	tk = Toolkit.getDefaultToolkit();
-	 splashImage = loadSplashImage();
-
-	 setFont( displayFont );
-	 fontMetrics = getFontMetrics(displayFont);
-
-	 this.displayText = displayText;
-	 
-	 showSplashScreen();
-
-	 f.addWindowListener( new WindowAdapter()
- 	 {
-	 	 public void windowActivated(WindowEvent we )
+		 setFont( displayFont );
+		 fontMetrics = getFontMetrics(displayFont);
+	
+		 this.displayText = displayText;
+		 
+		 showSplashScreen();
+	
+		 f.addWindowListener( new WindowAdapter()
 	 	 {
-		 	 setVisible(false);
-		 	 dispose();
-	 	 }
-	 }
-	 );
-}
+		 	 public void windowActivated(WindowEvent we )
+		 	 {
+			 	 setVisible(false);
+			 	 dispose();
+		 	 }
+		 }
+		 );
+	}
+
    public Image loadSplashImage() {
 	 MediaTracker tracker = new MediaTracker(this);
 	 Image result;
@@ -84,64 +95,66 @@ private void initialize( Frame f, String imgName, String displayText, Font displ
 	 imgHeight = result.getHeight(this);
 	 return (result);
 	 } 
-/**
- * Insert the method's description here.
- * Creation date: (3/17/00 3:28:12 PM)
- * @param args java.lang.String[]
- */
-public static void main(String[] args) 
-{
-	try
+
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (3/17/00 3:28:12 PM)
+	 * @param args java.lang.String[]
+	 */
+	public static void main(String[] args) 
 	{
-		javax.swing.JFrame f = new javax.swing.JFrame();
-		f.setSize(100,200);		
+		try
+		{
+			javax.swing.JFrame f = new javax.swing.JFrame();
+			f.setSize(100,200);		
+			
+			com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow(f, "ctismall.gif", "Hi, I'm loading...", new java.awt.Font("dialog", 0, 16), Color.black,  Color.black, 1  );
 		
-		com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow(f, "ctismall.gif", "Hi, I'm loading...", new java.awt.Font("dialog", 0, 16), Color.black,  Color.black, 1  );
+			Thread.sleep(3000);
+			splash.setDisplayText("Hi, I'm still loading...");
 	
-		Thread.sleep(3000);
-		splash.setDisplayText("Hi, I'm still loading...");
-
-		Thread.sleep(3000);
-		splash.setDisplayText("Geez, I'm still loading...");
-
-		Thread.sleep(4000);
-		splash.setDisplayText("Geez, this must be a java application...");
-
-		Thread.sleep(5000);
-		splash.setDisplayText("Almost done.....");
-
-		Thread.sleep(3000);		
-		splash.setDisplayText("Just hang on.");
-
-		Thread.sleep(500);
-		splash.setDisplayText("Just hang on....");
-
-		Thread.sleep(500);
-		splash.setDisplayText("Just hang on......");
-
-		Thread.sleep(500);
-		splash.setDisplayText("Just hang on........");
-
-		Thread.sleep(500);
-		splash.setDisplayText("Just hang on..........");
-
-		Thread.sleep(500);
-		splash.setDisplayText("Just hang on............");
-
-		Thread.sleep(500);
-		splash.setDisplayText("Just hang on..............");
-
-		Thread.sleep(500);
-		splash.setDisplayText("Just hang on................");
-		
-		Thread.sleep(1000);
-		
-		f.setVisible(true);
+			Thread.sleep(3000);
+			splash.setDisplayText("Geez, I'm still loading...");
+	
+			Thread.sleep(4000);
+			splash.setDisplayText("Geez, this must be a java application...");
+	
+			Thread.sleep(5000);
+			splash.setDisplayText("Almost done.....");
+	
+			Thread.sleep(3000);		
+			splash.setDisplayText("Just hang on.");
+	
+			Thread.sleep(500);
+			splash.setDisplayText("Just hang on....");
+	
+			Thread.sleep(500);
+			splash.setDisplayText("Just hang on......");
+	
+			Thread.sleep(500);
+			splash.setDisplayText("Just hang on........");
+	
+			Thread.sleep(500);
+			splash.setDisplayText("Just hang on..........");
+	
+			Thread.sleep(500);
+			splash.setDisplayText("Just hang on............");
+	
+			Thread.sleep(500);
+			splash.setDisplayText("Just hang on..............");
+	
+			Thread.sleep(500);
+			splash.setDisplayText("Just hang on................");
+			
+			Thread.sleep(1000);
+			
+			f.setVisible(true);
+		}
+		catch(Exception e )
+		{
+		}	
 	}
-	catch(Exception e )
-	{
-	}	
-}
+
    public void paint(Graphics g) {
 	 g.drawImage(splashImage, borderSize, borderSize,
 	   imgWidth, imgHeight, this);
@@ -153,16 +166,18 @@ public static void main(String[] args)
 	 g.setColor(textColor);
 	 g.drawString(displayText, (getWidth() / 2) - (fontMetrics.stringWidth(displayText)/2),
 		 				       imgHeight+(borderSize) + fontMetrics.getHeight() );
-	 } 
-/**
- * Insert the method's description here.
- * Creation date: (3/17/00 3:27:22 PM)
- * @param newDisplayText java.lang.String
- */
-public void setDisplayText(java.lang.String newDisplayText) {
-	displayText = newDisplayText;
-	repaint();
-}
+	 }
+ 
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (3/17/00 3:27:22 PM)
+	 * @param newDisplayText java.lang.String
+	 */
+	public void setDisplayText(java.lang.String newDisplayText) {
+		displayText = newDisplayText;
+		repaint();
+	}
+
    public void showSplashScreen() {
 	 Dimension screenSize = tk.getScreenSize();
 	 setBackground(borderColor);

@@ -30,6 +30,10 @@ public StrategyReceiver()
 {
 	super();
 }
+
+public void initChild() {}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (8/7/00 3:41:18 PM)
@@ -46,6 +50,12 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 	}
 	
 }
+
+public boolean needsComboIniting()
+{
+	return true;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (8/7/00 3:51:22 PM)
@@ -355,7 +365,7 @@ public void removeActionListenerFromJComponent( javax.swing.JComponent component
  * Insert the method's description here.
  * Creation date: (8/7/00 3:51:13 PM)
  */
-public void setFont(java.awt.Font font ) 
+public void setTableFont(java.awt.Font font ) 
 {
 	if( mainPanel == null )
 		return;

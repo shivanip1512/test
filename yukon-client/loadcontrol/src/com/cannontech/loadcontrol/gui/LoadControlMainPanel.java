@@ -65,8 +65,14 @@ public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBa
  */
 public LoadControlMainPanel() {
 	super();
+	//initialize();
+}
+
+public void initChild()
+{
 	initialize();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (8/7/00 3:41:18 PM)
@@ -85,6 +91,12 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 	}
 	
 }
+
+public boolean needsComboIniting()
+{
+	return false;
+}
+
 /**
  * Comment
  *	This action will do the DisableAll and ViewRevisions 
@@ -1579,7 +1591,7 @@ public void setButtonBarPanelVisible(boolean visible)
  * Insert the method's description here.
  * Creation date: (8/4/00 8:59:17 AM)
  */
-public void setFont( java.awt.Font font )
+public void setTableFont( java.awt.Font font )
 {
    for( int i = 0; i < getJTables().length; i++ )
    {
