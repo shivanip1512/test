@@ -63,10 +63,12 @@ CtiCCSubstationBusStore::~CtiCCSubstationBusStore()
     if( _resetthr.isValid() )
     {
         _resetthr.requestCancellation();
+        _resetthr.join();
     }
     if( _amfmthr.isValid() )
     {
         _amfmthr.requestCancellation();
+        _amfmthr.join();
     }
 
     shutdown();
@@ -258,6 +260,8 @@ void CtiCCSubstationBusStore::reset()
                                  << dynamicCCSubstationBusTable["lastfeederpaoid"]
                                  << dynamicCCSubstationBusTable["lastfeederposition"]
                                  << dynamicCCSubstationBusTable["ctitimestamp"]
+                                 << dynamicCCSubstationBusTable["powerfactorvalue"]
+                                 << dynamicCCSubstationBusTable["kvarsolution"]
                                  << pointTable["pointid"]
                                  << pointTable["pointoffset"]
                                  << pointTable["pointtype"];
@@ -373,6 +377,8 @@ void CtiCCSubstationBusStore::reset()
                                  << dynamicCCFeederTable["busoptimizedvarcategory"]
                                  << dynamicCCFeederTable["busoptimizedvaroffset"]
                                  << dynamicCCFeederTable["ctitimestamp"]
+                                 << dynamicCCFeederTable["powerfactorvalue"]
+                                 << dynamicCCFeederTable["kvarsolution"]
                                  << pointTable["pointid"]
                                  << pointTable["pointoffset"]
                                  << pointTable["pointtype"];
@@ -1279,12 +1285,6 @@ void CtiCCSubstationBusStore::shutdown()
     delete _ccCapBankStates;
     _ccGeoAreas->clearAndDestroy();
     delete _ccGeoAreas;
-
-    //if( _CC_DEBUG )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - done shutting down the cc substation store." << endl;
-    }
 }
 
 /*---------------------------------------------------------------------------
