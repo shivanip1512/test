@@ -79,7 +79,8 @@
 	if (ServerUtils.forceNotNone(email).length() > 0)
 		email = "<a href='" + email + "' class='Link1' target='new'>Send us an email</a><br>";
 	else
-		email = "<a href='mailto:" + energyCompany.getEmail() + "' class='Link1'>Email: " + energyCompany.getEmail() + "</a><br>";
+		email = (energyCompany.getEmail().trim().length() > 0)?
+				"<a href='mailto:" + energyCompany.getEmail() + "' class='Link1'>Email: " + energyCompany.getEmail() + "</a><br>" : "";
 	
 	desc = desc.replaceAll(ServletUtils.UTIL_COMPANY_ADDRESS, address);
 	desc = desc.replaceAll(ServletUtils.UTIL_PHONE_NUMBER, phoneNo);
