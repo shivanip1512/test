@@ -246,21 +246,25 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 			}
 
 			resetDisplayRange();
+			Date start = ServletUtil.getStartingDateOfInterval(getCurrentStartDate(),getDisplayPeriod());
+			Date end = ServletUtil.getEndingDateOfInterval(getCurrentStartDate(),getDisplayPeriod()); 
+			System.out.println(start);
+			System.out.println(end);
 					
-			gDef.getGraphDefinition()
-				.setStartDate(ServletUtil.getStartingDateOfInterval(getCurrentStartDate(),getDisplayPeriod()));
-			gDef.getGraphDefinition()
-				.setStopDate(ServletUtil.getEndingDateOfInterval(getCurrentStartDate(),getDisplayPeriod()));
-						
+			//gDef.getGraphDefinition().setStartDate(start);
+			//gDef.getGraphDefinition().setStopDate(end);
+				
 			Graph graph = getCTIGraph();
+			graph.setStartDate(getCurrentStartDate());
+			graph.setPeriod(getDisplayPeriod());
 			
 			graph.setSize((int) getWidth(), (int) getHeight());
 			graph.setGraphDefinition(gDef);
 
 			graph.setViewType(getTrendType());
 						
- 			getCTIGraph().setUpdateTrend(true);
-			getCTIGraph().update();
+			graph.setUpdateTrend(true);
+			graph.update();
 		
 			setLastUpdated(new Date());
 			setDirty(false);
