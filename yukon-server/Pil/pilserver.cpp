@@ -1,5 +1,3 @@
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   pilserver
@@ -8,11 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2003/04/23 19:39:31 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2003/04/25 22:56:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
 
 
 #include <windows.h>
@@ -1123,11 +1122,6 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
     CtiDevice *Dev = DeviceManager->RemoteGetEqual(pReq->DeviceId());
 
-    if( Dev && parse.isKeyValid("install") && (Dev->getType() == TYPE_REPEATER800 || Dev->getType() == TYPE_REPEATER900) )
-    {
-        analyzeAutoRole(*pReq,parse,execList,retList);
-    }
-
     if(parse.isKeyValid("serial"))
     {
         pReq->setDeviceId( SYS_DID_SYSTEM );    // Make sure we are targeting the serial/system device;
@@ -1178,6 +1172,11 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
+    }
+
+    if( Dev && parse.isKeyValid("install") && (Dev->getType() == TYPE_REPEATER800 || Dev->getType() == TYPE_REPEATER900) )
+    {
+        analyzeAutoRole(*pReq,parse,execList,retList);
     }
 
     if(!pReq->DeviceId() && parse.isKeyValid("group"))
