@@ -67,7 +67,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
     CtiLMProgramCurtailment& setRunStatus(const RWCString& runstat);
     CtiLMProgramCurtailment& setAdditionalInfo(const RWCString& additional);
 
-    void restoreCurtailmentSpecificDatabaseEntries(RWDBReader& rdr);
+    //void restoreCurtailmentSpecificDatabaseEntries(RWDBReader& rdr);
     void notifyCustomers(CtiMultiMsg* multiDispatchMsg);
     void notifyCustomersOfStop(CtiMultiMsg* multiDispatchMsg);
     void addLMCurtailProgramActivityTable();
@@ -79,10 +79,10 @@ RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
     virtual CtiLMProgramBase* replicate() const;
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     virtual BOOL hasControlHoursAvailable() const;
     virtual void stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    virtual BOOL handleManualControl(LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
