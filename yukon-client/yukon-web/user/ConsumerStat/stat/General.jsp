@@ -217,7 +217,7 @@
 					<%= ServletUtils.getFormattedAddress(propAddr) %><br>
                     <%= primContact.getHomePhone() %></span><br>
                     <br>
-                    <img src="../../../WebConfig/<cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_IMG_GENERAL %>"/>" width="168" height="224"> 
+                    <img src="../../../WebConfig/<cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_IMG_GENERAL %>"/>"> 
                   </td>
                 </tr>
               </table>
