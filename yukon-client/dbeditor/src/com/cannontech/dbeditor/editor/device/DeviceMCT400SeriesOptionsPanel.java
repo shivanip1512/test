@@ -241,11 +241,11 @@ public Object getValue(Object o)
 	
 	if(getJCheckBoxEnableDisconnect().isSelected() &&
 		getJTextFieldDisconnectAddress().getText().length() > 0)
-		{
-			mct400.setHasNewDisconnect(true);
-			mct400.getDeviceMCT400Series().setDeviceID(mct400.getPAObjectID());
-			mct400.getDeviceMCT400Series().setDisconnectAddress(new Integer(getJTextFieldDisconnectAddress().getText()));
-		}
+	{
+		mct400.setHasNewDisconnect(true);
+		mct400.getDeviceMCT400Series().setDeviceID(mct400.getPAObjectID());
+		mct400.getDeviceMCT400Series().setDisconnectAddress(new Integer(getJTextFieldDisconnectAddress().getText()));
+	}
 	else
 	{
 		mct400.setHasNewDisconnect(false);
