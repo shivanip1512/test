@@ -43,7 +43,7 @@ CtiIONTime::CtiIONTime( unsigned char *byteStream, unsigned long streamLength ) 
         _seconds |= (_fractionalSeconds & 0x80000000) >> 31;
         _fractionalSeconds &= 0x7FFFFFFF;
 
-        setValid( TRUE );
+        setValid(true);
     }
     else
     {
@@ -51,7 +51,7 @@ CtiIONTime::CtiIONTime( unsigned char *byteStream, unsigned long streamLength ) 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        setValid( FALSE );
+        setValid(false);
     }
 }
 
@@ -59,8 +59,8 @@ CtiIONTime::CtiIONTime( unsigned char *byteStream, unsigned long streamLength ) 
 CtiIONTime::CtiIONTime( unsigned long seconds = 0, unsigned long fractionalSeconds = 0 ) :
     CtiIONValue(IONTime)
 {
-    setSeconds( seconds );
-    setFractionalSeconds( fractionalSeconds );
+    setSeconds(seconds);
+    setFractionalSeconds(fractionalSeconds);
 }
 
 
