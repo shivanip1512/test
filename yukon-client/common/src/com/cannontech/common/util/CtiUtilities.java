@@ -597,7 +597,6 @@ public final static Integer getIntervalSecondsValue(String selectedString)
 	else
 		multiplier = 0;  //we have no idea, just use zero
 		
-	
 	try
 	{
 		int loc = selectedString.toLowerCase().indexOf(" ");
@@ -957,7 +956,32 @@ public static final void setIntervalComboBoxSelectedItem(JComboBox comboBox, dou
 	}
 }
 
+//this is mainly for gear refresh rates
+public static final void setIntervalComboBoxSelectedItem(JComboBox comboBox, JComboBox comboBox2, double scanRateSecs) 
+{
+	String scanRateString = null;
+	String scanRateUnitString = null;
+	boolean found = false;
+	boolean unitsFound = false;
 
+	//when we divide the scanRateSecs value, we must use a double formatted number
+	// so we are returned a double value (Ex: getDecimalFormatter().format(scanRateSecs/60.0) 
+
+	if( scanRateSecs < 3600 )
+	{
+		scanRateString = getDecimalFormatter().format(scanRateSecs/60.0);
+		scanRateUnitString = "minutes";
+	}
+	else
+	{
+		scanRateString = getDecimalFormatter().format(scanRateSecs/3600.0);
+		scanRateUnitString = "hours";
+	}
+	
+	comboBox.setSelectedItem( scanRateString );
+	comboBox2.setSelectedItem( scanRateUnitString );
+	
+}
 /**
  * This method was created in VisualAge.
  * @param comboBox javax.swing.JComboBox

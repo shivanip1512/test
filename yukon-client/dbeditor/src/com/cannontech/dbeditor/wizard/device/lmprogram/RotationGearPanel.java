@@ -12,7 +12,6 @@ public class RotationGearPanel extends GenericGearPanel {
 	private javax.swing.JComboBox ivjJComboBoxGroupSelection = null;
 	private javax.swing.JComboBox ivjJComboBoxHowToStop = null;
 	private javax.swing.JComboBox ivjJComboBoxNumGroups = null;
-	private javax.swing.JComboBox ivjJComboBoxSendRate = null;
 	private javax.swing.JComboBox ivjJComboBoxShedTime = null;
 	private javax.swing.JComboBox ivjJComboBoxWhenChange = null;
 	private com.klg.jclass.field.JCSpinField ivjJCSpinFieldChangeDuration = null;
@@ -28,11 +27,13 @@ public class RotationGearPanel extends GenericGearPanel {
 	private javax.swing.JLabel ivjJLabelMinutesChDur = null;
 	private javax.swing.JLabel ivjJLabelNumGroups = null;
 	private javax.swing.JLabel ivjJLabelPercentReduction = null;
-	private javax.swing.JLabel ivjJLabelSendRate = null;
 	private javax.swing.JLabel ivjJLabelShedTime = null;
+	private javax.swing.JLabel ivjJLabelSendRate = null;
 	private javax.swing.JLabel ivjJLabelWhenChange = null;
 	private javax.swing.JPanel ivjJPanelChangeMethod = null;
 	private javax.swing.JTextField ivjJTextFieldChangeTriggerOffset = null;
+	private javax.swing.JComboBox ivjJComboBoxSendRateDigits = null;
+	private javax.swing.JComboBox ivjJComboBoxSendRateUnits = null;
 
 /**
  * RotationGearPanel constructor comment.
@@ -55,6 +56,8 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC4(e);
 	if (e.getSource() == getJComboBoxNumGroups()) 
 		connEtoC5(e);
+	if (e.getSource() == getJComboBoxSendRateDigits() || e.getSource() == getJComboBoxSendRateUnits()) 
+		connEtoC7(e);
 	if (e.getSource() == getJComboBoxGroupSelection()) 
 		connEtoC8(e);
 	if (e.getSource() == getJComboBoxHowToStop()) 
@@ -91,6 +94,20 @@ private void connEtoC1(java.awt.event.ActionEvent arg1) {
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC7(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.fireInputUpdate();
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+
 private void connEtoC10(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
@@ -335,33 +352,28 @@ private javax.swing.JComboBox getJComboBoxNumGroups() {
  * Return the JComboBoxSendRate property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getJComboBoxSendRate() {
-	if (ivjJComboBoxSendRate == null) {
+private javax.swing.JComboBox getJComboBoxSendRateDigits() {
+	if (ivjJComboBoxSendRateDigits == null) {
 		try {
-			ivjJComboBoxSendRate = new javax.swing.JComboBox();
-			ivjJComboBoxSendRate.setName("JComboBoxSendRate");
-			ivjJComboBoxSendRate.setPreferredSize(new java.awt.Dimension(175, 23));
-			ivjJComboBoxSendRate.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-			ivjJComboBoxSendRate.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-			ivjJComboBoxSendRate.setMinimumSize(new java.awt.Dimension(126, 23));
+			ivjJComboBoxSendRateDigits = new javax.swing.JComboBox();
+			ivjJComboBoxSendRateDigits.setName("JComboBoxSendRateDigits");
+			ivjJComboBoxSendRateDigits.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+			ivjJComboBoxSendRateDigits.setComponentOrientation(java.awt.ComponentOrientation.LEFT_TO_RIGHT);
+			ivjJComboBoxSendRateDigits.setPreferredSize(new java.awt.Dimension(175, 23));
+			ivjJComboBoxSendRateDigits.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+			ivjJComboBoxSendRateDigits.setMinimumSize(new java.awt.Dimension(0, 0));
+			ivjJComboBoxSendRateDigits.setEditable(true);
 			// user code begin {1}
-			ivjJComboBoxSendRate.addItem("1 minute");
-			ivjJComboBoxSendRate.addItem("2 minutes");
-			ivjJComboBoxSendRate.addItem("5 minutes");
-			ivjJComboBoxSendRate.addItem("10 minutes");
-			ivjJComboBoxSendRate.addItem("15 minutes");
-			ivjJComboBoxSendRate.addItem("20 minutes");
-			ivjJComboBoxSendRate.addItem("30 minutes");
-			ivjJComboBoxSendRate.addItem("45 minutes");
-			ivjJComboBoxSendRate.addItem("1 hour");
-			ivjJComboBoxSendRate.addItem("2 hours");
-			ivjJComboBoxSendRate.addItem("3 hours");
-			ivjJComboBoxSendRate.addItem("4 hours");
-			ivjJComboBoxSendRate.addItem("5 hours");
-			ivjJComboBoxSendRate.addItem("6 hours");
-			ivjJComboBoxSendRate.addItem("7 hours");
-			ivjJComboBoxSendRate.addItem("8 hours");
+			ivjJComboBoxSendRateDigits.addItem("0");
+			ivjJComboBoxSendRateDigits.addItem("1");
+			ivjJComboBoxSendRateDigits.addItem("2");
+			ivjJComboBoxSendRateDigits.addItem("5");
+			ivjJComboBoxSendRateDigits.addItem("8");
+			ivjJComboBoxSendRateDigits.addItem("10");
+			ivjJComboBoxSendRateDigits.addItem("15");
+			ivjJComboBoxSendRateDigits.addItem("20");
+			ivjJComboBoxSendRateDigits.addItem("30");
+			ivjJComboBoxSendRateDigits.addItem("45");
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -369,7 +381,34 @@ private javax.swing.JComboBox getJComboBoxSendRate() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjJComboBoxSendRate;
+	return ivjJComboBoxSendRateDigits;
+}
+/**
+ * Return the JComboBoxSendRate11 property value.
+ * @return javax.swing.JComboBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JComboBox getJComboBoxSendRateUnits() {
+	if (ivjJComboBoxSendRateUnits == null) {
+		try {
+			ivjJComboBoxSendRateUnits = new javax.swing.JComboBox();
+			ivjJComboBoxSendRateUnits.setName("JComboBoxSendRateUnits");
+			ivjJComboBoxSendRateUnits.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+			ivjJComboBoxSendRateUnits.setComponentOrientation(java.awt.ComponentOrientation.LEFT_TO_RIGHT);
+			ivjJComboBoxSendRateUnits.setPreferredSize(new java.awt.Dimension(175, 23));
+			ivjJComboBoxSendRateUnits.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+			ivjJComboBoxSendRateUnits.setMinimumSize(new java.awt.Dimension(0, 0));
+			// user code begin {1}
+			ivjJComboBoxSendRateUnits.addItem("minutes");
+			ivjJComboBoxSendRateUnits.addItem("hours");
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJComboBoxSendRateUnits;
 }
 
 /**
@@ -817,31 +856,6 @@ private javax.swing.JLabel getJLabelPercentReduction() {
 }
 
 /**
- * Return the JLabelSendRate property value.
- * @return javax.swing.JLabel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getJLabelSendRate() {
-	if (ivjJLabelSendRate == null) {
-		try {
-			ivjJLabelSendRate = new javax.swing.JLabel();
-			ivjJLabelSendRate.setName("JLabelSendRate");
-			ivjJLabelSendRate.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjJLabelSendRate.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-			ivjJLabelSendRate.setText("Command Resend Rate:");
-			ivjJLabelSendRate.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJLabelSendRate;
-}
-
-/**
  * Return the JLabelShedTime property value.
  * @return javax.swing.JLabel
  */
@@ -864,6 +878,31 @@ private javax.swing.JLabel getJLabelShedTime() {
 		}
 	}
 	return ivjJLabelShedTime;
+}
+
+/**
+ * Return the JLabelSendRate property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabelSendRate() {
+	if (ivjJLabelSendRate == null) {
+		try {
+			ivjJLabelSendRate = new javax.swing.JLabel();
+			ivjJLabelSendRate.setName("JLabelSendRate");
+			ivjJLabelSendRate.setFont(new java.awt.Font("dialog", 0, 12));
+			ivjJLabelSendRate.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+			ivjJLabelSendRate.setText("Command Resend Rate:");
+			ivjJLabelSendRate.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabelSendRate;
 }
 
 /**
@@ -1071,7 +1110,8 @@ public Object getValue(Object o)
 
 	r.setNumberOfGroups( getJComboBoxNumGroups().getSelectedItem() );
 
-	r.setSendRate( com.cannontech.common.util.CtiUtilities.getIntervalComboBoxSecondsValue( getJComboBoxSendRate() ) );
+	String sendRateString = (String)(getJComboBoxSendRateDigits().getSelectedItem()) + " " + (String)(getJComboBoxSendRateUnits().getSelectedItem());	
+	r.setSendRate( com.cannontech.common.util.CtiUtilities.getIntervalSecondsValue( sendRateString ) );
 		
 	r.setGroupSelectionMethod( StringUtils.removeChars( ' ', getJComboBoxGroupSelection().getSelectedItem().toString() ) );
 	
@@ -1106,7 +1146,8 @@ private void initConnections() throws java.lang.Exception {
 	getJComboBoxWhenChange().addActionListener(this);
 	getJComboBoxShedTime().addActionListener(this);
 	getJComboBoxNumGroups().addActionListener(this);
-	getJComboBoxSendRate().addActionListener(this);
+	getJComboBoxSendRateDigits().addActionListener(this);
+	getJComboBoxSendRateUnits().addActionListener(this);
 	getJComboBoxGroupSelection().addActionListener(this);
 	getJComboBoxHowToStop().addActionListener(this);
 	getJTextFieldChangeTriggerOffset().addCaretListener(this);
@@ -1120,7 +1161,8 @@ private void initConnections() throws java.lang.Exception {
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initialize() {
-	try {
+	try 
+	{
 		// user code begin {1}
 		// user code end
 		setName("RotationGearPanel");
@@ -1172,14 +1214,26 @@ private void initialize() {
 		constraintsJLabelSendRate.insets = new java.awt.Insets(7, 13, 5, 1);
 		add(getJLabelSendRate(), constraintsJLabelSendRate);
 
-		java.awt.GridBagConstraints constraintsJComboBoxSendRate = new java.awt.GridBagConstraints();
-		constraintsJComboBoxSendRate.gridx = 2; constraintsJComboBoxSendRate.gridy = 3;
-		constraintsJComboBoxSendRate.gridwidth = 2;
-		constraintsJComboBoxSendRate.anchor = java.awt.GridBagConstraints.NORTHWEST;
-		constraintsJComboBoxSendRate.weightx = 1.0;
-		constraintsJComboBoxSendRate.ipadx = 49;
-		constraintsJComboBoxSendRate.insets = new java.awt.Insets(3, 1, 2, 66);
-		add(getJComboBoxSendRate(), constraintsJComboBoxSendRate);
+		java.awt.GridBagConstraints constraintsJComboBoxSendRateDigits = new java.awt.GridBagConstraints();
+		constraintsJComboBoxSendRateDigits.gridx = 2; constraintsJComboBoxSendRateDigits.gridy = 3;
+		constraintsJComboBoxSendRateDigits.gridwidth = 2;
+		constraintsJComboBoxSendRateDigits.fill = java.awt.GridBagConstraints.VERTICAL;
+		constraintsJComboBoxSendRateDigits.anchor = java.awt.GridBagConstraints.WEST;
+		constraintsJComboBoxSendRateDigits.weightx = 1.0;
+		constraintsJComboBoxSendRateDigits.ipadx = 83;
+		constraintsJComboBoxSendRateDigits.ipady = 23;
+		constraintsJComboBoxSendRateDigits.insets = new java.awt.Insets(3, 1, 2, 161);
+		add(getJComboBoxSendRateDigits(), constraintsJComboBoxSendRateDigits);
+
+		java.awt.GridBagConstraints constraintsJComboBoxSendRateUnits = new java.awt.GridBagConstraints();
+		constraintsJComboBoxSendRateUnits.gridx = 3; constraintsJComboBoxSendRateUnits.gridy = 3;
+		constraintsJComboBoxSendRateUnits.fill = java.awt.GridBagConstraints.VERTICAL;
+		constraintsJComboBoxSendRateUnits.anchor = java.awt.GridBagConstraints.EAST;
+		constraintsJComboBoxSendRateUnits.weightx = 1.0;
+		constraintsJComboBoxSendRateUnits.ipadx = 98;
+		constraintsJComboBoxSendRateUnits.ipady = 23;
+		constraintsJComboBoxSendRateUnits.insets = new java.awt.Insets(3, 56, 2, 64);
+		add(getJComboBoxSendRateUnits(), constraintsJComboBoxSendRateUnits);
 
 		java.awt.GridBagConstraints constraintsJComboBoxGroupSelection = new java.awt.GridBagConstraints();
 		constraintsJComboBoxGroupSelection.gridx = 2; constraintsJComboBoxGroupSelection.gridy = 4;
@@ -1240,23 +1294,21 @@ private void initialize() {
 		constraintsJPanelChangeMethod.ipady = 87;
 		constraintsJPanelChangeMethod.insets = new java.awt.Insets(3, 8, 165, 59);
 		add(getJPanelChangeMethod(), constraintsJPanelChangeMethod);
-	} catch (java.lang.Throwable ivjExc) {
+	} 
+	catch (java.lang.Throwable ivjExc) 
+	{
 		handleException(ivjExc);
 	}
-	// user code begin {2}
-	getJComboBoxWhenChange().setSelectedItem( LMProgramDirectGear.CHANGE_NONE );
-	getJLabelSendRate().setText("Send Rate:");
-	getJComboBoxShedTime().setSelectedItem("1 hour");
-	getJComboBoxNumGroups().setSelectedItem(new Integer(1));
-	getJComboBoxSendRate().setSelectedItem("10 minutes");
-		try
-	{
-		initConnections();
-	}
-	catch(Exception e)	{ }
-	// user code end
+	//user code begin {2}
+	getJComboBoxSendRateDigits().setSelectedItem("30");
+	getJComboBoxSendRateUnits().setSelectedItem("minutes");
+	try
+	 {
+		 initConnections();
+	 }
+	 catch(Exception e)	{ }
+	 // user code end
 }
-
 /**
  * Comment
  */
@@ -1404,7 +1456,8 @@ public void setValue(Object o)
 
 	getJComboBoxNumGroups().setSelectedItem( r.getNumberOfGroups() );
 
-	com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( getJComboBoxSendRate(), r.getSendRate().intValue() );
+	com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( 
+			getJComboBoxSendRateDigits(), getJComboBoxSendRateUnits(), r.getSendRate().intValue() );
 		
 	getJComboBoxGroupSelection().setSelectedItem( StringUtils.addCharBetweenWords( ' ', r.getGroupSelectionMethod() ) );
 	
