@@ -301,14 +301,22 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG c
                                 if( !doesGroupHaveAmpleControlTime(currentLMGroup,estimatedControlTimeInSeconds) )
                                 {
                                     ULONG controlTimeLeft = calculateGroupControlTimeLeft(currentLMGroup,estimatedControlTimeInSeconds);
-                                    ULONG tempCycleCount = controlTimeLeft / period;
-                                    if( (controlTimeLeft % period) > 0 )
+                                    if( period != 0 )
                                     {
-                                        tempCycleCount++;
+                                        ULONG tempCycleCount = controlTimeLeft / period;
+                                        if( (controlTimeLeft % period) > 0 )
+                                        {
+                                            tempCycleCount++;
+                                        }
+                                        if( tempCycleCount < cycleCount )
+                                        {
+                                            cycleCount = tempCycleCount;
+                                        }
                                     }
-                                    if( tempCycleCount < cycleCount )
+                                    else
                                     {
-                                        cycleCount = tempCycleCount;
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << RWTime() << " - Tried to divide by zero in: " << __FILE__ << " at:" << __LINE__ << endl;
                                     }
                                 }
                             }
@@ -554,19 +562,27 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                         {
                             if( maxCycleCount > 0 )
                             {
-                                ULONG tempCycleCount = (getDirectStopTime().seconds() - RWDBDateTime().seconds()) / period;
-                                if( ((getDirectStopTime().seconds() - RWDBDateTime().seconds()) % period) > 0 )
+                                if( period != 0 )
                                 {
-                                    tempCycleCount++;
-                                }
+                                    ULONG tempCycleCount = (getDirectStopTime().seconds() - RWDBDateTime().seconds()) / period;
+                                    if( ((getDirectStopTime().seconds() - RWDBDateTime().seconds()) % period) > 0 )
+                                    {
+                                        tempCycleCount++;
+                                    }
 
-                                if( tempCycleCount > maxCycleCount )
-                                {
-                                    cycleCount = maxCycleCount;
+                                    if( tempCycleCount > maxCycleCount )
+                                    {
+                                        cycleCount = maxCycleCount;
+                                    }
+                                    else
+                                    {
+                                        cycleCount = tempCycleCount;
+                                    }
                                 }
                                 else
                                 {
-                                    cycleCount = tempCycleCount;
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << RWTime() << " - Tried to divide by zero in: " << __FILE__ << " at:" << __LINE__ << endl;
                                 }
                             }
                             else
@@ -575,21 +591,29 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                                 RWDBDateTime compareDateTime(tempDateTime.year(),tempDateTime.month(),tempDateTime.dayOfMonth(),0,0,0,0);
                                 compareDateTime.addDays(1);
                                 ULONG tempCycleCount = cycleCount;
-                                if( getDirectStopTime().seconds() > compareDateTime.seconds() )
+                                if( period != 0 )
                                 {
-                                    tempCycleCount = (compareDateTime.seconds() - RWDBDateTime().seconds()) / period;
-                                    if( ((compareDateTime.seconds() - RWDBDateTime().seconds()) % period) > 0 )
+                                    if( getDirectStopTime().seconds() > compareDateTime.seconds() )
                                     {
-                                        tempCycleCount++;
+                                        tempCycleCount = (compareDateTime.seconds() - RWDBDateTime().seconds()) / period;
+                                        if( ((compareDateTime.seconds() - RWDBDateTime().seconds()) % period) > 0 )
+                                        {
+                                            tempCycleCount++;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        tempCycleCount = (getDirectStopTime().seconds() - RWDBDateTime().seconds()) / period;
+                                        if( ((getDirectStopTime().seconds() - RWDBDateTime().seconds()) % period) > 0 )
+                                        {
+                                            tempCycleCount++;
+                                        }
                                     }
                                 }
                                 else
                                 {
-                                    tempCycleCount = (getDirectStopTime().seconds() - RWDBDateTime().seconds()) / period;
-                                    if( ((getDirectStopTime().seconds() - RWDBDateTime().seconds()) % period) > 0 )
-                                    {
-                                        tempCycleCount++;
-                                    }
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << RWTime() << " - Tried to divide by zero in: " << __FILE__ << " at:" << __LINE__ << endl;
                                 }
 
                                 if( tempCycleCount > 63 )
@@ -1133,14 +1157,22 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG previousGearN
                         if( !doesGroupHaveAmpleControlTime(currentLMGroup,estimatedControlTimeInSeconds) )
                         {
                             ULONG controlTimeLeft = calculateGroupControlTimeLeft(currentLMGroup,estimatedControlTimeInSeconds);
-                            ULONG tempCycleCount = controlTimeLeft / period;
-                            if( (controlTimeLeft % period) > 0 )
+                            if( period != 0 )
                             {
-                                tempCycleCount++;
+                                ULONG tempCycleCount = controlTimeLeft / period;
+                                if( (controlTimeLeft % period) > 0 )
+                                {
+                                    tempCycleCount++;
+                                }
+                                if( tempCycleCount < cycleCount )
+                                {
+                                    cycleCount = tempCycleCount;
+                                }
                             }
-                            if( tempCycleCount < cycleCount )
+                            else
                             {
-                                cycleCount = tempCycleCount;
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Tried to divide by zero in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
                         }
                     }
@@ -1365,7 +1397,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG nowInSeconds, CtiMu
                                                  refreshRate;
                     if( refreshTimeInSeconds <= nowInSeconds )
                     {
-                        multiPilMsg->insert( currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMStartPriority) );
+                        multiPilMsg->insert( currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMRefreshPriority) );
                         setLastControlSent(RWDBDateTime());
                         setLastGroupControlled(currentLMGroup->getPAOId());
                         currentLMGroup->setLastControlSent(RWDBDateTime());
@@ -1400,156 +1432,164 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG nowInSeconds, CtiMu
                                      cycleRefreshRate;
             }
 
-            if( periodEndInSeconds <= nowInSeconds )
+            if( period != 0 )
             {
-                for(ULONG i=0;i<_lmprogramdirectgroups.entries();i++)
+                if( periodEndInSeconds <= nowInSeconds )
                 {
-                    CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
-
-                    if( !currentLMGroup->getDisableFlag() &&
-                        !currentLMGroup->getControlInhibit() )
+                    for(ULONG i=0;i<_lmprogramdirectgroups.entries();i++)
                     {
-                        //reset the default for each group if the previous groups was lower
-                        cycleCount = currentGearObject->getMethodRateCount();
-                        if( cycleCountDownType == CtiLMProgramDirectGear::CountDownMethodOptionType )
-                        {
-                            if( getManualControlReceivedFlag() )
-                            {
-                                if( maxCycleCount > 0 )
-                                {
-                                    ULONG tempCycleCount = (getDirectStopTime().seconds() - RWDBDateTime().seconds()) / period;
-                                    if( ((getDirectStopTime().seconds() - RWDBDateTime().seconds()) % period) > 0 )
-                                    {
-                                        tempCycleCount++;
-                                    }
+                        CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
 
-                                    if( tempCycleCount > maxCycleCount )
-                                    {
-                                        cycleCount = maxCycleCount;
-                                    }
-                                    else
-                                    {
-                                        cycleCount = tempCycleCount;
-                                    }
-                                }
-                                else
+                        if( !currentLMGroup->getDisableFlag() &&
+                            !currentLMGroup->getControlInhibit() )
+                        {
+                            //reset the default for each group if the previous groups was lower
+                            cycleCount = currentGearObject->getMethodRateCount();
+                            if( cycleCountDownType == CtiLMProgramDirectGear::CountDownMethodOptionType )
+                            {
+                                if( getManualControlReceivedFlag() )
                                 {
-                                    RWDBDateTime tempDateTime;
-                                    RWDBDateTime compareDateTime(tempDateTime.year(),tempDateTime.month(),tempDateTime.dayOfMonth(),0,0,0,0);
-                                    compareDateTime.addDays(1);
-                                    ULONG tempCycleCount = cycleCount;
-                                    if( getDirectStopTime().seconds() > compareDateTime.seconds() )
+                                    if( maxCycleCount > 0 )
                                     {
-                                        tempCycleCount = (compareDateTime.seconds() - RWDBDateTime().seconds()) / period;
-                                        if( ((compareDateTime.seconds() - RWDBDateTime().seconds()) % period) > 0 )
-                                        {
-                                            tempCycleCount++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        tempCycleCount = (getDirectStopTime().seconds() - RWDBDateTime().seconds()) / period;
+                                        ULONG tempCycleCount = (getDirectStopTime().seconds() - RWDBDateTime().seconds()) / period;
                                         if( ((getDirectStopTime().seconds() - RWDBDateTime().seconds()) % period) > 0 )
                                         {
                                             tempCycleCount++;
                                         }
-                                    }
 
-                                    if( tempCycleCount > 63 )
-                                    {//Versacom can't support counts higher than 63
-                                        tempCycleCount = 63;
+                                        if( tempCycleCount > maxCycleCount )
+                                        {
+                                            cycleCount = maxCycleCount;
+                                        }
+                                        else
+                                        {
+                                            cycleCount = tempCycleCount;
+                                        }
                                     }
-                                    cycleCount = tempCycleCount;
+                                    else
+                                    {
+                                        RWDBDateTime tempDateTime;
+                                        RWDBDateTime compareDateTime(tempDateTime.year(),tempDateTime.month(),tempDateTime.dayOfMonth(),0,0,0,0);
+                                        compareDateTime.addDays(1);
+                                        ULONG tempCycleCount = cycleCount;
+                                        if( getDirectStopTime().seconds() > compareDateTime.seconds() )
+                                        {
+                                            tempCycleCount = (compareDateTime.seconds() - RWDBDateTime().seconds()) / period;
+                                            if( ((compareDateTime.seconds() - RWDBDateTime().seconds()) % period) > 0 )
+                                            {
+                                                tempCycleCount++;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            tempCycleCount = (getDirectStopTime().seconds() - RWDBDateTime().seconds()) / period;
+                                            if( ((getDirectStopTime().seconds() - RWDBDateTime().seconds()) % period) > 0 )
+                                            {
+                                                tempCycleCount++;
+                                            }
+                                        }
+
+                                        if( tempCycleCount > 63 )
+                                        {//Versacom can't support counts higher than 63
+                                            tempCycleCount = 63;
+                                        }
+                                        cycleCount = tempCycleCount;
+                                    }
+                                }
+
+                                ULONG estimatedControlTimeInSeconds = period * cycleCount;
+                                if( !doesGroupHaveAmpleControlTime(currentLMGroup,estimatedControlTimeInSeconds) )
+                                {
+                                    ULONG controlTimeLeft = calculateGroupControlTimeLeft(currentLMGroup,estimatedControlTimeInSeconds);
+                                    ULONG tempCycleCount = controlTimeLeft / period;
+                                    if( (controlTimeLeft % period) > 0 )
+                                    {
+                                        tempCycleCount++;
+                                    }
+                                    if( tempCycleCount < cycleCount )
+                                    {
+                                        cycleCount = tempCycleCount;
+                                    }
                                 }
                             }
+                            else if( cycleCountDownType == CtiLMProgramDirectGear::LimitedCountDownMethodOptionType )
+                            {
+                                ULONG estimatedControlTimeInSeconds = period * cycleCount;
+                                if( getManualControlReceivedFlag() )
+                                {
+                                    unsigned long secondsSince1901 = RWDBDateTime().seconds();
+                                    if( (secondsSince1901 + estimatedControlTimeInSeconds) > getDirectStopTime().seconds())
+                                    {
+                                        cycleCount = 0;
+                                    }
+                                }
 
-                            ULONG estimatedControlTimeInSeconds = period * cycleCount;
-                            if( !doesGroupHaveAmpleControlTime(currentLMGroup,estimatedControlTimeInSeconds) )
-                            {
-                                ULONG controlTimeLeft = calculateGroupControlTimeLeft(currentLMGroup,estimatedControlTimeInSeconds);
-                                ULONG tempCycleCount = controlTimeLeft / period;
-                                if( (controlTimeLeft % period) > 0 )
-                                {
-                                    tempCycleCount++;
-                                }
-                                if( tempCycleCount < cycleCount )
-                                {
-                                    cycleCount = tempCycleCount;
-                                }
-                            }
-                        }
-                        else if( cycleCountDownType == CtiLMProgramDirectGear::LimitedCountDownMethodOptionType )
-                        {
-                            ULONG estimatedControlTimeInSeconds = period * cycleCount;
-                            if( getManualControlReceivedFlag() )
-                            {
-                                unsigned long secondsSince1901 = RWDBDateTime().seconds();
-                                if( (secondsSince1901 + estimatedControlTimeInSeconds) > getDirectStopTime().seconds())
+                                if( !doesGroupHaveAmpleControlTime(currentLMGroup,estimatedControlTimeInSeconds) )
                                 {
                                     cycleCount = 0;
                                 }
+
                             }
 
-                            if( !doesGroupHaveAmpleControlTime(currentLMGroup,estimatedControlTimeInSeconds) )
+                            if( cycleCount > 0 )
                             {
-                                cycleCount = 0;
-                            }
-
-                        }
-
-                        if( cycleCount > 0 )
-                        {
-                            multiPilMsg->insert( currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, defaultLMRefreshPriority) );
-                            setLastControlSent(RWDBDateTime());
-                            setLastGroupControlled(currentLMGroup->getPAOId());
-                            currentLMGroup->setLastControlSent(RWDBDateTime());
-                            currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
-                            returnBoolean = TRUE;
-                        }
-                        else
-                        {
-                            if( !doesGroupHaveAmpleControlTime(currentLMGroup,0) )
-                            {//we need to restore the group in the way set in the gear because it went over max control time
-                                RWCString tempMethodStopType = currentGearObject->getMethodStopType();
-                                if( tempMethodStopType == CtiLMProgramDirectGear::RestoreStopType )
-                                {
-                                    multiPilMsg->insert(new CtiRequestMsg(currentLMGroup->getPAOId(), "control restore"));
-                                    setLastControlSent(RWDBDateTime());
-                                    currentLMGroup->setLastControlSent(RWDBDateTime());
-                                }
-                                else if( tempMethodStopType == CtiLMProgramDirectGear::StopCycleStopType ||
-                                         tempMethodStopType == CtiLMProgramDirectGear::TimeInStopType ||
-                                         tempMethodStopType == "Time-In" )
-                                {//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
-                                    multiPilMsg->insert(new CtiRequestMsg(currentLMGroup->getPAOId(), "control cycle terminate"));
-                                    setLastControlSent(RWDBDateTime());
-                                    currentLMGroup->setLastControlSent(RWDBDateTime());
-                                }
-                                else
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - Invalid current gear method stop type: " << tempMethodStopType << " in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                }
-
-                                DOUBLE restoredGroupLoad = 0.0;
-                                if( currentGearObject->getPercentReduction() > 0.0 )
-                                {
-                                    restoredGroupLoad += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
-                                }
-                                else
-                                {
-                                    restoredGroupLoad += currentLMGroup->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
-                                }
-                                setReductionTotal(getReductionTotal()-restoredGroupLoad);
+                                multiPilMsg->insert( currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, defaultLMRefreshPriority) );
+                                setLastControlSent(RWDBDateTime());
+                                setLastGroupControlled(currentLMGroup->getPAOId());
+                                currentLMGroup->setLastControlSent(RWDBDateTime());
+                                currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
                                 returnBoolean = TRUE;
+                            }
+                            else
+                            {
+                                if( !doesGroupHaveAmpleControlTime(currentLMGroup,0) )
+                                {//we need to restore the group in the way set in the gear because it went over max control time
+                                    RWCString tempMethodStopType = currentGearObject->getMethodStopType();
+                                    if( tempMethodStopType == CtiLMProgramDirectGear::RestoreStopType )
+                                    {
+                                        multiPilMsg->insert(new CtiRequestMsg(currentLMGroup->getPAOId(), "control restore"));
+                                        setLastControlSent(RWDBDateTime());
+                                        currentLMGroup->setLastControlSent(RWDBDateTime());
+                                    }
+                                    else if( tempMethodStopType == CtiLMProgramDirectGear::StopCycleStopType ||
+                                             tempMethodStopType == CtiLMProgramDirectGear::TimeInStopType ||
+                                             tempMethodStopType == "Time-In" )
+                                    {//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
+                                        multiPilMsg->insert(new CtiRequestMsg(currentLMGroup->getPAOId(), "control cycle terminate"));
+                                        setLastControlSent(RWDBDateTime());
+                                        currentLMGroup->setLastControlSent(RWDBDateTime());
+                                    }
+                                    else
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << RWTime() << " - Invalid current gear method stop type: " << tempMethodStopType << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                    }
+
+                                    DOUBLE restoredGroupLoad = 0.0;
+                                    if( currentGearObject->getPercentReduction() > 0.0 )
+                                    {
+                                        restoredGroupLoad += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
+                                    }
+                                    else
+                                    {
+                                        restoredGroupLoad += currentLMGroup->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
+                                    }
+                                    setReductionTotal(getReductionTotal()-restoredGroupLoad);
+                                    returnBoolean = TRUE;
+                                }
                             }
                         }
                     }
+                    if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                    {
+                        setProgramState(CtiLMProgramBase::FullyActiveState);
+                    }
                 }
-                if( getProgramState() != CtiLMProgramBase::ManualActiveState )
-                {
-                    setProgramState(CtiLMProgramBase::FullyActiveState);
-                }
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Tried to divide by zero in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
         else if( currentGearObject->getControlMethod() == CtiLMProgramDirectGear::MasterCycleMethod )
@@ -1559,7 +1599,11 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG nowInSeconds, CtiMu
 
             ULONG offTime = period * (percent / 100.0);
             ULONG onTime = period - offTime;
-            ULONG sendRate = onTime / (_lmprogramdirectgroups.entries()-1);
+            ULONG sendRate = onTime;
+            if( _lmprogramdirectgroups.entries()-1 > 0 )
+            {
+                ULONG sendRate = onTime / (_lmprogramdirectgroups.entries()-1);
+            }
 
             ULONG sendRateEndInSeconds = (getLastControlSent().hour() * 3600) +
                                          (getLastControlSent().minute() * 60) +
@@ -1587,6 +1631,10 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG nowInSeconds, CtiMu
                     else if( nowInSeconds >= groupControlDone )
                     {//groups not currently shed need to be set back to inactive state
                         currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
+                        if( currentGearObject->getMethodStopType() == CtiLMProgramDirectGear::RestoreStopType )
+                        {
+                            multiPilMsg->insert(new CtiRequestMsg(currentLMGroup->getPAOId(), "control restore"));
+                        }
                         returnBoolean = TRUE;
                     }
                 }
@@ -1781,11 +1829,11 @@ void CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                 {
                     if( currentLMGroup->getPAOType() == TYPE_LMGROUP_POINT )
                     {
-                        multiDispatchMsg->insert( currentLMGroup->createLatchingRequestMsg( (((CtiLMGroupPoint*)currentLMGroup)->getStartControlRawState()?0:1), defaultLMStartPriority ) );
+                        multiDispatchMsg->insert( currentLMGroup->createLatchingRequestMsg( (((CtiLMGroupPoint*)currentLMGroup)->getStartControlRawState()?0:1), defaultLMRefreshPriority ) );
                     }
                     else
                     {
-                        multiDispatchMsg->insert( currentLMGroup->createLatchingRequestMsg( (currentGearObject->getMethodRateCount()?0:1), defaultLMStartPriority ) );
+                        multiDispatchMsg->insert( currentLMGroup->createLatchingRequestMsg( (currentGearObject->getMethodRateCount()?0:1), defaultLMRefreshPriority ) );
                     }
                     setLastControlSent(RWDBDateTime());
                     currentLMGroup->setLastControlSent(RWDBDateTime());

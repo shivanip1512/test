@@ -218,26 +218,34 @@ BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(ULONG nowInSeconds, ULONG 
             dout << RWTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle refreshed in: " << __FILE__ << " at:" << __LINE__ << endl;
         }*/
     }
-    else if( (offTime/trueShedTime) >= 2 )
+    else if( trueShedTime!=0 )
     {
-        ULONG numberOfTimesToExtend = (offTime/trueShedTime)-1;
-        ULONG controlStartedInSeconds = (getLastControlSent().hour() * 3600) +
-                                        (getLastControlSent().minute() * 60) +
-                                        getLastControlSent().second();
-        ULONG timeToExtendInSeconds = controlStartedInSeconds + trueShedTime;
-        for(ULONG i=0;i<numberOfTimesToExtend;i++)
+        if( (offTime/trueShedTime) >= 2 )
         {
-            if( nowInSeconds < timeToExtendInSeconds+2 &&
-                nowInSeconds >= timeToExtendInSeconds-1 )
+            ULONG numberOfTimesToExtend = (offTime/trueShedTime)-1;
+            ULONG controlStartedInSeconds = (getLastControlSent().hour() * 3600) +
+                                            (getLastControlSent().minute() * 60) +
+                                            getLastControlSent().second();
+            ULONG timeToExtendInSeconds = controlStartedInSeconds + trueShedTime;
+            for(ULONG i=0;i<numberOfTimesToExtend;i++)
             {
-                returnBOOL = TRUE;
-                /*{
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle extended in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }*/
+                if( nowInSeconds < timeToExtendInSeconds+2 &&
+                    nowInSeconds >= timeToExtendInSeconds-1 )
+                {
+                    returnBOOL = TRUE;
+                    /*{
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle extended in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }*/
+                }
+                timeToExtendInSeconds += trueShedTime;
             }
-            timeToExtendInSeconds += trueShedTime;
         }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Tried to divide by zero in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     return returnBOOL;

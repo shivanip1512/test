@@ -1149,7 +1149,17 @@ void CtiLMControlAreaStore::doResetThr()
         strcpy(var, "LOAD_MANAGEMENT_REFRESH");
         if( !(str = gConfigParms.getValueAsString(var)).isNull() )
         {
-            refreshrate = atoi(str);
+            int tempRefreshRate = atoi(str);
+            if( tempRefreshRate > 0 )
+            {
+                refreshrate = tempRefreshRate;
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << var << " is ZERO!!!" << endl;
+            }
+
             if( _LM_DEBUG )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
