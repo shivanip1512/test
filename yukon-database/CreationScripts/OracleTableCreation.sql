@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     9/11/2003 5:40:22 PM                         */
+/* Created on:     9/12/2003 10:04:26 AM                        */
 /*==============================================================*/
 
 
@@ -814,8 +814,8 @@ create table BillingFileFormats  (
 insert into billingfileformats values( -11, 'MV_90 DATA Import');
 insert into BillingFileFormats values(-1,'INVALID');
 insert into BillingFileFormats values(0,'SEDC');
-insert into BillingFileFormats values(1,'CAPD');
-insert into BillingFileFormats values(2,'CAPDXL2');
+insert into BillingFileFormats values(1,'CADP');
+insert into BillingFileFormats values(2,'CADPXL2');
 insert into BillingFileFormats values(3,'WLT-40');
 insert into BillingFileFormats values(4,'CTI-CSV');
 insert into BillingFileFormats values(5,'OPU');

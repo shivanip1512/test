@@ -267,6 +267,14 @@ insert into YukonRoleProperty values(-40180,-400,'Image Corner','Mom.jpg','Image
 insert into YukonRoleProperty values(-40181,-400,'Image General','Family.jpg','Image on the general page');
 
 
+
+/* @error ignore */
+update billingfileformats set FormatType = 'CADP' where formatid = 1;
+
+/* @error ignore */
+update billingfileformats set FormatType = 'CADPXL2' where formatid = 2;
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
