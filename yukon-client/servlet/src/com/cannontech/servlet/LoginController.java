@@ -52,7 +52,6 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 {
 	String action = req.getParameter(ACTION).toString();
 	String nextURI = req.getParameter(REDIRECT);
-	if (nextURI == null) nextURI = LOG_OUT_URI;
 		
 	if(action.equalsIgnoreCase(LOGIN)) {
 		String username = req.getParameter(USERNAME);
@@ -73,16 +72,19 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			resp.sendRedirect(home_url);
 		}
 		else {
-			resp.sendRedirect(INVALID_URI);
+			if (nextURI == null)
+				nextURI = req.getContextPath() + INVALID_URI;
+			resp.sendRedirect(nextURI);
 		}		
 	}
 	else 
 	if(action.equalsIgnoreCase(LOGOUT))  {
 		HttpSession session = req.getSession();
+		if(session != null) session.invalidate();
+
+		if (nextURI == null)
+			nextURI = req.getContextPath() + LOG_OUT_URI;
 		resp.sendRedirect(nextURI);
-		if(session != null) {
-			session.invalidate();
-		}			
 	} 
 	else {
 		resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
