@@ -1286,7 +1286,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
                         {
                             regularSubstationBusControl(setPoint, currentDateTime, pointChanges, pilMessages);
                         }
-                        else if( _controlmethod == CtiCCSubstationBus::SubstationBusControlMethod )
+                        else if( _controlmethod == CtiCCSubstationBus::BusOptimizedFeederControlMethod )
                         {
                             optimizedSubstationBusControl(setPoint, currentDateTime, pointChanges, pilMessages);
                         }
@@ -1304,7 +1304,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
                     {
                         regularSubstationBusControl(setPoint, currentDateTime, pointChanges, pilMessages);
                     }
-                    else if( _controlmethod == CtiCCSubstationBus::SubstationBusControlMethod )
+                    else if( _controlmethod == CtiCCSubstationBus::BusOptimizedFeederControlMethod )
                     {
                         optimizedSubstationBusControl(setPoint, currentDateTime, pointChanges, pilMessages);
                     }
@@ -2424,9 +2424,13 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             updater << dynamicCCSubstationBusTable["currentvarpointvalue"].assign( _currentvarloadpointvalue )
             << dynamicCCSubstationBusTable["currentwattpointvalue"].assign( _currentwattloadpointvalue )
             << dynamicCCSubstationBusTable["nextchecktime"].assign( (RWDBDateTime)_nextchecktime )
-            << dynamicCCSubstationBusTable["newpointdatareceivedflag"].assign( ((_newpointdatareceivedflag?'Y':'N')) )
-            << dynamicCCSubstationBusTable["busupdatedflag"].assign( (_busupdatedflag?'Y':'N') );
+            << dynamicCCSubstationBusTable["newpointdatareceivedflag"].assign( RWCString((_newpointdatareceivedflag?'Y':'N')) )
+            << dynamicCCSubstationBusTable["busupdatedflag"].assign( RWCString((_busupdatedflag?'Y':'N')) );
 
+            /*{
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << updater.asString().data() << endl;
+            }*/
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -2454,8 +2458,12 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             updater << dynamicCCSubstationBusTable["lastcurrentvarupdatetime"].assign( (RWDBDateTime)_lastcurrentvarpointupdatetime )
             << dynamicCCSubstationBusTable["estimatedvarpointvalue"].assign( _estimatedvarloadpointvalue )
             << dynamicCCSubstationBusTable["currentdailyoperations"].assign( _currentdailyoperations )
-            << dynamicCCSubstationBusTable["peaktimeflag"].assign( ((_peaktimeflag?'Y':'N')) );
+            << dynamicCCSubstationBusTable["peaktimeflag"].assign( RWCString((_peaktimeflag?'Y':'N')) );
 
+            /*{
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << updater.asString().data() << endl;
+            }*/
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -2480,11 +2488,15 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
 
             updater.where(dynamicCCSubstationBusTable["substationbusid"]==_paoid);
 
-            updater << dynamicCCSubstationBusTable["recentlycontrolledflag"].assign( ((_recentlycontrolledflag?'Y':'N')) )
+            updater << dynamicCCSubstationBusTable["recentlycontrolledflag"].assign( RWCString((_recentlycontrolledflag?'Y':'N')) )
             << dynamicCCSubstationBusTable["lastoperationtime"].assign( (RWDBDateTime)_lastoperationtime )
             << dynamicCCSubstationBusTable["varvaluebeforecontrol"].assign( _varvaluebeforecontrol )
             << dynamicCCSubstationBusTable["lastfeederpaoid"].assign( _lastfeedercontrolledpaoid );
 
+            /*{
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << updater.asString().data() << endl;
+            }*/
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -2516,6 +2528,10 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             << dynamicCCSubstationBusTable["estimatedpfvalue"].assign( _estimatedpowerfactorvalue )
             << dynamicCCSubstationBusTable["currentvarpointquality"].assign( _currentvarpointquality );
 
+            /*{
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << updater.asString().data() << endl;
+            }*/
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -2549,13 +2565,13 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             << _currentvarloadpointvalue
             << _currentwattloadpointvalue
             << _nextchecktime
-            << _newpointdatareceivedflag
-            << _busupdatedflag
+            << RWCString((_newpointdatareceivedflag?'Y':'N'))
+            << RWCString((_busupdatedflag?'Y':'N'))
             << _lastcurrentvarpointupdatetime
             << _estimatedvarloadpointvalue
             << _currentdailyoperations
-            << _peaktimeflag
-            << _recentlycontrolledflag
+            << RWCString((_peaktimeflag?'Y':'N'))
+            << RWCString((_recentlycontrolledflag?'Y':'N'))
             << _lastoperationtime
             << _varvaluebeforecontrol
             << _lastfeedercontrolledpaoid
