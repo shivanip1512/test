@@ -2089,11 +2089,11 @@ public class StarsAdmin extends HttpServlet {
         	
         	UpdateThermostatScheduleAction action = new UpdateThermostatScheduleAction();
         	SOAPMessage reqMsg = action.build( req, session );
-        	
         	StarsUpdateThermostatSchedule updateSched = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsUpdateThermostatSchedule();
+        	
         	LiteStarsLMHardware liteHw = energyCompany.getLMHardware( dftSettings.getInventoryID(), true );
-        	StarsUpdateThermostatScheduleResponse resp = action.updateThermostatSchedule( updateSched, liteHw, energyCompany );
-        	action.parseResponse( resp, dftSettings );
+        	StarsUpdateThermostatScheduleResponse resp = UpdateThermostatScheduleAction.updateThermostatSchedule( updateSched, liteHw, energyCompany );
+			UpdateThermostatScheduleAction.parseResponse( resp, dftSettings );
 			
         	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Default thermostat schedule updated successfully");
         }
