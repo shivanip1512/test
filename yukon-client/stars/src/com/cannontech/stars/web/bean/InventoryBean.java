@@ -98,8 +98,28 @@ public class InventoryBean {
 				return -1;
 			else if (!(inv1 instanceof LiteStarsLMHardware) && (inv2 instanceof LiteStarsLMHardware))
 				return 1;
-			else
-				return PAOFuncs.getYukonPAOName(inv1.getDeviceID()).compareTo( PAOFuncs.getYukonPAOName(inv2.getDeviceID()) );
+			else {
+				String devName1 = null;
+				if (inv1.getDeviceID() > 0)
+					devName1 = PAOFuncs.getYukonPAOName( inv1.getDeviceID() );
+				else if (inv1.getDeviceLabel() != null && inv1.getDeviceLabel().length() > 0)
+					devName1 = inv1.getDeviceLabel();
+				
+				String devName2 = null;
+				if (inv2.getDeviceID() > 0)
+					devName2 = PAOFuncs.getYukonPAOName( inv2.getDeviceID() );
+				else if (inv2.getDeviceLabel() != null && inv2.getDeviceLabel().length() > 0)
+					devName2 = inv2.getDeviceLabel();
+				
+				if (devName1 != null && devName2 != null)
+					return devName1.compareTo( devName2 );
+				else if (devName1 != null && devName2 == null)
+					return -1;
+				else if (devName1 == null && devName2 != null)
+					return 1;
+				else
+					return -1;
+			}
 		}
 	};
 	
@@ -328,18 +348,22 @@ public class InventoryBean {
         for (int i = minInvNo; i <= maxInvNo; i++) {
         	LiteInventoryBase liteInv = (LiteInventoryBase) hwList.get(i-1);
         	
-        	String deviceType = null;
-        	String deviceName = null;
+        	String deviceType = "(none)";
+        	String deviceName = "(none)";
         	if (liteInv instanceof LiteStarsLMHardware) {
 				deviceType = YukonListFuncs.getYukonListEntry( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID() ).getEntryText();
 				deviceName = ((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber();
         	}
-        	else if (ECUtils.isMCT( liteInv.getCategoryID() )) {
+        	else if (liteInv.getDeviceID() > 0) {
 				LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( liteInv.getDeviceID() );
 				deviceType = PAOGroups.getPAOTypeString( litePao.getType() );
 				deviceName = litePao.getPaoName();
         	}
-        	if (deviceName.equals("")) deviceName = "&nbsp;";
+        	else if (ECUtils.isMCT( liteInv.getCategoryID() )) {
+        		deviceType = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT).getEntryText();
+        		if (liteInv.getDeviceLabel() != null && liteInv.getDeviceLabel().length() > 0)
+        			deviceName = liteInv.getDeviceLabel();
+        	}
         	
         	java.util.Date installDate = ServerUtils.translateDate( liteInv.getInstallDate() );
         	dateFormat.setTimeZone( getEnergyCompany().getDefaultTimeZone() );
