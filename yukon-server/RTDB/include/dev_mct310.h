@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct310.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/07/12 19:30:38 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/12/07 18:56:56 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,7 @@ class IM_EX_DEVDB CtiDeviceMCT310 : public CtiDeviceMCT
 {
 private:
 
-   static DLCCommandSet _commandStore;
+    static DLCCommandSet _commandStore;
 
 protected:
 
@@ -40,62 +40,62 @@ protected:
 
     enum
     {
-        MCT3XX_FuncReadMReadPos  = 0x90,  //  144
-        MCT3XX_FuncReadMReadLen  =    9,  //  Variable based on point count... Max of 9.
-        MCT3XX_FuncReadFrozenPos = 0x91,  //  145
-        MCT3XX_FuncReadFrozenLen =    9,  //  Variable based on point count... Max of 9.
+        MCT3XX_FuncReadMReadPos        = 0x90,  //  144
+        MCT3XX_FuncReadMReadLen        =    9,  //  Variable based on point count... Max of 9.
+        MCT3XX_FuncReadFrozenPos       = 0x91,  //  145
+        MCT3XX_FuncReadFrozenLen       =    9,  //  Variable based on point count... Max of 9.
 
         MCT3XX_FuncReadMinMaxDemandPos = 0x93,
         MCT3XX_FuncReadMinMaxDemandLen =   12,  //  Variable based on point count
         MCT3XX_FuncReadFrozenDemandPos = 0x94,
         MCT3XX_FuncReadFrozenDemandLen =   12,  //  Variable based on point count
 
-        MCT3XX_PutMRead1Pos      = 0x20,
-        MCT3XX_PutMRead2Pos      = 0x32,
-        MCT3XX_PutMRead3Pos      = 0x51,
-        MCT3XX_PutMReadLen       =    6,
+        MCT3XX_PutMRead1Pos            = 0x20,
+        MCT3XX_PutMRead2Pos            = 0x32,
+        MCT3XX_PutMRead3Pos            = 0x51,
+        MCT3XX_PutMReadLen             =    6,
 
-        MCT3XX_Mult1Pos          = 0x26,
-        MCT3XX_Mult2Pos          = 0x38,
-        MCT3XX_Mult3Pos          = 0x57,
-        MCT3XX_MultLen           =    2,
+        MCT3XX_Mult1Pos                = 0x26,
+        MCT3XX_Mult2Pos                = 0x38,
+        MCT3XX_Mult3Pos                = 0x57,
+        MCT3XX_MultLen                 =    2,
 
-        MCT3XX_PFCountPos        = 0x07,
-        MCT3XX_PFCountLen        =    2,
+        MCT3XX_PFCountPos              = 0x07,
+        MCT3XX_PFCountLen              =    2,
 
-        MCT3XX_ResetPos          = 0x06,
-        MCT3XX_ResetLen          =    1,
+        MCT3XX_ResetPos                = 0x06,
+        MCT3XX_ResetLen                =    1,
 
-        MCT3XX_TimePos           = 0x7A,
-        MCT3XX_TimeLen           =    5,
+        MCT3XX_TimePos                 = 0x7A,
+        MCT3XX_TimeLen                 =    5,
 
-        MCT3XX_LPStatusPos       = 0x70,
-        MCT3XX_LPStatusLen       =    9,
+        MCT3XX_LPStatusPos             = 0x70,
+        MCT3XX_LPStatusLen             =    9,
 
-        MCT3XX_DemandIntervalPos = 0x1B,
-        MCT3XX_DemandIntervalLen =    1,
-        MCT3XX_LPIntervalPos     = 0x76,
-        MCT3XX_LPIntervalLen     =    1,
+        MCT3XX_DemandIntervalPos       = 0x1B,
+        MCT3XX_DemandIntervalLen       =    1,
+        MCT3XX_LPIntervalPos           = 0x76,
+        MCT3XX_LPIntervalLen           =    1,
 
-        MCT3XX_OptionPos         = 0x02,
-        MCT3XX_OptionLen         =    6,
-        MCT3XX_GenStatPos        = 0x05,
-        MCT3XX_GenStatLen        =    9,
+        MCT3XX_OptionPos               = 0x02,
+        MCT3XX_OptionLen               =    6,
+        MCT3XX_GenStatPos              = 0x05,
+        MCT3XX_GenStatLen              =    9,
 
-        MCT3XX_MinMaxPeakConfigPos  = 0x03,
+        MCT3XX_MinMaxPeakConfigPos     = 0x03,
 
-        MCT3XX_FunctionPeakOff  = 0x59,
-        MCT3XX_FunctionPeakOn   = 0x5a,
+        MCT3XX_FunctionPeakOff         = 0x59,
+        MCT3XX_FunctionPeakOn          = 0x5a,
 
-        MCT3XX_FreezeOne         = 0x51,
-        MCT3XX_FreezeTwo         = 0x52,
-        MCT3XX_FreezeLen         =    0
+        MCT3XX_FreezeOne               = 0x51,
+        MCT3XX_FreezeTwo               = 0x52,
+        MCT3XX_FreezeLen               =    0
     };
 
     enum
     {
-        MCT3XX_GroupAddrPos     = 0x10,
-        MCT3XX_GroupAddrLen     =    5,
+        MCT3XX_GroupAddrPos            = 0x10,
+        MCT3XX_GroupAddrLen            =    5,
 
         MCT3XX_UniqAddrPos             = 0x0A,
         MCT3XX_UniqAddrLen             =    6,
@@ -109,36 +109,43 @@ protected:
 
 public:
 
-   typedef CtiDeviceMCT Inherited;
+    enum
+    {
+        MCT310_StatusConnected         = 0x00,
+        MCT310_StatusConnectArmed      = 0x40,
+        MCT310_StatusConnectInProgress = 0x80,
+        MCT310_StatusDisconnected      = 0xc0
+    };
 
-   CtiDeviceMCT310( );
-   CtiDeviceMCT310( const CtiDeviceMCT310 &aRef );
-   virtual ~CtiDeviceMCT310( );
+    typedef CtiDeviceMCT Inherited;
 
-   CtiDeviceMCT310 &operator=( const CtiDeviceMCT310 &aRef );
+    CtiDeviceMCT310( );
+    CtiDeviceMCT310( const CtiDeviceMCT310 &aRef );
+    virtual ~CtiDeviceMCT310( );
 
-   static bool initCommandStore( );
-   virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
+    CtiDeviceMCT310 &operator=( const CtiDeviceMCT310 &aRef );
 
-   //  virtual so that the MCT318 can override them
-   virtual ULONG calcNextLPScanTime( void );
-   virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
-   virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
+    static bool initCommandStore( );
+    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
-   virtual INT ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
+    //  virtual so that the MCT318 can override them
+    virtual ULONG calcNextLPScanTime( void );
+    virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
+    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
-   INT decodeGetValueKWH         ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-   INT decodeGetValueDemand      ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-   INT decodeGetValuePeak        ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-   INT decodeGetStatusDisconnect ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-   INT decodeGetStatusInternal   ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-   INT decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-   INT decodeGetConfigModel      ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-   INT decodeGetConfigOptions    ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-   INT decodeScanLoadProfile     ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-   INT decodePutConfigPeakMode   ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    virtual INT ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
 
-   void decodeAccumulators( ULONG *result, INT accum_cnt, BYTE *Data );
-   void decodeStati( INT &stat, INT which, BYTE *Data );
+    INT decodeGetValueKWH         ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    INT decodeGetValueDemand      ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    INT decodeGetValuePeak        ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    INT decodeGetStatusInternal   ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    INT decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    INT decodeGetConfigModel      ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    INT decodeGetConfigOptions    ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    INT decodeScanLoadProfile     ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    INT decodePutConfigPeakMode   ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+
+    void decodeAccumulators( ULONG *result, INT accum_cnt, BYTE *Data );
+    void decodeStati( INT &stat, INT which, BYTE *Data );
 };
 #endif // #ifndef __DEV_MCT310_H__

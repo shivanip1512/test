@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2004/10/12 20:14:16 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2004/12/07 18:56:56 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,23 +31,27 @@
 
 set< CtiDLCCommandStore > CtiDeviceMCT310::_commandStore;
 
-CtiDeviceMCT310::CtiDeviceMCT310( )  {  }
+CtiDeviceMCT310::CtiDeviceMCT310( )
+{
+}
 
 CtiDeviceMCT310::CtiDeviceMCT310( const CtiDeviceMCT310 &aRef )
 {
-   *this = aRef;
+    *this = aRef;
 }
 
-CtiDeviceMCT310::~CtiDeviceMCT310( ) { }
+CtiDeviceMCT310::~CtiDeviceMCT310( )
+{
+}
 
 CtiDeviceMCT310& CtiDeviceMCT310::operator=( const CtiDeviceMCT310 &aRef )
 {
-   if( this != &aRef )
-   {
-      Inherited::operator=( aRef );
-   }
+    if( this != &aRef )
+    {
+        Inherited::operator=( aRef );
+    }
 
-   return *this;
+    return *this;
 }
 
 
@@ -793,9 +797,12 @@ INT CtiDeviceMCT310::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
 INT CtiDeviceMCT310::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
-    int       status = NORMAL;
+    int       status = NORMAL, demand_interval;
     double    Value;
     RWCString resultString;
+    unsigned long pulses;
+    PointQuality_t quality;
+    bool bad_data;
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
@@ -829,19 +836,33 @@ INT CtiDeviceMCT310::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
         // 2 byte demand value.  Upper 2 bits are error indicators.
-        Value = MAKEUSHORT(DSt->Message[1], (DSt->Message[0] & 0x3f) );
+        pulses = MAKEUSHORT(DSt->Message[1], (DSt->Message[0] & 0x3f) );
 
-        //  turn raw pulses into a demand reading
-        Value *= DOUBLE(3600 / getDemandInterval());
+        demand_interval = getDemandInterval();
 
         // look for first defined DEMAND accumulator
         pPoint = getDevicePointOffsetTypeEqual( 1, DemandAccumulatorPointType );
 
+        if( checkDemandQuality( pulses, quality, bad_data ) )
+        {
+            Value = 0.0;
+        }
+        else
+        {
+            //  if no fatal problems with the quality,
+            //    adjust for the demand interval
+            Value = pulses * (3600 / demand_interval);
+
+            if( pPoint )
+            {
+                //    and the UOM
+                Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
+            }
+        }
+
         if( pPoint != NULL)
         {
             RWTime pointTime;
-
-            Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
 
             resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                      ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
@@ -1079,7 +1100,7 @@ INT CtiDeviceMCT310::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                             quality = DeviceFillerQuality;
                             value = 0.0;
                         }
-                        else if( checkLoadProfileQuality( pulses, quality, bad_data ) )
+                        else if( checkDemandQuality( pulses, quality, bad_data ) )
                         {
                             value = 0.0;
                         }
@@ -1312,132 +1333,6 @@ INT CtiDeviceMCT310::decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &Time
     }
 
     return status;
-}
-
-
-INT CtiDeviceMCT310::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
-{
-    INT status = NORMAL;
-
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
-
-    INT disc;
-
-    CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg *pData = NULL;
-    CtiPointBase    *pPoint;
-
-    double    Value;
-    RWCString resultStr;
-
-    //  ACH:  are these necessary?  /mskf
-    resetScanFreezePending();
-    resetScanFreezeFailed();
-
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
-        // No error occured, we must do a real decode!
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        decodeStati(disc, MCT_STATUS_DISCONNECT, InMessage->Buffer.DSt.Message);
-
-        Value = CLOSED;
-
-        switch(disc)
-        {
-            case 0:
-            {
-                Value = CLOSED;
-                resultStr = " CONNECTED";
-                break;
-            }
-            case 1:
-            {
-                Value = INDETERMINATE;
-                resultStr = " CONNECT ARMED";
-                break;
-            }
-            case 2:
-            {
-                Value = INDETERMINATE;
-                resultStr = " CONNECT IN PROGRESS";
-                break;
-            }
-            case 3:
-            {
-                Value = OPENED;
-                resultStr = " DISCONNECTED";
-                break;
-            }
-        }
-
-        pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
-
-        if(pPoint != NULL)
-        {
-            resultStr = getName() + " / " + pPoint->getName() + resultStr;
-
-            //  Send this value to requestor via retList.
-
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, resultStr, TAG_POINT_MUST_ARCHIVE);
-
-            if(pData != NULL)
-            {
-                ReturnMsg->PointData().insert(pData);
-                pData = NULL;
-            }
-        }
-        else
-        {
-            resultStr = getName() + " / Disconnect Status: " + resultStr;
-            ReturnMsg->setResultString(resultStr);
-        }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
-
-    return status;
-}
-
-
-void CtiDeviceMCT310::decodeStati(INT &stat, INT which, BYTE *Data)
-{
-    switch(which)
-    {
-        case MCT_STATUS_DISCONNECT:
-        {
-            // This status is a 2 bit value based upon bit 7,6 of 'status0'
-            // 1, 1 Disconnected.
-            // 0, 1 Connect Armed
-            // 1, 0 Connect in Progress
-            // 0, 0 Connected
-
-#if 0
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << hex << "  0x" << setw(2) << (INT)Data[0] << dec << endl;
-            }
-#endif
-            stat = (Data[0] >> 6) & 0x03;
-            break;
-        }
-        default:
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
 }
 
 
