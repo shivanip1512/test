@@ -14,6 +14,7 @@ public final class UserUtils
 	public static final String STATUS_ENABLED = "Enabled";
 	public static final String STATUS_LOGGEDIN = "LoggedIn";
 	public static final String STATUS_LOGGEDOUT = "LoggedOut";
+	public static final String STATUS_FIRST_TIME = "FirstTime";
 	
 
 	/* Precanned existing users in the system */

@@ -26,7 +26,7 @@ public class AuthFuncs {
 	
 	/**
 	 * Attempts to locate user with the given username and password.
-	 * Returns null if there is no match or the user is not enabled.
+	 * Returns null if there is no match or the user is disabled.
 	 * Does not attempt Radius login if user is admin.
 	 * @param username
 	 * @param password
@@ -58,7 +58,7 @@ public class AuthFuncs {
 			Iterator i = cache.getAllYukonUsers().iterator();
 			while(i.hasNext()) {
 				LiteYukonUser u = (LiteYukonUser) i.next();
-				if( CtiUtilities.isEnabled(u.getStatus()) &&
+				if( !CtiUtilities.isDisabled(u.getStatus()) &&
 					u.getUsername().equals(username) &&
 					u.getPassword().equals(password) ) {
 					return u;  //success!

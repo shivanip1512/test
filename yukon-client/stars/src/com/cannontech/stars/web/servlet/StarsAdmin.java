@@ -1849,8 +1849,20 @@ public class StarsAdmin extends HttpServlet {
 			
 			energyCompany.updateStarsCustomerSelectionLists();
 			
-			if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE))
+			if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE)) {
 				energyCompany.updateStarsDefaultThermostatSchedules();
+				
+				if (user.getUserID() == energyCompany.getUserID() && user.getYukonUser().getStatus().equalsIgnoreCase(UserUtils.STATUS_FIRST_TIME)) {
+					// Change the status of the default operator login from "FirstTime" to "Enabled"
+					com.cannontech.database.db.user.YukonUser dbUser = (com.cannontech.database.db.user.YukonUser)
+							StarsLiteFactory.createDBPersistent( user.getYukonUser() );
+					dbUser.setStatus( UserUtils.STATUS_ENABLED );
+					
+					dbUser = (com.cannontech.database.db.user.YukonUser)
+							Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
+					ServerUtils.handleDBChange( user.getYukonUser(), com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
+				}
+			}
 			
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer selection list updated successfully");
 		}
@@ -1895,7 +1907,7 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
-	private LiteYukonUser createOperatorLogin(String username, String password, boolean enabled, LiteYukonGroup[] operGroups,
+	private LiteYukonUser createOperatorLogin(String username, String password, String status, LiteYukonGroup[] operGroups,
 		LiteStarsEnergyCompany energyCompany) throws Exception
 	{
 		if (YukonUserFuncs.getLiteYukonUser( username ) != null)
@@ -1906,7 +1918,7 @@ public class StarsAdmin extends HttpServlet {
 		
 		userDB.setUsername( username );
 		userDB.setPassword( password );
-		userDB.setStatus( (enabled)? UserUtils.STATUS_ENABLED : UserUtils.STATUS_DISABLED );
+		userDB.setStatus( status );
 		
 		for (int i = 0; i < operGroups.length; i++) {
 			com.cannontech.database.db.user.YukonGroup group =
@@ -1952,11 +1964,12 @@ public class StarsAdmin extends HttpServlet {
 			String username = req.getParameter( "Username" );
 			String password = req.getParameter( "Password" );
 			boolean enabled = Boolean.valueOf( req.getParameter("Status") ).booleanValue();
+			String status = (enabled)? UserUtils.STATUS_ENABLED : UserUtils.STATUS_DISABLED;
 			
 			if (userID == -1) {
 				// Create new operator login
 				LiteYukonGroup liteGroup = AuthFuncs.getGroup( Integer.parseInt(req.getParameter("OperatorGroup")) );
-				LiteYukonUser liteUser = createOperatorLogin( username, password, enabled,
+				LiteYukonUser liteUser = createOperatorLogin( username, password, status,
 						new LiteYukonGroup[] { liteGroup }, energyCompany );
 				
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Operator login created successfully" );
@@ -2124,13 +2137,43 @@ public class StarsAdmin extends HttpServlet {
 			LiteYukonGroup[] operGroups = (operGroup != null)?
 					new LiteYukonGroup[] { operGroup, liteDftGroup } : new LiteYukonGroup[] { liteDftGroup };
 			LiteYukonUser liteUser = createOperatorLogin(
-					req.getParameter("Username"), req.getParameter("Password"), true, operGroups, null );
+					req.getParameter("Username"), req.getParameter("Password"), UserUtils.STATUS_FIRST_TIME, operGroups, null );
+			
+			// Create primary contact of the energy company
+			com.cannontech.database.data.customer.Contact contact =
+					new com.cannontech.database.data.customer.Contact();
+			
+			contact.getContact().setContLastName( CtiUtilities.STRING_NONE );
+			contact.getContact().setContFirstName( CtiUtilities.STRING_NONE );
+			
+			if (req.getParameter("Email").length() > 0) {
+				com.cannontech.database.db.contact.ContactNotification notifEmail =
+						new com.cannontech.database.db.contact.ContactNotification();
+				notifEmail.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
+				notifEmail.setDisableFlag( "N" );
+				notifEmail.setNotification( req.getParameter("Email") );
+				notifEmail.setOpCode( Transaction.INSERT );
+				
+				contact.getContactNotifVect().add( notifEmail );
+			}
+			
+			com.cannontech.database.db.customer.Address addr =
+					new com.cannontech.database.db.customer.Address();
+			addr.setStateCode( " " );
+			contact.setAddress( addr );
+			
+			contact = (com.cannontech.database.data.customer.Contact)
+					Transaction.createTransaction( Transaction.INSERT, contact ).execute();
+			
+			LiteContact liteContact = new LiteContact( contact.getContact().getContactID().intValue() );
+			StarsLiteFactory.setLiteContact( liteContact, contact );
+			ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
 			
 			// Create the energy company
 			com.cannontech.database.db.company.EnergyCompany company =
 					new com.cannontech.database.db.company.EnergyCompany();
 			company.setName( req.getParameter("CompanyName") );
-			company.setPrimaryContactID( new Integer(CtiUtilities.NONE_ID) );
+			company.setPrimaryContactID( contact.getContact().getContactID() );
 			company.setUserID( new Integer(liteUser.getUserID()) );
 			company = (com.cannontech.database.db.company.EnergyCompany)
 					Transaction.createTransaction(Transaction.INSERT, company).execute();
@@ -2151,7 +2194,7 @@ public class StarsAdmin extends HttpServlet {
 				operGroups = (operGroup != null)?
 						new LiteYukonGroup[] { operGroup } : new LiteYukonGroup[0];
 				liteUser = createOperatorLogin(
-						req.getParameter("Username2"), req.getParameter("Password2"), true, operGroups, energyCompany );
+						req.getParameter("Username2"), req.getParameter("Password2"), UserUtils.STATUS_ENABLED, operGroups, energyCompany );
 			}
 			
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company created successfully");

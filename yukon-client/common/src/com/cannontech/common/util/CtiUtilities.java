@@ -1006,12 +1006,21 @@ public final static boolean isFalse(String s) {
 }
 
 /**
- * Returns true of the given string represents true
+ * Returns true of the given string represents enabled
  * @param enableStr
  * @return boolean
  */
 public static final boolean isEnabled(String enableStr) {
 	return (ENABLED_STRING.equalsIgnoreCase(enableStr));
+}
+
+/**
+ * Returns true of the given string represents disabled
+ * @param enableStr
+ * @return boolean
+ */
+public static final boolean isDisabled(String disableStr) {
+	return (DISABLED_STRING.equalsIgnoreCase(disableStr));
 }
 
 /**

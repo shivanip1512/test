@@ -1,5 +1,9 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%
+	int delay = 10;
+	if (request.getParameter("delay") != null)
+		delay = Integer.parseInt(request.getParameter("delay"));
+	
 	String nextURL = (String)
 		((errorMsg == null)? session.getAttribute(ServletUtils.ATT_REDIRECT2) : session.getAttribute(ServletUtils.ATT_REFERRER2));
 %>
@@ -7,7 +11,9 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<meta http-equiv="Refresh" content="10; url=<%= nextURL %>">
+<% if (delay > 0) { %>
+<meta http-equiv="Refresh" content="<%= delay %>; url=<%= nextURL %>">
+<% } %>
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 </head>
@@ -49,13 +55,15 @@
               <p>
                 <input type="button" name="OK" value="OK" onClick="location.href='<%= nextURL %>'">
               </p>
+<% if (delay > 0) { %>
               <table width="600" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
                   <td class="MainText" align="center">You will be redirected to 
-                    the next page in 10 seconds, or click the &quot;OK&quot; button 
+                    the next page in <%= delay %> seconds, or click the &quot;OK&quot; button 
                     if you don't want to wait.</td>
                 </tr>
               </table>
+<% } %>
               <p align="center" class="MainText">&nbsp;</p>
             </div>
 			

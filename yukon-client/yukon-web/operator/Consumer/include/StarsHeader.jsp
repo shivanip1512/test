@@ -134,6 +134,18 @@
 					selectionListTable.put( list.getListName(), list );
 				}
 				session.setAttribute(ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable);
+				
+				if (lYukonUser.getUserID() == liteEC.getUserID()
+					&& lYukonUser.getStatus().equalsIgnoreCase(com.cannontech.user.UserUtils.STATUS_FIRST_TIME)
+					&& selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) != null
+					&& request.getRequestURI().indexOf("/Message.jsp") < 0)
+				{
+					// The default operator login for the first time, edit the device type list first!
+					session.setAttribute(ServletUtils.ATT_REDIRECT2, request.getContextPath() + "/operator/Admin/SelectionList.jsp?List=DeviceType");
+					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "This is the first time you login as the default operator. Please edit the device types first.");
+					response.sendRedirect(request.getContextPath() + "/operator/Consumer/Message.jsp?delay=0");
+					return;
+				}
 			}
 		}
 		
