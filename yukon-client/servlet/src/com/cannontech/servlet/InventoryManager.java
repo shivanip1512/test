@@ -31,7 +31,6 @@ import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.AddSNRangeTask;
@@ -97,8 +96,8 @@ public class InventoryManager extends HttpServlet {
 		
 		// If parameter "ConfirmOnMessagePage" specified, the confirm/error message will be displayed on Message.jsp
 		if (req.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null) {
-			session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
-			session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
+			session.setAttribute( ServletUtils.ATT_MSG_PAGE_REDIRECT, redirect );
+			session.setAttribute( ServletUtils.ATT_MSG_PAGE_REFERRER, referer );
 			redirect = referer = req.getContextPath() + "/operator/Admin/Message.jsp";
 		}
 		
@@ -136,7 +135,7 @@ public class InventoryManager extends HttpServlet {
 			session.setAttribute( ServletUtils.ATT_REDIRECT, redir );
 			deleteInventory( user, req, session );
 		}
-		else if (action.equalsIgnoreCase("ConfigHardware"))
+		else if (action.equalsIgnoreCase("ConfigLMHardware"))
 			configLMHardware( user, req, session );
 		else if (action.equalsIgnoreCase("ConfirmCheck"))
 			confirmCheck( user, req, session );
@@ -752,29 +751,34 @@ public class InventoryManager extends HttpServlet {
 				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, liteHw, energyCompany );
 			}
 			
-			if (Boolean.valueOf( req.getParameter("SaveToBatch") ).booleanValue()) {
-				UpdateLMHardwareConfigAction.saveSwitchCommand( liteHw, SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE, energyCompany );
-				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration saved to batch successfully." );
+			if (Boolean.valueOf( req.getParameter("SaveConfigOnly") ).booleanValue()) {
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration saved successfully." );
 			}
 			else {
-				YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true, null );
-				
-				if (liteHw.getAccountID() > 0) {
-					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
-					if (starsAcctInfo != null) {
-						StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-						UpdateLMHardwareAction.parseResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, null );
-					}
+				if (Boolean.valueOf( req.getParameter("SaveToBatch") ).booleanValue()) {
+					UpdateLMHardwareConfigAction.saveSwitchCommand( liteHw, SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE, energyCompany );
+					session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration saved to batch successfully." );
 				}
-				
-				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration sent out successfully." );
+				else {
+					YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true, null );
+					
+					if (liteHw.getAccountID() > 0) {
+						StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
+						if (starsAcctInfo != null) {
+							StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+							UpdateLMHardwareAction.parseResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, null );
+						}
+					}
+					
+					session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration sent out successfully." );
+				}
 			}
-			
+			/*
 			session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
 			session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
 			redirect = referer = req.getContextPath() +
 					(StarsUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
-		}
+		*/}
 		catch (WebClientException e) {
 			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());

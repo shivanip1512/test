@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -59,6 +60,7 @@ import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
@@ -932,5 +934,65 @@ public class StarsAdminUtil {
 		ServerUtils.handleDBChange( liteUser, DBChangeMsg.CHANGE_TYPE_ADD );
 		
 		return liteUser;
+	}
+	
+	public static void updateLogin(LiteYukonUser liteUser, String username, String password, String status,
+		LiteYukonGroup loginGroup, LiteStarsEnergyCompany energyCompany) throws Exception
+	{
+		if (!liteUser.getUsername().equalsIgnoreCase(username) && YukonUserFuncs.getLiteYukonUser(username) != null)
+			throw new WebClientException( "Username '" + username + "' already exists" );
+		
+		if (password.length() == 0) {
+			if (!username.equalsIgnoreCase( liteUser.getUsername() ))
+				throw new WebClientException( "Password cannot be empty" );
+			// Only the login group and/or status have been changed, ignore the password
+			password = liteUser.getPassword();
+		}
+		
+		com.cannontech.database.data.user.YukonUser user = new com.cannontech.database.data.user.YukonUser();
+		com.cannontech.database.db.user.YukonUser dbUser = user.getYukonUser();
+		
+		StarsLiteFactory.setYukonUser( dbUser, liteUser );
+		dbUser.setUsername( username );
+		dbUser.setPassword( password );
+		if (status != null) dbUser.setStatus( status );
+		
+		boolean groupChanged = false;
+		if (loginGroup != null) {
+			com.cannontech.database.cache.DefaultDatabaseCache cache =
+					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			synchronized (cache) {
+				List userGroups = (List) cache.getYukonUserGroupMap().get( liteUser );
+				for (int i = 0; i < userGroups.size(); i++) {
+					LiteYukonGroup liteGroup = (LiteYukonGroup) userGroups.get(i);
+					if (liteGroup.getGroupID() == YukonGroupRoleDefs.GRP_YUKON)
+						continue;
+					if (liteUser.getUserID() == energyCompany.getUserID() && liteGroup.equals(energyCompany.getOperatorAdminGroup()))
+						continue;
+					if (liteGroup.getGroupID() != loginGroup.getGroupID()) {
+						groupChanged = true;
+						break;
+					}
+				}
+			}
+		}
+		
+		if (groupChanged) {
+			com.cannontech.database.db.user.YukonGroup group =
+					new com.cannontech.database.db.user.YukonGroup( new Integer(loginGroup.getGroupID()) );
+			user.getYukonGroups().addElement( group );
+			
+			if (liteUser.getUserID() == energyCompany.getUserID()) {
+				group = new com.cannontech.database.db.user.YukonGroup( new Integer(energyCompany.getOperatorAdminGroup().getGroupID()) );
+				user.getYukonGroups().addElement( group );
+			}
+			
+			Transaction.createTransaction( Transaction.UPDATE, user ).execute();
+		}
+		else {
+			Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
+		}
+		
+		ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
 	}
 }

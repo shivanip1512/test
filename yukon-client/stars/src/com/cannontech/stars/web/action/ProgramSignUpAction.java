@@ -767,7 +767,7 @@ public class ProgramSignUpAction implements ActionBase {
 							LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
 							String label = StarsUtils.forceNotNone( liteHw.getDeviceLabel() );
 							if (label.equals("")) label = liteHw.getManufacturerSerialNumber();
-							throw new WebClientException( "Load #" + loadNo + " has been selected for hardware \"" + label + "\" more than once" );
+							throw new WebClientException( "Relay #" + loadNo + " has been selected for hardware \"" + label + "\" more than once" );
 						}
 					}
 				}

@@ -43,6 +43,8 @@
 		
 		session.setAttribute(ServletUtils.ATT_REFERRER2, referer);
 	}
+	
+	boolean viewOnly = src.equalsIgnoreCase("SelectInv");
 %>
 <html>
 <head>
@@ -68,14 +70,17 @@ function deleteHardware(form) {
 	form.submit();
 }
 
-function configHardware(form) {
-	form.action.value = "ConfigHardware";
-	form.submit();
+function copyHardware(form) {
+	location.href = '<%= isMCT? "CreateMCT.jsp" : "CreateHardware.jsp" %>?RefId=<%= inventory.getInventoryID() %>';
 }
 
 function saveToBatch(form) {
-	form.action.value = "ConfigHardware";
-	form.SaveToBatch.value = "true";
+	form.SaveToBatch.value = true;
+	form.submit();
+}
+
+function saveConfigOnly(form) {
+	form.SaveConfigOnly.value = true;
 	form.submit();
 }
 
@@ -107,38 +112,16 @@ function validate(form) {
         </tr>
         <tr> 
           <td  valign="top" width="101"> 
-<% if (!src.equalsIgnoreCase("SelectInv")) { %>
+<% if (!viewOnly) { %>
             <br>
             <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell1">
-<%
-	if (session.getAttribute(com.cannontech.common.constants.LoginController.SAVED_YUKON_USERS) == null
-		|| liteEC.getParent() == null) {
-%>
-              <tr>
+<%  if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) == null) { %>
+              <tr> 
                 <td width="5">&nbsp;</td>
-                <td><a href="<%= referer %>" class="Link2" onclick="return warnUnsavedChanges()">[Back to List]</a></td>
+                <td><a href="<%= referer %>" class="Link2" onclick="return warnUnsavedChanges()">[Back 
+                  to List]</a></td>
               </tr>
-<%
-	}
-%>
-              <tr>
-                <td width="5">&nbsp;</td>
-                <td><a href="<%= isMCT? "CreateMCT.jsp" : "CreateHardware.jsp" %>?RefId=<%= inventory.getInventoryID() %>" class="Link2" onclick="return warnUnsavedChanges()">Copy</a></td>
-              </tr>
-<%
-	if (!isMCT) {
-%>
-              <tr>
-                <td width="5">&nbsp;</td>
-                <td><a href="" onclick="configHardware(document.MForm); return false;" class="Link2">Config</a></td>
-              </tr>
-              <tr>
-                <td width="5">&nbsp;</td>
-                <td><a href="" onclick="saveToBatch(document.MForm); return false;" class="Link2">Save To Batch</a></td>
-              </tr>
-<%
-	}
-%>
+<%  } %>
             </table>
 <% } %>
           </td>
@@ -146,7 +129,7 @@ function validate(form) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
               <% String header = "INVENTORY DETAIL"; %>
-<% if (!src.equalsIgnoreCase("SelectInv")) { %>
+<% if (!viewOnly) { %>
               <%@ include file="include/SearchBar.jsp" %>
 <% } else { %>
               <table width="100%" border="0" cellspacing="0" cellpadding="5">
@@ -158,12 +141,11 @@ function validate(form) {
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  
-              <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="return validate(this)">
+              <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="return <%= !viewOnly %> && validate(this)">
 			    <input type="hidden" name="action" value="UpdateInventory">
                 <input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
 				<input type="hidden" name="DeviceID" value="<%= inventory.getDeviceID() %>">
 				<input type="hidden" name="DeviceType" value="<%= inventory.getDeviceType().getEntryID() %>">
-				<input type="hidden" name="SaveToBatch" value="false">
 				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvId=<%= invID %>">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvId=<%= invID %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
@@ -401,27 +383,41 @@ function validate(form) {
                     </td>
                   </tr>
                 </table>
-<% if (!src.equalsIgnoreCase("SelectInv")) { %>
+<% if (!viewOnly) { %>
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                   <tr> 
-                    <td width="40%" align="right"> 
+                    <td align="right" width="35%"> 
                       <input type="submit" name="Save" value="Save">
                     </td>
-                    <td width="20%" align="center"> 
-                      <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
+                    <td align="center" width="15%"> 
+                      <input type="reset" name="Reset" value="Reset" onClick="setContentChanged(false)">
                     </td>
-                    <td width="40%"> 
-                      <input type="button" name="Delete" value="Delete" onclick="deleteHardware(this.form)">
+                    <td align="center" width="15%"> 
+                      <input type="button" name="Copy" value="Copy" onClick="if (warnUnsavedChanges()) copyHardware(this.form);">
+                    </td>
+                    <td width="35%"> 
+                      <input type="button" name="Delete" value="Delete" onClick="deleteHardware(this.form)">
                     </td>
                   </tr>
                 </table>
 <% } %>
+			  </form>
 <%
-	String trackHwAddr = liteEC.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
-	boolean configHw = (inventory.getLMHardware() != null) && trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue();
-	if (configHw) {
-		int hwConfigType = InventoryUtils.getHardwareConfigType(inventory.getDeviceType().getEntryID());
-		StarsLMConfiguration configuration = inventory.getLMHardware().getStarsLMConfiguration();
+	if (inventory.getLMHardware() != null) {
+%>
+			  <form name="cfgForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="return <%= !viewOnly %>">
+			    <input type="hidden" name="action" value="ConfigLMHardware">
+                <input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
+				<input type="hidden" name="SaveToBatch" value="false">
+				<input type="hidden" name="SaveConfigOnly" value="false">
+				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvId=<%= invID %>">
+				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvId=<%= invID %>">
+				<input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
+<%
+		String trackHwAddr = liteEC.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
+		if (trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue()) {
+			int hwConfigType = InventoryUtils.getHardwareConfigType(inventory.getDeviceType().getEntryID());
+			StarsLMConfiguration configuration = inventory.getLMHardware().getStarsLMConfiguration();
 %>
                 <input type="hidden" name="UseHardwareAddressing" value="true">
                 <table width="610" border="0" cellspacing="0" cellpadding="10">
@@ -456,36 +452,45 @@ function validate(form) {
                     </td>
                   </tr>
                 </table>
-<% if (!src.equalsIgnoreCase("SelectInv")) { %>
+<% if (!viewOnly) { %>
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                   <tr> 
-                    <td align="right"> 
-                      <input type="submit" name="Save2" value="Save">
-                    </td>
-                    <td> 
-                      <input type="button" name="Config" value="Config" onclick="configHardware(this.form)">
+                    <td align="center"> 
+                      <input type="submit" name="Config" value="Config">
+                      <input type="button" name="SaveBatch" value="Save To Batch" onclick="saveToBatch(this.form)">
+                      <input type="button" name="SaveConfig" value="Save Config Only" onclick="saveConfigOnly(this.form)">
                     </td>
                   </tr>
                 </table>
 <% } %>
+<%
+		}
+		else if (liteInv.getAccountID() > 0 && !viewOnly) {
+%>
+                <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
+                  <tr> 
+                    <td align="center"> 
+                      <input type="submit" name="Config" value="Config">
+                      <input type="button" name="SaveBatch" value="Save To Batch" onclick="saveToBatch(this.form)">
+                    </td>
+                  </tr>
+                </table>
+<%
+		}
+%>
+              </form>
 <%
 	}
 %>
-<%
-	if (src.equalsIgnoreCase("SelectInv") &&
-		(session.getAttribute(com.cannontech.common.constants.LoginController.SAVED_YUKON_USERS) == null
-		|| liteEC.getParent() == null))
-	{
-%>
-                <table width="200" border="0" cellspacing="0" cellpadding="5" align="center">
-                  <tr> 
-                    <td align="center"> 
-                      <input type="button" name="Back" value="Back" onclick="history.back()">
-                    </td>
-                  </tr>
-                </table>
+<% if (viewOnly && session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) == null) { %>
+              <table width="200" border="0" cellspacing="0" cellpadding="5" align="center">
+                <tr> 
+                  <td align="center"> 
+                    <input type="button" name="Back" value="Back" onclick="history.back()">
+                  </td>
+                </tr>
+              </table>
 <% } %>
-              </form>
               <form name="cusForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
                 <input type="hidden" name="action" value="GetCustAccount">
                 <input type="hidden" name="AccountID" value="<%= liteInv.getAccountID() %>">

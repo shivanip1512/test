@@ -74,7 +74,6 @@ function validate(form) {
                 <tr> 
                   <td height="67"> 
                     <table width="100%" border="0" cellspacing="0" cellpadding="5">
-                      <%	if (userID == -1) { %>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Operator 
                           Group: </td>
@@ -91,7 +90,6 @@ function validate(form) {
                           </select>
                         </td>
                       </tr>
-<%	} %>
                       <tr>
                         <td width="25%" align="right" class="TableCell">&nbsp;</td>
                         <td width="75%" class="TableCell">

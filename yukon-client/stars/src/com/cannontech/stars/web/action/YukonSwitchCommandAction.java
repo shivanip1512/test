@@ -399,7 +399,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 		
 		final String[] cfgCmds = getConfigCommands( liteHw, energyCompany, useHardwareAddressing, optGroupID );
 		if (cfgCmds.length == 0)
-			throw new WebClientException("Failed to build config command for serial #" + liteHw.getManufacturerSerialNumber() + ".");
+			throw new WebClientException("No hardware configuration set up for serial #" + liteHw.getManufacturerSerialNumber() + ".");
 		
 		if ((liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService)
 			&& InventoryUtils.supportServiceInOut( liteHw.getLmHardwareTypeID() ))

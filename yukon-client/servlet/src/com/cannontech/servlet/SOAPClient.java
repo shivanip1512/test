@@ -120,8 +120,8 @@ public class SOAPClient extends HttpServlet {
 		
 		// If parameter "ConfirmOnMessagePage" specified, the confirm/error message will be displayed on Message.jsp
 		if (req.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null) {
-			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
-			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
+			session.setAttribute( ServletUtils.ATT_MSG_PAGE_REDIRECT, destURL );
+			session.setAttribute( ServletUtils.ATT_MSG_PAGE_REFERRER, errorURL );
 			destURL = errorURL = req.getContextPath() +
 					(StarsUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}

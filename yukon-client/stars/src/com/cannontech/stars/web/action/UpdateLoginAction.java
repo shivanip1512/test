@@ -1,7 +1,5 @@
 package com.cannontech.stars.web.action;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -25,6 +23,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsMsgUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
@@ -241,7 +240,7 @@ public class UpdateLoginAction implements ActionBase {
 	}
 	
 	public static void updateLogin(StarsUpdateLogin updateLogin, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
-		throws WebClientException, TransactionException
+		throws Exception
 	{
 		LiteContact liteContact = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 		int userID = liteContact.getLoginID();
@@ -273,57 +272,16 @@ public class UpdateLoginAction implements ActionBase {
 		}
 		else {
 			// Update customer login
-			LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( userID );
-			if (!liteUser.getUsername().equalsIgnoreCase(username) && YukonUserFuncs.getLiteYukonUser(username) != null)
-				throw new WebClientException( "Username '" + username + "' already exists" );
-			
-			if (password.length() == 0) {
-				if (!username.equalsIgnoreCase( liteUser.getUsername() ))
-					throw new WebClientException( "Password cannot be empty" );
-				// Only the login group and/or status have been changed, ignore the password
-				password = liteUser.getPassword();
-			}
-			
-			com.cannontech.database.data.user.YukonUser user = new com.cannontech.database.data.user.YukonUser();
-			com.cannontech.database.db.user.YukonUser dbUser = user.getYukonUser();
-			
-			StarsLiteFactory.setYukonUser( dbUser, liteUser );
-			dbUser.setUsername( username );
-			dbUser.setPassword( password );
+			String status = null;
 			if (updateLogin.getStatus() != null)
-				dbUser.setStatus( StarsMsgUtils.getUserStatus(updateLogin.getStatus()) );
+				status = StarsMsgUtils.getUserStatus( updateLogin.getStatus() );
 			
-			int loginGroupID = 0;
-			LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
-			com.cannontech.database.cache.DefaultDatabaseCache cache =
-					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			LiteYukonGroup loginGroup = null;
+			if (updateLogin.hasGroupID())
+				loginGroup = AuthFuncs.getGroup( updateLogin.getGroupID() );
 			
-			synchronized (cache) {
-				List userGroups = (List) cache.getYukonUserGroupMap().get( liteUser );
-				for (int i = 0; i < custGroups.length; i++) {
-					if (userGroups.contains( custGroups[i] )) {
-						loginGroupID = custGroups[i].getGroupID();
-						break;
-					}
-				}
-			}
-			
-			if (updateLogin.hasGroupID() && updateLogin.getGroupID() != loginGroupID) {
-				LiteYukonGroup liteGroup = AuthFuncs.getGroup( updateLogin.getGroupID() );
-				if (liteGroup == null)
-					throw new WebClientException( "Cannot update login to have no customer group" );
-				
-				com.cannontech.database.db.user.YukonGroup group =
-						new com.cannontech.database.db.user.YukonGroup( new Integer(liteGroup.getGroupID()) );
-				user.getYukonGroups().addElement( group );
-				
-				Transaction.createTransaction( Transaction.UPDATE, user ).execute();
-			}
-			else {
-				Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
-			}
-			
-			ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
+			LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( userID );
+			StarsAdminUtil.updateLogin( liteUser, username, password, status, loginGroup, energyCompany );
 		}
 	}
 

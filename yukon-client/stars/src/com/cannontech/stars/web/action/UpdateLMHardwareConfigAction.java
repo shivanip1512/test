@@ -71,9 +71,11 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 			if (progIDs != null) {
 				for (int i = 0; i < progIDs.length; i++) {
 					int loadNo = Integer.parseInt( loadNos[i] );
-					for (int j = 0; j < updateHwConfig.getStarsLMHardwareConfigCount(); j++) {
-						if (updateHwConfig.getStarsLMHardwareConfig(j).getLoadNumber() == loadNo)
-							throw new WebClientException( "Load #" + loadNo + " has been selected more than once" );
+					if (loadNo > 0) {
+						for (int j = 0; j < updateHwConfig.getStarsLMHardwareConfigCount(); j++) {
+							if (updateHwConfig.getStarsLMHardwareConfig(j).getLoadNumber() == loadNo)
+								throw new WebClientException( "Relay #" + loadNo + " has been selected more than once" );
+						}
 					}
 					
 					StarsLMHardwareConfig config = new StarsLMHardwareConfig();

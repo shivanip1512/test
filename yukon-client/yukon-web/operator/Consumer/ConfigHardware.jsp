@@ -7,8 +7,6 @@
 	StarsLMConfiguration configuration = inventory.getLMHardware().getStarsLMConfiguration();
 	
 	ArrayList attachedApps = new ArrayList();
-	ArrayList attachedProgIDs = new ArrayList();
-	
 	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
 		StarsAppliance app = appliances.getStarsAppliance(i);
 		if (app.getInventoryID() == inventory.getInventoryID()) {
@@ -18,11 +16,6 @@
 					break;
 			}
 			attachedApps.add(idx, app);
-			
-			if (app.getProgramID() > 0) {
-				Integer progID = new Integer(app.getProgramID());
-				if (!attachedProgIDs.contains(progID)) attachedProgIDs.add(progID);
-			}
 		}
 	}
 	
@@ -117,9 +110,18 @@ function changeProgSelection(chkBox) {
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		for (int j = 0; j < categories.getStarsApplianceCategory(i).getStarsEnrLMProgramCount(); j++) {
 			StarsEnrLMProgram program = categories.getStarsApplianceCategory(i).getStarsEnrLMProgram(j);
-			boolean assigned = attachedProgIDs.contains(new Integer(program.getProgramID()));
-			
+			boolean assigned = false;
+			int groupID = 0;
 			int loadNo = 0;
+			
+			for (int k = 0; k < programs.getStarsLMProgramCount(); k++) {
+				if (programs.getStarsLMProgram(k).getProgramID() == program.getProgramID()) {
+					assigned = true;
+					groupID = programs.getStarsLMProgram(k).getGroupID();
+					break;
+				}
+			}
+			
 			for (int k = 0; k < appliances.getStarsApplianceCount(); k++) {
 				StarsAppliance app = appliances.getStarsAppliance(k);
 				if (app.getInventoryID() == inventory.getInventoryID() && app.getProgramID() == program.getProgramID()) {
@@ -141,8 +143,9 @@ function changeProgSelection(chkBox) {
 <%
 			for (int k = 0; k < program.getAddressingGroupCount(); k++) {
 				AddressingGroup group = program.getAddressingGroup(k);
+				String selected = (group.getEntryID() == groupID)? "selected" : "";
 %>
-                        <option value="<%= group.getEntryID() %>"><%= group.getContent() %></option>
+                        <option value="<%= group.getEntryID() %>" <%= selected %>><%= group.getContent() %></option>
 <%
 			}
 %>

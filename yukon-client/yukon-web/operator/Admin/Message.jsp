@@ -5,7 +5,7 @@
 		delay = Integer.parseInt(request.getParameter("delay"));
 	
 	String nextURL = (String)
-		((errorMsg == null)? session.getAttribute(ServletUtils.ATT_REDIRECT2) : session.getAttribute(ServletUtils.ATT_REFERRER2));
+		((errorMsg == null)? session.getAttribute(ServletUtils.ATT_MSG_PAGE_REDIRECT) : session.getAttribute(ServletUtils.ATT_MSG_PAGE_REFERRER));
 %>
 <html>
 <head>

@@ -85,8 +85,8 @@ public class WorkOrderManager extends HttpServlet {
 		
 		// If parameter "ConfirmOnMessagePage" specified, the confirm/error message will be displayed on Message.jsp
 		if (req.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null) {
-			session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
-			session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
+			session.setAttribute( ServletUtils.ATT_MSG_PAGE_REDIRECT, redirect );
+			session.setAttribute( ServletUtils.ATT_MSG_PAGE_REFERRER, referer );
 			redirect = referer = req.getContextPath() + "/operator/Admin/Message.jsp";
 		}
 		

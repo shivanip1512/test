@@ -286,7 +286,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 				if (liteEvent.getActionID() == installEntryID) {
 					if (updateHw.getInstallDate() != null &&
 						!StarsUtils.isDateEqual( new Date(liteEvent.getEventDateTime()), updateHw.getInstallDate() )
-						|| !liteEvent.getNotes().equals( updateHw.getInstallationNotes() ))
+						|| liteEvent.getNotes() == null || !liteEvent.getNotes().equals( updateHw.getInstallationNotes() ))
 					{
 						com.cannontech.database.data.stars.event.LMHardwareEvent event =
 								(com.cannontech.database.data.stars.event.LMHardwareEvent) StarsLiteFactory.createDBPersistent( liteEvent );

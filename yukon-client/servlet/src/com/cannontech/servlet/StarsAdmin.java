@@ -1467,6 +1467,7 @@ public class StarsAdmin extends HttpServlet {
 		
 		try {
 			int userID = Integer.parseInt( req.getParameter("UserID") );
+			int operGroupID = Integer.parseInt( req.getParameter("OperatorGroup") );
 			String username = req.getParameter( "Username" );
 			String password = req.getParameter( "Password" );
 			boolean enabled = Boolean.valueOf( req.getParameter("Status") ).booleanValue();
@@ -1474,7 +1475,7 @@ public class StarsAdmin extends HttpServlet {
 			
 			if (userID == -1) {
 				// Create new operator login
-				LiteYukonGroup liteGroup = AuthFuncs.getGroup( Integer.parseInt(req.getParameter("OperatorGroup")) );
+				LiteYukonGroup liteGroup = AuthFuncs.getGroup( operGroupID );
 				LiteYukonUser liteUser = StarsAdminUtil.createOperatorLogin(
 						username, password, status, new LiteYukonGroup[] {liteGroup}, energyCompany );
 				
@@ -1483,18 +1484,8 @@ public class StarsAdmin extends HttpServlet {
 			}
 			else {
 				LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( userID );
-				if (!username.equals( liteUser.getUsername() ) && YukonUserFuncs.getLiteYukonUser( username ) != null)
-					throw new WebClientException( "Username '" + username + "' already exists" );
-				
-				com.cannontech.database.db.user.YukonUser dbUser = (com.cannontech.database.db.user.YukonUser)
-						StarsLiteFactory.createDBPersistent( liteUser );
-				dbUser.setUsername( username );
-				dbUser.setPassword( password );
-				dbUser.setStatus( (enabled)? UserUtils.STATUS_ENABLED : UserUtils.STATUS_DISABLED );
-				
-				dbUser = (com.cannontech.database.db.user.YukonUser)
-						Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
-				ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
+				LiteYukonGroup loginGroup = AuthFuncs.getGroup( operGroupID );
+				StarsAdminUtil.updateLogin( liteUser, username, password, status, loginGroup, energyCompany );
 				
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Operator login updated successfully" );
 			}

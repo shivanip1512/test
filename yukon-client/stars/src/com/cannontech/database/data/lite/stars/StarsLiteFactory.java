@@ -1943,7 +1943,6 @@ public class StarsLiteFactory {
 	
 	public static void setAddressingGroups(StarsEnrLMProgram starsProg, LiteLMProgramWebPublishing liteProg) {
 		starsProg.removeAllAddressingGroup();
-		starsProg.addAddressingGroup( (AddressingGroup)StarsFactory.newEmptyStarsCustListEntry(AddressingGroup.class) );
 		
 		for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
 			LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( liteProg.getGroupIDs()[j] );
@@ -1979,6 +1978,9 @@ public class StarsLiteFactory {
 				starsProg.addAddressingGroup( group );
 			}
 		}
+		
+		if (starsProg.getAddressingGroupCount() == 0)
+			starsProg.addAddressingGroup( (AddressingGroup)StarsFactory.newEmptyStarsCustListEntry(AddressingGroup.class) );
 	}
 	
 	public static StarsApplianceCategory createStarsApplianceCategory(LiteApplianceCategory liteAppCat, LiteStarsEnergyCompany energyCompany) {

@@ -84,6 +84,8 @@ public class ServletUtils {
 	
 	public static final String NEED_MORE_INFORMATION = "NeedMoreInformation";
 	public static final String CONFIRM_ON_MESSAGE_PAGE = "ConfirmOnMessagePage";
+	public static final String ATT_MSG_PAGE_REDIRECT = "MSG_PAGE_REDIRECT";
+	public static final String ATT_MSG_PAGE_REFERRER = "MSG_PAGE_REFERRER";
 	
 	public static final String IN_SERVICE = "In Service";
 	public static final String OUT_OF_SERVICE = "Out of Service";
