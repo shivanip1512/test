@@ -18,8 +18,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/10/15 17:40:00 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/12/11 21:49:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -107,5 +107,17 @@ IM_EX_CTIBASE LONG GetPAOIdOfPoint(long pid);
 IM_EX_CTIBASE INT EstablishOutMessagePriority(CtiOutMessage *Out, INT priority);
 IM_EX_CTIBASE INT OverrideOutMessagePriority(CtiOutMessage *Out, INT priority);
 IM_EX_CTIBASE bool CheckSocketSubsystem();
+
+
+IM_EX_CTIBASE ULONG    BCDtoBase10(UCHAR* buffer, ULONG len);
+IM_EX_CTIBASE ULONG    StrToUlong(UCHAR* buffer, ULONG len);
+IM_EX_CTIBASE INT      CheckCCITT16CRC(INT Id,BYTE *InBuffer,ULONG InCount);
+IM_EX_CTIBASE USHORT   CCITT16CRC(INT Id, BYTE* buffer, LONG length, BOOL bAdd);
+IM_EX_CTIBASE USHORT   ShortLittleEndian(USHORT *ShortEndianFloat);
+IM_EX_CTIBASE FLOAT    FltLittleEndian(FLOAT  *BigEndianFloat);
+IM_EX_CTIBASE DOUBLE   DblLittleEndian(DOUBLE *BigEndianDouble);
+IM_EX_CTIBASE VOID     BDblLittleEndian(CHAR *BigEndianBDouble);
+IM_EX_CTIBASE ULONG    MilliTime (PULONG);
+
 
 #endif // #ifndef __UTILITY_H__

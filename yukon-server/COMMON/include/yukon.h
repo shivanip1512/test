@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/11/15 14:07:51 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/12/11 21:49:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -324,6 +324,8 @@ typedef enum
     PortTypeLocalDialup,
     PortTypeTServerDirect,
     PortTypeTServerDialup,
+    PortTypeLocalDialBack,
+    PortTypeTServerDialBack,
 
     PortTypeInvalid
 

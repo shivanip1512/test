@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/11/21 21:22:54 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2002/12/11 21:49:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -886,6 +886,14 @@ INT resolvePortType(RWCString str)
     else if(str == "terminal server dialup")
     {
         nRet = PortTypeTServerDialup;
+    }
+    else if(str == "local dialback")
+    {
+        nRet = PortTypeLocalDialBack;
+    }
+    else if(str == "terminal server dialback")
+    {
+        nRet = PortTypeTServerDialBack;
     }
     else
     {
