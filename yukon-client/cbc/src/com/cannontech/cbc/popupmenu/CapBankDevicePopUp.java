@@ -9,6 +9,7 @@ import com.cannontech.cbc.data.CapBankDevice;
 import com.cannontech.cbc.data.Feeder;
 import com.cannontech.cbc.messages.CBCCommand;
 import com.cannontech.clientutils.tags.TagUtils;
+import com.cannontech.debug.gui.ObjectInfoDialog;
 import com.cannontech.message.dispatch.message.Command;
 
 /**
@@ -25,6 +26,8 @@ public class CapBankDevicePopUp extends javax.swing.JPopupMenu implements java.a
 	private javax.swing.JMenuItem jMenuItemAckAlarm = null;
 	private javax.swing.JMenuItem jMenuItemTempMove = null;
 	private javax.swing.JMenuItem jMenuItemMoveBack = null;
+
+	private javax.swing.JMenuItem jMenuItemCapBankData = null;
 
 	private Feeder ownerFeeder = null;
 	private CapBankDevice capBankDevice = null;
@@ -75,6 +78,9 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 
 	if (e.getSource() == getJMenuItemMoveBack()) 
 		jMenuItemMoveBack_ActionPerformed(e);
+
+	if( e.getSource() == getJMenuItemCapBankData() )
+		jMenuItemCapBankData_ActionPerformed( e );
 
 	// user code end
 }
@@ -338,6 +344,7 @@ private void initConnections() throws java.lang.Exception
 {
 	// user code begin {1}
 
+	getJMenuItemCapBankData().addActionListener(this);
 	getJMenuItemConfirm().addActionListener(this);
 	getJMenuItemAckAlarm().addActionListener(this);
 	
@@ -359,16 +366,17 @@ private void initialize()
 	{
 		setName("CapBankDevicePopUp");
 		
-		add(getJMenuItemAckAlarm(), getJMenuItemAckAlarm().getName() );
-		add(getJMenuItemManualEntry(), getJMenuItemManualEntry().getName() );
-		add(getJMenuItemEnableDisable(), getJMenuItemEnableDisable().getName());
-		add(getJMenuItemConfirm(), getJMenuItemConfirm().getName() );
-		add(getJMenuItemOpenClose(), getJMenuItemOpenClose().getName());
+		add( getJMenuItemAckAlarm() );
+		add( getJMenuItemManualEntry() );
+		add( getJMenuItemEnableDisable() );
+		add( getJMenuItemConfirm() );
+		add( getJMenuItemOpenClose() );
 
 		add( new JSeparator() );
 		
-		add(getJMenuItemTempMove(), getJMenuItemTempMove().getName());
-		add(getJMenuItemMoveBack(), getJMenuItemMoveBack().getName());
+		add( getJMenuItemTempMove() );
+		add( getJMenuItemMoveBack() );
+		add( getJMenuItemCapBankData() );
 		
 		initConnections();
 	}
@@ -506,6 +514,25 @@ public void jMenuItemConfirm_ActionPerformed(java.awt.event.ActionEvent actionEv
 	
 	return;
 }
+
+/**
+ * Comment
+ */
+public void jMenuItemCapBankData_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	if( actionEvent.getSource() instanceof javax.swing.JMenuItem )
+	{
+		ObjectInfoDialog d = new ObjectInfoDialog(
+			com.cannontech.common.util.CtiUtilities.getParentFrame(this) ); 
+
+		d.setLocationRelativeTo( (javax.swing.JMenuItem)actionEvent.getSource() );
+		d.setModal( true );		
+		d.showDialog( getCapBankDevice() );
+	}
+	
+	return;
+}
+
 /**
  * Comment
  */
@@ -525,6 +552,32 @@ public void jMenuItemEnableDisable_ActionPerformed(java.awt.event.ActionEvent ac
 		
 	return;
 }
+
+/**
+ * Return the jMenuItemCapBankData property value.
+ * @return javax.swing.JMenuItem
+ */
+private javax.swing.JMenuItem getJMenuItemCapBankData()
+{
+	if( jMenuItemCapBankData == null)
+	{
+		try
+		{
+			jMenuItemCapBankData = new javax.swing.JMenuItem();
+			jMenuItemCapBankData.setName("jMenuItemCapBankData");
+			jMenuItemCapBankData.setMnemonic('t');
+			jMenuItemCapBankData.setText("CapBank Data...");
+		}
+		catch (java.lang.Throwable ivjExc)
+		{
+			handleException(ivjExc);
+		}
+	}
+
+	return jMenuItemCapBankData;
+}
+
+
 /**
  * Comment
  */

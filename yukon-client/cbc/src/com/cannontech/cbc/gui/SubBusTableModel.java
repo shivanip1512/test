@@ -347,7 +347,12 @@ public Object getValueAt(int row, int col)
 			}
 			else
 				state = "ENABLED";
-				
+
+
+			//show waived with a W at the end of the state
+			if( sub.getWaiveControlFlag().booleanValue() )
+				state += "-W";
+
 			return state;
 		}
 

@@ -24,6 +24,7 @@ import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.common.gui.panel.*;
 import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
+import com.cannontech.message.dispatch.message.Multi;
 
 public class ReceiverMainPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener, javax.swing.event.ListSelectionListener, javax.swing.event.TableModelListener, java.util.Observer, javax.swing.event.PopupMenuListener 
 {
@@ -57,6 +58,9 @@ public class ReceiverMainPanel extends javax.swing.JPanel implements java.awt.ev
 	private JButton disableAreaButton = null;
 	private JButton currentViewButton = null;
 	private JButton confirmAreaButton = null;
+	private JButton unwaiveAreaButton = null;
+	private JButton waiveAreaButton = null;
+
 	private MessagePanel messagePanel = null;
 
 	public static final int NO_ROW_SELECTED = -1;
@@ -117,6 +121,13 @@ public void actionPerformed(ActionEvent event)
 			
 		if( event.getSource() == getConfirmAreaButton() )
 			execute_ConfirmAreaButton( event );
+
+		if( event.getSource() == getWaiveAreaButton() )
+			execute_WaiveSubs( event );
+
+		if( event.getSource() == getUnwaiveAreaButton() )
+			execute_UnwaiveSubs( event );
+
 	}
 	catch( Exception e )
 	{
@@ -182,6 +193,8 @@ private void createButtonToolBar()
 	buttonPanel.add( getEnableAreaButton() );
 	buttonPanel.add( getDisableAreaButton() );
 	buttonPanel.add( getConfirmAreaButton() );
+	buttonPanel.add( getWaiveAreaButton() );
+	buttonPanel.add( getUnwaiveAreaButton() );
 	buttonPanel.add( getCurrentViewButton() );
 
 	toolBarPanel = new JPanel();
@@ -289,9 +302,6 @@ private void execute_ConfirmAreaButton(ActionEvent event)
 {
    String filter = getSubBusTableModel().getFilter();
    
-   if( filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) )
-      return;
-   
 	String actionString = "Are you sure you want to confirm " +
 						  		 "the area '" + getSubBusTableModel().getFilter() + "'?";
 
@@ -306,11 +316,8 @@ private void execute_ConfirmAreaButton(ActionEvent event)
 		{
 			SubBus sub = getSubBusTableModel().getRowAt(i);
 			
-			if( sub.getCcArea().equals(filter) )
-			{
-				getSubBusPopUp().setSubBus(sub);
-				getSubBusPopUp().jMenuItemConfirm_ActionPerformed(null);
-			}
+			getSubBusPopUp().setSubBus(sub);
+			getSubBusPopUp().jMenuItemConfirm_ActionPerformed(null);
 		}
 
 	}
@@ -349,8 +356,7 @@ private void execute_DisableAreaButton(ActionEvent event)
 {
    String filter = getSubBusTableModel().getFilter();
    
-	if( getSubBusTableModel().getRowCount() <= 0
-       || filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) )
+	if( getSubBusTableModel().getRowCount() <= 0 )
 		return;
 
 	String actionString = "Are you sure you want to " + getDisableAreaButton().getActionCommand() +
@@ -359,28 +365,20 @@ private void execute_DisableAreaButton(ActionEvent event)
 	if( !confirmAction(actionString, "Disable Area") )
 		return;
 		
-	int index =	getSubBusTable().getSelectionModel().getMinSelectionIndex();
-
-	getSubBusTable().getSelectionModel().setSelectionInterval( index, index );
 
 	//lock down our table model
 	synchronized( getSubBusTableModel() )
 	{
-		com.cannontech.message.dispatch.message.Multi multi =
-				new com.cannontech.message.dispatch.message.Multi();
+		Multi multi =
+				new Multi();
 		
 		for( int i = 0; i < getSubBusTableModel().getRowCount(); i++ )
 		{
 			SubBus sub = getSubBusTableModel().getRowAt(i);
 			
-			if( sub.getCcArea().equals(filter) )
-			{
-				//only send the command if the state of the sub != disabled
-				if( !sub.getCcDisableFlag().booleanValue() )
-					multi.getVector().add( new CBCCommand(CBCCommand.DISABLE_SUBBUS, sub.getCcId().intValue()) );
-			}
-
-			
+			//only send the command if the state of the sub != disabled
+			if( !sub.getCcDisableFlag().booleanValue() )
+				multi.getVector().add( new CBCCommand(CBCCommand.DISABLE_SUBBUS, sub.getCcId().intValue()) );
 		}
 
 		if( multi.getVector().size() > 0 )
@@ -397,8 +395,7 @@ private void execute_EnableAreaButton(ActionEvent event)
 {
    String filter = getSubBusTableModel().getFilter();
    
-	if( getSubBusTableModel().getRowCount() <= 0
-       || filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) )
+	if( getSubBusTableModel().getRowCount() <= 0 )
 		return;
 
 	String actionString = "Are you sure you want to " + getEnableAreaButton().getActionCommand() +
@@ -407,35 +404,110 @@ private void execute_EnableAreaButton(ActionEvent event)
 	if( !confirmAction(actionString, "Enable Area") )
 		return;
 		
-	int index =	getSubBusTable().getSelectionModel().getMinSelectionIndex();
-
-	getSubBusTable().getSelectionModel().setSelectionInterval( index, index );
-
 	//lock down our table model
 	synchronized( getSubBusTableModel() )
 	{
-		com.cannontech.message.dispatch.message.Multi multi =
-				new com.cannontech.message.dispatch.message.Multi();
+		Multi multi = new Multi();
 		
 		for( int i = 0; i < getSubBusTableModel().getRowCount(); i++ )
 		{
 			SubBus sub = getSubBusTableModel().getRowAt(i);
 			
-			if( sub.getCcArea().equals(filter) )
-			{
-				//only send the command if the state of the sub != our wanted command
-				if( sub.getCcDisableFlag().booleanValue() )
-					multi.getVector().add( new CBCCommand(CBCCommand.ENABLE_SUBBUS, sub.getCcId().intValue()) );
-			}
-
-			
+			//only send the command if the state of the sub != our wanted command
+			if( sub.getCcDisableFlag().booleanValue() )
+				multi.getVector().add( new CBCCommand(CBCCommand.ENABLE_SUBBUS, sub.getCcId().intValue()) );
 		}
 
 		if( multi.getVector().size() > 0 )
 			getConnectionWrapper().write( multi );
-	}
+	}	
+
+}
+
+/**
+ * Comment
+ */
+public void execute_WaiveSubs(java.awt.event.ActionEvent actionEvent) 
+{
+	String filter = getSubBusTableModel().getFilter();
+   
+	if( getSubBusTableModel().getRowCount() <= 0 )
+		return;
+
+	int confirm = javax.swing.JOptionPane.showConfirmDialog( this, 
+			"Are you sure you want to Waive control " +
+			"for '" + getSubBusTableModel().getFilter() +"' ?",
+			"Confirm Waive", 
+			javax.swing.JOptionPane.YES_OPTION);
+   
+	if( confirm != javax.swing.JOptionPane.YES_OPTION )
+		return;
+		
+	//lock down our table model
+	synchronized( getSubBusTableModel() )
+	{
+		Multi multi = new Multi();
+		
+		for( int i = 0; i < getSubBusTableModel().getRowCount(); i++ )
+		{
+			SubBus sub = getSubBusTableModel().getRowAt(i);
+			
+			//only send the command if the state of the sub != our wanted command
+			if( !sub.getWaiveControlFlag().booleanValue() )
+				multi.getVector().add( 
+					new CBCCommand(
+						CBCCommand.WAIVE_SUB,
+						sub.getCcId().intValue()) );
+		}
+
+		if( multi.getVector().size() > 0 )
+			getConnectionWrapper().write( multi );
+	}	
 	
 }
+
+/**
+ * Comment
+ */
+public void execute_UnwaiveSubs(java.awt.event.ActionEvent actionEvent) 
+{
+	String filter = getSubBusTableModel().getFilter();
+   
+	if( getSubBusTableModel().getRowCount() <= 0 )
+		return;
+
+	int confirm = javax.swing.JOptionPane.showConfirmDialog( this, 
+			"Are you sure you want to Unwaive control " +
+			"for '" + getSubBusTableModel().getFilter() +"' ?",
+			"Confirm Unwaive", 
+			javax.swing.JOptionPane.YES_OPTION);
+   
+	if( confirm != javax.swing.JOptionPane.YES_OPTION )
+		return;
+		
+	//lock down our table model
+	synchronized( getSubBusTableModel() )
+	{
+		Multi multi = new Multi();
+		
+		for( int i = 0; i < getSubBusTableModel().getRowCount(); i++ )
+		{
+			SubBus sub = getSubBusTableModel().getRowAt(i);
+			
+			//only send the command if the state of the sub != our wanted command
+			if( sub.getWaiveControlFlag().booleanValue() )
+				multi.getVector().add( 
+					new CBCCommand(
+						CBCCommand.UNWAIVE_SUB,
+						sub.getCcId().intValue()) );
+		}
+
+		if( multi.getVector().size() > 0 )
+			getConnectionWrapper().write( multi );
+	}	
+	
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/8/2001 12:44:52 PM)
@@ -684,6 +756,45 @@ public javax.swing.JButton getDisableAreaButton()
 
 	return disableAreaButton;
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (8/4/00 9:01:12 AM)
+ * @return javax.swing.JButton
+ */
+public javax.swing.JButton getWaiveAreaButton() 
+{
+	if( waiveAreaButton == null )
+	{
+		waiveAreaButton = new JButton("Waive Area");
+		waiveAreaButton.setActionCommand("waiveAreaButton");
+		waiveAreaButton.setMnemonic('w');
+		waiveAreaButton.setPreferredSize( new java.awt.Dimension(80,23) );
+		waiveAreaButton.setToolTipText("Waive control for the SubBus's within the current selected area");
+	}
+
+	return waiveAreaButton;
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (8/4/00 9:01:12 AM)
+ * @return javax.swing.JButton
+ */
+public javax.swing.JButton getUnwaiveAreaButton() 
+{
+	if( unwaiveAreaButton == null )
+	{
+		unwaiveAreaButton = new JButton("Unwaive Area");
+		unwaiveAreaButton.setActionCommand("unwaiveAreaButton");
+		unwaiveAreaButton.setMnemonic('u');
+		unwaiveAreaButton.setPreferredSize( new java.awt.Dimension(80,23) );
+		unwaiveAreaButton.setToolTipText("Unwaive control for the SubBus's within the current selected area");
+	}
+
+	return unwaiveAreaButton;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (8/4/00 9:01:12 AM)
@@ -1123,6 +1234,9 @@ private void initConnections()
 	getEnableAreaButton().addActionListener(this);
 	getDisableAreaButton().addActionListener(this);
 	getConfirmAreaButton().addActionListener(this);
+	getWaiveAreaButton().addActionListener(this);
+	getUnwaiveAreaButton().addActionListener(this);
+	
 
 	// add listeners to the CapBankTable & FeederTable
 	getCapBankTable().addMouseListener(this);
@@ -1392,9 +1506,14 @@ protected void synchTableAndButtons(SubBus selected)
 {	   
    String filter = getSubBusTableModel().getFilter();
 
-   confirmAreaButton.setEnabled( !filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) );
-   enableAreaButton.setEnabled( !filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) );
-   disableAreaButton.setEnabled( !filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) );   
+/*
+   getConfirmAreaButton().setEnabled( !filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) );
+   getEnableAreaButton().setEnabled( !filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) );
+   getDisableAreaButton().setEnabled( !filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) );
+	getWaiveAreaButton().setEnabled( !filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) );
+	getUnwaiveAreaButton().setEnabled( !filter.equalsIgnoreCase(SubBusTableModel.ALL_FILTER) );
+*/
+
 }
 
 /**

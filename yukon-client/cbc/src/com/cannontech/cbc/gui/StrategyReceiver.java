@@ -269,6 +269,8 @@ public javax.swing.JPanel getMainJPanel()
 			mainPanel.getEnableAreaButton(),
 			mainPanel.getDisableAreaButton(),
 			mainPanel.getConfirmAreaButton(),
+			mainPanel.getWaiveAreaButton(),
+			mainPanel.getUnwaiveAreaButton(),
 			mainPanel.getCurrentViewButton()
 		};
 		

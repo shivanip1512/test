@@ -58,14 +58,14 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 	};
 	
 	//The color schemes - based on the schedule status (foreGround, bgColor)
-	private static Color[] cellColors =
+	private static final Color[] CELL_COLORS =
 	{
 		//Enabled feeder
-		Color.green,
+		Color.GREEN,
 		//Disabled feeder
-		Color.red,
+		Color.RED,
 		//Pending color
-		Color.yellow
+		Color.YELLOW		
 	};
 	
 
@@ -141,19 +141,19 @@ public java.awt.Color getCellForegroundColor(int row, int col)
 	{
 		if( getRowAt(row).getCcDisableFlag().booleanValue() )
 		{
-			return cellColors[1]; //disabled color
+			return CELL_COLORS[1]; //disabled color
 		}
 		else if( getRowAt(row).getRecentlyControlledFlag().booleanValue() )
 		{
-			return cellColors[2]; //pending color
+			return CELL_COLORS[2]; //pending color
 		}
 		else
 		{
-			return cellColors[0];
+			return CELL_COLORS[0];
 		}
 	}
 
-	return Color.white;
+	return Color.WHITE;
 }
 /**
  * getColumnCount method comment.
@@ -293,6 +293,10 @@ public Object getValueAt(int row, int col)
 				else
 					state = "ENABLED";
 					
+				//show waived with a W at the end of the state
+				if( feeder.getWaiveControlFlag().booleanValue() )
+					state += "-W";
+
 				return state;
 			}
 

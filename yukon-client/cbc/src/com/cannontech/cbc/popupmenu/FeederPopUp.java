@@ -15,7 +15,7 @@ public class FeederPopUp extends javax.swing.JPopupMenu implements java.awt.even
 	private javax.swing.JMenuItem ivjJMenuItemEnableDisable = null;
 	private CBCClientConnection connectionWrapper = null;
 	private javax.swing.JMenuItem ivjJMenuItemFeederData = null;
-	
+	private javax.swing.JMenuItem jMenuItemWaive = null;	
 	
 	private javax.swing.JMenuItem ivjJMenuItemResetOpCount = null;
 	
@@ -53,6 +53,8 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	if( e.getSource() == getJMenuItemResetOpCount() )
 		jMenuItemResetOpCount_ActionPerformed(e);		
 
+	if( e.getSource() == getJMenuItemWaive() )
+		jMenuItemWaive_ActionPerformed( e );
 	
 	// user code end
 }
@@ -133,6 +135,30 @@ private javax.swing.JMenuItem getJMenuItemEnableDisable() {
 }
 
 /**
+ * Return the jMenuItemWaive property value.
+ * @return javax.swing.JMenuItem
+ */
+private javax.swing.JMenuItem getJMenuItemWaive() 
+{
+	if (jMenuItemWaive == null) 
+	{
+		try 
+		{
+			jMenuItemWaive = new javax.swing.JMenuItem();
+			jMenuItemWaive.setName("jMenuItemWaive");
+			jMenuItemWaive.setMnemonic('w');
+			jMenuItemWaive.setText("Waive Control");
+		}
+		catch (java.lang.Throwable ivjExc)
+		{
+			handleException(ivjExc);
+		}
+	}
+
+	return jMenuItemWaive;
+}
+
+/**
  * Return the JMenuItemResetOpCount property value.
  * @return javax.swing.JMenuItem
  */
@@ -196,6 +222,7 @@ private void handleException(java.lang.Throwable exception) {
 private void initConnections() throws java.lang.Exception 
 {
 	getJMenuItemResetOpCount().addActionListener(this);
+	getJMenuItemWaive().addActionListener(this);
 	
 	getJMenuItemFeederData().addActionListener(this);
 	getJMenuItemEnableDisable().addActionListener(this);
@@ -208,9 +235,10 @@ private void initialize()
 	try 
 	{
 		setName("FeederPopUp");
-		add(getJMenuItemEnableDisable(), getJMenuItemEnableDisable().getName());
-		add(getJMenuItemResetOpCount(), getJMenuItemResetOpCount().getName());
-		add(getJMenuItemFeederData(), getJMenuItemFeederData().getName());
+		add( getJMenuItemEnableDisable() );
+		add( getJMenuItemResetOpCount() );
+		add( getJMenuItemWaive() );
+		add( getJMenuItemFeederData() );
 		
 		initConnections();
 	}
@@ -277,6 +305,32 @@ public void jMenuItemFeederData_ActionPerformed(java.awt.event.ActionEvent actio
 }
 
 /**
+ * Comment
+ */
+public void jMenuItemWaive_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	if( getFeeder() == null )
+		return;
+
+	boolean isWaived = getFeeder().getWaiveControlFlag().booleanValue();
+
+	int confirm = javax.swing.JOptionPane.showConfirmDialog( this, 
+			"Are you sure you want to " + (isWaived ? "Unwaive" : "Waive") + " control " +
+			"for '" + getFeeder().getCcName() +"' ?",
+			"Confirm " + (isWaived ? "Unwaive" : "Waive"), 
+			javax.swing.JOptionPane.YES_OPTION);
+   
+	if( confirm != javax.swing.JOptionPane.YES_OPTION )
+		return;
+
+
+	getConnectionWrapper().write(
+		new CBCCommand(
+				(isWaived ? CBCCommand.UNWAIVE_FEEDER: CBCCommand.WAIVE_FEEDER), 
+				getFeeder().getCcId().intValue()) );
+}
+
+/**
  * Insert the method's description here.
  * Creation date: (1/5/2001 4:45:07 PM)
  * @param newConnectionWrapper com.cannontech.cbc.CBCClientConnection
@@ -299,8 +353,15 @@ public void setFeeder( Feeder newFeeder )
 			getJMenuItemEnableDisable().setText("Enable");
 		else
 			getJMenuItemEnableDisable().setText("Disable");
+
+		if( getFeeder().getWaiveControlFlag().booleanValue() )
+			getJMenuItemWaive().setText("Unwaive Control");
+		else
+			getJMenuItemWaive().setText("Waive Control");
 	}
+
 }
+
 /**
  * This method was created in VisualAge.
  * @param event javax.swing.event.TableModelEvent
