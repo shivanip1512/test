@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/pending_info.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:25 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/12/23 21:30:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -178,13 +178,13 @@ CtiPendingPointOperations& CtiPendingPointOperations::operator=(const CtiPending
     if(this != &aRef)
     {
         _pid = aRef.getPointID();
+        _pendingType = aRef.getType();
         _time = aRef.getTime();
         _limitBeingTimed = aRef.getLimitBeingTimed();
         _limitDuration = aRef.getLimitDuration();
         _controlState = aRef.getControlState();
         _controlTimeout = aRef.getControlTimeout();
         _controlCompleteValue = aRef.getControlCompleteValue();
-        _pendingType = aRef.getType();
         _control = aRef.getControl();
 
         if(_signal != NULL)
