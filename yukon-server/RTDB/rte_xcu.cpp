@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2004/06/03 21:46:17 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2004/06/03 23:09:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -948,8 +948,6 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
             outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
 
             resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
-
-            outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
 
             break;
         }
