@@ -216,14 +216,14 @@
                         <td width="36" class="TableCell"><%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.DAILY_OPERATIONS_COLUMN) %></td>
                         <td width="71" class="TableCell"> 
                           <select name="select2">
-                            <option>Graph A</option>
-                            <option>Graph B</option>
+                            <option value="AllSubs.jsp">Bus kVar</option>
+                            <option value="AllSubs.jsp">Feeder kVar</option>
                           </select>
                         </td>
                         <td width="80" class="TableCell"> 
                           <select name="select3">
-                            <option>Report A</option>
-                            <option>Report B</option>
+                            <option>Peaks</option>
+                            <option>Ops.</option>
                           </select>
                         </td>
                       </tr>
@@ -282,14 +282,14 @@
                         <td width="36" class="TableCell"><%= feederMdl.getValueAt(i, FeederTableModel.DAILY_OPERATIONS_COLUMN) %></td>
                         <td width="71" class="TableCell"> 
                           <select name="select5">
-                            <option>Graph A</option>
+                            <option>Feeder kVar</option>
                             <option>Graph B</option>
                           </select>
                         </td>
                         <td width="80" class="TableCell"> 
                           <select name="select5">
-                            <option>Report A</option>
-                            <option>Report B</option>
+                            <option>Peaks</option>
+                            <option>Ops.</option>
                           </select>
                         </td>
                       </tr>

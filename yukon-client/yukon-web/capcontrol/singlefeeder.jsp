@@ -203,19 +203,17 @@
                         <td width="36" class="TableCell"><%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.DAILY_OPERATIONS_COLUMN) %></td>
                         <td width="71" class="TableCell"> 
                           <select name="select5">
-                            <option>Graph A</option>
+                            <option>Feeder kVar</option>
                             <option>Graph B</option>
                           </select>
                         </td>
                         <td width="80" class="TableCell"> 
                           <select name="select5">
-                            <option>Report A</option>
-                            <option>Report B</option>
+                            <option>Peaks</option>
+                            <option>Ops.</option>
                           </select>
                         </td>
                       </tr>
-
-
                     </table>
                     <br>
                   <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
