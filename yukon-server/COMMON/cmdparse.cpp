@@ -2982,19 +2982,23 @@ void  CtiCommandParser::doParseExpresscomControl(const RWCString &CmdStr)
             }
         }
 
-        if(!(temp = CmdStr.match(" system +((off)|(heat)|(cool))")).isNull())
+        if(!(temp = CmdStr.match(" system +((off)|(heat)|(cool)|(emheat))")).isNull())
         {
-            if(temp.contains("off"))
+            if(temp.contains(" off"))
             {
                 _cmd["xcsysstate"] = CtiParseValue( 0x04 );
             }
-            else if(temp.contains("heat"))
+            else if(temp.contains(" heat"))
             {
                 _cmd["xcsysstate"] = CtiParseValue( 0x08 );
             }
-            else if(temp.contains("cool"))
+            else if(temp.contains(" cool"))
             {
                 _cmd["xcsysstate"] = CtiParseValue( 0x0c );
+            }
+            else if(temp.contains(" emheat"))
+            {
+                _cmd["xcsysstate"] = CtiParseValue( 0x10 );
             }
         }
 
@@ -3007,12 +3011,12 @@ void  CtiCommandParser::doParseExpresscomControl(const RWCString &CmdStr)
             }
         }
 
-        if(!(temp = CmdStr.match(" timeout +[0-9]+")).isNull())         // in hours
+        if(!(temp = CmdStr.match(" timeout +[0-9]+")).isNull())         // assume minutes input.
         {
             if(!(valStr = temp.match("[0-9]+")).isNull())
             {
                 iValue = atoi(valStr.data());
-                _cmd["xctimeout"] = CtiParseValue( iValue * 60 );       // In minutes
+                _cmd["xctimeout"] = CtiParseValue( iValue );            // In minutes
             }
         }
     }

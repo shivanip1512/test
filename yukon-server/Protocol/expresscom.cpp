@@ -11,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/12/19 20:26:52 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/01/06 23:08:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1292,7 +1292,7 @@ INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool run, int timeo
     {
         if(loadMask & (0x01 << (load - 1)))         // We have a message to be build up here!
         {
-            flaghi = ((fanstate & 0x03) | (sysstate & 0x0c) | (run ? 0x10 : 0x00));
+            flaghi = ((fanstate & 0x03) | (sysstate & 0x1c) | (run ? 0x20 : 0x00));
             flaglo = ( _celsiusMode ? 0x20 : 0x00) | (load & 0x0f);                  // Pick up the load designator;
 
             _message.push_back( mtThermostatSetState );
@@ -1305,7 +1305,7 @@ INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool run, int timeo
             {
                 BYTE timeout;
 
-                flaghi |= 0x20;         // Timout included.
+                flaghi |= 0x40;         // Timeout included.
 
                 if(timeout_min > 255)
                 {
@@ -1330,7 +1330,7 @@ INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool run, int timeo
 
             if(setpoint > 0)
             {
-                flaglo |= 0x10;         // Timout included.
+                flaglo |= 0x10;         // Temp setpoint included.
                 _message.push_back(LOBYTE(setpoint));
             }
 
