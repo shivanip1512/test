@@ -37,7 +37,9 @@ import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.parametersfile.ParameterNotFoundException;
 import com.cannontech.clientutils.parametersfile.ParametersFile;
+import com.cannontech.debug.gui.AboutDialog;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
@@ -45,7 +47,6 @@ import java.util.Vector;
 import com.cannontech.tdc.editdisplay.EditDisplayDialog;
 import com.cannontech.tdc.exportdata.ExportCreatedDisplay;
 import com.cannontech.tdc.commandevents.AckAlarm;
-import com.cannontech.tdc.aboutbox.AboutBoxDialog;
 import com.cannontech.tdc.spawn.TDCMainFrameSpawnListener;
 import com.cannontech.tdc.data.Display;
 
@@ -91,7 +92,6 @@ public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.t
 	private javax.swing.JMenuItem ivjJMenuItemRemoveBookMark = null;
 	private static final String LUDICROUS_SPEED = "ludicrous_speed";
 	private javax.swing.JMenuItem ivjJMenuItemExportCreatedDisplay = null;
-	private AboutBoxDialog aboutBox = null;
 	protected transient com.cannontech.tdc.TDCMainFrameListener fieldTDCMainFrameListenerEventMulticaster = null;
 	private javax.swing.JSeparator ivjJSeparator1 = null;
 	private javax.swing.JSeparator ivjJSeparator2 = null;
@@ -1209,22 +1209,6 @@ protected void fireOtherTDCMainFrame_actionPerformed(com.cannontech.tdc.spawn.Sp
 	}
 */	
 	return;
-}
-
-
-/**
- * Insert the method's description here.
- * Creation date: (8/16/00 4:48:21 PM)
- * @return com.cannontech.tdc.aboutbox.AboutBoxDialog
- */
-private AboutBoxDialog getAboutBox() 
-{
-	if( aboutBox == null )
-	{
-		aboutBox = new AboutBoxDialog( this );		
-	}
-	
-	return aboutBox;
 }
 
 
@@ -2896,7 +2880,6 @@ public void initialize() {
 
 		initAccelerators();
 		getExternalResources();
-		getAboutBox();  // init our about box
 		
 		// user code end
 		setName("TDCFrame");
@@ -3131,18 +3114,16 @@ public void JComboCurrentDisplayAction_actionPerformed(java.util.EventObject new
  */
 public void jMenuItemAbout_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-/*	com.cannontech.tdc.aboutbox.AboutBox About = 
-			new com.cannontech.tdc.aboutbox.AboutBox( this, TDCDefines.VERSION );
+	ArrayList list = new ArrayList(16);
+	list.add("Max Rows     : " + TDCDefines.MAX_ROWS);
+	list.add("Sound File   : " + TDCDefines.ALARM_SOUND_FILE);
+	list.add("Temp File    : " + CtiUtilities.OUTPUT_FILE_NAME);
+				
+	AboutDialog aboutDialog = new AboutDialog( this, "About TDC", true );
 
-	About.setModal( true );
-	About.setLocationRelativeTo( this );
-	About.show();
-*/
-	getAboutBox().setModal( true );
-	getAboutBox().setLocationRelativeTo( this );
-	getAboutBox().show();
-
-	this.repaint();
+	aboutDialog.setLocationRelativeTo( this );
+	aboutDialog.setValue( list );
+	aboutDialog.show();
 	
 	return;
 }
@@ -3852,20 +3833,23 @@ public void jMenuItemSearch_ActionPerformed(java.awt.event.ActionEvent actionEve
 {
 	try
 	{
-		javax.swing.JTable table = null;
+		javax.swing.JTable[] tables = null;
 		
 		if( getMainPanel().isClientDisplay() )
-			table = getMainPanel().getCurrentSpecailChild().getJTables()[0];
+			tables = getMainPanel().getCurrentSpecailChild().getJTables();
 		else
-			table = getMainPanel().getDisplayTable();
-			
-		((com.cannontech.tdc.search.TextSearchJPanel)getTextSearchDialog().getContentPane()).setTableToSearch( table );
+			tables = new javax.swing.JTable[] { getMainPanel().getDisplayTable() };
 
-		String[] columnNames = new String[ table.getColumnModel().getColumnCount() ];
-		for( int i = 0; i < table.getColumnModel().getColumnCount(); i++ )
-			columnNames[i] = table.getColumnName(i);
+		((com.cannontech.tdc.search.TextSearchJPanel)
+				getTextSearchDialog().getContentPane()).setTablesToSearch( tables );
+
+		String[] columnNames = new String[ tables[0].getColumnModel().getColumnCount() ];
+		for( int i = 0; i < tables[0].getColumnModel().getColumnCount(); i++ )
+			columnNames[i] = tables[0].getColumnName(i);
 			
-		((com.cannontech.tdc.search.TextSearchJPanel)getTextSearchDialog().getContentPane()).setColumnNames( columnNames );
+		((com.cannontech.tdc.search.TextSearchJPanel)
+				getTextSearchDialog().getContentPane()).setColumnNames( columnNames );
+
 		getTextSearchDialog().show();
 	}
 	catch( ClassCastException e )

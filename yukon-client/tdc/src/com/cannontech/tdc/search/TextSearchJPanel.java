@@ -1,6 +1,6 @@
 package com.cannontech.tdc.search;
 
-import java.awt.KeyboardFocusManager;
+import javax.swing.JTable;
 
 /**
  * Insert the type's description here.
@@ -9,8 +9,8 @@ import java.awt.KeyboardFocusManager;
  */
 public class TextSearchJPanel extends javax.swing.JPanel implements java.awt.event.ActionListener 
 {
-	// a reference to the table we need to search
-	private javax.swing.JTable tableToSearch = null;
+	// references to the tables we need to search
+	private JTable[] tablesToSearch = null;
 	
 	public static int PRESSED_CANCEL = 0;
 	public static int PRESSED_SEARCH = 0;
@@ -26,6 +26,8 @@ public class TextSearchJPanel extends javax.swing.JPanel implements java.awt.eve
 	private javax.swing.JPanel ivjJPanelButtons = null;
 	private javax.swing.JCheckBox ivjJCheckBoxSearchFromSelected = null;
 	private javax.swing.JComboBox ivjJComboBoxSearchText = null;
+
+
 /**
  * TextSearchJPanel constructor comment.
  */
@@ -452,10 +454,10 @@ public String getSearchText()
 /**
  * Insert the method's description here.
  * Creation date: (7/9/2001 10:34:01 AM)
- * @return javax.swing.JTable
+ * @return JTable
  */
-public javax.swing.JTable getTableToSearch() {
-	return tableToSearch;
+public JTable[] getTablesToSearch() {
+	return tablesToSearch;
 }
 /**
  * Called whenever the part throws an exception.
@@ -583,42 +585,45 @@ public void jButtonSearch_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		getJComboBoxSearchText().addItem( getJComboBoxSearchText().getSelectedItem().toString() );
 
 
-	
-	//determine what row we should start on, if we have the last row
-	//  selected, start at row ZERO
-	int begin = 0;
 	found = false;
-	if( getJCheckBoxSearchFromSelected().isSelected()
-		 && getTableToSearch().getSelectedRow() < (getTableToSearch().getRowCount()-1) )
+	for( int k = 0; k < getTablesToSearch().length && !found; k++ )
 	{
-		begin = getTableToSearch().getSelectedRow() + 1; //search 1 beyond the selected row
-	}
-
-	for( int i = begin; i < getTableToSearch().getRowCount(); i++ )
-	{
-		for( int j = 0; j < getTableToSearch().getColumnCount(); j++ )
-		{
-			if( getJCheckBoxColumn().isSelected() && getJComboBoxColumnName().getSelectedIndex() != j )
-				continue;
-				
-			if( isTextEnteredEqual(getTableToSearch().getModel().getValueAt(i, j).toString()) )
-			{
-				found = true;
-				getTableToSearch().setRowSelectionInterval( i, i );
-
-				//scroll to a location that makes the new selected row appear
-				getTableToSearch().scrollRectToVisible( new java.awt.Rectangle(
-					0,
-					getTableToSearch().getRowHeight() * (i+1) - getTableToSearch().getRowHeight(),  //just an estimate that works!!
-					100,
-					100) );	
-
-				break;
-			}
-		}
+		JTable currTable = getTablesToSearch()[k];
 		
-		if( found ) 
-			break;
+		//determine what row we should start on, if we have the last row
+		//  selected, start at row ZERO
+		int begin = 0;
+
+		if( getJCheckBoxSearchFromSelected().isSelected()
+			 && currTable.getSelectedRow() < (currTable.getRowCount()-1) )
+		{
+			begin = currTable.getSelectedRow() + 1; //search 1 beyond the selected row
+		}
+	
+		for( int i = begin; i < currTable.getRowCount() && !found; i++ )
+		{
+			for( int j = 0; j < currTable.getColumnCount() && !found; j++ )
+			{
+				//only search column specific for the first table
+				if( k == 0 && getJCheckBoxColumn().isSelected() && getJComboBoxColumnName().getSelectedIndex() != j )
+					continue;
+					
+				if( isTextEnteredEqual(currTable.getModel().getValueAt(i, j).toString()) )
+				{
+					found = true;
+					currTable.setRowSelectionInterval( i, i );
+	
+					//scroll to a location that makes the new selected row appear
+					currTable.scrollRectToVisible( new java.awt.Rectangle(
+						0,
+						currTable.getRowHeight() * (i+1) - currTable.getRowHeight(),  //just an estimate that works!!
+						100,
+						100) );	
+				}
+			}
+			
+		}
+
 	}
 
 
@@ -716,10 +721,10 @@ public void setColumnNames(String[] columns)
 /**
  * Insert the method's description here.
  * Creation date: (7/9/2001 10:34:01 AM)
- * @param newTableToSearch javax.swing.JTable
+ * @param newTableToSearch JTable
  */
-public void setTableToSearch(javax.swing.JTable newTableToSearch) {
-	tableToSearch = newTableToSearch;	
+public void setTablesToSearch(JTable newTablesToSearch[]) {
+	tablesToSearch = newTablesToSearch;	
 }
 
 /**
