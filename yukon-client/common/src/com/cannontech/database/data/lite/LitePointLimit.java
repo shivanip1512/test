@@ -1,25 +1,21 @@
 package com.cannontech.database.data.lite;
 
-import java.math.BigDecimal;
-
 /**
  * Lite representation of PointLimit
  * @author alauinger
  */
 public class LitePointLimit extends LiteBase {
-	private static final String retrieveSql = "SELECT LIMITNUMBER,HIGHLIMIT,LOWLIMIT,LIMITDURATION FROM POINTLIMIT WHERE POINTID=";
-	
 	private int pointID;
 	private int limitNumber;
-	private int highLimit;
-	private int lowLimit;
+	private double highLimit;
+	private double lowLimit;
 	private int limitDuration;
 	
 	public LitePointLimit(int pointID) {
 		setPointID(pointID);
 		setLiteType(LiteTypes.POINT_LIMIT);
 	}
-	public LitePointLimit(int pointID, int limitNumber, int highLimit, int lowLimit, int limitDuration) {
+	public LitePointLimit(int pointID, int limitNumber, double highLimit, double lowLimit, int limitDuration) {
 		setPointID(pointID);
 		setLimitNumber(limitNumber);
 		setHighLimit(highLimit);
@@ -28,29 +24,11 @@ public class LitePointLimit extends LiteBase {
 		setLiteType(LiteTypes.POINT_LIMIT);
 	}
 	
-	public void retrieve(String dbAlias) {
-		com.cannontech.database.SqlStatement stmt =
- 		new com.cannontech.database.SqlStatement(retrieveSql + Integer.toString(getPointID()), dbAlias);
-
- 		try
- 		{
- 			stmt.execute();
- 			setLimitNumber( ((BigDecimal) stmt.getRow(0)[0]).intValue() );
- 			setHighLimit( ((BigDecimal) stmt.getRow(0)[1]).intValue() );
- 			setLowLimit( ((BigDecimal) stmt.getRow(0)[2]).intValue() );
- 			setLimitDuration( ((BigDecimal) stmt.getRow(0)[3]).intValue() );
-	 	}
- 		catch( Exception e )
-	 	{
- 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
- 		}
-	}
-	
 	/**
 	 * Returns the highLimit.
-	 * @return int
+	 * @return double
 	 */
-	public int getHighLimit() {
+	public double getHighLimit() {
 		return highLimit;
 	}
 
@@ -74,7 +52,7 @@ public class LitePointLimit extends LiteBase {
 	 * Returns the lowLimit.
 	 * @return int
 	 */
-	public int getLowLimit() {
+	public double getLowLimit() {
 		return lowLimit;
 	}
 
@@ -90,7 +68,7 @@ public class LitePointLimit extends LiteBase {
 	 * Sets the highLimit.
 	 * @param highLimit The highLimit to set
 	 */
-	public void setHighLimit(int highLimit) {
+	public void setHighLimit(double highLimit) {
 		this.highLimit = highLimit;
 	}
 
@@ -114,7 +92,7 @@ public class LitePointLimit extends LiteBase {
 	 * Sets the lowLimit.
 	 * @param lowLimit The lowLimit to set
 	 */
-	public void setLowLimit(int lowLimit) {
+	public void setLowLimit(double lowLimit) {
 		this.lowLimit = lowLimit;
 	}
 
