@@ -35,5 +35,16 @@ public interface YukonSelectionListDefs {
 	public static final String YUK_LIST_NAME_THERMOSTAT_MODE = "ThermostatMode";
 	public static final String YUK_LIST_NAME_THERMOSTAT_FAN_STATE = "ThermostatFanState";
 	public static final String YUK_LIST_NAME_CUSTOMER_FAQ_GROUP = "CustomerFAQGroup";
+	public static final String YUK_LIST_NAME_RESIDENCE_TYPE = "ResidenceType";
+	public static final String YUK_LIST_NAME_CONSTRUCTION_MATERIAL = "ConstructionMaterial";
+	public static final String YUK_LIST_NAME_DECADE_BUILT = "DecadeBuilt";
+	public static final String YUK_LIST_NAME_SQUARE_FEET = "SquareFeet";
+	public static final String YUK_LIST_NAME_INSULATION_DEPTH = "InsulationDepth";
+	public static final String YUK_LIST_NAME_GENERAL_CONDITION = "GeneralCondition";
+	public static final String YUK_LIST_NAME_COOLING_SYSTEM = "CoolingSystem";
+	public static final String YUK_LIST_NAME_HEATING_SYSTEM = "HeatingSystem";
+	public static final String YUK_LIST_NAME_NUM_OF_OCCUPANTS = "NumberOfOccupants";
+	public static final String YUK_LIST_NAME_OWNERSHIP_TYPE = "OwnershipType";
+	public static final String YUK_LIST_NAME_FUEL_TYPE = "FuelType";
 	
 }
