@@ -122,7 +122,7 @@ public void buildDefs()
 	MINNKOTADEFS.put("001011", "Red Lake");
 	MINNKOTADEFS.put("110100", "Red River Valley");
 	MINNKOTADEFS.put("101100", "Roseau Electric");
-	MINNKOTADEFS.put("11100", "Sheyenne Valley");
+	MINNKOTADEFS.put("011100", "Sheyenne Valley");
 	MINNKOTADEFS.put("110010", "Wild Rice");
 	MINNKOTADEFS.put("101010", "NMPA");
 	
@@ -138,7 +138,7 @@ public void buildDefs()
 	MINNKOTADEFS.put("Red Lake", "001011");
 	MINNKOTADEFS.put("Red River Valley", "110100");
 	MINNKOTADEFS.put("Roseau Electric", "101100");
-	MINNKOTADEFS.put("Sheyenne Valley", "11100");
+	MINNKOTADEFS.put("Sheyenne Valley", "011100");
 	MINNKOTADEFS.put("Wild Rice", "110010");
 	MINNKOTADEFS.put("NMPA", "101010");
 	
