@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pdata.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/03/14 01:15:51 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/03/14 02:25:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,6 +60,15 @@ CtiPointDataMsg::CtiPointDataMsg(long id,
     {
         setExemptionStatus(TRUE); // Status data must always default to exemptable!
     }
+
+    if(_isnan(_value) || !_finite(_value))
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") pdata is NaN or INF!" << endl;
+        }
+        _value = 0.0;
+    }
 }
 
 CtiPointDataMsg::CtiPointDataMsg(const CtiPointDataMsg &aRef)
@@ -97,15 +106,6 @@ CtiPointDataMsg& CtiPointDataMsg::operator=(const CtiPointDataMsg& aRef)
 void CtiPointDataMsg::saveGuts(RWvostream &aStream) const
 {
     Inherited::saveGuts(aStream);
-
-    if(_isnan(_value) || !_finite(value))
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") pdata is NaN or INF!" << endl;
-        }
-        _value = 0.0;
-    }
     aStream << getId() << getType() << getQuality() << getTags() << getAttributes() << getLimit() << getValue() << isExemptable() << getString() << getTime() << getMillis();
 }
 
@@ -186,6 +186,14 @@ double CtiPointDataMsg::getValue() const
 CtiPointDataMsg& CtiPointDataMsg::setValue(double value)
 {
     _value = value;
+    if(_isnan(_value) || !_finite(_value))
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") pdata is NaN or INF!" << endl;
+        }
+        _value = 0.0;
+    }
     return *this;
 }
 
