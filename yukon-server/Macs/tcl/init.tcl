@@ -1,7 +1,7 @@
 ##
 # init.tcl
 #
-# After each TCL interpreter is created this script is executed.
+# After each TCL interpreter is created this script is executed .
 # Commonly used procedures and variables can be placed here and
 # accessed from MACS schedules.
 #
