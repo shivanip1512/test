@@ -907,10 +907,10 @@ private javax.swing.JLabel getJLabelVoltDmdRate() {
 			ivjJLabelVoltDmdRate.setName("JLabelVoltDmdRate");
 			ivjJLabelVoltDmdRate.setText("Voltage Demand Rate:");
 			ivjJLabelVoltDmdRate.setMaximumSize(new java.awt.Dimension(200, 16));
-			ivjJLabelVoltDmdRate.setPreferredSize(new java.awt.Dimension(175, 16));
+			ivjJLabelVoltDmdRate.setPreferredSize(new java.awt.Dimension(200, 16));
 			ivjJLabelVoltDmdRate.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelVoltDmdRate.setEnabled(true);
-			ivjJLabelVoltDmdRate.setMinimumSize(new java.awt.Dimension(150, 16));
+			ivjJLabelVoltDmdRate.setMinimumSize(new java.awt.Dimension(175, 16));
 			// user code begin {1}
 			
 			ivjJLabelVoltDmdRate.setEnabled( false );
@@ -1571,6 +1571,21 @@ public void setValue(Object val)
 			//the last interval demand rate can not be edited for DCT_501 & LMT-2
 			getLastIntervalDemandRateComboBox().setVisible(false);
 			getLastIntervalDemandRateLabel().setVisible(false);
+		}
+		
+		if( deviceType == PAOGroups.MCT410_KWH_ONLY )
+		{
+			//The 410 LE doesn't support all these options
+			getChannel2CheckBox().setEnabled(false);
+			getChannel3CheckBox().setEnabled(false);
+			
+			getJLabelVoltDmdRate().setText("Voltage Profile Demand Rate: ");
+			getJComboBoxlVoltRate().removeAllItems();
+			getJComboBoxlVoltRate().addItem("5 minute");
+			getJComboBoxlVoltRate().addItem("15 minute");
+			getJComboBoxlVoltRate().addItem("30 minute");
+			getJComboBoxlVoltRate().addItem("1 hour");
+			
 		}
 		
       CtiUtilities.setIntervalComboBoxSelectedItem(
