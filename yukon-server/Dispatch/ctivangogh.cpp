@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/18 16:31:52 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/04/22 19:59:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4573,7 +4573,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
             }
             Now = Now.now();
 
-            if( pChg == NULL || ( (pChg->getDatabase() == ChangePAODb) && (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) ) )
+            if( pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) )
             {
                 CtiLockGuard<CtiMutex> guard(server_mux, 5000);
 
@@ -4826,7 +4826,7 @@ void CtiVanGogh::loadDeviceLites()
         RWDBReader     rdr;
 
         /* Go after the system defined points! */
-        CtiDeviceBaseLite::getSQL( db, keyTable, selector );
+        CtiDeviceBaseLite().getSQL( db, keyTable, selector );
 
         rdr = selector.reader(conn);
 
