@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     2/19/2003 10:20:49 AM                        */
+/* Created on:     2/25/2003 5:22:23 PM                         */
 /*==============================================================*/
 
 
@@ -1663,7 +1663,7 @@ constraint PK_CONTACT primary key  (ContactID)
 go
 
 
-insert into contact values ( 0, '(none)', '(none)', -1, 0 )
+insert into contact values ( 0, '(none)', '(none)', -1, 0 );
 
 /*==============================================================*/
 /* Table : ContactNotification                                  */
@@ -1679,7 +1679,7 @@ constraint PK_CONTACTNOTIFICATION primary key  (ContactNotifID)
 go
 
 
-insert into ContactNotification values( 0, 0, 0, 'N', '(none)' )
+insert into ContactNotification values( 0, 0, 0, 'N', '(none)' );
 
 
 /*==============================================================*/
@@ -2512,15 +2512,6 @@ go
 create   index Indx_FdrTrnsIntTypDir on FDRTRANSLATION (
 DIRECTIONTYPE,
 InterfaceType
-)
-go
-
-
-/*==============================================================*/
-/* Index: Indx_FdrTrns_PK                                       */
-/*==============================================================*/
-create   index Indx_FdrTrns_PK on FDRTRANSLATION (
-POINTID
 )
 go
 
@@ -3526,15 +3517,6 @@ insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonack
 	1, 0  from point;
 
 /*==============================================================*/
-/* Index: Indx_POINTALARMING_PK                                 */
-/*==============================================================*/
-create unique  index Indx_POINTALARMING_PK on PointAlarming (
-PointID
-)
-go
-
-
-/*==============================================================*/
 /* Table : PortStatistics                                       */
 /*==============================================================*/
 create table PortStatistics (
@@ -3903,8 +3885,9 @@ go
 
 
 insert into YukonGroup values(-1,'default users');
-insert into YukonGroup values(-2,'web users');
-insert into YukonGroup values(-3,'web operators');
+insert into YukonGroup values(-2,'web operators');
+insert into YukonGroup values(-3,'web residential customers');
+insert into YukonGroup values(-4,'web ci customers');
 
 insert into yukongroup values(-200,'Esub Users');
 insert into yukongroup values(-201,'Esub Operators');
@@ -3960,21 +3943,29 @@ insert into YukonGroupRole values(-1,-31,'false');
 insert into YukonGroupRole values(-1,-32,'c:\yukon\client\bin\BillingIn.txt');
 insert into YukonGroupRole values(-1,-33,'INFO');
 insert into YukonGroupRole values(-1,-34,'false');
+insert into YukonGroupRole values(-1,-35,'3');
+insert into YukonGroupRole values(-1,-36,'1');
 
+insert into YukonGroupRole values(-2,-100,'/operator/Operations.jsp');
 insert into YukonGroupRole values(-2,-101,'(none)');
-insert into YukonGroupRole values(-2,-100,'/user/user_trending.jsp?tab=graph');
-insert into yukongrouprole values(-2,-9000,'(none)');
-insert into yukongrouprole values(-2,-9001,'(none)');
-insert into yukongrouprole values(-2,-9002,'(none)');
-insert into yukongrouprole values(-2,-9003,'(none)');
+insert into yukongrouprole values(-2,-9000,' ');
+insert into yukongrouprole values(-2,-9001,'Energy Exchange');
+insert into yukongrouprole values(-2,-9002,'Energy Exchange');
+insert into yukongrouprole values(-2,-9003,' ');
+insert into yukongrouprole values(-2,-9010,'Notification');
+insert into yukongrouprole values(-2,-9011,'Curtailment Provider');
 
+insert into YukonGroupRole values(-3,-100,'/user/ConsumerStat/stat/General.jsp');
 insert into YukonGroupRole values(-3,-102,'(none)');
-insert into YukonGroupRole values(-3,-100,'/operator/oper_trending.jsp?tab=graph');
-insert into yukongrouprole values(-3,-9000,'(none)');
-insert into yukongrouprole values(-3,-9001,'(none)');
-insert into yukongrouprole values(-3,-9002,'(none)');
-insert into yukongrouprole values(-3,-9003,'(none)');
 
+insert into YukonGroupRole values(-4,-100,'/user/CILC/user_trending.jsp');
+insert into YukonGroupRole values(-4,-103,'(none)');
+insert into yukongrouprole values(-4,-9000,' ');
+insert into yukongrouprole values(-4,-9001,'Energy Exchange');
+insert into yukongrouprole values(-4,-9002,'Energy Exchange');
+insert into yukongrouprole values(-4,-9003,' ');
+insert into yukongrouprole values(-4,-9010,'Notification');
+insert into yukongrouprole values(-4,-9011,'Curtailment Provider');
 
 insert into yukongrouprole values(-200,-200,'(none)');
 insert into yukongrouprole values(-201,-200,'(none)');
@@ -4057,6 +4048,66 @@ insert into YukonListEntry values( 1, 1, 0, 'Email', 1 );
 insert into YukonListEntry values( 2, 1, 0, 'Phone Number', 2 );
 insert into YukonListEntry values( 3, 1, 0, 'Pager Number', 2 );
 insert into YukonListEntry values( 4, 1, 0, 'Fax Number', 2 );
+
+
+insert into YukonListEntry values (1001,1001,0,'Program',1001);
+insert into YukonListEntry values (1002,1001,0,'Hardware',1002);
+insert into YukonListEntry values (1003,1002,0,'Signup',1101);
+insert into YukonListEntry values (1004,1002,0,'Activation Pending',1102);
+insert into YukonListEntry values (1005,1002,0,'Activation Completed',1103);
+insert into YukonListEntry values (1006,1002,0,'Termination',1104);
+insert into YukonListEntry values (1007,1002,0,'Temp Opt Out',1105);
+insert into YukonListEntry values (1008,1002,0,'Future Activation',1106);
+insert into YukonListEntry values (1009,1002,0,'Install',1107);
+insert into YukonListEntry values (1010,1002,0,'Configure',1108);
+insert into YukonListEntry values (1011,1003,0,'OneWayReceiver',1201);
+insert into YukonListEntry values (1012,1004,0,'120/120',0);
+insert into YukonListEntry values (1013,1005,0,'LCR-5000',0);
+insert into YukonListEntry values (1014,1005,0,'LCR-4000',0);
+insert into YukonListEntry values (1015,1005,0,'LCR-3000',0);
+insert into YukonListEntry values (1016,1005,0,'LCR-2000',0);
+insert into YukonListEntry values (1017,1005,0,'LCR-1000',0);
+insert into YukonListEntry values (1018,1005,0,'Thermostat',1301);
+insert into YukonListEntry values (1019,1007,0,'Air Conditioner',1401);
+insert into YukonListEntry values (1020,1007,0,'Water Heater',1402);
+insert into YukonListEntry values (1021,1007,0,'Heating System',1403);
+insert into YukonListEntry values (1022,1007,0,'Pool Pump',1404);
+insert into YukonListEntry values (1023,1007,0,'Hot Tub',1405);
+insert into YukonListEntry values (1024,1008,0,'General',0);
+insert into YukonListEntry values (1025,1008,0,'Credit',0);
+insert into YukonListEntry values (1026,1009,0,'Service Call',0);
+insert into YukonListEntry values (1027,1009,0,'Install',0);
+insert into YukonListEntry values (1028,1010,0,'Unscheduled',1501);
+insert into YukonListEntry values (1029,1010,0,'Scheduled',1502);
+insert into YukonListEntry values (1030,1010,0,'Completed',1503);
+insert into YukonListEntry values (1031,1011,0,'Acct #',1601);
+insert into YukonListEntry values (1032,1011,0,'Phone #',1602);
+insert into YukonListEntry values (1033,1011,0,'Last name',1603);
+insert into YukonListEntry values (1034,1011,0,'Serial #',1604);
+insert into YukonListEntry values (1035,1006,0,'Available',1701);
+insert into YukonListEntry values (1036,1006,0,'Temp Unavail',1702);
+insert into YukonListEntry values (1037,1006,0,'Unavailable',1703);
+insert into YukonListEntry values (1038,1012,0,'(Unknown);',1801);
+insert into YukonListEntry values (1039,1012,0,'Century',0);
+insert into YukonListEntry values (1040,1012,0,'Universal',0);
+insert into YukonListEntry values (1041,1013,0,'(Unknown);',1901);
+insert into YukonListEntry values (1042,1013,0,'Basement',0);
+insert into YukonListEntry values (1043,1013,0,'North Side',0);
+insert into YukonListEntry values (1044,1014,0,'Likely',2001);
+insert into YukonListEntry values (1045,1014,0,'Unlikely',2002);
+insert into YukonListEntry values (1046,1015,0,'Weekday',2101);
+insert into YukonListEntry values (1047,1015,0,'Weekend',2102);
+insert into YukonListEntry values (1048,1015,0,'Saturday',2103);
+insert into YukonListEntry values (1049,1015,0,'Sunday',2104);
+insert into YukonListEntry values (1050,1016,0,'Signup',2201);
+insert into YukonListEntry values (1051,1016,0,'Exit',2202);
+insert into YukonListEntry values (1052,1017,0,'Selection',2301);
+insert into YukonListEntry values (1053,1017,0,'Free Form',2302);
+insert into YukonListEntry values (1054,1018,0,'Cool',2401);
+insert into YukonListEntry values (1055,1018,0,'Heat',2402);
+insert into YukonListEntry values (1056,1018,0,'Off',2403);
+insert into YukonListEntry values (1057,1019,0,'Auto',2501);
+insert into YukonListEntry values (1058,1019,0,'On',2502);
 
 /*==============================================================*/
 /* Index: Indx_YkLstDefID                                       */
@@ -4146,12 +4197,13 @@ insert into YukonRole values(-31,'billing_wiz_activate','Client','false'	,'(none
 insert into YukonRole values(-32,'billing_input_file','Client','c:\yukon\client\bin\BillingIn.txt','(none)');
 insert into YukonRole values(-33,'client_log_level','Client','INFO','(none)');
 insert into YukonRole values(-34,'client_log_file','Client','false','(none)');
+insert into YukonRole values(-35,'tdc_alarm_count','Client','3','(none)');
+insert into YukonRole values(-36,'pfactor_decimal_places','Client','1','(none)');
 
 insert into YukonRole values(-100,'HOME_URL','WebClient','default.jsp','(none)');
-insert into YukonRole values(-101,'WEB_USER','WebClient','(none)','(none)');
+insert into YukonRole values(-101,'WEB_OPERATOR','WebClient','(none)','(none)');
 insert into YukonRole values(-102,'WEB_RESIDENTIAL_CUSTOMER','WebClient','(none)','(none)');
 insert into YukonRole values(-103,'WEB_CICUSTOMER','WebClient','(none)','(none)');
-insert into YukonRole values(-104,'WEB_OPERATOR','WebClient','(none)', '(none)');
 
 insert into YukonRole values(-120,'OPERATOR_CONSUMER_INFO','WebClient','(none)','(none)');
 insert into YukonRole values(-121,'OPERATOR_COMMERCIAL_METERING','WebClient','(none)','(none)');
@@ -4188,10 +4240,13 @@ insert into yukonrole values(-200,'ESUBVIEW','Esub','true','(none)');
 insert into yukonrole values(-201,'ESUBEDIT','Esub','true','(none)');
 insert into yukonrole values(-202,'ESUBCONTROL','Esub','true','(none)');
 
-insert into yukonrole values(-9000,'TRENDING_DISCLAIMER_TEXT','WebClient','','(none)','(none)');
-insert into yukonrole values(-9001,'ENERGYEXCHANGE_TEXT','WebClient','Energy Exchange','(none)','(none)');
-insert into yukonrole values(-9002,'ENERGYEXCHANGE_HEADING_TEXT','WebClient','Energy Exchange','(none)','(none)');
-insert into yukonrole values(-9003,'CURTAILMENT_PROVIDER_TEXT','WebClient','Curtailment Provider','(none)','(none)');
+insert into yukonrole values(-9000,'TRENDING_DISCLAIMER_TEXT','WebClient',' ','(none)');
+insert into yukonrole values(-9001,'ENERGYEXCHANGE_TEXT','WebClient','Energy Exchange','(none)');
+insert into yukonrole values(-9002,'ENERGYEXCHANGE_HEADING_TEXT','WebClient','Energy Exchange','(none)');
+insert into yukonrole values(-9003,'ENERGYEXCHANGE_PHONE_TEXT','WebClient',' ','(none)');
+
+insert into yukonrole values(-9010,'CURTAILMENT_TEXT','WebClient','Notification','(none)');
+insert into yukonrole values(-9011,'CURTAILMENT_PROVIDER_TEXT','WebClient','Curtailment Provider','(none)');
 
 /*==============================================================*/
 /* Index: Indx_YukRol_Nm                                        */
@@ -4220,6 +4275,26 @@ go
 insert into YukonSelectionList values( 0, 'N', '(none)', '(none)', '(none)', 'N' );
 insert into YukonSelectionList values( 1, 'A', 'Contact', 'DBEditor contact type list', 'ContactType', 'N' );
 
+insert into YukonSelectionList values (1001,'A','(none)','Not visible, list defines the event ids','LMCustomerEvent','N');
+insert into YukonSelectionList values (1002,'A','(none)','Not visible, defines possible event actions','LMCustomerAction','N');
+insert into YukonSelectionList values (1003,'A','(none)','Not visible, defines inventory device category','InventoryCategory','N');
+insert into YukonSelectionList values (1004,'A','(none)','Device voltage selection','DeviceVoltage','N');
+insert into YukonSelectionList values (1005,'A','(none)','Device type selection','DeviceType','N');
+insert into YukonSelectionList values (1006,'N','(none)','Hardware status selection', 'DeviceStatus','N');
+insert into YukonSelectionList values (1007,'A','(none)','Appliance category','ApplianceCategory','N');
+insert into YukonSelectionList values (1008,'A','(none)','Call type selection','CallType','N');
+insert into YukonSelectionList values (1009,'A','(none)','Service type selection', 'ServiceType','N');
+insert into YukonSelectionList values (1010,'N','(none)','Service request status', 'ServiceStatus','N');
+insert into YukonSelectionList values (1011,'N','(none)','Search by selection','SearchBy','N');
+insert into YukonSelectionList values (1012,'A','(none)','Appliance manufacturer selection', 'Manufacturer','N');
+insert into YukonSelectionList values (1013,'A','(none)','Appliance location selection', 'ApplianceLocation','N');
+insert into YukonSelectionList values (1014,'N','(none)','Chance of control selection', 'ChanceOfControl','N');
+insert into YukonSelectionList values (1015,'N','(none)','Thermostat settings time of week selection', 'TimeOfWeek','N');
+insert into YukonSelectionList values (1016,'N','(none)','Question type selection', 'QuestionType','N');
+insert into YukonSelectionList values (1017,'N','(none)','Answer type selection','AnswerType','N');
+insert into YukonSelectionList values (1018,'N','(none)','Thermostat mode selection', 'ThermostatMode','N');
+insert into YukonSelectionList values (1019,'N','(none)','Thermostat fan state selection', 'ThermostatFanState','N');
+
 
 /*==============================================================*/
 /* Table : YukonUser                                            */
@@ -4237,9 +4312,6 @@ go
 
 
 insert into YukonUser values(-1,'yukon','yukon',0,'01-JAN-00','Enabled');
-insert into YukonUser values(-2,'webuser','webuser',0,'01-JAN-00','Enabled');
-insert into YukonUser values(-3,'weboper','weboper',0,'01-JAN-00','Enabled');
-
 
 /*==============================================================*/
 /* Index: Indx_YkUsIDNm                                         */
@@ -4262,8 +4334,6 @@ go
 
 
 insert into YukonUserGroup values(-1,-1);
-insert into YukonUserGroup values(-2,-2);
-insert into YukonUserGroup values(-3,-3);
 
 
 /*==============================================================*/
