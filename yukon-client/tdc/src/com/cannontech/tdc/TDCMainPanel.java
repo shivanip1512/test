@@ -38,7 +38,6 @@ import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.tdc.data.ColumnData;
 import com.cannontech.tdc.data.Display;
-import com.cannontech.tdc.data.IDisplay;
 import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.roweditor.AnalogPanel;
