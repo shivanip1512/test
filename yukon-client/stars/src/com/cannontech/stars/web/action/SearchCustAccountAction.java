@@ -61,9 +61,12 @@ public class SearchCustAccountAction implements ActionBase {
 			LiteStarsCustAccountInformation acct2 = (LiteStarsCustAccountInformation) o2;
 			LiteContact cont1 = ContactFuncs.getContact( acct1.getCustomer().getPrimaryContactID() );
 			LiteContact cont2 = ContactFuncs.getContact( acct2.getCustomer().getPrimaryContactID() );
-			int result = cont1.getContLastName().compareTo( cont2.getContLastName() );
-			if (result == 0) result = cont1.getContFirstName().compareTo( cont2.getContFirstName() );
-			if (result == 0) result = acct1.getCustomerAccount().getAccountNumber().compareTo( acct2.getCustomerAccount().getAccountNumber() );
+			
+			int result = cont1.getContLastName().toUpperCase().compareTo( cont2.getContLastName().toUpperCase() );
+			if (result == 0)
+				result = cont1.getContFirstName().toUpperCase().compareTo( cont2.getContFirstName().toUpperCase() );
+			if (result == 0)
+				result = acct1.getCustomerAccount().getAccountNumber().compareTo( acct2.getCustomerAccount().getAccountNumber() );
     		return result;
     	}
     };
