@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_dyn_dispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/12/12 20:37:08 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/10/08 20:33:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -89,8 +89,6 @@ CtiDynamicPointDispatch& CtiDynamicPointDispatch::setArchivePending(BOOL b)
 CtiDynamicPointDispatch& CtiDynamicPointDispatch::setPoint(const RWTime &NewTime, UINT millis, double Val, int Qual, UINT tag_mask)
 {
     {
-        LockGuard guard( monitor() );    // This is the point's "mux" from parent.
-
         getDispatch().resetTags( MASK_RESETTABLE_TAGS );       // Clear out any value based tags..
 
         getDispatch().setValue(Val);

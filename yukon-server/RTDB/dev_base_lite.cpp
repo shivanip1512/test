@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base_lite.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/02/16 21:00:37 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/10/08 20:33:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,7 +28,6 @@ _controlInhibitFlag("N")
 
 CtiDeviceBaseLite::CtiDeviceBaseLite(const CtiDeviceBaseLite& aRef)
 {
-    LockGuard guard( monitor() );
     *this = aRef;
 }
 
@@ -38,97 +37,81 @@ CtiDeviceBaseLite::~CtiDeviceBaseLite()
 
 LONG CtiDeviceBaseLite::getID() const
 {
-    LockGuard guard( monitor() );
     return _deviceID;
 }
 RWCString CtiDeviceBaseLite::getClass() const
 {
-    LockGuard guard( monitor() );
     return _class;
 }
 RWCString CtiDeviceBaseLite::getName() const
 {
-    LockGuard guard( monitor() );
     return _name;
 }
 
 RWCString CtiDeviceBaseLite::getDescription() const
 {
-    LockGuard guard( monitor() );
     return _description;
 }
 
 RWCString CtiDeviceBaseLite::getObjectType() const
 {
-    LockGuard guard( monitor() );
     return _objectType;
 }
 
 RWCString CtiDeviceBaseLite::getDisableFlag() const
 {
-    LockGuard guard( monitor() );
     return _disableFlag;
 }
 
 CtiDeviceBaseLite& CtiDeviceBaseLite::setDisableFlag( const RWCString &str )
 {
-    LockGuard guard( monitor() );
     _disableFlag = str;
     return *this;
 }
 CtiDeviceBaseLite& CtiDeviceBaseLite::setControlInhibitFlag( const RWCString &str )
 {
-    LockGuard guard( monitor() );
     _controlInhibitFlag = str;
     return *this;
 }
 
 RWCString CtiDeviceBaseLite::getControlInhibitFlag() const
 {
-    LockGuard guard( monitor() );
     return _controlInhibitFlag;
 }
 
 
 CtiDeviceBaseLite& CtiDeviceBaseLite::setID( LONG id )
 {
-    LockGuard guard( monitor() );
     _deviceID = id;
     return *this;
 }
 CtiDeviceBaseLite& CtiDeviceBaseLite::setName( const RWCString &str )
 {
-    LockGuard guard( monitor() );
     _name = str;
     return *this;
 }
 CtiDeviceBaseLite& CtiDeviceBaseLite::setClass( const RWCString &str )
 {
-    LockGuard guard( monitor() );
     _class = str;
     return *this;
 }
 
 CtiDeviceBaseLite& CtiDeviceBaseLite::setDescription( const RWCString &str )
 {
-    LockGuard guard( monitor() );
     _description = str;
     return *this;
 }
 
 bool CtiDeviceBaseLite::operator<( const CtiDeviceBaseLite &rhs ) const
 {
-    LockGuard guard( monitor() );
     return(getID() < rhs.getID() );
 }
 bool CtiDeviceBaseLite::operator==( const CtiDeviceBaseLite &rhs ) const
 {
-    LockGuard guard( monitor() );
     return(getID() == rhs.getID() );
 }
 bool CtiDeviceBaseLite::operator()(const CtiDeviceBaseLite& aRef) const
 {
-    LockGuard guard( monitor() );
     return operator<(aRef);
 }
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_dyn_base.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/10/08 20:31:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,7 @@
 #include "ctidbgmem.h"  // CTIDBG_new
 #include "dlldefs.h"
 
-class IM_EX_PNTDB CtiDynamicPointBase : public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class IM_EX_PNTDB CtiDynamicPointBase
 {
 protected:
 
