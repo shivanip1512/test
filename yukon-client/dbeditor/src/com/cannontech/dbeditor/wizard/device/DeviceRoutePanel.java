@@ -190,7 +190,7 @@ public class DeviceRoutePanel
 	
 	         newVal.getDBPersistentVector().add( 
 	            PointFactory.createDmdAccumPoint(
-	               "KW-LP",
+	               "kW-LP",
 	               ((DeviceBase) val).getDevice().getDeviceID(),
 	               new Integer(++pointID),
 	               PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
