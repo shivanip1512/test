@@ -5,8 +5,6 @@ INCLPATHS+= \
 -I$(CPARMS)\include \
 -I$(COMMON)\include \
 -I$(RW) \
--I$(R_CPARMS)\include \
--I$(R_COMMON)\include \
 
 
 .PATH.cpp = .;$(R_CPARMS)
