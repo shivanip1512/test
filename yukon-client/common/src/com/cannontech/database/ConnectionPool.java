@@ -235,14 +235,17 @@ public class ConnectionPool
    private Connection newConnection() throws SQLException
    {
 	  Connection conn = null;
-
+	  
 	  /*************************************************************************/
 	  /** THESE PROPERTIES MUST BE RECOGNIZED BY THE DB DRIVER TO WORK!!!     **/
 	  /*************************************************************************/
 	  java.util.Properties p = new java.util.Properties();
 	  p.put("user", user);
 	  p.put("password", password);
-	  p.put("programname", System.getProperty("cti.app.name"));
+	  p.put("programname", 
+	  	( System.getProperty("cti.app.name") == null 
+	  	  ? "YukonClient"	  	  
+	  	  : System.getProperty("cti.app.name")) );
 
 	  try
 	  {
