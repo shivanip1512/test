@@ -31,6 +31,7 @@ import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.DeleteCustAccountAction;
 import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.web.servlet.StarsAdmin;
 
 /**
  * @author yao
@@ -353,6 +354,18 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 				sql = "DELETE FROM ECToGenericMapping WHERE EnergyCompanyID = " + user.getEnergyCompanyID();
 				stmt.setSQLString( sql );
 				stmt.execute();
+				
+				// Delete membership from the energy company hierarchy
+				if (energyCompany.getParent() != null) {
+					currentAction = "Deleting membership";
+					StarsAdmin.removeMember( energyCompany.getParent(), energyCompany.getLiteID() );
+				}
+				
+				// Delete LM groups created for the default route
+				if (energyCompany.getDefaultRouteID() >= 0) {
+					currentAction = "Deleting LM groups created for the default route";
+					StarsAdmin.removeDefaultRoute( energyCompany );
+				}
 				
 				// Delete the energy company!
 				currentAction = "Deleting the energy company";

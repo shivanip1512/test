@@ -209,7 +209,7 @@ public class StarsAdmin extends HttpServlet {
 		else if (action.equalsIgnoreCase("DeleteOperatorLogin"))
 			deleteOperatorLogin( user, req, session );
 		else if (action.equalsIgnoreCase("UpdateRoutes"))
-			updateRoutes( user, req, session );
+			updateRouteList( user, req, session );
 		else if (action.equalsIgnoreCase("MemberLogin"))
 			memberLogin( user, req, session );
 		else if (action.equalsIgnoreCase("AddMemberEnergyCompany"))
@@ -364,7 +364,7 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
-	public static void updateRoute(LiteStarsEnergyCompany energyCompany, int routeID) throws Exception {
+	public static void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID) throws Exception {
 		if (energyCompany.getDefaultRouteID() != routeID) {
 			if (energyCompany.getDefaultRouteID() == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
 				// Assign the default route to the energy company
@@ -412,6 +412,33 @@ public class StarsAdmin extends HttpServlet {
 			}
 			
 			energyCompany.setDefaultRouteID( routeID );
+		}
+	}
+	
+	public static void removeDefaultRoute(LiteStarsEnergyCompany energyCompany) throws Exception {
+		String sql = "SELECT exc.LMGroupID, opgrp.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro, OperatorSerialGroup opgrp " +
+				"WHERE opgrp.LoginID = " + energyCompany.getUserID() + " AND opgrp.LMGroupID = macro.OwnerID " +
+				"AND macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+		stmt.execute();
+		
+		if (stmt.getRowCount() > 0) {
+			int dftRtGrpID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
+			int serialGrpID = ((java.math.BigDecimal) stmt.getRow(0)[1]).intValue();
+			
+			sql = "DELETE FROM OperatorSerialGroup WHERE LMGroupID = " + serialGrpID;
+			stmt.setSQLString( sql );
+			stmt.execute();
+			
+			MacroGroup grpSerial = (MacroGroup) LMFactory.createLoadManagement( PAOGroups.MACRO_GROUP );
+			grpSerial.setDeviceID( new Integer(serialGrpID) );
+			Transaction.createTransaction( Transaction.DELETE, grpSerial ).execute();
+			ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_DELETE)[0] );
+			
+			LMGroupExpressCom grpDftRoute = (LMGroupExpressCom) LMFactory.createLoadManagement( PAOGroups.LM_GROUP_EXPRESSCOMM );
+			grpDftRoute.setLMGroupID( new Integer(dftRtGrpID) );
+			Transaction.createTransaction( Transaction.DELETE, grpDftRoute ).execute();
+			ServerUtils.handleDBChangeMsg( grpDftRoute.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_DELETE)[0] );
 		}
 	}
 	
@@ -569,7 +596,7 @@ public class StarsAdmin extends HttpServlet {
 			}
         	
 			int routeID = Integer.parseInt(req.getParameter("Route"));
-			updateRoute( energyCompany, routeID );
+			updateDefaultRoute( energyCompany, routeID );
 			
 			String[] operGroupNames = req.getParameter("OperatorGroup").split(",");
 			String operGroupIDs = "";
@@ -2243,21 +2270,26 @@ public class StarsAdmin extends HttpServlet {
 					);
 			stmt.execute();
 			
-			LiteStarsEnergyCompany energyCompany = new LiteStarsEnergyCompany( company );
-			SOAPServer.addEnergyCompany( energyCompany );
-			ServerUtils.handleDBChange( energyCompany, DBChangeMsg.CHANGE_TYPE_ADD );
+			LiteStarsEnergyCompany newCompany = new LiteStarsEnergyCompany( company );
+			SOAPServer.addEnergyCompany( newCompany );
+			ServerUtils.handleDBChange( newCompany, DBChangeMsg.CHANGE_TYPE_ADD );
 			
 			// Create login for the second operator
 			if (req.getParameter("Username2").length() > 0) {
 				operGroups = (operGroup != null)?
 						new LiteYukonGroup[] { operGroup } : new LiteYukonGroup[0];
-				liteUser = createOperatorLogin(
-						req.getParameter("Username2"), req.getParameter("Password2"), UserUtils.STATUS_ENABLED, operGroups, energyCompany );
+				createOperatorLogin( req.getParameter("Username2"), req.getParameter("Password2"), UserUtils.STATUS_ENABLED, operGroups, newCompany );
 			}
 			
 			// Assign default route to the energy company
 			int routeID = Integer.parseInt( req.getParameter("Route") );
-			updateRoute( energyCompany, routeID );
+			updateDefaultRoute( newCompany, routeID );
+			
+			// Add the new energy company as a member of the current company
+			if (req.getParameter("AddMember") != null) {
+				LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+				addMember( energyCompany, newCompany.getLiteID(), liteUser.getUserID() );
+			}
 			
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company created successfully");
 		}
@@ -2339,7 +2371,7 @@ public class StarsAdmin extends HttpServlet {
 		synchronized (routeIDs) { routeIDs.remove(rtID); }
 	}
 	
-	private void updateRoutes(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+	private void updateRouteList(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
@@ -2433,31 +2465,34 @@ public class StarsAdmin extends HttpServlet {
 		throw new WebClientException( "No member login assigned to '" + member.getName() + "'" );
 	}
 	
+	public static void addMember(LiteStarsEnergyCompany energyCompany, int memberID, int loginID) throws Exception {
+		ECToGenericMapping map = new ECToGenericMapping();
+		map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+		map.setItemID( new Integer(memberID) );
+		map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER );
+		Transaction.createTransaction( Transaction.INSERT, map ).execute();
+		
+		LiteStarsEnergyCompany member = SOAPServer.getEnergyCompany( memberID );
+		ArrayList members = energyCompany.getChildren();
+		synchronized (members) { members.add(member); }
+		
+		if (loginID != -1) {
+			map.setItemID( new Integer(loginID) );
+			map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
+			Transaction.createTransaction( Transaction.INSERT, map ).execute();
+			
+			ArrayList loginIDs = energyCompany.getMemberLoginIDs();
+			synchronized (loginIDs) { loginIDs.add(new Integer(loginID)); }
+		}
+	}
+	
 	private void addMemberEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
-		int memberID = Integer.parseInt( req.getParameter("MemberID") );
-		int loginID = Integer.parseInt( req.getParameter("LoginID") );
-		
 		try {
-			ECToGenericMapping map = new ECToGenericMapping();
-			map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-			map.setItemID( new Integer(memberID) );
-			map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER );
-			Transaction.createTransaction( Transaction.INSERT, map ).execute();
-			
-			LiteStarsEnergyCompany member = SOAPServer.getEnergyCompany( memberID );
-			ArrayList members = energyCompany.getChildren();
-			synchronized (members) { members.add(member); }
-			
-			if (loginID != -1) {
-				map.setItemID( new Integer(loginID) );
-				map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
-				Transaction.createTransaction( Transaction.INSERT, map ).execute();
-				
-				ArrayList loginIDs = energyCompany.getMemberLoginIDs();
-				synchronized (loginIDs) { loginIDs.add(new Integer(loginID)); }
-			}
+			int memberID = Integer.parseInt( req.getParameter("MemberID") );
+			int loginID = Integer.parseInt( req.getParameter("LoginID") );
+			addMember( energyCompany, memberID, loginID );
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
@@ -2529,45 +2564,49 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
-	private void removeMemberEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		
-		int memberID = Integer.parseInt( req.getParameter("MemberID") );
+	public static void removeMember(LiteStarsEnergyCompany energyCompany, int memberID) throws Exception {
 		ArrayList members = energyCompany.getChildren();
 		ArrayList loginIDs = energyCompany.getMemberLoginIDs();
 		
-		try {
-			synchronized (members) {
-				Iterator it = members.iterator();
-				while (it.hasNext()) {
-					LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) it.next();
-					if (memberID != -1 && member.getLiteID() != memberID) continue;
-					
-					ECToGenericMapping map = new ECToGenericMapping();
-					map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-					map.setItemID( member.getEnergyCompanyID() );
-					map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER );
-					Transaction.createTransaction( Transaction.DELETE, map ).execute();
-					
-					it.remove();
-					
-					synchronized (loginIDs) {
-						for (int i = 0; i < loginIDs.size(); i++) {
-							Integer loginID = (Integer) loginIDs.get(i);
-							LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( loginID.intValue() );
+		synchronized (members) {
+			Iterator it = members.iterator();
+			while (it.hasNext()) {
+				LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) it.next();
+				if (memberID != -1 && member.getLiteID() != memberID) continue;
+				
+				ECToGenericMapping map = new ECToGenericMapping();
+				map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+				map.setItemID( member.getEnergyCompanyID() );
+				map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER );
+				Transaction.createTransaction( Transaction.DELETE, map ).execute();
+				
+				it.remove();
+				
+				synchronized (loginIDs) {
+					for (int i = 0; i < loginIDs.size(); i++) {
+						Integer loginID = (Integer) loginIDs.get(i);
+						LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( loginID.intValue() );
+						
+						if (EnergyCompanyFuncs.getEnergyCompany( liteUser ).getEnergyCompanyID() == member.getLiteID()) {
+							map.setItemID( loginID );
+							map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
+							Transaction.createTransaction( Transaction.DELETE, map ).execute();
 							
-							if (EnergyCompanyFuncs.getEnergyCompany( liteUser ).getEnergyCompanyID() == member.getLiteID()) {
-								map.setItemID( loginID );
-								map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
-								Transaction.createTransaction( Transaction.DELETE, map ).execute();
-								
-								loginIDs.remove(i);
-								break;
-							}
+							loginIDs.remove(i);
+							break;
 						}
 					}
 				}
 			}
+		}
+	}
+	
+	private void removeMemberEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
+		try {
+			int memberID = Integer.parseInt( req.getParameter("MemberID") );
+			removeMember( energyCompany, memberID );
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
