@@ -419,8 +419,16 @@ public Object getValue(Object o)
 	
 	if( getJCheckBoxUse1().isSelected() )
 	{
-		window1.setAvailableStartTime( new Integer( getTimeComboStart1().getTimeInSeconds() ) );
-		window1.setAvailableStopTime( new Integer( getTimeComboStop1().getTimeInSeconds() ) );
+		int startTime = getTimeComboStart1().getTimeInSeconds() ;
+		int stopTime = getTimeComboStop1().getTimeInSeconds();
+		
+		if(stopTime < startTime)
+		{
+			//make sure server knows that this is the next day
+			stopTime = stopTime + 86400;
+		}
+		window1.setAvailableStartTime( new Integer(startTime) );
+		window1.setAvailableStopTime( new Integer(stopTime) );
 
 		window1.setDeviceID( program.getPAObjectID() );
 		window1.setWindowNumber( new Integer(1) );
@@ -432,8 +440,17 @@ public Object getValue(Object o)
 
 	if( getJCheckBoxUse2().isSelected() )
 	{
-		window2.setAvailableStartTime( new Integer( getTimeComboStart2().getTimeInSeconds() ) );
-		window2.setAvailableStopTime( new Integer( getTimeComboStop2().getTimeInSeconds() ) );
+		int startTime = getTimeComboStart2().getTimeInSeconds() ;
+		int stopTime = getTimeComboStop2().getTimeInSeconds();
+		
+		if(stopTime < startTime)
+		{
+			//make sure server knows that this is the next day
+			stopTime = stopTime + 86400;
+		}
+		
+		window2.setAvailableStartTime( new Integer(startTime));
+		window2.setAvailableStopTime( new Integer(stopTime));
 
 		window2.setDeviceID( program.getPAObjectID() );
 		window2.setWindowNumber( new Integer(2) );
@@ -611,15 +628,23 @@ public void setValue(Object o)
 			if( window.getWindowNumber().intValue() == 1 )
 			{
 				getJCheckBoxUse1().doClick();
-				getTimeComboStart1().setTimeInSeconds( window.getAvailableStartTime().intValue() );
-				getTimeComboStop1().setTimeInSeconds( window.getAvailableStopTime().intValue() );
+				int startTime = window.getAvailableStartTime().intValue();
+				int stopTime = window.getAvailableStopTime().intValue();
+				if(stopTime > 86400)
+					stopTime = stopTime - 86400;
+				getTimeComboStart1().setTimeInSeconds( startTime );
+				getTimeComboStop1().setTimeInSeconds( stopTime );
 			}
 			
 			if( window.getWindowNumber().intValue() == 2 )
 			{
 				getJCheckBoxUse2().doClick();
-				getTimeComboStart2().setTimeInSeconds( window.getAvailableStartTime().intValue() );
-				getTimeComboStop2().setTimeInSeconds( window.getAvailableStopTime().intValue() );
+				int startTime = window.getAvailableStartTime().intValue();
+				int stopTime = window.getAvailableStopTime().intValue();
+				if(stopTime > 86400)
+					stopTime = stopTime - 86400;
+				getTimeComboStart2().setTimeInSeconds( startTime );
+				getTimeComboStop2().setTimeInSeconds( stopTime );
 			}
 			
 		}	
