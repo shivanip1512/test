@@ -10,7 +10,7 @@ ptime to_boost_ptime(const RWTime& rw_time)
     struct tm tm;
     rw_time.extract(&tm);
     time_t tt = mktime(&tm);
-    return from_time_t(tt);
+    return boost::posix_time::from_time_t(tt);
 }
 
 ptime to_boost_ptime(const RWDBDateTime& rwdb_datetime)
@@ -18,7 +18,7 @@ ptime to_boost_ptime(const RWDBDateTime& rwdb_datetime)
     struct tm tm;
     rwdb_datetime.extract(&tm);
     time_t tt = mktime(&tm);
-    return from_time_t(tt);
+    return boost::posix_time::from_time_t(tt);
 }
 /*
 RWSet makeRWSet(const set<T>& std_set)
@@ -26,7 +26,7 @@ RWSet makeRWSet(const set<T>& std_set)
     RWSet rw_set;
     for(set<T>::iterator iter = std_set.begin(); iter != std_set.end(); iter++)
     {
-	rw_set.insert(*iter);
+    rw_set.insert(*iter);
     }
     return rw_set;
 }*/
@@ -50,5 +50,24 @@ RWDBReader& operator>>(RWDBReader& rdr, string& s)
     rdr >> rw_str;
     s = (const char*) rw_str.data();
     return rdr ;
+}
+
+RWDBReader&   operator>>(RWDBReader&   rdr, ptime& p)
+{
+    RWTime t;
+    rdr >> t;
+    p = to_boost_ptime(t);
+    return rdr;
+}
+
+RWDBInserter& operator<<(RWDBInserter& ins, const string &s)
+{
+    return ins << RWCString(s.data());
+}
+
+RWDBInserter& operator<<(RWDBInserter& ins, const ptime& p)
+{
+    RWDBDateTime dbdt(RWTime(ptime_to_utc_seconds(p) + rwEpoch));
+    return ins << dbdt;
 }
 

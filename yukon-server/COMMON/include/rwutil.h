@@ -10,7 +10,7 @@
 #include <rw/rwtime.h>
 #include <rw/db/datetime.h>
 
-#include "boost/date_time/posix_time/posix_time.hpp"
+#include "boost_time.h"
 
 #include "dlldefs.h"
 
@@ -20,22 +20,26 @@ using std::string;
 /*
  * RW Date/Time - boost
  */
-using namespace boost::posix_time;
-using namespace boost::gregorian; 
-
-IM_EX_CTIBASE date to_boost_date(const RWDate& rw_date);
-IM_EX_CTIBASE ptime to_boost_ptime(const RWTime& rw_time);
-IM_EX_CTIBASE ptime to_boost_ptime(const RWDBDateTime& rwdb_datetime);
+IM_EX_CTIBASE date to_boost_date(const RWDate &rw_date);
+IM_EX_CTIBASE ptime to_boost_ptime(const RWTime &rw_time);
+IM_EX_CTIBASE ptime to_boost_ptime(const RWDBDateTime &rwdb_datetime);
 
 /*
  * RW virtual stream - std::string operators
  */
-IM_EX_CTIBASE RWvostream& operator<<(RWvostream& strm, const string& s);
-IM_EX_CTIBASE RWvistream&  operator>>(RWvistream& strm, string& s);
+IM_EX_CTIBASE RWvostream &operator<<(RWvostream &strm, const string &s);
+IM_EX_CTIBASE RWvistream &operator>>(RWvistream &strm,       string &s);
 
 /*
  * RW Database - std::string operators
  */
-IM_EX_CTIBASE RWDBReader&  operator>>(RWDBReader& rdr, string& s);
+IM_EX_CTIBASE RWDBInserter &operator<<(RWDBInserter &ins, const string &s);
+IM_EX_CTIBASE RWDBReader   &operator>>(RWDBReader   &rdr,       string &s);
+
+/*
+ * RW Database - boost ptime operators
+ */
+IM_EX_CTIBASE RWDBInserter &operator<<(RWDBInserter &ins, const ptime &p);
+IM_EX_CTIBASE RWDBReader   &operator>>(RWDBReader   &rdr,       ptime &p);
 
 #endif
