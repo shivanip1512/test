@@ -70,7 +70,7 @@ alter table rawpointhistory modify millis not null;
 /* Default user for STARS customers who don't have a login */
 insert into YukonUser values (-9999,'(none)','(none)',0,'01-JAN-2000','Disabled');
 
-
+alter table YukonWebConfiguration modify AlternateDisplayName varchar2(100);
 
 /* energy company role properties */
 update YukonRoleProperty set Description='(Deprecated) Use this value as the admin email address only if the energy company''s primary contact doesn''t have an email address.' where RolePropertyId=-1100;
