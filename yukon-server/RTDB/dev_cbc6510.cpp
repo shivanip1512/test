@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/11/15 14:08:10 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/02/04 18:07:35 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 #include "porter.h"
 
 #include "pt_base.h"
+#include "pt_numeric.h"
 #include "master.h"
 
 #include "pointtypes.h"
@@ -114,7 +115,11 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
 void CtiDeviceCBC6510::processInboundPoints(RWTPtrSlist<CtiPointDataMsg> &points, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
 {
     CtiPointDataMsg *tmpMsg;
-    CtiPointBase *point;
+    CtiPointBase    *point;
+    CtiPointNumeric *pNumeric;
+
+    double tmpValue;
+
     int tripped, closed;
 
     tripped = -1;
@@ -145,6 +150,15 @@ void CtiDeviceCBC6510::processInboundPoints(RWTPtrSlist<CtiPointDataMsg> &points
             if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
             {
                 tmpMsg->setId(point->getID());
+
+                if( point->isNumeric() )
+                {
+                    pNumeric = (CtiPointNumeric *)point;
+
+                    tmpValue = pNumeric->computeValueForUOM(tmpMsg->getValue());
+
+                    tmpMsg->setValue(tmpValue);
+                }
 
                 retList.append(tmpMsg);
             }
