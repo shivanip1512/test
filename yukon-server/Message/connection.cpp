@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/18 15:25:36 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/18 16:30:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -233,6 +233,7 @@ void CtiConnection::InThread()
 
                     if(_serverConnection)
                     {
+                        if(getDebugLevel() & 0x00001000)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " Received a null message, shutting down the connection." << endl;
