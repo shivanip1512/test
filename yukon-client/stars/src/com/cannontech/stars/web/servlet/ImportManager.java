@@ -41,6 +41,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -273,9 +274,11 @@ public class ImportManager extends HttpServlet {
 	public static int app_idx = 3;
 	public static final int IDX_APP_ID = app_idx++;
 	public static final int IDX_RELAY_NUM = app_idx++;
+	public static final int IDX_APP_DESC = app_idx++;
 	public static final int IDX_APP_TYPE = app_idx++;
 	public static final int IDX_APP_NOTES = app_idx++;
 	public static final int IDX_MANUFACTURER = app_idx++;
+	public static final int IDX_AVAIL_FOR_CTRL = app_idx++;
 	public static final int IDX_YEAR_MADE = app_idx++;
 	public static final int IDX_APP_KW = app_idx++;
 	public static final int IDX_AC_TONNAGE = app_idx++;
@@ -1074,11 +1077,12 @@ public class ImportManager extends HttpServlet {
 		 * 2		(ACCOUNT_ID)
 		 * 3		(INV_ID)
 		 * 4		RELAY_NUM
-		 * 5		APP_NOTES
+		 * 5		APP_DESC
 		 * 6		APP_TYPE
 		 * 7		APP_NOTES
 		 * 8		MANUFACTURER
-		 * 9-12		APP_NOTES
+		 * 9-11		APP_NOTES
+		 * 12		AVAIL_FOR_CTRL
 		 * 13		YEAR_MADE
 		 * 14-21	APP_NOTES
 		 */
@@ -1100,8 +1104,8 @@ public class ImportManager extends HttpServlet {
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_RELAY_NUM] = st.sval;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_APP_NOTES] += st.sval + LINE_SEPARATOR;
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
+					fields[IDX_APP_DESC] = st.sval;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_TYPE] = st.sval;
@@ -1127,8 +1131,7 @@ public class ImportManager extends HttpServlet {
 					fields[IDX_APP_NOTES] += "WarrantyInfo:" + st.sval + LINE_SEPARATOR;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_APP_NOTES] += "AvailForCtrl:" + st.sval + LINE_SEPARATOR;
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_AVAIL_FOR_CTRL] = st.sval;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_YEAR_MADE] = st.sval;
@@ -2030,12 +2033,17 @@ public class ImportManager extends HttpServlet {
 			if (checkConstraint)
 				liteInv = energyCompany.searchForLMHardware( devTypeID, fields[IDX_SERIAL_NO] );
 		}
-		else if (fields[IDX_DEVICE_NAME].length() > 0)
+		else {
+			if (fields[IDX_DEVICE_NAME].equals(""))
+				throw new ImportProblem( ImportProblem.NO_DEVICE_NAME );
 			liteInv = energyCompany.searchForDevice( categoryID, fields[IDX_DEVICE_NAME] );
+			if (liteInv == null)
+				throw new ImportProblem( ImportProblem.DEVICE_NAME_NOT_FOUND );
+		}
 		
 		if (liteInv != null) {
-			if (liteAcctInfo != null && liteInv.getAccountID() == liteAcctInfo.getAccountID())
-				throw new WebClientException("Cannot insert duplicate hardware into the customer account");
+			if (liteInv.getAccountID() > 0)
+				throw new ImportProblem("The hardware is already assigned to account id = " + liteInv.getAccountID());
 			
 			createHw = new StarsCreateLMHardware();
 			StarsLiteFactory.setStarsInv( createHw, liteInv, energyCompany );
