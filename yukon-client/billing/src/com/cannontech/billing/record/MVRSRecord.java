@@ -54,7 +54,8 @@ public class MVRSRecord implements BillingRecordBase
 	private String inputFile = CtiUtilities.getExportDirPath() + "/inFile.txt";
 	//Map of deviceName (MeterNumber) string to RPH object
 	private HashMap deviceNameToRPHMap = null;
-	
+
+	private static final DecimalFormat READING_FORMAT = new DecimalFormat("0000000000"); 
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MMddyyyy"); 
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss");
 /**
@@ -63,6 +64,7 @@ public class MVRSRecord implements BillingRecordBase
 public MVRSRecord()
 {
 	super();
+	meterRecord = new MeterRecord();
 }
 /**
  * dataToString method comment.
@@ -124,7 +126,7 @@ public final HashMap getDeviceNameToRPHMap() throws java.sql.SQLException
     {
         deviceNameToRPHMap = new HashMap();
         
-		String sql = "SELECT RPH1.CHANGEID, RPH1.POINTID, RPH1.TIMESTAMP, RPH1.QUALITY, RPH1.VALUE, RPH.MILLIS, PAO.PAONAME " + 
+		String sql = "SELECT RPH1.CHANGEID, RPH1.POINTID, RPH1.TIMESTAMP, RPH1.QUALITY, RPH1.VALUE, RPH1.MILLIS, PAO.PAONAME " + 
 		        		" FROM RAWPOINTHISTORY RPH1, POINT P, YUKONPAOBJECT PAO " + 
 		        		" WHERE RPH1.TIMESTAMP = ( " + 
 		        		" SELECT MAX(RPH2.TIMESTAMP) FROM RAWPOINTHISTORY RPH2, POINT P2 " + 
@@ -306,7 +308,7 @@ public final String processFileHeader() {
 	storage.append(countFormat.format(numberMeters));	//N6 Number Meters
 	storage.append(countFormat.format(numberReads));	//N6 Number Reads
 	
-	while (storage.length() < 128)
+	while (storage.length() < 126)
 		storage.append(" "); //Extended Route Header Flag, Pad, Reserved (Not Supported by Yukon)
 	storage.append("\r\n");
 	return storage.toString();
@@ -366,8 +368,18 @@ public final String processMeterRecord(String buffer) {
 	storage.append(buffer.substring(98, 99));	//N1 Special message Display
 	storage.append(buffer.substring(100, 101));	//A1 Special Message indicator
 	storage.append(" ");	//A1 Trouble Message Indicator
-	storage.append("\r\n");
+	storage.append(" ");	//A/N1 Survey Response1
+	storage.append(" ");	//A/N1 Survey Response2
+	storage.append(" ");	//A1 Meter Change Out
+	storage.append(" ");	//A1 Change Meter Record Indicator
+	storage.append(buffer.substring(101, 102));	//A1 Meter Category
+	storage.append(buffer.substring(102, 103));	//A1 Location/Extra Meter
+	storage.append(buffer.substring(103, 106));	//N3 Time Code
+	storage.append("   ");	//A/N3 Future Use
+	storage.append(buffer.substring(69, 89));	//A/N20 Original Additional Meter Info
+	storage.append("     ");	//A/N5 Future Use
 	
+	storage.append("\r\n");
 	meterRecord.meterNumber = null;
 	meterRecord.meterNumber = new StringBuffer(buffer.substring(45,57).trim());
 	numberMeters++;
@@ -418,8 +430,6 @@ public final String processMVRSField(String buffer){//, StringBuffer writeToFile
 public final String processReadingRecord(String buffer) {
 	StringBuffer storage = new StringBuffer();
 	
-	DecimalFormat readingFormat = new DecimalFormat("0000000000");
-	
 	storage.append("RDG");
 	storage.append(buffer.substring(3, 11));	//A/N8 RouteNumber
 	storage.append(buffer.substring(11, 15));	//A/N4 Text Prompt
@@ -439,7 +449,7 @@ public final String processReadingRecord(String buffer) {
 	catch (SQLException e1)	{ }
 	if( dummyRPH != null)
 	{
-		storage.append(readingFormat.format(dummyRPH.getValue()));	//N10 Reading
+		storage.append(READING_FORMAT.format(dummyRPH.getValue()));	//N10 Reading
 		storage.append("0000");	//N4 Read Order
 		storage.append(DATE_FORMAT.format(dummyRPH.getTimeStamp().getTime()));	//D8 Read Date
 		storage.append(TIME_FORMAT.format(dummyRPH.getTimeStamp().getTime()));	//T6 Read Time
@@ -491,7 +501,8 @@ public static final String processRouteHeaderAndTrailer(String buffer) {
 	storage.append("00000000");
 	storage.append(buffer.substring(51,77));
 	storage.append("          "); // data not present in host download
-	storage.append(buffer.substring(79,83));
+	storage.append("00");	//force complete code
+	storage.append(buffer.substring(81,85));
 	storage.append("           "); // "Reserved" spaces
 	storage.append("\r\n");
 	numberRoutes++;
