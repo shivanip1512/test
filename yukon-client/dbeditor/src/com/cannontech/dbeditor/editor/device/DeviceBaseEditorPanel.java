@@ -1469,10 +1469,10 @@ public Object getValue(Object val)
 	else
 		d.setDisableFlag( new Character('N') );
 
-	if( getControlInhibitCheckBox().isSelected() )
+	/*if( getControlInhibitCheckBox().isSelected() )
 		d.getDevice().setControlInhibit( new Character( 'Y' ) );
 	else
-		d.getDevice().setControlInhibit( new Character( 'N' ) );
+		d.getDevice().setControlInhibit( new Character( 'N' ) );*/
 
 	//This is a little bit ugly
 	//The address could be coming from three distinct
@@ -1528,11 +1528,6 @@ public Object getValue(Object val)
 		{
 			((IDLCBase)val).getDeviceIDLCRemote().setPostCommWait( postCommWait );
 			((IDLCBase)val).getDeviceIDLCRemote().setCcuAmpUseType( getJComboBoxAmpUseType().getSelectedItem().toString() );
-		}
-		
-		if( val instanceof RTCBase )
-		{
-			//((RTCBase)val).getDeviceRTC().
 		}
 		
 		if( PAOGroups.isDialupPort(port.getType()) )
@@ -1601,7 +1596,12 @@ public Object getValue(Object val)
 		catch( NumberFormatException e )
 		{
 			s5.getSeries5().setPostCommWait( new Integer(0) );
-		}	
+		}
+		
+		if(getControlInhibitCheckBox().isSelected())
+			s5.getVerification().setDisable("Y");
+		else
+			s5.getVerification().setDisable("N");	
       }
       
       else if( val instanceof RTCBase)
@@ -2214,6 +2214,13 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
       
 		getSlaveAddressLabel().setVisible(false);
 		getSlaveAddressComboBox().setVisible(false);
+		
+		getControlInhibitCheckBox().setVisible(true);
+		ivjControlInhibitCheckBox.setText("Disable Verification");
+		if(((Series5Base)rBase).getVerification().getDisable().compareTo("Y") == 0)
+			getControlInhibitCheckBox().setSelected(true);
+		else
+			getControlInhibitCheckBox().setSelected(false);
       
 		getPostCommWaitSpinner().setValue( ((Series5Base)rBase).getSeries5().getPostCommWait() );
       

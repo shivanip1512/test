@@ -26,6 +26,7 @@ import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.device.DeviceVerification;
  
 public class DeviceCommChannelPanel extends com.cannontech.common.gui.util.DataInputPanel implements ActionListener, MouseListener, ListSelectionListener {
 	private javax.swing.JComboBox ivjPortComboBox = null;
@@ -210,7 +211,12 @@ public Object getValue(Object val)
 		else if (devType == PAOGroups.WCTP_TERMINAL)
 			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_WCTP_TERMINAL_ROUTE;
 		else if (devType == PAOGroups.SERIES_5_LMI)
+		{
+			Integer devID = ((DeviceBase)val).getDevice().getDeviceID();
+			((com.cannontech.database.data.device.Series5Base)val).setVerification(
+				new DeviceVerification(devID, devID, "N", "N"));
 			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_SERIES_5_LMI_ROUTE;
+		}
 		else if (devType == PAOGroups.RTC)
 			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_RTC_ROUTE;
 		else

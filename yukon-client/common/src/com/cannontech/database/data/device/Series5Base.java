@@ -5,6 +5,7 @@ package com.cannontech.database.data.device;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceSeries5RTU;
+import com.cannontech.database.db.device.DeviceVerification;
 /**
  * @author jdayton
  *
@@ -13,10 +14,12 @@ import com.cannontech.database.db.device.DeviceSeries5RTU;
  */
 public class Series5Base extends RemoteBase {
 	
-	//although this is not a DNP device, we use the DeviceAddress table
+	//we use the DeviceAddress table
 	//to store the address
 	private DeviceAddress deviceAddress = null;
 	private DeviceSeries5RTU series5RTU = null;
+	//DeviceVerification entry that references itself (identical IDs)
+	private DeviceVerification lmiVerification = null;
 	
 	
 	public Series5Base() 
@@ -31,6 +34,7 @@ public class Series5Base extends RemoteBase {
 		super.add();
 	   	getSeries5().add();
 		getSeries5RTU().add();
+		getVerification().add();
 	}
 
 	/**
@@ -40,6 +44,7 @@ public class Series5Base extends RemoteBase {
 	{
 		getSeries5RTU().delete();
 	   	getSeries5().delete();
+	   	getVerification().delete();
 	   	super.delete();
 	}
 
@@ -51,6 +56,7 @@ public class Series5Base extends RemoteBase {
 	   	super.retrieve();
 	  	getSeries5().retrieve();
 		getSeries5RTU().retrieve();
+		getVerification().retrieve();
 	}
 	/**
 	 * Insert the method's description here.
@@ -62,6 +68,7 @@ public class Series5Base extends RemoteBase {
 	   	super.setDbConnection(conn);
 	   	getSeries5().setDbConnection(conn);
 		getSeries5RTU().setDbConnection(conn);
+		getVerification().setDbConnection(conn);
 	}
    
 	/**
@@ -73,6 +80,10 @@ public class Series5Base extends RemoteBase {
 	   	super.setDeviceID(deviceID);
 	   	getSeries5().setDeviceID(deviceID);
 		getSeries5RTU().setDeviceID(deviceID);
+		
+		//funky
+		getVerification().setReceiverID(deviceID);
+		getVerification().setTransmitterID(deviceID);
 	}
 	/**
 	 * This method was created in VisualAge.
@@ -82,6 +93,7 @@ public class Series5Base extends RemoteBase {
 	   	super.update();
 	   	getSeries5().update();
 		getSeries5RTU().update();
+		getVerification().update();
 	}
 
 	/**
@@ -123,5 +135,19 @@ public class Series5Base extends RemoteBase {
 	{
 		this.series5RTU = series5RTU;
 	}
+	
+	public DeviceVerification getVerification()
+	{
+		if(lmiVerification == null)
+			lmiVerification = new DeviceVerification();
+			
+		return lmiVerification;
+	}
+	
+	public void setVerification(DeviceVerification verify)
+	{
+		this.lmiVerification = verify;
+	}
+	
 
 }
