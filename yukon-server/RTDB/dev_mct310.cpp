@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2005/02/25 21:58:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -135,7 +135,7 @@ bool CtiDeviceMCT310::initCommandStore( )
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_LoadProfileInterval;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair((int)MCT_Function_LPInt, 0);
+    cs._funcLen = make_pair((int)MCT_Command_LPInt, 0);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_Multiplier;
@@ -172,12 +172,14 @@ bool CtiDeviceMCT310::initCommandStore( )
                             (int)MCT3XX_FuncReadMReadLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetValue_Frozen;
+//  ACH add frozen support for 310
+/*
+    cs._cmd     = CtiProtocolEmetcon::GetValue_FrozenKWH;
     cs._io      = IO_FCT_READ;
     cs._funcLen = make_pair((int)MCT3XX_FuncReadFrozenPos,
                             (int)MCT3XX_FuncReadFrozenLen);
     _commandStore.insert( cs );
-
+*/
     cs._cmd     = CtiProtocolEmetcon::GetStatus_Internal;
     cs._io      = IO_READ;
     cs._funcLen = make_pair((int)MCT3XX_GenStatPos,
@@ -214,12 +216,12 @@ bool CtiDeviceMCT310::initCommandStore( )
 
     cs._cmd     = CtiProtocolEmetcon::PutStatus_FreezeOne;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair((int)MCT3XX_FreezeOne, 0);
+    cs._funcLen = make_pair((int)MCT_Command_FreezeOne, 0);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutStatus_FreezeTwo;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair((int)MCT3XX_FreezeTwo, 0);
+    cs._funcLen = make_pair((int)MCT_Command_FreezeTwo, 0);
     _commandStore.insert( cs );
 
     //  only valid for sspec 1007 (and above?)
@@ -324,7 +326,7 @@ ULONG CtiDeviceMCT310::calcNextLPScanTime( void )
     unsigned long midnightOffset;
     int lpBlockSize, lpDemandRate, lpMaxBlocks;
 
-    CtiPointBase *pPoint = getDevicePointOffsetTypeEqual(1 + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType);
+    CtiPointBase *pPoint = getDevicePointOffsetTypeEqual(1 + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
     //  make sure to completely recalculate this every time
     _nextLPScanTime = YUKONEOT;
@@ -628,7 +630,7 @@ INT CtiDeviceMCT310::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
             break;
         }
-        case (CtiProtocolEmetcon::GetValue_Frozen):
+
         default:
         {
             status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
@@ -1042,7 +1044,7 @@ INT CtiDeviceMCT310::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                 max_blocks = 8;
             }
 
-            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( 1 + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
+            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( 1 + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
 
             if( point != NULL )
             {

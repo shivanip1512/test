@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2005/02/21 21:47:11 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2005/02/25 21:58:36 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -289,7 +289,7 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
 
         for( int i = 0; i < MCT31X_ChannelCount; i++ )
         {
-            CtiPointBase *pPoint = getDevicePointOffsetTypeEqual((i+1) + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType);
+            CtiPointBase *pPoint = getDevicePointOffsetTypeEqual((i+1) + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
             //  safe default
             _nextLPTime[i] = YUKONEOT;
@@ -630,7 +630,6 @@ INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             break;
         }
 
-        case CtiProtocolEmetcon::GetValue_Frozen:
         default:
         {
             status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
@@ -2516,7 +2515,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                 max_blocks = 8;
             }
 
-            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( retrieved_channel + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
+            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( retrieved_channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
 
             if( point != NULL )
             {
