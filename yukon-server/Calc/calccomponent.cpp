@@ -39,7 +39,7 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
         else if( operationType == "-" )     _operationType = subtraction;
         else if( operationType == "*" )     _operationType = multiplication;
         else if( operationType == "/" )     _operationType = division;
-        else if( operationType == "push" )  _operationType = push;
+        else if( !operationType.compareTo("push", RWCString::ignoreCase) )  _operationType = push;
         else
         {
             {
@@ -74,7 +74,7 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
         else if( operationType == "-" )     _operationType = subtraction;
         else if( operationType == "*" )     _operationType = multiplication;
         else if( operationType == "/" )     _operationType = division;
-        else if( operationType == "push" )  _operationType = push;
+        else if( !operationType.compareTo("push", RWCString::ignoreCase) )  _operationType = push;
         else
         {
             {
@@ -212,7 +212,7 @@ double CtiCalcComponent::calculate( double input )
             case push:           
                 if( _parent != NULL )
                 {
-                    _parent->push( input );
+                    _parent->push( componentPointPtr->getPointValue( ) );
                 }
                 else
                 {
@@ -238,7 +238,7 @@ double CtiCalcComponent::calculate( double input )
             case push:           
                 if( _parent != NULL )
                 {
-                    _parent->push( input );
+                    _parent->push( _constantValue );
                 }
                 else
                 {
@@ -260,7 +260,7 @@ double CtiCalcComponent::calculate( double input )
         if( _CALC_DEBUG )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "CtiCalcComponent::calculate(); function: " << _functionName << "; input:" << orignal << ",   constant:" << _constantValue << ",   return:" << input << endl;
+            dout << "CtiCalcComponent::calculate(); function return:" << input << endl;
         }
     }
 
@@ -335,8 +335,8 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
     }
     else if( functionName == "P-Factor KW/KVar" )
     {
-        DOUBLE kw = _parent->pop();
         DOUBLE kvar = _parent->pop();
+        DOUBLE kw = _parent->pop();
         DOUBLE newPowerFactorValue = 1.0;
         DOUBLE kva = 0.0;
 
@@ -359,9 +359,8 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
     }
     else if( functionName == "P-Factor KW/KQ" )
     {
-
-        DOUBLE kw = _parent->pop();
         DOUBLE kq = _parent->pop();
+        DOUBLE kw = _parent->pop();
         DOUBLE kvar = ((2.0*kq)-kw)/SQRT3;
         DOUBLE newPowerFactorValue = 1.0;
         DOUBLE kva = 0.0;
@@ -385,8 +384,8 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
     }
     else if( functionName == "P-Factor KW/KVa" )
     {
-        DOUBLE kw = _parent->pop();
         DOUBLE kva = _parent->pop();
+        DOUBLE kw = _parent->pop();
         DOUBLE newPowerFactorValue = 1.0;
 
         if( kva != 0.0 )
