@@ -107,11 +107,4 @@
 	datePart.setTimeZone(tz);
 	dateFormat.setTimeZone(tz);
 	histDateFormat.setTimeZone(tz);
-	
-	String logOffUrl = "";
-	{
-		String link = com.cannontech.stars.util.ServerUtils.forceNotNone(
-				AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LINK_LOG_OFF) );
-		if (link.length() > 0) logOffUrl = "&REDIRECT=" + link;
-	}
 %>
