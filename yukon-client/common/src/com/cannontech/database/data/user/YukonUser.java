@@ -7,6 +7,7 @@ import java.util.Vector;
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
@@ -35,6 +36,32 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		}
 		
 	}
+
+
+	/**
+	 * This method was created in VisualAge.
+	 * @param pointID java.lang.Integer
+	 */
+	public final static boolean isUsedByContact(int loginID_, String databaseAlias) throws java.sql.SQLException 
+	{
+		com.cannontech.database.SqlStatement stmt =
+			new com.cannontech.database.SqlStatement(
+				"SELECT LoginID FROM " + 
+				Contact.TABLE_NAME + 
+				" WHERE LoginID=" + loginID_,
+				databaseAlias );
+	
+		try
+		{
+			stmt.execute();
+			return (stmt.getRowCount() > 0 );
+		}
+		catch( Exception e )
+		{
+			return false;
+		}
+	}
+	
 	
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
