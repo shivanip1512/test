@@ -192,8 +192,8 @@ function sendCommand(cmd) {
                     <tr> 
                       <form name="ctrlForm" method="POST" action="/servlet/SOAPClient">
 					    <input type="hidden" name="action" value="">
-						<input type="hidden" name="REDIRECT" value="<%= request.getRequestURL().toString() %>">
-						<input type="hidden" name="REFERRER" value="<%= request.getRequestURL().toString() %>">
+						<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() + "?InvNo=" + invNoStr %>">
+						<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() + "?InvNo=" + invNoStr %>">
 						<input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
                         <td valign="top" align = "center"> 
                           <table width="46%" border="0" height="26" cellpadding = "3" cellspacing = "0">
