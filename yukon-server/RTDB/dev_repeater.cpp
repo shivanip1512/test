@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/05/08 14:28:04 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/05/16 14:47:35 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -192,7 +192,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
             pOut->RouteID         = routeID;
             pOut->Request.RouteID = routeID;
 
-            EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 4 );
+            EstablishOutMessagePriority( pOut, MAXPRIORITY - 4 );
 
             if( (Route = CtiDeviceBase::getRoute( routeID )) != NULL )    // This is "this's" route
             {
