@@ -5,18 +5,10 @@ package com.cannontech.dbtools.dbsleuth;
  * Creation date: (1/17/2001 10:52:06 AM)
  * @author: 
  */
-import java.util.Properties;
-import java.util.Vector;
-
-
-public class DBSleuth extends javax.swing.JFrame implements java.awt.event.ActionListener, java.awt.event.WindowListener {
-   private Vector drivers = new Vector();
-	private String serverField = null;
-	private String driverField = null;
-	private String userNameField = null;
-	private String passwordField = null;
-   TableSorter sorter;
-   JDBCAdapter dataBase;
+public class DBSleuth extends javax.swing.JFrame implements java.awt.event.ActionListener, java.awt.event.WindowListener
+{
+	private TableSorter sorter;
+	private JDBCAdapter dataBase;
 	private javax.swing.JButton ivjJButtonConfig = null;
 	private javax.swing.JButton ivjJButtonExecute = null;
 	private javax.swing.JPanel ivjJFrameContentPane = null;
@@ -74,13 +66,10 @@ private void closeDatabase()
 	}
 	
 }
+
 public void connect()
 {
-   dataBase = new JDBCAdapter(
-		 		serverField,
-	         driverField,
-	         userNameField,
-	         passwordField);
+	dataBase = new JDBCAdapter();
    
    sorter.setModel(dataBase);
 }
@@ -120,55 +109,7 @@ private void connEtoC2(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
-/**
- * Insert the method's description here.
- * Creation date: (1/17/2001 11:09:21 AM)
- */
-private boolean getExternalResources() 
-{
-	  // Log to System.err until we have read the logfile property
-	  java.io.InputStream is = getClass().getResourceAsStream("/db.properties");
-	  Properties dbProps = new Properties();
-	  try
-	  {
-		 dbProps.load(is);
-	  }
-	  catch (Exception e)
-	  {
-		 com.cannontech.clientutils.CTILogger.info("Can't read the properties file. " +
-			"Make sure db.properties is in the CLASSPATH" );
-		 return false;
-	  }
-	  
-   String driverClasses = dbProps.getProperty("drivers");
-   java.util.StringTokenizer st = new java.util.StringTokenizer(driverClasses);   
-   while (st.hasMoreElements())
-   {
-	  driverField = st.nextToken().trim();
-   }
 
-   java.util.Enumeration propNames = dbProps.propertyNames();
-   while (propNames.hasMoreElements())
-   {
-	  String name = (String) propNames.nextElement();
-	  if (name.endsWith(".url"))
-	  {
-		 String poolName = name.substring(0, name.lastIndexOf("."));
-		 serverField = dbProps.getProperty(poolName + ".url");
-		 if (serverField == null)
-		 {
-			com.cannontech.clientutils.CTILogger.info("No URL specified for " + poolName);
-			continue;
-		 }
-
-		 userNameField = dbProps.getProperty(poolName + ".user");
-		 passwordField = dbProps.getProperty(poolName + ".password");
-	  }
-	  
-   }
-
-   return true; 
-}
 /**
  * Return the JButtonConfig property value.
  * @return javax.swing.JButton
@@ -484,8 +425,8 @@ private javax.swing.JTextArea getJTextArea() {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initializes connections
@@ -533,11 +474,8 @@ private void initialize() {
 	}
 	// user code begin {2}
 
-	if( getExternalResources() )
-	{
-		connect();
-		com.cannontech.clientutils.CTILogger.info("Connected to DB!");
-	}
+	connect();
+	com.cannontech.clientutils.CTILogger.info("Connected to DB!");
 		
 	// user code end
 }

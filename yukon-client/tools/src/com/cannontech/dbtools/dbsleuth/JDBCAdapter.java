@@ -22,7 +22,6 @@ package com.cannontech.dbtools.dbsleuth;
  */
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -32,6 +31,9 @@ import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
+
 public class JDBCAdapter extends AbstractTableModel {
 	Connection          connection;
 	Statement           statement;
@@ -40,18 +42,16 @@ public class JDBCAdapter extends AbstractTableModel {
 	Vector		rows = new Vector();
 	ResultSetMetaData   metaData;
 
-	public JDBCAdapter(String url, String driverName,
-					   String user, String passwd) {
-		try {
-			Class.forName(driverName);
+	public JDBCAdapter()
+	{
+		try
+		{
 			com.cannontech.clientutils.CTILogger.info("Opening db connection");
 
-			connection = DriverManager.getConnection(url, user, passwd);
+			connection = PoolManager.getInstance().getConnection(
+				CtiUtilities.getDatabaseAlias() );
+
 			statement = connection.createStatement();
-		}
-		catch (ClassNotFoundException ex) {
-			System.err.println("Cannot find the database driver classes.");
-			System.err.println(ex);
 		}
 		catch (SQLException ex) {
 			System.err.println("Cannot connect to this database.");
