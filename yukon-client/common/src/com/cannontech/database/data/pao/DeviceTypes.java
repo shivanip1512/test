@@ -83,6 +83,7 @@ public interface DeviceTypes extends TypeBase
 	public final static int LM_GROUP_GOLAY			= DEVICE_OFFSET + 70;
 	
 	public final static int SERIES_5_LMI			= DEVICE_OFFSET + 71;
+	public final static int RTC						= DEVICE_OFFSET + 72;
 
 
 	//all the possible text representation of each device type.
@@ -158,6 +159,8 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_SADIGITAL_GROUP = {"SA-Digital Group"};
 	public static final String[] STRING_GOLAY_GROUP = {"Golay Group"};
 	public static final String[] STRING_SERIES_5_LMI = {"SERIES 5 LMI", "Series 5 LMI"};
+	public static final String[] STRING_RTC = {"RTC"};
+	
 	
 	
 }

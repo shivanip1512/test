@@ -7,6 +7,8 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.MCT_Broadcast;
 import com.cannontech.database.data.device.DNPBase;
+import com.cannontech.database.data.device.RTCBase;
+import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
@@ -467,6 +469,14 @@ public Object getValue(Object val)
    else if( val instanceof DNPBase )
    {
       ((DNPBase)val).getDeviceDNP().setMasterAddress( address );
+   }
+   else if( val instanceof RTCBase )
+   {
+   		((RTCBase)val).getDeviceRTC().setRTCAddress( address );
+   }
+   else if( val instanceof Series5Base )
+   {
+		((Series5Base)val).getSeries5().setSlaveAddress( address );
    }
    else if( val instanceof CarrierBase )
 	{

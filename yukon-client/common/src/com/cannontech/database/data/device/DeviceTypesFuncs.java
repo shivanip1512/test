@@ -71,6 +71,7 @@ public final static boolean hasSlaveAddress(int intType)
       case ION_7700:
       case ION_7330:
       case ION_8300:
+      case SERIES_5_LMI:
          return true;
       default:
          return false;

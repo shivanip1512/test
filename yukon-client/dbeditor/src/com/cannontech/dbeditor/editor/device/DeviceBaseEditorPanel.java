@@ -1529,6 +1529,11 @@ public Object getValue(Object val)
 			((IDLCBase)val).getDeviceIDLCRemote().setCcuAmpUseType( getJComboBoxAmpUseType().getSelectedItem().toString() );
 		}
 		
+		if( val instanceof RTCBase )
+		{
+			//((RTCBase)val).getDeviceRTC().
+		}
+		
 		if( PAOGroups.isDialupPort(port.getType()) )
 		{
 			DeviceDialupSettings dDialup = ((RemoteBase) val).getDeviceDialupSettings();
@@ -1573,8 +1578,54 @@ public Object getValue(Object val)
          {
             dnp.getDeviceDNP().setPostCommWait( new Integer(0) );
          }
-   
+   	
       }
+      else if( val instanceof Series5Base )
+      {
+		Series5Base s5 = (Series5Base)val;
+		
+		try
+		{
+			s5.getSeries5().setSlaveAddress( new Integer(getPhysicalAddressTextField().getText()) );
+		}
+		catch( NumberFormatException e )
+		{
+			s5.getSeries5().setSlaveAddress( new Integer(0) );
+		}
+		
+		try
+		{
+			s5.getSeries5().setPostCommWait( new Integer(getPostCommWaitSpinner().getValue().toString()) );
+		}
+		catch( NumberFormatException e )
+		{
+			s5.getSeries5().setPostCommWait( new Integer(0) );
+		}	
+      }
+      
+      else if( val instanceof RTCBase)
+      {
+		RTCBase rtc = (RTCBase)val;
+		try
+		{
+			rtc.getDeviceRTC().setRTCAddress( new Integer(getPhysicalAddressTextField().getText()) );
+		}
+		catch( NumberFormatException e )
+		{
+			rtc.getDeviceRTC().setRTCAddress( new Integer(0) );
+		}
+            
+		try
+		{         
+			rtc.setLBTMode( getSlaveAddressComboBox().getSelectedItem().toString() );
+		}
+		catch( NumberFormatException e )
+		{
+			rtc.getDeviceRTC().setLBTMode( new Integer(0) );
+		}
+      }
+      
+      
 		else if( val instanceof IEDBase )
 		{
 			String password = getPasswordTextField().getText();
@@ -2128,6 +2179,48 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
       getPasswordLabel().setVisible(false);
       getPasswordTextField().setVisible(false);
    }
+   else if( rBase instanceof Series5Base )
+	{
+		getPhysicalAddressLabel().setVisible(true);
+		getPhysicalAddressLabel().setText("Slave Address:");
+		getPhysicalAddressTextField().setVisible(true);
+		getPhysicalAddressTextField().setText( ((Series5Base)rBase).getSeries5().getSlaveAddress().toString() );
+      
+		getSlaveAddressLabel().setVisible(false);
+		getSlaveAddressComboBox().setVisible(false);
+      
+		getPostCommWaitSpinner().setValue( ((Series5Base)rBase).getSeries5().getPostCommWait() );
+      
+      	getPasswordLabel().setVisible(false);
+		getPasswordTextField().setVisible(false);
+	}
+	else if( rBase instanceof RTCBase )
+	{
+		getPhysicalAddressLabel().setVisible(true);
+		getPhysicalAddressLabel().setText("Physical Address:");
+		getPhysicalAddressTextField().setVisible(true);
+		getPhysicalAddressTextField().setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0, 15) );
+		getPhysicalAddressTextField().setText( ((RTCBase)rBase).getDeviceRTC().getRTCAddress().toString() );
+			
+      	getSlaveAddressLabel().setText("Listen Before Talk: ");
+		getSlaveAddressLabel().setVisible(true);
+	  	getSlaveAddressComboBox().setVisible(true);
+      
+	  	//create a new editor for our combobox so we can set the document
+	  	getSlaveAddressComboBox().setEditable( false );
+	  	getSlaveAddressComboBox().removeAllItems();
+	  	getSlaveAddressComboBox().addItem( RTCBase.LBT3 );
+		getSlaveAddressComboBox().addItem( RTCBase.LBT2 );
+		getSlaveAddressComboBox().addItem( RTCBase.LBT1 );
+		getSlaveAddressComboBox().addItem( RTCBase.LBT0 );
+
+		getPostCommWaitSpinner().setVisible(false);
+		getPostCommWaitLabel().setVisible(false);
+		//getPostCommWaitSpinner().setValue( ((RTCBase)rBase).getDeviceRTC().getPostCommWait() );
+      
+		getPasswordLabel().setVisible(false);
+		getPasswordTextField().setVisible(false);
+	}
 	else
 	{
 		getPasswordLabel().setVisible(false);

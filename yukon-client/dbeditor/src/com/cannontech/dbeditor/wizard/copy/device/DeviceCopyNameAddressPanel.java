@@ -489,8 +489,10 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 				 ((ICapBankController) val).assignAddress( new Integer(getAddressTextField().getText()) );
 			else if (val instanceof Ion7700)
 				 ((Ion7700) val).getDeviceDNP().setSlaveAddress( new Integer(getAddressTextField().getText()) );
-			/*else if (val instanceof RTCBase)
-				((RTCBase) val).getDeviceRTC().setRTCAddress( new Integer( getAddressTextField().getText()));*/
+			else if (val instanceof Series5Base)
+				 ((Series5Base) val).getSeries5().setSlaveAddress( new Integer(getAddressTextField().getText()) );			
+			else if (val instanceof RTCBase)
+				((RTCBase) val).getDeviceRTC().setRTCAddress( new Integer( getAddressTextField().getText()));
 			else //didn't find it
 				throw new Error("Unable to determine device type when attempting to set the address");
 		}
@@ -855,10 +857,15 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
             ((Ion7700)val).getDeviceDNP().getSlaveAddress().toString() );            
       }
       
-      /*if( val instanceof RTCBase )
+      if( val instanceof Series5Base )
+      {
+      	 getAddressTextField().setText( ((Series5Base)val).getSeries5().getSlaveAddress().toString());
+      }
+      
+      if( val instanceof RTCBase )
       {
       	 getAddressTextField().setText( ((RTCBase)val).getDeviceRTC().getRTCAddress().toString());
-      }*/
+      }
    
       if( val instanceof ICapBankController )
       {

@@ -253,6 +253,8 @@ public final static int getDeviceType(String typeString)
 	  return SIXNET;
    else if (isStringDevice(compareString, STRING_SERIES_5_LMI))
    	  return SERIES_5_LMI;
+   else if (isStringDevice(compareString, STRING_RTC))
+   	  return RTC;
    else
 	  return INVALID;
 }
@@ -321,6 +323,8 @@ public final static String getPAOTypeString(int type)
 		  return STRING_TCU_5500[0];
 	  case SERIES_5_LMI:
 	  	  return STRING_SERIES_5_LMI[0];
+	  case RTC:
+	  	  return STRING_RTC[0];
 	  case LCU415:
 		  return STRING_LCU_415[0];
 	  case LCULG:
