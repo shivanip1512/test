@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2003/09/24 19:07:06 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2003/10/06 16:29:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2145,7 +2145,7 @@ bool CtiProtocolION::inputIsValid( CtiIONApplicationLayer &al, CtiIONDataStream 
         {
             al.putPayload(buf);
 
-            ds.initialize(buf, _appLayer.getPayloadLength());
+            ds.initialize(buf, al.getPayloadLength());
 
             if( ds.isValid() )
             {
