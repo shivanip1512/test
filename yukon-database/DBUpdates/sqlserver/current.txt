@@ -5,6 +5,13 @@
 insert into CTIDatabase values('2.39', 'Ryan', '6-NOV-2002', 'Added two columns to DynamicCCCapBank');
 
 
+create view Peakpointhistory_View  as
+select rph1.POINTID pointid, rph1.VALUE value, min(rph1.timestamp) timestamp
+from RAWPOINTHISTORY rph1
+where value in ( select max ( value ) from rawpointhistory rph2 where rph1.pointid = rph2.pointid )
+group by pointid, value;
+go
+
 /* Change the DynamicCCCapBank table */
 alter TABLE DynamicCCCapBank add OriginalFeederID NUMERIC not null DEFAULT 0;
 go
