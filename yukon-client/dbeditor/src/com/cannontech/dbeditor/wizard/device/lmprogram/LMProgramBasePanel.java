@@ -1141,9 +1141,9 @@ public boolean isInputValid()
  */
 public void jCheckBoxDayChooser_Action(java.awt.event.ActionEvent e) 
 {
-	//com.cannontech.clientutils.CTILogger.info("+++++++++++++++ A CHeck Box was pressed!!!");
-	
+	getJComboBoxHoliday().setEnabled( getJCheckBoxDayChooser().isHolidaySelected() );   
 	fireInputUpdate();
+
 	return;
 }
 /**
