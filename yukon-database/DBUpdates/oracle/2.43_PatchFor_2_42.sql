@@ -236,6 +236,15 @@ insert into YukonGroupRole values(-211,-1,-105,-10501,'(none)');
 insert into YukonGroupRole values(-230,-1,-106,-10600,'(none)');
 insert into YukonGroupRole values(-231,-1,-106,-10601,'(none)');
 
+insert into YukonGroupRole values(-190,-1,-104,-10400,'(none)');
+insert into YukonGroupRole values(-191,-1,-104,-10401,'(none)');
+insert into YukonGroupRole values(-192,-1,-104,-10402,'(none)');
+
+insert into YukonGroupRole values(-210,-1,-105,-10500,'(none)');
+insert into YukonGroupRole values(-211,-1,-105,-10501,'(none)');
+
+insert into YukonGroupRole values(-230,-1,-106,-10600,'(none)');
+insert into YukonGroupRole values(-231,-1,-106,-10601,'(none)');
 
 
 
