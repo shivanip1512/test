@@ -1,6 +1,7 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntry" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
+<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%
 	Properties savedReq = null;
 	if (request.getParameter("failed") != null) {
@@ -186,7 +187,14 @@ function changeMember(form) {
                           </td>
                           <td width="75%"> 
                             <select name="Route">
-                              <option value="0">(Default Route)</option>
+<%
+	String dftRoute = PAOFuncs.getYukonPAOName(member.getDefaultRouteID());
+	if (dftRoute != null)
+		dftRoute = "Default - " + dftRoute;
+	else
+		dftRoute = "Default - (None)";
+%>
+                              <option value="0"><%= dftRoute %></option>
                               <%
 	int savedRoute = 0;
 	if (savedReq.getProperty("Route") != null)

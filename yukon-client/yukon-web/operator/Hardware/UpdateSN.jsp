@@ -245,7 +245,14 @@ function init() {
                           <td width="25%">Route:</td>
                           <td width="70%"> 
                             <select name="Route">
-                              <option value="0">(Default Route)</option>
+<%
+	String dftRoute = PAOFuncs.getYukonPAOName(member.getDefaultRouteID());
+	if (dftRoute != null)
+		dftRoute = "Default - " + dftRoute;
+	else
+		dftRoute = "Default - (None)";
+%>
+                              <option value="0"><%= dftRoute %></option>
                               <%
 	int savedRoute = 0;
 	if (savedReq.getProperty("Route") != null)

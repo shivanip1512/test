@@ -510,7 +510,14 @@ function confirmCancel() {
                                 </td>
                                 <td width="200"> 
                                   <select name="Route" onchange="setContentChanged(true)">
-                                    <option value="0">(Default Route)</option>
+<%
+	String dftRoute = PAOFuncs.getYukonPAOName(liteEC.getDefaultRouteID());
+	if (dftRoute != null)
+		dftRoute = "Default - " + dftRoute;
+	else
+		dftRoute = "Default - (None)";
+%>
+                                    <option value="0"><%= dftRoute %></option>
 <%
 	int savedRoute = inventory.getLMHardware().getRouteID();
 	if (savedReq.getProperty("Route") != null)

@@ -272,7 +272,14 @@ function validate(form) {
                                 </td>
                                 <td width="210"> 
                                   <select name="Route" onchange="setContentChanged(true)">
-                                    <option value="0">(Default Route)</option>
+<%
+	String dftRoute = PAOFuncs.getYukonPAOName(liteEC.getDefaultRouteID());
+	if (dftRoute != null)
+		dftRoute = "Default - " + dftRoute;
+	else
+		dftRoute = "Default - (None)";
+%>
+                                    <option value="0"><%= dftRoute %></option>
 <%
 	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
 	for (int i = 0; i < routes.length; i++) {
