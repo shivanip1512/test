@@ -152,11 +152,13 @@
             msg.setStopTime(stopCal);
 	        
             com.cannontech.loadcontrol.LoadControlClientConnection conn = cs.getConnection();
-            conn.write(msg);
-                           
+            conn.write(msg);                           
             checker.clear();
             
+            /* Log this activity */
+            com.cannontech.clientutils.ActivityLogger.logEvent(user.getUserID(), programID, "Manual LMProgram Start", "Manual control of direct program requested, start: " + startCal.getTime() + " stop: " + stopCal.getTime());            
              response.sendRedirect( "oper_direct.jsp?pending=true");
+             
 		}
 	}
 

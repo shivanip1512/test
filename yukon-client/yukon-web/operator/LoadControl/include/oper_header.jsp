@@ -33,10 +33,10 @@
     LiteYukonUser ecUser = null;
     TimeZone tz = TimeZone.getDefault();	//init to the timezone of the running program
     if( EnergyCompanyFuncs.getEnergyCompany(user) != null)
-    {
+    { 
     	energyCompanyID = EnergyCompanyFuncs.getEnergyCompany(user).getEnergyCompanyID();
 	    ecUser = EnergyCompanyFuncs.getEnergyCompanyUser(energyCompanyID);
-		tz = TimeZone.getTimeZone(AuthFuncs.getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
+		tz = TimeZone.getTimeZone(AuthFuncs.getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE, "CST"));
 	}
     LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
     LoadcontrolCache cache = cs.getCache();

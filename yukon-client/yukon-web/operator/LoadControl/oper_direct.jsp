@@ -7,7 +7,7 @@
 	 */
 %>
 
-<%@ include file="include/oper_header.jsp" %>
+<%@ include file="include/oper_header.jsp" %>  
 
 <%@ page import="com.cannontech.message.macs.message.Schedule" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
@@ -23,10 +23,10 @@
 <cti:checkRole roleid="<%=DirectLoadcontrolRole.ROLEID%>">  
 <%
    String pending = request.getParameter("pending");
-     
+      
    /*
    	*	Update quickly if a command was just sent
-    */
+    */ 
    if( pending != null )
       out.println("<META HTTP-EQUIV=\"refresh\" CONTENT=\"7;URL=oper_direct.jsp\">");
    else
@@ -44,9 +44,10 @@
 	 * Determine which lm programs we need to display
 	 */
     long[] programIDs = com.cannontech.database.db.web.LMDirectOperatorList.getProgramIDs( user.getUserID() );       
+    System.out.println(programIDs.length);
     java.util.Arrays.sort(programIDs);
     LMProgramDirect[] allPrograms = cache.getDirectPrograms(); 
-	
+	  System.out.println(allPrograms.length);
     // Match our program ids with the actual programs in the cache so we know what to display
     for( int i = 0; i < allPrograms.length; i++ )
     {

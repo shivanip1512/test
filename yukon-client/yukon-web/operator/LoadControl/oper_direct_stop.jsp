@@ -109,6 +109,9 @@
                        
             checker.clear();
             
+            /* Log this activity */
+            com.cannontech.clientutils.ActivityLogger.logEvent(user.getUserID(), programID, "Manual LMProgram Stop", "Manual control of direct program requested, stop: " + stopCal.getTime());            
+
             response.sendRedirect( "oper_direct.jsp?pending=true");
 		}
 	}
