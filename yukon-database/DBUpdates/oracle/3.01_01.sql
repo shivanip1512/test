@@ -975,6 +975,8 @@ alter table LMGroupExpressCom
    add constraint FK_ExCZ_LMExCm foreign key (ZipID)
       references LMGroupExpressComAddress (AddressID);
 
+insert into YukonRoleProperty values(-1100,-2,'admin_email_address','info@cannontech.com','Sender address of certain emails sent by the energy company, e.g., odds for control and opt out notification.');
+
 
 
 
