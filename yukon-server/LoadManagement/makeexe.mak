@@ -60,6 +60,7 @@ lmenergyexchangeofferrevision.obj \
 lmgroupbase.obj \
 lmgroupemetcon.obj \
 lmgroupexpresscom.obj \
+lmgroupmct.obj \
 lmgrouppoint.obj \
 lmgroupripple.obj \
 lmgroupversacom.obj \
