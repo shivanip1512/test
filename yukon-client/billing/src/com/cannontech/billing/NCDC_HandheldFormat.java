@@ -45,7 +45,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 		if( dbAlias == null )
 			dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 	
-		java.util.Hashtable inputRecordsHashTable = retrieveInputFile(dbAlias);
+		java.util.Hashtable inputRecordsHashTable = retrieveInputFile();
 		if( inputRecordsHashTable == null)
 			return false;	//can't do anything without the input records
 	
@@ -120,7 +120,6 @@ public class NCDC_HandheldFormat extends FileFormatBase
 						{
 							multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(pointID))).doubleValue();
 						}
-						
 						if( pointID != lastPointID )	//just getting max time for each point
 						{
 							lastPointID = pointID;
@@ -187,19 +186,20 @@ public class NCDC_HandheldFormat extends FileFormatBase
 								   		used as the accountNumber also
 								*/
 								InputRecord inRecord = null;
-								inRecord = (InputRecord)inputRecordsHashTable.get(loc);
+								inRecord = (InputRecord)inputRecordsHashTable.get(loc.trim());
 			
-								if( inRecord != null)	//we have a big problem!  What is our deviceName?
+								if( inRecord == null)	//we have a big problem!  What is our deviceName?
 								{
 									//I guess we have to skip this record and move on!
 									com.cannontech.clientutils.CTILogger.info("SKIPPING DEVICE NAME " + loc + ".  DO NOT HAVE A REFERENCE TO THIS DEVICE IN THE INPUT FILE.");
 								}
 								else
 								{
-									String accountNumber = inRecord.account;
-									String meterNumber = inRecord.meterNumber;
-									String comment = inRecord.comment;
-									String tou = inRecord.tou;
+									record.setLocation(loc.trim());
+									record.setAcctNumber(inRecord.account);
+									record.setMeterNumber(inRecord.meterNumber);
+									record.setCommentCode(inRecord.comment);
+									record.setTou(inRecord.tou);
 								
 									lastDeviceID = deviceID;
 									getRecordVector().addElement(record);
@@ -239,15 +239,13 @@ public class NCDC_HandheldFormat extends FileFormatBase
 	 * @return java.util.Hashtable
 	 * @param dbAlias the database string name alias.
 	 */
-	public java.util.Hashtable retrieveInputFile(String dbAlias)
+	public java.util.Hashtable retrieveInputFile()
 	{
 		java.util.Vector returnInputRecordsVector = new java.util.Vector();
 	
 		java.util.Vector linesInFile = new java.util.Vector();
 		java.util.Hashtable inputRecordsHashTable = null;
 		
-		if (dbAlias == null)
-			dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 		try
 		{
 			java.io.FileReader inputRecordsFileReader = new java.io.FileReader(billingDefaults.getInputFileDir());
@@ -278,6 +276,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 	
 		if(linesInFile != null)
 		{	
+			com.cannontech.clientutils.CTILogger.info("Successfully read " + linesInFile.size()+ " lines from file " + getInputFileName()+".");
 			java.util.Collections.sort(linesInFile);
 			int hashCapacity = (linesInFile.size() + 1);
 			inputRecordsHashTable = new java.util.Hashtable(hashCapacity);
@@ -285,13 +284,13 @@ public class NCDC_HandheldFormat extends FileFormatBase
 			for (int i = 0; i < linesInFile.size(); i++)
 			{
 				String line = (String)linesInFile.get(i);
-				String keyLocation = line.substring(0, 25);
+				String keyLocation = line.substring(0, 25).trim();
 				String valueLocation = keyLocation;
-				String valueAccount = line.substring(34,46);
-				String valueMeter = line.substring(46, 56);
-				String valueComment = line.substring(139, 141);
-				String valueTou = line.substring(203, 204);
-				
+				String valueAccount = line.substring(34,46).trim();
+				String valueMeter = line.substring(46, 56).trim();
+				String valueComment = line.substring(139, 141).trim();
+				String valueTou = line.substring(203, 204).trim();
+			
 				InputRecord inRecord = new InputRecord(valueLocation, valueAccount, valueMeter, valueComment, valueTou);
 				inputRecordsHashTable.put(keyLocation, inRecord);
 			}
