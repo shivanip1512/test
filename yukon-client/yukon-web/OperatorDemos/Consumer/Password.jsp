@@ -4,6 +4,14 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
+<script language="JavaScript">
+function checkPasswords(form) {
+	if (form.Password.value != form.Password2.value) {
+		alert("The passwords you entered doesn't match, please reenter them");
+		return false;
+	}
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -58,14 +66,16 @@
               <% String header = "ADMINISTRATION - CHANGE PASSWORD"; %>
               <%@ include file="InfoSearchBar.jsp" %>
               <br>
-             
+            <form method="POST" action="/servlet/SOAPClient">
+			  <input type="hidden" name="action" value="UpdateLogin">
+			   
               <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                 <tr> 
                   <td width="100" class="TableCell"> 
                     <div align="right">User Name: </div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="textfield2432" maxlength="14" size="14">
+                    <input type="text" name="Username" maxlength="14" size="14" value="<%= userLogin.getUsername() %>">
                   </td>
                 </tr>
                 <tr> 
@@ -73,7 +83,7 @@
                     <div align="right">Old Password:</div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="textfield2433" maxlength="14" size="14">
+                    <input type="text" name="OldPassword" maxlength="14" size="14" value="<%= userLogin.getPassword() %>">
                   </td>
                 </tr>
                 <tr> 
@@ -81,7 +91,7 @@
                     <div align="right">New Password:</div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="textfield243" maxlength="14" size="14">
+                    <input type="text" name="Password" maxlength="14" size="14">
                   </td>
                 </tr>
                 <tr> 
@@ -89,29 +99,26 @@
                     <div align="right">Confirm Password:</div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="textfield2434" maxlength="14" size="14">
+                    <input type="text" name="Password2" maxlength="14" size="14">
                   </td>
                 </tr>
               </table>
               <br>
               <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                 <tr>
-				<form name="form1" method="get" action="Password.jsp"> 
                   <td width="186"> 
                       <div align="right"> 
-                        <input type="submit" name="Submit2" value="Submit">
+                        <input type="submit" name="Submit2" value="Submit" onclick="return checkPasswords(this.form)">
                       </div>
                   </td>
-				  </form>
-                  <form name="form1" method="get" action="">
                   <td width="194"> 
                       <div align="left"> 
                         <input type="reset" name="Cancel" value="Cancel">
                       </div>
                   </td>
-				  </form>
                 </tr>
               </table>
+			</form>
               <p>&nbsp;</p>
               </div>
           </td>

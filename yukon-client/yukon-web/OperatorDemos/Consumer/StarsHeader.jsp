@@ -35,6 +35,7 @@
 	StarsServiceCompanies companies = null;
 	StarsCallReportHistory callHist = null;
 	StarsServiceRequestHistory serviceHist = null;
+	StarsLogin userLogin = null;
 	StarsGetEnrollmentProgramsResponse categories = null;
 	
 	accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
@@ -51,6 +52,7 @@
 		companies = accountInfo.getStarsServiceCompanies();
 		callHist = accountInfo.getStarsCallReportHistory();
 		serviceHist = accountInfo.getStarsServiceRequestHistory();
+		userLogin = accountInfo.getStarsLogin();
 		categories = (StarsGetEnrollmentProgramsResponse) operator.getAttribute( "ENROLLMENT_PROGRAMS" );
 	}
 %>

@@ -89,8 +89,10 @@ function selectAccount(accountID) {
 	for (int i = 0; i < resp.getStarsCustAccountBriefCount(); i++) {
 		StarsCustAccountBrief acctBrief = resp.getStarsCustAccountBrief(i);
 %>
-              <tr valign="top" onclick="selectAccount(<%= acctBrief.getAccountID() %>)"> 
-                <td width="187" class="TableCell"><span class="Clickable"><%= acctBrief.getContactName() %></span></td>
+              <tr valign="top"> 
+                <td width="187" class="TableCell">
+				  <span class="Clickable" onclick="selectAccount(<%= acctBrief.getAccountID() %>)"><%= acctBrief.getContactName() %></span>
+				</td>
                 <td width="290" class="TableCell"><%= acctBrief.getStreetAddress() %></td>
                 <td width="112" class="TableCell"><%= acctBrief.getContPhoneNumber() %></td>
               </tr>
