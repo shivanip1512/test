@@ -153,7 +153,7 @@ public boolean retrieveBillingData(String dbAlias)
 				{
 					if( isKW_demand(ptOffset) )
 					{
-						if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+						if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 							break inValidTimestamp;
 							
 						//** Get the last record and add to it the other pointOffsets' values. **//
@@ -171,7 +171,7 @@ public boolean retrieveBillingData(String dbAlias)
 						new com.cannontech.billing.record.MV_90Record(meterNumber);
 					if (isKW_demand(ptOffset))
 					{
-						if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+						if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 							break inValidTimestamp;
 						
 						readingVector = new java.util.Vector(4);	//best guess capacity is 4
