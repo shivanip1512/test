@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/09/30 18:49:18 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/10/12 01:15:07 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -157,11 +157,78 @@ void CtiProtocolDNP::setCommand( DNPCommand command, dnp_output_point *points, i
 
             break;
         }
-        case DNP_SetDigitalOut:
+        case DNP_SetDigitalOut_Direct:
         {
             if( numPoints == 1 && points[0].type == DigitalOutput )
             {
                 _appLayer.setCommand(CtiDNPApplication::RequestDirectOp);
+
+                CtiDNPObjectBlock dob(CtiDNPObjectBlock::ByteIndex_ByteQty);
+                CtiDNPBinaryOutputControl *bout = CTIDBG_new CtiDNPBinaryOutputControl(CtiDNPBinaryOutputControl::ControlRelayOutputBlock);
+
+                bout->setControlBlock(points[0].dout.on_time,
+                                      points[0].dout.off_time,
+                                      points[0].dout.count,
+                                      points[0].dout.control,
+                                      points[0].dout.queue,
+                                      points[0].dout.clear,
+                                      points[0].dout.trip_close);
+
+                dob.addObjectIndex(bout, points[0].offset);
+
+                _appLayer.addObjectBlock(dob);
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                command = DNP_Invalid;
+            }
+
+            break;
+        }
+        case DNP_SetDigitalOut_SBO_SelectOnly:
+        case DNP_SetDigitalOut_SBO_Select:
+        {
+            if( numPoints == 1 && points[0].type == DigitalOutput )
+            {
+                _appLayer.setCommand(CtiDNPApplication::RequestSelect);
+
+                CtiDNPObjectBlock dob(CtiDNPObjectBlock::ByteIndex_ByteQty);
+                CtiDNPBinaryOutputControl *bout = CTIDBG_new CtiDNPBinaryOutputControl(CtiDNPBinaryOutputControl::ControlRelayOutputBlock);
+
+                bout->setControlBlock(points[0].dout.on_time,
+                                      points[0].dout.off_time,
+                                      points[0].dout.count,
+                                      points[0].dout.control,
+                                      points[0].dout.queue,
+                                      points[0].dout.clear,
+                                      points[0].dout.trip_close);
+
+                dob.addObjectIndex(bout, points[0].offset);
+
+                _appLayer.addObjectBlock(dob);
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                command = DNP_Invalid;
+            }
+
+            break;
+        }
+        case DNP_SetDigitalOut_SBO_Operate:
+        {
+            if( numPoints == 1 && points[0].type == DigitalOutput )
+            {
+                _appLayer.setCommand(CtiDNPApplication::RequestOperate);
 
                 CtiDNPObjectBlock dob(CtiDNPObjectBlock::ByteIndex_ByteQty);
                 CtiDNPBinaryOutputControl *bout = CTIDBG_new CtiDNPBinaryOutputControl(CtiDNPBinaryOutputControl::ControlRelayOutputBlock);
@@ -217,7 +284,9 @@ bool CtiProtocolDNP::commandRequiresRequeueOnFail( void )
 
     switch( _currentCommand )
     {
-        case DNP_SetDigitalOut:
+        case DNP_SetDigitalOut_Direct:
+        case DNP_SetDigitalOut_SBO_Select:
+        case DNP_SetDigitalOut_SBO_Operate:
         {
             retVal = true;
 
@@ -370,4 +439,48 @@ void CtiProtocolDNP::getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList
 {
     _appLayer.getInboundPoints(pointList);
 }
+
+
+bool CtiProtocolDNP::hasControlResult( void ) const
+{
+    return _appLayer.isControlResult();
+}
+
+long CtiProtocolDNP::getControlResultOffset( void ) const
+{
+    return _appLayer.getControlResultOffset();
+}
+
+bool CtiProtocolDNP::getControlResultSuccess( void ) const
+{
+    return _appLayer.getControlResultStatus() == CtiDNPBinaryOutputControl::Status_RequestAccepted;
+}
+
+const char *CtiProtocolDNP::getControlResultString( void ) const
+{
+    const char *retVal;
+
+    switch( _appLayer.getControlResultStatus() )
+    {
+        case CtiDNPBinaryOutputControl::Status_RequestAccepted:        retVal = ControlResultStr_RequestAccepted;        break;
+        case CtiDNPBinaryOutputControl::Status_ArmTimeout:             retVal = ControlResultStr_ArmTimeout;             break;
+        case CtiDNPBinaryOutputControl::Status_NoSelect:               retVal = ControlResultStr_NoSelect;               break;
+        case CtiDNPBinaryOutputControl::Status_FormattingError:        retVal = ControlResultStr_FormattingError;        break;
+        case CtiDNPBinaryOutputControl::Status_PointNotControllable:   retVal = ControlResultStr_PointNotControllable;   break;
+        case CtiDNPBinaryOutputControl::Status_QueueFullPointActive:   retVal = ControlResultStr_QueueFullPointActive;   break;
+        case CtiDNPBinaryOutputControl::Status_HardwareError:          retVal = ControlResultStr_HardwareError;          break;
+        default:                                                       retVal = ControlResultStr_InvalidStatus;          break;
+    }
+
+    return retVal;
+}
+
+const char const *CtiProtocolDNP::ControlResultStr_RequestAccepted      = "Request accepted";
+const char const *CtiProtocolDNP::ControlResultStr_ArmTimeout           = "Operate received after select timeout";
+const char const *CtiProtocolDNP::ControlResultStr_NoSelect             = "Operate without select";
+const char const *CtiProtocolDNP::ControlResultStr_FormattingError      = "Format error(s) in control";
+const char const *CtiProtocolDNP::ControlResultStr_PointNotControllable = "Control not supported on this point";
+const char const *CtiProtocolDNP::ControlResultStr_QueueFullPointActive = "Queue full, or point already active";
+const char const *CtiProtocolDNP::ControlResultStr_HardwareError        = "Control hardware problems";
+const char const *CtiProtocolDNP::ControlResultStr_InvalidStatus        = "Unknown/undefined error";
 

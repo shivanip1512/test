@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/06/02 18:20:08 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/10/12 01:15:07 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,6 +44,15 @@ private:
 
 protected:
 
+    static const char const *ControlResultStr_RequestAccepted;
+    static const char const *ControlResultStr_ArmTimeout;
+    static const char const *ControlResultStr_NoSelect;
+    static const char const *ControlResultStr_FormattingError;
+    static const char const *ControlResultStr_PointNotControllable;
+    static const char const *ControlResultStr_QueueFullPointActive;
+    static const char const *ControlResultStr_HardwareError;
+    static const char const *ControlResultStr_InvalidStatus;
+
 public:
 
     CtiProtocolDNP();
@@ -74,6 +83,12 @@ public:
 
     bool hasInboundPoints( void );
     void getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList );
+
+    bool hasControlResult( void ) const;
+    bool getControlResultSuccess( void ) const;
+    long getControlResultOffset( void )  const;
+    const char *getControlResultString( void ) const;
+
 
     enum DNPOutputPointType
     {
@@ -117,7 +132,12 @@ public:
         DNP_Class123Read,
         DNP_Class0123Read,
         DNP_SetAnalogOut,
-        DNP_SetDigitalOut
+        DNP_SetDigitalOut_Direct,
+        DNP_SetDigitalOut_SBO_Select,
+        DNP_SetDigitalOut_SBO_Operate,
+        DNP_SetDigitalOut_SBO_SelectOnly/*,
+        DNP_SBO_Select,
+        DNP_SBO_Operate*/
     };
 
     enum DNPOptions
