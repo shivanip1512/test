@@ -5,6 +5,7 @@ package com.cannontech.database.model;
  */
 import javax.swing.tree.TreePath;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
 
@@ -157,32 +158,20 @@ private void addPoints(DBTreeNode deviceNode )
  */
 private boolean createDevicePointList(java.util.List points, java.util.List destList, int deviceDevID )
 {
-	int ptSize = points.size();
-	int loc = java.util.Collections.binarySearch( 
-						points,
-						DUMMY_LITE_POINT, //must have the needed DeviceID set!!
-						com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator );
-
-	if( loc >= 0 ) //only loop if there is a point
+	//searches and sorts the list!
+	CtiUtilities.binarySearchRepetition( 
+					points,
+					DUMMY_LITE_POINT, //must have the needed DeviceID set!!
+					com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator,
+					destList );
+						
+	for( int i = destList.size()-1; i >= 0; i-- )
 	{
-		//walk back thru the list and make sure we 
-		//  have the first occurence of the deviceID
-		for (int j = (loc-1); j >= 0; j--)
-			if( ((LitePoint)points.get(j)).getPaobjectID() == deviceDevID )
-				loc--;
-			else
-				break;
-
-		com.cannontech.database.data.lite.LitePoint lp = null;
-		while( loc < ptSize 
-				 && (lp = (LitePoint)points.get(loc++)).getPaobjectID() 
-				  	  == deviceDevID )
-		{
-         if( isPointValid(lp) )
-			   destList.add( lp );
-		}
-
+		com.cannontech.database.data.lite.LitePoint lp = (LitePoint)points.get(i);		
+		if( !isPointValid(lp) )
+			destList.remove(i);
 	}
+
 	return destList.size() > 0;
 }
 /**
