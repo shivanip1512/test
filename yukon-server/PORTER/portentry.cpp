@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/03/26 20:33:41 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/07/14 18:28:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1096,6 +1096,18 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDevice *Dev)
             }
         }
 
+        if(OutMessage->Sequence == CtiProtocolEmetcon::Scan_LoadProfile)
+        {
+            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Cleaning Excess LP Entries for TargetID " << OutMessage->TargetID << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            // Remove any other Load Profile Queue Entries for this Queue.
+            CleanQueue( p711Info->QueueHandle, (void*)OutMessage, findLPRequestEntries, cleanupOutMessages );
+        }
+
         /* Go ahead and send block to the appropriate queing queue */
         if(WriteQueue(p711Info->QueueHandle, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
         {
@@ -1389,7 +1401,7 @@ INT ExecuteGoodRemote(OUTMESS *&OutMessage)
        !(OutMessage->EventCode & (DTRAN       |      // AND _NONE_ of these flags are set
                                   ENCODED     |
                                   RIPPLE      |
-                                  VERSACOM    |
+                                  /*VERSACOM    |*/  //  Versacom messages can be queued now
                                   REMS        |
                                   FISHERPIERCE)))
     {
