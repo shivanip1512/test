@@ -28,7 +28,7 @@ import com.cannontech.database.data.lite.LiteContact;
 public class ProgramDetailModel extends ReportModelBase
 {
 	/** A string for the title of the data */
-	private static String title = "ENERGY COMPANY ACTIVITY LOG";
+	private static String title = "PROGRAM STATUS SUMMARY";
 	
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 5;
