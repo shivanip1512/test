@@ -1962,7 +1962,6 @@ private void setStopFieldVisible()
 public void setValue(Object val) 
 {
 	Schedule sched = (Schedule)val;	
-	java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 
 	setEditableJComboBox( sched.getNonPersistantData().getCategories() );
 	
@@ -1992,6 +1991,7 @@ public void setValue(Object val)
 	if( sched.getStartPolicy().equalsIgnoreCase( Schedule.DATETIME_START ) )
 	{
 		/*----- SUPER HACK!!! */
+		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 		cal.setTime( new java.util.Date() );
 		/*----- END SUPER HACK */
 		
@@ -2015,8 +2015,8 @@ public void setValue(Object val)
 	}
 	else if( sched.getStartPolicy().equalsIgnoreCase( Schedule.DAYOFMONTH_START ) )
 	{		
-		cal.setTime( sched.getNextRunTime() );
-		getJTextFieldDayOfMonth().setText( new Integer(cal.get(java.util.GregorianCalendar.DAY_OF_MONTH) ).toString() );
+		//cal.setTime( sched.getNextRunTime() );		
+		getJTextFieldDayOfMonth().setText( new Integer(sched.getStartMonth()).toString() );
 	}
 	else if( sched.getStartPolicy().equalsIgnoreCase( Schedule.WEEKDAY_START ) )
 	{
