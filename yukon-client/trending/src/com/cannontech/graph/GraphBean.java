@@ -19,7 +19,6 @@ import com.cannontech.util.ServletUtil;
 
 public class GraphBean implements GraphDataFormats, GraphDefines
 {
-	
 	private Graph graphClass = null;
 	private final java.lang.String DB_ALIAS = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 //	private String directory = null;
@@ -596,6 +595,15 @@ public String getTab()
 {
 	return tab;
 }
+public int getWidth()
+{
+	return getGraph().getWidth();
+}
+public int getHeight()
+{
+	return getGraph().getHeight();
+}
+	
 public void setTab(String newTab)
 {
 	tab = newTab;
@@ -1042,11 +1050,6 @@ private com.cannontech.database.data.graph.GraphDefinition updateGraphDefinition
 	return gDef;
 	
 }*/
-
-
-
-
-
 public void encode(java.io.OutputStream out) throws IOException
 {
 	if( getFormat().equalsIgnoreCase("gif") )								
