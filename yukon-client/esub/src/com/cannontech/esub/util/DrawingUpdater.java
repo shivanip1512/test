@@ -98,7 +98,6 @@ drawing.getLxGraph().startUndoEdit("update");
 						if( comp[i] instanceof DynamicGraphElement ) {
 							DynamicGraphElement dge = (DynamicGraphElement) comp[i];
 							if( dge.shouldUpdate() ) {
-								System.out.println("found graph that needs updating");
 								dge.updateGraph();
 								change = true;
 							}							
