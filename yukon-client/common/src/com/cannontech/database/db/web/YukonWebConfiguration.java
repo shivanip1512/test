@@ -12,8 +12,6 @@ import com.cannontech.database.db.DBPersistent;
  */
 public class YukonWebConfiguration extends DBPersistent {
 
-    public static final int NONE_INT = 0;
-
     private Integer configurationID = null;
     private String logoLocation = "";
     private String description = "";
