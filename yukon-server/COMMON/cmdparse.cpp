@@ -9,6 +9,7 @@ using namespace std;
 #include <rw\rwtime.h>
 #include <rw\cstring.h>
 #include <rw\re.h>
+#undef mask_                // Stupid RogueWave re.h
 
 #include <limits.h>
 #include "yukon.h"
@@ -24,7 +25,6 @@ using namespace std;
 static RWCRExpr   re_num("[0-9]+");
 static RWCRExpr   re_hexnum("0x[0-9a-f]+");
 static RWCRExpr   re_anynum("0x[0-9a-f]+|[0-9]+");
-
 
 
 
@@ -3116,6 +3116,23 @@ INT CtiCommandParser::convertTimeInputToSeconds(const RWCString& inStr) const
     return val;
 }
 
+RWCString CtiCommandParser::asString()
+{
+    RWCString rstr;
+
+    map_itr_type itr(_cmd);
+
+    for(; itr(); )
+    {
+        if(rstr.length() > 0)
+        {
+            rstr += RWCString(":");
+        }
+        rstr += RWCString(itr.key()) + RWCString("=") + ( itr.value().getString().length() ? itr.value().getString(): RWCString("(none)")) + RWCString(",") + CtiNumStr(itr.value().getInt()) + RWCString(",") + CtiNumStr(itr.value().getReal());
+    }
+    return rstr;
+}
+
 void CtiCommandParser::Dump()
 {
     CHAR  oldFill = dout.fill();
@@ -4453,4 +4470,38 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
         }
     }
 }
+
+CtiCommandParser& CtiCommandParser::parseAsString(const RWCString str)
+{
+    _cmdString = RWCString("built from string");
+    _actionItems.clear();
+    _cmd.clear();
+
+    RWCString key;
+    RWCString asStr;
+    INT iValue;
+    DOUBLE dValue;
+
+    RWCTokenizer   tok(str);
+
+    while( !(key = tok("\= \t\n\0")).isNull() )
+    {
+        asStr = tok(", \t\n\0");
+        iValue = atoi( RWCString(tok(", \t\n\0")).data() );
+        dValue = atof( RWCString(tok("\: \t\n\0")).data());
+
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << key << " " << asStr << " " << iValue << " " << dValue << endl;
+        }
+    }
+
+    RWCString   temp;
+
+
+    return *this;
+}
+
 

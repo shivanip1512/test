@@ -118,6 +118,10 @@ public:
    RWTValSlist< RWCString >& getActionItems();
 
    void parse();
+
+   RWCString asString();
+   CtiCommandParser& parseAsString(const RWCString str);
+
 };
 
 
