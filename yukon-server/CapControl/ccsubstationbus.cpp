@@ -1915,16 +1915,27 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
     }
     else if( _controlmethod == CtiCCSubstationBus::SubstationBusControlMethod )
     {
-        for(UINT i=0;i<_ccfeeders.entries();i++)
-        {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[getLastFeederControlledPosition()];
 
-            if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
+        if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
+        {
+            currentFeeder->capBankControlStatusUpdate(pointChanges,getMinConfirmPercent(),getFailurePercent(),getVarValueBeforeControl(),getCurrentVarLoadPointValue());
+            setRecentlyControlledFlag(FALSE);
+            figureEstimatedVarLoadPointValue();
+        }
+        else
+        {
+            for(UINT i=0;i<_ccfeeders.entries();i++)
             {
-                currentFeeder->capBankControlStatusUpdate(pointChanges,getMinConfirmPercent(),getFailurePercent(),getVarValueBeforeControl(),getCurrentVarLoadPointValue());
-                setRecentlyControlledFlag(FALSE);
-                figureEstimatedVarLoadPointValue();
-                break;
+                currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+
+                if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
+                {
+                    currentFeeder->capBankControlStatusUpdate(pointChanges,getMinConfirmPercent(),getFailurePercent(),getVarValueBeforeControl(),getCurrentVarLoadPointValue());
+                    setRecentlyControlledFlag(FALSE);
+                    figureEstimatedVarLoadPointValue();
+                    break;
+                }
             }
         }
     }
@@ -1964,11 +1975,29 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
                 {
                     try
                     {
-                        if( ((CtiCCFeeder*)_ccfeeders[getLastFeederControlledPosition()])->getPAOId() == getLastFeederControlledPAOId() )
+                        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[getLastFeederControlledPosition()];
+
+                        if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
                         {
-                            if( ((CtiCCFeeder*)_ccfeeders[getLastFeederControlledPosition()])->getNewPointDataReceivedFlag() )
+                            if( currentFeeder->getNewPointDataReceivedFlag() )
                             {
                                 returnBoolean = TRUE;
+                            }
+                        }
+                        else
+                        {
+                            for(UINT i=0;i<_ccfeeders.entries();i++)
+                            {
+                                currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+
+                                if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
+                                {
+                                    if( currentFeeder->getNewPointDataReceivedFlag() )
+                                    {
+                                        returnBoolean = TRUE;
+                                    }
+                                    break;
+                                }
                             }
                         }
                     }
@@ -1980,13 +2009,27 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
 
                     if( !returnBoolean )
                     {
-                        for(ULONG i=0;i<_ccfeeders.entries();i++)
+                        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[getLastFeederControlledPosition()];
+
+                        if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
                         {
-                            if( ((CtiCCFeeder*)_ccfeeders[i])->getPAOId() == getLastFeederControlledPAOId() )
+                            if( currentFeeder->getNewPointDataReceivedFlag() )
                             {
-                                if( ((CtiCCFeeder*)_ccfeeders[i])->getNewPointDataReceivedFlag() )
+                                returnBoolean = TRUE;
+                            }
+                        }
+                        else
+                        {
+                            for(UINT i=0;i<_ccfeeders.entries();i++)
+                            {
+                                currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+
+                                if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
                                 {
-                                    returnBoolean = TRUE;
+                                    if( currentFeeder->getNewPointDataReceivedFlag() )
+                                    {
+                                        returnBoolean = TRUE;
+                                    }
                                     break;
                                 }
                             }
@@ -2116,7 +2159,8 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
             DOUBLE newCalcValue = getCurrentVarLoadPointValue();
             for(UINT i=0;i<_ccfeeders.entries();i++)
             {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[getLastFeederControlledPosition()];
+
                 if( getLastFeederControlledPAOId() == currentFeeder->getPAOId() )
                 {
                     RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
@@ -2156,6 +2200,62 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << RWTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 returnBoolean = FALSE;
+                            }
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    for(UINT i=0;i<_ccfeeders.entries();i++)
+                    {
+                        currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+
+                        if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
+                        {
+                            if( getLastFeederControlledPAOId() == currentFeeder->getPAOId() )
+                            {
+                                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                                for(UINT j=0;j<ccCapBanks.entries();j++)
+                                {
+                                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
+                                    if( currentCapBank->getPAOId() == currentFeeder->getLastCapBankControlledDeviceId() )
+                                    {
+                                        if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
+                                        {
+                                            DOUBLE change = newCalcValue - oldCalcValue;
+                                            DOUBLE ratio = change/currentCapBank->getBankSize();
+                                            if( ratio >= getMinConfirmPercent()*.01 )
+                                            {
+                                                returnBoolean = TRUE;
+                                            }
+                                            else
+                                            {
+                                                returnBoolean = FALSE;
+                                            }
+                                        }
+                                        else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+                                        {
+                                            DOUBLE change = oldCalcValue - newCalcValue;
+                                            DOUBLE ratio = change/currentCapBank->getBankSize();
+                                            if( ratio >= getMinConfirmPercent()*.01 )
+                                            {
+                                                returnBoolean = TRUE;
+                                            }
+                                            else
+                                            {
+                                                returnBoolean = FALSE;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << RWTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                            returnBoolean = FALSE;
+                                        }
+                                        break;
+                                    }
+                                }
                             }
                             break;
                         }
