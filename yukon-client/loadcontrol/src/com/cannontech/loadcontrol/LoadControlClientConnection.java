@@ -7,7 +7,6 @@ package com.cannontech.loadcontrol;
  */
 import java.util.Vector;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.events.LCChangeEvent;

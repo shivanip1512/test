@@ -12,7 +12,6 @@ package com.cannontech.web.loadcontrol;
  */
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -22,8 +21,10 @@ import javax.swing.Timer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.LMFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 import com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer;
@@ -362,12 +363,25 @@ public LMProgramDirect[] getDirectPrograms() {
 }
 
 /**
- * Creation date: (7/24/2001 11:23:41 AM)
- * @return Enumeration
+ * Returns the available control areas for the given user
+ * 
+ * @return Iterator
  */
-public Enumeration getAllControlAreas() 
+public Iterator getAllControlAreas( LiteYukonUser yukUser )
 {
-	return controlAreaMap.elements();
+    if( yukUser == null )
+        return controlAreaMap.values().iterator(); //return all areas
+
+    Iterator iter = controlAreaMap.values().iterator();
+    ArrayList paoList = new ArrayList(32);
+    while( iter.hasNext() )
+    {
+        LMControlArea area = (LMControlArea)iter.next();
+        if( AuthFuncs.userHasAccessPAO(yukUser, area.getYukonID().intValue()) )
+            paoList.add( area );        
+    }
+
+    return paoList.iterator();
 }
 
 /**

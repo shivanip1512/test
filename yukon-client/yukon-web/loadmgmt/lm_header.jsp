@@ -8,7 +8,7 @@
 <%@ page import="com.cannontech.roles.application.WebClientRole"%>
 <%@ page import="com.cannontech.clientutils.CTILogger" %>
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
-<%@ page import="java.util.Enumeration" %>
+<%@ page import="java.util.Iterator" %>
 <%@ page import="com.cannontech.common.util.NativeIntVector" %>
 
 <%@ page import="com.cannontech.loadcontrol.datamodels.ControlAreaTableModel" %>
@@ -35,7 +35,8 @@
 <%@ page import="com.cannontech.loadcontrol.gui.manualentry.ConstraintTableModel" %>
 <%@ page import="com.cannontech.loadcontrol.gui.manualentry.ResponseProg" %>
 <%@ page import="com.cannontech.message.server.ServerResponseMsg" %>
-
+<%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
+<%@ page import="com.cannontech.util.ServletUtil" %>
 
 <jsp:useBean 
 	id="lmSession" scope="session"

@@ -144,11 +144,13 @@
 					
 					
 					
-				  <% 
-					Enumeration enumAreas = lcCache.getAllControlAreas();
-					while( enumAreas.hasMoreElements() )
+				  <%
+					Iterator iterAreas = lcCache.getAllControlAreas(
+								(LiteYukonUser)session.getAttribute(ServletUtil.ATT_YUKON_USER) );
+
+					while( iterAreas.hasNext() )
 					{
-  					  LMControlArea lmCntrArea = (LMControlArea)enumAreas.nextElement();
+  					  LMControlArea lmCntrArea = (LMControlArea)iterAreas.next();
 					  
 					  if( !LCUtils.isAreaDisplayed(lmSession.getAreaView(), lmCntrArea.getControlAreaState().intValue()) )
 					  	continue;

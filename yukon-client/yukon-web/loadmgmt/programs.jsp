@@ -143,10 +143,12 @@ else
                       <select name="select" onchange="location=this.options[this.selectedIndex].value">
 
 						  <% 
-							Enumeration enumAreas = lcCache.getAllControlAreas();
-							while( enumAreas.hasMoreElements() )
+							Iterator iterAreas = lcCache.getAllControlAreas(
+										(LiteYukonUser)session.getAttribute(ServletUtil.ATT_YUKON_USER) );
+							
+							while( iterAreas.hasNext() )
 							{
-		  					  LMControlArea tempArea = (LMControlArea)enumAreas.nextElement();
+		  					  LMControlArea tempArea = (LMControlArea)iterAreas.next();
 		  					  
 								String s = ( tempArea.toString().equals(lmCntrArea.toString()) 
 	                  					 ? " selected" : "" );
