@@ -1332,7 +1332,14 @@ void CtiCCCommandExecutor::ResetDailyOperations()
 
     if( found )
     {
-        CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg);
+		{
+			CtiLockGuard<CtiLogger> logger_guard(dout);
+			dout << RWTime() << "Reset Daily Operations for PAO Id: " << paoId << endl;
+		}
+		if( pointChanges.entries() > 0 )
+		{
+			CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg);
+		}
     }
     else
     {
