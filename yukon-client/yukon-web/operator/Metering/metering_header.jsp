@@ -2,9 +2,11 @@
 <%@ page import="java.util.*" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole"%>
 <%@ page import="com.cannontech.roles.operator.CommercialMeteringRole"%>
+<%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.graph.model.TrendModelType" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
+<%@ taglib uri="/WEB-INF/jruntags.jar" prefix="jrun" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
 <cti:checklogin/>
@@ -26,8 +28,15 @@
 	catch (IllegalStateException ise)
 	{
 	}
+	int energyCompanyID =EnergyCompanyFuncs.getEnergyCompany(liteYukonUser).getEnergyCompanyID();
+		
     Class[] types = { Integer.class,String.class };    
-	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "SELECT GDEF.GRAPHDEFINITIONID, GDEF.NAME FROM GRAPHDEFINITION GDEF, OPERATORLOGINGRAPHLIST OLGL WHERE GDEF.GRAPHDEFINITIONID = OLGL.GRAPHDEFINITIONID  AND OLGL.OPERATORLOGINID = " + liteYukonUserID + " ORDER BY GDEF.NAME", types );    
+    java.lang.String sqlString =  "SELECT DISTINCT GDEF.GRAPHDEFINITIONID, GDEF.NAME " +
+                                  " FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL, ENERGYCOMPANYCUSTOMERLIST ECCL "+
+                                  " WHERE ECCL.ENERGYCOMPANYID = " + energyCompanyID + 
+                                  " AND GDEF.GRAPHDEFINITIONID = GCL.GRAPHDEFINITIONID " +
+                                  " AND GCL.CUSTOMERID = ECCL.CUSTOMERID";
+	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sqlString);
 %>
 
 	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">
