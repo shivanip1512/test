@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:16 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/24 14:59:45 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -144,27 +144,9 @@ private:
       {
       case TYPE_CCU711:
          {
-            int i;
             CtiTransmitter711Info *p711 = new CtiTransmitter711Info;
 
-            p711->ControlOutMessage = NULL;
-            p711->FiveMinuteCount = 0;
             p711->Type = getType();
-            p711->Status = 0;
-            p711->ReadyN = 32;
-            p711->NCsets = 0;
-            p711->NCOcts = 0;
-            p711->PortQueueEnts = 0;
-            p711->PortQueueConts = 0;
-            p711->RColQMin = 0;
-
-            p711->FreeSlots = MAXQUEENTRIES;
-
-            for(i = 0; i < MAXQUEENTRIES; i++)
-            {
-               p711->QueTable[i].InUse = 0;
-               p711->QueTable[i].TimeSent = 0L;
-            }
 
             /* create the queue */
             if(CreateQueue (&p711->QueueHandle, QUE_PRIORITY))
@@ -186,16 +168,7 @@ private:
       default:
          {
             _trxInfo = new CtiTransmitterInfo;
-
-            _trxInfo->Type                   = getType();
-            _trxInfo->Status                 = 0;
-            _trxInfo->StageTime              = 0;
-            _trxInfo->FiveMinuteCount        = 0;
-            _trxInfo->NextCommandTime        = 0;
-            _trxInfo->LCUFlags               = 0;
-            _trxInfo->ControlOutMessage      = NULL;
-            _trxInfo->RemoteSequence.Reply   = 0;
-
+            _trxInfo->Type = getType();
             break;
          }
       }

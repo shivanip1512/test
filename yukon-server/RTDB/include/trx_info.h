@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/trx_info.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:33 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/24 14:59:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,72 +31,86 @@ class CtiTransmitterInfo
 {
 public:
 
-   CtiMutex         _statMux;
-   UINT             Status;
-   INT              Type;
+    CtiMutex         _statMux;
+    UINT             Status;
+    INT              Type;
 
 
-   REMOTESEQUENCE   RemoteSequence;                   // Used by WELCORTUs to track sequencing...?
-   USHORT           FiveMinuteCount;
-   ULONG            StageTime;
-   ULONG            NextCommandTime;
-   ULONG            LCUFlags;
-   OUTMESS          *ControlOutMessage;
-   STATS            Stats;
+    REMOTESEQUENCE   RemoteSequence;                   // Used by WELCORTUs to track sequencing...?
+    USHORT           FiveMinuteCount;
+    ULONG            StageTime;
+    ULONG            NextCommandTime;
+    ULONG            LCUFlags;
+    OUTMESS          *ControlOutMessage;
 
 private:
 
 public:
-   CtiTransmitterInfo() {}
 
-   CtiTransmitterInfo(const CtiTransmitterInfo& aRef)
-   {
-      *this = aRef;
-   }
+    CtiTransmitterInfo() :
+        Type(-1),
+        Status(0),
+        StageTime(0),
+        FiveMinuteCount(0),
+        NextCommandTime(0),
+        LCUFlags(0),
+        ControlOutMessage(NULL)
+    {
+        RemoteSequence.Reply   = 0;
+    }
 
-   virtual ~CtiTransmitterInfo()
-   {
-      if(ControlOutMessage != NULL)
-      {
-         delete ControlOutMessage;
-         ControlOutMessage = NULL;
-      }
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-      }
-   }
+    CtiTransmitterInfo(const CtiTransmitterInfo& aRef)
+    {
+        *this = aRef;
+    }
 
-   CtiTransmitterInfo& operator=(const CtiTransmitterInfo& aRef)
-   {
-      if(this != &aRef)
-      {
-      }
-      return *this;
-   }
+    virtual ~CtiTransmitterInfo()
+    {
+        if(ControlOutMessage != NULL)
+        {
+            delete ControlOutMessage;
+            ControlOutMessage = NULL;
+        }
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
 
-   /* Routine to set a status bit with Mutex protection */
-   INT SetStatus (USHORT Mask)
-   {
-      CtiLockGuard< CtiMutex > guard(_statMux);
-      Status |= Mask;
-      return(NORMAL);
-   }
+    CtiTransmitterInfo& operator=(const CtiTransmitterInfo& aRef)
+    {
+        if(this != &aRef)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+        return *this;
+    }
 
-   /* Routine to clear a status bit with Mutex protection */
-   INT ClearStatus (USHORT Mask)
-   {
-      CtiLockGuard< CtiMutex > guard(_statMux);
-      Status &= ~Mask;
-      return(NORMAL);
-   }
+    /* Routine to set a status bit with Mutex protection */
+    INT SetStatus (USHORT Mask)
+    {
+        CtiLockGuard< CtiMutex > guard(_statMux);
+        Status |= Mask;
+        return(NORMAL);
+    }
 
-   /* Routine to set a status bit with Mutex protection */
-   INT GetStatus (USHORT Mask)
-   {
-      CtiLockGuard< CtiMutex > guard(_statMux);
-      return(Status & Mask);
-   }
+    /* Routine to clear a status bit with Mutex protection */
+    INT ClearStatus (USHORT Mask)
+    {
+        CtiLockGuard< CtiMutex > guard(_statMux);
+        Status &= ~Mask;
+        return(NORMAL);
+    }
+
+    /* Routine to set a status bit with Mutex protection */
+    INT GetStatus (USHORT Mask)
+    {
+        CtiLockGuard< CtiMutex > guard(_statMux);
+        return(Status & Mask);
+    }
 
 };
 #endif // #ifndef __TRX_INFO_H__

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/trx_711.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:33 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/24 14:59:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,7 +42,24 @@ public:
 private:
 
 public:
-   CtiTransmitter711Info() {}
+   CtiTransmitter711Info() :
+       QueueHandle(NULL),
+       ActinQueueHandle(NULL),
+       PortQueueEnts(0),
+       PortQueueConts(0),
+       RContInLength(0),
+       ReadyN(32),
+       NCsets(0),
+       NCOcts(0),
+       FreeSlots(MAXQUEENTRIES),
+       RColQMin(0)
+   {
+       for(int i = 0; i < MAXQUEENTRIES; i++)
+       {
+          QueTable[i].InUse = 0;
+          QueTable[i].TimeSent = 0L;
+       }
+   }
 
    CtiTransmitter711Info(const CtiTransmitter711Info& aRef)
    {
