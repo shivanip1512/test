@@ -233,6 +233,7 @@ public class TagManager implements MessageListener {
 					tMsg.getAction() == TagMsg.REPORT_TAG_ACTION ) {
 					CTILogger.debug("Adding/Updating/Reporting tag: " + t.getInstanceID());
 					Set ts = getTagSet(tagKey.intValue());
+					ts.remove(t);
 					ts.add(t);
 				}
 				else 
