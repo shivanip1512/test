@@ -29,6 +29,7 @@ import javax.swing.undo.UndoableEdit;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.esub.element.CurrentAlarmsTable;
@@ -36,6 +37,7 @@ import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.util.DrawingUpdater;
 import com.cannontech.esub.util.Util;
+import com.cannontech.roles.application.EsubEditorRole;
 
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
@@ -362,14 +364,26 @@ public class Editor extends JPanel {
 			}
 		});
 		
+		frame.setSize(defaultSize);
+		frame.setTitle("Untitled");		
+		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("esubEditorIcon.png"));
+		frame.setIconImage(icon.getImage());
+		
+		ClientSession session = ClientSession.establishSession(frame);			
+		
+		if(session == null) {
+			System.exit(-1);
+		}
+		
+		if(!session.checkRole(EsubEditorRole.ROLEID)) {
+			JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
+			System.exit(-1);				
+		}
+		
 		Editor editor = new Editor();
 
 		frame.getContentPane().add(editor);
-		frame.setSize(defaultSize);
-		frame.setTitle("Untitled");		
-		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("esubEditorIcon.gif"));
-        frame.setIconImage(icon.getImage());
-
+	
 		frame.pack();
 		frame.show();
 		

@@ -9,8 +9,11 @@ package com.cannontech.graph;
 import java.awt.event.WindowEvent;
 import java.util.Date;
 
+import javax.swing.JOptionPane;
+
 import org.jfree.chart.JFreeChart;
 
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -31,6 +34,7 @@ import com.cannontech.graph.menu.ViewMenu;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.util.ServletUtil;
 public class GraphClient extends javax.swing.JPanel implements com.cannontech.database.cache.DBChangeListener, GraphDefines, java.awt.event.ActionListener, java.awt.event.WindowListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener {
 
@@ -2014,6 +2018,18 @@ public static void main(String[] args)
         javax.swing.JFrame mainFrame = new javax.swing.JFrame();
         mainFrame.setIconImage(
             java.awt.Toolkit.getDefaultToolkit().getImage("GraphIcon.gif"));
+            
+		ClientSession session = ClientSession.establishSession(mainFrame);			
+		
+		if(session == null) 		
+			System.exit(-1);
+				
+		if(!session.checkRole(TrendingRole.ROLEID)) 
+		{
+		  JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
+		  System.exit(-1);				
+		}
+			
         mainFrame.setTitle("Yukon Trending");
 
         java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();

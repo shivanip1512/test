@@ -26,6 +26,7 @@ import Acme.Nnrpd.ArticleCache;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.MessagePanel;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.FileMessageLog;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
@@ -46,6 +47,8 @@ import com.cannontech.dbeditor.editor.regenerate.RegenerateDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 import com.cannontech.dbeditor.wizard.changetype.device.DeviceChngTypesPanel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.application.DBEditorRole;
+
 import java.awt.Dimension;
 
 public class DatabaseEditor
@@ -2011,6 +2014,18 @@ public static void main(String[] args) {
 
       f.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
 
+	  ClientSession session = ClientSession.establishSession(f);			
+		
+	  if(session == null) 
+	  {
+		  System.exit(-1);
+	  }
+	
+	  if(!session.checkRole(DBEditorRole.ROLEID)) {
+	  	JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
+		System.exit(-1);				
+	  }
+			  
 
 		com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow(
 			f,
