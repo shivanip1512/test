@@ -2198,29 +2198,31 @@ bool findLPRequestEntries(void *om, void* d)
 
     if(NewGuy && OutMessage)
     {
-        bRet = (OutMessage->Sequence == LOADPROFILESEQUENCE) &&
-               (NewGuy->Sequence     == LOADPROFILESEQUENCE) &&
-               (OutMessage->TargetID == NewGuy->TargetID);
-
-        RWCString oldstr(OutMessage->Request.CommandStr);
-
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+        if( (OutMessage->Sequence == LOADPROFILESEQUENCE) &&
+            (NewGuy->Sequence     == LOADPROFILESEQUENCE) &&
+            (OutMessage->TargetID == NewGuy->TargetID) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Comparing Outmessage->CommandStr" << endl;
-            dout << "NewGuy     = \"" << NewGuy->Request.CommandStr << "\" and" << endl;
-            dout << "OutMessage = \"" << OutMessage->Request.CommandStr << "\"" << endl;
-        }
-
-        if( bRet && oldstr.contains(" channel", RWCString::ignoreCase) )
-        {
-            RWCRExpr re_channel(" channel +[0-9]");
-
+            RWCString oldstr(OutMessage->Request.CommandStr);
             RWCString newstr(NewGuy->Request.CommandStr);
 
-            if( !(newstr.match(re_channel) == oldstr.match(re_channel)) )
+            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
             {
-                bRet = false;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Comparing Outmessage->CommandStr" << endl;
+                dout << "NewGuy     = \"" << NewGuy->Request.CommandStr << "\" and" << endl;
+                dout << "OutMessage = \"" << OutMessage->Request.CommandStr << "\"" << endl;
+            }
+
+            bRet = oldstr.contains("scan loadprofile") && newstr.contains("scan loadprofile");
+
+            if( bRet && oldstr.contains(" channel", RWCString::ignoreCase) )
+            {
+                RWCRExpr re_channel(" channel +[0-9]");
+
+                if( !(newstr.match(re_channel) == oldstr.match(re_channel)) )
+                {
+                    bRet = false;
+                }
             }
         }
     }
