@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2003/11/17 15:21:38 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2004/01/05 15:40:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -212,14 +212,17 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
                     {
                         CtiPointAnalog *AnalogPoint = (CtiPointAnalog *)PointRecord;
 
-                        if(AnalogPoint->getPointOffset() - 1 > AnalogLast)
+                        if(!AnalogPoint->isPseudoPoint())
                         {
-                            AnalogLast = AnalogPoint->getPointOffset() - 1;
-                        }
+                            if(AnalogPoint->getPointOffset() - 1 > AnalogLast)
+                            {
+                                AnalogLast = AnalogPoint->getPointOffset() - 1;
+                            }
 
-                        if(AnalogPoint->getPointOffset() - 1 < AnalogFirst)
-                        {
-                            AnalogFirst = AnalogPoint->getPointOffset() - 1;
+                            if(AnalogPoint->getPointOffset() - 1 < AnalogFirst)
+                            {
+                                AnalogFirst = AnalogPoint->getPointOffset() - 1;
+                            }
                         }
 
                         break;
@@ -229,14 +232,17 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
                     {
                         CtiPointAccumulator *AccumPoint = (CtiPointAccumulator *)PointRecord;
 
-                        if(AccumPoint->getPointOffset() - 1 > AccumLast)
+                        if(!AccumPoint->isPseudoPoint())
                         {
-                            AccumLast = AccumPoint->getPointOffset() - 1;
-                        }
+                            if(AccumPoint->getPointOffset() - 1 > AccumLast)
+                            {
+                                AccumLast = AccumPoint->getPointOffset() - 1;
+                            }
 
-                        if(AccumPoint->getPointOffset() - 1 < AccumFirst)
-                        {
-                            AccumFirst = AccumPoint->getPointOffset() - 1;
+                            if(AccumPoint->getPointOffset() - 1 < AccumFirst)
+                            {
+                                AccumFirst = AccumPoint->getPointOffset() - 1;
+                            }
                         }
 
                         break;
