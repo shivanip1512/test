@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pdata.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/12/12 01:03:01 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/12/12 20:35:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,14 +30,15 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 RWDEFINE_COLLECTABLE( CtiPointDataMsg, MSG_POINTDATA );
 
 CtiPointDataMsg::CtiPointDataMsg(long id,
-                double     value       ,
-                unsigned   quality     ,
-                int        type        ,
-                RWCString  valReport   ,
-                unsigned   tags        ,
-                unsigned   attrib      ,
-                unsigned   limit       ,
-                int        pri         ) :
+                                 double     value       ,
+                                 unsigned   quality     ,
+                                 int        type        ,
+                                 RWCString  valReport   ,
+                                 unsigned   tags        ,
+                                 unsigned   attrib      ,
+                                 unsigned   limit       ,
+                                 int        pri         ,
+                                 unsigned   millis      ) :
    _id(id),
    _value(value),
    _quality(quality),
@@ -47,8 +48,11 @@ CtiPointDataMsg::CtiPointDataMsg(long id,
    _tags(tags),
    _attrib(attrib),
    _limit(limit),
+   //_millis(millis)  //  set below so the time can be rounded
    CtiMessage(pri)
 {
+    setMillis(millis);
+
     if(_type == StatusPointType)
     {
         setExemptionStatus(TRUE); // Status data must always default to exemptable!
@@ -79,6 +83,7 @@ CtiPointDataMsg& CtiPointDataMsg::operator=(const CtiPointDataMsg& aRef)
       _value            = aRef.getValue();
       _str              = aRef.getString();
       _time             = aRef.getTime();
+      _millis           = aRef.getMillis();
    }
 
    return *this;
@@ -87,7 +92,7 @@ CtiPointDataMsg& CtiPointDataMsg::operator=(const CtiPointDataMsg& aRef)
 void CtiPointDataMsg::saveGuts(RWvostream &aStream) const
 {
     Inherited::saveGuts(aStream);
-    aStream << getId() << getType() << getQuality() << getTags() << getAttributes() << getLimit() << getValue() << isExemptable() << getString() << getTime();
+    aStream << getId() << getType() << getQuality() << getTags() << getAttributes() << getLimit() << getValue() << isExemptable() << getString() << getTime() << getMillis();
 }
 
 void CtiPointDataMsg::restoreGuts(RWvistream& aStream)
@@ -103,8 +108,9 @@ void CtiPointDataMsg::restoreGuts(RWvistream& aStream)
     double      value;
     RWCString   str;
     RWTime      intime;
+    unsigned    millis;
 
-    aStream >> id >> type >> quality >> tags >> _attrib >> limit >> value >> force >> str >> intime;
+    aStream >> id >> type >> quality >> tags >> _attrib >> limit >> value >> force >> str >> intime >> millis;
 
     setId(id);
     setType(type);
@@ -120,6 +126,7 @@ void CtiPointDataMsg::restoreGuts(RWvistream& aStream)
 
     setString(str);
     setTime(intime);
+    setMillis(millis);
 
     //dump();
 }
@@ -229,6 +236,25 @@ CtiPointDataMsg& CtiPointDataMsg::setTime(const RWTime& aTime)
    return *this;
 }
 
+unsigned CtiPointDataMsg::getMillis() const
+{
+   return _millis;
+}
+
+CtiPointDataMsg& CtiPointDataMsg::setMillis(unsigned millis)
+{
+    _millis = millis % 1000;
+
+    if( millis > 999 )
+    {
+       CtiLockGuard<CtiLogger> doubt_guard(dout);
+       dout << RWTime() << " **** Checkpoint - setMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return *this;
+}
+
+
 
 void CtiPointDataMsg::dump() const
 {
@@ -246,7 +272,7 @@ void CtiPointDataMsg::dump() const
       dout.fill(oldFill);
       dout << " Limit                         " << getLimit() << endl;
       dout << " Value                         " << getValue() << endl;
-      dout << " Change Time                   " << getTime() << endl;
+      dout << " Change Time                   " << getTime() << ", " << getMillis() << "ms" << endl;
       dout << " Change Report                 " << getString() << endl;
       dout << " Is this data exemptable       " << isExemptable() << endl;
       // dout << " Exception Exempt              " << (_exceptionExempt ? "TRUE" : "FALSE") << endl;

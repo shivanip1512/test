@@ -101,6 +101,11 @@ RWTime CtiTableRawPointHistory::getTime() const
     return _time;
 }
 
+INT CtiTableRawPointHistory::getMillis() const
+{
+    return _millis;
+}
+
 CtiTableRawPointHistory& CtiTableRawPointHistory::setChangeID(LONG id)
 {
     _changeID = id;
@@ -116,6 +121,32 @@ CtiTableRawPointHistory& CtiTableRawPointHistory::setPointID(LONG id)
 CtiTableRawPointHistory& CtiTableRawPointHistory::setTime(const RWTime &rwt)
 {
     _time = rwt;
+    return *this;
+}
+
+CtiTableRawPointHistory& CtiTableRawPointHistory::setMillis(INT millis)
+{
+    if( millis > 999 )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - setMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        millis %= 1000;
+    }
+    else if( millis < 0 )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - setMillis(), millis = " << millis << " < 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        millis = 0;
+    }
+
+    _millis = millis;
+
     return *this;
 }
 
@@ -143,7 +174,8 @@ void CtiTableRawPointHistory::Restore()
     << table["pointid"]
     << table["timestamp"]
     << table["quality"]
-    << table["value"];
+    << table["value"]
+    << table["millis"];
 
     selector.where( table["pointid"] == getPointID() );
 
@@ -171,7 +203,8 @@ void CtiTableRawPointHistory::RestoreMax()
     << table["pointid"]
     << table["timestamp"]
     << table["quality"]
-    << table["value"];
+    << table["value"]
+    << table["millis"];
 
     selector.where( table["pointid"] == getPointID() &&  table["timestamp"] == temp);
 
@@ -186,14 +219,17 @@ void CtiTableRawPointHistory::RestoreMax()
 void CtiTableRawPointHistory::DecodeDatabaseReader( RWDBReader& rdr )
 {
     RWDBDateTime dt;
+    INT millis;
 
     rdr["changeid"]     >> _changeID;
     rdr["pointid"]      >> _pointID;
     rdr["timestamp"]    >> dt;
     rdr["quality"]      >> _quality;
     rdr["value"]        >> _value;
+    rdr["millis"]       >> millis;
 
     setTime( dt.rwtime() );             // Convert that thing back into a time.
+    setMillis( millis );
 }
 
 

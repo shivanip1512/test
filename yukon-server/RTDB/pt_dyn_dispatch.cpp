@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_dyn_dispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/08/19 13:54:07 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/12/12 20:37:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,6 +65,11 @@ RWTime CtiDynamicPointDispatch::getTimeStamp() const
     return getDispatch().getTimeStamp().rwtime();
 }
 
+UINT CtiDynamicPointDispatch::getTimeStampMillis() const
+{
+    return getDispatch().getTimeStampMillis();
+}
+
 BOOL CtiDynamicPointDispatch::getArchivePending() const
 {
     return _archivePending;
@@ -81,7 +86,7 @@ CtiDynamicPointDispatch& CtiDynamicPointDispatch::setArchivePending(BOOL b)
     return *this;
 }
 
-CtiDynamicPointDispatch& CtiDynamicPointDispatch::setPoint(const RWTime &NewTime, double Val, int Qual, UINT tag_mask)
+CtiDynamicPointDispatch& CtiDynamicPointDispatch::setPoint(const RWTime &NewTime, UINT millis, double Val, int Qual, UINT tag_mask)
 {
     {
         LockGuard guard( monitor() );    // This is the point's "mux" from parent.
@@ -91,6 +96,7 @@ CtiDynamicPointDispatch& CtiDynamicPointDispatch::setPoint(const RWTime &NewTime
         getDispatch().setValue(Val);
         getDispatch().setQuality(Qual);
         getDispatch().setTimeStamp(NewTime);
+        getDispatch().setTimeStampMillis(millis);
 
         getDispatch().setTags( tag_mask );
 

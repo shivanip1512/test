@@ -19,6 +19,7 @@ _logPriority(0)
 
 CtiTableSignal::CtiTableSignal(LONG              id,
                                const RWTime      &tme,
+                               INT               millis,
                                const RWCString   &text,
                                const RWCString   &addl,
                                INT               lp,
@@ -29,6 +30,7 @@ CtiTableSignal::CtiTableSignal(LONG              id,
 _logID(lid),
 _pointID(id),
 _time(tme),
+_millis(millis),
 _soe(soe),
 _logType(lt),
 _logPriority(lp),
@@ -67,7 +69,8 @@ CtiTableSignal& CtiTableSignal::operator=(const CtiTableSignal& aRef)
         _logID            = aRef.getLogID();
         _pointID          = aRef.getPointID();
         _time             = aRef.getTime();
-        _soe           = aRef.getSOE();
+        _millis           = aRef.getMillis();
+        _soe              = aRef.getSOE();
         _logType          = aRef.getLogType();
         _logPriority      = aRef.getPriority();
         _additional       = aRef.getAdditionalInfo();
@@ -88,6 +91,7 @@ void CtiTableSignal::DecodeDatabaseReader( RWDBReader& rdr )
     rdr["action"]       >> _additional;
     rdr["description"]  >> _text;
     rdr["username"]     >> _user;
+    rdr["millis"]       >> _millis;
 }
 
 void CtiTableSignal::Insert(RWDBConnection &conn)
@@ -118,7 +122,8 @@ void CtiTableSignal::Insert(RWDBConnection &conn)
     getPriority() <<
     getAdditionalInfo() <<
     getText() <<
-    getUser();
+    getUser() <<
+    getMillis();
 
     RWDBStatus stat = inserter.execute( conn ).status();
 
@@ -153,7 +158,8 @@ void CtiTableSignal::Restore()
     << table["priority"]
     << table["action"]
     << table["description"]
-    << table["username"];
+    << table["username"]
+    << table["millis"];
 
     selector.where( table["logid"] == getLogID() );
 
@@ -195,7 +201,8 @@ void CtiTableSignal::Update()
     << table["priority"].assign( getPriority() )
     << table["action"].assign(getAdditionalInfo())
     << table["description"].assign(getText())
-    << table["username"].assign(getUser());
+    << table["username"].assign(getUser())
+    << table["millis"].assign(getMillis());
 
     updater.where( table["logid"] == getLogID() );
 
@@ -236,6 +243,11 @@ LONG CtiTableSignal::getPointID() const
 RWTime CtiTableSignal::getTime() const
 {
     return _time;
+}
+
+INT CtiTableSignal::getMillis() const
+{
+    return _millis;
 }
 
 INT CtiTableSignal::getPriority() const
@@ -286,6 +298,32 @@ CtiTableSignal& CtiTableSignal::setTime(const RWTime rwt)
     return *this;
 }
 
+CtiTableSignal& CtiTableSignal::setMillis(INT millis)
+{
+    if( millis > 999 )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - setMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        millis %= 1000;
+    }
+    else if( millis < 0 )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - setMillis(), millis = " << millis << " < 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        millis = 0;
+    }
+
+    _millis = millis;
+
+    return *this;
+}
+
 CtiTableSignal& CtiTableSignal::setPriority(INT cls)
 {
     _logPriority = cls;
@@ -330,7 +368,7 @@ void CtiTableSignal::dump() const
     dout << endl;
     dout << " Log ID                        " << _logID << endl;
     dout << " Point ID                      " << _pointID << endl;
-    dout << " Log time                      " << _time << endl;
+    dout << " Log time                      " << _time << ", " << _millis << "ms" << endl;
     dout << " SOE Tag                       " << _soe << endl;
     dout << " Log Type                      " << _logType << endl;
     dout << " Log Priority Level            " << _logPriority << endl;
@@ -380,7 +418,8 @@ void CtiTableSignal::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector
     keyTable["priority"] <<
     keyTable["action"] <<
     keyTable["description"] <<
-    keyTable["username"];
+    keyTable["username"] <<
+    keyTable["millis"];
 
 
     selector.from(keyTable);

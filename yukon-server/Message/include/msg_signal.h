@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/08/22 21:43:32 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/12/12 20:36:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,7 @@ protected:
    RWCString   _additional;         // Additional Info.  What is special about this happening?
    unsigned    _tags;               // Alarm states;.. Bit field frome pointdefs.h
    RWCString   _user;               // Who caused this to happen?
+   unsigned    _signalMillis;       // Milliseconds for high-precision/SOE events
 
    int         _condition;          // This is the alarm condition represented by this message
 
@@ -46,15 +47,16 @@ public:
 
    typedef CtiMessage Inherited;
 
-   CtiSignalMsg(long       pid   = 0,
-                int        soe   = 0,
-                RWCString  text  = RWCString("(none)"),
-                RWCString  addl  = RWCString("(none)"),
-                int        lt    = GeneralLogType,
-                unsigned   cls   = SignalEvent,
-                RWCString  usr   = RWCString("(none)"),
-                unsigned   tag   = 0,
-                int        pri   = 7 );
+   CtiSignalMsg(long       pid    = 0,
+                int        soe    = 0,
+                RWCString  text   = RWCString("(none)"),
+                RWCString  addl   = RWCString("(none)"),
+                int        lt     = GeneralLogType,
+                unsigned   cls    = SignalEvent,
+                RWCString  usr    = RWCString("(none)"),
+                unsigned   tag    = 0,
+                int        pri    = 7,
+                unsigned   millis = 0 );
 
    CtiSignalMsg(const CtiSignalMsg& aRef);
 
@@ -82,6 +84,9 @@ public:
 
    int getLogType() const;
    CtiSignalMsg& setLogType(const int soe);
+
+   unsigned getSignalMillis() const;
+   CtiSignalMsg& setSignalMillis(unsigned millis);
 
    virtual void saveGuts(RWvostream &aStream) const;
    virtual void restoreGuts(RWvistream& aStream);

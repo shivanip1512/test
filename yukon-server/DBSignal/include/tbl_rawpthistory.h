@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DBSIGNAL/INCLUDE/tbl_rawpthistory.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:53 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/12/12 20:39:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,6 +34,7 @@ protected:
    LONG        _changeID;
    LONG        _pointID;
    RWTime      _time;
+   INT         _millis;
    INT         _quality;
    DOUBLE      _value;
 
@@ -45,6 +46,7 @@ public:
                            INT      qual           = NormalQuality,
                            DOUBLE   val            = 0.0,
                            const RWTime    &tme    = RWTime(),
+                           INT      millis         = 0,
                            LONG     cid            = ChangeIdGen()) :
       _changeID(cid),
       _pointID(pid),
@@ -52,6 +54,7 @@ public:
       _value(val),
       _time(tme)
    {
+       setMillis(millis);
    }
 
    CtiTableRawPointHistory(const CtiTableRawPointHistory& aRef)
@@ -76,12 +79,14 @@ public:
    LONG                       getChangeID() const;
    LONG                       getPointID() const;
    RWTime                     getTime() const;
+   INT                        getMillis() const;
    INT                        getQuality() const;
    DOUBLE                     getValue() const;
 
    CtiTableRawPointHistory&   setChangeID(LONG id);
    CtiTableRawPointHistory&   setPointID(LONG id);
    CtiTableRawPointHistory&   setTime(const RWTime &rwt);
+   CtiTableRawPointHistory&   setMillis(INT millis);
    CtiTableRawPointHistory&   setQuality(const INT &qual);
    CtiTableRawPointHistory&   setValue(const DOUBLE &val);
    CtiTableRawPointHistory&   setBookmark(const RWCString &mark);

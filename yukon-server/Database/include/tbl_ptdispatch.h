@@ -34,17 +34,18 @@ class IM_EX_CTIYUKONDB CtiTablePointDispatch : public CtiMemDBObject
 {
 protected:
 
-    LONG           iPointID;
+    LONG           _pointID;
 
-    RWDBDateTime   iTimeStamp;
-    DOUBLE         iValue;
-    UINT           iQuality;
+    RWDBDateTime   _timeStamp;
+    INT            _timeStampMillis;
+    DOUBLE         _value;
+    UINT           _quality;
 
-    RWDBDateTime   iNextArchiveTime;
-    UINT           iTags;
-    UINT           iStaleCount;
+    RWDBDateTime   _nextArchiveTime;
+    UINT           _tags;
+    UINT           _staleCount;
 
-    ULONG          iLastAlarmLogID;
+    ULONG          _lastAlarmLogID;
 
 private:
 
@@ -57,7 +58,8 @@ private:
     CtiTablePointDispatch(LONG pointid,
                           DOUBLE value = 0,
                           UINT quality = UnintializedQuality,
-                          const RWDBDateTime& timestamp = RWDBDateTime( (UINT)1990, (UINT)1, (UINT)1 ) );
+                          const RWDBDateTime& timestamp = RWDBDateTime( (UINT)1990, (UINT)1, (UINT)1 ),
+                          UINT millis = 0 );
 
     CtiTablePointDispatch(const CtiTablePointDispatch& aRef);
 
@@ -85,6 +87,9 @@ private:
     const RWDBDateTime& getTimeStamp() const;
     CtiTablePointDispatch& setTimeStamp(const RWDBDateTime& timestamp);
 
+    UINT getTimeStampMillis() const;
+    CtiTablePointDispatch& setTimeStampMillis(INT millis);
+
     UINT getQuality() const;
     CtiTablePointDispatch& setQuality(UINT quality);
 
@@ -108,6 +113,7 @@ private:
     virtual void dump();
 
     CtiTablePointDispatch&  applyNewReading(const RWDBDateTime& timestamp,
+                                            UINT millis,
                                             UINT quality,
                                             DOUBLE value,
                                             UINT tags,

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/08/22 21:43:31 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/12/12 20:36:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,18 +27,65 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 RWDEFINE_COLLECTABLE( CtiSignalMsg, MSG_SIGNAL );
 
+CtiSignalMsg::CtiSignalMsg(long pid, int soe, RWCString text, RWCString addl, int lt, unsigned cls, RWCString usr, unsigned tag, int pri, unsigned millis) :
+   Inherited(pri),
+   _id(pid),
+   _logType(lt),
+   _signalCategory(cls),
+   _text(text),
+   _additional(addl),
+   _tags(tag),
+   _condition(-1),
+   _logid(0),
+   _signalMillis(millis)
+{
+   Inherited::setSOE(soe);
+   Inherited::setUser(usr);
+}
+
+CtiSignalMsg::CtiSignalMsg(const CtiSignalMsg& aRef)
+{
+   *this = aRef;
+}
+
+CtiSignalMsg::~CtiSignalMsg() {}
+
+CtiSignalMsg& CtiSignalMsg::operator=(const CtiSignalMsg& aRef)
+{
+   if(this != &aRef)
+   {
+      Inherited::operator=(aRef);
+
+      _id            = aRef.getId();
+      _text          = aRef.getText();
+      _signalCategory   = aRef.getSignalCategory();
+      _tags          = aRef.getTags();
+      _logType       = aRef.getLogType();
+      _additional    = aRef.getAdditionalInfo();
+      _signalMillis  = aRef.getSignalMillis();
+      _condition     = aRef.getCondition();
+      _logid         = aRef.getLogID();
+      _user          = aRef.getUser();
+   }
+   return *this;
+}
+
 void CtiSignalMsg::saveGuts(RWvostream &aStream) const
 {
     Inherited::saveGuts(aStream);
 
-    aStream << getId() << getLogType() << getSignalCategory() << getText() << getAdditionalInfo() << getTags() << getCondition();
+    aStream << getId() << getLogType() << getSignalCategory() << getText() << getAdditionalInfo() << getTags() << getCondition() << getSignalMillis();
 }
 
 void CtiSignalMsg::restoreGuts(RWvistream& aStream)
 {
+    unsigned millis;
+
     Inherited::restoreGuts(aStream);
 
-    aStream >> _id >> _logType >> _signalCategory >> _text >> _additional >> _tags >> _condition;
+    aStream >> _id >> _logType >> _signalCategory >> _text >> _additional >> _tags >> _condition >> millis;
+
+    setSignalMillis(millis);
 }
 
 long CtiSignalMsg::getId() const
@@ -87,6 +134,24 @@ CtiSignalMsg& CtiSignalMsg::resetTags(const unsigned s)
    return *this;
 }
 
+unsigned CtiSignalMsg::getSignalMillis() const
+{
+    return _signalMillis;
+}
+
+CtiSignalMsg& CtiSignalMsg::setSignalMillis(unsigned millis)
+{
+   _signalMillis = millis % 1000;
+
+   if( millis > 999 )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " **** Checkpoint - setSignalMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+   }
+
+   return *this;
+}
+
 void CtiSignalMsg::dump() const
 {
    Inherited::dump();
@@ -99,6 +164,7 @@ void CtiSignalMsg::dump() const
    dout << " Signal Group                  " << getSignalCategory() << endl;
    dout << " Text                          " << getText() << endl;
    dout << " Additional Info Text          " << getAdditionalInfo() << endl;
+   dout << " Milliseconds                  " << getSignalMillis() << endl;
    dout << " Log ID (if inserted)          " << _logid << endl;
    CHAR oldfill = dout.fill();
    dout.fill('0');
@@ -144,47 +210,6 @@ const RWCString& CtiSignalMsg::getAdditionalInfo() const
 CtiSignalMsg& CtiSignalMsg::setAdditionalInfo(const RWCString& string)
 {
    _additional = string;
-   return *this;
-}
-
-CtiSignalMsg::CtiSignalMsg(long pid, int soe, RWCString text, RWCString addl, int lt, unsigned cls, RWCString usr, unsigned tag, int pri) :
-   Inherited(pri),
-   _id(pid),
-   _logType(lt),
-   _signalCategory(cls),
-   _text(text),
-   _additional(addl),
-   _tags(tag),
-   _condition(-1),
-   _logid(0)
-{
-   Inherited::setSOE(soe);
-   Inherited::setUser(usr);
-}
-
-CtiSignalMsg::CtiSignalMsg(const CtiSignalMsg& aRef)
-{
-   *this = aRef;
-}
-
-CtiSignalMsg::~CtiSignalMsg() {}
-
-CtiSignalMsg& CtiSignalMsg::operator=(const CtiSignalMsg& aRef)
-{
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
-
-      _id            = aRef.getId();
-      _text          = aRef.getText();
-      _signalCategory   = aRef.getSignalCategory();
-      _tags          = aRef.getTags();
-      _logType       = aRef.getLogType();
-      _additional    = aRef.getAdditionalInfo();
-      _condition     = aRef.getCondition();
-      _logid         = aRef.getLogID();
-      _user          = aRef.getUser();
-   }
    return *this;
 }
 

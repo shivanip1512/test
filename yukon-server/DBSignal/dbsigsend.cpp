@@ -9,6 +9,7 @@ void main(int argc, char** argv)
    {
       CtiTableSignal sig(atoi(argv[1]),
                          RWTime().now(),
+                         0,
                          RWCString(argv[2]),
                          RWCString(argv[3]),
                          0,

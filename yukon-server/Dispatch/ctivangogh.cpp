@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2003/09/29 13:28:53 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2003/12/12 20:41:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -732,7 +732,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                                 if(pFailSig->getSignalCategory() > SignalEvent)
                                 {
-                                pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_UNACKNOWLEDGED_ALARM);
+                                    pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_UNACKNOWLEDGED_ALARM);
                                     pFailSig->setLogType(AlarmCategoryLogType);
                                 }
                                 pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
@@ -1158,7 +1158,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                         // This one cannot go unless manual tag is set.
                         if(aPD.getQuality() == ManualQuality)
                         {
-                            pDyn->setPoint(aPD.getTime(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~MASK_ANY_ALARM) | _signalManager.getAlarmMask(aPD.getId()) );
+                            pDyn->setPoint(aPD.getTime(), aPD.getMillis(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~MASK_ANY_ALARM) | _signalManager.getAlarmMask(aPD.getId()) );
                         }
                     }
                     else
@@ -1166,7 +1166,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                         // Set the point in memory to the current value.  Archive if an archive is pending.
                         // Do not update with an older time!
                         // Unless we are in the forced condition
-                        pDyn->setPoint(aPD.getTime(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~MASK_ANY_ALARM) | _signalManager.getAlarmMask(aPD.getId()));
+                        pDyn->setPoint(aPD.getTime(), aPD.getMillis(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~MASK_ANY_ALARM) | _signalManager.getAlarmMask(aPD.getId()));
                     }
                 }
 
@@ -1175,13 +1175,13 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                     // This is a forced reading, which must be written, it should not
                     // however cause any change in normal pending scanned readings
 
-                    _archiverQueue.putQueue( CTIDBG_new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime()));
+                    _archiverQueue.putQueue( CTIDBG_new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis()));
                 }
                 else if(pDyn->isArchivePending() ||
                         (TempPoint->getArchiveType() == ArchiveTypeOnUpdate) ||
                         (TempPoint->getArchiveType() == ArchiveTypeOnChange && isNew))
                 {
-                    _archiverQueue.putQueue( CTIDBG_new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime()));
+                    _archiverQueue.putQueue( CTIDBG_new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis()));
                     TempPoint->setArchivePending(FALSE);
                 }
             }
@@ -1946,7 +1946,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 
                 if(pFailSig->getSignalCategory() > SignalEvent)
                 {
-                pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_UNACKNOWLEDGED_ALARM);
+                    pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_UNACKNOWLEDGED_ALARM);
                     pFailSig->setLogType(AlarmCategoryLogType);
                 }
                 pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
@@ -2177,7 +2177,7 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
 
                         if(sigMsg != NULL)
                         {
-                            CtiTableSignal sig(sigMsg->getId(), sigMsg->getMessageTime(), sigMsg->getText(), sigMsg->getAdditionalInfo(), sigMsg->getSignalCategory(), sigMsg->getLogType(), sigMsg->getSOE(), sigMsg->getUser());
+                            CtiTableSignal sig(sigMsg->getId(), sigMsg->getMessageTime(), sigMsg->getSignalMillis(), sigMsg->getText(), sigMsg->getAdditionalInfo(), sigMsg->getSignalCategory(), sigMsg->getLogType(), sigMsg->getSOE(), sigMsg->getUser());
 
                             if(!sigMsg->getText().isNull() || !sigMsg->getAdditionalInfo().isNull())
                             {

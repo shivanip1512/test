@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DBSIGNAL/INCLUDE/tbl_signal.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:53 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/12/12 20:39:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,6 +39,7 @@ protected:
     LONG        _logID;
     LONG        _pointID;
     RWTime      _time;
+    INT         _millis;
     INT         _soe;
     INT         _logType;
     INT         _logPriority;
@@ -54,14 +55,15 @@ private:
     CtiTableSignal();
 
     CtiTableSignal(LONG              id,
-                   const RWTime      &tme  = RWTime(),
-                   const RWCString   &text = RWCString(),
-                   const RWCString   &addl = RWCString(),
-                   INT               lp    = SignalEvent,
-                   INT               lt    = GeneralLogType,
-                   INT               soe   = 0,
-                   const RWCString   &user = RWCString(""),
-                   const INT         lid   = SystemLogIdGen());
+                   const RWTime      &tme   = RWTime(),
+                   INT               millis = 0,
+                   const RWCString   &text  = RWCString(),
+                   const RWCString   &addl  = RWCString(),
+                   INT               lp     = SignalEvent,
+                   INT               lt     = GeneralLogType,
+                   INT               soe    = 0,
+                   const RWCString   &user  = RWCString(""),
+                   const INT         lid    = SystemLogIdGen());
 
     CtiTableSignal(const CtiTableSignal& aRef);
 
@@ -85,6 +87,8 @@ private:
     LONG              getLogID() const;
     LONG              getPointID() const;
     RWTime            getTime() const;
+    INT               getMillis() const;
+
     INT               getPriority() const;
     RWCString         getText() const;
     RWCString         getUser() const;
@@ -95,6 +99,7 @@ private:
     CtiTableSignal&   setLogID(LONG id);
     CtiTableSignal&   setPointID(LONG id);
     CtiTableSignal&   setTime(const RWTime rwt);
+    CtiTableSignal&   setMillis(INT millis);
     CtiTableSignal&   setPriority(INT cls);
     CtiTableSignal&   setText(const RWCString &str);
     CtiTableSignal&   setUser(const RWCString &str);

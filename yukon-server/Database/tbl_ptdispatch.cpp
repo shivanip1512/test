@@ -1,7 +1,3 @@
-
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_ptdispatch
@@ -10,11 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ptdispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/08/19 13:52:04 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/12/12 20:38:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
 
 #include <iostream>
 #include <iomanip>
@@ -24,36 +21,41 @@ using namespace std;
 #include "logger.h"
 #include "tbl_ptdispatch.h"
 
+
 CtiTablePointDispatch::CtiTablePointDispatch() :
-iPointID(0),
-iTimeStamp( RWDBDateTime( (UINT)1990, (UINT)1, (UINT)1) ),
-iQuality(UnintializedQuality),
-iValue(0),
-iTags(0),
-iStaleCount(0),
-iLastAlarmLogID(0),
-iNextArchiveTime(RWTime(UINT_MAX - 86400))
+_pointID(0),
+_timeStamp( RWDBDateTime( (UINT)1990, (UINT)1, (UINT)1) ),
+_quality(UnintializedQuality),
+_value(0),
+_tags(0),
+_staleCount(0),
+_lastAlarmLogID(0),
+_nextArchiveTime(RWTime(UINT_MAX - 86400))
 {
+    setTimeStampMillis(0);
 }
 
 CtiTablePointDispatch::CtiTablePointDispatch(LONG pointid,
                                              DOUBLE value,
                                              UINT quality,
-                                             const RWDBDateTime& timestamp) :
-iPointID(pointid),
-iTimeStamp(timestamp),
-iQuality(quality),
-iValue(value),
-iTags(0),
-iStaleCount(0),
-iLastAlarmLogID(0),
-iNextArchiveTime(RWTime(UINT_MAX - 86400))
+                                             const RWDBDateTime& timestamp,
+                                             UINT millis) :
+_pointID(pointid),
+_timeStamp(timestamp),
+_quality(quality),
+_value(value),
+_tags(0),
+_staleCount(0),
+_lastAlarmLogID(0),
+_nextArchiveTime(RWTime(UINT_MAX - 86400))
 {
+    setTimeStampMillis(millis);
+
     setDirty(TRUE);
 }
 
 CtiTablePointDispatch::CtiTablePointDispatch(const CtiTablePointDispatch& ref) :
-iTags(0)
+_tags(0)
 {
     *this = ref;
 }
@@ -70,6 +72,7 @@ CtiTablePointDispatch& CtiTablePointDispatch::operator=(const CtiTablePointDispa
         setPointID( right.getPointID() );
 
         setTimeStamp( right.getTimeStamp() );
+        setTimeStampMillis( right.getTimeStampMillis() );
         setQuality( right.getQuality() );
         setValue( right.getValue() );
 
@@ -105,7 +108,8 @@ void CtiTablePointDispatch::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBS
     keyTable["tags"]        <<
     keyTable["nextarchive"] <<
     keyTable["stalecount"]  <<
-    keyTable["lastalarmlogid"];
+    keyTable["lastalarmlogid"] <<
+    keyTable["millis"];
 
     selector.from(keyTable);
 }
@@ -126,7 +130,8 @@ RWDBStatus CtiTablePointDispatch::Restore()
     table["tags"] <<
     table["nextarchive"] <<
     table["stalecount"]  <<
-    table["lastalarmlogid"];
+    table["lastalarmlogid"] <<
+    table["millis"];
 
     selector.where( table["pointid"] == getPointID() );
 
@@ -170,7 +175,8 @@ RWDBStatus CtiTablePointDispatch::Update(RWDBConnection &conn)
     table["tags"].assign(getTags()) <<
     table["nextarchive"].assign(getNextArchiveTime()) <<
     table["stalecount"].assign(getStaleCount())  <<
-    table["lastalarmlogid"].assign(getLastAlarmLogID());
+    table["lastalarmlogid"].assign(getLastAlarmLogID()) <<
+    table["millis"].assign(getTimeStampMillis());
 
     updater.execute( conn );
 
@@ -211,7 +217,8 @@ RWDBStatus CtiTablePointDispatch::Insert(RWDBConnection &conn)
     getTags() <<
     getNextArchiveTime() <<
     getStaleCount() <<
-    getLastAlarmLogID();
+    getLastAlarmLogID() <<
+    getTimeStampMillis();
 
     inserter.execute( conn );
 
@@ -246,127 +253,150 @@ RWDBStatus CtiTablePointDispatch::Delete()
 
 void CtiTablePointDispatch::DecodeDatabaseReader(RWDBReader& rdr )
 {
-    rdr["pointid"] >> iPointID;
-    rdr["timestamp"] >> iTimeStamp;
-    rdr["quality"] >> iQuality;
-    rdr["value"] >> iValue;
-    rdr["tags"] >> iTags;
-    rdr["nextarchive"] >> iNextArchiveTime;
-    rdr["stalecount"] >> iStaleCount;
-    rdr["lastalarmlogid"] >> iLastAlarmLogID;
+    INT millis;
+
+    rdr["pointid"]        >> _pointID;
+    rdr["timestamp"]      >> _timeStamp;
+    rdr["quality"]        >> _quality;
+    rdr["value"]          >> _value;
+    rdr["tags"]           >> _tags;
+    rdr["nextarchive"]    >> _nextArchiveTime;
+    rdr["stalecount"]     >> _staleCount;
+    rdr["lastalarmlogid"] >> _lastAlarmLogID;
+    rdr["millis"]         >> millis;
+
+    setTimeStampMillis(millis);
 
     resetDirty(FALSE);
 }
 
 LONG CtiTablePointDispatch::getPointID() const
 {
-
-
-    return iPointID;
+    return _pointID;
 }
 
 CtiTablePointDispatch& CtiTablePointDispatch::setPointID(LONG pointid)
 {
-
-
     setDirty(TRUE);
-    iPointID = pointid;
+    _pointID = pointid;
     return *this;
 }
 
 const RWDBDateTime& CtiTablePointDispatch::getTimeStamp() const
 {
-
-
-    return iTimeStamp;
+    return _timeStamp;
 }
 
 CtiTablePointDispatch& CtiTablePointDispatch::setTimeStamp(const RWDBDateTime& timestamp)
 {
-
-
     setDirty(TRUE);
-    iTimeStamp = timestamp;
+    _timeStamp = timestamp;
+    return *this;
+}
+
+UINT CtiTablePointDispatch::getTimeStampMillis() const
+{
+    return _timeStampMillis;
+}
+
+CtiTablePointDispatch& CtiTablePointDispatch::setTimeStampMillis(INT millis)
+{
+    setDirty(TRUE);
+
+    if( millis > 999 )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - setTimeStampMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        millis %= 1000;
+    }
+    else if( millis < 0 )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - setTimeStampMillis(), millis = " << millis << " < 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        millis = 0;
+    }
+
+    _timeStampMillis = millis;
+
     return *this;
 }
 
 UINT CtiTablePointDispatch::getQuality() const
 {
-
-
-    return iQuality;
+    return _quality;
 }
 
 CtiTablePointDispatch& CtiTablePointDispatch::setQuality(UINT quality)
 {
-
-
     setDirty(TRUE);
-    iQuality = quality;
+    _quality = quality;
     return *this;
 }
 
 DOUBLE CtiTablePointDispatch::getValue() const
 {
-
-
-    return iValue;
+    return _value;
 }
 
 CtiTablePointDispatch& CtiTablePointDispatch::setValue(DOUBLE value)
 {
-
-
     setDirty(TRUE);
-    iValue = value;
+    _value = value;
     return *this;
 }
 
 UINT CtiTablePointDispatch::getTags() const
 {
-    return iTags;
+    return _tags;
 }
 
 UINT CtiTablePointDispatch::setTags(UINT tags)
 {
     setDirty(TRUE);
-    iTags |= tags;
-    return iTags;
+    _tags |= tags;
+    return _tags;
 }
 
 UINT CtiTablePointDispatch::resetTags(UINT mask)
 {
     setDirty(TRUE);
-    iTags &= ~mask;
-    return iTags;
+    _tags &= ~mask;
+    return _tags;
 }
 
 
 UINT CtiTablePointDispatch::getStaleCount() const
 {
-    return iStaleCount;
+    return _staleCount;
 }
 
 CtiTablePointDispatch& CtiTablePointDispatch::setStaleCount(UINT stalecount)
 {
     setDirty(TRUE);
-    iStaleCount = stalecount;
+    _staleCount = stalecount;
     return *this;
 }
 
 const RWDBDateTime& CtiTablePointDispatch::getNextArchiveTime() const
 {
-    return iNextArchiveTime;
+    return _nextArchiveTime;
 }
 
 CtiTablePointDispatch& CtiTablePointDispatch::setNextArchiveTime(const RWDBDateTime& timestamp)
 {
     setDirty(TRUE);
-    iNextArchiveTime= timestamp;
+    _nextArchiveTime= timestamp;
     return *this;
 }
 
 CtiTablePointDispatch& CtiTablePointDispatch::applyNewReading(const RWDBDateTime& timestamp,
+                                                              UINT millis,
                                                               UINT quality,
                                                               DOUBLE value,
                                                               UINT tags,
@@ -375,9 +405,10 @@ CtiTablePointDispatch& CtiTablePointDispatch::applyNewReading(const RWDBDateTime
 {
 
 
-    if(timestamp < iTimeStamp)    // The setting is backward in time...
+    if(timestamp < _timeStamp)    // The setting is backward in time...
     {
         setTimeStamp( timestamp );
+        setTimeStampMillis(millis);
         setQuality( quality );
         setValue( value );
 
@@ -387,9 +418,10 @@ CtiTablePointDispatch& CtiTablePointDispatch::applyNewReading(const RWDBDateTime
 
         setDirty(TRUE);
     }
-    else if(timestamp >= iTimeStamp)
+    else if(timestamp >= _timeStamp)
     {
         setTimeStamp( timestamp );
+        setTimeStampMillis(millis);
         setQuality( quality );
         setValue( value );
 
@@ -409,37 +441,29 @@ void CtiTablePointDispatch::dump()
         CHAR  oldFill = dout.fill();
         dout.fill('0');
 
-        dout << endl << "PointID                           : " << iPointID << endl;
-        dout << " Time Stamp                               : " << iTimeStamp.rwtime() << endl;
-        dout << " Value                                    : " << iValue << endl;
-        dout << " Quality                                  : " << iQuality << endl;
-        dout << " Next Archive Time                        : " << iNextArchiveTime.rwtime() << endl;
-        dout << " Tags                                     : 0x" << hex << setw(8) << iTags << dec << endl;
-        dout << " Stale Count                              : " << iStaleCount << endl;
+        dout << endl;
+        dout << " PointID                                  : " << _pointID << endl;
+        dout << " Time Stamp                               : " << _timeStamp.rwtime() << ", " << _timeStampMillis << "ms" << endl;
+        dout << " Value                                    : " << _value << endl;
+        dout << " Quality                                  : " << _quality << endl;
+        dout << " Next Archive Time                        : " << _nextArchiveTime.rwtime() << endl;
+        dout << " Tags                                     : 0x" << hex << setw(8) << _tags << dec << endl;
+        dout << " Stale Count                              : " << _staleCount << endl;
 
         dout.fill(oldFill);
     }
 
 }
 
-CtiTablePointDispatch::CtiTablePointDispatch();
-
-CtiTablePointDispatch::CtiTablePointDispatch(LONG pointid,DOUBLE value,UINT quality,const RWDBDateTime& timestamp);
-
-CtiTablePointDispatch::CtiTablePointDispatch(const CtiTablePointDispatch& aRef);
-
-CtiTablePointDispatch::~CtiTablePointDispatch();
-
-
-
 ULONG CtiTablePointDispatch::getLastAlarmLogID() const
 {
-    return iLastAlarmLogID;
+    return _lastAlarmLogID;
 }
+
 CtiTablePointDispatch& CtiTablePointDispatch::setLastAlarmLogID(ULONG logID)
 {
     setDirty(TRUE);
-    iLastAlarmLogID = logID;
+    _lastAlarmLogID = logID;
     return *this;
 }
 

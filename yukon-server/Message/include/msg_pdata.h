@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_pdata.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 17:46:57 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/12/12 20:35:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,6 +42,8 @@ protected:
    double         _value;
 
    RWTime         _time;
+   unsigned       _millis;
+
    RWCString      _str;
 
 private:
@@ -60,19 +62,9 @@ public:
                    unsigned   tags        = 0,
                    unsigned   attrib      = 0,
                    unsigned   limit       = 0,
-                   int        pri         = 7
-                   );/* :
-      _id(id),
-      _value(value),
-      _quality(quality),
-      _type(type),
-      _str(valReport),
-      _time(RWTime()),
-      _tags(tags),
-      _attrib(attrib),
-      _limit(limit),
-      CtiMessage(pri)
-   {}                  */
+                   int        pri         = 7,
+                   unsigned   millis      = 0
+                   );
 
    CtiPointDataMsg(const CtiPointDataMsg &aRef);
    virtual ~CtiPointDataMsg();
@@ -116,6 +108,9 @@ public:
    const RWTime& getTime() const;
    RWTime& getTime();
    CtiPointDataMsg& setTime(const RWTime& aTime);
+
+   unsigned  getMillis() const;
+   CtiPointDataMsg& setMillis(unsigned millis);
 
    virtual void dump() const;
 
