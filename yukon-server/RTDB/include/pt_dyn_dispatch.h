@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_dyn_dispatch.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/12/12 20:37:08 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/11/17 23:39:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,7 @@
 #define __PT_DYN_DISPATCH_H__
 #pragma warning( disable : 4786)
 
+#include <windows.h>
 
 #include "pt_dyn_base.h"
 #include "tbl_pt_alarm.h"
@@ -36,6 +37,7 @@ protected:
    BOOL                       _archivePending;
    INT                        _lastSignal;
 
+   bool                       _inDelayedData;
 
 private:
 
@@ -72,5 +74,9 @@ public:
    RWTime         getNextArchiveTime() const;
    // RWTime&        getNextArchiveTime();
    CtiDynamicPointDispatch&  setNextArchiveTime(const RWTime &aTime);
+
+   bool inDelayedData() const;
+   CtiDynamicPointDispatch&  setInDelayedData(const bool in = true);
+
 };
 #endif // #ifndef __PT_DYN_DISPATCH_H__

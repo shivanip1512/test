@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_dyn_dispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/10/08 20:33:16 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/11/17 23:39:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,7 @@
 
 
 CtiDynamicPointDispatch::CtiDynamicPointDispatch(LONG id, double initialValue, INT qual) :
+_inDelayedData(false),
 _archivePending(FALSE),
 _lastSignal(-1),
 _attachment(NULL),
@@ -28,6 +29,7 @@ _dispatch(id,initialValue,qual)
 }
 
 CtiDynamicPointDispatch::CtiDynamicPointDispatch(const CtiDynamicPointDispatch& aRef) :
+_inDelayedData(false),
 _attachment(NULL),
 _lastSignal(-1),
 _archivePending(FALSE)
@@ -144,3 +146,15 @@ CtiDynamicPointBase*  CtiDynamicPointDispatch::replicate() const
     return((CtiDynamicPointBase*)pNew);
 
 }
+
+bool CtiDynamicPointDispatch::inDelayedData() const
+{
+    return _inDelayedData;
+}
+
+CtiDynamicPointDispatch&  CtiDynamicPointDispatch::setInDelayedData(const bool in)
+{
+    _inDelayedData = in;
+    return *this;
+}
+
