@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/03 22:55:03 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/07 21:43:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -412,7 +412,7 @@ int CtiStatistics::get(int counter, int index ) const
 
 RWCString CtiStatistics::getTableName()
 {
-    return RWCString("PaoStatistics");
+    return RWCString("DynamicPaoStatistics");
 }
 
 RWDBStatus::ErrorCode CtiStatistics::Restore()
