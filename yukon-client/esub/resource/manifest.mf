@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.esub.editor.Editor
-Class-Path: ./ jloox2.0.2.jar cache.jar common.jar message.jar database.jar dbext.jar rwav.jar classes12.zip clientutils.jar SqlServer.jar ../images ../config/ ../log/ ../export/
+Class-Path: ./ jloox2.0.2.jar common.jar rwav.jar classes12.zip log4j-1.2.4.jar SqlServer.jar ../images ../config/ ../log/ ../export/
 
 
