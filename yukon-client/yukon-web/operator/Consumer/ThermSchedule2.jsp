@@ -364,43 +364,43 @@ MM_reloadPage(true);
                             <% if (daySetting.getType() == StarsThermoDaySettings.MONDAY_TYPE) { %>
                             <b><span class="Header2">Mon</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.MONDAY.toString() %>', '<%= modeStr %>')">Mon</span> 
+                            <a href="" class="Link2" onclick="switchSettings('<%= StarsThermoDaySettings.MONDAY.toString() %>', '<%= modeStr %>'); return false;">Mon</a> 
                             <% } %>
 							&nbsp;&nbsp; 
                             <% if (daySetting.getType() == StarsThermoDaySettings.TUESDAY_TYPE) { %>
                             <b><span class="Header2">Tue</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.TUESDAY.toString() %>', '<%= modeStr %>')">Tue</span> 
+                            <a href="" class="Link2" onclick="switchSettings('<%= StarsThermoDaySettings.TUESDAY.toString() %>', '<%= modeStr %>'); return false;">Tue</a> 
                             <% } %>
 							&nbsp;&nbsp; 
                             <% if (daySetting.getType() == StarsThermoDaySettings.WEDNESDAY_TYPE) { %>
                             <b><span class="Header2">Wed</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.WEDNESDAY.toString() %>', '<%= modeStr %>')">Wed</span> 
+                            <a href="" class="Link2" onclick="switchSettings('<%= StarsThermoDaySettings.WEDNESDAY.toString() %>', '<%= modeStr %>'); return false;">Wed</a> 
                             <% } %>
 							&nbsp;&nbsp; 
                             <% if (daySetting.getType() == StarsThermoDaySettings.THURSDAY_TYPE) { %>
                             <b><span class="Header2">Thu</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.THURSDAY.toString() %>', '<%= modeStr %>')">Thu</span> 
+                            <a href="" class="Link2" onclick="switchSettings('<%= StarsThermoDaySettings.THURSDAY.toString() %>', '<%= modeStr %>'); return false;">Thu</a> 
                             <% } %>
 							&nbsp;&nbsp; 
                             <% if (daySetting.getType() == StarsThermoDaySettings.FRIDAY_TYPE) { %>
                             <b><span class="Header2">Fri</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.FRIDAY.toString() %>', '<%= modeStr %>')">Fri</span> 
+                            <a href="" class="Link2" onclick="switchSettings('<%= StarsThermoDaySettings.FRIDAY.toString() %>', '<%= modeStr %>'); return false;">Fri</a> 
                             <% } %>
 							&nbsp;&nbsp; 
                             <% if (daySetting.getType() == StarsThermoDaySettings.SATURDAY_TYPE) { %>
                             <b><span class="Header2">Sat</span> </b>
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>', '<%= modeStr %>')">Sat</span> 
+                            <a href="" class="Link2" onclick="switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>', '<%= modeStr %>'); return false;">Sat</a> 
                             <% } %>
                             &nbsp;&nbsp; 
                             <% if (daySetting.getType() == StarsThermoDaySettings.SUNDAY_TYPE) { %>
                             <b><span class="Header2">Sun</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeStr %>')">Sun</span> 
+                            <a href="" class="Link2" onclick="switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeStr %>'); return false;">Sun</a> 
                             <% } %>
                           <td class = "Background" align = "right" width="50%"> 
                             <input type="checkbox" name="ApplyToWeekdays" value="true">

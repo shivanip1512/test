@@ -286,19 +286,19 @@ MM_reloadPage(true);
                             <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.WEEKDAY.toString() )) { %>
                             <b><span class="Header2">Weekday</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onClick="switchSettings('<%= StarsThermoDaySettings.WEEKDAY.toString() %>', '<%= modeStr %>')">Weekday</span> 
+                            <a href="" class="Link2" onClick="switchSettings('<%= StarsThermoDaySettings.WEEKDAY.toString() %>', '<%= modeStr %>'); return false;">Weekday</a> 
                             <% } %>
                             &nbsp;&nbsp; 
                             <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.SATURDAY.toString() )) { %>
                             <b><span class="Header2">Saturday</span> </b>
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>', '<%= modeStr %>')">Saturday</span> 
+                            <a href="" class="Link2" onclick="switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>', '<%= modeStr %>'); return false;">Saturday</a> 
                             <% } %>
                             &nbsp;&nbsp; 
                             <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.SUNDAY.toString() )) { %>
                             <b><span class="Header2">Sunday</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeStr %>')">Sunday</span> 
+                            <a href="" class="Link2" onclick="switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeStr %>'); return false;">Sunday</a> 
                             <% } %>
                           <td class = "Background" align = "right" width="46%"> 
 <%	String visibleStr = (dayStr.equalsIgnoreCase( StarsThermoDaySettings.WEEKDAY.toString() ))? "visible" : "hidden"; %>
