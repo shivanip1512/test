@@ -16,14 +16,6 @@ var thermostats = ['', 'MovingLayer1', 'MovingLayer2', 'MovingLayer3', 'MovingLa
 var timeFields = ['', 'time1', 'time2', 'time3', 'time4'];
 var checkboxes = ['', 'WakeEnabled', 'LeaveEnabled', 'ReturnEnabled', 'SleepEnabled'];
 
-var browser = new Object();
-browser.isNetscape = false;
-browser.isMicrosoft = false;
-if (navigator.appName.indexOf("Netscape") != -1)
-	browser.isNetscape = true;
-else if (navigator.appName.indexOf("Microsoft") != -1)
-	browser.isMicrosoft = true;
-
 
 function showTimeWake(){
   var s = document.getElementById('MovingLayer1');
