@@ -14,6 +14,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 
 /**
+ * Handles the dirty work of contacting servlets.
  * @author aaron
  */
 class LoginSupport {
