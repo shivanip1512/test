@@ -5,6 +5,7 @@
 	<projects>
 		<project>billing</project>
 		<project>cbc</project>
+		<project>commander</project>
 		<project>common</project>
 		<project>loadcontrol</project>
 		<project>macs</project>

@@ -26,5 +26,6 @@
     <classpathentry kind="src" path="/tdc"/>
     <classpathentry kind="src" path="/cbc"/>
     <classpathentry kind="lib" path="/third-party/jloox30.jar"/>
+    <classpathentry kind="src" path="/commander"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
