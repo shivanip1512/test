@@ -21,27 +21,20 @@ import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.AdditionalContact;
 import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.Email;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
-import com.cannontech.stars.xml.serialize.StarsAppliances;
-import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsInventories;
-import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.serialize.StarsUpdateLogin;
-import com.cannontech.stars.xml.serialize.StarsUser;
 import com.cannontech.stars.xml.serialize.StreetAddress;
 import com.cannontech.stars.xml.serialize.Substation;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -211,11 +204,12 @@ public class NewCustAccountAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
             
-			if (SOAPServer.isClientLocal()) {
-				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
-				ServletUtils.removeTransientAttributes( session );
-				session.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo );
-			}
+			// Response will be handled here, instead of in parse()
+			session.removeAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT );
+			ServletUtils.removeTransientAttributes( session );
+			
+			StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
+			session.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo );
             
 			StarsSuccess success = new StarsSuccess();
 			success.setDescription( "Customer account created successfully" );
@@ -247,40 +241,15 @@ public class NewCustAccountAction implements ActionBase {
 			StarsOperation respOper = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 			
+			StarsFailure failure = respOper.getStarsFailure();
+			if (failure != null) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+				return failure.getStatusCode();
+			}
+			
 			StarsSuccess success = respOper.getStarsSuccess();
-			if (success == null) {
-				StarsFailure failure = respOper.getStarsFailure();
-				if (failure != null) {
-					session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
-					return failure.getStatusCode();
-				}
-				else
-					return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-			}
-			
-			session.removeAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT );
-			
-			if (!SOAPClient.isServerLocal()) {
-				StarsNewCustomerAccount newAccount = reqOper.getStarsNewCustomerAccount();
-				StarsCustAccountInformation accountInfo = new StarsCustAccountInformation();
-				
-				accountInfo.setStarsCustomerAccount( newAccount.getStarsCustomerAccount() );
-				if (newAccount.getStarsUpdateLogin() != null) {
-					StarsUser login = new StarsUser();
-					login.setUsername( newAccount.getStarsUpdateLogin().getUsername() );
-					login.setPassword( newAccount.getStarsUpdateLogin().getPassword() );
-					accountInfo.setStarsUser( login );
-				}
-				
-				accountInfo.setStarsLMPrograms( new StarsLMPrograms() );
-				accountInfo.setStarsAppliances( new StarsAppliances() );
-				accountInfo.setStarsInventories( new StarsInventories() );
-				accountInfo.setStarsCallReportHistory( new StarsCallReportHistory() );
-				accountInfo.setStarsServiceRequestHistory( new StarsServiceRequestHistory() );
-				
-				ServletUtils.removeTransientAttributes( session );
-				session.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
-			}
+			if (success == null)
+				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
 			return 0;
 		}
