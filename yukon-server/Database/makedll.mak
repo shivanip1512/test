@@ -56,6 +56,7 @@ tbl_dv_scandata.obj \
 tbl_dv_tappaging.obj \
 tbl_dv_versacom.obj \
 tbl_dv_wnd.obj \
+tbl_gateway_end_device.obj \
 tbl_lm_controlhist.obj \
 tbl_loadprofile.obj \
 tbl_metergrp.obj \
