@@ -57,7 +57,8 @@ public class ServerDatabaseCache implements com.cannontech.yukon.IDatabaseCache
 	//derived from allYukonUsers,allYukonRoles,allYukonGroups
 	//see type info in IDatabaseCache
 	private java.util.Map allYukonUserLookupRoles = null;
-	 
+	private java.util.Map allYukonUserLookupRoleIDs = null;
+	
 	private java.util.ArrayList allEnergyCompanies = null;
 	private java.util.Map allUserEnergyCompanies = null;
 	
@@ -868,9 +869,28 @@ public synchronized java.util.List getAllYukonPAObjects()
 	public Map getAllYukonUserRoleLookupMap() {
 	
 		if(allYukonUserLookupRoles == null) {
-			allYukonUserLookupRoles = new HashMap();
-			
-			Iterator iter = getAllYukonUsers().iterator();			
+			loadRoleLookupMaps();	
+		}
+		
+		return allYukonUserLookupRoles;			
+	}
+	
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleIDLookupMap()
+	 */
+	public Map getAllYukonUserRoleIDLookupMap() {
+		if(allYukonUserLookupRoleIDs == null) {
+			loadRoleLookupMaps();
+		}
+		return allYukonUserLookupRoleIDs;
+	}
+	
+	
+	private void loadRoleLookupMaps() {
+		allYukonUserLookupRoles = new HashMap();
+		allYukonUserLookupRoleIDs = new HashMap();
+		
+		Iterator iter = getAllYukonUsers().iterator();			
 			Map userRoles = getAllYukonUserRoleMap();
 			Map userGroups =  getAllYukonUserGroupMap();
 			Map groupRoles = getAllYukonGroupRoleMap();
@@ -878,6 +898,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 			while(iter.hasNext()) {
 				LiteYukonUser user = (LiteYukonUser) iter.next();
 				HashMap roleMap = new HashMap();
+				HashMap roleIDMap = new HashMap();
 				
 				// first groups roles then user roles
 				// to maintain correct precedence
@@ -887,37 +908,34 @@ public synchronized java.util.List getAllYukonPAObjects()
 					while(groupIter.hasNext()) {
 						LiteYukonGroup group = (LiteYukonGroup) groupIter.next();
 						List roles = (List) groupRoles.get(group);
-						addRolesToMap(roles, roleMap);
+						addRolesToMap(roles, roleMap, roleIDMap);
 					}				
 				}
 				
 				List roles = (List) userRoles.get(user);
-				addRolesToMap(roles, roleMap);
+				addRolesToMap(roles, roleMap, roleIDMap);
 				
-				allYukonUserLookupRoles.put(user, roleMap);						
+				allYukonUserLookupRoles.put(user, roleMap);		
+				allYukonUserLookupRoleIDs.put(user, roleIDMap);				
 			}	
-		}
-		
-		return allYukonUserLookupRoles;			
 	}
-	
 	/**
-	 * Convenience method for getAllYukonUserRoleLookupMap
+	 * Convenience method for loadRoleLookupMaps
 	 * @param roles
 	 * @param roleMap
 	 */
-	private void addRolesToMap(List roleValuePairs, Map roleMap) {
+	private void addRolesToMap(List roleValuePairs, Map roleMap, Map roleIDMap) {
 		if(roleValuePairs != null) {
 			Iterator i = roleValuePairs.iterator();
 			while(i.hasNext()) {
 				Pair p = (Pair) i.next();
 				LiteYukonRole r = (LiteYukonRole) p.first;
 				roleMap.put(r.getRoleName(), p);
+				roleIDMap.put(new Integer(r.getLiteID()), p);
 			}
 		}
 	}
-		
-		
+				
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllEnergyCompanies()
 	 */
@@ -2055,6 +2073,4 @@ public void setDatabaseAlias(String newAlias){
 protected void setDbChangeListener(CacheDBChangeListener newDbChangeListener) {
 	dbChangeListener = newDbChangeListener;
 }
-
-
 }

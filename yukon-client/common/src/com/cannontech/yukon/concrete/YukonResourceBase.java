@@ -20,7 +20,6 @@ import com.cannontech.database.data.lite.LiteBase;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Observer;
 
 // ---------------------------------------------------------------------------------
 //  Imports for ISQLStatement implementation
@@ -33,7 +32,6 @@ import java.sql.Connection;
 //  Imports for IMACSConnection implementation
 // ---------------------------------------------------------------------------------   
 import com.cannontech.common.util.MessageEventListener;
-import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.message.util.Message;
 
@@ -327,9 +325,7 @@ public abstract class YukonResourceBase implements IYukon
       return getDBCache();
    }
 
-    public Map getAllYukonUserRoleMap() {
-		return null;
-	}
+   
 	
    /**
     *  Returns the LiteBase object that was added,deleted or updated, 
@@ -510,6 +506,20 @@ public abstract class YukonResourceBase implements IYukon
 	 */
 	public Map getAllUserEnergyCompanies() {
 		return getDBCache().getAllUserEnergyCompanies(); 
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleIDLookupMap()
+	 */
+	public Map getAllYukonUserRoleIDLookupMap() {
+		return getDBCache().getAllYukonUserRoleIDLookupMap();
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleMap()
+	 */
+	public Map getAllYukonUserRoleMap() {
+		return getDBCache().getAllYukonUserRoleMap();
 	}
 
 }

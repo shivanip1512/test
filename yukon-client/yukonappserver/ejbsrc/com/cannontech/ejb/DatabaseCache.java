@@ -81,6 +81,8 @@ public interface DatabaseCache
  
    public java.util.Map getAllYukonUserRoleLookupMap() throws java.rmi.RemoteException;;
    
+   public java.util.Map getAllYukonUserRoleIDLookupMap() throws java.rmi.RemoteException;;
+   
    public java.util.List getAllEnergyCompanies() throws java.rmi.RemoteException;
    
    public java.util.Map getAllUserEnergyCompanies() throws java.rmi.RemoteException;

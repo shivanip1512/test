@@ -531,4 +531,12 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    {
       getCache().setDatabaseAlias( newAlias );
    }	
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	 */
+	public Map getAllYukonUserRoleIDLookupMap() {
+		return getCache().getAllYukonUserRoleIDLookupMap();
+	}
+
 }

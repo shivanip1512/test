@@ -525,4 +525,11 @@ public class DefaultDatabaseCache implements IDatabaseCache
 		return getDBCache().getAllUserEnergyCompanies();
 	}
 
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleIDLookupMap()
+	 */
+	public Map getAllYukonUserRoleIDLookupMap() {
+		return getDBCache().getAllYukonUserRoleIDLookupMap();
+	}
+
 }

@@ -597,6 +597,21 @@ public class ClientCache implements IDatabaseCache
 	}
 
 	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleIDLookupMap()
+	 */
+	public Map getAllYukonUserRoleIDLookupMap() {
+		try 
+		{			
+			return getCache().getAllYukonUserRoleIDLookupMap();
+		}
+		catch( java.rmi.RemoteException e )
+      {
+         com.cannontech.clientutils.CTILogger.info( e );
+         return new java.util.HashMap();
+      }	
+	}
+	
+	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleMap()
 	 */
 	public Map getAllYukonUserRoleMap() {
@@ -932,4 +947,6 @@ public class ClientCache implements IDatabaseCache
          com.cannontech.clientutils.CTILogger.info( e );
       }
    }
+	
+
 }
