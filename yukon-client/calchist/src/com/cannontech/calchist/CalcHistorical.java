@@ -1021,7 +1021,11 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 				pointDataMsg.setTime(((RawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp().getTime());
 				pointDataMsg.setQuality(PointQualities.NON_UPDATED_QUALITY);
 				pointDataMsg.setType(PointTypes.CALCULATED_POINT);
-				pointDataMsg.setTags(0x00008000); //load profile tag setting
+				if( done )	//last time through
+					pointDataMsg.setTags(0x00000000); //represent the last PointData message in the group
+				else
+					pointDataMsg.setTags(0x00008000); //load profile tag setting
+
 				pointDataMsg.setStr("Calc Historical");
 	
 				returnVector.addElement(pointDataMsg);
