@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/PORTGLOB.H-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/03/13 19:35:35 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/06/10 20:58:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,7 @@ using namespace std;
 #define PORTER_DEBUG_NEXUSREAD         0x00000004
 #define PORTER_DEBUG_PORTQUEREAD       0x00000008
 #define PORTER_DEBUG_SENDERROR         0x00000010
+#define PORTER_DEBUG_COMMFAIL          0x00000020
 #define PORTER_DEBUG_VERSACOM          0x00000100
 #define PORTER_DEBUG_RIPPLE            0x00000800
 #define PORTER_DEBUG_PRIORITIES        0x00001000
