@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/05/05 15:31:43 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/10/14 19:57:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -470,23 +470,42 @@ IDLCua (PBYTE Response, PUSHORT ReqNum, PUSHORT RepNum)
 /* Routine to decode the Algorithm status part of the message */
 IDLCAlgStat (PBYTE Message, PUSHORT Status)
 {
-   USHORT i;
+    int retval = NORMAL;
 
-   if(!Message[0] && !Message[1])
-   {
-      for(i = 0; i < 8; i++)
-         Status[i] = 0;
-      return(NOTNORMAL);
-   }
+    USHORT i;
 
-   Status[0] = (Message[0] >> 6) & 0x03;
-   Status[1] = (Message[0] >> 4) & 0x03;
-   Status[2] = (Message[0] >> 2) & 0x03;
-   Status[3] = Message[0] & 0x03;
-   Status[4] = (Message[1] >> 6) & 0x03;
-   Status[5] = (Message[1] >> 4) & 0x03;
-   Status[6] = (Message[1] >> 2) & 0x03;
-   Status[7] = Message[1] & 0x03;
+    Status[0] = (Message[0] >> 6) & 0x03;
+    Status[1] = (Message[0] >> 4) & 0x03;
+    Status[2] = (Message[0] >> 2) & 0x03;
+    Status[3] = Message[0] & 0x03;
+    Status[4] = (Message[1] >> 6) & 0x03;
+    Status[5] = (Message[1] >> 4) & 0x03;
+    Status[6] = (Message[1] >> 2) & 0x03;
+    Status[7] = Message[1] & 0x03;
 
-   return(NORMAL);
+    if( !Message[0] && !Message[1] )
+    {
+        //  we have no statuses - something's wrong
+        retval = NOTNORMAL;
+    }
+    else if( Status[0] || Status[3] || Status[6] || Status[7] )
+    {
+        /*
+        note, we set up the algorithm statuses like so...  if anything comes
+        back in 0, 3, 6, or 7, we know that they're not initialized properly
+
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (-1);
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1);
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (2);
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (-1);
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (4);
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (5);
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (-1);
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (-1);
+        */
+
+        retval = NOTNORMAL;
+    }
+
+    return retval;
 }
