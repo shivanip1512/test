@@ -1057,6 +1057,8 @@ go
 
 update YukonRoleProperty set DefaultValue='(none)' where RolePropertyID=-1101;
 
+insert into lmgroup values( 0, 0 );
+
 
 
 
