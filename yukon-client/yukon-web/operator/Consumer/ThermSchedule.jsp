@@ -6,9 +6,24 @@
 	StarsThermostatSettings thermoSettings = hardware.getStarsThermostatSettings();
 
 	String dayStr = request.getParameter("day");
-	if (dayStr == null) dayStr = StarsThermoDaySettings.WEEKDAY.toString();
+	StarsThermoDaySettings daySetting = null;
+	if (dayStr != null)
+		daySetting = StarsThermoDaySettings.valueOf(dayStr);
+	if (daySetting == null) {
+		daySetting = ServletUtils.getCurrentDay();
+		if (ServletUtils.isWeekday(daySetting))
+			daySetting = StarsThermoDaySettings.WEEKDAY;
+		dayStr = daySetting.toString();
+	}
+	
 	String modeStr = request.getParameter("mode");
-	if (modeStr == null) modeStr = StarsThermoModeSettings.COOL.toString();
+	StarsThermoModeSettings modeSetting = null;
+	if (modeStr != null)
+		modeSetting = StarsThermoModeSettings.valueOf(modeStr);
+	if (modeStr == null) {
+		modeSetting = StarsThermoModeSettings.COOL;
+		modeStr = modeSetting.toString();
+	}
 	
 	boolean isCooling = modeStr.equalsIgnoreCase( StarsThermoModeSettings.COOL.toString() );
 	String visibleC = isCooling ? "visible" : "hidden";
