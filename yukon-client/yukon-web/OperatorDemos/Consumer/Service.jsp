@@ -1,3 +1,11 @@
+<%@ include file="StarsHeader.jsp" %>
+<%
+	String orderNumber = "";
+	Integer orderNo = operator.getIncAttribute("NEXT_ORDER_NUMBER");
+	if (orderNo != null)
+		orderNumber = orderNo.toString();
+%>
+
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -54,18 +62,18 @@
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center"><% String header = "WORK ORDERS - SERVICE REQUEST"; %><%@ include file="InfoSearchBar.jsp" %><br>
-             
+			<form name="form5" method="POST" action="/servlet/SOAPClient">
+			  <input type="hidden" name="action" value="CreateOrder">
               <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                   <tr> 
                     <td valign="top" bgcolor="#FFFFFF"> 
-                      <form name="form5" method="" action="">
                         <table width="400" border="0" cellspacing="0" cellpadding="3" align="center">
                           <tr> 
                             <td width="100" class="TableCell"> 
                               <div align="right">Service Order #:</div>
                             </td>
                             <td width="210"> 
-                              <input type="text" name="textfield22332" maxlength="2" size="14">
+                              <input type="text" name="OrderNumber" maxlength="2" size="14" value="<%= orderNumber %>">
                             </td>
                           </tr>
                           <tr> 
@@ -73,7 +81,7 @@
                               <div align="right">Date Reported:</div>
                             </td>
                             <td width="210"> 
-                              <input type="text" name="textfield2234" maxlength="2" size="14">
+                              <input type="text" name="DateAssigned" maxlength="2" size="14" value="<%= dateFormat.format(Calendar.getInstance().getTime()) %>">
                             </td>
                           </tr>
                           <tr> 
@@ -81,8 +89,8 @@
                               <div align="right">Service Type:</div>
                             </td>
                             <td width="210"> 
-                              <select name="select">
-                                <option>Service Call</option>
+                              <select name="ServiceType">
+                                <option value="18">Service Call</option>
                               </select>
                             </td>
                           </tr>
@@ -92,8 +100,8 @@
                             <div align="right">Assign to:</div>
                             </td>
                             <td width="210"> 
-                              <select name="select">
-                                <option>Acme Company</option>
+                              <select name="ServiceCompany">
+                                <option value="25">Acme Company</option>
                               </select>
                             </td>
                           </tr>
@@ -102,34 +110,28 @@
                               <div align="right">Notes: </div>
                             </td>
                             <td width="210"> 
-                              <textarea name="textarea2" rows="3" wrap="soft" cols="25" class = "TableCell"></textarea>
+                              <textarea name="Notes" rows="3" wrap="soft" cols="25" class = "TableCell"></textarea>
                             </td>
                           </tr>
                         </table>
-                      </form>
                       <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                         <tr> 
-                          <form name="form3" method="get" action="Service.jsp">
-                            
                           <td width="169"> 
                             <div align="right"> 
                                 <input type="submit" name="Send" value="Send">
                               </div>
                             </td>
-                          </form>
-                          <form name="form4" method="" action="">
-                            
                           <td width="211"> 
                             <div align="left"> 
                                 <input type="reset" name="Cancel2" value="Cancel">
                               </div>
                             </td>
-                          </form>
                         </tr>
                       </table>
                     </td>
                   </tr>
                 </table>
+			  </form>
                 <div align="center"><br>
               </div>
             </div>
