@@ -306,7 +306,14 @@ public void inputUpdate(PropertyPanelEvent event)
 {
 	getJButtonOk().setEnabled( 
 		((DataInputPanel)getJPanelSlot()).isInputValid() );
+	
+	if( event != null && event.getID() == PropertyPanelEvent.OK_SELECTION )
+		getJButtonOk().doClick();
+
+	if( event != null && event.getID() == PropertyPanelEvent.CANCEL_SELECTION )
+		getJButtonCancel().doClick();
 }
+
 /**
  * Comment
  */

@@ -34,7 +34,11 @@ public class TreeItemDeleter
 			throw new IllegalArgumentException(this.getClass().getName() + 
 			" only accepts a non null argument passed to its constructor");
 
-	   nodes = treeViewPanel.getSelectedNodes();
+	   nodes = 
+	   	(treeViewPanel.getSelectedNodes() == null 
+	   	 ? new DefaultMutableTreeNode[0]
+	   	 : treeViewPanel.getSelectedNodes()) ;
+
 		deletables = new DBPersistent[ nodes.length ];
 	}
 
@@ -47,7 +51,18 @@ public class TreeItemDeleter
 		StringBuffer unableDel = new StringBuffer(), message = new StringBuffer();
 		String dbDeletionWarning = "";
 		
-		
+		if( nodes.length <= 0 )
+		{
+			javax.swing.JOptionPane.showMessageDialog(
+				getParentFrame(),
+				"Something must be selected for deletion",
+				"Unable to Delete",
+				JOptionPane.WARNING_MESSAGE);
+					
+			return JOptionPane.NO_OPTION;			
+		}
+
+
 		for( int i = 0; i < nodes.length; i++ )
 		{
 		   if( !(nodes[i].getUserObject() instanceof com.cannontech.database.data.lite.LiteBase) )

@@ -3,8 +3,11 @@ package com.cannontech.common.gui.util;
 /**
  * This type was created in VisualAge.
  */
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
 
@@ -12,6 +15,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionListener;
@@ -21,10 +25,11 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.model.LiteBaseTreeModel;
 
-public class TreeViewPanel extends javax.swing.JPanel implements java.awt.ItemSelectable, javax.swing.event.TreeWillExpandListener, java.awt.event.ActionListener, ItemListener
+public class TreeViewPanel extends javax.swing.JPanel implements java.awt.ItemSelectable, javax.swing.event.TreeWillExpandListener, ItemListener
 {
 	//gui components
 	private JTree tree;
@@ -46,6 +51,8 @@ public class TreeViewPanel extends javax.swing.JPanel implements java.awt.ItemSe
 	protected boolean undoLastSelection = false;
 
 
+	private static final TreeFindPanel FND_PANEL = new TreeFindPanel();
+	private static OkCancelDialog dialog = null;
 
 
 	private static java.util.Comparator nodeComparator = new java.util.Comparator()
@@ -71,30 +78,6 @@ public TreeViewPanel() {
 	initialize();
 }
 
-/**
- * Method to handle events for the ActionListener interface.
- * @param e java.awt.event.ActionEvent
- */
-public void actionPerformed(java.awt.event.ActionEvent e) 
-{
-	if( e.getSource() == this )
-	{
-		String value = javax.swing.JOptionPane.showInputDialog(
-			this, "Name of the item: ", "Find",
-			javax.swing.JOptionPane.QUESTION_MESSAGE );
-
-		if( value != null )
-		{
-			boolean found = searchFirstLevelString(value);
-
-			if( !found )
-				javax.swing.JOptionPane.showMessageDialog(
-					this, "Unable to find your selected item", "Item Not Found",
-					javax.swing.JOptionPane.INFORMATION_MESSAGE );
-		}
-	}
-	
-}
 /**
  * This method was created in VisualAge.
  * @param l java.awt.event.ItemListener
@@ -270,7 +253,6 @@ public JTree getTree()
 				return false;
 		 	}
 		});
-			
 	}
 
 	return tree;
@@ -292,14 +274,14 @@ private void initConnections()
 
 	getTree().addTreeWillExpandListener(this);
 
-
+/*
 	registerKeyboardAction( this,
 								javax.swing.KeyStroke.getKeyStroke( 
 								java.awt.event.KeyEvent.VK_F,
 								java.awt.event.KeyEvent.CTRL_MASK),
 								WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-/*	for( int i = java.awt.event.KeyEvent.VK_A; i <= java.awt.event.KeyEvent.VK_Z; i++ )
+	for( int i = java.awt.event.KeyEvent.VK_A; i <= java.awt.event.KeyEvent.VK_Z; i++ )
 	{
 		registerKeyboardAction( this,
 								javax.swing.KeyStroke.getKeyStroke( 
@@ -314,16 +296,62 @@ private void initConnections()
 								WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);		
 	}
 */
-	//this includes the following chars: 
-	// 	[NUMPAD0..NUMPAD9], [A..Z], [0..9] *,-,/,+,.
-	for( int i = java.awt.event.KeyEvent.VK_0; i <= java.awt.event.KeyEvent.VK_DIVIDE; i++ )
-		registerKeyboardAction( this,
-								javax.swing.KeyStroke.getKeyStroke( 
-								i,
-								0),
-								WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+	dialog = new OkCancelDialog(
+			CtiUtilities.getParentFrame(TreeViewPanel.this),
+			"Search",
+			true, FND_PANEL );
+
+
+	KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(
+		new KeyEventDispatcher()
+		{
+			public boolean dispatchKeyEvent(KeyEvent e)
+			{
+				//do the checks of the KeyEvent here
+				if( e.getID() == KeyEvent.KEY_PRESSED && e.getSource() == getTree() )
+				{
+					//do the checks of the keystrokes here
+					if( e.getKeyCode() >= KeyEvent.VK_0
+						 && e.getKeyCode() <= KeyEvent.VK_DIVIDE
+						 && e.getModifiers() == 0
+						 && !dialog.isShowing() )
+					{
+						FND_PANEL.setValue( new Character(e.getKeyChar()) );
+						
+						dialog.setSize(250, 120);
+						dialog.setLocationRelativeTo( TreeViewPanel.this );
+						dialog.show();
+		
+						if( dialog.getButtonPressed() == OkCancelDialog.OK_PRESSED )
+						{
+			
+							Object value = FND_PANEL.getValue(null);
+							
+							if( value != null )
+							{
+								boolean found = searchFirstLevelString(value.toString());
+	
+								if( !found )
+									javax.swing.JOptionPane.showMessageDialog(
+										TreeViewPanel.this, "Unable to find your selected item", "Item Not Found",
+										javax.swing.JOptionPane.INFORMATION_MESSAGE );
+							}
+						}
+		
+						dialog.setVisible(false);
+					}
+	
+				}
+				
+				//its this the last handling of the KeyEvent in this KeyboardFocusManager?
+				return false;
+			}
+		});
+	
 
 }
+
 /**
  * This method was created in VisualAge.
  */
