@@ -243,7 +243,7 @@ public class Drawing implements Serializable {
 		for (int i = 0; i < comps.length; i++) {
 			if (comps[i] instanceof DrawingMetaElement)
 				return (DrawingMetaElement) comps[i];
-			}
+		}
 		
 		DrawingMetaElement metaInfo = new DrawingMetaElement();
 		metaInfo.setDrawing(this);			
