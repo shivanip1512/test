@@ -164,7 +164,11 @@ public void destroy()
 }
 private synchronized void playSound()
 {
-	
+	//must not have found the sound file
+	if( sourceDataLine == null )
+		return;
+
+
 	try
 	{
 		if( !sourceDataLine.isOpen() )
