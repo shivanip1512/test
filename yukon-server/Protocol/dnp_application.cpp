@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/02/12 01:16:09 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/03/05 23:54:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -214,7 +214,6 @@ void CtiDNPApplication::processInput( void )
         dout << endl << endl;
     }
 
-    //  real code
     if( _appRsp.ctrl.app_confirm )
     {
         setCommand(RequestConfirm);
@@ -222,7 +221,7 @@ void CtiDNPApplication::processInput( void )
         _hasOutput = true;
     }
 
-    //  if class_1 || class_2 || class_3, we need to do something...  pass it up to the protocol layer, eh?
+    //  ACH:  if class_1 || class_2 || class_3, we need to do something...  pass it up to the protocol layer, eh?
 
     int processed = 0;
 
@@ -346,7 +345,7 @@ bool CtiDNPApplication::isTransactionComplete( void )
     //  ACH:  add code to allow fragmented application layer packets to be sent and received
     //    ...but will be on Scanner side...
 
-    return _ioState == Complete;
+    return _ioState == Complete || _ioState == Failed;
 }
 
 
@@ -437,7 +436,6 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
                 {
                     _appRspBytesUsed = 0;
                     _ioState = Failed;
-                    retVal = PORTREAD;  //  timeout reading from port
                 }
 
                 break;

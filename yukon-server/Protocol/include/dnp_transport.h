@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/02/12 01:16:10 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/03/05 23:54:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,12 +26,12 @@
 class CtiDNPTransport
 {
 private:
-    CtiDNPDatalink _datalink;
-    unsigned char *_outPayload,     *_inPayload;
-    unsigned int   _outPayloadLen,   _inPayloadLen,
-                   _outPayloadSent,  _inPayloadRecv,
-                   _seq;
-    unsigned short _srcAddr, _dstAddr;
+    CtiDNPDatalink  _datalink;
+    unsigned char  *_outPayload,       *_inPayload;
+    unsigned int    _outPayloadLen,     _inPayloadLen,
+                    _outPayloadSent,    _inPayloadRecv,
+                    _currentPacketLen,  _seq;
+    unsigned short  _srcAddr, _dstAddr;
 
     enum TransportIOState
     {
@@ -46,7 +46,8 @@ private:
 
     enum
     {
-        TransportHeaderLen = 1
+        TransportHeaderLen     =   1,
+        TransportMaxPayloadLen = 249
     };
 
     struct _transport_header_t

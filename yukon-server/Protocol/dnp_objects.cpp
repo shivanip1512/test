@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/15 14:08:05 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/03/05 23:54:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -535,6 +535,20 @@ int CtiDNPObjectBlock::restore( unsigned char *buf, int len )
                 case NoIndex_ShortStartStop:
                 {
                     idx = _start + qtyRestored;
+                    break;
+                }
+
+                case NoIndex_ByteQty:
+                case NoIndex_ShortQty:
+                {
+                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    idx = 0 + qtyRestored;
+
                     break;
                 }
 

@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/02/12 01:16:10 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/03/05 23:54:49 $
 *
 * Copyright (c) 2003 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,7 @@
 #pragma pack( push, 1 )
 
 //  the primary and secondary control byte
-struct _dnp_datalink_packet_header_control_primary
+struct dnp_datalink_packet_header_control_primary
 {
     unsigned char functionCode  : 4;
     unsigned char fcv           : 1;
@@ -30,7 +30,7 @@ struct _dnp_datalink_packet_header_control_primary
     unsigned char direction     : 1;
 };
 
-struct _dnp_datalink_packet_header_control_secondary
+struct dnp_datalink_packet_header_control_secondary
 {
     unsigned char functionCode  : 4;
     unsigned char dfc           : 1;
@@ -41,15 +41,15 @@ struct _dnp_datalink_packet_header_control_secondary
 
 
 //  the formatted and raw structure of the header
-struct _dnp_datalink_packet_header_formatted
+struct dnp_datalink_packet_header_formatted
 {
     unsigned char framing[2];
     unsigned char len;
 
     union _control
     {
-        _dnp_datalink_packet_header_control_primary   p;
-        _dnp_datalink_packet_header_control_secondary s;
+        dnp_datalink_packet_header_control_primary   p;
+        dnp_datalink_packet_header_control_secondary s;
     } control;
 
     unsigned short destination;
@@ -57,23 +57,24 @@ struct _dnp_datalink_packet_header_formatted
     unsigned short crc;
 };
 
-struct _dnp_datalink_packet_header_raw
+/*
+struct dnp_datalink_packet_header_raw
 {
     unsigned char  buf[8];
     unsigned short crc;
 };
-
+*/
 
 //  the header combines both formatted and raw for clearer access
-union _dnp_datalink_packet_header
+union dnp_datalink_packet_header
 {
-    _dnp_datalink_packet_header_formatted fmt;
-    _dnp_datalink_packet_header_raw       raw;
+    dnp_datalink_packet_header_formatted fmt;
+    unsigned char                        raw[10];
 };
 
 
 //  in case we ever need to access it in a non-block-oriented fashion
-union _dnp_datalink_packet_data
+union dnp_datalink_packet_data
 {
 //    unsigned char raw[282];        //  rounds up to 288 due to block-level access
     unsigned char blocks[16][18];  //    note the last block is only 14 instead of 18
@@ -81,10 +82,10 @@ union _dnp_datalink_packet_data
 
 
 //  the packet combines all of the previous into one big blob
-struct _dnp_datalink_packet
+struct dnp_datalink_packet
 {
-    _dnp_datalink_packet_header header;
-    _dnp_datalink_packet_data   data;
+    dnp_datalink_packet_header header;
+    dnp_datalink_packet_data   data;
 };
 
 #pragma pack( pop )

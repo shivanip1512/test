@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/02/12 01:16:09 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/03/05 23:54:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,8 +23,9 @@
 
 CtiDNPDatalink::CtiDNPDatalink()
 {
-    _io_state   = State_Uninitialized;
-    _dl_confirm = false;
+    _io_state      = State_IO_Uninitialized;
+    _control_state = State_Control_Ready;
+    _dl_confirm    = false;
 }
 
 CtiDNPDatalink::CtiDNPDatalink(const CtiDNPDatalink &aRef)
@@ -67,41 +68,60 @@ void CtiDNPDatalink::setOptions(int options)
 void CtiDNPDatalink::resetLink( void )
 {
     _reset_sent = false;
-    _fcb_in     = false;
-    _fcb_out    = false;
+/*    _fcb_in     = false;
+    _fcb_out    = false;*/
 }
 
 
 void CtiDNPDatalink::setToOutput(unsigned char *buf, unsigned int len)
 {
-    _comm_errors     = 0;
-    _protocol_errors = 0;
-
     //  if it's too big or there's nothing to copy, set our buffer to zip
     if( len > Packet_MaxPayloadLen || buf == NULL )
     {
-        _out_data_len = 0;
-        _io_state      = State_Failed;
+        _out_data_len  = 0;
+        _io_state      = State_IO_Failed;
+        _control_state = State_Control_Ready;
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
     else
     {
-        _out_data_len = len;
-        _io_state      = State_Output;
+        _io_state      = State_IO_Output;
+
+        if( _dl_confirm & !_reset_sent )
+        {
+            _control_state = State_Control_Request_DLReset_Out;
+        }
+        else
+        {
+            _control_state = State_Control_Ready;
+        }
+
+        _out_data_len  = len;
+        _out_sent      = 0;     //  unused, eh?  we mostly just switch off of comm errors
+
+        _comm_errors     = 0;
+        _protocol_errors = 0;
 
         memcpy(_out_data, buf, _out_data_len);
     }
-
-    _out_sent = 0;
 }
 
 
 void CtiDNPDatalink::setToInput( void )
 {
-    _io_state = State_Input;
+    _io_state = State_IO_Input;
+
+    _control_state = State_Control_Ready;
 
     _in_recv     = 0;
     _in_expected = 0;
     _in_actual   = 0;
+
+    _in_data_len = 0;
 
     _comm_errors     = 0;
     _protocol_errors = 0;
@@ -112,27 +132,34 @@ int CtiDNPDatalink::generate( CtiXfer &xfer )
 {
     int retVal = NoError;
 
-    if( isDatalinkControlActionPending() )
+    if( isControlPending() )
     {
-        doDatalinkControlAction(xfer);
+        generateControl(xfer);
     }
     else
     {
         switch( _io_state )
         {
-            case State_Output:
+            case State_IO_Input:
             {
-                //  ACH:  retries if we're NACK'd or we time out
-                constructPacket(&_packet, _out_data, _out_data_len);
-
-                sendPacket(&_packet, xfer);
+                recvPacket(_packet, xfer);
 
                 break;
             }
 
-            case State_Input:
+            case State_IO_Output:
             {
-                recvPacket(&_packet, xfer);
+                constructDataPacket(_packet, _out_data, _out_data_len);
+
+                sendPacket(_packet, xfer);
+
+                break;
+            }
+
+            //  ACH:  does this need to just be another control state transition?
+            case State_IO_OutputRecvAck:
+            {
+                recvPacket(_packet, xfer);
 
                 break;
             }
@@ -144,129 +171,19 @@ int CtiDNPDatalink::generate( CtiXfer &xfer )
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                _io_state = State_Failed;
+                _io_state = State_IO_Failed;
+
+                xfer.setOutBuffer(NULL);
+                xfer.setOutCount(0);
+                xfer.setInBuffer((unsigned char *)&_packet);
+                xfer.setInCountActual(&_in_actual);
+                xfer.setInCountExpected(0);
             }
         }
     }
 
     return retVal;
 }
-
-
-void CtiDNPDatalink::constructPacket( _dnp_datalink_packet *packet, unsigned char *buf, unsigned long len )
-{
-    int pos, block_len, num_blocks;
-    unsigned short crc;
-    unsigned char  *current_block, *crc_pos;
-
-    packet->header.fmt.framing[0] = 0x05;
-    packet->header.fmt.framing[1] = 0x64;
-
-    packet->header.fmt.len  = Packet_HeaderLen;  //  add on the header length
-    packet->header.fmt.len += len;               //  add the data length
-
-    //  add on the CRC lengths if there's data there
-    if( len > 0 )
-    {
-        //  0 = 0;  1-16 = 1;  17-32 = 2;  etc
-        num_blocks = ((len - 1) / 16) + 1;
-
-        //  one CRC per block
-        packet->header.fmt.len += num_blocks * 2;
-    }
-
-    packet->header.fmt.destination = _dst;
-    packet->header.fmt.source      = _src;
-
-    packet->header.fmt.control.p.direction = 1;  //  from the master
-    packet->header.fmt.control.p.primary   = 1;  //  we're primary
-
-    if( _dl_confirm )
-    {
-        packet->header.fmt.control.p.functionCode = Control_PrimaryUserDataConfirmed;
-        packet->header.fmt.control.p.fcv = 1;
-        packet->header.fmt.control.p.fcb = _fcb_out;
-    }
-    else
-    {
-        packet->header.fmt.control.p.functionCode = Control_PrimaryUserDataUnconfirmed;
-        packet->header.fmt.control.p.fcv = 0;
-        packet->header.fmt.control.p.fcb = 0;
-    }
-
-    //  tack on the CRC
-    packet->header.raw.crc = computeCRC(packet->header.raw.buf, 8);
-
-    pos = 0;
-
-    while( pos < len )
-    {
-        current_block = packet->data.blocks[pos/16];
-        block_len     = len - pos;
-
-        if( block_len > 16 )
-        {
-            block_len = 16;
-        }
-
-        //  copy in this block of data
-        memcpy(current_block, &buf[pos], block_len);
-
-        //  tack on the CRC
-        crc = computeCRC(current_block, block_len);
-
-        memcpy(current_block + block_len, &crc, sizeof(unsigned short));
-
-        pos += block_len;
-    }
-}
-
-
-void CtiDNPDatalink::sendPacket(_dnp_datalink_packet *packet, CtiXfer &xfer)
-{
-    xfer.setInBuffer(NULL);
-    xfer.setInCountActual(&_in_actual);
-    xfer.setInCountExpected(0);
-
-    xfer.setOutBuffer((unsigned char *)packet);
-    xfer.setOutCount(packet->header.fmt.len + Packet_HeaderLenUncounted);
-    xfer.setCRCFlag(0);
-}
-
-
-void CtiDNPDatalink::recvPacket(_dnp_datalink_packet *packet, CtiXfer &xfer)
-{
-    if( _in_recv < Packet_HeaderLen )
-    {
-        if( _in_recv == 0 )
-        {
-            _in_expected = Packet_HeaderLen;
-        }
-        else
-        {
-            //  we should've gotten a full packet header - what went wrong?
-            //  this should be taken care of by setting inExpected to DNPDatalinkHeaderLen - anything less would be a timeout.
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            _in_expected = Packet_HeaderLen - _in_recv;
-        }
-    }
-    else
-    {
-        //  ACH:  check to see if the packet is valid first
-
-        //  if we're sending the final ACK, this should calculate to 0
-        _in_expected = calcPacketLength( packet->header.fmt.len ) - _in_recv;
-    }
-
-    xfer.setInBuffer((unsigned char *)packet + _in_recv);
-    xfer.setInCountExpected(_in_expected);  //  get the header first so we know how much to expect
-    xfer.setInCountActual(&_in_actual);
-}
-
 
 
 int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
@@ -291,98 +208,93 @@ int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
 
         if( ++_comm_errors >= CommRetryCount )
         {
-            _io_state = State_Failed;
-            retVal   = status;
+            _io_state = State_IO_Failed;
+            retVal    = status;
         }
+    }
+
+    if( isControlPending() )
+    {
+        decodeControl(xfer, status);
     }
     else
     {
+        //  ACH:  unified packet input/output/error checking...  um yeah.
+        //          another layer, perhaps... ?  but a local, internal-ish one.
+
         switch( _io_state )
         {
-            case State_Output:
+            case State_IO_Input:
             {
-/*                if( _dl_confirm )
+                //  ACH:  this is dumb...  i don't like this variable floating around...
+                //          we should only be dealing with whole packets
+                _in_recv += _in_actual;
+
+                if( isEntirePacket(_packet, _in_recv) )
                 {
-                    if( (_in_actual == Packet_HeaderLen) &&
-                        (_confirmPacket.control.s.functionCode == Control_SecondaryACK) )
+                    //  check to see if the packet is okay
+                    if( processControl(_packet) )
                     {
-                        _outSent += xfer.getOutCount();
+                        putPacketPayload(_packet, _in_data, &_in_data_len);
+
+                        _io_state = State_IO_Complete;
                     }
                     else
                     {
-                        ++_protocolErrorCount;
+                        //  we'll count this as an error, even though we might've just gotten a data link reset -
+                        //    we don't want to get stuck in a loop
+                        _protocol_errors++;
 
-                        //  we should retry, since we didn't change the _io_state
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        //  then start us listening all over again
+                        _in_recv = 0;
                     }
-                }
-                else*/
-                {
-                    _out_sent += xfer.getOutCount();
                 }
 
                 break;
             }
 
-            case State_Input:
+            case State_IO_Output:
             {
-                _send_confirm = false;
-
-                _in_recv += _in_actual;
-
-                if( _in_recv >= Packet_FramingLen && !areFramingBytesValid(_packet) )
+                //  if we sent the whole packet okay
+                if( !status )
                 {
-                    status = Error_BadFraming;
-                }
-                else if( _in_recv >= Packet_HeaderLen )
-                {
-                    if( _in_recv == calcPacketLength( _packet.header.fmt.len ) )
+                    if( _dl_confirm )
                     {
-                        if( !areCRCsValid(_packet) )
-                        {
-                            status = Error_BadCRC;
-                        }
-
-                        if( status == NoError )
-                        {
-                            //  ACH:  add datalink control check
-                            /*
-                            if( _inPacket.header.control.p.functionCode == Control_PrimaryUserDataConfirmed )
-                            {
-                                _sendConfirm = true;
-
-                                _confirmPacket.framing[0] = 0x05;
-                                _confirmPacket.framing[1] = 0x64;
-
-                                _confirmPacket.control.s.direction    = 1;
-                                _confirmPacket.control.s.primary      = 0;
-                                _confirmPacket.control.s.dfc          = 0;
-                                _confirmPacket.control.s.functionCode = Control_SecondaryACK;
-                                _confirmPacket.control.s.zpad         = 0;
-
-                                _confirmPacket.source      = _src;
-                                _confirmPacket.destination = _dst;
-                                _confirmPacket.len = 5;
-
-                                _confirmPacket.crc = computeCRC(_confirmPacket.header.raw, 8);
-
-                                if( _inPacket.header.control.p.fcv && (_inPacket.header.control.p.fcb != _fcbIn) )
-                                {
-                                    //  reset, we just got a duplicate
-                                    _inRecv = 0;
-                                    _fcbIn = !(_inPacket.header.control.p.fcb);
-                                }
-                            }
-                            */
-                            //  ACH: additional actions
-                            //else if( _inPacket.header.control.p.functionCode == Primary_LinkStatus )
-                        }
+                        _io_state = State_IO_OutputRecvAck;
+                        _in_recv  = 0;
+                    }
+                    else
+                    {
+                        _io_state = State_IO_Complete;
                     }
                 }
 
+                //  otherwise, we'll regenerate and send again
+
+                break;
+            }
+
+            case State_IO_OutputRecvAck:
+            {
+                _in_recv += _in_actual;
+
+                if( isEntirePacket(_packet, _in_recv) )
+                {
+                    //  check to see if there's a control message that needs to be worked on
+                    if( processControl(_packet) )
+                    {
+                        _io_state = State_IO_Complete;
+                    }
+                    else
+                    {
+                        //  we'll count this as an error, even though we might've just gotten a data link reset -
+                        //    we don't want to get stuck in a loop
+                        _protocol_errors++;
+
+                        //  then try the send again
+                        _io_state = State_IO_Output;
+                    }
+                }
 
                 break;
             }
@@ -393,12 +305,596 @@ int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
+
+                break;
+            }
+        }
+    }
+
+    if( _protocol_errors > ProtocolRetryCount )
+    {
+        _io_state = State_IO_Failed;
+    }
+
+    return retVal;
+}
+
+
+void CtiDNPDatalink::constructDataPacket( dnp_datalink_packet &packet, unsigned char *buf, unsigned long len )
+{
+    int pos, block_len, num_blocks;
+    unsigned short crc;
+    unsigned char  *current_block, *crc_pos;
+
+    packet.header.fmt.framing[0] = 0x05;
+    packet.header.fmt.framing[1] = 0x64;
+
+    packet.header.fmt.len  = Packet_HeaderLenCounted;  //  add on the header length
+    packet.header.fmt.len += len;                      //  add the data length
+
+    packet.header.fmt.destination = _dst;
+    packet.header.fmt.source      = _src;
+
+    packet.header.fmt.control.p.direction = 1;  //  from the master
+    packet.header.fmt.control.p.primary   = 1;  //  we're primary
+
+    if( _dl_confirm )
+    {
+        packet.header.fmt.control.p.functionCode = Control_PrimaryUserDataConfirmed;
+        packet.header.fmt.control.p.fcv = 1;
+        packet.header.fmt.control.p.fcb = _fcb_out;
+    }
+    else
+    {
+        packet.header.fmt.control.p.functionCode = Control_PrimaryUserDataUnconfirmed;
+        packet.header.fmt.control.p.fcv = 0;
+        packet.header.fmt.control.p.fcb = 0;
+    }
+
+    //  tack on the CRC
+    packet.header.fmt.crc = computeCRC(packet.header.raw, 8);
+
+    pos = 0;
+
+    while( pos < len )
+    {
+        current_block = packet.data.blocks[pos/16];
+        block_len     = len - pos;
+
+        if( block_len > 16 )
+        {
+            block_len = 16;
+        }
+
+        //  copy in this block of data
+        memcpy(current_block, &buf[pos], block_len);
+
+        //  tack on the CRC
+        crc = computeCRC(current_block, block_len);
+
+        memcpy(current_block + block_len, &crc, sizeof(unsigned short));
+
+        pos += block_len;
+    }
+}
+
+
+void CtiDNPDatalink::constructPrimaryControlPacket( dnp_datalink_packet &packet, PrimaryControlFunction function, bool fcv, bool fcb )
+{
+    unsigned short crc;
+
+    packet.header.fmt.framing[0] = 0x05;
+    packet.header.fmt.framing[1] = 0x64;
+
+    packet.header.fmt.len  = Packet_HeaderLenCounted;  //  control packets are empty
+
+    packet.header.fmt.destination = _dst;
+    packet.header.fmt.source      = _src;
+
+    packet.header.fmt.control.p.direction = 1;  //  from the master
+    packet.header.fmt.control.p.primary   = 1;  //  this is a primary message
+
+    packet.header.fmt.control.p.functionCode = function;
+    packet.header.fmt.control.p.fcv          = fcv;
+    packet.header.fmt.control.p.fcb          = fcb;
+
+    //  tack on the CRC
+    packet.header.fmt.crc = computeCRC(packet.header.raw, 8);
+}
+
+
+void CtiDNPDatalink::constructSecondaryControlPacket( dnp_datalink_packet &packet, SecondaryControlFunction function, bool dfc )
+{
+    unsigned short crc;
+
+    packet.header.fmt.framing[0] = 0x05;
+    packet.header.fmt.framing[1] = 0x64;
+
+    packet.header.fmt.len  = Packet_HeaderLenCounted;  //  control packets are empty
+
+    packet.header.fmt.destination = _dst;
+    packet.header.fmt.source      = _src;
+
+    packet.header.fmt.control.s.direction = 1;  //  from the master
+    packet.header.fmt.control.s.primary   = 0;  //  secondary control
+    packet.header.fmt.control.s.dfc       = !dfc; //  (negative logic - 1 means stop, 0 means go)
+    packet.header.fmt.control.s.zpad      = 0;
+
+    packet.header.fmt.control.s.functionCode = function;
+
+    //  tack on the CRC
+    packet.header.fmt.crc = computeCRC(packet.header.raw, 8);
+}
+
+
+void CtiDNPDatalink::sendPacket( dnp_datalink_packet &packet, CtiXfer &xfer )
+{
+    xfer.setOutBuffer((unsigned char *)&packet);
+    xfer.setOutCount(calcPacketLength(packet.header.fmt.len));
+    xfer.setCRCFlag(0);
+
+    xfer.setInBuffer(NULL);
+    xfer.setInCountActual(&_in_actual);
+    xfer.setInCountExpected(0);
+}
+
+
+void CtiDNPDatalink::recvPacket( dnp_datalink_packet &packet, CtiXfer &xfer)
+{
+    if( _in_recv < Packet_HeaderLen )
+    {
+        //  get the header first so we know how much to expect
+        _in_expected = Packet_HeaderLen - _in_recv;
+    }
+    else if( packet.header.fmt.framing[0] != 0x05 ||
+             packet.header.fmt.framing[1] != 0x64 )
+    {
+        int offset;
+
+        //  look for the framing bytes
+        for( offset = 0; offset < _in_recv; offset++ )
+        {
+            //  if we can look for both framing bytes at once...
+            if( (offset + 1) < _in_recv )
+            {
+                //  if we found the start of the header
+                if( packet.header.raw[offset]   == 0x05 &&
+                    packet.header.raw[offset+1] == 0x64 )
+                {
+                    //  move everything to the start of the packet
+                    for( int i = 0; i < (_in_recv - offset); i++ )
+                    {
+                        packet.header.raw[i] = packet.header.raw[offset+i];
+                    }
+
+                    break;
+                }
+            }
+            else  //  otherwise just look for 0x05
+            {
+                if( packet.header.raw[offset]   == 0x05 )
+                {
+                    //  just the one byte, that's easy enough to move
+                    packet.header.raw[0] = 0x05;
+
+                    break;
+                }
             }
         }
 
-        if( _protocol_errors > ProtocolRetryCount )
+        //  adjust our count to reflect valid bytes so far
+        _in_recv -= offset;
+
+        _in_expected = Packet_HeaderLen - _in_recv;
+    }
+    else
+    {
+        //  this can safely calculate to 0 if we mistakenly got in here
+        _in_expected = calcPacketLength(packet.header.fmt.len) - _in_recv;
+    }
+
+    xfer.setInBuffer((unsigned char *)&packet + _in_recv);
+    xfer.setInCountExpected(_in_expected);
+    xfer.setInCountActual(&_in_actual);
+
+    xfer.setOutBuffer(NULL);
+    xfer.setOutCount(0);
+    xfer.setCRCFlag(0);
+}
+
+
+bool CtiDNPDatalink::isControlPending( void )
+{
+    return (_control_state != State_Control_Ready);
+}
+
+
+bool CtiDNPDatalink::processControl( const dnp_datalink_packet &packet )
+{
+    bool retVal = false;
+
+    if( areCRCsValid(packet) )
+    {
+        if( packet.header.fmt.control.p.direction == 0 )  //  incoming message
         {
-            _io_state = State_Failed;
+            if( packet.header.fmt.control.p.primary == 1 )  //  primary control message
+            {
+                if( packet.header.fmt.control.p.fcv )
+                {
+                    if( packet.header.fmt.control.p.fcb == _fcb_in )
+                    {
+                        retVal = true;
+
+                        _control_state = State_Control_Reply_Ack;
+                    }
+                    else
+                    {
+                        switch( packet.header.fmt.control.p.functionCode )
+                        {
+                            case Control_PrimaryUserDataConfirmed:
+                            {
+                                _control_state = State_Control_Reply_Nack;
+
+                                break;
+                            }
+
+                            case Control_PrimaryTestLink:
+                            {
+                                _control_state = State_Control_Reply_NonFCBAck;
+
+                                break;
+                            }
+
+                            default:
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+
+                                _control_state = State_Control_Ready;
+
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    switch( packet.header.fmt.control.p.functionCode )
+                    {
+                        case Control_PrimaryResetLink:
+                        {
+                            _control_state = State_Control_Reply_ResetLink;
+
+                            break;
+                        }
+
+                        case Control_PrimaryLinkStatus:
+                        {
+                            _control_state = State_Control_Reply_LinkStatus;
+
+                            break;
+                        }
+
+                        case Control_PrimaryResetProcess:
+                        {
+                            _control_state = State_Control_Reply_Ack;
+
+                            break;
+                        }
+
+                        case Control_PrimaryUserDataUnconfirmed:
+                        {
+                            _control_state = State_Control_Ready;
+
+                            retVal = true;
+
+                            break;
+                        }
+
+                        default:
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+            else  //  packet.header.fmt.control.s.primary == 0  //  secondary message
+            {
+                if( packet.header.fmt.control.s.dfc == 0 )  //  flow control OK
+                {
+                    switch( packet.header.fmt.control.s.functionCode )
+                    {
+                        case Control_SecondaryACK:
+                        {
+                            _fcb_out = !_fcb_out;
+                        }
+                        case Control_SecondaryLinkStatus:
+                        {
+                            retVal = true;
+
+                            _control_state = State_Control_Ready;
+
+                            break;
+                        }
+
+                        case Control_SecondaryNACK:
+                        default:
+                        {
+                            //  try again... ?
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    _control_state = State_Control_Request_LinkStatus_Out;
+                }
+            }
+        }
+    }
+    else
+    {
+        _control_state = State_Control_Reply_Nack;
+    }
+
+    return retVal;
+}
+
+
+void CtiDNPDatalink::generateControl( CtiXfer &xfer )
+{
+    switch( _control_state )
+    {
+        case State_Control_Request_DLReset_Out:
+        {
+            _fcb_out = true;
+
+            constructPrimaryControlPacket(_control_packet, Control_PrimaryResetLink, false, false);
+
+            sendPacket(_control_packet, xfer);
+
+            break;
+        }
+
+        case State_Control_Request_DLReset_In:
+        {
+            recvPacket(_control_packet, xfer);
+
+            break;
+        }
+
+        case State_Control_Request_LinkStatus_Out:
+        {
+            constructPrimaryControlPacket(_control_packet, Control_PrimaryLinkStatus, true, _fcb_out);
+
+            sendPacket(_control_packet, xfer);
+
+            break;
+        }
+
+        case State_Control_Reply_ResetLink:
+        case State_Control_Reply_Ack:
+        {
+            constructSecondaryControlPacket(_control_packet, Control_SecondaryACK, true);
+
+            sendPacket(_control_packet, xfer);
+
+            break;
+        }
+
+        case State_Control_Reply_Nack:
+        {
+            constructSecondaryControlPacket(_control_packet, Control_SecondaryNACK, true);
+
+            sendPacket(_control_packet, xfer);
+
+            break;
+        }
+
+        case State_Control_Reply_NonFCBAck:
+        {
+            constructSecondaryControlPacket(_control_packet, Control_SecondaryACK, true);
+
+            sendPacket(_control_packet, xfer);
+
+            break;
+        }
+
+        case State_Control_Reply_LinkStatus:
+        {
+            constructSecondaryControlPacket(_control_packet, Control_SecondaryLinkStatus, true);
+
+            sendPacket(_control_packet, xfer);
+
+            break;
+        }
+
+        case State_Control_Ready:
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "unhandled state = " << _control_state << endl;
+            }
+
+            break;
+        }
+    }
+}
+
+
+void CtiDNPDatalink::decodeControl( CtiXfer &xfer, int status )
+{
+    if( !status )
+    {
+        switch( _control_state )
+        {
+            case State_Control_Request_DLReset_Out:
+            {
+                _in_recv     = 0;
+                _control_state = State_Control_Request_DLReset_In;
+
+                break;
+            }
+
+            case State_Control_Request_DLReset_In:
+            {
+                //  this sucks - i need an intermediary.
+                _in_recv += _in_actual;
+
+                if( isEntirePacket(_control_packet, _in_recv) )
+                {
+                    if( isValidAckPacket(_control_packet) )
+                    {
+                        if( _control_packet.header.fmt.control.s.dfc == 0 )
+                        {
+                            _in_recv       = 0;
+                            _control_state = State_Control_Ready;
+                        }
+                        else
+                        {
+                            _control_state = State_Control_Request_LinkStatus_Out;
+                        }
+                    }
+                    else
+                    {
+                        _protocol_errors++;
+
+                        _control_state = State_Control_Request_DLReset_Out;
+                    }
+                }
+
+                break;
+            }
+
+            case State_Control_Request_LinkStatus_Out:
+            {
+                _in_recv     = 0;
+                _control_state = State_Control_Request_LinkStatus_In;
+
+                break;
+            }
+
+            case State_Control_Request_LinkStatus_In:
+            {
+                if( isEntirePacket(_control_packet, _in_recv) )
+                {
+                    if( areCRCsValid(_control_packet) &&
+                        _control_packet.header.fmt.control.s.direction    == 0 &&
+                        _control_packet.header.fmt.control.s.primary      == 0 &&
+                        _control_packet.header.fmt.control.s.functionCode == Control_SecondaryLinkStatus )
+                    {
+                        if( _control_packet.header.fmt.control.s.dfc == 0 )
+                        {
+                            _in_recv       = 0;
+                            _control_state = State_Control_Ready;
+                        }
+                        else
+                        {
+                            _protocol_errors++;
+
+                            _control_state = State_Control_Request_LinkStatus_Out;
+                        }
+                    }
+                }
+                break;
+            }
+
+            case State_Control_Reply_ResetLink:
+            case State_Control_Reply_Ack:
+            {
+                if( _control_state == State_Control_Reply_ResetLink )
+                {
+                    _fcb_in = true;
+                }
+                else
+                {
+                    _fcb_in = !_fcb_in;
+                }
+
+                _in_recv       = 0;
+                _control_state = State_Control_Ready;
+
+                break;
+            }
+
+            case State_Control_Reply_Nack:
+            {
+                _in_recv       = 0;
+                _control_state = State_Control_Ready;
+
+                break;
+            }
+
+            case State_Control_Reply_NonFCBAck:
+            {
+                _in_recv       = 0;
+                _control_state = State_Control_Ready;
+
+                break;
+            }
+
+            case State_Control_Reply_LinkStatus:
+            {
+                _in_recv       = 0;
+                _control_state = State_Control_Ready;
+
+                break;
+            }
+
+            case State_Control_Ready:
+            default:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "unhandled state = " << _control_state << endl;
+                }
+
+                break;
+            }
+        }
+    }
+}
+
+
+bool CtiDNPDatalink::isValidDataPacket( const dnp_datalink_packet &packet )
+{
+    bool retVal = false;
+
+    if( areCRCsValid( packet ) )
+    {
+        if( packet.header.fmt.control.p.primary   == 1 &&
+            packet.header.fmt.control.p.direction == 0 )
+        {
+            if( !packet.header.fmt.control.p.fcv ||
+                (packet.header.fmt.control.p.fcv && packet.header.fmt.control.p.fcb == _fcb_in) )
+            {
+                if( packet.header.fmt.control.p.functionCode == Control_PrimaryUserDataConfirmed ||
+                    packet.header.fmt.control.p.functionCode == Control_PrimaryUserDataUnconfirmed )
+                {
+                    retVal = true;
+                }
+            }
         }
     }
 
@@ -406,123 +902,45 @@ int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
 }
 
 
-bool CtiDNPDatalink::isDatalinkControlActionPending( void )
+bool CtiDNPDatalink::isValidAckPacket( const dnp_datalink_packet &packet )
 {
-    return false;
-}
+    bool retVal = false;
 
-
-void CtiDNPDatalink::doDatalinkControlAction( CtiXfer &xfer )
-{
-/*    case State_Output://DLReset:
+    if( areCRCsValid( packet ) )
     {
-        if( (_inActual == HeaderLen) &&
-            (_confirmPacket.control.s.functionCode == Control_SecondaryACK) )
+        if( packet.header.fmt.control.s.primary   == 0 &&
+            packet.header.fmt.control.s.direction == 0 )
         {
-            _io_state = State_Output;
-        }
-        else
-        {
+            if( packet.header.fmt.control.s.functionCode == Control_SecondaryACK )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                retVal = true;
             }
-
-            ++_protocolErrorCount;
         }
-
-        break;
     }
 
-
-    if( _sendConfirm )
-    {
-        //  if we're in this state, the confirmPacket's been filled out
-        xfer.setOutBuffer((unsigned char *)&_confirmPacket);
-        xfer.setOutCount(HeaderLen);
-        xfer.setCRCFlag(0);
-
-        _sendConfirm = false;
-    }
-    else
-    {
-        xfer.setOutBuffer((unsigned char *)&_outPacket);
-        xfer.setOutCount(0);
-        xfer.setCRCFlag(0);
-    }
-
-
-
-    //  ACH:  retries if we're NACK'd or we time out
-
-    //  send the datalink reset packet
-    _confirmPacket.framing[0] = 0x05;
-    _confirmPacket.framing[1] = 0x64;
-
-    _confirmPacket.control.p.direction    = 1;
-    _confirmPacket.control.p.primary      = 1;
-    _confirmPacket.control.p.fcb          = _fcbOut;
-    _confirmPacket.control.p.fcv          = 0;
-    _confirmPacket.control.p.functionCode = Primary_ResetLink;
-
-    _confirmPacket.source      = _src;
-    _confirmPacket.destination = _dst;
-    _confirmPacket.len = 5;
-
-    _confirmPacket.crc = computeCRC((unsigned char *)&_confirmPacket, 8);
-
-    xfer.setOutBuffer((unsigned char *)&_confirmPacket);
-    xfer.setOutCount(DNPDatalinkHeaderLen);
-    xfer.setCRCFlag(0);
-
-    //  receive the DL reset ACK packet into _confirmPacket
-    xfer.setInBuffer((unsigned char *)&_confirmPacket);
-    xfer.setInCountExpected(DNPDatalinkHeaderLen);
-    xfer.setInCountActual(&_inActual);
-
-    break;
-*/
+    return retVal;
 }
 
 
 bool CtiDNPDatalink::isTransactionComplete( void )
 {
-    bool retVal = false;
+    bool retVal;
 
-    switch( _io_state )
+    if( (_io_state == State_IO_Complete) && !isControlPending() )
     {
-        case State_Output:
-        {
-            //  ACH: modify to wait for inbound ACK when secondary enabled
-            if( _out_data_len == _out_sent )
-            {
-                retVal = true;
-                _fcb_out = !_fcb_out;
-            }
-
-            break;
-        }
-
-        case State_Input:
-        {
-            if( _in_recv >= Packet_HeaderLen )
-            {
-                if( _in_recv == calcPacketLength( _packet.header.fmt.len ) )
-                {
-                    retVal = true;
-                }
-            }
-
-            break;
-        }
-
-        default:
-        {
-            //  if we're uninitialized, we had nothing to do - so we're finished
-            retVal = true;
-
-            break;
-        }
+        retVal = true;
+    }
+    else if( _io_state == State_IO_Uninitialized )
+    {
+        retVal = true;
+    }
+    else if( _io_state == State_IO_Failed )
+    {
+        retVal = true;
+    }
+    else
+    {
+        retVal = false;
     }
 
     return retVal;
@@ -531,7 +949,7 @@ bool CtiDNPDatalink::isTransactionComplete( void )
 
 bool CtiDNPDatalink::errorCondition( void )
 {
-    return _io_state == State_Failed;
+    return _io_state == State_IO_Failed;
 }
 
 
@@ -539,72 +957,56 @@ int CtiDNPDatalink::calcPacketLength( int headerLen )
 {
     int packetLength, dataLength, numBlocks;
 
-    //  get the true payload size by subtracting off the header bytes
-    dataLength = headerLen - Packet_HeaderLenCounted;
+    if( headerLen > Packet_HeaderLenCounted)
+    {
+        //  get the true payload size by subtracting off the header bytes
+        dataLength = headerLen - Packet_HeaderLenCounted;
 
-    numBlocks  =  dataLength / 16;
-    numBlocks += (dataLength % 16)?1:0;
+        numBlocks  =  dataLength / 16;
+        numBlocks += (dataLength % 16)?1:0;
 
-    packetLength  = Packet_HeaderLen;
-    packetLength += dataLength;
-    packetLength += numBlocks * 2;  //  add on the CRC bytes
+        packetLength  = Packet_HeaderLen;
+        packetLength += dataLength;
+        packetLength += numBlocks * 2;  //  add on the CRC bytes
+    }
+    else
+    {
+        packetLength = Packet_HeaderLen;
+    }
 
     return packetLength;
 }
 
 
-int CtiDNPDatalink::getPayloadLength( void )
+bool CtiDNPDatalink::isEntirePacket( const dnp_datalink_packet &packet, unsigned long in_recv )
 {
-    return _packet.header.fmt.len - Packet_HeaderLenCounted;
-}
+    bool retVal = false;
 
-
-int CtiDNPDatalink::getPayload(unsigned char *buf)
-{
-    int retVal = NoError;
-
-    unsigned char *current_block;
-    int payload_len, block_len, pos;
-
-    //  subtract the header length
-    payload_len = _packet.header.fmt.len - Packet_HeaderLenCounted;
-
-    if( buf != NULL )
+    if( in_recv >= Packet_HeaderLen )
     {
-        pos = 0;
-
-        while( pos < payload_len )
+        if( calcPacketLength(packet.header.fmt.len) == in_recv )
         {
-            current_block = _packet.data.blocks[pos/16];
-
-            block_len = payload_len - pos;
-
-            if( block_len > 16 )
-            {
-                block_len = 16;
-            }
-
-            memcpy(buf + pos, current_block, block_len);
-
-            pos += block_len;
+            retVal = true;
         }
-    }
-    else
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Buffer passed to getInPayload() is NULL... ?" << endl;
-        }
-
-        retVal = MemoryError;
     }
 
     return retVal;
 }
 
 
-bool CtiDNPDatalink::areCRCsValid( const _dnp_datalink_packet &packet )
+int CtiDNPDatalink::getInPayloadLength( void )
+{
+    return _in_data_len;
+}
+
+
+void CtiDNPDatalink::getInPayload( unsigned char *buf )
+{
+    memcpy(buf, _in_data, _in_data_len);
+}
+
+
+bool CtiDNPDatalink::areCRCsValid( const dnp_datalink_packet &packet )
 {
     bool valid;
 
@@ -618,7 +1020,7 @@ bool CtiDNPDatalink::areCRCsValid( const _dnp_datalink_packet &packet )
     valid = true;
 
     //  compute the header's CRC
-    crc = computeCRC(packet.header.raw.buf, 8);
+    crc = computeCRC((unsigned char *)&packet.header, 8);
 
     if( crc != packet.header.fmt.crc )
     {
@@ -659,17 +1061,46 @@ bool CtiDNPDatalink::areCRCsValid( const _dnp_datalink_packet &packet )
 }
 
 
-bool CtiDNPDatalink::areFramingBytesValid( const _dnp_datalink_packet &packet )
+void CtiDNPDatalink::putPacketPayload( const dnp_datalink_packet &packet, unsigned char *buf, int *len )
 {
-    bool retVal = false;
+    unsigned const char *current_block;
+    int payload_len, block_len, pos;
 
-    if( packet.header.fmt.framing[0] == 0x05 &&
-        packet.header.fmt.framing[1] == 0x64 )
+    //  subtract the header length
+    payload_len = packet.header.fmt.len - Packet_HeaderLenCounted;
+
+    if( buf != NULL )
     {
-        retVal = true;
-    }
+        pos = 0;
 
-    return retVal;
+        while( pos < payload_len )
+        {
+            current_block = packet.data.blocks[pos/16];
+
+            block_len = payload_len - pos;
+
+            if( block_len > 16 )
+            {
+                block_len = 16;
+            }
+
+            memcpy(buf + pos, current_block, block_len);
+
+            pos += block_len;
+        }
+
+        *len = payload_len;
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Buffer passed to putPayload() is NULL... ?" << endl;
+        }
+
+        *len = 0;
+    }
 }
 
 

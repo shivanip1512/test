@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/07/25 20:53:20 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/03/05 23:54:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,13 @@
 
 class CtiDNPCounter : public CtiDNPObject
 {
+    unsigned long _counter;
+
 protected:
+    CtiDNPCounter(int group, int variation);
+
+    int restoreVariation(unsigned char *buf, int len, int variation);
+    int serializeVariation(unsigned char *buf, int variation);
 
 public:
     CtiDNPCounter(int variation);

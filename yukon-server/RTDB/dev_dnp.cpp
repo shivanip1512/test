@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/02/12 01:16:09 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/03/05 23:54:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,9 @@
 
 #include "pt_base.h"
 #include "pt_numeric.h"
+#include "pt_status.h"
 #include "master.h"
+#include "dllyukon.h"
 
 #include "pointtypes.h"
 #include "mgr_route.h"
@@ -122,13 +124,54 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     {
         case ControlRequest:
         {
-            int offset;
+            int offset, on_time, off_time;
+            CtiPointBase   *point;
+            CtiPointStatus *control;
             CtiDNPBinaryOutputControl::ControlCode controltype;
+            CtiDNPBinaryOutputControl::TripClose   trip_close;
 
-            if( parse.getFlags() & CMD_FLAG_OFFSET )
+            if( parse.getiValue("point") > 0 )
+            {
+                if( (point = getDevicePointEqual(parse.getiValue("point"))) != NULL )
+                {
+                    if( point->isStatus() )
+                    {
+                        control = (CtiPointStatus *)point;
+                    }
+                }
+            }
+            else if( parse.getFlags() & CMD_FLAG_OFFSET )
             {
                 offset = parse.getiValue("offset");
 
+                control = (CtiPointStatus*)getDeviceControlPointOffsetEqual(offset);
+            }
+
+            if( control != NULL && (control->getPointStatus().getControlType() == NormalControlType) )
+            {
+                if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
+                {
+                    controltype = CtiDNPBinaryOutputControl::PulseOn;
+
+                    offset      = control->getPointStatus().getControlOffset();
+
+                    trip_close  = CtiDNPBinaryOutputControl::Trip;
+                    on_time     = control->getPointStatus().getCloseTime1();
+                    off_time    = 0;
+                }
+                else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
+                {
+                    controltype = CtiDNPBinaryOutputControl::PulseOn;
+
+                    offset      = control->getPointStatus().getControlOffset();
+
+                    trip_close  = CtiDNPBinaryOutputControl::Close;
+                    on_time     = control->getPointStatus().getCloseTime2();
+                    off_time    = 0;
+                }
+            }
+            else
+            {
                 if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
                 {
                     controltype = CtiDNPBinaryOutputControl::PulseOff;
@@ -138,28 +181,33 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                     controltype = CtiDNPBinaryOutputControl::PulseOn;
                 }
 
-                CtiProtocolDNP::dnp_output_point controlout;
+                on_time  = 0;
+                off_time = 0;
+            }
 
-                controlout.type   = CtiProtocolDNP::DigitalOutput;
-                controlout.offset = offset;
+            CtiProtocolDNP::dnp_output_point controlout;
 
-                controlout.dout.control    = controltype;
-                controlout.dout.trip_close = CtiDNPBinaryOutputControl::NUL;
-                controlout.dout.on_time    = 0;
-                controlout.dout.off_time   = 0;
-                controlout.dout.count      = 1;
-                controlout.dout.queue      = false;
-                controlout.dout.clear      = false;
+            controlout.type   = CtiProtocolDNP::DigitalOutput;
+            controlout.offset = offset;
 
+            controlout.dout.control    = controltype;
+            controlout.dout.trip_close = trip_close;
+            controlout.dout.on_time    = on_time;
+            controlout.dout.off_time   = off_time;
+            controlout.dout.count      = 1;
+            controlout.dout.queue      = false;
+            controlout.dout.clear      = false;
+
+            if( (control != NULL) && control->getPointStatus().getControlInhibit() )
+            {
+                nRet = NoMethod;
+            }
+            else
+            {
                 _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut, &controlout, 1);
 
                 nRet = NoError;
             }
-            //  implied
-            /*else
-            {
-                nRet = NoMethod;
-            }*/
 
             break;
         }
@@ -269,22 +317,33 @@ INT CtiDeviceDNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
     {
         _dnp.getInboundPoints(dnpPoints);
 
-        processInboundPoints(dnpPoints, TimeNow, vgList, retList, outList);
+        processInboundPoints(InMessage, TimeNow, vgList, retList, outList, dnpPoints);
     }
 
     return ErrReturn;
 }
 
 
-void CtiDeviceDNP::processInboundPoints(RWTPtrSlist<CtiPointDataMsg> &points, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+void CtiDeviceDNP::processInboundPoints(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &points )
 {
+    CtiReturnMsg    *retMsg,
+                    *vgMsg;
+    CtiPointDataMsg *tmpMsg;
+    CtiPointBase    *point;
+    CtiPointNumeric *pNumeric;
+    RWCString        resultString;
+
+    retMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    vgMsg  = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    retMsg->setUserMessageId(InMessage->Return.UserID);
+    vgMsg->setUserMessageId (InMessage->Return.UserID);
+
+    double tmpValue;
+
     while( !points.isEmpty() )
     {
-        CtiPointDataMsg *tmpMsg = points.removeFirst();
-        CtiPointBase    *point;
-        CtiPointNumeric *pNumeric;
-
-        double tmpValue;
+        tmpMsg = points.removeFirst();
 
         //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
         if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
@@ -298,15 +357,32 @@ void CtiDeviceDNP::processInboundPoints(RWTPtrSlist<CtiPointDataMsg> &points, RW
                 tmpValue = pNumeric->computeValueForUOM(tmpMsg->getValue());
 
                 tmpMsg->setValue(tmpValue);
+
+                resultString = getName() + " / " + point->getName() + ": " + CtiNumStr(tmpMsg->getValue(), ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
+            }
+            else if( point->isStatus() )
+            {
+                resultString = getName() + " / " + point->getName() + ": " + ResolveStateName(((CtiPointStatus *)point)->getStateGroupID(), tmpMsg->getValue());
+            }
+            else
+            {
+                resultString = "";
             }
 
-            retList.append(tmpMsg);
+            tmpMsg->setString(resultString);
+
+            //  ACH:  maybe check for "update" someday...  but for now, who cares
+            vgMsg->PointData().append(tmpMsg->replicateMessage());
+            retMsg->PointData().append(tmpMsg);
         }
         else
         {
             delete tmpMsg;
         }
     }
+
+    retList.append(retMsg);
+    vgList.append(vgMsg);
 }
 
 
@@ -388,7 +464,10 @@ void CtiDeviceDNP::DecodeDatabaseReader(RWDBReader &rdr)
    _dnp.setSlaveAddress(_dnpAddress.getSlaveAddress());
    _dnp.setMasterAddress(_dnpAddress.getMasterAddress());
 
-   _dnp.setOptions(CtiProtocolDNP::DatalinkConfirm);
+   if( getType() == TYPE_DARTRTU )
+   {
+       _dnp.setOptions(CtiProtocolDNP::DatalinkConfirm);
+   }
 }
 
 

@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/02/12 01:16:10 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/03/05 23:54:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,30 +39,96 @@ private:
     bool _fcb_out, _fcb_in;
 
     //  used in all cases
-    _dnp_datalink_packet _packet;
+    dnp_datalink_packet _packet;
+    dnp_datalink_packet _control_packet;
 
     int _comm_errors;
     int _protocol_errors;
 
     enum DatalinkIOState
     {
-        State_Uninitialized = 0,
-        State_Output,
-        State_Input,
-        State_Complete,
-        State_Failed
+        State_IO_Uninitialized,
+        State_IO_Output,
+        State_IO_OutputRecvAck,
+        State_IO_Input,
+        State_IO_InputSendAck,
+        State_IO_Complete,
+        State_IO_Failed
     } _io_state;
 
+    enum DatalinkControlState
+    {
+        State_Control_Ready,
+        State_Control_Request_DLReset_Out,
+        State_Control_Request_DLReset_In,
+        State_Control_Request_LinkStatus_Out,
+        State_Control_Request_LinkStatus_In,
+        State_Control_Reply_Ack,
+        State_Control_Reply_Nack,
+        State_Control_Reply_NonFCBAck,
+        State_Control_Reply_LinkStatus,
+        State_Control_Reply_ResetLink
+    } _control_state;
+
     //  outbound-specific
-    unsigned char _out_data[250];
     unsigned long _out_data_len;
     unsigned long _out_sent;
+    unsigned char _out_data[250];
 
     //  inbound-specific
-    unsigned long _in_recv, _in_expected, _in_actual;
+    unsigned long _in_recv;
+    unsigned long _in_expected;
+    unsigned long _in_actual;
+    unsigned char _in_data[250];
+    int           _in_data_len;
 
 protected:
+
+    enum PrimaryControlFunction;
+    enum SecondaryControlFunction;
+
     unsigned short computeCRC(const unsigned char *buf, int len);
+
+    void constructDataPacket( dnp_datalink_packet &packet, unsigned char *buf, unsigned long len );
+
+    bool isControlPending( void );
+    bool processControl( const dnp_datalink_packet &packet );
+    void generateControl( CtiXfer &xfer );
+    void decodeControl  ( CtiXfer &xfer, int status );
+
+    void constructPrimaryControlPacket  ( dnp_datalink_packet &packet, PrimaryControlFunction   function, bool fcv, bool fcb );
+    void constructSecondaryControlPacket( dnp_datalink_packet &packet, SecondaryControlFunction function, bool dfc );
+
+    void sendPacket( dnp_datalink_packet &packet, CtiXfer &xfer );
+    void recvPacket( dnp_datalink_packet &packet, CtiXfer &xfer );
+
+    bool isValidDataPacket( const dnp_datalink_packet &packet );
+    bool isValidAckPacket ( const dnp_datalink_packet &packet );
+
+    int  calcPacketLength( int headerLen );
+    bool isEntirePacket( const dnp_datalink_packet &packet, unsigned long in_recv );
+
+    bool areFramingBytesValid( const dnp_datalink_packet &packet );
+    bool areCRCsValid        ( const dnp_datalink_packet &packet );
+
+    void putPacketPayload( const dnp_datalink_packet &packet, unsigned char *buf, int *len );
+
+    enum PrimaryControlFunction
+    {
+        Control_PrimaryResetLink           = 0x0,
+        Control_PrimaryResetProcess        = 0x1,
+        Control_PrimaryTestLink            = 0x2,
+        Control_PrimaryUserDataConfirmed   = 0x3,  //  these two really should only go along with data packets,
+        Control_PrimaryUserDataUnconfirmed = 0x4,  //    but it's overkill to seperate them.
+        Control_PrimaryLinkStatus          = 0x9
+    };
+
+    enum SecondaryControlFunction
+    {
+        Control_SecondaryACK               = 0x0,
+        Control_SecondaryNACK              = 0x1,
+        Control_SecondaryLinkStatus        = 0xb
+    };
 
     enum DatalinkPacketEnum
     {
@@ -80,6 +146,7 @@ protected:
     };
 
 public:
+
     CtiDNPDatalink();
     CtiDNPDatalink(const CtiDNPDatalink &aRef);
 
@@ -95,41 +162,14 @@ public:
     void setToOutput( unsigned char *buf, unsigned int len );
     void setToInput ( void );
 
-    int calcPacketLength( int headerLen );
-
-    int getPayload( unsigned char *buf );
-    int getPayloadLength( void );
-
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
-
-    void constructPacket( _dnp_datalink_packet *packet, unsigned char *buf, unsigned long len );
-
-    void sendPacket( _dnp_datalink_packet *packet, CtiXfer &xfer );
-    void recvPacket( _dnp_datalink_packet *packet, CtiXfer &xfer );
-
-    bool isDatalinkControlActionPending( void );
-    void doDatalinkControlAction( CtiXfer &xfer );
 
     bool isTransactionComplete( void );
     bool errorCondition( void );
 
-    bool areFramingBytesValid( const _dnp_datalink_packet &packet );
-    bool areCRCsValid        ( const _dnp_datalink_packet &packet );
-
-    enum ControlFunction
-    {
-        Control_PrimaryResetLink           = 0x0,
-        Control_PrimaryResetProcess        = 0x1,
-        Control_PrimaryTestLink            = 0x2,
-        Control_PrimaryUserDataConfirmed   = 0x3,
-        Control_PrimaryUserDataUnconfirmed = 0x4,
-        Control_PrimaryLinkStatus          = 0x9,
-
-        Control_SecondaryACK               = 0x0,
-        Control_SecondaryNACK              = 0x1,
-        Control_SecondaryLinkStatus        = 0xb
-    };
+    void getInPayload( unsigned char *buf );
+    int  getInPayloadLength( void );
 
     enum DatalinkError
     {

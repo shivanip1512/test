@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/02/12 01:16:10 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/03/05 23:54:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,8 +87,9 @@ int CtiDNPTransport::initForOutput(unsigned char *buf, int len, unsigned short d
     }
     else
     {
-        _outPayload    = NULL;
-        _outPayloadLen = 0;
+        _outPayload     = NULL;
+        _outPayloadLen  = 0;
+        _outPayloadSent = 0;
         _ioState = Uninitialized;
 
         //  maybe set error return... ?
@@ -133,11 +134,12 @@ int CtiDNPTransport::generate( CtiXfer &xfer )
 
                 first = !(_outPayloadSent > 0);
 
-                dataLen = _outPayloadLen - _outPayloadSent;
+                _currentPacketLen = _outPayloadLen - _outPayloadSent;
 
-                if( dataLen > 254 )
+                if( _currentPacketLen > TransportMaxPayloadLen )
                 {
-                    dataLen = 254;
+                    _currentPacketLen = TransportMaxPayloadLen;
+
                     final = 0;
                 }
                 else
@@ -146,7 +148,7 @@ int CtiDNPTransport::generate( CtiXfer &xfer )
                 }
 
                 //  add on the header byte
-                packetLen = dataLen + TransportHeaderLen;
+                packetLen = _currentPacketLen + TransportHeaderLen;
 
                 //  set up the transport header
                 _outPacket.header.first = first;
@@ -154,7 +156,7 @@ int CtiDNPTransport::generate( CtiXfer &xfer )
                 _outPacket.header.seq   = _seq;
 
                 //  copy the app layer chunk into the outbound packet
-                memcpy( (void *)_outPacket.data, (void *)&(_outPayload[_outPayloadSent]), dataLen );
+                memcpy( (void *)_outPacket.data, (void *)&(_outPayload[_outPayloadSent]), _currentPacketLen );
 
                 _datalink.setToOutput((unsigned char *)&_outPacket, packetLen);
 
@@ -163,8 +165,6 @@ int CtiDNPTransport::generate( CtiXfer &xfer )
 
             case Input:
             {
-                //  ACH: generate ACK for previous packet (or does it do that automagically?)
-
                 _datalink.setToInput();
 
                 break;
@@ -212,10 +212,8 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
             {
                 int transportPayloadLen;
 
-                transportPayloadLen = _datalink.getPayloadLength() - TransportHeaderLen;
-
                 _seq++;
-                _outPayloadSent += transportPayloadLen;
+                _outPayloadSent += _currentPacketLen;
 
                 if( _outPayloadLen <= _outPayloadSent )
                 {
@@ -238,10 +236,10 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
                 int dataLen;
 
                 //  copy out the data
-                if( _datalink.getPayloadLength() >= TransportHeaderLen )
+                if( _datalink.getInPayloadLength() >= TransportHeaderLen )
                 {
-                    dataLen = _datalink.getPayloadLength() - TransportHeaderLen;
-                    _datalink.getPayload((unsigned char *)&_inPacket);
+                    dataLen = _datalink.getInPayloadLength() - TransportHeaderLen;
+                    _datalink.getInPayload((unsigned char *)&_inPacket);
 
                     memcpy(&_inPayload[_inPayloadRecv], _inPacket.data, dataLen);
 
@@ -257,7 +255,6 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
                 else
                 {
                     _ioState = Failed;
-                    retVal = PORTREAD;  //  didn't get the header, life is bad
                 }
 
                 break;
@@ -281,7 +278,7 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
 
 bool CtiDNPTransport::isTransactionComplete( void )
 {
-    return _ioState == Complete;
+    return _ioState == Complete || _ioState == Failed;
 }
 
 

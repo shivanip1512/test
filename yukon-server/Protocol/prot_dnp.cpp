@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/02/12 01:16:10 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/03/05 23:54:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,117 +86,72 @@ void CtiProtocolDNP::setCommand( DNPCommand command, dnp_output_point *points, i
     switch( command )
     {
         case DNP_Class0Read:
+        {
+            _appLayer.setCommand(CtiDNPApplication::RequestRead);
+
+            CtiDNPObjectBlock dob(CtiDNPObjectBlock::NoIndex_NoRange);
+
+            dob.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class0));
+
+            _appLayer.addObjectBlock(dob);
+
+            break;
+        }
+        case DNP_Class0123Read:
+        {
+            _appLayer.setCommand(CtiDNPApplication::RequestRead);
+
+            CtiDNPObjectBlock dob0(CtiDNPObjectBlock::NoIndex_NoRange),
+                              dob1(CtiDNPObjectBlock::NoIndex_NoRange),
+                              dob2(CtiDNPObjectBlock::NoIndex_NoRange),
+                              dob3(CtiDNPObjectBlock::NoIndex_NoRange);
+
+            dob0.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class0));
+            dob1.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class1));
+            dob2.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class2));
+            dob3.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class3));
+
+            _appLayer.addObjectBlock(dob0);
+            _appLayer.addObjectBlock(dob1);
+            _appLayer.addObjectBlock(dob2);
+            _appLayer.addObjectBlock(dob3);
+
+            break;
+        }
+        case DNP_Class123Read:
+        {
+            _appLayer.setCommand(CtiDNPApplication::RequestRead);
+
+            CtiDNPObjectBlock dob1(CtiDNPObjectBlock::NoIndex_NoRange),
+                              dob2(CtiDNPObjectBlock::NoIndex_NoRange),
+                              dob3(CtiDNPObjectBlock::NoIndex_NoRange);
+
+            dob1.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class1));
+            dob2.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class2));
+            dob3.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class3));
+
+            _appLayer.addObjectBlock(dob1);
+            _appLayer.addObjectBlock(dob2);
+            _appLayer.addObjectBlock(dob3);
+
+            break;
+        }
+        case DNP_SetAnalogOut:
+        {
+            if( numPoints == 1 && points[0].type == AnalogOutput )
             {
-                _appLayer.setCommand(CtiDNPApplication::RequestRead);
+                _appLayer.setCommand(CtiDNPApplication::RequestDirectOp);
 
-                CtiDNPObjectBlock dob(CtiDNPObjectBlock::NoIndex_NoRange);
+                CtiDNPObjectBlock dob(CtiDNPObjectBlock::ShortIndex_ShortQty);
+                CtiDNPAnalogOutputBlock *aout = CTIDBG_new CtiDNPAnalogOutputBlock(CtiDNPAnalogOutputBlock::AOB16Bit);
 
-                dob.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class0));
+                aout->setControl(points[0].aout.value);
+
+                dob.addObjectIndex(aout, points[0].offset);
 
                 _appLayer.addObjectBlock(dob);
-
-                break;
             }
-        case DNP_Class0123Read:
-            {
-                _appLayer.setCommand(CtiDNPApplication::RequestRead);
-
-                CtiDNPObjectBlock dob0(CtiDNPObjectBlock::NoIndex_NoRange),
-                                  dob1(CtiDNPObjectBlock::NoIndex_NoRange),
-                                  dob2(CtiDNPObjectBlock::NoIndex_NoRange),
-                                  dob3(CtiDNPObjectBlock::NoIndex_NoRange);
-
-                dob0.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class0));
-                dob1.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class1));
-                dob2.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class2));
-                dob3.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class3));
-
-                _appLayer.addObjectBlock(dob0);
-                _appLayer.addObjectBlock(dob1);
-                _appLayer.addObjectBlock(dob2);
-                _appLayer.addObjectBlock(dob3);
-
-                break;
-            }
-        case DNP_Class123Read:
-            {
-                _appLayer.setCommand(CtiDNPApplication::RequestRead);
-
-                CtiDNPObjectBlock dob1(CtiDNPObjectBlock::NoIndex_NoRange),
-                                  dob2(CtiDNPObjectBlock::NoIndex_NoRange),
-                                  dob3(CtiDNPObjectBlock::NoIndex_NoRange);
-
-                dob1.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class1));
-                dob2.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class2));
-                dob3.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class3));
-
-                _appLayer.addObjectBlock(dob1);
-                _appLayer.addObjectBlock(dob2);
-                _appLayer.addObjectBlock(dob3);
-
-                break;
-            }
-        case DNP_SetAnalogOut:
-            {
-                if( numPoints == 1 && points[0].type == AnalogOutput )
-                {
-                    _appLayer.setCommand(CtiDNPApplication::RequestDirectOp);
-
-                    CtiDNPObjectBlock dob(CtiDNPObjectBlock::ShortIndex_ShortQty);
-                    CtiDNPAnalogOutputBlock *aout = CTIDBG_new CtiDNPAnalogOutputBlock(CtiDNPAnalogOutputBlock::AOB16Bit);
-
-                    aout->setControl(points[0].aout.value);
-
-                    dob.addObjectIndex(aout, points[0].offset);
-
-                    _appLayer.addObjectBlock(dob);
-                }
-                else
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    command = DNP_Invalid;
-                }
-
-                break;
-            }
-        case DNP_SetDigitalOut:
-            {
-                if( numPoints == 1 && points[0].type == DigitalOutput )
-                {
-                    _appLayer.setCommand(CtiDNPApplication::RequestDirectOp);
-
-                    CtiDNPObjectBlock dob(CtiDNPObjectBlock::ByteIndex_ByteQty);
-                    CtiDNPBinaryOutputControl *bout = CTIDBG_new CtiDNPBinaryOutputControl(CtiDNPBinaryOutputControl::ControlRelayOutputBlock);
-
-                    bout->setControlBlock(points[0].dout.on_time,
-                                          points[0].dout.off_time,
-                                          points[0].dout.count,
-                                          points[0].dout.control,
-                                          points[0].dout.queue,
-                                          points[0].dout.clear,
-                                          points[0].dout.trip_close);
-
-                    dob.addObjectIndex(bout, points[0].offset);
-
-                    _appLayer.addObjectBlock(dob);
-                }
-                else
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    command = DNP_Invalid;
-                }
-
-                break;
-            }
-        default:
+            else
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -205,6 +160,51 @@ void CtiProtocolDNP::setCommand( DNPCommand command, dnp_output_point *points, i
 
                 command = DNP_Invalid;
             }
+
+            break;
+        }
+        case DNP_SetDigitalOut:
+        {
+            if( numPoints == 1 && points[0].type == DigitalOutput )
+            {
+                _appLayer.setCommand(CtiDNPApplication::RequestDirectOp);
+
+                CtiDNPObjectBlock dob(CtiDNPObjectBlock::ByteIndex_ByteQty);
+                CtiDNPBinaryOutputControl *bout = CTIDBG_new CtiDNPBinaryOutputControl(CtiDNPBinaryOutputControl::ControlRelayOutputBlock);
+
+                bout->setControlBlock(points[0].dout.on_time,
+                                      points[0].dout.off_time,
+                                      points[0].dout.count,
+                                      points[0].dout.control,
+                                      points[0].dout.queue,
+                                      points[0].dout.clear,
+                                      points[0].dout.trip_close);
+
+                dob.addObjectIndex(bout, points[0].offset);
+
+                _appLayer.addObjectBlock(dob);
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                command = DNP_Invalid;
+            }
+
+            break;
+        }
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            command = DNP_Invalid;
+        }
     }
 
     _currentCommand = command;

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/12/21 17:20:45 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/05 23:54:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,7 +17,15 @@
 #include "dnp_object_counter.h"
 #include "logger.h"
 
-CtiDNPCounter::CtiDNPCounter(int variation) : CtiDNPObject(Group, variation)
+CtiDNPCounter::CtiDNPCounter(int variation) :
+    CtiDNPObject(Group, variation)
+{
+
+}
+
+
+CtiDNPCounter::CtiDNPCounter(int group, int variation) :
+    CtiDNPObject(group, variation)
 {
 
 }
@@ -25,7 +33,7 @@ CtiDNPCounter::CtiDNPCounter(int variation) : CtiDNPObject(Group, variation)
 
 int CtiDNPCounter::restore(unsigned char *buf, int len)
 {
-    return len;
+    return restoreVariation(buf, len, getVariation());
 }
 
 
@@ -49,11 +57,58 @@ int CtiDNPCounter::getSerializedLen(void)
             }
 
             retVal = 0;
+
             break;
         }
     }
 
     return retVal;
+}
+
+
+int CtiDNPCounter::restoreVariation(unsigned char *buf, int len, int variation)
+{
+    int pos = 0;
+
+    switch( variation )
+    {
+        case Binary32BitNoFlag:
+        {
+            unsigned char *val = (unsigned char *)&_counter;
+
+            val[0] = buf[pos++];
+            val[1] = buf[pos++];
+            val[2] = buf[pos++];
+            val[3] = buf[pos++];
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            pos = len;
+
+            break;
+        }
+    }
+
+    return pos;
+}
+
+
+int CtiDNPCounter::serializeVariation(unsigned char *buf, int variation)
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return 0;
 }
 
 
@@ -64,15 +119,12 @@ CtiPointDataMsg *CtiDNPCounter::getPoint( void )
     double val = 0;
     int quality;
 
-/*    switch(getVariation())
+    switch(getVariation())
     {
-        case WithStatus:
+        case Binary32BitNoFlag:
         {
-            //  fall through
-        }
-        case SingleBitPacked:
-        {
-            val = _bi.flags.state;
+            val = _counter;
+
             break;
         }
 
@@ -85,7 +137,7 @@ CtiPointDataMsg *CtiDNPCounter::getPoint( void )
 
             break;
         }
-    }*/
+    }
 
 /*    UnintializedQuality = 0,
     InitDefaultQuality,
