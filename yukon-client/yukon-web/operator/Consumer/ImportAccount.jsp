@@ -241,10 +241,90 @@ function changeProgram(radioBtn, index) {
                   </tr>
                   <tr> 
                     <td width="150"> 
+                      <div align="right">AC Info File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="text" name="ACInfoFile" size="40">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="150"> 
+                      <div align="right">WH Info File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="text" name="WHInfoFile" size="40">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="150"> 
+                      <div align="right">Generator Info File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="text" name="GenInfoFile" size="40">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="150"> 
+                      <div align="right">Irrigation Info File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="text" name="IrrInfoFile" size="40">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="150"> 
+                      <div align="right">Grain Dryer Info File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="text" name="GDryInfoFile" size="40">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="150"> 
+                      <div align="right">Heat Pump Info File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="text" name="HPInfoFile" size="40">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="150"> 
+                      <div align="right">Storage Heat Info File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="text" name="SHInfoFile" size="40">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="150"> 
+                      <div align="right">Dual Fuel Info File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="text" name="DFInfoFile" size="40">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="150"> 
+                      <div align="right">General Load Info File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="text" name="GenlInfoFile" size="40">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="150"> 
                       <div align="right">Work Order File: </div>
                     </td>
                     <td width="250"> 
                       <input type="text" name="WorkOrderFile" size="40">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="150"> 
+                      <div align="right">Residence Info File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="text" name="ResInfoFile" size="40">
                     </td>
                   </tr>
                 </table>
