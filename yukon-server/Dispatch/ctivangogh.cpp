@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2003/09/25 16:17:20 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2003/09/26 03:31:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -732,7 +732,12 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                                 RWCString devicename= resolveDeviceName(*pPoint);
                                 CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), Cmd->getUser());
+
+                                if(pFailSig->getSignalCategory() > SignalEvent)
+                                {
                                 pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_UNACKNOWLEDGED_ALARM);
+                                }
+                                pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
 
                                 pendingControlRequest.setSignal( pFailSig );
 
@@ -1941,7 +1946,11 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 
                 CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Control " + ResolveStateName(pPoint->getStateGroupID(), pMsg->getRawState()) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), pMsg->getUser());
 
+                if(pFailSig->getSignalCategory() > SignalEvent)
+                {
                 pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_UNACKNOWLEDGED_ALARM);
+                }
+                pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
 
                 pendingControlLMMsg.setSignal( pFailSig );
 
@@ -2701,12 +2710,14 @@ INT CtiVanGogh::checkSignalStateQuality(CtiSignalMsg  *pSig, CtiMultiWrapper &aW
 
     }
 
+    #if 0       // 092503 CGP.
     // This is an alarm if the alarm state indicates anything other than SignalEvent.
-    if(pSig->getSignalCategory() > SignalEvent)
+    if(pSig->getSignalCategory() > SignalEvent && !(pSig->getTags() & MASK_ANY_ALARM))
     {
         pSig->setTags(TAG_ACTIVE_ALARM | TAG_UNACKNOWLEDGED_ALARM);
         pSig->setLogType(AlarmCategoryLogType);
     }
+    #endif
 
     return status;
 }
