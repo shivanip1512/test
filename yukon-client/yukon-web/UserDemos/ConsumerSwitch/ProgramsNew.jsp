@@ -81,7 +81,7 @@
                 <td width="7%"><img src="../$Sm.gif" width="40" height="39"></td>
                 <td width="21%">Savings: More dollar signs means more savings!</td>
                 <td width="5%"><img src="../Tree1Sm.gif" width="40" height="39"></td>
-                <td width="27%">Environment: More trees means better for the environment.</td>
+                <td width="27%">Environment: More trees means a healthier environment.</td>
                 <td width="7%"><img src="../HalfSm.gif" width="40" height="39"></td>
                 <td width="12%">Percent of Control</td>
               </tr>
