@@ -73,6 +73,14 @@ function changeAppSelection(chkBox) {
 	grpList.disabled = !chkBox.checked;
 	document.invForm.ConfigChanged.value = "true";
 }
+
+function validate(form) {
+	if (form.SerialNo.value == "") {
+		alert("Serial # cannot be empty");
+		return false;
+	}
+	return true;
+}
 </script>
 </head>
 
@@ -128,7 +136,7 @@ function changeAppSelection(chkBox) {
               <% String header = "HARDWARE"; %><%@ include file="InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-			  <form name="invForm" method="POST" action="/servlet/SOAPClient">
+			  <form name="invForm" method="POST" action="/servlet/SOAPClient" onsubmit="return validate(this)">
                 <input type="hidden" name="action" value="UpdateLMHardware">
                 <input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
 				<input type="hidden" name="REDIRECT" value="/operator/Consumer/Inventory.jsp?InvNo=<%= invNo %>">

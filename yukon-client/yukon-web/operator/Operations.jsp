@@ -17,7 +17,7 @@
 <table width="658" border="0" cellspacing="0" height="102" cellpadding="0">
   <tr>
     <td width="657"valign="bottom">
-      <table width="657" border="0" cellspacing="0" cellpadding="3" height="102">
+      <table width="657" border="0" cellspacing="0" cellpadding="3" height="102"> 
         <tr> 
 <cti:checkNoRole roleid="<%= RoleTypes.OPERATOR_CONSUMER_INFO %>">
           <td id="Header" background="Header.gif" height="77" >&nbsp;</td>
@@ -80,7 +80,7 @@
               &nbsp; 
               <input type="text" name="SearchValue">
               &nbsp; </td>
-            <td class = "Main" width="45" valign = "top"><img src="GoButton.gif" width="23" height="20" onClick = "Javascript:document.custSearchForm.submit();"> 
+            <td class = "Main" width="45" valign = "top"><img class="Clickable" src="GoButton.gif" width="23" height="20" onClick = "Javascript:document.custSearchForm.submit();"> 
             </td>
           </form>
           <form method="get" action="Consumer/New.jsp"> 

@@ -7,14 +7,17 @@
 <link id="StyleSheet" rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
 <script language="JavaScript">
-function confirmCancel() {
-	if (confirm('Are you sure you want to stop the process? (You can make changes to the account later)'))
-		location = "../Operations.jsp";
-}
-
 function changeAppSelection(chkBox) {
 	var grpList = document.getElementById('Group_App' + chkBox.value);
 	grpList.disabled = !chkBox.checked;
+}
+
+function validate(form) {
+	if (form.SerialNo.value == "") {
+		alert("Serial # cannot be empty");
+		return false;
+	}
+	return true;
 }
 </script>
 </head>
@@ -72,7 +75,7 @@ function changeAppSelection(chkBox) {
               <%@ include file="InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-              <form name="MForm" method="post" action="/servlet/SOAPClient">
+              <form name="MForm" method="post" action="/servlet/SOAPClient" onsubmit="return validate(this)">
 			    <input type="hidden" name="action" value="CreateLMHardware">
 				<input type="hidden" name="InvNo" value="<%= inventories.getStarsLMHardwareCount() %>">
 <% if (request.getParameter("Wizard") != null) { %>
@@ -324,11 +327,7 @@ function changeAppSelection(chkBox) {
 <% } %>
                   </td>
                   <td> 
-<% if (request.getParameter("Wizard") == null) { %>
                     <input type="reset" name="Cancel" value="Cancel">
-<% } else { %>
-                    <input type="button" name="Cancel2" value="Cancel" onclick="confirmCancel()">
-<% } %>
                   </td>
                 </tr>
               </table><br>

@@ -5,6 +5,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 
+<%@ page import="com.cannontech.stars.xml.StarsFactory" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
 <%@ page import="com.cannontech.stars.xml.serialize.types.*" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
@@ -37,6 +38,7 @@
 	StarsWebConfig ecWebSettings = null;
 	StarsEnrollmentPrograms categories = null;
 	StarsServiceCompanies companies = null;
+	StarsCustomerFAQs customerFAQs = null;
 	StarsExitInterviewQuestions exitQuestions = null;
 	StarsDefaultThermostatSettings dftThermoSettings = null;
 	
@@ -81,6 +83,7 @@
 			ecWebSettings = ecSettings.getStarsWebConfig();
 			categories = ecSettings.getStarsEnrollmentPrograms();
 			companies = ecSettings.getStarsServiceCompanies();
+			customerFAQs = ecSettings.getStarsCustomerFAQs();
 			exitQuestions = ecSettings.getStarsExitInterviewQuestions();
 			dftThermoSettings = ecSettings.getStarsDefaultThermostatSettings();
 		}

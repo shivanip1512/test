@@ -149,8 +149,7 @@
 	</tr>
 </table>
 <br>
-<p align="center" class="TableCell2">&copy; 2002 Cannon Technologies, Inc. 
-  All rights reserved. </p>
+<p align="center" class="TableCell2">&nbsp;</p>
 <div align="center"></div>
 </body>
 </html>

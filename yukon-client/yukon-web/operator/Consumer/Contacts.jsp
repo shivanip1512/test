@@ -4,16 +4,8 @@
 	for (int i = 0; i < 3; i++) {
 		if (i < account.getAdditionalContactCount())
 			contacts[i] = account.getAdditionalContact(i);
-		else {
-			contacts[i] = new AdditionalContact();
-			contacts[i].setContactID(0);
-			contacts[i].setLastName("");
-			contacts[i].setFirstName("");
-			contacts[i].setHomePhone("");
-			contacts[i].setWorkPhone("");
-			contacts[i].setEmail( (Email) com.cannontech.stars.xml.StarsFactory
-					.newStarsContactNotification(false, "", Email.class) );
-		}
+		else
+			contacts[i] = (AdditionalContact) StarsFactory.newStarsCustomerContact(AdditionalContact.class);
 	}
 %>
 

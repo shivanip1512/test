@@ -54,21 +54,21 @@ function decTemp() {
 
 function holdTemp() {
 	if (document.MForm.holdSetting.value == "off") {
-			document.MForm.hold.src = "ThermImages/HoldGray.gif";
+			document.MForm.hold.src = "../../../Images/ThermImages/HoldGray.gif";
 			document.MForm.holdSetting.value = "on";
 			document.MForm.resetSetting.value = "on";
-			document.MForm.rst.src = "ThermImages/ResetBk.gif";
-			document.MForm.msg.src = "ThermImages/HoldMsg.gif";
+			document.MForm.rst.src = "../../../Images/ThermImages/ResetBk.gif";
+			document.MForm.msg.src = "../../../Images/ThermImages/HoldMsg.gif";
 			}
 }
 
 function resetTemp() {
 	if ( document.MForm.resetSetting.value == "on") {
-			document.MForm.hold.src = "ThermImages/HoldBk.gif";
+			document.MForm.hold.src = "../../../Images/ThermImages/HoldBk.gif";
 			document.MForm.holdSetting.value = "off";
 			document.MForm.resetSetting.value = "off";
-			document.MForm.rst.src = "ThermImages/ResetGray.gif";
-			document.MForm.msg.src = "ThermImages/SchedMsg.gif";
+			document.MForm.rst.src = "../../../Images/ThermImages/ResetGray.gif";
+			document.MForm.msg.src = "../../../Images/ThermImages/SchedMsg.gif";
 	}
 }
 
@@ -231,10 +231,10 @@ if (text.length == 2) {
                                   <td width="48%" height="53"> 
                                     <table width="41%" border="0" cellspacing = "0" cellpadding = "0">
                                       <tr> 
-                                        <td><img src="../../../Images/ThermImages/UpBk.gif" width="21" height="21" onclick = "incTemp()"></td>
+                                        <td><img class="Clickable" src="../../../Images/ThermImages/UpBk.gif" width="21" height="21" onclick = "incTemp()"></td>
                                       </tr>
                                       <tr> 
-                                        <td><img src="../../../Images/ThermImages/DownBk.gif" width="21" height="21" onclick = "decTemp()"></td>
+                                        <td><img class="Clickable" src="../../../Images/ThermImages/DownBk.gif" width="21" height="21" onclick = "decTemp()"></td>
                                       </tr>
                                     </table>
                                   </td>
@@ -279,28 +279,28 @@ if (text.length == 2) {
                                   <td width="53%"  height="59" valign = "bottom"> 
                                     <table width="35%" border="0" cellpadding = "2" cellspacing = "0" height="41">
                                       <tr onClick="modeChange('<%= StarsThermoModeSettings.COOL.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoModeSettings.COOL.toString() %>" src="../../../Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
-                                        <td><img src="../../../Images/ThermImages/Cool.gif"></td>
+                                        <td><img id="<%= StarsThermoModeSettings.COOL.toString() %>" src="../../../Images/ThermImages/Arrow.gif" style="visibility:hidden"></td>
+                                        <td><img class="Clickable" src="../../../Images/ThermImages/Cool.gif"></td>
                                       </tr>
                                       <tr onClick="modeChange('<%= StarsThermoModeSettings.HEAT.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoModeSettings.HEAT.toString() %>" src="../../../Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
-                                        <td><img src="../../../Images/ThermImages/Heat.gif"></td>
+                                        <td><img id="<%= StarsThermoModeSettings.HEAT.toString() %>" src="../../../Images/ThermImages/Arrow.gif" style="visibility:hidden"></td>
+                                        <td><img class="Clickable" src="../../../Images/ThermImages/Heat.gif"></td>
                                       </tr>
                                       <tr onClick="modeChange('<%= StarsThermoModeSettings.OFF.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoModeSettings.OFF.toString() %>" src="../../../Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
-                                        <td><img src="../../../Images/ThermImages/Off.gif"></td>
+                                        <td><img id="<%= StarsThermoModeSettings.OFF.toString() %>" src="../../../Images/ThermImages/Arrow.gif" style="visibility:hidden"></td>
+                                        <td><img class="Clickable" src="../../../Images/ThermImages/Off.gif"></td>
                                       </tr>
                                     </table>
                                   </td>
                                   <td width="47%" height="59" valign = "bottom"> 
                                     <table width="34%" border="0" cellpadding = "2" cellspacing = "0">
                                       <tr onClick="fanChange('<%= StarsThermoFanSettings.AUTO.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoFanSettings.AUTO.toString() %>" src="../../../Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
-                                        <td><img src="../../../Images/ThermImages/Auto.gif"></td>
+                                        <td ><img id="<%= StarsThermoFanSettings.AUTO.toString() %>" src="../../../Images/ThermImages/Arrow.gif" style="visibility:hidden"></td>
+                                        <td><img class="Clickable" src="../../../Images/ThermImages/Auto.gif"></td>
                                       </tr>
                                       <tr onClick="fanChange('<%= StarsThermoFanSettings.ON.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoFanSettings.ON.toString() %>" src="../../../Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
-                                        <td><img src="../../../Images/ThermImages/On.gif"></td>
+                                        <td><img id="<%= StarsThermoFanSettings.ON.toString() %>" src="../../../Images/ThermImages/Arrow.gif" style="visibility:hidden"></td>
+                                        <td><img class="Clickable" src="../../../Images/ThermImages/On.gif"></td>
                                       </tr>
                                       <tr> 
                                         <td height="14"></td>
@@ -315,7 +315,7 @@ if (text.length == 2) {
                               <div align="left"></div>
                               <table width="84%" border="0" height="45">
                                 <tr> 
-                                  <td><img src="../../../Images/ThermImages/Submit.gif" width="65" height="40" onClick = "submitIt()"></td>
+                                  <td><img class="Clickable" src="../../../Images/ThermImages/Submit.gif" width="65" height="40" onClick = "submitIt()"></td>
                                 </tr>
                               </table>
                             </td>

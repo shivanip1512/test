@@ -37,18 +37,12 @@ function toolTipAppear(event, divId, index, w, text) {
 	element.style.top = coordy + 'px';
 	element.style.visibility = 'visible';
 	
-	
-	
 function closeToolTip() {
 	var element = document.getElementById(divId);
 	element.style.visibility = 'hidden';
 }
 	
-	
-	
-	
-	
-	function getLeftCoordinate() {
+function getLeftCoordinate() {
 	var x;
 	if (window.event) {
 		x = window.event.clientX + document.documentElement.scrollLeft + document.body.scrollLeft;
@@ -72,13 +66,10 @@ function getTopCoordinate() {
 }
 
 
-
-
 function doReenable(form) {
 	form.action.value = "EnableService";
 	form.submit();
 }
-
 
 function changeCategory(checkbox, index) {
 	form = checkbox.form;
@@ -125,11 +116,6 @@ function changeProgram(radioBtn, index) {
 		form.ProgID.value = radioBtn.value;
 	}
 	form.SignUpChanged.value = "true";
-}
-
-function confirmCancel() {
-	if (confirm('Are you sure you want to stop the process? (You can make changes to the account later)'))
-		location = "../Operations.jsp";
 }
 </script>
 </head>
@@ -294,11 +280,7 @@ function confirmCancel() {
                     </td>
                     <td width="194"> 
                       <div align="left"> 
-<% if (request.getParameter("Wizard") == null) { %>
                         <input type="reset" name="Cancel" value="Cancel">
-<% } else { %>
-                        <input type="button" name="Cancel2" value="Cancel" onClick="confirmCancel()">
-<% } %>
                       </div>
                     </td>
                   </tr>

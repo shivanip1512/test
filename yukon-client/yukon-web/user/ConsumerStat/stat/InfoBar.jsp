@@ -14,7 +14,7 @@
 			  <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
 			  <!--<%= account.getCompany() %><br> -->
 			  <%= ServletUtils.getFormattedAddress(propAddr) %><br>
-			  <%= primContact.getHomePhone() %></span></td>
+			  </span></td>
 		  </tr>
 		</table>
 	  </td>
