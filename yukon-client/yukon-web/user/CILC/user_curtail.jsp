@@ -53,8 +53,8 @@
             long nowMillis = System.currentTimeMillis();
             if( stopCurtail.getTime() > nowMillis )
             {                
-                startDateTimeStr = timePart.format(startCurtail) + " " + datePart.format(startCurtail);
-				stopDateTimeStr = timePart.format(stopCurtail) + " " + datePart.format(stopCurtail);
+                startDateTimeStr = timePart.format(startCurtail) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(startCurtail);
+				stopDateTimeStr = timePart.format(stopCurtail) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(stopCurtail);
                 // durtaion? stop time?
             }
       }
@@ -247,17 +247,17 @@
                  if( curtailStart.before(oldDate) )
                      curtailStartStr = "-";
                  else
-                     curtailStartStr = datePart.format(curtailStart) + " " + timePart.format(curtailStart);
+                     curtailStartStr = datePart.format(curtailStart) + " " + timePart.format(curtailStart) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT);
 
                  if( curtailStop.before(oldDate) )
                      curtailStopStr = "-";
                  else
-                     curtailStopStr = datePart.format(curtailStop) + " " + timePart.format(curtailStop);
+                     curtailStopStr = datePart.format(curtailStop) + " " + timePart.format(curtailStop) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT);
 
                  if( respDateTime.before(oldDate) )
                      respDateTimeStr = "-";
                  else
-                     respDateTimeStr = datePart.format(respDateTime) + " " + timePart.format(respDateTime);
+                     respDateTimeStr = datePart.format(respDateTime) + " " + timePart.format(respDateTime) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT);
                  
                  if( userStr == null || userStr.trim().equalsIgnoreCase("null") )
                      userStr = "-";

@@ -155,7 +155,7 @@
             <td width="17%" class="MainHeader"> 
                           <p align=RIGHT><b>Expire Date/Time: </b> 
                         </td>
-            <td width="20%" class="MainHeader"><%= timePart.format( revisionHistory.getExpirationDateTime()) + " " + datePart.format( revisionHistory.getExpirationDateTime()) %></td>
+            <td width="20%" class="MainHeader"><%= timePart.format( revisionHistory.getExpirationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format( revisionHistory.getExpirationDateTime()) %></td>
           </tr>
         </table>
         <table width="650" border="0" cellspacing="0" cellpadding="5">

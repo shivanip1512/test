@@ -13,7 +13,7 @@
 <%@ page import="java.util.Vector" %>
 <%@ page import="java.util.Iterator" %>
 <%@ taglib uri="jruntags" prefix="jrun" %>
-<%
+<%  
    String pending = request.getParameter("pending");
    
    if( pending != null )

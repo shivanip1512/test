@@ -22,7 +22,7 @@
     
 	String tab = request.getParameter("tab"); 
 	if (tab == null)
-		tab = "";
+		tab = "";  
 
     java.text.NumberFormat hourFormat = new java.text.DecimalFormat();
     hourFormat.setMinimumIntegerDigits(2);
@@ -324,7 +324,7 @@ System.out.println("&&&&&&&&&&&&&&&& sending confirm message");
 			response.sendRedirect("user_ee.jsp?pending=confirm");
 			tab = "";
 
-		}
+		}   
 	}
 
 	if (tab.equalsIgnoreCase(""))

@@ -87,8 +87,8 @@
                       <tr> 
                         <td width="20%" height="10" class="TableCell"><a href="user_ee.jsp?tab=accept&offer=<%= revision.getOfferID() %>&rev=<%= revision.getRevisionNumber() %>"><%= revision.getOfferID() + " - " + revision.getRevisionNumber()%></a></td>
                         <td width="20%" height="10" class="TableCell"><%= datePart.format( offer.getOfferDate()) %></td>
-                        <td width="30%" height="10" class="TableCell"><%= timePart.format( revision.getNotificationDateTime()) + " " + datePart.format( revision.getNotificationDateTime()) %></td>
-                        <td width="30%" height="10" class="TableCell"><%= timePart.format( revision.getOfferExpirationDateTime()) + " " + datePart.format( revision.getOfferExpirationDateTime()) %></td>
+                        <td width="30%" height="10" class="TableCell"><%= timePart.format( revision.getNotificationDateTime() ) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format( revision.getNotificationDateTime() ) %>
+                         <td width="30%" height="10" class="TableCell"><%= timePart.format( revision.getOfferExpirationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format( revision.getOfferExpirationDateTime()) %></td>
                       </tr>
                       <%
 				}
@@ -109,7 +109,7 @@
                         <td width="20%" height="26" class="HeaderCell">Offer Date</td>
                         <td width="20%" height="26" class="HeaderCell">Accept</td>
                         <td width="30%" height="26" class="HeaderCell">Accept 
-                          Date/Time</td>
+                          Date/Time</td> 
                         <td width="15%" height="26" class="HeaderCell">User</td>
                       </tr>
                       <%		
@@ -129,7 +129,7 @@
                         <td width="15%" height="10" class="TableCell"><a href="user_ee.jsp?tab=offer&offer=<%= revision.getOfferID() %>&rev=<%= revision.getRevisionNumber() %>"><%= revision.getOfferID() + " - " + revision.getRevisionNumber()%></a></td>
                         <td width="20%" height="10" class="TableCell"><%= datePart.format( offer.getOfferDate()) %></td>
                         <td width="20%" height="10" class="TableCell"><%= reply.getAcceptStatus() %></td>
-                        <td width="30%" height="10" class="TableCell"><%= timePart.format( reply.getAcceptDateTime() ) + " " + datePart.format( reply.getAcceptDateTime() ) %></td>
+                        <td width="30%" height="10" class="TableCell"><%= timePart.format( reply.getAcceptDateTime() ) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format( reply.getAcceptDateTime() ) %></td>
                         <td width="15%" height="10" bgcolor="#CCCCCC" class="TableCell"><%= reply.getNameOfAcceptPerson() %></td>
                       </tr>
                       <%
@@ -197,7 +197,7 @@
 			com.cannontech.web.history.HEnergyExchangeCustomerReply historyReply = replies[i];
 
 			String offerDateStr = "-";
-			try {
+			try { 
 				Class[] types2 = { java.util.Date.class };
 				Object[][] result = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "SELECT OFFERDATE FROM LMENERGYEXCHANGEPROGRAMOFFER WHERE LMENERGYEXCHANGEPROGRAMOFFER.OFFERID = " + historyReply.getOfferId(), types2 );
 
@@ -213,7 +213,7 @@
                         </td>
                         <td width="20%" height="10" class="TableCell"><%= offerDateStr %></td>
                         <td width="20%" height="10" class="TableCell"><%= historyReply.getAcceptStatus() %></td>
-                        <td width="30%" height="10" class="TableCell"><%= timePart.format( historyReply.getAcceptDateTime() ) + " " + datePart.format( historyReply.getAcceptDateTime() ) %></td>
+                        <td width="30%" height="10" class="TableCell"><%= timePart.format( historyReply.getAcceptDateTime() ) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format( historyReply.getAcceptDateTime() ) %></td>
                         <td width="15%" height="10" class="TableCell"><%= historyReply.getNameOfAcceptPerson() %></td>
                       </tr>
                       <%	

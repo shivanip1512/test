@@ -66,19 +66,19 @@
                   <table
     width="480" border="0" cellspacing="0" cellpadding="5" align="center" class="Main">
         <tr> 
-          <td width="15%"> 
+          <td> 
             <p align=RIGHT>&nbsp;Offer 
               ID:
           </td>
-          <td width="10%"> <%= checker.get("offer") + " - " + checker.get("rev") %></td>
-          <td width="15%"> 
+          <td> <%= checker.get("offer") + " - " + checker.get("rev") %></td>
+          <td> 
             <p align=RIGHT>Date:
           </td>
-          <td width="20%"><%= checker.get("offerdate") %></td>
-          <td width="15%"> 
+          <td><%= checker.get("offerdate") %></td>
+          <td> 
             <p align=RIGHT>Expires:
           </td> <% System.out.println("HERO " + checker.get("expiredatetime")); %>
-          <td width="25%"> <%= java.net.URLDecoder.decode( checker.get("expiredatetime") ) %></td>
+          <td> <%= java.net.URLDecoder.decode( checker.get("expiredatetime") ) %><%= " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %></td>
         </tr>
       </table>
       <form action="user_ee.jsp?tab=confirm" method="post">

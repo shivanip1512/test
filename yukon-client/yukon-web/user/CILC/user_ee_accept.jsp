@@ -85,20 +85,20 @@ function decline_form()
                     <table
     width="600" border="0" cellspacing="0" cellpadding="5">
           <tr valign="top"> 
-            <td width="60" class="Main"> 
+            <td class="Main"> 
               <p align=RIGHT><b>Offer ID:</b> 
             </td>
-            <td width="45" class="Main"> <%= revision.getOfferID() + " - " + revision.getRevisionNumber()%></td>
-            <td width="40" class="Main"> 
+            <td class="Main"> <%= revision.getOfferID() + " - " + revision.getRevisionNumber()%></td>
+            <td class="Main"> 
               <p align=RIGHT><b>Date:</b> 
             </td>
-            <td width="70" class="Main"><%= datePart.format( offer.getOfferDate()) %></td>
-            <td width="55" class="Main"> 
+            <td class="Main"><%= datePart.format( offer.getOfferDate()) %></td>
+            <td class="Main"> 
               <p align=RIGHT><b>Expires:</b> 
             </td>
-            <td width="120" class="Main"><%= timePart.format( revision.getOfferExpirationDateTime()) + " " + datePart.format( revision.getOfferExpirationDateTime()) %></td>
-            <td width="135" class="Main"><b>Curtailable Amount:</b></td>
-            <td width="75" class="Main">&nbsp;</td>
+            <td class="Main"><%= timePart.format( revision.getOfferExpirationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format( revision.getOfferExpirationDateTime()) %></td>
+            <td class="Main"><b>Curtailable Amount:</b></td>
+            <td class="Main">&nbsp;</td> 
           </tr>
         </table>
         <struts:form name="checker" type="com.cannontech.validate.PageBean" scope="session" action="user_ee.jsp?tab=accept"> 

@@ -4,10 +4,15 @@
 <%@ page import="com.cannontech.roles.cicustomer.*"%>
 <%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
 <%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
+<%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
+<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.data.lite.LiteCICustomer" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.graph.model.TrendModelType" %>
+
+<%@ page import="com.cannontech.roles.yukon.EnergyCompanyRole" %>
+
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ taglib uri="/WEB-INF/jruntags.jar" prefix="jrun" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
@@ -17,17 +22,26 @@
 <%
 	LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute("YUKON_USER");
 	int liteYukonUserID = liteYukonUser.getLiteID();
-	
-    java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
-    java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
-    java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
-    String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 
 	LiteContact liteContact = YukonUserFuncs.getLiteContact(liteYukonUserID);
 	LiteCICustomer liteCICustomer = ContactFuncs.getCICustomer(liteContact.getContactID());
 	
 	int customerID = liteCICustomer.getCustomerID();
+	int energyCompanyID =EnergyCompanyFuncs.getEnergyCompany(liteYukonUser).getEnergyCompanyID();
+	
+	LiteYukonUser ecUser = EnergyCompanyFuncs.getEnergyCompanyUser(energyCompanyID);
+	TimeZone tz = TimeZone.getTimeZone(AuthFuncs.getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
 
+	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
+    java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
+    java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
+    
+    datePart.setTimeZone(tz);
+    timePart.setTimeZone(tz);
+    dateFormat.setTimeZone(tz);
+    
+    String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
+	
     Class[] types = { Integer.class,String.class };    
 	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "SELECT GDEF.GRAPHDEFINITIONID, GDEF.NAME FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL WHERE GDEF.GRAPHDEFINITIONID=GCL.GRAPHDEFINITIONID AND GCL.CUSTOMERID = " + customerID+ " ORDER BY GDEF.NAME", types );
 %>
