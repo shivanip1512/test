@@ -1794,7 +1794,7 @@ void CtiLMControlArea::restore(RWDBReader& rdr)
     rdr["defdailystoptime"] >> _defdailystoptime;
     rdr["requirealltriggersactiveflag"] >> tempBoolString;
     tempBoolString.toLower();
-    setRequireAllTriggersActiveFlag(tempBoolString=="y"?TRUE:FALSE);
+    setRequireAllTriggersActiveFlag(tempBoolString=="t"?TRUE:FALSE);
 
     setControlAreaStatusPointId(0);
     rdr["pointid"] >> isNull;
