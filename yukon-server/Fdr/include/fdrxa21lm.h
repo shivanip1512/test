@@ -35,6 +35,9 @@
 #include "fdrpointlist.h"
 #include "device.h"             // get the raw states
 #include "fdrsinglesocket.h"
+#include "critical_section.h"
+#include "guard.h"
+#include "string_util.h"
 
 // global defines
 #define XA21LMPORTNUMBER        1027
@@ -45,6 +48,29 @@ NOTE:  All data limit violations will be handled by the receiving system
 */
 
 #pragma pack(push, xa21lm_packing, 1)
+
+/* Define the LMS status values */
+
+#define STARTED                 1
+#define COMPLETED               2
+#define STOPPED                 3
+#define REJECTED                4
+#define ACKNOWLEDGE             5
+
+/* Define the various function codes for harris interface */
+#define NICKTESTSTART                   301
+#define NICKTESTSTATUS                  302
+#define NICKTESTSTOP                    303
+#define STARTNEWSEASON                  402
+#define LMSSTRATEGYSTART                501
+#define LMSSTRATEGYSTOP                 503
+#define LOADSCRAM                       505
+#define LOADSCRAMSTATUS                 506
+#define LOADSCRAMSTOP                   507
+#define TOPOLOGY                        508
+#define LMSSTRATEGYSTATUS               510
+#define LMSTYPEACCOUNTING               512
+#define LMSRETRIES                      530
 
 #define MPCSTATUS                       1
 #define MPCCOMPLETE                     2
@@ -102,6 +128,28 @@ NOTE:  All data limit violations will be handled by the receiving system
    recieved in a buffer declared with this union will have the type available
    for determining which type of message to decode.  Also by default the
    buffer is guarenteed to be large enough to accept the largest message */
+
+typedef struct _XA21TIME {
+    ULONG Time;                 // Seconds
+    USHORT MilliSeconds;        // MilliSeconds
+    USHORT DSTFlag;             // DST Flag
+} XA21TIME;
+
+/* Message type 302 - Nick test status
+   This is sent to lmsdlnk as a nick acknowledgment, trick or treat */
+typedef struct _NICKTESTSTAT {
+    ULONG Function;
+    XA21TIME Time;
+    USHORT State;
+} NICKTESTSTAT;
+
+/* Message type 506 - Load SCRAM status
+   This is sent to lmsdlnk as a scram acknowledgment, nothing more. */
+typedef struct _LOADSCRAMSTAT {
+    ULONG Function;
+    XA21TIME Time;
+    USHORT State;
+} LOADSCRAMSTAT;
 
 /*
   Note, we only handle MPC messages.
@@ -161,118 +209,6 @@ typedef struct _XATIMESCHEDULE {
 
 #define XAMAXTIMESCHED  ((8192 - sizeof (ULONG) - sizeof (XA21TIME) - sizeof (USHORT)) / sizeof (XATIMESCHEDULE))
 
-
-typedef struct _XA21TIME {
-    ULONG Time;                 // Seconds
-    USHORT MilliSeconds;        // MilliSeconds
-    USHORT DSTFlag;             // DST Flag
-} XA21TIME;
-
-#ifdef FULLMSG
-typedef struct _XA21LMMESS {
-    ULONG Function;             // Function Code
-    XA21TIME Time;              // Harris time stamp
-    union {
-        /* Message type 301 - Nick test start */
-        struct {
-            USHORT Level[MAXTYPES];
-        } NickStart;
-
-        /* Message type 302 - Nick Test Status */
-        struct {
-            USHORT State;
-        } NickStatus;
-
-        /* Message type 303 - Nick test stop */
-        /* Null structure for this guy */
-
-        /* Message Type 402 - Start New Season */
-        /* Null structure for this guy */
-
-        /* Message Type 501 - Start LMS Strategy  Message 1 */
-        struct {
-            USHORT HoursFromMidnight;
-            USHORT ActiveHours;
-            USHORT Priority[MAXTYPES];
-            FLOAT ELF[MAXHOURS];
-            USHORT LTD[MAXHOURS];
-            USHORT Level[MAXTYPES][MAXHOURS];
-            USHORT FeedbackMode;
-        } LMSStrategy;
-
-        /* Message Type 503  - Stop LMS Strategy */
-        /* Null structure for this guy */
-
-        /* Message Type 505 - Start Load Scram */
-        struct {
-            USHORT Duration;
-            USHORT Level[MAXTYPES];
-        } StartLoadScram;
-
-        /* Message Type 506 - Load Scram Status */
-        struct {
-            USHORT State;
-        } ScramStatus;
-
-        /* Message Type 507 - Stop Load Scram */
-        /* Null Message for this guy */
-
-        /* Message Type 508 - Load Topology */
-        struct {
-            USHORT Devices[MAXTOWERS][MAXTYPES];
-        } Topology;
-
-        /* Message Type 510 - Strategy Status */
-        struct {
-            USHORT State;
-        } StratStatus;
-
-        /* Message Type 512 - Accounting Data */
-        struct {
-            struct {
-                USHORT MinutesToday;
-                USHORT HoursForSeason;
-            } Type[MAXTYPES];
-        } Accounting;
-
-        struct {
-            USHORT Retries;
-        } Retries;
-
-        /* Message Type 1000 thru 1302 - MPC Messages */
-        struct {
-            USHORT AreaCode;
-            USHORT IDNumber;
-            struct {
-                CHAR GroupName[21];
-                USHORT State;
-                USHORT ShedSequence;
-            } Group[MPCMAXGROUPS];
-        } MPC;
-
-        /* Message Type 1400 - MPC Was Doin' Nothin' */
-        /* Null Structure for this guy */
-
-        /* Message Type 10000  - Strategy report message */
-        struct {
-            USHORT Count;       /* set to 0xffff if all entries do not fit */
-            XASTRATEGY Strategy[XAMAXSTRATEGY];
-        } XAStrategy;
-
-        /* Message Type 10100  - Group History report message */
-        struct {
-            USHORT Count;       /* set to 0xffff if all entries do not fit */
-            XAGROUP_HIST_REPORT GroupHist[XAMAXGROUPHIST];
-        } XAGroupHist;
-
-        /* Message Type 10200  - Time Schedule report message */
-        struct {
-            USHORT Count;       /* set to 0xffff if all entries do not fit */
-            XATIMESCHEDULE TimeSched[XAMAXTIMESCHED];
-        } XATimeSched;
-    } Message;
-} XA21LMMESS;
-#endif
 typedef struct _XA21LMMESS {
     ULONG Function;             // Function Code
     XA21TIME Time;              // Harris time stamp
@@ -300,6 +236,37 @@ typedef struct _XNULL {
 
 class RWTime;
 
+/*
+ * CurrentControl is a utility class to help keep track of pending controls.
+ */
+class CurrentControl
+{
+public:
+    ULONG getMPCFunction() const;
+    vector<string> getPendingGroups() const;
+    vector<string> getCompletedGroups() const;
+    
+    unsigned getNumCompletedGroups() const;
+    unsigned getNumPendingGroups() const;
+    
+    int getCommandedState(const string& group_name) const;
+    time_t getExpirationTime() const;
+
+    bool isGroupPending(const string& group_name) const;
+    
+    bool setGroupCompleted(const string& group_name);
+
+    static CurrentControl createCurrentControl(XA21LMMESS* lm_msg);
+
+    void dump();
+    
+private:
+    ULONG _mpc_function;
+    time_t _expiration_time;
+    vector< pair<string, unsigned> > _pending_groups;
+    vector< pair<string, unsigned> > _completed_groups;
+};
+
 class IM_EX_FDRXA21LM CtiFDR_XA21LM : public CtiFDRSingleSocket
 {                                    
     typedef CtiFDRSingleSocket Inherited;
@@ -312,16 +279,21 @@ class IM_EX_FDRXA21LM CtiFDR_XA21LM : public CtiFDRSingleSocket
 
         virtual int processMessageFromForeignSystem (CHAR *data);
         virtual CHAR *buildForeignSystemHeartbeatMsg (void);
-//	virtual bool buildAndWriteToForeignSystem(CtiFDRPoint& aPoint);
         virtual CHAR *buildForeignSystemMsg (CtiFDRPoint &aPoint);
         virtual int getMessageSize(CHAR *data);
         virtual RWCString decodeClientName(CHAR *data);
-
+	
         virtual int readConfig( void );
 
         virtual int processRegistrationMessage(CHAR *data);
-        virtual int processImmediateControlMessage(CHAR *data);
+        virtual int processControlMessage(CHAR *data);
 
+	CHAR* buildMPCStatus(const CurrentControl& ctrl, const string& group_name);
+	CHAR* buildMPCUnsolicited(const string& group_name, unsigned state);
+	
+	void saveControl(XA21LMMESS* ctrl_msg);
+	void cleanupCurrentControls();
+	
 	void MPCStatusUpdateThr();
 	
         ULONG       ForeignToYukonQuality (ULONG aQuality);
@@ -350,19 +322,13 @@ class IM_EX_FDRXA21LM CtiFDR_XA21LM : public CtiFDRSingleSocket
 	    
 private:
 
-#ifdef KEEPTRACKOFCONTROLS	
-	/* Keep track of control's sent from lmsdlink */
-	typedef struct _mpc_control
-	{
-	    unsigned control_state;
-	    XA21LMMESS xa_msg;
-	} mpc_control;
-
+	int stripAreaCode(string& group_name);
+	
 	/* A new MPC control will create an entry in this vector
 	   Either all the groups have to switch to the correct
 	   state or the control must timeout to be removed from here */
-	vector< pair< time_t, mpc_control> _current_control;
-#endif
+	vector<CurrentControl> _current_controls;
+	CtiCriticalSection _control_cs;
 };
 
 
