@@ -1483,6 +1483,10 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		retLBase = handleConfigChange( dbType, id );
 	}
+	else if( database == DBChangeMsg.CHANGE_TAG_DB )
+	{
+		retLBase = handleTagChange( dbType, id );
+	}
 	else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB
 				|| database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
 	{
@@ -1821,6 +1825,64 @@ private synchronized LiteBase handleConfigChange( int changeType, int id )
 	}
 
 	return lBase;
+}
+
+private synchronized LiteBase handleTagChange( int changeType, int id )
+{
+	boolean alreadyAdded = false;
+	LiteBase lTag = null;
+
+	// if the storage is not already loaded, we must not care about it
+	if( allTags == null )
+		return lTag;
+
+	switch(changeType)
+	{
+		case DBChangeMsg.CHANGE_TYPE_ADD:
+				for(int i=0;i<allTags.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteTag)allTags.get(i)).getTagID() == id )
+					{
+						alreadyAdded = true;
+						lTag = (LiteBase)allTags.get(i);
+						break;
+					}
+				}
+				if( !alreadyAdded )
+				{
+					com.cannontech.database.data.lite.LiteTag lh = new com.cannontech.database.data.lite.LiteTag(id);
+					lh.retrieve(databaseAlias);
+					allTags.add(lh);
+					lTag = lh;
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+				for(int i=0;i<allTags.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteTag)allTags.get(i)).getTagID() == id )
+					{
+						((com.cannontech.database.data.lite.LiteTag)allTags.get(i)).retrieve(databaseAlias);
+						lTag = (LiteBase)allTags.get(i);
+						break;
+					}
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
+				for(int i=0;i<allTags.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteTag)allTags.get(i)).getTagID() == id )
+					{
+						lTag = (LiteBase)allTags.remove(i);
+						break;
+					}
+				}
+				break;
+		default:
+				releaseAllTags();
+				break;
+	}
+
+	return lTag;
 }
 /**
  * Insert the method's description here.
@@ -2342,6 +2404,7 @@ public synchronized void releaseAllCache()
 	allHolidaySchedules = null;
 	allBaselines = null;
 	allConfigs = null;
+	allTags = null;
 	allDeviceMeterGroups = null;
 	allPointsUnits = null;
 	allPointLimits = null;
@@ -2427,6 +2490,11 @@ public synchronized void releaseAllBaselines()
 public synchronized void releaseAllConfigs()
 {
 	allConfigs = null;
+}
+
+public synchronized void releaseAllTags()
+{
+	allTags = null;
 }
 /**
  * Insert the method's description here.
