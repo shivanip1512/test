@@ -14,6 +14,7 @@ import com.cannontech.analysis.tablemodel.LMControlLogModel;
 import com.cannontech.analysis.tablemodel.LoadGroupModel;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
 import com.cannontech.analysis.tablemodel.PowerFailModel;
+import com.cannontech.analysis.tablemodel.ProgramDetailModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.RouteMacroModel;
 import com.cannontech.analysis.tablemodel.StatisticModel;
@@ -45,6 +46,7 @@ public class ReportTypes
 	public static final int SUCCESS_METER_DATA = 10;
 	public static final int LOAD_PROFILE_DATA = 11;
 	public static final int EC_ACTIVITY_DETAIL_DATA = 12;
+	public static final int PROGRAM_DETAIL_DATA = 13;
 	
 	public static final int ADMIN_LOG_REPORTS_GROUP = 0;
 	public static final int AMR_REPORTS_GROUP = 1;
@@ -64,7 +66,7 @@ public class ReportTypes
 		{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA},		//lm reports
 		{},		//cap control reports
 		{CARRIER_DATA}, //database reports
-		{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA },	//stars reports
+		{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA, PROGRAM_DETAIL_DATA},	//stars reports
 		{CARRIER_ROUTE_MACRO_DATA}	//other reports
 	};
 
@@ -98,7 +100,8 @@ public class ReportTypes
 				return new MeterReadModel();
 			case ReportTypes.EC_ACTIVITY_DETAIL_DATA:
 				return new ActivityDetailModel();
-				
+			case ReportTypes.PROGRAM_DETAIL_DATA:
+				return new ProgramDetailModel();				
 			default:
 				return null;
 		}		
