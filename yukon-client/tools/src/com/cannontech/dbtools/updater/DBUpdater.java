@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
 
@@ -90,10 +89,6 @@ public class DBUpdater extends MessageFrameAdaptor
 	private static final String FS = System.getProperty("file.separator");
 	private static final String LF = System.getProperty("line.separator");
 
-	private DecimalFormat floatForm = new DecimalFormat( "#.00" );
-	private DecimalFormat intForm = new DecimalFormat( "00" );
-	
-
 	public final static String[] CMD_LINE_PARAM_NAMES = 
 	{
 		IRunnableDBTool.PROP_VALUE,
@@ -106,8 +101,6 @@ public class DBUpdater extends MessageFrameAdaptor
 	public DBUpdater()
 	{
 		super();
-		intForm.setMaximumIntegerDigits( 2 );
-		intForm.setMaximumFractionDigits( 0 );		
 	}
 
 	public String getName()
@@ -396,8 +389,8 @@ public class DBUpdater extends MessageFrameAdaptor
 			if( !UpdateDB.isValidUpdateFile(sqlFile) )
 				printUpdateLines( validLines, 
 						new File( CtiUtilities.getLogDirPath() + 
-							floatForm.format(filesVers[i].getVersion()) +
-							"_" + intForm.format(filesVers[i].getBuild()) +
+							filesVers[i].getVersion() +
+							"_" + filesVers[i].getBuild() +
 							DBMSDefines.NAME_VALID) );
 			
 			getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
