@@ -31,6 +31,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.db.DBPersistent;
@@ -325,13 +326,36 @@ public void actionPerformed(ActionEvent event)
 	{
 		java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame(getContentPane());
 		java.awt.Cursor savedCursor = f.getCursor();
+		
 		try
 		{
 			f.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 			
 			//refresh the cache and the connections state
 			com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
-
+			
+			//grab the current selected object in the tree
+			Object holder = treeViewPanel.getSelectedItem();
+			//do the actual refresh of the tree
+			treeViewPanel.refresh();
+			if(holder != null && holder instanceof LiteBase)
+			{
+				//reselect the object, wherever it may have ended up now
+				//make sure it isn't a point, as this will result in a failed selection
+				//which will leave the treeviewpanel on the final sort-by model
+				if(! (holder instanceof LitePoint))
+					treeViewPanel.selectLiteObject((LiteBase)holder);
+				DefaultMutableTreeNode tempNode = treeViewPanel.getSelectedNode();
+				
+				if(tempNode != null)
+				{
+					javax.swing.tree.TreeNode[] path = tempNode.getPath();
+					javax.swing.tree.TreePath newPath = new javax.swing.tree.TreePath(path);
+					
+					treeViewPanel.selectLiteBase(newPath, (LiteBase)holder);
+				}
+			}
+			
 			if( getConnToDispatch().isValid() )
 			{
 				f.setTitle("Yukon Database Editor [Connected to Dispatch@" +
@@ -353,7 +377,7 @@ public void actionPerformed(ActionEvent event)
 		finally
 		{
 			f.setCursor(savedCursor);
-			fireMessage( new MessageEvent( this, "Connection state and cache have been refreshed", MessageEvent.INFORMATION_MESSAGE) );
+			fireMessage( new MessageEvent( this, "Tree view, connection state and cache have been refreshed", MessageEvent.INFORMATION_MESSAGE) );
 		}
 		
 	}
