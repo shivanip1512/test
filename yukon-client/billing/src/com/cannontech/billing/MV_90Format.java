@@ -140,7 +140,7 @@ public class MV_90Format extends FileFormatBase
 									break inValidTimestamp;
 
 								readingVector = new java.util.Vector(4);	//best guess capacity is 4
-								readingVector.add(new Double(-999D));
+								readingVector.add(new Double(-99999D));
 
 								mv90Rec.setReadingKWVector(readingVector);
 								mv90Rec.setTimeKW(lpDemandRateTimeStamp);
