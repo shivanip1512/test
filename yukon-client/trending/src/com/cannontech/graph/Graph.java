@@ -17,11 +17,14 @@ import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.util.ServletUtil;
-import com.jrefinery.chart.JFreeChart;
+import org.jfree.chart.JFreeChart;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.graph.GraphDefinition;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.ChartFactory;
 
-public class Graph implements GraphDefines, com.jrefinery.chart.event.ChartChangeListener
+public class Graph implements GraphDefines
 {
 	private long lastUpdateTime = 0;
 
@@ -79,35 +82,25 @@ public Graph()
 	}		*/
 } 
 
-/**
- * Insert the method's description here.
- * Creation date: (9/13/2001 3:03:38 PM)
- * @param value boolean
- */
-public void chartChanged(com.jrefinery.chart.event.ChartChangeEvent event)
-{
-	if( event.getSource() == freeChart)
-	{
-		com.cannontech.clientutils.CTILogger.info(" ***** CHART CHANGED EVENT ***** " + event.getType());
-	}
-}
-
 public void encodeCSV(java.io.OutputStream out) throws java.io.IOException
 {
-	com.cannontech.graph.exportdata.ExportDataFile eDataFile = 
-		new com.cannontech.graph.exportdata.ExportDataFile(
-		viewType,
-		getFreeChart(), 
-		getTrendModel().getChartName(), 
-		getTrendModel());
-
-	eDataFile.setExtension("csv");
-
-	String data[] = eDataFile.createCSVFormat();
-	for( int i = 0; i < data.length; i++ )
+	synchronized (Graph.class)
 	{
-		if( data[i] != null)
-			out.write( data[ i ].getBytes() );
+		com.cannontech.graph.exportdata.ExportDataFile eDataFile = 
+			new com.cannontech.graph.exportdata.ExportDataFile(
+			viewType,
+			getFreeChart(), 
+			getTrendModel().getChartName(), 
+			getTrendModel());
+	
+		eDataFile.setExtension("csv");
+	
+		String data[] = eDataFile.createCSVFormat();
+		for( int i = 0; i < data.length; i++ )
+		{
+			if( data[i] != null)
+				out.write( data[ i ].getBytes() );
+		}
 	}
 }
 
@@ -164,7 +157,7 @@ public void encodeJpeg(java.io.OutputStream out) throws java.io.IOException
 {
 	synchronized(Graph.class)
 	{
-		com.jrefinery.chart.ChartUtilities cu = new com.jrefinery.chart.ChartUtilities();
+		ChartUtilities cu = new ChartUtilities();
 		cu.writeChartAsJPEG(out, getFreeChart(), getWidth(), getHeight());
 	}
 }
@@ -172,7 +165,7 @@ public void encodePng(java.io.OutputStream out) throws java.io.IOException
 {
 	synchronized(Graph.class)
 	{
-		com.jrefinery.chart.ChartUtilities cu = new com.jrefinery.chart.ChartUtilities();
+		ChartUtilities cu = new ChartUtilities();
 		cu.writeChartAsPNG(out, getFreeChart(), getWidth() , getHeight());
 	}
 }
@@ -227,19 +220,22 @@ public void encodeSummmaryHTML(java.io.OutputStream out) throws java.io.IOExcept
 	
 public void encodePDF(java.io.OutputStream out) throws java.io.IOException
 {
-	try
+	synchronized(Graph.class)
 	{
-		com.klg.jclass.util.swing.encode.page.PDFEncoder encoder = new com.klg.jclass.util.swing.encode.page.PDFEncoder();
-		encoder.encode(getFreeChart().createBufferedImage(getWidth(), getHeight()), out);
-		out.flush();	
-	}		
-	catch( java.io.IOException io )
-	{
-		io.printStackTrace();
-	}
-	catch( com.klg.jclass.util.swing.encode.EncoderException ee )
-	{
-		ee.printStackTrace();
+		try
+		{
+			com.klg.jclass.util.swing.encode.page.PDFEncoder encoder = new com.klg.jclass.util.swing.encode.page.PDFEncoder();
+			encoder.encode(getFreeChart().createBufferedImage(getWidth(), getHeight()), out);
+			out.flush();	
+		}		
+		catch( java.io.IOException io )
+		{
+			io.printStackTrace();
+		}
+		catch( com.klg.jclass.util.swing.encode.EncoderException ee )
+		{
+			ee.printStackTrace();
+		}
 	}
 }
 /**
@@ -345,11 +341,11 @@ public String getPeriod()
  * Creation date: (6/20/2002 9:32:40 AM)
  * @return com.jrefinery.chart.JFreeChart
  */
-public synchronized com.jrefinery.chart.JFreeChart getFreeChart() 
+public synchronized JFreeChart getFreeChart() 
 {
 	if( freeChart == null)
 	{
-		freeChart = com.jrefinery.chart.ChartFactory.createTimeSeriesChart("Yukon Trending Application", "Date/Time", "Value", new com.jrefinery.data.TimeSeriesCollection(), true, true, true);
+		freeChart = ChartFactory.createTimeSeriesChart("Yukon Trending Application", "Date/Time", "Value", new TimeSeriesCollection(), true, true, true);
 		freeChart.setBackgroundPaint(java.awt.Color.white);
 	}
 	return freeChart;

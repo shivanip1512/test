@@ -6,6 +6,7 @@ package com.cannontech.graph.buffer.html;
  * @author: 
  */
 import com.cannontech.graph.model.TrendSerie;
+import org.jfree.data.time.TimePeriod;
 //import com.cannontech.graph.GraphDataFormats;
 public class TabularHtml extends HTMLBuffer
 {
@@ -134,7 +135,7 @@ public StringBuffer getHtml(StringBuffer buf)
 	validIndex = 0;
 	for (int i = 0; i < model.getTrendSeries().length; i++)
 	{
-		com.jrefinery.data.TimePeriod prevTimePeriod = null;
+		TimePeriod prevTimePeriod = null;
 		if(com.cannontech.database.db.graph.GraphDataSeries.isGraphType(model.getTrendSeries()[i].getTypeMask()))
 		{
 			setFractionDigits(3);
@@ -196,4 +197,5 @@ public void setTabularStartDate(java.util.Date start)
 {
 	tabularStartDate = start;
 }
+
 }

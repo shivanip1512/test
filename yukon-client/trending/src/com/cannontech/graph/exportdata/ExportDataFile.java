@@ -1,5 +1,8 @@
 package com.cannontech.graph.exportdata;
 
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/21/2002 9:48:51 AM)
@@ -205,8 +208,8 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 	{
 		try
 		{
-			com.jrefinery.chart.JFreeChart fChart = (com.jrefinery.chart.JFreeChart)exportObject;			
-			com.jrefinery.chart.ChartUtilities cu = new com.jrefinery.chart.ChartUtilities();
+			JFreeChart fChart = (JFreeChart)exportObject;			
+			ChartUtilities cu = new ChartUtilities();
 			cu.saveChartAsJPEG(file,fChart, 700, 500 );
 		}
 		catch (java.io.IOException ioe)
@@ -226,7 +229,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 
 		try
 		{
-			com.jrefinery.chart.JFreeChart fChart = (com.jrefinery.chart.JFreeChart)exportObject;
+			JFreeChart fChart = (JFreeChart)exportObject;
 			out = new java.io.BufferedOutputStream(new java.io.FileOutputStream(file));
 
 			com.klg.jclass.util.swing.encode.page.PDFEncoder encoder = new com.klg.jclass.util.swing.encode.page.PDFEncoder();
@@ -259,8 +262,8 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 	{
 		try
 		{
-			com.jrefinery.chart.JFreeChart fChart = (com.jrefinery.chart.JFreeChart)exportObject;
-			com.jrefinery.chart.ChartUtilities cu = new com.jrefinery.chart.ChartUtilities();
+			JFreeChart fChart = (JFreeChart)exportObject;
+			ChartUtilities cu = new ChartUtilities();
 			cu.saveChartAsPNG(file,fChart, 700, 500 );
 		}
 		catch (java.io.IOException ioe)

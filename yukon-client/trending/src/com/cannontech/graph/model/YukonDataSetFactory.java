@@ -9,8 +9,17 @@ package com.cannontech.graph.model;
  * Window>Preferences>Java>Code Generation.
  */
 import com.cannontech.database.db.graph.GraphDataSeries;
-import com.jrefinery.data.AbstractSeriesDataset;
-import com.jrefinery.data.AbstractDataset;
+import org.jfree.data.AbstractSeriesDataset;
+import org.jfree.data.AbstractDataset;
+import org.jfree.data.DefaultCategoryDataset;
+import org.jfree.data.time.TimePeriod;
+import org.jfree.data.time.Millisecond;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesDataItem;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.XYSeries;
+import org.jfree.data.XYSeriesCollection;
+import org.jfree.data.SeriesException;
 /**
  * A quick and dirty implementation.
  */
@@ -120,7 +129,7 @@ public class YukonDataSetFactory
 				 		double[] values = new double[serie.getDataPairArray().length];
 						for (int x = 0; x < serie.getDataPairArray().length; x++)
 						{
-							com.jrefinery.data.TimeSeriesDataPair dp = serie.getDataPairArray(x);						
+							TimeSeriesDataItem dp = serie.getDataPairArray(x);						
 							timeStamp[x] = dp.getPeriod().getStart().getTime();
 							values[x] = dp.getValue().doubleValue();
 						}
@@ -147,16 +156,16 @@ public class YukonDataSetFactory
 
 
 
-	public static com.jrefinery.data.TimeSeriesCollection [] createBasicDataSet(TrendSerie [] tSeries ) 
+	public static TimeSeriesCollection [] createBasicDataSet(TrendSerie [] tSeries ) 
 	{
 		if( tSeries == null)
 			return null;
 
 
-		com.jrefinery.data.TimeSeriesCollection [] dSet = new com.jrefinery.data.TimeSeriesCollection[2];
+		TimeSeriesCollection [] dSet = new TimeSeriesCollection[2];
 		for ( int datasetIndex = 0; datasetIndex < 2; datasetIndex++)
 		{
-			dSet[datasetIndex] = new com.jrefinery.data.TimeSeriesCollection();
+			dSet[datasetIndex] = new TimeSeriesCollection();
 			for ( int i = 0; i < tSeries.length; i++)
 			{
 				Double prevValue = null;
@@ -167,13 +176,13 @@ public class YukonDataSetFactory
 					{
 						if( serie.getAxis().equals(axisChars[datasetIndex]))
 						{	
-							com.jrefinery.data.TimeSeries series = new com.jrefinery.data.TimeSeries(serie.getLabel(), com.jrefinery.data.Millisecond.class);
+							TimeSeries series = new TimeSeries(serie.getLabel(), Millisecond.class);
 
 							if( serie.getDataPairArray() != null)
 							{
 								for (int j = 0; j < serie.getDataPairArray().length; j++)
 								{
-									com.jrefinery.data.TimeSeriesDataPair dp = (com.jrefinery.data.TimeSeriesDataPair)serie.getDataPairArray(j);
+									TimeSeriesDataItem dp = (TimeSeriesDataItem)serie.getDataPairArray(j);
 									try
 									{
 										if( GraphDataSeries.isUsageType(serie.getTypeMask()))
@@ -187,7 +196,7 @@ public class YukonDataSetFactory
 												Double currentValue = (Double)dp.getValue();
 												if( currentValue != null && prevValue != null)
 												{
-													com.jrefinery.data.TimeSeriesDataPair tempDP = new com.jrefinery.data.TimeSeriesDataPair(dp.getPeriod(), new Double(currentValue.doubleValue() - prevValue.doubleValue()));
+													TimeSeriesDataItem tempDP = new TimeSeriesDataItem(dp.getPeriod(), new Double(currentValue.doubleValue() - prevValue.doubleValue()));
 													prevValue = currentValue;
 													series.add(tempDP);
 												}
@@ -198,7 +207,7 @@ public class YukonDataSetFactory
 											series.add(dp);
 										}
 									}
-									catch(com.jrefinery.data.SeriesException se)
+									catch(SeriesException se)
 									{
 										com.cannontech.clientutils.CTILogger.info("Series ["+i+"] Exception:  PERIOD = " + dp.getPeriod().getStart() + " VALUE = " + dp.getValue().doubleValue());
 									}
@@ -225,19 +234,19 @@ public class YukonDataSetFactory
 	 * Creation date: (8/2/2001 10:46:02 AM)
 	 * @param cModels FreeChartModel []
 	 */
-	public static com.jrefinery.data.XYSeriesCollection [] createLoadDurationDataSet(TrendSerie[] tSeries)
+	public static XYSeriesCollection [] createLoadDurationDataSet(TrendSerie[] tSeries)
 	{
 		if( tSeries == null)
 			return null;
 
-		com.jrefinery.data.XYSeriesCollection [] dataset = new com.jrefinery.data.XYSeriesCollection[2];
+		XYSeriesCollection [] dataset = new XYSeriesCollection[2];
 		int primaryIndex = -1;
 		int primaryDset = -1;
 		//Valid series are those that have type = graph.  tSeries has all types of series,
 		//  therefore we need to weed out those we don't want in the graph.
 		for( int datasetIndex = 0; datasetIndex < 2; datasetIndex++)
 		{
-			dataset[datasetIndex] = new com.jrefinery.data.XYSeriesCollection();			
+			dataset[datasetIndex] = new XYSeriesCollection();			
 		
 			int count = 0;
 			for( int i = 0; i < tSeries.length; i++)
@@ -342,7 +351,7 @@ public class YukonDataSetFactory
 //			com.jrefinery.data.XYSeriesCollection collection = new com.jrefinery.data.XYSeriesCollection();
 			for ( int i = 0; i < datasetValues.length; i++)
 			{
-				com.jrefinery.data.XYSeries xySeries = new com.jrefinery.data.XYSeries(tSeries[i].getLabel());			
+				XYSeries xySeries = new XYSeries(tSeries[i].getLabel());			
 				for (int j = 0; j < datasetValues[i].length; j++)
 				{
 					if( datasetValues[i][j] != null)
@@ -367,12 +376,12 @@ public class YukonDataSetFactory
 	 * @param cModels FreeChartModel []
 	 */
 	
-	public static com.jrefinery.data.DefaultCategoryDataset [] createVerticalCategoryDataSet(TrendSerie[] tSeries)
+	public static DefaultCategoryDataset [] createVerticalCategoryDataSet(TrendSerie[] tSeries)
 	{
 		if( tSeries == null)
 			return null;
 
-		com.jrefinery.data.DefaultCategoryDataset[] dataset = new com.jrefinery.data.DefaultCategoryDataset[2];
+		DefaultCategoryDataset[] dataset = new DefaultCategoryDataset[2];
 		
 		for( int datasetIndex = 0; datasetIndex < 2; datasetIndex++)
 		{
@@ -402,7 +411,7 @@ public class YukonDataSetFactory
 			//When there is a null tSeries[i].getDataPairArray(), we have to ignore the i values interval of the tree.get(keyArray[j]).
 			int notNullValuesIndex = 0;
 
-			com.jrefinery.data.DefaultCategoryDataset tempDataset = new com.jrefinery.data.DefaultCategoryDataset();
+			DefaultCategoryDataset tempDataset = new DefaultCategoryDataset();
 			java.util.Vector categoryVector = new java.util.Vector();
 			for (int j = 0; j < keyArray.length; j++)
 			{
@@ -416,7 +425,7 @@ public class YukonDataSetFactory
 				Double prevValue = null;
 				Double value = null;
 				
-				com.jrefinery.data.TimePeriod prevTimePeriod = null;
+				TimePeriod prevTimePeriod = null;
 				if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
 				{
 					String serieKey = tSeries[i].getLabel().toString();
@@ -475,12 +484,12 @@ public class YukonDataSetFactory
 	}
 
 
-	public static com.jrefinery.data.DefaultCategoryDataset [] createVerticalCategoryDataSet_LD(TrendSerie[] tSeries)
+	public static DefaultCategoryDataset [] createVerticalCategoryDataSet_LD(TrendSerie[] tSeries)
 	{
 		if( tSeries == null)
 			return null;
 
-		com.jrefinery.data.DefaultCategoryDataset[] dataset = new com.jrefinery.data.DefaultCategoryDataset[2];
+		DefaultCategoryDataset[] dataset = new DefaultCategoryDataset[2];
 		int primaryIndex = -1;
 		int primaryDset = -1;
 		for( int datasetIndex = 0; datasetIndex < 2; datasetIndex++)
@@ -516,7 +525,7 @@ public class YukonDataSetFactory
 			//When there is a null tSeries[i].getDataPairArray(), we have to ignore the i values interval of the tree.get(keyArray[j]).
 			int notNullValuesIndex = 0;
 
-			com.jrefinery.data.DefaultCategoryDataset tempDataset = new com.jrefinery.data.DefaultCategoryDataset();
+			DefaultCategoryDataset tempDataset = new DefaultCategoryDataset();
 			java.util.Vector categoryVector = new java.util.Vector();
 			for (int j = 0; j < keyArray.length; j++)
 			{
@@ -529,7 +538,7 @@ public class YukonDataSetFactory
 				Double prevValue = null;
 				Double value = null;
 			
-				com.jrefinery.data.TimePeriod prevTimePeriod = null;
+				TimePeriod prevTimePeriod = null;
 				if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
 				{
 					String serieKey = tSeries[i].getLabel().toString();
@@ -601,7 +610,7 @@ public class YukonDataSetFactory
 	 * @param xHrs java.util.ArrayList
 	 * @param yQual java.util.ArrayList
 	 */
-	private static void sortValuesDescending(com.jrefinery.data.DefaultCategoryDataset[] dSet, int primaryDset, int primaryIndex)
+	private static void sortValuesDescending(DefaultCategoryDataset[] dSet, int primaryDset, int primaryIndex)
 	{
 		int maxIndex = 0;
 
@@ -678,7 +687,7 @@ public class YukonDataSetFactory
 		}
 	}
 	
-	private static void sortValuesDescending(com.jrefinery.data.XYSeriesCollection[] dSet, int primaryDset, int primaryIndex)
+	private static void sortValuesDescending(XYSeriesCollection[] dSet, int primaryDset, int primaryIndex)
 	{
 		int maxIndex = 0;
 

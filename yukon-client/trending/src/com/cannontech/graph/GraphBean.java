@@ -16,6 +16,7 @@ import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.util.ServletUtil;
+import org.jfree.chart.JFreeChart;
 
 public class GraphBean implements GraphDefines
 {
@@ -71,7 +72,7 @@ public class GraphBean implements GraphDefines
 	 * Method getFreeChart.
 	 * @return JFreeChart
 	 */
-	private com.jrefinery.chart.JFreeChart getFreeChart()
+	private JFreeChart getFreeChart()
 	{
 		return getGraph().getFreeChart();
 	}

@@ -1,6 +1,9 @@
 package com.cannontech.graph.model;
 
 import java.awt.Color;
+
+import org.jfree.data.time.RegularTimePeriod;
+import org.jfree.data.time.TimeSeriesDataItem;
 //
 //import org.exolab.castor.jdo.Database;
 /**
@@ -10,7 +13,7 @@ import java.awt.Color;
  */
 public class TrendSerie
 {
-	private com.jrefinery.data.TimeSeriesDataPair[] dataPairArray = null;
+	private TimeSeriesDataItem[] dataPairArray = null;
 
 	private Integer pointId;
 	private String label = null;
@@ -22,8 +25,8 @@ public class TrendSerie
 	
 	// Flag for using graph multiplier
 	public boolean useMultiplier = false;
-	private com.jrefinery.data.TimeSeriesDataPair minimumTSDataPair = null;
-	private com.jrefinery.data.TimeSeriesDataPair maximumTSDataPair = null;
+	private TimeSeriesDataItem minimumTSDataPair = null;
+	private TimeSeriesDataItem maximumTSDataPair = null;
 
 	// Load factor values computed for each point in the model, stored in an array that
 	//  is in accordance to the order of the pointIds.
@@ -63,19 +66,19 @@ public class TrendSerie
 		return color;
 	}
 
-	public com.jrefinery.data.TimeSeriesDataPair[] getDataPairArray()
+	public TimeSeriesDataItem[] getDataPairArray()
 	{
 		return dataPairArray;
 	}
 
-	public com.jrefinery.data.TimeSeriesDataPair getDataPairArray(int serie)
+	public TimeSeriesDataItem getDataPairArray(int serie)
 	{
 //		if( getMultiplier() != null)
 		if( getUseMultiplier())
 		{
-			com.jrefinery.data.RegularTimePeriod tp = dataPairArray[serie].getPeriod();
+			RegularTimePeriod tp = dataPairArray[serie].getPeriod();
 			Number val = new Double(dataPairArray[serie].getValue().doubleValue() * getMultiplier().doubleValue());
-			com.jrefinery.data.TimeSeriesDataPair multDP = new com.jrefinery.data.TimeSeriesDataPair(tp, val);
+			TimeSeriesDataItem multDP = new TimeSeriesDataItem(tp, val);
 			return (multDP);
 		}
 		return dataPairArray[serie];
@@ -115,7 +118,7 @@ public class TrendSerie
 		return maxArea;
 	}
 
-	public com.jrefinery.data.TimeSeriesDataPair getMaximumTSDataPair()
+	public TimeSeriesDataItem getMaximumTSDataPair()
 	{
 		if( maximumTSDataPair == null)
 		{
@@ -134,7 +137,7 @@ public class TrendSerie
 		}
 		return maximumTSDataPair;
 	}
-	public com.jrefinery.data.TimeSeriesDataPair getMinimumTSDataPair()
+	public TimeSeriesDataItem getMinimumTSDataPair()
 	{
 		if( minimumTSDataPair == null)
 		{
@@ -229,10 +232,9 @@ public class TrendSerie
 			for (int i = 0; i < getDataPairArray().length; i++)
 			{
 				long time = getDataPairArray(i).getPeriod().getStart().getTime();
-				long round = time % resolution;  //60000 should be modifiable!
+				long round = time % resolution;
 				time = time - round;
 				periodsArray[i] = time;
-				
 //				periodsArray[i] = getDataPairArray(i).getPeriod().getStart().getTime();
 			}
 		}
@@ -247,7 +249,7 @@ public class TrendSerie
 	{
 		color = newColor;
 	}
-	protected void setDataPairArray(com.jrefinery.data.TimeSeriesDataPair[] newDataPairArray)
+	protected void setDataPairArray(TimeSeriesDataItem[] newDataPairArray)
 	{
 		dataPairArray = newDataPairArray;
 	}

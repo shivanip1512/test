@@ -11,12 +11,12 @@ package com.cannontech.jfreechart.chart;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
-import com.jrefinery.chart.ChartRenderingInfo;
-import com.jrefinery.chart.CrosshairInfo;
-import com.jrefinery.chart.plot.XYPlot;
-import com.jrefinery.chart.axis.ValueAxis;
-import com.jrefinery.chart.renderer.XYStepRenderer;
-import com.jrefinery.data.XYDataset;
+import org.jfree.chart.ChartRenderingInfo;
+import org.jfree.chart.CrosshairInfo;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.renderer.XYStepRenderer;
+import org.jfree.data.XYDataset;
 
 /**
  * Shapes rendered for MIN/MAX valuse on a Line/Step item renderer for an XYPlot.
@@ -61,14 +61,14 @@ public class XYStepRenderer_MinMax extends XYStepRenderer
      * @param item The item index.
      */
     public void drawItem(Graphics2D g2, Rectangle2D dataArea, ChartRenderingInfo info,
-                          XYPlot plot, ValueAxis horizontalAxis, ValueAxis verticalAxis,
-                          XYDataset data, int datasetIndex, int series, int item,
-                          CrosshairInfo crosshairInfo) {
-		super.drawItem(g2, dataArea, info, plot, horizontalAxis, verticalAxis, data, datasetIndex, series, item, crosshairInfo);
+                         XYPlot plot, ValueAxis horizontalAxis, ValueAxis verticalAxis,
+                         XYDataset dataset, int datasetIndex, int series, int item,
+                         CrosshairInfo crosshairInfo, int pass) {
+		super.drawItem(g2, dataArea, info, plot, horizontalAxis, verticalAxis, dataset, datasetIndex, series, item, crosshairInfo, pass);
 
         // get the data point...
-        Number x1 = data.getXValue(series, item);
-        Number y1 = data.getYValue(series, item);
+        Number x1 = dataset.getXValue(series, item);
+        Number y1 = dataset.getYValue(series, item);
         if (y1==null)
 			return;
 

@@ -12,15 +12,15 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
-import com.jrefinery.chart.ChartRenderingInfo;
-import com.jrefinery.chart.CrosshairInfo;
-import com.jrefinery.chart.plot.XYPlot;
-import com.jrefinery.chart.axis.ValueAxis;
-import com.jrefinery.chart.renderer.StandardXYItemRenderer;
-import com.jrefinery.chart.tooltips.StandardXYToolTipGenerator;
-import com.jrefinery.chart.tooltips.XYToolTipGenerator;
-import com.jrefinery.chart.urls.XYURLGenerator;
-import com.jrefinery.data.XYDataset;
+import org.jfree.chart.ChartRenderingInfo;
+import org.jfree.chart.CrosshairInfo;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.renderer.StandardXYItemRenderer;
+import org.jfree.chart.tooltips.StandardXYToolTipGenerator;
+import org.jfree.chart.tooltips.XYToolTipGenerator;
+import org.jfree.chart.urls.XYURLGenerator;
+import org.jfree.data.XYDataset;
 
 /**
  * Shapes rendered for MIN/MAX valuse on a Standard item renderer for an XYPlot.
@@ -95,16 +95,17 @@ public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
                          XYPlot plot,
                          ValueAxis domainAxis,
                          ValueAxis rangeAxis,
-                         XYDataset data,
+                         XYDataset dataset,
                          int datasetIndex,
                          int series,
                          int item,
-                         CrosshairInfo crosshairInfo)
+                         CrosshairInfo crosshairInfo,
+                         int pass)
 	{
-		super.drawItem(g2, dataArea, info, plot, domainAxis, rangeAxis, data, datasetIndex, series, item, crosshairInfo );
+		super.drawItem(g2, dataArea, info, plot, domainAxis, rangeAxis, dataset, datasetIndex, series, item, crosshairInfo, pass);
 		// get the data point...
-		Number x1n = data.getXValue(series, item);
-		Number y1n = data.getYValue(series, item);
+		Number x1n = dataset.getXValue(series, item);
+		Number y1n = dataset.getYValue(series, item);
 		if (y1n != null)
 		{
 		    double x1 = x1n.doubleValue();

@@ -1,7 +1,7 @@
 package com.cannontech.jfreechart.chart;
 
-import com.jrefinery.chart.ChartPanel;
-import com.jrefinery.chart.JFreeChart;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
 
 /**
  * @author snebben
