@@ -135,7 +135,7 @@
 				}
 	%>
                 <tr> 
-                  <td width="25%" class="TableCell"> <%= customers[j].getCustomerName() %></td>
+                  <td width="25%" class="TableCell"> <%= customers[j].getCompanyName() %></td>
                   <td width="20%" class="TableCell"> <%= activity.getAckStatus() %></td>
                   <td width="25%" class="TableCell"> <%= ackDateTimeStr %></td>
                   <td width="15%" class="TableCell"> <%= activity.getAckLateFlag() %></td>

@@ -100,8 +100,6 @@
       <table width="600" border="1" cellspacing="0" cellpadding="2" align="center">
         <tr> 
           <td width="25%" class="HeaderCell">Company</td>
-          <td width="15%" class="HeaderCell">Contact</td>
-          <td width="15%" class="HeaderCell">Telephone #</td>
           <td width="15%" class="HeaderCell">Acknowledged</td>
           <td width="15%" class="HeaderCell">Ack Date/Time</td>
           <td width="15%" class="HeaderCell">Ack User</td>
@@ -109,21 +107,8 @@
         <%
                         // Iterator through all the customers
                         for( int i = 0; i < customers.length; i++)
-                        {
-                            
-                            String companyName = customers[i].getYukonName();
-                            
-                            String contact = "?";
-                            String telephone = "???-????";
-
-                            Class[] cTypes = { String.class, String.class, String.class };
-                            Object[][] cData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "select contfirstname, contlastname, contphone1 from customercontact,cicustomerbase,cicustcontact where cicustomerbase.deviceid=cicustcontact.deviceid and cicustcontact.contactid=customercontact.contactid and cicustomerbase.deviceid=" + customers[i].getYukonID(), cTypes );
-
-                            if( cData != null && cData.length > 0 && cData[0] != null && cData[0].length > 0 )
-                            {
-                                 contact = cData[0][0].toString() + " " + cData[0][1].toString();
-                                 telephone = cData[0][2].toString();
-                            }
+                        {                            
+                            String companyName = customers[i].getCompanyName();
 
                             String ack = customers[i].getAckStatus();
                             Date ackDateTime = customers[i].getAckDateTime();
@@ -143,13 +128,8 @@
                             {                            
                   %>
         <tr> 
-                        <td width="25%" class="TableCell"> <a href="oper_mand.jsp?tab=profile&customerid=<%= customers[i].getYukonID() %>" class="Link1"><%= companyName %></a> 
+                        <td width="25%" class="TableCell"> <a href="oper_mand.jsp?tab=profile&customerid=<%= customers[i].getCustomerID() %>" class="Link1"><%= companyName %></a> 
                         </td>
-          <td width="15%" class="TableCell"> 
-              <%= contact %> 
-          </td>
-          <td width="15%" class="TableCell"> 
-              <%= telephone %> 
           </td>
           <td width="15%" class="TableCell"> 
               <%= ack %> 

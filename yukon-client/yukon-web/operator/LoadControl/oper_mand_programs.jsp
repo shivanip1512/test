@@ -105,7 +105,7 @@
                     {                    
                 %>
                 <tr class="TableCell"> 
-                  <td width="50%"> <a href="oper_mand.jsp?tab=profile&customerid=<%= custs[j].getYukonID() %>" class="Link1"><%= custs[j].getYukonName() %></a></td>
+                  <td width="50%"> <a href="oper_mand.jsp?tab=profile&customerid=<%= custs[j].getCustomerID() %>" class="Link1"><%= custs[j].getCompanyName() %></a></td>
                 </tr>
                 <%
                     }
@@ -130,7 +130,7 @@
                     {                    
                 %>
                 <tr class="TableCell"> 
-                  <td width="50%"> <a href="oper_mand.jsp?tab=profile&customerid=<%= custs[j].getYukonID() %>" class="Link1"><%= custs[j].getYukonName() %></a></td>
+                  <td width="50%"> <a href="oper_mand.jsp?tab=profile&customerid=<%= custs[j].getCustomerID() %>" class="Link1"><%= custs[j].getCompanyName() %></a></td>
                 </tr>
                 <%
                      }

@@ -18,7 +18,7 @@
         // Attempt to retrieve the customer's info
         com.cannontech.database.data.customer.CICustomerBase cust = 
             (com.cannontech.database.data.customer.CICustomerBase) 
-                com.cannontech.database.data.customer.CustomerFactory.createCustomer(com.cannontech.database.data.pao.CustomerTypes.CI_CUSTOMER);
+                com.cannontech.database.data.customer.CustomerFactory.createCustomer(com.cannontech.database.data.customer.CustomerTypes.CUSTOMER_CI);
 
         cust.setCustomerID( new Integer(customerID) );
 
@@ -121,10 +121,9 @@
       <td width="635">
         <p align="center" class="Main"><br><b><cti:text key="energyexchangeheading.text"/> - CUSTOMER PROFILE</b> 
         </p>
-        <p align="center" class="Main"><%= cust.getCustomerName() %><br clear="ALL">
+        <p align="center" class="Main"><%= cust.getCompanyName() %><br clear="ALL">
           <%= cust.getCustomerAddress().getLocationAddress1() %><br clear="ALL">
           <%= cust.getCustomerAddress().getLocationAddress2() %><br clear="ALL">
-          <%= cust.getCiCustomerBase().getMainPhoneNumber() %><br clear="ALL">
           </p>
     </td>
     </tr>
