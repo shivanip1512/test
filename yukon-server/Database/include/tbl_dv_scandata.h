@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dv_scandata.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/28 18:16:20 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/21 15:35:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,6 +141,8 @@ private:
    virtual RWDBStatus Update();
    virtual RWDBStatus Delete();
    virtual RWCString getTableName() const;
+
+   RWDBStatus Update(RWDBConnection &conn);
 
 };
 #endif // #ifndef __TBL_DV_SCANDATA_H__

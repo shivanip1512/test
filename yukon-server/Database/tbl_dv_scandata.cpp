@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_scandata.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/28 18:16:20 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/21 15:35:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -356,12 +356,9 @@ RWDBStatus CtiTableDeviceScanData::Restore()
     return reader.status();
 }
 
-RWDBStatus CtiTableDeviceScanData::Update()
+RWDBStatus CtiTableDeviceScanData::Update(RWDBConnection &conn)
 {
     char temp[32];
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBUpdater updater = table.updater();
@@ -387,6 +384,13 @@ RWDBStatus CtiTableDeviceScanData::Update()
     }
 
     return updater.status();
+}
+
+RWDBStatus CtiTableDeviceScanData::Update()
+{
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+    return Update(conn);
 }
 
 RWDBStatus CtiTableDeviceScanData::Insert()
