@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/02/21 21:49:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -337,10 +337,6 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
 
     next_time = YUKONEOT;
 
-    demand_rate = getLoadProfile().getLoadProfileDemandRate();
-    block_size  = demand_rate * 6;
-    next_time   = YUKONEOT;
-
     if( !_intervalsSent )
     {
         //  send load profile interval on the next 5 minute boundary
@@ -352,6 +348,17 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
     {
         for( int i = 0; i < MCT4XX_LPChannels; i++ )
         {
+            if( i != MCT410_LPVoltageChannel )
+            {
+                demand_rate = getLoadProfile().getLoadProfileDemandRate();
+            }
+            else
+            {
+                demand_rate = getLoadProfile().getVoltageLoadProfileRate();
+            }
+
+            block_size  = demand_rate * 6;
+
             CtiPointBase *pPoint = getDevicePointOffsetTypeEqual((i+1) + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType);
 
             //  if we're not collecting load profile, or there's no point defined, don't scan
@@ -703,10 +710,9 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             break;
         }
 
-        case CtiProtocolEmetcon::GetConfig_DemandInterval:
-        case CtiProtocolEmetcon::GetConfig_LoadProfileInterval:
+        case CtiProtocolEmetcon::GetConfig_Intervals:
         {
-            status = decodeGetConfigInterval(InMessage, TimeNow, vgList, retList, outList);
+            status = decodeGetConfigIntervals(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
@@ -1161,7 +1167,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         Value   = dp.first;
         quality = dp.second;
 
-        pPoint = getDevicePointOffsetTypeEqual( MCT4XX_VoltageOffset, DemandAccumulatorPointType );
+        pPoint = getDevicePointOffsetTypeEqual( MCT410_VoltageOffset, DemandAccumulatorPointType );
 
         if( pPoint != NULL)
         {
@@ -1211,8 +1217,6 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
             if(pData != NULL)
             {
-                pointTime -= pointTime.seconds() % getDemandInterval();
-                pData->setTime( pointTime );
                 ReturnMsg->PointData().insert(pData);
                 pData = NULL;  // We just put it on the list...
             }
@@ -1405,7 +1409,7 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
 
         minTime = RWTime(tmpTime + rwEpoch);
 
-        CtiPoint *pPoint = getDevicePointOffsetTypeEqual( MCT4XX_VoltageOffset, DemandAccumulatorPointType );
+        CtiPoint *pPoint = getDevicePointOffsetTypeEqual( MCT410_VoltageOffset, DemandAccumulatorPointType );
 
         if( pPoint != NULL)
         {
@@ -1443,7 +1447,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, RWTime &TimeNow, R
     {
         // No error occured, we must do a real decode!
 
-        int outagenum;
+        int outagenum, multiplier;
         unsigned long  timestamp;
         unsigned short duration;
         RWCString resultString;
@@ -1490,6 +1494,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, RWTime &TimeNow, R
             {
                 int days, hours, minutes, seconds, cycles;
 
+#ifdef OLD_OUTAGE_METHODS
                 if( duration & 0x8000 )
                 {
                     cycles = (duration & 0x7fff) * 60;
@@ -1516,6 +1521,58 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, RWTime &TimeNow, R
                 {
                     resultString += ", " + CtiNumStr(cycles) + " cycles\n";
                 }
+#else
+                /*
+                Units of outage:
+                Bits 0-1 Units of outage (-2) 0=cycles, 1=seconds; 2=minutes; 3=waiting time sync
+                Bits 2-3 Unused
+                Bits 4-5 Units of outage (-1) 0=cycles, 1=seconds; 2=minutes; 3=waiting time sync
+                Bits 6-7 Unused
+                */
+
+                if( i == 0 )
+                {
+                    multiplier = (msgbuf[12] >> 4) & 0x03;
+                }
+                else
+                {
+                    multiplier =  msgbuf[12] & 0x03;
+                }
+
+                switch( multiplier )
+                {
+                    case 2: cycles *= 60;  //  minutes falls through to...
+                    case 1: cycles *= 60;  //  seconds, which falls through to...
+                    case 0: break;         //  cycles, which does nothing
+
+                    case 3: cycles = -1;   //  waiting time sync - don't report a value
+                }
+
+                if( cycles < 0 )
+                {
+                    resultString += "(waiting for time sync to calculate outage duration)\n";
+                }
+                else
+                {
+                    seconds = cycles  / 60;
+                    minutes = seconds / 60;
+                    hours   = minutes / 60;
+
+                    cycles  %= 60;
+                    seconds %= 60;
+                    minutes %= 60;
+                    hours   %= 24;
+
+                    resultString += CtiNumStr(hours).zpad(2) + ":" +
+                                    CtiNumStr(minutes).zpad(2) + ":" +
+                                    CtiNumStr(seconds).zpad(2);
+
+                    if( cycles )
+                    {
+                        resultString += ", " + CtiNumStr(cycles) + " cycles\n";
+                    }
+                }
+#endif
             }
 
             if( !i )    resultString += "\n";
@@ -1579,13 +1636,21 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
             //  but we want interval *ending* times, so add on one more interval
             timeStamp += interval_len;
 
-            dp = getData(DSt->Message + (i * 2) + 1, 2, ValueType_Voltage);
+            if( channel == MCT410_LPVoltageChannel )
+            {
+                dp = getData(DSt->Message + (i * 2) + 1, 2, ValueType_Voltage);
+            }
+            else
+            {
+                dp = getData(DSt->Message + (i * 2) + 1, 2, ValueType_KW);
+            }
+
             pulses  = dp.first;
             quality = dp.second;
 
             Value = pulses;
 
-            if( channel != MCT4XX_LPVoltageChannel )
+            if( channel != MCT410_LPVoltageChannel )
             {
                 Value *= 3600 / interval_len;
             }
@@ -1696,7 +1761,7 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                 {
                     for( int offset = 5; offset >= 0; offset-- )
                     {
-                        if( channel == MCT4XX_LPVoltageChannel )
+                        if( channel == MCT410_LPVoltageChannel )
                         {
                             dp = getData(DSt->Message + offset*2 + 1, 2, ValueType_Voltage);
 
@@ -1918,7 +1983,7 @@ INT CtiDeviceMCT410::decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &Time
 }
 
 
-INT CtiDeviceMCT410::decodeGetConfigInterval(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT410::decodeGetConfigIntervals(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -1932,26 +1997,22 @@ INT CtiDeviceMCT410::decodeGetConfigInterval(INMESS *InMessage, RWTime &TimeNow,
         CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
         RWCString resultString;
 
-        switch( InMessage->Sequence )
-        {
-            case (CtiProtocolEmetcon::GetConfig_DemandInterval):
-            {
-                resultString = getName() + " / Demand Interval: " + CtiNumStr(DSt->Message[0]);
-                break;
-            }
-            case (CtiProtocolEmetcon::GetConfig_LoadProfileInterval):
-            {
-                resultString = getName() + " / Load Profile Interval: " + CtiNumStr(DSt->Message[0]);
-                break;
-            }
-            default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        resultString = getName() + " / Demand Interval: " + CtiNumStr(DSt->Message[0]) + " minutes\n";
+        resultString = getName() + " / Load Profile Interval: " + CtiNumStr(DSt->Message[1]) + " minutes\n";
+        resultString = getName() + " / Voltage Demand Interval: ";
 
-                status = NoMethod;
-            }
+        if( DSt->Message[2] / 4 > 0 )
+        {
+            resultString += CtiNumStr(DSt->Message[2] / 4) + " minutes";
         }
+        if( DSt->Message[2] % 4 > 0 )
+        {
+            resultString += CtiNumStr((DSt->Message[2] % 4) * 15) + " seconds";
+        }
+
+        resultString += "\n";
+
+        resultString = getName() + " / Voltage Load Profile Interval: " + CtiNumStr(DSt->Message[3]) + " minutes\n";
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/12/07 18:54:44 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/02/21 21:49:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,20 +90,18 @@ protected:
         MCT4XX_CommandPowerfailReset    = 0x89,
         MCT4XX_CommandReset             = 0x8A,
 
-        MCT4XX_VoltageOffset = 4
+        MCT410_VoltageOffset = 4
     };
 
     enum
     {
         MCT4XX_LPChannels       =  4,
-        MCT4XX_LPVoltageChannel =  4,
-        MCT4XX_LPRecentBlocks   = 16
+        MCT410_LPVoltageChannel =  4,
+        MCT4XX_LPRecentBlocks   = 16,
+
+        MCT4XX_DawnOfTime       = 0x386d4380  //  jan 1, 2000
+                                              //  if 81c99f60 is 1970
     };
-
-private:
-
-    static const DLCCommandSet _commandStore;
-    bool _intervalsSent;
 
     enum ErrorClasses
     {
@@ -124,7 +122,6 @@ private:
 
     typedef map<unsigned long, pair<PointQuality_t, int> > QualityMap;
     static  QualityMap _errorQualities;
-    static  QualityMap initErrorQualities( void );
 
     struct LPInfo
     {
@@ -139,6 +136,13 @@ private:
         int offset;
         int channel;
     } _llpInterest;
+
+private:
+
+    static const DLCCommandSet _commandStore;
+    bool _intervalsSent;
+
+    static  QualityMap initErrorQualities( void );
 
 public:
 
@@ -186,7 +190,7 @@ public:
     INT decodeGetStatusInternal   ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetConfigTime       ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-    INT decodeGetConfigInterval   ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    INT decodeGetConfigIntervals  ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetConfigModel      ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetConfigDisconnect ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
 };
