@@ -24,7 +24,7 @@ PARAMETERS
  command            - specific command string to send to device
  function			- what should be done (?)
  clearResult		- flag (not null)indicating to clear the resultText data field
- waitTime			- Time in millis to wait for a response to come back from YC before returning.
+ timeOut			- Time in millis to wait for a response to come back from YC before ignoring it.
  REDIRECT			- where the servlet should go after the post
 */
 
@@ -81,8 +81,12 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 			String command = req.getParameter("command");	//system command string
 			/** Time to wait for return to calling jsp
 			 * Wait is used to <hope to> assure there is some resultText to display when we do go back. */ 
-			String waitTime = req.getParameter("waitTime");
+			String timeOut = req.getParameter("timeOut");
+			if( timeOut == null)
+				timeOut = "8000";	// 8 secs default
 	
+			localBean.setTimeOut(new Integer(timeOut).intValue());
+			
 			//Set our yc bean command string
 			if( command != null)
 				localBean.setCommandString(command);
@@ -93,7 +97,7 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 				 * pairs found in the commands file directory for a particular device. */ 
 				if( function != null)
 				{
-					command = localBean.substituteCommand(function);
+					command = localBean.getCommandFromLabel(function);
 				}
 				else
 				{
@@ -111,19 +115,21 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 				localBean.setSerialNumber(serialNumber);
 				localBean.handleSerialNumber();
 			}
-			
 
-			if( waitTime != null)
+			/** Don't return to the jsp until we have the message or we've timed out.*/
+			while( localBean.getRequestMessageIDs().size() > 0 && localBean.isWatchRunning())
 			{
-				try	{
-					//WAIT FOR COMMAND RESPONSE TO COME BACK FROM PORTER TO YC
-					Thread.sleep(Long.parseLong(waitTime));
+				try
+				{
+					Thread.sleep(1000);
 				}
-				catch (InterruptedException e) {
+				catch (InterruptedException e)
+				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
+			
 		}
 		
 		String redirectURL = req.getParameter("REDIRECT");
