@@ -12,7 +12,7 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+#include "yukon.h"
 
 #include "dbaccess.h"
 #include "lmcontrolarea.h"
@@ -1001,6 +1001,13 @@ bool CtiLMControlArea::shouldReduceControl()
                 return false;
             }
         }
+	else if(lm_trigger->getTriggerType() == CtiLMControlAreaTrigger::StatusTriggerType)
+	{
+	    if( lm_trigger->getPointValue() != lm_trigger->getNormalState())
+	    {
+		return false;
+	    }
+	}
     }
     return true;
 }
@@ -1093,7 +1100,8 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
 
                         expectedLoadReduced = lmProgramDirect->reduceProgramLoad(loadReductionNeeded, getCurrentStartPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, isTriggerCheckNeeded(secondsFrom1901));
                         newlyActivePrograms++;
-
+			setUpdatedFlag(TRUE);
+			
                         if( getControlAreaState() != CtiLMControlArea::FullyActiveState &&
                             getControlAreaState() != CtiLMControlArea::ActiveState )
                         {
