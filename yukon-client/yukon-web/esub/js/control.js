@@ -10,15 +10,15 @@ function controlPoint(evt) {
     
     var id = node.getAttribute('id');
 
-	var url = "/esub/jsp/control.jsp?pointid=" + id;
-	var w = 300;
-	var h = 240;
+	var url = "/esub/jsp/control.jsp?pointid=" + id + "&action=display";
+	var w = 800;
+	var h = 480;
 	var winl = (screen.width - w) / 2; 
 	var wint = (screen.height - h) / 2; 
 	
-	win = window.parent.open(url, 'Control', 'width='+w+',height='+h+',top='+wint+',left='+winl+',resizable=yes');
+	win = window.parent.open(url, 'Control', 'width='+w+',height='+h+',top='+wint+',left='+winl+',scrollbars=yes,resizable=yes');
 	window.setTimeout("chckCtrlWindow()", 250);
-	window.setTimeout("closeCtrlWindow()", 300000);
+	//window.setTimeout("closeCtrlWindow()", 300000);
 } //end updateGraphChange
 
 function chckCtrlWindow() {
@@ -48,12 +48,8 @@ function closeCtrlWindow() {
 }
 
 /* actually submit the control */
-function submitControl() {
-
-	var url = '/servlet/ControlServlet?id=' + 
-				document.form1.pointid.value +
-				'&rawstate=' +
-				document.form1.selectedRawState.value;
+function submitControl(pointid, rawstate) {
+	var url = '/servlet/ControlServlet?id=' + pointid + '&rawstate=' + rawstate;
 	opener.requestURL = url;
 	self.close();
 }
