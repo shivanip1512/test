@@ -74,9 +74,22 @@ CtiRequestMsg* CtiLMGroupSA305::createTimeRefreshRequestMsg(LONG refreshRate, LO
   --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupSA305::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - createSmartCycleRequestMsg() not implemented for SA305 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
-    return NULL;
+    char tempchar[64];
+    RWCString controlString = RWCString("control sa305 cycle ");
+    _ltoa(percent,tempchar,10);
+    controlString += tempchar;
+    controlString += " count ";
+    _ltoa(defaultCount,tempchar,10);
+    controlString += tempchar;
+    controlString += " period ";
+    controlString += buildPeriodString(period);
+
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+    }
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
