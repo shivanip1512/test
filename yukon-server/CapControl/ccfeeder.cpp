@@ -1144,19 +1144,37 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
                             dout << RWTime() << " - Attempting to Decrease Var level in feeder: " << getPAOName().data() << endl;
                         }
     
-                        request = createDecreaseVarRequest(findCapBankToChangeVars(getKVARSolution()) , pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
-    
-                        if( request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
+                        CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution());
+
+                        if( capBank != NULL &&
+                            capBank->getRecloseDelay() > 0 &&
+                            currentDateTime.seconds() < capBank->getLastStatusChangeTime().seconds() + capBank->getRecloseDelay() )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Can Not Decrease Var level for feeder: " << getPAOName()
-                            << " any further.  All cap banks are already in the Close state in: " << __FILE__ << " at: " << __LINE__ << endl;
-    
-                            CtiCCCapBank* currentCapBank = NULL;
-                            for(int i=0;i<_cccapbanks.entries();i++)
+                            dout << RWTime() << " - Can Not Close Cap Bank: " << capBank->getPAOName() << " because it has not passed its reclose delay." << endl;
+                            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                             {
-                                currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
-                                dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
+                                dout << " Last Status Change Time: " << capBank->getLastStatusChangeTime().rwtime() << endl;
+                                dout << " Reclose Delay:           " << capBank->getRecloseDelay() << endl;
+                                dout << " Current Date Time:       " << currentDateTime.rwtime() << endl;
+                            }
+                        }
+                        else
+                        {
+                            request = createDecreaseVarRequest(capBank , pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
+
+                            if( request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Can Not Decrease Var level for feeder: " << getPAOName()
+                                << " any further.  All cap banks are already in the Close state in: " << __FILE__ << " at: " << __LINE__ << endl;
+
+                                CtiCCCapBank* currentCapBank = NULL;
+                                for(int i=0;i<_cccapbanks.entries();i++)
+                                {
+                                    currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+                                    dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
+                                }
                             }
                         }
                     }
@@ -1168,7 +1186,8 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
                             dout << RWTime() << " - Attempting to Increase Var level in feeder: " << getPAOName().data() << endl;
                         }
     
-                        request = createIncreaseVarRequest(findCapBankToChangeVars(getKVARSolution()), pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
+                        CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution());
+                        request = createIncreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
     
                         if( request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                         {
@@ -1217,15 +1236,30 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
                 CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution());
                 if( capBank != NULL )
                 {
-                    DOUBLE adjustedBankKVARReduction = (getLowerBandwidth()/100.0)*((DOUBLE)capBank->getBankSize());
-                    if( adjustedBankKVARReduction <= (-1.0*getKVARSolution()) )
+                    if( capBank->getRecloseDelay() > 0 &&
+                        currentDateTime.seconds() < capBank->getLastStatusChangeTime().seconds() + capBank->getRecloseDelay() )
                     {
-                        request = createDecreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Can Not Close Cap Bank: " << capBank->getPAOName() << " because it has not passed its reclose delay." << endl;
+                        if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                        {
+                            dout << " Last Status Change Time: " << capBank->getLastStatusChangeTime().rwtime() << endl;
+                            dout << " Reclose Delay:           " << capBank->getRecloseDelay() << endl;
+                            dout << " Current Date Time:       " << currentDateTime.rwtime() << endl;
+                        }
                     }
                     else
-                    {//cap bank too big
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Cap Bank: " << capBank->getPAOName() << ", KVAR size too large to switch" << endl;
+                    {
+                        DOUBLE adjustedBankKVARReduction = (getLowerBandwidth()/100.0)*((DOUBLE)capBank->getBankSize());
+                        if( adjustedBankKVARReduction <= (-1.0*getKVARSolution()) )
+                        {
+                            request = createDecreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
+                        }
+                        else
+                        {//cap bank too big
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Cap Bank: " << capBank->getPAOName() << ", KVAR size too large to switch" << endl;
+                        }
                     }
                 }
     

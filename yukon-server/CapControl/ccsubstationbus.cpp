@@ -1546,7 +1546,23 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
                 }
                 if( capBank != NULL )
                 {
-                    request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
+                    if( capBank != NULL &&
+                        capBank->getRecloseDelay() > 0 &&
+                        currentDateTime.seconds() < capBank->getLastStatusChangeTime().seconds() + capBank->getRecloseDelay() )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Can Not Close Cap Bank: " << capBank->getPAOName() << " because it has not passed its reclose delay." << endl;
+                        if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                        {
+                            dout << " Last Status Change Time: " << capBank->getLastStatusChangeTime().rwtime() << endl;
+                            dout << " Reclose Delay:           " << capBank->getRecloseDelay() << endl;
+                            dout << " Current Date Time:       " << currentDateTime.rwtime() << endl;
+                        }
+                    }
+                    else
+                    {
+                        request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
+                    }
                 }
     
                 if( request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
@@ -1672,7 +1688,23 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
                     DOUBLE adjustedBankKVARReduction = (getLowerBandwidth()/100.0)*((DOUBLE)capBank->getBankSize());
                     if( adjustedBankKVARReduction <= (-1.0*getKVARSolution()) )
                     {
-                        request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
+                        if( capBank != NULL &&
+                            capBank->getRecloseDelay() > 0 &&
+                            currentDateTime.seconds() < capBank->getLastStatusChangeTime().seconds() + capBank->getRecloseDelay() )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Can Not Close Cap Bank: " << capBank->getPAOName() << " because it has not passed its reclose delay." << endl;
+                            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                            {
+                                dout << " Last Status Change Time: " << capBank->getLastStatusChangeTime().rwtime() << endl;
+                                dout << " Reclose Delay:           " << capBank->getRecloseDelay() << endl;
+                                dout << " Current Date Time:       " << currentDateTime.rwtime() << endl;
+                            }
+                        }
+                        else
+                        {
+                            request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
+                        }
                     }
                     else
                     {//cap bank too big
@@ -1848,9 +1880,25 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
                     }
                     if( capBank != NULL )
                     {
-                        request = ((CtiCCFeeder*)varSortedFeeders[j])->createDecreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
-                        lastFeederControlled = (CtiCCFeeder*)varSortedFeeders[j];
-                        positionLastFeederControlled = j;
+                        if( capBank != NULL &&
+                            capBank->getRecloseDelay() > 0 &&
+                            currentDateTime.seconds() < capBank->getLastStatusChangeTime().seconds() + capBank->getRecloseDelay() )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Can Not Close Cap Bank: " << capBank->getPAOName() << " because it has not passed its reclose delay." << endl;
+                            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                            {
+                                dout << " Last Status Change Time: " << capBank->getLastStatusChangeTime().rwtime() << endl;
+                                dout << " Reclose Delay:           " << capBank->getRecloseDelay() << endl;
+                                dout << " Current Date Time:       " << currentDateTime.rwtime() << endl;
+                            }
+                        }
+                        else
+                        {
+                            request = ((CtiCCFeeder*)varSortedFeeders[j])->createDecreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
+                            lastFeederControlled = (CtiCCFeeder*)varSortedFeeders[j];
+                            positionLastFeederControlled = j;
+                        }
                         break;
                     }
                 }
@@ -1960,7 +2008,23 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
                         DOUBLE adjustedBankKVARReduction = (getLowerBandwidth()/100.0)*((DOUBLE)capBank->getBankSize());
                         if( adjustedBankKVARReduction <= (-1.0*getKVARSolution()) )
                         {
-                            request = ((CtiCCFeeder*)varSortedFeeders[j])->createDecreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
+                            if( capBank != NULL &&
+                                capBank->getRecloseDelay() > 0 &&
+                                currentDateTime.seconds() < capBank->getLastStatusChangeTime().seconds() + capBank->getRecloseDelay() )
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Can Not Close Cap Bank: " << capBank->getPAOName() << " because it has not passed its reclose delay." << endl;
+                                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                                {
+                                    dout << " Last Status Change Time: " << capBank->getLastStatusChangeTime().rwtime() << endl;
+                                    dout << " Reclose Delay:           " << capBank->getRecloseDelay() << endl;
+                                    dout << " Current Date Time:       " << currentDateTime.rwtime() << endl;
+                                }
+                            }
+                            else
+                            {
+                                request = ((CtiCCFeeder*)varSortedFeeders[j])->createDecreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
+                            }
                         }
                         else
                         {//cap bank too big
