@@ -85,7 +85,7 @@
                                     <td width="134"> <div align="center" class="TableCell3">Control 
                                         Since Midnight</div></td>
                                   </tr>
-                                  <%
+<%
 	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
 		StarsLMProgram program = programs.getStarsLMProgram(i);
 		StarsApplianceCategory category = null;
@@ -108,29 +108,33 @@
                                     <td width="134" class="Main"> 
                                       <div align="center"> 
                                         <%
-		if (program.getStatus().equalsIgnoreCase("Out of Service")) {
+		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
 %>
                                         <b>Out of Service</b>
 <%
 		}
-		else if (todayCtrlHist.getControlHistoryCount() == 0) {
+		else if (todayCtrlHist.getBeingControlled()) {
 %>
-                                        <b>You have not<br>
-                                        been controlled</b> 
-                                        <%
+                                        <b>Currently<br>
+                                        controlling</b> 
+<%
 		}
-		else {
+		else if (todayCtrlHist.getControlHistoryCount() > 0) {
 %>
                                         <b>You have<br>
                                         been controlled</b> 
                                         <%
 		}
+		else {
 %>
-                                        <!--<b>Currently<br>
-							controlling</b>-->
+                                        <b>You have not<br>
+                                        been controlled</b> 
+                                        <%
+		}
+%>
                                       </div></td>
                                 </tr>
-								<%
+<%
 	}
 %>
 							</table></td>

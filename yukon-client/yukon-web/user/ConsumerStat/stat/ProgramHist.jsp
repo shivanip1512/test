@@ -104,7 +104,7 @@ function setRedirect(form, progNo) {
                   </td>
                   <td width="302" valign="top"> 
 <%
-		if (program.getStatus().equalsIgnoreCase("Out of Service")) {
+		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
 %>
 					<div align="center" class="TableCell">Out of Service</div>
 <%

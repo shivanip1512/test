@@ -22,8 +22,9 @@
 	if (lYukonUser == null) {
 		response.sendRedirect("/login.jsp"); return;
 	}
+	
 	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-	if (user == null && lYukonUser != null) {	// This is logged in using the normal LoginController, not the StarsLoginController
+	if (user == null || user.getYukonUser().getUserID() != lYukonUser.getUserID()) {	// This is logged in using the normal LoginController, not the StarsLoginController
 		user = SOAPServer.getStarsYukonUser( lYukonUser );
 		session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
 		
