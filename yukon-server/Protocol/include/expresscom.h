@@ -13,8 +13,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/10/08 20:14:14 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/10/23 21:06:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,7 +57,7 @@ public:
         mtThermostatSetpointControl = 0x0b,
         mtThermostatLoadControl     = 0x0c,
         mtConfiguration             = 0x10,
-        mtMaintenence               = 0x14,
+        mtMaintenance               = 0x14,
         mtService                   = 0x15,
         mtTemporaryService          = 0x16,
         mtData                      = 0x1d,
@@ -82,7 +82,6 @@ protected:
     BYTE    _splinterAddress;               // 1-254 subset of program.
     UINT    _uniqueAddress;                 // 1-4294967295 UID.
 
-    BYTE    _loadNumber;                    // Any loadnumber 1-15. 0 is all loads
     // Parameters which affect the construction of the messages.
 
     bool    _celsiusMode;                   // Default to false/no. (Implies Fahrenheit).
@@ -99,14 +98,16 @@ private:
     void terminateMessage();
     void resolveAddressLevel();
     INT assembleControl(CtiCommandParser &parse, CtiOutMessage &OutMessage);
+    INT assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &OutMessage);
+    INT assemblePutStatus(CtiCommandParser &parse, CtiOutMessage &OutMessage);
 
     INT sync();
     INT timeSync(RWTime &gmt);
 
     INT signalTest(BYTE test);
-    INT timedLoadControl(BYTE load, UINT shedtime_seconds, BYTE randin = 0, BYTE randout = 0, USHORT delay = 0 );                 // This is a shed!
-    INT restoreLoadControl(BYTE load, BYTE rand = 0, USHORT delay = 0 );
-    INT cycleLoadControl(BYTE load, BYTE cyclepercent, BYTE period_minutes, BYTE cyclecount, USHORT delay = 0, bool preventrampin = false, bool allowTrueCycle = false);
+    INT timedLoadControl(UINT loadMask, UINT shedtime_seconds, BYTE randin = 0, BYTE randout = 0, USHORT delay = 0 );                 // This is a shed!
+    INT restoreLoadControl(UINT loadMask, BYTE rand = 0, USHORT delay = 0 );
+    INT cycleLoadControl(UINT loadMask, BYTE cyclepercent, BYTE period_minutes, BYTE cyclecount, USHORT delay = 0, bool preventrampin = false, bool allowTrueCycle = false);
 
     /*
      *
@@ -122,7 +123,7 @@ private:
      *  BYTE deltafallbackpercent = 0);       // If the temperature is changing too quickly we switch to this rate.
      *
      */
-    INT thermostatLoadControl(BYTE load, BYTE cyclepercent, BYTE periodminutes, BYTE cyclecount, USHORT delay = 0, INT controltemperature = 0, BYTE limittemperature = 0, BYTE limitfallbackpercent = 0, CHAR maxdeltaperhour = 0, BYTE deltafallbackpercent = 0);
+    INT thermostatLoadControl(UINT loadMask, BYTE cyclepercent, BYTE periodminutes, BYTE cyclecount, USHORT delay = 0, INT controltemperature = 0, BYTE limittemperature = 0, BYTE limitfallbackpercent = 0, CHAR maxdeltaperhour = 0, BYTE deltafallbackpercent = 0);
 
     /*  Ok, this really requires the document, but here's some ASCII art too.
      *
@@ -162,9 +163,13 @@ private:
      */
     INT thermostatSetpointControl(BYTE minTemp = 0, BYTE maxTemp = 0, USHORT T_r = 0, USHORT T_a = 0, USHORT T_b = 0, BYTE delta_S_b = 0, USHORT T_c = 0, USHORT T_d = 0, BYTE delta_S_d = 0, USHORT T_e = 0, USHORT T_f = 0, BYTE delta_S_f = 0);
     INT configuration(BYTE configNumber, BYTE length, PBYTE data);
-    INT maintenence(BYTE function, BYTE opt1, BYTE opt2, BYTE opt3, BYTE opt4);
-    INT service(BYTE load, bool activate = true);
+    INT rawconfiguration(RWCString str);
+    INT rawmaintenance(RWCString str);
+    INT maintenance(BYTE function, BYTE opt1, BYTE opt2, BYTE opt3, BYTE opt4);
+    INT service(BYTE action);
+    INT service(UINT loadMask, bool activate = true);
     INT temporaryService(USHORT hoursout, bool cancel = false, bool deactiveColdLoad = false, bool deactiveLights = false);
+    INT data(RWCString str);
     INT data(PBYTE data, BYTE length, BYTE dataTransmitType = 0, BYTE targetPort = 0);
     INT capControl(BYTE action, BYTE subAction, BYTE data1 = 0x00, BYTE data2 = 0x00);
 
@@ -178,7 +183,7 @@ public:
     /*
      * This method incorporates all the assigned addressing into the parse object.
      */
-    void addAddressing( UINT serial = 0, USHORT spid = 0, USHORT geo = 0, USHORT substation = 0, USHORT feeder = 0, UINT zip = 0, USHORT uda = 0, BYTE program = 0, BYTE splinter = 0, BYTE load = 0xff);
+    void addAddressing( UINT serial = 0, USHORT spid = 0, USHORT geo = 0, USHORT substation = 0, USHORT feeder = 0, UINT zip = 0, USHORT uda = 0, BYTE program = 0, BYTE splinter = 0);
     bool parseAddressing(CtiCommandParser &parse);
 
     enum

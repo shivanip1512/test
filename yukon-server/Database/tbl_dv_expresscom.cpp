@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/10/09 13:10:21 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/10/23 21:06:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -223,9 +223,10 @@ void CtiTableExpresscomLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
 {
     RWCString rwsTemp;
 
+    if(getDebugLevel() & 0x0800)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     /*

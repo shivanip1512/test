@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/10/08 20:14:13 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/10/23 21:06:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -553,62 +553,62 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
     xcom.parseAddressing(parse);                    // The parse holds all the addressing for the group.
     xcom.parseRequest(parse, *OutMessage);          // OutMessage->Buffer.TAPSt has been filled with xcom.entries() messages.
 
-    OutMessage->EventCode |= ENCODED;               // Make the OM be ignored by porter...
-
-    switch(Device->getType())
-    {
-    case TYPE_WCTP:
-    case TYPE_TAPTERM:
-        {
-            CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)Device;
-
-            OutMessage->OutLength            = xcom.messageSize() * 2 +  2;
-            OutMessage->Buffer.TAPSt.Length  = xcom.messageSize() * 2 +  2;
-
-            /* Build the message */
-            OutMessage->Buffer.TAPSt.Message[0] = xcom.getStartByte();
-
-            for(i = 0; i < xcom.messageSize() * 2; i++)
-            {
-                BYTE curByte = xcom.getByte(i / 2);
-                if(i % 2)
-                {
-                    sprintf(&OutMessage->Buffer.TAPSt.Message[i + 1], "%1x", curByte & 0x0f);
-                }
-                else
-                {
-                    sprintf(&OutMessage->Buffer.TAPSt.Message[i + 1], "%1x", (curByte >> 4) & 0x0f);
-                }
-            }
-            OutMessage->Buffer.TAPSt.Message[i + 1] = xcom.getStopByte();
-
-            for(i = 0; i < OutMessage->OutLength; i++)
-            {
-                byteString += (char)OutMessage->Buffer.TAPSt.Message[i];
-            }
-
-
-            /* Now add it to the collection of outbound messages */
-            outList.insert( OutMessage );
-            OutMessage = 0; // It has been used, don't let it be deleted!
-
-
-            break;
-        }
-    default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << "  Cannot send expresscom to TYPE:" << /*desolveDeviceType(*/Device->getType()/*)*/ << endl;
-            }
-
-            break;
-        }
-    }
-
     if(xcom.entries() > 0)
     {
-        resultString = CtiNumStr(xcom.entries()) + " Expresscom commands sent on route " + getName() + "\n" + byteString;
+        OutMessage->EventCode |= ENCODED;               // Make the OM be ignored by porter...
+
+        switch(Device->getType())
+        {
+        case TYPE_WCTP:
+        case TYPE_TAPTERM:
+            {
+                CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)Device;
+
+                OutMessage->OutLength            = xcom.messageSize() * 2 +  2;
+                OutMessage->Buffer.TAPSt.Length  = xcom.messageSize() * 2 +  2;
+
+                /* Build the message */
+                OutMessage->Buffer.TAPSt.Message[0] = xcom.getStartByte();
+
+                for(i = 0; i < xcom.messageSize() * 2; i++)
+                {
+                    BYTE curByte = xcom.getByte(i / 2);
+                    if(i % 2)
+                    {
+                        sprintf(&OutMessage->Buffer.TAPSt.Message[i + 1], "%1x", curByte & 0x0f);
+                    }
+                    else
+                    {
+                        sprintf(&OutMessage->Buffer.TAPSt.Message[i + 1], "%1x", (curByte >> 4) & 0x0f);
+                    }
+                }
+                OutMessage->Buffer.TAPSt.Message[i + 1] = xcom.getStopByte();
+
+                for(i = 0; i < OutMessage->OutLength; i++)
+                {
+                    byteString += (char)OutMessage->Buffer.TAPSt.Message[i];
+                }
+
+
+                /* Now add it to the collection of outbound messages */
+                outList.insert( OutMessage );
+                OutMessage = 0; // It has been used, don't let it be deleted!
+
+
+                break;
+            }
+        default:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << "  Cannot send expresscom to TYPE:" << /*desolveDeviceType(*/Device->getType()/*)*/ << endl;
+                }
+
+                break;
+            }
+        }
+
+        resultString = CtiNumStr(xcom.entries()) + " Expresscom commands (" + CtiNumStr(xcom.messageSize()) + " bytes) sent on route " + getName() + "\n" + byteString;
     }
     else
     {

@@ -61,6 +61,11 @@ private:
     void     doParsePutStatusEmetcon(const RWCString &CmdStr);
     void     resolveProtocolType(const RWCString &CmdStr);
 
+    void    doParseExpresscomControl(const RWCString &CmdStr);
+    void    doParsePutConfigExpresscom(const RWCString &CmdStr);
+    void    doParsePutStatusExpresscom(const RWCString &CmdStr);
+
+
     INT      convertTimeInputToSeconds(const RWCString& inStr) const;
 
 public:
@@ -92,10 +97,10 @@ public:
    UINT     getCommand() const;
    UINT     getFlags() const;
    UINT     getOffset() const;
-   UINT     isKeyValid(const RWCString key) const;
+   bool     isKeyValid(const RWCString key) const;
    UINT     getOffset(const RWCString key) const;
-   INT      getiValue(const RWCString key) const;
-   DOUBLE   getdValue(const RWCString key) const;
+   INT      getiValue(const RWCString key, INT valifnotfound = INT_MIN) const;
+   DOUBLE   getdValue(const RWCString key, DOUBLE valifnotfound = 0.0) const;
    RWCString getsValue(const RWCString key) const;
    CtiCommandParser& setValue(const RWCString key, INT val);
    CtiCommandParser& setValue(const RWCString key, DOUBLE val);

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/10/08 20:14:12 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/10/23 21:06:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,10 +73,26 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                 }
             case ProtocolExpresscomType:
                 {
+                    int xcserial = parse.getiValue("serial");
+
+                    parse.setValue("xc_serial", xcserial);
+
+                    if( INT_MIN == xcserial )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** XCOM **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        RWCString   problem;
+
+                        if( INT_MIN == xcserial )
+                        {
+                            problem = RWCString("Invalid Request: Serial number not specified");
+                        }
+
+                        status = CtiInvalidRequest;
+
+                        vgList.insert(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                        retList.insert( new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
                     }
+
+                    OutMessage->Retry = 2;                      // Default to two tries per route!
 
                     break;
                 }
@@ -140,17 +156,23 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                 }
             case ProtocolExpresscomType:
                 {
-                    if( INT_MIN == (OutMessage->Buffer.VSt.RelayMask = parse.getiValue("relaymask")) )
+                    int xcserial = parse.getiValue("serial");
+                    int xcrelaymask = parse.getiValue("relaymask");
+
+                    parse.setValue("xc_serial", xcserial);
+                    parse.setValue("relaymask", xcrelaymask);
+
+                    if( INT_MIN == xcserial )
                     {
                         RWCString   problem;
 
-                        if( INT_MIN == OutMessage->Buffer.VSt.Address )
+                        if( INT_MIN == xcserial )
                         {
                             problem = RWCString("Invalid Request: Serial number not specified");
                         }
                         else
                         {
-                            problem = RWCString("Invalid Request: (Relay 1,2,3) | (OPEN|CLOSE) not specified");
+                            problem = RWCString("Invalid Request: (Relay 1,2,3) not specified");
                         }
 
                         status = CtiInvalidRequest;
@@ -219,10 +241,26 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                 }
             case ProtocolExpresscomType:
                 {
+                    int xcserial = parse.getiValue("serial");
+
+                    parse.setValue("xc_serial", xcserial);
+
+                    if( INT_MIN == xcserial )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** XCOM **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        RWCString   problem;
+
+                        if( INT_MIN == xcserial )
+                        {
+                            problem = RWCString("Invalid Request: Serial number not specified");
+                        }
+
+                        status = CtiInvalidRequest;
+
+                        vgList.insert(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                        retList.insert( new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
                     }
+
+                    OutMessage->Retry = 2;                      // Default to two tries per route!
 
                     break;
                 }

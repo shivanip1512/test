@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/10/09 13:19:13 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/10/23 21:06:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -126,6 +126,7 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
      *   ExecuteRequest(CtiReturnMsg*) (NOTE THE DIFFERENCE IN ARGS)
      *   That method prepares an outmessage for submission to the internals..
      */
+    parse.setValue("type", ProtocolExpresscomType);
 
     if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
     {
@@ -143,30 +144,32 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
         int program = 0;
         int splinter = 0;
 
-        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSpid)          spid = (int)(getExpresscomGroup().getServiceProvider());
-        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atGeo)           geo = (int)(getExpresscomGroup().getGeo());
-        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSubstation)    substation = (int)(getExpresscomGroup().getSubstation());
-        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atFeeder)        feeder = (int)(getExpresscomGroup().getFeeder());
-        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atZip)           zip = (int)(getExpresscomGroup().getZip());
-        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atUser)          uda = (int)(getExpresscomGroup().getUda());
-        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atProgram)       program = (int)(getExpresscomGroup().getProgram());
-        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSplinter)      splinter = (int)(getExpresscomGroup().getSplinter());
+        serial = (int)(getExpresscomGroup().getSerial());
 
-
-        parse.setValue("xc_spid", spid);
-        parse.setValue("xc_geo", geo);
-        parse.setValue("xc_sub", substation);
-        parse.setValue("xc_feeder", feeder);
-        parse.setValue("xc_zip", zip);
-        parse.setValue("xc_uda", uda);
-        parse.setValue("xc_program", program);
-        parse.setValue("xc_splinter", splinter);
-
-        if(getExpresscomGroup().getAddressUsage() == 0)
+        if(serial == 0)
         {
-            serial = (int)(getExpresscomGroup().getSerial());
+            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSpid)          spid = (int)(getExpresscomGroup().getServiceProvider());
+            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atGeo)           geo = (int)(getExpresscomGroup().getGeo());
+            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSubstation)    substation = (int)(getExpresscomGroup().getSubstation());
+            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atFeeder)        feeder = (int)(getExpresscomGroup().getFeeder());
+            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atZip)           zip = (int)(getExpresscomGroup().getZip());
+            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atUser)          uda = (int)(getExpresscomGroup().getUda());
+            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atProgram)       program = (int)(getExpresscomGroup().getProgram());
+            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSplinter)      splinter = (int)(getExpresscomGroup().getSplinter());
+
+            parse.setValue("xc_spid", spid);
+            parse.setValue("xc_geo", geo);
+            parse.setValue("xc_sub", substation);
+            parse.setValue("xc_feeder", feeder);
+            parse.setValue("xc_zip", zip);
+            parse.setValue("xc_uda", uda);
+            parse.setValue("xc_program", program);
+            parse.setValue("xc_splinter", splinter);
         }
-        parse.setValue("xc_serial", serial);
+        else
+        {
+            parse.setValue("xc_serial", serial);
+        }
 
         parse.setValue("relaymask", (int)(getExpresscomGroup().getLoadMask()));
 
