@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/10/30 17:41:54 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/01/26 21:53:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,22 +48,23 @@ INT CtiDeviceMCTBroadcast::ExecuteRequest( CtiRequestMsg              *pReq,
                                            RWTPtrSlist< OUTMESS >     &outList )
 {
     int nRet = NoError;
+    RWTPtrSlist< OUTMESS > tmpOutList;
 
     switch( parse.getCommand( ) )
     {
         case PutStatusRequest:
         {
-            nRet = executePutStatus( pReq, parse, OutMessage, vgList, retList, outList );
+            nRet = executePutStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
         }
         case PutConfigRequest:
         {
-            nRet = executePutConfig( pReq, parse, OutMessage, vgList, retList, outList );
+            nRet = executePutConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
         }
         case PutValueRequest:
         {
-            nRet = executePutValue( pReq, parse, OutMessage, vgList, retList, outList );
+            nRet = executePutValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
         }
         case LoopbackRequest:
@@ -103,11 +104,11 @@ INT CtiDeviceMCTBroadcast::ExecuteRequest( CtiRequestMsg              *pReq,
     {
         if(OutMessage != NULL)
         {
-            outList.append( OutMessage );
+            tmpOutList.append( OutMessage );
             OutMessage = NULL;
         }
 
-        executeOnDLCRoute(pReq, parse, OutMessage, vgList, retList, outList, false);
+        executeOnDLCRoute(pReq, parse, OutMessage, tmpOutList, vgList, retList, outList, false);
     }
 
     return nRet;

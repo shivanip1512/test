@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2003/10/30 17:43:09 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/01/26 21:53:19 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -122,32 +122,33 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
                                          RWTPtrSlist< OUTMESS >         &outList)
 {
     int nRet = NoError;
+    RWTPtrSlist< OUTMESS > tmpOutList;
 
     switch( parse.getCommand() )
     {
         case ScanRequest:
         {
-            nRet = executeScan(pReq, parse, OutMessage, vgList, retList, outList);
+            nRet = executeScan(pReq, parse, OutMessage, vgList, retList, tmpOutList);
             break;
         }
         case LoopbackRequest:
         {
-            nRet = executeLoopback(pReq, parse, OutMessage, vgList, retList, outList);
+            nRet = executeLoopback(pReq, parse, OutMessage, vgList, retList, tmpOutList);
             break;
         }
         case GetConfigRequest:
         {
-            nRet = executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
+            nRet = executeGetConfig(pReq, parse, OutMessage, vgList, retList, tmpOutList);
             break;
         }
         case PutConfigRequest:
         {
-            nRet = executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
+            nRet = executePutConfig(pReq, parse, OutMessage, vgList, retList, tmpOutList);
             break;
         }
         case GetValueRequest:
         {
-            nRet = executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
+            nRet = executeGetValue(pReq, parse, OutMessage, vgList, retList, tmpOutList);
             break;
         }
         default:
@@ -191,11 +192,11 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
     {
         if(OutMessage != NULL)
         {
-            outList.append( OutMessage );
+            tmpOutList.append( OutMessage );
             OutMessage = NULL;
         }
 
-        executeOnDLCRoute(pReq, parse, OutMessage, vgList, retList, outList, true);
+        executeOnDLCRoute(pReq, parse, OutMessage, tmpOutList, vgList, retList, outList, true);
     }
 
     return nRet;
