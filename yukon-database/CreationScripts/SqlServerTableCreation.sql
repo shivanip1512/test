@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     8/16/2002 9:48:39 AM                         */
+/* Created on:     8/20/2002 3:33:00 PM                         */
 /*==============================================================*/
 
 
@@ -1399,14 +1399,6 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('StateImage')
-            and   type = 'U')
-   drop table StateImage
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('TEMPLATE')
             and   type = 'U')
    drop table TEMPLATE
@@ -1434,6 +1426,14 @@ if exists (select 1
            where  id = object_id('VersacomRoute')
             and   type = 'U')
    drop table VersacomRoute
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonImage')
+            and   type = 'U')
+   drop table YukonImage
 go
 
 
@@ -1521,6 +1521,7 @@ insert into BillingFileFormats values(3,'WLT-40');
 insert into BillingFileFormats values(4,'CTI-CSV');
 insert into BillingFileFormats values(5,'OPU');
 insert into BillingFileFormats values(6,'DAFRON');
+insert into billingfileformats values( 11, 'MV_90 DATA Import');
 
 /*==============================================================*/
 /* Table : CALCBASE                                             */
@@ -2099,17 +2100,11 @@ go
 insert into display values(-1, 'All Categories', 'Scheduler Client', 'Metering And Control Scheduler', 'com.cannontech.macs.gui.Scheduler');
 /**insert into display values(-2, 'All Areas', 'Cap Control Client', 'Cap Control', 'com.cannontech.cbc.gui.StrategyReceiver');**/
 /**insert into display values(-3, 'All Control Areas', 'Load Management Client', 'Load Management', 'com.cannontech.loadcontrol.gui.LoadControlMainPanel');**/
+/**insert into display values(2, 'Historical Viewer', 'Alarms and Events', 'Historical Event Viewer', 'This display will allow the user to select a range of dates and show the events that occured.');**/
+/**insert into display values(3, 'Raw Point Viewer', 'Alarms and Events', 'Current Raw Point Viewer', 'This display will recieve current raw point updates as they happen in the system.');**/
 
-insert into display values(99, 'Your Custom Display', 'Custom Displays', 'Edit This Display', 'This display is is used to show what a user created display looks like. You may edit this display to fit your own needs.');
+
 insert into display values(1, 'Event Viewer', 'Alarms and Events', 'Current Event Viewer', 'This display will recieve current events as they happen in the system.');
-
-/*********************************************************************************************************
-This use to be for the Historical Data View,but that view was deleted and no longer used as of 7-11-2001
-*********************************************************************************************************
-insert into display values(2, 'Historical Viewer', 'Alarms and Events', 'Historical Event Viewer', 'This display will allow the user to select a range of dates and show the events that occured.');
-********************************************************************************************************/
-
-insert into display values(3, 'Raw Point Viewer', 'Alarms and Events', 'Current Raw Point Viewer', 'This display will recieve current raw point updates as they happen in the system.');
 insert into display values(4, 'All Alarms', 'Alarms and Events', 'Global Alarm Viewer', 'This display will recieve all alarm events as they happen in the system.');
 insert into display values(5, 'Priority 1 Alarms', 'Alarms and Events', 'Priority 1 Alarm Viewer', 'This display will recieve all priority 1 alarm events as they happen in the system.');
 insert into display values(6, 'Priority 2 Alarms', 'Alarms and Events', 'Priority 2 Alarm Viewer', 'This display will recieve all priority 2 alarm events as they happen in the system.');
@@ -2120,6 +2115,8 @@ insert into display values(10, 'Priority 6 Alarms', 'Alarms and Events', 'Priori
 insert into display values(11, 'Priority 7 Alarms', 'Alarms and Events', 'Priority 7 Alarm Viewer', 'This display will recieve all priority 7 alarm events as they happen in the system.');
 insert into display values(12, 'Priority 8 Alarms', 'Alarms and Events', 'Priority 8 Alarm Viewer', 'This display will recieve all priority 8 alarm events as they happen in the system.');
 insert into display values(13, 'Priority 9 Alarms', 'Alarms and Events', 'Priority 9 Alarm Viewer', 'This display will recieve all priority 9 alarm events as they happen in the system.');
+insert into display values(99, 'Your Custom Display', 'Custom Displays', 'Edit This Display', 'This display is is used to show what a user created display looks like. You may edit this display to fit your own needs.');
+
 
 /*==============================================================*/
 /* Index: Indx_DISPLAYNAME                                      */
@@ -2179,7 +2176,7 @@ insert into displaycolumns values(1, 'Additional Info', 10, 5, 180 );
 insert into displaycolumns values(1, 'User Name', 8, 6, 35 );
 
 /*********************************************************************************************************
-This use to be for the Historical Data View,but that view was deleted and no longer used as of 7-11-2001
+This use to be for the Historical Data View and RawPointHistory view,  they have been deleted and no longer used as of 7-11-2001
 *********************************************************************************************************
 insert into displaycolumns values(2, 'Time Stamp', 11, 1, 60 );
 insert into displaycolumns values(2, 'Device Name', 5, 2, 70 );
@@ -2187,14 +2184,14 @@ insert into displaycolumns values(2, 'Point Name', 2, 3, 70 );
 insert into displaycolumns values(2, 'Text Message', 12, 4, 180 );
 insert into displaycolumns values(2, 'Additional Info', 10, 5, 180 );
 insert into displaycolumns values(2, 'User Name', 8, 6, 35 );
-*********************************************************************************************************/
-
 insert into displaycolumns values(3, 'Time Stamp', 11, 1, 70 );
 insert into displaycolumns values(3, 'Device Name', 5, 2, 60 );
 insert into displaycolumns values(3, 'Point Name', 2, 3, 60 );
 insert into displaycolumns values(3, 'Text Message', 12, 4, 200 );
 insert into displaycolumns values(3, 'Additional Info', 10, 5, 200 );
 insert into displaycolumns values(3, 'User Name', 8, 6, 35 );
+*********************************************************************************************************/
+
 
 insert into displaycolumns values(4, 'Time Stamp', 11, 1, 90 );
 insert into displaycolumns values(4, 'Device Name', 5, 2, 90 );
@@ -3939,20 +3936,6 @@ go
 
 
 /*==============================================================*/
-/* Table : StateImage                                           */
-/*==============================================================*/
-create table StateImage (
-ImageID              numeric              not null,
-StateImage           image                null,
-ImageName            varchar(80)          null,
-constraint PK_STATEIMAGE primary key  (ImageID)
-)
-go
-
-
-insert into StateImage values( 0, null, '(none)' );
-
-/*==============================================================*/
 /* Table : TEMPLATE                                             */
 /*==============================================================*/
 create table TEMPLATE (
@@ -4077,6 +4060,21 @@ AMPCARDSET           numeric              not null
 )
 go
 
+
+/*==============================================================*/
+/* Table : YukonImage                                           */
+/*==============================================================*/
+create table YukonImage (
+ImageID              numeric              not null,
+ImageCategory        varchar(20)          null,
+ImageName            varchar(80)          null,
+ImageValue           image                null,
+constraint PK_YUKONIMAGE primary key  (ImageID)
+)
+go
+
+
+insert into YukonImage values( 0, '(none)', '(none)', null );
 
 /*==============================================================*/
 /* Table : YukonPAObject                                        */
@@ -4862,15 +4860,15 @@ alter table MACSchedule
 go
 
 
-alter table STATE
-   add constraint FK_StIm_St foreign key (ImageID)
-      references StateImage (ImageID)
-go
-
-
 alter table LMThermoStatGear
    add constraint FK_ThrmStG_PrDiGe foreign key (GearID)
       references LMProgramDirectGear (GearID)
+go
+
+
+alter table STATE
+   add constraint FK_YkIm_St foreign key (ImageID)
+      references YukonImage (ImageID)
 go
 
 
