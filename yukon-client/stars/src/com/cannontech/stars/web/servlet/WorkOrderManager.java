@@ -287,14 +287,6 @@ public class WorkOrderManager extends HttpServlet {
 				throw new WebClientException("Invalid date/time format '" + req.getParameter("DateCompleted") + " " + req.getParameter("TimeCompleted") + "'");
 			starsOrder.setDateCompleted( dateCompleted );
 		}
-		
-		if (req.getParameter("DateCancelled") != null && req.getParameter("DateCancelled").length() > 0) {
-			Date dateCancelled = ServletUtils.parseDateTime(
-					req.getParameter("DateCancelled"), req.getParameter("TimeCancelled"), tz );
-			if (dateCancelled == null)
-				throw new WebClientException("Invalid date/time format '" + req.getParameter("DateCancelled") + " " + req.getParameter("TimeCancelled") + "'");
-			starsOrder.setDateCompleted( dateCancelled );
-		}
 	}
 
 }
