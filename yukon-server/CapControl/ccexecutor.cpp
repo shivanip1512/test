@@ -83,6 +83,10 @@ void CtiCCCommandExecutor::Execute()
         ReturnCapToOriginalFeeder();
         break;
 
+    case CtiCCCommand::RESET_DAILY_OPERATIONS:
+        ResetDailyOperations();
+        break;
+
     default:
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1213,6 +1217,127 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Cap Bank not found PAO Id: " << movedCapBankId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
+    }
+}
+
+/*---------------------------------------------------------------------------
+    ResetDailyOperations
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::ResetDailyOperations()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
+    RWOrdered& pointChanges = multiDispatchMsg->getData();
+
+    LONG paoId = _command->getId();
+    BOOL found = FALSE;
+
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+
+    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    {
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+
+        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+
+        if( currentSubstationBus->getPAOId() == paoId )
+        {
+            for(LONG j=0;j<ccFeeders.entries();j++)
+            {
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                for(LONG k=0;k<ccCapBanks.entries();k++)
+                {
+                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                    if( currentCapBank->getOperationAnalogPointId() > 0 )
+                    {
+                        pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType));
+                    }
+                    else
+                    {
+                        currentCapBank->setCurrentDailyOperations(0);
+                    }
+                }
+            }
+            currentSubstationBus->setBusUpdatedFlag(TRUE);
+            found = TRUE;
+        }
+        else
+        {
+            for(LONG j=0;j<ccFeeders.entries();j++)
+            {
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+
+                if( currentFeeder->getPAOId() == paoId )
+                {
+                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                    for(LONG k=0;k<ccCapBanks.entries();k++)
+                    {
+                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                        if( currentCapBank->getOperationAnalogPointId() > 0 )
+                        {
+                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType));
+                        }
+                        else
+                        {
+                            currentCapBank->setCurrentDailyOperations(0);
+                        }
+                    }
+
+                    currentSubstationBus->setBusUpdatedFlag(TRUE);
+                    found = TRUE;
+                }
+                else
+                {
+                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                    for(LONG k=0;k<ccCapBanks.entries();k++)
+                    {
+                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                        
+                        if( currentCapBank->getPAOId() == paoId )
+                        {
+                            if( currentCapBank->getOperationAnalogPointId() > 0 )
+                            {
+                                pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType));
+                            }
+                            else
+                            {
+                                currentCapBank->setCurrentDailyOperations(0);
+                            }
+
+                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                            found = TRUE;
+                            break;
+                        }
+                    }
+                }
+
+                if( found )
+                {
+                    break;
+                }
+            }
+        }
+
+        if( found )
+        {
+            break;
+        }
+    }
+
+    if( found )
+    {
+        CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg);
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << "Cannot find PAO Id: " << paoId << " in ResetDailyOperations() in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 }
 

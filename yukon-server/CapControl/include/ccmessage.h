@@ -61,7 +61,8 @@ public:
         CONFIRM_OPEN,//8
         CONFIRM_CLOSE,//9
         REQUEST_ALL_SUBSTATION_BUSES,//10
-        RETURN_CAP_TO_ORIGINAL_FEEDER//11
+        RETURN_CAP_TO_ORIGINAL_FEEDER,//11
+        RESET_DAILY_OPERATIONS//12
     };
 
     CtiCCCommand(LONG command);

@@ -69,6 +69,7 @@ private:
     void doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, RWOrdered& pointChanges);
     void SendAllSubstationBuses();
     void ReturnCapToOriginalFeeder();
+    void ResetDailyOperations();
 
     CtiCCCommand* _command;
 };
