@@ -240,12 +240,24 @@ public Object getValueAt(int row, int col)
  */
 public boolean isCellEditable(int row, int column)
 {
-	return ( column == LABEL_NAME_COLUMN ||
-			 column == COLOR_NAME_COLUMN || 
-			 column == AXIS_NAME_COLUMN ||
-			 column == TYPE_NAME_COLUMN ||
-			 column == MULT_NAME_COLUMN /*||
-			 column == SETUP_NAME_COLUMN*/);
+	boolean editable = false;
+	if( column == LABEL_NAME_COLUMN ||
+		column == COLOR_NAME_COLUMN || 
+		column == AXIS_NAME_COLUMN ||
+		column == MULT_NAME_COLUMN )
+	{
+		editable = true;
+	}
+	else if( column == TYPE_NAME_COLUMN )
+	{
+		//When type column value is 'THRESHOLD' or 'DATE', the combo box is NOT editable.
+		if( !((String)getValueAt(row, column)).equalsIgnoreCase( com.cannontech.database.db.graph.GraphDataSeries.THRESHOLD_TYPE_STRING))
+			editable = true;
+		
+	}
+		
+	
+	return editable;
 }
 /**
  * Insert the method's description here.
