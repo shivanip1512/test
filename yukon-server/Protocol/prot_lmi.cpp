@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/14 17:08:10 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/05/11 18:31:25 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -160,6 +160,8 @@ int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
     setCommand(lmi_om.command, lmi_om.control_offset, lmi_om.control_parameter);
 
     _transactionComplete = false;
+    _in_count = 0;
+    _in_total = 0;
 
     return 0;
 }
@@ -201,100 +203,114 @@ bool CtiProtocolLMI::isTransactionComplete( void )
 int CtiProtocolLMI::generate( CtiXfer &xfer )
 {
     int retval = NoError;
-    int in_body_expected;
+    bool reply_expected = true;
     RWTime NowTime;
     RWDate NowDate;
 
-
-    _outbound.preamble = 0x01;
-    _outbound.dest_sat_id  = 0x08; //_address;
-    _outbound.dest_node    = 0x08; //0x01;
-    _outbound.src_sat_id   = 0x01; //0x01;  //  picked at random - they seem like nice enough numbers
-    _outbound.src_sat_node = 0x01; //0x01;  //
-    _outbound.body_header.flush_codes  = 0;
-
-    switch( _command )
+    if( _in_total > 0 )
     {
-        case Command_Loopback:
+        lmi_message &packet = *((lmi_message *)&_inbound);
+
+        xfer.setInBuffer((unsigned char *)&_inbound + _in_total);
+        xfer.setInCountActual(&_in_count);
+
+        //  we also expect the CRC
+        xfer.setInCountExpected(packet.length + LMIPacketOverheadLen - _in_total);
+
+        xfer.setOutBuffer((unsigned char *)&_outbound);
+        xfer.setOutCount(0);
+    }
+    else
+    {
+        _outbound.preamble = 0x01;
+        _outbound.dest_sat_id  = 0x08; //_address;
+        _outbound.dest_node    = 0x08; //0x01;
+        _outbound.src_sat_id   = 0x01; //0x01;  //  picked at random - they seem like nice enough numbers
+        _outbound.src_sat_node = 0x01; //0x01;  //
+        _outbound.body_header.flush_codes  = 0;
+
+        switch( _command )
         {
-            _outbound.length  = 3;
-            _outbound.body_header.message_type = Opcode_RetransmitCodes;
-            _outbound.data[0] = 0;
-            _outbound.data[1] = 0;
-
-            in_body_expected  = 4;
-
-            break;
-        }
-
-        case Command_Timesync:
-        {
-            _outbound.length  = 7;
-            _outbound.body_header.message_type = Opcode_SetTime;
-            _outbound.data[0] = NowDate.month();
-            _outbound.data[0] = NowDate.dayOfMonth();
-            _outbound.data[0] = NowDate.year() % 1900;
-            _outbound.data[0] = NowTime.hour();
-            _outbound.data[0] = NowTime.minute();
-            _outbound.data[0] = NowTime.second();
-
-            in_body_expected = 8;
-
-            break;
-        }
-
-        case Command_ScanAccumulator:
-        case Command_ScanIntegrity:
-        case Command_ScanException:
-        case Command_Control:
-        case Command_AnalogSetpoint:
-        {
-            if( !_seriesv.isTransactionComplete() )
+            case Command_Loopback:
             {
-                _outbound.body_header.message_type = Opcode_SeriesVWrap;
+                _outbound.length  = 2;
+                _outbound.body_header.message_type = Opcode_RetransmitCodes;
+                _outbound.data[0] = 0;
+                _outbound.data[1] = 0;
 
-                retval = _seriesv.generate(xfer);
+                break;
+            }
 
-                //  copy the packet into our outbound, without the CRC
-                memcpy((unsigned char *)_outbound.data, xfer.getOutBuffer(), xfer.getOutCount() - 2);
-                _outbound.length = 1 + xfer.getOutCount() - 2;
+            case Command_Timesync:
+            {
+                _outbound.length  = 7;
+                _outbound.body_header.message_type = Opcode_SetTime;
+                _outbound.data[0] = NowDate.month();
+                _outbound.data[0] = NowDate.dayOfMonth();
+                _outbound.data[0] = NowDate.year() % 1900;
+                _outbound.data[0] = NowTime.hour();
+                _outbound.data[0] = NowTime.minute();
+                _outbound.data[0] = NowTime.second();
 
-                //  reset the count - knock off the series V CRC
-                _seriesv_inbuffer = xfer.getInBuffer();
-                in_body_expected  = xfer.getInCountExpected() - 2;
+                break;
+            }
+
+            case Command_ScanAccumulator:
+            case Command_ScanIntegrity:
+            case Command_ScanException:
+            case Command_Control:
+            case Command_AnalogSetpoint:
+            {
+                if( !_seriesv.isTransactionComplete() )
+                {
+                    _outbound.body_header.message_type = Opcode_SeriesVWrap;
+
+                    retval = _seriesv.generate(xfer);
+
+                    //  copy the packet into our outbound, without the CRC
+                    memcpy((unsigned char *)_outbound.data, xfer.getOutBuffer(), xfer.getOutCount() - 2);
+                    _outbound.length = 1 + xfer.getOutCount() - 2;
+
+                    //  reset the count - knock off the series V CRC
+                    _seriesv_inbuffer = xfer.getInBuffer();
+                }
+                else
+                {
+                    retval = !NORMAL;
+                }
+
+                break;
+            }
+        }
+
+        if( !retval )
+        {
+            xfer.setInBuffer((unsigned char *)&_inbound);
+            xfer.setInCountActual(&_in_count);
+
+            if( reply_expected )
+            {
+                xfer.setInCountExpected(LMIPacketHeaderLen);
             }
             else
             {
-                retval = !NORMAL;
+                xfer.setInCountExpected(0);
             }
 
-            break;
+            xfer.setOutBuffer((unsigned char *)&_outbound);
+            xfer.setOutCount(_outbound.length + LMIPacketOverheadLen);
+
+            //  tack on the CRC
+            if( xfer.getOutCount() > 0 )
+            {
+                unsigned short crc = CCITT16CRC(-1, (unsigned char *)&_outbound, _outbound.length + LMIPacketHeaderLen, false);
+
+                _outbound.data[(_outbound.length - 1) + 0] = (crc & 0xff00) >> 8;
+                _outbound.data[(_outbound.length - 1) + 1] =  crc & 0x00ff;
+            }
         }
     }
 
-    if( !retval )
-    {
-        xfer.setInBuffer((unsigned char *)&_inbound);
-        xfer.setInCountExpected(in_body_expected + LMIPacketOverheadLen);
-        xfer.setInCountActual(&_inCountActual);
-
-        xfer.setOutBuffer((unsigned char *)&_outbound);
-        xfer.setOutCount(_outbound.length + LMIPacketOverheadLen);
-
-
-
-        //  tack on the CRC
-        if( xfer.getOutCount() > 0 )
-        {
-            unsigned short crc = CCITT16CRC(-1, (unsigned char *)&_outbound, _outbound.length + LMIPacketHeaderLen, false);
-            /*_crc.reset();
-
-            _crc.process_bytes((unsigned char *)&_outbound, _outbound.length + LMIPacketHeaderLen);*/
-
-            _outbound.data[(_outbound.length - 1) + 0] = (crc & 0xff00) >> 8;
-            _outbound.data[(_outbound.length - 1) + 1] =  crc & 0x00ff;
-        }
-    }
 
     return retval;
 }
@@ -303,80 +319,88 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 {
     int retval = NoError;
-    unsigned long  tmp_crc;
-    unsigned char *in_buffer = xfer.getInBuffer();
+    unsigned long  tmp_crc, inbound_crc;
+    CtiXfer seriesv_xfer;
+    unsigned long seriesv_incount_actual;
+    const unsigned char *buf = (unsigned char *)&_inbound;
 
     if( !status )
     {
-        tmp_crc  = in_buffer[xfer.getInCountActual() - 2] << 8;
-        tmp_crc |= in_buffer[xfer.getInCountActual() - 1];
+        _in_total += xfer.getInCountActual();
 
-        _crc.process_bytes((unsigned char *)&_inbound, xfer.getInCountActual() - 2);
-
-        if( tmp_crc == _crc.checksum() )
+        if( _in_total >= LMIPacketHeaderLen && _in_total >= (_inbound.length + LMIPacketOverheadLen) )
         {
-            //  also verify the inbound address
+            tmp_crc = CCITT16CRC(-1, (unsigned char *)&_inbound, _in_total - 2, false);
 
-            switch( _command )
+            inbound_crc  = buf[_in_total - 2] << 8;
+            inbound_crc |= buf[_in_total - 1];
+
+            if( tmp_crc == inbound_crc )
             {
-                case Command_Loopback:
+                //  also verify the inbound address
+
+                switch( _command )
                 {
-                    //  all we have to do is verify that the message got to us okay - nothing more
-                    //    what will it take to return a message from a loopback?
-
-                    _transactionComplete = true;
-
-                    break;
-                }
-
-                case Command_Timesync:
-                {   /*
-                    _outbound.body_header.message_type = Opcode_SetTime;
-                    _outbound.data[0] = NowDate.month();
-                    _outbound.data[0] = NowDate.dayOfMonth();
-                    _outbound.data[0] = NowDate.year() % 1900;
-                    _outbound.data[0] = NowTime.hour();
-                    _outbound.data[0] = NowTime.minute();
-                    _outbound.data[0] = NowTime.second();
-
-                    in_body_expected = 8;
-                    */
-                    break;
-                }
-
-                case Command_ScanAccumulator:
-                case Command_ScanIntegrity:
-                case Command_ScanException:
-                case Command_Control:
-                case Command_AnalogSetpoint:
-                {
-                    memcpy(_seriesv_inbuffer, xfer.getInBuffer() + LMIPacketHeaderLen, xfer.getInCountActual() - LMIPacketOverheadLen);
-                    //  tack on the Series V passthrough CRC
-                    _seriesv_inbuffer[xfer.getInCountActual() - LMIPacketHeaderLen - 2] = (CtiProtocolSeriesV::PassthroughCRC & 0x00ff);
-                    _seriesv_inbuffer[xfer.getInCountActual() - LMIPacketHeaderLen - 1] = (CtiProtocolSeriesV::PassthroughCRC & 0xff00) >> 8;
-
-                    if( !_seriesv.isTransactionComplete() )
+                    case Command_Loopback:
                     {
-                        retval = _seriesv.decode(xfer, status);
+                        //  all we have to do is verify that the message got to us okay - nothing more
+                        //    what will it take to return a message from a loopback?
 
                         _transactionComplete = true;
+
+                        break;
                     }
-                    else
+
+                    case Command_Timesync:
+                    {   /*
+                        _outbound.body_header.message_type = Opcode_SetTime;
+                        _outbound.data[0] = NowDate.month();
+                        _outbound.data[0] = NowDate.dayOfMonth();
+                        _outbound.data[0] = NowDate.year() % 1900;
+                        _outbound.data[0] = NowTime.hour();
+                        _outbound.data[0] = NowTime.minute();
+                        _outbound.data[0] = NowTime.second();
+
+                        in_body_expected = 8;
+                        */
+                        break;
+                    }
+
+                    case Command_ScanAccumulator:
+                    case Command_ScanIntegrity:
+                    case Command_ScanException:
+                    case Command_Control:
+                    case Command_AnalogSetpoint:
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - got into lmi.decode() even though seriesv.istransactioncomplete() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        memcpy(_seriesv_inbuffer, buf + LMIPacketHeaderLen + 1, _in_total - LMIPacketHeaderLen - 1);
+
+                        seriesv_xfer.setInBuffer(_seriesv_inbuffer);
+                        seriesv_xfer.setInCountActual(&seriesv_incount_actual);
+                        seriesv_xfer.setInCountActual(_in_total - LMIPacketHeaderLen - 1);
+
+                        //  tack on the Series V passthrough CRC
+                        _seriesv_inbuffer[seriesv_xfer.getInCountActual() - 2] = (CtiProtocolSeriesV::PassthroughCRC & 0x00ff);
+                        _seriesv_inbuffer[seriesv_xfer.getInCountActual() - 1] = (CtiProtocolSeriesV::PassthroughCRC & 0xff00) >> 8;
+
+                        retval = _seriesv.decode(seriesv_xfer, status);
+
+                        _transactionComplete = _seriesv.isTransactionComplete();
+
+                        break;
                     }
 
-                    break;
-                }
-
-                default:
-                {
-                    _transactionComplete = true;
+                    default:
+                    {
+                        _transactionComplete = true;
+                    }
                 }
             }
+            else
+            {
+                retval = BADCRC;
+            }
+
+            _in_total = 0;
         }
     }
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/14 17:08:11 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/05/11 18:31:26 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -130,6 +130,8 @@ private:
         State_AnalogOutputDirectControl,
 
         //  Misc
+        State_Loopback
+
         //  Accumulator freeze/reset
         //  Time sync
     } _state;
@@ -267,6 +269,19 @@ public:
 
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
+
+    int generateLoopback( CtiXfer &xfer );
+    int decodeLoopback( CtiXfer &xfer, int status );
+    int generateScanAccumulator( CtiXfer &xfer );
+    int decodeScanAccumulator( CtiXfer &xfer, int status );
+/*    int generateScanException( CtiXfer &xfer );
+    int decodeScanException( CtiXfer &xfer, int status );
+    int generateScanIntegrity( CtiXfer &xfer );
+    int decodeScanIntegrity( CtiXfer &xfer, int status );*/
+    int generateControl( CtiXfer &xfer );
+    int decodeControl( CtiXfer &xfer, int status );
+    int generateAnalogSetpoint( CtiXfer &xfer );
+    int decodeAnalogSetpoint( CtiXfer &xfer, int status );
 
     enum
     {

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/14 17:08:11 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/05/11 18:31:26 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,8 +43,7 @@ private:
     unsigned char _address;
     bool          _deadbandsSent,
                   _transactionComplete;
-
-    crc_ccitt_type _crc;
+    //crc_ccitt_type _crc;
 
     enum LMIOpcode
     {
@@ -122,9 +121,10 @@ private:
         unsigned char data[300];
     } _outbound, _inbound;
 
-    unsigned long _inCountActual;
-
 #pragma pack(pop)
+
+    unsigned long _in_count,
+                  _in_total;
 
 protected:
 

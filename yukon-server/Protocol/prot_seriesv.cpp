@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/14 17:08:11 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/05/11 18:31:25 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,10 +74,9 @@ void CtiProtocolSeriesV::setAddress( unsigned char address )
 void CtiProtocolSeriesV::setCommand( SeriesVCommand cmd )
 {
     _command = cmd;
+    _state   = State_Init;
 
     _retry_count = 0;
-
-    _state = State_Init;
 }
 
 void CtiProtocolSeriesV::setCommandControl( SeriesVCommand cmd, unsigned control_offset, unsigned control_parameter )
@@ -235,7 +234,7 @@ int CtiProtocolSeriesV::sendCommResult( INMESS *InMessage )
 
 bool CtiProtocolSeriesV::isTransactionComplete( void )
 {
-    return _state == State_Complete;
+    return (_state == State_Complete) || (_retry_count >= Retries);
 }
 
 
@@ -245,6 +244,7 @@ int CtiProtocolSeriesV::generate( CtiXfer &xfer )
                   param1 = 0,
                   param2 = 0,
                   points_requested = 0;
+    int retval = NoError;
 
     if( !_configRead )
     {
@@ -258,106 +258,165 @@ int CtiProtocolSeriesV::generate( CtiXfer &xfer )
     }
     else
     {
-        switch( _state )
+        switch( _command )
         {
-            case State_RequestAccumulators:
+            case Command_Loopback:
             {
-                opcode = Opcode_ScanAccumulator;
+                opcode = Opcode_RTUStatusClear;
 
-                setRange( _rtu_info.accum_count, _accum_min, _accum_max, param1, param2 );
-                points_requested = param2;
+                param1 = 0;
+                param2 = 0;
 
                 break;
             }
-
-            case State_RequestAnalogs:
+        /*  case Command_ScanException:
+            case Command_ScanIntegrity:  */
+            case Command_ScanAccumulator:
             {
-                opcode = Opcode_ScanAnalog;
+                switch( _state )
+                {
+                    case State_Init:
+                    case State_RequestAccumulators:
+                    {
+                        opcode = Opcode_ScanAccumulator;
 
-                setRange( _rtu_info.analog_count, _analog_min, _analog_max, param1, param2 );
-                points_requested = param2;
+                        setRange( _rtu_info.accum_count, _accum_min, _accum_max, param1, param2 );
+                        points_requested = param2;
+
+                        if( points_requested )
+                        {
+                            break;
+                        }
+                        //  else fall through, we're skipping this state!
+                    }
+                    case State_RequestAnalogs:
+                    {
+                        opcode = Opcode_ScanAnalog;
+
+                        setRange( _rtu_info.analog_count, _analog_min, _analog_max, param1, param2 );
+                        points_requested = param2;
+
+                        if( points_requested )
+                        {
+                            break;
+                        }
+                        //  else fall through, we're skipping this state!
+                    }
+                    case State_RequestAnalogOutputs:
+                    {
+                        opcode = Opcode_AnalogSetpointScan;
+
+                        setRange( NumAnalogSetpoints, _setpt_min, _setpt_max, param1, param2 );
+                        points_requested = param2;
+
+                        if( points_requested )
+                        {
+                            break;
+                        }
+                        //  else fall through, we're skipping this state!
+                    }
+                    case State_RequestStatuses:
+                    {
+                        opcode = Opcode_ScanStatus;
+
+                        setRange( _rtu_info.status_count, _status_min, _status_max, param1, param2 );
+                        points_requested = param2;
+
+                        if( !points_requested )
+                        {
+                            //  we need a more elegant way of skipping out of this...
+                            //    it'll probably require a rewrite of the decode routine, since that
+                            //    wants to see a valid incoming packet before it does anything
+                            opcode = Opcode_Invalid;
+                        }
+
+                        break;
+                    }
+
+                    default:
+                    {
+                        opcode = Opcode_Invalid;
+                    }
+                }
 
                 break;
             }
-            case State_RequestAnalogOutputs:
+            case Command_Control:
             {
-                opcode = Opcode_AnalogSetpointScan;
+                switch( _state )
+                {
+                    case State_Init:
+                    case State_ControlSelect:
+                    {
+                        opcode = Opcode_ControlSelect;
 
-                setRange( NumAnalogSetpoints, _setpt_min, _setpt_max, param1, param2 );
-                points_requested = param2;
+                        param1 = SelectTimeout;
+                        param2 = _control_offset;
+
+                        break;
+                    }
+                    case State_ControlExecute:
+                    {
+                        opcode = Opcode_ControlExecute;
+
+                        param1 = _control_parameter;  //  ACH:  adjust execute time for ms
+                        param2 = _control_offset;
+
+                        break;
+                    }
+
+                    default:
+                    {
+                        opcode = Opcode_Invalid;
+                    }
+                }
 
                 break;
             }
-            case State_RequestStatuses:
+            case Command_AnalogSetpointDirect:
+            case Command_AnalogSetpoint:
             {
-                opcode = Opcode_ScanStatus;
+                switch( _state )
+                {
+                    case State_Init:
+                    {
+                        if( _command == Command_AnalogSetpointDirect )  _state = State_AnalogOutputDirectControl;
+                        if( _command == Command_AnalogSetpoint )        _state = State_AnalogOutputSelect;
+                    }
+                    case State_AnalogOutputSelect:
+                    case State_AnalogOutputExecute:
+                    case State_AnalogOutputDirectControl:
+                    {
+                        //  they're exactly the same, which is kind of convenient
+                        if( _state == State_AnalogOutputSelect )        opcode = Opcode_AnalogOutputSelect;
+                        if( _state == State_AnalogOutputExecute )       opcode = Opcode_AnalogOutputOperate;
+                        if( _state == State_AnalogOutputDirectControl ) opcode = Opcode_AnalogOutputDirectControl;
 
-                setRange( _rtu_info.status_count, _status_min, _status_max, param1, param2 );
-                points_requested = param2;
+                        opcode += _control_offset / 16;
+
+                        param1  = (_control_offset % 16) << 4;
+                        param1 |= (_control_parameter & 0xf00) >> 8;
+                        param2  =  _control_parameter & 0x0ff;
+
+                        break;
+                    }
+
+                    default:
+                    {
+                        opcode = Opcode_Invalid;
+                    }
+                }
 
                 break;
             }
-
-            case State_RequestAnalogChangeCount:
+            default:
             {
-                opcode = Opcode_AnalogChangeCountRequest;
+                opcode = Opcode_Invalid;
 
-                break;
-            }
-            case State_RequestAnalogChangeDump:
-            {
-                opcode = Opcode_AnalogChangeDump;
-
-                param2 = _rtu_info.analog_change_count;
-                points_requested = param2;
-
-                break;
-            }
-            case State_RequestCOSDump:
-            {
-                opcode = Opcode_StatusChangeDumpCOS;
-
-                param1 = _rtu_info.cos_count;
-                points_requested = param1;
-
-                break;
-            }
-
-            case State_ControlSelect:
-            {
-                opcode = Opcode_ControlSelect;
-
-                param1 = SelectTimeout;
-                param2 = _control_offset;
-
-                break;
-            }
-            case State_ControlExecute:
-            {
-                opcode = Opcode_ControlExecute;
-
-                param1 = _control_parameter;  //  ACH:  adjust execute time for ms
-                param2 = _control_offset;
-
-                break;
-            }
-
-            case State_AnalogOutputSelect:
-            case State_AnalogOutputExecute:
-            case State_AnalogOutputDirectControl:
-            {
-                //  they're exactly the same, which is kind of convenient
-                if( _state == State_AnalogOutputSelect )        opcode = Opcode_AnalogOutputSelect;
-                if( _state == State_AnalogOutputExecute )       opcode = Opcode_AnalogOutputOperate;
-                if( _state == State_AnalogOutputDirectControl ) opcode = Opcode_AnalogOutputDirectControl;
-
-                opcode += _control_offset / 16;
-
-                param1  = (_control_offset % 16) << 4;
-                param1 |= (_control_parameter & 0xf00) >> 8;
-                param2  =  _control_parameter & 0x0ff;
-
-                break;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - invalid command \"" << _command << "\" in CtiProtocolSeriesV::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
         }
     }
@@ -385,12 +444,97 @@ int CtiProtocolSeriesV::generate( CtiXfer &xfer )
     }
     else
     {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - opcode not assigned in CtiProtocolSeriesV::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
         xfer.setOutBuffer(NULL);
         xfer.setOutCount(0);
+        xfer.setInBuffer(NULL);
+        xfer.setInCountExpected(0);
     }
 
-    return 0;
+    return retval;
 }
+
+
+/*
+            case State_RequestAnalogChangeCount:
+            {
+                opcode = Opcode_AnalogChangeCountRequest;
+
+                break;
+            }
+            case State_RequestAnalogChangeDump:
+            {
+                opcode = Opcode_AnalogChangeDump;
+
+                param2 = _rtu_info.analog_change_count;
+                points_requested = param2;
+
+                break;
+            }
+            case State_RequestCOSDump:
+            {
+                opcode = Opcode_StatusChangeDumpCOS;
+
+                param1 = _rtu_info.cos_count;
+                points_requested = param1;
+
+                break;
+            }
+*/
+
+/*
+            case Opcode_AnalogChangeCountRequest:
+            {
+                _rtu_info.analog_change_count = packet.data[0];
+
+                _state = State_RequestAnalogChangeDump;
+
+                break;
+            }
+
+            case Opcode_AnalogChangeDump:
+            {
+                for( int i = 0; i < _outbound.payload[1]; i++ )
+                {
+                    pd.offset = i + _outbound.payload[0];
+                    pd.time    = Now.seconds();
+                    pd.type    = StatusPointType;
+                    pd.value   = (packet.data[i/8] >> (i % 8)) & 0x01;
+
+                    _collected_points.push(pd);
+                }
+
+                _rtu_info.aber = true;
+
+                _state = State_RequestCOSDump;
+
+                break;
+            }
+
+            case Opcode_StatusChangeDumpCOS:
+            {
+                for( int i = 0; i < _outbound.payload[1]; i++ )
+                {
+                    pd.offset = i + _outbound.payload[0];
+                    pd.time    = Now.seconds();
+                    pd.type    = StatusPointType;
+                    pd.value   = (packet.data[i/8] >> (i % 8)) & 0x01;
+
+                    _collected_points.push(pd);
+                }
+
+                _rtu_info.cosr = true;
+
+                _state = State_Complete;
+
+                break;
+            }
+*/
+
 
 
 void CtiProtocolSeriesV::setRange( int point_count, int point_min, int point_max, unsigned char &req_begin, unsigned char &req_count )
@@ -421,227 +565,225 @@ int CtiProtocolSeriesV::decode( CtiXfer &xfer, int status )
     int retval = NoError;
     seriesv_pointdata pd;
     RWTime Now;
+    unsigned long in_actual = xfer.getInCountActual();
+    unsigned long in_body   = in_actual - 3;
 
     if( status )
     {
         retval = status;
+        //  check for short return!
     }
-    else
+    else if( _state != State_Invalid )
     {
         const seriesv_slave_packet &packet = *((seriesv_slave_packet *)_inbound);
 
-        //  ACH:  check the CRC FIRST
-        //          allow both a valid CRC AND another token - that way, we can do the LMI passthrough without having to calculate the CRC again
-
-        if( packet.station_id != _address )
+        //  NOTE - i am ONLY checking for the passthrough CRC, NOT the crc16!  Add crc16 later if need be!
+        if( (packet.data[in_body - 2] == (CtiProtocolSeriesV::PassthroughCRC & 0x00ff) &&
+             packet.data[in_body - 1] == (CtiProtocolSeriesV::PassthroughCRC & 0xff00) >> 8) )
         {
+            if( packet.station_id != _address )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - incoming address doesn't match **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            retval = ADDRESSERROR;
-        }
-        else
-        {
-            _rtu_info.status = packet.status;
-
-            //  clear them out ONLY after a successful comm return
-            _rtu_info.aber = false;
-            _rtu_info.cosr = false;
-
-            if( _rtu_info.status.bits.request_questionable )
-            {
-                //  i don't think any other status prohibits decode... ?
-
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - RTU status: request questionable **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** Checkpoint - incoming address (" << (int)packet.station_id << ") doesn't match (" << (int)_address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                retval = NOTNORMAL;
+                retval = ADDRESSERROR;
             }
             else
             {
-                switch( _outbound.opcode )
+                _rtu_info.status = packet.status;
+
+                //  clear them out ONLY after a successful comm return
+                _rtu_info.aber = false;
+                _rtu_info.cosr = false;
+
+                if( _rtu_info.status.bits.request_questionable )
                 {
-                    case Opcode_RTUConfigRequest:
+                    //  i don't think any other status prohibits decode... ?
+
                     {
-                        _rtu_info.analog_count = packet.data[0];
-                        _rtu_info.status_count = packet.data[1];
-                        _rtu_info.accum_count  = packet.data[2];
-
-                        //  don't touch the state
-
-                        break;
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - RTU status: request questionable **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    case Opcode_ScanAccumulator:
+                    retval = NOTNORMAL;
+                }
+                else if( !_configRead )
+                {
+                    _rtu_info.analog_count = packet.data[0];
+                    _rtu_info.status_count = packet.data[1];
+                    _rtu_info.accum_count  = packet.data[2];
+
+                    _configRead = true;
+                }
+                else
+                {
+                    //if( packet.
+
+                    switch( _command )
                     {
-                        for( int i = 0; i < _outbound.payload[1]; i++ )
+                        case Command_Loopback:
                         {
-                            pd.offset = i + _outbound.payload[0];
-                            pd.time    = Now.seconds();
-                            pd.type    = PulseAccumulatorPointType;
-                            pd.value   = (packet.data[i*2] << 8) | packet.data[i*2+1];
-
-                            _collected_points.push(pd);
+                            break;  //  noop, all we wanted was the reply
                         }
-
-                        _state = State_RequestAnalogs;
-
-                        break;
-                    }
-
-                    case Opcode_ScanAnalog:
-                    {
-                        for( int i = 0; i < _outbound.payload[1]; i++ )
+                        /*case Command_ScanException:
+                        case Command_ScanIntegrity:    */
+                        case Command_ScanAccumulator:
                         {
-                            pd.offset = i + _outbound.payload[0];
-                            pd.time    = Now.seconds();
-                            pd.type    = AnalogPointType;
-                            pd.value   = (packet.data[i*2] << 8) | packet.data[i*2+1];
+                            switch( _state )
+                            {
+                                case State_Init:
+                                case State_RequestAccumulators:
+                                {
+                                    for( int i = 0; i < _outbound.payload[1]; i++ )
+                                    {
+                                        pd.offset = i + _outbound.payload[0];
+                                        pd.time    = Now.seconds();
+                                        pd.type    = PulseAccumulatorPointType;
+                                        pd.value   = (packet.data[i*2] << 8) | packet.data[i*2+1];
 
-                            _collected_points.push(pd);
+                                        _collected_points.push(pd);
+                                    }
+
+                                    _state = State_RequestAnalogs;
+
+                                    break;
+                                }
+                                case State_RequestAnalogs:
+                                {
+                                    for( int i = 0; i < _outbound.payload[1]; i++ )
+                                    {
+                                        pd.offset = i + _outbound.payload[0];
+                                        pd.time    = Now.seconds();
+                                        pd.type    = AnalogPointType;
+                                        pd.value   = (packet.data[i*2] << 8) | packet.data[i*2+1];
+
+                                        _collected_points.push(pd);
+                                    }
+
+                                    _state = State_RequestAnalogOutputs;
+
+                                    break;
+                                }
+                                case State_RequestAnalogOutputs:
+                                {
+                                    for( int i = 0; i < _outbound.payload[1]; i++ )
+                                    {
+                                        pd.offset = i + _outbound.payload[0] + AnalogOutputOffset;
+                                        pd.time    = Now.seconds();
+                                        pd.type    = AnalogPointType;  //  maybe AnalogOutputPointType someday?
+                                        pd.value   = (packet.data[i*2] << 8) | packet.data[i*2+1];
+
+                                        _collected_points.push(pd);
+                                    }
+
+                                    _state = State_RequestStatuses;
+
+                                    break;
+                                }
+                                case State_RequestStatuses:
+                                {
+                                    for( int i = 0; i < _outbound.payload[1]; i++ )
+                                    {
+                                        pd.offset = i + _outbound.payload[0];
+                                        pd.time    = Now.seconds();
+                                        pd.type    = StatusPointType;
+                                        pd.value   = (packet.data[i/8] >> (i % 8)) & 0x01;
+
+                                        _collected_points.push(pd);
+                                    }
+
+                                    _state = State_Complete;
+
+                                    break;
+                                }
+                            }
+
+                            break;
                         }
-
-                        _state = State_RequestAnalogOutputs;
-
-                        break;
-                    }
-
-                    case Opcode_AnalogSetpointScan:
-                    {
-                        for( int i = 0; i < _outbound.payload[1]; i++ )
+                        case Command_Control:
                         {
-                            pd.offset = i + _outbound.payload[0] + AnalogOutputOffset;
-                            pd.time    = Now.seconds();
-                            pd.type    = AnalogPointType;  //  maybe AnalogOutputPointType someday?
-                            pd.value   = (packet.data[i*2] << 8) | packet.data[i*2+1];
+                            switch( _state )
+                            {
+                                case State_Init:
+                                case State_ControlSelect:
+                                {
+                                    _state = State_ControlExecute;
 
-                            _collected_points.push(pd);
+                                    break;
+                                }
+
+                                case State_ControlExecute:
+                                {
+                                    _state = State_Complete;
+
+                                    break;
+                                }
+                            }
+
+                            break;
+
                         }
-
-                        _state = State_RequestStatuses;
-
-                        break;
-                    }
-
-                    case Opcode_ScanStatus:
-                    {
-                        for( int i = 0; i < _outbound.payload[1]; i++ )
+                        case Command_AnalogSetpoint:
+                        case Command_AnalogSetpointDirect:
                         {
-                            pd.offset = i + _outbound.payload[0];
-                            pd.time    = Now.seconds();
-                            pd.type    = StatusPointType;
-                            pd.value   = (packet.data[i/8] >> (i % 8)) & 0x01;
+                            switch( _state )
+                            {
+                                case State_AnalogOutputSelect:
+                                {
+                                    //  maybe do some verification here
+                                    _state = State_AnalogOutputExecute;
 
-                            _collected_points.push(pd);
+                                    break;
+                                }
+
+                                case State_AnalogOutputExecute:
+                                case State_AnalogOutputDirectControl:
+                                {
+                                    //  complain if the point doesn't match, as above
+                                    _state = State_Complete;
+
+                                    break;
+                                }
+                            }
+
+                            break;
                         }
-
-                        _state = State_Complete;
-
-                        break;
-                    }
-
-                    case Opcode_AnalogChangeCountRequest:
-                    {
-                        _rtu_info.analog_change_count = packet.data[0];
-
-                        _state = State_RequestAnalogChangeDump;
-
-                        break;
-                    }
-
-                    case Opcode_AnalogChangeDump:
-                    {
-                        for( int i = 0; i < _outbound.payload[1]; i++ )
+                        default:
                         {
-                            pd.offset = i + _outbound.payload[0];
-                            pd.time    = Now.seconds();
-                            pd.type    = StatusPointType;
-                            pd.value   = (packet.data[i/8] >> (i % 8)) & 0x01;
-
-                            _collected_points.push(pd);
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint - invalid command \"" << _command << "\" in CtiProtocolSeriesV::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
                         }
-
-                        _rtu_info.aber = true;
-
-                        _state = State_RequestCOSDump;
-
-                        break;
                     }
 
-                    case Opcode_StatusChangeDumpCOS:
+
+
+                    switch( _outbound.opcode )
                     {
-                        for( int i = 0; i < _outbound.payload[1]; i++ )
+
+                        case Opcode_RTUStatusClear:
                         {
-                            pd.offset = i + _outbound.payload[0];
-                            pd.time    = Now.seconds();
-                            pd.type    = StatusPointType;
-                            pd.value   = (packet.data[i/8] >> (i % 8)) & 0x01;
+                            //  ACH:  this should probably propagate the expanded error to the requesting command (controls, especially),
+                            //    and also abort (no retries) the requesting command
+                            _state = State_Complete;
 
-                            _collected_points.push(pd);
+                            break;
                         }
-
-                        _rtu_info.cosr = true;
-
-                        _state = State_Complete;
-
-                        break;
-                    }
-
-                    case Opcode_ControlSelect:
-                    {
-                        _state = State_ControlExecute;
-
-                        break;
-                    }
-
-                    case Opcode_ControlExecute:
-                    {
-                        _state = State_Complete;
-
-                        break;
-                    }
-
-                    case Opcode_AnalogOutputSelect:
-                    case Opcode_AnalogOutputSelect + 1:
-                    case Opcode_AnalogOutputSelect + 2:
-                    case Opcode_AnalogOutputSelect + 3:
-                    {
-                        //  maybe do some verification here
-                        _state = State_AnalogOutputExecute;
-
-                        break;
-                    }
-
-                    case Opcode_AnalogOutputOperate:
-                    case Opcode_AnalogOutputOperate + 1:
-                    case Opcode_AnalogOutputOperate + 2:
-                    case Opcode_AnalogOutputOperate + 3:
-                    case Opcode_AnalogOutputDirectControl:
-                    case Opcode_AnalogOutputDirectControl + 1:
-                    case Opcode_AnalogOutputDirectControl + 2:
-                    case Opcode_AnalogOutputDirectControl + 3:
-                    {
-                        //  complain if the point doesn't match, as above
-                        _state = State_Complete;
-
-                        break;
-                    }
-
-                    case Opcode_RTUStatusClear:
-                    {
-                        //  ACH:  this should probably propagate the expanded error to the requesting command (controls, especially),
-                        //    and also abort (no retries) the requesting command
-                        _state = State_Complete;
-
-                        break;
                     }
                 }
             }
         }
+        else
+        {
+            retval = BADCRC;
+        }
+    }
+    else
+    {
+        retval = NOTNORMAL;
     }
 
     if( retval )

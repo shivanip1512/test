@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/14 17:08:10 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/05/11 18:31:25 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -241,10 +241,20 @@ INT CtiDeviceLMI::ResultDecode( INMESS *InMessage, RWTime &Now, RWTPtrSlist< Cti
     return 0;
 }
 
+void CtiDeviceLMI::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector)
+{
+    Inherited::getSQL(db, keyTable, selector);
+
+    _address.getSQL(db, keyTable, selector);
+}
+
+
 void CtiDeviceLMI::DecodeDatabaseReader(RWDBReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);
 
-    _lmi.setAddress(8);  //  WROOOOOOOOOONG -> getIED().getSlaveAddress());
+    _address.DecodeDatabaseReader(rdr);
+
+    _lmi.setAddress(_address.getSlaveAddress());
 }
 

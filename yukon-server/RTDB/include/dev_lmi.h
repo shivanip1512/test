@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/14 17:08:10 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/05/11 18:31:25 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,21 +18,26 @@
 #define __DEV_LMI_H__
 #pragma warning( disable : 4786 )
 
-#include "dev_ied.h"
+#include "dev_remote.h"
+#include "tbl_dv_address.h"
 #include "prot_lmi.h"
 
-class IM_EX_DEVDB CtiDeviceLMI : public CtiDeviceIED
+class IM_EX_DEVDB CtiDeviceLMI : public CtiDeviceRemote
 {
 private:
 
+    CtiTableDeviceAddress _address;
+
     CtiProtocolLMI _lmi;
-    typedef CtiDeviceIED Inherited;
+    typedef CtiDeviceRemote Inherited;
 
 protected:
 
 public:
 
     virtual CtiProtocolBase* getProtocol() const;
+
+    virtual void getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector);
 
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
