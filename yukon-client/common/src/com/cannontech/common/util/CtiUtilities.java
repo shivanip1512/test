@@ -313,18 +313,18 @@ public static int[] decodeRangeIDString( String string, final int maxID )
  * Creation date: (4/9/2001 3:16:28 PM)
  * @return java.lang.String
  * @param seconds int
- */
-/* Returns a string in the the format of
-			HH:mm
-	where HH is hours and mm is minutes.
-	WARNING: The hours returned may exceed 23
-	*/
+ *
+ * Returns a string in the the format of
+ *			HH:mm or H:mm
+ *	where HH is hours and mm is minutes.
+ *	WARNING: The hours returned may exceed 23
+ **/
 public static String decodeSecondsToTime(int seconds) 
 {
 	int intHour = seconds / 3600;
 	String hour = Integer.toString(intHour);
-	if( hour.length() <= 1 )
-		hour = "0" + hour;
+//	if( hour.length() <= 1 )
+//		hour = "0" + hour;
 		
 	String minute = Integer.toString( (seconds - (intHour*3600)) / 60);
 	if( minute.length() <= 1 )

@@ -49,9 +49,9 @@ public abstract class LMDirectGroupBase extends LMGroupBase implements ILMGroup
 	public String getStatistics()
 	{
 		return CtiUtilities.decodeSecondsToTime(getCurrentHoursDaily().intValue()) + " / " 
-			+ CtiUtilities.decodeSecondsToTime(getCurrentHoursMonthly().intValue()).substring(0, 2) + " / "
-			+ CtiUtilities.decodeSecondsToTime(getCurrentHoursSeasonal().intValue()).substring(0, 2) + " / "
-			+ CtiUtilities.decodeSecondsToTime(getCurrentHoursAnnually().intValue()).substring(0, 2); 
+			+ CtiUtilities.decodeSecondsToTime(getCurrentHoursMonthly().intValue()) + " / "
+			+ CtiUtilities.decodeSecondsToTime(getCurrentHoursSeasonal().intValue()) + " / "
+			+ CtiUtilities.decodeSecondsToTime(getCurrentHoursAnnually().intValue()); 
 	}
 	
 	/**
