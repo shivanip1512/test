@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/04/28 22:27:10 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/10/17 18:41:36 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,7 @@ CtiDNPCounter::CtiDNPCounter(int group, int variation) :
 
 int CtiDNPCounter::restore(unsigned char *buf, int len)
 {
+    //  ACH:  check minimum length, like the others
     return restoreVariation(buf, len, getVariation());
 }
 
@@ -70,8 +71,17 @@ int CtiDNPCounter::restoreVariation(unsigned char *buf, int len, int variation)
 {
     int pos = 0;
 
+    _valid = true;
+
     switch( variation )
     {
+        case Binary32Bit:
+        case Delta32Bit:
+        {
+            _flag = buf[pos++];
+
+            //  fall through
+        }
         case Binary32BitNoFlag:
         case Delta32BitNoFlag:
         {
@@ -85,6 +95,13 @@ int CtiDNPCounter::restoreVariation(unsigned char *buf, int len, int variation)
             break;
         }
 
+        case Binary16Bit:
+        case Delta16Bit:
+        {
+            _flag = buf[pos++];
+
+            //  fall through
+        }
         case Binary16BitNoFlag:
         case Delta16BitNoFlag:
         {
@@ -105,6 +122,7 @@ int CtiDNPCounter::restoreVariation(unsigned char *buf, int len, int variation)
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
+            _valid = false;
             pos = len;
 
             break;
@@ -135,9 +153,13 @@ CtiPointDataMsg *CtiDNPCounter::getPoint( void )
 
     switch(getVariation())
     {
+        case Binary32Bit:
         case Binary32BitNoFlag:
+        case Binary16Bit:
         case Binary16BitNoFlag:
+        case Delta32Bit:
         case Delta32BitNoFlag:
+        case Delta16Bit:
         case Delta16BitNoFlag:
         {
             val = _counter;

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:35:45 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/10/17 18:41:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,7 @@
 class CtiDNPCounter : public CtiDNPObject
 {
     unsigned long _counter;
+    unsigned char _flag;  //  this will be a bitfield struct someday
 
 protected:
     CtiDNPCounter(int group, int variation);
