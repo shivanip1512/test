@@ -25,12 +25,6 @@ insert into billingfileformats values(14, 'NISC-NCDC');
 
 
 
-/******************* New YukonListEntries *******************/
-insert into YukonListEntry values( 5, 1, 0, 'Home Phone', 2 );
-insert into YukonListEntry values( 6, 1, 0, 'Work Phone', 2 );
-
-
-
 /******************* START YUKONLISTENTRY CHANGES *******************/
 create table YukonSelectionList  (
    ListID               NUMBER                           not null,
@@ -59,6 +53,8 @@ insert into YukonListEntry values( 1, 1, 0, 'Email', 1 );
 insert into YukonListEntry values( 2, 1, 0, 'Phone Number', 2 );
 insert into YukonListEntry values( 3, 1, 0, 'Pager Number', 2 );
 insert into YukonListEntry values( 4, 1, 0, 'Fax Number', 2 );
+insert into YukonListEntry values( 5, 1, 0, 'Home Phone', 2 );
+insert into YukonListEntry values( 6, 1, 0, 'Work Phone', 2 );
 
 create index Indx_YkLstDefID on YukonListEntry (
    YukonDefinitionID ASC
