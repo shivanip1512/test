@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/30 14:54:13 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/10/24 19:54:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -133,7 +133,7 @@ void ApplyInitialDynamicConditions(const CtiHashKey *key, CtiPoint *&pTempPoint,
     return;
 }
 
-void CtiPointClientManager::RefreshList(LONG pointID)
+void CtiPointClientManager::RefreshPoint(LONG pointID)
 {
     LockGuard  guard(monitor());
 
