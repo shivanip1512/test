@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMControlHistoryDescriptor.java,v 1.55 2003/10/28 16:26:50 zyao Exp $
+ * $Id: StarsLMControlHistoryDescriptor.java,v 1.56 2003/10/31 21:00:11 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.55 $ $Date: 2003/10/28 16:26:50 $
+ * @version $Revision: 1.56 $ $Date: 2003/10/31 21:00:11 $
 **/
 public class StarsLMControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

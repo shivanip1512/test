@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsEnableServiceDescriptor.java,v 1.56 2003/10/31 21:00:15 zyao Exp $
+ * $Id: StarsCustomerContactsDescriptor.java,v 1.1 2003/10/31 21:00:12 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.56 $ $Date: 2003/10/31 21:00:15 $
+ * @version $Revision: 1.1 $ $Date: 2003/10/31 21:00:12 $
 **/
-public class StarsEnableServiceDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsCustomerContactsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,59 +47,87 @@ public class StarsEnableServiceDescriptor extends org.exolab.castor.xml.util.XML
      //- Constructors -/
     //----------------/
 
-    public StarsEnableServiceDescriptor() {
+    public StarsCustomerContactsDescriptor() {
         super();
-        xmlName = "stars-EnableService";
+        xmlName = "stars-CustomerContacts";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- _inventoryID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_inventoryID", "inventoryID", NodeType.Attribute);
+        //-- initialize element descriptors
+        
+        //-- _primaryContact
+        desc = new XMLFieldDescriptorImpl(PrimaryContact.class, "_primaryContact", "PrimaryContact", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsEnableService target = (StarsEnableService) object;
-                if(!target.hasInventoryID())
-                    return null;
-                return new Integer(target.getInventoryID());
+                StarsCustomerContacts target = (StarsCustomerContacts) object;
+                return target.getPrimaryContact();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsEnableService target = (StarsEnableService) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteInventoryID();
-                        return;
-                    }
-                    target.setInventoryID( ((Integer)value).intValue());
+                    StarsCustomerContacts target = (StarsCustomerContacts) object;
+                    target.setPrimaryContact( (PrimaryContact) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new PrimaryContact();
             }
         } );
         desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _inventoryID
+        //-- validation code for: _primaryContact
         fieldValidator = new FieldValidator();
-        { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
-        }
+        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
-        //-- initialize element descriptors
+        //-- _additionalContactList
+        desc = new XMLFieldDescriptorImpl(AdditionalContact.class, "_additionalContactList", "AdditionalContact", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustomerContacts target = (StarsCustomerContacts) object;
+                return target.getAdditionalContact();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustomerContacts target = (StarsCustomerContacts) object;
+                    target.addAdditionalContact( (AdditionalContact) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new AdditionalContact();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(true);
+        addFieldDescriptor(desc);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsEnableServiceDescriptor()
+        //-- validation code for: _additionalContactList
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(0);
+        desc.setValidator(fieldValidator);
+        
+    } //-- com.cannontech.stars.xml.serialize.StarsCustomerContactsDescriptor()
 
 
       //-----------/
@@ -131,7 +159,7 @@ public class StarsEnableServiceDescriptor extends org.exolab.castor.xml.util.XML
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsEnableService.class;
+        return com.cannontech.stars.xml.serialize.StarsCustomerContacts.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

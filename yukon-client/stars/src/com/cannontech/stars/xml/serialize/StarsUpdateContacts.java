@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: BillingAddress.java,v 1.56 2003/10/31 21:00:13 zyao Exp $
+ * $Id: StarsUpdateContacts.java,v 1.1 2003/10/31 21:00:14 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,9 +23,9 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.56 $ $Date: 2003/10/31 21:00:13 $
+ * @version $Revision: 1.1 $ $Date: 2003/10/31 21:00:14 $
 **/
-public class BillingAddress extends StarsCustomerAddress 
+public class StarsUpdateContacts extends StarsCustomerContacts 
 implements java.io.Serializable
 {
 
@@ -34,9 +34,9 @@ implements java.io.Serializable
      //- Constructors -/
     //----------------/
 
-    public BillingAddress() {
+    public StarsUpdateContacts() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.BillingAddress()
+    } //-- com.cannontech.stars.xml.serialize.StarsUpdateContacts()
 
 
       //-----------/
@@ -85,11 +85,11 @@ implements java.io.Serializable
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.BillingAddress unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsUpdateContacts unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.BillingAddress) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.BillingAddress.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.BillingAddress unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsUpdateContacts) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsUpdateContacts.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsUpdateContacts unmarshal(java.io.Reader) 
 
     /**
     **/

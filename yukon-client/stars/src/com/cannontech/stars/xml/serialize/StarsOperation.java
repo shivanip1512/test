@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.55 2003/10/28 16:26:51 zyao Exp $
+ * $Id: StarsOperation.java,v 1.56 2003/10/31 21:00:11 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.55 $ $Date: 2003/10/28 16:26:51 $
+ * @version $Revision: 1.56 $ $Date: 2003/10/31 21:00:11 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -67,6 +67,10 @@ public class StarsOperation implements java.io.Serializable {
      * Update a customer account
     **/
     private StarsUpdateCustomerAccount _starsUpdateCustomerAccount;
+
+    private StarsUpdateContacts _starsUpdateContacts;
+
+    private StarsUpdateContactsResponse _starsUpdateContactsResponse;
 
     /**
      * Update the LM programs for a customer account
@@ -690,6 +694,26 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsUpdateCallReport;
     } //-- StarsUpdateCallReport getStarsUpdateCallReport() 
+
+    /**
+     * Returns the value of field 'starsUpdateContacts'.
+     * 
+     * @return the value of field 'starsUpdateContacts'.
+    **/
+    public StarsUpdateContacts getStarsUpdateContacts()
+    {
+        return this._starsUpdateContacts;
+    } //-- StarsUpdateContacts getStarsUpdateContacts() 
+
+    /**
+     * Returns the value of field 'starsUpdateContactsResponse'.
+     * 
+     * @return the value of field 'starsUpdateContactsResponse'.
+    **/
+    public StarsUpdateContactsResponse getStarsUpdateContactsResponse()
+    {
+        return this._starsUpdateContactsResponse;
+    } //-- StarsUpdateContactsResponse getStarsUpdateContactsResponse() 
 
     /**
      * Returns the value of field 'starsUpdateControlNotification'.
@@ -1444,6 +1468,28 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsUpdateCallReport = starsUpdateCallReport;
     } //-- void setStarsUpdateCallReport(StarsUpdateCallReport) 
+
+    /**
+     * Sets the value of field 'starsUpdateContacts'.
+     * 
+     * @param starsUpdateContacts the value of field
+     * 'starsUpdateContacts'.
+    **/
+    public void setStarsUpdateContacts(StarsUpdateContacts starsUpdateContacts)
+    {
+        this._starsUpdateContacts = starsUpdateContacts;
+    } //-- void setStarsUpdateContacts(StarsUpdateContacts) 
+
+    /**
+     * Sets the value of field 'starsUpdateContactsResponse'.
+     * 
+     * @param starsUpdateContactsResponse the value of field
+     * 'starsUpdateContactsResponse'.
+    **/
+    public void setStarsUpdateContactsResponse(StarsUpdateContactsResponse starsUpdateContactsResponse)
+    {
+        this._starsUpdateContactsResponse = starsUpdateContactsResponse;
+    } //-- void setStarsUpdateContactsResponse(StarsUpdateContactsResponse) 
 
     /**
      * Sets the value of field 'starsUpdateControlNotification'.
