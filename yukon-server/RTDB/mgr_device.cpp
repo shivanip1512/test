@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2004/06/01 21:45:47 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2004/06/01 21:51:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -299,7 +299,7 @@ void CtiDeviceManager::refreshDevices(bool &rowFound, RWDBReader& rdr, CtiDevice
 
 CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortRemoteEqual (LONG Port, LONG Remote)
 {
-    CtiDeviceBase     *p = NULL;
+    ptr_type p;
 
     LockGuard  dev_guard(getMux());
 
@@ -315,14 +315,14 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortRemoteEqual (LONG Port
 
     for(itr = begin(); itr != end(); itr++)
     {
-        p = (itr->second).get();
+        p = itr->second;
 
         if( p->getAddress() > 0 &&  p->getPortID() == Port && p->getAddress() == Remote )
         {
             break;
         }
 
-        p = NULL;
+        p.reset();
     }
 
     return p;
