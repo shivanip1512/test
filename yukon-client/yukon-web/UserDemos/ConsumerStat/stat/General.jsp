@@ -101,9 +101,13 @@
                         <td width="139"> <div align="center"> <span class="TableCell"> 
                             <%= program.getProgramName() %></span> <br>
                           </div></td>
-                        <td width="134" class="Main"> <div align="center"><strong>You 
-                            have not <br>
-                            been controlled</strong></div></td>
+                        <td width="134" class="Main"> <div align="center"><b>You have not<br>
+                            been controlled</b>
+							<!--<b>You have<br>
+                            been controlled</b>-->
+							<!--<b>Currently<br>
+							controlling</b>-->
+							</div></td>
                     </table></td>
                 </tr>
               </table>
