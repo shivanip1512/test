@@ -594,18 +594,17 @@ public class StarsAdmin extends HttpServlet {
 					pubProgDB.setLMProgramID( new Integer(progID) );
 					pubProgDB.setChanceOfControlID( Integer.valueOf(progCtrlOdds[i]) );
 					
+					if (progDispNames[i].indexOf(",") >= 0)
+						progDispNames[i] = "\"" + progDispNames[i] + "\"";
+					if (progShortNames[i].indexOf(",") >= 0)
+						progShortNames[i] = "\"" + progShortNames[i] + "\"";
+					
 					com.cannontech.database.db.web.YukonWebConfiguration cfg =
 							new com.cannontech.database.db.web.YukonWebConfiguration();
 					cfg.setLogoLocation( progIconNames[i] );
 					cfg.setAlternateDisplayName( progDispNames[i] + "," + progShortNames[i] );
-					if (progDescFiles[i].length() == 0) {
-						cfg.setDescription( progDescriptions[i].replaceAll(LINE_SEPARATOR, "<br>") );
-						cfg.setURL( "" );
-					}
-					else {
-						cfg.setDescription( "" );
-						cfg.setURL( progDescFiles[i] );
-					}
+					cfg.setDescription( progDescriptions[i].replaceAll(LINE_SEPARATOR, "<br>") );
+					cfg.setURL( progDescFiles[i] );
 					pubProg.setWebConfiguration( cfg );
 					
 					if (pubPrograms[i] != null) {
@@ -1948,7 +1947,7 @@ public class StarsAdmin extends HttpServlet {
 				else if (roleProps[i].getRolePropertyID() == EnergyCompanyRole.OPERATOR_GROUP_IDS)
 					groupRole.setValue( operGroupIDs );
 				else
-					groupRole.setValue( "" );
+					groupRole.setValue( CtiUtilities.STRING_NONE );
 				
 				dftGroup.getYukonGroupRoles().add( groupRole );
 			}

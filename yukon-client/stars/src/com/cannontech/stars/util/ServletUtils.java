@@ -302,7 +302,7 @@ public class ServletUtils {
     
     // Return program display names: display name, short name (used in enrollment page)
     public static String[] getProgramDisplayNames(StarsEnrLMProgram starsProg) {
-    	String[] names = starsProg.getStarsWebConfig().getAlternateDisplayName().split(",");
+    	String[] names = ServerUtils.splitString( starsProg.getStarsWebConfig().getAlternateDisplayName(), "," );
     	String[] dispNames = new String[2];
     	for (int i = 0; i < 2; i++) {
     		if (i < names.length)
