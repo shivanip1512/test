@@ -310,13 +310,10 @@ public class StarsAdmin extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
-			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
-			StarsCustomerAddress starsAddr = null;
-			
 			int addressID = Integer.parseInt( req.getParameter("AddressID") );
 			boolean newAddress = (addressID <= 0);
 			String referer = req.getParameter( "REFERER" );
+			StarsCustomerAddress starsAddr = null;
 			
 			if (referer.equalsIgnoreCase("EnergyCompany.jsp")) {
 				StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute( ENERGY_COMPANY_TEMP );
@@ -329,6 +326,7 @@ public class StarsAdmin extends HttpServlet {
 			
 			if (!newAddress) {
 				LiteAddress liteAddr = energyCompany.getAddress( starsAddr.getAddressID() );
+				
 				com.cannontech.database.db.customer.Address addr =
 						(com.cannontech.database.db.customer.Address) StarsLiteFactory.createDBPersistent( liteAddr );
 				addr.setLocationAddress1( req.getParameter("StreetAddr1") );
@@ -337,12 +335,13 @@ public class StarsAdmin extends HttpServlet {
 				addr.setStateCode( req.getParameter("State") );
 				addr.setZipCode( req.getParameter("Zip") );
 				addr.setCounty( req.getParameter("County") );
-	        	
+				
 				addr = (com.cannontech.database.db.customer.Address)
 						Transaction.createTransaction( Transaction.UPDATE, addr ).execute();
+				
 				StarsLiteFactory.setLiteAddress( liteAddr, addr );
 				StarsLiteFactory.setStarsCustomerAddress( starsAddr, liteAddr );
-	        	
+				
 				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Address information updated successfully");
 			}
 			else {
@@ -456,17 +455,8 @@ public class StarsAdmin extends HttpServlet {
 			com.cannontech.database.data.customer.Contact contact =
 					new com.cannontech.database.data.customer.Contact();
 			
-			boolean newContact = (energyCompany.getPrimaryContactID() == CtiUtilities.NONE_ID);
-			LiteContact liteContact = null;
-			
-			if (newContact) {
-				contact.getContact().setContLastName( CtiUtilities.STRING_NONE );
-				contact.getContact().setContFirstName( CtiUtilities.STRING_NONE );
-			}
-			else {
-				liteContact = ContactFuncs.getContact( energyCompany.getPrimaryContactID() );
-				StarsLiteFactory.setContact( contact, liteContact );
-			}
+			LiteContact liteContact = ContactFuncs.getContact( energyCompany.getPrimaryContactID() );
+			StarsLiteFactory.setContact( contact, liteContact );
 			
 			com.cannontech.database.db.contact.ContactNotification notifPhone = null;
 			com.cannontech.database.db.contact.ContactNotification notifFax = null;
@@ -534,32 +524,9 @@ public class StarsAdmin extends HttpServlet {
 				}
 			}
 			
-			if (newContact) {
-				com.cannontech.database.db.customer.Address addr =
-						new com.cannontech.database.db.customer.Address();
-				addr.setStateCode( " " );
-				StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute( ENERGY_COMPANY_TEMP );
-				if (ecTemp != null)
-					StarsFactory.setCustomerAddress( addr, ecTemp.getCompanyAddress() );
-				contact.setAddress( addr );
-				
-				contact = (com.cannontech.database.data.customer.Contact)
-						Transaction.createTransaction( Transaction.INSERT, contact ).execute();
-				liteContact = new LiteContact( contact.getContact().getContactID().intValue() );
-				StarsLiteFactory.setLiteContact( liteContact, contact );
-				
-				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
-				
-				CompanyAddress starsAddr = new CompanyAddress();
-				StarsLiteFactory.setStarsCustomerAddress(
-						starsAddr, energyCompany.getAddress(contact.getContact().getAddressID().intValue()) );
-				ec.setCompanyAddress( starsAddr );
-			}
-			else {
-				contact = (com.cannontech.database.data.customer.Contact)
-						Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
-				StarsLiteFactory.setLiteContact( liteContact, contact );
-			}
+			contact = (com.cannontech.database.data.customer.Contact)
+					Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
+			StarsLiteFactory.setLiteContact( liteContact, contact );
 			
 			LiteContactNotification liteNotifPhone = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_PHONE );
 			ec.setMainPhoneNumber( ECUtils.getNotification(liteNotifPhone) );
@@ -571,7 +538,7 @@ public class StarsAdmin extends HttpServlet {
 			ec.setEmail( ECUtils.getNotification(liteNotifEmail) );
 			
 			String compName = req.getParameter("CompanyName");
-			if (newContact || !energyCompany.getName().equals( compName )) {
+			if (!energyCompany.getName().equals( compName )) {
 				energyCompany.setName( compName );
 				energyCompany.setPrimaryContactID( contact.getContact().getContactID().intValue() );
 				Transaction.createTransaction( Transaction.UPDATE, StarsLiteFactory.createDBPersistent(energyCompany) ).execute();
@@ -1170,6 +1137,8 @@ public class StarsAdmin extends HttpServlet {
 				StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute( SERVICE_COMPANY_TEMP );
 				if (scTemp != null)
 					StarsFactory.setCustomerAddress( address, scTemp.getCompanyAddress() );
+				else
+					address.setStateCode( "" );
 				
 				company.setAddress( address );
 				company.setPrimaryContact( contactDB );
@@ -2250,10 +2219,9 @@ public class StarsAdmin extends HttpServlet {
 				contact.getContactNotifVect().add( notifEmail );
 			}
 			
-			com.cannontech.database.db.customer.Address addr =
-					new com.cannontech.database.db.customer.Address();
-			addr.setStateCode( " " );
-			contact.setAddress( addr );
+			com.cannontech.database.db.customer.Address address = new com.cannontech.database.db.customer.Address();
+			address.setStateCode( "" );
+			contact.setAddress( address );
 			
 			contact = (com.cannontech.database.data.customer.Contact)
 					Transaction.createTransaction( Transaction.INSERT, contact ).execute();
