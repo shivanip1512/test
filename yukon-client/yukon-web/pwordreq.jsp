@@ -108,6 +108,14 @@ boolean starsExists = VersionTools.starsExists();
 	} 
 %>
 
+				<tr> 
+                  <td width="83" class = "MainText" align="right">Energy Provider:</td>
+                  <td width="117"> 
+                    <input type="text" name="ENERGY_COMPANY" size="26">
+                  </td>
+                </tr>
+
+
                 <tr> 
                   <td width="83" class = "MainText" align="right">Your Notes:</td>
                   <td width="117">

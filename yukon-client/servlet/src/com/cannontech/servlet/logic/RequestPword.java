@@ -11,7 +11,7 @@ import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.application.WebClientRole;
+import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.tools.email.EmailMessage;
 
 /**
@@ -36,6 +36,7 @@ public class RequestPword
 	private String fName = null;
 	private String lName = null;
 	private String notes = null;
+    private String energyCompany = null;
 
 	private int state = RET_FAILED;
 	private String resultString = "";
@@ -66,8 +67,8 @@ public class RequestPword
 		allParams = new String[] { userName, email, fName, lName };
 
 
-		Object o = ClientSession.getInstance().getRolePropertyValue(
-							WebClientRole.LOG_IN_URL );
+		Object o = ClientSession.getInstance().getRolePropertyValue(                            
+							SystemRole.MAIL_FROM_ADDRESS );
 
 		if( o != null )
 			masterMail = o.toString();
@@ -77,160 +78,234 @@ public class RequestPword
 	{
 		return resultString;
 	}
+    
+    private void handleEmail()
+    {
+        //unique system wide email address
+        if( email != null )
+        {
+            //we may continue after this, remove all the stored data
+            foundData.clear();
+            
+            LiteContact lc = ContactFuncs.getContactByEmailNotif( email );
+            if( lc == null )
+                setState( RET_FAILED, "Contact for Email not found, try again" );
+            else
+            {
+                foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );
+                foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lc.getLoginID()).getUsername() );
 
+                LiteEnergyCompany[] cmps = processContact( lc );
+                processEnergyCompanies( cmps );
+            }
+        }
+        
+    }
+    
+    private void handleUserName()
+    {
+        //unique system wide user name
+        if( userName != null )
+        {
+            //we may continue after this, remove all the stored data
+            foundData.clear();
+            
+            LiteYukonUser user = YukonUserFuncs.getLiteYukonUser( userName );
+            if( user == null )
+                setState( RET_FAILED, "User Name not found, try again" );
+            else
+            {
+                foundData.add( " User Name: " + user.getUsername() );                   
 
+                LiteContact lc = YukonUserFuncs.getLiteContact( user.getUserID() );
+                if( lc == null )
+                {
+                    setState( RET_FAILED, "Contact for User Name not found, try again" );
+                }
+                else
+                {
+                    foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );                    
+    
+                    LiteEnergyCompany[] cmps = processContact( lc );                    
+                    processEnergyCompanies( cmps );
+                }
+            }
+        }
+
+    }
+
+    private void handleFName()
+    {
+        if( fName != null )
+        {
+            //we may continue after this, remove all the stored data
+            foundData.clear();
+            
+            LiteContact[] lConts = ContactFuncs.getContactsByFName( fName );
+            if( lConts.length == 1 )
+            {
+                //if we also have a last name, try to match BOTH names
+                if( lName != null )
+                {
+                    if( lName.equalsIgnoreCase(lConts[0].getContLastName()) )
+                    {
+                        foundData.add( " Contact Name: " + lConts[0].getContFirstName() + " " + lConts[0].getContLastName() );                  
+                        foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
+                        
+                        LiteEnergyCompany[] cmps = processContact( lConts[0] );
+                        processEnergyCompanies( cmps );                                 
+                    }
+                    else
+                    {
+                        setState( RET_FAILED, "Name not found, try again" );
+                    }
+                    
+                }
+                else
+                {
+                    foundData.add( " Contact Name: " + lConts[0].getContFirstName() + " " + lConts[0].getContLastName() );                  
+                    foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
+
+                    LiteEnergyCompany[] cmps = processContact( lConts[0] );                 
+                    processEnergyCompanies( cmps );
+                }
+            }
+            else if( lConts.length < 1 )
+            {
+                setState( RET_FAILED, "First name not found, try again" );
+            }
+            else //many contacts found to have this same first name
+            {
+                //if we also have a last name, try to match BOTH names
+                if( lName != null )
+                {
+                    for( int i = 0; i < lConts.length; i++ )
+                    {
+                        if( lName.equalsIgnoreCase(lConts[i].getContLastName()) )
+                        {
+                            foundData.add( " Contact Name: " + lConts[i].getContFirstName() + " " + lConts[i].getContLastName() );                  
+                            foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[i].getLoginID()).getUsername() );
+                            
+                            LiteEnergyCompany[] cmps = processContact( lConts[i] );
+                            processEnergyCompanies( cmps );                                 
+                        }
+                    }
+                }
+                else
+                {
+                    setState( RET_FAILED, "More than one first name found, forwarding request onto the WebMaster" );
+                    subject = "WebMaster: " + subject;
+                    foundData.add( " " + getResultString() );
+                    foundData.add( " Number of Contacts for this First Name: " + lConts.length );
+                    for( int i = 0; i < lConts.length; i++ )
+                        foundData.add( "   Contacts " + i + ": " + lConts[i].toString() );
+
+                    sendEmails( new String[] { masterMail }, genBody() );
+                }
+                    
+            }
+
+        }
+
+    }
+
+    
+    private void handleLName()
+    {
+        if( lName != null )
+        {
+            //we may continue after this, remove all the stored data
+            foundData.clear();
+            
+            LiteContact[] lConts = ContactFuncs.getContactsByLName( lName );
+            if( lConts.length == 1 )
+            {
+                //if we also have a first name, try to match BOTH names
+                if( fName != null )
+                {
+                    if( fName.equalsIgnoreCase(lConts[0].getContFirstName()) )
+                    {
+                        foundData.add( " Contact Name: " + lConts[0].getContFirstName() + " " + lConts[0].getContLastName() );                  
+                        foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
+                        LiteEnergyCompany[] cmps = processContact( lConts[0] );
+                        processEnergyCompanies( cmps );                                 
+                    }
+                    else
+                    {
+                        setState( RET_FAILED, "Name not found, try again" );
+                    }                    
+                }
+                else
+                {
+                    foundData.add( " Contact Name: " + lConts[0].getContFirstName() + " " + lConts[0].getContLastName() );                  
+                    foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
+                    
+                    LiteEnergyCompany[] cmps = processContact( lConts[0] );                 
+                    processEnergyCompanies( cmps );
+                }
+            }
+            else if( lConts.length < 1 )
+            {
+                setState( RET_FAILED, "Last name not found, try again" );
+            }
+            else //many contacts found to have this same first name
+            {
+                //if we also have a first name, try to match BOTH names
+                if( fName != null )
+                {
+                    for( int i = 0; i < lConts.length; i++ )
+                    {
+                        if( fName.equalsIgnoreCase(lConts[i].getContFirstName()) )
+                        {
+                            foundData.add( " Contact Name: " + lConts[i].getContFirstName() + " " + lConts[i].getContLastName() );                  
+                            foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[i].getLoginID()).getUsername() );
+
+                            LiteEnergyCompany[] cmps = processContact( lConts[i] );                 
+                            processEnergyCompanies( cmps );                                 
+                        }
+                    }
+                }
+                else
+                {                       
+                    setState( RET_FAILED, "More than one last name found, forwarding request onto the WebMaster" );
+                    subject = "WebMaster: " + subject;
+                    foundData.add( " " + getResultString() );
+                    foundData.add( " Number of Contacts for this Last Name: " + lConts.length );
+                    for( int i = 0; i < lConts.length; i++ )
+                        foundData.add( "   Contacts " + i + ": " + lConts[i].toString() );
+
+                    sendEmails( new String[] { masterMail }, genBody() );
+                }
+            }
+                
+                
+        }
+
+    }
+    
 	public void doRequest()
 	{
 
 		try
 		{
 			//unique system wide email address
-			if( email != null )
-			{
-				//we may continue after this, remove all the stored data
-				foundData.clear();
-				
-				LiteContact lc = ContactFuncs.getContactByEmailNotif( email );
-				if( lc == null )
-					setState( RET_FAILED, "Email not found, try again" );
-				else
-				{
-					foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );
-					foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lc.getLoginID()).getUsername() );
-
-					LiteEnergyCompany[] cmps = processContact( lc );
-					processEnergyCompanies( cmps );
-				}
-			}
+            handleEmail();
 				
 			//unique system wide user name
-			if( getState() != RET_SUCCESS && userName != null )
+			if( getState() != RET_SUCCESS )
 			{
-				//we may continue after this, remove all the stored data
-				foundData.clear();
-				
-				LiteYukonUser user = YukonUserFuncs.getLiteYukonUser( userName );
-				if( user == null )
-					setState( RET_FAILED, "User Name not found, try again" );
-				else
-				{
-					foundData.add( " User Name: " + user.getUsername() );					
-
-					LiteContact lc = YukonUserFuncs.getLiteContact( user.getUserID() );
-					if( lc == null )
-						setState( RET_FAILED, "User Name not found, try again" );
-	
-					foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );					
-
-					LiteEnergyCompany[] cmps = processContact( lc );					
-					processEnergyCompanies( cmps );
-				}
+                handleUserName();
 			}
 				
-			if( getState() != RET_SUCCESS && fName != null )
+			if( getState() != RET_SUCCESS )
 			{
-				//we may continue after this, remove all the stored data
-				foundData.clear();
-				
-				LiteContact[] lConts = ContactFuncs.getContactsByFName( fName );
-				if( lConts.length == 1 )
-				{
-					foundData.add( " Contact Name: " + lConts[0].getContFirstName() + " " + lConts[0].getContLastName() );					
-					foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
-
-					LiteEnergyCompany[] cmps = processContact( lConts[0] );					
-					processEnergyCompanies( cmps );
-				}
-				else if( lConts.length < 1 )
-				{
-					setState( RET_FAILED, "First name not found, try again" );
-				}
-				else //many contacts found to have this same first name
-				{
-					//if we also have a last name, try to match BOTH names
-					if( lName != null )
-					{
-						for( int i = 0; i < lConts.length; i++ )
-						{
-							if( lName.equalsIgnoreCase(lConts[i].getContLastName()) )
-							{
-								foundData.add( " Contact Name: " + lConts[i].getContFirstName() + " " + lConts[i].getContLastName() );					
-								foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[i].getLoginID()).getUsername() );
-								
-								LiteEnergyCompany[] cmps = processContact( lConts[i] );
-								processEnergyCompanies( cmps );									
-							}
-						}
-					}
-					else
-					{
-						setState( RET_FAILED, "More than one first name found, forwarding request onto the WebMaster" );
-						subject = "WebMaster: " + subject;
-						foundData.add( " " + getResultString() );
-						foundData.add( " Number of Contacts for this First Name: " + lConts.length );
-						for( int i = 0; i < lConts.length; i++ )
-							foundData.add( "   Contacts " + i + ": " + lConts[i].toString() );
-
-						sendEmails( new String[] { masterMail }, genBody() );
-					}
-						
-				}
-					
-					
+                handleFName();
 			}
 				
-			if( getState() != RET_SUCCESS && lName != null )
+			if( getState() != RET_SUCCESS )
 			{
-				//we may continue after this, remove all the stored data
-				foundData.clear();
-				
-				LiteContact[] lConts = ContactFuncs.getContactsByLName( lName );
-				if( lConts.length == 1 )
-				{
-					foundData.add( " Contact Name: " + lConts[0].getContFirstName() + " " + lConts[0].getContLastName() );					
-					foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
-					
-					LiteEnergyCompany[] cmps = processContact( lConts[0] );					
-					processEnergyCompanies( cmps );						
-				}
-				else if( lConts.length < 1 )
-				{
-					setState( RET_FAILED, "Last name not found, try again" );
-				}
-				else //many contacts found to have this same first name
-				{
-					//if we also have a first name, try to match BOTH names
-					if( fName != null )
-					{
-						for( int i = 0; i < lConts.length; i++ )
-						{
-							if( fName.equalsIgnoreCase(lConts[i].getContFirstName()) )
-							{
-								foundData.add( " Contact Name: " + lConts[i].getContFirstName() + " " + lConts[i].getContLastName() );					
-								foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[i].getLoginID()).getUsername() );
-
-								LiteEnergyCompany[] cmps = processContact( lConts[i] );					
-								processEnergyCompanies( cmps );									
-							}
-						}
-					}
-					else
-					{						
-						setState( RET_FAILED, "More than one last name found, forwarding request onto the WebMaster" );
-						subject = "WebMaster: " + subject;
-						foundData.add( " " + getResultString() );
-						foundData.add( " Number of Contacts for this Last Name: " + lConts.length );
-						for( int i = 0; i < lConts.length; i++ )
-							foundData.add( "   Contacts " + i + ": " + lConts[i].toString() );
-
-						sendEmails( new String[] { masterMail }, genBody() );
-					}
-				}
-					
-					
+                handleLName();
 			}
-
-
 
 
 		}
@@ -380,11 +455,15 @@ public class RequestPword
 			body += foundData.get(i).toString() + 
 					  (i == (foundData.size()-1) ? "" : CR);
 
-		if( getNotes() != null )
+        if( getEnergyCompany() != null )
+            body += CR + CR + 
+                    "The user supplied the following Energy Company: " + getEnergyCompany();
+
+        if( getNotes() != null )
 			body += CR + CR + 
 					"The user supplied the following notes:" + CR + getNotes();
-
-
+        
+        
 		return body;
 	}
 
@@ -427,5 +506,21 @@ public class RequestPword
 	{
 		notes = string;
 	}
+
+    /**
+     * @param string
+     */
+    public void setEnergyCompany(String enrgyCompany)
+    {
+        energyCompany = enrgyCompany;
+    }
+
+    /**
+     * @param string
+     */
+    public String getEnergyCompany()
+    {
+        return energyCompany;
+    }
 
 }

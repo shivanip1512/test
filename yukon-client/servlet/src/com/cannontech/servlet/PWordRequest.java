@@ -34,6 +34,7 @@ public class PWordRequest extends javax.servlet.http.HttpServlet
 		String lName = ServletUtil.getParm( req, "LAST_NAME");
 		String accNum = ServletUtil.getParm( req, "ACCOUNT_NUM");		
 		String notes = ServletUtil.getParm( req, "NOTES");
+        String energyComp = ServletUtil.getParm( req, "ENERGY_COMPANY");
 
 
 		RequestPword reqPword = createRequest( 
@@ -41,6 +42,7 @@ public class PWordRequest extends javax.servlet.http.HttpServlet
 			email, fName, lName, accNum );
 
 		reqPword.setNotes( notes );
+        reqPword.setEnergyCompany( energyComp );
 
 		String returnURI = "";
 
