@@ -89,7 +89,7 @@ public class YukonServerResource extends YukonResourceBase
    public synchronized IMACSConnection getMACSConnection()
    {
       if( macsConnection == null )
-         macsConnection = new com.cannontech.ejb.MACSConnectionBean();
+         macsConnection = new com.cannontech.yukon.connections.ServerMACSConnection();
       
       return macsConnection;
    }
