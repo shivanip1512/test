@@ -20,38 +20,22 @@
 		response.sendRedirect("/login.jsp"); return;
 	}
 	
-	if (com.cannontech.database.cache.functions.AuthFuncs.checkRole(lYukonUser, RoleTypes.OPERATOR_CONSUMER_INFO) == null)
-		return;
-			
     java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
+	
 	String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
+	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
+	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 	
-	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-	if (user == null || user.getYukonUser().getUserID() != lYukonUser.getUserID()) {	// This is logged in using the normal LoginController, not the StarsLoginController
-		user = SOAPServer.getStarsYukonUser( lYukonUser );
-		session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
-		
-		MultiAction actions = new MultiAction();
-		actions.addAction( new GetEnergyCompanySettingsAction(), request, session );
-		
-		SOAPMessage reqMsg = actions.build(request, session);
-		SOAPUtil.logSOAPMsgForOperation( reqMsg, "*** Send Message *** " );
-		SOAPMessage respMsg = actions.process(reqMsg, session);
-		SOAPUtil.logSOAPMsgForOperation( respMsg, "*** Receive Message *** " );
-		actions.parse(reqMsg, respMsg, session);
-	}
-	
-	StarsGetEnergyCompanySettingsResponse ecSettings = (StarsGetEnergyCompanySettingsResponse)
-			user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
-	StarsEnergyCompany energyCompany = ecSettings.getStarsEnergyCompany();
-	StarsWebConfig ecWebSettings = ecSettings.getStarsWebConfig();
-	StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
-	StarsServiceCompanies companies = ecSettings.getStarsServiceCompanies();
-	StarsExitInterviewQuestions exitQuestions = ecSettings.getStarsExitInterviewQuestions();
-	StarsDefaultThermostatSettings dftThermoSettings = ecSettings.getStarsDefaultThermostatSettings();
+	StarsGetEnergyCompanySettingsResponse ecSettings = null;
+	StarsEnergyCompany energyCompany = null;
+	StarsWebConfig ecWebSettings = null;
+	StarsEnrollmentPrograms categories = null;
+	StarsServiceCompanies companies = null;
+	StarsExitInterviewQuestions exitQuestions = null;
+	StarsDefaultThermostatSettings dftThermoSettings = null;
 	Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 	
 	StarsCustAccountInformation accountInfo = null;
@@ -70,37 +54,64 @@
 	StarsThermostatSettings thermoSettings = null;
 	StarsUser userLogin = null;
 	
-	accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-	if (accountInfo != null) {
-		account = accountInfo.getStarsCustomerAccount();
-		propAddr = account.getStreetAddress();
-		siteInfo = account.getStarsSiteInformation();
-		billAddr = account.getBillingAddress();
-		primContact = account.getPrimaryContact();
-		
-		residence = accountInfo.getStarsResidenceInformation();
-		appliances = accountInfo.getStarsAppliances();
-		inventories = accountInfo.getStarsInventories();
-		programs = accountInfo.getStarsLMPrograms();
-		callHist = accountInfo.getStarsCallReportHistory();
-		serviceHist = accountInfo.getStarsServiceRequestHistory();
-		thermoSettings = accountInfo.getStarsThermostatSettings();
-		
-		userLogin = accountInfo.getStarsUser();
-		if (userLogin == null) {
-			userLogin = new StarsUser();
-			userLogin.setUsername( "" );
-			userLogin.setPassword( "" );
+	if (com.cannontech.database.cache.functions.AuthFuncs.checkRole(lYukonUser, RoleTypes.OPERATOR_CONSUMER_INFO) != null)
+	{
+		StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
+		if (user == null || user.getYukonUser().getUserID() != lYukonUser.getUserID()) {	// This is logged in using the normal LoginController, not the StarsLoginController
+			user = SOAPServer.getStarsYukonUser( lYukonUser );
+			session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
+			
+			MultiAction actions = new MultiAction();
+			actions.addAction( new GetEnergyCompanySettingsAction(), request, session );
+			
+			SOAPMessage reqMsg = actions.build(request, session);
+			SOAPUtil.logSOAPMsgForOperation( reqMsg, "*** Send Message *** " );
+			SOAPMessage respMsg = actions.process(reqMsg, session);
+			SOAPUtil.logSOAPMsgForOperation( respMsg, "*** Receive Message *** " );
+			actions.parse(reqMsg, respMsg, session);
 		}
 		
-		if (account.getTimeZone() != null && !account.getTimeZone().equals("") && !account.getTimeZone().equals("(none)")) {
-			TimeZone tz = TimeZone.getTimeZone( account.getTimeZone() );
-			datePart.setTimeZone(tz);
-			dateFormat.setTimeZone(tz);
-			histDateFormat.setTimeZone(tz);
+		ecSettings = (StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+		if (ecSettings != null) {
+			energyCompany = ecSettings.getStarsEnergyCompany();
+			ecWebSettings = ecSettings.getStarsWebConfig();
+			categories = ecSettings.getStarsEnrollmentPrograms();
+			companies = ecSettings.getStarsServiceCompanies();
+			exitQuestions = ecSettings.getStarsExitInterviewQuestions();
+			dftThermoSettings = ecSettings.getStarsDefaultThermostatSettings();
+		}
+		
+		Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
+		
+		accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+		if (accountInfo != null) {
+			account = accountInfo.getStarsCustomerAccount();
+			propAddr = account.getStreetAddress();
+			siteInfo = account.getStarsSiteInformation();
+			billAddr = account.getBillingAddress();
+			primContact = account.getPrimaryContact();
+			
+			residence = accountInfo.getStarsResidenceInformation();
+			appliances = accountInfo.getStarsAppliances();
+			inventories = accountInfo.getStarsInventories();
+			programs = accountInfo.getStarsLMPrograms();
+			callHist = accountInfo.getStarsCallReportHistory();
+			serviceHist = accountInfo.getStarsServiceRequestHistory();
+			thermoSettings = accountInfo.getStarsThermostatSettings();
+			
+			userLogin = accountInfo.getStarsUser();
+			if (userLogin == null) {
+				userLogin = new StarsUser();
+				userLogin.setUsername( "" );
+				userLogin.setPassword( "" );
+			}
+			
+			if (account.getTimeZone() != null && !account.getTimeZone().equals("") && !account.getTimeZone().equals("(none)")) {
+				TimeZone tz = TimeZone.getTimeZone( account.getTimeZone() );
+				datePart.setTimeZone(tz);
+				dateFormat.setTimeZone(tz);
+				histDateFormat.setTimeZone(tz);
+			}
 		}
 	}
-	
-	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
-	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 %>
