@@ -287,6 +287,12 @@ void CtiLoadManager::controlLoop()
                                         }
                                     }
                                 }
+
+                                if( currentControlArea->getControlAreaState() == CtiLMControlArea::AttemptingControlState &&
+                                    !currentControlArea->isControlStillNeeded() )
+                                {
+                                    currentControlArea->setControlAreaState(CtiLMControlArea::InactiveState);
+                                }
                                 examinedControlAreaForControlNeededFlag = FALSE;
                             }
                             else if( !currentControlArea->isControlTime(secondsFromBeginningOfDay) &&

@@ -1056,6 +1056,12 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
         setControlAreaState(CtiLMControlArea::FullyActiveState);
     }
 
+    if( getControlAreaState() == CtiLMControlArea::AttemptingControlState )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Control cannot go active because no programs are currently available " << endl;
+    }
+
     return expectedLoadReduced;
 }
 
@@ -1200,6 +1206,12 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
         fullyActivePrograms >= _lmprograms.entries() )
     {
         setControlAreaState(CtiLMControlArea::FullyActiveState);
+    }
+
+    if( getControlAreaState() == CtiLMControlArea::AttemptingControlState )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Control cannot go active because no programs are currently available " << endl;
     }
 
     return expectedLoadReduced;
