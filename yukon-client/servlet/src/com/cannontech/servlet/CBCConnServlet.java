@@ -8,14 +8,13 @@ package com.cannontech.servlet;
  */
  
 import java.awt.Color;
+import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.gui.CapBankTableModel;
-import com.cannontech.cbc.messages.CBCStates;
 import com.cannontech.cbc.web.CBCCommandExec;
 import com.cannontech.cbc.web.CapControlWebAnnex;
 import com.cannontech.clientutils.CTILogger;
@@ -26,13 +25,18 @@ import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.yukon.cbc.CBCClientConnection;
+import com.cannontech.yukon.cbc.CBCCommand;
+import com.cannontech.yukon.cbc.CBCStates;
+import com.cannontech.yukon.conns.ConnPool;
 
 public class CBCConnServlet extends javax.servlet.http.HttpServlet implements MessageListener 
 {		
 	// Key used to store instances of this in the servlet context
 	public static final String SERVLET_CONTEXT_ID = "CBCConnection";
 
-	private CBCClientConnection conn;
+	//private CBCClientConnection conn;
+	private boolean addedListener = false;
 
 	//insures only 1 set of these Strings for the servlet
 	//private final Vector areaNames = new Vector(32);
@@ -49,34 +53,22 @@ public synchronized boolean isConnected()
 
 public synchronized CBCClientConnection getConnection()
 {
-	if( conn == null )  
+	if( !addedListener )
 	{
-		//first time this app has been hit		
-		Registration reg = new Registration();
-		reg.setAppName( CtiUtilities.getApplicationName() );
-		reg.setAppIsUnique(0);
-		reg.setAppKnownPort(0);
-		reg.setAppExpirationDelay( 300 );  // 5 minutes
+		ConnPool.getInstance().getDefCapControlConn().addMessageListener( this );
+		addedListener = true;
 
-		//The CBC server does not take this registration for now, dont use it
-		//conn = new CBCClientConnection( reg );
-		conn = new CBCClientConnection();
-		
-		conn.addMessageListener( this );
-
-
-		//start the conn!!!
 		try
 		{
-			conn.connect( 15000 );	
+			getConnection().executeCommand(0, CBCCommand.REQUEST_ALL_SUBS );
 		}
-		catch( java.io.IOException ex )
+		catch( Exception e)
 		{
-			CTILogger.error( ex );
-		}
+			CTILogger.error( e.getMessage(), e );
+		}		
 	}
-			
-	return conn;
+	
+	return (CBCClientConnection)ConnPool.getInstance().getDefCapControlConn();
 }
 
 

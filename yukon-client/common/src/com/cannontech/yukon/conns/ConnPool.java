@@ -8,6 +8,8 @@ import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.cbc.CBCClientConnection;
+import com.cannontech.yukon.cbc.CBCCommand;
 
 /**
  * @author rneuharth
@@ -30,6 +32,7 @@ public class ConnPool
 	public static final String PORTER_CONN = "PORTER";
 	public static final String DISPATCH_CONN = "DISPATCH";
 	public static final String MACS_CONN = "MACS";
+	public static final String CAPCONTROL_CONN = "CAPCONTROL";
 
 
 	// Map<String, IServerConnection>
@@ -86,6 +89,10 @@ public class ConnPool
             else if( connName.toUpperCase().indexOf(MACS_CONN) >= 0 )
             {
                 conn = createMacsConn();
+            }
+            else if( connName.toUpperCase().indexOf(CAPCONTROL_CONN) >= 0 )
+            {
+                conn = createCapControlConn();
             }
             else
             {
@@ -175,7 +182,18 @@ public class ConnPool
      */
     public IServerConnection getDefMacsConn()
     {
-        return getConn(MACS_CONN);
+        //check our master Map of existing connections
+    	IServerConnection macsConn =
+            (IServerConnection)getAllConns().get(MACS_CONN);
+
+        if( macsConn == null )
+        {		
+        	macsConn = createMacsConn();
+
+			getAllConns().put( MACS_CONN, macsConn );
+        }
+        
+        return macsConn;    	
     }
 
     /**
@@ -188,5 +206,49 @@ public class ConnPool
         ServerMACSConnection macsConn = new ServerMACSConnection();
 
         return macsConn;
+    }
+
+    /**
+     * Gets the default CapControl connection that is available to all users.
+     * @return
+     */
+    public IServerConnection getDefCapControlConn()
+    {
+        //check our master Map of existing connections
+        CBCClientConnection cbcConn =
+            (CBCClientConnection)getAllConns().get(CAPCONTROL_CONN);
+
+        if( cbcConn == null )
+        {		
+        	cbcConn = (CBCClientConnection)createCapControlConn();
+
+			try
+			{
+				//start the conn!!!
+				cbcConn.connect( 15000 );
+				
+				cbcConn.executeCommand( 0, CBCCommand.REQUEST_ALL_SUBS );
+			}
+			catch( java.io.IOException ex )
+			{
+				CTILogger.error( ex );
+			}
+			
+			getAllConns().put( CAPCONTROL_CONN, cbcConn );
+        }
+        
+        return cbcConn;
+    }
+
+    /**
+     * Creates a new CapControl connection.
+     * 
+     * @return
+     */
+    private IServerConnection createCapControlConn()
+    {       
+    	CBCClientConnection cbcConn = new CBCClientConnection();
+
+        return cbcConn;
     }
 }
