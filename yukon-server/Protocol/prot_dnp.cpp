@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/09/11 21:24:29 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/09/18 21:18:53 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -112,7 +112,7 @@ void CtiProtocolDNP::setCommand( DNPCommand command, dnp_output_point *points, i
 
                     aout->setControl(points[0].aout.value);
 
-                    dob.addObjectIndex(aout, points[0].offset - 1);
+                    dob.addObjectIndex(aout, points[0].offset);
 
                     _appLayer.addObjectBlock(dob);
                 }
@@ -145,7 +145,7 @@ void CtiProtocolDNP::setCommand( DNPCommand command, dnp_output_point *points, i
                                           points[0].dout.clear,
                                           points[0].dout.trip_close);
 
-                    dob.addObjectIndex(bout, points[0].offset - 1);
+                    dob.addObjectIndex(bout, points[0].offset);
 
                     _appLayer.addObjectBlock(dob);
                 }
