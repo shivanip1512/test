@@ -150,13 +150,9 @@ public synchronized void readFromJLX(InputStream in, String version) throws IOEx
 	relativeImagePaths = new String[numStates];	
 	absoluteImagePaths = new String[numStates];
 	
-	for( int i = 0; i < numStates; i++ ) {
-		System.out.println("!!");
+	for( int i = 0; i < numStates; i++ ) {		
 		states[i] = LxSaveUtils.readString(in);
-		System.out.println("!! read: " + states[i]);
-		//absoluteImagePaths[i] = LxSaveUtils.readString(in);
-		relativeImagePaths[i] = LxSaveUtils.readString(in);		
-		System.out.println("!!" + states[i] + "," + relativeImagePaths[i]);
+		relativeImagePaths[i] = LxSaveUtils.readString(in);				
 	}	
 
 	//restore state
@@ -182,12 +178,8 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
 	//write number of states
 	LxSaveUtils.writeInt(out, states.length);
 	
-	for( int i = 0; i < states.length; i++ ) {
-		System.out.println("!! writing: " + states[i]);
+	for( int i = 0; i < states.length; i++ ) {		
 		LxSaveUtils.writeString(out, states[i]);
-		//LxSaveUtils.writeString(out, absoluteImagePaths[i]);
-		System.out.println("!! writing: " + calcRelativeImagePath(states[i]));
-//		LxSaveUtils.writeString(out, "yoyo");		
 		LxSaveUtils.writeString(out, calcRelativeImagePath(states[i]));
 	}
 
