@@ -1594,17 +1594,18 @@ void CtiLMControlAreaStore::doResetThr()
             dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
 
-        time_t start = time(NULL);
+        RWDBDateTime lastPeriodicDatabaseRefresh = RWDBDateTime();
 
-        RWDBDateTime currenttime = RWDBDateTime();
-        ULONG tempsum = currenttime.seconds()+refreshrate;
-        RWDBDateTime nextDatabaseRefresh = RWDBDateTime(RWTime(tempsum));
-    
         while(TRUE)
         {
             rwRunnable().serviceCancellation();
     
-            if( RWDBDateTime().seconds() >= nextDatabaseRefresh.seconds() )
+            if( RWDBDateTime().rwdate() != lastPeriodicDatabaseRefresh.rwdate() )
+            {//check to see if it is midnight
+                checkMidnightDefaultsForReset();
+            }
+
+            if( RWDBDateTime().seconds() >= lastPeriodicDatabaseRefresh.seconds()+refreshrate )
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -1615,19 +1616,12 @@ void CtiLMControlAreaStore::doResetThr()
     
                 setValid(false);
 
-                tempsum = currenttime.seconds()+refreshrate;
-                nextDatabaseRefresh = RWDBDateTime(RWTime(tempsum));
+                lastPeriodicDatabaseRefresh = RWDBDateTime();
             }
             else
             {
                 rwRunnable().sleep(500);
             }
-
-            if( currenttime.rwdate() != RWDBDateTime().rwdate() )
-            {//check to see if it is midnight
-                checkMidnightDefaultsForReset();
-            }
-            currenttime = RWDBDateTime();
         }
     }
     catch(RWCancellation& )

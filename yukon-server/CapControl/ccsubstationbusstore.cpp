@@ -1712,17 +1712,13 @@ void CtiCCSubstationBusStore::doResetThr()
         dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    time_t start = time(NULL);
-
-    RWDBDateTime currenttime = RWDBDateTime();
-    ULONG tempsum = currenttime.seconds()+refreshrate;
-    RWDBDateTime nextDatabaseRefresh = RWDBDateTime(RWTime(tempsum));
+    RWDBDateTime lastPeriodicDatabaseRefresh = RWDBDateTime();
 
     while(TRUE)
     {
         rwRunnable().serviceCancellation();
 
-        if ( RWDBDateTime().seconds() >= nextDatabaseRefresh.seconds() )
+        if( RWDBDateTime().seconds() >= lastPeriodicDatabaseRefresh.seconds()+refreshrate )
         {
             //if( _CC_DEBUG )
             {
@@ -1733,9 +1729,7 @@ void CtiCCSubstationBusStore::doResetThr()
             dumpAllDynamicData();
             setValid(FALSE);
 
-            currenttime = RWDBDateTime();
-            tempsum = currenttime.seconds()+refreshrate;
-            nextDatabaseRefresh = RWDBDateTime(RWTime(tempsum));
+            lastPeriodicDatabaseRefresh = RWDBDateTime();
         }
         else
         {
