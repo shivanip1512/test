@@ -82,7 +82,6 @@ public class InventoryBean {
 	private int htmlStyle = HTML_STYLE_LIST_INVENTORY;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
-	private ArrayList hardwareList = null;
 	
 	public InventoryBean() {
 	}
@@ -94,8 +93,6 @@ public class InventoryBean {
 	}
 	
 	private ArrayList getHardwareList() {
-		if (hardwareList != null) return hardwareList;
-		
 		ArrayList hardwares = getEnergyCompany().loadInventory();
 		java.util.TreeSet sortedHws = null;
 		
@@ -174,7 +171,7 @@ public class InventoryBean {
 				sortedHws.add( hardwares.get(i) );
 		}
 		
-		hardwareList = new ArrayList();
+		ArrayList hardwareList = new ArrayList();
 		java.util.Iterator it = sortedHws.iterator();
 		while (it.hasNext()) {
 			if (getSortOrder() == SORT_ORDER_ASCENDING)
@@ -339,8 +336,6 @@ public class InventoryBean {
 	 */
 	public void setFilterBy(int filterBy) {
 		this.filterBy = filterBy;
-		// Update the search result
-		hardwareList = null;
 	}
 
 	/**

@@ -32,6 +32,7 @@ import com.cannontech.roles.operator.OddsForControlRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.OptOutEventQueue;
+import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
@@ -94,6 +95,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	private int dftRouteID = CtiUtilities.NONE_ID;
 	private OptOutEventQueue optOutEventQueue = null;
+	private SwitchCommandQueue switchCommandQueue = null;
 	private ArrayList accountsWithGatewayEndDevice = null;	// List of LiteStarsCustAccountInformation
 	
 	
@@ -260,7 +262,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	 * @return OptOutEventQueue
 	 */
 	public OptOutEventQueue getOptOutEventQueue() {
-		if (optOutEventQueue == null)
+		if (optOutEventQueue == null) {
 			try {
 				optOutEventQueue = new OptOutEventQueue( getEnergyCompanySetting(EnergyCompanyRole.OPTOUT_COMMAND_FILE) );
 				optOutEventQueue.syncFromFile();
@@ -268,7 +270,22 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+		
 		return optOutEventQueue;
+	}
+	
+	public SwitchCommandQueue getSwitchCommandQueue() {
+		if (switchCommandQueue == null) {
+			try {
+				switchCommandQueue = new SwitchCommandQueue( getEnergyCompanySetting(EnergyCompanyRole.SWITCH_COMMAND_FILE) );
+				switchCommandQueue.syncFromFile();
+			}
+			catch (IOException e) {
+			}
+		}
+		
+		return switchCommandQueue;
 	}
 
 	/**
@@ -315,6 +332,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		dftRouteID = CtiUtilities.NONE_ID;
 		optOutEventQueue = null;
+		switchCommandQueue = null;
 		accountsWithGatewayEndDevice = null;
 		
 		starsEnergyCompany = null;
@@ -1184,18 +1202,15 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return hardwares;
 	}
 	
-	public LiteStarsLMHardware getLMHardware(int inventoryID, boolean autoLoad) {
+	public LiteStarsLMHardware getBriefLMHardware(int inventoryID, boolean autoLoad) {
 		ArrayList lmHardwareList = getAllLMHardwares();
 		LiteStarsLMHardware liteHw = null;
 		
 		synchronized (lmHardwareList) {
 			for (int i = 0; i < lmHardwareList.size(); i++) {
 				liteHw = (LiteStarsLMHardware) lmHardwareList.get(i);
-				if (liteHw.getInventoryID() == inventoryID) {
-					if ( !liteHw.isExtended() )
-						StarsLiteFactory.extendLiteStarsLMHardware( liteHw, this );
+				if (liteHw.getInventoryID() == inventoryID)
 					return liteHw;
-				}
 			}
 		}
 		
@@ -1207,7 +1222,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 						Transaction.createTransaction( Transaction.RETRIEVE, hw ).execute();
 				
 				liteHw = (LiteStarsLMHardware) StarsLiteFactory.createLite( hw );
-				StarsLiteFactory.extendLiteStarsLMHardware( liteHw, this );
 				synchronized (lmHardwareList) { lmHardwareList.add( liteHw ); }
 				return liteHw;
 			}
@@ -1217,6 +1231,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		return null;
+	}
+	
+	public LiteStarsLMHardware getLMHardware(int inventoryID, boolean autoLoad) {
+		LiteStarsLMHardware liteHw = getBriefLMHardware(inventoryID, autoLoad);
+		if (liteHw != null && !liteHw.isExtended())
+			StarsLiteFactory.extendLiteStarsLMHardware( liteHw, this );
+		
+		return liteHw;
 	}
 	
 	public void addLMHardware(LiteStarsLMHardware liteHw) {
@@ -1245,6 +1267,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	 */
 	public LiteStarsLMHardware searchForLMHardware(int deviceType, String serialNo) {
 		ArrayList lmHardwareList = getAllLMHardwares();
+		java.sql.Connection conn = null;
 		
 		synchronized (lmHardwareList) {
 			for (int i = 0; i < lmHardwareList.size(); i++) {
@@ -1256,22 +1279,30 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		try {
-			int[] invIDs = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchForLMHardware( deviceType, serialNo, getLiteID() );
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			
+			int[] invIDs = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchForLMHardware( deviceType, serialNo, getLiteID(), conn );
 			if (invIDs.length > 0) {
 				// There shouldn't be more than one hardware with the same device type & serial #
 				com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
 						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
 				hw.setInventoryID( new Integer(invIDs[0]) );
-				hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
-						Transaction.createTransaction(Transaction.RETRIEVE, hw).execute();
+				hw.setDbConnection( conn );
+				hw.retrieve();
 				
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) StarsLiteFactory.createLite(hw);
 				addLMHardware( liteHw );
 				return liteHw;
 			}
 		}
-		catch (Exception e) {
+		catch (java.sql.SQLException e) {
 			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
 		}
 		
 		return null;

@@ -67,26 +67,46 @@ public class LMHardwareBase extends DBPersistent {
             throw new Error(getClass() + " - Incorrect number of results retrieved");
     }
     
-    public static int[] searchForLMHardware(int deviceType, String serialNo, int energyCompanyID) {
+    public static int[] searchForLMHardware(int deviceType, String serialNo, int energyCompanyID, java.sql.Connection conn)
+    throws java.sql.SQLException {
     	String sql = "SELECT inv.InventoryID FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
     			"WHERE LMHardwareTypeID = " + deviceType + " AND UPPER(ManufacturerSerialNumber) = UPPER('" + serialNo + "')" +
     			" AND inv.InventoryID >= 0 AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = " + energyCompanyID;
-    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-    			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    	java.sql.Statement stmt = conn.createStatement();
+    	java.sql.ResultSet rset = stmt.executeQuery( sql );
     	
-    	try {
-    		stmt.execute();
-    		int[] invIDs = new int[ stmt.getRowCount() ];
-    		
-    		for (int i = 0; i < invIDs.length; i++)
-    			invIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-    		return invIDs;
-    	}
-    	catch (Exception e) {
-    		e.printStackTrace();
-    	}
+		int rowCnt = (rset.last())? rset.getRow() : 0;
+		int[] invIDs = new int[rowCnt];
+		
+		rset.beforeFirst();
+		int i = 0;
+		while (rset.next())
+			invIDs[i++] = rset.getInt(1);
+		
+		return invIDs;
+    }
+    
+    /**
+     * Return map from serial number (String) to inventory id (Integer)
+     */
+    public static java.util.Hashtable searchForSNRange(
+    	int deviceType, String serialNoLB, String serialNoUB, int energyCompanyID, java.sql.Connection conn)
+    	throws java.sql.SQLException
+    {
+		String sql = "SELECT inv.InventoryID, ManufacturerSerialNumber FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
+				"WHERE LMHardwareTypeID = " + deviceType + " AND ManufacturerSerialNumber >= " + serialNoLB + " AND ManufacturerSerialNumber <= " + serialNoUB +
+				" AND inv.InventoryID >= 0 AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = " + energyCompanyID;
+		java.sql.Statement stmt = conn.createStatement();
+		java.sql.ResultSet rset = stmt.executeQuery( sql );
     	
-    	return null;
+		java.util.Hashtable snTable = new java.util.Hashtable();
+		while (rset.next()) {
+			int invID = rset.getInt(1);
+			String serialNo = rset.getString(2);
+			snTable.put(serialNo, new Integer(invID));
+		}
+		
+		return snTable;
     }
     
     public static int[] searchBySerialNumber(String serialNo, int energyCompanyID) {

@@ -173,6 +173,8 @@ public class OptOutEventQueue {
 				}
 			}
 			else {
+				if (newEvents.size() == 0) return;
+				
 				fw = new PrintWriter( new FileWriter(diskFile, true) );
 				for (int i = 0; i < newEvents.size(); i++) {
 					OptOutEvent event = (OptOutEvent) newEvents.get(i);

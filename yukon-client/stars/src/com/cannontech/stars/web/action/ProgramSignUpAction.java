@@ -10,7 +10,6 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -104,6 +103,7 @@ public class ProgramSignUpAction implements ActionBase {
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
         StarsOperation respOper = new StarsOperation();
+        java.sql.Connection conn = null;
         
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
@@ -122,6 +122,8 @@ public class ProgramSignUpAction implements ActionBase {
             }
             
             LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+            		com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
             
             LiteStarsCustAccountInformation liteAcctInfo = null;
             if (progSignUp.getAccountNumber() != null)
@@ -131,7 +133,7 @@ public class ProgramSignUpAction implements ActionBase {
             
             if (progSignUp.getStarsSULMPrograms() == null) {
             	// Resend the not enrolled command
-            	respOper.setStarsProgramSignUpResponse( resendNotEnrolled(energyCompany, liteAcctInfo) );
+            	respOper.setStarsProgramSignUpResponse( resendNotEnrolled(energyCompany, liteAcctInfo, conn) );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
 	        	
@@ -193,7 +195,8 @@ public class ProgramSignUpAction implements ActionBase {
 						eventBase.setEventTypeID( progEventEntryID );
 						eventBase.setActionID( signUpEntryID );
 						eventBase.setEventDateTime( now );
-						Transaction.createTransaction(Transaction.INSERT, event).execute();
+						event.setDbConnection( conn );
+						event.add();
 						
 						// Add the program to the program list of the account
 		                LiteLMProgram liteProg = energyCompany.getLMProgram( program.getProgramID() );
@@ -227,7 +230,8 @@ public class ProgramSignUpAction implements ActionBase {
     					liteApp.setLmProgramID( program.getProgramID() );
     					com.cannontech.database.data.stars.appliance.ApplianceBase app =
     							(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
-    					Transaction.createTransaction(Transaction.UPDATE, app).execute();
+    					app.setDbConnection( conn );
+    					app.update();
     				}
     				else if (liteApp.getLmProgramID() != program.getProgramID()) {
     					// Add "termination" event to the old program
@@ -242,13 +246,15 @@ public class ProgramSignUpAction implements ActionBase {
 						eventBase.setEventTypeID( progEventEntryID );
 						eventBase.setActionID( termEntryID );
 						eventBase.setEventDateTime( now );
-						Transaction.createTransaction(Transaction.INSERT, event).execute();
+						event.setDbConnection( conn );
+						event.add();
 						
 						// Add "sign up" event to the new program
     					event.setEventID( null );
 						eventDB.setLMProgramID( new Integer(program.getProgramID()) );
 						eventBase.setActionID( signUpEntryID );
-						Transaction.createTransaction(Transaction.INSERT, event).execute();
+						event.setDbConnection( conn );
+						event.add();
 						
 						// Update the program list of the account
 		                LiteLMProgram liteProg = energyCompany.getLMProgram( program.getProgramID() );
@@ -282,7 +288,8 @@ public class ProgramSignUpAction implements ActionBase {
     					liteApp.setLmProgramID( program.getProgramID() );
     					com.cannontech.database.data.stars.appliance.ApplianceBase app =
     							(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
-    					Transaction.createTransaction(Transaction.UPDATE, app).execute();
+    					app.setDbConnection( conn );
+    					app.update();
     				}
     				else {
     					// Just copy the program to the new program list of the account
@@ -319,7 +326,8 @@ public class ProgramSignUpAction implements ActionBase {
 					eventBase.setEventTypeID( progEventEntryID );
 					eventBase.setActionID( signUpEntryID );
 					eventBase.setEventDateTime( now );
-					Transaction.createTransaction(Transaction.INSERT, event).execute();
+					event.setDbConnection( conn );
+					event.add();
 					
 					// Add the program to the program list of the account
 	                LiteLMProgram liteProg = energyCompany.getLMProgram( program.getProgramID() );
@@ -359,8 +367,9 @@ public class ProgramSignUpAction implements ActionBase {
 		        			if (!hwIDsToConfig.contains( dftInvID )) hwIDsToConfig.add( dftInvID );
 	        			}
 	        		}
-	        		app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
-	        				Transaction.createTransaction(Transaction.INSERT, app).execute();
+	        		
+	        		app.setDbConnection( conn );
+	        		app.add();
 	        		
 	        		liteApp = StarsLiteFactory.createLiteStarsAppliance( app, energyCompany );
 	        		newAppList.add( liteApp );
@@ -384,7 +393,8 @@ public class ProgramSignUpAction implements ActionBase {
 					eventBase.setEventTypeID( progEventEntryID );
 					eventBase.setActionID( termEntryID );
 					eventBase.setEventDateTime( now );
-					Transaction.createTransaction(Transaction.INSERT, event).execute();
+					event.setDbConnection( conn );
+					event.add();
 					
 					if (liteApp.getInventoryID() > 0) {
                 		Integer hwID = new Integer( liteApp.getInventoryID() );
@@ -396,7 +406,9 @@ public class ProgramSignUpAction implements ActionBase {
 	    			liteApp.setAddressingGroupID( 0 );
 					com.cannontech.database.data.stars.appliance.ApplianceBase app =
 							(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
-					Transaction.createTransaction(Transaction.UPDATE, app).execute();
+					app.setDbConnection( conn );
+					app.update();
+					
 					com.cannontech.database.data.stars.hardware.LMHardwareConfiguration.deleteLMHardwareConfiguration( app.getApplianceBase().getApplianceID() );
     			}
     			
@@ -423,12 +435,12 @@ public class ProgramSignUpAction implements ActionBase {
 			StarsInventories starsInvs = new StarsInventories();
 			for (int i = 0; i < hwIDsToConfig.size(); i++) {
 				int invID = ((Integer) hwIDsToConfig.get(i)).intValue();
-				StarsLMHardware starsHw = YukonSwitchCommandAction.sendConfigCommand( energyCompany, invID, false );
+				StarsLMHardware starsHw = YukonSwitchCommandAction.sendConfigCommand(energyCompany, invID, false, conn);
 				starsInvs.addStarsLMHardware( starsHw );
 			}
 			for (int i = 0; i < hwIDsToDisable.size(); i++) {
 				int invID = ((Integer) hwIDsToDisable.get(i)).intValue();
-				StarsLMHardware starsHw = YukonSwitchCommandAction.sendDisableCommand( energyCompany, invID );
+				StarsLMHardware starsHw = YukonSwitchCommandAction.sendDisableCommand(energyCompany, invID, conn);
 				starsInvs.addStarsLMHardware( starsHw );
 			}
             
@@ -528,6 +540,12 @@ public class ProgramSignUpAction implements ActionBase {
             	e2.printStackTrace();
             }
         }
+        finally {
+        	try {
+        		if (conn != null) conn.close();
+        	}
+        	catch (java.sql.SQLException e) {}
+        }
 
 		return null;
 	}
@@ -590,7 +608,8 @@ public class ProgramSignUpAction implements ActionBase {
 	
 	/* For every hardware that's out of service, resend a disable command
 	 */
-	StarsProgramSignUpResponse resendNotEnrolled(LiteStarsEnergyCompany energyCompany, LiteStarsCustAccountInformation liteAcctInfo) throws Exception {
+	StarsProgramSignUpResponse resendNotEnrolled(LiteStarsEnergyCompany energyCompany, LiteStarsCustAccountInformation liteAcctInfo, java.sql.Connection conn)
+	throws java.sql.SQLException {
 		StarsProgramSignUpResponse resp = new StarsProgramSignUpResponse();
 		
 		StarsInventories starsInvs = new StarsInventories();
@@ -598,7 +617,7 @@ public class ProgramSignUpAction implements ActionBase {
 			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
 			LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID, true );
 			if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
-				YukonSwitchCommandAction.sendDisableCommand( energyCompany, invID );
+				YukonSwitchCommandAction.sendDisableCommand( energyCompany, invID, conn );
 				starsInvs.addStarsLMHardware( StarsLiteFactory.createStarsLMHardware(liteHw, energyCompany) );
 			}
 		}

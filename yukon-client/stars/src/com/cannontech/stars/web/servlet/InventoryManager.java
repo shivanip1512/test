@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -17,10 +18,12 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.action.DeleteLMHardwareAction;
 import com.cannontech.stars.web.action.UpdateLMHardwareAction;
+import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.InstallationCompany;
 import com.cannontech.stars.xml.serialize.LMDeviceType;
@@ -72,6 +75,8 @@ public class InventoryManager extends HttpServlet {
         	return;
         }
         
+        SOAPClient.initSOAPServer( req );
+        
 		referer = req.getHeader( "referer" );
 		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
 		if (redirect == null) redirect = referer;
@@ -108,6 +113,15 @@ public class InventoryManager extends HttpServlet {
 			confirmCheck( user, req, session );
 		else if (action.equalsIgnoreCase("ConfirmDelete"))
 			confirmDelete( user, req, session );
+		else if (action.equalsIgnoreCase("AddSNRange"))
+			addSNRange( user, req, session );
+		else if (action.equalsIgnoreCase("UpdateSNRange"))
+			updateSNRange( user, req, session );
+		else if (action.equalsIgnoreCase("ConfigSNRange"))
+			configSNRange( user, req, session );
+		else if (action.equalsIgnoreCase("SendSwitchCommands")) {
+			sendSwitchCommands( user, req, session );
+		}
 		
 		resp.sendRedirect( redirect );
 	}
@@ -262,6 +276,296 @@ public class InventoryManager extends HttpServlet {
 				Boolean.valueOf(req.getParameter("DeletePerm")).booleanValue() );
 		
 		redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
+	}
+	
+	/**
+	 * Add hardwares in the given serial # range to inventory 
+	 */
+	private void addSNRange(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		java.sql.Connection conn = null;
+		
+		int snFrom = 0, snTo = 0;
+		try {
+			snFrom = Integer.parseInt( req.getParameter("From") );
+			if (req.getParameter("To").length() > 0)
+				snTo = Integer.parseInt( req.getParameter("To") );
+			else
+				snTo = snFrom;
+		}
+		catch (NumberFormatException nfe) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid serial number format");
+			return;
+		}
+		
+		if (snFrom > snTo) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "'From' value must be less than or equal to 'to' value");
+			return;
+		}
+		
+		try {
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			int numSuccess = 0, numFailure = 0;
+			
+			Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
+			Date recvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally( req.getParameter("ReceiveDate") );
+			Integer voltageID = Integer.valueOf( req.getParameter("Voltage") );
+			Integer companyID = Integer.valueOf( req.getParameter("ServiceCompany") );
+			Integer categoryID = new Integer( CreateLMHardwareAction.getInventoryCategoryID(devTypeID.intValue(), energyCompany) ); 
+			
+			java.util.Hashtable snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchForSNRange(
+					devTypeID.intValue(), String.valueOf(snFrom), String.valueOf(snTo), user.getEnergyCompanyID(), conn );
+			
+			for (int sn = snFrom; sn <= snTo; sn++) {
+				String serialNo = String.valueOf(sn);
+				Integer invID = (Integer) snTable.get( serialNo );
+				if (invID != null) {
+					CTILogger.info("***Failed to add hardware with serial # " + serialNo + ", serial # already exists");
+					numFailure++;
+					continue;
+				}
+				
+				com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
+						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+				com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB = hardware.getLMHardwareBase();
+				com.cannontech.database.db.stars.hardware.InventoryBase invDB = hardware.getInventoryBase();
+				
+				invDB.setInstallationCompanyID( companyID );
+				invDB.setCategoryID( categoryID );
+				invDB.setReceiveDate( recvDate );
+				invDB.setVoltageID( voltageID );
+				invDB.setDeviceLabel( serialNo );
+				hwDB.setManufacturerSerialNumber( serialNo );
+				hwDB.setLMHardwareTypeID( devTypeID );
+				hardware.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+				hardware.setDbConnection( conn );
+				hardware.add();
+				
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) StarsLiteFactory.createLite( hardware );
+				energyCompany.addLMHardware( liteHw );
+				numSuccess++;
+			}
+			
+			if (numSuccess > 0)
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, numSuccess + " hardware(s) added to inventory successfully");
+			if (numFailure > 0)
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, numFailure + " hardware(s) failed to be added to inventory");
+		}
+		catch (java.sql.SQLException e) {
+			e.printStackTrace();
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to add hardwares to inventory");
+		}
+		finally {
+			try {
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
+		}
+	}
+	
+	/**
+	 * Update information of hardwares in the given serial # range 
+	 */
+	private void updateSNRange(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		java.sql.Connection conn = null;
+		
+		int snFrom = 0, snTo = 0;
+		try {
+			snFrom = Integer.parseInt( req.getParameter("From") );
+			if (req.getParameter("To").length() > 0)
+				snTo = Integer.parseInt( req.getParameter("To") );
+			else
+				snTo = snFrom;
+		}
+		catch (NumberFormatException nfe) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid serial number format");
+			return;
+		}
+		
+		if (snFrom > snTo) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "'From' value must be less than or equal to 'to' value");
+			return;
+		}
+		
+		try {
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			int numSuccess = 0, numFailure = 0;
+			
+			Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
+			Date recvDate = (req.getParameter("ReceiveDate") != null)?
+					com.cannontech.util.ServletUtil.parseDateStringLiberally( req.getParameter("ReceiveDate") ) : null;
+			Integer voltageID = (req.getParameter("Voltage") != null)?
+					Integer.valueOf( req.getParameter("Voltage") ) : null;
+			Integer companyID = (req.getParameter("ServiceCompany") != null)?
+					Integer.valueOf( req.getParameter("ServiceCompany") ) : null;
+			if (recvDate == null && voltageID == null && companyID == null)
+				return;
+			
+			java.util.Hashtable snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchForSNRange(
+					devTypeID.intValue(), String.valueOf(snFrom), String.valueOf(snTo), user.getEnergyCompanyID(), conn );
+			
+			for (int sn = snFrom; sn <= snTo; sn++) {
+				String serialNo = String.valueOf(sn);
+				Integer invID = (Integer) snTable.get( serialNo );
+				if (invID == null) {
+					CTILogger.info("***Failed to update hardware with serial # " + serialNo + ", serial # doesn't exist");
+					numFailure++;
+					continue;
+				}
+				
+				LiteStarsLMHardware liteHw = energyCompany.getBriefLMHardware( invID.intValue(), true );
+				com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
+						(com.cannontech.database.data.stars.hardware.LMHardwareBase) StarsLiteFactory.createDBPersistent( liteHw );
+				com.cannontech.database.db.stars.hardware.InventoryBase invDB = hardware.getInventoryBase();
+				
+				if (companyID != null)
+					invDB.setInstallationCompanyID( companyID );
+				if (recvDate != null)
+					invDB.setReceiveDate( recvDate );
+				if (voltageID != null)
+					invDB.setVoltageID( voltageID );
+				invDB.setDbConnection( conn );
+				invDB.update();
+				
+				StarsLiteFactory.setLiteLMHardwareBase( liteHw, hardware );
+				numSuccess++;
+			}
+			
+			if (numSuccess > 0)
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, numSuccess + " hardware(s) updated successfully");
+			if (numFailure > 0)
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, numFailure + " hardware(s) failed to be updated");
+		}
+		catch (java.sql.SQLException e) {
+			e.printStackTrace();
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update hardware information");
+		}
+		finally {
+			try {
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
+		}
+	}
+	
+	/**
+	 * Configure hardwares in the given serial # range 
+	 */
+	private void configSNRange(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		java.sql.Connection conn = null;
+		
+		int snFrom = 0, snTo = 0;
+		try {
+			snFrom = Integer.parseInt( req.getParameter("From") );
+			if (req.getParameter("To").length() > 0)
+				snTo = Integer.parseInt( req.getParameter("To") );
+			else
+				snTo = snFrom;
+		}
+		catch (NumberFormatException nfe) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid serial number format");
+			return;
+		}
+		
+		if (snFrom > snTo) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "'From' value must be less than or equal to 'to' value");
+			return;
+		}
+		
+		try {
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			int numSuccess = 0, numFailure = 0;
+			
+			Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
+			boolean configNow = req.getParameter("ConfigNow") != null;
+			SwitchCommandQueue cmdQueue = (configNow)?
+					null : energyCompany.getSwitchCommandQueue();
+			
+			java.util.Hashtable snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchForSNRange(
+					devTypeID.intValue(), String.valueOf(snFrom), String.valueOf(snTo), user.getEnergyCompanyID(), conn );
+			
+			for (int sn = snFrom; sn <= snTo; sn++) {
+				String serialNo = String.valueOf(sn);
+				Integer invID = (Integer) snTable.get( serialNo );
+				if (invID == null) {
+					CTILogger.info("***Failed to configure hardware with serial # " + serialNo + ", serial # doesn't exist");
+					numFailure++;
+					continue;
+				}
+				
+				if (configNow)
+					YukonSwitchCommandAction.sendConfigCommand(energyCompany, invID.intValue(), true, conn);
+				else {
+					SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
+					cmd.setEnergyCompanyID( user.getEnergyCompanyID() );
+					cmd.setInventoryID( invID.intValue() );
+					cmd.setSerialNumber( serialNo );
+					cmd.setCommandType( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE );
+					cmdQueue.addCommand( cmd, false );
+				}
+				numSuccess++;
+			}
+			if (!configNow) cmdQueue.addCommand( null, true );
+			
+			if (numSuccess > 0) {
+				if (configNow)
+					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, numSuccess + " hardware(s) configured successfully");
+				else
+					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, numSuccess + " hardware configuration scheduled successfully");
+			}
+			if (numFailure > 0) {
+				if (configNow)
+					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, numFailure + " hardware(s) failed to be configured");
+				else
+					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, numFailure + " hardware configuration failed to be scheduled");
+			}
+		}
+		catch (java.sql.SQLException e) {
+			e.printStackTrace();
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to configure hardwares");
+		}
+		finally {
+			try {
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
+		}
+	}
+	
+	/**
+	 * Send all the scheduled switch commands
+	 */
+	private void sendSwitchCommands(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		java.sql.Connection conn = null;
+		
+		try {
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			SwitchCommandQueue.SwitchCommand[] commands =
+					energyCompany.getSwitchCommandQueue().getCommands( user.getEnergyCompanyID() );
+			for (int i = 0; i < commands.length; i++) {
+				if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE ))
+					YukonSwitchCommandAction.sendConfigCommand(energyCompany, commands[i].getInventoryID(), true, conn);
+				else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_ENABLE ))
+					YukonSwitchCommandAction.sendEnableCommand(energyCompany, commands[i].getInventoryID(), conn);
+				else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_DISABLE ))
+					YukonSwitchCommandAction.sendDisableCommand(energyCompany, commands[i].getInventoryID(), conn);
+			}
+			
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Scheduled switch commands sent out successfully");
+		}
+		catch (java.sql.SQLException e) {
+			e.printStackTrace();
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to send scheduled switch commands");
+		}
+		finally {
+			try {
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
+		}
 	}
 	
 	/**

@@ -106,7 +106,7 @@ public class CreateLMHardwareAction implements ActionBase {
 			LiteStarsLMHardware liteHw = addLMHardware( createHw, liteAcctInfo, energyCompany, conn );
 
             // Send config command
-            StarsLMHardware starsHw = YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw.getInventoryID(), false );
+            StarsLMHardware starsHw = YukonSwitchCommandAction.sendConfigCommand(energyCompany, liteHw.getInventoryID(), false, conn);
             StarsCreateLMHardwareResponse resp = new StarsCreateLMHardwareResponse();
             resp.setStarsLMHardware( starsHw );
             

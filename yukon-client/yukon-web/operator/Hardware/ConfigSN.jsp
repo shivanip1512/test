@@ -64,7 +64,7 @@
 			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  
               <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
-			    <input type="hidden" name="action" value="AddSNRange">
+			    <input type="hidden" name="action" value="ConfigSNRange">
                 <table width="64%" border="1" cellspacing="0" cellpadding="5" align="center" height="91">
                   <tr> 
                     <td align = "left" class = "Main" bgcolor="#CCCCCC"><b>Configure 
@@ -78,7 +78,27 @@
                             <div align="right">Range:</div>
                           </td>
                           <td width="75%"> 
-                            <input type="text" name="From" size="10">&nbsp;to&nbsp;<input type="text" name="To" size="10">
+                            <input type="text" name="From" size="10">
+                            &nbsp;to&nbsp;
+                            <input type="text" name="To" size="10">
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="25%"> 
+                            <div align="right">Device Type:</div>
+                          </td>
+                          <td width="75%"> 
+                            <select name="DeviceType">
+                              <%
+	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
+	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
+%>
+                              <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                              <%
+	}
+%>
+                            </select>
                           </td>
                         </tr>
                       </table>

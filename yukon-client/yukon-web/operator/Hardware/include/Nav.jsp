@@ -27,6 +27,14 @@
 	}
 %>
 
+<script language="Javascript">
+function sendConfig() {
+	if (!confirm("Are you sure you want to send out all scheduled configuration?"))
+		return;
+	document.ConfigForm.submit();
+}
+</script>
+
 <table width="101" border="0" cellspacing="0" cellpadding="5">
 <cti:checkProperty propertyid="<%= InventoryRole.INVENTORY_SHOW_ALL %>">
   <tr> 
@@ -63,6 +71,17 @@
           <tr> 
             <td width="10"><%= ((String[]) links.get("ConfigSN.jsp"))[0] %></td>
             <td style="padding:1"><%= ((String[]) links.get("ConfigSN.jsp"))[1] %></td>
+          </tr>
+          <tr> 
+            <td width="10">&nbsp;</td>
+            <td style="padding:1">
+              <form name="ConfigForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
+			    <input type="hidden" name="action" value="SendSwitchCommands">
+				<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/ConfigSN.jsp">
+                <a href="" class="Link2" onclick="sendConfig(); return false;"><span class="NavText">[Send 
+                Scheduled Configuration]</span></a> 
+              </form>
+            </td>
           </tr>
 		  </cti:checkProperty>
         </table>

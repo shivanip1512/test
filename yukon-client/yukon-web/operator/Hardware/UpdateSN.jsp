@@ -88,14 +88,12 @@ function updateField(f, checked) {
                           </td>
                         </tr>
                         <tr> 
-                          <td width="5%">
-                            <input type="checkbox" name="UpdateDeviceType" value="true" onclick="updateField(this.form.DeviceType, this.checked)">
-                          </td>
+                          <td width="5%">&nbsp;</td>
                           <td width="25%"> 
                             <div align="left">Device Type: </div>
                           </td>
                           <td width="70%"> 
-                            <select name="DeviceType" disabled>
+                            <select name="DeviceType">
                               <%
 	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
