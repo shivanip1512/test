@@ -340,7 +340,8 @@ public void getChooser()
 	fileChooser.setCurrentDirectory( new File(thePath) );
 
 
-	if(fileChooser.showOpenDialog(this) == javax.swing.JFileChooser.APPROVE_OPTION)
+	int res = fileChooser.showOpenDialog( this );
+	if( res == javax.swing.JFileChooser.APPROVE_OPTION )
 	{
 		try
 		{
@@ -354,8 +355,6 @@ public void getChooser()
 			javax.swing.JOptionPane.showMessageDialog(parent,"An error occured opening file","Error",javax.swing.JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	else if(fileChooser.showOpenDialog(this) == javax.swing.JFileChooser.CANCEL_OPTION)
-		fileChooser.cancelSelection();
 
 	return;
 }
