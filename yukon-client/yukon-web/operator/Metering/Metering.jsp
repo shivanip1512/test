@@ -11,7 +11,7 @@
 <SCRIPT LANGUAGE = "JavaScript">
 function MakeArray()
 {
-	this.length = MakeArray.arguments.length;
+	this.length = MakeArray.arguments.length; 
 	for (var i = 0; i < this.length; i++)
 		this[i+1] = MakeArray.arguments[i];
 }
@@ -178,7 +178,7 @@ function jumpPage(form)
 					<img id = "theGraph" src="/servlet/GraphGenerator?" > 
 				<%}
 				%>
-				<!--<font size="-1"><cti:text key="trending.disclaimer"/></font>-->
+				<br><font size="-1"><cti:text roleid="<%= RoleTypes.TRENDING_DISCLAIMER_TEXT %>"/></font>
 				</center></td>
 			</tr>
 			</table>

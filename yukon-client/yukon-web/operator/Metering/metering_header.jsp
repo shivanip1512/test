@@ -1,5 +1,6 @@
 <%@ page language="java" %>
 <%@ page import="java.util.*" %>
+<%@ page import="com.cannontech.common.constants.RoleTypes" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.graph.model.TrendModelType" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
@@ -16,7 +17,7 @@
 
 	LiteYukonUser liteYukonUser = null;
 	int liteYukonUserID = -1;
-	int customerID = -1;
+
 	try
 	{
 		liteYukonUser = (LiteYukonUser) session.getAttribute("YUKON_USER");
@@ -28,20 +29,6 @@
 	if (liteYukonUser == null)
 	{
 		response.sendRedirect("/login.jsp"); return;
-	}
-
-	//Get customerId from YukonUserID
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	java.util.List custContactList = cache.getAllCustomerContacts();
-	java.util.Iterator iter = custContactList.iterator();
-	while( iter.hasNext() )
-	{
-		com.cannontech.database.data.lite.LiteCustomerContact liteCustCont = (com.cannontech.database.data.lite.LiteCustomerContact)iter.next();
-		if( liteCustCont.getUserID() == liteYukonUserID)
-		{
-			customerID = liteCustCont.getCustomerID();
-			break;
-		}
 	}
 
     Class[] types = { Integer.class,String.class };    
