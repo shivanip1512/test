@@ -26,7 +26,7 @@ public class CheckNoRole extends BodyTagSupport {
 		LiteYukonUser user = 
 			(LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
 			
-		return (user == null && AuthFuncs.checkRole(user,roleid) == null) ?
+		return (user == null || AuthFuncs.checkRole(user,roleid) == null) ?
 					EVAL_BODY_INCLUDE :
 					SKIP_BODY;			
 	}
