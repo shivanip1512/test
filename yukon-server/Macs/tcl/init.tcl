@@ -610,7 +610,7 @@ proc exportBillingFile { args } {
                 return
             }
             
-            if { $argCount == 6 } {
+            if { $argCount >= 6 } {
                 append energyDays [lindex $args 5]
             } else {
                 append energyDays "7"
