@@ -277,9 +277,6 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
     }
     else
     {
-        delete OutMessage;
-        OutMessage = NULL;
-
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Couldn't come up with an operation for device " << getName() << endl;
@@ -298,6 +295,9 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                                         OutMessage->Request.UserID,
                                         OutMessage->Request.SOE,
                                         RWOrdered()));
+
+        delete OutMessage;
+        OutMessage = NULL;
     }
 
     return nRet;
@@ -683,7 +683,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                 else
                 {
                     CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
-                                                                     "putconfig time",
+                                                                     "putconfig timesync",
                                                                      InMessage->Return.UserID,
                                                                      InMessage->Return.TrxID,
                                                                      InMessage->Return.RouteID,
