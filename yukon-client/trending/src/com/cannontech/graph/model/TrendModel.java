@@ -711,7 +711,7 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 				//new pointid in rset.
 				//init everything, a new freechartmodel will be created with the change of pointid.
 				java.sql.Timestamp ts = rset.getTimestamp(2);
-				com.jrefinery.data.RegularTimePeriod tp = new com.jrefinery.data.Second(new java.util.Date(ts.getTime() + day));
+				com.jrefinery.data.RegularTimePeriod tp = new com.jrefinery.data.Millisecond(new java.util.Date(ts.getTime() + day));
 
 				double val = rset.getDouble(3);
 			
@@ -789,7 +789,7 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 						for (int j = 0; j < size; j++)
 						{
 							double v = ((com.jrefinery.data.TimeSeriesDataPair)dataPairVector.get(j)).getValue().doubleValue();
-							com.jrefinery.data.RegularTimePeriod tp = new com.jrefinery.data.Second(new java.util.Date(((com.jrefinery.data.TimeSeriesDataPair)dataPairVector.get(j)).getPeriod().getStart().getTime() + (86400000*i)));
+							com.jrefinery.data.RegularTimePeriod tp = new com.jrefinery.data.Millisecond(new java.util.Date(((com.jrefinery.data.TimeSeriesDataPair)dataPairVector.get(j)).getPeriod().getStart().getTime() + (86400000*i)));
 							dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp,v);
 							dataPairVector.add(dataPair);							
 						}					
@@ -1132,7 +1132,7 @@ public JFreeChart refresh(int newRendererType)
 
 		CategoryItemRenderer rend = new VerticalBarRenderer3D(10, 10);
 
-		rend.setDrawingSupplier(getPaintTable_BAR_Temporary(PRIMARY));
+		rend.setDrawingSupplier(getDrawingSupplier(PRIMARY));
 		plot = new com.jrefinery.chart.plot.VerticalCategoryPlot( (DefaultCategoryDataset)getPrimaryDataset(), (CategoryAxis)getHorizontalAxis(), getPrimaryVerticalAxis(), rend);
 
 		//Attempt to do multiple axis
@@ -1143,7 +1143,7 @@ public JFreeChart refresh(int newRendererType)
 			((com.jrefinery.chart.plot.VerticalCategoryPlot)plot).setSecondaryDataset(getSecondaryDataset());
 			((com.jrefinery.chart.plot.VerticalCategoryPlot)plot).setSecondaryRangeAxis(getSecondaryVerticalAxis());
 			rend = new com.jrefinery.chart.renderer.LineAndShapeRenderer(com.jrefinery.chart.renderer.LineAndShapeRenderer.LINES);
-			rend.setDrawingSupplier(getDrawingSupplier(PRIMARY));
+			rend.setDrawingSupplier(getDrawingSupplier(SECONDARY));
 			((com.jrefinery.chart.plot.VerticalCategoryPlot)plot).setSecondaryRenderer(rend);
 		}
 	}
