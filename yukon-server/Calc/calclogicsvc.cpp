@@ -655,6 +655,7 @@ void CtiCalcLogicService::_inputThread( void )
                     }*/
 
                     delete incomingMsg;   //  Make sure to delete this - its on the heap
+                    incomingMsg = 0;
                 }
             }
         }
