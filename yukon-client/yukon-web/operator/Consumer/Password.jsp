@@ -5,7 +5,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <script language="JavaScript">
 function validate(form) {
@@ -69,7 +69,7 @@ function generatePassword(form) {
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
-              <% String header = "ADMINISTRATION - CHANGE LOGIN"; %>
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_CHANGE_LOGIN, "ADMINISTRATION - CHANGE LOGIN"); %>
               <%@ include file="include/InfoSearchBar.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
@@ -146,7 +146,7 @@ function generatePassword(form) {
                 <tr>
                   <td width="186"> 
                       <div align="right"> 
-                        <input type="submit" name="Submit2" value="Submit">
+                        <input type="submit" name="Submit" value="Save">
                       </div>
                   </td>
                   <td width="194"> 

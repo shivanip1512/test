@@ -5,7 +5,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -43,13 +43,13 @@
                     <div align="center">Enrolled Programs</div>
                   </td>
                   <td width="200" class="HeaderCell"> 
-                    <div align="center">Today's <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/> History</div>
+                    <div align="center">Today's <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" defaultvalue="control" format="capital"/> History</div>
                   </td>
                   <td width="150" class="HeaderCell"> 
-                    <div align="center"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/> History Summary</div>
+                    <div align="center"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" defaultvalue="control" format="capital"/> History Summary</div>
                   </td>
                   <td width="130" class="HeaderCell"> 
-                    <div align="center">Complete <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/> History</div>
+                    <div align="center">Complete <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" defaultvalue="control" format="capital"/> History</div>
                   </td>
                 </tr>
 <%
@@ -95,7 +95,7 @@
 			if (ctrlHistToday.getControlHistoryCount() == 0) {
 %>
                       <tr> 
-                        <td width="61" class="TableCell">No <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/></td>
+                        <td width="61" class="TableCell">No <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" defaultvalue="control" format="capital"/></td>
                         <td width="61" class="TableCell"></td>
                         <td width="60" class="TableCell">----</td>
                       </tr>

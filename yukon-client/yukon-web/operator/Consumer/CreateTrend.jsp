@@ -48,7 +48,7 @@ if (request.getParameter("saveList") != null && Boolean.valueOf(request.getParam
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <SCRIPT language="JavaScript">
 function disableButton(x)
 {
@@ -79,8 +79,10 @@ function disableButton(x)
           <td  valign="top" width="101"><% String pageName = "CreateTrend.jsp"; %><%@ include file="include/Nav.jsp" %></td>
           <td width="1" bgcolor="#000000"><img src=""../WebConfig/yukon/Icons/VerticalRule.gif"" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div class = "MainText" align="center"><% String header = "ACCOUNT - CREATE NEW TREND"; %><%@ include file="include/InfoSearchBar.jsp" %>
-			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+            <div class = "MainText" align="center">
+			  <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_CREATE_TREND, "METERING - CREATE NEW TREND"); %>
+			  <%@ include file="include/InfoSearchBar.jsp" %>
+			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               
               <form name = "newTrendForm" method="POST" action="CreateTrend.jsp">
                 <input type="hidden" name="custID" value="<%=account.getCustomerID()%>">
@@ -104,21 +106,20 @@ function disableButton(x)
 						  while( iter.hasNext() )
 						  {
 							LiteGraphDefinition lGDef = (LiteGraphDefinition) iter.next();
+							
+							String checked = "";
+							for (int j = 0; j < custGraphs.size(); j++) {
+							  GraphCustomerList gcl = (GraphCustomerList) custGraphs.get(j);
+							  if( gcl.getGraphDefinitionID().intValue() == lGDef.getLiteID())
+							  {
+								checked = "checked";
+								break;
+							  }
+							}
 							%>
 						<tr>
                           <td width="35"> 
-                            <input type="checkbox" name="custGraphs<%=i++%>" value="<%=lGDef.getLiteID()%>"
-							  <%
-							  for (int j = 0; j < custGraphs.size(); j++) {
-							    GraphCustomerList gcl = (GraphCustomerList) custGraphs.get(j);
-							    if( gcl.getGraphDefinitionID().intValue() == lGDef.getLiteID())
-							    {
-								  out.println("checked");
-								  break;
-								}
-							  }
-  							  out.println(">");
-  							  %>
+                            <input type="checkbox" name="custGraphs<%=i++%>" value="<%=lGDef.getLiteID()%>" <%= checked %>>
                           </td>
   						  <td width="300"><%=lGDef.getName()%></td>
 						</tr>

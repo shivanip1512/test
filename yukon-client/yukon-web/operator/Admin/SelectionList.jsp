@@ -24,7 +24,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
 var dftEntryTexts = new Array();
 var dftEntryYukDefIDs = new Array();
@@ -94,8 +94,10 @@ function showEntry(form) {
 function showDefaultEntry(form) {
 	var dftEntries = form.DefaultListEntries;
 	var idx = dftEntries.selectedIndex;
-	form.EntryText.value = dftEntryTexts[idx];
-	form.YukonDefID.value = dftEntryYukDefIDs[idx];
+	if (idx >= 0) {
+		form.EntryText.value = dftEntryTexts[idx];
+		form.YukonDefID.value = dftEntryYukDefIDs[idx];
+	}
 }
 
 function saveEntry(form) {
@@ -166,13 +168,28 @@ function deleteEntry(form) {
 	var entries = form.ListEntries;
 	var idx = entries.selectedIndex;
 	if (idx >= 0 && idx < entries.options.length - 1) {
-		if (!confirm("Are you sure you want to delete this item?")) return;
+		if (!confirm("Are you sure you want to delete this entry?")) return;
 		entries.options.remove(idx);
 		entryIDs.splice(idx, 1);
 		entryTexts.splice(idx, 1);
 		entryYukDefIDs.splice(idx, 1);
 		dftListIndices.splice(idx, 1);
 		entries.selectedIndex = entries.options.length - 1;
+		showEntry(form);
+	}
+}
+
+function deleteAllEntries(form) {
+	var entries = form.ListEntries;
+	if (entries.options.length > 1) {
+		if (!confirm("Are you sure you want to delete all entries?")) return;
+		for (idx = entries.options.length - 2; idx >= 0; idx--)
+			entries.options.remove(idx);
+		entryIDs.splice(0, entryIDs.length);
+		entryTexts.splice(0, entryTexts.length);
+		entryYukDefIDs.splice(0, entryYukDefIDs.length);
+		dftListIndices.splice(0, dftListIndices.length);
+		entries.selectedIndex = 0;
 		showEntry(form);
 	}
 }
@@ -359,6 +376,7 @@ function init() {
                                 <br>
 <%	} %>
                                 <input type="button" name="Delete" value="Delete" onclick="deleteEntry(this.form)">
+                                <input type="button" name="DeleteAll" value="Delete All" onclick="deleteAllEntries(this.form)">
                                 <br>
 <%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
                                 <input type="button" name="Default" value="Set As Default" onclick="setAsDefault(this.form)">

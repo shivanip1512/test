@@ -1,25 +1,24 @@
 <%
 	// Table of [link, label, page name(optional)]
-	String linkTable[][] = {{"Update.jsp", "General"},
-						  {"Contacts.jsp", "Contacts"},
-						  {"Residence.jsp", "Residence"},
-						  {"Calls.jsp", "Call Tracking"},
-						  {"Metering.jsp", "Interval Data"},
+	String linkTable[][] = {{"Update.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_GENERAL, "General")},
+						  {"Contacts.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CONTACTS, "Contacts")},
+						  {"Residence.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_RESIDENCE, "Residence")},
+						  {"Calls.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CALL_TRACKING, "Call Tracking")},
+						  {"CreateCalls.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CREATE_CALL, "Create Call")},
+						  {"Metering.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_INTERVAL_DATA, "Interval Data")},
 						  {"CreateTrend.jsp", "New"},
 						  {"Usage.jsp", "Usage"},
 						  {"ProgramHist.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CONTROL_HISTORY, "Control History")},
 						  {"Programs.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_ENROLLMENT, "Enrollment")},
 						  {"OptOut.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_OPT_OUT, "Opt Out")},
-						  {"CreateCalls.jsp", "Create Call"},
-						  {"Service.jsp", "Service Request"},
-						  {"ServiceSummary.jsp", "Service History"},
-						  {"Password.jsp", "Change Login"},
+						  {"Service.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_SERVICE_REQUEST, "Service Request")},
+						  {"ServiceSummary.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_SERVICE_HISTORY, "Service History")},
+						  {"Password.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CHANGE_LOGIN, "Change Login")},
 						  {"Privileges.jsp", "Privileges"},
 						  {"PrintExport.jsp", "Print/Export"},
-						  {"FAQ.jsp", "FAQ"},
+						  {"FAQ.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_FAQ, "FAQ")},
 						  {"CreateAppliances.jsp", "New"},
-						  {(AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING)?
-						  	"SerialNumber.jsp?action=New" : "CreateHardware.jsp"), "New", "CreateHardware.jsp"},
+						  {(AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING)? "SerialNumber.jsp?action=New" : "CreateHardware.jsp"), "New", "CreateHardware.jsp"},
 						 };
 
 	String bulletImg = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif") + "' width='9' height='9'>";
@@ -55,7 +54,8 @@
 <cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING) %>">
   <tr> 
     <td> 
-      <div align="left"><span class="NavHeader">Account</span><br>
+      <div align="left">
+	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_ACCOUNT %>" defaultvalue="Account"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL %>"> 
           <tr> 
@@ -91,7 +91,8 @@
 <cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_METERING_INTERVAL_DATA) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_METERING_USAGE) %>">
   <tr> 
     <td> 
-      <div align="left"><span class="NavHeader">Metering</span><br>
+      <div align="left">
+	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_METERING %>" defaultvalue="Metering"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	      <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_USAGE %>"> 
           <tr>
@@ -148,7 +149,8 @@
 <cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT) %>">
   <tr> 
     <td> 
-      <div align="left"><span class="NavHeader">Programs</span><br>
+      <div align="left">
+	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_PROGRAMS %>" defaultvalue="Programs"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY %>"> 
           <tr>
@@ -176,7 +178,8 @@
 <cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_APPLIANCES) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_APPLIANCES_CREATE) %>">
   <tr> 
     <td> 
-      <div align="left"><span class="NavHeader">Appliances</span><br>
+      <div align="left">
+	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_APPLIANCES %>" defaultvalue="Appliances"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_APPLIANCES %>"> 
           <%
@@ -229,7 +232,8 @@
 <cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_HARDWARES) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE) %>">
   <tr> 
     <td> 
-      <div align="left"><span class="NavHeader">Hardware</span><br>
+      <div align="left">
+	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_HARDWARES %>" defaultvalue="Hardwares"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES %>"> 
 <%
@@ -290,7 +294,7 @@
 <%
 		if (switchLabels.size() > 0) {
 %>
-			  <span class="NavGroup">Switches</span><br>
+			  <span class="NavGroup"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_SUB_HEADING_SWITCHES %>" defaultvalue="Switches"/></span><br>
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                 <%
 			for (int i = 0; i < switchLabels.size(); i++) {
@@ -310,7 +314,7 @@
 		}	// switchLabels
 		if (thermostatLabels.size() > 0) {
 %>
-              <span class="NavGroup">Thermostats</span><br>
+              <span class="NavGroup"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_SUB_HEADING_THERMOSTATS %>" defaultvalue="Thermostats"/></span><br>
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_THERMOSTATS_ALL %>"> 
 <%
@@ -349,7 +353,7 @@
 		}	// thermostatLabels
 		if (meterLabels.size() > 0) {
 %>
-              <span class="NavGroup">Meters</span><br>
+              <span class="NavGroup"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_SUB_HEADING_METERS %>" defaultvalue="Meters"/></span><br>
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                 <%
 			for (int i = 0; i < meterLabels.size(); i++) {
@@ -388,7 +392,8 @@
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS %>">
   <tr> 
     <td> 
-      <div align="left"><span class="NavHeader">Work Orders</span><br>
+      <div align="left">
+	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_WORK_ORDERS %>" defaultvalue="Work Orders"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <tr>
             <td width="10"><%= ((String[]) links.get("Service.jsp"))[0] %></td>
@@ -406,7 +411,8 @@
 <cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ) %>">
   <tr> 
     <td> 
-      <div align="left"><span class="NavHeader">Administration</span><br>
+      <div align="left">
+	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_ADMINISTRATION %>" defaultvalue="Administration"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN %>"> 
           <tr>
@@ -421,7 +427,7 @@
 %>
           <tr>
             <td width="10">&nbsp;</td>
-            <td style="padding:1"><a href='<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LINK_FAQ %>"/>' class="Link2" target="faqs"><span class="NavText">FAQ</span></a></td>
+            <td style="padding:1"><a href='<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LINK_FAQ %>"/>' class="Link2" target="faqs"><span class="NavText"><%= ((String[]) links.get("FAQ.jsp"))[1] %></span></a></td>
           </tr>
 <%	} else { %>
           <tr>

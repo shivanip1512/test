@@ -23,7 +23,7 @@
 <head>
 <title>Consumer Energy Services</title>
 <link rel="stylesheet" href="../../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">

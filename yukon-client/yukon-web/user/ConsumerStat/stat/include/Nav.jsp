@@ -1,14 +1,13 @@
 <%
 	// Table of (link, page name) pairs
-	String linkPairs[][] = {{"General.jsp", "General"},
+	String linkPairs[][] = {{"General.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_GENERAL, "General")},
 						  {"TOU.jsp", "Usage"},
 						  {"ProgramHist.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_CONTROL_HISTORY, "Control History")},
-						  {"Util.jsp", "Contact Us"},
-						  {"FAQ.jsp", "FAQ"},
 						  {"Enrollment.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_ENROLLMENT, "Enrollment")},
 						  {"OptOut.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_OPT_OUT, "Opt Out")},
-						  {"Password.jsp", "Change Login"},
-						  {"Metering.jsp", "Trending"},
+						  {"Util.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_CONTACT_US, "Contact Us")},
+						  {"FAQ.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_FAQ, "FAQ")},
+						  {"Password.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_CHANGE_LOGIN, "Change Login")},
 						 };
 
 	String bulletImg = "<img src='../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif") + "' width='9' height='9'>";
@@ -36,7 +35,8 @@
 <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_ACCOUNT_GENERAL %>">
   <tr> 
     <td> 
-      <div align="left"><span class="NavHeader">Account</span><br>
+      <div align="left">
+	    <span class="NavHeader"><cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_HEADING_ACCOUNT %>" defaultvalue="Account"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <tr> 
             <td width="10"><%= ((String[]) links.get("General.jsp"))[0] %></td>
@@ -55,7 +55,8 @@
 %>
   <tr>
     <td>
-      <div align="left"><span class="NavHeader">Thermostat</span><br>
+      <div align="left">
+	    <span class="NavHeader"><cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_HEADING_THERMOSTAT %>" defaultvalue="Thermostat"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL %>"> 
 <%
@@ -128,7 +129,8 @@
 <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_METERING_USAGE%>">
   <tr> 
     <td> 
-      <div align="left"><span class="NavHeader">Metering</span><br>
+      <div align="left">
+	    <span class="NavHeader"><cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_HEADING_METERING %>" defaultvalue="Metering"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <tr> 
             <td width="10"><%= ((String[]) links.get("TOU.jsp"))[0] %></td>
@@ -142,7 +144,8 @@
 <cti:checkMultiProperty propertyid="<%=Integer.toString(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY)+','+Integer.toString(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT)+','+Integer.toString(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT)%>">
   <tr> 
     <td> 
-      <div align="left"><span class="NavHeader">Programs</span><br>
+      <div align="left">
+	    <span class="NavHeader"><cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_HEADING_PROGRAMS %>" defaultvalue="Programs"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY %>"> 
           <tr>
@@ -170,7 +173,8 @@
 <cti:checkRole roleid="<%=CommercialMeteringRole.ROLEID%>">
   <tr> 
     <td height="30" valign="bottom">
-      <div align="left"><span class="NavHeader">Trending</span><br>
+      <div align="left">
+	    <span class="NavHeader"><cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_HEADING_TRENDING %>" defaultvalue="Trending"/></span><br>
         <%   /* Retrieve all the predefined graphs for this user*/                       
 		if( gData != null )
 		{%>
@@ -202,7 +206,8 @@
 <cti:checkMultiProperty propertyid="<%=Integer.toString(ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_UTIL)+','+Integer.toString(ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ)%>">
   <tr> 
     <td> 
-      <div align="left"><span class="NavHeader">Questions</span><br>
+      <div align="left">
+	    <span class="NavHeader"><cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_HEADING_QUESTIONS %>" defaultvalue="Questions"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
 		  <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_UTIL %>"> 
           <tr> 
@@ -217,7 +222,7 @@
 %>
           <tr> 
             <td width="10">&nbsp;</td>
-            <td style="padding:1"><a href="<%= faqLink %>" class="Link2" target="faqs"><span class="NavText">FAQ</span></a></td>
+            <td style="padding:1"><a href="<%= faqLink %>" class="Link2" target="faqs"><span class="NavText"><%= ((String[]) links.get("FAQ.jsp"))[1] %></span></a></td>
           </tr>
 <%	} else { %>
           <tr> 
@@ -235,7 +240,8 @@
 <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN %>">
   <tr> 
     <td> 
-      <div align="left"><span class="NavHeader">Administration</span><br>
+      <div align="left">
+	    <span class="NavHeader"><cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_HEADING_ADMINISTRATION %>" defaultvalue="Administration"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <tr> 
             <td width="10"><%= ((String[]) links.get("Password.jsp"))[0] %></td>

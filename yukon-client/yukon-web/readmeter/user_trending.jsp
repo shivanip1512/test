@@ -6,7 +6,7 @@
 <head>
 <title>Trending</title>
 <link id="StyleSheet" rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link id="StyleSheet" rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <META NAME="robots" CONTENT="noindex, nofollow">
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
@@ -32,7 +32,7 @@
           <td width="609">
             <table width="609" cellspacing="0"  cellpadding="0" border="0">
               <tr>
-                <td colspan="4" height="74" background="../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>" width="609"></td>
+                <td colspan="4" height="74" background="../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>" width="609"></td>
               </tr>
               <tr>
                 <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;&nbsp;</td>

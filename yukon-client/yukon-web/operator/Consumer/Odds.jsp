@@ -4,7 +4,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 </head>
 
@@ -35,7 +35,7 @@
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
              
               <div align="center"><span class="MainText">Check the appropriate 
-                <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>"/> 
+                <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>" defaultvalue="odds for control"/> 
 				for each program.</span><br>
               </div>
 			  <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
@@ -45,7 +45,7 @@
                     <td width="200" class="HeaderCell" align="center">Program 
                       Enrollment </td>
                     <td width="148" class="HeaderCell" align="center">
-					  <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>" format="all_capital"/>
+					  <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>" defaultvalue="odds for control" format="all_capital"/>
                     </td>
                   </tr>
                   <%
@@ -111,7 +111,7 @@
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                   <tr> 
                     <td align="center"> 
-                      <input type="submit" name="Submit" value="Submit">
+                      <input type="submit" name="Submit" value="Send">
                     </td>
                   </tr>
                 </table>

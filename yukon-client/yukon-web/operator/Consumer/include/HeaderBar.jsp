@@ -7,7 +7,7 @@
     <td valign="top" height="102" width="656"> 
       <table width="657" cellspacing="0" cellpadding="0" border="0">
 	    <tr> 
-		  <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
+		  <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
 	    </tr>
 	    <tr> 
 		  <td width="265" height="28" valign="middle" class="PageHeader">&nbsp;&nbsp;&nbsp;Customer 

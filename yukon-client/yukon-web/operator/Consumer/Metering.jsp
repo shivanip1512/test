@@ -7,7 +7,7 @@
 <html>
 <head>
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
@@ -44,7 +44,6 @@
 			</form>
 			<td width="1" bgcolor="#000000"></td>
 			<td width="657" valign="top" bgcolor="#FFFFFF">
-				<% String header = "METERING - INTERVAL DATA"; %>
 				<%@include file="../../include/trending_options.jsp"%>
             <table width="575" border="0" cellspacing="0" cellpadding="0" align="center" height="46">
 			<tr> 
@@ -69,7 +68,7 @@
 					<img id = "theGraph" src="<%= request.getContextPath() %>/servlet/GraphGenerator?action=EncodeGraph" > 
 				<%}
 				%>
-				<br><font size="-1"><cti:getProperty propertyid="<%= CommercialMeteringRole.TRENDING_DISCLAIMER%>"/></font>				
+				<br><font size="-1"><cti:getProperty propertyid="<%= CommercialMeteringRole.TRENDING_DISCLAIMER%>"/></font>
 				</center></td>
 			</tr>
 			</table>

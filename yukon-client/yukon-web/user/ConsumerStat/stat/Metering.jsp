@@ -6,7 +6,7 @@
 <head>
 <title>Consumer Energy Services</title>
 <link rel="stylesheet" href="../../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <META NAME="robots" CONTENT="noindex, nofollow">
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 

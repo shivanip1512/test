@@ -58,7 +58,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <script language="JavaScript">
 function deleteHardware(form) {
@@ -324,7 +324,7 @@ function changeSerialNo() {
             <table width="400" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
               <tr> 
                   <td width="42%" align="right"> 
-                    <input type="submit" name="Submit" value="Submit">
+                    <input type="submit" name="Submit" value="Save">
                   </td>
                   <td width="15%" align="center"> 
                   <% if (invChanged) { %>

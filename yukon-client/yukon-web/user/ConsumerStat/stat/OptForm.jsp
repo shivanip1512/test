@@ -4,7 +4,7 @@
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <script language="JavaScript">
 <!--
@@ -50,7 +50,7 @@ function MM_popupMsg(msg) { //v1.0
                     </td>
                   </tr>
                 </table>
-                <p class="MainText">Please complete the following form to <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_OPT_OUT_VERB %>"/> 
+                <p class="MainText">Please complete the following form to <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_OPT_OUT_VERB %>" defaultvalue="opt out of"/> 
 				your program:</p>
                   <form method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient">
 					<input type="hidden" name="action" value="SendOptOutNotification">

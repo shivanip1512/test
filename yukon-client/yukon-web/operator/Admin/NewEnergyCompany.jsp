@@ -6,7 +6,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
 function validate(form) {
 	if (form.Username.value == "") {
@@ -80,18 +80,18 @@ function validate(form) {
                         <td width="15%" align="right" class="TableCell" valign="top">Step 
                           2:</td>
                         <td width="85%" class="TableCell"><span class="ConfirmMsg">Create 
-                          a default group for operators and a default group for 
-                          residential customers in DBEditor. Enter the group names 
-                          below: </span> 
+                          one or more groups for operators and one or more groups 
+                          for residential customers in DBEditor. Enter the group 
+                          names below, separated by comma:</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
-                              <td width="20%" align="right">Operator Group:</td>
+                              <td width="20%" align="right">Operator Groups:</td>
                               <td width="80%"> 
                                 <input type="text" name="OperatorGroup" size="30">
                               </td>
                             </tr>
                             <tr> 
-                              <td width="20%" align="right">Customer Group:</td>
+                              <td width="20%" align="right">Customer Groups:</td>
                               <td width="80%"> 
                                 <input type="text" name="CustomerGroup" size="30">
                               </td>
@@ -104,8 +104,8 @@ function validate(form) {
                           3:</td>
                         <td width="85%" class="TableCell"><span class="ConfirmMsg">Create 
                           a default operator login (A default login not only belongs 
-                          to the operator group you just created, but also has 
-                          the privilege to edit energy company configuration):</span> 
+                          to the first operator group you just created, but also 
+                          has the privilege to edit energy company configuration):</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
                               <td width="20%" align="right">Username:</td>
@@ -130,10 +130,10 @@ function validate(form) {
                       </tr>
                       <tr> 
                         <td width="15%" align="right" class="TableCell" valign="top">Step 
-                          4:</td>
+                          4 (OPTIONAL):</td>
                         <td width="85%" class="ConfirmMsg"><span class="ConfirmMsg">Create 
-                          a second operator login (with only the privileges you 
-                          defined in the operator group) (OPTIONAL):</span> 
+                          a second operator login (with only the privileges defined 
+                          in the first operator group you just created):</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
                               <td width="20%" align="right">Username:</td>
@@ -159,22 +159,19 @@ function validate(form) {
                       <tr> 
                         <td width="15%" align="right" class="TableCell" valign="top"> 
                           Step 5:</td>
-                        <td width="85%" class="TableCell"> 
+                        <td width="85%" class="MainText"> 
                           <p class="ConfirmMsg">After the energy company is created, 
                             you should:</p>
                           <ol>
-                            <li>Open DBEditor, find the operator login you just 
-                              created, edit properties of the EnergyCompany role 
-                              under the &quot;Yukon&quot; category.</li>
                             <li>Assign a default route to the energy company (more 
                               details later).</li>
                             <li>Assign direct programs to the operator login.</li>
-                            <li>Log off and re-login with the operator login you 
-                              just created. Click the &quot;Config Energy Company&quot; 
-                              button under &quot;Administration&quot;, and edit 
-                              the energy company settings. The email address of 
-                              the energy company must be set in order for password 
-                              request to work.</li>
+                            <li>Login as the default operator you just created. 
+                              Click the &quot;Config Energy Company&quot; button 
+                              under &quot;Administration&quot;, and edit the energy 
+                              company settings. The email address of the energy 
+                              company must be set in order for password request 
+                              to work.</li>
                           </ol>
                         </td>
                       </tr>

@@ -53,7 +53,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <script language="JavaScript">
 function deleteAppliance(form) {
@@ -812,7 +812,7 @@ function deleteAppliance(form) {
                             </div>
                           </td>
                           <td width="151" class="HeaderCell"> 
-                            <div align="center"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/> 
+                            <div align="center"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" defaultvalue="control" format="capital"/> 
                               History</div>
                           </td>
                         </tr>
@@ -870,7 +870,7 @@ function deleteAppliance(form) {
               <table width="250" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                 <tr>
                   <td width="33%" align = "right"> 
-                    <input type="button" name="Submit" value="Submit" onclick="document.form1.submit()">
+                    <input type="button" name="Submit" value="Save" onclick="document.form1.submit()">
                   </td>
                     <td width="33%" align = "center"> 
                       <div>

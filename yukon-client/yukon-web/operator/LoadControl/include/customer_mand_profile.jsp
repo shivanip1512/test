@@ -3,7 +3,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 </head>
 <%@ page import="com.cannontech.database.cache.DefaultDatabaseCache" %>
@@ -55,7 +55,7 @@
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
               </tr>
               <tr> 
                 <td width="253" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
@@ -122,7 +122,7 @@
             <table width="640" border="0" cellspacing="0" cellpadding="0" align="left">
               <tr>
                 <td width="640">
-                  <p align="center" class="TitleHeader"><br><cti:getProperty propertyid="<%=DirectCurtailmentRole.CURTAILMENT_LABEL%>"/> - CUSTOMER PROFILE</p>
+                  <p align="center" class="TitleHeader"><br><cti:getProperty propertyid="<%=DirectCurtailmentRole.CURTAILMENT_LABEL%>" defaultvalue="Notification"/> - CUSTOMER PROFILE</p>
                 </td>
               </tr>
               <%@include file="cust_profile.jsp"%>

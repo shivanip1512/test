@@ -4,7 +4,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <script language="JavaScript">
 function validate(form) {
@@ -96,7 +96,7 @@ function validate(form) {
                 <tr>
                   <td width="186"> 
                       <div align="right"> 
-                        <input type="submit" name="Submit2" value="Submit">
+                        <input type="submit" name="Submit" value="Save">
                       </div>
                   </td>
                   <td width="194"> 

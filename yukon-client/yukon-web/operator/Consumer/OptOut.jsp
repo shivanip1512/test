@@ -5,7 +5,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -38,7 +38,7 @@
               <table width="550" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td><div align="center">
-                <p class="MainText"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_DESC_OPT_OUT %>"/></p>
+                <p class="MainText"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_DESC_OPT_OUT %>" defaultvalue="If you would like to temporarily opt out of all programs, select the time frame from the drop-down box below, then select Submit."/></p>
               </div>
               </td>
                 </tr>
@@ -52,7 +52,7 @@
                 <tr> 
                   <td> 
                     <div align="center"> 
-                      <p class="HeaderCell">Temporarily <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_OPT_OUT_VERB %>"/> 
+                      <p class="HeaderCell">Temporarily <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_OPT_OUT_VERB %>" defaultvalue="opt out of"/> 
 					  all programs</p>
                     </div>
                     <table width="180" border="0" cellspacing="0" cellpadding="0" align="center">

@@ -4,7 +4,7 @@
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -40,7 +40,7 @@
                       <tr> 
                         <td valign="bottom" class="GeneralHeader">
                           <div align="center">
-                            <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TITLE_GENERAL %>"/><br>
+                            <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TITLE_GENERAL %>" defaultvalue="WELCOME TO ENERGY COMPANY SERVICES!"/><br>
                           </div>
                         </td>
                       </tr>
@@ -131,12 +131,12 @@
 %>
                                             <div align="left">Out of service<%= untilStr %>. 
 <%		} else if (todayCtrlHist.getBeingControlled()) { %>
-                                              Currently <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROLLING %>"/>. 
+                                              Currently <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROLLING %>" defaultvalue="controlling"/>. 
 <%		} else if (todayCtrlHist.getControlHistoryCount() > 0) { %>
-                                              You have been <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_CONTROLLED %>"/> 
+                                              You have been <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_CONTROLLED %>" defaultvalue="controlled"/> 
                                               today. 
 <%		} else { %>
-                                              You have not been <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_CONTROLLED %>"/> 
+                                              You have not been <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_CONTROLLED %>" defaultvalue="controlled"/> 
                                               today. 
 <%		} %>
                                             </div>
@@ -145,7 +145,7 @@
 <%		if (ctrlOdds != null) { %>
                                         <tr> 
                                           <td>
-                                            <div><cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_ODDS_FOR_CONTROL %>" format="capital"/>:
+                                            <div><cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_ODDS_FOR_CONTROL %>" defaultvalue="odds for control" format="capital"/>:
                                               <b><i><%= ctrlOdds %></i></b> </div>
                                           </td>
                                         </tr>
@@ -201,7 +201,7 @@
 							   <% if (primContact.getEmail().getEnabled()) out.print("checked"); %>>
                               <span class="TableCell2"> 
                               I would like to be notified by e-mail of the 
-                              <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_ODDS_FOR_CONTROL %>"/>.<br>
+                              <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_ODDS_FOR_CONTROL %>" defaultvalue="odds for control"/>.<br>
                               My e-mail address is:</span><br>
                               <input type="text" name="Email" maxlength="50" size="30" value="<%= primContact.getEmail().getNotification() %>">
                               <input type="submit" name="Submit" value="Submit">

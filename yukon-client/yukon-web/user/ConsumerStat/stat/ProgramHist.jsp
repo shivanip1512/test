@@ -4,7 +4,7 @@
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <script language="JavaScript">
 function setRedirect(form) {
@@ -57,10 +57,10 @@ function setRedirect(form) {
                     <div align="center">Enrolled Programs</div>
                   </td>
                   <td width="262" class="HeaderCell"> 
-                    <div align="center">Today's <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROL %>" format="capital"/> History</div>
+                    <div align="center">Today's <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROL %>" defaultvalue="control" format="capital"/> History</div>
                   </td>
                   <td width="180" class="HeaderCell"> 
-                    <div align="center">Complete <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROL %>" format="capital"/> History</div>
+                    <div align="center">Complete <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROL %>" defaultvalue="control" format="capital"/> History</div>
                   </td>
                 </tr>
 <%
@@ -107,7 +107,7 @@ function setRedirect(form) {
 			if (ctrlHistToday.getControlHistoryCount() == 0) {
 %>
                       <tr> 
-                        <td width="61" class="TableCell">No <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROL %>" format="capital"/></td>
+                        <td width="61" class="TableCell">No <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROL %>" defaultvalue="control" format="capital"/></td>
                         <td width="61" class="TableCell"></td>
                         <td width="60" class="TableCell">----</td>
                       </tr>

@@ -4,13 +4,13 @@
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <script language="JavaScript">
 <!--
 function confirmSubmit(form) { //v1.0
   if (form.OptOutPeriod.value == 0) return false;
-  return confirm('Are you sure you would like to temporarily <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_OPT_OUT_VERB %>"/> all programs?');
+  return confirm('Are you sure you would like to temporarily <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_OPT_OUT_VERB %>" defaultvalue="opt out of"/> all programs?');
 }
 //-->
 </script>
@@ -53,7 +53,7 @@ function confirmSubmit(form) { //v1.0
               <p><table width="500" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td class="MainText">
-				    <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_DESC_OPT_OUT %>"/>
+				    <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_DESC_OPT_OUT %>" defaultvalue="If you would like to temporarily opt out of all programs, select the time frame from the drop-down box below, then select Submit."/>
 				  </td>
                 </tr>
               </table>
@@ -70,7 +70,7 @@ function confirmSubmit(form) { //v1.0
                       <table width="200" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
                         <tr> 
                           <td align = "center"> 
-                              <p class="HeaderCell">Temporarily <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_OPT_OUT_VERB %>"/> 
+                              <p class="HeaderCell">Temporarily <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_OPT_OUT_VERB %>" defaultvalue="opt out of"/> 
 							  all programs </p>
                             <table width="180" border="0" cellspacing="0" cellpadding="0" align="center">
                               <tr> 

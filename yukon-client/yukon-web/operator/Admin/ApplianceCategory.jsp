@@ -12,7 +12,7 @@
 		category.setApplianceCategoryID(-1);
 		category.setDescription("");
 		StarsWebConfig cfg = new StarsWebConfig();
-		cfg.setLogoLocation("Load.gif");
+		cfg.setLogoLocation("yukon/Icons/Load.gif");
 		cfg.setAlternateDisplayName("");
 		cfg.setDescription("");
 		category.setStarsWebConfig( cfg );
@@ -62,7 +62,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
 function changeIcon(form) {
 	form.CategoryIcon.style.display = (form.IconName.value == "") ? "none" : "";
