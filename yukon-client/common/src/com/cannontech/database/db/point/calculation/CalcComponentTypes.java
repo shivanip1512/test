@@ -14,7 +14,7 @@ public class CalcComponentTypes
 	public static final String SUBTRACTION_OPERATION = "-";
 	public static final String MULTIPLICATION_OPERATION = "*";
 	public static final String DIVISION_OPERATION = "/";
-	
+	public static final String PUSH_OPERATION = "PUSH";
 	
 	
 	public static final String MIN_FUNCTION= "Min";
@@ -52,7 +52,8 @@ public class CalcComponentTypes
 		ADDITION_OPERATION,
 		SUBTRACTION_OPERATION,
 		MULTIPLICATION_OPERATION,
-		DIVISION_OPERATION
+		DIVISION_OPERATION,
+		PUSH_OPERATION
 	};
 	
 }
