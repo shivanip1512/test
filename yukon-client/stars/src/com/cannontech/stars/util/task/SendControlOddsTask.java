@@ -14,8 +14,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.roles.operator.ConsumerInfoRole;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.util.ServletUtil;
@@ -63,8 +63,7 @@ public class SendControlOddsTask implements Runnable {
 			if (emails.length > 0)
 				from = emails[0];
 		}
-		if (from == null)
-			from = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
+		if (from == null) from = ServerUtils.ADMIN_EMAIL_ADDRESS;
 		
 		ArrayList progList = new ArrayList();	// Programs that are eligible for notification
 		ArrayList programs = energyCompany.getAllPrograms();

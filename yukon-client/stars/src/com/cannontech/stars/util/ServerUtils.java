@@ -48,6 +48,10 @@ public class ServerUtils {
 	public static final String OPTOUT_EVENT_FILE = "optout_events.txt";
 	public static final String UPLOAD_DIR = "upload";
 	
+	// Default sender email address from Stars
+	public static final String ADMIN_EMAIL_ADDRESS = "info@cannontech.com";
+	
+	
 	public static void sendSerialCommand(String command, int routeID)
 	{
 		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
