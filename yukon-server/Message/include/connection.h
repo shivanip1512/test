@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/connection.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/10/03 16:13:30 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/02/18 14:28:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,7 +53,7 @@ protected:
    RWCString               _host;
    INT                     _port;
 
-   CtiExchange             *Ex;                     // Pointer so I can kill it dead at will...
+   CtiExchange             *_exchange;                     // Pointer so I can kill it dead at will...
 
    RWThreadFunction        outthread_;
    RWThreadFunction        inthread_;

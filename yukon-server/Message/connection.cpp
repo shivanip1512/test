@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/02/18 14:28:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,6 +53,18 @@ void CtiConnection::cleanConnection()
 
     if( _connectCalled && _localQueueAlloc && inQueue != NULL )
     {
+        try
+        {
+            inQueue->clearAndDestroy();     // The queue is allocated by me.  I will be responsible for this memory!
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+
         delete inQueue;
         inQueue = 0;
     }
@@ -231,7 +243,7 @@ void CtiConnection::InThread()
             {
                 try
                 {
-                    Ex->In() >> c;                // NOTE: Memory is heaped by the RWCollectable class here
+                    _exchange->In() >> c;                // NOTE: Memory is heaped by the RWCollectable class here
                 }
                 catch(RWSockErr& msg )
                 {
@@ -649,9 +661,9 @@ INT CtiConnection::ConnectPortal()
                 else
                 {
                     cleanExchange();
-                    Ex = CTIDBG_new CtiExchange(psck);
+                    _exchange = CTIDBG_new CtiExchange(psck);
 
-                    if(!Ex->In().bad() && !Ex->Out().bad())
+                    if(!_exchange->In().bad() && !_exchange->Out().bad())
                     {
                         _valid = TRUE;
 
@@ -861,13 +873,13 @@ INT CtiConnection::verifyConnection()
         {
             TryLockGuard guard(monitor());
 
-            if(guard.isAcquired() && Ex != NULL)
+            if(guard.isAcquired() && _exchange != NULL)
             {
-                if( Ex->In().bad() )
+                if( _exchange->In().bad() )
                 {
                     ok = InboundSocketBad; // the stream indicates a bad condition.
                 }
-                else if( Ex->Out().bad() )
+                else if( _exchange->Out().bad() )
                 {
                     ok = OutboundSocketBad; // the stream indicates a bad condition.
                 }
@@ -1065,7 +1077,7 @@ RWCString CtiConnection::who()
 
     TryLockGuard guard(monitor());
 
-    if(_port == -2 && guard.isAcquired() && Ex != NULL)
+    if(_port == -2 && guard.isAcquired() && _exchange != NULL)
     {
         connectedto += (_name.isNull() ? "" : " / " ) + getPeer().id();
     }
@@ -1101,7 +1113,7 @@ CtiConnection::CtiConnection( ) :
 _regMsg(NULL),
 _ptRegMsg(NULL),
 _termTime(3),
-Ex(NULL),
+_exchange(NULL),
 _flag(0),
 inQueue(NULL),
 _port(-1L),
@@ -1113,7 +1125,7 @@ CtiConnection::CtiConnection( const INT &Port, const RWCString &Host, InQ_t *inQ
 _regMsg(NULL),
 _ptRegMsg(NULL),
 _termTime(tt),
-Ex(NULL),
+_exchange(NULL),
 inQueue(inQ),
 _flag(0)
 {
@@ -1124,7 +1136,7 @@ CtiConnection::CtiConnection(CtiExchange *xchg, InQ_t *inQ, INT tt) :
 _regMsg(NULL),
 _ptRegMsg(NULL),
 _termTime(tt),
-Ex(xchg),
+_exchange(xchg),
 inQueue(inQ),
 _flag(0),
 _port(-2),
@@ -1193,9 +1205,9 @@ unsigned CtiConnection::hash(const CtiConnection& aRef)
     return(unsigned)&aRef;            // The address of the Object?
 }
 
-RWpistream& CtiConnection::In()                                { return Ex->In();}
-RWpostream& CtiConnection::Out()                               { return Ex->Out();}
-RWInetHost  CtiConnection::getPeer() const                     { return Ex->getPeer();}
+RWpistream& CtiConnection::In()                                { return _exchange->In();}
+RWpostream& CtiConnection::Out()                               { return _exchange->Out();}
+RWInetHost  CtiConnection::getPeer() const                     { return _exchange->getPeer();}
 
 void CtiConnection::ThreadTerminate()
 {
@@ -1226,10 +1238,10 @@ void CtiConnection::cleanExchange()
 {
     // LockGuard guard(monitor());
 
-    if(Ex != NULL)
+    if(_exchange != NULL)
     {
         _valid = FALSE;
-        delete Ex;
-        Ex = NULL;
+        delete _exchange;
+        _exchange = NULL;
     }
 }
