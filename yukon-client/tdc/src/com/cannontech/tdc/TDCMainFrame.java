@@ -4,9 +4,7 @@ package com.cannontech.tdc;
  * Creation date: (1/20/00 11:51:54 AM)
  * @author: 
  */
-import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.common.gui.panel.ManualChangeJPanel;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.tdc.spawn.SpawnTDCMainFrameEvent;
 import com.cannontech.tdc.bookmark.BookMarkBase;
@@ -15,13 +13,13 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
 import com.cannontech.tdc.fonteditor.*;
-import com.cannontech.clientutils.CommonUtils;
 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
-import java.io.StringReader;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
 import com.klg.jclass.page.awt.*;
 import com.klg.jclass.page.*;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
@@ -32,7 +30,6 @@ import com.cannontech.clientutils.commonutils.ModifiedDate;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Observer;
 import java.util.Vector;
 
 import com.cannontech.tdc.exportdata.ExportCreatedDisplay;
@@ -1444,7 +1441,7 @@ public javax.swing.JCheckBoxMenuItem getJCheckBoxMenuItemShowToolBar() {
 			ivjJCheckBoxMenuItemShowToolBar.setName("JCheckBoxMenuItemShowToolBar");
 			ivjJCheckBoxMenuItemShowToolBar.setMnemonic('b');
 			ivjJCheckBoxMenuItemShowToolBar.setText("Show ToolBar");
-			ivjJCheckBoxMenuItemShowToolBar.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_B, java.awt.Event.CTRL_MASK));
+			ivjJCheckBoxMenuItemShowToolBar.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_R, java.awt.Event.CTRL_MASK));
 			ivjJCheckBoxMenuItemShowToolBar.setBackground(java.awt.SystemColor.control);
 			ivjJCheckBoxMenuItemShowToolBar.setForeground(java.awt.SystemColor.controlText);
 			// user code begin {1}
@@ -1795,7 +1792,7 @@ private javax.swing.JMenuItem getJMenuItemAbout() {
 			ivjJMenuItemAbout.setBackground(java.awt.SystemColor.control);
 			ivjJMenuItemAbout.setForeground(java.awt.SystemColor.controlText);
 			ivjJMenuItemAbout.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjJMenuItemAbout.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_A, java.awt.Event.CTRL_MASK));
+			ivjJMenuItemAbout.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_B, java.awt.Event.CTRL_MASK));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1844,12 +1841,12 @@ private javax.swing.JMenuItem getJMenuItemCreate() {
 		try {
 			ivjJMenuItemCreate = new javax.swing.JMenuItem();
 			ivjJMenuItemCreate.setName("JMenuItemCreate");
-			ivjJMenuItemCreate.setMnemonic('c');
-			ivjJMenuItemCreate.setText("Create...");
+			ivjJMenuItemCreate.setMnemonic('n');
+			ivjJMenuItemCreate.setText("New Display...");
 			ivjJMenuItemCreate.setBackground(java.awt.SystemColor.control);
 			ivjJMenuItemCreate.setForeground(java.awt.SystemColor.controlText);
 			ivjJMenuItemCreate.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjJMenuItemCreate.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_C, java.awt.Event.CTRL_MASK));
+			ivjJMenuItemCreate.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_N, java.awt.Event.CTRL_MASK));
 			// user code begin {1}
 
 			// if the config file is not set for creation of displays,
@@ -2121,7 +2118,7 @@ private javax.swing.JMenuItem getJMenuItemMakeCopy() {
 			ivjJMenuItemMakeCopy.setName("JMenuItemMakeCopy");
 			ivjJMenuItemMakeCopy.setMnemonic('y');
 			ivjJMenuItemMakeCopy.setText("Copy...");
-			ivjJMenuItemMakeCopy.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_Y, java.awt.Event.CTRL_MASK));
+			ivjJMenuItemMakeCopy.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_C, java.awt.Event.CTRL_MASK));
 			ivjJMenuItemMakeCopy.setBackground(java.awt.SystemColor.control);
 			ivjJMenuItemMakeCopy.setForeground(java.awt.SystemColor.controlText);
 			// user code begin {1}
@@ -2227,7 +2224,7 @@ private javax.swing.JMenuItem getJMenuItemRemoveDisplays() {
 			ivjJMenuItemRemoveDisplays.setName("JMenuItemRemoveDisplays");
 			ivjJMenuItemRemoveDisplays.setMnemonic('l');
 			ivjJMenuItemRemoveDisplays.setText("Delete...");
-			ivjJMenuItemRemoveDisplays.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_DELETE, 0));
+			ivjJMenuItemRemoveDisplays.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_DELETE, java.awt.Event.CTRL_MASK));
 			ivjJMenuItemRemoveDisplays.setBackground(java.awt.SystemColor.control);
 			ivjJMenuItemRemoveDisplays.setForeground(java.awt.SystemColor.controlText);
 			// user code begin {1}
@@ -2852,7 +2849,8 @@ public void initialize() {
 			"Loading " + System.getProperty("cti.app.name") + "...",
 			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
 
-				
+
+		initAccelerators();
 		getExternalResources();
 		getAboutBox();  // init our about box
 		
@@ -2878,6 +2876,103 @@ public void initialize() {
 	getTdcClient();
 
 	// user code end
+}
+
+
+private void initAccelerators()
+{
+	/* 
+	 * This way to handle accelerators was changed to work with JRE 1.4. The accelerator
+	 * event would always get consumed by the component focus was in. This ensures that
+	 * accelerator fires the correct event ONLY (that is why true is returned on after
+	 * each click). We keep the above accelerators set for display purposes.
+	 */
+	KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(
+		new CTIKeyEventDispatcher()
+		{
+			public boolean handleKeyEvent(KeyEvent e)
+			{
+				//do the checks of the keystrokes here
+				if( e.getKeyCode() == KeyEvent.VK_N && e.isControlDown() )
+				{
+					getJMenuItemCreate().doClick();
+					return true;
+				}
+				else if( e.getKeyCode() == KeyEvent.VK_P && e.isControlDown() )
+				{
+					getJMenuItemExportCreatedDisplay().doClick();
+					return true;
+				}
+				else if( e.getKeyCode() == KeyEvent.VK_I && e.isControlDown() )
+				{
+					getJMenuItemPrint().doClick();
+					return true;
+				}
+				else if( e.getKeyCode() == KeyEvent.VK_W && e.isControlDown() )
+				{
+					getJMenuItemSpawnTDC().doClick();
+					return true;
+				}
+				else if( e.getKeyCode() == KeyEvent.VK_D && e.isControlDown() )
+				{
+					getJMenuItemEditDisplays().doClick();
+					return true;
+				}
+				else if( e.getKeyCode() == KeyEvent.VK_C && e.isControlDown() )
+				{
+					getJMenuItemMakeCopy().doClick();
+					return true;
+				}
+				else if( e.getKeyCode() == KeyEvent.VK_DELETE && e.isControlDown() )
+				{
+					getJMenuItemRemoveDisplays().doClick();
+					return true;
+				}
+				else if( e.getKeyCode() == KeyEvent.VK_S && e.isControlDown() )
+				{
+					getJMenuItemSearch().doClick();
+					return true;
+				}
+				else if( e.getKeyCode() == KeyEvent.VK_F && e.isControlDown() )
+				{
+					getJMenuItemFindNext().doClick();
+					return true;
+				}
+				else if( e.getKeyCode() == KeyEvent.VK_T && e.isControlDown() )
+				{
+					getJMenuItemFont().doClick();
+					return true;
+				}
+				else if( e.getKeyCode() == KeyEvent.VK_L && e.isControlDown() )
+				{
+					getJCheckBoxMenuItemShowLog().doClick();
+					return true;
+				}
+				else if( e.getKeyCode() == KeyEvent.VK_R && e.isControlDown() )
+				{
+					getJCheckBoxMenuItemShowToolBar().doClick();
+					return true;
+				}
+				else if( e.getKeyCode() == KeyEvent.VK_Q && e.isControlDown() )
+				{
+					getJMenuItemExportDataSet().doClick();
+					return true;
+				}
+				else if( e.getKeyCode() == KeyEvent.VK_F1 )
+				{
+					getJMenuItemHelpTopics().doClick();
+					return true;
+				}
+				else if( e.getKeyCode() == KeyEvent.VK_B && e.isControlDown() )
+				{
+					getJMenuItemAbout().doClick();
+					return true;
+				}
+				
+				//its this the last handling of the KeyEvent in this KeyboardFocusManager?
+				return false;
+			}
+		});	
 }
 
 
