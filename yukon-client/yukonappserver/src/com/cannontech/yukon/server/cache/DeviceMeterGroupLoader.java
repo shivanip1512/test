@@ -66,7 +66,9 @@ public void run()
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
-		com.cannontech.clientutils.CTILogger.info( ((System.currentTimeMillis() - timer)*.001) + " Secs for DeviceMeterGroupLoader");
+		com.cannontech.clientutils.CTILogger.info( 
+            ((System.currentTimeMillis() - timer)*.001) + 
+               " Secs for DeviceMeterGroupLoader (" + devMetNumList.size() + " loaded)" );
 	}
 }
 }

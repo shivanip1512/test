@@ -78,7 +78,8 @@ timerStart = new java.util.Date();
 //temp code
 timerStop = new java.util.Date();
 com.cannontech.clientutils.CTILogger.info( 
-    (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for NotificationGroupRecipientLoader" );
+    (timerStop.getTime() - timerStart.getTime())*.001 + 
+      " Secs for NotificationGroupRecipientLoader (" + allLocations.size() + " loaded)" );
 //temp code
 	}
 }

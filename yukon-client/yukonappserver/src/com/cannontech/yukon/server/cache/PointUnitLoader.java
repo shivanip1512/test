@@ -72,7 +72,9 @@ timerStart = new java.util.Date();
 //temp code
 timerStop = new java.util.Date();
 com.cannontech.clientutils.CTILogger.info( 
-    (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for PointLoader" );
+    (timerStop.getTime() - timerStart.getTime())*.001 + 
+      " Secs for PointLoader (" + allPointsUnits.size() + " loaded)" );
+
 //temp code
 	}
 }

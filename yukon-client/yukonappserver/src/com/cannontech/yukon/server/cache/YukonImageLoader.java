@@ -88,7 +88,8 @@ public class YukonImageLoader implements Runnable
    //temp code
    timerStop = new java.util.Date();
    com.cannontech.clientutils.CTILogger.info( 
-       (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for StateImageLoader" );
+       (timerStop.getTime() - timerStart.getTime())*.001 + 
+       " Secs for StateImageLoader (" + allStateImages.size() + " loaded)" );
    //temp code
       }
    

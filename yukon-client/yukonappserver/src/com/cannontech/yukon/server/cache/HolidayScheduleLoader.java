@@ -77,7 +77,9 @@ public void run()
 		//temp code
 		timerStop = new java.util.Date();
 		com.cannontech.clientutils.CTILogger.info(
-                    (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for HolidayScheduleLoader");
+            (timerStop.getTime() - timerStart.getTime())*.001 + 
+               " Secs for HolidayScheduleLoader (" + allHolidaySchedules.size() + " loaded)" );
+               
 		//temp code
 	}
 
