@@ -6,7 +6,7 @@ package com.cannontech.cttp;
 import java.util.Date;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.cttp.schema.cttp_OperationType;
 import com.cannontech.cttp.schema.cttp_ServerStatusResponseType;
 import com.cannontech.cttp.schema.cttp_ServerStatusType;
@@ -31,7 +31,7 @@ public class ServerStatusRequestHandler implements CttpMessageHandler {
 		
 		cttp_ServerStatusType cttpServerStatus = new cttp_ServerStatusType(); 	
 		cttpServerStatus.addtimestamp(Cttp.formatCTTPDate(new Date()));
-		cttpServerStatus.addversion(CtiProperties.getInstance().getProperty(CtiProperties.KEY_YUKON_VERSION, "3.0"));
+		cttpServerStatus.addversion(VersionTools.getYUKON_VERSION());
 		cttpServerStatus.addowner("Cannon Technologies");
 		cttpServerStatus.addsupportContact("Technical Support");
 		cttpServerStatus.addsupportPhone("763-595-7775");
