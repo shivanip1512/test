@@ -2,6 +2,8 @@ package com.cannontech.dbeditor.editor.user;
 /**
  * This type was created in VisualAge.
  */
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -9,10 +11,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.AbstractButton;
 import javax.swing.JTextField;
+import javax.swing.JWindow;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 import com.cannontech.common.gui.tree.CTITreeModel;
 import com.cannontech.common.gui.tree.CheckNode;
@@ -281,8 +288,20 @@ private javax.swing.JTable getJTableProperties() {
 			if( combo.getEditor().getEditorComponent() instanceof JTextField )
 			{
 				JTextField txtEditor = (JTextField)combo.getEditor().getEditorComponent();
+				txtEditor.setHorizontalAlignment( JTextField.CENTER );
+				
+				txtEditor.addFocusListener( new FocusListener()
+				{
+					public void focusGained(FocusEvent e) {}
+					public void focusLost(FocusEvent e)
+					{
+						//if a button on the screen was pressed, save the edited cell
+						if( getJTableProperties().isEditing()
+							 && !(e.getOppositeComponent() instanceof JWindow) )
+							getJTableProperties().getCellEditor().stopCellEditing();
+					}
 
-				txtEditor.setHorizontalAlignment( JTextField.CENTER );						
+				});						
 			}
 			
 			javax.swing.DefaultCellEditor ed = new javax.swing.DefaultCellEditor(combo);
@@ -370,6 +389,7 @@ private javax.swing.JTree getJTreeRoles() {
 			ivjJTreeRoles.setModel( new CTITreeModel(root) );			
 			ivjJTreeRoles.setCellRenderer( new CheckRenderer() );
 			//ivjJTreeRoles.setRootVisible( false );
+			ivjJTreeRoles.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
 
 			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			
@@ -658,16 +678,15 @@ private void initConnections()
 
 
 
-	// add the mouselistener for the JTree
-	MouseListener treeMl = new MouseAdapter()
+	// add the TreeSelectionListener for the JTree
+	TreeSelectionListener treeSl = new TreeSelectionListener()
 	{
-		public void mousePressed(final MouseEvent e) 
+		public void valueChanged(TreeSelectionEvent e) 
 		{
 			if( getJTableProperties().isEditing() )
 				getJTableProperties().getCellEditor().stopCellEditing();
 			
-			int selRow = getJTreeRoles().getRowForLocation(e.getX(), e.getY());
-			
+			int selRow = getJTreeRoles().getMaxSelectionRow();
 			if(selRow != -1) 
 			{
 				TreeNode node = 
@@ -725,34 +744,21 @@ private void initConnections()
 					getJTablePropertyModel().clear();
 					getJTextPaneDescription().setText("");  //clear out any text
 				}
-			}
-
-		}
-		
-		public void mouseClicked(final MouseEvent e) 
-		{
-			updateSelectionCountNodes();
-			
-			int selRow = getJTreeRoles().getRowForLocation(e.getX(), e.getY());
-			
-			if(selRow != -1) 
-			{
-				TreeNode node = 
-					(TreeNode)getJTreeRoles().getPathForRow( selRow ).getLastPathComponent();
-
+				
+				
 				//this must fire here because the NodeCheckBox only fires these events
 				if( node instanceof CheckNode && !isReadOnlyTree() )
 					getJTableProperties().setEnabled( 
 								((CheckNode)node).isSelected() );
 
-				fireInputUpdate();
+				fireInputUpdate();				
 			}
 
 		}
-		
 
 	};
-	getJTreeRoles().addMouseListener( treeMl );
+
+	getJTreeRoles().addTreeSelectionListener( treeSl );
 
 
 }
