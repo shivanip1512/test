@@ -1,14 +1,15 @@
 package com.cannontech.clientutils;
 
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.YukonFileAppender;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
@@ -37,7 +38,7 @@ public class CTILogger
 	private static boolean isCreated = false;
 
 	private static final Layout DEF_LAYOUT = 
-				new PatternLayout("[%d{HH:mm:ss}] %-5p [%-11.11t] %m%n");
+				new PatternLayout("[%d{MM/dd/yyyy HH:mm:ss}] %-5p [%-11.11t] %m%n");
 	
    //private static Logger logger = null;
    private static String MAX_LOG_FILE_SIZE = "100MB";
@@ -69,10 +70,7 @@ public class CTILogger
 		{ "com.cannontech.stars", new Integer(LoggingRole.STARS_LEVEL) },
 	};
 
-
-
-	private static RollingFileAppender fileAppender = null;
-
+	private static FileAppender fileAppender = null;
 
 	/**
 	 * Constructor for CTILogger.
@@ -193,14 +191,12 @@ public class CTILogger
    		Logger log = getLogger();
 		setLogLevel( getLoggerLevel(log) );
 
-
 		LiteYukonRoleProperty lToFile =
 			AuthFuncs.getRoleProperty( LoggingRole.LOG_TO_FILE );
 
 		String writeToFile = "false";
 		if( lToFile != null )
 			writeToFile = RoleFuncs.getGlobalPropertyValue( LoggingRole.LOG_TO_FILE );		
-
 
 		if( Boolean.valueOf(writeToFile).booleanValue() )
 		{
@@ -214,22 +210,19 @@ public class CTILogger
 		}
    }
    
-	private static final RollingFileAppender getFileAppender()
+	private static final FileAppender getFileAppender()
 	{
 		if( fileAppender == null )
 		{
 			try
-			{
-				fileAppender = new RollingFileAppender(
-						DEF_LAYOUT,
-						CtiUtilities.getLogDirPath() +
-						  (CtiUtilities.getApplicationName() == null
-						  ? "yukon"
-						  : CtiUtilities.getApplicationName()) + ".log",
-						true );
-								
-				fileAppender.setMaxFileSize(MAX_LOG_FILE_SIZE);
-				fileAppender.setMaxBackupIndex(1);
+			{					
+				fileAppender = new YukonFileAppender(
+										DEF_LAYOUT,
+										CtiUtilities.getLogDirPath() + System.getProperty("file.separator") +
+										  (CtiUtilities.getApplicationName() == null
+										  ? "webapp"
+										  : CtiUtilities.getApplicationName()) 
+										);						
 			}
 			catch( Exception e )
 			{
