@@ -5,7 +5,7 @@ package com.cannontech.graph.model;
  * Creation date: (7/10/2001 5:01:43 PM)
  * @author: 
  */
-public interface TrendModelType
+public final class TrendModelType
 {
 	//model type less then 0 yields previous model type (in code). 6/7/02 SN
 	public final static int DONT_CHANGE_VIEW = -1;
@@ -14,6 +14,13 @@ public interface TrendModelType
 	public final static int BAR_3D_VIEW = 2;
 	public final static int STEP_VIEW = 3;
 	public final static int SHAPES_LINE_VIEW = 4;
+
+	public final static String DONT_CHANGE_VIEW_STRING = "Invalid";
+	public final static String LINE_VIEW_STRING = "Line Graph";
+	public final static String BAR_VIEW_STRING = "Bar Graph";
+	public final static String BAR_3D_VIEW_STRING = "3D Bar Graph";
+	public final static String STEP_VIEW_STRING = "Step Graph";
+	public final static String SHAPES_LINE_VIEW_STRING = "Shapes/Line Graph";
 		
 	// ** NOTE ** Add more int model values here with the addition of new models.	
 
@@ -30,4 +37,51 @@ public interface TrendModelType
 		// Extra stuff.
 //	public final static int DWELL_LABELS_MASK = 0x0040;
 
+
+	public final static String getViewString(int viewID)
+	{
+		String returnString = "";
+		switch(viewID)
+		{
+			case LINE_VIEW:
+				returnString =  LINE_VIEW_STRING;
+				break;
+			case BAR_VIEW:
+				returnString =  BAR_VIEW_STRING;
+				break;
+			case BAR_3D_VIEW:
+				returnString =  BAR_3D_VIEW_STRING;
+				break;
+			case STEP_VIEW:
+				returnString =  STEP_VIEW_STRING;
+				break;
+			case SHAPES_LINE_VIEW:
+				returnString =  SHAPES_LINE_VIEW_STRING;
+				break;			
+			default:
+				returnString = LINE_VIEW_STRING;
+		}
+		return returnString;
+	}
+	
+	public final static int getViewID(String viewString)
+	{
+		int returnInt = DONT_CHANGE_VIEW;
+		if( viewString.equalsIgnoreCase(LINE_VIEW_STRING))
+			returnInt = LINE_VIEW;
+		else if (viewString.equalsIgnoreCase(BAR_VIEW_STRING))
+			returnInt = BAR_VIEW;
+		else if (viewString.equalsIgnoreCase(BAR_3D_VIEW_STRING))
+			returnInt = BAR_3D_VIEW;
+		else if (viewString.equalsIgnoreCase(STEP_VIEW_STRING))
+			returnInt = STEP_VIEW;
+		else if (viewString.equalsIgnoreCase(SHAPES_LINE_VIEW_STRING))
+			returnInt = SHAPES_LINE_VIEW;
+		else
+			returnInt = LINE_VIEW;
+		
+		return returnInt;
+	}
+		
 }
+
