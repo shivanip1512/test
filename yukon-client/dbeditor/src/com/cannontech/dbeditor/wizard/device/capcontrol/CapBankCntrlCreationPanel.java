@@ -41,6 +41,10 @@ public CapBankCntrlCreationPanel() {
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
+   
+   if( e.getSource() == getJComboBoxCBCType() )
+      jComboBoxCBCType_ActionPerformed(e);
+      
 	// user code end
 	if (e.getSource() == getJCheckBoxCreateCBC()) 
 		connEtoC1(e);
@@ -231,24 +235,47 @@ public void controlDeviceComboBox_ActionPerformed(java.awt.event.ActionEvent act
 private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObjects( 
 		com.cannontech.database.data.multi.SmartMultiDBPersistent ogMulti, String bankName )
 {
-	com.cannontech.database.data.capcontrol.CapBankController newCBC = null;
-	
+	//com.cannontech.database.data.capcontrol.CapBankController newCBC = null;
+	com.cannontech.database.data.device.DeviceBase newCBC = null;
+
+   
 	if( getJComboBoxCBCType().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]) )
-		newCBC = (com.cannontech.database.data.capcontrol.CapBankController)DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_FP_2800);
-	else
-		newCBC = (com.cannontech.database.data.capcontrol.CapBankController)DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CAPBANKCONTROLLER);
+		newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_FP_2800);
+	else if( getJComboBoxCBCType().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]) )
+		newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CAPBANKCONTROLLER);
+   else if( getJComboBoxCBCType().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]) )
+      newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510);
 
-	//just in case bankName is too long for our table, use a substring of it
-	newCBC.setPAOName("CBC " + (bankName.length() > 50 ? bankName.substring(0, 50) : bankName) );
+   //store the SerialNumber
+   Integer serialNumber = new Integer(getJTextFieldCBCAddress().getText());
 
-	Integer serialNumber = new Integer(getJTextFieldCBCAddress().getText());
-	newCBC.getDeviceCBC().setSerialNumber(serialNumber);
 
-	if( getJComboBoxCBCRoute().getSelectedItem() instanceof com.cannontech.database.data.lite.LiteYukonPAObject )
-		newCBC.getDeviceCBC().setRouteID(
-			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getJComboBoxCBCRoute().getSelectedItem()).getYukonID()));
-			
+   if( newCBC instanceof com.cannontech.database.data.capcontrol.CapBankController )
+   {
+      com.cannontech.database.data.capcontrol.CapBankController cntrler = 
+            (com.cannontech.database.data.capcontrol.CapBankController)newCBC;
+
+   	cntrler.getDeviceCBC().setSerialNumber(serialNumber);
+   
+   	if( getJComboBoxCBCRoute().getSelectedItem() instanceof com.cannontech.database.data.lite.LiteYukonPAObject )
+   		cntrler.getDeviceCBC().setRouteID(
+   			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getJComboBoxCBCRoute().getSelectedItem()).getYukonID()));
+   }
+   else if( newCBC instanceof com.cannontech.database.data.capcontrol.CapBankController6510 )
+   {
+      com.cannontech.database.data.capcontrol.CapBankController6510 cntrler = 
+            (com.cannontech.database.data.capcontrol.CapBankController6510)newCBC;
+
+      cntrler.getDeviceDNP().setMasterAddress( serialNumber );   
+   }
+   else
+      throw new IllegalStateException("CBC class of: " + newCBC.getClass().getName() + " not found");
+
+
 	newCBC.setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+   
+   //just in case bankName is too long for our table, use a substring of it
+   newCBC.setPAOName("CBC " + (bankName.length() > 50 ? bankName.substring(0, 50) : bankName) );
 
 	
 	//a status point is automatically added to all capbank controllers
@@ -265,7 +292,8 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
 			newCBC.getDevice().getDeviceID(),
 			new Integer(1) );
 
-	newPoint.getPoint().setStateGroupID( new Integer(1) );
+	newPoint.getPoint().setStateGroupID( 
+         new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS) );
 
 	((com.cannontech.database.data.point.StatusPoint)newPoint).getPointStatus().setControlOffset(
 			new Integer(1) );
@@ -462,6 +490,7 @@ private javax.swing.JComboBox getJComboBoxCBCType() {
 
 			ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]);
 			ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]);
+         ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]);
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -825,12 +854,30 @@ private void initComboBoxes()
 	}
 
 }
+
+private void jComboBoxCBCType_ActionPerformed( java.awt.event.ActionEvent e)
+{
+   if( getJComboBoxCBCType().getSelectedItem() == null )
+      return;
+      
+   boolean isDNP = getJComboBoxCBCType().getSelectedItem().toString().equals(
+         com.cannontech.database.data.pao.DeviceTypes.STRING_DNP_CBC_6510[0] );
+   
+   getJComboBoxCBCRoute().setVisible( !isDNP );
+   getJLabelCBCRoute().setVisible( !isDNP );
+   getJLabelCBCSerial().setText( 
+         isDNP ? "Address:" : "Serial #:"  );
+}
+
 /**
  * Initializes connections
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
+   
+   getJComboBoxCBCType().addActionListener(this);
+   
 	// user code end
 	getJCheckBoxCreateCBC().addActionListener(this);
 	getControlDeviceComboBox().addActionListener(this);
@@ -929,6 +976,9 @@ public void jCheckBoxCreateCBC_ActionPerformed(java.awt.event.ActionEvent action
 public void jCheckBoxShowAllDevices_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	initComboBoxes();
+   
+   getControlDeviceComboBox().setSelectedIndex( 
+         (getControlDeviceComboBox().getItemCount() > 0) ? 0 : -1 );
 
 	return;
 }

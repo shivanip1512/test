@@ -5,14 +5,15 @@ package com.cannontech.database.db.device;
  */
 public class DeviceTwoWayFlags extends com.cannontech.database.db.DBPersistent 
 {
-	private Character monthlyStats = null;
-	private Character twentyFourHourStats = null;
-	private Character hourlyStats = null;
-	private Character failureAlarm = null;
-	private Integer performThreshold = null;
-	private Character performAlarm = null;
-	private Character performTwentyFourAlarm = null;
-	private Integer deviceID = null;
+   private Integer deviceID = null;
+	private Character monthlyStats = new Character('N');
+	private Character twentyFourHourStats = new Character('N');
+	private Character hourlyStats = new Character('N');
+	private Character failureAlarm = new Character('N');
+	private Integer performThreshold = new Integer(0);
+	private Character performAlarm = new Character('N');
+	private Character performTwentyFourAlarm = new Character('N');
+
 
 	public static final String[] SETTER_COLUMNS = 
 	{ 

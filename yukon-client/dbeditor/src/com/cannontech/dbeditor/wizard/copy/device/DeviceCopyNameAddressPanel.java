@@ -118,6 +118,9 @@ private javax.swing.JTextField getAddressTextField() {
 			ivjAddressTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjAddressTextField.setColumns(6);
 			// user code begin {1}
+         
+         ivjAddressTextField.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(-99999999, 99999999) );
+         
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -320,6 +323,16 @@ public Object getValue(Object val)
 			 ((CarrierBase) val).getDeviceCarrierSettings().setAddress(new Integer(getAddressTextField().getText()));
 		else if (val instanceof CapBank)
 			 ((CapBank) val).setLocation(getAddressTextField().getText());
+      else if( val instanceof com.cannontech.database.data.capcontrol.CapBankController )
+      {
+         ((com.cannontech.database.data.capcontrol.CapBankController)val).getDeviceCBC().setSerialNumber( 
+               new Integer(getAddressTextField().getText()) );
+      }
+      else if( val instanceof com.cannontech.database.data.capcontrol.CapBankController6510 )         
+      {
+         ((com.cannontech.database.data.capcontrol.CapBankController6510)val).getDeviceDNP().setMasterAddress( 
+               new Integer(getAddressTextField().getText()) );
+      }
 		else //didn't find it
 			throw new Error("Unable to determine device type when attempting to set the address");
 	}
@@ -547,17 +560,31 @@ public void setValue(Object val )
 		deviceClass = com.cannontech.database.data.pao.DeviceClasses.getClass( ((DeviceBase)val).getPAOClass() );
 	
 	if( (val instanceof IEDBase)
-		 || (val instanceof com.cannontech.database.data.capcontrol.CapBankController)
 		 || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.GROUP)
 		 || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.VIRTUAL) )
 	{
 		getAddressTextField().setVisible(false);
 		getPhysicalAddressLabel().setVisible(false);
 	}
+   else if( val instanceof com.cannontech.database.data.capcontrol.CapBankController )
+   {
+      getPhysicalAddressLabel().setText( "Serial #:" );      
+      getAddressTextField().setText( 
+            ((com.cannontech.database.data.capcontrol.CapBankController)val).getDeviceCBC().getSerialNumber().toString() );
+   }
+   else if( val instanceof com.cannontech.database.data.capcontrol.CapBankController6510 )
+   {
+      getAddressTextField().setText( 
+            ((com.cannontech.database.data.capcontrol.CapBankController6510)val).getDeviceDNP().getMasterAddress().toString() );
+   }
 	else if( val instanceof CarrierBase )
+   {
 		getAddressTextField().setText( ((CarrierBase)val).getDeviceCarrierSettings().getAddress().toString() );
+   }
 	else if( val instanceof IDLCBase )
-		getAddressTextField().setText( ((IDLCBase)val).getDeviceIDLCRemote().getAddress().toString() );
+   {
+   	getAddressTextField().setText( ((IDLCBase)val).getDeviceIDLCRemote().getAddress().toString() );
+   }
 		
 	getNameTextField().setText( ((com.cannontech.database.data.device.DeviceBase)val).getPAOName() );
 	int deviceDeviceID = ((com.cannontech.database.data.device.DeviceBase)val).getDevice().getDeviceID().intValue();

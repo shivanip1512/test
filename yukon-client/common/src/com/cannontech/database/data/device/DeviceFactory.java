@@ -182,6 +182,12 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice.setDeviceType( PAOGroups.STRING_CBC_FP_2800[0] );
 			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_CAPCONTROL);
 			break;
+      case PAOGroups.DNP_CBC_6510:
+         returnDevice = new com.cannontech.database.data.capcontrol.CapBankController6510();
+         returnDevice.setDeviceType( PAOGroups.STRING_DNP_CBC_6510[0] );
+         returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_CAPCONTROL);
+         break;
+
 
 		//The new MCT broadcast group (lead meter broadcast)
 		case PAOGroups.MCTBROADCAST:

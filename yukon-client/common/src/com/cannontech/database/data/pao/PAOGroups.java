@@ -241,6 +241,8 @@ public final static int getDeviceType(String typeString)
 	  return DCT_501;
    else if (isStringDevice(compareString, STRING_CBC_FP_2800))
 	  return CBC_FP_2800;
+   else if (isStringDevice(compareString, STRING_DNP_CBC_6510))
+     return DNP_CBC_6510;
    else if (isStringDevice(compareString, STRING_REPEATER_800))
 	  return REPEATER_800;
    else if (isStringDevice(compareString, STRING_SIXNET))
@@ -368,6 +370,8 @@ public final static String getDeviceTypeString(int type)
 		  return STRING_DCT_501[0];
 	  case CBC_FP_2800:
 		  return STRING_CBC_FP_2800[0];
+     case DNP_CBC_6510:
+        return STRING_DNP_CBC_6510[0];
 	  case REPEATER_800:
 		  return STRING_REPEATER_800[0];
 	  case SIXNET:

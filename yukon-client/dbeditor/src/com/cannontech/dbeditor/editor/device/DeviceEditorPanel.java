@@ -36,7 +36,10 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.DR_87, PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L, PAOGroups.MCT213,
 			PAOGroups.DCT_501
 		},
-		{	//2 - DeviceScanRateEditorPanel
+      {   //2 - CapBankController
+         PAOGroups.CAPBANKCONTROLLER, PAOGroups.CBC_FP_2800, PAOGroups.DNP_CBC_6510
+      },
+		{	//3 - DeviceScanRateEditorPanel
 			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.TCU5000, PAOGroups.TCU5500, 
 			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER,
 			PAOGroups.ALPHA_A1, PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, 
@@ -45,16 +48,17 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.MCT240, PAOGroups.LMT_2, PAOGroups.MCT248, PAOGroups.MCT250, 
 			PAOGroups.MCT210, PAOGroups.MCT213, PAOGroups.REPEATER, PAOGroups.REPEATER_800, 
 			PAOGroups.RTUILEX, PAOGroups.RTUWELCO, PAOGroups.DR_87, PAOGroups.SIXNET, 
-			PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L, PAOGroups.DCT_501
+			PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L, PAOGroups.DCT_501,
+         PAOGroups.DNP_CBC_6510
 		},
 
-		{   //3 - TapTerminalPanel
+		{   //4 - TapTerminalPanel
 			PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL
 		},
-		{   //4 - MCTIEDPort
+		{   //5 - MCTIEDPort
 			PAOGroups.MCT360, PAOGroups.MCT370
 		},
-		{   //5 - Alarm
+		{   //6 - Alarm
 			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.TCU5000, PAOGroups.TCU5500, 
 			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER,
 			PAOGroups.ALPHA_A1, PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, 
@@ -65,13 +69,10 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.RTUWELCO, PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL, 
 			PAOGroups.MCT213, PAOGroups.SIXNET, 
 			PAOGroups.DR_87, PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L,
-			PAOGroups.DCT_501
+			PAOGroups.DCT_501, PAOGroups.DNP_CBC_6510
 		},
-		{   //6 - CapBank
+		{   //7 - CapBank
 			PAOGroups.CAPBANK
-		},
-		{   //7 - CapBankController
-			PAOGroups.CAPBANKCONTROLLER, PAOGroups.CBC_FP_2800
 		},
 		{   //8 - CapBankSettingsPanel
 			PAOGroups.CAPBANK
@@ -108,38 +109,38 @@ public Object[] createNewPanel(int panelIndex)
 			objs[1] = "Metering";
 			break;
 
-		case 2:
+      case 2:
+         objs[0] = new com.cannontech.dbeditor.editor.device.capcontrol.DeviceCapBankControllerEditorPanel();
+         objs[1] = "General";
+         break;
+         
+		case 3:
 			objs[0] = new com.cannontech.dbeditor.editor.device.DeviceScanRateEditorPanel();
 			objs[1] = "Scan Rate";
 			break;
 
-/*		case 3:
+/*		case 4:
 			objs[0] = new com.cannontech.dbeditor.editor.device.DeviceStatisticsEditorPanel();
 			objs[1] = "Statistics";
 			break;
 */
-		case 3:
+		case 4:
 			objs[0] = new com.cannontech.dbeditor.editor.device.DeviceTapTerminalEditorPanel();
 			objs[1] = "Paging";
 			break;
 			
-		case 4:
+		case 5:
 			objs[0] = new com.cannontech.dbeditor.editor.device.DeviceMCTIEDPortEditorPanel();
 			objs[1] = "IED Port";
 			break;
 
-		case 5:
+		case 6:
 			objs[0] = new com.cannontech.dbeditor.editor.device.DeviceAlarmEditorPanel();
 			objs[1] = "Alarm";
 			break;
 
-		case 6:
-			objs[0] = new com.cannontech.dbeditor.editor.device.capcontrol.DeviceCapBankEditorPanel();
-			objs[1] = "General";
-			break;
-
 		case 7:
-			objs[0] = new com.cannontech.dbeditor.editor.device.capcontrol.DeviceCapBankControllerEditorPanel();
+			objs[0] = new com.cannontech.dbeditor.editor.device.capcontrol.DeviceCapBankEditorPanel();
 			objs[1] = "General";
 			break;
 	

@@ -118,14 +118,6 @@ public Object getValue(Object val)
 	((CarrierBase) val).getDeviceRoutes().setRouteID(
 		new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID()));
 
-	((TwoWayDevice) val).getDeviceTwoWayFlags().setMonthlyStats(new Character('N'));
-	((TwoWayDevice) val).getDeviceTwoWayFlags().setTwentyFourHourStats(new Character('N'));
-	((TwoWayDevice) val).getDeviceTwoWayFlags().setHourlyStats(new Character('N'));
-	((TwoWayDevice) val).getDeviceTwoWayFlags().setFailureAlarm(new Character('N'));
-	((TwoWayDevice) val).getDeviceTwoWayFlags().setPerformAlarm(new Character('N'));
-	((TwoWayDevice) val).getDeviceTwoWayFlags().setPerformTwentyFourAlarm(new Character('N'));
-	((TwoWayDevice) val).getDeviceTwoWayFlags().setPerformThreshold(new Integer(0));
-
 	//MCT 310 & 310IL are special case
 	if (val instanceof MCT310 || val instanceof MCT310IL || val instanceof MCT310ID)
 	{

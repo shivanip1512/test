@@ -6,6 +6,7 @@ import com.cannontech.database.data.device.*;
 
 /**
  * This type was created in VisualAge.
+ * @deprecated use com.cannontech.dbeditor.editor.device.DeviceScanRateEditorPanel instead
  */
  import java.awt.Dimension;
  import com.cannontech.database.db.*;
@@ -14,7 +15,7 @@ import com.cannontech.database.data.device.*;
  import com.cannontech.common.gui.util.DataInputPanel;
  
 public class CapBankControllerSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.CaretListener 
-{
+{   
 	private int cbcType = com.cannontech.database.data.pao.PAOGroups.INVALID;
 	
 	private javax.swing.JLabel ivjNameLabel = null;
@@ -26,6 +27,7 @@ public class CapBankControllerSettingsPanel extends com.cannontech.common.gui.ut
 	private javax.swing.JComboBox ivjRouteComboBox = null;
 /**
  * Constructor
+ * @deprecated use com.cannontech.dbeditor.editor.device.DeviceScanRateEditorPanel instead
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 public CapBankControllerSettingsPanel() {
@@ -357,20 +359,52 @@ public Object getValue(Object val)
 
 	com.cannontech.database.data.multi.MultiDBPersistent newVal = new com.cannontech.database.data.multi.MultiDBPersistent();
 
-	if (getCbcType() == com.cannontech.database.data.pao.PAOGroups.CBC_FP_2800)
+	if( getCbcType() == com.cannontech.database.data.pao.PAOGroups.CBC_FP_2800 )
 		newDevice = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_FP_2800);
-	else
+	else if( getCbcType() == com.cannontech.database.data.pao.PAOGroups.CAPBANKCONTROLLER )
 		newDevice = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CAPBANKCONTROLLER);
+   else if( getCbcType() == com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510 )
+      newDevice = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510);
+   else
+      throw new IllegalStateException("CBC type of: " + getCbcType() + " not found");
 
-	Integer serailNumber = new Integer(getSerialNumberTextField().getText());
-	newDevice.setPAOName(getNameTextField().getText());
-	
-	((com.cannontech.database.data.capcontrol.CapBankController) newDevice).getDeviceCBC().setSerialNumber(
-		serailNumber );
-	((com.cannontech.database.data.capcontrol.CapBankController) newDevice).getDeviceCBC().setRouteID(
-		new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID()));
+
+   Integer serailNumber = new Integer(getSerialNumberTextField().getText());
+
+   if( newDevice instanceof com.cannontech.database.data.capcontrol.CapBankController )
+   {
+   	((com.cannontech.database.data.capcontrol.CapBankController) newDevice).getDeviceCBC().setSerialNumber(
+   		serailNumber );
+   	((com.cannontech.database.data.capcontrol.CapBankController) newDevice).getDeviceCBC().setRouteID(
+   		new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID()));
+   }
+   else if( newDevice instanceof com.cannontech.database.data.capcontrol.CapBankController6510 )
+   {
+
+      com.cannontech.database.data.capcontrol.CapBankController6510 
+            tempController = (com.cannontech.database.data.capcontrol.CapBankController6510)newDevice;
+
+      Integer slave = null;
+/*            (getJTextFieldSlaveAddress().getText() == null 
+               || getJTextFieldSlaveAddress().getText().length() <= 0)
+            ? new Integer(0)
+            : new Integer(getJTextFieldSlaveAddress().getText());
+*/            
+      Integer postWait = null;
+/*            (getJTextFieldPostCommWait().getText() == null
+               || getJTextFieldPostCommWait().getText().length() <= 0)
+            ? new Integer(0)
+            : new Integer(getJTextFieldPostCommWait().getText());
+*/
+
+      tempController.getDeviceDNP().setMasterAddress( serailNumber );
+      tempController.getDeviceDNP().setSlaveAddress( slave );
+      tempController.getDeviceDNP().setPostCommWait( postWait );            
+   }
+
 	
 	newDevice.setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+   newDevice.setPAOName(getNameTextField().getText());
 
 	newVal.getDBPersistentVector().add(newDevice);
 
@@ -388,7 +422,7 @@ public Object getValue(Object val)
 			newDevice.getDevice().getDeviceID(),
 			new Integer(1) );
 
-	newPoint.getPoint().setStateGroupID( new Integer(1) );
+	newPoint.getPoint().setStateGroupID( new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS) );
 
 	((com.cannontech.database.data.point.StatusPoint)newPoint).getPointStatus().setControlOffset(
 			new Integer(1) );

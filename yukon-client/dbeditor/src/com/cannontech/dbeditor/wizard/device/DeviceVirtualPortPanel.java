@@ -156,12 +156,7 @@ public Object getValue(Object val)
 	else
 		throw new Error("What kind of device is this?");
 
-	((TwoWayDevice) val).getDeviceTwoWayFlags().setMonthlyStats(new Character('N'));
-	((TwoWayDevice) val).getDeviceTwoWayFlags().setTwentyFourHourStats(new Character('N'));
-	((TwoWayDevice) val).getDeviceTwoWayFlags().setHourlyStats(new Character('N'));
-	((TwoWayDevice) val).getDeviceTwoWayFlags().setFailureAlarm(new Character('N'));
-	((TwoWayDevice) val).getDeviceTwoWayFlags().setPerformAlarm(new Character('N'));
-	((TwoWayDevice) val).getDeviceTwoWayFlags().setPerformTwentyFourAlarm(new Character('N'));
+   //default the threshold
 	((TwoWayDevice) val).getDeviceTwoWayFlags().setPerformThreshold(new Integer(90));
 
 	//transmitter is a special case

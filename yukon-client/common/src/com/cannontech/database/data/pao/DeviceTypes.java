@@ -39,7 +39,6 @@ public interface DeviceTypes
 	
 	public final static int RTUILEX	=	40;
 	public final static int RTUWELCO	=	41;
-
 	public final static int DCT_501	=	42;
 	
 	public final static int TAPTERMINAL	=	50;
@@ -63,9 +62,11 @@ public interface DeviceTypes
 	public final static int CAPBANKCONTROLLER = 111;
 	public final static int VIRTUAL_SYSTEM = 112;
 	public final static int CBC_FP_2800 = 113;
-
 	public final static int LM_GROUP_POINT = 114;
 		
+   public final static int DNP_CBC_6510  = 130;
+   
+      
 	public final static int SYSTEM = 200;
 	public final static int EDITABLEVERSACOMSERIAL = 210;
 
@@ -127,4 +128,5 @@ public interface DeviceTypes
 	public static final String[] STRING_REPEATER_800 = {"REPEATER 800"};
 	public static final String[] STRING_LM_ENERGY_EXCHANGE_PROGRAM = {"LM ENERGY EXCHANGE", "ENERGY EXCHANGE" };
 	public static final String[] STRING_SIXNET = {"SIXNET"};
+   public static final String[] STRING_DNP_CBC_6510 = {"CBC 6510", "CBC-6510" };
 }

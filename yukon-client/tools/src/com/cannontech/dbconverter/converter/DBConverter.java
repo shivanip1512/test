@@ -418,16 +418,6 @@ private void handleTransmitter(com.cannontech.database.data.device.TwoWayDevice 
 		((com.cannontech.database.data.device.IEDBase)device).getDeviceIED().setPassword( "None" );
 		((com.cannontech.database.data.device.IEDBase)device).getDeviceIED().setSlaveAddress( "Master" );
 	}
-		
-	// Default values that do NOT get set by default??
-	device.getDeviceTwoWayFlags().setMonthlyStats( new Character('N') );
-	device.getDeviceTwoWayFlags().setTwentyFourHourStats( new Character('N') );
-	device.getDeviceTwoWayFlags().setHourlyStats( new Character('N') );
-	device.getDeviceTwoWayFlags().setFailureAlarm ( new Character('N') );
-	device.getDeviceTwoWayFlags().setPerformAlarm( new Character('N') );
-	device.getDeviceTwoWayFlags().setPerformTwentyFourAlarm( new Character('N') );
-	device.getDeviceTwoWayFlags().setPerformThreshold ( new Integer(0) );
-	
 
 }
 
@@ -1117,15 +1107,6 @@ public boolean processMCTDevices()
 		// set this devices route
 		device.getDeviceRoutes().setRouteID(new Integer( Integer.parseInt(tokenizer.nextElement().toString() )));
 	    		
-		// set the defaults settings
-		device.getDeviceTwoWayFlags().setMonthlyStats(new Character('N'));
-		device.getDeviceTwoWayFlags().setTwentyFourHourStats(new Character('N'));
-		device.getDeviceTwoWayFlags().setHourlyStats(new Character('N'));
-		device.getDeviceTwoWayFlags().setFailureAlarm(new Character('N'));
-		device.getDeviceTwoWayFlags().setPerformThreshold(new Integer(0));
-		device.getDeviceTwoWayFlags().setPerformAlarm(new Character('N'));
-		device.getDeviceTwoWayFlags().setPerformTwentyFourAlarm(new Character('N'));
-		
 		// set group info
 		device.getDeviceMeterGroup().setCollectionGroup( tokenizer.nextElement().toString() );
 
@@ -1328,15 +1309,6 @@ public boolean processRepeaterFile(int aPassCount)
 		// set the repeater address
 		device.getDeviceCarrierSettings().setAddress( new Integer( Integer.parseInt(tokenizer.nextElement().toString() )));
 
-		// set the defaults settings
-		device.getDeviceTwoWayFlags().setMonthlyStats(new Character('N'));
-		device.getDeviceTwoWayFlags().setTwentyFourHourStats(new Character('N'));
-		device.getDeviceTwoWayFlags().setHourlyStats(new Character('N'));
-		device.getDeviceTwoWayFlags().setFailureAlarm(new Character('N'));
-		device.getDeviceTwoWayFlags().setPerformThreshold(new Integer(0));
-		device.getDeviceTwoWayFlags().setPerformAlarm(new Character('N'));
-		device.getDeviceTwoWayFlags().setPerformTwentyFourAlarm(new Character('N'));
-		
 		// set this devices route
 		device.getDeviceRoutes().setRouteID(new Integer( Integer.parseInt(tokenizer.nextElement().toString() )));
 		
@@ -1602,14 +1574,6 @@ public boolean processRTUDevices()
 		((com.cannontech.database.data.device.IDLCBase)device).getDeviceDirectCommSettings().setPortID( new Integer(Integer.parseInt(tokenizer.nextElement().toString()) ) );
 		((com.cannontech.database.data.device.IDLCBase)device).getDeviceIDLCRemote().setAddress( new Integer(Integer.parseInt(tokenizer.nextElement().toString()) ) );
 		((com.cannontech.database.data.device.IDLCBase)device).getDeviceIDLCRemote().setPostCommWait( new Integer(Integer.parseInt(tokenizer.nextElement().toString()) ) );
-
-		device.getDeviceTwoWayFlags().setMonthlyStats(new Character('N'));
-		device.getDeviceTwoWayFlags().setTwentyFourHourStats(new Character('N'));
-		device.getDeviceTwoWayFlags().setHourlyStats(new Character('N'));
-		device.getDeviceTwoWayFlags().setFailureAlarm(new Character('N'));
-		device.getDeviceTwoWayFlags().setPerformThreshold(new Integer(0));
-		device.getDeviceTwoWayFlags().setPerformAlarm(new Character('N'));
-		device.getDeviceTwoWayFlags().setPerformTwentyFourAlarm(new Character('N'));
 
 		// check if it is dialup
 		if( tokenizer.hasMoreTokens() )

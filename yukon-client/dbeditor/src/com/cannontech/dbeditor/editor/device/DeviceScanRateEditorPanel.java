@@ -5,6 +5,7 @@ import com.cannontech.database.db.device.*;
 import com.cannontech.database.data.device.*;
 import com.cannontech.database.data.pao.PAOGroups;
 import java.awt.event.ItemEvent;
+import com.cannontech.database.data.capcontrol.CapBankController6510;
 
 import com.cannontech.common.util.*;
 import com.cannontech.dbeditor.*;
@@ -1466,13 +1467,24 @@ private javax.swing.JComboBox getPeriodicHealthIntervalComboBox() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
-public Object getValue(Object val) {
+public Object getValue(Object device) 
+{
+   TwoWayDevice val = null;
+   
+   if( device instanceof com.cannontech.database.data.multi.MultiDBPersistent )
+   {
+      val = (TwoWayDevice)com.cannontech.database.data.multi.CommonMulti.getFirstObjectOfType(
+                  TwoWayDevice.class,
+                  (com.cannontech.database.data.multi.MultiDBPersistent)device );
+   }         
+   else
+   	val = (TwoWayDevice)device;
 
-	TwoWayDevice twd = (TwoWayDevice)val;
-	Integer deviceID = twd.getDevice().getDeviceID();
-	java.util.Vector oldScanRateVector = twd.getDeviceScanRateVector();
+	Integer deviceID = val.getDevice().getDeviceID();
+	java.util.Vector oldScanRateVector = val.getDeviceScanRateVector();
 	java.util.Vector newScanRateVector = new java.util.Vector(3);
-	
+
+
 	if( (val instanceof CCUBase) || (val instanceof TCUBase)
 			  || (val instanceof RepeaterBase) ||
 			 (val instanceof PagingTapTerminal) )
@@ -1505,7 +1517,8 @@ public Object getValue(Object val) {
 	}
 	else if( (val instanceof RTUBase) 
 				|| (val instanceof MCTBase) 
-				|| (val instanceof LCUBase) )
+				|| (val instanceof LCUBase)
+            || (val instanceof CapBankController6510) )
 	{
 		if( getPeriodicHealthCheckBox().isSelected() && getPeriodicHealthCheckBox().isVisible() )
 		{
@@ -1578,29 +1591,29 @@ public Object getValue(Object val) {
 
 	}
 
-	twd.setDeviceScanRateVector(newScanRateVector);
+	val.setDeviceScanRateVector(newScanRateVector);
 
 	//set the scan window values here! Also we must do this in the Wizard
-	twd.getDeviceWindow().setType( getJComboBoxScanWindowType().getSelectedItem().toString() );
+	val.getDeviceWindow().setType( getJComboBoxScanWindowType().getSelectedItem().toString() );
 	
 	if( getJCheckBoxScanWindow().isSelected() )
 	{
-		twd.getDeviceWindow().setWinOpen( getJTextFieldOpen().getTimeTotalSeconds() );
-		twd.getDeviceWindow().setAlternateOpen( getJTextFieldOpen().getTimeTotalSeconds() );
+		val.getDeviceWindow().setWinOpen( getJTextFieldOpen().getTimeTotalSeconds() );
+		val.getDeviceWindow().setAlternateOpen( getJTextFieldOpen().getTimeTotalSeconds() );
 
-		twd.getDeviceWindow().setWinClose( getJTextFieldClose().getTimeTotalSeconds() );
-		twd.getDeviceWindow().setAlternateClose( getJTextFieldClose().getTimeTotalSeconds() );
+		val.getDeviceWindow().setWinClose( getJTextFieldClose().getTimeTotalSeconds() );
+		val.getDeviceWindow().setAlternateClose( getJTextFieldClose().getTimeTotalSeconds() );
 	}
 	else
 	{
-		twd.getDeviceWindow().setWinOpen( new Integer(0) );
-		twd.getDeviceWindow().setAlternateOpen( new Integer(0) );
+		val.getDeviceWindow().setWinOpen( new Integer(0) );
+		val.getDeviceWindow().setAlternateOpen( new Integer(0) );
 
-		twd.getDeviceWindow().setWinClose( new Integer(0) );
-		twd.getDeviceWindow().setAlternateClose( new Integer(0) );
+		val.getDeviceWindow().setWinClose( new Integer(0) );
+		val.getDeviceWindow().setAlternateClose( new Integer(0) );
 	}
 	
-	return val;
+	return device;
 }
 /**
  * Called whenever the part throws an exception.
@@ -1802,7 +1815,8 @@ public void setDeviceType(int type)
 	}
 	else if( DeviceTypesFuncs.isRTU(type) 
 				|| DeviceTypesFuncs.isMCT(type)
-				|| DeviceTypesFuncs.isLCU(type) )
+				|| DeviceTypesFuncs.isLCU(type)
+            || DeviceTypesFuncs.isCapBankController(type) )
 	{		
 		if( DeviceTypesFuncs.isMCT3xx(type) )
 		{
@@ -1816,7 +1830,7 @@ public void setDeviceType(int type)
 			getIntegrityRateCheckBox().setText("Demand Rate");
 			getAccumulatorRateCheckBox().setText("Accumulator (Energy) Rate");			
 		}
-		else if( type == PAOGroups.RTUILEX )
+		else if( type == PAOGroups.RTUILEX || type == PAOGroups.DNP_CBC_6510 )
 		{
 			getPeriodicHealthCheckBox().setText("General Scan");
 			getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");
@@ -1837,7 +1851,8 @@ public void setDeviceType(int type)
 		
 		setAccumulatorObjectsVisible( 
 				!(type == PAOGroups.DCT_501 
-					|| type == PAOGroups.LCU_T3026) );
+					|| type == PAOGroups.LCU_T3026
+               || type == PAOGroups.DNP_CBC_6510) );
 		
 		setIntegrityObjectsVisible(
 			!(type == PAOGroups.LMT_2
@@ -1940,7 +1955,8 @@ public void setValue(Object val)
 	}
 	else if( (val instanceof RTUBase) 
 				|| (val instanceof MCTBase) 
-				|| (val instanceof LCUBase) )
+				|| (val instanceof LCUBase)
+            || (val instanceof CapBankController6510) )            
 	{
 
 		for (int i = 0; i < dScanRate.length; i++)

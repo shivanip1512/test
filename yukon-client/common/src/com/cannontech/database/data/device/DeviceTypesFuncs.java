@@ -47,7 +47,8 @@ public final static boolean allowRebroadcast(String type)
 public final static boolean isCapBankController( int deviceType )
 {
 	return ( deviceType == CAPBANKCONTROLLER
-			   || deviceType == CBC_FP_2800 );
+			    || deviceType == CBC_FP_2800
+             || deviceType == DNP_CBC_6510 );
 }
 /**
  * This method was created in VisualAge.

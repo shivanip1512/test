@@ -160,7 +160,10 @@ protected java.util.Vector getDBPersistentVector()
 	return dbPersistentVector;
 }
 /**
- * delete method comment.
+ * Finds the first object of the given class in the Vector.
+ * This method checks the first element and searches the entire
+ * object hierarchary of that element for the Class, 
+ * then moves to the next element and repeats.
  */
 public static final DBPersistent getFirstObjectOfType( Class type, CommonMulti multi )
 {
@@ -168,8 +171,15 @@ public static final DBPersistent getFirstObjectOfType( Class type, CommonMulti m
 	{
 		for( int i = 0; i < multi.getDBPersistentVector().size(); i++ )
 		{
-			if( multi.getDBPersistentVector().get(i).getClass().equals(type) )
-				return (DBPersistent)multi.getDBPersistentVector().get(i);
+         Class currClass = multi.getDBPersistentVector().get(i).getClass();
+         
+         while( currClass != null )
+         {
+   			if( currClass.equals(type) )
+   				return (DBPersistent)multi.getDBPersistentVector().get(i);
+            else
+               currClass = currClass.getSuperclass();
+         }
 		}
 
 	}
