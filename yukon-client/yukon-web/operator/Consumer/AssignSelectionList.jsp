@@ -109,8 +109,8 @@ function prepareSubmit(form) {
 			  <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount2.jsp">
               <table width="500" border="1" cellspacing="0" cellpadding="3" align="center" class="MainText">
                 <tr> 
-                  <td width="50%" class="HeaderCell">Import File Value</td>
-                  <td width="50%" class="HeaderCell">Selection List Entry</td>
+                  <td width="40%" class="HeaderCell">Import File Value</td>
+                  <td width="60%" class="HeaderCell">Selection List Entry</td>
                 </tr>
 <%
 	Iterator it = valueIDMap.entrySet().iterator();
@@ -122,30 +122,30 @@ function prepareSubmit(form) {
 		if (value.equals("")) {
 %>
 				<tr> 
-                  <td width="50%" class="TableCell">Assign empty import value 
+                  <td width="40%" class="TableCell">Assign empty import value 
                     <input type="checkbox" name="AssignEmpty" onclick="setAssignEmpty(this.form, this.checked)">
                   </td>
-                  <td width="50%" class="TableCell">
-<%
+                  <td width="60%" class="TableCell"> 
+                    <%
 			if (newList) {
 %>
-				    <input type="text" name="EntryTextEmpty" disabled>
+                    <input type="text" name="EntryTextEmpty" disabled>
 <%
 			}
 			else {
 %>
                     <select name="EntryIDEmpty" disabled>
 <%
-				if (listName.equals("ServiceCompany")) {
-					for (int j = 0; j < companies.getStarsServiceCompanyCount(); j++) {
-						StarsServiceCompany company = companies.getStarsServiceCompany(j);
-						String selected = (company.getCompanyID() == id)? "selected" : "";
+				if (list != null) {		
+					for (int j = 0; j < list.getYukonListEntries().size(); j++) {
+						YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(j);
+						String selected = (entry.getEntryID() == id)? "selected" : "";
 %>
-                      <option value="<%= company.getCompanyID() %>" <%= selected %>><%= company.getCompanyName() %></option>
+                      <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
 <%
 					}
 				}
-				else if (listName.equals("ApplianceCategory")) {
+				else if (listName.equals("ApplianceType")) {
 					for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
 						StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
 						String selected = (category.getApplianceCategoryID() == id)? "selected" : "";
@@ -154,14 +154,19 @@ function prepareSubmit(form) {
 <%
 					}
 				}
-				else {		
-					for (int j = 0; j < list.getYukonListEntries().size(); j++) {
-						YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(j);
-						String selected = (entry.getEntryID() == id)? "selected" : "";
+				else if (listName.equals("ServiceCompany")) {
+					for (int j = 0; j < companies.getStarsServiceCompanyCount(); j++) {
+						StarsServiceCompany company = companies.getStarsServiceCompany(j);
+						String selected = (company.getCompanyID() == id)? "selected" : "";
 %>
-                      <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
+                      <option value="<%= company.getCompanyID() %>" <%= selected %>><%= company.getCompanyName() %></option>
 <%
 					}
+				}
+				else {
+%>
+                      <option value="0">(none)</option>
+<%
 				}
 %>
                     </select>
@@ -176,28 +181,28 @@ function prepareSubmit(form) {
 %>
                 <input type="hidden" name="ImportValue" value="<%= value %>">
 				<tr> 
-                  <td width="50%" class="TableCell"><%= value %></td>
-                  <td width="50%" class="TableCell">
-<%
+                  <td width="40%" class="TableCell"><%= value %></td>
+                  <td width="60%" class="TableCell"> 
+                    <%
 			if (newList) {
 %>
-				    <input type="text" name="EntryText">
+                    <input type="text" name="EntryText">
 <%
 			}
 			else {
 %>
                     <select name="EntryID">
 <%
-				if (listName.equals("ServiceCompany")) {
-					for (int j = 0; j < companies.getStarsServiceCompanyCount(); j++) {
-						StarsServiceCompany company = companies.getStarsServiceCompany(j);
-						String selected = (company.getCompanyID() == id)? "selected" : "";
+				if (list != null) {		
+					for (int j = 0; j < list.getYukonListEntries().size(); j++) {
+						YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(j);
+						String selected = (entry.getEntryID() == id)? "selected" : "";
 %>
-                      <option value="<%= company.getCompanyID() %>" <%= selected %>><%= company.getCompanyName() %></option>
+                      <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
 <%
 					}
 				}
-				else if (listName.equals("ApplianceCategory")) {
+				else if (listName.equals("ApplianceType")) {
 					for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
 						StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
 						String selected = (category.getApplianceCategoryID() == id)? "selected" : "";
@@ -206,14 +211,34 @@ function prepareSubmit(form) {
 <%
 					}
 				}
-				else {		
-					for (int j = 0; j < list.getYukonListEntries().size(); j++) {
-						YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(j);
-						String selected = (entry.getEntryID() == id)? "selected" : "";
+				else if (listName.equals("ServiceCompany")) {
+					for (int j = 0; j < companies.getStarsServiceCompanyCount(); j++) {
+						StarsServiceCompany company = companies.getStarsServiceCompany(j);
+						String selected = (company.getCompanyID() == id)? "selected" : "";
 %>
-                      <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
+                      <option value="<%= company.getCompanyID() %>" <%= selected %>><%= company.getCompanyName() %></option>
 <%
 					}
+				}
+				else if (listName.equals("LoadGroup")) {
+					for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
+						StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
+						for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
+							StarsEnrLMProgram program = category.getStarsEnrLMProgram(k);
+							for (int l = 0; l < program.getAddressingGroupCount(); l++) {
+								AddressingGroup group = program.getAddressingGroup(l);
+								String selected = (group.getEntryID() == id)? "selected" : "";
+%>
+                      <option value="<%= group.getEntryID() %>" <%= selected %>><%= group.getContent() %></option>
+<%
+							}
+						}
+					}
+				}
+				else {
+%>
+                      <option value="0">(none)</option>
+<%
 				}
 %>
                     </select>
