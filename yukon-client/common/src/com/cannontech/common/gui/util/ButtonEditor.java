@@ -15,8 +15,8 @@ import javax.swing.JTable;
  */
 public class ButtonEditor extends DefaultCellEditor {
 	protected JButton button;
-	private String    label;
-	private boolean   isPushed;
+	protected String    label;
+	protected boolean   isPushed;
 
 	public ButtonEditor(JCheckBox checkBox) {
 		super(checkBox);
