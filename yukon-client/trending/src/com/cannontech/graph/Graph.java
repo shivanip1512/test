@@ -28,8 +28,6 @@ import com.cannontech.database.data.graph.GraphDefinition;
 
 public class Graph implements GraphDefines, com.jrefinery.chart.event.ChartChangeListener
 {
-	private java.lang.String DB_ALIAS = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
-	private java.lang.String databaseAlias = DB_ALIAS;	//defaults set to yukon! 5/24/01
 	private long lastUpdateTime = 0;
 
 	private int viewType = TrendModelType.LINE_VIEW;
@@ -60,8 +58,6 @@ public class Graph implements GraphDefines, com.jrefinery.chart.event.ChartChang
 	private int options_mask_holder = 0x00;	
 	private boolean updateTrend = true;
 	private StringBuffer htmlString = null;
-
-
 
 
 /**
@@ -340,10 +336,6 @@ public String getPeriod()
 {
 	return period;
 }
-public String getDatabaseAlias() 
-{
-	return databaseAlias;
-}
 
 /**
  * Insert the method's description here.
@@ -479,7 +471,7 @@ private int retrieveIntervalRate()
 
 	try
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(getDatabaseAlias());
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 
 		if( conn == null )
 		{
@@ -549,15 +541,6 @@ public void setPeriod(String newPeriod)
 		setUpdateTrend(true);
 	}	
 }  
-/**
- * Insert the method's description here.
- * Creation date: (10/12/00 5:01:10 PM)
- * @param dbAlias java.lang.String
- */
-public void setDatabaseAlias(String dbAlias) 
-{
-	databaseAlias = dbAlias;
-} 
 
 public void setHtmlString(StringBuffer newHtmlString)
 {
