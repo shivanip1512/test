@@ -1182,7 +1182,7 @@ private javax.swing.JLabel getJLabelScenario() {
 				c.set(GregorianCalendar.MINUTE, Integer.parseInt( stop.substring(3,5) ) );
 				c.set(GregorianCalendar.SECOND, 0 );
 				
-				if( getJCheckBoxStartStopNow().isSelected() )
+				if( getJCheckBoxStartStopNow().isSelected() && getMode() == MODE_STOP )
 					return new Date();  //use a time of now
 				else
 					return c.getTime();
