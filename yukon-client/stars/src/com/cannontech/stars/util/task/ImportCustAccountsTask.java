@@ -984,10 +984,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				String progName = StarsUtils.getPublishedProgramName( liteProg );
 				
 				if (progName.equalsIgnoreCase( fields[ImportManagerUtil.IDX_PROGRAM_NAME] )) {
-					int[] suProg = new int[3];
+					int[] suProg = new int[4];
 					suProg[0] = liteProg.getProgramID();
 					suProg[1] = -1;	// ApplianceCategoryID (optional)
 					suProg[2] = -1;	// GroupID (optional)
+					suProg[3] = -1;	// LoadNumber (optional)
 					
 					if (fields[ImportManagerUtil.IDX_ADDR_GROUP].trim().length() > 0) {
 						for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
