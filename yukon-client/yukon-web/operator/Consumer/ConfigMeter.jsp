@@ -1,29 +1,34 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.database.data.lite.LiteFactory"%>
-<%@ page import="com.cannontech.database.data.lite.LiteDeviceMeterNumber" %>
-<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
-
-<%@ page import="com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase"%>
-<%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
-<%@ page import="com.cannontech.database.data.device.CarrierBase"%>
-<%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 
 <%@ page import="com.cannontech.database.cache.functions.PAOFuncs"%>
 <%@ page import="com.cannontech.database.cache.functions.DBPersistentFuncs"%>
+<%@ page import="com.cannontech.database.db.device.DeviceMeterGroup"%>
+<%@ page import="com.cannontech.database.data.device.IDeviceMeterGroup"%>
+<%@ page import="com.cannontech.database.data.device.CarrierBase"%>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
+<%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
+<%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
+<%@ page import="com.cannontech.database.data.pao.RouteTypes"%>
 
+<%
+	java.util.Enumeration enum1 = request.getParameterNames();
+	while (enum1.hasMoreElements()){
+		
+		java.lang.Object element = enum1.nextElement();
+		  	System.out.println(" --" + element.toString() + " = " + request.getParameter(element.toString()));
+	}
+ %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } 
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
 	StarsMCT starsMCT = inventories.getStarsMCT(invNo - inventories.getStarsLMHardwareCount());
 	int deviceID = starsMCT.getDeviceID();
 
-  	//DeviceMeterGroup - meterNumber, collectionGroup
-	LiteDeviceMeterNumber liteDevMeterNum = new LiteDeviceMeterNumber(deviceID);
-	liteDevMeterNum.retrieve(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-	DeviceMeterGroupBase devMeterGroup = (DeviceMeterGroupBase)DBPersistentFuncs.retrieveDBPersistent(liteDevMeterNum);
-
 	//get the liteYukonPao using the deviceID
 	LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(deviceID);
 	YukonPAObject yukonPao = (YukonPAObject)DBPersistentFuncs.retrieveDBPersistent(liteYukonPao);
+
+  	//DeviceMeterGroup - meterNumber, collectionGroup
+	DeviceMeterGroup devMeterGroup = ((IDeviceMeterGroup)yukonPao).getDeviceMeterGroup();
 
 	int deviceRouteID = -1;	//Get the device's routeID
 	int address = -1;		//Get the device's physical Address
@@ -35,11 +40,62 @@
 		address = ((CarrierBase)yukonPao).getDeviceCarrierSettings().getAddress().intValue();
 	}
 	int [] validRouteTypes = new int[]{
-		com.cannontech.database.data.pao.RouteTypes.ROUTE_CCU,
-		com.cannontech.database.data.pao.RouteTypes.ROUTE_MACRO
+		RouteTypes.ROUTE_CCU,
+		RouteTypes.ROUTE_MACRO
 		};
 	LiteYukonPAObject[] validRoutes = PAOFuncs.getRoutesByType(validRouteTypes);
 %>
+
+<%
+//Update the Device when submit button was pressed.
+if (request.getParameter("Submit") != null)
+{
+	//Meter Number Updated
+	boolean updateYukonPAO = false;
+	String updateMeterNumber = (String)request.getParameter("MeterNumber");
+	String prevMeterNumber = (String)request.getParameter("PrevMeterNumber");
+	//Verify prevMeterNumber from db is "still" the same as the currentMeterNumber from db
+	if( prevMeterNumber.equalsIgnoreCase(devMeterGroup.getMeterNumber()))
+	{
+		if(!updateMeterNumber.equalsIgnoreCase(devMeterGroup.getMeterNumber().toString()))
+		{
+			devMeterGroup.setMeterNumber(updateMeterNumber.toString());
+			updateYukonPAO = true;
+		}
+	}
+	else {
+		errorMsg = "Changes have been made to data by another user.  Please try again";
+	}
+	
+	//CollectionGroup Updated
+	String collGroup = (String)request.getParameter("CollGroup");
+	if (!collGroup.equalsIgnoreCase(devMeterGroup.getCollectionGroup()))
+	{
+		devMeterGroup.setCollectionGroup(collGroup.toString());
+		updateYukonPAO = true;
+	}
+
+	//Physical Address Updated
+	int physAddr = Integer.valueOf((String)request.getParameter("Address")).intValue();
+	int prevPhysAddr = Integer.valueOf((String)request.getParameter("PrevAddress")).intValue();
+	if( prevPhysAddr == address)
+	{
+		if( physAddr != address)
+		{
+			((CarrierBase)yukonPao).getDeviceCarrierSettings().setAddress(new Integer(physAddr));
+			address = physAddr;
+			updateYukonPAO = true;
+		}
+	}
+	else {
+		errorMsg = "Changes have been made to data by another user.  Please try again";
+	}
+
+	//Update the database when change is true.
+	if( updateYukonPAO )
+		DBPersistentFuncs.update(yukonPao);	
+}%>	
+
 
 <html>
 <head>
@@ -103,7 +159,7 @@
   
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>              
 
-			  <form name="invForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
+			  <form name="invForm" method="POST" action="ConfigMeter.jsp">
                 <input type="hidden" name="action" value="UpdateMeterConfig">
                 <input type="hidden" name="InvNo" value="<%=invNo%>">
 				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/ConfigMeter.jsp?InvNo=<%=invNo%>">
@@ -120,19 +176,21 @@
                   <tr> 
                     <td width="30%" class="SubtitleHeader" height="2" align="right">Meter Number:</td>
                     <td width="70%" height="2"> 
-                      <input type="text" name="MeterNumberLabel" maxlength="70" size="20" value="<%=devMeterGroup.getDeviceMeterGroup().getMeterNumber()%>">
+                      <input type="text" name="MeterNumber" maxlength="70" size="20" value="<%=devMeterGroup.getMeterNumber()%>">
+                      <input type="hidden" name="PrevMeterNumber" value="<%=devMeterGroup.getMeterNumber()%>">
                     </td>
                   </tr>
                   <tr> 
                     <td width="30%" class="SubtitleHeader" height="2" align="right">Physical Address:</td>
                     <td width="70%" height="2"> 
-                      <input type="text" name="PhysicalAddressLabel" size="20" value="<%= address%>" maxlength="70">
+                      <input type="text" name="Address" size="20" value="<%= address%>" maxlength="70">
+                      <input type="hidden" name="PrevAddress" value="<%=address%>">
                     </td>
                   </tr>
                   <tr> 
                     <td width="30%" class="SubtitleHeader" height="2" align="right">Route:</td>
                     <td width="70%" height="2"> 
-                      <select id="getRouteID()" name="RouteID">
+                      <select id="RouteID" name="RouteID">
                         <%
                       for (int i = 0; i < validRoutes.length; i++)
                       {
@@ -147,15 +205,14 @@
                     </td>
                   </tr>
                   <tr> 
-                    <td width="30%" class="SubtitleHeader" height="2" align="right">Collection 
-                      Group:</td>
+                    <td width="30%" class="SubtitleHeader" height="2" align="right">Collection Group:</td>
                     <td width="70%" height="2"> 
                       <select id="collgroup" name="CollGroup">
                         <% /* Fill in the period drop down and attempt to match the current period with one of the options */
-					  String [] collGroups = com.cannontech.database.db.device.DeviceMeterGroup.getDeviceCollectionGroups();
+					  String [] collGroups = DeviceMeterGroup.getDeviceCollectionGroups();
                       for( int i = 0; i < collGroups.length; i++ )
                       {
-                        if( collGroups[i].equals(devMeterGroup.getDeviceMeterGroup().getCollectionGroup()) )
+                        if( collGroups[i].equals(devMeterGroup.getCollectionGroup()) )
                           out.println("<OPTION SELECTED>" + collGroups[i]);
                         else
                           out.println("<OPTION>" + collGroups[i]);
@@ -168,7 +225,7 @@
                     </td>
                     <td width="70%" height="2">
                       <input type="reset" name="Reset" value="Restore">
-                      <input type="submit" name="Submit2" value="Submit">
+                      <input type="submit" name="Submit" value="Submit">
                     </td>
                   </tr>
                   <tr> 
