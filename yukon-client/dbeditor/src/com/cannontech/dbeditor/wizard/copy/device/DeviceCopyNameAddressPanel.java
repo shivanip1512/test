@@ -7,17 +7,17 @@ import com.cannontech.database.data.device.*;
 /**
  * This type was created in VisualAge.
  */
- import java.awt.Dimension;
+import java.awt.Dimension;
 
 import javax.swing.JLabel;
 
- import com.cannontech.database.db.*;
- import com.cannontech.database.data.device.*;
- import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.db.*;
+import com.cannontech.database.data.device.*;
+import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController6510;
 import com.cannontech.database.data.capcontrol.ICapBankController;
- import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.gui.util.DataInputPanel;
  
 public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ItemListener, javax.swing.event.CaretListener {
 	private javax.swing.JTextField ivjAddressTextField = null;
@@ -28,11 +28,13 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 	private javax.swing.JLabel ivjJLabelMeterNumber = null;
 	private javax.swing.JPanel ivjJPanelCopyDevice = null;
 	private javax.swing.JTextField ivjJTextFieldMeterNumber = null;
-   private int deviceType = 0;
-   private JLabel jLabelRange = null;
+   	private int deviceType = 0;
+   	private JLabel jLabelRange = null;
 
-class IvjEventHandler implements java.awt.event.ItemListener, javax.swing.event.CaretListener {
-		public void caretUpdate(javax.swing.event.CaretEvent e) {
+	class IvjEventHandler implements java.awt.event.ItemListener, javax.swing.event.CaretListener 
+	{
+		public void caretUpdate(javax.swing.event.CaretEvent e) 
+		{
 			if (e.getSource() == DeviceCopyNameAddressPanel.this.getNameTextField()) 
 				connEtoC1(e);
 			if (e.getSource() == DeviceCopyNameAddressPanel.this.getAddressTextField()) 
@@ -42,11 +44,13 @@ class IvjEventHandler implements java.awt.event.ItemListener, javax.swing.event.
 			if (e.getSource() == DeviceCopyNameAddressPanel.this.getJTextFieldPhoneNumber()) 
 				connEtoC5(e);
 		};
+	
 		public void itemStateChanged(java.awt.event.ItemEvent e) {
 			if (e.getSource() == DeviceCopyNameAddressPanel.this.getPointCopyCheckBox()) 
 				connEtoC3(e);
 		};
 	};
+
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	private javax.swing.JLabel ivjJLabelPhoneNumber = null;
 	private javax.swing.JTextField ivjJTextFieldPhoneNumber = null;
