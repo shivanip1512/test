@@ -11,10 +11,6 @@ import com.cannontech.tools.gui.*;
  */
 public class DBConverter extends MessageFrameAdaptor 
 {
-	// main will set the path
-	private String filePathName;
-	//private IMessageFrame cf = null;
-	
 	private static final int MAX_DSM2_MACRO_COUNT = 30;
 	
 	private String stateGroupFileName = "stategrp.txt";
@@ -59,28 +55,12 @@ public class DBConverter extends MessageFrameAdaptor
 	private String AccumPointFileName = "ptaccum.txt";
 	public static final int ACCUM_PT_TOKEN_COUNT = 13;	
 
-
-/**
- * DBConverter constructor comment.
- */
-public DBConverter(String myPathName) 
-{
-	super();
-
-
-	filePathName = myPathName;
-	if( filePathName != null && !filePathName.endsWith("/") )
-	{
-		filePathName.concat("/");
-	}
-}
-
 /**
  * DBConverter constructor comment.
  */
 public DBConverter() 
 {
-	this(null);
+	super();
 }
 
 public String getName()
@@ -178,15 +158,10 @@ public static synchronized PtUnitRets[] getAllPointUnitd()
  */
 public String getFullFileName(String aFileName) 
 {
-	if( filePathName == null )
-	{
-		//try to get this value from our System properties
-		String propPath = System.getProperty(IRunnableDBTool.PROP_SRCPATH);
-		if( propPath != null )
-			filePathName = propPath;
-	}
+	//try to get this value from our System properties
+	String propPath = System.getProperty(IRunnableDBTool.PROP_SRCPATH);
 	
-	return filePathName + aFileName;
+	return propPath + aFileName;
 }
 
 
@@ -491,7 +466,11 @@ public static void main(String[] args)
 	
 	com.cannontech.clientutils.CTILogger.info("Import File Path:" + filePathName);
 
-	DBConverter converter = new DBConverter(filePathName);
+	System.setProperty( IRunnableDBTool.PROP_SRCPATH, 
+			filePathName + IRunnableDBTool.FS );
+
+	DBConverter converter = new DBConverter();
+
 	converter.processStateGroupFile();
 	converter.processPortFile();
 	converter.processTransmitterFile();

@@ -20,11 +20,9 @@ import com.cannontech.dbtools.updater.DBUpdater;
  */
 class DBToolsFrame extends javax.swing.JFrame implements IMessageFrame, java.awt.event.ActionListener, javax.swing.event.PopupMenuListener 
 {
-	//less typing for these
-	private static final String FS = System.getProperty("file.separator");
-	private static final String LF = System.getProperty("line.separator");
-	public static final String DEF_PATH = "c:" +
-		FS + "yukon" + FS + "client" + FS + "export" + FS;
+	private static final String DEF_PATH =
+		System.getProperty("user.dir") + IRunnableDBTool.FS;
+		//"c:" + FS + "yukon" + FS + "client" + FS + "export" + FS;
 
 	/** 
 	 * All the possible tools available for use, do not change the order of this!
@@ -33,7 +31,7 @@ class DBToolsFrame extends javax.swing.JFrame implements IMessageFrame, java.awt
 	public static final IRunnableDBTool[] ALL_TOOLS =
 	{
 		new DBUpdater(),
-		new DBConverter(DEF_PATH),
+		new DBConverter(),
 		new ModifyConstraints()
 	};
 	
@@ -43,10 +41,8 @@ class DBToolsFrame extends javax.swing.JFrame implements IMessageFrame, java.awt
 	private javax.swing.JTextField ivjPathField = null;
 	private javax.swing.JButton ivjStartButton = null;
 	private javax.swing.JPanel ivjButtonPanel = null;
-	private String thePath = DEF_PATH;
-	//private String shorterPath = new String(FS + "yukon" + FS + "client" + FS );
+	//private String thePath = DEF_PATH;
 	private javax.swing.JFileChooser chooser = null;
-	//private com.cannontech.dbconverter.converter.DBConverter ourConverter = null;
 	private Vector ourOutput = null;
 	private javax.swing.JScrollPane ivjOutputScrollPane = null;
 	private javax.swing.JTextArea ivjMessageArea = null;
@@ -114,7 +110,7 @@ public void addOutput(final String output)
 	{
 		public void run()
 		{
-			getMessageArea().append(output + LF);
+			getMessageArea().append(output + IRunnableDBTool.LF);
 		}
 	});
 
@@ -349,7 +345,10 @@ public void getChooser()
 	fileChooser.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY );
 	fileChooser.setApproveButtonText("Select");
 	fileChooser.setApproveButtonMnemonic('s');
-	fileChooser.setCurrentDirectory( new File(thePath) );
+	
+	//set the chooser to the current location
+	fileChooser.setCurrentDirectory( 
+			new File(getPathField().getText()) );
 
 
 	int res = fileChooser.showOpenDialog( this );
@@ -357,10 +356,13 @@ public void getChooser()
 	{
 		try
 		{
-			thePath = fileChooser.getSelectedFile().getPath();
+			//thePath = fileChooser.getSelectedFile().getPath();
 			
-			getPathField().setText(thePath + FS);
-			com.cannontech.clientutils.CTILogger.info("** Chooser path was: " + thePath);
+			getPathField().setText(
+				fileChooser.getSelectedFile().getPath() + IRunnableDBTool.FS);
+
+			com.cannontech.clientutils.CTILogger.info("** Chooser path was: " + 
+				getPathField().getText() );
 		}
 		catch (Exception exep)
 		{
@@ -806,7 +808,9 @@ private javax.swing.JTextField getPathField() {
 			ivjPathField.setFont(new java.awt.Font("Arial", 1, 12));
 			ivjPathField.setEditable(true);
 			// user code begin {1}
-			ivjPathField.setText(thePath);
+			
+			ivjPathField.setText( DEF_PATH );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

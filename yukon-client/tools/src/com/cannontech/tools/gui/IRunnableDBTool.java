@@ -13,6 +13,11 @@ public interface IRunnableDBTool extends Runnable
 	public static final String PROP_ENABLE = "Enable/Disable";
 
 
+	//less typing for these
+	public static final String FS = System.getProperty("file.separator");
+	public static final String LF = System.getProperty("line.separator");
+
+
 	void setIMessageFrame( IMessageFrame frm );
 	
 	String getName();
