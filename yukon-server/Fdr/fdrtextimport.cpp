@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2003/10/20 20:28:18 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2003/10/31 21:16:17 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,7 +20,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
-      Revision 1.4  2003/10/20 20:28:18  dsutton
+      Revision 1.5  2003/10/31 21:16:17  dsutton
+      Interface would apply a multiplier and offset to a status point if one was
+      imported.  Probably wouldn't cause a problem but was moved anyway.
+
+      Revision 1.2.2.1  2003/10/20 20:19:42  dsutton
       Bug:  The application wasn't locking the point list down before looking for a
       point.  The database reload does lock the list down before reloading.  If the
       lookup and the reload happened at the same time,  the lookup lost and threw
@@ -271,8 +275,6 @@ bool CtiFDR_TextImport::processFunctionOne (RWCString &aLine, CtiMessage **aRetM
             case 3:
                 {
                     value = atof(tempString1);
-                    value *= point.getMultiplier();
-                    value += point.getOffset();
                     break;
                 }
             case 4:
@@ -328,8 +330,13 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
         case DemandAccumulatorPointType:
         case CalculatedPointType:
         {
+            DOUBLE value = aValue;
+
+            value *= aPoint.getMultiplier();
+            value += aPoint.getOffset();
+
             *aRetMsg = new CtiPointDataMsg(aPoint.getPointID(), 
-                                           aValue, 
+                                           value, 
                                            aQuality, 
                                         AnalogPointType);
                                     ((CtiPointDataMsg *)*aRetMsg)->setTime(aTimestamp);
@@ -338,7 +345,7 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Analog point " << aTranslationName;
-                dout << " value " << aValue << " from " << getFileName() << " assigned to point " << aPoint.getPointID() << endl;;
+                dout << " value " << value << " from " << getFileName() << " assigned to point " << aPoint.getPointID() << endl;;
             }
             retCode = true;
             break;
