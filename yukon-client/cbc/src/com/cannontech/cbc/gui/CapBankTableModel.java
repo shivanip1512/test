@@ -12,7 +12,9 @@ import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
 import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.state.State;
+import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
 import com.cannontech.tdc.alarms.gui.RowBlinker;
@@ -151,10 +153,10 @@ public void forcePaintTableRowUpdated( int minLocation, int maxLocation )
  * Creation date: (1/12/2001 2:22:49 PM)
  * @return com.cannontech.tdc.alarms.gui.AlarmingRowVector
  */
-public synchronized com.cannontech.tdc.alarms.gui.AlarmingRowVector getAlarmingRowVector() 
+public synchronized AlarmingRowVector getAlarmingRowVector() 
 {
 	if( alarmingRowVector == null )
-		alarmingRowVector = new com.cannontech.tdc.alarms.gui.AlarmingRowVector();
+		alarmingRowVector = new AlarmingRowVector();
 
 	return alarmingRowVector;
 }
@@ -693,13 +695,13 @@ private void setRowAlarmed( int rowNumber )
 	// see if the point is in our display
 	if( rowNumber >= 0 && rowNumber < getRowCount() )
 	{
-		com.cannontech.message.dispatch.message.Signal sig = new com.cannontech.message.dispatch.message.Signal();
+		Signal sig = new Signal();
 		sig.setPointID( getRowAt(rowNumber).getStatusPointID().intValue() );
 		sig.setTimeStamp( new java.util.Date() );
 		sig.setTags( getRowAt(rowNumber).getTagControlStatus().intValue() );
 		sig.setAction("Automatically created signal from CBC Client");
 		sig.setDescription("Alarm signal used in CBC client table");
-		sig.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
+		sig.setUserName( CtiUtilities.getUserName() );
 		
 		synchronized( getAlarmingRowVector() )
 		{
