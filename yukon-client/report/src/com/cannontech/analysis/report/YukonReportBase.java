@@ -1,10 +1,6 @@
 package com.cannontech.analysis.report;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.print.PageFormat;
 
 import org.jfree.report.Boot;
@@ -16,10 +12,8 @@ import org.jfree.report.PageFooter;
 import org.jfree.report.PageHeader;
 import org.jfree.report.ReportFooter;
 import org.jfree.report.ReportHeader;
-import org.jfree.report.ShapeElement;
 import org.jfree.report.elementfactory.DateFieldElementFactory;
 import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
 import org.jfree.report.function.ElementVisibilitySwitchFunction;
 import org.jfree.report.function.ExpressionCollection;

@@ -2,7 +2,6 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.cannontech.analysis.ColumnProperties;
@@ -11,7 +10,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.point.SystemLog;
 
 /**

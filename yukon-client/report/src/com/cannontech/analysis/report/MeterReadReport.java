@@ -5,7 +5,6 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
 import org.jfree.report.Boot;
-import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
 import org.jfree.report.GroupHeader;
@@ -24,8 +23,6 @@ import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
-import com.cannontech.analysis.ReportFuncs;
-import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
 
 /**

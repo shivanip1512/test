@@ -11,7 +11,6 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.Date;
 
-import org.jfree.report.Element;
 import org.jfree.report.ElementAlignment;
 import org.jfree.report.GroupFooter;
 import org.jfree.report.GroupHeader;

@@ -19,7 +19,6 @@ import org.jfree.report.ReportHeader;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
@@ -27,9 +26,6 @@ import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFactory;
-import com.cannontech.analysis.ReportFuncs;
-import com.cannontech.analysis.ReportTypes;
-import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 
 /**

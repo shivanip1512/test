@@ -17,7 +17,6 @@ import java.util.Vector;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.report.CapBankReport;
 import com.cannontech.analysis.report.CarrierDBReport;
 import com.cannontech.analysis.report.DisconnectReport;

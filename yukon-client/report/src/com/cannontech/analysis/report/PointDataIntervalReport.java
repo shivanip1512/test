@@ -1,12 +1,9 @@
 package com.cannontech.analysis.report;
 
-import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
 import java.util.Calendar;
 
 import org.jfree.report.Boot;
-import org.jfree.report.Element;
-import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
 import org.jfree.report.GroupHeader;
@@ -14,22 +11,16 @@ import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
 import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.NumberFieldElementFactory;
-import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
 import org.jfree.report.function.ExpressionCollection;
 import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.function.ItemHideFunction;
 import org.jfree.report.function.ItemMaxFunction;
-import org.jfree.report.function.ItemMinFunction;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
-import com.cannontech.analysis.ReportFuncs;
-import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.tablemodel.PointDataIntervalModel;
 import com.cannotech.analysis.jfreereport.ItemMaxValueFunction;
 
