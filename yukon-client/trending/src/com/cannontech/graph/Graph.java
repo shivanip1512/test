@@ -16,7 +16,6 @@ import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
-
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
@@ -105,7 +104,8 @@ public void encodeGif(java.io.OutputStream out) throws java.io.IOException
 	// An error of " too many colors for a gif" is returned.
 	synchronized(Graph.class)
 	{
-		com.jrefinery.chart.ChartPanel cp = new com.jrefinery.chart.ChartPanel(freeChart);
+		com.cannontech.jfreechart.chart.YukonChartPanel cp = 
+			new com.cannontech.jfreechart.chart.YukonChartPanel(freeChart);
 //		update();
 
 		// FIXFIX
