@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2004/06/03 21:46:55 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2004/10/08 20:47:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -203,11 +203,11 @@ void CtiPILServer::mainThread()
                     /* Use the same time base for the full scan check */
                     TimeNow = TimeNow.now();   // update the time...
 
-                    if(MsgPtr->getMessageTime().seconds() < (TimeNow.seconds() - 900))
+                    if(MsgPtr->isA() == MSG_PCREQUEST && MsgPtr->getMessageTime().seconds() < (TimeNow.seconds() - 900))
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << TimeNow << " PIL processing an inbound message which is over 15 minutes old.  Message will be discarded." << endl;
+                            dout << TimeNow << " PIL processing an inbound request/command message which is over 15 minutes old.  Message will be discarded." << endl;
                             dout << " >>---------- Message Content ----------<< " << endl;
                             MsgPtr->dump();
                             dout << " <<---------- Message Content ---------->> " << endl;
