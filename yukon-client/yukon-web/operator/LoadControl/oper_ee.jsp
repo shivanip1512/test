@@ -48,7 +48,8 @@
 	java.text.SimpleDateFormat eeDateFormat = new java.text.SimpleDateFormat("MM/dd/yy");
 	java.text.SimpleDateFormat eeTimeFormat = new java.text.SimpleDateFormat("HH:mm");
 	java.text.SimpleDateFormat eeDateTimeFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
-	java.text.DecimalFormat numberFormat = new java.text.DecimalFormat("#,###.00");
+	java.text.DecimalFormat priceFormat = new java.text.DecimalFormat("#,###.00");
+	java.text.DecimalFormat numberFormat = new java.text.DecimalFormat("#,###");	//Value can only be in whole KW, therefore decimal places are not needed	
 
 	eeDateFormat.setTimeZone(tz);
 	eeTimeFormat.setTimeZone(tz);
@@ -108,6 +109,10 @@
 					response.sendRedirect("oper_ee.jsp?tab=newconfirm");
 					return;
 				}
+				else{
+					priceStrs = (String[]) checker.getObject("prices");
+					amountStrs = (String[]) checker.getObject("amount");
+				}
 			}
 		}
 		else {
@@ -134,7 +139,7 @@
 			for (int i = 0; i < 24; i++)
 			{
 				try {
-					double amountVal = Double.parseDouble(newAmountStrs[i]);
+					double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();
 					double priceVal = Double.parseDouble(newPriceStrs[i]);
 					totAmount += amountVal;
 
@@ -145,7 +150,7 @@
 					if (priceVal == 0)
 						priceStrs[i] = "----";
 					else
-						priceStrs[i] = numberFormat.format(priceVal);
+						priceStrs[i] = priceFormat.format(priceVal);
 				}
 				catch (NumberFormatException ne) {
 					checker.setError("formaterror", "Some of the values below have invalid format");
@@ -214,7 +219,7 @@ System.out.println("sending: " + expireDateTime);
 				Integer[] prices = new Integer[24];
 				for (int i = 0; i < 24; i++)
 				{
-					amount[i] = new Double(amountStrs[i]);
+					amount[i] = new Double(numberFormat.parse(amountStrs[i]).doubleValue());
 					int centVal = (int) (Double.parseDouble(priceStrs[i]) * 100);
 					prices[i] = new Integer(centVal);
 				}
@@ -264,6 +269,10 @@ System.out.println("sending: " + expireDateTime);
 					response.sendRedirect("oper_ee.jsp?tab=reviseconfirm");
 					return;
 				}
+				else{
+					priceStrs = (String[]) checker.getObject("prices");
+					amountStrs = (String[]) checker.getObject("amount");
+				}
 			}
 		} 
 	}
@@ -290,7 +299,7 @@ System.out.println("sending: " + expireDateTime);
 			for (int i = 0; i < 24; i++)
 			{
 				try {
-					double amountVal = Double.parseDouble(newAmountStrs[i]);
+					double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();
 					double priceVal = Double.parseDouble(newPriceStrs[i]);
 					totAmount += amountVal;
 
@@ -301,7 +310,7 @@ System.out.println("sending: " + expireDateTime);
 					if (priceVal == 0)
 						priceStrs[i] = "----";
 					else
-						priceStrs[i] = numberFormat.format(priceVal);
+						priceStrs[i] = priceFormat.format(priceVal);
 				}
 				catch (NumberFormatException ne) {
 					checker.setError("formaterror", "Some of the values below have invalid format");
@@ -366,7 +375,7 @@ System.out.println("sending: " + expireDateTime);
 				Integer[] prices = new Integer[24];
 				for (int i = 0; i < 24; i++)
 				{
-					amount[i] = new Double(amountStrs[i]);
+					amount[i] = new Double(numberFormat.parse(amountStrs[i]).doubleValue());
 					int centVal = (int) (Double.parseDouble(priceStrs[i]) * 100);
 					prices[i] = new Integer(centVal);
 				}
