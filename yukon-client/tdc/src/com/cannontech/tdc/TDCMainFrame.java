@@ -18,6 +18,8 @@ import com.klg.jclass.page.*;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.createdisplay.ColumnEditorDialog;
 import com.cannontech.tdc.utils.TDCDefines;
+
+import java.util.GregorianCalendar;
 import java.util.Observer;
 import com.cannontech.tdc.exportdata.ExportCreatedDisplay;
 import com.cannontech.tdc.commandevents.AckAlarm;
@@ -377,8 +379,19 @@ public void alarmToolBar_JToolBarButtonSilenceAlarmsAction_actionPerformed(java.
  */
 public void alarmToolBar_JToolBarJCDateChange_actionPerformed(java.beans.PropertyChangeEvent event)
 {
+
    if( event.getNewValue() instanceof java.util.Date )
-	  getMainPanel().executeDateChange( (java.util.Date)event.getNewValue() );
+   {
+   	//be sure the new time has 0's for hour, min and sec
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.setTime( (java.util.Date)event.getNewValue() );
+		cal.set( cal.HOUR_OF_DAY, 0 );
+		cal.set( cal.SECOND, 0 );
+		cal.set( cal.MINUTE, 0 );
+   	
+	  getMainPanel().executeDateChange( cal.getTime() );
+   }
+   
 
 }
 /**

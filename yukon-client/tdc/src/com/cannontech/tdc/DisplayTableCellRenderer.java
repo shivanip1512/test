@@ -87,10 +87,18 @@ public Component getTableCellRendererComponent(javax.swing.JTable table, Object 
 
 	// we have to check the the actual ColumnIndexToModel mapping in order to find out what
 	// column is the PointValue, because the user could have moved it.
-	if( model.getColumnTypeName( table.convertColumnIndexToModel(column) ).equalsIgnoreCase(Display2WayDataAdapter.COLUMN_TYPE_POINTVALUE) )
-		renderPointValueColumn();
-	else
+	try
+	{
+		if( model.getColumnTypeName( table.convertColumnIndexToModel(column) ).equalsIgnoreCase(Display2WayDataAdapter.COLUMN_TYPE_POINTVALUE) )
+			renderPointValueColumn();
+		else
+			this.setHorizontalAlignment( javax.swing.SwingConstants.LEFT );
+	}
+	catch( NullPointerException ne )
+	{
 		this.setHorizontalAlignment( javax.swing.SwingConstants.LEFT );
+	}
+	
 		
 	return this;
 }
