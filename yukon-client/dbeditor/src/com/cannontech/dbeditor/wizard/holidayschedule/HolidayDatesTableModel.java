@@ -99,7 +99,7 @@ public Object getValueAt(int row, int col)
 		return getRowAt(row).getHolidayName();
 
 		case COLUMN_MONTH:
-		return DATE_SYMBOLS.getMonths()[getRowAt(row).getHolidayMonth().intValue()];
+		return DATE_SYMBOLS.getMonths()[getRowAt(row).getHolidayMonth().intValue() - 1];
 
 		case COLUMN_DAY:
 		return getRowAt(row).getHolidayDay();

@@ -162,7 +162,7 @@ public com.cannontech.database.db.holiday.DateOfHoliday getDateOfHoliday()
 	
 	hDate.setHolidayName(getJTextFieldHolidayName().getText());
 
-	hDate.setHolidayMonth( new Integer(getJComboBoxMonth().getSelectedIndex()) );
+	hDate.setHolidayMonth( new Integer(getJComboBoxMonth().getSelectedIndex() + 1) );
 
 	hDate.setHolidayDay( 
 			new Integer( Integer.parseInt(getJComboBoxDay().getSelectedItem().toString()) ) );
@@ -696,7 +696,7 @@ public void setDateOfHoliday( com.cannontech.database.db.holiday.DateOfHoliday h
 
 	getJComboBoxYear().setSelectedItem( hDate.getHolidayYear() );
 	
-	getJComboBoxMonth().setSelectedIndex( hDate.getHolidayMonth().intValue() );
+	getJComboBoxMonth().setSelectedIndex( hDate.getHolidayMonth().intValue() - 1);
 }
 /**
  * 
