@@ -230,7 +230,7 @@ dropDownRouteIDArray[<%=ii%>] = <%=nameSerial[i][3]%>;
                       <input type="radio" name="radioButton" value="dropdown" <% if(!showSerialNumberTextField) { %>checked<% } %>>
                     </td>
                     <td width="91%"> 
-                      <select name="serialSelect" onChange="changecontent(this)">
+                      <select name="serialSelect">
 <%    for( int i = 0; i < nameSerial.length; i++ ) {
       if( ((Integer) nameSerial[i][1]).intValue() != 0 ) {
 %>
