@@ -54,6 +54,8 @@ public int doStartTag() throws JspException {
 					text = ServletUtil.capitalize( text );
 				else if (fmat.equalsIgnoreCase( ServletUtil.FORMAT_ALL_CAPITAL ))
 					text = ServletUtil.capitalizeAll( text );
+				else if (fmat.equalsIgnoreCase( ServletUtil.FORMAT_ADD_ARTICLE ))
+					text = ServletUtil.addArticle( text );
 			}
 			pageContext.getOut().write(text);
 		}				 	
