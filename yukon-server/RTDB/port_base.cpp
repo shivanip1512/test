@@ -356,6 +356,16 @@ INT CtiPort::verifyPortIsRunnable( HANDLE hQuit )
     return status;
 }
 
+void CtiPort::DecodeDialoutDatabaseReader(RWDBReader &rdr)
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** DecodeDialoutDatabaseReader not defined for " << getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return;
+}
+
 void CtiPort::DecodeDatabaseReader(RWDBReader &rdr)
 {
     LockGuard gd(monitor());
@@ -504,6 +514,11 @@ INT CtiPort::connectToDevice(CtiDevice *Device, INT trace)
 
     if(connected() && !connectedTo(DeviceCRC))      // This port connected to a device, and is not connected to this device.
     {
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Connected to the wrong device! " << endl;
+        }
         disconnect(Device, trace);
     }
 
@@ -696,6 +711,104 @@ CTI_PORTTHREAD_FUNC_PTR CtiPort::setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn)
     CTI_PORTTHREAD_FUNC_PTR oldFn = _portFunc;
     _portFunc = aFn;
     return oldFn;
+}
+
+
+INT CtiPort::checkCommStatus(INT trace)
+{
+    INT status = NORMAL;
+
+    if(getLastBaudRate() == 0 || needsReinit())
+    {
+        /* set up the port */
+        if( (status = init()) != NORMAL )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Error initializing Virtual Port " << getPortID() <<" on " << getName() << endl;
+            }
+
+            return status;
+        }
+        else
+        {
+            setPortNameWas( getName() );
+            setLastBaudRate( getTablePortSettings().getBaudRate() );
+        }
+    }
+
+    return status;
+}
+
+/* Routine to check DCD on a Port */
+INT CtiPort::isDCD() const
+{
+    DWORD   eMask = 0;
+    GetCommModemStatus(getHandle(), &eMask);
+    return(eMask & MS_RLSD_ON);     // Yes, that is DCD or receive-line-signal detect.
+}
+
+
+/* Routine to check DSR on a port */
+INT CtiPort::isDSR() const
+{
+    DWORD   eMask = 0;
+    GetCommModemStatus(getHandle(), &eMask);
+    return(eMask & MS_DSR_ON);
+}
+
+
+/* Routine to check CTS on a port */
+INT CtiPort::isCTS() const
+{
+    DWORD   eMask = 0;
+    GetCommModemStatus(getHandle(), &eMask);
+    return(eMask & MS_CTS_ON);
+}
+
+INT CtiPort::setPortReadTimeOut(USHORT timeout)
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    return NORMAL;
+}
+
+INT CtiPort::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    return NORMAL;
+}
+
+INT CtiPort::writePort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesWritten)
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    return NORMAL;
+}
+
+INT CtiPort::readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesRead)
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    return NORMAL;
+}
+
+bool CtiPort::isViable() const
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    return false;
 }
 
 

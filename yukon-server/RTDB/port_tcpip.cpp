@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/07/08 18:44:30 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/09/19 15:57:58 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,14 +26,20 @@ using namespace std;
 #include "portsup.h"
 #include "yukon.h"
 
-CtiPortTCPIPDirect::CtiPortTCPIPDirect() :
+CtiPortTCPIPDirect::CtiPortTCPIPDirect(CtiPortDialout *dial) :
+    _dialout(dial),
    _socket(INVALID_SOCKET),
    _open(false),
    _connected(false),
    _failed(false),
    _busy(false),
    _baud(0)
-{}
+{
+    if(_dialout != 0)
+    {
+        _dialout->setSuperPort(this);
+    }
+}
 
 
 CtiPortTCPIPDirect::CtiPortTCPIPDirect(const CtiPortTCPIPDirect& aRef)
@@ -41,7 +47,15 @@ CtiPortTCPIPDirect::CtiPortTCPIPDirect(const CtiPortTCPIPDirect& aRef)
    *this = aRef;
 }
 
-CtiPortTCPIPDirect::~CtiPortTCPIPDirect() {}
+CtiPortTCPIPDirect::~CtiPortTCPIPDirect()
+{
+    close(false);
+    if(_dialout)
+    {
+        delete _dialout;
+        _dialout = 0;
+    }
+}
 
 CtiPortTCPIPDirect& CtiPortTCPIPDirect::operator=(const CtiPortTCPIPDirect& aRef)
 {
@@ -150,20 +164,14 @@ INT CtiPortTCPIPDirect::init()
          }
 
          _connected   = true;
-         _baud        = _tblPortSettings.getBaudRate();
+         _baud        = getTablePortSettings().getBaudRate();
+      }
 
-#if 0
-         /* Not digi stuff so set to non blocking */
-         ULONG ulTemp = 1L;
-         if(ioctlsocket (_socket, FIONBIO, &ulTemp))
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Error setting Non Blocking Mode for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
-         }
-#endif
+      if(_dialout)
+      {
+          _dialout->init();   // If we are a dialout port, init the dialout aspects!
       }
    }
-
 
    return status;
 }
@@ -206,6 +214,11 @@ INT CtiPortTCPIPDirect::inClear() const
 
           free (Buffer);
       }
+   }
+
+   if(_dialout)
+   {
+       _dialout->disconnect(NULL, false);
    }
 
    return status;
@@ -291,18 +304,18 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMe
          inClear();
       }
 
-      if(_tblPortSettings.getCDWait() != 0)
+      if(getTablePortSettings().getCDWait() != 0)
       {
          status = NODCD;
          /* Check if we have DCD */
-         while(!(dcdTest()) && DCDCount < _tblPortSettings.getCDWait())
+         while(!(dcdTest()) && DCDCount < getTablePortSettings().getCDWait())
          {
             /* We do not have DCD... Wait 1/20 second and try again */
             CTISleep (50L);
             DCDCount += 50;
          }
 
-         if(DCDCount < _tblPortSettings.getCDWait())
+         if(DCDCount < getTablePortSettings().getCDWait())
          {
             status = NORMAL;
          }
@@ -441,18 +454,6 @@ INT CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiM
          Xfer.setOutCount( Xfer.getOutCount() + 2 );
       }
 
-      #if 0 // 20020708 CGP.  This code seems custom.
-      /* Wait for DCD to dissapear */
-      if(_tblPortSettings.getCDWait() != 0)
-      {
-         i = 0;
-         while(i++ < _tblPortSettings.getCDWait() && dcdTest() )
-         {
-            CTISleep (50L);
-         }
-      }
-      #endif
-
       /* Check if we need to key ... Pre Key Delay */
       if(getDelay(PRE_RTS_DELAY))
       {
@@ -487,18 +488,19 @@ INT CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiM
 
       if(status == NORMAL)
       {
-         /* Now outwait the hardware queue if neccessary */
-         if(Xfer.getOutCount() > 2)
-         {
-            MilliTime (&ReturnWrite);
-            if(ReturnWrite < (StartWrite + (((ULONG) (Xfer.getOutCount() - 2) * 10000L) / _tblPortSettings.getBaudRate())))
-            {
-               CTISleep (StartWrite + (((ULONG) (Xfer.getOutCount() - 2) * 10000L) / _tblPortSettings.getBaudRate()) - ReturnWrite);
-            }
-         }
          /* Time to do the RTS thing */
          if(getDelay(DATA_OUT_TO_RTS_DOWN_DELAY))
          {
+             /* Now outwait the hardware queue if neccessary */
+             if(Xfer.getOutCount() > 2)
+             {
+                MilliTime (&ReturnWrite);
+                if(ReturnWrite < (StartWrite + (((ULONG) (Xfer.getOutCount() - 2) * 10000L) / getTablePortSettings().getBaudRate())))
+                {
+                   CTISleep (StartWrite + (((ULONG) (Xfer.getOutCount() - 2) * 10000L) / getTablePortSettings().getBaudRate()) - ReturnWrite);
+                }
+             }
+
              CTISleep (getDelay(DATA_OUT_TO_RTS_DOWN_DELAY));
 
              if(!isDialup())
@@ -730,6 +732,14 @@ void CtiPortTCPIPDirect::DecodeDatabaseReader(RWDBReader &rdr)
    _tcpIpInfo.DecodeDatabaseReader(rdr);       // get the base class handled
 }
 
+void CtiPortTCPIPDirect::DecodeDialoutDatabaseReader(RWDBReader &rdr)
+{
+    if(_dialout)
+    {
+        _dialout->DecodeDatabaseReader(rdr);
+    }
+}
+
 bool CtiPortTCPIPDirect::needsReinit() const
 {
    return (_socket == INVALID_SOCKET);
@@ -739,5 +749,137 @@ void CtiPortTCPIPDirect::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSele
 {
    Inherited::getSQL(db, keyTable, selector);
    CtiTablePortTCPIP::getSQL(db, keyTable, selector);
+}
+
+
+INT CtiPortTCPIPDirect::setPortReadTimeOut(USHORT timeout)
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    return NORMAL;
+}
+
+INT CtiPortTCPIPDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    return NORMAL;
+}
+
+INT CtiPortTCPIPDirect::writePort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesWritten)
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    return NORMAL;
+}
+
+INT CtiPortTCPIPDirect::readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesRead)
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    return NORMAL;
+}
+
+bool CtiPortTCPIPDirect::isViable() const
+{
+    return (_socket != INVALID_SOCKET);
+}
+
+INT CtiPortTCPIPDirect::reset(INT trace)
+{
+    setLastBaudRate(0);
+    setConnectedDevice(0);
+    setConnectedDeviceUID(-1);
+
+    if(_dialout)
+    {
+        _dialout->reset(trace);
+    }
+
+    return NORMAL;
+}
+
+INT CtiPortTCPIPDirect::setup(INT trace)
+{
+    setConnectedDevice(0);
+    setConnectedDeviceUID(-1);
+
+    if(_dialout)
+    {
+        _dialout->setup(trace);
+    }
+
+    return NORMAL;
+}
+
+INT  CtiPortTCPIPDirect::connectToDevice(CtiDevice *Device, INT trace)
+{
+    INT status = NORMAL;
+
+    if(_dialout)
+    {
+        status = _dialout->connectToDevice(Device,trace);
+    }
+    else
+    {
+        status = Inherited::connectToDevice(Device,trace);
+    }
+    return NORMAL;
+}
+
+INT  CtiPortTCPIPDirect::disconnect(CtiDevice *Device, INT trace)
+{
+    Inherited::disconnect(Device,trace);
+
+    if(_dialout)
+    {
+        _dialout->disconnect(Device,trace);
+        close(trace);                           // Release the port handle
+    }
+
+    return NORMAL;
+}
+
+BOOL CtiPortTCPIPDirect::connected()
+{
+    if(_dialout && getTablePortSettings().getCDWait() != 0 && getConnectedDevice() > 0)
+    {
+        if(!dcdTest())    // No DCD and we think we are connected!  This is BAD.
+        {
+            disconnect(NULL, FALSE);
+        }
+    }
+
+    return Inherited::connected();
+}
+
+BOOL CtiPortTCPIPDirect::shouldDisconnect() const
+{
+    BOOL bRet = Inherited::shouldDisconnect();
+
+    if(_dialout)
+    {
+        bRet = _dialout->shouldDisconnect();
+    }
+
+    return bRet;
+}
+
+CtiPort& CtiPortTCPIPDirect::setShouldDisconnect(BOOL b)
+{
+    if(_dialout)
+    {
+        _dialout->setShouldDisconnect(b);
+    }
+
+    return *this;
 }
 

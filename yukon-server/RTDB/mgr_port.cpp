@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/09/03 14:33:50 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/09/19 15:57:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,11 +17,12 @@
 #include <rw/db/db.h>
 
 #include "mgr_port.h"
+#include "port_direct.h"
+#include "port_dialout.h"
 #include "dbaccess.h"
 #include "hashkey.h"
 #include "resolvers.h"
 
-#include "port_local_modem.h"
 #include "port_tcpip.h"
 #include "utility.h"
 
@@ -139,8 +140,8 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 RWDBSelector selector = conn.database().selector();
                 RWDBTable   keyTable;
 
-                if(DebugLevel & 0x00080000)  cout  << "Looking for Direct and ModemDirect Ports" << endl;
-                CtiPortLocalModem().getSQL( db, keyTable, selector );
+                if(DebugLevel & 0x00080000)  cout  << "Looking for Direct Ports" << endl;
+                CtiPortDirect().getSQL( db, keyTable, selector );
                 RWDBReader  rdr = selector.reader( conn );
                 if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
@@ -148,7 +149,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 }
 
                 RefreshEntries(rowFound, rdr, Factory, testFunc, arg);
-                if(DebugLevel & 0x00080000)  cout  << "Done looking for Direct and ModemDirect Ports" << endl;
+                if(DebugLevel & 0x00080000)  cout  << "Done looking for Direct Ports" << endl;
             }
 
             {
@@ -170,6 +171,28 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
 
                 RefreshEntries(rowFound, rdr, Factory, testFunc, arg);
                 if(DebugLevel & 0x00080000)  cout  << "Done looking for TCPIP Ports" << endl;
+            }
+
+
+            {
+                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+                RWDBConnection conn = getConnection();
+                // are out of scope when the release is called
+
+                RWDBDatabase db = conn.database();
+                RWDBSelector selector = conn.database().selector();
+                RWDBTable   keyTable;
+
+                if(DebugLevel & 0x00080000)  cout  << "Looking for DialOut Ports" << endl;
+                CtiPortDialout().getSQL( db, keyTable, selector );
+                RWDBReader  rdr = selector.reader( conn );
+                if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                }
+
+                RefreshDialoutEntries(rowFound, rdr, Factory, testFunc, arg);
+                if(DebugLevel & 0x00080000)  cout  << "Done looking for DialOut Ports" << endl;
             }
 
             if(_smartMap.getErrorCode() != RWDBStatus::ok)
@@ -322,6 +345,35 @@ void CtiPortManager::RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*
                 {
                     delete pSp;                         // I don't want it!
                 }
+            }
+        }
+    }
+}
+
+void CtiPortManager::RefreshDialoutEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
+{
+    LONG     lTemp = 0;
+    ptr_type pTempPort;
+
+    while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    {
+        rowFound = true;
+        rdr["paobjectid"] >> lTemp;            // get the RouteID
+
+        if( !_smartMap.empty() && (pTempPort = _smartMap.find(lTemp)) )
+        {
+            /*
+             *  The point just returned from the rdr already was in my list.  We need to
+             *  update my list entry to the new settings!
+             */
+
+            pTempPort->DecodeDialoutDatabaseReader(rdr);     // Fills himself in from the reader
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Port " << lTemp << " not found in pao, but IS in portdialupmodem table" << endl;
             }
         }
     }

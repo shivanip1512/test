@@ -104,7 +104,7 @@ INT CtiPortDirect::init()
         }
 
         /* set the Read Timeout for the port */
-        if((i = SetReadTimeOut(_portHandle, TIMEOUT)) != NORMAL)
+        if((i = setPortReadTimeOut(TIMEOUT)) != NORMAL)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -134,6 +134,11 @@ INT CtiPortDirect::init()
 
         /* Raise DTR */
         raiseDTR();
+
+        if(_dialout)
+        {
+            _dialout->init();   // If we are a dialout port, init the dialout aspects!
+        }
     }
 
     return status;
@@ -164,7 +169,7 @@ CtiPortDirect& CtiPortDirect::setHandle(const HANDLE& hdl)
 
 INT CtiPortDirect::baudRate(INT rate) const     // Set/reset the port's baud rate to the DB value
 {
-    INT r = _tblPortSettings.getBaudRate();
+    INT r = getTablePortSettings().getBaudRate();
 
     if(rate != 0)
     {
@@ -177,7 +182,7 @@ INT CtiPortDirect::baudRate(INT rate) const     // Set/reset the port's baud rat
 INT CtiPortDirect::byteTime(ULONG bytes) const
 {
     DOUBLE msbits = (10000 * bytes);
-    DOUBLE mytime = ( msbits / (DOUBLE)_tblPortSettings.getBaudRate() );
+    DOUBLE mytime = ( msbits / (DOUBLE)getTablePortSettings().getBaudRate() );
 
     return(int) (mytime / 1000.0) + 2;
 }
@@ -296,19 +301,19 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceBase *Dev, RWTPtrSlist< CtiMes
             inClear();
         }
 
-        if(_tblPortSettings.getCDWait() != 0)
+        if(getTablePortSettings().getCDWait() != 0)
         {
             status = NODCD;
 
             /* Check if we have DCD */
-            while(!dcdTest() && DCDCount < _tblPortSettings.getCDWait())
+            while(!dcdTest() && DCDCount < getTablePortSettings().getCDWait())
             {
                 /* We do not have DCD... Wait 1/20 second and try again */
                 CTISleep (50L);
                 DCDCount += 50;
             }
 
-            if(DCDCount < _tblPortSettings.getCDWait())
+            if(DCDCount < getTablePortSettings().getCDWait())
             {
                 status = NORMAL;
             }
@@ -328,7 +333,7 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceBase *Dev, RWTPtrSlist< CtiMes
 
         Tmot = (Told > Tnew) ? Told : Tnew;
 
-        SetReadTimeOut( getHandle(), Tmot );
+        setPortReadTimeOut( Tmot );
 
         //  if the beginning of an IDLC message
         if(_tblPortBase.getProtocol() == ProtocolWrapIDLC && Xfer.isMessageStart())
@@ -540,10 +545,10 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessag
 
         #if 0  // 20020708 CGP.  This code seems custom.
         /* Wait for DCD to dissapear */
-        if(_tblPortSettings.getCDWait() != 0)
+        if(getTablePortSettings().getCDWait() != 0)
         {
             i = 0;
-            while(dcdTest() && (i < _tblPortSettings.getCDWait()) )
+            while(dcdTest() && (i < getTablePortSettings().getCDWait()) )
             {
                 CTISleep (50L);
                 i+= 50;
@@ -612,7 +617,7 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessag
             {
                 if ((ByteCount = GetPortOutputQueueCount(getHandle())) != 0)
                 {
-                    CTISleep ((10000L * ByteCount) / _tblPortSettings.getBaudRate());
+                    CTISleep ((10000L * ByteCount) / getTablePortSettings().getBaudRate());
                 }
                 else
                 {
@@ -624,9 +629,9 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessag
             if(Xfer.getOutCount() > 2)
             {
                 MilliTime (&ReturnWrite);
-                if(ReturnWrite < (StartWrite + (((ULONG) (Xfer.getOutCount() - 2) * 10000L) / _tblPortSettings.getBaudRate())))
+                if(ReturnWrite < (StartWrite + (((ULONG) (Xfer.getOutCount() - 2) * 10000L) / getTablePortSettings().getBaudRate())))
                 {
-                    CTISleep (StartWrite + (((ULONG) (Xfer.getOutCount() - 2) * 10000L) / _tblPortSettings.getBaudRate()) - ReturnWrite);
+                    CTISleep (StartWrite + (((ULONG) (Xfer.getOutCount() - 2) * 10000L) / getTablePortSettings().getBaudRate()) - ReturnWrite);
                 }
             }
 
@@ -665,6 +670,11 @@ INT CtiPortDirect::close(INT trace)
 
     if(getHandle() != NULL)
     {
+        if(_dialout)
+        {
+            _dialout->disconnect(NULL, trace);
+        }
+
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << getName() << " releasing port handle" << endl;
@@ -673,15 +683,23 @@ INT CtiPortDirect::close(INT trace)
     }
     _lastBaudRate = 0;
 
+
     return status;
 }
 
-CtiPortDirect::CtiPortDirect() :
-_portHandle(NULL)
-{}
+CtiPortDirect::CtiPortDirect(CtiPortDialout *dial) :
+_dialout(dial),
+_portHandle(0)
+{
+    if(_dialout != 0)
+    {
+        _dialout->setSuperPort(this);
+    }
+}
 
 CtiPortDirect::CtiPortDirect(const CtiPortDirect& aRef) :
-_portHandle(NULL)
+_dialout(0),
+_portHandle(0)
 {
     *this = aRef;
 }
@@ -689,6 +707,11 @@ _portHandle(NULL)
 CtiPortDirect::~CtiPortDirect()
 {
     close(false);
+    if(_dialout)
+    {
+        delete _dialout;
+        _dialout = 0;
+    }
 }
 
 CtiPortDirect& CtiPortDirect::operator=(const CtiPortDirect& aRef)
@@ -699,6 +722,11 @@ CtiPortDirect& CtiPortDirect::operator=(const CtiPortDirect& aRef)
 
         _portHandle    = aRef.getHandle();
         _localSerial   = aRef.getLocalSerial();
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
     return *this;
 }
@@ -715,57 +743,125 @@ void CtiPortDirect::DecodeDatabaseReader(RWDBReader &rdr)
     _localSerial.DecodeDatabaseReader(rdr);       // get the base class handled
 }
 
+void CtiPortDirect::DecodeDialoutDatabaseReader(RWDBReader &rdr)
+{
+    if(_dialout)
+    {
+        _dialout->DecodeDatabaseReader(rdr);
+    }
+}
 
-INT CtiPortDirect::checkCommStatus(INT trace)
+INT CtiPortDirect::setPortReadTimeOut(USHORT timeout)
+{
+    return SetReadTimeOut( getHandle(), timeout );
+}
+INT CtiPortDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
+{
+    return WaitForResponse(getHandle(),ResponseSize,Response,Timeout,ExpectedResponse);
+}
+
+INT CtiPortDirect::writePort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesWritten)
+{
+    return CTIWrite(getHandle(),pBuf,BufLen,pBytesWritten);
+}
+
+INT CtiPortDirect::readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesRead)
+{
+    return CTIRead(getHandle(),pBuf,BufLen,pBytesRead);
+}
+
+bool CtiPortDirect::isViable() const
+{
+    return (getHandle() != NULL);
+}
+
+
+INT CtiPortDirect::reset(INT trace)
+{
+    setLastBaudRate(0);
+    setConnectedDevice(0);
+    setConnectedDeviceUID(-1);
+
+    if(_dialout)
+    {
+        _dialout->reset(trace);
+    }
+
+    return NORMAL;
+}
+
+INT CtiPortDirect::setup(INT trace)
+{
+    setConnectedDevice(0);
+    setConnectedDeviceUID(-1);
+
+    if(_dialout)
+    {
+        _dialout->setup(trace);
+    }
+
+    return NORMAL;
+}
+
+INT  CtiPortDirect::connectToDevice(CtiDevice *Device, INT trace)
 {
     INT status = NORMAL;
 
-    if(getLastBaudRate() == 0 || needsReinit())
+    if(_dialout)
     {
-        /* set up the port */
-        if( (status = init()) != NORMAL )
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error initializing Virtual Port " << getPortID() <<" on " << getName() << endl;
-            }
+        status = _dialout->connectToDevice(Device,trace);
+    }
+    else
+    {
+        status = Inherited::connectToDevice(Device,trace);
+    }
+    return NORMAL;
+}
 
-            return status;
-        }
-        else
+INT  CtiPortDirect::disconnect(CtiDevice *Device, INT trace)
+{
+    Inherited::disconnect(Device,trace);
+    if(_dialout)
+    {
+        close(trace);                           // Release the port handle
+    }
+
+    return NORMAL;
+}
+
+BOOL CtiPortDirect::connected()
+{
+    if(_dialout && getTablePortSettings().getCDWait() != 0 && getConnectedDevice() > 0)
+    {
+        if(!dcdTest())    // No DCD and we think we are connected!  This is BAD.
         {
-            setPortNameWas( getName() );
-            setLastBaudRate( _tblPortSettings.getBaudRate() );
+            disconnect(NULL, FALSE);
         }
     }
 
-    return status;
+    return Inherited::connected();
 }
 
-/* Routine to check DCD on a Port */
-INT CtiPortDirect::isDCD() const
+BOOL CtiPortDirect::shouldDisconnect() const
 {
-    DWORD   eMask = 0;
-    GetCommModemStatus(getHandle(), &eMask);
-    return(eMask & MS_RLSD_ON);     // Yes, that is DCD or receive-line-signal detect.
+    BOOL bRet = Inherited::shouldDisconnect();
+
+    if(_dialout)
+    {
+        bRet = _dialout->shouldDisconnect();
+    }
+
+    return bRet;
 }
 
-
-/* Routine to check DSR on a port */
-INT CtiPortDirect::isDSR() const
+CtiPort& CtiPortDirect::setShouldDisconnect(BOOL b)
 {
-    DWORD   eMask = 0;
-    GetCommModemStatus(getHandle(), &eMask);
-    return(eMask & MS_DSR_ON);
-}
+    if(_dialout)
+    {
+        _dialout->setShouldDisconnect(b);
+    }
 
-
-/* Routine to check CTS on a port */
-INT CtiPortDirect::isCTS() const
-{
-    DWORD   eMask = 0;
-    GetCommModemStatus(getHandle(), &eMask);
-    return(eMask & MS_CTS_ON);
+    return *this;
 }
 
 

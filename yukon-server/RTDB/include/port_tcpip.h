@@ -14,18 +14,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_tcpip.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:18 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/19 15:57:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "port_base.h"
+#include "port_dialout.h"
 #include "tbl_port_tcpip.h"
 #include "tcpsup.h"
 
 
-class IM_EX_PRTDB CtiPortTCPIPDirect : public CtiPortBase
+class IM_EX_PRTDB CtiPortTCPIPDirect : public CtiPort
 {
 protected:
 
@@ -42,12 +43,13 @@ private:
    bool                 _busy;
    INT                  _baud;
 
+   CtiPortDialout       *_dialout;
 
 public:
 
-   typedef CtiPortBase  Inherited;
+   typedef CtiPort  Inherited;
 
-   CtiPortTCPIPDirect();
+   CtiPortTCPIPDirect(CtiPortDialout *dial = 0);
 
    CtiPortTCPIPDirect(const CtiPortTCPIPDirect& aRef);
    virtual ~CtiPortTCPIPDirect();
@@ -68,9 +70,17 @@ public:
 
    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDialoutDatabaseReader(RWDBReader &rdr);
 
+   virtual bool isViable() const;
    virtual INT init();
+   virtual INT reset(INT trace);
+   virtual INT setup(INT trace);
    virtual INT close(INT trace);
+   virtual INT connectToDevice(CtiDevice *Device, INT trace);
+   virtual INT disconnect(CtiDevice *Device, INT trace);
+   virtual BOOL connected();
+
    virtual INT inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMessage > &traceList);
    virtual INT outMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMessage > &traceList);
 
@@ -78,6 +88,13 @@ public:
    virtual INT outClear() const;
    virtual void Dump() const;
    virtual bool needsReinit() const;
+   virtual BOOL shouldDisconnect() const;
+   virtual CtiPort& setShouldDisconnect(BOOL b = TRUE);
+
+   virtual INT setPortReadTimeOut(USHORT timeout);
+   virtual INT waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse = NULL);
+   virtual INT writePort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesWritten);
+   virtual INT readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesRead);
 
    INT shutdownClose(PCHAR Label = NULL, ULONG Line = 0);
    INT queryBytesAvailable();

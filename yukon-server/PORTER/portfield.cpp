@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2002/09/11 21:25:12 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2002/09/19 15:57:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -881,146 +881,159 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
 
     if( Port->isDialup() )
     {
-        //  init the port to the device's baud rate
-        Port->setBaudRate(((CtiDeviceRemote *)Device)->getDialup()->getBaudRate());
+        if(((CtiDeviceRemote *)Device)->isDialup())     // Make sure the dialup pointer is NOT null!
+        {
+            //  init the port to the device's baud rate
+            Port->setBaudRate(((CtiDeviceRemote *)Device)->getDialup()->getBaudRate());
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** WARNING **** " << Device->getName() << " is on a dialup port, but has no devicedialupsettings entry" << endl;
+
+            status = BADPARAM;
+        }
     }
 
-    switch(Device->getType())
+    if(status == NORMAL)
     {
-    case TYPE_CCU711:
+        switch(Device->getType())
         {
-            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Device->getTrxInfo();
-
-            /* check if we need to load the time into a time sync */
-            if(OutMessage->EventCode & TSYNC)
+        case TYPE_CCU711:
             {
-                if(OutMessage->EventCode & BWORD)
-                    LoadBTimeMessage (OutMessage);
-                else
-                    LoadXTimeMessage (OutMessage->Buffer.OutMessage);
-            }
+                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Device->getTrxInfo();
 
-            /* Broadcasts do not need CCU preprocessing */
-            if(Device->getAddress() == CCUGLOBAL)
-                break;
-
-            pInfo->reduceEntsConts(OutMessage->EventCode & RCONT);
-
-            /* Check if we are in an RCONT condition */
-            if(pInfo->GetStatus(INRCONT))
-            {
-                if(OutMessage->EventCode & RCONT)
+                /* check if we need to load the time into a time sync */
+                if(OutMessage->EventCode & TSYNC)
                 {
-                    /* Check out what the message is... if it is not RCOLQ we need to set lengths */
-                    if(OutMessage->Command != CMND_RCOLQ)
+                    if(OutMessage->EventCode & BWORD)
+                        LoadBTimeMessage (OutMessage);
+                    else
+                        LoadXTimeMessage (OutMessage->Buffer.OutMessage);
+                }
+
+                /* Broadcasts do not need CCU preprocessing */
+                if(Device->getAddress() == CCUGLOBAL)
+                    break;
+
+                pInfo->reduceEntsConts(OutMessage->EventCode & RCONT);
+
+                /* Check if we are in an RCONT condition */
+                if(pInfo->GetStatus(INRCONT))
+                {
+                    if(OutMessage->EventCode & RCONT)
                     {
-                        OutMessage->InLength = pInfo->RContInLength;
+                        /* Check out what the message is... if it is not RCOLQ we need to set lengths */
+                        if(OutMessage->Command != CMND_RCOLQ)
+                        {
+                            OutMessage->InLength = pInfo->RContInLength;
+                        }
                     }
                 }
-            }
-            else
-            {
-                /* Check if we ended up with an unneeded message */
-                if(OutMessage->Command == CMND_RCONT)
+                else
                 {
-                    /* Yup */
-                    delete OutMessage;
-                    OutMessage = NULL;
-                    return NOTNORMAL;
-                }
-            }
-
-            break;
-        }
-    case TYPE_LCU415LG:
-    case TYPE_LCU415ER:
-    case TYPE_LCU415:
-    case TYPE_LCUT3026:
-        {
-            if(LCUPreSend (OutMessage, Device))  // Requeued if non-zero returned
-            {
-                return RETRY_SUBMITTED;
-            }
-
-            break;
-        }
-    case TYPE_ILEXRTU:
-        {
-            if(OutMessage->EventCode & TSYNC)
-                LoadILEXTimeMessage (OutMessage->Buffer.OutMessage + PREIDLEN, 0);
-
-            break;
-        }
-    case TYPE_WELCORTU:
-    case TYPE_VTU:
-        {
-            if(OutMessage->EventCode & TSYNC)
-            {
-                LoadWelcoTimeMessage (OutMessage->Buffer.OutMessage + PREIDLEN, 0);
-            }
-
-            break;
-        }
-    case TYPE_SES92RTU:
-        {
-            if(OutMessage->EventCode & TSYNC)
-                LoadSES92TimeMessage (OutMessage->Buffer.OutMessage + PREIDLEN, 0);
-
-            break;
-        }
-    case TYPE_CCU700:
-    case TYPE_CCU710:
-        {
-            /* check if we need to load the time into a time sync */
-            if(OutMessage->EventCode & TSYNC)
-                LoadBTimeMessage (OutMessage);
-
-            break;
-        }
-    case TYPE_TCU5000:
-        break;
-
-    case TYPE_TCU5500:
-        {
-            if((OutMessage->EventCode & VERSACOM) && VCUWait)
-            {
-                CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
-
-                /* Check see if we need to wait for a message to complete */
-                UCTFTime (&TimeB);
-                if(TimeB.time <= (LONG)pInfo->NextCommandTime)
-                {
-                    /* while queue is empty just sit on it otherwise put it back */
-                    do
+                    /* Check if we ended up with an unneeded message */
+                    if(OutMessage->Command == CMND_RCONT)
                     {
-                        QueryQueue (Port->getPortQueueHandle(), &QueueCount);
-                        if(QueueCount)
-                        {
-                            /* Write him back out to the queue */
-                            if(OutMessage->Priority) OutMessage->Priority--;
-
-                            if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
-                            {
-                                printf ("\nError Replacing entry onto Queue\n");
-                            }
-                            CTISleep (50L);
-                            break;
-                        }
-                        else
-                        {
-                            CTISleep (100L);
-                            UCTFTime (&TimeB);
-                        }
-                    } while(TimeB.time <= (LONG)pInfo->NextCommandTime);
-
-                    if(QueueCount) status = !NORMAL;
+                        /* Yup */
+                        delete OutMessage;
+                        OutMessage = NULL;
+                        return NOTNORMAL;
+                    }
                 }
+
+                break;
             }
+        case TYPE_LCU415LG:
+        case TYPE_LCU415ER:
+        case TYPE_LCU415:
+        case TYPE_LCUT3026:
+            {
+                if(LCUPreSend (OutMessage, Device))  // Requeued if non-zero returned
+                {
+                    return RETRY_SUBMITTED;
+                }
+
+                break;
+            }
+        case TYPE_ILEXRTU:
+            {
+                if(OutMessage->EventCode & TSYNC)
+                    LoadILEXTimeMessage (OutMessage->Buffer.OutMessage + PREIDLEN, 0);
+
+                break;
+            }
+        case TYPE_WELCORTU:
+        case TYPE_VTU:
+            {
+                if(OutMessage->EventCode & TSYNC)
+                {
+                    LoadWelcoTimeMessage (OutMessage->Buffer.OutMessage + PREIDLEN, 0);
+                }
+
+                break;
+            }
+        case TYPE_SES92RTU:
+            {
+                if(OutMessage->EventCode & TSYNC)
+                    LoadSES92TimeMessage (OutMessage->Buffer.OutMessage + PREIDLEN, 0);
+
+                break;
+            }
+        case TYPE_CCU700:
+        case TYPE_CCU710:
+            {
+                /* check if we need to load the time into a time sync */
+                if(OutMessage->EventCode & TSYNC)
+                    LoadBTimeMessage (OutMessage);
+
+                break;
+            }
+        case TYPE_TCU5000:
             break;
-        }
-    default:
-        {
-            break;
+
+        case TYPE_TCU5500:
+            {
+                if((OutMessage->EventCode & VERSACOM) && VCUWait)
+                {
+                    CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+
+                    /* Check see if we need to wait for a message to complete */
+                    UCTFTime (&TimeB);
+                    if(TimeB.time <= (LONG)pInfo->NextCommandTime)
+                    {
+                        /* while queue is empty just sit on it otherwise put it back */
+                        do
+                        {
+                            QueryQueue (Port->getPortQueueHandle(), &QueueCount);
+                            if(QueueCount)
+                            {
+                                /* Write him back out to the queue */
+                                if(OutMessage->Priority) OutMessage->Priority--;
+
+                                if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+                                {
+                                    printf ("\nError Replacing entry onto Queue\n");
+                                }
+                                CTISleep (50L);
+                                break;
+                            }
+                            else
+                            {
+                                CTISleep (100L);
+                                UCTFTime (&TimeB);
+                            }
+                        } while(TimeB.time <= (LONG)pInfo->NextCommandTime);
+
+                        if(QueueCount) status = !NORMAL;
+                    }
+                }
+                break;
+            }
+        default:
+            {
+                break;
+            }
         }
     }
 

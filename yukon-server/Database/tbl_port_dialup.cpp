@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_dialup.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:03 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/09/19 15:57:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -124,36 +124,42 @@ CtiTablePortDialup& CtiTablePortDialup::setSuffixString(const RWCString& str)
 
 void CtiTablePortDialup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   RWDBTable portDialup    = db.table(getTableName() );
+   keyTable = db.table( "YukonPAObject" );
+   RWDBTable portDialup = db.table(getTableName() );
 
    selector <<
+      keyTable["paobjectid"] <<
       portDialup["modemtype"] <<
       portDialup["initializationstring"] <<
       portDialup["prefixnumber"] <<
       portDialup["suffixnumber"];
 
+   selector.from(keyTable);
    selector.from(portDialup);
 
-   selector.where( selector.where() && keyTable["paobjectid"].leftOuterJoin(portDialup["portid"]) );
+   selector.where( selector.where() && keyTable["paobjectid"] == portDialup["portid"] );
 }
 
 void CtiTablePortDialup::DecodeDatabaseReader(RWDBReader &rdr)
 {
    {
-      CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & 0x00000800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      if(getDebugLevel() & 0x00000800)
+      {
+          CtiLockGuard<CtiLogger> logger_guard(dout);
+          dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      }
 
       rdr["modemtype"]              >> _modemType;
-      if(getDebugLevel() & 0x00000800) dout << " Modem Type           = " << _modemType << endl;
+      if(getDebugLevel() & 0x00000800) { CtiLockGuard<CtiLogger> logger_guard(dout); dout << " Modem Type           = " << _modemType << endl; }
 
       rdr["initializationstring"]   >> _modemInitString;
-      if(getDebugLevel() & 0x00000800) dout << " Modem Init String    = " << _modemInitString << endl;
+      if(getDebugLevel() & 0x00000800) { CtiLockGuard<CtiLogger> logger_guard(dout); dout << " Modem Init String    = " << _modemInitString << endl; }
 
       rdr["prefixnumber"]           >> _prefixString;
-      if(getDebugLevel() & 0x00000800) dout << " Prefix String        = " << _prefixString << endl;
+      if(getDebugLevel() & 0x00000800) { CtiLockGuard<CtiLogger> logger_guard(dout); dout << " Prefix String        = " << _prefixString << endl; }
 
       rdr["suffixnumber"]           >> _suffixString;
-      if(getDebugLevel() & 0x00000800) dout << " Suffix String        = " << _suffixString << endl;
+      if(getDebugLevel() & 0x00000800) { CtiLockGuard<CtiLogger> logger_guard(dout); dout << " Suffix String        = " << _suffixString << endl; }
    }
 }
 

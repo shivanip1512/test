@@ -14,8 +14,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_port.h-arc  $
- * REVISION     :  $Revision: 1.5 $
- * DATE         :  $Date: 2002/08/05 20:42:57 $
+ * REVISION     :  $Revision: 1.6 $
+ * DATE         :  $Date: 2002/09/19 15:57:58 $
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -40,6 +40,7 @@ private:
 
     CtiMutex                    _mux;
 
+    void RefreshDialoutEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg);
     void RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*),void *arg);
 
 public:

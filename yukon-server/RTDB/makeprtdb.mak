@@ -6,8 +6,8 @@ INCLPATHS+= \
 -I$(DATABASE)\include \
 -I$(PORTER)\include \
 -I$(MSG)\include \
--I$(PROT)\include \
 -I$(CPARMS)\include \
+-I$(PROT)\include \
 -I$(BOOST) \
 -I$(RW) \
 
@@ -24,10 +24,10 @@ INCLPATHS+= \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \
-;$(PROT)\include \
 ;$(PROCLOG)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
+;$(PROT)\include \
 ;$(BOOST) \
 ;$(RW)
 
@@ -36,12 +36,13 @@ INCLPATHS+= \
 YUKONPORTDLLOBJS=\
 mgr_port.obj \
 port_base.obj \
+port_dialout.obj \
 port_direct.obj \
-port_local_modem.obj \
-port_modem.obj \
 port_tcpip.obj \
 slctprt.obj \
 
+#port_local_modem.obj \
+#port_modem.obj \
 
 PRTDBLIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/07/18 16:56:28 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/09/19 15:57:59 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,10 +53,6 @@ protected:
     CtiTablePortBase _tblPortBase;
     CtiTablePortSettings _tblPortSettings;
     CtiTablePortTimings _tblPortTimings;
-
-    #ifdef CTIOLDSTATS
-    CtiTablePortStatistics* _portStatistics[ StatTypeInvalid ];
-    #endif
 
     RWThreadFunction  _portThread;
     HCTIQUEUE         _portQueue;
@@ -99,14 +95,7 @@ public:
     BOOL                    isTAP() const;
     CtiPort&                setTAP(BOOL b = TRUE);
 
-#ifdef CTIOLDSTATS
-    CtiTablePortStatistics  getPortStatistics(INT i) const;
-    CtiTablePortStatistics& getPortStatistics(INT i);
-    CtiPort&                setPortStatistics(const CtiTablePortStatistics& ps, INT i);
-#endif
-
     virtual INT init() = 0;
-
     virtual INT connectToDevice(CtiDevice *Device, INT trace);
 
     virtual BOOL connected();
@@ -133,9 +122,13 @@ public:
     void fileTraces(RWTPtrSlist< CtiMessage > &traceList) const;
 
 
+    CtiLogger& getPortLog() { return _portLog; }
+
 
 
     /* virtuals to make the world all fat and happy */
+    virtual bool      isViable() const;
+
     virtual INT       ctsTest() const;
     virtual INT       dcdTest() const;
 
@@ -161,12 +154,15 @@ public:
     virtual CtiPort&  setDelay(int Offset, int D);
 
 
+    virtual INT setPortReadTimeOut(USHORT timeout);
+    virtual INT waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse = NULL);
+    virtual INT writePort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesWritten);
+    virtual INT readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesRead);
+
+
     void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
-    #ifdef CTIOLDSTATS
-    virtual void DecodeStatisticsDatabaseReader(RWDBReader &rdr);
-    #endif
-
+    virtual void DecodeDialoutDatabaseReader(RWDBReader &rdr);
     virtual void Dump() const;
 
     HCTIQUEUE&  getPortQueueHandle();
@@ -180,9 +176,12 @@ public:
 
     void haltLog();
 
+    const CtiTablePortSettings& getTablePortSettings() const
+    {
+        return _tblPortSettings;
+    }
 
 
-    // I hate this crap
     RWCString getSharedPortType() const;
     INT getSharedSocketNumber() const;
     INT getType() const;
@@ -201,9 +200,12 @@ public:
     INT verifyPortStatus();
 
     CTI_PORTTHREAD_FUNC_PTR  setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn);
-};
 
-typedef CtiPort CtiPortBase;
+    INT checkCommStatus(INT trace);
+    INT isCTS() const;
+    INT isDCD() const;
+    INT isDSR() const;
+};
 
 inline INT CtiPort::getType() const   { return _tblPAO.getType();}
 inline LONG CtiPort::getPortID() const { return _tblPAO.getID();}
@@ -217,7 +219,7 @@ inline INT CtiPort::getProtocol() const { return _tblPortBase.getProtocol();}
 inline INT CtiPort::isDialup() const { return ((getType() == PortTypeLocalDialup || getType() == PortTypeTServerDialup)); }
 inline bool CtiPort::isTCPIPPort() const { return ((getType() == TSERVER_SERIAL_PORT) || (getType() == TSERVER_DIALUP_PORT)); }
 
-inline INT CtiPort::getBaudRate() const { return _tblPortSettings.getBaudRate();}
+inline INT CtiPort::getBaudRate() const { return getTablePortSettings().getBaudRate();}
 inline bool CtiPort::operator<(const CtiPort& rhs) const { return getPortID() < rhs.getPortID(); }
 
 
