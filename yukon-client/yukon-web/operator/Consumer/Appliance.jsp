@@ -68,7 +68,7 @@ function deleteAppliance(form) {
 <%
 	}
 %>
-	form.elements('action').value = 'DeleteAppliance';
+	form.action.value = 'DeleteAppliance';
 	form.submit();
 }
 </script>
