@@ -3,12 +3,13 @@
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.graph.model.TrendModelType" %>
-
+<%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%
     java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
+	String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 	
 	StarsYukonUser user = null;
 	try {
@@ -18,6 +19,8 @@
 	if (user == null) {
 		response.sendRedirect("/login.jsp"); return;
 	}
+
+	LiteYukonUser liteYukonUser = user.getYukonUser();
 	
 	Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 	
