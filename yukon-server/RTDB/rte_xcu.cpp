@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/05/23 22:11:23 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/08/05 12:52:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -566,22 +566,45 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
                 OutMessage->OutLength            = xcom.messageSize() * 2 +  2;
                 OutMessage->Buffer.TAPSt.Length  = xcom.messageSize() * 2 +  2;
 
+                // BEGIN serialpatch here
+                j = 0;
+                RWCString serialpatch;
+
+                if(parse.getiValue("xcprefix", FALSE))
+                {
+                     serialpatch = parse.getsValue("xcprefixstr");
+                }
+
+                if(!serialpatch.isNull() && (xcom.getByte(0) == 0))
+                {
+                    for(j = 0; j <= serialpatch.length(); j++)
+                    {
+                        OutMessage->Buffer.TAPSt.Message[j] = serialpatch.data()[j];
+                    }
+
+                    OutMessage->OutLength            += serialpatch.length();
+                    OutMessage->Buffer.TAPSt.Length  += serialpatch.length();
+
+                    j = serialpatch.length();
+                }
+                // END serialpatch
+
                 /* Build the message */
-                OutMessage->Buffer.TAPSt.Message[0] = xcom.getStartByte();
+                OutMessage->Buffer.TAPSt.Message[j] = xcom.getStartByte();
 
                 for(i = 0; i < xcom.messageSize() * 2; i++)
                 {
                     BYTE curByte = xcom.getByte(i / 2);
                     if(i % 2)
                     {
-                        sprintf(&OutMessage->Buffer.TAPSt.Message[i + 1], "%1x", curByte & 0x0f);
+                        sprintf(&OutMessage->Buffer.TAPSt.Message[i + 1 + j], "%1x", curByte & 0x0f);
                     }
                     else
                     {
-                        sprintf(&OutMessage->Buffer.TAPSt.Message[i + 1], "%1x", (curByte >> 4) & 0x0f);
+                        sprintf(&OutMessage->Buffer.TAPSt.Message[i + 1 + j], "%1x", (curByte >> 4) & 0x0f);
                     }
                 }
-                OutMessage->Buffer.TAPSt.Message[i + 1] = xcom.getStopByte();
+                OutMessage->Buffer.TAPSt.Message[i + 1 + j] = xcom.getStopByte();
 
                 for(i = 0; i < OutMessage->OutLength; i++)
                 {
