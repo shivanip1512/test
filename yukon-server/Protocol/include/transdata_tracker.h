@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/12/18 15:02:11 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/12/18 21:49:15 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -33,6 +33,7 @@ class IM_EX_PROT CtiTransdataTracker
    {
       //connect
       doPassword  = 0,
+      doTime,
       doIdentify,
       
       //billing
@@ -44,7 +45,7 @@ class IM_EX_PROT CtiTransdataTracker
       //loadprofile
       doEnabledChannels,
       doIntervalSize,
-      doTime,
+//      doTime,
       doRecordDump,
       doRecordNumber,
       doProt1,

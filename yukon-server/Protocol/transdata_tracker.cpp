@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/12/18 15:57:18 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/12/18 21:49:15 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -534,12 +534,19 @@ bool CtiTransdataTracker::logOn( CtiXfer &xfer )
 
       switch( _lastState )
       {
-         case doPassword:
+      case doPassword:
          {
 //            setXfer( xfer, "22222222\r\n", strlen( _good_return ), false, 1 );
             setXfer( xfer, _password, strlen( _good_return ), false, 1 );
             _datalink.buildMsg( xfer );
             _first = true;
+         }
+         break;
+
+      case doTime:
+         {
+            setXfer( xfer, _get_clock, 50, true, 1 );//24
+            _datalink.buildMsg( xfer );
          }
          break;
 
@@ -647,14 +654,14 @@ bool CtiTransdataTracker::loadProfile( CtiXfer &xfer )
          _datalink.buildMsg( xfer );
       }
       break;
-
+/*
    case doTime:
       {
          setXfer( xfer, _get_clock, 50, true, 1 );//24
          _datalink.buildMsg( xfer );
       }
       break;
-
+*/
    case doRecordDump:
       {
          setXfer( xfer, _dump_demands, 47, true, 1 );
