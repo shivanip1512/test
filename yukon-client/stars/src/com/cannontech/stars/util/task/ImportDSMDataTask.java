@@ -1080,13 +1080,15 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				hw.setManufacturerSerialNumber( serialNo );
 				inv.setLMHardware( hw );
 				
-				CustomerPK pk = new CustomerPK( fields[3].trim(), fields[4].trim(), fields[5].trim(), coopID.intValue() );
-				Integer acctID = (Integer) getCustomerMap().get(pk);
 				LiteStarsCustAccountInformation liteAcctInfo = null;
-				if (acctID != null)
-					liteAcctInfo = member.getBriefCustAccountInfo( acctID.intValue(), true );
-				else
-					importLog.println(errorLocation + ": unable to find customer record for \"" + pk.toString() + "\", add receiver to the warehouse.");
+				CustomerPK pk = new CustomerPK( fields[3].trim(), fields[4].trim(), fields[5].trim(), coopID.intValue() );
+				if (!(pk.mapid.equalsIgnoreCase("STOCK") || pk.mappage.equalsIgnoreCase("STOCK") || pk.mapsection.equalsIgnoreCase("STOCK"))) {
+					Integer acctID = (Integer) getCustomerMap().get(pk);
+					if (acctID != null)
+						liteAcctInfo = member.getBriefCustAccountInfo( acctID.intValue(), true );
+					else
+						importLog.println(errorLocation + ": unable to find customer record for \"" + pk.toString() + "\", add receiver to the warehouse.");
+				}
 				
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) CreateLMHardwareAction.addInventory( inv, liteAcctInfo, member );
 				
@@ -1512,7 +1514,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					}
 				}
 				else {
-					importLog.println(errorLocation + ": no LM program defined for this controlled load, program enrollment skipped.");;
+					importLog.println(errorLocation + ": unknown load type, assign to the generic appliance category.");
 				}
 				
 				app.setNotes( notes );
