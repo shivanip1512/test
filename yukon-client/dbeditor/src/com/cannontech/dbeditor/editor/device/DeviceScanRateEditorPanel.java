@@ -1908,7 +1908,7 @@ public void setDeviceType(int type)
             || DeviceTypesFuncs.isCapBankController(type)
             || (type == PAOGroups.SERIES_5_LMI) )
 	{		
-		if( DeviceTypesFuncs.isMCT3xx(type) || DeviceTypesFuncs.isMCT410KWHONLY(type)  )
+		if( DeviceTypesFuncs.isMCT3xx(type) || DeviceTypesFuncs.isMCT4XX(type)  )
 		{
 			getIntegrityRateCheckBox().setText("Demand & Status Rate");
 			getAccumulatorRateCheckBox().setText("Accumulator (Energy) Rate");
@@ -1971,7 +1971,7 @@ public void setDeviceType(int type)
 		
       setHealthObjectsVisible( 
             !(type == PAOGroups.DCT_501
-              || DeviceTypesFuncs.isMCT3xx(type) || DeviceTypesFuncs.isMCT410KWHONLY(type)
+              || DeviceTypesFuncs.isMCT3xx(type) || DeviceTypesFuncs.isMCT4XX(type)
 				|| type == PAOGroups.SERIES_5_LMI) );
       
 		setAccumulatorObjectsVisible( 
