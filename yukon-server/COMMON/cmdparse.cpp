@@ -1267,6 +1267,7 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
 void  CtiCommandParser::doParseScan(const RWCString &CmdStr)
 {
     RWCString   token;
+    RWCRExpr    re_loadprofile("loadprofile( +channel +[1-4])?( +block +[1-8])?");
 
     RWCTokenizer   tok(CmdStr);
 
@@ -1290,9 +1291,31 @@ void  CtiCommandParser::doParseScan(const RWCString &CmdStr)
         {
             _cmd["scantype"] = CtiParseValue( ScanRateStatus );
         }
-        else if(!(token = CmdStr.match("loadprofile")).isNull())      // Sourcing from CmdStr, which is the entire command string.
+        else if(!(token = CmdStr.match(re_loadprofile)).isNull())      // Sourcing from CmdStr, which is the entire command string.
         {
             _cmd["scantype"] = CtiParseValue( ScanRateLoadProfile );
+
+            RWCTokenizer lp_tok(token);
+
+            lp_tok();  //  pull "loadprofile"
+
+            token = lp_tok();
+
+            if( !(token.compareTo("channel")) )
+            {
+                token = lp_tok();
+
+                _cmd["scan_loadprofile_channel"] = CtiParseValue(atoi(token.data()));
+
+                token = lp_tok();
+            }
+
+            if( !(token.compareTo("block")) )
+            {
+                token = lp_tok();
+
+                _cmd["scan_loadprofile_block"] = CtiParseValue(atoi(token.data()));
+            }
         }
     }
 
