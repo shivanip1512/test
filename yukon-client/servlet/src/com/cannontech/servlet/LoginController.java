@@ -78,7 +78,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
 
-			resp.sendRedirect(home_url);
+			resp.sendRedirect(req.getContextPath() + home_url);
 		}
 		else {
 			if (nextURI == null)
