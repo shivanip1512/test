@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/02/25 23:40:34 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -729,13 +729,13 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << _superPort->getName() << " modem hangup " << (getDialedUpNumber().isNull ? "" : RWCString("on ") + getDialedUpNumber()) << endl;
+        dout << RWTime() << " " << _superPort->getName() << " modem hangup " << (getDialedUpNumber().isNull() ? "" : RWCString("on ") + getDialedUpNumber()) << endl;
     }
 
     if(gLogPorts)
     {
         CtiLockGuard<CtiLogger> portlog_guard(_superPort->getPortLog());
-        _superPort->getPortLog() << RWTime() << " " << _superPort->getName() << " modem hangup " << (getDialedUpNumber().isNull ? "" : RWCString("on ") + getDialedUpNumber()) << endl;
+        _superPort->getPortLog() << RWTime() << " " << _superPort->getName() << " modem hangup " << (getDialedUpNumber().isNull() ? "" : RWCString("on ") + getDialedUpNumber()) << endl;
     }
 
     _superPort->setConnectedDevice(0);
