@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     10/29/2002 10:13:34 AM                       */
+/* Created on:     11/6/2002 9:22:09 AM                         */
 /*==============================================================*/
 
 
@@ -1438,6 +1438,36 @@ go
 
 
 if exists (select 1
+            from  sysindexes
+           where  id    = object_id('SYSTEMLOG')
+            and   name  = 'Indx_SYSLG_PtId'
+            and   indid > 0
+            and   indid < 255)
+   drop index SYSTEMLOG.Indx_SYSLG_PtId
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('SYSTEMLOG')
+            and   name  = 'Indx_SYSLG_Date'
+            and   indid > 0
+            and   indid < 255)
+   drop index SYSTEMLOG.Indx_SYSLG_Date
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('SYSTEMLOG')
+            and   name  = 'Indx_SYSLG_PtIdDt'
+            and   indid > 0
+            and   indid < 255)
+   drop index SYSTEMLOG.Indx_SYSLG_PtIdDt
+go
+
+
+if exists (select 1
             from  sysobjects
            where  id = object_id('SYSTEMLOG')
             and   type = 'U')
@@ -1835,7 +1865,8 @@ BUSNUMBER            numeric              not null,
 CCUFIXBITS           numeric              not null,
 CCUVARIABLEBITS      numeric              not null,
 UserLocked           char(1)              not null,
-ResetRptSettings     char(1)              not null
+ResetRptSettings     char(1)              not null,
+constraint PK_CARRIERROUTE primary key  (ROUTEID)
 )
 go
 
@@ -2002,7 +2033,7 @@ create table DEVICE (
 DEVICEID             numeric              not null,
 ALARMINHIBIT         varchar(1)           not null,
 CONTROLINHIBIT       varchar(1)           not null,
-constraint PK_DEV_DEVICEID primary key  (DEVICEID)
+constraint PK_DEV_DEVICEID2 primary key  (DEVICEID)
 )
 go
 
@@ -2020,7 +2051,8 @@ HOURLYSTATS          varchar(1)           not null,
 FAILUREALARM         varchar(1)           not null,
 PERFORMANCETHRESHOLD numeric              not null,
 PERFORMANCEALARM     varchar(1)           not null,
-PERFORMANCETWENTYFOURALARM varchar(1)           not null
+PERFORMANCETWENTYFOURALARM varchar(1)           not null,
+constraint PK_DEVICE2WAYFLAGS primary key  (DEVICEID)
 )
 go
 
@@ -2030,7 +2062,8 @@ go
 /*==============================================================*/
 create table DEVICECARRIERSETTINGS (
 DEVICEID             numeric              not null,
-ADDRESS              numeric              not null
+ADDRESS              numeric              not null,
+constraint PK_DEVICECARRIERSETTINGS primary key  (DEVICEID)
 )
 go
 
@@ -2044,7 +2077,8 @@ PHONENUMBER          varchar(40)          not null,
 MINCONNECTTIME       numeric              not null,
 MAXCONNECTTIME       numeric              not null,
 LINESETTINGS         varchar(8)           not null,
-BaudRate             numeric              not null
+BaudRate             numeric              not null,
+constraint PK_DEVICEDIALUPSETTINGS primary key  (DEVICEID)
 )
 go
 
@@ -2056,7 +2090,8 @@ create table DEVICEIDLCREMOTE (
 DEVICEID             numeric              not null,
 ADDRESS              numeric              not null,
 POSTCOMMWAIT         numeric              not null,
-CCUAmpUseType        varchar(20)          not null
+CCUAmpUseType        varchar(20)          not null,
+constraint PK_DEVICEIDLCREMOTE primary key  (DEVICEID)
 )
 go
 
@@ -2067,7 +2102,8 @@ go
 create table DEVICEIED (
 DEVICEID             numeric              not null,
 PASSWORD             varchar(20)          not null,
-SLAVEADDRESS         varchar(20)          not null
+SLAVEADDRESS         varchar(20)          not null,
+constraint PK_DEVICEIED primary key  (DEVICEID)
 )
 go
 
@@ -2079,7 +2115,8 @@ create table DEVICELOADPROFILE (
 DEVICEID             numeric              not null,
 LASTINTERVALDEMANDRATE numeric              not null,
 LOADPROFILEDEMANDRATE numeric              not null,
-LOADPROFILECOLLECTION varchar(4)           not null
+LOADPROFILECOLLECTION varchar(4)           not null,
+constraint PK_DEVICELOADPROFILE primary key  (DEVICEID)
 )
 go
 
@@ -2094,7 +2131,8 @@ IEDSCANRATE          numeric              not null,
 DEFAULTDATACLASS     numeric              not null,
 DEFAULTDATAOFFSET    numeric              not null,
 PASSWORD             varchar(6)           not null,
-REALTIMESCAN         varchar(1)           not null
+REALTIMESCAN         varchar(1)           not null,
+constraint PK_DEVICEMCTIEDPORT primary key  (DEVICEID)
 )
 go
 
@@ -2107,7 +2145,8 @@ DEVICEID             numeric              not null,
 CollectionGroup      varchar(20)          not null,
 TestCollectionGroup  varchar(20)          not null,
 METERNUMBER          varchar(15)          not null,
-BillingGroup         varchar(20)          not null
+BillingGroup         varchar(20)          not null,
+constraint PK_DEVICEMETERGROUP primary key  (DEVICEID)
 )
 go
 
@@ -2131,7 +2170,8 @@ go
 /*==============================================================*/
 create table DEVICETAPPAGINGSETTINGS (
 DEVICEID             numeric              not null,
-PAGERNUMBER          varchar(20)          not null
+PAGERNUMBER          varchar(20)          not null,
+constraint PK_DEVICETAPPAGINGSETTINGS primary key  (DEVICEID)
 )
 go
 
@@ -2304,9 +2344,10 @@ insert into displaycolumns values(13, 'User Name', 8, 5, 50 );
 /* Table : DYNAMICACCUMULATOR                                   */
 /*==============================================================*/
 create table DYNAMICACCUMULATOR (
-POINTID              numeric              null,
+POINTID              numeric              not null,
 PREVIOUSPULSES       numeric              not null,
-PRESENTPULSES        numeric              not null
+PRESENTPULSES        numeric              not null,
+constraint PK_DYNAMICACCUMULATOR primary key  (POINTID)
 )
 go
 
@@ -2315,7 +2356,7 @@ go
 /* Table : DYNAMICDEVICESCANDATA                                */
 /*==============================================================*/
 create table DYNAMICDEVICESCANDATA (
-DEVICEID             numeric              null,
+DEVICEID             numeric              not null,
 LASTFREEZETIME       datetime             not null,
 PREVFREEZETIME       datetime             not null,
 LASTLPTIME           datetime             not null,
@@ -2324,7 +2365,8 @@ PREVFREEZENUMBER     numeric              not null,
 NEXTSCAN0            datetime             not null,
 NEXTSCAN1            datetime             not null,
 NEXTSCAN2            datetime             not null,
-NEXTSCAN3            datetime             not null
+NEXTSCAN3            datetime             not null,
+constraint PK_DYNAMICDEVICESCANDATA primary key  (DEVICEID)
 )
 go
 
@@ -2340,7 +2382,8 @@ VALUE                float                not null,
 TAGS                 numeric              not null,
 NEXTARCHIVE          datetime             not null,
 STALECOUNT           numeric              not null,
-LastAlarmLogID       numeric              not null
+LastAlarmLogID       numeric              not null,
+constraint PK_DYNAMICPOINTDISPATCH primary key  (POINTID)
 )
 go
 
@@ -2365,7 +2408,8 @@ go
 create table DeviceCBC (
 DEVICEID             numeric              not null,
 SERIALNUMBER         numeric              not null,
-ROUTEID              numeric              not null
+ROUTEID              numeric              not null,
+constraint PK_DEVICECBC primary key  (DEVICEID)
 )
 go
 
@@ -2388,7 +2432,8 @@ go
 /*==============================================================*/
 create table DeviceDirectCommSettings (
 DEVICEID             numeric              not null,
-PORTID               numeric              not null
+PORTID               numeric              not null,
+constraint PK_DEVICEDIRECTCOMMSETTINGS primary key  (DEVICEID)
 )
 go
 
@@ -2398,7 +2443,8 @@ go
 /*==============================================================*/
 create table DeviceRoutes (
 DEVICEID             numeric              not null,
-ROUTEID              numeric              not null
+ROUTEID              numeric              not null,
+constraint PK_DEVICEROUTES primary key  (DEVICEID, ROUTEID)
 )
 go
 
@@ -2545,7 +2591,8 @@ CurrentHoursSeasonal numeric              not null,
 CurrentHoursAnnually numeric              not null,
 LastControlSent      datetime             not null,
 TimeStamp            datetime             not null,
-constraint PK_DYNAMICLMGROUP primary key  (DeviceID)
+LMProgramID          numeric              not null,
+constraint PK_DYNAMICLMGROUP primary key  (DeviceID, LMProgramID)
 )
 go
 
@@ -2858,7 +2905,8 @@ DEVICEID             numeric              not null,
 LMPROGRAMDEVICEID    numeric              not null,
 USERORDER            numeric              not null,
 STOPORDER            numeric              not null,
-DEFAULTPRIORITY      numeric              not null
+DEFAULTPRIORITY      numeric              not null,
+constraint PK_LMCONTROLAREAPROGRAM primary key  (DEVICEID)
 )
 go
 
@@ -3121,7 +3169,8 @@ GOLDADDRESS          numeric              not null,
 SILVERADDRESS        numeric              not null,
 ADDRESSUSAGE         char(1)              not null,
 RELAYUSAGE           char(1)              not null,
-ROUTEID              numeric              not null
+ROUTEID              numeric              not null,
+constraint PK_LMGROUPEMETCON primary key  (DEVICEID)
 )
 go
 
@@ -3161,7 +3210,7 @@ constraint PK_LMGROUPEXPRESSCOMADDRESS primary key  (AddressID)
 go
 
 
-insert into LMGroupExpressCommAddress values( 0, '(none)', 0, '(none)' );
+insert into LMGroupExpressComAddress values( 0, '(none)', 0, '(none)' );
 
 /*==============================================================*/
 /* Table : LMGroupPoint                                         */
@@ -3202,7 +3251,8 @@ CLASSADDRESS         numeric              not null,
 DIVISIONADDRESS      numeric              not null,
 ADDRESSUSAGE         char(4)              not null,
 RELAYUSAGE           char(7)              not null,
-SerialAddress        varchar(15)          not null
+SerialAddress        varchar(15)          not null,
+constraint PK_LMGROUPVERSACOM primary key  (DEVICEID)
 )
 go
 
@@ -3236,7 +3286,7 @@ create table LMPROGRAM (
 DEVICEID             numeric              not null,
 CONTROLTYPE          varchar(20)          not null,
 AVAILABLESEASONS     varchar(4)           not null,
-AVAILABLEWEEKDAYS    varchar(8)           not null,
+AvWkDys              varchar(8)           not null,
 MAXHOURSDAILY        numeric              not null,
 MAXHOURSMONTHLY      numeric              not null,
 MAXHOURSSEASONAL     numeric              not null,
@@ -3255,7 +3305,8 @@ create table LMProgramControlWindow (
 DeviceID             numeric              not null,
 WindowNumber         numeric              not null,
 AvailableStartTime   numeric              not null,
-AvailableStopTime    numeric              not null
+AvailableStopTime    numeric              not null,
+constraint PK_LMPROGRAMCONTROLWINDOW primary key  (DeviceID)
 )
 go
 
@@ -3344,7 +3395,8 @@ go
 create table LMProgramDirectGroup (
 DeviceID             numeric              not null,
 LMGroupDeviceID      numeric              not null,
-GroupOrder           numeric              not null
+GroupOrder           numeric              not null,
+constraint PK_LMPROGRAMDIRECTGROUP primary key  (DeviceID, GroupOrder)
 )
 go
 
@@ -3644,7 +3696,8 @@ go
 create table POINTACCUMULATOR (
 POINTID              numeric              not null,
 MULTIPLIER           float                not null,
-DATAOFFSET           float                not null
+DATAOFFSET           float                not null,
+constraint PK_POINTACCUMULATOR primary key  (POINTID)
 )
 go
 
@@ -3671,7 +3724,8 @@ POINTID              numeric              not null,
 LIMITNUMBER          numeric              not null,
 HIGHLIMIT            float                not null,
 LOWLIMIT             float                not null,
-LIMITDURATION        numeric              not null
+LIMITDURATION        numeric              not null,
+constraint PK_POINTLIMITS primary key  (POINTID)
 )
 go
 
@@ -3717,7 +3771,8 @@ PORTID               numeric              not null,
 MODEMTYPE            varchar(30)          not null,
 INITIALIZATIONSTRING varchar(50)          not null,
 PREFIXNUMBER         varchar(10)          not null,
-SUFFIXNUMBER         varchar(10)          not null
+SUFFIXNUMBER         varchar(10)          not null,
+constraint PK_PORTDIALUPMODEM primary key  (PORTID)
 )
 go
 
@@ -3727,7 +3782,8 @@ go
 /*==============================================================*/
 create table PORTLOCALSERIAL (
 PORTID               numeric              not null,
-PHYSICALPORT         varchar(8)           not null
+PHYSICALPORT         varchar(8)           not null,
+constraint PK_PORTLOCALSERIAL primary key  (PORTID)
 )
 go
 
@@ -3740,7 +3796,8 @@ PORTID               numeric              not null,
 RTSTOTXWAITSAMED     numeric              not null,
 RTSTOTXWAITDIFFD     numeric              not null,
 RADIOMASTERTAIL      numeric              not null,
-REVERSERTS           numeric              not null
+REVERSERTS           numeric              not null,
+constraint PK_PORTRADIOSETTINGS primary key  (PORTID)
 )
 go
 
@@ -3752,7 +3809,8 @@ create table PORTSETTINGS (
 PORTID               numeric              not null,
 BAUDRATE             numeric              not null,
 CDWAIT               numeric              not null,
-LINESETTINGS         varchar(8)           not null
+LINESETTINGS         varchar(8)           not null,
+constraint PK_PORTSETTINGS primary key  (PORTID)
 )
 go
 
@@ -3763,7 +3821,8 @@ go
 create table PORTTERMINALSERVER (
 PORTID               numeric              not null,
 IPADDRESS            varchar(16)          not null,
-SOCKETPORTNUMBER     numeric              not null
+SOCKETPORTNUMBER     numeric              not null,
+constraint PK_PORTTERMINALSERVER primary key  (PORTID)
 )
 go
 
@@ -3815,7 +3874,8 @@ PRETXWAIT            numeric              not null,
 RTSTOTXWAIT          numeric              not null,
 POSTTXWAIT           numeric              not null,
 RECEIVEDATAWAIT      numeric              not null,
-EXTRATIMEOUT         numeric              not null
+EXTRATIMEOUT         numeric              not null,
+constraint PK_PORTTIMING primary key  (PORTID)
 )
 go
 
@@ -3869,7 +3929,8 @@ create table RepeaterRoute (
 ROUTEID              numeric              not null,
 DEVICEID             numeric              not null,
 VARIABLEBITS         numeric              not null,
-REPEATERORDER        numeric              not null
+REPEATERORDER        numeric              not null,
+constraint PK_REPEATERROUTE primary key  (ROUTEID, DEVICEID)
 )
 go
 
@@ -4001,6 +4062,34 @@ go
 
 
 /*==============================================================*/
+/* Index: Indx_SYSLG_PtId                                       */
+/*==============================================================*/
+create   index Indx_SYSLG_PtId on SYSTEMLOG (
+POINTID
+)
+go
+
+
+/*==============================================================*/
+/* Index: Indx_SYSLG_Date                                       */
+/*==============================================================*/
+create   index Indx_SYSLG_Date on SYSTEMLOG (
+DATETIME
+)
+go
+
+
+/*==============================================================*/
+/* Index: Indx_SYSLG_PtIdDt                                     */
+/*==============================================================*/
+create   index Indx_SYSLG_PtIdDt on SYSTEMLOG (
+POINTID,
+DATETIME
+)
+go
+
+
+/*==============================================================*/
 /* Table : TEMPLATE                                             */
 /*==============================================================*/
 create table TEMPLATE (
@@ -4025,7 +4114,8 @@ TEMPLATENUM          numeric              not null,
 TITLE                varchar(50)          null,
 TYPENUM              numeric              not null,
 ORDERING             numeric              not null,
-WIDTH                numeric              not null
+WIDTH                numeric              not null,
+constraint PK_TEMPLATECOLUMNS primary key  (TEMPLATENUM)
 )
 go
 
@@ -4120,13 +4210,14 @@ INSERT INTO UnitMeasure VALUES( 50,'Milibars',0,'Milibars','(none)');
 /* Table : VersacomRoute                                        */
 /*==============================================================*/
 create table VersacomRoute (
-ROUTEID              numeric              null,
+ROUTEID              numeric              not null,
 UTILITYID            numeric              not null,
 SECTIONADDRESS       numeric              not null,
 CLASSADDRESS         numeric              not null,
 DIVISIONADDRESS      numeric              not null,
 BUSNUMBER            numeric              not null,
-AMPCARDSET           numeric              not null
+AMPCARDSET           numeric              not null,
+constraint PK_VERSACOMROUTE primary key  (ROUTEID)
 )
 go
 
@@ -4191,9 +4282,17 @@ go
 /* View: ExpressComAddress_View                                 */
 /*==============================================================*/
 create view ExpressComAddress_View  as
-select x.LMGroupID, x.RouteID, x.SerialNumber, s.serviceaddress, g.geoaddress, b.substationaddress, f.feederaddress, x.ZipCodeAddress, x.UDAddress, p.programaddress, x.SplinterAddress, x.AddressUsage, x.RelayUsage
-from LMGroupExpressCom x, ServiceAddress_View s, GeoAddress_View g, SubstationAddress_View b, FeederAddress_View f, ProgramAddress_View p
-where x.LMGroupID = s.lmgroupid and x.LMGroupID = g.lmgroupid and x.LMGroupID = b.lmgroupid and x.LMGroupID = f.lmgroupid and x.LMGroupID = p.lmgroupid
+select x.LMGroupID, x.RouteID, x.SerialNumber, s.Address as serviceaddress,
+g.Address as geoaddress, b.Address as substationaddress, f.Address as feederaddress,
+x.ZipCodeAddress, x.UDAddress, p.Address as programaddress, x.SplinterAddress, x.AddressUsage, x.RelayUsage
+from LMGroupExpressCom x, LMGroupExpressComAddress s, 
+LMGroupExpressComAddress g, LMGroupExpressComAddress b, LMGroupExpressComAddress f,
+LMGroupExpressComAddress p
+where ( x.ServiceProviderID = s.AddressID and ( s.AddressType = 'SERVICE' or s.AddressID = 0 ) )
+and ( x.FeederID = f.AddressID and ( f.AddressType = 'FEEDER' or f.AddressID = 0 ) )
+and ( x.GeoID = g.AddressID and ( g.AddressType = 'GEO' or g.AddressID = 0 ) )
+and ( x.ProgramID = p.AddressID and ( p.AddressType = 'PROGRAM' or p.AddressID = 0 ) )
+and ( x.SubstationID = b.AddressID and ( b.AddressType = 'SUBSTATION' or b.AddressID = 0 ) )
 go
 
 
@@ -4433,7 +4532,7 @@ go
 
 
 alter table LMGroup
-   add constraint FK_Device_LMGrpBase foreign key (DeviceID)
+   add constraint FK_Device_LMGrpBase2 foreign key (DeviceID)
       references DEVICE (DEVICEID)
 go
 
@@ -4753,6 +4852,12 @@ go
 alter table DEVICE
    add constraint FK_Dev_YukPAO foreign key (DEVICEID)
       references YukonPAObject (PAObjectID)
+go
+
+
+alter table DynamicLMGroup
+   add constraint FK_DyLmGr_LmPrDGr foreign key (LMProgramID)
+      references LMProgramDirect (DeviceID)
 go
 
 
