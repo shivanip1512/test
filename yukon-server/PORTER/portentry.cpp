@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/14 15:44:08 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/10 20:44:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -230,6 +230,18 @@ VOID ConnectionThread (VOID *Arg)
              */
             OutMessage = outList.get();
             OutMessage->Request.BuildIt = FALSE;         // Make this FALSE, so the OutMessage passes into the PorterEntryPoint function.
+
+            if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD)
+            {
+                CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID);
+
+                if(tempDev)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Portentry built an outmessage for " << tempDev->getName();
+                    dout << " at priority " << OutMessage->Priority << endl;
+                }
+            }
         }
         else if((OutMessage = new OUTMESS) == NULL)     // Get a bit of memory for the next else if...
         {
@@ -263,17 +275,17 @@ VOID ConnectionThread (VOID *Arg)
                 MyNexus->CTINexusClose();
                 break;   // The for and exit this thread
             }
-        }
 
-        if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD)
-        {
-            CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID);
-
-            if(tempDev)
+            if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Portentry connection received an outmessage for " << tempDev->getName();
-                dout << " at priority " << OutMessage->Priority << endl;
+                CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID);
+
+                if(tempDev)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Portentry connection received an outmessage for " << tempDev->getName();
+                    dout << " at priority " << OutMessage->Priority << endl;
+                }
             }
         }
 
