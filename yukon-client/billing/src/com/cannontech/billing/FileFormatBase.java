@@ -320,11 +320,16 @@ public abstract class FileFormatBase
 	 */
 	public int getRecordCount()
 	{
+		int count = 0;
 		if( getRecordVector() != null)
 		{
-			return getRecordVector().size();
+			for (int i = 0; i < getRecordVector().size(); i++)
+			{
+				if( !(getRecordVector().get(i) instanceof com.cannontech.billing.record.StringRecord))
+					count++;
+			}
 		}
-		return 0;
+		return count;
 	}
 	
 	/**
