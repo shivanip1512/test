@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/id_pgdll.h-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2002/07/09 16:16:20 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2002/07/19 14:58:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,7 @@
 #define PROJECT   "CTI Porter DLL"
 
 #define MAJORREVISION   2
-#define MINORREVISION   27
+#define MINORREVISION   28
 #define BUILDNUMBER     0
 
 CTICOMPILEINFO CompileInfo = {
