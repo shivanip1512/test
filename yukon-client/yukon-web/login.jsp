@@ -50,7 +50,7 @@ self.name = "mainWin";
           <td rowspan = "3" width="555" height="102" valign="top" ><br> 
             <div align="center" class="TitleHeader">SIGN IN<br></div>
             <div align="center" class="MainText">Please enter your username and password below.</div>
-            <form name="form1" method="post" action="/servlet/LoginController">
+            <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/LoginController">
               <input type="hidden" name="ACTION" value="LOGIN">
               <table width="250" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
