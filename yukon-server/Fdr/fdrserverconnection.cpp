@@ -81,7 +81,7 @@ int CtiFDRServerConnection::stop ()
 void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
-    CHAR            data[2048];
+    CHAR            data[8172];
     INT retVal=0;        
     ULONG   bytesRead=0,totalMsgSize=0;
     int connectionBadCount=0;
@@ -122,7 +122,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                 // if the connection is failed, don't bother trying
                 if (getConnectionStatus() ==  CtiFDRSocketConnection::Ok)
                 {
-                    memset (&data, '\0',2048);
+                    memset (&data, '\0',8172);
                     // attempt to find out what type of message we're dealing with
                     retVal = readSocket((CHAR*)&data, 4, bytesRead);
 
@@ -144,8 +144,8 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                         // figure out how many more bytes we now need
                         totalMsgSize = getParent()->getMessageSize (data);
 
-                        // make sure we have a number
-                        if (totalMsgSize)
+                        // make sure we have a number (greater than four, we already read 4)
+                        if (totalMsgSize > 4)
                         {
                             retVal = readSocket((CHAR*)&data[4], totalMsgSize - 4, bytesRead);
 
@@ -200,7 +200,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                                 }
                             }
                         }
-                        else
+                        else if(totalMsgSize == 0)
                         {
                             // closes and marks as failed
                             closeAndFailConnection();
