@@ -245,8 +245,8 @@ public class YukonGroupRole extends DBPersistent implements IDefinedYukonRole
 	 * Sets the groupID.
 	 * @param groupID The groupID to set
 	 */
-	public void setGroupID(Integer userID) {
-		this.groupID = userID;
+	public void setGroupID(Integer groupID) {
+		this.groupID = groupID;
 	}
 
 	/**
