@@ -13,7 +13,8 @@
    Send a msg to the load control server to stop the program
 */
    java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("HH:mm");
-
+   timeFormat.setTimeZone(tz);
+   
    LMProgramDirect program = null;
    java.util.Date now = new java.util.Date();
       
@@ -75,7 +76,7 @@
 		java.util.Date stopTime = null;
 
 		try {			
-			stopTime = com.cannontech.validate.PageBean.parseTime( checker.get("STOPAT") );            
+			stopTime = ServletUtil.parseDateStringLiberally(checker.get("STOPAT"), tz);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -225,11 +226,13 @@
                 <td width="59%">&nbsp; </td>
               </tr>
               <tr> 
-                <td width="16%"> <span class="TableCell"><struts:radio property="STOPRADIO" value="time"/> 
+                <td> <span class="TableCell"><struts:radio property="STOPRADIO" value="time"/> 
                   </span></td>
-                <td width="25%"> <span class="TableCell">Time:</span></td>
-                <td width="59%"> <span class="TableCell"><struts:text property="STOPTIME" size="10" pattern="@time"/> 
+                <td> <span class="TableCell">Time:</span></td>
+                <td> <span class="TableCell"><struts:text property="STOPTIME" size="10" pattern="@time"/> 
                   </span></td>
+                <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+                  </td>
               </tr>
               <tr> <cti:errormsg colSpan="3"> <span class = "TableCell"><%= checker.getError("STOPTIME") %></span> 
                 </cti:errormsg> </tr>

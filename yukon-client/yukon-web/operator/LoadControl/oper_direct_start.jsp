@@ -15,7 +15,8 @@
    If the cancel button is clicked the user is directed back to program summary page
 */
    java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("HH:mm");
-
+	timeFormat.setTimeZone(tz);
+	
    LMProgramDirect program = null;
    java.util.Vector gears = null; //will contain LMProgramDirectGear
    java.util.Date now = new java.util.Date();
@@ -81,9 +82,9 @@
 			if ( ((String)checker.get("STARTAT")).equals("0") )
 				startTime = new java.util.Date();
 			else
-				startTime = com.cannontech.validate.PageBean.parseTime( checker.get("STARTAT") );
-
-			stopTime = com.cannontech.validate.PageBean.parseTime( checker.get("STOPAT") );
+				startTime = ServletUtil.parseDateStringLiberally(checker.get("STARTAT"), tz);
+			
+			stopTime = ServletUtil.parseDateStringLiberally(checker.get("STOPAT"), tz);				
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -130,7 +131,8 @@
         }
                 
 		if (valid)
-		{			           
+		{		
+			//Send the message to loadmanagement	           
             com.cannontech.loadcontrol.messages.LMManualControlMsg msg = new com.cannontech.loadcontrol.messages.LMManualControlMsg();
         	msg.setCommand(com.cannontech.loadcontrol.messages.LMManualControlMsg.SCHEDULED_START);
 	        msg.setYukonID(programID);
@@ -138,7 +140,7 @@
                        
             java.util.Date current = new java.util.Date();
             java.util.GregorianCalendar currentCal = new java.util.GregorianCalendar();
-            currentCal.setTime(current);
+            currentCal.setTime(current);            
 
             startCal.set( Calendar.YEAR, currentCal.get( Calendar.YEAR ) );
             startCal.set( Calendar.DAY_OF_YEAR, currentCal.get( Calendar.DAY_OF_YEAR ) );
@@ -298,9 +300,11 @@
               <tr> 
                 <td width="16%"> <span class="TableCell"><struts:radio property="STARTRADIO" value="time"/> 
                   </span></td>
-                <td width="25%"> <span class="TableCell">Time:</span></td>
-                <td width="59%"> <span class="TableCell"><struts:text property="STARTTIME" size="10" pattern="@time"/> 
+                <td> <span class="TableCell">Time:</span></td>
+                <td> <span class="TableCell"><struts:text property="STARTTIME" size="10" pattern="@time"/> 
                   </span></td>
+                <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+                  </td>
               </tr>
               <tr> <cti:errormsg colSpan="3"> <span class = "TableCell"><%= checker.getError("STARTTIME") %></span>
                 </cti:errormsg> </tr>
@@ -320,9 +324,11 @@
               <tr> 
                 <td width="16%"> <span class="TableCell"><struts:radio property="STOPRADIO" value="now"/> 
                   </span></td>
-                <td width="25%"> <span class="TableCell">Time:</span></td>
-                <td width="59%"> <span class="TableCell"><struts:text property="STOPTIME" size="10" pattern="@time"/> 
+                <td> <span class="TableCell">Time:</span></td>
+                <td> <span class="TableCell"><struts:text property="STOPTIME" size="10" pattern="@time"/> 
                   </span></td>
+                <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+                </td>
               </tr>
               <tr> <cti:errormsg colSpan="3"><span class = "TableCell"> <%= checker.getError("STOPTIME") %></span>
                 </cti:errormsg> </tr>
