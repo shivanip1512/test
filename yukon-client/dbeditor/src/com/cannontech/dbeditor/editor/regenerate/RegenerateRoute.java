@@ -152,7 +152,6 @@ public static final int numCarrierRoutesReset(java.util.Vector routes) {
  * This method recalculates the fixed and variable bits for carrier routes.
  * If 'all' is true it recalculates for all of the routes.
  * If 'newRoute' is not null, then it recalculates just for that new route that is passed in.
- * The routes are updated in the database if there is no new route.
  * Creation date: (5/28/2002 12:57:11 PM)
  */
 public static final Vector resetRptSettings(java.util.Vector routes, boolean all, DBPersistent newRoute) {
@@ -191,7 +190,7 @@ public static final Vector resetRptSettings(java.util.Vector routes, boolean all
     for (int i = 0; i < routes.size(); i++) {
 
         rt = (DBPersistent) routes.get(i);
-
+		if (newRoute == null  || ((RouteBase)rt).getPAObjectID().intValue() != ((RouteBase)newRoute).getPAObjectID().intValue()) {  
         CcuFixedBits = ((CCURoute) rt).getCarrierRoute().getCcuFixBits();
         CcuVariableBits = ((CCURoute) rt).getCarrierRoute().getCcuVariableBits();
         reset = ((CCURoute) rt).getCarrierRoute().getResetRptSettings();
@@ -204,9 +203,7 @@ public static final Vector resetRptSettings(java.util.Vector routes, boolean all
                 if (usedFixedBits.get(CcuFixedBits.intValue()) == null) {
                     usedFixedBits.set(CcuFixedBits.intValue(),
                         new Integer(((CCURoute) rt).getRepeaterVector().size()));
-                    varBits.set(CcuFixedBits.intValue(), 
-                        ((CarrierRoute) ((CCURoute) rt).getCarrierRoute())
-                            .getCcuVariableBits());
+                    varBits.set(CcuFixedBits.intValue(),((CarrierRoute) ((CCURoute) rt).getCarrierRoute()).getCcuVariableBits());
                    
 
                 } else {
@@ -220,7 +217,7 @@ public static final Vector resetRptSettings(java.util.Vector routes, boolean all
             changingRoutes.add(rt);
            
         }
-
+		}
     }
 
    //if we are only setting a new route it will be the only route changed
@@ -232,11 +229,60 @@ public static final Vector resetRptSettings(java.util.Vector routes, boolean all
     //recalculated
 
     CCURoute ccu;
-    int nextFixedBit;
+    int nextFixedBit = SMALL_VALID_FIXED;
     int variable1 = SMALL_VALID_VARIABLE;
     int variable2 = SMALL_VALID_VARIABLE;
-    int numRepeat;
-    Vector repeatVector;
+    int numRepeat = 0;
+    Vector repeatVector = null;
+    //start testing code
+    
+ 	if (newRoute != null) {
+		
+		nextFixedBit = ((CCURoute)newRoute).getCarrierRoute().getCcuFixBits().intValue();
+		repeatVector = ((CCURoute)newRoute).getRepeaterVector();
+		if (usedFixedBits.get(nextFixedBit) != null) {
+		numRepeat = ((Integer)usedFixedBits.get(nextFixedBit)).intValue(); 
+
+		}
+	}
+//end testing code
+if ( (newRoute != null)  && repeatVector.size() + numRepeat <= LARGE_VALID_VARIABLE  && nextFixedBit != LARGE_VALID_FIXED && ((CCURoute)newRoute).getCarrierRoute().getUserLocked().equalsIgnoreCase("N")) {
+
+
+	    variable1 = ((CCURoute)newRoute).getCarrierRoute().getCcuVariableBits().intValue();
+
+		variable2 = SMALL_VALID_VARIABLE;
+	
+		if (variable1 > 0) {
+
+			variable1 = RegenerateRoute.LARGE_VALID_VARIABLE - ((CCURoute)newRoute).getRepeaterVector().size();
+			variable2 = variable1 + 1;
+		}
+		else {
+			
+		variable2++;	
+		}	
+		
+		for (int i=0; i< ((CCURoute)newRoute).getRepeaterVector().size(); i++){
+			if (i + 1 >= ((CCURoute)newRoute).getRepeaterVector().size()) {
+				variable2 = RegenerateRoute.LARGE_VALID_VARIABLE;
+			} 
+			((RepeaterRoute)((CCURoute)newRoute).getRepeaterVector().get(i)).setVariableBits(new Integer(variable2));
+			variable2++;
+		}
+
+	
+	((CCURoute)newRoute).getCarrierRoute().setCcuVariableBits(new Integer(variable1));
+   
+
+	   
+
+   }
+
+   else {   
+    
+    
+    
 
     for (int k = 0; k < changingRoutes.size(); k++) {
 
@@ -301,7 +347,7 @@ public static final Vector resetRptSettings(java.util.Vector routes, boolean all
        
     }
 
-   
+   }
     
     return changingRoutes;
 }
