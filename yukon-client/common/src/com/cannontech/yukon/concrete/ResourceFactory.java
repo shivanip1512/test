@@ -53,7 +53,7 @@ public class ResourceFactory
          throw new Error("Unable to load the YukonResource layer");
    }
 
-   public static IYukon getIYukon()
+   public static synchronized IYukon getIYukon()
    {
       if( yukRes == null )
          yukRes = createYukonResource();
