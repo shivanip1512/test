@@ -3,21 +3,17 @@ package com.cannontech.loadcontrol.data;
 /**
  * This type was created in VisualAge.
  */
-import java.util.Date;
-
-import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableLMControlAreaTrigger implements com.roguewave.vsj.DefineCollectable
+public class DefColl_LMCurtailCustomer extends DefColl_LMGroupBase
 {
 	//The roguewave class id
-	private static int CTILMCONTROLAREATRIGGER_ID = 605;
+	private static int CTILMCURTAILCUSTOMER_ID = 608;
 /**
  * DefineCollectableSchedule constructor comment.
  */
-public DefineCollectableLMControlAreaTrigger()
-{
+public DefColl_LMCurtailCustomer() {
 	super();
 }
 /**
@@ -26,91 +22,63 @@ public DefineCollectableLMControlAreaTrigger()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMControlAreaTrigger();
-}
-/**
- * getComparator method comment.
- */
-public com.roguewave.tools.v2_0.Comparator getComparator() 
-{
-	return new Comparator() 
-	{
-		public int compare(Object x, Object y) 
-		{
-			return (int) (((LMControlAreaTrigger)x).getYukonID().intValue() - ((LMControlAreaTrigger)y).getYukonID().intValue() );
-		}
-	};
-	
+	return new LMCurtailCustomer();
 }
 /**
  * getCxxClassId method comment.
  */
-public int getCxxClassId()
-{
-	return CTILMCONTROLAREATRIGGER_ID;
+public int getCxxClassId() {
+	return this.CTILMCURTAILCUSTOMER_ID;
 }
 /**
  * getCxxStringId method comment.
  */
-public String getCxxStringId()
-{
+public String getCxxStringId() {
 	return DefineCollectable.NO_STRINGID;
 }
 /**
  * getJavaClass method comment.
  */
-public Class getJavaClass()
-{
-	return LMControlAreaTrigger.class;
+public Class getJavaClass() {
+	return LMCurtailCustomer.class;
 }
 /**
  * restoreGuts method comment.
  */
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMControlAreaTrigger lmTrigger = (LMControlAreaTrigger) obj;
+	super.restoreGuts( obj, vstr, polystr );
+	LMCurtailCustomer lmCurtailCustomer = (LMCurtailCustomer) obj;
+	
+	String custTimeZone = (String) vstr.restoreObject( SimpleMappings.CString );
+	int reqAck = (int)vstr.extractUnsignedInt();
+	int curtailRefID = (int)vstr.extractUnsignedInt();
+	String ackStatus = (String) vstr.restoreObject( SimpleMappings.CString );
+	java.util.Date ackDateTime = (java.util.Date)vstr.restoreObject( SimpleMappings.Time );
+	String ipAddress = (String) vstr.restoreObject( SimpleMappings.CString );
+	String userIDName = (String) vstr.restoreObject( SimpleMappings.CString );
+	String nameOfAckPerson = (String) vstr.restoreObject( SimpleMappings.CString );
+	String curtNotes = (String) vstr.restoreObject( SimpleMappings.CString );
+	int ackLateFlag = (int)vstr.extractUnsignedInt();
+	
+	
+	lmCurtailCustomer.setCustTimeZone(custTimeZone);
+	lmCurtailCustomer.setRequireAck(new Boolean(reqAck>0));
+	lmCurtailCustomer.setCurtailRefID(curtailRefID);
+	lmCurtailCustomer.setAckStatus(ackStatus);
+	lmCurtailCustomer.setAckDateTime(ackDateTime);
+	lmCurtailCustomer.setIpAddress(ipAddress);
+	lmCurtailCustomer.setUserIDname(userIDName);
+	lmCurtailCustomer.setNameOfAckPerson(nameOfAckPerson);
+	lmCurtailCustomer.setCurtailmentNotes(curtNotes);
+	lmCurtailCustomer.setAckLateFlag(new Boolean(ackLateFlag>0));
 
-	Integer yukonID = new Integer( (int)vstr.extractUnsignedInt() );
-	Integer triggerNumber = new Integer( (int)vstr.extractUnsignedInt() );
-	String triggerType = (String) vstr.restoreObject( SimpleMappings.CString );
-	Integer pointID = new Integer( (int)vstr.extractUnsignedInt() );
-	Double pointValue = new Double( vstr.extractDouble() );
-	Date lastPointValueTimeStamp = (Date) vstr.restoreObject( SimpleMappings.Time );
-	Integer normalState = new Integer( (int)vstr.extractUnsignedInt() );
-	Double threshold = new Double( vstr.extractDouble() );
-	String projectionType = (String) vstr.restoreObject( SimpleMappings.CString );
-	Integer projectionPoints = new Integer( (int)vstr.extractUnsignedInt() );
-	Integer projectAheadDuration = new Integer( (int)vstr.extractUnsignedInt() );
-	Integer thresholdKickPercent = new Integer( (int)vstr.extractUnsignedInt() );
-	Double minRestoreOffset = new Double( vstr.extractDouble() );
-	Integer peakPointID = new Integer( (int)vstr.extractUnsignedInt() );
-	Double peakPointValue = new Double( vstr.extractDouble() );
-	Date lastPeakPointValueTimeStamp = (Date) vstr.restoreObject( SimpleMappings.Time );
- 	Double projectedPointValue = new Double( vstr.extractDouble() );
- 	
-	lmTrigger.setYukonID(yukonID);
-	lmTrigger.setTriggerNumber(triggerNumber);
-	lmTrigger.setTriggerType(triggerType);
-	lmTrigger.setPointId(pointID);
-	lmTrigger.setPointValue(pointValue);
-	lmTrigger.setLastPointValueTimeStamp(lastPointValueTimeStamp);
-	lmTrigger.setNormalState(normalState);
-	lmTrigger.setThreshold(threshold);
-	lmTrigger.setProjectionType(projectionType);
-	lmTrigger.setProjectionPoints(projectionPoints);
-	lmTrigger.setProjectAheadDuration(projectAheadDuration);
-	lmTrigger.setThresholdKickPercent(thresholdKickPercent);
-	lmTrigger.setMinRestoreOffset(minRestoreOffset);
-	lmTrigger.setPeakPointId(peakPointID);
-	lmTrigger.setPeakPointValue(peakPointValue);
-	lmTrigger.setLastPeakPointValueTimeStamp(lastPeakPointValueTimeStamp);
-	lmTrigger.setProjectedPointValue(projectedPointValue);
 }
 /**
  * saveGuts method comment.
  */
-public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException
-{
+public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
+
 /* This saveGuts isn't implemented because we won't be sending full LMControlAreas
 	 to the Server */
 

@@ -7,12 +7,12 @@ import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableLMProgramBase implements com.roguewave.vsj.DefineCollectable 
+public class DefColl_LMProgramBase implements com.roguewave.vsj.DefineCollectable 
 {
 /**
  * DefineCollectableSchedule constructor comment.
  */
-public DefineCollectableLMProgramBase() {
+public DefColl_LMProgramBase() {
 	super();
 }
 /**

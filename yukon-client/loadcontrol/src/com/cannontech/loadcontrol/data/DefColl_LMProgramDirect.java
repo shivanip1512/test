@@ -6,14 +6,14 @@ package com.cannontech.loadcontrol.data;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableLMProgramDirect extends DefineCollectableLMProgramBase
+public class DefColl_LMProgramDirect extends DefColl_LMProgramBase
 {
 	//The roguewave class id
 	private static int CTILMPROGRAMDIRECT_ID = 606;
 /**
  * DefineCollectableSchedule constructor comment.
  */
-public DefineCollectableLMProgramDirect()
+public DefColl_LMProgramDirect()
 {
 	super();
 }

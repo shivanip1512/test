@@ -21,24 +21,24 @@ public class CollectableMappings
 		
 		//data received
 		new com.cannontech.message.dispatch.message.DefineCollectableMulti(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMGroupVersacom(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMGroupRipple(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMControlArea(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMProgramDirect(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMProgramDirectGear(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMControlAreaTrigger(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMProgramCurtailment(),		
-		new com.cannontech.loadcontrol.data.DefineCollectableLMCurtailCustomer(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMEnergyExchangeCustomerReply(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMEnergyExchangeHourlyCustomer(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMEnergyExchangeOffer(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMEnergyExchangeOfferRevision(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMEnergyExchangeCustomer(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMEnergyExchangeHourlyOffer(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMProgramEnergyExchange(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMGroupEmetcon(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMProgramControlWindow(),
-		new com.cannontech.loadcontrol.data.DefineCollectableLMGroupPoint()
+		new com.cannontech.loadcontrol.data.DefColl_LMGroupVersacom(),
+		new com.cannontech.loadcontrol.data.DefColl_LMGroupRipple(),
+		new com.cannontech.loadcontrol.data.DefColl_LMControlArea(),
+		new com.cannontech.loadcontrol.data.DefColl_LMProgramDirect(),
+		new com.cannontech.loadcontrol.data.DefColl_LMProgramDirectGear(),
+		new com.cannontech.loadcontrol.data.DefColl_LMControlAreaTrigger(),
+		new com.cannontech.loadcontrol.data.DefColl_LMProgramCurtailment(),		
+		new com.cannontech.loadcontrol.data.DefColl_LMCurtailCustomer(),
+		new com.cannontech.loadcontrol.data.DefColl_LMEnergyExchangeCustomerReply(),
+		new com.cannontech.loadcontrol.data.DefColl_LMEnergyExchangeHourlyCustomer(),
+		new com.cannontech.loadcontrol.data.DefColl_LMEnergyExchangeOffer(),
+		new com.cannontech.loadcontrol.data.DefColl_LMEnergyExchangeOfferRevision(),
+		new com.cannontech.loadcontrol.data.DefColl_LMEnergyExchangeCustomer(),
+		new com.cannontech.loadcontrol.data.DefColl_LMEnergyExchangeHourlyOffer(),
+		new com.cannontech.loadcontrol.data.DefColl_LMProgramEnergyExchange(),
+		new com.cannontech.loadcontrol.data.DefColl_LMGroupEmetcon(),
+		new com.cannontech.loadcontrol.data.DefColl_LMProgramControlWindow(),
+		new com.cannontech.loadcontrol.data.DefColl_LMGroupPoint()
 	};
 /**
  * This method was created in VisualAge.

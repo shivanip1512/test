@@ -4,16 +4,15 @@ package com.cannontech.loadcontrol.data;
  * This type was created in VisualAge.
  */
 import com.roguewave.vsj.DefineCollectable;
-import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableLMGroupEmetcon extends DefineCollectableLMDirectGroupBase
+public class DefColl_LMGroupPoint extends DefColl_LMDirectGroupBase
 {
 	//The roguewave class id
-	private static int CTILMGROUPEMETCON_ID = 609;
+	private static int CTILMGROUPPOINT_ID = 625;
 /**
  * DefineCollectableSchedule constructor comment.
  */
-public DefineCollectableLMGroupEmetcon()
+public DefColl_LMGroupPoint()
 {
 	super();
 }
@@ -23,14 +22,14 @@ public DefineCollectableLMGroupEmetcon()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMGroupEmetcon();
+	return new LMGroupPoint();
 }
 /**
  * getCxxClassId method comment.
  */
 public int getCxxClassId()
 {
-	return CTILMGROUPEMETCON_ID;
+	return CTILMGROUPPOINT_ID;
 }
 /**
  * getCxxStringId method comment.
@@ -44,7 +43,7 @@ public String getCxxStringId()
  */
 public Class getJavaClass()
 {
-	return LMGroupEmetcon.class;
+	return LMGroupPoint.class;
 }
 /**
  * restoreGuts method comment.
@@ -53,7 +52,16 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts( obj, vstr, polystr );
 
-	LMGroupEmetcon lmGroupEmetcon = (LMGroupEmetcon) obj;	
+	LMGroupPoint lmGroupPoint = (LMGroupPoint) obj;
+	
+	Integer devID = new Integer( (int)vstr.extractUnsignedInt() );
+	Integer ptID = new Integer( (int)vstr.extractUnsignedInt() );
+	Integer startState = new Integer( (int)vstr.extractUnsignedInt() );
+
+
+	lmGroupPoint.setDeviceIDUsage(devID);
+	lmGroupPoint.setPointIDUsage(ptID);
+	lmGroupPoint.setStartControlRawState(startState);
 }
 /**
  * saveGuts method comment.

@@ -5,16 +5,14 @@ package com.cannontech.loadcontrol.data;
  */
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
+import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableLMProgramControlWindow implements com.roguewave.vsj.DefineCollectable
+public class DefColl_LMGroupBase implements com.roguewave.vsj.DefineCollectable 
 {
-	//The roguewave class id
-	private static int CTILMPROGRAMCONTROLWINDOW_ID = 611;
 /**
  * DefineCollectableSchedule constructor comment.
  */
-public DefineCollectableLMProgramControlWindow()
-{
+public DefColl_LMGroupBase() {
 	super();
 }
 /**
@@ -23,7 +21,7 @@ public DefineCollectableLMProgramControlWindow()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMProgramControlWindow();
+	throw new RuntimeException();
 }
 /**
  * getComparator method comment.
@@ -34,7 +32,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator()
 	{
 		public int compare(Object x, Object y) 
 		{
-			return (int) (((LMProgramControlWindow)x).getYukonID().intValue() - ((LMProgramControlWindow)y).getYukonID().intValue() );
+			return (int) (((LMGroupBase)x).getYukonID().intValue() - ((LMGroupBase)y).getYukonID().intValue() );
 		}
 	};
 	
@@ -44,13 +42,17 @@ public com.roguewave.tools.v2_0.Comparator getComparator()
  */
 public int getCxxClassId()
 {
-	return CTILMPROGRAMCONTROLWINDOW_ID;
+	Exception e = new Exception("com.cannontech.loadcontrol.data.DefineCollectableLMProgramBase.getCxxClassId() should Never be called");
+	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	return -1;
 }
 /**
  * getCxxStringId method comment.
  */
 public String getCxxStringId()
 {
+	Exception e = new Exception("com.cannontech.loadcontrol.data.DefineCollectableLMProgramBase.getCxxStringId() should Never be called");
+	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	return DefineCollectable.NO_STRINGID;
 }
 /**
@@ -58,30 +60,42 @@ public String getCxxStringId()
  */
 public Class getJavaClass()
 {
-	return LMProgramControlWindow.class;
+	Exception e = new Exception("com.cannontech.loadcontrol.data.DefineCollectableLMProgramBase.getJavaClass() should Never be called");
+	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	return LMGroupBase.class;
 }
 /**
  * restoreGuts method comment.
  */
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMProgramControlWindow lmProgramControlWindow = (LMProgramControlWindow) obj;
-
+	LMGroupBase lmGroupBase = (LMGroupBase) obj;
+	
 	Integer yukonID = new Integer( (int)vstr.extractUnsignedInt() );
-	Integer windowNumber = new Integer( (int)vstr.extractUnsignedInt() );
-	Integer availableStartTime = new Integer( (int)vstr.extractUnsignedInt() );
-	Integer availableStopTime = new Integer( (int)vstr.extractUnsignedInt() );
+	String yukonCategory = (String) vstr.restoreObject( SimpleMappings.CString );
+	String yukonClass = (String) vstr.restoreObject( SimpleMappings.CString );
+	String yukonName = (String) vstr.restoreObject( SimpleMappings.CString );
+	Integer yukonType = new Integer( (int)vstr.extractUnsignedInt() );
+	String yukonDescription = (String) vstr.restoreObject( SimpleMappings.CString );
+	int disableFlag = (int)vstr.extractUnsignedInt();
+	Integer groupOrder = new Integer( (int)vstr.extractUnsignedInt() );
+	Double kwCapacity = new Double( vstr.extractDouble() );
 
-	lmProgramControlWindow.setYukonID(yukonID);
-	lmProgramControlWindow.setWindowNumber(windowNumber);
-	lmProgramControlWindow.setAvailableStartTime(availableStartTime);
-	lmProgramControlWindow.setAvailableStopTime(availableStopTime);
+	lmGroupBase.setYukonID(yukonID);
+	lmGroupBase.setYukonCategory(yukonCategory);
+	lmGroupBase.setYukonClass(yukonClass);
+	lmGroupBase.setYukonName(yukonName);
+	lmGroupBase.setYukonType(yukonType);
+	lmGroupBase.setYukonDescription(yukonDescription);
+	lmGroupBase.setDisableFlag(new Boolean(disableFlag>0));
+	lmGroupBase.setGroupOrder(groupOrder);	
+	lmGroupBase.setKwCapacity(kwCapacity);
 }
 /**
  * saveGuts method comment.
  */
-public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException
-{
+public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
+
 /* This saveGuts isn't implemented because we won't be sending full LMControlAreas
 	 to the Server */
 

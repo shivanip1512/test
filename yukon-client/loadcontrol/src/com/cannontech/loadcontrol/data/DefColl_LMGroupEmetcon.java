@@ -6,14 +6,14 @@ package com.cannontech.loadcontrol.data;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableLMGroupVersacom extends DefineCollectableLMDirectGroupBase
+public class DefColl_LMGroupEmetcon extends DefColl_LMDirectGroupBase
 {
 	//The roguewave class id
-	private static int CTILMGROUPVERSACOM_ID = 610;
+	private static int CTILMGROUPEMETCON_ID = 609;
 /**
  * DefineCollectableSchedule constructor comment.
  */
-public DefineCollectableLMGroupVersacom()
+public DefColl_LMGroupEmetcon()
 {
 	super();
 }
@@ -23,14 +23,14 @@ public DefineCollectableLMGroupVersacom()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMGroupVersacom();
+	return new LMGroupEmetcon();
 }
 /**
  * getCxxClassId method comment.
  */
 public int getCxxClassId()
 {
-	return CTILMGROUPVERSACOM_ID;
+	return CTILMGROUPEMETCON_ID;
 }
 /**
  * getCxxStringId method comment.
@@ -44,7 +44,7 @@ public String getCxxStringId()
  */
 public Class getJavaClass()
 {
-	return LMGroupVersacom.class;
+	return LMGroupEmetcon.class;
 }
 /**
  * restoreGuts method comment.
@@ -53,9 +53,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts( obj, vstr, polystr );
 
-	LMGroupVersacom lmGroupVersacom = (LMGroupVersacom) obj;	
+	LMGroupEmetcon lmGroupEmetcon = (LMGroupEmetcon) obj;	
 }
-
 /**
  * saveGuts method comment.
  */

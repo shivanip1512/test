@@ -7,14 +7,14 @@ import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableLMControlArea implements com.roguewave.vsj.DefineCollectable
+public class DefColl_LMControlArea implements com.roguewave.vsj.DefineCollectable
 {
 	//The roguewave class id
 	private static int CTILMCONTROLAREA_ID = 604;
 /**
  * DefineCollectableSchedule constructor comment.
  */
-public DefineCollectableLMControlArea() {
+public DefColl_LMControlArea() {
 	super();
 }
 /**

@@ -6,14 +6,14 @@ package com.cannontech.loadcontrol.data;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableLMGroupRipple extends DefineCollectableLMDirectGroupBase
+public class DefColl_LMGroupExpresscom extends DefColl_LMDirectGroupBase
 {
 	//The roguewave class id
-	private static int CTILMGROUPRIPPLE_ID = 624;
+	private static int CTI_LMGROUP_EXPRESSCOM_ID = 626;
 /**
  * DefineCollectableSchedule constructor comment.
  */
-public DefineCollectableLMGroupRipple()
+public DefColl_LMGroupExpresscom()
 {
 	super();
 }
@@ -23,14 +23,14 @@ public DefineCollectableLMGroupRipple()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMGroupRipple();
+	return new LMGroupExpresscom();
 }
 /**
  * getCxxClassId method comment.
  */
 public int getCxxClassId()
 {
-	return CTILMGROUPRIPPLE_ID;
+	return CTI_LMGROUP_EXPRESSCOM_ID;
 }
 /**
  * getCxxStringId method comment.
@@ -44,7 +44,7 @@ public String getCxxStringId()
  */
 public Class getJavaClass()
 {
-	return LMGroupRipple.class;
+	return LMGroupExpresscom.class;
 }
 /**
  * restoreGuts method comment.
@@ -53,8 +53,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts( obj, vstr, polystr );
 
-	LMGroupRipple lmGroupRipple = (LMGroupRipple) obj;
+	LMGroupExpresscom lmGroupExpresscom = (LMGroupExpresscom) obj;	
 }
+
 /**
  * saveGuts method comment.
  */
@@ -62,7 +63,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 {
 	super.saveGuts( obj, vstr, polystr );
 
-/* This saveGuts isn't implemented because we won't be sending full LMGroupRipples
+/* This saveGuts isn't implemented because we won't be sending full LMControlAreas
 	 to the Server */
 }
 }

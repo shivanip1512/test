@@ -3,16 +3,18 @@ package com.cannontech.loadcontrol.data;
 /**
  * This type was created in VisualAge.
  */
-import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableLMGroupBase implements com.roguewave.vsj.DefineCollectable 
+public class DefColl_LMProgramCurtailment extends DefColl_LMProgramBase
 {
+	//The roguewave class id
+	private static int CTILMPROGRAMCURTAILMENT_ID = 613;
 /**
  * DefineCollectableSchedule constructor comment.
  */
-public DefineCollectableLMGroupBase() {
+public DefColl_LMProgramCurtailment()
+{
 	super();
 }
 /**
@@ -21,38 +23,20 @@ public DefineCollectableLMGroupBase() {
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	throw new RuntimeException();
-}
-/**
- * getComparator method comment.
- */
-public com.roguewave.tools.v2_0.Comparator getComparator() 
-{
-	return new Comparator() 
-	{
-		public int compare(Object x, Object y) 
-		{
-			return (int) (((LMGroupBase)x).getYukonID().intValue() - ((LMGroupBase)y).getYukonID().intValue() );
-		}
-	};
-	
+	return new LMProgramCurtailment();
 }
 /**
  * getCxxClassId method comment.
  */
 public int getCxxClassId()
 {
-	Exception e = new Exception("com.cannontech.loadcontrol.data.DefineCollectableLMProgramBase.getCxxClassId() should Never be called");
-	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	return -1;
+	return CTILMPROGRAMCURTAILMENT_ID;
 }
 /**
  * getCxxStringId method comment.
  */
 public String getCxxStringId()
 {
-	Exception e = new Exception("com.cannontech.loadcontrol.data.DefineCollectableLMProgramBase.getCxxStringId() should Never be called");
-	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	return DefineCollectable.NO_STRINGID;
 }
 /**
@@ -60,41 +44,59 @@ public String getCxxStringId()
  */
 public Class getJavaClass()
 {
-	Exception e = new Exception("com.cannontech.loadcontrol.data.DefineCollectableLMProgramBase.getJavaClass() should Never be called");
-	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	return LMGroupBase.class;
+	return LMProgramCurtailment.class;
 }
 /**
  * restoreGuts method comment.
  */
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMGroupBase lmGroupBase = (LMGroupBase) obj;
-	
-	Integer yukonID = new Integer( (int)vstr.extractUnsignedInt() );
-	String yukonCategory = (String) vstr.restoreObject( SimpleMappings.CString );
-	String yukonClass = (String) vstr.restoreObject( SimpleMappings.CString );
-	String yukonName = (String) vstr.restoreObject( SimpleMappings.CString );
-	Integer yukonType = new Integer( (int)vstr.extractUnsignedInt() );
-	String yukonDescription = (String) vstr.restoreObject( SimpleMappings.CString );
-	int disableFlag = (int)vstr.extractUnsignedInt();
-	Integer groupOrder = new Integer( (int)vstr.extractUnsignedInt() );
-	Double kwCapacity = new Double( vstr.extractDouble() );
+	super.restoreGuts( obj, vstr, polystr );
 
-	lmGroupBase.setYukonID(yukonID);
-	lmGroupBase.setYukonCategory(yukonCategory);
-	lmGroupBase.setYukonClass(yukonClass);
-	lmGroupBase.setYukonName(yukonName);
-	lmGroupBase.setYukonType(yukonType);
-	lmGroupBase.setYukonDescription(yukonDescription);
-	lmGroupBase.setDisableFlag(new Boolean(disableFlag>0));
-	lmGroupBase.setGroupOrder(groupOrder);	
-	lmGroupBase.setKwCapacity(kwCapacity);
+	LMProgramCurtailment lmProgramCurtailment = (LMProgramCurtailment) obj;
+	
+	Integer minNotifyTime = new Integer( (int)vstr.extractUnsignedInt() );
+	String heading = (String) vstr.restoreObject( SimpleMappings.CString );
+	String messageHeader = (String) vstr.restoreObject( SimpleMappings.CString );
+	String messageFooter = (String) vstr.restoreObject( SimpleMappings.CString );
+	Integer ackTimeLimit = new Integer( (int)vstr.extractUnsignedInt() );	
+	String cancelMsg = (String) vstr.restoreObject( SimpleMappings.CString );
+	String stopEarlyMsg = (String) vstr.restoreObject( SimpleMappings.CString );
+	Integer curtailReferenceId = new Integer( (int)vstr.extractUnsignedInt() );
+	java.util.GregorianCalendar actionDateTime = new java.util.GregorianCalendar();
+	actionDateTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
+	java.util.GregorianCalendar notificationDateTime = new java.util.GregorianCalendar();
+	notificationDateTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
+	java.util.GregorianCalendar curtailmentStartTime = new java.util.GregorianCalendar();
+	curtailmentStartTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
+	java.util.GregorianCalendar curtailmentStopTime = new java.util.GregorianCalendar();
+	curtailmentStopTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
+	String runStatus = (String) vstr.restoreObject( SimpleMappings.CString );
+	String additionalInfo = (String) vstr.restoreObject( SimpleMappings.CString );
+	java.util.Vector groupVector = (java.util.Vector) vstr.restoreObject( polystr );
+
+	lmProgramCurtailment.setMinNotifyTime(minNotifyTime);
+	lmProgramCurtailment.setHeading(heading);
+	lmProgramCurtailment.setMessageHeader(messageHeader);
+	lmProgramCurtailment.setMessageFooter(messageFooter);
+	lmProgramCurtailment.setAckTimeLimit(ackTimeLimit);
+	lmProgramCurtailment.setCanceledMsg( cancelMsg );
+	lmProgramCurtailment.setStoppedEarlyMsg( stopEarlyMsg );
+	lmProgramCurtailment.setCurtailReferenceId(curtailReferenceId);
+	lmProgramCurtailment.setActionDateTime(actionDateTime);
+	lmProgramCurtailment.setNotificationDateTime(notificationDateTime);
+	lmProgramCurtailment.setCurtailmentStartTime(curtailmentStartTime);
+	lmProgramCurtailment.setCurtailmentStopTime(curtailmentStopTime);
+	lmProgramCurtailment.setRunStatus(runStatus);
+	lmProgramCurtailment.setAdditionalInfo(additionalInfo);
+	lmProgramCurtailment.setLoadControlGroupVector( groupVector );
 }
 /**
  * saveGuts method comment.
  */
-public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
+public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException
+{
+	super.saveGuts( obj, vstr, polystr );
 
 /* This saveGuts isn't implemented because we won't be sending full LMControlAreas
 	 to the Server */

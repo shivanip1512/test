@@ -11,14 +11,14 @@ import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableLMEnergyExchangeCustomerReply implements com.roguewave.vsj.DefineCollectable 
+public class DefColl_LMEnergyExchangeCustomerReply implements com.roguewave.vsj.DefineCollectable 
 {
 	//The roguewave class id
 	private static int RW_CLASS_ID = 621;	
 /**
  * DefineCollectableLMEnergyExchangeCustomerReply constructor comment.
  */
-public DefineCollectableLMEnergyExchangeCustomerReply() {
+public DefColl_LMEnergyExchangeCustomerReply() {
 	super();
 }
  /**

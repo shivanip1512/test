@@ -7,14 +7,14 @@ import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableLMProgramDirectGear implements com.roguewave.vsj.DefineCollectable
+public class DefColl_LMProgramDirectGear implements com.roguewave.vsj.DefineCollectable
 {
 	//The roguewave class id
 	private static int CTILMPROGRAMDIRECTGEAR_ID = 607;
 /**
  * DefineCollectableSchedule constructor comment.
  */
-public DefineCollectableLMProgramDirectGear()
+public DefColl_LMProgramDirectGear()
 {
 	super();
 }

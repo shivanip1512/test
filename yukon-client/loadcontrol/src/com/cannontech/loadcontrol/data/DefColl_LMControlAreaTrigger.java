@@ -3,17 +3,20 @@ package com.cannontech.loadcontrol.data;
 /**
  * This type was created in VisualAge.
  */
+import java.util.Date;
+
+import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableLMProgramCurtailment extends DefineCollectableLMProgramBase
+public class DefColl_LMControlAreaTrigger implements com.roguewave.vsj.DefineCollectable
 {
 	//The roguewave class id
-	private static int CTILMPROGRAMCURTAILMENT_ID = 613;
+	private static int CTILMCONTROLAREATRIGGER_ID = 605;
 /**
  * DefineCollectableSchedule constructor comment.
  */
-public DefineCollectableLMProgramCurtailment()
+public DefColl_LMControlAreaTrigger()
 {
 	super();
 }
@@ -23,14 +26,28 @@ public DefineCollectableLMProgramCurtailment()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMProgramCurtailment();
+	return new LMControlAreaTrigger();
+}
+/**
+ * getComparator method comment.
+ */
+public com.roguewave.tools.v2_0.Comparator getComparator() 
+{
+	return new Comparator() 
+	{
+		public int compare(Object x, Object y) 
+		{
+			return (int) (((LMControlAreaTrigger)x).getYukonID().intValue() - ((LMControlAreaTrigger)y).getYukonID().intValue() );
+		}
+	};
+	
 }
 /**
  * getCxxClassId method comment.
  */
 public int getCxxClassId()
 {
-	return CTILMPROGRAMCURTAILMENT_ID;
+	return CTILMCONTROLAREATRIGGER_ID;
 }
 /**
  * getCxxStringId method comment.
@@ -44,60 +61,56 @@ public String getCxxStringId()
  */
 public Class getJavaClass()
 {
-	return LMProgramCurtailment.class;
+	return LMControlAreaTrigger.class;
 }
 /**
  * restoreGuts method comment.
  */
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	super.restoreGuts( obj, vstr, polystr );
+	LMControlAreaTrigger lmTrigger = (LMControlAreaTrigger) obj;
 
-	LMProgramCurtailment lmProgramCurtailment = (LMProgramCurtailment) obj;
-	
-	Integer minNotifyTime = new Integer( (int)vstr.extractUnsignedInt() );
-	String heading = (String) vstr.restoreObject( SimpleMappings.CString );
-	String messageHeader = (String) vstr.restoreObject( SimpleMappings.CString );
-	String messageFooter = (String) vstr.restoreObject( SimpleMappings.CString );
-	Integer ackTimeLimit = new Integer( (int)vstr.extractUnsignedInt() );	
-	String cancelMsg = (String) vstr.restoreObject( SimpleMappings.CString );
-	String stopEarlyMsg = (String) vstr.restoreObject( SimpleMappings.CString );
-	Integer curtailReferenceId = new Integer( (int)vstr.extractUnsignedInt() );
-	java.util.GregorianCalendar actionDateTime = new java.util.GregorianCalendar();
-	actionDateTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
-	java.util.GregorianCalendar notificationDateTime = new java.util.GregorianCalendar();
-	notificationDateTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
-	java.util.GregorianCalendar curtailmentStartTime = new java.util.GregorianCalendar();
-	curtailmentStartTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
-	java.util.GregorianCalendar curtailmentStopTime = new java.util.GregorianCalendar();
-	curtailmentStopTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
-	String runStatus = (String) vstr.restoreObject( SimpleMappings.CString );
-	String additionalInfo = (String) vstr.restoreObject( SimpleMappings.CString );
-	java.util.Vector groupVector = (java.util.Vector) vstr.restoreObject( polystr );
-
-	lmProgramCurtailment.setMinNotifyTime(minNotifyTime);
-	lmProgramCurtailment.setHeading(heading);
-	lmProgramCurtailment.setMessageHeader(messageHeader);
-	lmProgramCurtailment.setMessageFooter(messageFooter);
-	lmProgramCurtailment.setAckTimeLimit(ackTimeLimit);
-	lmProgramCurtailment.setCanceledMsg( cancelMsg );
-	lmProgramCurtailment.setStoppedEarlyMsg( stopEarlyMsg );
-	lmProgramCurtailment.setCurtailReferenceId(curtailReferenceId);
-	lmProgramCurtailment.setActionDateTime(actionDateTime);
-	lmProgramCurtailment.setNotificationDateTime(notificationDateTime);
-	lmProgramCurtailment.setCurtailmentStartTime(curtailmentStartTime);
-	lmProgramCurtailment.setCurtailmentStopTime(curtailmentStopTime);
-	lmProgramCurtailment.setRunStatus(runStatus);
-	lmProgramCurtailment.setAdditionalInfo(additionalInfo);
-	lmProgramCurtailment.setLoadControlGroupVector( groupVector );
+	Integer yukonID = new Integer( (int)vstr.extractUnsignedInt() );
+	Integer triggerNumber = new Integer( (int)vstr.extractUnsignedInt() );
+	String triggerType = (String) vstr.restoreObject( SimpleMappings.CString );
+	Integer pointID = new Integer( (int)vstr.extractUnsignedInt() );
+	Double pointValue = new Double( vstr.extractDouble() );
+	Date lastPointValueTimeStamp = (Date) vstr.restoreObject( SimpleMappings.Time );
+	Integer normalState = new Integer( (int)vstr.extractUnsignedInt() );
+	Double threshold = new Double( vstr.extractDouble() );
+	String projectionType = (String) vstr.restoreObject( SimpleMappings.CString );
+	Integer projectionPoints = new Integer( (int)vstr.extractUnsignedInt() );
+	Integer projectAheadDuration = new Integer( (int)vstr.extractUnsignedInt() );
+	Integer thresholdKickPercent = new Integer( (int)vstr.extractUnsignedInt() );
+	Double minRestoreOffset = new Double( vstr.extractDouble() );
+	Integer peakPointID = new Integer( (int)vstr.extractUnsignedInt() );
+	Double peakPointValue = new Double( vstr.extractDouble() );
+	Date lastPeakPointValueTimeStamp = (Date) vstr.restoreObject( SimpleMappings.Time );
+ 	Double projectedPointValue = new Double( vstr.extractDouble() );
+ 	
+	lmTrigger.setYukonID(yukonID);
+	lmTrigger.setTriggerNumber(triggerNumber);
+	lmTrigger.setTriggerType(triggerType);
+	lmTrigger.setPointId(pointID);
+	lmTrigger.setPointValue(pointValue);
+	lmTrigger.setLastPointValueTimeStamp(lastPointValueTimeStamp);
+	lmTrigger.setNormalState(normalState);
+	lmTrigger.setThreshold(threshold);
+	lmTrigger.setProjectionType(projectionType);
+	lmTrigger.setProjectionPoints(projectionPoints);
+	lmTrigger.setProjectAheadDuration(projectAheadDuration);
+	lmTrigger.setThresholdKickPercent(thresholdKickPercent);
+	lmTrigger.setMinRestoreOffset(minRestoreOffset);
+	lmTrigger.setPeakPointId(peakPointID);
+	lmTrigger.setPeakPointValue(peakPointValue);
+	lmTrigger.setLastPeakPointValueTimeStamp(lastPeakPointValueTimeStamp);
+	lmTrigger.setProjectedPointValue(projectedPointValue);
 }
 /**
  * saveGuts method comment.
  */
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException
 {
-	super.saveGuts( obj, vstr, polystr );
-
 /* This saveGuts isn't implemented because we won't be sending full LMControlAreas
 	 to the Server */
 

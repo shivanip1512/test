@@ -1,20 +1,24 @@
 package com.cannontech.loadcontrol.data;
 
 /**
- * Creation date: (5/29/2001 10:29:39 AM)
+ * Creation date: (5/28/2001 2:33:27 PM)
  * @author: Aaron Lauinger
  */
+
+import java.util.Vector;
+
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
+import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableLMEnergyExchangeHourlyCustomer implements com.roguewave.vsj.DefineCollectable 
+public class DefColl_LMProgramEnergyExchange extends DefColl_LMProgramBase
 {
 	//The roguewave class id
-	private static int RW_CLASS_ID = 619;	
+	private static int CTILMPROGRAMENERGYEXCHANGE_ID = 616;
 /**
- * DefineCollectableLMEnergyExchangeHourlyCustomer constructor comment.
+ * DefineCollectableLMProgramEnergyExchange constructor comment.
  */
-public DefineCollectableLMEnergyExchangeHourlyCustomer() {
+public DefColl_LMProgramEnergyExchange() {
 	super();
 }
  /**
@@ -30,7 +34,7 @@ public DefineCollectableLMEnergyExchangeHourlyCustomer() {
 	* to be out of sync and the results could be catastrophic.
 	*/
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new LMEnergyExchangeHourlyCustomer();
+	return new LMProgramEnergyExchange();
 }
  /**
 	* Return a Comparator object for the Java class being mapped.
@@ -57,7 +61,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator() {
 	* during registration.
 	*/
 public int getCxxClassId() {
-	return RW_CLASS_ID;
+	return CTILMPROGRAMENERGYEXCHANGE_ID;
 }
  /**
 	* This method must return the C++ StringId when the C++ class
@@ -74,7 +78,7 @@ public String getCxxStringId() {
 	* being mapped.  It is used by CollectableStreamer during registration.
 	*/
 public Class getJavaClass() {
-	return LMEnergyExchangeHourlyCustomer.class;
+	return LMProgramEnergyExchange.class;
 }
  /**
 	* This method will be called by CollectableStreamer to restore the guts,
@@ -84,14 +88,18 @@ public Class getJavaClass() {
 	*/
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMEnergyExchangeHourlyCustomer hCust = (LMEnergyExchangeHourlyCustomer) obj;
-	
-	hCust.setCustomerID( new Integer((int)vstr.extractUnsignedInt()) );
-	hCust.setOfferID( new Integer((int)vstr.extractUnsignedInt()) );
-	hCust.setRevisionNumber( new Integer((int)vstr.extractUnsignedInt()) );
-	hCust.setHour( new Integer((int)vstr.extractUnsignedInt()) );
-	hCust.setAmountCommitted( new Double(vstr.extractDouble()) );
-	
+	super.restoreGuts(obj,vstr,polystr);
+
+	LMProgramEnergyExchange prog = (LMProgramEnergyExchange) obj;
+
+	prog.setMinNotifyTime( new Integer((int)vstr.extractUnsignedInt()) );
+	prog.setHeading( (String) vstr.restoreObject( SimpleMappings.CString ));
+	prog.setMessageHeader( (String) vstr.restoreObject( SimpleMappings.CString ));
+	prog.setMessageFooter( (String) vstr.restoreObject( SimpleMappings.CString ));
+	prog.setCanceledMsg( (String) vstr.restoreObject( SimpleMappings.CString ));
+	prog.setStoppedEarlyMsg( (String) vstr.restoreObject( SimpleMappings.CString ))	;
+	prog.setEnergyExchangeOffers( (Vector) vstr.restoreObject( polystr ));
+	prog.setEnergyExchangeCustomers( (Vector) vstr.restoreObject( polystr ));
 }
  /**
 	* This method will be called by CollectableStreamer to save the guts,
@@ -101,11 +109,17 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	*/
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMEnergyExchangeHourlyCustomer hCust = (LMEnergyExchangeHourlyCustomer) obj;
+	super.saveGuts(obj,vstr,polystr);
 
-	vstr.insertUnsignedLong( hCust.getCustomerID().longValue() );
-	vstr.insertUnsignedLong( hCust.getOfferID().longValue() );
-	vstr.insertUnsignedLong( hCust.getHour().longValue() );
-	vstr.insertUnsignedLong( hCust.getAmountCommitted().longValue() );
+	LMProgramEnergyExchange prog = (LMProgramEnergyExchange) obj;
+
+	vstr.insertUnsignedLong( prog.getMinNotifyTime().longValue() );
+	vstr.saveObject( prog.getHeading(), SimpleMappings.CString );
+	vstr.saveObject( prog.getMessageHeader(), SimpleMappings.CString );
+	vstr.saveObject( prog.getMessageFooter(), SimpleMappings.CString );
+	vstr.saveObject( prog.getCanceledMsg(), SimpleMappings.CString );
+	vstr.saveObject( prog.getStoppedEarlyMsg(), SimpleMappings.CString );
+	vstr.saveObject( prog.getEnergyExchangeOffers(), polystr );
+	vstr.saveObject( prog.getEnergyExchangeCustomers(), polystr );
 }
 }

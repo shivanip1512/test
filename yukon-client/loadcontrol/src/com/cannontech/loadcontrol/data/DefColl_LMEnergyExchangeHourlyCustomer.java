@@ -1,24 +1,20 @@
 package com.cannontech.loadcontrol.data;
 
 /**
- * Creation date: (5/29/2001 10:16:11 AM)
+ * Creation date: (5/29/2001 10:29:39 AM)
  * @author: Aaron Lauinger
  */
-import java.util.Date;
-import java.util.Vector;
-
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
-import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableLMEnergyExchangeOffer implements com.roguewave.vsj.DefineCollectable 
+public class DefColl_LMEnergyExchangeHourlyCustomer implements com.roguewave.vsj.DefineCollectable 
 {
 	//The roguewave class id
-	private static int CTILMENERGYEXCHANGEOFFER_ID = 618;
+	private static int RW_CLASS_ID = 619;	
 /**
- * DefineCollectableLMEnergyExchangeOffer constructor comment.
+ * DefineCollectableLMEnergyExchangeHourlyCustomer constructor comment.
  */
-public DefineCollectableLMEnergyExchangeOffer() {
+public DefColl_LMEnergyExchangeHourlyCustomer() {
 	super();
 }
  /**
@@ -34,7 +30,7 @@ public DefineCollectableLMEnergyExchangeOffer() {
 	* to be out of sync and the results could be catastrophic.
 	*/
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new LMEnergyExchangeOffer();
+	return new LMEnergyExchangeHourlyCustomer();
 }
  /**
 	* Return a Comparator object for the Java class being mapped.
@@ -44,12 +40,13 @@ public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.I
 	* from the C++ side.
 	*/
 public com.roguewave.tools.v2_0.Comparator getComparator() {
-	return new Comparator() 
-	{
-		public int compare(Object x, Object y) 
-		{
-			return (int) (((LMEnergyExchangeOffer)x).getYukonID().intValue() - ((LMEnergyExchangeOffer)y).getYukonID().intValue() );
-		}
+	return new Comparator() {
+	  public int compare(Object x, Object y) {
+			if( x == y )
+				return 0;
+			else
+				return -1;
+	  }
 	};
 }
  /**
@@ -60,7 +57,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator() {
 	* during registration.
 	*/
 public int getCxxClassId() {
-	return CTILMENERGYEXCHANGEOFFER_ID;
+	return RW_CLASS_ID;
 }
  /**
 	* This method must return the C++ StringId when the C++ class
@@ -77,7 +74,7 @@ public String getCxxStringId() {
 	* being mapped.  It is used by CollectableStreamer during registration.
 	*/
 public Class getJavaClass() {
-	return LMEnergyExchangeOffer.class;
+	return LMEnergyExchangeHourlyCustomer.class;
 }
  /**
 	* This method will be called by CollectableStreamer to restore the guts,
@@ -87,15 +84,15 @@ public Class getJavaClass() {
 	*/
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMEnergyExchangeOffer offer = (LMEnergyExchangeOffer) obj;
+	LMEnergyExchangeHourlyCustomer hCust = (LMEnergyExchangeHourlyCustomer) obj;
 	
-	offer.setYukonID( new Integer((int)vstr.extractUnsignedInt()) );
-	offer.setOfferID( new Integer((int)vstr.extractUnsignedInt()) );
-	offer.setRunStatus( (String) vstr.restoreObject(SimpleMappings.CString) );
-	offer.setOfferDate( (Date) vstr.restoreObject(SimpleMappings.Time) );
-	offer.setEnergyExchangeOfferRevisions( (Vector) vstr.restoreObject(polystr) );
+	hCust.setCustomerID( new Integer((int)vstr.extractUnsignedInt()) );
+	hCust.setOfferID( new Integer((int)vstr.extractUnsignedInt()) );
+	hCust.setRevisionNumber( new Integer((int)vstr.extractUnsignedInt()) );
+	hCust.setHour( new Integer((int)vstr.extractUnsignedInt()) );
+	hCust.setAmountCommitted( new Double(vstr.extractDouble()) );
+	
 }
-
  /**
 	* This method will be called by CollectableStreamer to save the guts,
 	* or internal state, of the given object to the stream.  Here you may
@@ -104,12 +101,11 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	*/
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMEnergyExchangeOffer offer = (LMEnergyExchangeOffer) obj;
-	
-	vstr.insertUnsignedLong( offer.getYukonID().longValue() );
-	vstr.insertUnsignedLong( offer.getOfferID().longValue() );
-	vstr.saveObject( offer.getRunStatus(), SimpleMappings.CString );
-	vstr.saveObject( offer.getOfferDate(), SimpleMappings.Time );
-	vstr.saveObject( offer.getEnergyExchangeOfferRevisions(), polystr );	
+	LMEnergyExchangeHourlyCustomer hCust = (LMEnergyExchangeHourlyCustomer) obj;
+
+	vstr.insertUnsignedLong( hCust.getCustomerID().longValue() );
+	vstr.insertUnsignedLong( hCust.getOfferID().longValue() );
+	vstr.insertUnsignedLong( hCust.getHour().longValue() );
+	vstr.insertUnsignedLong( hCust.getAmountCommitted().longValue() );
 }
 }

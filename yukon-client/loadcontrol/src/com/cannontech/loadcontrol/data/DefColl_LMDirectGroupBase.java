@@ -7,12 +7,12 @@ import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableLMDirectGroupBase extends DefineCollectableLMGroupBase
+public class DefColl_LMDirectGroupBase extends DefColl_LMGroupBase
 {
 /**
  * DefineCollectableSchedule constructor comment.
  */
-public DefineCollectableLMDirectGroupBase() {
+public DefColl_LMDirectGroupBase() {
 	super();
 }
 /**
