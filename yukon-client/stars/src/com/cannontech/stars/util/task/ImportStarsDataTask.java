@@ -209,7 +209,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			
 			File custMapFile = new File(path, "customer.map");
-			fw = new java.io.PrintWriter( new java.io.FileWriter(custMapFile, true) );
+			fw = new java.io.PrintWriter(new java.io.FileWriter(custMapFile, true), true);	// Append to file and auto flush
 			
 			for (int i = 0; i < acctFieldsList.size(); i++) {
 				String[] fields = (String[]) acctFieldsList.get(i);
@@ -233,7 +233,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			lineNo = null;
 			
 			File hwConfigMapFile = new File(path, "hwconfig.map");
-			fw = new java.io.PrintWriter( new java.io.FileWriter(hwConfigMapFile) );
+			fw = new java.io.PrintWriter(new java.io.FileWriter(hwConfigMapFile, true), true);
 			
 			for (int i = 0; i < invFieldsList.size(); i++) {
 				String[] fields = (String[]) invFieldsList.get(i);
