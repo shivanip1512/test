@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/11/20 16:41:17 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/12/21 17:20:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,25 +53,25 @@ RWDBDatabase *sqlDatabase = NULL;
  *  These are the Configuration Parameters for the Real Time Database
  */
 
-IM_EX_CTIBASE RWCString       dbDll("ora15d.dll");
-IM_EX_CTIBASE RWCString       dbName("yukon");
-IM_EX_CTIBASE RWCString       dbUser("yukon");
-IM_EX_CTIBASE RWCString       dbPassword("yukon");
-IM_EX_CTIBASE RWCString       VanGoghMachine("127.0.0.1");     // Connect locally if we don't know any better
-IM_EX_CTIBASE RWCString       gSMTPServer("mail");
-IM_EX_CTIBASE RWCString       gEmailFrom;
-IM_EX_CTIBASE RWCString       gLogDirectory("\\yukon\\server\\log");
-IM_EX_CTIBASE bool            gLogPorts = false;
-IM_EX_CTIBASE bool            gOptimizeVersacom = false;
-IM_EX_CTIBASE bool            gDoPrefix = false;
-IM_EX_CTIBASE bool            gCoalesceRippleBits = false;
-IM_EX_CTIBASE INT             DebugLevel = 0;
-IM_EX_CTIBASE INT             Double = {FALSE};
-IM_EX_CTIBASE INT             useVersacomTypeFourControl = 0;  // Jeesh if you can't figure this out...
-IM_EX_CTIBASE INT             ModemConnectionTimeout = 60;     // Modem Connection Timeout in seconds (60 def.)
-IM_EX_CTIBASE int             gMaxDBConnectionCount = 5;       // Maximum number of DB connections to allow to remain open.
-IM_EX_CTIBASE bool            gIDLCEchoSuppression  = false;   // Eat up IDLC echoes on the comm channel (usually from satellite, etc)
-
+IM_EX_CTIBASE RWCString     dbDll("ora15d.dll");
+IM_EX_CTIBASE RWCString     dbName("yukon");
+IM_EX_CTIBASE RWCString     dbUser("yukon");
+IM_EX_CTIBASE RWCString     dbPassword("yukon");
+IM_EX_CTIBASE RWCString     VanGoghMachine("127.0.0.1");     // Connect locally if we don't know any better
+IM_EX_CTIBASE RWCString     gSMTPServer("mail");
+IM_EX_CTIBASE RWCString     gEmailFrom;
+IM_EX_CTIBASE RWCString     gLogDirectory("\\yukon\\server\\log");
+IM_EX_CTIBASE bool          gLogPorts = false;
+IM_EX_CTIBASE bool          gOptimizeVersacom = false;
+IM_EX_CTIBASE bool          gDoPrefix = false;
+IM_EX_CTIBASE bool          gCoalesceRippleBits = false;
+IM_EX_CTIBASE INT           DebugLevel = 0;
+IM_EX_CTIBASE INT           Double = {FALSE};
+IM_EX_CTIBASE INT           useVersacomTypeFourControl = 0;  // Jeesh if you can't figure this out...
+IM_EX_CTIBASE INT           ModemConnectionTimeout = 60;     // Modem Connection Timeout in seconds (60 def.)
+IM_EX_CTIBASE int           gMaxDBConnectionCount = 5;       // Maximum number of DB connections to allow to remain open.
+IM_EX_CTIBASE bool          gIDLCEchoSuppression  = false;   // Eat up IDLC echoes on the comm channel (usually from satellite, etc)
+IM_EX_CTIBASE bool          gDNPVerbose = false;
 
 /*
  *  These are global to the ctibase, but
@@ -200,6 +200,12 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         gLogPorts = true;
     }
     if(DebugLevel & 0x0001) cout << "Ports will " << ( gLogPorts ? "log to file" : "NOT log to file") << endl;
+
+    if( !(str = gConfigParms.getValueAsString("YUKON_DNP_VERBOSE")).isNull() && (!stricmp("TRUE", str.data())))
+    {
+        gDNPVerbose = true;
+    }
+    if(DebugLevel & 0x0001) cout << "DNP output is " << ( gLogPorts ? "verbose" : "quiet") << endl;
 
     if( !(str = gConfigParms.getValueAsString("OPTIMIZE_VERSACOM_CONFIGURATION")).isNull() && (!stricmp("TRUE", str.data())))
     {
