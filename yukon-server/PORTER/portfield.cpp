@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.75 $
-* DATE         :  $Date: 2003/10/10 15:38:29 $
+* REVISION     :  $Revision: 1.76 $
+* DATE         :  $Date: 2003/10/23 13:32:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -657,6 +657,7 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
             }
 
             Port->setMinMaxIdle(true);
+            Port->postEvent();
 
             /* do not reinit i since times are non cumulative! */
             current = current.now();
