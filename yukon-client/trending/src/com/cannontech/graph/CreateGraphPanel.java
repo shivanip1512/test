@@ -82,42 +82,60 @@ public void addGDS_ActionPerformed(javax.swing.tree.DefaultMutableTreeNode node)
 	com.cannontech.database.data.lite.LitePoint pt = null;
 	String deviceName = null;
 	
-	//Get the object selected in the tree.
-	Object selected = node.getUserObject();
-
-	if( selected instanceof com.cannontech.database.data.lite.LiteYukonPAObject )
-	{	// The device and all points are added to the GDS, e loop through the children.
-		java.util.Enumeration e = node.children();
-		while( e.hasMoreElements() )
-		{
-			pt = (com.cannontech.database.data.lite.LitePoint) ((com.cannontech.database.model.DBTreeNode) e.nextElement()).getUserObject();
-			deviceName = ((com.cannontech.database.data.lite.LiteYukonPAObject) selected).getPaoName();
-
-			// Create the GDS to add in the tables (and peakComboBox maybe).
-			GraphDataSeries gds = createGDS(pt, deviceName );
-			
-			GDSTableModel model = (GDSTableModel) getGraphGDSTable().getModel();
-
-			model.addRow( gds );
-
-		}	
+	//Get the DEVICE Object selected in the tree.
+	Object tempNode = node;
+	while (tempNode instanceof javax.swing.tree.DefaultMutableTreeNode &&
+			((javax.swing.tree.DefaultMutableTreeNode)tempNode).getParent() !=((javax.swing.tree.DefaultMutableTreeNode)tempNode).getRoot())	//root node is instance of TreeNode
+	{
+		tempNode = ((javax.swing.tree.DefaultMutableTreeNode)tempNode).getParent();
 	}
-	else if( selected instanceof com.cannontech.database.data.lite.LitePoint )
-	{	//A single point is added to the GDS
-		
-		pt = (com.cannontech.database.data.lite.LitePoint) selected;
-		deviceName = ((com.cannontech.database.model.DBTreeNode) node.getParent()).getUserObject().toString();
+	deviceName = ((com.cannontech.database.data.lite.LiteYukonPAObject)((javax.swing.tree.DefaultMutableTreeNode)tempNode).getUserObject()).getPaoName();
+	
+	if( node.getUserObject() instanceof com.cannontech.database.data.lite.LitePoint)	//  The selected node is one point
+	{
+		pt = (com.cannontech.database.data.lite.LitePoint) node.getUserObject();
 
 		// Create the GDS to add in the tables (and peakComboBox maybe).
 		GraphDataSeries gds = createGDS(pt, deviceName );
-
 		GDSTableModel model = (GDSTableModel) getGraphGDSTable().getModel();
-
 		model.addRow( gds );
-
+	}
+	else if( node instanceof javax.swing.tree.DefaultMutableTreeNode )	// The device and all points are added to the GDS, e loop through the children.
+	{	
+		java.util.Enumeration e = node.children();
+		elementLoad(deviceName, e);
 	}
 	else	//The tree label ("Devices") was selected...not acceptable.
 		return;
+}
+private void elementLoad(String devName, java.util.Enumeration e)
+{
+	com.cannontech.database.data.lite.LitePoint pt = null;
+	while( e.hasMoreElements() )
+	{
+		Object nextElem = e.nextElement();
+		if( nextElem instanceof com.cannontech.database.model.DummyTreeNode)
+		{
+			java.util.Enumeration e2 = ((com.cannontech.database.model.DummyTreeNode)nextElem).children();
+			while (e2.hasMoreElements())
+			{
+				pt = (com.cannontech.database.data.lite.LitePoint) ((com.cannontech.database.model.DBTreeNode) e2.nextElement()).getUserObject();
+
+				GraphDataSeries gds = createGDS(pt, devName);
+				GDSTableModel tModel = (GDSTableModel) getGraphGDSTable().getModel();
+				tModel.addRow(gds);
+			}
+		}
+		else 
+		{
+			pt = (com.cannontech.database.data.lite.LitePoint)((com.cannontech.database.model.DBTreeNode)nextElem).getUserObject();
+
+			// Create the GDS to add in the tables (and peakComboBox maybe).
+			GraphDataSeries gds = createGDS(pt, devName );
+			GDSTableModel model = (GDSTableModel) getGraphGDSTable().getModel();
+			model.addRow( gds );
+		}
+	}	
 }
 /**
  * connEtoM1:  (GraphNameTextField.caret.caretUpdate(javax.swing.event.CaretEvent) --> CreateGraphPanel.fireInputUpdate()V)
@@ -470,19 +488,29 @@ private javax.swing.JTable getGraphGDSTable() {
 			javax.swing.table.TableColumnModel colModel = ivjGraphGDSTable.getColumnModel();
 			colModel.getColumn(GDSTableModel.DEVICE_NAME_COLUMN).setPreferredWidth(80);
 			colModel.getColumn(GDSTableModel.POINT_NAME_COLUMN).setPreferredWidth(65);
-			colModel.getColumn(GDSTableModel.LABEL_NAME_COLUMN).setPreferredWidth(140);
+			colModel.getColumn(GDSTableModel.LABEL_NAME_COLUMN).setPreferredWidth(122);
 			colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN).setPreferredWidth(55);
-			colModel.getColumn(GDSTableModel.AXIS_NAME_COLUMN).setPreferredWidth(12);
-			colModel.getColumn(GDSTableModel.TYPE_NAME_COLUMN).setPreferredWidth(12);
+			colModel.getColumn(GDSTableModel.AXIS_NAME_COLUMN).setPreferredWidth(8);
+			colModel.getColumn(GDSTableModel.TYPE_NAME_COLUMN).setPreferredWidth(40);
+
+
+//			javax.swing.JColorChooser colorChooser = new javax.swing.JColorChooser(java.awt.Color.BLUE);
+//			javax.swing.JComboBox testBox = new javax.swing.JComboBox(new Object[] {colorChooser});
+//			javax.swing.DefaultCellEditor colorEditor = new javax.swing.DefaultCellEditor(testBox);
+//			colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN).setCellEditor(colorEditor);						
+//
 
 			colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN).setCellEditor(colorEditor);
-
 			javax.swing.table.TableColumn tblColumn = colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN);
 			tblColumn.setCellRenderer( new com.cannontech.common.gui.util.ColorTableCellRenderer() );
 
 			javax.swing.JComboBox axisComboBox = new javax.swing.JComboBox( new String[] { "Left", "Right" } );
 			javax.swing.DefaultCellEditor axisEditor = new javax.swing.DefaultCellEditor(axisComboBox);
 			colModel.getColumn(GDSTableModel.AXIS_NAME_COLUMN).setCellEditor(axisEditor);
+			
+			javax.swing.JComboBox typeComboBox = new javax.swing.JComboBox( new String[] { "graph", "usage", "yesterday" } );
+			javax.swing.DefaultCellEditor typeEditor = new javax.swing.DefaultCellEditor(typeComboBox);
+			colModel.getColumn(GDSTableModel.TYPE_NAME_COLUMN).setCellEditor(typeEditor);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
