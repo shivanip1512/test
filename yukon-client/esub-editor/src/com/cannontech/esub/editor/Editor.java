@@ -1,8 +1,10 @@
 package com.cannontech.esub.editor;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -32,6 +34,7 @@ import javax.swing.undo.UndoableEdit;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
+import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -58,7 +61,7 @@ import com.loox.jloox.LxView;
  */
 public class Editor extends JPanel {
 	
-	private static final String APPLICATION_NAME = "esubeditor";	
+	private static final String APPLICATION_NAME = "Esubstation Editor";
 	private static final Dimension defaultSize = new Dimension(800, 600);
 
 	// the drawing to edit
@@ -385,19 +388,26 @@ public class Editor extends JPanel {
 		System.setProperty("cti.app.name", APPLICATION_NAME);
 		CtiUtilities.setLaF();
 		JFrame frame = new JFrame();
+
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			}
 		});
 		
+		SplashWindow splash = new SplashWindow(
+			frame,
+			"ctismall.gif",
+			"Loading " + System.getProperty("cti.app.name") + "...",
+			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
+	
 		frame.setSize(defaultSize);
 		frame.setTitle("Untitled");		
 		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("esubEditorIcon.gif"));
 		frame.setIconImage(icon.getImage());
 
 		ClientSession session = ClientSession.getInstance(); 
-		if(!session.establishSession(frame)){
+		if(!session.establishSession(frame)) {
 			System.exit(-1);			
 		}
 	  	
@@ -416,6 +426,7 @@ public class Editor extends JPanel {
 	
 		frame.pack();
 		frame.show();
+
 		
 		//get this stuff loaded into the cache asap
 		DefaultDatabaseCache.getInstance().getAllDevices();
@@ -424,6 +435,20 @@ public class Editor extends JPanel {
 		
 //		fire up the db change listener
 		DefaultDatabaseCache.getInstance().addDBChangeListener(new DBChangeCaptain());	
+		
+while(true) {
+try {
+	Thread.sleep(5000);
+} catch (InterruptedException e1) {
+	// TODO Auto-generated catch block
+	e1.printStackTrace();
+}
+		CTILogger.debug("TEST DEBUG MESSAGE FROM ESUB");
+		CTILogger.info("TEST INFO MESSAGE FROM ESUB");
+		CTILogger.warn("TEST WARN MESSAGE FROM ESUB");
+		CTILogger.error("TEST ERROR MESSAGE FROM ESUB");
+		CTILogger.fatal("TEST FATAL MESSAGE FROM ESUB");
+}
 	}
 	/**
 	 * Creation date: (12/12/2001 3:29:49 PM)
