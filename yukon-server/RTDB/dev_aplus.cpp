@@ -8,12 +8,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_aplus.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/07/14 20:17:11 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/07/27 16:53:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*    History: 
+*    History:
       $Log: dev_aplus.cpp,v $
+      Revision 1.8  2004/07/27 16:53:54  mfisher
+      RWTime.seconds workaround for boost ptime::seconds
+
       Revision 1.7  2003/07/14 20:17:11  dsutton
       Added processing for usage hours and last interval demand for
       vars atttributed to the four quadrants.  New point offsets were needed
@@ -367,7 +370,7 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " Class 0 failed for " << getName() << " aborting scan " << endl;
-                                }  
+                                }
                             }
                             break;
                         }
@@ -827,7 +830,7 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
                             flip.ch[1] = wPtr->dayRecordSize[0];
                             ptr->class14.dayRecordSize = flip.sh;
 
-                            ptr->daysRequested = ((RWTime().seconds() - ptr->porterLPTime) / 86400) + 2;
+                            ptr->daysRequested = ((RWTime::now().seconds() - ptr->porterLPTime) / 86400) + 2;
                             ptr->dayRecordSize = ptr->class14.dayRecordSize;
 
                             if( DebugLevel & 0x0001 )
@@ -1020,11 +1023,11 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                 *
                 * check that the length of the message received matches what
                 * the message said it would be otherwise get out
-                * byte 5 is the length (msb is marker telling us whether this is the 
+                * byte 5 is the length (msb is marker telling us whether this is the
                 * last message in a class download) and add 4 for header and 2 for crc
                 *********************************************
                 */
-                if (commReturnValue || 
+                if (commReturnValue ||
                     (!isReturnedBufferValid(Transfer)) ||
                     (ret_crc=checkCRC(Transfer.getInBuffer(),Transfer.getInCountActual())) ||
                     (ret_length=(Transfer.getInCountActual() != ((Transfer.getInBuffer()[4] & ~0x80)+7))))
@@ -1167,8 +1170,8 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                     /********************************************
                     * check that the length of the message received matches what
                     * the message said it would be otherwise get out
-                    * byte 5 is the length (msb is marker telling us whether this is the 
-                    * last message in a class download) and add 4 for header and 2 for crc 
+                    * byte 5 is the length (msb is marker telling us whether this is the
+                    * last message in a class download) and add 4 for header and 2 for crc
                     *********************************************
                     */
                     int ret_crc,ret_length;
@@ -1392,11 +1395,11 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                 *
                 * check that the length of the message received matches what
                 * the message said it would be otherwise get out
-                * byte 5 is the length (msb is marker telling us whether this is the 
+                * byte 5 is the length (msb is marker telling us whether this is the
                 * last message in a class download) and add 4 for header and 2 for crc
                 *********************************************
                 */
-                if (commReturnValue || 
+                if (commReturnValue ||
                     (!isReturnedBufferValid(Transfer)) ||
                     (ret_crc=checkCRC(Transfer.getInBuffer(),Transfer.getInCountActual())) ||
                     (ret_length=(Transfer.getInCountActual() != ((Transfer.getInBuffer()[4] & ~0x80)+7))))
@@ -1434,7 +1437,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                         setPreviousState (StateScanAbort);
                         setCurrentState (StateScanSendTerminate);
                     }
-                    CTISleep(500); 
+                    CTISleep(500);
                 }
                 else
                 {
@@ -1589,8 +1592,8 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                     /********************************************
                     * check that the length of the message received matches what
                     * the message said it would be otherwise get out
-                    * byte 5 is the length (msb is marker telling us whether this is the 
-                    * last message in a class download) and add 4 for header and 2 for crc 
+                    * byte 5 is the length (msb is marker telling us whether this is the
+                    * last message in a class download) and add 4 for header and 2 for crc
                     *********************************************
                     */
                     int ret_crc,ret_length;
@@ -2762,7 +2765,7 @@ UCHAR CtiDeviceAlphaPPlus::touBlockMapping (UCHAR config, USHORT type)
                 dout << RWTime() << " ****** Alpha " << getName() << " configured for Q1 vars, defaulting to delivered vars ******" << endl;
             }
             retCode = PPLUS_REACTIVE_DELIVERED;
-*/            
+*/
             retCode = PPLUS_REACTIVE_QUADRANT1;
         }
         else if (config & 0x02)
@@ -2773,7 +2776,7 @@ UCHAR CtiDeviceAlphaPPlus::touBlockMapping (UCHAR config, USHORT type)
                 dout << RWTime() << " ****** Alpha " << getName() << " configured for Q2 vars, defaulting to delivered vars ******" << endl;
             }
             retCode = PPLUS_REACTIVE_DELIVERED;
-*/            
+*/
             retCode = PPLUS_REACTIVE_QUADRANT2;
         }
         else if (config & 0x03)
@@ -2784,7 +2787,7 @@ UCHAR CtiDeviceAlphaPPlus::touBlockMapping (UCHAR config, USHORT type)
                 dout << RWTime() << " ****** Alpha " << getName() << " configured for Q3 vars, defaulting to delivered vars ******" << endl;
             }
             retCode = PPLUS_REACTIVE_DELIVERED;
-*/            
+*/
             retCode = PPLUS_REACTIVE_QUADRANT3;
         }
         else if (config & 0x04)
@@ -2795,7 +2798,7 @@ UCHAR CtiDeviceAlphaPPlus::touBlockMapping (UCHAR config, USHORT type)
                 dout << RWTime() << " ****** Alpha " << getName() << " configured for Q4 vars, defaulting to delivered vars ******" << endl;
             }
             retCode = PPLUS_REACTIVE_DELIVERED;
-*/            
+*/
             retCode = PPLUS_REACTIVE_QUADRANT4;
         }
         else

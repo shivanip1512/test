@@ -6,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_a1.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/04/10 21:45:47 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/07/27 16:53:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*    History: 
+*    History:
       $Log: dev_a1.cpp,v $
+      Revision 1.10  2004/07/27 16:53:53  mfisher
+      RWTime.seconds workaround for boost ptime::seconds
+
       Revision 1.9  2003/04/10 21:45:47  dsutton
       Added code to check the CRC on the multiple message classes (ones over 64 bytes)
       and added checks to make sure we had received the entire message
@@ -808,7 +811,7 @@ INT CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrSlis
                                 * I need DLS
                                 ***********************
                                 */
-                                int missingIntervals =((RWTime().seconds() - ptr->porterLPTime) / (ptr->class14.intervalLength * 60)) + 2;
+                                int missingIntervals =((RWTime::now().seconds() - ptr->porterLPTime) / (ptr->class14.intervalLength * 60)) + 2;
                                 ptr->bytesRequested = missingIntervals * ptr->class14.numberOfChannels * 2;
 
                                 // we get back at most 64 bytes at a time
@@ -1021,12 +1024,12 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
                 *
                 * check that the length of the message received matches what
                 * the message said it would be otherwise get out
-                * byte 5 is the length (msb is marker telling us whether this is the 
+                * byte 5 is the length (msb is marker telling us whether this is the
                 * last message in a class download) and add 4 for header and 2 for crc
                 *********************************************
                 */
 
-                if (commReturnValue || 
+                if (commReturnValue ||
                     (!isReturnedBufferValid(Transfer)) ||
                     (ret_crc=checkCRC(Transfer.getInBuffer(),Transfer.getInCountActual())) ||
                     (ret_length=(Transfer.getInCountActual() != ((Transfer.getInBuffer()[4] & ~0x80)+7))))
@@ -1171,8 +1174,8 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
                     /********************************************
                     * check that the length of the message received matches what
                     * the message said it would be otherwise get out
-                    * byte 5 is the length (msb is marker telling us whether this is the 
-                    * last message in a class download) and add 4 for header and 2 for crc 
+                    * byte 5 is the length (msb is marker telling us whether this is the
+                    * last message in a class download) and add 4 for header and 2 for crc
                     *********************************************
                     */
                     int ret_crc,ret_length;
@@ -1394,11 +1397,11 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                 *
                 * check that the length of the message received matches what
                 * the message said it would be otherwise get out
-                * byte 5 is the length (msb is marker telling us whether this is the 
+                * byte 5 is the length (msb is marker telling us whether this is the
                 * last message in a class download) and add 4 for header and 2 for crc
                 *********************************************
                 */
-                if (commReturnValue || 
+                if (commReturnValue ||
                     (!isReturnedBufferValid(Transfer)) ||
                     (ret_crc=checkCRC(Transfer.getInBuffer(),Transfer.getInCountActual())) ||
                     (ret_length=(Transfer.getInCountActual() != ((Transfer.getInBuffer()[4] & ~0x80)+7))))
@@ -1436,7 +1439,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                         setPreviousState (StateScanAbort);
                         setCurrentState (StateScanSendTerminate);
                     }
-                    CTISleep(500); 
+                    CTISleep(500);
                 }
                 else
                 {
@@ -1566,8 +1569,8 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                     /********************************************
                     * check that the length of the message received matches what
                     * the message said it would be otherwise get out
-                    * byte 5 is the length (msb is marker telling us whether this is the 
-                    * last message in a class download) and add 4 for header and 2 for crc 
+                    * byte 5 is the length (msb is marker telling us whether this is the
+                    * last message in a class download) and add 4 for header and 2 for crc
                     *********************************************
                     */
                     int ret_crc,ret_length;

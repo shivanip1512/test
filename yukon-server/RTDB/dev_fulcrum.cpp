@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_fulcrum.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/03/13 19:35:54 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/07/27 16:53:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -766,10 +766,11 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                                          *  NOTE:  This is a UNIX time of RECORD START!
                                          */
 
-                                        LPTime = (RWTime (RWDate ((INT)localRTReg->DayOfMonth,
-                                                                  (INT)localRTReg->Month,
-                                                                  (INT)localRTReg->Year+2000),
-                                                          (INT)localRTReg->Hours, 0, 0).seconds()) +
+                                        RWTime t(RWDate((INT)localRTReg->DayOfMonth,
+                                                        (INT)localRTReg->Month,
+                                                        (INT)localRTReg->Year+2000),
+                                                 (INT)localRTReg->Hours, 0, 0);
+                                        LPTime = t.seconds() +
                                                  (((INT)localRTReg->Minutes - ((INT)localRTReg->Minutes % (INT)localMMConfig->IntervalLength)
                                                    - ((INT)localMMConfig->CurrentInterval * (INT)localMMConfig->IntervalLength)) * 60) -
                                                  rwEpoch;

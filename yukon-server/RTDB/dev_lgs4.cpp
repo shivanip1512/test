@@ -1126,7 +1126,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
                                         */
                                         // do this from midnight, we don't want to miss data because of rounding problems
                                         RWTime midnightOnLastLP (RWDate(RWDate(RWTime(localLP->porterLPTime)).day(), RWDate(RWTime(localLP->porterLPTime)).year()));
-                                        ULONG difference = (((RWTime().seconds() - midnightOnLastLP.seconds()) / 86400) + 1);
+                                        ULONG difference = ((((RWTime::now().seconds()) - (midnightOnLastLP.seconds())) / 86400) + 1);
 
                                         // no more than thirty one days
                                         if (difference > 31)
@@ -2317,9 +2317,10 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                     */
 
                     // power down is date plus seconds past midnight
-                    ULONG powerDown = getCurrentLPDate() + getPowerDownTime();
-                    ULONG missingIntervals = (RWTime(recordDate).seconds() - powerDown) /
-                                             (localLP->configuration.intervalLength * 60) ;
+                    RWTime recordTime(recordDate);
+                    ULONG  powerDown = getCurrentLPDate() + getPowerDownTime();
+                    ULONG  missingIntervals = (recordTime.seconds() - powerDown) /
+                                              (localLP->configuration.intervalLength * 60) ;
 
                     // ????? need a check for intervals to make sure it isn't outrageous??????
                     for (int x=0; x < missingIntervals; x++)
@@ -2402,8 +2403,9 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                     *
                     *****************************
                     */
-                    expectedLastInterval = ((RWTime().seconds() - RWTime(0,0).seconds()) /
-                                            (localLP->configuration.intervalLength * 60.0));
+                    RWTime todayMidnight(0,0);
+                    expectedLastInterval = (RWTime::now().seconds() - todayMidnight.seconds()) /
+                                             (localLP->configuration.intervalLength * 60.0);
 
 
                     // perform parity checking on reading
@@ -2536,8 +2538,10 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                         }
                         else
                         {
+                            RWTime todayMidnight(0,0);
+
                             // we are one today, check for repeated data
-                            if ((RWTime(0,0).seconds()) == getCurrentLPDate())
+                            if (todayMidnight.seconds() == getCurrentLPDate())
                             {
                                 if (expectedLastInterval < getCurrentLPInterval())
                                 {
