@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/12/01 20:15:04 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/12/02 22:58:43 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.9  2004/12/02 22:58:43  cplender
+* Try to reduce the number of pointdata messages sent to loadmanagement due to controlling groups.
+*
 * Revision 1.8  2004/12/01 20:15:04  cplender
 * LMControlHistory.
 *
@@ -110,12 +113,16 @@ void CtiPendingOpThread::run( void )
 
     try
     {
+        RWTime now;
+        RWTime lastMulti;
         _multi = new CtiMultiMsg;
         _multi->setMessagePriority(5);
         _multi->setSource("Dispatch pendingOpThread");
 
         while( !isSet(SHUTDOWN) )
         {
+            now = now.now();
+
             if( isSet(PROCESSQ) )
             {
                 set(PROCESSQ, false);
@@ -128,19 +135,25 @@ void CtiPendingOpThread::run( void )
                 doPendingPointData(false);
                 doPendingControls(false);
 
-                sleep(1000);               // interrupt(XXX) can wake us.
-
-                if(_multi->getCount() > 0)
+                // Every 60 seconds or when the box is large/full enough.
+                if(lastMulti < now || _multi->getCount() > gConfigParms.getValueAsULong("DISPATCH_MAX_CTLHIST_POINT_BATCH", 100) )
                 {
-                    if(_pMainQueue)
-                        _pMainQueue->putQueue( _multi );
-                    else
-                        delete _multi;
+                    lastMulti = nextScheduledTimeAlignedOnRate(now, gConfigParms.getValueAsULong("DISPATCH_MAX_CTLHIST_RATE", 60)) + 5L;
 
-                    _multi = new CtiMultiMsg;
-                    _multi->setMessagePriority(5);
-                    _multi->setSource("Dispatch pendingOpThread");
+                    if(_multi->getCount() > 0)
+                    {
+                        if(_pMainQueue)
+                            _pMainQueue->putQueue( _multi );
+                        else
+                            delete _multi;
+
+                        _multi = new CtiMultiMsg;
+                        _multi->setMessagePriority(5);
+                        _multi->setSource("Dispatch pendingOpThread");
+                    }
                 }
+
+                sleep(1000);               // interrupt(XXX) can wake us.
             }
             catch(...)
             {
@@ -420,10 +433,6 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                              ppo.getControlState() == CtiPendingPointOperations::controlCompleteTimedIn     ||
                              ppo.getControlState() == CtiPendingPointOperations::controlCompleteManual      )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
                         it = _pendingControls.erase(it);
                         continue;   // iterator has been repositioned!
                     }
@@ -1248,17 +1257,8 @@ bool CtiPendingOpThread::loadICControlMap()
             if(!dynC.getLoadedActiveRestore().compareTo(LMAR_DISPATCH_SHUTDOWN, RWCString::ignoreCase) ||
                !dynC.getLoadedActiveRestore().compareTo(LMAR_NEWCONTROL, RWCString::ignoreCase))
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
                 if( now >= dynC.getStopTime() )  // This control completed during dispatch's shutdown.
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
                     dynC.setNotNewControl();
                     dynC.setActiveRestore(LMAR_TIMED_RESTORE);
                     dynC.Insert();                                  // Insert into the lmcontrolhistory
@@ -1267,10 +1267,6 @@ bool CtiPendingOpThread::loadICControlMap()
                 else
                 {
                     LONG inc = now.seconds() - dynC.getStopTime().seconds();        // This should be negative and back us up!
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
                     dynC.setNotNewControl();
                     dynC.setControlCompleteTime(dynC.getStopTime());
                     dynC.incrementTimes(now, inc);
@@ -1297,12 +1293,6 @@ bool CtiPendingOpThread::loadICControlMap()
             }
             else if( !dynC.getLoadedActiveRestore().compareTo(LMAR_LOGTIMER, RWCString::ignoreCase) )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " Control accounting adjust over dispatch shutdown!" << endl;
-                }
-
                 if( now >= dynC.getStopTime() )  // This control completed during dispatch's shutdown.
                 {
                     dynC.setNotNewControl();
