@@ -351,33 +351,34 @@ public void parseDefaultsFile()
 
 private void setBillGroup(String newBillGrpString)
 {
-	int beginIndex = 0;
+	java.util.Vector tempBillGrp = null;
 	int endIndex = newBillGrpString.indexOf(",");
 
-	String temp = newBillGrpString;
-
-	if( endIndex < 0)
+	if( endIndex < 0)	//only one billing group selected in dat file.
 	{
-		billGroup = new java.util.Vector(1);
-		billGroup.add(newBillGrpString);
+		tempBillGrp = new java.util.Vector(1);
+		tempBillGrp.add(newBillGrpString);
 	}
 	else
 	{	
-		billGroup = new java.util.Vector();
+		tempBillGrp = new java.util.Vector();
 		int count = 0;
 		
 		while ( endIndex > 0)			//returns -1 "," not found
 		{
-			temp = newBillGrpString.substring(beginIndex, endIndex);
+			int beginIndex = 0;			
+			String temp = newBillGrpString.substring(beginIndex, endIndex);
 
-			billGroup.add(count++, temp);
+			tempBillGrp.add(count++, temp);
 			beginIndex = endIndex + 1;
 
-			newBillGrpString = newBillGrpString.substring(beginIndex);			
+			newBillGrpString = newBillGrpString.substring(beginIndex);	
 			endIndex = newBillGrpString.indexOf(",");
-
 		}
 	}
+	
+	if( tempBillGrp != null)
+		setBillGroup(tempBillGrp);
 }
 private void setBillGroup(java.util.Vector newBillGroup)
 {
