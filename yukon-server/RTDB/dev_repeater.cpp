@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/02/17 23:19:59 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -487,7 +487,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
            pOutMessage->Sequence  = function;     // Helps us figure it out later!
            pOutMessage->Retry     = 3;
 
-           OutMessage->Request.RouteID = getRouteID();
+           pOutMessage->Request.RouteID = getRouteID();
            // Tell the porter side to complete the assembly of the message.
            strncpy(pOutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
 
