@@ -664,6 +664,168 @@ public class StarsLiteFactory {
 		//starsEntry.setYukonDefID( yukonEntry.getYukonDefID() );
 	}
 	
+	public static void setStarsCustAccountInformation(StarsCustAccountInformation starsAcctInfo, LiteStarsCustAccountInformation liteAcctInfo, int energyCompanyID, boolean isOperator) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+		
+		LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
+		LiteCustomer liteCustomer = liteAcctInfo.getCustomer();
+		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
+		LiteSiteInformation liteSiteInfo = liteAcctInfo.getSiteInformation();
+		
+		StarsCustomerAccount starsAccount = new StarsCustomerAccount();
+		starsAccount.setAccountID( liteAccount.getAccountID() );
+		starsAccount.setCustomerID( liteAccount.getCustomerID() );
+		starsAccount.setAccountNumber( forceNotNull(liteAccount.getAccountNumber()) );
+		starsAccount.setIsCommercial( liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI );
+		starsAccount.setCompany( "" );
+		starsAccount.setAccountNotes( forceNotNull(liteAccount.getAccountNotes()) );
+		starsAccount.setPropertyNumber( forceNotNull(liteAcctSite.getSiteNumber()) );
+		starsAccount.setPropertyNotes( forceNotNull(liteAcctSite.getPropertyNotes()) );
+		starsAccount.setTimeZone( liteCustomer.getTimeZone() );
+		starsAcctInfo.setStarsCustomerAccount( starsAccount );
+		
+		StreetAddress streetAddr = new StreetAddress();
+		setStarsCustomerAddress( streetAddr, energyCompany.getAddress(liteAcctSite.getStreetAddressID()) );
+		starsAccount.setStreetAddress( streetAddr );
+		
+		starsAccount.setStarsSiteInformation( createStarsSiteInformation(liteSiteInfo, energyCompanyID) );
+				
+		BillingAddress billAddr = new BillingAddress();
+		setStarsCustomerAddress( billAddr, energyCompany.getAddress(liteAccount.getBillingAddressID()) );
+		starsAccount.setBillingAddress( billAddr );
+		
+		PrimaryContact primContact = new PrimaryContact();
+		setStarsCustomerContact( primContact, energyCompany.getCustomerContact(liteCustomer.getPrimaryContactID()) );
+		starsAccount.setPrimaryContact( primContact );
+		
+		for (int i = 0; i < liteCustomer.getAdditionalContacts().size(); i++) {
+			Integer contactID = (Integer) liteCustomer.getAdditionalContacts().get(i);
+			AdditionalContact contact = new AdditionalContact();
+			setStarsCustomerContact( contact, energyCompany.getCustomerContact(contactID.intValue()) );
+			starsAccount.addAdditionalContact( contact );
+		}
+		
+		ArrayList liteProgs = liteAcctInfo.getLmPrograms();
+		StarsLMPrograms starsProgs = new StarsLMPrograms();
+		starsAcctInfo.setStarsLMPrograms( starsProgs );
+		
+		for (int i = 0; i < liteProgs.size(); i++) {
+			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteProgs.get(i);
+			LiteStarsAppliance liteApp = null;
+			
+			ArrayList liteApps = liteAcctInfo.getAppliances();
+			for (int k = 0; k < liteApps.size(); k++) {
+				LiteStarsAppliance lApp = (LiteStarsAppliance) liteApps.get(k);
+				if (lApp.getLmProgramID() == liteProg.getLmProgram().getProgramID()) {
+					liteApp = lApp;
+					break;
+				}
+			}
+			
+			starsProgs.addStarsLMProgram( createStarsLMProgram(liteProg, liteApp, energyCompanyID) );
+		}
+		
+		if (liteAcctInfo.getThermostatSettings() != null) {
+			StarsThermostatSettings starsThermSettings = new StarsThermostatSettings();
+			setStarsThermostatSettings( starsThermSettings, liteAcctInfo.getThermostatSettings() );
+			starsAcctInfo.setStarsThermostatSettings( starsThermSettings );
+			
+			StarsDefaultThermostatSettings starsDftThermSettings = new StarsDefaultThermostatSettings();
+			setStarsThermostatSettings( starsDftThermSettings, energyCompany.getDefaultThermostatSettings() );
+			starsAcctInfo.setStarsDefaultThermostatSettings( starsDftThermSettings );
+		}
+		
+		if (isOperator) {
+			ArrayList liteApps = liteAcctInfo.getAppliances();
+			StarsAppliances starsApps = new StarsAppliances();
+			starsAcctInfo.setStarsAppliances( starsApps );
+			
+			TreeMap tmap = new TreeMap();
+			for (int i = 0; i < liteApps.size(); i++) {
+				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(i);
+				StarsAppliance starsApp = (StarsAppliance) createStarsAppliance(liteApp, energyCompanyID);
+				
+				ArrayList list = (ArrayList) tmap.get( starsApp.getCategoryName() );
+				if (list == null) {
+					list = new ArrayList();
+					tmap.put( starsApp.getCategoryName(), list );
+				}
+				list.add( starsApp );
+			}
+			
+			Iterator it = tmap.values().iterator();
+			while (it.hasNext()) {
+				ArrayList list = (ArrayList) it.next();
+				for (int i = 0; i < list.size(); i++)
+					starsApps.addStarsAppliance( (StarsAppliance) list.get(i) );
+			}
+			
+			ArrayList liteInvs = liteAcctInfo.getInventories();
+			StarsInventories starsInvs = new StarsInventories();
+			starsAcctInfo.setStarsInventories( starsInvs );
+			
+			tmap.clear();
+			for (int i = 0; i < liteInvs.size(); i++) {
+				LiteLMHardwareBase liteHw = energyCompany.getLMHardware( ((Integer) liteInvs.get(i)).intValue(), true );
+				StarsLMHardware starsHw = createStarsLMHardware(liteHw, energyCompanyID);
+				
+				ArrayList list = (ArrayList) tmap.get( starsHw.getLMDeviceType().getContent() );
+				if (list == null) {
+					list = new ArrayList();
+					tmap.put( starsHw.getLMDeviceType().getContent(), list );
+				}
+				list.add( starsHw );
+			}
+			
+			it = tmap.values().iterator();
+			while (it.hasNext()) {
+				ArrayList list = (ArrayList) it.next();
+				for (int i = 0; i < list.size(); i++)
+					starsInvs.addStarsLMHardware( (StarsLMHardware) list.get(i) );
+			}
+			
+			ArrayList liteCompanies = liteAcctInfo.getServiceCompanies();
+			StarsServiceCompanies starsCompanies = new StarsServiceCompanies();
+			starsAcctInfo.setStarsServiceCompanies( starsCompanies );
+			
+			for (int i = 0; i < liteCompanies.size(); i++) {
+				LiteServiceCompany liteCompany = energyCompany.getServiceCompany( ((Integer) liteCompanies.get(i)).intValue() );
+				StarsServiceCompany starsCompany = StarsLiteFactory.createStarsServiceCompany( liteCompany, energyCompanyID );
+				starsCompanies.addStarsServiceCompany( starsCompany );
+			}
+			
+			ArrayList liteCalls = liteAcctInfo.getCallReportHistory();
+			StarsCallReportHistory starsCalls = new StarsCallReportHistory();
+			starsAcctInfo.setStarsCallReportHistory( starsCalls );
+			
+			for (int i = 0; i < liteCalls.size(); i++) {
+				StarsCallReport starsCall = (StarsCallReport) liteCalls.get(i);
+				starsCalls.addStarsCallReport( starsCall );
+			}
+			
+			ArrayList liteOrders = liteAcctInfo.getServiceRequestHistory();
+			StarsServiceRequestHistory starsOrders = new StarsServiceRequestHistory();
+			starsAcctInfo.setStarsServiceRequestHistory( starsOrders );
+			
+			for (int i = 0; i < liteOrders.size(); i++) {
+				LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( ((Integer) liteOrders.get(i)).intValue() );
+				starsOrders.addStarsServiceRequest( createStarsServiceRequest(liteOrder, energyCompanyID) );
+			}
+			
+	        if (liteAccount.getLoginID() > com.cannontech.user.UserUtils.USER_YUKON_ID) {
+		        LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteAccount.getLoginID() );
+				starsAcctInfo.setStarsUser( createStarsUser(liteUser) );
+	        }
+		}
+	}
+		
+	
+	public static StarsCustAccountInformation createStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo, int energyCompanyID, boolean isOperator) {
+		StarsCustAccountInformation starsAcctInfo = new StarsCustAccountInformation();
+		setStarsCustAccountInformation( starsAcctInfo, liteAcctInfo, energyCompanyID, isOperator );
+		return starsAcctInfo;
+	}
+	
 	public static StarsSiteInformation createStarsSiteInformation(LiteSiteInformation liteSite, int energyCompanyID) {
 		StarsSiteInformation starsSite = new StarsSiteInformation();
 		
@@ -934,166 +1096,6 @@ public class StarsLiteFactory {
 		}
 		
 		return starsProg;
-	}
-	
-	public static StarsCustAccountInformation createStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo, int energyCompanyID, boolean isOperator) {
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-		
-		StarsCustAccountInformation starsAcctInfo = new StarsCustAccountInformation();
-		
-		LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
-		LiteCustomer liteCustomer = liteAcctInfo.getCustomer();
-		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
-		LiteSiteInformation liteSiteInfo = liteAcctInfo.getSiteInformation();
-		
-		StarsCustomerAccount starsAccount = new StarsCustomerAccount();
-		starsAcctInfo.setStarsCustomerAccount( starsAccount );
-		
-		starsAccount.setAccountID( liteAccount.getAccountID() );
-		starsAccount.setCustomerID( liteAccount.getCustomerID() );
-		starsAccount.setAccountNumber( forceNotNull(liteAccount.getAccountNumber()) );
-		starsAccount.setIsCommercial( liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI );
-		starsAccount.setCompany( "" );
-		starsAccount.setAccountNotes( forceNotNull(liteAccount.getAccountNotes()) );
-		starsAccount.setPropertyNumber( forceNotNull(liteAcctSite.getSiteNumber()) );
-		starsAccount.setPropertyNotes( forceNotNull(liteAcctSite.getPropertyNotes()) );
-		starsAccount.setTimeZone( liteCustomer.getTimeZone() );
-		
-		StreetAddress streetAddr = new StreetAddress();
-		setStarsCustomerAddress( streetAddr, energyCompany.getAddress(liteAcctSite.getStreetAddressID()) );
-		starsAccount.setStreetAddress( streetAddr );
-		
-		starsAccount.setStarsSiteInformation( createStarsSiteInformation(liteSiteInfo, energyCompanyID) );
-				
-		BillingAddress billAddr = new BillingAddress();
-		setStarsCustomerAddress( billAddr, energyCompany.getAddress(liteAccount.getBillingAddressID()) );
-		starsAccount.setBillingAddress( billAddr );
-		
-		PrimaryContact primContact = new PrimaryContact();
-		setStarsCustomerContact( primContact, energyCompany.getCustomerContact(liteCustomer.getPrimaryContactID()) );
-		starsAccount.setPrimaryContact( primContact );
-		
-		for (int i = 0; i < liteCustomer.getAdditionalContacts().size(); i++) {
-			Integer contactID = (Integer) liteCustomer.getAdditionalContacts().get(i);
-			AdditionalContact contact = new AdditionalContact();
-			setStarsCustomerContact( contact, energyCompany.getCustomerContact(contactID.intValue()) );
-			starsAccount.addAdditionalContact( contact );
-		}
-		
-		ArrayList liteProgs = liteAcctInfo.getLmPrograms();
-		StarsLMPrograms starsProgs = new StarsLMPrograms();
-		starsAcctInfo.setStarsLMPrograms( starsProgs );
-		
-		for (int i = 0; i < liteProgs.size(); i++) {
-			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteProgs.get(i);
-			LiteStarsAppliance liteApp = null;
-			
-			ArrayList liteApps = liteAcctInfo.getAppliances();
-			for (int k = 0; k < liteApps.size(); k++) {
-				LiteStarsAppliance lApp = (LiteStarsAppliance) liteApps.get(k);
-				if (lApp.getLmProgramID() == liteProg.getLmProgram().getProgramID()) {
-					liteApp = lApp;
-					break;
-				}
-			}
-			
-			starsProgs.addStarsLMProgram( createStarsLMProgram(liteProg, liteApp, energyCompanyID) );
-		}
-		
-		if (liteAcctInfo.getThermostatSettings() != null) {
-			StarsThermostatSettings starsThermSettings = new StarsThermostatSettings();
-			setStarsThermostatSettings( starsThermSettings, liteAcctInfo.getThermostatSettings() );
-			starsAcctInfo.setStarsThermostatSettings( starsThermSettings );
-			
-			StarsDefaultThermostatSettings starsDftThermSettings = new StarsDefaultThermostatSettings();
-			setStarsThermostatSettings( starsDftThermSettings, energyCompany.getDefaultThermostatSettings() );
-			starsAcctInfo.setStarsDefaultThermostatSettings( starsDftThermSettings );
-		}
-		
-		if (isOperator) {
-			ArrayList liteApps = liteAcctInfo.getAppliances();
-			StarsAppliances starsApps = new StarsAppliances();
-			starsAcctInfo.setStarsAppliances( starsApps );
-			
-			TreeMap tmap = new TreeMap();
-			for (int i = 0; i < liteApps.size(); i++) {
-				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(i);
-				StarsAppliance starsApp = (StarsAppliance) createStarsAppliance(liteApp, energyCompanyID);
-				
-				ArrayList list = (ArrayList) tmap.get( starsApp.getCategoryName() );
-				if (list == null) {
-					list = new ArrayList();
-					tmap.put( starsApp.getCategoryName(), list );
-				}
-				list.add( starsApp );
-			}
-			
-			Iterator it = tmap.values().iterator();
-			while (it.hasNext()) {
-				ArrayList list = (ArrayList) it.next();
-				for (int i = 0; i < list.size(); i++)
-					starsApps.addStarsAppliance( (StarsAppliance) list.get(i) );
-			}
-			
-			ArrayList liteInvs = liteAcctInfo.getInventories();
-			StarsInventories starsInvs = new StarsInventories();
-			starsAcctInfo.setStarsInventories( starsInvs );
-			
-			tmap.clear();
-			for (int i = 0; i < liteInvs.size(); i++) {
-				LiteLMHardwareBase liteHw = energyCompany.getLMHardware( ((Integer) liteInvs.get(i)).intValue(), true );
-				StarsLMHardware starsHw = createStarsLMHardware(liteHw, energyCompanyID);
-				
-				ArrayList list = (ArrayList) tmap.get( starsHw.getLMDeviceType().getContent() );
-				if (list == null) {
-					list = new ArrayList();
-					tmap.put( starsHw.getLMDeviceType().getContent(), list );
-				}
-				list.add( starsHw );
-			}
-			
-			it = tmap.values().iterator();
-			while (it.hasNext()) {
-				ArrayList list = (ArrayList) it.next();
-				for (int i = 0; i < list.size(); i++)
-					starsInvs.addStarsLMHardware( (StarsLMHardware) list.get(i) );
-			}
-			
-			ArrayList liteCompanies = liteAcctInfo.getServiceCompanies();
-			StarsServiceCompanies starsCompanies = new StarsServiceCompanies();
-			starsAcctInfo.setStarsServiceCompanies( starsCompanies );
-			
-			for (int i = 0; i < liteCompanies.size(); i++) {
-				LiteServiceCompany liteCompany = energyCompany.getServiceCompany( ((Integer) liteCompanies.get(i)).intValue() );
-				StarsServiceCompany starsCompany = StarsLiteFactory.createStarsServiceCompany( liteCompany, energyCompanyID );
-				starsCompanies.addStarsServiceCompany( starsCompany );
-			}
-			
-			ArrayList liteCalls = liteAcctInfo.getCallReportHistory();
-			StarsCallReportHistory starsCalls = new StarsCallReportHistory();
-			starsAcctInfo.setStarsCallReportHistory( starsCalls );
-			
-			for (int i = 0; i < liteCalls.size(); i++) {
-				StarsCallReport starsCall = (StarsCallReport) liteCalls.get(i);
-				starsCalls.addStarsCallReport( starsCall );
-			}
-			
-			ArrayList liteOrders = liteAcctInfo.getServiceRequestHistory();
-			StarsServiceRequestHistory starsOrders = new StarsServiceRequestHistory();
-			starsAcctInfo.setStarsServiceRequestHistory( starsOrders );
-			
-			for (int i = 0; i < liteOrders.size(); i++) {
-				LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( ((Integer) liteOrders.get(i)).intValue() );
-				starsOrders.addStarsServiceRequest( createStarsServiceRequest(liteOrder, energyCompanyID) );
-			}
-			
-	        if (liteAccount.getLoginID() > com.cannontech.user.UserUtils.USER_YUKON_ID) {
-		        LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteAccount.getLoginID() );
-				starsAcctInfo.setStarsUser( createStarsUser(liteUser) );
-	        }
-		}
-		
-		return starsAcctInfo;
 	}
 	
 	public static StarsWebConfig createStarsWebConfig(LiteWebConfiguration liteWebConfig) {

@@ -1137,10 +1137,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		synchronized (starsCustAcctInfos) {
 			Integer accountID = new Integer(liteAcctInfo.getAccountID());
 			StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation) starsCustAcctInfos.get( accountID );
-			if (starsAcctInfo != null) {
-				starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, getLiteID(), true );
-				starsCustAcctInfos.put( accountID, starsAcctInfo );
-			}
+			if (starsAcctInfo != null)
+				StarsLiteFactory.setStarsCustAccountInformation( starsAcctInfo, liteAcctInfo, getLiteID(), true );
 		}
 	}
 	
