@@ -121,7 +121,7 @@ function disableButton(x)
                   <td width="70%"> 
                     <select name="command">
                     <%
-                      String tempCommand = ycBean.getCommand().replaceAll("noqueue", "").trim();
+                      String tempCommand = ycBean.getCommandString().replaceAll("noqueue", "").trim();
                       com.cannontech.common.util.KeysAndValues keysAndVals = 
 						new com.cannontech.common.util.KeysAndValues(defaultKeys, defaultValues);
                       if( DeviceTypesFuncs.isDisconnectMCT(liteYukonPao.getType()))
