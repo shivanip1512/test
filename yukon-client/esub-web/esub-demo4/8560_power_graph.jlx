@@ -1,0 +1,89 @@
+JLoox 2.0.2
+"UTF8"
+A 0 2 0 0 ffffff66 1 ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+11
+
+com.cannontech.esub.editor.element.DrawingMetaElement
+! 111101100 0;0;18.640625;2.03125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C $ 0 0
+0 0
+"Default" 0 32 "_"
+769 694
+
+com.cannontech.esub.editor.element.DrawingMetaElement
+! 111101100 0;0;18.640625;2.03125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C $ 0 0
+0 0
+"Default" 0 32 "_"
+1049 939
+
+com.cannontech.esub.editor.element.DrawingMetaElement
+! 111101100 0;0;18.640625;2.03125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C $ 0 0
+0 0
+"Default" 0 32 "_"
+1027 785
+
+com.cannontech.esub.editor.element.DynamicGraphElement
+! 111101100 40;150;660;460 5 0 $ ! ! 0
+A 0 1 0 0 ffffffff 1 C ffffffff 0 0
+0 0 0
+682 0 0 $
+
+com.cannontech.esub.editor.element.StaticImage
+! 110101100 40;30;175;60 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+41 ""
+
+com.cannontech.esub.editor.element.StaticImage
+! 110101100 450;20;240;60 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+40 ""
+
+com.cannontech.esub.editor.element.StaticImage
+! 110101100 300;110;103;22 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+9 "rockridge.html"
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 260;20;136.178711;13.34375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff009900 0 0
+0 0
+"Arial Bold" 0 18 "TRANSMISSION "
+"Arial Bold" 18 0 153 0 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 250;40;160.603516;13.328125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff009900 0 0
+0 0
+"Arial Bold" 0 18 "BREAKER POWER"
+"Arial Bold" 18 0 153 0 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 300;60;62.770508;13.328125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff009900 0 0
+0 0
+"Arial Bold" 0 18 "GRAPH"
+"Arial Bold" 18 0 153 0 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 250;80;172.862305;16.890625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff009900 0 0
+0 0
+"Arial Bold" 0 18 "Rockridge TCB 8560"
+"Arial Bold" 18 0 153 0 ""
+
+
+0

@@ -1,0 +1,76 @@
+JLoox 2.0.2
+"UTF8"
+A 0 2 0 0 ffffff66 1 ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+9
+
+com.cannontech.esub.editor.element.DrawingMetaElement
+! 111101100 0;0;18.640625;2.03125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C $ 0 0
+0 0
+"Default" 0 32 "_"
+1027 785
+
+com.cannontech.esub.editor.element.StaticImage
+! 110101100 170;60;175;60 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+41 ""
+
+com.cannontech.esub.editor.element.StaticImage
+! 110101100 570;60;240;60 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+40 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 390;60;136.178711;13.34375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff009900 0 0
+0 0
+"Arial Bold" 0 18 "TRANSMISSION"
+"Arial Bold" 18 0 153 0 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 380;80;168.81543;13.34375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff009900 0 0
+0 0
+"Arial Bold" 0 18 "BREAKER DETAILS"
+"Arial Bold" 18 0 153 0 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 400;100;126.43457;16.671875 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff009900 0 0
+0 0
+"Arial Bold" 0 18 "Brooks Energy "
+"Arial Bold" 18 0 153 0 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 380;120;172.862305;16.890625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff009900 0 0
+0 0
+"Arial Bold" 0 18 "Rockridge TCB 8560"
+"Arial Bold" 18 0 153 0 ""
+
+com.cannontech.esub.editor.element.StaticImage
+! 110101100 120;160;103;22 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+9 "rockridge.html"
+
+com.cannontech.esub.editor.element.StaticImage
+! 110101100 260;160;103;22 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+10 "8560_power_graph.html"
+
+
+0
