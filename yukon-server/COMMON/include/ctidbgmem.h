@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/03/13 19:35:26 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/02/25 20:16:13 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,16 @@
 
 #include <windows.h>
 #include <crtdbg.h>
+
+#ifdef BOUNDSCHECKER
+
+     #define SET_CRT_OUTPUT_MODES
+     #define ENABLE_CRT_SHUTDOWN_CHECK
+     #define SET_CRT_DEBUG_FIELD(a)   ((void) 0)
+     #define CLEAR_CRT_DEBUG_FIELD(a) ((void) 0)
+     #define CTIDBG_new new
+
+#else
 
 #ifdef   _DEBUG
  #define SET_CRT_OUTPUT_MODES \
@@ -47,6 +57,7 @@
  #define CLEAR_CRT_DEBUG_FIELD(a) ((void) 0)
  #define CTIDBG_new new
 
+#endif
 #endif
 
 
