@@ -38,7 +38,7 @@ public StringBuffer getHtml(StringBuffer buf)
 	{
 		for( int i = 0; i < model.getTrendSeries().length; i++ )
 		{
-			if(( model.getTrendSeries()[i].getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.PEAK_MASK) == 					model.getTrendSeries()[i].getTypeMask())
+			if(( model.getTrendSeries()[i].getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.PEAK_MASK) == model.getTrendSeries()[i].getTypeMask())
 			{
 				peakPointIndex = i;
 				break;

@@ -139,7 +139,7 @@ public StringBuffer getHtml(StringBuffer buf)
 		usageCount = usageLabels.size();
 		if( usageCount == 0)
 		{
-			return buf;
+//			return buf;
 		}
 		
 		//table label description
