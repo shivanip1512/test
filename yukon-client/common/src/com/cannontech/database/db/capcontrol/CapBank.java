@@ -14,12 +14,13 @@ public class CapBank extends com.cannontech.database.db.DBPersistent
 	private String typeOfSwitch = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	private String switchManufacture = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	private Integer mapLocationID = new Integer(0);
+	private Integer recloseDelay = new Integer(0);
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"OperationalState", "ControllerType", "ControlDeviceID",
 		"ControlPointID", "BankSize", "TypeOfSwitch",
-		"SwitchManufacture", "MapLocationID"
+		"SwitchManufacture", "MapLocationID", "RecloseDelay"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
@@ -49,7 +50,7 @@ public void add() throws java.sql.SQLException
 		getControllerType(), getControlDeviceID(), 
 		getControlPointID(), getBankSize(), 
 		getTypeOfSwitch(), getSwitchManufacture(),
-		getMapLocationID()
+		getMapLocationID(), getRecloseDelay()
 	};
 
 	add( TABLE_NAME, addValues );
@@ -130,6 +131,10 @@ public java.lang.String getSwitchManufacture() {
  */
 public java.lang.String getTypeOfSwitch() {
 	return typeOfSwitch;
+}
+
+public Integer getRecloseDelay() {
+	return recloseDelay;
 }
 /**
  * This method was created in VisualAge.
@@ -214,6 +219,7 @@ public void retrieve() throws java.sql.SQLException
 		setTypeOfSwitch( (String) results[5] );
 		setSwitchManufacture( (String) results[6] );
 		setMapLocationID( (Integer) results[7] );
+		setRecloseDelay( (Integer) results[8] );
 	}
 
 }
@@ -286,6 +292,10 @@ public void setSwitchManufacture(java.lang.String newSwitchManufacture) {
 public void setTypeOfSwitch(java.lang.String newTypeOfSwitch) {
 	typeOfSwitch = newTypeOfSwitch;
 }
+
+public void setRecloseDelay(Integer newValue) {
+	recloseDelay = newValue;
+}
 /**
  * update method comment.
  */
@@ -298,7 +308,7 @@ public void update() throws java.sql.SQLException
 		getControllerType(), getControlDeviceID(), 
 		getControlPointID(), getBankSize(), 
 		getTypeOfSwitch(), getSwitchManufacture(),
-		getMapLocationID()
+		getMapLocationID(), getRecloseDelay()
 	};
 
 	Object constraintValues[] = { getDeviceID() };
