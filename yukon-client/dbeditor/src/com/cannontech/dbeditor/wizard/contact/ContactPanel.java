@@ -827,9 +827,7 @@ public Object getValue(Object val)
 		cnt.getContact().setLogInID( 
 			new Integer( ((LiteYukonUser)selLg).getLiteID()) );
 	}
-    else  //must be (none)
-        cnt.getContact().setLogInID( new Integer(CtiUtilities.NONE_ZERO_ID) );
-
+	//must be none, that should be the default of the DBPersistent object
 
 	Vector holder = new Vector();
 	//grab the latest ContactNotification list
