@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mgr_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/02 17:02:29 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/08 20:22:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -151,9 +151,7 @@ bool CtiMCScheduleManager::updateAllSchedules()
                     dout << RWTime() << " Inserting schedule into the database:  " << sched->getScheduleID() << endl;
                 }
 
-                sched->Insert();
-                //sched->setUpdatedFlag(true);
-                //sched->setDirty(false);
+                sched->Insert();                
             }
             else  // The schedule is in the database but the version in memory
                   // isn't consistent with the database
@@ -166,9 +164,6 @@ bool CtiMCScheduleManager::updateAllSchedules()
                 }
 
                 sched->Update();
-
-                //sched->setUpdatedFlag(true);
-                //sched->setDirty(false);
             }
         }
     }
