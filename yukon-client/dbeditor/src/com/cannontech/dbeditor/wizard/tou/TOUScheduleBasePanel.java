@@ -5,6 +5,7 @@ import com.cannontech.database.data.tou.TOUSchedule;
 import com.cannontech.common.gui.util.JTextFieldTimeEntry;
 import javax.swing.JTextField;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.gui.util.ComboBoxTableRenderer;
 
 /**
  * This type was created in VisualAge.
@@ -205,9 +206,9 @@ private javax.swing.JButton getJButtonCreate() {
 			ivjJButtonCreate = new javax.swing.JButton();
 			ivjJButtonCreate.setName("JButtonCreate");
 			ivjJButtonCreate.setMnemonic(67);
-			ivjJButtonCreate.setText("Create...");
+			ivjJButtonCreate.setText("Add");
 			ivjJButtonCreate.setMaximumSize(new java.awt.Dimension(120, 25));
-			ivjJButtonCreate.setActionCommand("Create...");
+			ivjJButtonCreate.setActionCommand("Add");
 			ivjJButtonCreate.setPreferredSize(new java.awt.Dimension(120, 25));
 			ivjJButtonCreate.setMinimumSize(new java.awt.Dimension(120, 25));
 			// user code begin {1}
@@ -366,7 +367,6 @@ private javax.swing.JTable getJTableRateOffsets() {
 			ivjJTableRateOffsets = new javax.swing.JTable();
 			ivjJTableRateOffsets.setName("JTableRateOffsets");
 			getJScrollPaneTable().setColumnHeaderView(ivjJTableRateOffsets.getTableHeader());
-			getJScrollPaneTable().getViewport().setBackingStoreEnabled(true);
 			ivjJTableRateOffsets.setPreferredSize(new java.awt.Dimension(287,393));
 			ivjJTableRateOffsets.setBounds(0, 5, 287, 393);
 			// user code begin {1}
@@ -381,17 +381,25 @@ private javax.swing.JTable getJTableRateOffsets() {
 			ivjJTableRateOffsets.getSelectionModel().setSelectionMode( javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
 			ivjJTableRateOffsets.setRowHeight(20);
 			
-			//Do any column specific initialization here, with the exception of the gear column.
 			javax.swing.table.TableColumn switchRateColumn = getJTableRateOffsets().getColumnModel().getColumn(RateOffsetTableModel.SWITCH_RATE_COLUMN);
 			javax.swing.table.TableColumn switchOffsetColumn = getJTableRateOffsets().getColumnModel().getColumn(RateOffsetTableModel.SWITCH_OFFSET_COLUMN);
 				
 			switchRateColumn.setPreferredWidth(20);
 			switchOffsetColumn.setPreferredWidth(40);
-
-			//create our editors for the textfields
-			JTextFieldTimeEntry field = new JTextFieldTimeEntry();
+		
+			//create our editors/renderers for the fields
+			ComboBoxTableRenderer rateBox = new ComboBoxTableRenderer();
+			javax.swing.JComboBox rate = new javax.swing.JComboBox();
+			rateBox.addItem("A");
+			rateBox.addItem("B");
+			rateBox.addItem("C");
+			rateBox.addItem("D");
+			rate.addItem("A");
+			rate.addItem("B");
+			rate.addItem("C");
+			rate.addItem("D");
 			JTextField otherField = new JTextField();
-			field.addKeyListener(new java.awt.event.KeyAdapter() 
+			rate.addKeyListener(new java.awt.event.KeyAdapter() 
 			{
 				public void keyTyped(java.awt.event.KeyEvent e) 
 				{
@@ -410,18 +418,18 @@ private javax.swing.JTable getJTableRateOffsets() {
 				TextFieldDocument.STRING_LENGTH_4,
 				TextFieldDocument.INVALID_CHARS_TOURATEOFFSETS) );
 		
-			field.setHorizontalAlignment( javax.swing.JTextField.CENTER );
 			otherField.setHorizontalAlignment( javax.swing.JTextField.CENTER );
-			javax.swing.DefaultCellEditor ed = new javax.swing.DefaultCellEditor(field);
-			javax.swing.DefaultCellEditor ed2 = new javax.swing.DefaultCellEditor(otherField);
+			javax.swing.DefaultCellEditor ed = new javax.swing.DefaultCellEditor(otherField);
+			javax.swing.DefaultCellEditor ed2 = new javax.swing.DefaultCellEditor(rate);
 			ed.setClickCountToStart(2);
-			ed2.setClickCountToStart(2);
+			ed2.setClickCountToStart(1);
 			switchOffsetColumn.setCellEditor( ed );
+			switchRateColumn.setCellRenderer(rateBox);
 			switchRateColumn.setCellEditor( ed2 );
 			
 			//create our renderer for the Integer field
 			javax.swing.table.DefaultTableCellRenderer rend = new javax.swing.table.DefaultTableCellRenderer();
-			rend.setHorizontalAlignment( field.getHorizontalAlignment() );
+			rend.setHorizontalAlignment( otherField.getHorizontalAlignment() );
 			switchOffsetColumn.setCellRenderer(rend);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

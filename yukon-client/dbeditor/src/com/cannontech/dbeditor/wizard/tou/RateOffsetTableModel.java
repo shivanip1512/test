@@ -23,7 +23,7 @@ public class RateOffsetTableModel extends AbstractTableModel
 	private String[] COLUMN_NAMES = 
 	{
 		"Switch Rate", 
-		"Switch Offset"
+		"Switch Offset (HH:mm)"
 	};
 	
 	private Class[] COLUMN_CLASSES = {String.class, String.class};
