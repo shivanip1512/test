@@ -1,5 +1,8 @@
 package com.cannontech.export;
 
+import com.cannontech.export.record.CSVBillingRecord;
+import com.cannontech.export.record.CSVBillingCustomerRecord;
+import com.cannontech.export.record.StringRecord;
 /**
  * Insert the type's description here.
  * Creation date: (2/29/00 10:16:47 AM)
@@ -263,7 +266,7 @@ public class CSVBillingFormat extends ExportFormatBase
 	 * @param keyId
 	 * @param csvBillingCust
 	 */
-	public void retrieveBillingData(int keyId, com.cannontech.export.record.CSVBillingCustomerRecord csvBillingCust)
+	public void retrieveBillingData(int keyId, CSVBillingCustomerRecord csvBillingCust)
 	{
 		long timer = System.currentTimeMillis();
 		int rowCount = 0;
@@ -348,7 +351,7 @@ public class CSVBillingFormat extends ExportFormatBase
 					if( addRec)
 					{
 						rowCount++;
-						com.cannontech.export.record.CSVBillingRecord csvBillingRec = new com.cannontech.export.record.CSVBillingRecord();
+						CSVBillingRecord csvBillingRec = new CSVBillingRecord();
 						csvBillingRec.setCustomerName(csvBillingCust.getCustomerName());
 						csvBillingRec.setEnergyDebtor(csvBillingCust.getEnergyDebtor());
 						csvBillingRec.setEnergyPremise(csvBillingCust.getEnergyPremise());
@@ -452,7 +455,7 @@ public class CSVBillingFormat extends ExportFormatBase
 					String energyDebtor = nums.energyDebtor;
 					String energyPremise = nums.energyPremise;
 	
-					com.cannontech.export.record.CSVBillingCustomerRecord csvBillingCust = new com.cannontech.export.record.CSVBillingCustomerRecord(
+					CSVBillingCustomerRecord csvBillingCust = new CSVBillingCustomerRecord(
 						paoName, meterLoc, energyDebtor, energyPremise, baselinePtId, curatailPtId);
 	
 					customerHashtable.put(paoId, csvBillingCust);
@@ -531,7 +534,7 @@ public class CSVBillingFormat extends ExportFormatBase
 			for (int i = 0; i < linesInFile.size(); i++)
 			{
 				String line = (String)linesInFile.get(i);
-				int commaIndex = line.indexOf(",");
+//				int commaIndex = line.indexOf(",");
 	
 				java.util.StringTokenizer t = new java.util.StringTokenizer( line, (new Character('|')).toString(), false );
 				EnergyNumbers nums = new EnergyNumbers();
@@ -566,13 +569,16 @@ public class CSVBillingFormat extends ExportFormatBase
 		long timer = System.currentTimeMillis();
 		if( getExportProperties().isShowColumnHeadings())
 		{
-			//Add a title record
-			getRecordVector().add("Yukon Curtailment Settlement for " +
+			StringRecord stringRec = new StringRecord("Yukon Curtailment Settlement for " +
 				getExportProperties().getMinTimestamp().getTime() + " - " + 
 				getExportProperties().getMaxTimestamp().getTime() + "\r\n");
+				
+			//Add a title record
+			getRecordVector().add(stringRec);
 			
 			//Add a column headings record
-			getRecordVector().add(com.cannontech.export.record.CSVBillingRecord.getColumnHeadingsString());
+			stringRec = new StringRecord(CSVBillingRecord.getColumnHeadingsString());
+			getRecordVector().add(stringRec);
 			
 		}
 	
