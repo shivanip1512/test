@@ -77,6 +77,7 @@
 	StarsAppliances appliances = null;
 	StarsInventories inventories = null;
 	StarsLMPrograms programs = null;
+	StarsLMProgramHistory programHistory = null;
 	StarsCallReportHistory callHist = null;
 	StarsServiceRequestHistory serviceHist = null;
 	StarsUser userLogin = null;
@@ -130,6 +131,7 @@
 			appliances = accountInfo.getStarsAppliances();
 			inventories = accountInfo.getStarsInventories();
 			programs = accountInfo.getStarsLMPrograms();
+			programHistory = programs.getStarsLMProgramHistory();
 			callHist = accountInfo.getStarsCallReportHistory();
 			serviceHist = accountInfo.getStarsServiceRequestHistory();
 			
