@@ -158,6 +158,23 @@ public final static boolean isCarrier(int deviceType)
 	}
 }
 /**
+ * @param deviceType
+ * @return
+ */
+public final static boolean isAlpha(int deviceType) 
+{
+	switch(deviceType)
+	{
+		case ALPHA_A1:
+		case ALPHA_PPLUS:
+			return true;
+	
+		default:
+			return false;
+	}
+
+}
+/**
  * Insert the method's description here.
  * Creation date: (1/15/2001 1:46:22 PM)
  * @return boolean
@@ -746,5 +763,16 @@ public final static boolean usesDeviceMeterGroup(int deviceType)
 	}
 	
 }
-
+public final static boolean isIED(int deviceType) 
+{
+	switch(deviceType)
+	{
+		case MCT360:
+		case MCT370:
+			return true;
+	
+		default:
+			return false;
+	}
+}
 }
