@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/07/18 16:15:54 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/07/30 21:15:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1389,7 +1389,7 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
 
                 newReqString += roleStr;
 
-                if(parse.isKeyValid("noqueue"))
+                if( parse.isKeyValid("noqueue") && newReqString.subString("noqueue").isNull() )
                 {
                     newReqString += " noqueue";
                 }
