@@ -92,6 +92,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	   try
 	   {
 	  		connectWithoutWait();
+	  		sendRetrieveAllSchedules();
 		}
 		catch( java.io.IOException e )
 	   {
@@ -544,9 +545,10 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	 * @exception java.io.IOException The exception description.
 	 */
 	public void sendRetrieveAllSchedules() throws java.io.IOException 
-	{		
-		if( !(isValid()) )
-			throw new java.io.IOException("Not connected to MACSServer.");
+	{
+		/* We need this message to get out whenever we connect */		
+//		if( !(isValid()) )
+//			throw new java.io.IOException("Not connected to MACSServer.");
 	
 		com.cannontech.message.macs.message.RetrieveSchedule newSchedules = new com.cannontech.message.macs.message.RetrieveSchedule();
 		newSchedules.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
