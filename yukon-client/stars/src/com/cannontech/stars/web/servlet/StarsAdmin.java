@@ -58,7 +58,6 @@ import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
-import com.cannontech.database.db.web.LMDirectOperatorList;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
@@ -207,8 +206,6 @@ public class StarsAdmin extends HttpServlet {
 			updateOperatorLogin( user, req, session );
 		else if (action.equalsIgnoreCase("DeleteOperatorLogin"))
 			deleteOperatorLogin( user, req, session );
-		else if (action.equalsIgnoreCase("UpdateDirectPrograms"))
-			updateDirectPrograms( user, req, session );
 		else if (action.equalsIgnoreCase("UpdateRoutes"))
 			updateRoutes( user, req, session );
 		else if (action.equalsIgnoreCase("MemberLogin"))
@@ -2113,47 +2110,6 @@ public class StarsAdmin extends HttpServlet {
 		
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
-	}
-	
-	private void updateDirectPrograms(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		
-		try {
-			long[] programIDs = LMDirectOperatorList.getProgramIDs( user.getUserID() );       
-			ArrayList oldProgIDs = new ArrayList();
-			for (int i = 0; i < programIDs.length; i++)
-				oldProgIDs.add( new Integer((int)programIDs[i]) );
-			
-			String[] progIDs = req.getParameterValues( "ProgIDs" );
-			if (progIDs != null) {
-				for (int i = 0; i < progIDs.length; i++) {
-					Integer progID = Integer.valueOf( progIDs[i] );
-					
-					if (oldProgIDs.contains( progID )) {
-						// Program already assigned to this energy company
-						oldProgIDs.remove( progID );
-					}
-					else {
-						// New direct program
-						String sql = "INSERT INTO LMDirectOperatorList VALUES (" + progID + ", " + user.getUserID() + ")";
-						SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-						stmt.execute();
-					}
-				}
-			}
-			
-			for (int i = 0; i < oldProgIDs.size(); i++) {
-				// Direct programs to be removed
-				Integer progID = (Integer) oldProgIDs.get(i);
-				String sql = "DELETE FROM LMDirectOperatorList WHERE ProgramID = " + progID + " AND OperatorLoginID = " + user.getUserID();
-				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-				stmt.execute();
-			}
-		}
-		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
-			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to update the direct programs" );
-		}
 	}
 	
 	public static void removeRoute(LiteStarsEnergyCompany energyCompany, int routeID)

@@ -21,31 +21,13 @@
 
     LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
     LoadcontrolCache cache = cs.getCache();
-
-    // list to put this customers programs in, contains LMProgramDirect objects
-    ArrayList ourPrograms = new ArrayList();
-
-    long[] programIDs = com.cannontech.database.db.web.LMDirectOperatorList.getProgramIDs( user.getUserID() );       
-    java.util.Arrays.sort(programIDs);
     LMProgramDirect[] allPrograms = cache.getDirectPrograms(); 
-
-    // Match our program ids with the actual programs in the cache so we know what to display
-    for( int i = 0; i < allPrograms.length; i++ )
-    {
-        long id = allPrograms[i].getYukonID().longValue();
-        if( java.util.Arrays.binarySearch(programIDs, id ) >= 0 )
-        {
-            // found one
-            ourPrograms.add(allPrograms[i]);
-        }
-    }
 
     // list to put available programs in, contains LMProgramDirect objects
     ArrayList availPrograms = new ArrayList();
-	for (int i = 0; i < ourPrograms.size(); i++) {
-		int id = ((LMProgramDirect) ourPrograms.get(i)).getYukonID().intValue();
-		StarsEnrLMProgram program = ServletUtils.getEnrollmentProgram(categories, id);
-		if (program == null) availPrograms.add( ourPrograms.get(i) );
+	for (int i = 0; i < allPrograms.length; i++) {
+		StarsEnrLMProgram program = ServletUtils.getEnrollmentProgram(categories, allPrograms[i].getYukonID().intValue());
+		if (program == null) availPrograms.add( allPrograms[i] );
 	}
 %>
 <html>

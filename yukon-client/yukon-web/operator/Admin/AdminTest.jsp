@@ -2,12 +2,9 @@
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
 <%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
-<%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
 <%@ page import="com.cannontech.roles.operator.AdministratorRole" %>
-<%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.stars.util.ECUtils" %>
-<%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%	if (!AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
 		|| ecSettings == null) {
 		response.sendRedirect("../Operations.jsp"); return;
@@ -247,56 +244,6 @@ function removeAllMembers(form) {
                                   </td>
                                   <td width="25%" class="TableCell"> 
                                     <input type="button" name="Edit" value="Edit" onClick="location.href='Routes.jsp'">
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-                        </table>
-                        <br>
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td><b><font color="#0000FF">Direct Programs:</font></b> 
-                        <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
-                          <tr> 
-                            <td> 
-                              <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                <tr> 
-                                  <td class="TableCell" width="5%">&nbsp;</td>
-                                  <td class="TableCell" width="70%"> 
-<%
-    LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
-    LoadcontrolCache lcCache = cs.getCache();
-
-    // list to put this customers programs in, contains LMProgramDirect objects
-    ArrayList ourPrograms = new ArrayList();
-
-    long[] programIDs = com.cannontech.database.db.web.LMDirectOperatorList.getProgramIDs( user.getUserID() );       
-    java.util.Arrays.sort(programIDs);
-    LMProgramDirect[] allPrograms = lcCache.getDirectPrograms(); 
-
-    // Match our program ids with the actual programs in the cache so we know what to display
-    for( int i = 0; i < allPrograms.length; i++ )
-    {
-        long id = allPrograms[i].getYukonID().longValue();
-        if( java.util.Arrays.binarySearch(programIDs, id ) >= 0 )
-        {
-            // found one
-            ourPrograms.add(allPrograms[i]);
-        }
-    }
-	
-	for (int i = 0; i < ourPrograms.size(); i++) {
-		LMProgramDirect program = (LMProgramDirect) ourPrograms.get(i);
-%>
-                                    <%= program.getYukonName() %><br>
-<%
-	}
-%>
-                                  </td>
-                                  <td width="25%" class="TableCell"> 
-                                    <input type="button" name="Edit" value="Edit" onClick="location.href='DirectPrograms.jsp'">
                                   </td>
                                 </tr>
                               </table>
