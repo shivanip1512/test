@@ -33,7 +33,7 @@ class IM_EX_DEVDB CtiDeviceWctpTerminal  : public CtiDeviceIED
 {
 protected:
 
-   CtiTableDeviceTapPaging      _wctp;			// Use the same class as a TapPagingTerminal for now
+   CtiTableDeviceTapPaging      _wctp;          // Use the same class as a TapPagingTerminal for now
 
    UINT                         _pageCount;    // Used to count the number of pages sent out (0-n)
    CHAR                         _pagePrefix;   // Used to fake the WCTPTERM into thining it is a new message (a-d)
@@ -42,20 +42,20 @@ protected:
 
    RWCString                    _inStr;
 
-   CHAR*						_outBuffer;		// Use our own buffer because WCTP message could be as long as 1024 bytes
-   CHAR*						_inBuffer;
-   CHAR*						_xmlBuffer;		// Buffer for XML message
-   
+   CHAR*                        _outBuffer;     // Use our own buffer because WCTP message could be as long as 1024 bytes
+   CHAR*                        _inBuffer;
+   CHAR*                        _xmlBuffer;     // Buffer for XML message
+
 private:
 
-	CHAR			*readLinePtr;
+    CHAR            *readLinePtr;
 
-	SAX2XMLReader	*parser;			// Parser to parse the WCTP response message
-	SAXWctpHandler	*handler;			// WCTP response message handler
+    SAX2XMLReader   *parser;            // Parser to parse the WCTP response message
+    SAXWctpHandler  *handler;           // WCTP response message handler
 
-	BOOL			statusParsed;		// Whether the HTTP response status line has been parsed
-	BOOL			headerParsed;		// Whether the HTTP response headers has been parsed
-	INT				timeEllapsed;		// Time ellapsed before WCTP response message has been completely received
+    BOOL            statusParsed;       // Whether the HTTP response status line has been parsed
+    BOOL            headerParsed;       // Whether the HTTP response headers has been parsed
+    INT             timeEllapsed;       // Time ellapsed before WCTP response message has been completely received
 
 public:
 
@@ -128,7 +128,7 @@ private:
    INT   readLine(CHAR* str, CHAR* buf, INT bufLen);
    CHAR* getReadLinePtr()
    {
-	   return readLinePtr;
+       return readLinePtr;
    }
 
    SAX2XMLReader*  getSAXParser();
@@ -141,10 +141,10 @@ private:
 };
 
 
-#define WCTP_VERSION	"wctp-dtd-v1r1"
-#define WCTP_DOCTYPE	"http://dtd.wctp.org/wctp-dtd-v1r1.dtd"
+#define WCTP_VERSION    "wctp-dtd-v1r1"
+#define WCTP_DOCTYPE    "http://dtd.wctp.org/wctp-dtd-v1r1.dtd"
 
-#define WCTP_TIMEOUT	3
+#define WCTP_TIMEOUT    3
 
 
 
@@ -182,43 +182,43 @@ public:
         return succ;
     }
 
-	bool hasError() const
-	{
-		return err;
-	}
+    bool hasError() const
+    {
+        return err;
+    }
 
-	void resetHandler();
+    void resetHandler();
 
 
     // -----------------------------------------------------------------------
     //  Handlers for the SAX2 ContentHandler interface
     // -----------------------------------------------------------------------
-	void startElement (const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname, const Attributes &attrs);
-	void endElement (const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname);
+    void startElement (const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname, const Attributes &attrs);
+    void endElement (const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname);
     void characters(const XMLCh* const chars, const unsigned int length);
 
     // -----------------------------------------------------------------------
     //  Handlers for the SAX2 ErrorHandler interface
     // -----------------------------------------------------------------------
-	void  error (const SAXParseException &exception);
-	void  fatalError (const SAXParseException &exception);
-	void  warning (const SAXParseException &exception);
+    void  error (const SAXParseException &exception);
+    void  fatalError (const SAXParseException &exception);
+    void  warning (const SAXParseException &exception);
 
 
 private:
-	unsigned int	respCode;
-	char			*respText;
-	char			*respMessage;
-	bool			succ;
-	bool			err;
+    unsigned int    respCode;
+    char            *respText;
+    char            *respMessage;
+    bool            succ;
+    bool            err;
 
-	bool	isRoot;
-	bool	inOperation;
-	bool	inSubmitClientResponse;
-	bool	inClientSuccess;
-	bool	inFailure;
-	bool	inConfirmation;
-	bool	inSuccess;
+    bool    isRoot;
+    bool    inOperation;
+    bool    inSubmitClientResponse;
+    bool    inClientSuccess;
+    bool    inFailure;
+    bool    inConfirmation;
+    bool    inSuccess;
 };
 
 

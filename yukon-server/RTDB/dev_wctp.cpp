@@ -1112,10 +1112,8 @@ void CtiDeviceWctpTerminal::DecodeDatabaseReader(RWDBReader &rdr)
 SAXWctpHandler::SAXWctpHandler() :
 
     respCode(0)
-    , respText("")
     , succ(false)
     , err(false)
-
     , isRoot(true)
     , inOperation(false)
     , inSubmitClientResponse(false)
@@ -1124,6 +1122,7 @@ SAXWctpHandler::SAXWctpHandler() :
     , inConfirmation(false)
     , inSuccess(false)
 {
+    respText = CTIDBG_new char[256];;
     respMessage = CTIDBG_new char[256];
     respMessage[0] = 0;
 }
@@ -1134,13 +1133,23 @@ SAXWctpHandler::~SAXWctpHandler()
     {
         delete [] respMessage;
     }
+    if (respText != NULL)
+    {
+        delete [] respText;
+    }
 }
 
 
 void SAXWctpHandler::resetHandler()
 {
     respCode = 0;
-    respText = "";
+
+    if (respText == NULL)
+    {
+        respText = CTIDBG_new char[256];
+    }
+    respText[0] = 0;
+
     if (respMessage == NULL)
     {
         respMessage = CTIDBG_new char[256];
@@ -1166,7 +1175,9 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
                                    const XMLCh *const qname,
                                    const Attributes &attrs)
 {
-    char *elemName = XMLString::transcode(qname);
+    char elemName[256];
+
+    XMLString::transcode(qname, elemName, 255);
 
     if (strcmp(elemName, "wctp-Operation") == 0) {
         if (!isRoot) {
@@ -1207,9 +1218,12 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
 
         // This is the ONLY case that we get a success confirmation
         succ = true;
-        char *respCodeStr = XMLString::transcode(
-                                attrs.getValue( XMLString::transcode("successCode") ));
+        XMLCh *pXMLChTemp = XMLString::transcode("successCode");
+        char *respCodeStr = XMLString::transcode( attrs.getValue( pXMLChTemp ));
+        delete [] pXMLChTemp;
+
         respCode = atoi(respCodeStr);
+        delete [] respCodeStr;
         if (respCode == 0) {        // Conversion failed
             err = true;
             throw CTIDBG_new SAXParseException(
@@ -1219,8 +1233,10 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
                 0,
                 0);
         }
-        respText = XMLString::transcode(
-                        attrs.getValue( XMLString::transcode("successText") ));
+
+        pXMLChTemp = XMLString::transcode("successText");
+        XMLString::transcode( attrs.getValue( pXMLChTemp ), respText, 255);
+        delete [] pXMLChTemp;
     }
     else if (strcmp(elemName, "wctp-Failure") == 0) {
         if (!inSubmitClientResponse && !inConfirmation) {
@@ -1234,9 +1250,9 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
         }
         inFailure = true;
 
-        char *respCodeStr = XMLString::transcode(
-                                attrs.getValue( XMLString::transcode("errorCode") ));
+        char *respCodeStr = XMLString::transcode( attrs.getValue( XMLString::transcode("errorCode") ));
         respCode = atoi(respCodeStr);
+        delete [] respCodeStr;
         if (respCode == 0) {        // Conversion failed
             err = true;
             throw CTIDBG_new SAXParseException(
@@ -1246,8 +1262,7 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
                 0,
                 0);
         }
-        respText = XMLString::transcode(
-                        attrs.getValue( XMLString::transcode("errorText") ));
+        XMLString::transcode( attrs.getValue(XMLString::transcode("errorText")), respText, 255);
     }
     else if (strcmp(elemName, "wctp-Confirmation") == 0) {
         // If we get a wctp-Confirmation instead of a wctp-submitClientResponse, it means something's gone wrong
@@ -1274,9 +1289,11 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
         }
         inSuccess = true;
 
-        char *respCodeStr = XMLString::transcode(
-                                attrs.getValue( XMLString::transcode("successCode") ));
+        XMLCh *pXMLChTemp = XMLString::transcode("successCode");
+        char *respCodeStr = XMLString::transcode( attrs.getValue( pXMLChTemp ));
+        delete [] pXMLChTemp;
         respCode = atoi(respCodeStr);
+        delete [] respCodeStr;
         if (respCode == 0) {        // Conversion failed
             err = true;
             throw CTIDBG_new SAXParseException(
@@ -1286,16 +1303,18 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
                 0,
                 0);
         }
-        respText = XMLString::transcode(
-                        attrs.getValue( XMLString::transcode("successText") ));
+
+        pXMLChTemp = XMLString::transcode("successText");
+        XMLString::transcode(attrs.getValue(pXMLChTemp), respText, 255);
+        delete [] pXMLChTemp;
     }
 }
 
-void SAXWctpHandler::endElement(const XMLCh* const uri,
-                                 const XMLCh* const localname,
-                                 const XMLCh* const qname)
+void SAXWctpHandler::endElement(const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname)
 {
-    char *elemName = XMLString::transcode(qname);
+    char elemName[256];
+
+    XMLString::transcode(qname, elemName, 255);
 
     if (strcmp(elemName, "wctp-Operation") == 0) {
         if (!inOperation) {
@@ -1371,10 +1390,12 @@ void SAXWctpHandler::endElement(const XMLCh* const uri,
     }
 }
 
-void SAXWctpHandler::characters(const XMLCh* const chars,
-                                 const unsigned int length)
+void SAXWctpHandler::characters(const XMLCh* const chars, const unsigned int length)
 {
-    char *pChars = XMLString::transcode(chars);
+    char pChars[256];
+
+    XMLString::transcode(chars, pChars, 255);
+
     char buf[256];
     strncpy(buf, pChars, length);
     buf[length] = 0;
