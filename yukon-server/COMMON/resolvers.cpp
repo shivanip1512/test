@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/01/07 21:01:30 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/01/15 20:41:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1298,19 +1298,34 @@ RWCString   resolveDBChanged(INT dbnum)
             rStr = RWCString(" ALARM Category DB");
             break;
         }
+    case ChangeCustomerContactDb:
+        {
+            rStr = RWCString(" Customer Contact DB");
+            break;
+        }
     case ChangeGraphDb:
         {
             rStr = RWCString(" Graph DB");
             break;
         }
-    case ChangeHolidaySchedule:
+    case ChangeHolidayScheduleDb:
         {
             rStr = RWCString(" Holiday Schedule DB");
             break;
         }
-    case ChangeEnergyCompany:
+    case ChangeEnergyCompanyDb:
         {
             rStr = RWCString(" Energy Company DB");
+            break;
+        }
+    case ChangeStateImageDb:
+        {
+            rStr = RWCString(" State Image DB");
+            break;
+        }
+    case ChangeYukonUserDb:
+        {
+            rStr = RWCString(" Yukon User DB");
             break;
         }
     default:
