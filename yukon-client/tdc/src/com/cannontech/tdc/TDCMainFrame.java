@@ -1883,7 +1883,7 @@ private javax.swing.JMenuItem getJMenuItemCreate() {
 			ivjJMenuItemCreate = new javax.swing.JMenuItem();
 			ivjJMenuItemCreate.setName("JMenuItemCreate");
 			ivjJMenuItemCreate.setMnemonic('n');
-			ivjJMenuItemCreate.setText("New Display...");
+			ivjJMenuItemCreate.setText("New...");
 			ivjJMenuItemCreate.setBackground(java.awt.SystemColor.control);
 			ivjJMenuItemCreate.setForeground(java.awt.SystemColor.controlText);
 			ivjJMenuItemCreate.setFont(new java.awt.Font("dialog", 0, 12));

@@ -3465,7 +3465,8 @@ protected void resetMainPanel()
 		getCurrentSpecailChild().removeActionListenerFromJComponent( getJComboCurrentDisplay() );		
 		getCurrentSpecailChild().getMainJPanel().setVisible( false );
 		frameAlarmToolBar.setOriginalButtons();
-		getJLabelDisplayName().setText("Display");
+		getJLabelDisplayName().setText("View");
+
 
 		getCurrentSpecailChild().destroy();
 	}
