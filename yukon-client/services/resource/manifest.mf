@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.jmx.JRMPServer
-Class-Path: ./ graph.jar notification.jar calchist.jar mx4j-jmx.jar mx4j-tools.jar common.jar log4j-1.2.4.jar rwav.jar acme.jar yukonappclient.jar yukonappserver.jar j2ee.jar jfreechart.jar jcommon.jar jcfield401K.jar jcpagelayout450k.jar jcchart401k.jar batik.jar SqlServer.jar jtds.jar classes12.jar ../config/ ../log/ ../export/
+Class-Path: ./ graph.jar ../../lib/notification.jar ../../lib/calchist.jar ../../lib/mx4j-jmx.jar ../../lib/mx4j-tools.jar ../../lib/common.jar ../../lib/log4j-1.2.4.jar ../../lib/rwav.jar ../../lib/acme.jar ../../lib/yukonappserver.jar ../../lib/j2ee.jar ../../lib/jfreechart.jar ../../lib/jcommon.jar ../../lib/jcfield401K.jar ../../lib/jcpagelayout450k.jar ../../lib/jcchart401k.jar ../../lib/batik.jar ../../lib/SqlServer.jar ../../lib/jtds.jar ../../lib/classes12.jar ../log/ ../export/
