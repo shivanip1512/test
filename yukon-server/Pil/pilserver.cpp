@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2002/12/12 17:33:34 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2003/02/04 17:23:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -544,8 +544,19 @@ void CtiPILServer::resultThread()
             /* get the time for use in the decodes */
             TimeNow = RWTime();
 
-            // Do some device dependant work on this Inbound message!
-            DeviceRecord->ProcessResult( InMessage, TimeNow, vgList, retList, outList);
+            try
+            {
+                // Do some device dependant work on this Inbound message!
+                DeviceRecord->ProcessResult( InMessage, TimeNow, vgList, retList, outList);
+            }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " Process Result FAILED " << DeviceRecord->getName() << endl;
+                }
+            }
 
             if(outList.entries())
             {
