@@ -17,5 +17,6 @@
     <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
     <classpathentry kind="src" path="/yukonappserver"/>
     <classpathentry kind="lib" path="/third-party/jtds.jar"/>
+    <classpathentry kind="lib" path="/third-party/jfreereport.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
