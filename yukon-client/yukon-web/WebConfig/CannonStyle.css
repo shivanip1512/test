@@ -27,6 +27,8 @@ a.Link4:hover {color: #666699; font-size: 9px}
 .TableCell2 {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; background-color: #CCCCCC}
 
 .NavHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFCC66; font-style: italic}
+.NavGroup {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #CCCCCC; font-style: italic}
+.NavGroup_selected {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #CCCCCC}
 .NavText {  font-family: Arial, Helvetica, sans-serif; font-size: 9px}
 .Nav {  font-family: Arial, Helvetica, sans-serif; font-size: 9px;  color: #99FFFF}
 
