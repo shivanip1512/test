@@ -26,6 +26,14 @@ function selectSingle(form) {
 	form.All.checked = allChecked;
 }
 
+function removeCommands(form) {
+	if (!validate(form) ||
+		!confirm("Are you sure you want to remove the selected switch commands?"))
+		return;
+	form.action.value = "RemoveSwitchCommands";
+	form.submit();
+}
+
 function validate(form) {
 	var checkboxes = document.getElementsByName("InvID");
 	for (i = 0; i < checkboxes.length; i++) {
@@ -125,7 +133,7 @@ function validate(form) {
                     <input type="submit" name="Submit" value="Send">
                   </td>
                   <td width="53%"> 
-                    <input type="submit" name="Submit2" value="Remove" onclick="this.form.action.value = 'RemoveSwitchCommands'">
+                    <input type="button" name="Remove" value="Remove" onclick="removeCommands(this.form)">
                   </td>
                 </tr>
               </table>
