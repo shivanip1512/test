@@ -23,7 +23,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_POINT_DB						= 1;
 	public static final int CHANGE_STATE_GROUP_DB				= 2;
 	public static final int CHANGE_NOTIFICATION_GROUP_DB		= 3;
-	public static final int CHANGE_NOTIFICATION_RECIPIENT_DB	= 4;
+//	public static final int CHANGE_NOTIFICATION_RECIPIENT_DB	= 4;
 	public static final int CHANGE_ALARM_CATEGORY_DB			= 5;
 	public static final int CHANGE_CONTACT_DB						= 6;
 	public static final int CHANGE_GRAPH_DB						= 7;
@@ -40,7 +40,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_POINT = "Point";
 	public static final String CAT_STATEGROUP ="StateGroup";
 	public static final String CAT_NOTIFCATIONGROUP = "NotificationGroup";
-	public static final String CAT_NOTIFICATIONRECIPIENT = "NotificationRecipient";
+//	public static final String CAT_NOTIFICATIONRECIPIENT = "NotificationRecipient";
 	public static final String CAT_ALARMCATEGORY = "AlarmCategory";
 	public static final String CAT_CUSTOMERCONTACT = "CustomerContact";
 	public static final String CAT_GRAPH = "Graph";
