@@ -3,14 +3,14 @@
 
 /*-----------------------------------------------------------------------------*
 *
-* File:   tbl_dv_dnp
+* File:   tbl_dv_address
 *
 * Date:   2002-aug-27
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/14 16:36:41 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/05/11 18:28:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
