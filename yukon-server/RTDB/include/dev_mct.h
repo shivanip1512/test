@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/10/27 22:04:06 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/10/30 17:38:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,16 +53,21 @@ protected:
         MCT_TSyncPos         = 0x49,
         MCT_TSyncLen         =    3, //  5,  <-- !!  don't send the extra 2 bytes - this fools Porter into letting it through unscathed
 
-        MCT_GroupAddrInhibit = 0x53,
-        MCT_GroupAddrEnable  = 0x54,
+        MCT_Function_Open             = 0x41,
+        MCT_Function_Close            = 0x42,
+        MCT_Function_GroupAddrInhibit = 0x53,
+        MCT_Function_GroupAddrEnable  = 0x54,
+        MCT_Function_ARML             = 0x60,
+        MCT_Function_ARMD             = 0x61,
+        MCT_Function_ARMC             = 0x62,
+
+        MCT_Function_LPInt            = 0x70,
 
         MCT_Restore          = 0x00,
         MCT_Shed_Base_07m    = 0x00,
         MCT_Shed_Base_15m    = 0x10,
         MCT_Shed_Base_30m    = 0x20,
         MCT_Shed_Base_60m    = 0x30,
-
-        MCT_LPInt_Func       = 0x70,
 
         MCT_Rollover              = 100000,   //  5 digits
         MCT_DemandIntervalDefault = 300,      //  5 minute default demand, if not specified in the database...
