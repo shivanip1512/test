@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/10/27 22:03:36 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2004/03/18 19:46:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -438,6 +438,26 @@ RWCString desolveDeviceType( INT aType )
    else if(aType == TYPE_SYSTEM)
    {
       Ret = "system";
+   }
+   else if(aType == TYPE_LMGROUP_GOLAY)
+   {
+      Ret = "golay group";
+   }
+   else if(aType == TYPE_LMGROUP_SADIGITAL)
+   {
+      Ret = "sadigital group";
+   }
+   else if(aType == TYPE_LMGROUP_SA105)
+   {
+      Ret = "sa-105 group";
+   }
+   else if(aType == TYPE_LMGROUP_SA205)
+   {
+      Ret = "sa-205 group";
+   }
+   else if(aType == TYPE_LMGROUP_SA305)
+   {
+      Ret = "sa-305 group";
    }
    else
    {

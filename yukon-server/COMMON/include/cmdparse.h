@@ -66,6 +66,9 @@ private:
     void    doParsePutConfigExpresscom(const RWCString &CmdStr);
     void    doParsePutStatusExpresscom(const RWCString &CmdStr);
 
+    void    doParseControlSA(const RWCString &CmdStr);
+    void    doParsePutConfigSA(const RWCString &CmdStr);
+
     void    doParsePutConfigThermostatSchedule(const RWCString &CmdStr);
 
     INT     convertTimeInputToSeconds(const RWCString& inStr) const;

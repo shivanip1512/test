@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/02/17 15:08:03 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/03/18 19:46:44 $
 * HISTORY      :
 * $Log: tbl_lmg_sa305.h,v $
+* Revision 1.2  2004/03/18 19:46:44  cplender
+* Added code to support the SA305 protocol and load group
+*
 * Revision 1.1  2004/02/17 15:08:03  cplender
 * New files for GRE/SA support
 *
@@ -57,7 +60,7 @@ protected:
     int _hierarchy;         // 1 bit
 
     int _function;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
-    int _addressUsage;      // bit indicators.  Identifies which addressing components to use.
+    RWCString _addressUsage;      // Identifies which addressing components to use.
 
 
 private:
@@ -85,7 +88,7 @@ public:
     int getRateMember() const;        // 4 bits
     int getHierarchy() const;         // 1 bit
     int getFunction() const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
-    int getAddressUsage() const;
+    RWCString  getAddressUsage() const;
 
     CtiTableSA305LoadGroup& setLmGroupId(LONG newVal);
     CtiTableSA305LoadGroup& setRouteId(LONG newVal);
@@ -98,7 +101,7 @@ public:
     CtiTableSA305LoadGroup& setRateMember(int newVal);        // 4 bits
     CtiTableSA305LoadGroup& setHierarchy(int newVal);         // 1 bit
     CtiTableSA305LoadGroup& setFunction(int newVal);          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
-    CtiTableSA305LoadGroup& setAddressUsage(int newVal);      //
+    CtiTableSA305LoadGroup& setAddressUsage(RWCString  newVal);      //
 
     static RWCString getTableName();
 

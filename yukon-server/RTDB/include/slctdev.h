@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/slctdev.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:36:18 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/03/18 19:46:17 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,6 +22,7 @@
 
 #include "dlldefs.h"
 #include "dev_base.h"
+#include "rtdb.h"
 #include "rte_base.h"
 
 IM_EX_DEVDB CtiDeviceBase* DeviceFactory(RWDBReader &rdr);

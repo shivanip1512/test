@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2003/10/27 22:03:36 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2004/03/18 19:46:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -561,6 +561,26 @@ INT resolveDeviceType(RWCString rwsTemp)
     {
         nRet = TYPEMCTBCAST;
     }
+    else if(rwsTemp == "golay group")
+    {
+        nRet = TYPE_LMGROUP_GOLAY;
+    }
+    else if(rwsTemp == "sadigital group")
+    {
+        nRet = TYPE_LMGROUP_SADIGITAL;
+    }
+    else if(rwsTemp == "sa-105 group")
+    {
+        nRet = TYPE_LMGROUP_SA105;
+    }
+    else if(rwsTemp == "sa-205 group")
+    {
+        nRet = TYPE_LMGROUP_SA205;
+    }
+    else if(rwsTemp == "sa-305 group")
+    {
+        nRet = TYPE_LMGROUP_SA305;
+    }
     else
     {
         {
@@ -1031,6 +1051,11 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPE_LMGROUP_EXPRESSCOM:
     case TYPE_LMGROUP_ENERGYPRO:
     case TYPE_LMGROUP_MCT:
+    case TYPE_LMGROUP_GOLAY:
+    case TYPE_LMGROUP_SADIGITAL:
+    case TYPE_LMGROUP_SA105:
+    case TYPE_LMGROUP_SA205:
+    case TYPE_LMGROUP_SA305:
     case TYPEMCTBCAST:
     case TYPE_MACRO:
         {

@@ -898,11 +898,16 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
                 doParseControlExpresscom(CmdStr);
                 break;
             }
-        case ProtocolVersacomType:
-        case ProtocolFisherPierceType:
         case ProtocolSA105Type:
         case ProtocolSA205Type:
         case ProtocolSA305Type:
+            {
+                // This will change over time.
+                doParseControlSA(CmdStr);
+                break;
+            }
+        case ProtocolVersacomType:
+        case ProtocolFisherPierceType:
         case ProtocolEmetconType:
         default:
             {
@@ -1289,10 +1294,14 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
                 doParsePutConfigExpresscom(CmdStr);
                 break;
             }
-        case ProtocolFisherPierceType:
         case ProtocolSA105Type:
         case ProtocolSA205Type:
         case ProtocolSA305Type:
+            {
+                doParsePutConfigSA(CmdStr);
+                break;
+            }
+        case ProtocolFisherPierceType:
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2922,6 +2931,18 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
             {
                 _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
             }
+            else if(CmdStr.contains("sa105"))       // Sourcing from CmdStr, which is the entire command string.
+            {
+                _cmd["type"] = CtiParseValue( "sa105", ProtocolSA105Type );
+            }
+            else if(CmdStr.contains("sa205"))       // Sourcing from CmdStr, which is the entire command string.
+            {
+                _cmd["type"] = CtiParseValue( "sa205", ProtocolSA205Type );
+            }
+            else if(CmdStr.contains("sa305"))       // Sourcing from CmdStr, which is the entire command string.
+            {
+                _cmd["type"] = CtiParseValue( "sa305", ProtocolSA305Type );
+            }
             else
             {  //  default to Versacom if nothing found
                 _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
@@ -3932,3 +3953,401 @@ void CtiCommandParser::doParsePutConfigThermostatScheduleDOW(RWTokenizer &tok, I
         }
     }
 }
+
+void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
+{
+    INT         _num;
+    UINT        flag   = 0;
+    UINT        offset = 0;
+    INT         iValue = 0;
+    DOUBLE      dValue = 0.0;
+
+    CHAR        tbuf[80];
+    CHAR        tbuf2[80];
+
+    RWCString   temp;
+    RWCString   valStr;
+
+    RWCTokenizer   tok(CmdStr);
+
+    temp = tok(); // Get the first one into the hopper....
+
+
+    _cmd["sa_f1bit"] = 0;
+
+
+    if(CmdStr.contains(" priority"))
+    {
+        if(!(temp = CmdStr.match(" priority +[0-9]+")).isNull())
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
+                _cmd["sa_priority"] = CtiParseValue( iValue );
+            }
+        }
+    }
+    if(CmdStr.contains(" repeats"))
+    {
+        if(!(temp = CmdStr.match(" repeats +[0-9]+")).isNull())
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << iValue << endl;
+                }
+
+                _cmd["sa_reps"] = CtiParseValue( iValue - 1 );
+            }
+        }
+    }
+
+
+    if(CmdStr.contains(" function") )
+    {
+        if(!(temp = CmdStr.match(" function +[01][01][01][01]")).isNull())
+        {
+            if(!(valStr = temp.match("[01][01][01][01]")).isNull())
+            {
+                iValue = binaryStringToInt(valStr.data(), valStr.length());
+                _cmd["sa_function"] = CtiParseValue(iValue);
+            }
+        }
+        else if(!(temp = CmdStr.match(" function +[1-4]([ ,]+[1-4])?([ ,]+[1-4])?([ ,]+[1-4])?")).isNull())
+        {
+            if(!(valStr = temp.match("[1-4]([ ,]+[1-4])?([ ,]+[1-4])?([ ,]+[1-4])?")).isNull())
+            {
+                iValue = 0;
+
+                if(valStr.contains("4"))
+                {
+                    iValue |= 0x08;
+                }
+                if(valStr.contains("3"))
+                {
+                    iValue |= 0x04;
+                }
+                if(valStr.contains("2"))
+                {
+                    iValue |= 0x02;
+                }
+                if(valStr.contains("1"))
+                {
+                    iValue |= 0x01;
+                }
+
+                _cmd["sa_function"] = CtiParseValue(iValue);
+            }
+        }
+    }
+
+    if(CmdStr.contains(" dlc"))
+    {
+        _cmd["sa_dlc_mode"] = CtiParseValue(1);    // DI mode is implied by the abscence of dlc.
+    }
+
+    if(CmdStr.contains(" restore"))    // This parse must be done following the check for dlc.
+    {
+        bool abrupt = false;
+
+        if(CmdStr.contains(" abrupt"))
+        {
+            abrupt = true;
+        }
+
+        if(getiValue("sa_dlc_mode",0))  // If dlc was set by the parse above
+        {
+            _cmd["sa_reps"] = abrupt ? 0 : 1;
+            _cmd["sa_f0bit"] = 0;
+            _cmd["sa_restore"] = TRUE;
+        }
+        else
+        {
+            _cmd["sa_reps"] = abrupt ? 0 : 1;
+            _cmd["sa_f0bit"] = 1;
+            _cmd["sa_restore"] = TRUE;
+        }
+
+        _cmd["sa_strategy"] = CtiParseValue(61);        // This is the defined strategy.
+    }
+    else if(!(temp = CmdStr.match(" strategy +[01][01][01][01][01][01]")).isNull())
+    {
+        // This is a binary...
+        if(!(valStr = temp.match("[01][01][01][01][01][01]")).isNull())
+        {
+            iValue = binaryStringToInt(valStr.data(), valStr.length());
+            _cmd["sa_strategy"] = CtiParseValue(iValue);    // If not explicitly called out, this is inferred from the period and cycle percent.
+        }
+    }
+}
+
+void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
+{
+    INT         _num;
+    INT         iValue = 0;
+
+    RWCString   valStr;
+    RWCString   temp;
+
+    RWCTokenizer   tok(CmdStr);
+
+    temp = tok(); // Get the first one into the hopper....
+
+    if(CmdStr.contains(" priority"))
+    {
+        if(!(temp = CmdStr.match(" priority +[0-9]+")).isNull())
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
+                _cmd["sa_priority"] = CtiParseValue( iValue );
+            }
+        }
+    }
+
+    if(!(temp = CmdStr.match(" override +[0-9]+")).isNull())
+    {
+        _cmd["sa_f1bit"] = 0;
+        _cmd["sa_f0bit"] = 0;
+
+        if(!(valStr = temp.match("[0-9]+")).isNull())
+        {
+            iValue = atoi(valStr.data());
+            _cmd["sa_override"] = CtiParseValue(iValue);    // Hours switch is off.
+            _cmd["sa_strategy"] = CtiParseValue(62);        // This is the defined strategy.
+        }
+    }
+    else if(!(temp = CmdStr.match(" setled +[0-9]+")).isNull())
+    {
+        _cmd["sa_f1bit"] = 0;
+        _cmd["sa_f0bit"] = 1;
+
+        if(!(valStr = temp.match("[0-9]+")).isNull())
+        {
+            iValue = atoi(valStr.data());
+            _cmd["sa_setled"] = CtiParseValue(iValue);
+            _cmd["sa_strategy"] = CtiParseValue(63);
+        }
+    }
+    else if(!(temp = CmdStr.match(" flashled +[0-9]+")).isNull())
+    {
+        _cmd["sa_f1bit"] = 0;
+        _cmd["sa_f0bit"] = 1;
+
+        if(!(valStr = temp.match("[0-9]+")).isNull())
+        {
+            iValue = atoi(valStr.data());
+            _cmd["sa_flashled"] = CtiParseValue(iValue);
+            _cmd["sa_strategy"] = CtiParseValue(63);
+        }
+    }
+    else if(CmdStr.contains(" flashrate"))
+    {
+        _cmd["sa_f1bit"] = 0;
+        _cmd["sa_f0bit"] = 0;
+
+        _cmd["sa_flashrate"] = CtiParseValue(TRUE);
+        _cmd["sa_strategy"] = CtiParseValue(63);
+    }
+    else if(!(temp = CmdStr.match(" setpriority +[0-3]")).isNull())
+    {
+        _cmd["sa_f1bit"] = 0;
+        _cmd["sa_f0bit"] = 0;
+
+        if(!(valStr = temp.match("[0-3]")).isNull())
+        {
+            iValue = atoi(valStr.data());
+            _cmd["sa_setpriority"] = CtiParseValue(iValue);
+            _cmd["sa_strategy"] = CtiParseValue(63);
+        }
+    }
+    else
+    {
+        _cmd["sa_f1bit"] = 1;
+
+        if(CmdStr.contains(" assign"))
+        {
+            char *p;
+            CHAR        tbuf[80];
+
+            _cmd["sa_f0bit"] = 1;
+            _cmd["sa_assign"] = TRUE;
+
+            if(!(valStr = CmdStr.match(" u[ =]*[0-9]+")).isNull())  // Must be included
+            {
+                _num = strtol(valStr.match(re_num).data(), &p, 0);
+                _cmd["sa_utility"] = CtiParseValue( _num );
+            }
+            if(!(valStr = CmdStr.match(" g[ =]*[0-9]+")).isNull())
+            {
+                _num = strtol(valStr.match(re_num).data(), &p, 0);
+                _cmd["sa_group"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG GROUP = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+            if(!(valStr = CmdStr.match(" d[ =]*[0-9]+")).isNull())
+            {
+                _num = strtol(valStr.match(re_num).data(), &p, 0);
+                _cmd["sa_division"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+            if(!(valStr = CmdStr.match(" s[ =]*[0-9]+")).isNull())
+            {
+                _num = strtol(valStr.match(re_num).data(), &p, 0);
+                _cmd["sa_substation"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG SUBSTATION = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+            if(!(valStr = CmdStr.match(" p[ =]*[0-9]+")).isNull())
+            {
+                _num = strtol(valStr.match(re_num).data(), &p, 0);
+                _cmd["sa_package"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG PACKAGE = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+            else
+            {
+                if(!(valStr = CmdStr.match(" f[ =]*[0-9]+")).isNull())
+                {
+                    _num = strtol(valStr.match(re_num).data(), &p, 0);
+                    _cmd["sa_family"] = CtiParseValue( _num );
+
+                    _snprintf(tbuf, sizeof(tbuf), "CONFIG FAMILY = %d", _num);
+                    _actionItems.insert(tbuf);
+                }
+                if(!(valStr = CmdStr.match(" m[ =]*[0-9]+")).isNull())
+                {
+                    _num = strtol(valStr.match(re_num).data(), &p, 0);
+                    _cmd["sa_member"] = CtiParseValue( _num );
+
+                    _snprintf(tbuf, sizeof(tbuf), "CONFIG MEMBER = %d", _num);
+                    _actionItems.insert(tbuf);
+                }
+            }
+        }
+        else
+        {
+            _cmd["sa_f0bit"] = 0; // This is a short stuff config.
+            if(CmdStr.contains(" coldload"))
+            {
+                // Assume seconds is the input here!
+                if(!(temp = CmdStr.match(" coldload +f1[ =]+[0-9]+")).isNull())
+                {
+                    temp.replace("coldload +f1[ =]+", "");
+                    if(!(valStr = temp.match("[0-9]+")).isNull())
+                    {
+                        iValue = atoi(valStr.data());
+                        _cmd["sa_clpf1"] = CtiParseValue(iValue);
+                    }
+                }
+                else if(!(temp = CmdStr.match(" coldload +f2[ =]+[0-9]+")).isNull())
+                {
+                    temp.replace("coldload +f2[ =]+", "");
+                    if(!(valStr = temp.match("[0-9]+")).isNull())
+                    {
+                        iValue = atoi(valStr.data());
+                        _cmd["sa_clpf2"] = CtiParseValue(iValue);
+                    }
+                }
+                else if(!(temp = CmdStr.match(" coldload +f3[ =]+[0-9]+")).isNull())
+                {
+                    temp.replace("coldload +f3[ =]+", "");
+                    if(!(valStr = temp.match("[0-9]+")).isNull())
+                    {
+                        iValue = atoi(valStr.data());
+                        _cmd["sa_clpf3"] = CtiParseValue(iValue);
+                    }
+                }
+                else if(!(temp = CmdStr.match(" coldload +f4[ =]+[0-9]+")).isNull())
+                {
+                    temp.replace("coldload +f4[ =]+", "");
+                    if(!(valStr = temp.match("[0-9]+")).isNull())
+                    {
+                        iValue = atoi(valStr.data());
+                        _cmd["sa_clpf4"] = CtiParseValue(iValue);
+                    }
+                }
+                else if(!(temp = CmdStr.match(" coldload +all[ =]+[0-9]+")).isNull())
+                {
+                    if(!(valStr = temp.match("[0-9]+")).isNull())
+                    {
+                        iValue = atoi(valStr.data());
+                        _cmd["sa_clpall"] = CtiParseValue(iValue);
+                    }
+                }
+            }
+            else if(!(temp = CmdStr.match(" lorm0[ =]+[0-9]+")).isNull())
+            {
+                if(!(valStr = temp.match("[0-9]+")).isNull())
+                {
+                    iValue = atoi(valStr.data());
+                    _cmd["sa_lorm0"] = CtiParseValue(iValue);
+                }
+            }
+            else if(!(temp = CmdStr.match(" horm0[ =]+[0-9]+")).isNull())
+            {
+                if(!(valStr = temp.match("[0-9]+")).isNull())
+                {
+                    iValue = atoi(valStr.data());
+                    _cmd["sa_horm0"] = CtiParseValue(iValue);
+                }
+            }
+            else if(!(temp = CmdStr.match(" lorm1[ =]+[0-9]+")).isNull())
+            {
+                if(!(valStr = temp.match("[0-9]+")).isNull())
+                {
+                    iValue = atoi(valStr.data());
+                    _cmd["sa_lorm1"] = CtiParseValue(iValue);
+                }
+            }
+            else if(!(temp = CmdStr.match(" horm1[ =]+[0-9]+")).isNull())
+            {
+                if(!(valStr = temp.match("[0-9]+")).isNull())
+                {
+                    iValue = atoi(valStr.data());
+                    _cmd["sa_horm1"] = CtiParseValue(iValue);
+                }
+            }
+            else if(!(temp = CmdStr.match(" use relaymap 0")).isNull())
+            {
+                _cmd["sa_userelaymap0"] = TRUE;
+            }
+            else if(!(temp = CmdStr.match(" use relaymap 1")).isNull())
+            {
+                _cmd["sa_userelaymap1"] = TRUE;
+            }
+            else if(!(temp = CmdStr.match(" clear lc")).isNull())
+            {
+                _cmd["sa_clearlc"] = TRUE;
+            }
+            else if(!(temp = CmdStr.match(" clear hc")).isNull())
+            {
+                _cmd["sa_clearhc"] = TRUE;
+            }
+            else if(!(temp = CmdStr.match(" rawdata +[0-9]+ +[0-9]+")).isNull())
+            {
+                RWCTokenizer   tok2(temp);
+                temp = tok2(); // Get the rawdata into the hopper....
+                temp = tok2();
+                iValue = atoi(temp.data());
+
+                _cmd["sa_datatype"] = iValue;
+
+                temp = tok2();
+                iValue = atoi(temp.data());
+
+                _cmd["sa_dataval"] = iValue;
+            }
+        }
+    }
+}
+

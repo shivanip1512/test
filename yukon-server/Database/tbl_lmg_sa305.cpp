@@ -9,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/02/17 15:08:03 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/03/18 19:46:44 $
 *
 * HISTORY      :
 * $Log: tbl_lmg_sa305.cpp,v $
+* Revision 1.2  2004/03/18 19:46:44  cplender
+* Added code to support the SA305 protocol and load group
+*
 * Revision 1.1  2004/02/17 15:08:03  cplender
 * New files for GRE/SA support
 *
@@ -104,7 +107,7 @@ int CtiTableSA305LoadGroup::getFunction() const          // bitmask for function
     return _function;
 }
 
-int CtiTableSA305LoadGroup::getAddressUsage() const          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
+RWCString CtiTableSA305LoadGroup::getAddressUsage() const          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
 {
     return _addressUsage;
 }
@@ -164,7 +167,7 @@ CtiTableSA305LoadGroup& CtiTableSA305LoadGroup::setFunction(int newVal)         
     _function = newVal;
     return *this;
 }
-CtiTableSA305LoadGroup& CtiTableSA305LoadGroup::setAddressUsage(int newVal)          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
+CtiTableSA305LoadGroup& CtiTableSA305LoadGroup::setAddressUsage(RWCString newVal)          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
 {
     _addressUsage = newVal;
     return *this;
@@ -179,44 +182,57 @@ void CtiTableSA305LoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDB
 {
     RWDBTable devTbl = db.table(getTableName() );
 
-
-/*
-    LONG _lmGroupId;
-    LONG _routeId;
-    int _utility;           // 4 bit address
-    int _group;             // 6 bit address
-    int _division;          // 6 bit address
-    int _substation;        // 10 bit address
-    int _individual;        // 22 bit serial number.  4173802 = 3FAFEA is an all call.
-    int _rateFamily;        // 3 bits
-    int _rateMember;        // 4 bits
-    int _hierarchy;         // 1 bit
-    int _function;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
-*/
     selector <<
+    devTbl["groupid"           ] <<
     devTbl["routeid"           ] <<
-    devTbl["utility"           ] <<
-    devTbl["group"             ] <<
-    devTbl["division"          ] <<
-    devTbl["substation"        ] <<
-    devTbl["individual"        ] <<
+    devTbl["addressusage"      ] <<
+    devTbl["utilityaddress"    ] <<
+    devTbl["groupaddress"      ] <<
+    devTbl["divisionaddress"   ] <<
+    devTbl["substationaddress" ] <<
+    devTbl["individualaddress" ] <<
     devTbl["ratefamily"        ] <<
     devTbl["ratemember"        ] <<
-    devTbl["hierarchy"         ] <<
-    devTbl["function"          ] <<
-    devTbl["addressusage"      ];
-
+    devTbl["ratehierarchy"     ] <<
+    devTbl["loadnumber"        ] ;
 
     selector.from(devTbl);
 
-    selector.where( keyTable["paobjectid"] == devTbl["lmgroupid"] && selector.where() );
+    selector.where( keyTable["paobjectid"] == devTbl["groupid"] && selector.where() );
 }
 void CtiTableSA305LoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    RWCString rwsTemp;
+
+    rdr["groupid"           ] >> _lmGroupId;
+    rdr["routeid"           ] >> _routeId;
+    rdr["addressusage"      ] >> _addressUsage;
+    rdr["utilityaddress"    ] >> _utility;
+    rdr["groupaddress"      ] >> _group;
+    rdr["divisionaddress"   ] >> _division;
+    rdr["substationaddress" ] >> _substation;
+    rdr["individualaddress" ] >> rwsTemp;
+    _individual = atoi(rwsTemp.data());
+
+    rdr["ratefamily"        ] >> _rateFamily;
+    rdr["ratemember"        ] >> _rateMember;
+    rdr["ratehierarchy"     ] >> _hierarchy;
+    rdr["loadnumber"        ] >> rwsTemp;       // _function;
+
+    _function &= 0x0000000F;
+
+    if(rwsTemp.contains("1"))       _function |= 0x00000001;
+    else                            _function &= ~0x00000001;
+
+    if(rwsTemp.contains("2"))       _function |= 0x00000002;
+    else                            _function &= ~0x00000002;
+
+    if(rwsTemp.contains("3"))       _function |= 0x00000004;
+    else                            _function &= ~0x00000004;
+
+    if(rwsTemp.contains("4"))       _function |= 0x00000008;
+    else                            _function &= ~0x00000008;
+
 }
 
 RWDBStatus CtiTableSA305LoadGroup::Restore()

@@ -1,0 +1,1126 @@
+
+/*-----------------------------------------------------------------------------*
+*
+* File:   prot_sa305
+*
+* Date:   3/8/2004
+*
+* Author: Corey G. Plender
+*
+* CVS KEYWORDS:
+* REVISION     :  $Revision: 1.1 $
+* DATE         :  $Date: 2004/03/18 19:46:43 $
+*
+* HISTORY      :
+* $Log: prot_sa305.cpp,v $
+* Revision 1.1  2004/03/18 19:46:43  cplender
+* Added code to support the SA305 protocol and load group
+*
+*
+* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
+*-----------------------------------------------------------------------------*/
+
+#pragma warning( disable : 4786)
+
+#include "logger.h"
+#include "numstr.h"
+#include "prot_sa305.h"
+
+CtiProtocolSA305::CtiProtocolSA305() :
+_messageReady(false),
+_addressUsage(0),
+_serial(-1),
+_group(-1),
+_division(-1),
+_substation(-1),
+_utility(-1),
+_rateFamily(-1),
+_rateMember(),
+_rateHierarchy(0),
+_priority(0),
+_strategy(0),
+_functions(0)
+{
+}
+
+CtiProtocolSA305::CtiProtocolSA305(const CtiProtocolSA305& aRef) :
+_messageReady(false),
+_addressUsage(0),
+_serial(-1),
+_group(-1),
+_division(-1),
+_substation(-1),
+_utility(-1),
+_rateFamily(-1),
+_rateMember(-1),
+_rateHierarchy(0),
+_priority(0),
+_strategy(0),
+_functions(0)
+{
+    *this = aRef;
+}
+
+CtiProtocolSA305::~CtiProtocolSA305()
+{
+}
+
+CtiProtocolSA305& CtiProtocolSA305::operator=(const CtiProtocolSA305& aRef)
+{
+    if(this != &aRef)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+    return *this;
+}
+
+/*
+ * This method used the input strategy or the period and percentage to produce a strategy value.
+ * The produced value will be equal or larger than the requested parse.  If the parse is unsuccessful, the result will be -1.
+ */
+int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
+{
+    int strategy = -1;
+
+    // We only try to predict it if it has not already been fully identified for us.
+    if(_strategy == 0)
+    {
+        if(parse.isKeyValid("sa_restore"))
+        {
+            strategy = 61;
+            _repetitions = parse.getiValue("sa_reps", 1);
+        }
+        else
+        {
+            int shed_seconds = parse.getiValue("shed", 0);
+            int cycle_percent = parse.getiValue("cycle",0);
+            int cycle_period = parse.getiValue("cycle_period");
+            int cycle_count = parse.getiValue("cycle_count");
+
+            if(shed_seconds)
+            {
+                _percentageOff = 100.0;
+                if(shed_seconds < 6300)            // This is 450 seconds * 14 repeats!
+                {
+                    _period = 7.5;
+                    _repetitions = shed_seconds / 450;
+                }
+                else if(shed_seconds < 16800)       // This is 900 seconds * 14 repeats
+                {
+                    _period = 20.0;
+                    _repetitions = shed_seconds / 1200;
+                }
+                else if(shed_seconds < 25200)
+                {
+                    _period = 30.0;
+                    _repetitions = shed_seconds / 1800;
+                }
+                else if(shed_seconds < 50400)
+                {
+                    _period = 60.0;
+                    _repetitions = shed_seconds / 3600;
+                }
+            }
+            else if(cycle_percent > 0)
+            {
+                // It is a cycle command!
+
+                if(cycle_period < 20)
+                {
+                    _period = 7.5;
+                }
+                else if(cycle_period < 30)
+                {
+                    _period = 20.0;
+                }
+                else if(cycle_period < 60)
+                {
+                    _period = 30.0;
+                }
+                else
+                {
+                    _period = 60.0;
+                }
+
+                _percentageOff = (float)cycle_percent;
+                _repetitions = cycle_count - 1;
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
+
+
+        if(_period <= 7.5)
+        {
+            // There is only one option here!
+            strategy = 1;  // 000001b
+        }
+        else if(_period <= 15.0)
+        {
+            strategy = 2;  // 000010b   7.5/15
+        }
+        else if(_period <= 20.0)
+        {
+            if(_percentageOff <= 25.0)
+            {
+                strategy = 21;  // 05/20
+            }
+            else if(_percentageOff <= 33.3)
+            {
+                strategy = 22;  // 6.6/20
+            }
+            else if(_percentageOff <= 40.0)
+            {
+                strategy = 23;  // 8/20
+            }
+            else if(_percentageOff <= 45.0)
+            {
+                strategy = 24;  // 9/20
+            }
+            else if(_percentageOff <= 50.0)
+            {
+                strategy = 25;  // 10/20
+            }
+            else if(_percentageOff <= 55.0)
+            {
+                strategy = 26;  // 11/20
+            }
+            else if(_percentageOff <= 60.0)
+            {
+                strategy = 27;  // 12/20
+            }
+            else if(_percentageOff <= 65.0)
+            {
+                strategy = 28;  // 13/20
+            }
+            else if(_percentageOff <= 70.0)
+            {
+                strategy = 29;  // 14/20
+            }
+            else if(_percentageOff <= 75.0)
+            {
+                strategy = 30;  // 15/20
+            }
+            else if(_percentageOff <= 80.0)
+            {
+                strategy = 31;  // 16/20
+            }
+            else if(_percentageOff <= 85.0)
+            {
+                strategy = 32;  // 17/20
+            }
+            else if(_percentageOff <= 90.0)
+            {
+                strategy = 33;  // 18/20
+            }
+            else if(_percentageOff <= 95.0)
+            {
+                strategy = 34;  // 19/20
+            }
+            else if(_percentageOff <= 100)
+            {
+                strategy = 35;  // 20/20
+            }
+        }
+        else if(_period <= 30.0)
+        {
+            if(_percentageOff <= 16.7)
+            {
+                strategy = 4; // 000100b 5/30
+            }
+            else if(_percentageOff <= 25)
+            {
+                strategy = 5; // 000101b 7.5/30
+            }
+            else if(_percentageOff <= 33.3)
+            {
+                strategy = 6; // 000110b 10/30
+            }
+            else if(_percentageOff <= 40)
+            {
+                strategy = 7; // 000111b 12/30
+            }
+            else if(_percentageOff <= 45)
+            {
+                strategy = 8; // 001000b 13.5/30
+            }
+            else if(_percentageOff <= 50)
+            {
+                strategy = 9; // 001001b 15/30
+            }
+            else if(_percentageOff <= 55)
+            {
+                strategy = 10; // 001010b 16.5/30
+            }
+            else if(_percentageOff <= 60)
+            {
+                strategy = 11; // 001011b 18/30
+            }
+            else if(_percentageOff <= 65)
+            {
+                strategy = 12; // 001100b 19.5/30
+            }
+            else if(_percentageOff <= 70)
+            {
+                strategy = 13; // 001101b 21/30
+            }
+            else if(_percentageOff <= 75)
+            {
+                strategy = 14; // 001110b 22.5/30
+            }
+            else if(_percentageOff <= 80)
+            {
+                strategy = 15; // 001111b 24/30
+            }
+            else if(_percentageOff <= 85)
+            {
+                strategy = 16; // 010000b 25.5/30
+            }
+            else if(_percentageOff <= 90)
+            {
+                strategy = 17; // 010001b 27/30
+            }
+            else if(_percentageOff <= 95)
+            {
+                strategy = 18; // 010010b 28.5/30
+            }
+            else if(_percentageOff <= 100)
+            {
+                strategy = 19; // 010011b 30/30
+            }
+        }
+        else // ( We will assume it is 60 minutes then!)
+        {
+            if(_percentageOff <= 8.3)
+            {
+                strategy = 37;      // 5/60
+            }
+            else if(_percentageOff <= 16.7)
+            {
+                strategy = 38;      // 10/60
+            }
+            else if(_percentageOff <= 25.0)
+            {
+                strategy = 39;      // 15/60
+            }
+            else if(_percentageOff <= 33.3)
+            {
+                strategy = 40;      // 20/60
+            }
+            else if(_percentageOff <= 40.0)
+            {
+                strategy = 41;      // 24/60
+            }
+            else if(_percentageOff <= 45.0)
+            {
+                strategy = 42;      // 27/60
+            }
+            else if(_percentageOff <= 50.0)
+            {
+                strategy = 43;      // 30/60
+            }
+            else if(_percentageOff <= 55.0)
+            {
+                strategy = 44;      // 33/60
+            }
+            else if(_percentageOff <= 60.0)
+            {
+                strategy = 45;      // 36/60
+            }
+            else if(_percentageOff <= 65.0)
+            {
+                strategy = 46;      // 39/60
+            }
+            else if(_percentageOff <= 70.0)
+            {
+                strategy = 47;      // 42/60
+            }
+            else if(_percentageOff <= 75.0)
+            {
+                strategy = 48;      // 45/60
+            }
+            else if(_percentageOff <= 80.0)
+            {
+                strategy = 49;      // 48/60
+            }
+            else if(_percentageOff <= 85.0)
+            {
+                strategy = 50;      // 51/60
+            }
+            else if(_percentageOff <= 90.0)
+            {
+                strategy = 51;      // 54/60
+            }
+            else if(_percentageOff <= 95.0)
+            {
+                strategy = 52;      // 57/60
+            }
+            else if(_percentageOff <= 100.0)
+            {
+                strategy = 53;      // 60/60
+            }
+        }
+    }
+
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << " period        : " << _period << endl;
+        dout << " % off         : " << _percentageOff << endl;
+        dout << " strategy      : " << strategy << endl;
+        dout << " flags         : " << _flags << endl;
+    }
+
+    return strategy;
+}
+
+// Interesting
+INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMessage)
+{
+    INT status = NORMAL;
+
+
+
+    // These elements of addressing must be defined.
+    if(_utility <= 0) _utility = parse.getiValue("sa_utility");
+    if(_rateFamily <= 0) _rateFamily = parse.getiValue("sa_ratefamily");
+    if(_rateMember <= 0) _rateMember = parse.getiValue("sa_ratemember");
+
+    if(_serial <= 0) _serial = parse.getiValue("serial",0);
+    if(_group <= 0) _group = parse.getiValue("sa_group",0);
+    if(_division <= 0) _division = parse.getiValue("sa_division",0);
+    if(_substation <= 0) _substation = parse.getiValue("sa_substation",0);
+    _rateHierarchy = parse.getiValue("sa_hierarchy",0);
+
+    _addressUsage =  parse.getiValue("sa_addressusage", FALSE); // Assume a serially Addressed message (serial if FALSE)
+
+    // Optional elements
+    if(_priority <= 0) _priority = parse.getiValue("sa_priority", 0);
+    if(_functions <= 0) _functions = parse.getiValue("sa_function",0);
+    if(_dataType <= 0) _dataType = parse.getiValue("sa_datatype", 0);
+    if(_data <= 0) _data = parse.getiValue("sa_dataval", 0);
+
+    if(_strategy <= 0) _strategy = parse.getiValue("sa_strategy", 0);
+
+    // Now process the message components.
+    resetMessage();
+    addressMessage(parse.getiValue("sa_f1bit", CtiProtocolSA305::CommandTypeOperationFlag), parse.getiValue("sa_f0bit", CtiProtocolSA305::CommandDescription_DIMode) );
+
+    switch(parse.getCommand())
+    {
+    case ControlRequest:
+        {
+            assembleControl( parse, OutMessage );
+            break;
+        }
+    case PutConfigRequest:
+        {
+            assemblePutConfig( parse, OutMessage );
+            break;
+        }
+    default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Unsupported command on sa305 route. Command = " << parse.getCommand() << endl;
+            }
+
+            status = CtiInvalidRequest;
+
+            break;
+        }
+    }
+
+    appendCRCToMessage();
+    // dumpBits();
+
+    return status;
+}
+
+
+void CtiProtocolSA305::resetMessage()
+{
+    _messageReady = false;
+    _messageBits.clear();
+    return;
+}
+
+void CtiProtocolSA305::addressMessage(int command_type, int command_description)
+{
+    _flags = (command_type?2:0) | (command_description?1:0);     // These represent Bit F1, and F0 from the flag.
+
+    if(_addressUsage == FALSE) // This is a serially addressed message!
+    {
+    }
+    else
+    {
+        _flags |= AddressTypeGroupFlag;
+
+        if(_group > 0)
+        {
+            _flags |= GroupFlag;
+        }
+        if(_division > 0)
+        {
+            _flags |= DivisionFlag;
+        }
+        if(_substation > 0)
+        {
+            _flags |= SubstationFlag;
+        }
+    }
+
+    // And now build out the bits...
+
+    addBits(4, 3);          // This appears to be a paging prefix of some sort.
+    addBits(_flags, 6);
+
+    if(_flags & AddressTypeGroupFlag)
+    {
+        // this is a serially addressed message.
+        addBits(_utility, 4);
+
+        if(_flags & GroupFlag) addBits(_group, 6);
+        if(_flags & DivisionFlag) addBits(_division, 6);
+        if(_flags & SubstationFlag) addBits(_substation, 10);
+
+        addBits(_rateFamily, 3);
+        addBits(_rateMember, 4);
+        addBits(_rateHierarchy, 1);
+
+    }
+    else
+    {
+        // this is a serially addressed message.
+        addBits(_utility, 4);
+        addBits(_serial, 22);
+    }
+
+    return;
+}
+
+void CtiProtocolSA305::terminateMessage()
+{
+    return;
+}
+
+void CtiProtocolSA305::resolveAddressLevel()
+{
+    return;
+}
+
+INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &OutMessage)
+{
+    INT  i;
+    INT  status = NORMAL;
+    UINT CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
+
+    _strategy = solveStrategy(parse);
+
+    if(CtlReq == CMD_FLAG_CTL_SHED)
+    {
+        int shed_seconds = parse.getiValue("shed");
+        if(shed_seconds >= 0)
+        {
+            // Add these two items to the list for control accounting!
+            parse.setValue("control_interval", parse.getiValue("shed"));
+            parse.setValue("control_reduction", 100 );
+
+            timedLoadControl();
+        }
+    }
+    else if(CtlReq == CMD_FLAG_CTL_CYCLE)
+    {
+        INT period     = parse.getiValue("cycle_period", 30);
+        INT repeat     = parse.getiValue("cycle_count", 8);
+
+        // Add these two items to the list for control accounting!
+        parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
+        parse.setValue("control_interval", 60 * period * repeat);
+
+        cycleLoadControl();
+    }
+    else if(CtlReq == CMD_FLAG_CTL_RESTORE)
+    {
+        restoreLoadControl();
+    }
+    else if(CtlReq == CMD_FLAG_CTL_TERMINATE)
+    {
+        INT delay = parse.getiValue("delaytime_sec", 0) / 60;
+        cycleLoadControl();
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Unsupported expresscom command.  Command = " << parse.getCommand() << endl;
+    }
+
+    return status;
+}
+
+INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &OutMessage)
+{
+    INT status = NORMAL;
+
+    if( _strategy != 0 )
+    {
+        // These are the "operational" putconfigs...
+        int val;
+
+        addBits(_strategy, 6);
+
+        if( 0 != (val = parse.getiValue("sa_override",0)) )
+        {
+            addBits(val, 8);
+        }
+        else if( 0 != (val = parse.getiValue("sa_setpriority",0)) )
+        {
+            addBits((val & 0x00000003), 4);
+            addBits(0, 4);
+        }
+        else if( 0 != (val = parse.getiValue("sa_setled",0)) )
+        {
+            addBits(0, 4);
+            addBits(val, 4);
+        }
+        else if( 0 != (val = parse.getiValue("sa_flashled",0)) )
+        {
+            addBits(1, 4);
+            addBits(val, 4);
+        }
+        else if( 0 != (val = parse.getiValue("sa_flashrate",0)) )
+        {
+            addBits(4, 4);
+            addBits(0, 4);
+        }
+
+        addBits(_priority, 2);
+    }
+    else if(parse.getiValue("sa_f0bit", 0))
+    {
+        // This is a 29bit config!
+        addBits(parse.getiValue("sa_group",0), 6);
+        addBits(parse.getiValue("sa_division",0), 6);
+        addBits(parse.getiValue("sa_substation",0), 10);
+
+        if(parse.getiValue("sa_package",0))
+        {
+            addBits(parse.getiValue("sa_package",0), 7);
+        }
+        else
+        {
+            addBits(parse.getiValue("sa_family",0), 3);
+            addBits(parse.getiValue("sa_member",0), 4);
+        }
+    }
+    else
+    {
+        // This is a 13bit config!
+        int val;
+
+        if( 0 != (val = parse.getiValue("sa_clpf1",0)) )
+        {
+            addBits(0, 5);
+            addBits(val, 8);
+        }
+        else if( 0 != (val = parse.getiValue("sa_clpf2",0)) )
+        {
+            addBits(1, 5);
+            addBits(val, 8);
+        }
+        else if( 0 != (val = parse.getiValue("sa_clpf3",0)) )
+        {
+            addBits(2, 5);
+            addBits(val, 8);
+        }
+        else if( 0 != (val = parse.getiValue("sa_clpf4",0)) )
+        {
+            addBits(3, 5);
+            addBits(val, 8);
+        }
+        else if( 0 != (val = parse.getiValue("sa_clpall",0)) )
+        {
+            addBits(4, 5);
+            addBits(val, 8);
+        }
+        else if( 0 != (val = parse.getiValue("sa_lorm0",0)) )
+        {
+            addBits(8, 5);
+            addBits(val, 8);
+        }
+        else if( 0 != (val = parse.getiValue("sa_horm0",0)) )
+        {
+            addBits(9, 5);
+            addBits(val, 8);
+        }
+        else if( 0 != (val = parse.getiValue("sa_lorm1",0)) )
+        {
+            addBits(10, 5);
+            addBits(val, 8);
+        }
+        else if( 0 != (val = parse.getiValue("sa_horm1",0)) )
+        {
+            addBits(11, 5);
+            addBits(val, 8);
+        }
+        else if( 0 != (val = parse.getiValue("sa_userelaymap0",0)) )
+        {
+            addBits(12, 5);
+            addBits(0, 8);
+        }
+        else if( 0 != (val = parse.getiValue("sa_userelaymap1",0)) )
+        {
+            addBits(12, 5);
+            addBits(1, 8);
+        }
+        else if( 0 != (val = parse.getiValue("sa_clearlc",0)) )
+        {
+            addBits(12, 5);
+            addBits(2, 8);
+        }
+        else if( 0 != (val = parse.getiValue("sa_clearhc",0)) )
+        {
+            addBits(12, 5);
+            addBits(3, 8);
+        }
+        else if( 0 != (val = parse.getiValue("sa_datatype",0)) )
+        {
+            addBits(val, 5);
+            addBits(parse.getiValue("sa_dataval",0), 8);
+        }
+    }
+    return status;
+}
+
+
+INT CtiProtocolSA305::timedLoadControl( )
+{
+    INT status = NoError;
+
+    // Ok, the flags and addressing are all stuffed on the message, we also believe that the stratey, function etc are ready for us to use!
+
+    addBits(_strategy,6);
+    addBits(_functions,4);
+    addBits(_repetitions,4);
+    addBits(_priority,2);
+
+    return status;
+}
+
+
+INT CtiProtocolSA305::restoreLoadControl( )
+{
+    INT status = NoError;
+    return status;
+}
+
+
+INT CtiProtocolSA305::cycleLoadControl()
+{
+    INT status = NoError;
+
+    // Ok, the flags and addressing are all stuffed on the message, we also believe that the stratey, function etc are ready for us to use!
+
+    addBits(_strategy,6);
+    addBits(_functions,4);
+    addBits(_repetitions,4);
+    addBits(_priority,2);
+
+    return status;
+}
+
+void CtiProtocolSA305::addBits(unsigned int src, int num)
+{
+    BYTE bit;
+    int i;
+
+    for(i = 0; i < num; i++)
+    {
+        bit = (src & (0x80000000 >> (32 - num + i)) ? 1 : 0);
+        _messageBits.push_back(bit);
+    }
+}
+
+void CtiProtocolSA305::setBit(unsigned int offset, BYTE bit)
+{
+    if(_messageBits.size() >= offset)
+    {
+        _messageBits[offset] = (bit ? 1 : 0);
+    }
+}
+
+void CtiProtocolSA305::dumpBits() const
+{
+    vector< BYTE >::const_iterator itr;
+
+    {
+        int cnt = 0;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+        for( itr = _messageBits.begin(); itr != _messageBits.end(); itr++ )
+        {
+            if(*itr)
+                dout << "1";
+            else
+                dout << "0";
+
+            if(++cnt >= 3)
+            {
+                dout << " ";
+                cnt = 0;
+            }
+        }
+
+        dout << endl;
+
+
+        int bc = 0;
+        int val;
+
+        cnt = 0;
+
+        for( itr = _messageBits.begin(); itr != _messageBits.end(); itr++ )
+        {
+            bc <<= 1;
+            bc |= (*itr ? 1 : 0);
+
+            if(++cnt >= 3)
+            {
+                dout << " " << bc << "  ";
+                cnt = 0;
+                val = 0;
+                bc = 0;
+            }
+        }
+
+        dout << endl;
+    }
+}
+
+
+int CtiProtocolSA305::getSerial() const
+{
+    return _serial;
+}
+
+CtiProtocolSA305& CtiProtocolSA305::setSerial(int val)
+{
+    _serial = val;
+    return *this;
+}
+
+int CtiProtocolSA305::getGroup() const
+{
+    return _group;
+}
+
+CtiProtocolSA305& CtiProtocolSA305::setGroup(int val)
+{
+    _group = val;
+    return *this;
+}
+
+int CtiProtocolSA305::getDivision() const
+{
+    return _division;
+}
+CtiProtocolSA305& CtiProtocolSA305::setDivision(int val)
+{
+    _division = val;
+    return *this;
+}
+
+int CtiProtocolSA305::getSubstation() const
+{
+    return _substation;
+}
+CtiProtocolSA305& CtiProtocolSA305::setSubstation(int val)
+{
+    _substation = val;
+    return *this;
+}
+
+int CtiProtocolSA305::getUtility() const
+{
+    return _utility;
+}
+CtiProtocolSA305& CtiProtocolSA305::setUtility(int val)
+{
+    _utility = val;
+    return *this;
+}
+
+CtiProtocolSA305& CtiProtocolSA305::setRatePackage(int val)
+{
+    _rateMember = (val & 0x0000000f);
+    _rateFamily = (val & 0x00000070) >> 4;
+
+    return *this;
+}
+
+int CtiProtocolSA305::getRateFamily() const
+{
+    return _rateFamily;
+}
+CtiProtocolSA305& CtiProtocolSA305::setRateFamily(int val)
+{
+    _rateFamily = val;
+    return *this;
+}
+
+int CtiProtocolSA305::getRateMember() const
+{
+    return _rateMember;
+}
+CtiProtocolSA305& CtiProtocolSA305::setRateMember(int val)
+{
+    _rateMember = val;
+    return *this;
+}
+
+int CtiProtocolSA305::getRateHierarchy() const
+{
+    return _rateHierarchy;
+}
+CtiProtocolSA305& CtiProtocolSA305::setRateHierarchy(int val)
+{
+    _rateHierarchy = val;
+    return *this;
+}
+
+int CtiProtocolSA305::getStrategy() const
+{
+    return _strategy;
+}
+CtiProtocolSA305& CtiProtocolSA305::setStrategy(int val)
+{
+    _strategy = val;
+    return *this;
+}
+
+int CtiProtocolSA305::getFunctions() const
+{
+    return _functions;
+}
+CtiProtocolSA305& CtiProtocolSA305::setFunctions(int val)
+{
+    _functions = val;
+    return *this;
+}
+
+int CtiProtocolSA305::getPriority() const
+{
+    return _priority;
+}
+CtiProtocolSA305& CtiProtocolSA305::setPriority(int val)
+{
+    _priority = val;
+    return *this;
+}
+
+int CtiProtocolSA305::getDataType() const
+{
+    return _dataType;
+}
+CtiProtocolSA305& CtiProtocolSA305::setDataType(int val)
+{
+    _dataType = val;
+    return *this;
+}
+
+int CtiProtocolSA305::getData() const
+{
+    return _data;
+}
+CtiProtocolSA305& CtiProtocolSA305::setData(int val)
+{
+    _data = val;
+    return *this;
+}
+
+float CtiProtocolSA305::getPeriod() const
+{
+    return _period;
+}
+CtiProtocolSA305& CtiProtocolSA305::setPeriod(float val)
+{
+    _period = val;
+    return *this;
+}
+
+float CtiProtocolSA305::getPercentageOff() const
+{
+    return _percentageOff;
+}
+CtiProtocolSA305& CtiProtocolSA305::setPercentageOff(float val)
+{
+    _percentageOff = val;
+    return *this;
+}
+
+
+unsigned char CtiProtocolSA305::addBitToCRC(unsigned char crc, unsigned char bit) // bit is 0 or 1
+{
+    unsigned char msb = ((crc&0x80)?1:0);
+    bit = msb ^ bit;
+    crc<<=1;
+    crc|=bit;
+    if (bit)
+        crc^=0x48;
+
+    return(crc);
+}
+
+unsigned char CtiProtocolSA305::addOctalCharToCRC(unsigned char crc, unsigned char ch) // octal char
+{
+    int i=0;
+    ch-='0';
+    for (i=0; i<3; i++)
+    {
+        crc = addBitToCRC(crc, ch&0x04?1:0);
+        ch<<=1;
+    }
+    return(crc);
+}
+
+void CtiProtocolSA305::testCRC(char* testData)
+{
+    unsigned i;
+    unsigned char crc=0;
+    for (i=0; i<strlen(testData)-3; i++)
+        crc = addOctalCharToCRC(crc,testData[i]);
+    // shift in one false 0
+    crc = addBitToCRC(crc, 0);
+    printf("%o\r\n",crc);
+
+    return;
+}
+
+void CtiProtocolSA305::appendCRCToMessage()
+{
+    vector< BYTE >::const_iterator itr;
+    unsigned i;
+    unsigned char crc=0;
+
+    for( itr = _messageBits.begin(); itr != _messageBits.end(); itr++ )
+    {
+        crc = addBitToCRC(crc, ((*itr) ? 1 : 0));
+    }
+
+    addBits(crc, 8);
+
+    _messageReady = true;
+}
+
+bool CtiProtocolSA305::messageReady() const
+{
+    return _messageReady;
+}
+
+int CtiProtocolSA305::getPageLength(int mode) const      // Returns the length in characters of this message.
+{
+    int length = 0;
+
+    if(messageReady())
+    {
+        switch(mode)
+        {
+        case ModeUnspecified:
+            {
+                break;
+            }
+        case ModeOctal:         // = 1,              // Every three bits are converted into an octal value.
+            {
+                int cnt = _messageBits.size();
+                length = cnt/3 + ((cnt%3)?1:0);
+                break;
+            }
+        case ModeHexNibbles:    // = 2,         // Every four bits are converted into a hex value.
+        case ModeSerial:        // = 3              // Data is churned out the port in a serial fashion.
+        default:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                break;
+            }
+        }
+    }
+
+    return length;
+}
+
+int CtiProtocolSA305::buildPage(int mode, CHAR *buffer) const      // Returns the length in characters of this message.
+{
+    int length = 0;
+
+    if(messageReady())
+    {
+        switch(mode)
+        {
+        case ModeUnspecified:
+            {
+                break;
+            }
+        case ModeOctal:         // = 1,              // Every three bits are converted into an octal value.
+            {
+                unsigned bufpos = 0;
+                unsigned pos = 0;
+                int ich = 0;
+                CHAR ch;
+
+                vector< BYTE >::const_iterator itr;
+
+                for( itr = _messageBits.begin(); itr != _messageBits.end(); itr++ )
+                {
+                    ich<<=1;
+                    ich|=(*itr?1:0);
+                    if(++pos >= 3)  // ch is ready!
+                    {
+                        pos = 0;
+                        buffer[bufpos++] = '0' + ich;
+                        ich = 0;
+                    }
+                }
+
+                // Pad out any remaining bits!
+                while(pos != 0)
+                {
+                    ich<<=1;
+                    if(++pos >= 3)  // ch is ready!
+                    {
+                        pos = 0;
+                        buffer[bufpos++] = '0' + ich;
+                        ich = 0;
+                        break;
+                    }
+                }
+
+                break;
+            }
+        case ModeHexNibbles:    // = 2,         // Every four bits are converted into a hex value.
+        case ModeSerial:        // = 3              // Data is churned out the port in a serial fashion.
+        default:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                break;
+            }
+        }
+    }
+
+    return length;
+}
+

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/08/05 12:52:01 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/03/18 19:46:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,7 @@ using namespace std;
 #include "dev_remote.h"
 #include "dev_tap.h"
 #include "dev_lcu.h"
+#include "dev_wctp.h"
 #include "msg_pcrequest.h"
 #include "msg_signal.h"
 #include "porter.h"
@@ -36,6 +37,7 @@ using namespace std;
 
 #include "prot_versacom.h"
 #include "prot_fpcbc.h"
+#include "prot_sa305.h"
 
 static INT NoQueing = FALSE;
 
@@ -112,10 +114,17 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
 
             if(parse.isKeyValid("type") && parse.getiValue("type") == ProtocolExpresscomType)
             {
+                enablePrefix(true);
                 status = assembleExpresscomRequest(pReq, parse, OutMessage, vgList, retList, outList);
+            }
+            else if(parse.isKeyValid("type") && parse.getiValue("type") == ProtocolSA305Type)
+            {
+                enablePrefix(false);
+                status = assembleSA305Request(pReq, parse, OutMessage, vgList, retList, outList);
             }
             else if(OutMessage->EventCode & VERSACOM)
             {
+                enablePrefix(true);
                 status = assembleVersacomRequest(pReq, parse, OutMessage, vgList, retList, outList);
             }
             else if(OutMessage->EventCode & FISHERPIERCE)
@@ -661,4 +670,146 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
     return status;
 }
 
+INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
+                                      CtiCommandParser &parse,
+                                      OUTMESS *&OutMessage,
+                                      RWTPtrSlist< CtiMessage >   &vgList,
+                                      RWTPtrSlist< CtiMessage >   &retList,
+                                      RWTPtrSlist< OUTMESS >      &outList)
+{
+    INT            status = NORMAL;
+    bool           xmore = true;
+    RWCString      resultString;
+    RWCString      byteString;
+    ULONG          i, j;
+    USHORT         Length;
+    VSTRUCT        VSt;
 
+    /*
+     * Addressing variables SHALL have been assigned at an earlier level!
+     */
+
+    OutMessage->DeviceID = Device->getID();
+    OutMessage->Port     = Device->getPortID();
+    OutMessage->Remote   = Device->getAddress();
+    OutMessage->TimeOut  = 2;
+    OutMessage->InLength = -1;
+
+    if(!OutMessage->Retry)  OutMessage->Retry = 2;
+
+    CtiProtocolSA305 prot305;
+
+    prot305.parseCommand(parse, *OutMessage);
+
+    if(prot305.messageReady())
+    {
+        OUTMESS *NewOutMessage = CTIDBG_new OUTMESS( *OutMessage );  // Create and copy
+
+        if(NewOutMessage != NULL)
+        {
+            switch(Device->getType())
+            {
+            case TYPE_WCTP:
+            case TYPE_TAPTERM:
+                {
+                    CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)Device;
+
+                    /* Calculate the length */
+                    Length                              = prot305.getPageLength(CtiProtocolSA305::ModeOctal);
+
+                    NewOutMessage->TimeOut              = 2;
+                    NewOutMessage->InLength             = -1;
+                    NewOutMessage->OutLength            = Length;
+                    NewOutMessage->Buffer.TAPSt.Length  = Length;
+
+                    /* Build the message */
+                    prot305.buildPage(CtiProtocolSA305::ModeOctal, NewOutMessage->Buffer.TAPSt.Message);
+
+                    for(i = 0; i < NewOutMessage->OutLength; i++)
+                    {
+                        byteString += (char)NewOutMessage->Buffer.TAPSt.Message[i];
+                    }
+                    byteString += "\n";
+
+                    /* Now add it to the collection of outbound messages */
+                    outList.insert( NewOutMessage );
+
+                    break;
+                }
+            case TYPE_TCU5500:
+            case TYPE_TCU5000:
+            case TYPE_LCU415:
+            case TYPE_LCU415ER:
+            case TYPE_LCU415LG:
+            case TYPE_LCUT3026:
+            default:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << "  Cannot send versacom to TYPE:" << /*desolveDeviceType(*/Device->getType()/*)*/ << endl;
+                    }
+
+                    break;
+                }
+            }
+        }
+    }
+
+    if(prot305.messageReady())
+    {
+        resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
+    }
+    else
+    {
+        xmore = false;
+        resultString = "Route " + getName() + " did not transmit commands";
+
+        RWCString desc, actn;
+
+        desc = "Route: " + getName();
+        actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
+
+        vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+    }
+
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+
+    if(retReturn)
+    {
+        if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
+        retList.insert(retReturn);
+    }
+    else
+    {
+        delete retReturn;
+    }
+
+    return status;
+}
+
+
+void CtiRouteXCU::enablePrefix(bool enable)
+{
+    if(Device != NULL)      // This is the pointer which refers this rte to its transmitter device.
+    {
+        CtiDeviceWctpTerminal *WctpDev = 0;
+        CtiDeviceTapPagingTerminal *TapDev = 0;
+
+        switch(Device->getType())
+        {
+        case TYPE_WCTP:
+            {
+                WctpDev = (CtiDeviceWctpTerminal *)Device;
+                WctpDev->setAllowPrefix(enable);
+                break;
+            }
+        case TYPE_TAPTERM:
+            {
+                TapDev = (CtiDeviceTapPagingTerminal *)Device;
+                TapDev->setAllowPrefix(enable);
+                break;
+            }
+        }
+    }
+    return;
+}
