@@ -18,6 +18,7 @@ import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
 import com.cannontech.tdc.alarms.gui.RowBlinker;
+import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 
@@ -423,7 +424,8 @@ public Object getValueAt(int row, int col)
 					   com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
 					return "  ----";
 				else
-					return new com.cannontech.clientutils.commonutils.ModifiedDate( rowValue.getLastStatusChangeTime().getTime() );
+					return new ModifiedDate(
+						rowValue.getLastStatusChangeTime().getTime(), ModifiedDate.FRMT_NOSECS );
 
 			default:
 				return null;

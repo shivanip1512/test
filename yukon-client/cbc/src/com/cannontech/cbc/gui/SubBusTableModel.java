@@ -452,7 +452,7 @@ public Object getValueAt(int row, int col)
 					com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
 				return DASH_LINE;
 			else
-				return new com.cannontech.clientutils.commonutils.ModifiedDate( sub.getLastCurrentVarPointUpdateTime().getTime() );
+				return new ModifiedDate( sub.getLastCurrentVarPointUpdateTime().getTime(), ModifiedDate.FRMT_NOSECS );
 
 		default:
 			return null;

@@ -13,6 +13,7 @@ import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.clientutils.CommonUtils;
+import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.login.ClientSession;
 
 public class FeederTableModel extends javax.swing.table.AbstractTableModel implements com.cannontech.tdc.alarms.gui.AlarmTableModel, javax.swing.event.TableModelListener, CapControlTableModel, com.cannontech.common.gui.util.SortableTableModel
@@ -383,7 +384,8 @@ public Object getValueAt(int row, int col)
 						com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
 					return DASH_LINE;
 				else
-					return new com.cannontech.clientutils.commonutils.ModifiedDate( feeder.getLastCurrentVarPointUpdateTime().getTime() );
+					return new ModifiedDate( 
+						feeder.getLastCurrentVarPointUpdateTime().getTime(), ModifiedDate.FRMT_NOSECS );
 	
 			default:
 				return null;
