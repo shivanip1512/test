@@ -13,7 +13,7 @@ public class LiteCICustomer extends LiteCustomer
 	private double curtailAmount = 0.0;
 	
 	
-	private LiteCICustomer() 
+	public LiteCICustomer() 
 	{
 		this( 0, null );
 	}
