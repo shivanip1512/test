@@ -637,132 +637,148 @@ void CtiCapController::registerForPoints(CtiCCSubstationBusStore* store)
 ---------------------------------------------------------------------------*/
 void CtiCapController::parseMessage(RWCollectable *message)
 {
-    CtiMultiMsg* msgMulti;
-    CtiPointDataMsg* pData;
-    CtiReturnMsg* pcReturn;
-    CtiCommandMsg* cmdMsg;
-    CtiDBChangeMsg* dbChange;
-    CtiSignalMsg* signal;
-    int i = 0;
-    switch( message->isA() )
+    try
     {
-        case MSG_DBCHANGE:
-            {
-                dbChange = (CtiDBChangeMsg *)message;
-                if( dbChange->getSource() != CtiCCSubstationBusStore::CAP_CONTROL_DBCHANGE_MSG_SOURCE &&
-                    ( (dbChange->getDatabase() == ChangePAODb && resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_CAP_CONTROL) ||
-                      (dbChange->getDatabase() == ChangePAODb && resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_DEVICE) ||
-                      dbChange->getDatabase() == ChangePointDb ||
-                      (dbChange->getDatabase() == ChangeStateGroupDb && dbChange->getId() == 3) ) )
+        CtiMultiMsg* msgMulti;
+        CtiPointDataMsg* pData;
+        CtiReturnMsg* pcReturn;
+        CtiCommandMsg* cmdMsg;
+        CtiDBChangeMsg* dbChange;
+        CtiSignalMsg* signal;
+        int i = 0;
+        switch( message->isA() )
+        {
+            case MSG_DBCHANGE:
                 {
-                    //if( _CC_DEBUG )
+                    dbChange = (CtiDBChangeMsg *)message;
+                    if( dbChange->getSource() != CtiCCSubstationBusStore::CAP_CONTROL_DBCHANGE_MSG_SOURCE &&
+                        ( (dbChange->getDatabase() == ChangePAODb && resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_CAP_CONTROL) ||
+                          (dbChange->getDatabase() == ChangePAODb && resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_DEVICE) ||
+                          dbChange->getDatabase() == ChangePointDb ||
+                          (dbChange->getDatabase() == ChangeStateGroupDb && dbChange->getId() == 3) ) )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Relavant database change.  Setting reload flag." << endl;
-                    }
-
-                    CtiCCSubstationBusStore::getInstance()->setValid(FALSE);
-                    CtiCCSubstationBusStore::getInstance()->setReregisterForPoints(TRUE);
-                    if( dbChange->getDatabase() == ChangeStateGroupDb )
-                    {
-
-                        CtiCCExecutorFactory f;
-                        RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
-                        CtiCCExecutor* executor = f.createExecutor(new CtiCCCapBankStatesMsg(CtiCCSubstationBusStore::getInstance()->getCCCapBankStates()));
-                        executor->Execute(queue);
-                        delete executor;
-                    }
-                    else
-                    {
-                        CtiCCExecutorFactory f;
-                        RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
-                        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-                        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses())));
-                        try
-                        {
-                            executor->Execute(queue);
-                            delete executor;
-                            executor = f.createExecutor(new CtiCCCapBankStatesMsg(store->getCCCapBankStates()));
-                            executor->Execute(queue);
-                            delete executor;
-                            executor = f.createExecutor(new CtiCCGeoAreasMsg(store->getCCGeoAreas()));
-                            executor->Execute(queue);
-                        }
-                        catch(...)
+                        //if( _CC_DEBUG )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            dout << RWTime() << " - Relavant database change.  Setting reload flag." << endl;
                         }
-                        delete executor;
+    
+                        CtiCCSubstationBusStore::getInstance()->setValid(FALSE);
+                        CtiCCSubstationBusStore::getInstance()->setReregisterForPoints(TRUE);
+                        if( dbChange->getDatabase() == ChangeStateGroupDb )
+                        {
+    
+                            CtiCCExecutorFactory f;
+                            RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
+                            CtiCCExecutor* executor = f.createExecutor(new CtiCCCapBankStatesMsg(CtiCCSubstationBusStore::getInstance()->getCCCapBankStates()));
+                            try
+                            {
+                                executor->Execute(queue);
+                                delete executor;
+                            }
+                            catch(...)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            }
+                        }
+                        else
+                        {
+                            CtiCCExecutorFactory f;
+                            RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
+                            CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+                            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses())));
+                            try
+                            {
+                                executor->Execute(queue);
+                                delete executor;
+                                executor = f.createExecutor(new CtiCCCapBankStatesMsg(store->getCCCapBankStates()));
+                                executor->Execute(queue);
+                                delete executor;
+                                executor = f.createExecutor(new CtiCCGeoAreasMsg(store->getCCGeoAreas()));
+                                executor->Execute(queue);
+                            }
+                            catch(...)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            }
+                            delete executor;
+                        }
                     }
                 }
-            }
-            break;
-        case MSG_POINTDATA:
-            {
-                pData = (CtiPointDataMsg *)message;
-                pointDataMsg( pData->getId(), pData->getValue(), pData->getTags(), pData->getTime() );
-            }
-            break;
-        case MSG_PCRETURN:
-            {
-                pcReturn = (CtiReturnMsg *)message;
-                porterReturnMsg( pcReturn->DeviceId(), pcReturn->CommandString(), pcReturn->Status(), pcReturn->ResultString() );
-            }
-            break;
-        case MSG_COMMAND:
-            {
-                /*if( _CC_DEBUG )
+                break;
+            case MSG_POINTDATA:
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Command Message received from Dispatch" << endl;
-                }*/
-
-                cmdMsg = (CtiCommandMsg *)message;
-                if( cmdMsg->getOperation() == CtiCommandMsg::AreYouThere )
+                    pData = (CtiPointDataMsg *)message;
+                    pointDataMsg( pData->getId(), pData->getValue(), pData->getTags(), pData->getTime() );
+                }
+                break;
+            case MSG_PCRETURN:
+                {
+                    pcReturn = (CtiReturnMsg *)message;
+                    porterReturnMsg( pcReturn->DeviceId(), pcReturn->CommandString(), pcReturn->Status(), pcReturn->ResultString() );
+                }
+                break;
+            case MSG_COMMAND:
                 {
                     /*if( _CC_DEBUG )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Replying to Are You There message." << endl;
+                        dout << RWTime() << " - Command Message received from Dispatch" << endl;
                     }*/
+    
+                    cmdMsg = (CtiCommandMsg *)message;
+                    if( cmdMsg->getOperation() == CtiCommandMsg::AreYouThere )
                     {
-                        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-                        getDispatchConnection()->WriteConnQue(cmdMsg->replicateMessage());
+                        if( _CC_DEBUG )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Replying to Are You There message." << endl;
+                        }
+                        {
+                            RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+                            getDispatchConnection()->WriteConnQue(cmdMsg->replicateMessage());
+                        }
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Received not supported Command Message from Dispatch with Operation: "
+                             << cmdMsg->getOperation() << ", and Op String: " << cmdMsg->getOpString() << endl;
                     }
                 }
-                else
+                break;
+            case MSG_MULTI:
                 {
+                    msgMulti = (CtiMultiMsg *)message;
+                    RWOrdered& temp = msgMulti->getData( );
+                    for(i=0;i<temp.entries( );i++)
+                    {
+                        parseMessage(temp[i]);
+                    }
+                }
+                break;
+            case MSG_SIGNAL:
+                {
+                    signal = (CtiSignalMsg *)message;
+                    signalMsg( signal->getId(), signal->getTags(), signal->getText(), signal->getAdditionalInfo() );
+                }
+                break;
+            default:
+                {
+                    char tempstr[64] = "";
+                    _itoa(message->isA(),tempstr,10);
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Received not supported Command Message from Dispatch with Operation: "
-                         << cmdMsg->getOperation() << ", and Op String: " << cmdMsg->getOpString() << endl;
+                    dout << RWTime() << " - message->isA() = " << tempstr << endl;
+                    dout << RWTime() << " - Unknown message type: parseMessage(RWCollectable *message) in controller.cpp" << endl;
                 }
-            }
-            break;
-        case MSG_MULTI:
-            {
-                msgMulti = (CtiMultiMsg *)message;
-                RWOrdered& temp = msgMulti->getData( );
-                for(i=0;i<temp.entries( );i++)
-                {
-                    parseMessage(temp[i]);
-                }
-            }
-            break;
-        case MSG_SIGNAL:
-            {
-                signal = (CtiSignalMsg *)message;
-                signalMsg( signal->getId(), signal->getTags(), signal->getText(), signal->getAdditionalInfo() );
-            }
-            break;
-        default:
-            {
-                char tempstr[64] = "";
-                _itoa(message->isA(),tempstr,10);
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - message->isA() = " << tempstr << endl;
-                dout << RWTime() << " - Unknown message type: parseMessage(RWCollectable *message) in controller.cpp" << endl;
-            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return;
 }
