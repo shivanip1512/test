@@ -100,9 +100,9 @@ function updateDemandDate()
 																for( int i = 0; i < formats.length; i++ )
 																{
 																	if( formats[i] == selectedFormat)
-																		out.println("<OPTION VALUE=" + formats[i] + " SELECTED>" + FileFormatTypes.getFormatType(selectedFormat));
+																		out.println("<OPTION VALUE='" + formats[i] + "' SELECTED>" + FileFormatTypes.getFormatType(selectedFormat));
 																	else
-																		out.println("<OPTION VALUE=" + formats[i] + ">" + FileFormatTypes.getFormatType(formats[i]));
+																		out.println("<OPTION VALUE='" + formats[i] + "'>" + FileFormatTypes.getFormatType(formats[i]));
 																}%>
 															</select>
 														</td>
@@ -188,9 +188,9 @@ function updateDemandDate()
 																			for( int i = 0; i < groupTypes.length; i++ )
 																			{
 																				if( groupTypes[i] == selectedGrpType)
-																					out.println("<OPTION VALUE=" + groupTypes[i] + " SELECTED>" + BillingFileDefaults.getBillGroupTypeDisplayString(groupTypes[i]));
+																					out.println("<OPTION VALUE='" + groupTypes[i] + "' SELECTED>" + BillingFileDefaults.getBillGroupTypeDisplayString(groupTypes[i]));
 																				else
-																					out.println("<OPTION VALUE=" + groupTypes[i] + ">" + BillingFileDefaults.getBillGroupTypeDisplayString(groupTypes[i]));
+																					out.println("<OPTION VALUE='" + groupTypes[i] + "'>" + BillingFileDefaults.getBillGroupTypeDisplayString(groupTypes[i]));
 																			}%>
 																		</select>
 																	</td>
@@ -207,9 +207,9 @@ function updateDemandDate()
 																			for( int i = 0; i < groups.length; i++ )
 																			{
 																				if( groups[i].equalsIgnoreCase(selectedGrp))
-																					out.println("<OPTION VALUE=" + groups[i] + " SELECTED>" + groups[i]);
+																					out.println("<OPTION VALUE='" + groups[i] + "' SELECTED>" + groups[i]);
 																				else
-																					out.println("<OPTION VALUE=" + groups[i] + ">" + groups[i]);
+																					out.println("<OPTION VALUE='" + groups[i] + "'>" + groups[i]);
 																			}%>
 																		</select>
 																	</td>
