@@ -425,8 +425,8 @@ select pointid,
 'N', 1, 0  from point where pointid not in (select pointid from pointalarming);
 
 
-insert into tags values(1, 'Out Of Service', 1, 'Y', 1, 0);
-insert into tags values(2, 'Info', 1, 'N', 6, 0);
+insert into tags values(-1, 'Out Of Service', 1, 'Y', 1, 0);
+insert into tags values(-2, 'Info', 1, 'N', 6, 0);
 
 
 /******************************************************************************/
