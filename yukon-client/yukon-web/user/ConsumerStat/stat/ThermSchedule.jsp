@@ -393,7 +393,15 @@ updateLayout(
                           <input id="time4" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime4().toDate()) %>" name="time4" onchange="Javascript:setScheduleChanged();timeChange(this, 'MovingLayer4', null, 'time3');">
                         </td>
                       </tr>
-                    </table><noscript><table width="100%" border="0" class = "TableCell">
+                    </table>
+					<table width="100%" border="0" class = "TableCell">
+					  <tr>
+					      <td>Notice: There is only one time schedule for cooling 
+                            and heating. Changing it on one side will cause it 
+                            changed on the other side.</td>
+					  </tr>
+					</table>
+					<noscript><table width="100%" border="0" class = "TableCell">
   <tr>
                         <td>Temp: <input id="temp1" type="text" size="3" name="temp1" onchange="setScheduleChanged()" value="<%= schedule.getTemperature1() %>"></td>
                         <td>Temp: <input id="temp2" type="text" size="3" name="temp2" onchange="setScheduleChanged()" value="<%= schedule.getTemperature2() %>"></td>
