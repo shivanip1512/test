@@ -898,10 +898,11 @@ public static final Process showHelp( String helpFileName )
 	catch( java.io.IOException e )
 	{
 		com.cannontech.clientutils.CTILogger.info("*** Tried to execute help with the following values:");
-		System.out.print("			");
+                String s = null;
 		for( int i = 0; i < cmd.length; i++ )
-			System.out.print(cmd[i] + " " );
+			s += cmd[i] + " ";
 
+		com.cannontech.clientutils.CTILogger.info(s);
 		com.cannontech.clientutils.CTILogger.info("");
 		e.printStackTrace( System.out );
 	}

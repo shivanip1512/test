@@ -92,8 +92,8 @@ timerStart = new java.util.Date();
 		}
 //temp code
 timerStop = new java.util.Date();
-System.out.print( (timerStop.getTime() - timerStart.getTime())*.001 );
-com.cannontech.clientutils.CTILogger.info( " Secs for StateGroupLoader" );
+com.cannontech.clientutils.CTILogger.info( 
+    (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for StateGroupLoader" );
 //temp code
 	}
 }

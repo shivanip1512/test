@@ -46,9 +46,13 @@ public class CtiProperties extends java.util.Properties implements ClientRights
 	public static final String KEY_ACTIVATE_BILLING = "billing_wiz_activate";
 	public static final String KEY_BILLING_INPUT = "billing_input_file";
 
+   public static final String KEY_CLIENT_LOG_FILE = "client_log_file";
+
 	public static final String[] ALL_CONFIG_KEYS =
 	{
 		//Do not put KEY_YUKON_VERSION in here since it is not in the config.properties file
+      KEY_CLIENT_LOG_FILE,
+      
 		KEY_CC_INTERFACE,
 		KEY_EDITOR_CORE,
 		KEY_EDITOR_LM,

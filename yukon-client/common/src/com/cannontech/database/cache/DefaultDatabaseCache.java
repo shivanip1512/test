@@ -307,8 +307,8 @@ public synchronized java.util.List getAllGraphTaggedPoints()
 
 			   //temp code
 			   timerStop = new java.util.Date();
-			   System.out.print( (timerStop.getTime() - timerStart.getTime())*.001 );
-			   com.cannontech.clientutils.CTILogger.info( " Secs for getAllGraphTaggedPoints()" );
+			   com.cannontech.clientutils.CTILogger.info( 
+                               (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for getAllGraphTaggedPoints()" );
 			   //temp code
 
 
@@ -566,8 +566,8 @@ public synchronized java.util.List getAllUnusedCCDevices()
 
 	   //temp code
 	   java.util.Date timerStop = new java.util.Date();
-	   System.out.print( (timerStop.getTime() - timerStart.getTime())*.001 );
-	   com.cannontech.clientutils.CTILogger.info( " Secs for getAllUnusedCCPaos()" );
+	   com.cannontech.clientutils.CTILogger.info( 
+               (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for getAllUnusedCCPaos()" );
 	   //temp code
 
 		}
