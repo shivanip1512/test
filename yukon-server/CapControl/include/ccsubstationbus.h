@@ -85,6 +85,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     ULONG getLastFeederControlledPAOId() const;
     LONG getLastFeederControlledPosition() const;
     DOUBLE getPowerFactorValue() const;
+    DOUBLE getKVARSolution() const;
     
     RWOrdered& getCCFeeders();
 
@@ -132,6 +133,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setLastFeederControlledPAOId(ULONG lastfeederpao);
     CtiCCSubstationBus& setLastFeederControlledPosition(LONG lastfeederposition);
     CtiCCSubstationBus& setPowerFactorValue(DOUBLE pfval);
+    CtiCCSubstationBus& setKVARSolution(DOUBLE solution);
 
     BOOL isPastResponseTime(const RWDBDateTime& currentDateTime);
     BOOL isVarCheckNeeded(const RWDBDateTime& currentDateTime);
@@ -148,6 +150,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE calculatePowerFactor(DOUBLE kvar, DOUBLE kw);
     DOUBLE convertKQToKVAR(DOUBLE kq, DOUBLE kw);
     DOUBLE convertKVARToKQ(DOUBLE kvar, DOUBLE kw);
+    static DOUBLE calculateKVARSolution(const RWCString& controlUnits, DOUBLE setPoint, DOUBLE varValue, DOUBLE wattValue);
     void dumpDynamicData();
 
     //Members inherited from RWCollectable
@@ -218,6 +221,7 @@ private:
     ULONG _lastfeedercontrolledpaoid;
     LONG _lastfeedercontrolledposition;
     DOUBLE _powerfactorvalue;
+    DOUBLE _kvarsolution;
 
     RWOrdered _ccfeeders;
 

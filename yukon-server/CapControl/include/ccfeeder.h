@@ -96,6 +96,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     ULONG getBusOptimizedVarCategory() const;
     DOUBLE getBusOptimizedVarOffset() const;
     DOUBLE getPowerFactorValue() const;
+    DOUBLE getKVARSolution() const;
     
     RWSortedVector& getCCCapBanks();
 
@@ -131,18 +132,21 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     //CtiCCFeeder& setBusOptimizedVarCategory(ULONG varcategory);
     //CtiCCFeeder& setBusOptimizedVarOffset(DOUBLE varoffset);
     CtiCCFeeder& setPowerFactorValue(DOUBLE pfval);
+    CtiCCFeeder& setKVARSolution(DOUBLE solution);
 
 
-    CtiRequestMsg* createIncreaseVarRequest(RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, ULONG decimalPlaces);
-    CtiRequestMsg* createDecreaseVarRequest(RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, ULONG decimalPlaces);
+    CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
+    CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, ULONG decimalPlaces);
+    CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, ULONG decimalPlaces);
     BOOL capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minConfirmPercent, ULONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue);
     //BOOL isPeakDay();
     BOOL isPastResponseTime(const RWDBDateTime& currentDateTime, ULONG minResponseTime);
-    BOOL checkForAndProvideNeededIndividualControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, BOOL peakTimeFlag, ULONG decimalPlaces);
+    BOOL checkForAndProvideNeededIndividualControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, BOOL peakTimeFlag, ULONG decimalPlaces, const RWCString& controlUnits);
     CtiCCFeeder& figureEstimatedVarLoadPointValue();
     BOOL isAlreadyControlled(ULONG minConfirmPercent);
     BOOL areAllCapBankStatusesReceived();
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
+    void figureKVARSolution(const RWCString& controlUnits, DOUBLE setPoint);
     void dumpDynamicData();
 
     //Members inherited from RWCollectable
@@ -196,6 +200,7 @@ private:
     ULONG _busoptimizedvarcategory;
     DOUBLE _busoptimizedvaroffset;
     DOUBLE _powerfactorvalue;
+    DOUBLE _kvarsolution;
 
     RWSortedVector _cccapbanks;
 
