@@ -1561,15 +1561,11 @@ public void setValue(Object val)
 
 		String loadProfileCollection = dlp.getLoadProfileCollection();
 
-      CtiUtilities.setIntervalComboBoxSelectedItem(
+      	CtiUtilities.setIntervalComboBoxSelectedItem(
       		getLastIntervalDemandRateComboBox(), dlp.getLastIntervalDemandRate().intValue() );
 
 		CtiUtilities.setIntervalComboBoxSelectedItem(
-				getJComboBoxlVoltInterval(), dlp.getVoltageDmdInterval().intValue() );
-
-		CtiUtilities.setIntervalComboBoxSelectedItem(
-				getJComboBoxlVoltRate(), dlp.getVoltageDmdRate().intValue() );
-
+			getJComboBoxlVoltInterval(), dlp.getVoltageDmdInterval().intValue() );
 
 		if( deviceType == PAOGroups.DCT_501 
 			 || deviceType == PAOGroups.LMT_2 )
@@ -1594,7 +1590,10 @@ public void setValue(Object val)
 			CtiUtilities.setCheckBoxState(getChannel1CheckBox(),new Character(loadProfileCollection.charAt(0)));
 		}
 		
-      CtiUtilities.setIntervalComboBoxSelectedItem(
+		CtiUtilities.setIntervalComboBoxSelectedItem(
+			getJComboBoxlVoltRate(), dlp.getVoltageDmdRate().intValue() );
+      	
+      	CtiUtilities.setIntervalComboBoxSelectedItem(
             getLoadProfileDemandRateComboBox(), dlp.getLoadProfileDemandRate().intValue() );
 
 
