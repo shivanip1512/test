@@ -136,7 +136,7 @@ public class MV_90Format extends FileFormatBase
 							while (lpDemandRateTimeStamp.compareTo((Object) ts) < 0)
 							{
 								//If intervalTimeStamp is less than ts, we must enter 'dummy' data into recordVector.
-								if( lpDemandRateTimeStamp.compareTo( new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime())) > 0) //ts <= maxtime, CONTINUE ON!
+								if( lpDemandRateTimeStamp.compareTo((Object)new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime())) > 0) //ts <= maxtime, CONTINUE ON!
 									break inValidTimestamp;
 
 								readingVector = new java.util.Vector(4);	//best guess capacity is 4
