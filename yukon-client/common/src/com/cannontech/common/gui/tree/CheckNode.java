@@ -79,7 +79,7 @@ public class CheckNode extends DBTreeNode
 
 	private void collectCheckedObjects(Vector checkedNodes)
 	{
-		if (isSelected && this.getParent() != null)
+		if (isSelected)
 		{
 			if (!checkedNodes.contains(this.getUserObject()))
 				checkedNodes.add(this.getUserObject());
