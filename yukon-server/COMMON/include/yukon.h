@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/06/24 19:26:22 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/08/06 13:30:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -253,7 +253,7 @@ typedef enum
     ErrorHttpResponse,          // Invalid or unsuccessful HTTP response
     ErrorXMLParser,             // XML parser initialization failed
     ErrorWctpResponse,          // Invalid WCTP response format
-    ErrorWctpTimeout,           // Time out when receiving WCTP response    
+    ErrorWctpTimeout,           // Time out when receiving WCTP response
     ErrorWctp300Series,         // Protocol Error 300 Series.
     ErrorWctp400Series,
     ErrorWctp500Series,
@@ -371,6 +371,7 @@ typedef enum
 
 typedef enum
 {
+    ChangeInvalidDb = -1,
     ChangePAODb = 0,
     ChangePointDb,
     ChangeStateGroupDb,
@@ -380,7 +381,8 @@ typedef enum
     ChangeCustomerContactDb,
     ChangeGraphDb,
     ChangeHolidaySchedule,
-    ChangeEnergyCompany
+    ChangeEnergyCompany,
+    ChangeStateImageDb
 
 } CtiDBChanged_t;
 
