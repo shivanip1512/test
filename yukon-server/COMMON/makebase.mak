@@ -57,6 +57,7 @@ portsup.obj \
 psup.obj \
 queue.obj \
 queues.obj \
+repeaterrole.obj \
 resolvers.obj \
 rtdb.obj \
 sema.obj \
