@@ -2551,10 +2551,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		// Remove customer from the cache
-//		if (liteAcctInfo.getCustomer() instanceof LiteCICustomer)
-			ServerUtils.handleDBChange( liteAcctInfo.getCustomer(), DBChangeMsg.CHANGE_TYPE_DELETE );
-//		else
-//			DefaultDatabaseCache.getInstance().deleteCustomer( liteAcctInfo.getCustomer().getCustomerID() );
+		ServerUtils.handleDBChange( liteAcctInfo.getCustomer(), DBChangeMsg.CHANGE_TYPE_DELETE );
     	
 		// Remote all contacts from the cache
 		deleteContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
