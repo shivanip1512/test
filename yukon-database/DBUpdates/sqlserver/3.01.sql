@@ -825,6 +825,7 @@ create table DeviceVerification (
 ReceiverID           numeric              not null,
 TransmitterID        numeric              not null,
 ResendOnFail         char(1)              not null,
+Disable              char(1)              not null,
 constraint PK_DEVICEVERIFICATION primary key  (ReceiverID, TransmitterID)
 );
 go

@@ -716,7 +716,8 @@ delete from YukonRole where roleid = -3;
 create table DeviceVerification  (
    ReceiverID           NUMBER                           not null,
    TransmitterID        NUMBER                           not null,
-   ResendOnFail         CHAR(1)                          not null
+   ResendOnFail         CHAR(1)                          not null,
+   Disable              CHAR(1)                          not null
 );
 alter table DeviceVerification
    add constraint PK_DEVICEVERIFICATION primary key (ReceiverID, TransmitterID);
