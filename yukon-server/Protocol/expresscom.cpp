@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/04/09 22:46:27 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/05/09 16:08:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1002,6 +1002,16 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
     else if(parse.isKeyValid("xcsetpoint"))
     {
         bool hold = ( parse.getiValue("xcholdtemp", 0) ? true : false);
+
+        double totalcontroltime = parse.getiValue("xctb", 0) + parse.getiValue("xctc", 0) + parse.getdValue("xctd", 0) + parse.getiValue("xcte", 0) + parse.getiValue("xctf", 0);
+        double controlledtime = (gConfigParms.getValueAsDouble("XCOM_SETPOINT_TD_CONTROL_RATIO", 100.0)) * parse.getdValue("xctd", 0) +
+            (gConfigParms.getValueAsDouble("XCOM_SETPOINT_TE_CONTROL_RATIO", 50.0)) * parse.getdValue("xcte", 0) +
+            (gConfigParms.getValueAsDouble("XCOM_SETPOINT_TF_CONTROL_RATIO", 25.0)) * parse.getdValue("xctf", 0);
+
+        // Add these two items to the list for control accounting!
+        if(totalcontroltime > 0) parse.setValue("control_reduction", (int)(controlledtime/totalcontroltime) );
+        parse.setValue("control_interval", (int)totalcontroltime);
+
 
         thermostatSetpointControl( parse.getiValue("xcmintemp", 0),
                                    parse.getiValue("xcmaxtemp", 0),
