@@ -1,0 +1,232 @@
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+
+#include <windows.h>
+#include <iostream>
+using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+
+#include <rw/collect.h>
+#include <rw/thr/mutex.h>
+#include <rw/rwtime.h>
+
+#include "calc.h"
+#include "logger.h"
+
+
+RWDEFINE_NAMED_COLLECTABLE( CtiCalc, "CtiCalc" );
+
+// static const strings
+const CHAR * CtiCalc::UpdateType_Periodic   = "On Timer";
+const CHAR * CtiCalc::UpdateType_AllChange  = "On All Change";
+const CHAR * CtiCalc::UpdateType_OneChange  = "On First Change";
+const CHAR * CtiCalc::UpdateType_Historical = "Historical";
+
+
+CtiCalc::CtiCalc( long pointId, const RWCString &updateType, int updateInterval )
+{
+    _valid = TRUE;
+    _pointId = pointId;
+
+    if( (!updateType.compareTo(UpdateType_Periodic, RWCString::ignoreCase)) 
+        && (updateInterval > 0) )
+    {
+        _updateInterval = updateInterval;
+		setNextInterval (updateInterval);
+        _updateType = periodic;
+    }
+    else if( !updateType.compareTo(UpdateType_AllChange, RWCString::ignoreCase))
+    {
+        _updateInterval = 0;
+        _updateType = allUpdate;
+    }
+    else if( !updateType.compareTo(UpdateType_OneChange, RWCString::ignoreCase))
+    {
+        // FIXFIXFIX - Treat the same for now but should be a different update type
+        _updateInterval = 0;
+        _updateType = allUpdate;
+
+		// XXX  invalid for now 
+    }
+    else if( !updateType.compareTo(UpdateType_Historical, RWCString::ignoreCase))
+	{
+//        _updateInterval = 0;
+//        _updateType = historical;
+
+		// XXX  invalid for now 
+		_valid = FALSE;
+
+	}
+    else
+        _valid = FALSE;
+}
+
+CtiCalc &CtiCalc::operator=( CtiCalc &toCopy )
+{
+    RWSlistCollectablesIterator copyIterator( toCopy._components );
+
+    //  make sure I'm squeaky clean to prevent memory leaks
+    this->cleanup( );
+
+    //  must do a deep copy;  components aren't common enough to justify a reference-counted shallow copy
+    for( ; copyIterator( ); )
+    {
+        CtiCalcComponent *tmp;
+        tmp = new CtiCalcComponent( *((CtiCalcComponent *)copyIterator.key( )) );
+        this->appendComponent( tmp );
+    }
+    _updateInterval = toCopy._updateInterval;
+    _pointId = toCopy._pointId;
+    _valid = toCopy._valid;
+    return *this;
+}
+
+void CtiCalc::appendComponent( CtiCalcComponent *componentToAdd )
+{
+    _components.append( componentToAdd );
+}               
+
+
+void CtiCalc::cleanup( void )
+{
+    _components.clearAndDestroy( );
+}
+
+
+double CtiCalc::calculate( void )
+{
+    double retVal = 0.0;
+    RWSlistCollectablesIterator iter( _components );
+
+//    _countdown = _updateInterval;
+    
+    //  Iterate through all of the calculations in the collection
+    for( ; iter( ) && _valid; )
+    {
+        CtiCalcComponent *tmpComponent = (CtiCalcComponent *)iter.key( );
+        _valid = _valid & tmpComponent->isValid( );  //  Entire calculation is only valid if each component is valid
+        retVal = tmpComponent->calculate( retVal );  //  Calculate on returned value
+    }
+
+    if( !_valid )   //  NOT valid - actually, you should never get here, because the ready( ) back in CalcThread should
+    {               //    detect that you're invalid, and reject you with a "not ready" then.
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << __FILE__ << " (" << __LINE__ << ")  ERROR - attempt to calculate invalid point \"" << _pointId << "\" - returning 0.0" << endl;
+        retVal = 0.0;
+    }
+
+    return retVal;
+}
+
+/*  FIX_ME:  I can't manage to dump the guts of a Calc object without using an iterator - and that
+               doesn't take a const parameter.
+               I don't know how to work around that.  and I'm not too familiar with the whole idea of
+               polymorphic persistence in the first place, so...
+               Will this even be used?
+
+void CtiCalc::restoreGuts( RWvistream& aStream )
+{
+   int entries;
+   CtiCalcComponent scratchPad;
+   
+   aStream >> entries;
+
+   for( int i = 0; i < entries; i++ )
+   {
+      aStream >> scratchPad;
+      (*this) << scratchPad;
+   }
+}
+
+
+void CtiCalc::saveGuts(RWvostream &aStream) const
+{
+   RWSlistCollectablesIterator iter( _components );
+   
+   aStream << _components.entries( );
+   
+   //  Iterate through all of the calculations in the collection
+   for( ; iter( ); )
+   {
+      aStream << *((CtiCalcComponent *)iter.key( ));
+   }
+}
+*/
+
+
+PointUpdateType CtiCalc::getUpdateType( void )
+{
+    return _updateType;
+}
+
+
+BOOL CtiCalc::ready( void )
+{
+    RWSlistCollectablesIterator iter( _components );
+    BOOL isReady = TRUE;
+    if( !_valid )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        isReady = FALSE;
+        dout << RWTime( ) << " - CtiCalc::ready( ) - Point " << _pointId << " is INVALID." << endl;
+    }
+    else
+    {
+        switch( _updateType )
+        {
+			case periodic:
+				if (RWTime().seconds() > getNextInterval())
+				{
+					isReady = TRUE;
+				}
+				else
+				{
+					isReady = FALSE;
+				}
+//                isReady = !(--_countdown);  //  NOTE!  do NOT check if ready more than once before calculating
+                break;                      //    it decrements the timer for the periodic points
+            case allUpdate:
+                for( ; iter( ); )
+                    isReady &= ((CtiCalcComponent *)(iter.key( )))->isUpdated( );
+                break;
+        }
+    }
+
+    return isReady;
+}
+
+/*******************************
+*
+*	Takes the interval requested in seconds
+*   and calculates when the top of the next interval
+*   would be
+*	ie.  60 seconds interval should be updating
+*		once a minute at the top of the minute
+********************************
+*/
+CtiCalc& CtiCalc::setNextInterval( int aInterval )
+{
+   RWTime timeNow;
+   ULONG secondsPastHour;
+
+   // check where we sit
+   secondsPastHour = timeNow.seconds() % 3600L;
+
+   // if we are on the interval, go now
+   if ((secondsPastHour % aInterval) == 0)
+      _nextInterval = timeNow.seconds();
+	else
+		_nextInterval = timeNow.seconds() + (aInterval - (secondsPastHour % aInterval));
+
+	return *this;
+}
+
+
+ULONG CtiCalc::getNextInterval( ) const
+{
+	return _nextInterval;
+}
+
+int CtiCalc::getUpdateInterval( ) const
+{
+	return _updateInterval;
+}
+

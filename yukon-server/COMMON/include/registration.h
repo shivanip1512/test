@@ -1,0 +1,8 @@
+class CtiRegistration
+{
+public:
+
+private:
+
+
+};

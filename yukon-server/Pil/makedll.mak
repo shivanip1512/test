@@ -1,0 +1,151 @@
+# nmake file YUKON 1.0
+
+!include ..\common\global.inc
+!include ..\common\rwglobal.inc
+
+INCLPATHS+= \
+-I$(COMMON)\include \
+-I$(PIL)\include \
+-I$(SERVER)\include \
+-I$(DATABASE)\include \
+-I$(RTDB)\include \
+-I$(CPARMS)\include \
+-I$(MSG)\include \
+-I$(RW) \
+
+
+.PATH.cpp = .
+
+.PATH.H = \
+.\include \
+;$(COMMON)\include \
+;$(DATABASE)\include \
+;$(RTDB)\include \
+;$(SCANNER)\include \
+;$(PORTER)\include \
+;$(CPARMS)\include \
+;$(SERVICE)\include \
+;$(SERVER)\include \
+;$(PIL)\include \
+;$(PROT)\include \
+;$(PROCLOG)\include \
+;$(DISPATCH)\include \
+;$(MSG)\include \
+;$(RW)
+
+
+DLLLIBS=\
+$(COMPILEBASE)\lib\ctibase.lib \
+$(COMPILEBASE)\lib\ctimsg.lib \
+$(COMPILEBASE)\lib\ctisvr.lib \
+$(COMPILEBASE)\lib\cmdline.lib \
+$(COMPILEBASE)\lib\ctidevdb.lib \
+$(COMPILEBASE)\lib\ctidbsrc.lib \
+
+
+DLLOBJS=\
+exe_pcreq.obj \
+pil_conmgr.obj \
+pil_exefct.obj \
+pilglob.obj \
+pilserver.obj
+
+
+
+ALL:            ctipil.dll
+
+ctipil.dll:     $(DLLOBJS) makedll.mak
+                @echo Building  $@
+                @%cd $(OBJ)
+                $(CC) $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(RWLIBS) $(DLLLIBS) -Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+
+copy:
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist bin\ctipil.dll copy bin\ctipil.dll $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist bin\ctipil.lib copy bin\ctipil.lib $(COMPILEBASE)\lib
+
+
+clean:
+                -del *.obj *.dll *.ilk *.pdb *.lib *.exp
+
+deps:
+                scandeps -Output makedll.mak *.cpp
+
+
+
+.cpp.obj :
+                @echo:
+                @echo Compiling: $< Output: $@
+                @echo:
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) /D_DLL_CTIPIL $(INCLPATHS) \
+-DWINDOWS -Fo$(OBJ)\ -c $<
+
+
+#UPDATE#
+applist.obj:	applist.h con_mgr.h connection.h dlldefs.h exchange.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h message.h collectable.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
+		queue.h ctibase.h ctinexus.h
+exe_pcreq.obj:	message.h collectable.h dlldefs.h pil_conmgr.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h con_mgr.h connection.h msg_multi.h \
+		msg_pdata.h pointdefs.h msg_signal.h yukon.h msg_ptreg.h \
+		msg_reg.h queue.h ctibase.h ctinexus.h pilserver.h server_b.h \
+		cmdopts.h msg_pcrequest.h mgr_device.h rtdb.h hashkey.h \
+		dev_base.h cmdparse.h parsevalue.h tbl_base.h resolvers.h \
+		pointtypes.h db_entry_defines.h logger.h thread.h \
+		dbmemobject.h tbl_2way.h dbaccess.h tbl_stats.h desolvers.h \
+		tbl_scanrate.h tbl_pao.h queues.h slctdev.h rte_base.h \
+		tbl_rtcomm.h mgr_route.h exe_pcreq.h executor.h
+parsetest.obj:	queue.h dlldefs.h cmdparse.h parsevalue.h logger.h \
+		thread.h mutex.h guard.h
+pilglob.obj:	os2_2w32.h dlldefs.h types.h
+pilhost.obj:	mgr_device.h dlldefs.h rtdb.h hashkey.h dllbase.h \
+		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h \
+		dev_base.h cmdparse.h parsevalue.h tbl_base.h resolvers.h \
+		pointtypes.h yukon.h db_entry_defines.h logger.h thread.h \
+		dbmemobject.h tbl_2way.h dbaccess.h tbl_stats.h desolvers.h \
+		tbl_scanrate.h tbl_pao.h queues.h slctdev.h rte_base.h \
+		ctibase.h ctinexus.h message.h collectable.h tbl_rtcomm.h \
+		mgr_route.h pilserver.h server_b.h con_mgr.h connection.h \
+		exchange.h msg_multi.h msg_pdata.h pointdefs.h msg_signal.h \
+		msg_ptreg.h msg_reg.h queue.h cmdopts.h msg_pcrequest.h \
+		dlldev.h
+pilserver.obj:	os2_2w32.h dlldefs.h types.h cticalls.h \
+		dev_grp_versacom.h dev_base.h dsm2.h mutex.h guard.h \
+		cmdparse.h parsevalue.h tbl_base.h resolvers.h pointtypes.h \
+		yukon.h dllbase.h db_entry_defines.h logger.h thread.h \
+		dbmemobject.h tbl_2way.h dbaccess.h tbl_stats.h desolvers.h \
+		tbl_scanrate.h tbl_pao.h queues.h dev_grp.h \
+		msg_lmcontrolhistory.h pointdefs.h message.h collectable.h \
+		msg_pdata.h msg_signal.h pt_status.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h tbl_pt_status.h tbl_dv_versacom.h vcomdefs.h \
+		ctinexus.h porter.h dsm2err.h devicetypes.h cparms.h \
+		netports.h queent.h pil_conmgr.h exchange.h con_mgr.h \
+		connection.h msg_multi.h msg_ptreg.h msg_reg.h queue.h \
+		ctibase.h pil_exefct.h executorfactory.h executor.h exe_cmd.h \
+		exe_reg.h pilserver.h server_b.h cmdopts.h msg_pcrequest.h \
+		mgr_device.h rtdb.h hashkey.h slctdev.h rte_base.h \
+		tbl_rtcomm.h mgr_route.h msg_pcreturn.h msg_cmd.h pilglob.h \
+		dll_msg.h utility.h
+piltest.obj:	queue.h dlldefs.h exchange.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h netports.h logger.h \
+		thread.h message.h collectable.h msg_cmd.h msg_reg.h \
+		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h yukon.h connection.h msg_ptreg.h \
+		cmdparse.h parsevalue.h
+pil_conmgr.obj:	collectable.h pil_conmgr.h exchange.h dlldefs.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h message.h con_mgr.h connection.h msg_multi.h \
+		msg_pdata.h pointdefs.h msg_signal.h yukon.h msg_ptreg.h \
+		msg_reg.h queue.h ctibase.h ctinexus.h pil_exefct.h \
+		executorfactory.h executor.h exe_cmd.h exe_reg.h msg_cmd.h
+pil_exefct.obj:	executorfactory.h collectable.h message.h dlldefs.h \
+		executor.h exe_cmd.h exe_reg.h pil_exefct.h exe_pcreq.h
+#ENDUPDATE#

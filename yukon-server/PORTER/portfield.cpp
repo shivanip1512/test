@@ -1,0 +1,2942 @@
+
+/*-----------------------------------------------------------------------------*
+*
+* File:   portfield
+*
+* Date:   7/17/2001
+*
+* PVCS KEYWORDS:
+* ARCHIVE      :  $Archive$
+* REVISION     :  $Revision: 1.1.1.1 $
+* DATE         :  $Date: 2002/04/12 13:59:43 $
+*
+* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
+*-----------------------------------------------------------------------------*/
+
+
+#pragma warning(disable : 4786)
+#pragma title ( "Higher Level Port Handshake Routines" )
+#pragma subtitle ( "CTI Copyright (c) 1990-1999" )
+/*---------------------------------------------------------------------
+    Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
+
+    Programmer:
+        William R. Ockert
+
+    FileName:
+        PORTPORT.C
+
+    Purpose:
+        Following Routines form a subsystem that take requests off of the
+        by port queue's and process them out to the ports to field devices
+        stolen from dsm2's portport.c
+
+    The following procedures are contained in this module:
+        PortThread              RemoteInitialize
+        RemoteReset
+
+    Initial Date:
+        Unknown
+
+    Revision History:
+        Unknown prior to 8-93
+        8-25-93     Added code to load routes if flag set         WRO
+        9-7-93      Converted to 32 bit                           WRO
+        11-1-93     Modified to keep stats temporarily in memory  TRH
+        11-30-93    Added startup code for TCP/IP interface       WRO
+        2-2-94      Added support for SES 92                      WRO
+        9-2-94      Changed intialize to note 711's and default   WRO
+
+        12-99       NT and functionalized                         CGP
+
+   -------------------------------------------------------------------- */
+#include <windows.h>
+#include <process.h>
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+#include "os2_2w32.h"
+#include "cticalls.h"
+#include "cti_asmc.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <malloc.h>
+
+#include <rw\thr\mutex.h>
+
+#include "color.h"
+#include "queues.h"
+#include "dsm2.h"
+#include "dsm2err.h"
+#include "device.h"
+#include "routes.h"
+#include "porter.h"
+#include "master.h"
+#include "portsup.h"
+#include "portdecl.h"
+#include "tcpsup.h"
+#include "perform.h"
+#include "tapterm.h"
+#include "porttcp.h"
+
+#include "portglob.h"
+
+//#include "dialup.h"
+#include "c_port_interface.h"
+#include "mgr_port.h"
+#include "mgr_device.h"
+#include "dev_base.h"
+#include "dev_ied.h"
+#include "dev_schlum.h"
+#include "dev_remote.h"
+#include "msg_trace.h"
+#include "porttypes.h"
+#include "xfer.h"
+#include "rtdb.h"
+
+#include "port_base.h"
+#include "port_local_modem.h"
+#include "prot_711.h"
+#include "trx_info.h"
+#include "trx_711.h"
+#include "utility.h"
+
+#define INF_LOOP_COUNT 10000
+
+DLLIMPORT extern RWMutexLock coutMux;
+
+/*
+ *  gQueSlot is used by dialup ports to pluck the next item from within the queue's guts.
+ */
+static ULONG   gQueSlot = 0;
+
+extern void DisplayTraceList( CtiPort *Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
+extern HCTIQUEUE*   QueueHandle(LONG pid);
+
+/*
+ *  This structure describes the port instance in use here.
+ *  It is a consolidation of global variables and the port record from the old DSM/2 system
+ *  Some elements are valid only for some port types (should be pretty intuitive though).
+ */
+typedef struct
+{
+    CtiPort        *Port;
+
+    /* Definitions for TAP Terminal */
+    BOOL           TAPTerm;
+    BOOL           HangUp;
+
+} PortInstData_t;
+
+
+bool deviceCanSurviveThisStatus(INT status);
+void commFail(CtiDeviceBase *Device, INT state);
+BOOL areAnyOutMessagesForMyDevID(void *pId, void* d);
+BOOL areAnyOutMessagesForMyRteID(void *pId, void* d);
+BOOL areAnyOutMessagesForCRCID(void *pId, void* d);
+
+BOOL isTAPTermPort(LONG PortNumber);
+INT RequeueReportError(INT status, OUTMESS *OutMessage);
+INT PostCommToDialup(CtiPort *Port, CtiDevice *Device, OUTMESS *OutMessage);
+INT VerifyPortStatus(CtiPort *Port);
+INT ResetPortParameters(CtiPort *Port);
+INT ResetCommsChannel(CtiPort *Port, CtiDevice *Device, OUTMESS *OutMessage);
+INT InitInMessage(INMESS *InMessage, OUTMESS *OutMessage);
+INT CheckInhibitedState(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
+INT ValidateDevice(CtiPort *Port, CtiDevice *Device);
+INT VTUPrep(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
+INT EstablishConnection(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
+INT DevicePreprocessing(CtiPort  *Port, OUTMESS *&OutMessage, CtiDevice *Device);
+INT CommunicateDevice(CtiPort  *Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
+INT NonWrapDecode(INMESS *InMessage, CtiDevice *Device);
+INT CheckAndRetryMessage(INT              CommResult,
+                         CtiPort          *Port,
+                         INMESS           *InMessage,
+                         OUTMESS          *&OutMessage,
+                         CtiDevice        *Device);
+INT DoProcessInMessage(INT                CommResult,
+                       CtiPort            *Port,
+                       INMESS             *InMessage,
+                       OUTMESS            *OutMessage,
+                       CtiDevice          *Device);
+INT ReturnResultMessage(INT               CommResult,
+                        INMESS            *InMessage,
+                        OUTMESS           *OutMessage);
+INT UpdatePerformanceData(INT             CommResult,
+                          CtiPort         *Port,
+                          CtiDevice       *Device);
+
+INT InitializeHandshake (CtiPort *aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSlist< CtiMessage > &traceList);
+INT TerminateHandshake (CtiPort *aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSlist< CtiMessage > &traceList);
+INT PerformRequestedCmd ( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
+INT ReturnLoadProfileData ( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
+INT LogonToDevice( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
+
+
+/* Threads that handle each port for communications */
+VOID PortThread (VOID *arg)
+{
+    INT            status;
+
+    ULONG          i, j, ReadLength;
+    ULONG          BytesWritten;
+    INMESS         InMessage;
+    OUTMESS        *OutMessage;
+    REQUESTDATA    ReadResult;
+    BYTE           ReadPriority;
+    ULONG          MSecs;
+
+    CtiDeviceBase  *Device = NULL;
+
+    /* Definitons to update statistics */
+    REMOTEPERF     RemotePerf;
+    DEVICEPERF     DevicePerf;
+    ERRSTRUCT      ErrStruct;
+
+    CtiPort        *Port = (CtiPort*)arg;
+
+    if(Port == NULL)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Port started for a NULL CtiPort pointer! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        return;
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " PortThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
+    }
+
+#if 0 // FIX FIX FIX CGP 071999 Add later
+    /* setup memory for this port's stats */
+    if((PortStats[Port.ThreadPortNumber] = (PORTSTATS*)malloc (sizeof(PORTSTATS))) == NULL)
+    {
+        printf("1;31m Error Allocating Memory\n0m");
+        // _endthread ();
+    }
+
+    PortStats[Port.ThreadPortNumber]->Stats = Port.Port.Stats;
+#endif
+
+    /* make it clear who is the boss */
+    CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
+
+    // Let the threads get up and running....
+    WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 2500L);
+
+    /* and wait for something to come in */
+    for(;!PorterQuit;)
+    {
+        if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0L) )
+        {
+            PorterQuit = TRUE;
+            continue;
+        }
+
+        if( NORMAL != (status = ResetCommsChannel(Port, Device, OutMessage)) )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Port " << Port->getName() << " will not init. Waiting 15 seconds " << endl;
+            }
+
+            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 15000L) )
+            {
+                PorterQuit = TRUE;
+            }
+
+            continue; // 012601 CGP...  What is this..  // return;
+        }
+
+        try
+        {
+            rwServiceCancellation( );
+        }
+        catch(const RWCancellation& cMsg)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            return;  // We've been nixed!
+        }
+
+        /*
+         *  This is a Read from the CTI queueing structures which will originate from
+         *  some other requestor.  This is where this thread blocks and waits if there are
+         *  no entries on the queue.  One may think of the "above" call as "cleanup" for the
+         *  previous ReadQueue's operation. Note that the ReadQueue call mallocs space for the
+         *  OutMessage pointer, and fills it from it's queue entries!
+         */
+        if((status = ReadQueue (Port->getPortQueueHandle(), &ReadResult, &ReadLength, (PPVOID) &OutMessage, gQueSlot, DCWW_WAIT,&ReadPriority)) != NORMAL )
+        {
+            if(status == ERROR_QUE_EMPTY)
+            {
+                if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 500L) )
+                {
+                    PorterQuit = TRUE;
+                }
+            }
+            else if( status != ERROR_QUE_UNABLE_TO_ACCESS)
+            {
+                printf ("Error Reading Port Queue\n");
+            }
+            continue;
+        }
+        else if(PorterDebugLevel & 0x00000008)
+        {
+            CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->DeviceID);
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Portfield connection read an outmessage for " << tempDev->getName() << endl;
+            }
+        }
+
+
+        if(PorterDebugLevel & 0x00000001)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Portfield connection read OutMessage->DeviceID = " << OutMessage->DeviceID << endl
+            << "                           OutMessage->Remote   = " << OutMessage->Remote << endl
+            << "                           OutMessage->Port     = " << OutMessage->Port << endl;
+        }
+
+        if(OutMessage->DeviceID == 0 &&
+           OutMessage->Remote != 0 &&
+           OutMessage->Port != 0 )
+        {
+            if( PorterDebugLevel & 0x00000001 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " looking for new deviceID..." << endl;
+            }
+
+            CtiDeviceBase *tempDev = DeviceManager.RemoteGetPortRemoteEqual(OutMessage->Port, OutMessage->Remote);
+
+            if( tempDev != NULL )
+            {
+                OutMessage->DeviceID = tempDev->getID();
+
+                if( PorterDebugLevel & 0x00000001 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " assigned new deviceID = " << tempDev->getID() << endl;
+                }
+            }
+            else
+            {
+                if( PorterDebugLevel & 0x00000001 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " did not assign new deviceID" << endl;
+                }
+            }
+        }
+
+#ifdef DEBUG
+        if(OutMessage->DeviceID == 0 && OutMessage->TargetID == 0)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            if(OutMessage != NULL)
+            {
+                delete OutMessage; /* free up the OutMessage */
+                OutMessage = NULL;
+            }
+            continue;
+        }
+#endif
+
+        gQueSlot = 0;   // Set this back to zero every time regardless of port type.
+
+        // Make sure port hasn't changed any here..
+        if( ResetPortParameters(Port) != NORMAL )
+        {
+            if(OutMessage->DeviceID != OutMessage->TargetID)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << "Port " << Port->getPortNameWas() << " has a re-init problem" << endl;
+                dout << RWTime() << "  Messages have been lost." << endl;
+            }
+
+            if(OutMessage != NULL)
+            {
+                delete OutMessage;
+                OutMessage = NULL;
+            }
+
+            continue;
+        }
+        // Copy a good portion of the OutMessage to the to-be-formed InMessage
+        InitInMessage(&InMessage, OutMessage);
+
+        /* get the device record for this id */
+        Device = DeviceManager.RemoteGetEqual(OutMessage->DeviceID);
+
+        if(Device == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            cerr << "Port " << Port->getPortID() << " just received a message for device id " << \
+            OutMessage->DeviceID << endl << \
+            " Porter does not seem to know about him and is throwing away the message!" << endl;
+
+            SendError(OutMessage, status);
+            continue;
+        }
+
+        if((status = CheckInhibitedState(Port, &InMessage, OutMessage, Device)) != NORMAL)
+        {
+            SendError(OutMessage, status);
+            continue;
+        }
+
+        /* Check if this is an analog loopback */
+#if 0
+        if((status = VTUPrep(&Port, &InMessage, OutMessage, Device)) != NORMAL)
+        {
+            SendError (OutMessage, status);
+            continue;
+        }
+#endif
+
+        /* Make sure everything is A-OK with this device */
+        if((status = ValidateDevice(Port, Device)) != NORMAL)
+        {
+            SendError (OutMessage, status);
+            continue;
+        }
+
+        // See if there is a reason to proceed..
+        if((status = DevicePreprocessing(Port, OutMessage, Device)) != NORMAL) /* do any preprocessing according to type */
+        {
+            RequeueReportError(status, OutMessage);
+            continue;            // Connection never happened!
+        }
+
+        /* Check if this port is dial up and initiate connection. */
+        if((status = EstablishConnection(Port, &InMessage, OutMessage, Device)) != NORMAL)
+        {
+            if(status != RETRY_SUBMITTED)
+            {
+                Port->reset(TraceFlag);
+            }
+
+            RequeueReportError(status, OutMessage);
+            continue;
+        }
+
+        /* Execute based on wrap protocol.  Sends OutMessage and fills in InMessage */
+        i = CommunicateDevice(Port, &InMessage, OutMessage, Device);
+
+        /* Non wrap protcol specific communications stuff */
+        if(!i)      // No error yet.
+        {
+            i = NonWrapDecode(&InMessage, Device);
+        }
+
+        /*
+         * Check if we need to do a retry on this command. Returns RETRY_SUBMITTED if the message has
+         * been requeued, or the CommunicateDevice returned otherwise
+         */
+        if(CheckAndRetryMessage(i, Port, &InMessage, OutMessage, Device) == RETRY_SUBMITTED)
+        {
+            continue;  // It has been re-queued!
+        }
+        else   /* we are either successful or retried out */
+        {
+            if((status = DoProcessInMessage(i, Port, &InMessage, OutMessage, Device)) != NORMAL)
+            {
+                RequeueReportError(status, OutMessage);
+                continue;
+            }
+        }
+
+        /* If the OutMessage indicates it this routine responds to the client */
+        if((status = ReturnResultMessage(i, &InMessage, OutMessage)) != NORMAL)
+        {
+            RequeueReportError(status, OutMessage);
+            continue;
+        }
+
+        /* Update the performance stats for this remote */
+        UpdatePerformanceData(i, Port, Device);
+
+        if( Port->getType() == TCPIPSERVER )
+        {
+            Port->close(TraceFlag);
+        }
+
+        if(OutMessage != NULL)
+        {
+            delete OutMessage; /* free up the OutMessage, it made a successful run! */
+            OutMessage = NULL;
+        }
+    }  /* and do it all again */
+}
+
+
+void RemoteInitialize (const CtiHashKey *key, CtiDeviceBase *&Device, void *ptr)
+{
+    CtiPort *pPort = (CtiPort*)ptr;
+    CtiTransmitterInfo *pInfo = NULL;
+
+    ULONG i;
+
+    if(Device->hasTrxInfo())
+    {
+        if(pPort->getPortID() == Device->getPortID())
+        {
+            if( 0 <= Device->getAddress() && Device->getAddress() < MAXIDLC )
+            {
+                if( (pInfo = Device->getTrxInfo()) == NULL )
+                {
+                    pInfo = Device->initTrxInfo();
+
+                    if(Device->getAddress() > 0)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Enabling P: " << Device->getPortID() << " D: " << Device->getID() << " / " << Device->getName() << ". DLC ID: " << Device->getAddress() << endl;
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Enabling P: " << Device->getPortID() << " D: " << Device->getID() << " / " << Device->getName() << endl;
+                    }
+
+                    pInfo->SetStatus( NEEDSRESET );
+                }
+            }
+        }
+    }
+}
+
+/* Routine to initialize a remote based on it's type */
+void RemoteReset (const CtiHashKey *key, CtiDeviceBase *&Device, void *ptr)
+{
+    CtiPort *Port = (CtiPort*)ptr;
+    ULONG j;
+    INT   eRet = 0;
+
+    if(Port->getPortID() == Device->getPortID())
+    {
+        if(0 <= Device->getAddress() && Device->getAddress() < MAXIDLC)
+        {
+            CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+
+            if(Port->getProtocol() == IDLC)
+            {
+                if(Device->getAddress() != RTUGLOBAL && Device->getAddress() != CCUGLOBAL)
+                {
+                    switch(Device->getType())
+                    {
+                    case TYPE_CCU711:
+                        if(!(Port->isDialup()))
+                        {
+                            j = 0;
+                            while((eRet = IDLCInit(Port, Device, &pInfo->RemoteSequence)) && j++ < 2);
+                        }
+
+                        if(!eRet)
+                        {
+                            if(ResetAll711s)
+                            {
+                                /* Reset the whole thing */
+                                IDLCFunction (Device, 0, DEST_BASE, COLD);
+                            }
+                            else
+                            {
+                                /* Download the delay sets */
+                                IDLCSetDelaySets (Device);
+
+                                /* flush the queue's */
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " Reset CCU: " << Device->getName() << "'s queueing control" << endl;
+                                }
+                                IDLCFunction (Device, 0, DEST_QUEUE, CLRDY);
+
+                                /* Check if we need to load the routes */
+                                if(LoadRoutes)
+                                {
+                                    LoadRemoteRoutes(Device);
+                                }
+                            }
+                        }
+
+                        break;
+
+                    case TYPE_LCU415:
+                    case TYPE_LCU415LG:
+                    case TYPE_LCU415ER:
+                    case TYPE_LCUT3026:
+                    case TYPE_TCU5000:
+                    case TYPE_TCU5500:
+                    default:
+                        break;
+                    }
+                }
+            }
+            pInfo->ClearStatus(NEEDSRESET);
+        }
+    }
+    return;
+}
+
+/*----------------------------------------------------------------------------*
+ * This function esentially is used to hang up the modem if it is offhook.
+ * As a throughput enhancement, it was modified to peek at the queues before
+ * doing so to verify that no entries exist for this device.  It will peek
+ * 4 times per second for the post comm wait number of seconds.
+ *----------------------------------------------------------------------------*/
+INT PostCommToDialup(CtiPort *Port, CtiDevice *Device, OUTMESS *OutMessage)
+{
+    INT    i = 0;
+    INT    status = NORMAL;
+    ULONG  QueueCount = 0;
+
+    BOOL    bHangup = FALSE;
+
+    CtiPortLocalModem    *modem = NULL;
+
+    if(Port->connected() && Port->shouldDisconnect())
+    {
+        Port->disconnect(NULL, TraceFlag);
+    }
+
+    if(Port->connected() && Device != NULL)
+    {
+        ULONG stayConnectedMin = Device->getMinConnectTime();
+        ULONG stayConnectedMax = Device->getMaxConnectTime();
+
+        // We know that we are dialup... Initialize our modem pointer..
+        if(Port->getType() == PortTypeLocalDialup)
+        {
+            modem = (CtiPortLocalModem*)Port;
+
+            for(i = 0; i < (ULONG)(4 * stayConnectedMin); i++)
+            {
+                /* Check the queue 4 times per second for a new entry for this dialup port ... */
+                if((gQueSlot = SearchQueue(modem->getPortQueueHandle(), (void*)modem->getDialedUpDeviceCRC(), areAnyOutMessagesForCRCID)) != 0 )
+                {
+                    break;
+                }
+
+                CTISleep (250L);
+            }
+
+            /* do not reinit i since times are non cumulative! */
+            for( ; gQueSlot == 0 && i < (ULONG)(4 * stayConnectedMax); i++)
+            {
+                /* Check the queue 4 times per second for a new entry for this dialup port ... */
+                if( !QueryQueue(modem->getPortQueueHandle(), &QueueCount) && QueueCount > 0)
+                {
+                    gQueSlot = SearchQueue(modem->getPortQueueHandle(), (void*)modem->getDialedUpDeviceCRC(), areAnyOutMessagesForCRCID);
+
+                    if( gQueSlot == 0 ) // No entry, or the entry is not first on the list
+                    {
+                        bHangup = TRUE;
+                        break;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                CTISleep (250L);
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Error Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+
+        if(gQueSlot == 0 || bHangup != FALSE)
+        {
+            /* Hang Up */
+            Port->disconnect(Device, TraceFlag);
+        }
+
+    }
+
+    return status;
+}
+
+
+INT VerifyPortStatus(CtiPort *Port)
+{
+    INT         status   = NORMAL;
+    CtiDevice   *Dev     = NULL;
+
+    if(NULL != Port)
+    {
+        if(Port->getHandle() == NULL && !Port->isDialup())
+        {
+            if( NORMAL != (status = Port->init()) )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Error initializing Virtual Port " << Port->getPortID() << ": \"" << Port->getName() << "\"" << endl;
+                }
+            }
+        }
+    }
+
+    return status;
+}
+
+INT ResetPortParameters(CtiPort *Port)
+{
+    INT status = NORMAL;
+
+#if 0    // 8/9/01 CGP This is not working correctly anyway!
+
+    if( !(Port->isTCPIPPort()) )
+    {
+        /*
+         *  Check if the port has changed name i.e. com1 -> com2 etc... via the editor.
+         */
+        if( stricmp(Port->getName(), Port->getPortNameWas()) )
+        {
+            if(Port->init())
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Error initializing Virtual Port " << Port->getPortID() << " on " << Port->getName() << endl;
+                }
+                status = ErrPortInitFailed;
+            }
+            else
+            {
+                // Mark it so we can tell if the "ComX" designation changes.
+                Port->setPortNameWas(Port->getName());
+            }
+        }
+
+        /*
+         *  Lastly, check if the port's baud rate has been modified by editor.
+         */
+        if(!status && Port->getBaudRate() != Port->getLastBaudRate())
+        {
+            Port->setLastBaudRate( Port->getBaudRate() );
+        }
+    }
+
+#endif
+
+    return status;
+}
+
+/*----------------------------------------------------------------------------*
+ * This function prepares or resets the communications port for (re)use.
+ * it checks it for proper state and setup condition.
+ *----------------------------------------------------------------------------*/
+INT ResetCommsChannel(CtiPort *Port, CtiDevice *Device, OUTMESS *OutMessage)
+{
+    INT status = NORMAL;
+
+    /*
+     *  If the port is inhibited, don't talk to it ok...
+     */
+    if( !(Port->isInhibited()) )
+    {
+        /*
+         *  If the port has not been intialized at all, do it NOW!
+         */
+        if( (Port->getLastBaudRate() == 0 || Port->needsReinit()) && !Port->isDialup() )
+        {
+            /* set up the port */
+            if( (status = Port->init()) != NORMAL )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Error initializing Virtual Port " << Port->getPortID() <<" on " << Port->getName() << endl;
+                }
+
+                return status;
+            }
+            else
+            {
+                Port->setPortNameWas( Port->getName() );
+                Port->setLastBaudRate( Port->getBaudRate() );
+            }
+
+            /* Report which devices are available and set queues for those using IDLC*/
+            {
+                RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+
+                DeviceManager.getMap().apply(RemoteInitialize, (void*)Port);
+
+                // Need to do this seperately so that they all get initialized first...
+                DeviceManager.getMap().apply(RemoteReset, (void*)Port);
+            }
+
+            /* If neccessary start the TCPIP Interface */
+            if(
+              (StartTCPIP == TCP_SES92)                                  ||
+              (StartTCPIP == TCP_CCU710 &&  Port->isTCPIPPort())   ||
+              (StartTCPIP == TCP_WELCO  &&  Port->isTCPIPPort())
+              )
+            {
+
+#if 0 // 040300 CGP FIX FIX FIX This was pulled for brevity!
+                if(PortTCPIPStart (ThreadPortNumber))
+                {
+                    printf ("Error Starting TCP/IP Interface\n");
+                    // _endthread ();
+                }
+#else
+                printf ("TCP/IP Interface disabled by #ifdef. CGP 040300\n");
+#endif
+            }
+        }
+
+        if(status == NORMAL)
+        {
+            if(!(Port->isTCPIPPort()))
+            {
+                status = VerifyPortStatus(Port);    // Is this port still A-OK?
+            }
+
+            if(Port->isDialup())
+            {
+                PostCommToDialup(Port, Device, OutMessage);
+            }
+        }
+    }
+
+    return status;
+}
+
+INT InitInMessage(INMESS *InMessage, OUTMESS *OutMessage)
+{
+    INT status = NORMAL;
+
+    // Clear it...
+    memset(InMessage, 0, sizeof(INMESS));
+
+    /* Lotsa stuff requires the InMessage to be loaded so load it */
+    memcpy(&(InMessage->Return),&(OutMessage->Request), sizeof(PIL_ECHO));  // 092899 Get this crap back to the requestor.
+
+    InMessage->DeviceID        = OutMessage->DeviceID;
+    InMessage->TargetID        = OutMessage->TargetID;
+    InMessage->RouteID         = OutMessage->RouteID;
+
+    InMessage->Remote          = OutMessage->Remote;
+    InMessage->Port            = OutMessage->Port;
+    InMessage->Sequence        = OutMessage->Sequence;
+    InMessage->ReturnNexus     = OutMessage->ReturnNexus;
+    InMessage->SaveNexus       = OutMessage->SaveNexus;
+    InMessage->Priority        = OutMessage->Priority;
+
+    InMessage->DeviceIDofLMGroup  = OutMessage->DeviceIDofLMGroup;
+    InMessage->TrxID              = OutMessage->TrxID;
+
+    return status;
+}
+
+INT CheckInhibitedState(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device)
+{
+    INT      status = NORMAL;
+
+
+    if(Device == NULL) /* Non-existant or inhibited device so do as needed with message */
+    {
+        status = BADCCU;
+    }
+    else if(Port->isInhibited())
+    {
+        status = PORTINHIBITED;
+
+        switch(Device->getType())
+        {
+        case TYPE_CCU711:
+            QueueFlush (Device);
+
+            CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Device->getTrxInfo();
+
+            if(p711Info != NULL)
+            {
+                if(OutMessage->Command == CMND_LGRPQ)
+                {
+                    InMessage->EventCode = PORTINHIBITED;
+                    p711Info->ClearStatus(INLGRPQ);
+                }
+
+                p711Info->reduceEntsConts(OutMessage->EventCode & RCONT);
+            }
+        }
+    }
+    else if(Device->isInhibited())
+    {
+        status =  REMOTEINHIBITED;
+
+        switch(Device->getType())
+        {
+        case TYPE_CCU711:
+            {
+                CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Device->getTrxInfo();
+
+                if(p711Info != NULL)
+                {
+                    // QueueFlush (OutMessage->DeviceID, Port->getPortID(), OutMessage->Remote);
+                    QueueFlush (Device);
+
+                    if(OutMessage->Command == CMND_LGRPQ)
+                    {
+                        InMessage->EventCode = REMOTEINHIBITED;
+                        p711Info->ClearStatus(INLGRPQ);
+                    }
+
+                    p711Info->reduceEntsConts(OutMessage->EventCode & RCONT);
+                }
+
+                break;
+            }
+        }
+    }
+
+    if(status != NORMAL)
+    {
+        /* if this is a dial up port make sure that we hang up if needed */
+        Port->disconnect(Device, TraceFlag);
+    }
+
+    return status;
+}
+
+/*-------------------------------------------------------------------*
+ * This function checks if the port is dialup and makes a call to
+ * connect if so.  The call to connect checks if we are already
+ * connected to the correct phone number/crc and keeps the connection
+ * otherwise it makes the correct connection.
+ *-------------------------------------------------------------------*/
+INT EstablishConnection(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device)
+{
+    INT status = NORMAL;
+
+    if(Port->isDialup())
+    {
+        CtiPortLocalModem *modem = (CtiPortLocalModem*)Port;
+
+        status = modem->connectToDevice(Device, TraceFlag);
+
+        if(status != NORMAL)
+        {
+            /* Must call CheckAndRetry to make the re-queue happen if needed */
+            status = CheckAndRetryMessage(status, modem, InMessage, OutMessage, Device);     // This call may free OutMessages
+        }
+        else if( !modem->connectedTo(Device->getPhoneNumberCRC()) ) /* Check if we made the connect OK */
+        {
+            /* Must call CheckAndRetry to make the re-queue happen if needed */
+            // This call may free OutMessages
+            status = CheckAndRetryMessage(status, modem, InMessage, OutMessage, Device);
+        }
+    }
+
+    return status;
+}
+
+INT DevicePreprocessing(CtiPort  *Port, OUTMESS *&OutMessage, CtiDevice *Device)
+{
+    INT status = NORMAL;
+    struct timeb   TimeB;
+    ULONG          QueueCount;
+
+    if( Port->isDialup() )
+    {
+        //  init the port to the device's baud rate
+        Port->setBaudRate(((CtiDeviceRemote *)Device)->getDialup()->getBaudRate());
+    }
+
+    switch(Device->getType())
+    {
+    case TYPE_CCU711:
+        {
+            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Device->getTrxInfo();
+
+            /* check if we need to load the time into a time sync */
+            if(OutMessage->EventCode & TSYNC)
+            {
+                if(OutMessage->EventCode & BWORD)
+                    LoadBTimeMessage (OutMessage);
+                else
+                    LoadXTimeMessage (OutMessage->Buffer.OutMessage);
+            }
+
+            /* Broadcasts do not need CCU preprocessing */
+            if(Device->getAddress() == CCUGLOBAL)
+                break;
+
+            pInfo->reduceEntsConts(OutMessage->EventCode & RCONT);
+
+            /* Check if we are in an RCONT condition */
+            if(pInfo->GetStatus(INRCONT))
+            {
+                if(OutMessage->EventCode & RCONT)
+                {
+                    /* Check out what the message is... if it is not RCOLQ we need to set lengths */
+                    if(OutMessage->Command != CMND_RCOLQ)
+                    {
+                        OutMessage->InLength = pInfo->RContInLength;
+                    }
+                }
+            }
+            else
+            {
+                /* Check if we ended up with an unneeded message */
+                if(OutMessage->Command == CMND_RCONT)
+                {
+                    /* Yup */
+                    delete OutMessage;
+                    OutMessage = NULL;
+                    return !NORMAL;
+                }
+            }
+
+            break;
+        }
+    case TYPE_LCU415LG:
+    case TYPE_LCU415ER:
+    case TYPE_LCU415:
+    case TYPE_LCUT3026:
+        {
+            if(LCUPreSend (OutMessage, Device))  // Requeued if non-zero returned
+            {
+                return MESSAGEREQUEUED;
+            }
+
+            break;
+        }
+    case TYPE_ILEXRTU:
+        {
+            if(OutMessage->EventCode & TSYNC)
+                LoadILEXTimeMessage (OutMessage->Buffer.OutMessage + PREIDLEN, 0);
+
+            break;
+        }
+    case TYPE_WELCORTU:
+    case TYPE_VTU:
+        {
+            if(OutMessage->EventCode & TSYNC)
+            {
+                LoadWelcoTimeMessage (OutMessage->Buffer.OutMessage + PREIDLEN, 0);
+            }
+
+            break;
+        }
+    case TYPE_SES92RTU:
+        {
+            if(OutMessage->EventCode & TSYNC)
+                LoadSES92TimeMessage (OutMessage->Buffer.OutMessage + PREIDLEN, 0);
+
+            break;
+        }
+    case TYPE_CCU700:
+    case TYPE_CCU710:
+        {
+            /* check if we need to load the time into a time sync */
+            if(OutMessage->EventCode & TSYNC)
+                LoadBTimeMessage (OutMessage);
+
+            break;
+        }
+    case TYPE_TCU5000:
+        break;
+
+    case TYPE_TCU5500:
+        {
+            if((OutMessage->EventCode & VERSACOM) && VCUWait)
+            {
+                CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+
+                /* Check see if we need to wait for a message to complete */
+                UCTFTime (&TimeB);
+                if(TimeB.time <= (LONG)pInfo->NextCommandTime)
+                {
+                    /* while queue is empty just sit on it otherwise put it back */
+                    do
+                    {
+                        QueryQueue (Port->getPortQueueHandle(), &QueueCount);
+                        if(QueueCount)
+                        {
+                            /* Write him back out to the queue */
+                            if(OutMessage->Priority) OutMessage->Priority--;
+
+                            if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+                            {
+                                printf ("\nError Replacing entry onto Queue\n");
+                            }
+                            CTISleep (50L);
+                            break;
+                        }
+                        else
+                        {
+                            CTISleep (100L);
+                            UCTFTime (&TimeB);
+                        }
+                    } while(TimeB.time <= (LONG)pInfo->NextCommandTime);
+
+                    if(QueueCount) status = !NORMAL;
+                }
+            }
+            break;
+        }
+    default:
+        {
+            break;
+        }
+    }
+
+    return status;
+}
+
+INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device)
+{
+    INT            status = NORMAL;
+    INT            i = NORMAL;
+    ULONG          j, ReadLength;
+    struct timeb   TimeB;
+    CtiRoute       *VTURouteRecord;
+
+    BYTE           scratchBuffer[300];
+    BYTE           *dataBuffer = NULL;
+    CtiXfer        trx;
+    LONG           oldid = 0L;
+
+    RWTPtrSlist< CtiMessage > traceList;
+
+    /* Load the post remote delay */
+    if(Port->isDialup())
+    {
+        Port->setDelay(POST_REMOTE_DELAY, 0);
+    }
+    else
+    {
+        Port->setDelay(POST_REMOTE_DELAY, Device->getPostDelay());
+    }
+
+    trx.setTraceMask(TraceFlag, TraceErrorsOnly, TracePort == Port->getPortID(), TraceRemote);
+
+    switch(Port->getProtocol())
+    {
+    case ProtocolWrapNone:
+        {
+            /* check if this is a MasterComm or ILEX device */
+            switch(Device->getType())
+            {
+            case TYPE_ILEXRTU:
+            case TYPE_SES92RTU:
+            case TYPE_DAVIS:
+            case TYPE_COOP4C:
+            case TYPE_COOPCL4C:
+            case TYPE_COOPCL5A:
+                {
+                    trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
+                    trx.setOutCount(OutMessage->OutLength);
+                    i = Port->outMess(trx, Device, traceList);
+                    break;
+                }
+            case TYPE_LCU415:
+            case TYPE_LCU415LG:
+            case TYPE_LCU415ER:
+            case TYPE_LCUT3026:
+            case TYPE_TCU5000:
+            case TYPE_TCU5500:
+                {
+                    PreMaster (OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT) OutMessage->OutLength);
+
+                    trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
+                    trx.setOutCount(OutMessage->OutLength + 2);
+                    i = Port->outMess(trx, Device, traceList);
+                    break;
+                }
+            case TYPE_SIXNET:
+                {
+                    CtiDeviceIED         *IED= (CtiDeviceIED*)Device;
+                    // Copy the request into the InMessage side....
+                    memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
+
+                    IED->allocateDataBins(OutMessage);
+                    IED->setLogOnNeeded(TRUE);
+                    IED->setInitialState(0);
+
+                    if( (status = InitializeHandshake (Port, IED, traceList)) == NORMAL )
+                    {
+                        status = PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList);
+                        INT dcstat = TerminateHandshake (Port, IED, traceList);
+
+                        if(status == NORMAL) status = dcstat;
+                    }
+
+                    IED->freeDataBins();
+
+                    // 071901 CGP. For now, prevent the original outmessage from returning to the requestor.
+
+                    // OutMessage->EventCode &= ~RESULT;
+                    InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[0] = CtiDeviceIED::CmdScanData;
+
+                    break;
+                }
+            case TYPE_TAPTERM:
+                {
+                    CtiDeviceIED         *IED= (CtiDeviceIED*)Device;
+                    CtiPortLocalModem    *modem = NULL;
+                    LONG                 DialedUpDeviceCRC = -1;
+
+                    // Initialize our modem pointer..
+                    if(Port->isDialup())
+                    {
+                        if(Port->getType() == PortTypeLocalDialup)
+                        {
+                            modem = (CtiPortLocalModem*)Port;
+                            DialedUpDeviceCRC = modem->getDialedUpDeviceCRC();
+
+                            /* 050201 CGP Added this if... May cause issues, so pay attention */
+                            /*
+                             *  Is the port connected to a DIFFERENT device with the same CRC?
+                             */
+                            if( modem->getConnectedDevice() != IED->getID())
+                            {
+                                // We need to fix up the old device... because we are stealing some of his thunder here!
+                                {
+                                    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+                                    CtiDevice *pOldConnectedDevice = DeviceManager.getEqual(modem->getConnectedDevice());
+                                    oldid = pOldConnectedDevice->getPortID();
+                                    pOldConnectedDevice->setLogOnNeeded(TRUE);
+
+                                    if( pOldConnectedDevice->getPhoneNumberCRC() != IED->getPhoneNumberCRC() )
+                                    {
+                                        // OK, this means we need to do a logon. (At least to TAP)
+                                        oldid = 0;
+                                        IED->setLogOnNeeded(TRUE);
+                                    }
+                                }
+
+                                modem->setConnectedDevice( IED->getID() ); // Let's switch allegiance.
+                            }
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+
+                    IED->allocateDataBins(OutMessage);
+
+                    IED->setInitialState(oldid);
+
+                    if( (status = InitializeHandshake (Port, IED, traceList)) == NORMAL )
+                    {
+                        if(modem != NULL)
+                        {
+                            modem->setConnectedDevice( IED->getID() );
+                        }
+
+                        status = PerformRequestedCmd (Port, IED, NULL, NULL, traceList);
+
+                        if( status != NORMAL)
+                        {
+                            IED->setLogOnNeeded(TRUE);      // No one is waiting for me out there... so lets kill this connection
+                        }
+                        else
+                        {
+                            if( SearchQueue(Port->getPortQueueHandle(), (void*)DialedUpDeviceCRC, areAnyOutMessagesForCRCID) == 0 )
+                            {
+                                IED->setLogOnNeeded(TRUE);      // We have zero queue entries!
+                            }
+                            else
+                            {
+                                // We have queue entries!  This is what gets us through the terminate routine without a hangup!
+                                IED->setLogOnNeeded(FALSE);
+                            }
+                        }
+
+                        INT dcstat = TerminateHandshake (Port, IED, traceList);
+                        if(status == NORMAL)
+                            status = dcstat;
+
+                    }
+
+                    IED->freeDataBins();
+
+                    break;
+                }
+            case TYPE_ALPHA_A1:
+            case TYPE_ALPHA_PPLUS:
+            case TYPE_DR87:
+            case TYPE_LGS4:
+                {
+                    // Copy the request into the InMessage side....
+                    memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
+
+                    // initialize the ied
+                    CtiDeviceIED *IED= (CtiDeviceIED*)Device;
+
+                    /***********************
+                    *
+                    *  allocating memory for the many different data internal structures the IED
+                    *  uses to gather data
+                    *
+                    ************************
+                    */
+
+                    IED->allocateDataBins(OutMessage);
+                    i = InitializeHandshake (Port,IED, traceList);
+
+                    if(!i)
+                    {
+                        // this will do the initial command requested
+                        if(!(i=PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList)))
+                        {
+                            /*********************************************
+                            * Use the byte 2 of the command message to keep the
+                            * final state of communications with the device
+                            * to send to scanner
+                            **********************************************
+                            */
+                            InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
+
+                            // check if there is load profile to do
+                            if(IED->getCurrentCommand() == CtiDeviceIED::CmdLoadProfileTransition)
+                            {
+                                // set to load profile request
+                                IED->setCurrentCommand(CtiDeviceIED::CmdLoadProfileData);
+
+                                // note, current command must be reset to scan data before returning
+                                // or the decode response routine will not work correctly
+                                PerformRequestedCmd ( Port, IED, InMessage, OutMessage , traceList);
+
+                                // reset to scan data once completed
+                                IED->setCurrentCommand( CtiDeviceIED::CmdScanData );
+                            }
+
+                            // only do this if we were doing a scan data
+                            if(IED->getCurrentCommand() == CtiDeviceIED::CmdScanData)
+                            {
+                                // will need to move these back
+                                IED->reformatDataBuffer (InMessage->Buffer.DUPSt.DUPRep.Message,InMessage->InLength);
+                            }
+                        }
+                        else
+                        {
+                            InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
+                        }
+                    }
+                    else
+                    {
+                        InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
+                    }
+
+                    // free the memory we used
+                    IED->freeDataBins();
+
+                    break;
+                }
+            case TYPE_VECTRON:
+            case TYPE_FULCRUM:
+            case TYPE_QUANTUM:
+
+                {
+                    // Copy the request into the InMessage side....
+                    memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
+
+                    // initialize the ied
+                    CtiDeviceIED *IED= (CtiDeviceIED*)Device;
+
+                    /***********************
+                    *
+                    *  allocating memory for the many different data internal structures the IED
+                    *  uses to gather data
+                    *
+                    ************************
+                    */
+
+                    IED->allocateDataBins(OutMessage);
+
+                    /************************
+                    *
+                    *  initializes handshake and decides if there is a master/slave relationship
+                    *  to deal with
+                    *
+                    *************************
+                    */
+
+                    i = LogonToDevice (Port,IED,InMessage,OutMessage, traceList);
+
+                    if(!i)
+                    {
+                        // this will do the initial command requested
+                        if(!(i=PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList)))
+                        {
+                            /*********************************************
+                            * Use the byte 2 of the command message to keep the
+                            * final state of communications with the device
+                            * to send to scanner
+                            **********************************************
+                            */
+                            InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
+
+                            // check if there is load profile to do
+                            if(IED->getCurrentCommand() == CtiDeviceIED::CmdLoadProfileTransition)
+                            {
+                                // set to load profile request
+                                IED->setCurrentCommand(CtiDeviceIED::CmdLoadProfileData);
+
+                                // note, current command must be reset to scan data before returning
+                                // or the decode response routine will not work correctly
+                                PerformRequestedCmd ( Port, IED, InMessage, OutMessage , traceList);
+
+                                // reset to scan data once completed
+                                IED->setCurrentCommand( CtiDeviceIED::CmdScanData );
+                            }
+
+                            // only do this if we were doing a scan data
+                            if(IED->getCurrentCommand() == CtiDeviceIED::CmdScanData)
+                            {
+                                // will need to move these back
+                                IED->reformatDataBuffer (InMessage->Buffer.DUPSt.DUPRep.Message,InMessage->InLength);
+                            }
+                        }
+                        else
+                        {
+                            InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
+                        }
+                    }
+                    else
+                    {
+                        InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = IED->getCurrentState();
+                    }
+
+                    // free the memory we used
+                    IED->freeDataBins();
+
+                    break;
+                }
+            case TYPE_WELCORTU:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Invalid Port Protocol for Welco device **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    i = BADPORT;
+                    break;
+                }
+            default:
+                {
+                    /* output the message to the remote */
+                    trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
+                    trx.setOutCount(OutMessage->OutLength - 3);
+                    i = Port->outMess(trx, Device, traceList);
+                }
+            }
+
+            /* get the time into the return message */
+            UCTFTime (&TimeB);
+            InMessage->Time = TimeB.time;
+            InMessage->MilliTime = TimeB.millitm;
+
+            if(TimeB.dstflag) InMessage->MilliTime |= DSTACTIVE;
+
+            /* Increment the number of times we have talked to this guy */
+#if 0    // 040201 CGP ACH: This is a statistics function!
+            if(OutMessage->Remote != 0xffff)
+            {
+                pInfo->FiveMinuteCount++;
+            }
+#endif
+
+            /* !i is a successful return... This is a "post" successful send switch */
+            if(!i)
+            {
+                switch(Device->getType())
+                {
+                case TYPE_CCU700:
+                case TYPE_CCU710:
+                case TYPE_DAVIS:
+                case TYPE_COOP4C:
+                case TYPE_COOPCL4C:
+                case TYPE_COOPCL5A:
+                    {
+                        /* get the returned message from the remote */
+                        trx.setInBuffer(InMessage->Buffer.InMessage);
+                        trx.setInCountExpected(OutMessage->InLength);
+                        trx.setInCountActual(&InMessage->InLength);
+                        trx.setInTimeout(OutMessage->TimeOut);
+                        trx.setMessageStart();                          // This is the first "in" of this message
+                        trx.setMessageComplete();                       // This is the last "in" of this message
+
+                        i = Port->inMess(trx, Device, traceList);
+
+                        // Prepare for tracing
+                        if(trx.doTrace(i))
+                        {
+                            Port->traceXfer(trx, traceList, Device, i);
+                        }
+
+                        break;
+                    }
+                case TYPE_ILEXRTU:
+
+                    /* Add some code */
+                    break;
+
+                case TYPE_LCU415:
+                case TYPE_LCU415LG:
+                case TYPE_LCU415ER:
+                case TYPE_LCUT3026:
+                case TYPE_TCU5000:
+                case TYPE_TCU5500:
+                    {
+                        InMessage->InLength = 0;
+                        ReadLength = 0;
+
+
+                        /* get the first 4 chars of the message */
+                        trx.setInBuffer(InMessage->Buffer.InMessage);
+                        trx.setInCountExpected( 4 );
+                        trx.setInCountActual(&InMessage->InLength);
+                        trx.setInTimeout(OutMessage->TimeOut);
+                        trx.setMessageStart();                          // This is the first "in" of this message
+                        trx.setMessageComplete(0);                      // This is _NOT_ the last "in" of this message
+
+                        i = Port->inMess(trx, Device, traceList);
+
+                        if(!i)
+                        {
+                            /* check out the message... How much follows */
+                            i = PostMaster (InMessage->Buffer.InMessage, Device->getAddress(), &ReadLength);
+                        }
+
+                        if(!i)
+                        {
+                            /* get the rest of the message */
+                            trx.setInBuffer(InMessage->Buffer.InMessage + 4);
+                            trx.setInCountExpected( ReadLength + 2 );
+                            trx.setInCountActual(&ReadLength);
+                            trx.setInTimeout(OutMessage->TimeOut);
+                            trx.setMessageStart(0);                         // This is _NOT_ the first "in" of this message
+                            trx.setMessageComplete();                       // This is the last "in" of this message
+
+                            i = Port->inMess(trx, Device, traceList);
+                        }
+
+                        InMessage->InLength += ReadLength;
+
+                        if(!i)
+                        {
+                            /* Check crc of message */
+                            i = MasterReply (InMessage->Buffer.InMessage, (USHORT)InMessage->InLength);
+                        }
+
+                        // Prepare for tracing
+                        trx.setInBuffer(InMessage->Buffer.InMessage);
+                        trx.setInCountActual(&InMessage->InLength);
+                        trx.setTraceMask(TraceFlag, TraceErrorsOnly, TracePort == Port->getPortID(), TraceRemote);
+
+                        if(trx.doTrace(i))
+                        {
+                            Port->traceXfer(trx, traceList, Device, i);
+                        }
+
+                        if(!i)
+                        {
+                            InMessage->InLength = ReadLength - 2;
+                        }
+
+                        break;
+                    }
+
+                case TYPE_SIXNET:
+                case TYPE_TAPTERM:
+                case TYPE_ALPHA_PPLUS:
+                case TYPE_ALPHA_A1:
+                case TYPE_FULCRUM:
+                case TYPE_VECTRON:
+                case TYPE_QUANTUM:
+                case TYPE_DR87:
+                case TYPE_LGS4:
+                default:
+                    {
+                        /* These guys are handled in a special way... */
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                switch(Device->getType())
+                {
+                    // none of these use the transfer struct defined in this function so it blows the thread
+                    case TYPE_SIXNET:
+                    case TYPE_TAPTERM:
+                    case TYPE_ALPHA_PPLUS:
+                    case TYPE_ALPHA_A1:
+                    case TYPE_FULCRUM:
+                    case TYPE_VECTRON:
+                    case TYPE_QUANTUM:
+                    case TYPE_DR87:
+                    case TYPE_LGS4:
+                        break;
+                    default:
+                        // There was an outbound error, the Xfer was not traced...
+                        if(trx.doTrace(i))
+                        {
+                            Port->traceXfer(trx, traceList, Device, i);
+                        }
+                }
+            }
+
+            break;  /* No Wrap */
+        }
+    case ProtocolWrapIDLC:
+        {
+            /* Check for broadcast type message */
+            if(OutMessage->Remote == CCUGLOBAL)
+            {
+                /* form the CCU IDLC preamble */
+                PreIDLC (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, CCUGLOBAL, 0, 1, 1, OutMessage->Source, OutMessage->Destination, OutMessage->Command);
+            }
+            else if(OutMessage->Remote == RTUGLOBAL)
+            {
+                /* form the RTU IDLC preamble */
+                PreUnSequenced (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, OutMessage->Port, RTUGLOBAL, Device);
+            }
+            else
+            {
+                switch(Device->getType())
+                {
+                case TYPE_ILEXRTU:
+                case TYPE_WELCORTU:
+                case TYPE_VTU:
+                case TYPE_SES92RTU:
+                case TYPE_LCU415:
+                case TYPE_LCU415LG:
+                case TYPE_LCU415ER:
+                case TYPE_LCUT3026:
+                case TYPE_TCU5000:
+                case TYPE_TCU5500:
+                    {
+                        PreUnSequenced (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength,  Device->getPortID(),Device->getAddress(), Device);
+                        break;
+                    }
+                case TYPE_CCU700:
+                case TYPE_CCU710:
+                case TYPE_COOP4C:
+                case TYPE_COOPCL4C:
+                case TYPE_COOPLTC4C:
+                case TYPE_COOPCL5A:
+                case TYPE_JEM1:
+                case TYPE_JEM2:
+                case TYPE_JEM3:
+                case TYPE_DAVIS:
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "**** FIX FIX FIX FIX FIX THIS **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                        // PreVTU (OutMessage->Buffer.OutMessage, (USHORT)(OutMessage->OutLength - 3), (USHORT)Device->getAddress(), (USHORT)(VTURouteRecord->getBus()), (USHORT)OutMessage->InLength, (USHORT)(OutMessage->TimeOut));
+                        break;
+                    }
+                case TYPE_CCU711:
+                default:
+                    {
+                        CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+                        PreIDLC (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, OutMessage->Remote, pInfo->RemoteSequence.Reply, pInfo->RemoteSequence.Request, 1, OutMessage->Source, OutMessage->Destination, OutMessage->Command);
+                        break;
+                    }
+                }
+            }
+
+            /* calculate the crc and output the message */
+            switch(Device->getType())
+            {
+            case TYPE_ILEXRTU:
+            case TYPE_WELCORTU:
+            case TYPE_VTU:
+            case TYPE_SES92RTU:
+            case TYPE_LCU415:
+            case TYPE_LCU415LG:
+            case TYPE_LCU415ER:
+            case TYPE_LCUT3026:
+            case TYPE_TCU5000:
+            case TYPE_TCU5500:
+            case TYPE_CCU700:
+            case TYPE_CCU710:
+            case TYPE_COOP4C:
+            case TYPE_COOPCL4C:
+            case TYPE_COOPLTC4C:
+            case TYPE_COOPCL5A:
+            case TYPE_JEM1:
+            case TYPE_JEM2:
+            case TYPE_JEM3:
+            case TYPE_DAVIS:
+                {
+                    PostIDLC (OutMessage->Buffer.OutMessage, (USHORT)(OutMessage->OutLength + PREIDL + 1));
+
+                    trx.setOutBuffer(OutMessage->Buffer.OutMessage);
+                    trx.setOutCount(OutMessage->OutLength + PREIDL + 3);
+
+                    i = Port->outMess(trx, Device, traceList);
+
+                    break;
+                }
+            default:
+                {
+                    PostIDLC (OutMessage->Buffer.OutMessage, (USHORT)(OutMessage->OutLength + PREIDL - 2));
+
+                    trx.setOutBuffer(OutMessage->Buffer.OutMessage);
+                    trx.setOutCount(OutMessage->OutLength + PREIDL);
+
+                    i = Port->outMess(trx, Device, traceList);
+
+                    if(PorterDebugLevel & 0x00010000)
+                    {
+                        CtiProtocol711 ccu711;
+                        ccu711.setMasterRequest( OutMessage->Buffer.OutMessage );
+                        ccu711.describeMasterRequest();
+                    }
+
+                    break;
+                }
+            }
+
+            /* get the time into the return message */
+            UCTFTime (&TimeB);
+            InMessage->Time = TimeB.time;
+            InMessage->MilliTime = TimeB.millitm;
+            if(TimeB.dstflag)
+            {
+                InMessage->MilliTime |= DSTACTIVE;
+            }
+
+            /* Increment the number of times we have talked to this guy */
+
+#if 0    // 040201 CGP ACH: This is a statistics function!
+            if(OutMessage->Remote != 0xffff)
+            {
+                pInfo->FiveMinuteCount++;
+            }
+#endif
+
+            if(!i)
+            {
+                if(OutMessage->Remote == CCUGLOBAL)
+                {
+                    if(OutMessage->EventCode & DTRAN)
+                    {
+                        /* Calculate the time the command should take */
+                        if(OutMessage->EventCode & BWORD)
+                            CTISleep (3000L);
+                        else
+                            CTISleep(1000L);
+                    }
+                    i = NORMAL;
+                }
+                else if(OutMessage->Remote == RTUGLOBAL)
+                {
+                    i = NORMAL;
+                }
+                else
+                {
+                    switch(Device->getType())
+                    {
+                    case TYPE_ILEXRTU:
+                    case TYPE_WELCORTU:
+                    case TYPE_VTU:
+                    case TYPE_SES92RTU:
+                    case TYPE_LCU415:
+                    case TYPE_LCU415LG:
+                    case TYPE_LCU415ER:
+                    case TYPE_LCUT3026:
+                    case TYPE_TCU5000:
+                    case TYPE_TCU5500:
+                        {
+                            InMessage->InLength = 0;
+                            ReadLength = 0;
+
+                            /* get the first 7 chars of the message */
+
+                            trx.setInBuffer( InMessage->IDLCStat + 11 );
+                            trx.setInCountExpected( PREIDLEN );
+                            trx.setInCountActual( &(InMessage->InLength) );
+                            trx.setInTimeout(OutMessage->TimeOut);
+                            trx.setMessageStart();                          // This is the first "in" of this message
+                            trx.setMessageComplete(0);                      // This is _NOT_ the last "in" of this message
+
+                            i = Port->inMess(trx, Device, traceList);
+
+                            if(!i)
+                            {
+                                /* check out the message... How much follows */
+                                i = RTUReplyHeader (Device->getType(), Device->getAddress(), InMessage->IDLCStat + 11, &ReadLength);
+
+                                if(!i && ReadLength)
+                                {
+                                    /* get the rest of the message */
+                                    trx.setInBuffer( InMessage->Buffer.InMessage );
+                                    trx.setInCountExpected( ReadLength );
+                                    trx.setInCountActual( &ReadLength );
+                                    trx.setInTimeout(OutMessage->TimeOut);
+                                    trx.setMessageStart(0);                         // This is _NOT_ the first "in" of this message
+                                    trx.setMessageComplete();                       // This is the last "in" of this message
+
+                                    i = Port->inMess(trx, Device, traceList);
+                                }
+                            }
+
+                            InMessage->InLength += ReadLength;
+
+                            if(!i)
+                            {
+                                /* Check crc of message */
+                                i = RTUReply (InMessage->IDLCStat + 11, (USHORT)InMessage->InLength);
+                            }
+
+                            if(trx.doTrace(i))
+                            {
+                                trx.setInBuffer(InMessage->IDLCStat + 11);
+                                trx.setInCountActual(&InMessage->InLength);
+                                Port->traceXfer(trx, traceList, Device, i);
+                            }
+
+                            break;
+                        }
+                    case TYPE_CCU700:
+                    case TYPE_CCU710:
+                    case TYPE_COOP4C:
+                    case TYPE_COOPCL4C:
+                    case TYPE_COOPLTC4C:
+                    case TYPE_COOPCL5A:
+                    case TYPE_JEM1:
+                    case TYPE_JEM2:
+                    case TYPE_JEM3:
+                    case TYPE_DAVIS:
+                        {
+                            InMessage->InLength = 0;
+                            ReadLength = 0;
+
+                            trx.setInBuffer( InMessage->IDLCStat + 11 );
+                            trx.setInCountExpected( PREIDLEN );
+                            trx.setInCountActual( &(InMessage->InLength) );
+                            trx.setInTimeout(OutMessage->TimeOut);
+                            trx.setMessageStart();                          // This is the first "in" of this message
+                            trx.setMessageComplete(0);                      // This is _NOT_ the last "in" of this message
+
+                            i = Port->inMess(trx, Device, traceList);
+
+                            if(!i)
+                            {
+                                /* check out the message... How much follows */
+                                i = RTUReplyHeader (Device->getType(), Device->getAddress(), InMessage->IDLCStat + 11, &ReadLength);
+
+                                if(!i && ReadLength)
+                                {
+                                    /* get the rest of the message */
+                                    trx.setInBuffer( InMessage->Buffer.InMessage );
+                                    trx.setInCountExpected( ReadLength );
+                                    trx.setInCountActual( &ReadLength );
+                                    trx.setInTimeout(OutMessage->TimeOut);
+                                    trx.setMessageStart(0);                          // This is _NOT_ the first "in" of this message
+                                    trx.setMessageComplete();                        // This is the last "in" of this message
+
+                                    i = Port->inMess(trx, Device, traceList);
+                                }
+                            }
+                            InMessage->InLength += ReadLength;
+
+                            if(!i)
+                            {
+                                /* Check crc of message */
+                                i = RTUReply (InMessage->IDLCStat + 11, (USHORT)InMessage->InLength);
+                            }
+
+                            if(trx.doTrace(i))
+                            {
+                                trx.setInBuffer(InMessage->IDLCStat + 11);
+                                trx.setInCountActual(&InMessage->InLength);
+                                Port->traceXfer(trx, traceList, Device, i);
+                            }
+
+
+                            if(!i)
+                            {
+                                i = InMessage->Buffer.InMessage[2];
+                                InMessage->InLength = InMessage->Buffer.InMessage[1];
+                                if(InMessage->InLength)
+                                {
+                                    memmove (InMessage->Buffer.InMessage, InMessage->Buffer.InMessage + 3, InMessage->InLength);
+                                }
+                            }
+
+                            break;
+                        }
+                    default:
+                        {
+                            CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+
+                            /* get the first 5 bytes in the return message */
+                            trx.setInBuffer( InMessage->IDLCStat );
+                            trx.setInCountExpected( 5 );
+                            trx.setInCountActual( &InMessage->InLength );
+                            trx.setInTimeout(OutMessage->TimeOut);
+                            trx.setMessageStart();                           // This is the first "in" of this message
+                            trx.setMessageComplete(0);                       // This is NOT the last "in" of this message
+                            trx.setCRCFlag(0);
+
+                            i = Port->inMess(trx, Device, traceList);
+
+                            if(!i)
+                            {
+                                /* Oh wow, I got me five bytes of datum! */
+                                if(InMessage->IDLCStat[2] & 0x01)    // Supervisory frame. Emetcon S-Spec Section 4.5
+                                {
+                                    /* Ack patooy What to do here now ya don't ya' know */
+                                    switch(InMessage->IDLCStat[2] & 0x0f)
+                                    {
+                                    case REJ:
+                                        {
+                                            if((j = IDLCRej(InMessage->IDLCStat, &pInfo->RemoteSequence.Request)) != NORMAL)
+                                            {
+                                                i = j;
+                                            }
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << RWTime() << " *** Supervisory (Inbound) Message 0x" << hex << InMessage->IDLCStat[2] << " from CCU: " << Device->getName() << endl;
+                                            }
+
+                                            if(trx.doTrace(i))
+                                            {
+                                                trx.setInBuffer(InMessage->IDLCStat);
+                                                trx.setInCountActual(&InMessage->InLength);
+                                                Port->traceXfer(trx, traceList, Device, i);
+                                            }
+                                        }
+                                    }
+
+                                    /*
+                                     *  4/29/99 CGP There are others like Reset Acknowlege which may need to picked up here
+                                     */
+                                }
+                                else
+                                {
+                                    ReadLength = 0;
+                                    /* Go get the rest of the message */
+                                    /* Got first byte following length.. Must add two for CRC */
+                                    trx.setInBuffer( &InMessage->IDLCStat[5] );
+                                    trx.setInCountExpected( InMessage->IDLCStat[3] + 1 );
+                                    trx.setInCountActual( &ReadLength );
+                                    trx.setInTimeout(OutMessage->TimeOut);
+                                    trx.setMessageStart(FALSE);                           // This is the first "in" of this message
+                                    trx.setMessageComplete(TRUE);                   // This is NOT the last "in" of this message
+
+                                    i = Port->inMess(trx, Device, traceList);
+
+                                    InMessage->InLength += ReadLength;
+
+                                    if(!i)
+                                    {
+                                        /*
+                                         *  This is the guy who does some rudimentary checking on the CCU message
+                                         *  He will return REQACK in that case...
+                                         */
+                                        i = GenReply (InMessage->IDLCStat, InMessage->InLength, &pInfo->RemoteSequence.Request, &pInfo->RemoteSequence.Reply, Device->getAddress());
+                                    }
+                                }
+                            }
+
+                            if(i)
+                            {
+                                if(InMessage->InLength >= 5)
+                                {
+                                    if((j = IDLCRej (InMessage->IDLCStat, &pInfo->RemoteSequence.Request)) != NORMAL)
+                                    {
+                                        i = j;
+                                    }
+                                }
+                            }
+
+                            if(trx.doTrace(i))
+                            {
+                                trx.setInBuffer(InMessage->IDLCStat);
+                                trx.setInCountActual(&InMessage->InLength);
+                                Port->traceXfer(trx, traceList, Device, i);
+                            }
+
+                            if(!i)
+                            {
+                                InMessage->InLength -= 20;
+                            }
+
+                            if(PorterDebugLevel & 0x00010000)
+                            {
+                                CtiProtocol711 ccu711;
+                                ccu711.setSlaveResponse( InMessage->IDLCStat );
+                                ccu711.describeSlaveResponse();
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // There was an outbound error, the Xfer was not traced...
+                if(trx.doTrace(i))
+                {
+                    Port->traceXfer(trx, traceList, Device, i);
+                }
+            }
+
+
+            /* Do not do a retry if we REQACK */
+            if((i & ~DECODED) == REQACK)
+            {
+                OutMessage->Retry = 0;
+            }
+
+            break; /* IDLC */
+        }
+    case UCAWRAP:     /* Don't know about this one yet */
+    default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            break;
+        }
+    }
+
+    DisplayTraceList(Port, traceList, true);
+
+    return i;
+}
+
+INT NonWrapDecode(INMESS *InMessage, CtiDevice *Device)
+{
+    INT status = NORMAL;
+
+    switch(Device->getType())
+    {
+    case TYPE_DAVIS:
+        {
+            if(InMessage->Buffer.InMessage[0] != 0x06 && InMessage->Buffer.InMessage[1] != 0x01)
+            {
+                status = FRAMEERR;
+            }
+            else
+            {
+                /* Check the CRC */
+                if(MAKEUSHORT (InMessage->Buffer.InMessage[18],
+                               InMessage->Buffer.InMessage[17]) != CrcCalc_C ((InMessage->Buffer.InMessage + 2), 15))
+                {
+                    status = BADCRC;
+                }
+            }
+
+            break;
+        }
+    default:
+        break;
+    }
+
+    return status;
+}
+
+
+INT CheckAndRetryMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDevice *Device)
+{
+    INT            status = CommResult;
+    ULONG          j;
+    ULONG          QueueCount;
+    REMOTEPERF     RemotePerf;
+    ERRSTRUCT      ErrStruct;
+    bool           iscommfailed = (CommResult == NORMAL);      // Prime with the communication status
+
+    if(Device->adjustCommCounts( iscommfailed, OutMessage->Retry > 0 ))
+    {
+        commFail(Device, (iscommfailed ? CLOSED : OPENED));
+    }
+
+    if( (CommResult != NORMAL) ||
+        (  (Port->getProtocol() == IDLC) &&
+           (OutMessage->Remote == CCUGLOBAL || OutMessage->Remote == RTUGLOBAL)))
+    {
+        switch( Device->getType() )
+        {
+        case TYPE_LCU415:
+        case TYPE_LCU415LG:
+        case TYPE_LCU415ER:
+        case TYPE_LCUT3026:
+            {
+                if(CommResult == NORMAL)
+                {
+                    break;
+                }
+                else if((status = LCUResultDecode(OutMessage, InMessage, Device, CommResult, false)) == RETRY_SUBMITTED)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << Device->getName() << " RETRY SUBMITTED " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                    break; // **** DO NOT FALL THROUGH ****
+                }
+                else
+                {
+                    status = CommResult;
+                }
+
+                if(OutMessage->EventCode & RIPPLE)
+                {
+                    // Never requeue this stuff.  It is handled internally.
+
+                    break;
+                }
+            }
+        default:
+            {
+                if(OutMessage->Retry > 0)
+                {
+                    /* decrement the retry counter */
+                    --OutMessage->Retry;
+
+                    UpdatePerformanceData(CommResult, Port, Device);
+
+                    /* If this was a VTU message we need to slide things back over */
+                    if(Port->getProtocol() == ProtocolWrapIDLC)
+                    {
+                        switch(Device->getType())
+                        {
+                        case TYPE_CCU700:
+                        case TYPE_CCU710:
+                        case TYPE_COOP4C:
+                        case TYPE_COOPCL4C:
+                        case TYPE_COOPLTC4C:
+                        case TYPE_COOPCL5A:
+                        case TYPE_JEM1:
+                        case TYPE_JEM2:
+                        case TYPE_JEM3:
+                        case TYPE_DAVIS:
+                            {
+                                memmove (OutMessage->Buffer.OutMessage + 7, OutMessage->Buffer.OutMessage + 10, OutMessage->OutLength - 3);
+                            }
+                        }
+                    }
+
+                    /* Put it on the queue for this port */
+                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                    {
+                        // VioWrtTTY("Error Writing Retry into Queue\n\r", 31, 0);
+                        printf("Error Writing Retry into Queue\n");
+
+                        delete OutMessage;
+                        OutMessage = NULL;
+
+                        status =  QUEUE_WRITE;
+                    }
+                    else
+                    {
+                        /* don't free the memory, it is back on the queue!!! */
+                        /* Update the CCUInfo if neccessary */
+                        if(OutMessage->Remote != 0)
+                        {
+                            switch(Device->getType())
+                            {
+                            case TYPE_CCU711:
+                                {
+                                    CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Device->getTrxInfo();
+
+                                    pInfo->PortQueueEnts++;
+
+                                    if(OutMessage->EventCode & RCONT)
+                                        pInfo->PortQueueConts++;
+                                }
+                            }
+                        }
+
+                        /* If this is an TCP/IP Transaction port, disconnect */
+                        if(Port->getType() & TCPIPSERVER)
+                        {
+                            // TCPClose (NetCXPortRecord[OutMessage->Port]);
+                            Port->close(TraceFlag);
+
+                            /* Query how many are on the queue and if it is only one sleep for a bit */
+                            for(j = 0; j < 4; j++)
+                            {
+                                /* Check the queue */
+                                QueryQueue (Port->getPortQueueHandle(), &QueueCount);
+                                if(QueueCount > 1)
+                                {
+                                    break;
+                                }
+
+                                CTISleep (250L);
+                            }
+                        }
+
+                        status = RETRY_SUBMITTED;    // This makes us continue the loop!
+                    }
+                }
+                else
+                {
+                    switch(Device->getType())
+                    {
+                    case TYPE_CCU711:                // Remove this queue entry.
+                        {
+                            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Device->getTrxInfo();
+
+                            pInfo->reduceEntsConts(OutMessage->EventCode & RCONT);
+                        }
+                    }
+                }
+
+                break;
+            }
+        }
+    }
+
+    return status;
+}
+
+
+
+INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device)
+{
+    INT            status = NORMAL;
+    ULONG          j, QueueCount;
+    struct timeb   TimeB;
+    REMOTEPERF     RemotePerf;
+    ERRSTRUCT      ErrStruct;
+
+    InMessage->EventCode = (USHORT)CommResult;
+
+    switch(Device->getType())
+    {
+    case TYPE_CCU711:
+        {
+            CtiTransmitter711Info *p711info = (CtiTransmitter711Info *)Device->getTrxInfo();
+
+            if(OutMessage->Remote == CCUGLOBAL)
+            {
+                break;
+            }
+
+            InMessage->InLength = OutMessage->InLength;
+
+            /* Clear the RCOLQ flag if neccessary */
+            if(OutMessage->Command == CMND_RCOLQ)
+            {
+                p711info->ClearStatus (INRCOLQ);
+            }
+
+            /* Clear a LGRPQ flag if neccessary */
+            if(OutMessage->Command == CMND_LGRPQ)
+            {
+                p711info->ClearStatus(INLGRPQ);
+                if(!(QueryQueue (p711info->QueueHandle,&QueueCount)))
+                {
+                    if(QueueCount)
+                    {
+                        SetEvent(hPorterEvents[P_QUEUE_EVENT]);
+                    }
+                }
+            }
+
+            if(OutMessage->EventCode & RCONT)
+            {
+                CCUResponseDecode (InMessage, Device);
+            }
+            else
+            {
+                j = InMessage->InLength;
+                InMessage->InLength = 0;
+                CCUResponseDecode (InMessage, Device);
+                InMessage->InLength = j;
+            }
+
+            /* Only break if this is not DTRAN */
+            if(!(OutMessage->EventCode & DTRAN))     break;
+
+        }
+    case TYPE_CCU700:
+    case TYPE_CCU710:
+        {
+            if(CommResult)
+            {
+                InMessage->Buffer.DSt.Time     = InMessage->Time;
+                InMessage->Buffer.DSt.DSTFlag  = InMessage->MilliTime & DSTACTIVE;
+                break;
+            }
+
+            InMessage->InLength = OutMessage->InLength;
+
+            /* The data here is a CCU 700 type result */
+            if(OutMessage->EventCode & AWORD)
+            {
+                /* Make sure that we got back Acks */
+
+            }
+            else if(OutMessage->EventCode & BWORD)
+            {
+                /* find out if this is I or O */
+                if(OutMessage->Buffer.BSt.IO)
+                {
+                    DSTRUCT        DSt;
+
+                    /* This is I so decode dword(s) for the result */
+                    status = D_Words (InMessage->Buffer.InMessage + 3, (USHORT)((InMessage->InLength - 3) / (DWORDLEN + 1)),  OutMessage->Remote, &DSt);
+                    DSt.Time = InMessage->Time;
+                    DSt.DSTFlag = InMessage->MilliTime & DSTACTIVE;
+                    InMessage->Buffer.DSt = DSt;
+                }
+                else
+                {
+                    /* This is O so make sure we got back ACKS */
+                }
+            }
+
+            break;
+        }
+    case TYPE_LCU415:
+    case TYPE_LCU415LG:
+    case TYPE_LCU415ER:
+    case TYPE_LCUT3026:
+        {
+            LCUResultDecode(OutMessage, InMessage, Device, CommResult, true);
+            break;
+        }
+    case TYPE_TCU5500:
+        {
+            if(OutMessage->EventCode & VERSACOM)
+            {
+                CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+
+                if(VCUWait)
+                {
+                    /* The assumption (for now) is overlapping coverage of VCU's on the
+                       same comm port (VCU's on another comm port better damn well not
+                       overlap this one!!!!!!!) and that we have exclusive use of the VHF
+                       channels (No paging or voice channels!!!).  Obviosly this is an
+                       extremely simplistic view of the world but will do till we can do
+                       otherwise... Queues and time tables etc.... */
+
+                    /* Another gotcha... we assume that the VCU is doing something even
+                       if this command fails... Life's a bitch but thats the way
+                       its gotta be or things could fubar beyond belief... Then again??? */
+
+                    /* get how long this command will take */
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                    // VCUTime (OutMessage, &pInfo->NextCommandTime);
+
+                    UCTFTime (&TimeB);
+
+                    pInfo->NextCommandTime += TimeB.time;
+
+#ifdef OLD_CRAP
+                    for(j = 0; j <= MAXIDLC; j++)
+                    {
+                        if(CCUInfo[ThreadPortNumber][j] != NULL && CCUInfo[ThreadPortNumber][j]->Type == TYPE_TCU5500)
+                        {
+                            CCUInfo[ThreadPortNumber][j]->NextCommandTime = CCUInfo[ThreadPortNumber][Device->getAddress()]->NextCommandTime;
+                        }
+                    }
+#else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "**** ADD CODE HERE **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+#endif
+                }
+
+                /* Lets check if this command needs to be queued again */
+                if(!CommResult && (InMessage->Buffer.InMessage[4] & VCUOVERQUE))
+                {
+                    /* we need to reque this one  */
+                    /* Update the statistics for this ccu */
+                    UpdatePerformanceData(NORMAL, Port, Device);
+
+                    /* Drop the priority an notch so we don't hog the channel */
+                    if(OutMessage->Priority) OutMessage->Priority--;
+
+                    status = MESSAGEREQUEUED;
+
+                    /* Put it on the queue for this port */
+                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                    {
+                        printf ("Error Requeing Command\n");
+                    }
+                }
+            }
+            break;
+        }
+    case TYPE_WELCORTU:
+        {
+            /* Handle the Sequencing */
+            if(!(CommResult))
+            {
+                CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+                pInfo->RemoteSequence.Reply = !pInfo->RemoteSequence.Reply;
+            }
+
+            break;
+        }
+    case TYPE_ILEXRTU:
+    case TYPE_VTU:
+    case TYPE_SES92RTU:
+    case TYPE_TCU5000:
+    default:
+        {
+            break;
+        }
+    }
+
+    return status;
+}
+
+INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *OutMessage)
+{
+    INT         status = NORMAL;
+    ULONG       BytesWritten;
+
+    if(OutMessage->EventCode & RESULT)
+    {
+        InMessage->EventCode = (USHORT)CommResult;
+
+        /* send message back to originating process */
+        if(OutMessage->ReturnNexus != NULL)
+        {
+            if(OutMessage->ReturnNexus->CTINexusWrite (InMessage, sizeof (INMESS), &BytesWritten, 0L))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Error Writing to Return Nexus " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                status = SOCKWRITE;
+            }
+        }
+    }
+
+    return status;
+}
+
+INT UpdatePerformanceData(INT CommResult, CtiPort *Port, CtiDevice *Device)
+{
+    INT            status = NORMAL;
+    REMOTEPERF     RemotePerf;
+    ERRSTRUCT      ErrStruct;
+
+    if(Device->getAddress() != 0xffff)
+    {
+        RemotePerf.Port   = Device->getPortID();
+        RemotePerf.Remote = Device->getAddress();
+        RemotePerf.Error  = (USHORT)CommResult;
+        RemotePerfUpdate (&RemotePerf, &ErrStruct);
+
+        /* Log the error */
+        ReportRemoteError (Device,&ErrStruct);
+    }
+
+#ifdef OLD_WAY // FIX FIX FIX This needs to merge with the Remotes somehow...
+    else
+    {
+        memcpy (DevicePerf.DeviceName, DeviceRecord.DeviceName, STANDNAMLEN);
+        DevicePerf.Error = (USHORT)CommResult;
+
+        DevicePerfUpdate (&DevicePerf, &ErrStruct);
+        ReportDeviceError (&DeviceRecord, &(Port), &ErrStruct);
+    }
+#endif
+
+    return status;
+}
+
+/*---------------------------------------------------------------------------*
+ * This guy allows the same code to be called wether the OutMessage was
+ * requeued, or wehter it sould be cleaned up by a SendError call.
+ *
+ * It should ALWAYS be used in a case where some errors may actually cause
+ * a re-queue
+ *---------------------------------------------------------------------------*/
+INT RequeueReportError(INT status, OUTMESS *OutMessage)
+{
+    INT result = NORMAL;
+
+    switch(status)
+    {
+    case RETRY_SUBMITTED:
+    case MESSAGEREQUEUED:
+        {
+            break;  // Don't call this an error.
+        }
+    default:
+        {
+            SendError(OutMessage, status);   // This call frees the OUTMESS upon completion
+            break;
+        }
+    }
+
+    return result;
+}
+
+
+INT VTUPrep(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device)
+{
+    INT status = NORMAL;
+
+    if(
+      Device->getType() != TYPE_TDMARKV &&
+      Device->getType() != TYPE_TAPTERM &&
+      Device->getType() != TYPE_ALPHA_PPLUS &&
+      Device->getType() != TYPE_FULCRUM &&
+      Device->getType() != TYPE_VECTRON &&
+      Device->getType() != TYPE_QUANTUM &&
+      Device->getType() != TYPE_LGS4 &&
+      Device->getType() != TYPE_DR87 &&
+      Device->getType() != TYPE_ALPHA_A1
+
+      )
+    {
+        /* Check if this device is on a VTU and if so get it's record */
+
+#if 0 // FIX FIX FIX change for routesIDs
+        if(DeviceRecord.RouteName[2][0] != ' ')
+        {
+            /* This is a VTU! */
+            memcpy (VTURouteRecord.RouteName, DeviceRecord.RouteName[2], STANDNAMLEN);
+            if(!(RoutegetEqual (&VTURouteRecord)))
+            {
+                /* Go ahead and get the VTU Remote record */
+                memcpy (Device.RemoteName, VTURouteRecord.RemoteName, STANDNAMLEN);
+                if(RemotegetEqual (&Device))
+                {
+                    SendError (OutMessage, BADCCU);
+                    continue;
+                }
+            }
+            else
+            {
+                SendError (OutMessage, BADROUTE);
+                continue;
+            }
+        }
+#endif
+    }
+
+    return status;
+}
+
+
+INT ValidateDevice(CtiPort *Port, CtiDevice *Device)
+{
+    INT status = NORMAL;
+
+    if(Device->getAddress() != 0xffff)
+    {
+        if( Device->hasTrxInfo() ) // Does this device type support TrxInfo?
+        {
+            CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+
+            /* Before we do anything else make damn sure we are not a protection violation */
+            if(pInfo == NULL)
+            {
+                /* Go Ahead an start this one up */
+                RemoteInitialize(NULL, Device, (void*)Port);
+                RemoteReset(NULL, Device, (void*)Port);
+            }
+            else
+            {
+                if(pInfo->GetStatus(NEEDSRESET))
+                {
+                    RemoteReset (NULL, Device, (void*)Port);
+                }
+            }
+        }
+    }
+
+    return status;
+}
+
+INT InitializeHandshake (CtiPort *aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSlist< CtiMessage > &traceList)
+{
+    CtiXfer        transfer;
+    BYTE           inBuffer[512];
+    BYTE           outBuffer[256];
+    INT            status = NORMAL;
+    ULONG          bytesReceived (0);
+
+    // initialize the transfer structure
+    transfer.setInBuffer( inBuffer );
+    transfer.setOutBuffer( outBuffer );
+    transfer.setInCountActual( &bytesReceived );
+    transfer.setTraceMask(TraceFlag, TraceErrorsOnly);
+
+    while( status == NORMAL &&
+           !((aIEDDevice->getCurrentState() == CtiDeviceIED::StateHandshakeAbort) ||
+             (aIEDDevice->getCurrentState() == CtiDeviceIED::StateHandshakeComplete)))
+    {
+        status = aIEDDevice->generateCommandHandshake (transfer, traceList);
+        status = aPortRecord->outInMess(transfer, aIEDDevice, traceList);
+
+        if( transfer.doTrace(status) )
+        {
+            aPortRecord->traceXfer(transfer, traceList, aIEDDevice, status);
+        }
+
+        if( deviceCanSurviveThisStatus(status) )
+        {
+            status = aIEDDevice->decodeResponseHandshake (transfer, status, traceList);
+        }
+
+        DisplayTraceList(aPortRecord, traceList, true);
+    }
+
+
+    // check our return
+    if(status == NORMAL && aIEDDevice->getCurrentState() == CtiDeviceIED::StateHandshakeAbort)
+    {
+        status = !NORMAL;
+    }
+
+    return status;
+}
+
+INT PerformRequestedCmd ( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList)
+{
+    INT            status = NORMAL;
+    CtiXfer        transfer;
+    BYTE           inBuffer[512];
+    BYTE           outBuffer[256];
+    ULONG          bytesReceived=0;
+
+    INT            infLoopPrevention = 0;
+
+    // initialize the transfer structure
+    transfer.setInBuffer( inBuffer );
+    transfer.setOutBuffer( outBuffer );
+    transfer.setInCountActual( &bytesReceived );
+    transfer.setTraceMask(TraceFlag, TraceErrorsOnly);
+
+    do
+    {
+        status = aIED->generateCommand ( transfer , traceList);
+        status = aPortRecord->outInMess( transfer, aIED, traceList );
+
+        if( transfer.doTrace( status ) )
+        {
+            aPortRecord->traceXfer(transfer, traceList, aIED, status);
+        }
+
+        if( deviceCanSurviveThisStatus(status) )
+        {
+            status = aIED->decodeResponse (transfer, status, traceList);
+        }
+
+        // check if we are sending load profile to scanner
+        if(!status && aIED->getCurrentState() == CtiDeviceIED::StateScanReturnLoadProfile)
+        {
+            status = ReturnLoadProfileData ( aPortRecord, aIED, aInMessage, aOutMessage, traceList);
+        }
+
+        if(status != NORMAL)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  status = " << status << endl;
+            }
+        }
+
+        if(!(++infLoopPrevention % INF_LOOP_COUNT))  // If we go INF_LOOP_COUNT loops we're considering this infinite...
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  Possible infinite loop on device " << aIED->getName() << endl;
+                dout << "  breaking loop, forcing abort state." << endl;
+            }
+
+            status = !NORMAL;
+        }
+
+        DisplayTraceList(aPortRecord, traceList, true);
+
+    } while( status == NORMAL &&
+             !((aIED->getCurrentState() == CtiDeviceIED::StateScanAbort) ||
+               (aIED->getCurrentState() == CtiDeviceIED::StateScanComplete)));
+
+
+    if( status == NORMAL && aIED->getCurrentState() == CtiDeviceIED::StateScanAbort)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "  " << aIED->getName() << " State set to abort" << endl;
+        }
+        status = !NORMAL;
+    }
+
+    DisplayTraceList(aPortRecord, traceList, true);
+    return status;
+}
+
+
+
+INT ReturnLoadProfileData ( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage,  RWTPtrSlist< CtiMessage > &traceList)
+{
+    INT         status = NORMAL;
+
+    INMESS      MyInMessage;
+    ULONG       bytesWritten;
+
+    // need a copy of the read message
+    memcpy(&MyInMessage, aInMessage, sizeof(INMESS));
+    MyInMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[0] = CtiDeviceIED::CmdLoadProfileData;
+    MyInMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[1] = aIED->getCurrentState();
+
+    // move the load profile block into the inmessage copy
+    aIED->copyLoadProfileData ((BYTE*)&MyInMessage.Buffer.DUPSt.DUPRep.Message, MyInMessage.InLength);
+
+    /* send message back to originating process */
+    if(aOutMessage->ReturnNexus->NexusState != CTINEXUS_STATE_NULL)
+    {
+        if(aOutMessage->ReturnNexus->CTINexusWrite (&MyInMessage, sizeof (INMESS), &bytesWritten, 0L))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Error Writing to Return Nexus " << endl;
+            }
+            aIED->setCurrentState(CtiDeviceIED::StateScanAbort);
+
+            status = SOCKWRITE;
+        }
+        else
+        {
+            // return to this state to continue receiving data
+            aIED->setCurrentState(aIED->getPreviousState());
+        }
+    }
+    else
+    {
+        aIED->setCurrentState(CtiDeviceIED::StateScanAbort);
+    }
+
+    return status;
+}
+
+
+INT LogonToDevice( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList)
+{
+    int retCode (NORMAL);
+    int i;
+    INT   previousCmd ((INT)aIED->getCurrentCommand());
+
+
+    /************************
+    * a standalone master doesn't need to do the special login procedure
+    *************************
+    */
+    if(!(aIED->isStandaloneMaster()))
+    {
+        // may need to put handshake here in case we had to re-dial and the master needs to
+        // be interrogated first
+        i = InitializeHandshake (aPortRecord,aIED, traceList);
+        aIED->setCurrentState (CtiDeviceIED::StateHandshakeInitialize);
+
+        // set the command to send the switch statement
+        aIED->setCurrentCommand(CtiDeviceIED::CmdSelectMeter);
+
+        retCode = PerformRequestedCmd (aPortRecord, aIED, aInMessage, aOutMessage, traceList);
+
+        // we're ok so try do the handshake
+        if(!retCode)
+        {
+            // back to the handshake
+            aIED->setCurrentState (CtiDeviceIED::StateHandshakeInitialize);
+            i = InitializeHandshake (aPortRecord,aIED, traceList);
+
+            // finishes the switch command
+            if(!i)
+                retCode = PerformRequestedCmd (aPortRecord, aIED, aInMessage, aOutMessage, traceList);
+        }
+
+        aIED->setCurrentState (CtiDeviceIED::StateHandshakeComplete);
+        aIED->setCurrentCommand((CtiDeviceIED::CtiMeterCmdStates_t) previousCmd );
+
+    }
+    else
+        retCode = InitializeHandshake (aPortRecord,aIED, traceList);
+    return retCode;
+}
+
+INT TerminateHandshake (CtiPort *aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSlist< CtiMessage > &traceList)
+{
+    CtiXfer        transfer;
+    BYTE           inBuffer[512];
+    BYTE           outBuffer[256];
+    INT            status = NORMAL;
+    ULONG          bytesReceived (0);
+
+    // initialize the transfer structure
+    transfer.setInBuffer( inBuffer );
+    transfer.setOutBuffer( outBuffer );
+    transfer.setInCountActual( &bytesReceived );
+    transfer.setTraceMask(TraceFlag, TraceErrorsOnly);
+
+    do
+    {
+        status = aIEDDevice->generateCommandDisconnect(transfer, traceList);
+        status = aPortRecord->outInMess(transfer, aIEDDevice, traceList);
+
+        if( transfer.doTrace(status) )
+        {
+            aPortRecord->traceXfer(transfer, traceList, aIEDDevice, status);
+        }
+
+        if( deviceCanSurviveThisStatus(status) )
+        {
+            status = aIEDDevice->decodeResponseDisconnect (transfer, status, traceList);
+        }
+
+    } while( status == NORMAL &&
+             !((aIEDDevice->getCurrentState() == CtiDeviceIED::StateAbort) ||
+               (aIEDDevice->getCurrentState() == CtiDeviceIED::StateComplete) ||
+               (aIEDDevice->getCurrentState() == CtiDeviceIED::StateCompleteNoHUP)));
+
+    // check our return
+    if(status == NORMAL)
+    {
+        if( aPortRecord->isDialup() )
+        {
+            if(aPortRecord->getType() == PortTypeLocalDialup)
+            {
+                CtiPortLocalModem    *modem = (CtiPortLocalModem*)aPortRecord;
+
+                if(aIEDDevice->getCurrentState() == CtiDeviceIED::StateCompleteNoHUP)
+                {
+                    modem->setShouldDisconnect( FALSE );
+                }
+                else
+                {
+                    modem->setShouldDisconnect( TRUE );
+                }
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+
+    else if(status == NORMAL && aIEDDevice->getCurrentState() == CtiDeviceIED::StateAbort)
+    {
+        status = !NORMAL;
+    }
+
+    return status;
+}
+
+BOOL areAnyOutMessagesForMyDevID(void *pId, void* d)
+{
+    LONG Id = (LONG)pId;
+    OUTMESS *OutMessage = (OUTMESS *)d;
+
+    return(OutMessage->DeviceID == Id);
+}
+
+BOOL areAnyOutMessagesForMyRteID(void *pId, void* d)
+{
+    LONG Id = (LONG)pId;
+    OUTMESS *OutMessage = (OUTMESS *)d;
+
+    return(OutMessage->RouteID == Id);
+}
+
+BOOL areAnyOutMessagesForCRCID(void *pId, void* d)
+{
+    LONG Id = (LONG)pId;
+    OUTMESS *OutMessage = (OUTMESS *)d;
+
+    if(PorterDebugLevel & 0x00000001 && OutMessage->Request.CheckSum == 0)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << " OutMessage detected zero valued checksum " << __FILE__ << " (" << __LINE__ << ") " <<
+        OutMessage->Request.CheckSum << " ?=? " << Id << endl;
+        dout << " Device ID " << OutMessage->DeviceID << endl;
+        dout << "   " << OutMessage->Buffer.OutMessage << endl;
+    }
+
+    return(OutMessage->Request.CheckSum == Id);
+}
+
+
+void commFail(CtiDeviceBase *Device, INT state)
+{
+    extern CtiConnection VanGoghConnection;
+
+    CtiPoint * pPoint = NULL;
+    char temp[80];
+
+    if( NULL != (pPoint = Device->getDevicePointOffsetTypeEqual(COMM_FAIL_OFFSET, StatusPointType)) )
+    {
+        sprintf(temp, "Communication status %s", (state == OPENED) ? "GOOD" : "FAILED");
+
+        CtiPointDataMsg *pData = new CtiPointDataMsg(pPoint->getPointID(), (double)state, NormalQuality, StatusPointType, temp, TAG_POINT_MAY_BE_EXEMPTED);
+
+        if(pData != NULL)
+        {
+            VanGoghConnection.WriteConnQue(pData);
+        }
+    }
+    else if(state == CLOSED)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " " << Device->getName() << " would be COMM FAILED if it had offset " << COMM_FAIL_OFFSET << " defined" << endl;
+    }
+}
+
+
+bool deviceCanSurviveThisStatus(INT status)
+{
+    bool survive = false;
+
+    switch(status)
+    {
+    case NORMAL:
+    case NODCD:
+    case BADCRC:
+    case READTIMEOUT:
+        {
+            survive = true;
+        }
+    default:
+        {
+            break;
+        }
+    }
+
+    return survive;
+}

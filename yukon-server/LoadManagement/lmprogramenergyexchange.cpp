@@ -1,0 +1,808 @@
+/*---------------------------------------------------------------------------
+        Filename:  lmprogramenergyexchange.cpp
+        
+        Programmer:  Josh Wolberg
+        
+        Description:    Source file for CtiLMProgramEnergyExchange.
+                        CtiLMProgramEnergyExchange maintains the state and handles
+                        the persistence of programs for Load Management.
+
+        Initial Date:  5/7/2001
+         
+        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
+---------------------------------------------------------------------------*/
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+
+#include "dbaccess.h"
+#include "lmid.h"
+#include "lmprogrambase.h"
+#include "pointdefs.h"
+#include "pointtypes.h"
+#include "logger.h"
+#include "loadmanager.h"
+#include "lmprogramenergyexchange.h"
+#include "lmenergyexchangecustomer.h"
+#include "lmenergyexchangecustomerreply.h"
+#include "msg_email.h"
+
+extern BOOL _LM_DEBUG;
+
+RWDEFINE_COLLECTABLE( CtiLMProgramEnergyExchange, CTILMPROGRAMENERGYEXCHANGE_ID )
+
+/*---------------------------------------------------------------------------
+    Constructors
+---------------------------------------------------------------------------*/
+CtiLMProgramEnergyExchange::CtiLMProgramEnergyExchange()
+{   
+}
+
+CtiLMProgramEnergyExchange::CtiLMProgramEnergyExchange(RWDBReader& rdr)
+{
+    restore(rdr);   
+}
+
+CtiLMProgramEnergyExchange::CtiLMProgramEnergyExchange(const CtiLMProgramEnergyExchange& energyexchangeprog)
+{
+    operator=(energyexchangeprog);
+}
+
+/*---------------------------------------------------------------------------
+    Destructor
+---------------------------------------------------------------------------*/
+CtiLMProgramEnergyExchange::~CtiLMProgramEnergyExchange()
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    _lmenergyexchangeoffers.clearAndDestroy();
+    _lmenergyexchangecustomers.clearAndDestroy();
+}
+
+/*---------------------------------------------------------------------------
+    getMinNotifyTime
+    
+    Returns the minimum notify time in seconds of the energy exchange program
+---------------------------------------------------------------------------*/
+ULONG CtiLMProgramEnergyExchange::getMinNotifyTime() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _minnotifytime;
+}
+
+/*---------------------------------------------------------------------------
+    getHeading
+    
+    Returns the heading of the energy exchange program
+---------------------------------------------------------------------------*/
+const RWCString& CtiLMProgramEnergyExchange::getHeading() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _heading;
+}
+
+/*---------------------------------------------------------------------------
+    getMessageHeader
+    
+    Returns the message header of the energy exchange program
+---------------------------------------------------------------------------*/
+const RWCString& CtiLMProgramEnergyExchange::getMessageHeader() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _messageheader;
+}
+
+/*---------------------------------------------------------------------------
+    getMessageFooter
+    
+    Returns the message footer of the energy exchange program
+---------------------------------------------------------------------------*/
+const RWCString& CtiLMProgramEnergyExchange::getMessageFooter() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _messagefooter;
+}
+
+/*---------------------------------------------------------------------------
+    getCanceledMsg
+
+    Returns the canceled msg of the energy exchange program
+---------------------------------------------------------------------------*/
+const RWCString& CtiLMProgramEnergyExchange::getCanceledMsg() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _canceledmsg;
+}
+
+/*---------------------------------------------------------------------------
+    getStoppedEarlyMsg
+
+    Returns the stopped early msg of the energy exchange program
+---------------------------------------------------------------------------*/
+const RWCString& CtiLMProgramEnergyExchange::getStoppedEarlyMsg() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _stoppedearlymsg;
+}
+
+/*---------------------------------------------------------------------------
+    getLMEnergyExchangeOffers
+    
+    Returns a list of offer revisions for this energy exchange program
+---------------------------------------------------------------------------*/
+RWOrdered& CtiLMProgramEnergyExchange::getLMEnergyExchangeOffers()
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _lmenergyexchangeoffers;
+}
+
+/*---------------------------------------------------------------------------
+    getLMEnergyExchangeCustomers
+    
+    Returns a list of customers for this energy exchange program
+---------------------------------------------------------------------------*/
+RWOrdered& CtiLMProgramEnergyExchange::getLMEnergyExchangeCustomers()
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _lmenergyexchangecustomers;
+}
+
+/*---------------------------------------------------------------------------
+    setMinNotifyTime
+    
+    Sets the minimum notify time of the energy exchange program
+---------------------------------------------------------------------------*/    
+CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMinNotifyTime(ULONG notifytime)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _minnotifytime = notifytime;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setHeading
+    
+    Sets the heading of the energy exchange program
+---------------------------------------------------------------------------*/    
+CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setHeading(const RWCString& head)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _heading = head;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setMessageHeader
+    
+    Sets the message header of the energy exchange program
+---------------------------------------------------------------------------*/    
+CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMessageHeader(const RWCString& msgheader)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _messageheader = msgheader;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setMessageFooter
+    
+    Sets the message footer of the energy exchange program
+---------------------------------------------------------------------------*/    
+CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMessageFooter(const RWCString& msgfooter)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _messagefooter = msgfooter;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setCanceledMsg
+    
+    Sets the canceled msg of the energy exchange program
+---------------------------------------------------------------------------*/    
+CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setCanceledMsg(const RWCString& canceled)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _canceledmsg = canceled;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setStoppedEarlyMsg
+    
+    Sets the stopped early msg of the energy exchange program
+---------------------------------------------------------------------------*/    
+CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setStoppedEarlyMsg(const RWCString& stoppedearly)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _stoppedearlymsg = stoppedearly;
+
+    return *this;
+}
+
+
+/*---------------------------------------------------------------------------
+    reduceProgramLoad
+    
+    Sets the group selection method of the energy exchange program
+---------------------------------------------------------------------------*/    
+DOUBLE CtiLMProgramEnergyExchange::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG nowInSeconds, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
+    DOUBLE expectedLoadReduced = 0.0;
+
+    return expectedLoadReduced;
+}
+
+/*---------------------------------------------------------------------------
+    stopProgramControl
+
+    Stops control on the program by sending all groups that are active.
+---------------------------------------------------------------------------*/
+void CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - stopProgramControl isn't implemented yet, in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    /*const RWDBDateTime currentDateTime;
+    if( getProgramState() == CtiLMProgramBase::ManualActiveState ||
+        getProgramState() == CtiLMProgramBase::ActiveState )
+    {
+        for(ULONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+        {
+            CtiLMEnergyExchangeOffer* currentOffer = (CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i];
+            if( currentOffer->getRunStatus() == CtiLMEnergyExchangeOffer::CanceledRunStatus )
+            {
+                currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::CanceledRunStatus);
+                notifyCustomersOfStop(multiDispatchMsg);
+                currentOffer->updateLMEnergyExchangeProgramOfferTable();
+                //setProgramState(CtiLMProgramBase::InactiveState);
+            }
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Trying to stop a program that isn't in a active state, state is: " << getProgramState() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }*/
+}
+
+/*---------------------------------------------------------------------------
+    handleManualControl
+
+    Handles manual control messages for the energy exchange program.
+---------------------------------------------------------------------------*/
+BOOL CtiLMProgramEnergyExchange::handleManualControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
+    BOOL returnBoolean = FALSE;
+
+    ULONG numberOfCompletedOrCanceledOffers = 0;
+    const RWDBDateTime currentDateTime;
+    for(ULONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+    {
+        CtiLMEnergyExchangeOffer* currentOffer = (CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i];
+        CtiLMEnergyExchangeOfferRevision* currentOfferRevision = currentOffer->getCurrentOfferRevision();
+
+        if( currentOfferRevision != NULL )
+        {
+            if( currentOffer->getRunStatus() == CtiLMEnergyExchangeOffer::ScheduledRunStatus )
+            {
+                if( currentDateTime >= currentOfferRevision->getNotificationDateTime() )
+                {
+                    returnBoolean = TRUE;
+                    notifyCustomers(currentOffer, multiDispatchMsg);
+                    setProgramState(CtiLMProgramBase::ManualActiveState);
+                    currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::OpenRunStatus);
+                    currentOffer->updateLMEnergyExchangeProgramOfferTable();
+
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Energy Exchange notification sent to all customers in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate().rwtime() << endl;
+                    }
+                }
+            }
+            else if( currentOffer->getRunStatus() == CtiLMEnergyExchangeOffer::OpenRunStatus )
+            {
+                if( currentDateTime >= currentOfferRevision->getOfferExpirationDateTime() )
+                {
+                    returnBoolean = TRUE;
+                    //setProgramState(CtiLMProgramBase::ManualActiveState);
+                    currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::CurtailmentPendingRunStatus);
+                    currentOffer->updateLMEnergyExchangeProgramOfferTable();
+
+                    if( _LM_DEBUG )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Energy Exchange offer expired, curtailment pending in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate().rwtime() << endl;
+                    }
+                }
+            }
+            else if( currentOffer->getRunStatus() == CtiLMEnergyExchangeOffer::ClosingRunStatus )
+            {
+                if( currentDateTime >= currentOfferRevision->getOfferExpirationDateTime() )
+                {
+                    returnBoolean = TRUE;
+                    //setProgramState(CtiLMProgramBase::ManualActiveState);
+                    currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::CurtailmentPendingRunStatus);
+                    currentOffer->updateLMEnergyExchangeProgramOfferTable();
+
+                    if( _LM_DEBUG )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Energy Exchange offer closed, curtailment pending in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate().rwtime() << endl;
+                    }
+                }
+            }
+            else if( currentOffer->getRunStatus() == CtiLMEnergyExchangeOffer::CurtailmentPendingRunStatus )
+            {
+                if( currentDateTime >= RWDBDateTime(currentOffer->getOfferDate().year(),currentOffer->getOfferDate().month(),currentOffer->getOfferDate().dayOfMonth(),currentOfferRevision->getFirstCurtailHour(),0,0,0)  )
+                {
+                    returnBoolean = TRUE;
+                    //setProgramState(CtiLMProgramBase::ManualActiveState);
+                    currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::CurtailmentActiveRunStatus);
+                    currentOffer->updateLMEnergyExchangeProgramOfferTable();
+
+                    if( _LM_DEBUG )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Energy Exchange curtailment period started in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate().rwtime() << endl;
+                    }
+                }
+            }
+            else if( currentOffer->getRunStatus() == CtiLMEnergyExchangeOffer::CurtailmentActiveRunStatus )
+            {
+                if( currentDateTime >= RWDBDateTime(currentOffer->getOfferDate().year(),currentOffer->getOfferDate().month(),currentOffer->getOfferDate().dayOfMonth(),currentOfferRevision->getLastCurtailHour(),0,0,0)  )
+                {
+                    returnBoolean = TRUE;
+                    //setProgramState(CtiLMProgramBase::InactiveState);
+                    currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::CompletedRunStatus);
+                    currentOffer->updateLMEnergyExchangeProgramOfferTable();
+
+                    if( _LM_DEBUG )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Energy Exchange curtailment period completed in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate().rwtime() << endl;
+                    }
+                }
+            }
+            else if( currentOffer->getRunStatus() == CtiLMEnergyExchangeOffer::CompletedRunStatus ||
+                     currentOffer->getRunStatus() == CtiLMEnergyExchangeOffer::CanceledRunStatus )
+            {
+                numberOfCompletedOrCanceledOffers++;
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Invalid manual run status: " << currentOffer->getRunStatus() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Current offer revision = NULL in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
+    }
+
+    if( numberOfCompletedOrCanceledOffers == _lmenergyexchangeoffers.entries() )
+    {
+        setManualControlReceivedFlag(FALSE);
+        setProgramState(CtiLMProgramBase::InactiveState);
+    }
+
+    return returnBoolean;
+}
+
+/*---------------------------------------------------------------------------
+    notifyCustomers
+
+    .
+---------------------------------------------------------------------------*/
+void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer, CtiMultiMsg* multiDispatchMsg)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
+    CtiLMEnergyExchangeOfferRevision* currentOfferRevision = offer->getCurrentOfferRevision();
+
+    if( _lmenergyexchangecustomers.entries() > 0 )
+    {
+        CtiEmailMsg* emailMsg = NULL;
+        for(ULONG i=0;i<_lmenergyexchangecustomers.entries();i++)
+        {
+            CtiLMEnergyExchangeCustomer* currentCustomer = (CtiLMEnergyExchangeCustomer*)_lmenergyexchangecustomers[i];
+            if( !currentCustomer->hasAcceptedOffer(offer->getOfferId()) )
+            {
+                RWOrdered& customerReplies = currentCustomer->getLMEnergyExchangeCustomerReplies();
+
+                CtiLMEnergyExchangeCustomerReply* newCustomerReply = new CtiLMEnergyExchangeCustomerReply();
+
+                newCustomerReply->setCustomerId(currentCustomer->getPAOId());
+                newCustomerReply->setOfferId(offer->getOfferId());
+                newCustomerReply->setAcceptStatus(CtiLMEnergyExchangeCustomerReply::NoResponseAcceptStatus);
+                newCustomerReply->setAcceptDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
+                newCustomerReply->setRevisionNumber(currentOfferRevision->getRevisionNumber());
+                newCustomerReply->setIPAddressOfAcceptUser("(none)");
+                newCustomerReply->setUserIdName("(none)");
+                newCustomerReply->setNameOfAcceptPerson("(none)");
+                newCustomerReply->setEnergyExchangeNotes("(none)");
+                newCustomerReply->addLMEnergyExchangeCustomerReplyTable();
+                customerReplies.insert(newCustomerReply);
+
+                CtiEmailMsg* emailMsg = new CtiEmailMsg(currentCustomer->getPAOId(),CtiEmailMsg::CICustomerEmailType);
+                emailMsg->setSubject(getHeading());
+
+                RWCString emailBody = getMessageHeader();
+                emailBody += "\r\n\r\n";// 2 return lines
+                emailBody += "Facility:  ";
+                emailBody += currentCustomer->getPAOName();
+                emailBody += "\r\n\r\n";// 2 return lines
+                emailBody += "Offer Date:  ";
+                emailBody += offer->getOfferDate().rwdate().asString();
+                emailBody += "\r\n\r\n";// 2 return lines
+                char tempchar[64];
+                emailBody += "Offer ID:  ";
+                _ultoa(currentOfferRevision->getOfferId(),tempchar,10);
+                emailBody += tempchar;
+                emailBody += "-";
+                _ultoa(currentOfferRevision->getRevisionNumber(),tempchar,10);
+                emailBody += tempchar;
+                emailBody += "\r\n\r\n";// 2 return lines
+                emailBody += "Offer Expires:  ";
+                emailBody += currentOfferRevision->getOfferExpirationDateTime().asString();
+                emailBody += " ";
+                emailBody += (currentOfferRevision->getOfferExpirationDateTime().rwtime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
+                emailBody += "\r\n\r\n";// 2 return lines
+
+                emailBody += getMessageFooter();
+
+                emailMsg->setText(emailBody);
+                multiDispatchMsg->insert(emailMsg);
+            }
+        }
+    }
+}
+
+/*---------------------------------------------------------------------------
+    notifyCustomersOfCancel
+
+    .
+---------------------------------------------------------------------------*/
+void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffer* offer, CtiMultiMsg* multiDispatchMsg)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
+    CtiLMEnergyExchangeOfferRevision* currentOfferRevision = offer->getCurrentOfferRevision();
+
+    if( _lmenergyexchangecustomers.entries() > 0 )
+    {
+        CtiEmailMsg* emailMsg = NULL;
+        for(ULONG i=0;i<_lmenergyexchangecustomers.entries();i++)
+        {
+            CtiLMEnergyExchangeCustomer* currentCustomer = (CtiLMEnergyExchangeCustomer*)_lmenergyexchangecustomers[i];
+            if( currentCustomer->hasAcceptedOffer(offer->getOfferId()) )
+            {
+                CtiEmailMsg* emailMsg = new CtiEmailMsg(currentCustomer->getPAOId(),CtiEmailMsg::CICustomerEmailType);
+                emailMsg->setSubject(getHeading());
+
+                RWCString emailBody = getCanceledMsg();
+                emailBody += "\r\n\r\n";// 2 return lines
+                emailBody += getMessageHeader();
+                emailBody += "\r\n\r\n";// 2 return lines
+                emailBody += "Facility:  ";
+                emailBody += currentCustomer->getPAOName();
+                emailBody += "\r\n\r\n";// 2 return lines
+                emailBody += "Offer Date:  ";
+                emailBody += offer->getOfferDate().rwdate().asString();
+                emailBody += "\r\n\r\n";// 2 return lines
+                char tempchar[64];
+                emailBody += "Offer ID:  ";
+                _ultoa(currentOfferRevision->getOfferId(),tempchar,10);
+                emailBody += tempchar;
+                emailBody += "-";
+                _ultoa(currentOfferRevision->getRevisionNumber(),tempchar,10);
+                emailBody += tempchar;
+                emailBody += "\r\n\r\n";// 2 return lines
+                emailBody += getMessageFooter();
+
+                emailMsg->setText(emailBody);
+                multiDispatchMsg->insert(emailMsg);
+            }
+        }
+    }
+}
+
+/*---------------------------------------------------------------------------
+    hasControlHoursAvailable
+
+    Returns boolean if groups in this program are below the max hours
+    daily/monthly/seasonal/annually.
+---------------------------------------------------------------------------*/
+BOOL CtiLMProgramEnergyExchange::hasControlHoursAvailable() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
+    BOOL returnBoolean = TRUE;
+
+    return returnBoolean;
+}
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+    
+    Restore self's state from the given stream
+--------------------------------------------------------------------------*/
+void CtiLMProgramEnergyExchange::restoreGuts(RWvistream& istrm)
+{
+
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
+    CtiLMProgramBase::restoreGuts( istrm );
+
+    istrm >> _minnotifytime
+          >> _heading
+          >> _messageheader
+          >> _messagefooter
+          >> _canceledmsg
+          >> _stoppedearlymsg
+          >> _lmenergyexchangeoffers
+          >> _lmenergyexchangecustomers;
+
+}  
+   
+/*---------------------------------------------------------------------------
+    saveGuts
+    
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiLMProgramEnergyExchange::saveGuts(RWvostream& ostrm ) const  
+{
+
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+        
+    CtiLMProgramBase::saveGuts( ostrm );
+
+    ostrm << _minnotifytime
+          << _heading
+          << _messageheader
+          << _messagefooter
+          << _canceledmsg
+          << _stoppedearlymsg
+          << _lmenergyexchangeoffers
+          << _lmenergyexchangecustomers;
+
+    return;
+}
+
+/*---------------------------------------------------------------------------
+    operator=
+---------------------------------------------------------------------------*/
+CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::operator=(const CtiLMProgramEnergyExchange& right)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
+    if( this != &right )
+    {
+        CtiLMProgramBase::operator=(right);
+        _minnotifytime = right._minnotifytime;
+        _heading = right._heading;
+        _messageheader = right._messageheader;
+        _messagefooter = right._messagefooter;
+        _canceledmsg = right._canceledmsg;
+        _stoppedearlymsg = right._stoppedearlymsg;
+
+        _lmenergyexchangeoffers.clearAndDestroy();
+        for(UINT i=0;i<right._lmenergyexchangeoffers.entries();i++)
+        {
+            _lmenergyexchangeoffers.insert(((CtiLMEnergyExchangeOffer*)right._lmenergyexchangeoffers[i])->replicate());
+        }
+
+        _lmenergyexchangecustomers.clearAndDestroy();
+        for(UINT j=0;j<right._lmenergyexchangecustomers.entries();j++)
+        {
+            _lmenergyexchangecustomers.insert(((CtiLMEnergyExchangeCustomer*)right._lmenergyexchangecustomers[j])->replicate());
+        }
+    }
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    operator==
+---------------------------------------------------------------------------*/
+int CtiLMProgramEnergyExchange::operator==(const CtiLMProgramEnergyExchange& right) const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    return CtiLMProgramBase::operator==(right);
+}
+
+/*---------------------------------------------------------------------------
+    operator!=
+---------------------------------------------------------------------------*/
+int CtiLMProgramEnergyExchange::operator!=(const CtiLMProgramEnergyExchange& right) const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    return CtiLMProgramBase::operator!=(right);
+}
+
+/*---------------------------------------------------------------------------
+    isOfferForDate
+
+    Returns a boolean if there is a offer for a given date
+---------------------------------------------------------------------------*/
+BOOL CtiLMProgramEnergyExchange::isOfferWithId(ULONG offerid)
+{
+    BOOL returnBoolean = FALSE;
+
+    if( _lmenergyexchangeoffers.entries() > 0 )
+    {
+        for(ULONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+        {
+            if( offerid == ((CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i])->getOfferId() )
+            {
+                returnBoolean = TRUE;
+                break;
+            }
+        }
+    }
+
+    return returnBoolean;
+}
+
+/*---------------------------------------------------------------------------
+    isOfferRevisionOpen
+
+    Returns a boolean if there is a offer 
+---------------------------------------------------------------------------*/
+BOOL CtiLMProgramEnergyExchange::isOfferRevisionOpen(ULONG offerID, ULONG revisionNumber)
+{
+    BOOL returnBoolean = FALSE;
+
+    RWDBDateTime currentDateTime;
+    if( _lmenergyexchangeoffers.entries() > 0 )
+    {
+        for(ULONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+        {
+            CtiLMEnergyExchangeOffer* currentOffer = (CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i];
+            if( currentOffer->getOfferId() == offerID  )
+            {
+                if( currentOffer->getLMEnergyExchangeOfferRevisions().entries() > 0 )
+                {
+                    RWOrdered& revisions = currentOffer->getLMEnergyExchangeOfferRevisions();
+                    for(ULONG j=0;j<revisions.entries();j++)
+                    {
+                        CtiLMEnergyExchangeOfferRevision* currentRevision = (CtiLMEnergyExchangeOfferRevision*)revisions[j];
+                        if( currentRevision->getRevisionNumber() == revisionNumber )
+                        {
+                            if( currentDateTime >= currentRevision->getNotificationDateTime() &&
+                                currentDateTime < currentRevision->getOfferExpirationDateTime() )
+                            {
+                                returnBoolean = TRUE;
+                            }
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    return returnBoolean;
+}
+
+/*---------------------------------------------------------------------------
+    getOfferWithId
+
+    Returns a pointer to a offer for a given offer id
+---------------------------------------------------------------------------*/
+CtiLMEnergyExchangeOffer* CtiLMProgramEnergyExchange::getOfferWithId(ULONG offerid)
+{
+    CtiLMEnergyExchangeOffer* returnOffer = NULL;
+
+    if( _lmenergyexchangeoffers.entries() > 0 )
+    {
+        for(ULONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+        {
+            if( offerid == ((CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i])->getOfferId() )
+            {
+                returnOffer = (CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i];
+                break;
+            }
+        }
+    }
+
+    return returnOffer;
+}
+
+/*---------------------------------------------------------------------------
+    replicate
+    
+    Restores self's operation fields
+---------------------------------------------------------------------------*/
+CtiLMProgramBase* CtiLMProgramEnergyExchange::replicate() const
+{
+    return (new CtiLMProgramEnergyExchange(*this));
+}
+
+/*---------------------------------------------------------------------------
+    restore
+    
+    Restores given a RWDBReader
+---------------------------------------------------------------------------*/
+void CtiLMProgramEnergyExchange::restore(RWDBReader& rdr)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
+    CtiLMProgramBase::restore(rdr);
+
+    setMinNotifyTime(0);
+    setHeading("Null");
+    setMessageHeader("Null");
+    setMessageFooter("Null");
+    setCanceledMsg("Null");
+    setStoppedEarlyMsg("Null");
+}
+
+/*---------------------------------------------------------------------------
+    restoreEnergyExchangeSpecificDatabaseEntries
+    
+    Restores the database entries for a energy exchange program that are not
+    contained in the base table.
+---------------------------------------------------------------------------*/
+void CtiLMProgramEnergyExchange::restoreEnergyExchangeSpecificDatabaseEntries(RWDBReader& rdr)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
+    RWCString tempBoolString;
+
+    rdr["minnotifytime"] >> _minnotifytime;
+    rdr["heading"] >> _heading;
+    rdr["messageheader"] >> _messageheader;
+    rdr["messagefooter"] >> _messagefooter;
+    rdr["canceledmsg"] >> _canceledmsg;
+    rdr["stoppedearlymsg"] >> _stoppedearlymsg;
+}
+
+/*---------------------------------------------------------------------------
+    dumpDynamicData
+    
+    Writes out the dynamic information for this energy exchange program.
+---------------------------------------------------------------------------*/
+void CtiLMProgramEnergyExchange::dumpDynamicData()
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
+    if( getManualControlReceivedFlag() )
+    {
+        for(ULONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+        {
+            ((CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i])->updateLMEnergyExchangeProgramOfferTable();
+        }
+    }
+}
+
+/*---------------------------------------------------------------------------
+    restoreDynamicData
+    
+    Restores self's dynamic data given a RWDBReader
+---------------------------------------------------------------------------*/
+void CtiLMProgramEnergyExchange::restoreDynamicData(RWDBReader& rdr)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
+    if( getManualControlReceivedFlag() )
+    {
+    }
+}
+
+// Static Members
+
+// Possible 
+

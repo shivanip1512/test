@@ -1,0 +1,2007 @@
+
+
+#pragma warning( disable : 4786)
+
+/*-----------------------------------------------------------------------------*
+*
+* File:   prot_versacom
+*
+* Date:   6/28/2001
+*
+* PVCS KEYWORDS:
+* ARCHIVE      :  $Archive$
+* REVISION     :  $Revision: 1.1.1.1 $
+* DATE         :  $Date: 2002/04/12 13:59:44 $
+*
+* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
+*-----------------------------------------------------------------------------*/
+
+#include <windows.h>
+#include <iomanip>
+#include <iostream>
+using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+
+
+#include "cmdparse.h"
+#include "prot_versacom.h"
+#include "master.h"
+#include "msg_pcrequest.h"
+#include "dllbase.h"
+#include "devicetypes.h"
+#include "logger.h"
+#include "yukon.h"
+#include "utility.h"
+
+
+
+/* Routine to set a nibble in a message */
+INT CtiProtocolVersacom::setNibble (INT iNibble, INT iValue)
+{
+    USHORT Nibble = (USHORT)iNibble;
+    USHORT Value  = (USHORT)iValue;
+
+    if((Nibble & 0x0001))
+        _vst[_last]->Message[Nibble / 2] |= Value & 0x000f;
+    else
+        _vst[_last]->Message[Nibble / 2] |= (Value << 4) & 0x00f0;
+
+    return(NORMAL);
+}
+
+
+INT CtiProtocolVersacom::initVersacomMessage()
+{
+    _vst[_last]->Nibbles = 2;
+
+    memset (_vst[_last]->Message, 0, MAX_VERSACOM_MESSAGE);
+
+    _addressMode = 0;
+
+    if(!(_vst[_last]->Address))
+    {
+        /* Check if we are to use utility addressing */
+        if(_vst[_last]->UtilityID)
+            _addressMode |= 0x0008;
+
+        if(_vst[_last]->Section)
+            _addressMode |= 0x0004;
+
+        if(_vst[_last]->Class)
+            _addressMode |= 0x0002;
+
+        if(_vst[_last]->Division)
+            _addressMode |= 0x0001;
+    }
+
+    setNibble (1, _addressMode);
+
+    return NORMAL;
+}
+
+INT CtiProtocolVersacom::assembleCommandToMessage()
+{
+    ULONG    i;
+    USHORT   Mask;
+    USHORT   Flag;
+
+    ULONG    Divisor;
+    ULONG    ComputeTime;
+
+
+    switch(_vst[_last]->CommandType)
+    {
+    case VCONTROL:
+        {
+            setNibble(0, VCONTROL);
+
+            /* Leave room for the count */
+            _vst[_last]->Nibbles++;
+            /* build up the control actions */
+            for(i = 0; i < 3; i++)
+            {
+                Mask = 0;
+                if(_vst[_last]->Load[i].Relay[0])
+                    Mask |= 0x0004;
+                if(_vst[_last]->Load[i].Relay[1])
+                    Mask |= 0x0002;
+                if(_vst[_last]->Load[i].Relay[2])
+                    Mask |= 0x0001;
+                if(Mask)
+                {
+                    if(_vst[_last]->Load[i].ControlType)
+                        Mask |= 0x0008;
+                    setNibble(_vst[_last]->Nibbles++, Mask);
+                    setNibble(_vst[_last]->Nibbles++, _vst[_last]->Load[i].TimeCode);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            /* see if we have anything to send */
+            if(!(i) && !(Mask))
+                return(NORMAL);
+            else
+                setNibble ( 2, (USHORT)i);
+
+            break;
+
+        }
+    case VINITIATOR:
+        {
+            setNibble ( 0, VINITIATOR);
+            /* see if this is ripple */
+            if(isLCU(_transmitterType))
+                setNibble ( 1, _vst[_last]->Initiator);
+            else
+                setNibble ( _vst[_last]->Nibbles++, _vst[_last]->Initiator);
+
+            break;
+        }
+    case VCONFIG:
+        {
+            setNibble ( 0, VCONFIG);
+
+            /* set the configuration type */
+            setNibble ( _vst[_last]->Nibbles++, _vst[_last]->VConfig.ConfigType >> 4);
+            setNibble ( _vst[_last]->Nibbles++, _vst[_last]->VConfig.ConfigType);
+
+            /* Now load the data */
+            for(i = 0; i < 10; i++)
+            {
+                if((i & 0x0001))
+                {
+                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->VConfig.Data[i / 2]);
+                }
+                else
+                {
+                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->VConfig.Data[i / 2] >> 4);
+                }
+            }
+            break;
+        }
+    case VCOUNTRESET:
+        setNibble ( 0, VCOUNTRESET);
+
+        setNibble ( _vst[_last]->Nibbles++, _vst[_last]->CountReset >> 4);
+        setNibble (  _vst[_last]->Nibbles++, _vst[_last]->CountReset);
+        break;
+
+
+    case VSERVICE:
+        setNibble ( 0, VSERVICE);
+        setNibble ( _vst[_last]->Nibbles++, _vst[_last]->Service);
+        break;
+
+    case VPROPOGATION:
+        setNibble ( 0, VPROPOGATION);
+
+        setNibble ( _vst[_last]->Nibbles++, _vst[_last]->PropDIT);
+        break;
+
+    case VDATA:
+        {
+            setNibble ( 0, VDATA);
+
+            if(_vst[_last]->VData.DataType)
+                _vst[_last]->VData.Data[0] |= 0x80;
+            else
+                _vst[_last]->VData.Data[0] &= 0x7f;
+
+            for(i = 0; i < 6; i++)
+            {
+                _vst[_last]->Message[i+1] = _vst[_last]->VData.Data[i];
+            }
+
+            _vst[_last]->Nibbles += 12;
+
+            break;
+        }
+    case EXDATA:
+        {
+            setNibble ( 0, EXDATA);
+            // Nibble 1 has been set in init as addressing mode!
+            setNibble ( 2, (_vst[_last]->VData.DataLength >> 1) & 0x000f);
+            setNibble ( 3, ((_vst[_last]->VData.DataLength << 3) & 0x0008) | (_vst[_last]->VData.DataType & 0x0007));
+
+
+            if(_vst[_last]->VData.DataLength < 1)
+            {
+                _vst[_last]->VData.DataLength = 1;
+            }
+            else if(_vst[_last]->VData.DataLength > 31)
+            {
+                _vst[_last]->VData.DataLength = 31;
+            }
+
+            for(i = 0; i < _vst[_last]->VData.DataLength; i++)
+            {
+                _vst[_last]->Message[i + 2] = _vst[_last]->VData.Data[i];
+            }
+
+            _vst[_last]->Nibbles += 2 + (_vst[_last]->VData.DataLength * 2);
+
+            // dumpMessageBuffer();
+
+            break;
+        }
+    case VECONTROL:
+        {
+            setNibble ( 0, VECONTROL );
+
+            /* Calculate the delay time */
+            if(_vst[_last]->ELoad.DelayUntil <= LongTime ())
+                _vst[_last]->ELoad.DelayUntil = 0;
+            else
+                _vst[_last]->ELoad.DelayUntil -= LongTime ();
+
+            /* figure out the relays */
+            Mask = _vst[_last]->ELoad.Relay;
+
+            if(_vst[_last]->ELoad.ControlType)
+                Mask |= 0x0008;
+
+            /* xRRR - (bit 3 == 1) discrete command, (bits 2,1,0) relays */
+            setNibble ( _vst[_last]->Nibbles++, Mask);
+
+            if(_vst[_last]->ELoad.ControlType)
+            {
+                /* figure out what order of magnitude out control is */
+                if(_vst[_last]->ELoad.ControlTime < 3825L)
+                {
+                    Flag = 0;
+                    Divisor = 15L;
+                    if(_vst[_last]->ELoad.ControlTime % 15L)
+                        _vst[_last]->ELoad.ControlTime += 15L;
+                }
+                else if(_vst[_last]->ELoad.ControlTime == 3825L)
+                {
+                    Flag = 0;
+                    Divisor = 15L;
+                }
+                else if(_vst[_last]->ELoad.ControlTime < 15300L)
+                {
+                    Flag = 1;
+                    Divisor = 60L;
+                    if(_vst[_last]->ELoad.ControlTime % 60L)
+                        _vst[_last]->ELoad.ControlTime += 60L;
+                }
+                else if(_vst[_last]->ELoad.ControlTime == 15300L)
+                {
+                    Flag = 1;
+                    Divisor = 60L;
+                }
+                else if(_vst[_last]->ELoad.ControlTime < 76500L)
+                {
+                    Flag = 2;
+                    Divisor = 300L;
+                    if(_vst[_last]->ELoad.ControlTime % 300L)
+                        _vst[_last]->ELoad.ControlTime += 300L;
+                }
+                else if(_vst[_last]->ELoad.ControlTime == 76500L)
+                {
+                    Flag = 2;
+                    Divisor = 300L;
+                }
+                else if(_vst[_last]->ELoad.ControlTime < 229500L)
+                {
+                    Flag = 3;
+                    Divisor = 900L;
+                    if(_vst[_last]->ELoad.ControlTime % 900L)
+                        _vst[_last]->ELoad.ControlTime += 900L;
+                }
+                else if(_vst[_last]->ELoad.ControlTime == 229500L)
+                {
+                    Flag = 3;
+                    Divisor = 900L;
+                }
+                else
+                {
+                    Flag = 3;
+                    Divisor = 900L;
+                    _vst[_last]->ELoad.ControlTime = 229500L;
+                }
+
+                Mask = Flag << 2;
+
+                if(_vst[_last]->ELoad.RandomTime)
+                    Mask |= 0x0002;
+                if(_vst[_last]->ELoad.DelayUntil)
+                    Mask |= 0x0001;
+
+                /* FLAG */
+                setNibble ( _vst[_last]->Nibbles++, Mask);
+
+                /* CONTROL - set the control time */
+                setNibble ( _vst[_last]->Nibbles++, (USHORT) (_vst[_last]->ELoad.ControlTime / Divisor) >> 4);
+
+                setNibble ( _vst[_last]->Nibbles++, (USHORT) (_vst[_last]->ELoad.ControlTime / Divisor));
+
+                /* see if we need randomization */
+                if(_vst[_last]->ELoad.RandomTime)
+                {
+                    if(_vst[_last]->ELoad.RandomTime % Divisor)
+                        _vst[_last]->ELoad.RandomTime += Divisor;
+                    Mask = (USHORT) (_vst[_last]->ELoad.RandomTime / Divisor);
+                    if(Mask > 15)
+                        Mask = 15;
+
+                    /* RAND */
+                    setNibble ( _vst[_last]->Nibbles++, Mask);
+                }
+            }
+            else
+            {
+                ComputeTime = _vst[_last]->ELoad.Window;
+
+                /* get the divisor and the flag*/
+                if(ComputeTime < 945L)
+                {
+                    Flag = 0;
+                    Divisor = 15L;
+                    if(ComputeTime % 15L)
+                        ComputeTime += 15L;
+                }
+                else if(ComputeTime == 945L)
+                {
+                    Flag = 0;
+                    Divisor = 15L;
+                }
+                else if(ComputeTime < 3780L)
+                {
+                    Flag = 1;
+                    Divisor = 60L;
+                    if(ComputeTime % 60L)
+                        ComputeTime += 60L;
+                }
+                else if(ComputeTime == 3780L)
+                {
+                    Flag = 1;
+                    Divisor = 60L;
+                }
+                else if(ComputeTime < 18900L)
+                {
+                    Flag = 2;
+                    Divisor = 300L;
+                    if(ComputeTime % 300L)
+                        ComputeTime += 300L;
+                }
+                else if(ComputeTime == 18900L)
+                {
+                    Flag = 2;
+                    Divisor = 300L;
+                }
+                else if(ComputeTime < 56700L)
+                {
+                    Flag = 3;
+                    Divisor = 900L;
+                    if(ComputeTime % 900L)
+                        ComputeTime += 900L;
+                }
+                else if(ComputeTime == 56700L)
+                {
+                    Flag = 3;
+                    Divisor = 900L;
+                }
+                else
+                {
+                    Flag = 3;
+                    Divisor = 900L;
+                    ComputeTime = 56700L;
+                }
+
+                Mask = Flag << 2;
+                if(ComputeTime || _vst[_last]->ELoad.Count)
+                    Mask |= 0x0002;
+                if(_vst[_last]->ELoad.DelayUntil)
+                    Mask |= 0x0001;
+
+                /* FLAG */
+                setNibble ( _vst[_last]->Nibbles++, Mask);
+
+                /* figure out if this is a bump or cycling */
+                if(_vst[_last]->ELoad.CycleType)
+                {
+                    /* Bump */
+                    Mask = 0x0080;
+                    if(_vst[_last]->ELoad.Percent < 0)
+                    {
+                        _vst[_last]->ELoad.Percent = 0 - _vst[_last]->ELoad.Percent;
+                    }
+                    else
+                        Mask |= 0x0040;
+
+                    if(_vst[_last]->ELoad.Percent > 50)
+                        _vst[_last]->ELoad.Percent = 50;
+
+                    Mask |= _vst[_last]->ELoad.Percent & 0x003f;
+
+                }
+                else
+                {
+                    /* Cycling */
+                    Mask = 0;
+                    if(_vst[_last]->ELoad.Percent > 100)
+                        _vst[_last]->ELoad.Percent = 100;
+                    if(_vst[_last]->ELoad.Percent < 0)
+                        _vst[_last]->ELoad.Percent = 0;
+
+                    Mask |= _vst[_last]->ELoad.Percent & 0x007f;
+
+                }
+
+                /* PERCENT High byte */
+                setNibble ( _vst[_last]->Nibbles++, Mask >> 4);
+
+                /* PERCENT Low byte */
+                setNibble ( _vst[_last]->Nibbles++, Mask);
+
+                if(ComputeTime || _vst[_last]->ELoad.Count)
+                {
+                    /* change the times into what will be sent */
+                    if(_vst[_last]->ELoad.Window > 56700L)
+                        _vst[_last]->ELoad.Window = 56700L;
+
+                    if(_vst[_last]->ELoad.Window % Divisor)
+                        _vst[_last]->ELoad.Window += (USHORT)Divisor;
+
+                    _vst[_last]->ELoad.Window /= (USHORT)Divisor;
+
+                    /* Put them in the message */
+
+                    /* WINDOW */
+                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->ELoad.Window >> 2);
+
+                    /* WINDOW / COUNT */
+                    setNibble (
+                              _vst[_last]->Nibbles++,
+                              (_vst[_last]->ELoad.Window << 2) |
+                              ((_vst[_last]->ELoad.Count >> 4) & 0x0003));
+
+                    /* COUNT */
+                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->ELoad.Count);
+
+                }
+            }
+
+            /* see if we need delay */
+            if(_vst[_last]->ELoad.DelayUntil)
+            {
+                if(_vst[_last]->ELoad.DelayUntil < 945L)
+                {
+                    Flag = 0;
+                    Divisor = 15L;
+                    if(_vst[_last]->ELoad.DelayUntil % 15L)
+                        _vst[_last]->ELoad.DelayUntil += 15L;
+                }
+                else if(_vst[_last]->ELoad.DelayUntil == 945L)
+                {
+                    Flag = 0;
+                    Divisor = 15L;
+                }
+                else if(_vst[_last]->ELoad.DelayUntil < 3780L)
+                {
+                    Flag = 1;
+                    Divisor = 60L;
+                    if(_vst[_last]->ELoad.DelayUntil % 60L)
+                        _vst[_last]->ELoad.DelayUntil += 60L;
+                }
+                else if(_vst[_last]->ELoad.DelayUntil == 3780L)
+                {
+                    Flag = 1;
+                    Divisor = 60L;
+                }
+                else if(_vst[_last]->ELoad.DelayUntil < 18900L)
+                {
+                    Flag = 2;
+                    Divisor = 300L;
+                    if(_vst[_last]->ELoad.DelayUntil % 300L)
+                        _vst[_last]->ELoad.DelayUntil += 300L;
+                }
+                else if(_vst[_last]->ELoad.DelayUntil == 18900L)
+                {
+                    Flag = 2;
+                    Divisor = 300L;
+                }
+                else if(_vst[_last]->ELoad.DelayUntil < 56700L)
+                {
+                    Flag = 3;
+                    Divisor = 900L;
+                    if(_vst[_last]->ELoad.DelayUntil % 900L)
+                        _vst[_last]->ELoad.DelayUntil += 900L;
+                }
+                else if(_vst[_last]->ELoad.DelayUntil == 56700L)
+                {
+                    Flag = 3;
+                    Divisor = 900L;
+                }
+                else
+                {
+                    Flag = 3;
+                    Divisor = 900L;
+                    _vst[_last]->ELoad.DelayUntil = 56700L;
+                }
+
+                Mask = Flag << 6;
+                Mask |= ((USHORT) (_vst[_last]->ELoad.DelayUntil / Divisor)) & 0x003f;
+
+                /* DELAY High byte */
+                setNibble ( _vst[_last]->Nibbles++, Mask >> 4);
+
+                /* DELAY Low byte */
+                setNibble ( _vst[_last]->Nibbles++, Mask);
+
+            }
+
+            break;
+        }
+    case VSCRAM:
+        {
+            setNibble ( 0, VSCRAM);
+            break;
+        }
+    case VFILLER:
+        {
+            setNibble ( 0, VFILLER);
+            break;
+        }
+    }
+    return NORMAL;
+}
+
+INT CtiProtocolVersacom::assembleAddressing()
+{
+    INT status = NORMAL;
+    ULONG IAddress = 0;
+
+    /* Now go ahead and figure out the addressing */
+    switch(_vst[_last]->CommandType)
+    {
+    /* Handle the special cases */
+    case VSCRAM:
+        if(isLCU(_transmitterType))
+        {
+            if(!(_addressMode) && !(_vst[_last]->Address))
+                break;
+        }
+    case VINITIATOR:
+        if(isLCU(_transmitterType))
+            break;
+
+    default:
+        {
+            if(_addressMode == 0 && _vst[_last]->Address == 0)    // We have no addressing information
+            {
+                /*
+                 *  OK, if the user types serial and doesn't specify an address, what should happen???
+                 *  Let's make sure we don't do anything
+                 */
+                RWMutexLock::LockGuard  guard(coutMux);
+                cout << "**** ADDRESSING ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+                status = ADDRESSERROR;
+            }
+
+            /* Now build up the addressing */
+            if(_addressMode)
+            {
+                if(_vst[_last]->UtilityID)
+                {
+                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->UtilityID >> 4);
+                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->UtilityID);
+                }
+
+                if(_vst[_last]->Section)
+                {
+                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->Section >>4);
+
+                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->Section);
+                }
+
+                /* Now we will build a long word with class and division in it as appropriate */
+                /* This will end up being treated just like a unique address */
+                if(_vst[_last]->Class)
+                {
+                    if(_vst[_last]->Division)
+                    {
+                        _vst[_last]->Address =  (ULONG) _vst[_last]->Class & 0x0000000f;
+                        _vst[_last]->Address |= (((ULONG) _vst[_last]->Division) << 4) & 0x000000f0;
+                        _vst[_last]->Address |= (((ULONG) _vst[_last]->Class) << 4) & 0x00000f00;
+                        _vst[_last]->Address |= (((ULONG) _vst[_last]->Division) << 8) & 0x0000f000;
+                        _vst[_last]->Address |= (((ULONG) _vst[_last]->Class) << 8) & 0x000f0000;
+                        _vst[_last]->Address |= (((ULONG) _vst[_last]->Division) << 12) & 0x00f00000;
+                        _vst[_last]->Address |= (((ULONG) _vst[_last]->Class) << 12) & 0x0f000000;
+                        _vst[_last]->Address |= (((ULONG) _vst[_last]->Division) << 16) & 0xf0000000;
+                    }
+                    else
+                        _vst[_last]->Address = _vst[_last]->Class;
+                }
+                else
+                {
+                    if(_vst[_last]->Division)
+                        _vst[_last]->Address = _vst[_last]->Division;
+                    else
+                        _vst[_last]->Address = 0L;
+                }
+            }
+
+            if(_vst[_last]->Address)
+            {
+                ULONG i;
+                ULONG Nibbles;
+
+                /* Invert the beast */
+                IAddress = 0L;
+                for(i = 0; i < 32; i++)
+                    IAddress |= ((_vst[_last]->Address >> i) & 0x00000001) << (31 - i);
+
+                /* find out how many nibbles we need to load */
+                for(i = 0; i < 8; i++)
+                {
+                    if(((IAddress >> (4 * i)) & 0x0f))
+                        break;
+                }
+
+                Nibbles = 8 - i;
+
+                /* Load it into the message */
+                for(i = 0; i < Nibbles; i++)
+                {
+                    setNibble ( _vst[_last]->Nibbles++, (USHORT) (IAddress >> ((7 - i) * 4)));
+                }
+            }
+
+            break;
+        }
+    }
+
+    return status;
+}
+
+INT CtiProtocolVersacom::updateVersacomMessage()
+{
+    INT status = NORMAL;
+
+    status = initVersacomMessage();     // Prime the message buffer and the constants
+    if(!status) status = assembleCommandToMessage();
+    if(!status) status = assembleAddressing();
+
+    // dumpMessageBuffer();
+
+    return status;
+}
+
+VSTRUCT CtiProtocolVersacom::getVStruct(INT pos) const
+{
+    return *_vst[pos];
+}
+VSTRUCT& CtiProtocolVersacom::getVStruct(INT pos)
+{
+    return *_vst[pos];
+}
+CtiProtocolVersacom& CtiProtocolVersacom::setVStruct(const VSTRUCT &aVst)
+{
+    *_vst[_last] = aVst;
+
+    return *this;
+}
+
+INT CtiProtocolVersacom::getTransmitterType() const
+{
+    return _transmitterType;
+}
+CtiProtocolVersacom& CtiProtocolVersacom::setTransmitterType(INT type)
+{
+    _transmitterType = type;
+    return *this;
+}
+CtiProtocolVersacom& CtiProtocolVersacom::VersacomTransmitter(INT type)
+{
+    _transmitterType = type;
+    return *this;
+}
+
+/*-------------------------------------------------------------------------*
+ * Group addressing is COMPLETELY ignored if Serial Number (Serial) is non
+ * zero!
+ *-------------------------------------------------------------------------*/
+INT CtiProtocolVersacom::VersacomAddress(ULONG   Serial,
+                                         UINT    Uid,
+                                         UINT    Section,
+                                         UINT    Class,
+                                         UINT    Division)
+{
+    INT status = NORMAL;
+
+    if(!(Serial))
+    {
+        /* Check if we are to use utility addressing */
+        if(Uid)
+        {
+            _vst[_last]->UtilityID = Uid;
+            _addressMode |= 0x0008;
+        }
+
+        if(Section)
+        {
+            _vst[_last]->Section = Section;
+            _addressMode |= 0x0004;
+        }
+
+        if(Class)
+        {
+            _vst[_last]->Class = Class;
+            _addressMode |= 0x0002;
+        }
+
+        if(Division)
+        {
+            _vst[_last]->Division = Division;
+            _addressMode |= 0x0001;
+        }
+    }
+    else
+    {
+        _vst[_last]->Address = Serial;
+    }
+
+    setNibble ( 1, _addressMode);
+
+    return status;
+}
+
+INT    CtiProtocolVersacom::VersacomShedCommand(UINT controltime, UINT relaymask)
+{
+    INT i, mask;
+
+    _vst[_last]->CommandType           = VCONTROL;
+    _vst[_last]->Load[0].ControlType   = TRUE;
+    _vst[_last]->Load[0].TimeCode      = VersacomControlDuration(_vst[_last]->Load[0].ControlType, controltime);
+
+    if(_vst[_last]->RelayMask != 0)
+    {
+        /*
+         *  This means we set this in a higher level of context and the actual relaymask
+         *  passed in should be ignored...
+         */
+        relaymask = _vst[_last]->RelayMask;
+    }
+
+    for(i = 0, mask = 0x01; i < 3; i++, mask <<= 1)
+    {
+        _vst[_last]->Load[0].Relay[i] = ( (relaymask & mask) ? TRUE : FALSE);
+    }
+
+    /* OK this is all set-up for the builder to manhandle now! */
+    return updateVersacomMessage();
+}
+
+INT    CtiProtocolVersacom::VersacomShedCommandEx(UINT controltime,   // = 0,
+                                                  UINT relay,         // = 0,
+                                                  UINT rand,          // = 120,
+                                                  UINT delay)         // = 0)
+{
+    _vst[_last]->CommandType           = VECONTROL;
+    _vst[_last]->ELoad.ControlType     = 1;           // Discrete (shed) control
+    _vst[_last]->ELoad.CycleType       = 0;           // Cycle (not Bump) command
+
+    if(_vst[_last]->RelayMask != 0 && relay == 0)
+    {
+        /*
+         *  This means we set this in a higher level of context and the actual relaymask
+         *  passed in should be ignored...
+         */
+        relay = _vst[_last]->RelayMask;
+    }
+
+
+    _vst[_last]->ELoad.Relay           = relay;       // relay number or zero for ALL relays!
+    _vst[_last]->ELoad.ControlTime     = controltime; // VersacomControlDurationEx(_vst[_last]->ELoad.ControlType, controltime);
+    _vst[_last]->ELoad.RandomTime      = rand;
+    _vst[_last]->ELoad.DelayUntil      = delay;
+
+    /* OK this is all set-up for the builder to manhandle now! */
+    return updateVersacomMessage();
+}
+
+INT    CtiProtocolVersacom::VersacomCycleCommandEx(UINT percent,      // = 0,
+                                                   UINT relay,        // = 0,
+                                                   UINT period,       // = 30,
+                                                   UINT repeat,       // = 8,
+                                                   UINT delay)        // = 0)
+{
+    _vst[_last]->CommandType           = VECONTROL;
+
+    _vst[_last]->ELoad.ControlType     = 0;           // cycle control
+    _vst[_last]->ELoad.CycleType       = 0;           // Cycle (not Bump) command
+
+    if(_vst[_last]->RelayMask != 0 && relay == 0)
+    {
+        /*
+         *  This means we set this in a higher level of context and the actual relaymask
+         *  passed in should be ignored...
+         */
+
+        relay = _vst[_last]->RelayMask;
+    }
+
+    _vst[_last]->ELoad.Relay           = relay;       // relay number or zero for ALL relays!
+    _vst[_last]->ELoad.Percent         = percent;     // 0 - 100, 127 means terminate!
+
+    _vst[_last]->ELoad.Window          = (((period < 1) ? 30 : period) * 60); // VersacomControlDurationEx(_vst[_last]->ELoad.ControlType, period);
+    _vst[_last]->ELoad.Count           = repeat;
+    _vst[_last]->ELoad.DelayUntil      = delay;
+
+    /* OK this is all set-up for the builder to manhandle now! */
+    return updateVersacomMessage();
+}
+
+INT    CtiProtocolVersacom::VersacomCycleCommand(UINT controltime, UINT relaymask)
+{
+    INT i, mask;
+
+    _vst[_last]->CommandType           = VCONTROL;
+    _vst[_last]->Load[0].ControlType   = FALSE;
+    _vst[_last]->Load[0].TimeCode      = VersacomControlDuration(_vst[_last]->Load[0].ControlType, controltime);
+
+    if(_vst[_last]->RelayMask != 0 && relaymask == 0)
+    {
+        /*
+         *  This means we set this in a higher level of context and the actual relaymask
+         *  passed in should be ignored...
+         */
+        relaymask = _vst[_last]->RelayMask;
+    }
+
+    for(i = 0, mask = 0x01; i < 3; i++, mask <<= 1)
+    {
+        _vst[_last]->Load[0].Relay[i] = ( (relaymask & mask) ? TRUE : FALSE);
+    }
+
+    /* OK this is all set-up for the builder to manhandle now! */
+    return updateVersacomMessage();
+}
+
+UINT CtiProtocolVersacom::VersacomControlDuration(UINT type, UINT controltime)
+{
+    UINT result = 0;
+
+    if(type == 0)     // This is a cyclic percentage!
+    {
+        if(0 < controltime && controltime <= 5)
+        {
+            result = 1;     // 5%
+        }
+        else if(5 < controltime && controltime <= 10)
+        {
+            result = 2;     // 10%
+        }
+        else if(10 < controltime && controltime <= 20)
+        {
+            result = 3;     // 20%
+        }
+        else if(20 < controltime && controltime <= 25)
+        {
+            result = 4;     // 25%
+        }
+        else if(25 < controltime && controltime <= 30)
+        {
+            result = 5;     // 30%
+        }
+        else if(30 < controltime && controltime <= 33)
+        {
+            result = 6;     // 33%
+        }
+        else if(33 < controltime && controltime <= 40)
+        {
+            result = 7;     // 40%
+        }
+        else if(40 < controltime && controltime <= 50)
+        {
+            result = 8;     // 50%
+        }
+        else if(50 < controltime && controltime <= 60)
+        {
+            result = 9;     // 60%
+        }
+        else if(60 < controltime && controltime <= 67)
+        {
+            result = 10;     // 67%
+        }
+        else if(67 < controltime && controltime <= 70)
+        {
+            result = 11;     // 70%
+        }
+        else if(70 < controltime && controltime <= 75)
+        {
+            result = 12;     // 75%
+        }
+        else if(75 < controltime && controltime <= 80)
+        {
+            result = 13;     // 80%
+        }
+        else if(80 < controltime && controltime <= 90)
+        {
+            result = 14;     // 90%
+        }
+        else if(90 < controltime && controltime <= 95)
+        {
+            result = 15;     // 95%
+        }
+        else if(95 < controltime && controltime <= 100)
+        {
+            cout << "Versacom Load Control cycles at 95% maximum!.. " << endl;
+            // cout << " I'll pretend that is what you meant... " << endl;
+            result = 15;     // 95%
+        }
+    }
+    else
+    {
+        if(0 < controltime && controltime <= 1)
+        {
+            result = 1;     // 1 second shed
+        }
+        else if(1 < controltime && controltime <= 60)
+        {
+            result = 2;     // 1 minute shed
+        }
+        else if(60 < controltime && controltime <= 300)
+        {
+            result = 3;     // 5 minute shed
+        }
+        else if(300 < controltime && controltime <= 450)
+        {
+            result = 4;     // 7.5 minute shed
+        }
+        else if(450 < controltime && controltime <= 600)
+        {
+            result = 5;     // 10 minute shed
+        }
+        else if(600 < controltime && controltime <= 900)
+        {
+            result = 6;     // 15 minute shed
+        }
+        else if(900 < controltime && controltime <= 1200)
+        {
+            result = 7;     // 20 minute shed
+        }
+        else if(1200 < controltime && controltime <= 1800)
+        {
+            result = 8;     // 30 minute shed
+        }
+        else if(1800 < controltime && controltime <= 2400)
+        {
+            result = 9;     // 40 minutes
+        }
+        else if(2400 < controltime && controltime <= 2700)
+        {
+            result = 10;     // 45 minutes
+        }
+        else if(2700 < controltime && controltime <= 3600)
+        {
+            result = 11;     // 1 hour shed
+        }
+        else if(3600 < controltime && controltime <= 7200)
+        {
+            result = 12;     // 2 hour shed
+        }
+        else if(7200 < controltime && controltime <= 10800)
+        {
+            result = 13;     // 3 hour shed
+        }
+        else if(10800 < controltime && controltime <= 14400)
+        {
+            result = 14;     // 4 hour shed
+        }
+        else if(14400 < controltime && controltime <= 28800)
+        {
+            result = 15;     // 8 hour shed
+        }
+        else if(28800 < controltime)
+        {
+            cout << "Versacom Load Control sheds up to 8 hours maximum!.. " << endl;
+            // cout << " I'll pretend that is what you meant... " << endl;
+            result = 15;     // 8 hours
+        }
+    }
+
+    return result;
+}
+
+UINT CtiProtocolVersacom::VersacomControlDurationEx(UINT type, UINT controltime)
+{
+    UINT result = 0;
+
+    if(type == 0)     // This is a cycle command
+    {
+        if(controltime < 1)
+        {
+            controltime = 30;       // Use 30 minutes if they don't know what they are doing!
+        }
+
+
+        result = controltime * 60;
+    }
+    else
+    {
+    }
+
+    return result;
+}
+
+INT    CtiProtocolVersacom::VersacomRestoreCommand(UINT relaymask)
+{
+    INT i, mask;
+
+    _vst[_last]->CommandType           = VCONTROL;
+    _vst[_last]->Load[0].ControlType   = TRUE;
+    _vst[_last]->Load[0].TimeCode      = 0;           // Restore from shed!
+
+    if(_vst[_last]->RelayMask != 0)
+    {
+        /*
+         *  This means we set this in a higher level of context and the actual relaymask
+         *  passed in should be ignored...
+         */
+        relaymask = _vst[_last]->RelayMask;
+    }
+
+    for(i = 0, mask = 0x01; i < 3; i++, mask <<= 1)
+    {
+        _vst[_last]->Load[0].Relay[i] = ( (relaymask & mask) ? TRUE : FALSE);
+    }
+
+    /* OK this is all set-up for the builder to manhandle now! */
+    return updateVersacomMessage();
+}
+
+INT    CtiProtocolVersacom::VersacomTerminateCommand(UINT relaymask)
+{
+    INT i, mask;
+
+    _vst[_last]->CommandType           = VCONTROL;
+    _vst[_last]->Load[0].ControlType   = FALSE;
+    _vst[_last]->Load[0].TimeCode      = 0;           // Terminate the cycle command!
+
+    if(_vst[_last]->RelayMask != 0)
+    {
+        /*
+         *  This means we set this in a higher level of context and the actual relaymask
+         *  passed in should be ignored...
+         */
+        relaymask = _vst[_last]->RelayMask;
+    }
+
+    for(i = 0, mask = 0x01; i < 3; i++, mask <<= 1)
+    {
+        _vst[_last]->Load[0].Relay[i] = ( (relaymask & mask) ? TRUE : FALSE);
+    }
+
+    /* OK this is all set-up for the builder to manhandle now! */
+    return updateVersacomMessage();
+}
+
+INT    CtiProtocolVersacom::VersacomCapacitorControlCommand(BOOL Trip)
+{
+    /*
+     *  This is a TRIP opreation if TripClose != 0.
+     */
+
+    _vst[_last]->CommandType           = VDATA;
+
+    _vst[_last]->VData.DataType        = 0;        // ASCII, not TRL.
+    _vst[_last]->VData.Data[0]         = 0x71;
+    _vst[_last]->VData.Data[1]         = ( (Trip == 0) ? 0x80 : 0x40);   // close == 0x80, trip == 0x40
+    _vst[_last]->VData.Data[2]         = 0x00;
+    _vst[_last]->VData.Data[3]         = 0x00;
+    _vst[_last]->VData.Data[4]         = 0x00;
+    _vst[_last]->VData.Data[5]         = 0x00;
+
+
+    /* OK this is all set-up for the builder to manhandle now! */
+    return updateVersacomMessage();
+}
+
+INT    CtiProtocolVersacom::VersacomVoltageControlCommand(BOOL Enable)
+{
+    /*
+     *  This is a ENABLE opreation if Enable != 0.
+     */
+
+    _vst[_last]->CommandType           = VDATA;
+
+    _vst[_last]->VData.DataType        = 0;        // ASCII, not TRL.
+    _vst[_last]->VData.Data[0]         = 0x71;
+    _vst[_last]->VData.Data[1]         = ( (Enable == 0) ? 0xD0 : 0xE0);
+    _vst[_last]->VData.Data[2]         = 0x00;
+    _vst[_last]->VData.Data[3]         = 0x00;
+    _vst[_last]->VData.Data[4]         = 0x00;
+    _vst[_last]->VData.Data[5]         = 0x00;
+
+
+    /* OK this is all set-up for the builder to manhandle now! */
+    return updateVersacomMessage();
+}
+
+INT    CtiProtocolVersacom::VersacomInitiatorCommand(UINT Initiator)
+{
+    /*
+     *  This is a ENABLE opreation if EnableDiasable != 0.
+     */
+
+    _vst[_last]->CommandType           = VINITIATOR;
+    _vst[_last]->Initiator             = (USHORT) Initiator;
+
+    /* OK this is all set-up for the builder to manhandle now! */
+    return updateVersacomMessage();
+}
+
+INT    CtiProtocolVersacom::VersacomServiceCommand(UINT serviceflag)
+{
+    /*-------------------------------------------------------------------------*
+     * Builds a message to remove or restore service to a versacom switch.
+     *  ONE or more of the following may be defined, so long as they are not
+     *  mutually exclusive.
+     *  serviceflag == VC_SERVICE_T_OUT == 1 is Temporary OUT of service
+     *  serviceflag == VC_SERVICE_T_IN  == 2 is Temporary IN service
+     *  serviceflag == VC_SERVICE_C_OUT == 4 is Contractual OUT of service
+     *  serviceflag == VC_SERVICE_C_IN  == 8 is Contractual IN service
+     *  serviceflag == VC_SERVICE_MASK  == 0x0f is a mask
+     *-------------------------------------------------------------------------*/
+
+    _vst[_last]->CommandType           = VSERVICE;
+
+    if( serviceflag & VC_SERVICE_T_IN && serviceflag & VC_SERVICE_T_OUT )
+    {
+        cout << RWTime() << " both in and out of service bits are set" << endl;
+        cout << RWTime() << "  assuming temporary IN service" << endl;
+
+        serviceflag &=  ~VC_SERVICE_T_OUT;     // Get rid of this!
+    }
+
+    if( serviceflag & VC_SERVICE_C_IN && serviceflag & VC_SERVICE_C_OUT )
+    {
+        cout << RWTime() << " both in and out of service bits are set" << endl;
+        cout << RWTime() << "  assuming contractual IN service" << endl;
+
+        serviceflag &=  ~VC_SERVICE_C_OUT;     // Get rid of this!
+    }
+
+    _vst[_last]->Service               = (USHORT)(serviceflag & VC_SERVICE_MASK);
+
+    /* OK this is all set-up for the builder to manhandle now! */
+    return updateVersacomMessage();
+}
+
+INT    CtiProtocolVersacom::VersacomConfigLEDCommand(BYTE leds)
+{
+    /*
+     * leds is a mask of the following!
+     * VC_REPORT_LED_ENABLED
+     * VC_STATUS_LED_ENABLED
+     * VC_LOAD_LED_ENABLED
+     */
+
+    _vst[_last]->CommandType           = VCONFIG;
+    _vst[_last]->VConfig.ConfigType    = (USHORT)VCT_LEDConfig;
+    _vst[_last]->VConfig.Data[0]       = (BYTE)(leds & 0xE0 );
+    _vst[_last]->VConfig.Data[1]       = (BYTE)0x00;
+    _vst[_last]->VConfig.Data[2]       = (BYTE)0x00;
+    _vst[_last]->VConfig.Data[3]       = (BYTE)0x00;
+    _vst[_last]->VConfig.Data[4]       = (BYTE)0x00;
+
+    /* OK this is all set-up for the builder to manhandle now! */
+    return updateVersacomMessage();
+}
+
+INT CtiProtocolVersacom::VersacomDataCommand(BYTE *message, INT len)
+{
+    int i;
+    _vst[_last]->CommandType           = ((len > 6) ? EXDATA : VDATA);
+
+    for(i = 0; i < len && i < 30; i++)
+    {
+        _vst[_last]->VData.Data[i]      = (BYTE)message[i];
+    }
+
+    _vst[_last]->VData.DataLength      = (USHORT)i;
+    _vst[_last]->VData.DataType        = 0;                 // Make it BE ASCII.
+
+    return updateVersacomMessage();
+}
+
+INT CtiProtocolVersacom::VersacomConfigCommand(UINT configtype, BYTE *cfg)
+{
+    int i;
+
+    _vst[_last]->CommandType           = VCONFIG;
+    _vst[_last]->VConfig.ConfigType    = (USHORT)configtype;
+
+    for(i = 0; i < 5; i++)
+    {
+        _vst[_last]->VConfig.Data[i]      = (BYTE)cfg[i];
+    }
+
+    return updateVersacomMessage();
+}
+
+INT CtiProtocolVersacom::VersacomFillerCommand(BYTE uid)
+{
+    int i;
+
+    _vst[_last]->CommandType = VFILLER;
+    _vst[_last]->Address = 0;
+    _vst[_last]->UtilityID = uid;
+
+    return updateVersacomMessage();
+}
+
+INT CtiProtocolVersacom::VersacomRawConfigCommand(const BYTE *cfg)
+{
+    int i;
+
+    _vst[_last]->CommandType           = VCONFIG;
+    _vst[_last]->VConfig.ConfigType    = (USHORT)cfg[0];
+
+    for(i = 0; i < 5; i++)
+    {
+        _vst[_last]->VConfig.Data[i]      = (BYTE)cfg[i + 1];
+    }
+
+    return updateVersacomMessage();
+}
+
+INT CtiProtocolVersacom::VersacomPropagationCommand(BYTE propmask)
+{
+    int i;
+
+    /*
+     * VC_PROPTERMINATE
+     * VC_PROPINCREMENT
+     * VC_PROPDISPLAY
+     */
+
+    _vst[_last]->CommandType           = VPROPOGATION;
+    _vst[_last]->PropDIT               = (USHORT)(propmask & 0x07);
+
+    return updateVersacomMessage();
+}
+
+INT CtiProtocolVersacom::VersacomConfigPropagationTimeCommand(BYTE duration)
+{
+    if(duration > 9)
+    {
+        duration = 9;
+    }
+    _vst[_last]->CommandType           = VCONFIG;
+    _vst[_last]->VConfig.ConfigType    = (USHORT)VCT_PropDisplayTime;
+    _vst[_last]->VConfig.Data[0]       = (BYTE)duration;
+    _vst[_last]->VConfig.Data[1]       = (BYTE)0x00;
+    _vst[_last]->VConfig.Data[2]       = (BYTE)0x00;
+    _vst[_last]->VConfig.Data[3]       = (BYTE)0x00;
+    _vst[_last]->VConfig.Data[4]       = (BYTE)0x00;
+
+    /* OK this is all set-up for the builder to manhandle now! */
+    return updateVersacomMessage();
+}
+
+INT CtiProtocolVersacom::VersacomCountResetCommand(UINT resetmask)
+{
+    int i;
+
+    /*
+     * VC_RESETR4COUNT
+     * VC_RESETRTCCOUNT
+     * VC_RESETLUFCOUNT
+     * VC_RESETRELAY1COUNT
+     *
+     * VC_RESETRELAY2COUNT
+     * VC_RESETRELAY3COUNT
+     * VC_RESETCOMMLOSSCOUNT
+     * VC_RESETPROPAGATIONCOUNT
+     */
+
+    _vst[_last]->CommandType           = VCOUNTRESET;
+    _vst[_last]->CountReset            = (USHORT)(resetmask);
+
+    return updateVersacomMessage();
+}
+
+INT CtiProtocolVersacom::primeVStruct(const VSTRUCT &VstTemplate)
+{
+    INT      status = NORMAL;
+
+    VSTRUCT  *Vst = new VSTRUCT;
+
+    if(Vst != NULL)
+    {
+        memcpy((void*)Vst, &VstTemplate, sizeof(VSTRUCT));
+
+        _vst.insert( Vst );
+        _last = _vst.entries() - 1;      // Which one are we working on?
+    }
+    else
+    {
+        status = MEMORY;
+    }
+
+    return status;
+}
+
+INT CtiProtocolVersacom::parseRequest(CtiCommandParser  &parse, const VSTRUCT &aVst)
+{
+    INT            status = NORMAL;
+
+    switch(parse.getCommand())
+    {
+    case ControlRequest:
+        {
+            assembleControl(parse, aVst);
+            break;
+        }
+    case PutConfigRequest:
+        {
+            assemblePutConfig(parse, aVst);
+            break;
+        }
+    case PutStatusRequest:
+        {
+            assemblePutStatus(parse, aVst);
+            break;
+        }
+    default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Unsupported command on versacom route Command = " << parse.getCommand() << endl;
+            }
+
+            status = CtiInvalidRequest;
+
+            break;
+        }
+    }
+
+    return status;
+}
+
+
+void CtiProtocolVersacom::dumpMessageBuffer()
+{
+    CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+    for(int i = 0; i < (_vst[_last]->Nibbles * 2) && i < MAX_VERSACOM_MESSAGE; i++ )
+    {
+        if(i && !(i % 8))
+        {
+            dout << endl;
+        }
+        dout << hex << setw(2) << (INT)(_vst[_last]->Message[i]) << " ";
+    }
+    dout << dec << endl;
+}
+
+
+INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRUCT &aVst)
+{
+    INT   i, IAddress, iNum;
+    INT   status = NORMAL;
+    BOOL  firstOneDone = FALSE;
+    BYTE  config[6];
+
+    bool isGroupConfig = false;
+
+
+    LONG sn  = parse.getiValue("serial");
+    LONG uid = parse.getiValue("utility");
+    LONG aux = parse.getiValue("aux");
+    LONG sec = parse.getiValue("section");
+    LONG cls = parse.getiValue("class");
+    LONG div = parse.getiValue("division");
+
+    LONG fuid = parse.getiValue("fromutility");
+    LONG fsec = parse.getiValue("fromsection");
+    LONG fcls = parse.getiValue("fromclass");
+    LONG fdiv = parse.getiValue("fromdivision");
+
+    // Use these ONLY for group addressing!
+    fuid = (fuid == INT_MIN ? 0 : fuid);
+    fsec = (fsec == INT_MIN ? 0 : fsec);
+    fcls = (fcls == INT_MIN ? 0 : fcls);
+    fdiv = (fdiv == INT_MIN ? 0 : fdiv);
+
+    // Use these ONLY for the _CONFIGURATION_ of addressing!
+    uid = (uid == INT_MIN ? 0 : uid);
+    aux = (aux == INT_MIN ? 0 : aux);
+    sec = (sec == INT_MIN ? 0 : sec);
+    cls = (cls == INT_MIN ? 0 : cls);
+    div = (div == INT_MIN ? 0 : div);
+
+
+    /*
+     *  This bit indicates how we are getting there..  If the serial number was specified, we
+     *  will assume that any other addressing is to be set in the device!  Otherwise,
+     *  we assume that the device is being group configured
+     */
+    if( sn == INT_MIN )
+    {
+        sn = 0;
+    }
+
+    if(sn != 0 || fuid != 0)
+    {
+        isGroupConfig = true;
+    }
+
+    primeVStruct(aVst);  // Get a new one in the system
+    VersacomAddress(sn, fuid, fsec, fcls, fdiv);
+
+    /*
+     * This should be the original with only the addressing copied into it,
+     * we will use this for all others...
+     */
+    VSTRUCT     VStTemplate = getVStruct(_last);
+
+    /*
+     *  The first
+     */
+    if((iNum = parse.getiValue("service")) != INT_MIN)
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+
+        if(!VersacomServiceCommand(iNum & VC_SERVICE_MASK))
+            firstOneDone = TRUE;
+    }
+
+    if((iNum = parse.getiValue("led")) != INT_MIN)
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+
+        if(!VersacomConfigLEDCommand( iNum ))
+            firstOneDone = TRUE;
+    }
+
+    if((iNum = parse.getiValue("coldload_r1")) != INT_MIN)
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+        if(!VersacomConfigColdLoadCommand( 1, iNum ))
+            firstOneDone = TRUE;
+    }
+
+    if((iNum = parse.getiValue("coldload_r2")) != INT_MIN)
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+        if(!VersacomConfigColdLoadCommand( 2, iNum ))
+            firstOneDone = TRUE;
+    }
+
+    if((iNum = parse.getiValue("coldload_r3")) != INT_MIN)
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+        if(!VersacomConfigColdLoadCommand( 3, iNum ))
+            firstOneDone = TRUE;
+    }
+
+    if((iNum = parse.getiValue("scram_r1")) != INT_MIN)
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+        if(!VersacomConfigScramTimeCommand( 1, iNum ))
+            firstOneDone = TRUE;
+    }
+    if((iNum = parse.getiValue("scram_r2")) != INT_MIN)
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+        if(!VersacomConfigScramTimeCommand( 2, iNum ))
+            firstOneDone = TRUE;
+    }
+    if((iNum = parse.getiValue("scram_r3")) != INT_MIN)
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+        if(!VersacomConfigScramTimeCommand( 3, iNum ))
+            firstOneDone = TRUE;
+    }
+
+    if((iNum = parse.getiValue("cycle_r1")) != INT_MIN)
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+        if(!VersacomConfigCycleRepeatsCommand( 1, iNum ))
+            firstOneDone = TRUE;
+    }
+    if((iNum = parse.getiValue("cycle_r2")) != INT_MIN)
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+        if(!VersacomConfigCycleRepeatsCommand( 2, iNum ))
+            firstOneDone = TRUE;
+    }
+    if((iNum = parse.getiValue("cycle_r3")) != INT_MIN)
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+        if(!VersacomConfigCycleRepeatsCommand( 3, iNum ))
+            firstOneDone = TRUE;
+    }
+
+
+    if((iNum = parse.getiValue("proptime")) != INT_MIN)
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+        if(!VersacomConfigPropagationTimeCommand( iNum ))
+            firstOneDone = TRUE;
+    }
+
+    if((iNum = parse.getiValue("reset")) != INT_MIN)
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+        if(!VersacomCountResetCommand( iNum ))
+            firstOneDone = TRUE;
+    }
+
+    if( parse.isKeyValid("vdata") )
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+        if(!VersacomDataCommand( (BYTE *)parse.getsValue("raw").data() ), parse.getsValue("raw").length())
+            firstOneDone = TRUE;
+    }
+
+    if( parse.isKeyValid("raw") )
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+
+        if(!VersacomRawConfigCommand( (const BYTE*)parse.getsValue("raw").data() ))
+            firstOneDone = TRUE;
+    }
+
+    if( isGroupConfig && ((iNum = parse.getiValue("utility")) != INT_MIN) )
+    {  // We have a utility id to configure
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+
+        memset(config, 0, 6);      // Blank the bytes
+        config[0] = (BYTE)iNum;
+        if(!VersacomConfigCommand( VCONFIG_UTILID, config ))
+            firstOneDone = TRUE;
+    }
+
+    if( isGroupConfig && ((iNum = parse.getiValue("aux")) != INT_MIN) )
+    {  // We have a utility id to configure
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+
+        memset(config, 0, 6);      // Blank the bytes
+        config[0] = (BYTE)iNum;
+        if(!VersacomConfigCommand( VCONFIG_AUXID, config ))
+            firstOneDone = TRUE;
+    }
+
+    if( isConfigOptimized() &&
+        (parse.getiValue("section") != INT_MIN) &&
+        (parse.getiValue("class") != INT_MIN) &&
+        (parse.getiValue("division") != INT_MIN))
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+
+        memset(config, 0, 6);      // Blank the bytes
+
+        config[0] = (BYTE)sec;
+
+        IAddress = convertHumanFormAddressToVersacom(cls);
+
+        config[1] = (BYTE)( (IAddress >> 8) & 0x00FF );
+        config[2] = (BYTE)( (IAddress) & 0x00FF );
+
+        IAddress = convertHumanFormAddressToVersacom(div);
+        config[3] = (BYTE)( (IAddress >> 8) & 0x00FF );
+        config[4] = (BYTE)( (IAddress) & 0x00FF );
+
+        if(!VersacomConfigCommand( VCONFIG_SCD, config ))
+            firstOneDone = TRUE;
+    }
+    else
+    {
+        if( isGroupConfig && ((iNum = parse.getiValue("section")) != INT_MIN) )
+        {  // We have a utility id to configure
+            if(firstOneDone)
+            {
+                advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            }
+
+            memset(config, 0, 6);      // Blank the bytes
+            config[0] = (BYTE)iNum;
+            if(!VersacomConfigCommand( VCONFIG_SECTION, config ))
+                firstOneDone = TRUE;
+        }
+
+        if( isGroupConfig && ((iNum = parse.getiValue("class")) != INT_MIN) )
+        {  // We have a utility id to configure
+            if(firstOneDone)
+            {
+                advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            }
+
+            memset(config, 0, 6);      // Blank the bytes
+
+            IAddress = convertHumanFormAddressToVersacom(iNum);              /* Invert The Address */
+
+            config[0] = HIBYTE (IAddress);
+            config[1] = LOBYTE (IAddress);
+
+            if(!VersacomConfigCommand( VCONFIG_CLASS, config ))
+                firstOneDone = TRUE;
+        }
+
+        if( isGroupConfig && ((iNum = parse.getiValue("division")) != INT_MIN) )
+        {  // We have a utility id to configure
+            if(firstOneDone)
+            {
+                advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            }
+
+            memset(config, 0, 6);      // Blank the bytes
+            IAddress = convertHumanFormAddressToVersacom(iNum);              /* Invert The Address */
+
+            config[0] = HIBYTE (IAddress);
+            config[1] = LOBYTE (IAddress);
+
+            if(!VersacomConfigCommand( VCONFIG_DIVISION, config ))
+                firstOneDone = TRUE;
+        }
+    }
+
+
+    if(!firstOneDone)
+    {
+        // Oh my, this one failed.... we should get rid of the 'prime' VSTRUCT since it was never
+        // modified
+        _vst.clearAndDestroy();
+    }
+
+    return status;
+}
+
+void CtiProtocolVersacom::advanceAndPrime(const VSTRUCT &vTemp)
+{
+    VSTRUCT *newvst = new VSTRUCT;
+    *newvst = vTemp;
+    _vst.insert(newvst);
+    _last = _vst.entries() - 1;
+
+    return;
+}
+
+INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT &aVst)
+{
+    INT  i;
+    INT  status = NORMAL;
+    UINT CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
+    INT  relay  = parse.getiValue("relaymask");
+
+    if(CtlReq == CMD_FLAG_CTL_SHED)
+    {
+        relay = (relay  == INT_MIN) ? 0  : relay ;     // If zero it means all of them!
+
+        // Add these two items to the list for control accounting!
+        parse.Map()["control_interval"]  = CtiParseValue( parse.getiValue("shed") );
+        parse.Map()["control_reduction"] = CtiParseValue( 100 );
+
+        if( !(relay & 0xfffffff8) )     // Positional relays only one thru three can go out type four (in one message).
+        {
+            // Control time is in the parsers iValue!
+            // Assume the VSTRUCT RelayMask is set, otherwise use default relay 0
+            primeVStruct(aVst);  // Get a new one in the system
+            VersacomShedCommand(parse.getiValue("shed"));
+        }
+        else
+        {
+            INT rand  = parse.getiValue("shed_rand");
+            INT delay = parse.getiValue("shed_delay");
+
+            // If not specified, uses the last sent data.  Acts as a modification.
+            rand   = (rand == INT_MIN) ? 120  : rand;       // If not specified, it will continue the command in progress, modifying the other parameters
+            delay  = (delay  == INT_MIN) ? 0  : delay ;     // If not specified, it will continue the command in progress, modifying the other parameters
+
+            if(relay != 0)
+            {
+                for( i = 0; i < 7; i++ )
+                {
+                    if( relay & (0x01 << i) )
+                    {
+                        primeVStruct(aVst);  // Get a new one in the system
+                        VersacomShedCommandEx(parse.getiValue("shed"), (i+1), rand, delay);
+                    }
+                }
+            }
+            else
+            {
+                relay = aVst.RelayMask;         // Someone set this up at a higher level of context.
+
+                for( i = 0; i < 7; i++ )
+                {
+                    if( relay & (0x01 << i) )
+                    {
+                        primeVStruct(aVst);  // Get a new one in the system
+                        VersacomShedCommandEx(parse.getiValue("shed"), (i+1), rand, delay);
+                    }
+                }
+            }
+        }
+    }
+    else if(CtlReq == CMD_FLAG_CTL_CYCLE)
+    {
+        // Add these two items to the list for control accounting!
+        parse.Map()["control_reduction"] = CtiParseValue( parse.getiValue("cycle") );
+
+        // Control percentage is in the parsers iValue!
+        // Assume the VSTRUCT RelayMask is set, otherwise use default relay 0
+        if(useVersacomTypeFourControl)
+        {
+            parse.Map()["control_interval"]  = CtiParseValue( 60 * 30 * 8 );    // Assume a bit here!
+
+            primeVStruct(aVst);  // Get a new one in the system
+            VersacomCycleCommand(parse.getiValue("cycle"));
+        }
+        else
+        {
+            INT period     = parse.getiValue("cycle_period");
+            INT repeat     = parse.getiValue("cycle_count");
+            INT delay      = parse.getiValue("cycle_delay");
+
+            // If not specified, uses the last sent data.  Acts as a modification.
+            relay  = (relay  == INT_MIN) ? 0  : relay ;     // If zero it means all of them!
+            period = (period == INT_MIN) ? 30 : period;     // If not specified, it will continue the command in progress, modifying the other parameters
+            repeat = (repeat == INT_MIN) ? 8  : repeat;     // If not specified, it will continue the command in progress, modifying the other parameters
+            delay  = (delay  == INT_MIN) ? 0  : delay ;     // If not specified, it will continue the command in progress, modifying the other parameters
+
+            parse.Map()["control_interval"]  = CtiParseValue( 60 * period * repeat );
+
+            if(relay != 0)
+            {
+                for( i = 0; i < 7; i++ )
+                {
+                    if( relay & (0x01 << i) )
+                    {
+                        primeVStruct(aVst);  // Get a new one in the system
+                        VersacomCycleCommandEx(parse.getiValue("cycle"), (i+1), period, repeat, delay);
+                    }
+                }
+            }
+            else
+            {
+                relay = aVst.RelayMask;         // Someone set this up at a higher level of context.
+
+                for( i = 0; i < 7; i++ )
+                {
+                    if( relay & (0x01 << i) )
+                    {
+                        primeVStruct(aVst);  // Get a new one in the system
+                        VersacomCycleCommandEx(parse.getiValue("cycle"), (i+1), period, repeat, delay);
+                    }
+                }
+            }
+        }
+    }
+    else if(CtlReq == CMD_FLAG_CTL_RESTORE)
+    {
+        primeVStruct(aVst);  // Get a new one in the system
+        VersacomRestoreCommand();
+    }
+    else if(CtlReq == CMD_FLAG_CTL_TERMINATE)
+    {
+        primeVStruct(aVst);  // Get a new one in the system
+        VersacomTerminateCommand();
+    }
+    else if(CtlReq == CMD_FLAG_CTL_OPEN)
+    {
+        parse.Map()["control_reduction"] = CtiParseValue( 100 );
+
+        primeVStruct(aVst);  // Get a new one in the system
+        VersacomCapacitorControlCommand(TRUE);
+    }
+    else if(CtlReq == CMD_FLAG_CTL_CLOSE)
+    {
+        primeVStruct(aVst);  // Get a new one in the system
+        VersacomCapacitorControlCommand(FALSE);
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Unsupported command on versacom route Command = " << parse.getCommand() << endl;
+    }
+
+    return status;
+}
+
+INT CtiProtocolVersacom::assemblePutStatus(CtiCommandParser  &parse, const VSTRUCT &aVst)
+{
+    INT   i, iNum;
+    INT   status = NORMAL;
+    BOOL  firstOneDone = FALSE;
+    BYTE  config[6];
+
+
+    LONG sn  = parse.getiValue("serial");
+    LONG uid = parse.getiValue("utility");
+    LONG aux = parse.getiValue("aux");
+    LONG sec = parse.getiValue("section");
+    LONG cls = parse.getiValue("class");
+    LONG div = parse.getiValue("division");
+
+    // Use these ONLY for the addressing!
+    uid = (uid == INT_MIN ? 0 : uid);
+    aux = (aux == INT_MIN ? 0 : aux);
+    sec = (sec == INT_MIN ? 0 : sec);
+    cls = (cls == INT_MIN ? 0 : cls);
+    div = (div == INT_MIN ? 0 : div);
+
+
+    /*
+     *  This bit indicates how we are getting there..  If the serial number was specified, we
+     *  will assume that any other addressing is to be set in the device!  Otherwise,
+     *  we assume that the device is being group configured
+     */
+    if( sn == INT_MIN )
+    {
+        sn = 0;
+    }
+
+    primeVStruct(aVst);  // Get a new one in the system
+    VersacomAddress(sn, uid, sec, cls, div);
+
+    /*
+     * This should be the original with only the addressing copied into it,
+     * we will use this for all others...
+     */
+    VSTRUCT     VStTemplate = getVStruct(_last);
+
+    if((iNum = parse.getiValue("proptest")) != INT_MIN)
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+        VersacomPropagationCommand(iNum & 0x07);
+        firstOneDone = TRUE;
+    }
+
+    if((iNum = parse.getiValue("ovuv")) != INT_MIN)
+    {
+        if(firstOneDone)
+        {
+            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        }
+        VersacomVoltageControlCommand((BOOL)iNum);
+        firstOneDone = TRUE;
+    }
+
+    if(!firstOneDone)
+    {
+        // Oh my, this one failed.... we should get rid of the 'prime' VSTRUCT since it was never
+        // modified
+        _vst.clearAndDestroy();
+    }
+
+    return status;
+}
+
+INT    CtiProtocolVersacom::VersacomConfigColdLoadCommand(INT relay, INT seconds)
+{
+    USHORT   halfs = seconds * 2;
+
+    if(halfs > 0xFE00)
+    {
+        halfs = 0xFE00;
+    }
+
+    _vst[_last]->CommandType           = VCONFIG;
+    _vst[_last]->VConfig.ConfigType    = (USHORT)(VCT_ColdLoadPickupR1 + relay - 1);
+    _vst[_last]->VConfig.Data[0]       = HIBYTE(halfs);
+    _vst[_last]->VConfig.Data[1]       = LOBYTE(halfs);
+    _vst[_last]->VConfig.Data[2]       = (BYTE)0x00;
+    _vst[_last]->VConfig.Data[3]       = (BYTE)0x00;
+    _vst[_last]->VConfig.Data[4]       = (BYTE)0x00;
+
+    /* OK this is all set-up for the builder to manhandle now! */
+    return updateVersacomMessage();
+}
+
+INT    CtiProtocolVersacom::VersacomConfigScramTimeCommand(INT relay, INT seconds)
+{
+    USHORT   halfs = seconds * 2;
+
+    if(halfs > 0xFE00)
+    {
+        halfs = 0xFE00;
+    }
+
+    _vst[_last]->CommandType           = VCONFIG;
+    _vst[_last]->VConfig.ConfigType    = (USHORT)(VCT_ScramTimeR1 + relay - 1);
+    _vst[_last]->VConfig.Data[0]       = HIBYTE(halfs);
+    _vst[_last]->VConfig.Data[1]       = LOBYTE(halfs);
+    _vst[_last]->VConfig.Data[2]       = (BYTE)0x00;
+    _vst[_last]->VConfig.Data[3]       = (BYTE)0x00;
+    _vst[_last]->VConfig.Data[4]       = (BYTE)0x00;
+
+    /* OK this is all set-up for the builder to manhandle now! */
+    return updateVersacomMessage();
+}
+
+
+INT    CtiProtocolVersacom::VersacomConfigCycleRepeatsCommand(INT relay, USHORT repeats)
+{
+    if(repeats > 255)
+    {
+        repeats = 255;
+    }
+    _vst[_last]->CommandType           = VCONFIG;
+    _vst[_last]->VConfig.ConfigType    = (USHORT)(VCT_CycleRepeatsR1 + relay - 1);
+    _vst[_last]->VConfig.Data[0]       = (BYTE)repeats;
+    _vst[_last]->VConfig.Data[1]       = (BYTE)0x00;
+    _vst[_last]->VConfig.Data[2]       = (BYTE)0x00;
+    _vst[_last]->VConfig.Data[3]       = (BYTE)0x00;
+    _vst[_last]->VConfig.Data[4]       = (BYTE)0x00;
+
+    /* OK this is all set-up for the builder to manhandle now! */
+    return updateVersacomMessage();
+}
+
+bool CtiProtocolVersacom::isConfigOptimized() const
+{
+    return _configOptimized;
+}
+CtiProtocolVersacom& CtiProtocolVersacom::setConfigOptimized(const bool opt)
+{
+    _configOptimized = opt;
+    return *this;
+}
+

@@ -1,0 +1,670 @@
+/*---------------------------------------------------------------------------
+        Filename:  lmprogramdirectgear.cpp
+
+        Programmer:  Josh Wolberg
+        
+        Description:    Source file for CtiLMProgramDirectGear.
+                        CtiLMProgramDirectGear maintains the state and handles
+                        the persistence of direct program gears in Load
+                        Management.
+
+        Initial Date:  2/9/2001
+         
+        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
+---------------------------------------------------------------------------*/
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+
+#include "dbaccess.h"
+#include "lmprogramdirectgear.h"
+#include "lmid.h"
+#include "lmprogrambase.h"
+#include "pointdefs.h"
+#include "pointtypes.h"
+#include "logger.h"
+#include "loadmanager.h"
+
+extern BOOL _LM_DEBUG;
+
+RWDEFINE_COLLECTABLE( CtiLMProgramDirectGear, CTILMPROGRAMDIRECTGEAR_ID )
+
+/*---------------------------------------------------------------------------
+    Constructors
+---------------------------------------------------------------------------*/
+CtiLMProgramDirectGear::CtiLMProgramDirectGear()
+{   
+}
+
+CtiLMProgramDirectGear::CtiLMProgramDirectGear(RWDBReader& rdr)
+{
+    restore(rdr);   
+}
+
+CtiLMProgramDirectGear::CtiLMProgramDirectGear(const CtiLMProgramDirectGear& proggear)
+{
+    operator=(proggear);
+}
+
+/*---------------------------------------------------------------------------
+    Destructor
+---------------------------------------------------------------------------*/
+CtiLMProgramDirectGear::~CtiLMProgramDirectGear()
+{
+}
+
+/*---------------------------------------------------------------------------
+    getPAOId
+    
+    Returns the unique id of the gear
+---------------------------------------------------------------------------*/
+ULONG CtiLMProgramDirectGear::getPAOId() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _paoid;
+}
+
+/*---------------------------------------------------------------------------
+    getGearName
+
+    Returns the name of the gear
+---------------------------------------------------------------------------*/
+const RWCString& CtiLMProgramDirectGear::getGearName() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _gearname;
+}
+
+/*---------------------------------------------------------------------------
+    getGearNumber
+    
+    Returns the gear number of the gear
+---------------------------------------------------------------------------*/
+ULONG CtiLMProgramDirectGear::getGearNumber() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _gearnumber;
+}
+
+/*---------------------------------------------------------------------------
+    getControlMethod
+
+    Returns the control method of the gear
+---------------------------------------------------------------------------*/
+const RWCString& CtiLMProgramDirectGear::getControlMethod() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _controlmethod;
+}
+
+/*---------------------------------------------------------------------------
+    getMethodRate
+
+    Returns the send/refresh rate in seconds for rotation/refresh; also
+    percentage for cycling in the gear
+---------------------------------------------------------------------------*/
+ULONG CtiLMProgramDirectGear::getMethodRate() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _methodrate;
+}
+
+/*---------------------------------------------------------------------------
+    getMethodPeriod
+    
+    Returns the length of 1 period in seconds for cycling or shed-time length
+    for refresh/rotate in seconds for the gear
+---------------------------------------------------------------------------*/
+ULONG CtiLMProgramDirectGear::getMethodPeriod() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _methodperiod;
+}
+
+/*---------------------------------------------------------------------------
+    getMethodRateCount
+    
+    Returns the number of cycle counts for cycling (a zero value means
+    calculate the best number based on the total duration of shed); also
+    the number of groups to take in refresh/rotation methods for the gear
+---------------------------------------------------------------------------*/
+ULONG CtiLMProgramDirectGear::getMethodRateCount() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _methodratecount;
+}
+
+/*---------------------------------------------------------------------------
+    getCycleRefreshRate
+    
+    Returns the number of periods to wait in a cycle gear before we should
+    refresh the cycle command. 0 for non-cycle gears, 1 to the default count
+    for cycle gears.
+---------------------------------------------------------------------------*/
+ULONG CtiLMProgramDirectGear::getCycleRefreshRate() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _cyclerefreshrate;
+}
+
+/*---------------------------------------------------------------------------
+    getMethodStopType
+
+    Returns the method stop type of the gear
+---------------------------------------------------------------------------*/
+const RWCString& CtiLMProgramDirectGear::getMethodStopType() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _methodstoptype;
+}
+
+/*---------------------------------------------------------------------------
+    getChangeCondition
+
+    Returns the change condition of the gear
+---------------------------------------------------------------------------*/
+const RWCString& CtiLMProgramDirectGear::getChangeCondition() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _changecondition;
+}
+
+/*---------------------------------------------------------------------------
+    getChangeDuration
+    
+    Returns the change duration of the gear in seconds
+---------------------------------------------------------------------------*/
+ULONG CtiLMProgramDirectGear::getChangeDuration() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _changeduration;
+}
+
+/*---------------------------------------------------------------------------
+    getChangePriority
+    
+    Returns the change priority of the gear
+---------------------------------------------------------------------------*/
+ULONG CtiLMProgramDirectGear::getChangePriority() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _changepriority;
+}
+
+/*---------------------------------------------------------------------------
+    getChangeTriggerNumber
+    
+    Returns the trigger number that the gear will use to compare the trigger
+    offset value with.
+---------------------------------------------------------------------------*/
+ULONG CtiLMProgramDirectGear::getChangeTriggerNumber() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _changetriggernumber;
+}
+
+/*---------------------------------------------------------------------------
+    getChangeTriggerOffset
+    
+    Returns the change trigger offset of the gear
+---------------------------------------------------------------------------*/
+DOUBLE CtiLMProgramDirectGear::getChangeTriggerOffset() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _changetriggeroffset;
+}
+
+/*---------------------------------------------------------------------------
+    getPercentReduction
+    
+    Returns the percent reduction of the gear
+---------------------------------------------------------------------------*/
+ULONG CtiLMProgramDirectGear::getPercentReduction() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _percentreduction;
+}
+
+/*---------------------------------------------------------------------------
+    getGroupSelectionMethod
+
+    Returns the group selection method of the direct program
+---------------------------------------------------------------------------*/
+const RWCString& CtiLMProgramDirectGear::getGroupSelectionMethod() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _groupselectionmethod;
+}
+
+/*---------------------------------------------------------------------------
+    getMethodOptionType
+
+    Returns the method option type of the direct program
+---------------------------------------------------------------------------*/
+const RWCString& CtiLMProgramDirectGear::getMethodOptionType() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _methodoptiontype;
+}
+
+/*---------------------------------------------------------------------------
+    getMethodOptionMax
+    
+    Returns the method option max of the gear
+---------------------------------------------------------------------------*/
+ULONG CtiLMProgramDirectGear::getMethodOptionMax() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _methodoptionmax;
+}
+
+/*---------------------------------------------------------------------------
+    setPAOId
+    
+    Sets the id of the control area - use with caution
+---------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setPAOId(ULONG paoid)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _paoid = paoid;
+    //do not notify observers of this !
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setGearName
+    
+    Sets the name of the gear
+---------------------------------------------------------------------------*/    
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGearName(const RWCString& name)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _gearname = name;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setGearNumber
+    
+    Sets the number of the gear
+---------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGearNumber(ULONG gearnum)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _gearnumber = gearnum;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setControlMethod
+    
+    Sets the control method of the gear
+---------------------------------------------------------------------------*/    
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setControlMethod(const RWCString& contmeth)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _controlmethod = contmeth;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setMethodRate
+    
+    Sets the send/refresh rate in seconds for rotation/refresh; also
+    percentage for cycling in the gear
+---------------------------------------------------------------------------*/    
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodRate(ULONG methrate)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _methodrate = methrate;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setMethodPeriod
+    
+    Sets the length of 1 period in seconds for cycling or shed-time length
+    for refresh/rotate in seconds for the gear
+---------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodPeriod(ULONG methper)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _methodperiod = methper;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setMethodRateCount
+    
+    Sets the number of cycle counts for cycling (a zero value means
+    calculate the best number based on the total duration of shed); also
+    the number of groups to take in refresh/rotation methods for the gear
+---------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodRateCount(ULONG methratecount)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _methodratecount = methratecount;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setCycleRefeshRate
+    
+    Sets the number of periods to wait in a cycle gear before we should
+    refresh the cycle command. 0 for non-cycle gears, 1 to the default count
+    for cycle gears.
+---------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setCycleRefreshRate(ULONG cyclerefresh)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _cyclerefreshrate = cyclerefresh;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setMethodStopType
+    
+    Sets the method stop type of the gear
+---------------------------------------------------------------------------*/    
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodStopType(const RWCString& methstoptype)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _methodstoptype = methstoptype;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setChangeCondition
+    
+    Sets the change condition of the gear
+---------------------------------------------------------------------------*/    
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeCondition(const RWCString& changecond)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _changecondition = changecond;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setChangeDuration
+    
+    Sets the change duration of the gear in seconds
+---------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeDuration(ULONG changedur)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _changeduration = changedur;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setChangePriority
+    
+    Sets the change priority of the gear
+---------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangePriority(ULONG changeprior)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _changepriority = changeprior;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setChangeTriggerNumber
+    
+    Sets the trigger number that the gear will use to compare the trigger
+    offset value with.
+---------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeTriggerNumber(ULONG triggernumber)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _changetriggernumber = triggernumber;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setChangeTriggerOffset
+    
+    Sets the change offset of the gear
+---------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeTriggerOffset(DOUBLE triggeroffset)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _changetriggeroffset = triggeroffset;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setPercentReduction
+    
+    Sets the reduction percentage of the gear
+---------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setPercentReduction(ULONG percentreduce)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _percentreduction = percentreduce;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setGroupSelectionMethod
+    
+    Sets the group selection method of the direct program
+---------------------------------------------------------------------------*/    
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGroupSelectionMethod(const RWCString& group)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _groupselectionmethod = group;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setMethodOptionType
+    
+    Sets the method option type of the direct program
+---------------------------------------------------------------------------*/    
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodOptionType(const RWCString& optype)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _methodoptiontype = optype;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setMethodOptionMax
+    
+    Sets the method option max of the gear
+---------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodOptionMax(ULONG opmax)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _methodoptionmax = opmax;
+    return *this;
+}
+
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+    
+    Restore self's state from the given stream
+--------------------------------------------------------------------------*/
+void CtiLMProgramDirectGear::restoreGuts(RWvistream& istrm)
+{
+
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
+    RWCollectable::restoreGuts( istrm );
+
+    istrm >> _paoid
+          >> _gearname
+          >> _gearnumber
+          >> _controlmethod
+          >> _methodrate
+          >> _methodperiod
+          >> _methodratecount
+          >> _cyclerefreshrate
+          >> _methodstoptype
+          >> _changecondition
+          >> _changeduration
+          >> _changepriority
+          >> _changetriggernumber
+          >> _changetriggeroffset
+          >> _percentreduction
+          >> _groupselectionmethod
+          >> _methodoptiontype
+          >> _methodoptionmax;
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+    
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiLMProgramDirectGear::saveGuts(RWvostream& ostrm ) const  
+{
+
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+        
+    RWCollectable::saveGuts( ostrm );
+
+    ostrm << _paoid
+          << _gearname
+          << _gearnumber
+          << _controlmethod
+          << _methodrate
+          << _methodperiod
+          << _methodratecount
+          << _cyclerefreshrate
+          << _methodstoptype
+          << _changecondition
+          << _changeduration
+          << _changepriority
+          << _changetriggernumber
+          << _changetriggeroffset
+          << _percentreduction
+          << _groupselectionmethod
+          << _methodoptiontype
+          << _methodoptionmax;
+
+    return;
+}
+
+/*---------------------------------------------------------------------------
+    operator=
+---------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::operator=(const CtiLMProgramDirectGear& right)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
+    if( this != &right )
+    {
+        _paoid = right._paoid;
+        _gearname = right._gearname;
+        _gearnumber = right._gearnumber;
+        _controlmethod = right._controlmethod;
+        _methodrate = right._methodrate;
+        _methodperiod = right._methodperiod;
+        _methodratecount = right._methodratecount;
+        _cyclerefreshrate = right._cyclerefreshrate;
+        _methodstoptype = right._methodstoptype;
+        _changecondition = right._changecondition;
+        _changeduration = right._changeduration;
+        _changepriority = right._changepriority;
+        _changetriggernumber = right._changetriggernumber;
+        _changetriggeroffset = right._changetriggeroffset;
+        _percentreduction = right._percentreduction;
+        _groupselectionmethod = right._groupselectionmethod;
+        _methodoptiontype = right._methodoptiontype;
+        _methodoptionmax = right._methodoptionmax;
+    }
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    operator==
+---------------------------------------------------------------------------*/
+int CtiLMProgramDirectGear::operator==(const CtiLMProgramDirectGear& right) const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    return getPAOId() == right.getPAOId();
+}
+
+/*---------------------------------------------------------------------------
+    operator!=
+---------------------------------------------------------------------------*/
+int CtiLMProgramDirectGear::operator!=(const CtiLMProgramDirectGear& right) const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    return getPAOId() != right.getPAOId();
+}
+
+/*---------------------------------------------------------------------------
+    replicate
+    
+    Restores self's operation fields
+---------------------------------------------------------------------------*/
+CtiLMProgramDirectGear* CtiLMProgramDirectGear::replicate() const
+{
+    return (new CtiLMProgramDirectGear(*this));
+}
+
+/*---------------------------------------------------------------------------
+    restore
+    
+    Restores given a RWDBReader
+---------------------------------------------------------------------------*/
+void CtiLMProgramDirectGear::restore(RWDBReader& rdr)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
+    rdr["deviceid"] >> _paoid;//will be paobjectid
+    rdr["gearname"] >> _gearname;
+    rdr["gearnumber"] >> _gearnumber;
+    rdr["controlmethod"] >> _controlmethod;
+    rdr["methodrate"] >> _methodrate;
+    rdr["methodperiod"] >> _methodperiod;
+    rdr["methodratecount"] >> _methodratecount;
+    rdr["cyclerefreshrate"] >> _cyclerefreshrate;
+    rdr["methodstoptype"] >> _methodstoptype;
+    rdr["changecondition"] >> _changecondition;
+    rdr["changeduration"] >> _changeduration;
+    rdr["changepriority"] >> _changepriority;
+    rdr["changetriggernumber"] >> _changetriggernumber;
+    rdr["changetriggeroffset"] >> _changetriggeroffset;
+    rdr["percentreduction"] >> _percentreduction;
+    rdr["groupselectionmethod"] >> _groupselectionmethod;
+    rdr["methodoptiontype"] >> _methodoptiontype;
+    rdr["methodoptionmax"] >> _methodoptionmax;
+}
+
+// Static Members
+
+//Possible control methods
+const RWCString CtiLMProgramDirectGear::TimeRefreshMethod = "TimeRefresh";
+const RWCString CtiLMProgramDirectGear::SmartCycleMethod = "SmartCycle";
+const RWCString CtiLMProgramDirectGear::MasterCycleMethod = "MasterCycle";
+const RWCString CtiLMProgramDirectGear::RotationMethod = "Rotation";
+const RWCString CtiLMProgramDirectGear::LatchingMethod = "Latching";
+
+//Possible method stop types
+const RWCString CtiLMProgramDirectGear::RestoreStopType = "Restore";
+const RWCString CtiLMProgramDirectGear::TimeInStopType = "TimeIn";
+const RWCString CtiLMProgramDirectGear::StopCycleStopType = "StopCycle";
+
+//Possible gear change condition types
+const RWCString CtiLMProgramDirectGear::NoneChangeCondition = "None";
+const RWCString CtiLMProgramDirectGear::DurationChangeCondition = "Duration";
+const RWCString CtiLMProgramDirectGear::PriorityChangeCondition = "Priority";
+const RWCString CtiLMProgramDirectGear::TriggerOffsetChangeCondition = "TriggerOffset";
+
+// Possible group selection methods
+const RWCString CtiLMProgramDirectGear::LastControlledSelectionMethod = "LastControlled";
+const RWCString CtiLMProgramDirectGear::AlwaysFirstGroupSelectionMethod = "AlwaysFirstGroup";
+const RWCString CtiLMProgramDirectGear::LeastControlTimeSelectionMethod = "LeastControlTime";
+
+// Possible method option types
+const RWCString CtiLMProgramDirectGear::FixedCountMethodOptionType = "FixedCount";
+const RWCString CtiLMProgramDirectGear::CountDownMethodOptionType = "CountDown";
+const RWCString CtiLMProgramDirectGear::LimitedCountDownMethodOptionType = "LimitedCountDown";
+

@@ -1,0 +1,84 @@
+/*-----------------------------------------------------------------------------
+    Filename:  loadmanager.h
+    
+    Programmer:  Josh Wolberg
+    
+    Description:    Header file for CtiLoadManager
+                    Once started CtiLoadManager is reponsible
+                    for determining if and when to run the
+                    programs provided in the CtiLMControlAreaStore.
+                        
+    Initial Date:  2/6/2001
+    
+    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
+-----------------------------------------------------------------------------*/
+
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+ 
+#ifndef CTILOADMANAGER_H
+#define CTILOADMANAGER_H
+
+#include <rw/thr/thrfunc.h>
+#include <rw/thr/runfunc.h>
+#include <rw/thr/srvpool.h>
+#include <rw/thr/thrutil.h>
+#include <rw/thr/countptr.h> 
+#include <rw/collect.h>
+
+#include "dbaccess.h"
+#include "connection.h"
+#include "message.h"
+#include "msg_multi.h"
+#include "msg_cmd.h"
+#include "msg_reg.h"
+#include "msg_pdata.h"
+#include "msg_ptreg.h"
+#include "pointtypes.h"
+#include "configparms.h"
+#include "loadmanager.h"
+#include "lmcontrolareastore.h"
+#include "executor.h"
+#include "ctibase.h"
+#include "logger.h"
+#include "yukon.h"
+#include "ctdpcptrq.h"
+                       
+class CtiLMControlArea;
+class CtiLMExecutor;
+
+class CtiLoadManager
+{
+public:
+    
+    static CtiLoadManager* getInstance();
+
+    void start();
+    void stop();
+
+    void sendMessageToDispatch(CtiMessage* message);
+    
+private:
+    
+    CtiLoadManager();
+    virtual ~CtiLoadManager();
+
+    void controlLoop();
+
+    CtiConnection* getPILConnection();
+    CtiConnection* getDispatchConnection();
+    void checkDispatch();
+    void checkPIL();
+    void registerForPoints(CtiLMControlAreaStore* store);
+    void parseMessage( RWCollectable *message );
+    void pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, RWTime& timestamp );
+    void porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString );
+    void signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional );
+
+    static CtiLoadManager* _instance;
+    RWThread _loadManagerThread;
+
+    CtiConnection* _pilConnection;
+    CtiConnection* _dispatchConnection;
+    mutable RWRecursiveLock<RWMutexLock> _mutex;
+};
+#endif

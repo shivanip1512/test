@@ -1,0 +1,89 @@
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+/*-----------------------------------------------------------------------------*
+*
+* File:   con_mgr
+*
+* Date:   7/18/2001
+*
+* PVCS KEYWORDS:
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/con_mgr.cpp-arc  $
+* REVISION     :  $Revision: 1.1.1.1 $
+* DATE         :  $Date: 2002/04/12 13:59:47 $
+*
+* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
+*-----------------------------------------------------------------------------*/
+
+
+#include <windows.h>
+#include <iostream>
+using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+
+#include <rw/toolpro/neterr.h>
+
+#include "dlldefs.h"
+#include "collectable.h"
+#include "con_mgr.h"
+
+
+CtiConnectionManager::CtiConnectionManager( const INT &Port, const RWCString &HostMachine, InQ_t *inQ) :
+   ClientName("DEFAULT"),
+   ClientAppId(0),
+   ClientUnique(FALSE),
+   ClientQuestionable(FALSE),
+   ClientRegistered(FALSE),
+   _clientExpirationDelay(180),
+   CtiConnection(Port, HostMachine, inQ)
+{
+   // cout << "**** Connection Manager!!! *****" << endl;
+}
+
+CtiConnectionManager::CtiConnectionManager(CtiExchange *xchg, InQ_t *inQ) :
+   ClientName("DEFAULT"),
+   ClientAppId(0),
+   ClientUnique(FALSE),
+   ClientQuestionable(FALSE),
+   ClientRegistered(FALSE),
+   _clientExpirationDelay(180),
+   CtiConnection(xchg, inQ)
+{}
+
+CtiConnectionManager::~CtiConnectionManager()
+{
+   // We better just do the normal stuff one at a time... Make sure this is virtual
+   // so base destructor gets called in all cases.
+
+   // Inherited::ShutdownConnection(); // Handled in the base class...
+}
+
+RWThreadId  CtiConnectionManager::getClientAppId() const              { return ClientAppId; }
+RWThreadId  CtiConnectionManager::setClientAppId(RWThreadId id)       { return ClientAppId = id; }
+
+RWCString   CtiConnectionManager::getClientName() const               { return ClientName; }
+void        CtiConnectionManager::setClientName(RWCString str)
+{
+   ClientName = str;
+   Inherited::setName( str );
+}
+
+RWBoolean   CtiConnectionManager::getClientUnique() const             { return RWBoolean(ClientUnique);  }
+void        CtiConnectionManager::setClientUnique(RWBoolean b) { ClientUnique = RWBoolean(b);     }
+
+RWBoolean   CtiConnectionManager::getClientQuestionable() const             { return RWBoolean(ClientQuestionable);  }
+void        CtiConnectionManager::setClientQuestionable(RWBoolean b) { ClientQuestionable = RWBoolean(b);     }
+
+RWBoolean   CtiConnectionManager::getClientRegistered()               { return RWBoolean(ClientRegistered);}
+void        CtiConnectionManager::setClientRegistered(RWBoolean b) { ClientRegistered = RWBoolean(b); }
+
+int   CtiConnectionManager::getClientExpirationDelay() const    {return _clientExpirationDelay; }
+void  CtiConnectionManager::setClientExpirationDelay(int p)     {_clientExpirationDelay = p; }
+
+RWBoolean CtiConnectionManager::operator==(const CtiConnectionManager& aRef) const
+{
+   return (this == &aRef);
+}
+
+unsigned CtiConnectionManager::hash(const CtiConnectionManager& aRef)
+{
+   return (unsigned)&aRef;            // The address of the Object?
+}
+

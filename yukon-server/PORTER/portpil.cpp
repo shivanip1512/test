@@ -1,0 +1,108 @@
+#pragma warning (disable : 4786)
+
+/*-----------------------------------------------------------------------------*
+*
+* File:   portpil
+*
+* Date:   7/17/2001
+*
+* PVCS KEYWORDS:
+* ARCHIVE      :  $Archive$
+* REVISION     :  $Revision: 1.1.1.1 $
+* DATE         :  $Date: 2002/04/12 13:59:43 $
+*
+* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
+*-----------------------------------------------------------------------------*/
+
+#pragma title ( "PIL Server Routines" )
+#pragma subtitle ( "CTI Copyright (c) 1999-2000" )
+/*---------------------------------------------------------------------
+    Copyright (c) 1999-2000 Cannon Technologies, Inc. All rights reserved.
+
+    Programmer:
+        Corey G. Plender
+
+    FileName:
+        PORTPIL.C
+
+    Purpose:
+        To Accept request from other process's to Remotes and Devices
+
+    The following procedures are contained in this module:
+
+
+    Initial Date:
+        Unknown
+
+    Revision History:
+         12-16-99    Stolen from portpipe.cpp                     CGP
+
+   -------------------------------------------------------------------- */
+#include <windows.h>
+#include <iostream>
+using namespace std;
+
+#include "mgr_device.h"
+#include "mgr_route.h"
+#include "pilserver.h"
+#include "dlldefs.h"
+#include "dllyukon.h"
+#include "dllbase.h"
+#include "portglob.h"
+
+#include "logger.h"
+#include "guard.h"
+
+// Some Global Manager types to allow us some RTDB stuff.
+extern CtiDeviceManager   DeviceManager;
+extern CtiRouteManager    RouteManager;
+
+
+VOID PorterInterfaceThread (VOID *Arg)
+{
+
+
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " PorterInterfaceThread started as TID  " << CurrentTID() << endl;
+   }
+
+   try
+   {
+      CtiPILServer PIL(&DeviceManager, &RouteManager, PILMaxQueueSize);
+
+      PIL.execute();
+
+      for(;;)
+      {
+         try
+         {
+            rwServiceCancellation();
+            rwSleep(1000);
+         }
+         catch(RWCancellation &c)
+         {
+            PIL.shutdown();
+
+            if(PIL.join(5000) == RW_THR_TIMEOUT) // Wait until I am shutdown as a whole....
+            {
+               CtiLockGuard<CtiLogger> doubt_guard(dout);
+               dout << "PIL Threads failed to shutdown! " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+         }
+      }
+
+      return;
+   }
+   catch(const RWxmsg& x)
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << "PorterInterfaceThread Exception: " << x.why() << endl;
+   }
+
+   return;
+}
+
+

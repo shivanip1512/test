@@ -1,0 +1,320 @@
+
+#pragma warning( disable : 4786)
+
+/*-----------------------------------------------------------------------------*
+*
+* File:   dev_dlcbase
+*
+* Date:   1/29/2001
+*
+* Author: Corey G. Plender
+*
+* PVCS KEYWORDS:
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
+* REVISION     :  $Revision: 1.1.1.1 $
+* DATE         :  $Date: 2002/04/12 13:59:45 $
+*
+* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
+*-----------------------------------------------------------------------------*/
+
+#include "devicetypes.h"
+#include "dev_dlcbase.h"
+#include "dsm2.h"
+
+CtiDeviceDLCBase::CtiDeviceDLCBase()   {}
+
+CtiDeviceDLCBase::CtiDeviceDLCBase(const CtiDeviceDLCBase& aRef)
+{
+    *this = aRef;
+}
+
+CtiDeviceDLCBase::~CtiDeviceDLCBase() {}
+
+CtiDeviceDLCBase& CtiDeviceDLCBase::operator=(const CtiDeviceDLCBase& aRef)
+{
+    int i;
+
+    if(this != &aRef)
+    {
+        Inherited::operator=(aRef);
+
+        LockGuard guard(monitor());
+
+        DeviceRoutes = aRef.getDeviceRoute();
+    }
+    return *this;
+}
+
+CtiTableDeviceRoute  CtiDeviceDLCBase::getDeviceRoute() const
+{
+    return DeviceRoutes;
+}
+CtiTableDeviceRoute& CtiDeviceDLCBase::getDeviceRoute()
+{
+    LockGuard guard(monitor());
+    return DeviceRoutes;
+}
+
+CtiDeviceDLCBase& CtiDeviceDLCBase::setDeviceRoute(const CtiTableDeviceRoute& aRoute)
+{
+    LockGuard guard(monitor());
+    DeviceRoutes = aRoute;
+    return *this;
+}
+
+CtiTableDeviceCarrier  CtiDeviceDLCBase::getCarrierSettings() const
+{
+    return CarrierSettings;
+}
+
+CtiTableDeviceCarrier& CtiDeviceDLCBase::getCarrierSettings()
+{
+    LockGuard guard(monitor());
+    return CarrierSettings;
+}
+
+CtiDeviceDLCBase& CtiDeviceDLCBase::setCarrierSettings( const CtiTableDeviceCarrier & aCarrierSettings )
+{
+    LockGuard guard(monitor());
+    CarrierSettings = aCarrierSettings;
+    return *this;
+}
+
+
+void CtiDeviceDLCBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+{
+    Inherited::getSQL(db, keyTable, selector);
+    CtiTableDeviceCarrier::getSQL(db, keyTable, selector);
+}
+
+
+void CtiDeviceDLCBase::DecodeDatabaseReader(RWDBReader &rdr)
+{
+    INT iTemp;
+    RWDBNullIndicator isNull;
+
+    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
+
+    if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+    LockGuard guard(monitor());
+    CarrierSettings.DecodeDatabaseReader(rdr);
+}
+
+void CtiDeviceDLCBase::DecodeRoutesDatabaseReader(RWDBReader &rdr)
+{
+    INT iTemp;
+
+    if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    DeviceRoutes.DecodeDatabaseReader(rdr);
+}
+
+LONG CtiDeviceDLCBase::getAddress() const   { return CarrierSettings.getAddress();}
+LONG CtiDeviceDLCBase::getRouteID() const   { return DeviceRoutes.getRouteID();}            // From CtiTableDeviceRoute
+
+
+INT CtiDeviceDLCBase::retMsgHandler( RWCString commandStr, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList )
+{
+    CtiReturnMsg *tmpVGRetMsg;
+    RWOrdered subMsgs;
+    CtiCommandParser parse(commandStr);
+    int retVal;
+
+    //  this function replaced the following commented block of code everywhere it's called:
+    //    (except the MCT31x;  it had some special error-handling code.  the replaced code
+    //     is still there, commented out)
+
+    /*      if(ReturnMsg != NULL)
+      {
+         if(!(ReturnMsg->ResultString().isNull()) || ReturnMsg->getData().entries() > 0)
+         {
+            retList.append( ReturnMsg );
+         }
+         else
+         {
+            delete ReturnMsg;
+         }
+      }
+     */
+
+    retVal = FALSE;
+
+    if( retMsg != NULL)
+    {
+        if(!(retMsg->ResultString().isNull()) || retMsg->getData().entries() > 0)
+        {
+            //  if it's an update command
+            if( parse.isKeyValid("flag") &&
+                (parse.getFlags( ) & CMD_FLAG_UPDATE) )
+            {
+                //  make a copy for VanGogh
+                tmpVGRetMsg = (CtiReturnMsg *)retMsg->replicateMessage( );
+
+                subMsgs = tmpVGRetMsg->getData( );
+
+                //  iterate through the points in the retMsg and set the pointdatas to "MUST ARCHIVE"
+                for( int i = 0; i < subMsgs.entries( ); i++ )
+                {
+                    if( (subMsgs[i])->isA( ) == MSG_POINTDATA )
+                        ((CtiPointDataMsg *)(subMsgs[i]))->setTags( TAG_POINT_MUST_ARCHIVE );
+                }
+
+                vgList.append( tmpVGRetMsg );
+            }
+
+            retList.append( retMsg );
+
+            retVal = TRUE;
+        }
+        else
+        {
+            delete retMsg;
+        }
+    }
+
+    return retVal;
+}
+
+
+
+INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< CtiMessage > &retList)
+{
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    INT ErrReturn = InMessage->EventCode & 0x3fff,
+        sendMsg   = TRUE;
+
+    CtiCommandMsg *pMsg;
+    CtiReturnMsg  *retMsg;
+
+    if(!(ErrReturn))
+    {
+        /* verify we heard back from the correct device (only if we heard it)
+
+            Note:  The returned address from the device is only the lower 13 bits,
+                   which means we would not have to mask of the Dst address, but for some
+                   reason when the reading is queued into the CCU711 we get the whole address
+                   returned.  So by comparing only 13 bit for both it will not break in
+                   either case.
+         */
+
+
+        if((getAddress() & 0x1fff) != (InMessage->Buffer.DSt.Address & 0x1fff) &&
+           (InMessage->Buffer.DSt.Length))  //  make sure it's not just an ACK
+        {
+            /* Address did not match so it's a com error */
+            ErrReturn = WRONGADDRESS;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Wrong Address:  " << getName() << " " << InMessage->Buffer.DSt.Address << endl;
+                dout << " MCT Address " << getAddress() << " != " << InMessage->Buffer.DSt.Address << endl;
+            }
+        }
+    }
+
+    /*
+     * update performace stats for device and route
+     */
+
+    /* check for communication failure */
+    if(ErrReturn)
+    {
+        retMsg = new CtiReturnMsg(getID(),
+                                  RWCString(InMessage->Return.CommandStr),
+                                  RWCString(),
+                                  InMessage->EventCode & 0x7fff,
+                                  InMessage->Return.RouteID,
+                                  InMessage->Return.MacroOffset,
+                                  InMessage->Return.Attempt,
+                                  InMessage->Return.TrxID,
+                                  InMessage->Return.UserID);
+
+        /*
+         *  ACH: Log the communication failure on this route.
+         */
+
+        //  send a Device Failed/Point Failed message to dispatch, if applicable
+        pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+        if( pMsg != NULL )
+        {
+            switch( InMessage->Sequence )
+            {
+                case CtiProtocolEmetcon::Scan_General:
+                    pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
+                    pMsg->insert(OP_DEVICEID);      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+                    pMsg->insert(getID());    // The id (device or point which failed)
+                    pMsg->insert(ScanRateGeneral);  // defined in yukon.h
+
+                    if(InMessage->EventCode != 0)
+                        pMsg->insert(InMessage->EventCode);
+                    else
+                        pMsg->insert(GeneralScanAborted);
+
+                    break;
+
+                case CtiProtocolEmetcon::Scan_Accum:
+                    pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
+                    pMsg->insert(OP_DEVICEID);      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+                    pMsg->insert(getID());    // The id (device or point which failed)
+                    pMsg->insert(ScanRateAccum);
+
+                    if(InMessage->EventCode != 0)
+                        pMsg->insert(InMessage->EventCode);
+                    else
+                        pMsg->insert(GeneralScanAborted);
+
+                    break;
+
+                case CtiProtocolEmetcon::Scan_Integrity:
+                    pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
+                    pMsg->insert(OP_DEVICEID);      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+                    pMsg->insert(getID());    // The id (device or point which failed)
+                    pMsg->insert(ScanRateIntegrity);
+
+                    if(InMessage->EventCode != 0)
+                        pMsg->insert(InMessage->EventCode);
+                    else
+                        pMsg->insert(GeneralScanAborted);
+
+                    break;
+
+                default:
+                    delete pMsg;
+                    pMsg = NULL;
+                    break;
+            }
+        }
+
+        if( retMsg != NULL )
+        {
+            RWCString resultString;
+
+            if(pMsg != NULL)
+                retMsg->insert(pMsg);
+
+            resultString = getName() + " / operation failed";
+
+            retMsg->setResultString(resultString);
+
+            retList.append(retMsg);
+        }
+        else
+        {
+            if(pMsg != NULL)
+            {
+                delete pMsg;
+            }
+        }
+
+        /*
+         *  ACH: Find the next route and resubmit request to porter
+         *   if no more routes exist, plug the value points!
+         */
+    }
+
+    return ErrReturn;
+}
+
+
+
+

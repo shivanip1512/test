@@ -1,0 +1,702 @@
+#include <windows.h>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+#include <stdio.h>
+#include <string.h>
+
+#include <io.h>
+#include <sys/stat.h>
+
+#include <rw\re.h>
+#include <rw/rwfile.h>
+#include <rw/cstring.h>
+
+static RWCString gCompileBase;
+static INT gMajorRevision = -1;
+static INT gMinorRevision = -1;
+static bool gDoCheckouts = false;
+
+class CtiPVCS
+{
+public:
+
+   RWCString filename;
+   RWCString rev;
+   RWCString date;
+
+   CtiPVCS() :
+      rev("Unknown"),
+      date("Unknown")
+   {}
+
+   CtiPVCS(const CtiPVCS& aRef) :
+      rev("Unknown"),
+      date("Unknown")
+   {
+      *this = aRef;
+   }
+   virtual ~CtiPVCS() {}
+
+   CtiPVCS& operator=(const CtiPVCS& aRef)
+   {
+      if(this != &aRef)
+      {
+         filename = aRef.filename;
+         rev      = aRef.rev;
+         date     = aRef.date;
+      }
+      return *this;
+   }
+
+};
+
+class CtiDirBuild
+{
+public:
+
+   RWCString _dir;
+   RWCString _project;
+
+   UINT _majorRevision;
+   UINT _minorRevision;
+   UINT _buildNumber;
+
+   CtiDirBuild() :
+      _dir("Unknown"),
+      _project("Unknown"),
+      _majorRevision(0),
+      _minorRevision(0),
+      _buildNumber(0)
+   {}
+
+   CtiDirBuild(const CtiDirBuild& aRef)  :
+      _dir("Unknown"),
+      _project("Unknown"),
+      _majorRevision(0),
+      _minorRevision(0),
+      _buildNumber(0)
+   {
+      *this = aRef;
+   }
+   virtual ~CtiDirBuild() {}
+
+   CtiDirBuild& operator=(const CtiDirBuild& aRef)
+   {
+      if(this != &aRef)
+      {
+         _dir = aRef._dir;
+         _project = aRef._project;
+         _majorRevision = aRef._majorRevision;
+         _minorRevision = aRef._minorRevision;
+         _buildNumber = aRef._buildNumber;
+      }
+      return *this;
+   }
+
+};
+
+ostream& operator<<(ostream &os, const CtiDirBuild &db)
+{
+   os << "Directory " << db._dir << "\n" <<
+      "Project   " << db._project << "\n" <<
+      "Major     " << db._majorRevision << "\n" <<
+      "Minor     " << db._minorRevision << "\n" <<
+      "Build     " << db._buildNumber;
+
+   return os;
+}
+
+typedef vector< CtiPVCS > CTIFILEVECTOR;
+typedef vector< CtiDirBuild > CTIDIRVECTOR;
+
+
+#define MAJORINCREMENT 0x00000008
+#define MINORINCREMENT 0x00000004
+
+void ProcessCID(CtiDirBuild &db, RWCString &cidfile);
+void ProcessFile(CTIFILEVECTOR &vect, RWCString &filename);
+void ProcessDirectory( CTIFILEVECTOR &vect, const RWCString &path);
+void GenerateVInfo(CtiDirBuild db, CTIFILEVECTOR &vect);
+
+
+void ProcessDirectory(CTIFILEVECTOR &vect, const RWCString &path)
+{
+   WIN32_FIND_DATA wfd;
+   HANDLE fHandle;
+
+   RWCString findthis = path;
+   RWCString newdir;
+   RWCString filename;
+
+   findthis += "\\*";
+
+   fHandle = FindFirstFile( findthis, &wfd );
+
+   if( fHandle != INVALID_HANDLE_VALUE )
+   {
+      do
+      {
+         filename = wfd.cFileName;
+
+
+         // Sleep(1000);
+
+         if(filename[filename.length() - 1] != '.' && wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+         {
+            // cout << "Processing directory " << filename << endl;
+            ProcessDirectory(vect, RWCString(path + "\\" + filename));
+         }
+         else if( !(filename.match("\\.h")).isNull() )
+         {
+            //cout << "Found header file named " << filename << endl;
+            ProcessFile(vect, path + "\\" + filename);
+         }
+         else if( !(filename.match("\\.cpp")).isNull() )
+         {
+            //cout << "Found cpp file named " << filename << endl;
+            ProcessFile(vect, path + "\\" + filename);
+         }
+      } while(FindNextFile(fHandle, &wfd));
+   }
+
+   return;
+}
+
+void ProcessFile(CTIFILEVECTOR &vect, RWCString &filename)
+{
+
+   FILE *fp;
+
+   CtiPVCS   finfo;
+
+   char temp[128];
+
+   RWCString tstr;
+
+   filename.toLower();
+
+
+   if( !filename.match("id.h").isNull() ||            // Any file with id.h in it.
+       !filename.match("version.cpp").isNull() ||
+       !filename.match("version.h").isNull() ||
+       !filename.match("vinfo.h").isNull() )
+   {
+      // Do not include these files in the output..
+      return;
+   }
+   else
+   {
+      finfo.filename = filename;
+      finfo.rev = "Unknown";
+      finfo.date = "Unknown";
+
+      fp = fopen(filename.data(), "rt");
+
+      if(fp != NULL)
+      {
+         int linecnt = 0;
+         while( fgets(temp, 127, fp)  && linecnt++ < 50)
+         {
+            temp[ strlen(temp) - 1 ] = '\0';
+
+            RWCString str(temp);
+
+            if(!str.match("Revision").isNull())
+            {
+               if( !(tstr = str.match("\\$Revision: 1.1.1.1 $")).isNull() )
+               {
+                  finfo.rev = tstr.strip(RWCString::both, '$');
+                  //cout << filename << " : " << finfo.rev << endl;
+               }
+            }
+
+            if(!str.match("Date").isNull())
+            {
+               if( !(tstr = str.match("\\$Date: 2002/04/12 13:59:49 $")).isNull() )
+               {
+                  tstr = tstr.strip(RWCString::both, '$');
+                  tstr.replace("Date:","");
+                  tstr = tstr.strip(RWCString::both);
+                  finfo.date = tstr;
+                  //cout << filename << " : " << finfo.date << endl;
+               }
+            }
+         }
+
+         fclose(fp);
+
+         vect.push_back(finfo);
+      }
+      else
+      {
+         cout << "**** Checkpoint **** " << filename << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      }
+   }
+
+
+}
+
+void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
+{
+
+   bool bWritable = false;
+
+   FILE *fp;
+
+   CtiDirBuild   &dinfo = db;
+
+   char oldnum[10];
+   char newnum[10];
+
+   char temp[128];
+   char dir[128];
+   char file[128];
+   char *ptr = NULL;
+   vector< RWCString > fileStrings;
+
+   cidfile.toLower();
+
+   RWCString tstr = cidfile.match("([_a-z0-9.]+h)$");
+
+   // cout << tstr << endl;
+
+   if(tstr.length() == 0)
+   {
+      tstr = ".\\";
+      cout << tstr << endl;
+   }
+
+   if(!GetFullPathName(cidfile, 128, dir, &ptr))
+   {
+      cout << "It failed" << endl;
+   }
+   else
+   {
+      strcpy(file, ptr);
+      *ptr = '\0';
+   }
+
+   dinfo._dir = cidfile;
+   dinfo._dir = dinfo._dir.replace(tstr, "");
+
+   fp = fopen(cidfile.data(), "rt");
+
+   if(fp != NULL)
+   {
+      while( fgets(temp, 127, fp) )
+      {
+         temp[ strlen(temp) - 1 ] = '\0';
+
+         RWCString str(temp);
+         RWCString origstr(temp);
+         str.toLower();
+
+         if(!str.match("project").isNull())
+         {
+            // store it off for the write.
+            fileStrings.push_back(origstr);
+
+            str.replace("#define","");
+            str.replace("project","");
+            str.strip (RWCString::both);
+
+            dinfo._project = str;
+            // cout << "Project " << dinfo._project << endl;
+         }
+         else if(!str.match("majorrevision").isNull())
+         {
+            if( !(tstr = str.match("[0-9]+")).isNull() )
+            {
+               dinfo._majorRevision = atoi(tstr.data());
+            }
+
+            if(gMajorRevision > 0 && dinfo._majorRevision != gMajorRevision)
+            {
+               // We need to generate a new buildnumber define!
+               sprintf(oldnum, "%d", dinfo._majorRevision);
+
+               dinfo._majorRevision = gMajorRevision;
+               sprintf(newnum, "%d", dinfo._majorRevision);
+
+               origstr.replace(oldnum,newnum);
+            }
+            else
+            {
+               gMajorRevision = -1;
+            }
+
+            //cout << "MajorRevision " << dinfo._majorRevision << endl;
+
+            // store it off for the write.
+            fileStrings.push_back(origstr);
+
+         }
+         else if(!str.match("minorrevision").isNull())
+         {
+            if( !(tstr = str.match("[0-9]+")).isNull() )
+            {
+               dinfo._minorRevision = atoi(tstr.data());
+            }
+
+            if(gMinorRevision >= 0 && dinfo._minorRevision != gMinorRevision)
+            {
+               // We need to generate a new buildnumber define!
+               sprintf(oldnum, "%d", dinfo._minorRevision);
+
+               dinfo._minorRevision = gMinorRevision;
+               sprintf(newnum, "%d", dinfo._minorRevision);
+
+               origstr.replace(oldnum,newnum);
+            }
+            else
+            {
+               gMinorRevision = -1;
+            }
+
+            //cout << "MinorRevision " << dinfo._minorRevision << endl;
+
+            // store it off for the write.
+            fileStrings.push_back(origstr);
+         } else if(!str.match("buildnumber").isNull())
+         {
+            if( !(tstr = str.match("[0-9]+")).isNull() )
+            {
+               dinfo._buildNumber = atoi(tstr.data()) + 1;
+            }
+
+            if(gMinorRevision >= 0 || gMajorRevision >= 0)   // Need to reset this then.
+            {
+               // We need to generate a new buildnumber define!
+               sprintf(oldnum, "%d", dinfo._buildNumber - 1);
+
+               dinfo._buildNumber = 0;
+               sprintf(newnum, "%d", dinfo._buildNumber);
+            }
+            else
+            {
+               // We need to generate a new buildnumber define!
+               sprintf(oldnum, "%d", dinfo._buildNumber - 1);
+               sprintf(newnum, "%d", dinfo._buildNumber);
+            }
+
+            origstr.replace(oldnum,newnum);
+
+            //cout << "BuildNumber " << dinfo._buildNumber << endl;
+
+            // store it off for the write.
+            fileStrings.push_back(origstr);
+         }
+         else
+         {
+            // just store it off for the write.
+            fileStrings.push_back(origstr);
+         }
+
+      }
+
+      fclose(fp);
+
+
+      // cout << dinfo << endl;
+
+
+      if( !access(cidfile, 2) )
+      {
+         bWritable = true;
+      }
+      else
+      {
+         if(gDoCheckouts)
+         {
+            DWORD stat = STILL_ACTIVE;
+            STARTUPINFO si;
+            PROCESS_INFORMATION pi;
+
+            memset(&si, 0, sizeof(STARTUPINFO));
+            si.cb = sizeof(STARTUPINFO);
+            si.lpReserved = NULL;
+            si.lpDesktop = NULL;
+
+
+            sprintf(temp, "get -y -l %s", file);
+            CreateProcess(NULL, temp, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, dir, &si, &pi);
+
+
+            while(stat == STILL_ACTIVE)
+            {
+               Sleep(1000);
+               GetExitCodeProcess(pi.hProcess, &stat);
+            }
+
+            cout << "CID file " << cidfile << " has been checked out" << endl;
+         }
+         else
+         {
+            // Now prepare to re-write the file!
+            // Make sure we can access it.
+            chmod(cidfile, _S_IREAD | _S_IWRITE);
+         }
+      }
+
+
+      fp = fopen(cidfile.data(), "w");
+
+      if(fp != NULL)
+      {
+         vector< RWCString >::iterator fit;
+
+         for(fit = fileStrings.begin(); fit != fileStrings.end(); fit++)
+         {
+            RWCString str = *fit;
+            // cout << str << endl;
+            fprintf(fp, "%s\n", str.data());
+         }
+         fclose(fp);
+
+         fileStrings.clear();
+
+         if(!bWritable)
+         {
+            if(gDoCheckouts)
+            {
+               DWORD stat = STILL_ACTIVE;
+               STARTUPINFO si;
+               PROCESS_INFORMATION pi;
+
+               memset(&si, 0, sizeof(STARTUPINFO));
+               si.cb = sizeof(STARTUPINFO);
+               si.lpReserved = NULL;
+               si.lpDesktop = NULL;
+
+
+               sprintf(temp, "put -y -M\"Revision Number Update\" %s", file);
+               CreateProcess(NULL, temp, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, dir, &si, &pi);
+
+
+               while(stat == STILL_ACTIVE)
+               {
+                  Sleep(1000);
+                  GetExitCodeProcess(pi.hProcess, &stat);
+               }
+
+               cout << "CID file " << cidfile << " has been checked back in" << endl;
+            }
+            else
+            {
+               // Make sure we cannot access it.
+               chmod(cidfile, _S_IREAD);
+            }
+         }
+      }
+      else
+      {
+         cout << "Could not open " << cidfile << " for writing" << endl;
+      }
+   }
+   else
+   {
+      cout << " Couldn't open CID file" << endl;
+   }
+}
+
+void GenerateVInfo(CtiDirBuild db, CTIFILEVECTOR &vect)
+{
+   char temp[128];
+   char dir[128];
+   char file[128];
+   char *ptr = NULL;
+   bool bWritable = false;
+   FILE *fp;
+
+   RWCString vinfo(db._dir);
+
+   vinfo = vinfo + "\\id_vinfo.h";
+
+   if(!GetFullPathName(vinfo, 128, dir, &ptr))
+   {
+      cout << "It failed" << endl;
+   }
+   else
+   {
+      strcpy(file, ptr);
+      *ptr = '\0';
+   }
+
+
+   // Now prepare to generate the id_vinfo.h file
+   if( !access(vinfo, 2) )
+   {
+      bWritable = true;
+   }
+   else
+   {
+      if(gDoCheckouts)
+      {
+         DWORD stat = STILL_ACTIVE;
+         STARTUPINFO si;
+         PROCESS_INFORMATION pi;
+
+         memset(&si, 0, sizeof(STARTUPINFO));
+         si.cb = sizeof(STARTUPINFO);
+         si.lpReserved = NULL;
+         si.lpDesktop = NULL;
+
+
+         sprintf(temp, "get -y -l %s", file);
+         CreateProcess(NULL, temp, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, dir, &si, &pi);
+
+
+         while(stat == STILL_ACTIVE)
+         {
+            Sleep(1000);
+            GetExitCodeProcess(pi.hProcess, &stat);
+         }
+
+         cout << "VINFO file " << vinfo << " has been checked out" << endl;
+      }
+      else
+      {
+         // Make sure we can access it.
+         chmod(vinfo, _S_IREAD | _S_IWRITE);
+      }
+   }
+
+   fp = fopen(vinfo.data(), "w");
+
+   if(fp != NULL)
+   {
+
+      fprintf(fp, \
+              "static struct {\n" \
+              "   char *fname;\n" \
+              "   double rev;\n" \
+              "   char *date;\n} VersionInfo[] = {\n");
+
+
+      CTIFILEVECTOR::iterator it;
+
+      for(it = vect.begin(); it != vect.end(); it++)
+      {
+         CtiPVCS pS = *it;
+
+         RWCString tstr = pS.rev.match("[0-9.]+");
+         double revision = 0;
+
+         if(!tstr.isNull())
+         {
+            revision = atof(tstr.data());
+         }
+
+         pS.filename = pS.filename.replace(gCompileBase, "");
+         pS.filename = pS.filename.replace("\\\\", "\\\\", RWCString::all);
+
+         fprintf(fp, "{ \"%s\", %f, \"%s\" },\n", pS.filename, revision, pS.date);
+      }
+
+      fprintf(fp, "{ NULL, 0.0, NULL },\n");
+      fprintf(fp, "};\n");
+      fclose(fp);
+
+      if(!bWritable)
+      {
+         if(gDoCheckouts)
+         {
+            DWORD stat = STILL_ACTIVE;
+            STARTUPINFO si;
+            PROCESS_INFORMATION pi;
+
+            memset(&si, 0, sizeof(STARTUPINFO));
+            si.cb = sizeof(STARTUPINFO);
+            si.lpReserved = NULL;
+            si.lpDesktop = NULL;
+
+
+            sprintf(temp, "put -y -M\"Revision Number Update\" %s", file);
+            CreateProcess(NULL, temp, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, dir, &si, &pi);
+
+
+            while(stat == STILL_ACTIVE)
+            {
+               Sleep(1000);
+               GetExitCodeProcess(pi.hProcess, &stat);
+            }
+
+            cout << "VINFO file " << vinfo << " has been checked back in" << endl;
+         }
+         else
+         {
+            // Make sure we cannot access it.
+            chmod(vinfo, _S_IREAD);
+         }
+      }
+   }
+   else
+   {
+      cout << "Could not open " << vinfo << " for writing" << endl;
+   }
+
+}
+
+int main(int argc, char **argv)
+{
+   INT i;
+   INT flag = 0;
+   CTIFILEVECTOR vect;
+
+   if(argc < 2)
+   {
+      cout << "What cid header file please?" << endl;
+      return -1;
+   }
+
+   char temp[128];
+   RWCString path(".");
+
+   if(GetEnvironmentVariable("YUKON_MAJOR_REVISION", temp, 128) > 0)
+   {
+      gMajorRevision = atoi(temp);
+      gDoCheckouts = true;
+
+      //cout << "Major Revision " << gMajorRevision << endl;
+   }
+
+   if(GetEnvironmentVariable("YUKON_MINOR_REVISION", temp, 128) > 0)
+   {
+      gDoCheckouts = true;
+      gMinorRevision = atoi(temp);
+      //cout << "Minor Revision " << gMinorRevision << endl;
+   }
+
+   if(GetEnvironmentVariable("COMPILEBASE", temp, 128) > 0)
+   {
+      gCompileBase = temp;
+      path = temp;
+      gCompileBase.toLower();
+
+      if(gCompileBase[gCompileBase.length()-1] != '\\')
+      {
+         gCompileBase = gCompileBase + "\\";
+      }
+
+      gCompileBase = gCompileBase.replace("\\\\", "\\\\", RWCString::all);
+   }
+
+   // First find out if it has a CID.H file in it!
+
+   CtiDirBuild db;
+
+   RWCString cidname(argv[1]);
+
+   ProcessCID(db, cidname);
+
+   ProcessDirectory(vect, path);
+
+   GenerateVInfo(db, vect);
+
+   vect.clear();
+
+   return(0);
+}
+
