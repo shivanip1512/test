@@ -21,6 +21,7 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 	public static final int STATUS_NOTIFIED = 4;  //notified
 	public static final int STATUS_FULL_ACTIVE = 5;
 	public static final int STATUS_STOPPING = 6;
+	public static final int STATUS_CNTRL_ATTEMPT = 7;	
 	public static final int STATUS_NON_CNTRL = 8;
 	
 	private Integer yukonID = null;
