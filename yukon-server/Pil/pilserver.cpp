@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2003/05/15 22:34:23 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2003/05/22 20:30:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -609,7 +609,7 @@ void CtiPILServer::resultThread()
 
             if( retList.entries() > 0 )
             {
-                if(vgList.entries())
+                if((DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD) && vgList.entries())
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
