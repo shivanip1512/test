@@ -403,8 +403,6 @@ public class SOAPClient extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("ReenableProgram") || action.equalsIgnoreCase("CancelScheduledOptOut")) {
 			clientAction = new ProgramReenableAction();
-			if (action.equalsIgnoreCase("CancelScheduledOptOut"))
-				destURL = errorURL = referer;
 			
 			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
 			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
