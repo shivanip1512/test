@@ -71,14 +71,15 @@ import javax.swing.JFrame;
 		 
 		 showSplashScreen();
 	
+		 // Close the splash window when the parent frame is opened
 		 if( f != null )
 			 f.addWindowListener( new WindowAdapter()
 		 	 {
-			 	 public void windowActivated(WindowEvent we )
-			 	 {
-				 	 setVisible(false);
-				 	 dispose();
-			 	 }
+				public void windowOpened(WindowEvent we )
+				{
+					setVisible(false);
+					dispose();
+				}
 			 });
 	}
 
