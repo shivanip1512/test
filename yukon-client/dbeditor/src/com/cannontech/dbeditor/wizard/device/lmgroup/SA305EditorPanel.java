@@ -1691,6 +1691,12 @@ public void setValue(Object o)
 		getJTextDivisionAddress().setText(threeOhFive.getLMGroupSA305().getDivisionAddress().toString());
 		getJTextFieldSubAddress().setText(threeOhFive.getLMGroupSA305().getSubstationAddress().toString());
 		getJTextFieldIndividualAddress().setText(threeOhFive.getLMGroupSA305().getIndividualAddress());
+		//make sure the panel correctly reflects the use of individual address instead of other addresses
+		String fucknut = threeOhFive.getLMGroupSA305().getIndividualAddress();
+		if(threeOhFive.getLMGroupSA305().getIndividualAddress().compareTo(" ") != 0)
+		{
+			this.getJCheckBoxSerial().doClick();
+		}
 		getJTextFieldRateFamily().setText(threeOhFive.getLMGroupSA305().getRateFamily().toString());
 		getJTextFieldRateMember().setText(threeOhFive.getLMGroupSA305().getRateMember().toString());
 		getJTextFieldRateHierarchy().setText(threeOhFive.getLMGroupSA305().getRateHierarchy().toString());
