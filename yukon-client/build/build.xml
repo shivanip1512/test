@@ -9,6 +9,7 @@
      <property name="third-party"   value="${yukon.base}/third-party" />
      <property name="common"        value="${yukon.base}/common" />
      <property name="billing"          value="${yukon.base}/billing" />
+     <property name="export"          value="${yukon.base}/export" />
      <property name="tdc"           value="${yukon.base}/tdc" />
      <property name="cbc"           value="${yukon.base}/cbc" />
      <property name="loadcontrol"   value="${yukon.base}/loadcontrol" />
@@ -61,6 +62,7 @@
         <ant dir="${third-party}" target="${dotarget}" />
         <ant dir="${common}" target="${dotarget}" />
         <ant dir="${billing}" target="${dotarget}" />
+        <ant dir="${export}" target="${dotarget}" />
         <ant dir="${tdc}" target="${dotarget}" /> 
         <ant dir="${cbc}" target="${dotarget}" />
         <ant dir="${loadcontrol}" target="${dotarget}" />
