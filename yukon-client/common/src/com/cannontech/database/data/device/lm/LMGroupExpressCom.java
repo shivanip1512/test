@@ -15,6 +15,10 @@ public class LMGroupExpressCom extends LMGroup implements IGroupRoute
 	private LMGroupExpressComAddress substationAddress = null;
 	private LMGroupExpressComAddress feederAddress = null;
 	private LMGroupExpressComAddress programAddress = null;
+	private LMGroupExpressComAddress zipCodeAddress = null;
+	private LMGroupExpressComAddress userAddress = null;
+	private LMGroupExpressComAddress splinterAddress = null;
+	
 /**
  * LMGroupVersacom constructor comment.
  */
@@ -54,6 +58,18 @@ public void add() throws java.sql.SQLException
 	getProgramAddress().add();
 	if( getLMGroupExpressComm().getProgramID() == null )
 		getLMGroupExpressComm().setProgramID( getProgramAddress().getAddressID() );
+		
+	getSplinterAddress().add();
+	if( getLMGroupExpressComm().getSplinterID() == null )
+		getLMGroupExpressComm().setSplinterID( getSplinterAddress().getAddressID() );
+		
+	getUserAddress().add();
+	if( getLMGroupExpressComm().getUserID() == null )
+		getLMGroupExpressComm().setUserID( getUserAddress().getAddressID() );
+		
+	getZipCodeAddress().add();
+	if( getLMGroupExpressComm().getZipID() == null )
+		getLMGroupExpressComm().setZipID( getZipCodeAddress().getAddressID() );
 
 	//add the real object
 	getLMGroupExpressComm().add();
@@ -75,6 +91,9 @@ public void addPartial() throws java.sql.SQLException
 	getFeederAddress().add();
 	getGeoAddress().add();
 	getProgramAddress().add();
+	getSplinterAddress().add();
+	getUserAddress().add();
+	getZipCodeAddress().add();
 
 }
 
@@ -140,6 +159,24 @@ private void deleteAddresses() throws java.sql.SQLException
 		getProgramAddress().delete();
 	}
 	
+	if( !com.cannontech.database.db.device.lm.LMGroupExpressCom.isAddressUsed(
+			getDbConnection(), getSplinterAddress().getAddressID().intValue()) )
+	{
+		getSplinterAddress().delete();
+	}
+	
+	if( !com.cannontech.database.db.device.lm.LMGroupExpressCom.isAddressUsed(
+			getDbConnection(), getUserAddress().getAddressID().intValue()) )
+	{
+		getUserAddress().delete();
+	}
+	
+	if( !com.cannontech.database.db.device.lm.LMGroupExpressCom.isAddressUsed(
+			getDbConnection(), getZipCodeAddress().getAddressID().intValue()) )
+	{
+		getZipCodeAddress().delete();
+	}
+	
 }
 /**
  * Insert the method's description here.
@@ -199,6 +236,42 @@ public com.cannontech.database.db.device.lm.LMGroupExpressComAddress getProgramA
 	}
 
 	return programAddress;
+}
+
+public com.cannontech.database.db.device.lm.LMGroupExpressComAddress getSplinterAddress() 
+{
+	if( splinterAddress == null )
+	{
+		splinterAddress = new LMGroupExpressComAddress( IlmDefines.TYPE_SPLINTER );
+
+		getSplinterAddress().setAddressID( getLMGroupExpressComm().getSplinterID() );
+	}
+
+	return splinterAddress;
+}
+
+public com.cannontech.database.db.device.lm.LMGroupExpressComAddress getUserAddress() 
+{
+	if( userAddress == null )
+	{
+		userAddress = new LMGroupExpressComAddress( IlmDefines.TYPE_USER );
+
+		getUserAddress().setAddressID( getLMGroupExpressComm().getUserID() );
+	}
+
+	return userAddress;
+}
+
+public com.cannontech.database.db.device.lm.LMGroupExpressComAddress getZipCodeAddress() 
+{
+	if( zipCodeAddress == null )
+	{
+		zipCodeAddress = new LMGroupExpressComAddress( IlmDefines.TYPE_ZIP );
+
+		getZipCodeAddress().setAddressID( getLMGroupExpressComm().getZipID() );
+	}
+
+	return zipCodeAddress;
 }
 /**
  * Insert the method's description here.
@@ -269,6 +342,24 @@ public void retrieve() throws java.sql.SQLException
 		getProgramAddress().setAddressID( getLMGroupExpressComm().getProgramID() );
 		getProgramAddress().retrieve();
 	}
+	
+	if( !getLMGroupExpressComm().getSplinterID().equals(IlmDefines.NONE_ADDRESS_ID) )
+	{
+		getSplinterAddress().setAddressID( getLMGroupExpressComm().getSplinterID() );
+		getSplinterAddress().retrieve();
+	}
+	
+	if( !getLMGroupExpressComm().getUserID().equals(IlmDefines.NONE_ADDRESS_ID) )
+	{
+		getUserAddress().setAddressID( getLMGroupExpressComm().getUserID() );
+		getUserAddress().retrieve();
+	}
+	
+	if( !getLMGroupExpressComm().getZipID().equals(IlmDefines.NONE_ADDRESS_ID) )
+	{
+		getZipCodeAddress().setAddressID( getLMGroupExpressComm().getZipID() );
+		getZipCodeAddress().retrieve();
+	}
 }
 /**
  * Insert the method's description here.
@@ -286,6 +377,10 @@ public void setDbConnection(java.sql.Connection conn)
 	getFeederAddress().setDbConnection(conn);
 	getGeoAddress().setDbConnection(conn);
 	getProgramAddress().setDbConnection(conn);
+	getSplinterAddress().setDbConnection(conn);
+	getUserAddress().setDbConnection(conn);
+	getZipCodeAddress().setDbConnection(conn);
+	
 }
 /**
  * This method was created in VisualAge.
@@ -371,6 +466,27 @@ public void setSubstationAddress(com.cannontech.database.db.device.lm.LMGroupExp
 
 	getLMGroupExpressComm().setSubstationID( getSubstationAddress().getAddressID() );
 }
+
+public void setSplinterAddress(com.cannontech.database.db.device.lm.LMGroupExpressComAddress newSplinterAddress) 
+{
+	splinterAddress = newSplinterAddress;
+
+	getLMGroupExpressComm().setSplinterID( getSplinterAddress().getAddressID() );
+}
+
+public void setUserAddress(com.cannontech.database.db.device.lm.LMGroupExpressComAddress newUserAddress) 
+{
+	userAddress = newUserAddress;
+
+	getLMGroupExpressComm().setUserID( getUserAddress().getAddressID() );
+}
+
+public void setZipCodeAddress(com.cannontech.database.db.device.lm.LMGroupExpressComAddress newZipCodeAddress) 
+{
+	zipCodeAddress = newZipCodeAddress;
+
+	getLMGroupExpressComm().setZipID( getZipCodeAddress().getAddressID() );
+}
 /**
  * update method comment.
  */
@@ -383,46 +499,57 @@ public void update() throws java.sql.SQLException
 		getServiceProviderAddress().add();
 	else
 		getServiceProviderAddress().update();
-
 	if( getLMGroupExpressComm().getServiceProviderID() == null )
 		getLMGroupExpressComm().setServiceProviderID( getServiceProviderAddress().getAddressID() );
-
 
 	if( getSubstationAddress().getAddressID() == null )
 		getSubstationAddress().add();
 	else
 		getSubstationAddress().update();
-
 	if( getLMGroupExpressComm().getSubstationID() == null )
 		getLMGroupExpressComm().setSubstationID( getSubstationAddress().getAddressID() );
-
 
 	if( getFeederAddress().getAddressID() == null )
 		getFeederAddress().add();
 	else
 		getFeederAddress().update();
-
 	if( getLMGroupExpressComm().getFeederID() == null )
 		getLMGroupExpressComm().setFeederID( getFeederAddress().getAddressID() );
-
 
 	if( getGeoAddress().getAddressID() == null )
 		getGeoAddress().add();
 	else
 		getGeoAddress().update();
-
 	if( getLMGroupExpressComm().getGeoID() == null )
 		getLMGroupExpressComm().setGeoID( getGeoAddress().getAddressID() );
-
 
 	if( getProgramAddress().getAddressID() == null )
 		getProgramAddress().add();
 	else
 		getProgramAddress().update();
-
 	if( getLMGroupExpressComm().getProgramID() == null )
 		getLMGroupExpressComm().setProgramID( getProgramAddress().getAddressID() );
 	
+	if( getSplinterAddress().getAddressID() == null )
+		getSplinterAddress().add();
+	else
+		getSplinterAddress().update();
+	if( getLMGroupExpressComm().getSplinterID() == null )
+		getLMGroupExpressComm().setSplinterID( getSplinterAddress().getAddressID() );
+	
+	if( getUserAddress().getAddressID() == null )
+		getUserAddress().add();
+	else
+		getUserAddress().update();	
+	if( getLMGroupExpressComm().getUserID() == null )
+		getLMGroupExpressComm().setUserID( getUserAddress().getAddressID() );
+	
+	if( getZipCodeAddress().getAddressID() == null )
+		getZipCodeAddress().add();
+	else
+		getZipCodeAddress().update();	
+	if( getLMGroupExpressComm().getZipID() == null )
+		getLMGroupExpressComm().setZipID( getZipCodeAddress().getAddressID() );
 
 	getLMGroupExpressComm().update();
 

@@ -12,18 +12,18 @@ public class LMGroupExpressCom extends com.cannontech.database.db.DBPersistent
 	private Integer geoID = IlmDefines.NONE_ADDRESS_ID;
 	private Integer substationID = IlmDefines.NONE_ADDRESS_ID;
 	private Integer feederID = IlmDefines.NONE_ADDRESS_ID;
-	private Integer zipCodeAddress = IlmDefines.NONE_ADDRESS_ID;
-	private Integer udAddress = IlmDefines.NONE_ADDRESS_ID;
+	private Integer zipID = IlmDefines.NONE_ADDRESS_ID;
+	private Integer userID = IlmDefines.NONE_ADDRESS_ID;
 	private Integer programID = IlmDefines.NONE_ADDRESS_ID;
-	private Integer splinterAddress = IlmDefines.NONE_ADDRESS_ID;
+	private Integer splinterID = IlmDefines.NONE_ADDRESS_ID;
 	private String addressUsage = " "; //default none
 	private String relayUsage = " "; //default none
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"RouteID", "SerialNumber", "ServiceProviderID", "GeoID",
-		"SubstationID", "FeederID", "ZipCodeAddress", "UDAddress",
-		"ProgramID", "SplinterAddress", "AddressUsage", "RelayUsage"
+		"SubstationID", "FeederID", "ZipID", "UserID",
+		"ProgramID", "SplinterID", "AddressUsage", "RelayUsage"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "LMGroupID" };
@@ -42,8 +42,8 @@ public void add() throws java.sql.SQLException
 {
 	Object addValues[] = { getLmGroupID(), getRouteID(), 
 		getSerialNumber(), getServiceProviderID(), getGeoID(),
-		getSubstationID(), getFeederID(), getZipCodeAddress(), 
-		getUdAddress(), getProgramID(), getSplinterAddress(),
+		getSubstationID(), getFeederID(), getZipID(), 
+		getUserID(), getProgramID(), getSplinterID(),
 		getAddressUsage(), getRelayUsage() };
 
 	add( TABLE_NAME, addValues );
@@ -129,8 +129,8 @@ public java.lang.Integer getServiceProviderID() {
  * Creation date: (5/30/2002 9:53:12 AM)
  * @return java.lang.Integer
  */
-public java.lang.Integer getSplinterAddress() {
-	return splinterAddress;
+public java.lang.Integer getSplinterID() {
+	return splinterID;
 }
 /**
  * Insert the method's description here.
@@ -145,16 +145,16 @@ public java.lang.Integer getSubstationID() {
  * Creation date: (5/30/2002 9:53:12 AM)
  * @return java.lang.Integer
  */
-public java.lang.Integer getUdAddress() {
-	return udAddress;
+public java.lang.Integer getUserID() {
+	return userID;
 }
 /**
  * Insert the method's description here.
  * Creation date: (5/30/2002 9:53:12 AM)
  * @return java.lang.Integer
  */
-public java.lang.Integer getZipCodeAddress() {
-	return zipCodeAddress;
+public java.lang.Integer getZipID() {
+	return zipID;
 }
 /**
  * This method was created in VisualAge.
@@ -180,7 +180,10 @@ public final static boolean isAddressUsed( java.sql.Connection conn, int addID )
 						" or GeoID = " + addID +
 						" or SubstationID = " + addID +
 						" or FeederID = " + addID +
-						" or ProgramID = " + addID );
+						" or ProgramID = " + addID +
+						" or UserID = " + addID +
+						" or SplinterID = " + addID +
+						" or ZipID = " + addID );
 
 			rset = pstmt.executeQuery();							
 
@@ -236,6 +239,9 @@ public final static void purgeUnusedAddresses( java.sql.Connection conn )
 							"and addressid not in (select SubstationID from LMGroupExpressCom)  " +
 							"and addressid not in (select FeederID from LMGroupExpressCom) " +
 							"and addressid not in (select ProgramID from LMGroupExpressCom) " +
+							"and addressid not in (select SplinterID from LMGroupExpressCom) " +
+							"and addressid not in (select UserID from LMGroupExpressCom) " +
+							"and addressid not in (select ZipID from LMGroupExpressCom) " +
 							"and addressid > " + IlmDefines.NONE_ADDRESS_ID );
 
 			pstmt.executeUpdate();
@@ -275,10 +281,10 @@ public void retrieve() throws java.sql.SQLException
 		setGeoID( (Integer) results[3] );
 		setSubstationID( (Integer) results[4] );
 		setFeederID( (Integer) results[5] );
-		setZipCodeAddress( (Integer) results[6] );
-		setUdAddress( (Integer) results[7] );
+		setZipID( (Integer) results[6] );
+		setUserID( (Integer) results[7] );
 		setProgramID( (Integer) results[8] );
-		setSplinterAddress( (Integer) results[9] );
+		setSplinterID( (Integer) results[9] );
 		setAddressUsage( (String) results[10] );
 		setRelayUsage( (String) results[11] );		
 	}
@@ -358,10 +364,10 @@ public void setServiceProviderID(java.lang.Integer newServiceProviderID) {
 /**
  * Insert the method's description here.
  * Creation date: (5/30/2002 9:53:12 AM)
- * @param newSplinterAddress java.lang.Integer
+ * @param newSplinterID java.lang.Integer
  */
-public void setSplinterAddress(java.lang.Integer newSplinterAddress) {
-	splinterAddress = newSplinterAddress;
+public void setSplinterID(java.lang.Integer newSplinterID) {
+	splinterID = newSplinterID;
 }
 /**
  * Insert the method's description here.
@@ -374,18 +380,18 @@ public void setSubstationID(java.lang.Integer newSubstationID) {
 /**
  * Insert the method's description here.
  * Creation date: (5/30/2002 9:53:12 AM)
- * @param newUdAddress java.lang.Integer
+ * @param newUserID java.lang.Integer
  */
-public void setUdAddress(java.lang.Integer newUdAddress) {
-	udAddress = newUdAddress;
+public void setUserID(java.lang.Integer newUserID) {
+	userID = newUserID;
 }
 /**
  * Insert the method's description here.
  * Creation date: (5/30/2002 9:53:12 AM)
- * @param newZipCodeAddress java.lang.Integer
+ * @param newZipID java.lang.Integer
  */
-public void setZipCodeAddress(java.lang.Integer newZipCodeAddress) {
-	zipCodeAddress = newZipCodeAddress;
+public void setZipID(java.lang.Integer newZipID) {
+	zipID = newZipID;
 }
 /**
  * update method comment.
@@ -394,8 +400,8 @@ public void update() throws java.sql.SQLException
 {
 	Object setValues[] = {  getRouteID(), 
 		getSerialNumber(), getServiceProviderID(), getGeoID(),
-		getSubstationID(), getFeederID(), getZipCodeAddress(), 
-		getUdAddress(), getProgramID(), getSplinterAddress(),
+		getSubstationID(), getFeederID(), getZipID(), 
+		getUserID(), getProgramID(), getSplinterID(),
 		getAddressUsage(), getRelayUsage() };
 
 	Object constraintValues[] = { getLmGroupID() };
