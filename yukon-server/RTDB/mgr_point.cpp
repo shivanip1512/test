@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:52:34 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/23 14:50:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -131,7 +131,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             selector.where( keyTable["pointtype"] == RWDBExpr("System") && selector.where());
 
             rdr = selector.reader(conn);
-            if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)
+            if(DebugLevel & 0x00010000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
             }
@@ -144,7 +144,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             /* Go after the status points! */
             CtiPointStatus().getSQL( db, keyTable, selector );
             rdr = selector.reader(conn);
-            if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)
+            if(DebugLevel & 0x00010000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
             }
@@ -157,7 +157,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             /* Go after the analog points! */
             CtiPointAnalog().getSQL( db, keyTable, selector );
             rdr = selector.reader(conn);
-            if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)
+            if(DebugLevel & 0x00010000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
             }
@@ -170,7 +170,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             /* Go after the accumulator points! */
             CtiPointAccumulator().getSQL( db, keyTable, selector );
             rdr = selector.reader(conn);
-            if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)
+            if(DebugLevel & 0x00010000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
             }
@@ -186,7 +186,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             selector.where( ( keyTable["pointtype"] == RWDBExpr("Calculated") ||
                               keyTable["pointtype"] == RWDBExpr("CalcAnalog")) && selector.where());
             rdr = selector.reader(conn);
-            if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)
+            if(DebugLevel & 0x00010000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
             }
@@ -200,7 +200,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             /* Go after the point limits! */
             CtiTablePointLimit().getSQL( db, keyTable, selector );
             rdr = selector.reader(conn);
-            if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)
+            if(DebugLevel & 0x00010000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
             }
@@ -277,7 +277,7 @@ void CtiPointManager::RefreshList(LONG paoID)
                 selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
                 rdr = selector.reader(conn);
-                if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)
+                if(DebugLevel & 0x00010000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
@@ -291,7 +291,7 @@ void CtiPointManager::RefreshList(LONG paoID)
                 CtiPointAnalog().getSQL( db, keyTable, selector );
                 selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where());
                 rdr = selector.reader(conn);
-                if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)
+                if(DebugLevel & 0x00010000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
@@ -305,7 +305,7 @@ void CtiPointManager::RefreshList(LONG paoID)
                 CtiPointAccumulator().getSQL( db, keyTable, selector );
                 selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where());
                 rdr = selector.reader(conn);
-                if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)
+                if(DebugLevel & 0x00010000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
@@ -314,24 +314,33 @@ void CtiPointManager::RefreshList(LONG paoID)
 
                 selector = conn.database().selector();    // Clear the selector.
 
-                Map.apply(ApplyInvalidateNotUpdated, NULL);
-
-                do
+                if(getErrorCode() != RWDBStatus::ok)
                 {
-                    pTemp = remove(isPointNotUpdated, NULL);
-                    if(pTemp != NULL)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  Evicting " << pTemp->getName() << " from list" << endl;
-                        }
-                        delete pTemp;
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " database had a return code of " << getErrorCode() << endl;
                     }
+                }
+                else
+                {
+                    Map.apply(ApplyInvalidateNotUpdated, NULL);
 
-                } while(pTemp != NULL);
+                    do
+                    {
+                        pTemp = remove(isPointNotUpdated, NULL);
+                        if(pTemp != NULL)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "  Evicting " << pTemp->getName() << " from list" << endl;
+                            }
+                            delete pTemp;
+                        }
 
-
+                    } while(pTemp != NULL);
+                }
             }   // Temporary results are destroyed to free the connection
         }
     }
@@ -780,7 +789,7 @@ void CtiPointManager::RefreshAlarming()
     CtiTablePointAlarming::getSQL( db, keyTable, selector );
     rdr = selector.reader( conn );
 
-    if(rdr.status().errorCode() != RWDBStatus::ok)
+    if(setErrorCode(rdr.status().errorCode()) != RWDBStatus::ok)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

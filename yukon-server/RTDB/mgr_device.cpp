@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:52:15 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/23 14:50:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -123,6 +123,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
             {
                 // Reset everyone's Updated flag.
                 Map.apply(ApplyDeviceResetUpdated, NULL);
+                resetErrorCode();
 
                 {
                     RWDBConnection conn = getConnection();
@@ -142,7 +143,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     selector.where( keyTable["type"] == "SIXNET" && selector.where() );
 
                     RWDBReader rdr = selector.reader(conn);
-                    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+                    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                     }
@@ -170,7 +171,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     CtiDeviceMeter().getSQL( db, keyTable, selector );
 
                     RWDBReader rdr = selector.reader(conn);
-                    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+                    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                     }
@@ -197,7 +198,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     CtiDeviceTapPagingTerminal().getSQL( db, keyTable, selector );
 
                     RWDBReader rdr = selector.reader(conn);
-                    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+                    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                     }
@@ -224,7 +225,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     CtiDeviceIDLC().getSQL( db, keyTable, selector );
 
                     RWDBReader rdr = selector.reader(conn);
-                    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+                    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                     }
@@ -251,7 +252,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     CtiDeviceCarrier().getSQL( db, keyTable, selector );
 
                     RWDBReader rdr = selector.reader(conn);
-                    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+                    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                     }
@@ -282,7 +283,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
 
 
                     RWDBReader rdr = selector.reader(conn);
-                    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+                    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                     }
@@ -308,7 +309,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     }
                     CtiDeviceCBC().getSQL( db, keyTable, selector );
                     RWDBReader rdr = selector.reader(conn);
-                    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+                    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                     }
@@ -335,7 +336,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     CtiDeviceGroupEmetcon().getSQL( db, keyTable, selector );
 
                     RWDBReader rdr = selector.reader(conn);
-                    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+                    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                     }
@@ -362,7 +363,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     CtiDeviceGroupVersacom().getSQL( db, keyTable, selector );
 
                     RWDBReader rdr = selector.reader(conn);
-                    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+                    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                     }
@@ -390,7 +391,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     CtiDeviceGroupRipple().getSQL( db, keyTable, selector );
 
                     RWDBReader rdr = selector.reader(conn);
-                    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+                    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                     }
@@ -417,7 +418,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     CtiDeviceMacro().getSQL( db, keyTable, selector );
 
                     RWDBReader rdr = selector.reader(conn);
-                    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+                    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                     }
@@ -452,7 +453,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     selector.orderBy(tblGenericMacro["ChildOrder"]);
 
                     rdr = selector.reader(conn);
-                    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+                    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                     }
@@ -499,7 +500,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     selector.where( keyTable["type"]==RWDBExpr("System") && selector.where() );   // Need to attach a few conditions!
 
                     RWDBReader rdr = selector.reader(conn);
-                    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+                    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                     }
@@ -511,27 +512,37 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     }
                 }
 
-                // Now I need to check for any Device removals based upon the
-                // Updated Flag being NOT set
-
-                Map.apply(ApplyInvalidateNotUpdated, NULL);
-
-                do
+                if(getErrorCode() != RWDBStatus::ok)
                 {
-                    pTempCtiDevice = remove(isDeviceNotUpdated, NULL);
-                    if(pTempCtiDevice != NULL)
                     {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " database had a return code of " << getErrorCode() << endl;
+                    }
+                }
+                else
+                {
+                    // Now I need to check for any Device removals based upon the
+                    // Updated Flag being NOT set
+
+                    Map.apply(ApplyInvalidateNotUpdated, NULL);
+
+                    do
+                    {
+                        pTempCtiDevice = remove(isDeviceNotUpdated, NULL);
+                        if(pTempCtiDevice != NULL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  Evicting " << pTempCtiDevice->getName() << " from list" << endl;
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "  Evicting " << pTempCtiDevice->getName() << " from list" << endl;
+                            }
+
+                            delete pTempCtiDevice;
                         }
 
-                        delete pTempCtiDevice;
-                    }
-
-                } while(pTempCtiDevice != NULL);
-
+                    } while(pTempCtiDevice != NULL);
+                }
             }
         }   // Temporary results are destroyed to free the connection
     }
@@ -600,7 +611,7 @@ void CtiDeviceManager::RefreshDevices(RWDBReader& rdr, CtiDeviceBase* (*Factory)
     LONG              lTemp = 0;
     CtiDeviceBase*    pTempCtiDevice = NULL;
 
-    while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
         rdr["deviceid"] >> lTemp;            // get the DeviceID
         CtiHashKey key(lTemp);
@@ -662,7 +673,7 @@ void CtiDeviceManager::RefreshScanRates()
     CtiTableDeviceScanRate::getSQL( db, keyTable, selector );
 
     RWDBReader rdr = selector.reader(conn);
-    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
     }
@@ -673,7 +684,7 @@ void CtiDeviceManager::RefreshScanRates()
         dout << RWTime() <<" Done looking for ScanRates" << endl;
     }
 
-    if(rdr.status().errorCode() == RWDBStatus::ok)
+    if(setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok)
     {
         for(;itr();)
         {
@@ -682,7 +693,7 @@ void CtiDeviceManager::RefreshScanRates()
         }
     }
 
-    while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
         CtiDeviceBase* pSp = NULL;
 
@@ -708,7 +719,7 @@ void CtiDeviceManager::RefreshScanRates()
         }
     }
 
-    if(rdr.status().errorCode() == RWDBStatus::ok || rdr.status().errorCode() == RWDBStatus::endOfFetch)
+    if(setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok || setErrorCode(rdr.status().errorCode()) == RWDBStatus::endOfFetch)
     {
         itr.reset(Map);
 
@@ -758,7 +769,7 @@ void CtiDeviceManager::RefreshDeviceWindows()
        dout << RWTime() << " Done looking for ScanWindows" << endl;
    }
 
-   while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+   while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
    {
       CtiDeviceBase* pSp = NULL;
 
@@ -809,7 +820,7 @@ void CtiDeviceManager::RefreshStatistics()
     CtiTableDeviceStatistics::getSQL( db, keyTable, selector );
 
     RWDBReader rdr = selector.reader(conn);
-    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
     }
@@ -865,12 +876,12 @@ void CtiDeviceManager::RefreshRoutes()
     CtiTableDeviceRoute::getSQL( db, keyTable, selector );
 
     RWDBReader rdr = selector.reader(conn);
-    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
     }
 
-    while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
         rdr["deviceid"] >> lTemp;            // get the DeviceID
         CtiHashKey key(lTemp);

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:52:35 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/23 14:50:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -137,7 +137,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &),
             if(DebugLevel & 0x00080000)  cout  << "Looking for Direct and ModemDirect Ports" << endl;
             CtiPortLocalModem().getSQL( db, keyTable, selector );
             RWDBReader  rdr = selector.reader( conn );
-            if(DebugLevel & 0x00080000 || selector.status().errorCode() != RWDBStatus::ok) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl; }
+            if(DebugLevel & 0x00080000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl; }
 
             RefreshEntries(rdr, Factory, testFunc, arg);
             if(DebugLevel & 0x00080000)  cout  << "Done looking for Direct and ModemDirect Ports" << endl;
@@ -155,30 +155,51 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &),
             if(DebugLevel & 0x00080000)  cout  << "Looking for TCPIP Ports" << endl;
             CtiPortTCPIPDirect().getSQL( db, keyTable, selector );
             RWDBReader  rdr = selector.reader( conn );
-            if(DebugLevel & 0x00080000 || selector.status().errorCode() != RWDBStatus::ok) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl; }
+            if(DebugLevel & 0x00080000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl; }
 
             RefreshEntries(rdr, Factory, testFunc, arg);
             if(DebugLevel & 0x00080000)  cout  << "Done looking for TCPIP Ports" << endl;
          }
 
-         // Now I need to check for any Port removals based upon the
-         // Updated Flag being NOT set
-         Map.apply(ApplyInvalidateNotUpdated, NULL);
-         do
+         if(getErrorCode() != RWDBStatus::ok)
          {
-            pTempPort = remove(isNotUpdated, NULL);
-            if(pTempPort != NULL)
-            {
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                  dout << "  Evicting " << pTempPort->getName() << " from list" << endl;
-               }
-               delete pTempPort;
-            }
+             {
+                 CtiLockGuard<CtiLogger> doubt_guard(dout);
+                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                 dout << " database had a return code of " << getErrorCode() << endl;
+             }
+         }
+         else
+         {
+             if(getErrorCode() != RWDBStatus::ok)
+             {
+                 {
+                     CtiLockGuard<CtiLogger> doubt_guard(dout);
+                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                     dout << " database had a return code of " << getErrorCode() << endl;
+                 }
+             }
+             else
+             {
+                 // Now I need to check for any Port removals based upon the
+                 // Updated Flag being NOT set
+                 Map.apply(ApplyInvalidateNotUpdated, NULL);
+                 do
+                 {
+                    pTempPort = remove(isNotUpdated, NULL);
+                    if(pTempPort != NULL)
+                    {
+                       {
+                          CtiLockGuard<CtiLogger> doubt_guard(dout);
+                          dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                          dout << "  Evicting " << pTempPort->getName() << " from list" << endl;
+                       }
+                       delete pTempPort;
+                    }
 
-         } while(pTempPort != NULL);
-
+                 } while(pTempPort != NULL);
+             }
+         }
       }   // Temporary results are destroyed to free the connection
    }
    catch(RWExternalErr e )
@@ -245,7 +266,7 @@ void CtiPortManager::RefreshEntries(RWDBReader& rdr, CtiPort* (*Factory)(RWDBRea
    LONG     lTemp = 0;
    CtiPort* pTempPort = NULL;
 
-   while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+   while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
    {
       rdr["paobjectid"] >> lTemp;            // get the RouteID
       CtiHashKey key(lTemp);

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:52:35 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/23 14:50:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -131,7 +131,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &),
             CtiRouteCCU().getSQL( db, keyTable, selector );
             selector.where( keyTable["category"] == RWDBExpr("ROUTE") && selector.where());
             RWDBReader  rdr = selector.reader(conn);
-            if(DebugLevel & 0x00040000 || selector.status().errorCode() != RWDBStatus::ok) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl; }
+            if(DebugLevel & 0x00040000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl; }
             RefreshRoutes(rdr, Factory, testFunc, arg);
             if(DebugLevel & 0x00040000)  { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for CCU, LCU, TCU, & CCURPT Routes" << endl; }
          }
@@ -149,7 +149,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &),
             if(DebugLevel & 0x00040000)  { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Versacom Routes" << endl; }
             CtiTableVersacomRoute::getSQL( db, keyTable, selector );
             RWDBReader  rdr = selector.reader(conn);
-            if(DebugLevel & 0x00040000 || selector.status().errorCode() != RWDBStatus::ok) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl; }
+            if(DebugLevel & 0x00040000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl; }
             RefreshVersacomRoutes(rdr, testFunc, arg);
             if(DebugLevel & 0x00040000)  { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Versacom Routes" << endl; }
          }
@@ -167,7 +167,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &),
             if(DebugLevel & 0x00040000)  { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Repeater Information" << endl; }
             CtiTableRepeaterRoute::getSQL( db, keyTable, selector );
             RWDBReader  rdr = selector.reader(conn);
-            if(DebugLevel & 0x00040000 || selector.status().errorCode() != RWDBStatus::ok) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl; }
+            if(DebugLevel & 0x00040000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl; }
             RefreshRepeaterRoutes(rdr, testFunc, arg);
             if(DebugLevel & 0x00040000)  { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Repeater Information" << endl; }
          }
@@ -184,15 +184,26 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &),
             if(DebugLevel & 0x00040000)  { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Macro Routes" << endl; }
             CtiTableMacroRoute::getSQL( db, keyTable, selector );
             RWDBReader  rdr = selector.reader(conn);
-            if(DebugLevel & 0x00040000 || selector.status().errorCode() != RWDBStatus::ok) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl; }
+            if(DebugLevel & 0x00040000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl; }
             RefreshMacroRoutes(rdr, testFunc, arg);
             if(DebugLevel & 0x00040000)  { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Macro Routes" << endl; }
          }
 
-         // Now I need to check for any Route removals based upon the
-         // Updated Flag being NOT set
+         if(getErrorCode() != RWDBStatus::ok)
+         {
+             {
+                 CtiLockGuard<CtiLogger> doubt_guard(dout);
+                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                 dout << " database had a return code of " << getErrorCode() << endl;
+             }
+         }
+         else
+         {
+             // Now I need to check for any Route removals based upon the
+             // Updated Flag being NOT set
 
-         Map.apply(ApplyInvalidateNotUpdated, NULL);
+             Map.apply(ApplyInvalidateNotUpdated, NULL);
+         }
 
       }   // Temporary results are destroyed to free the connection
    }
@@ -213,7 +224,7 @@ void CtiRouteManager::RefreshRoutes(RWDBReader& rdr, CtiRouteBase* (*Factory)(RW
    LONG              lTemp = 0;
    CtiRouteBase*    pTempCtiRoute = NULL;
 
-   while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+   while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
    {
       rdr["paobjectid"] >> lTemp;            // get the RouteID
       CtiHashKey key(lTemp);
@@ -256,7 +267,7 @@ void CtiRouteManager::RefreshRepeaterRoutes(RWDBReader& rdr, BOOL (*testFunc)(Ct
    LONG        lTemp = 0;
    CtiRouteBase*   pTempCtiRoute = NULL;
 
-   while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+   while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
    {
       CtiRouteBase* pSp = NULL;
 
@@ -286,7 +297,7 @@ void CtiRouteManager::RefreshMacroRoutes(RWDBReader& rdr, BOOL (*testFunc)(CtiRo
    LONG        lTemp = 0;
    CtiRouteBase*   pTempCtiRoute = NULL;
 
-   while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+   while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
    {
       CtiRouteBase* pSp = NULL;
 
@@ -315,7 +326,7 @@ void CtiRouteManager::RefreshVersacomRoutes(RWDBReader& rdr, BOOL (*testFunc)(Ct
    LONG        lTemp = 0;
    CtiRouteBase*   pTempCtiRoute = NULL;
 
-   while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+   while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
    {
       CtiRouteBase* pSp = NULL;
 

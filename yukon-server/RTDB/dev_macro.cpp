@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/17 14:52:50 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/23 14:50:20 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -166,7 +166,7 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
             if(newvglistsize > vglistsize)
             {
                 /*
-                 *  We claim all generated messages as having come from the device macro and not heir causal device object here.
+                 *  We claim all generated messages as having come from the device macro and not their causal device object here.
                  */
                 for(int i = newvglistsize; i > vglistsize; i-- )
                 {

@@ -57,6 +57,8 @@ protected:
    // This is a keyed Mapping which does not allow duplicates!
    RWTPtrHashMap<CtiHashKey, T, my_hash<CtiHashKey> , equal_to<CtiHashKey> > Map;
 
+   int _dberrorcode;
+
 public:
 
    typedef RWTPtrHashMap<CtiHashKey, T, my_hash<CtiHashKey> , equal_to<CtiHashKey> >::value_type   val_pair;
@@ -131,6 +133,19 @@ public:
 
    RWTPtrHashMap<CtiHashKey, T, my_hash<CtiHashKey> , equal_to<CtiHashKey> > & getMap()      { return Map; }
    RWRecursiveLock<RWMutexLock> &      getMux()       { return mutex(); }
+
+   int getErrorCode() const { return _dberrorcode; };
+   int setErrorCode(int ec)
+   {
+       if( ec ) _dberrorcode = ec;      // Only set it if there was an error (don't re-set it)
+       return ec;
+   }
+
+   void resetErrorCode()
+   {
+       _dberrorcode = 0;      // Only set it if there was an error (don't re-set it)
+   }
+
 
 };
 
