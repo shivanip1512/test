@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/sigsrctest.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/11/15 14:07:53 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/08/19 13:46:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,7 +91,7 @@ void main(int argc, char **argv)
    INT unack = atoi(argv[4]);
    int loops = atoi(argv[5]);
 
-   INT tag = unack ? (TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM) : (TAG_ACKNOWLEDGED_ALARM);
+   INT tag = unack ? (TAG_UNACKNOWLEDGED_ALARM | TAG_ACTIVE_ALARM) : (TAG_ACTIVE_ALARM);
 
 
    try
