@@ -1433,7 +1433,7 @@ public boolean processTransmitterFile()
 		device.getPAOExclusionVector().add(
 			PAOExclusion.createExclusTiming(
 				device.getPAObjectID(),
-				new Integer(300),
+				new Integer(5),
 				device.getSeries5RTU().getTransmitOffset(),
 				new Integer(60) ) );
 
@@ -1677,7 +1677,7 @@ public boolean processUnxRTCFile()
 		device.getPAOExclusionVector().add(
 			PAOExclusion.createExclusTiming(
 				rtcID,
-				new Integer(300),
+				new Integer(5),
 				pInt(line[8].trim()),
 				new Integer(60) ) );
 				
