@@ -18,7 +18,8 @@
      	</javac>
 
        <jar jarfile="${yukon.lib}/common.jar"
-            basedir="build/"/>            
+            basedir="build/"
+            manifest="resource/manifest.mf" />            
    </target>
 
    <target name="clean">
