@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2002/09/18 21:27:55 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2002/11/01 21:03:46 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,62 +64,57 @@ INT CtiDeviceMCT::getSSpec() const
     return 0;
 }
 
-int CtiDeviceMCT::sspecIsValid( int sspec )
+bool CtiDeviceMCT::sspecIsValid( int sspec )
 {
-    int valid = FALSE;
+    bool valid = false;
 
-    switch( getType() )
+    set< pair<int, int> > mct_sspec;
+    pair<int, int> reported;
+
+    mct_sspec.insert(make_pair(TYPEMCT210,     95));
+
+    mct_sspec.insert(make_pair(TYPEMCT213,     95));
+
+    mct_sspec.insert(make_pair(TYPEMCT212,     74));
+
+    mct_sspec.insert(make_pair(TYPEMCT224,     74));
+
+    mct_sspec.insert(make_pair(TYPEMCT226,     74));
+
+    mct_sspec.insert(make_pair(TYPEMCT240,     74));
+    mct_sspec.insert(make_pair(TYPEMCT240,    121));
+
+    mct_sspec.insert(make_pair(TYPEMCT242,    121));
+
+    mct_sspec.insert(make_pair(TYPEMCT248,    121));
+
+    mct_sspec.insert(make_pair(TYPEMCT250,    111));
+
+    mct_sspec.insert(make_pair(TYPEMCT310,    153));
+    mct_sspec.insert(make_pair(TYPEMCT310,   1007));  //  new Grand Unification sspec
+
+    mct_sspec.insert(make_pair(TYPEMCT310ID,  153));
+    mct_sspec.insert(make_pair(TYPEMCT310ID, 1007));  //  new Grand Unification sspec
+
+    mct_sspec.insert(make_pair(TYPEMCT310IL, 1007));
+
+    mct_sspec.insert(make_pair(TYPEMCT318L,  1007));
+
+    mct_sspec.insert(make_pair(TYPEMCT318,    218));
+    mct_sspec.insert(make_pair(TYPEMCT318,   1007));  //  new Grand Unification sspec
+
+    mct_sspec.insert(make_pair(TYPEMCT360,    218));
+    mct_sspec.insert(make_pair(TYPEMCT360,   1007));  //  new Grand Unification sspec
+
+    mct_sspec.insert(make_pair(TYPEMCT370,    218));
+    mct_sspec.insert(make_pair(TYPEMCT370,   1007));  //  new Grand Unification sspec
+
+
+    reported = make_pair(getType(), sspec);
+
+    if( mct_sspec.find(reported) != mct_sspec.end() )
     {
-        case TYPEMCT210:
-        case TYPEMCT213:
-            if( sspec == 95 )
-                valid = TRUE;
-            break;
-
-        case TYPEMCT212:
-        case TYPEMCT224:
-        case TYPEMCT226:
-            if( sspec == 74 )
-                valid = TRUE;
-            break;
-
-        case TYPEMCT240:
-            if( sspec == 93 || sspec == 121 )
-                valid = TRUE;
-            break;
-
-        case TYPEMCT242:
-        case TYPEMCT248:
-            if( sspec == 121 )
-                valid = TRUE;
-            break;
-
-        case TYPEMCT250:
-            if( sspec == 111 )
-                valid = TRUE;
-            break;
-
-        case TYPEMCT310:
-        case TYPEMCT310ID:
-            if( sspec == 153 )
-                valid = TRUE;
-            break;
-
-        case TYPEMCT310IL:
-        case TYPEMCT318L:
-            if( sspec == 1007 )
-                valid = TRUE;
-            break;
-
-        case TYPEMCT318:
-        case TYPEMCT360:
-        case TYPEMCT370:
-            if( sspec == 218 )
-                valid = TRUE;
-            break;
-
-        default:
-            break;
+        valid = true;
     }
 
     return valid;
@@ -154,7 +149,7 @@ RWCString CtiDeviceMCT::sspecIsFrom( int sspec )
             break;
 
         case 1007:
-            whois = "MCT 31xL";
+            whois = "MCT 3xx/3xxL";
             break;
 
         case 218:
@@ -2665,8 +2660,26 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             case CtiProtocolEmetcon::PutConfig_Install:
             {
                 int sspec = DSt->Message[0] + (DSt->Message[4] << 8);
+                bool sspecValid;
 
-                if( sspecIsValid( sspec ) )
+                //  if it's an invalid sspec or if the option bits aren't set properly
+                if( !sspecIsValid(sspec) )
+                {
+                    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+                    resultString = getName( ) + " / sspec \'" + CtiNumStr(sspec) + "\' not valid - looks like an \'" + sspecIsFrom( sspec ) + "\'." + "\n" +
+                                   getName( ) + " / install command aborted";
+
+                    ReturnMsg->setResultString( resultString );
+                }
+                else if( getType() == TYPEMCT310ID && (sspec == 1007 || sspec == 153) && !(DSt->Message[1] & 0x40) )
+                {
+                    //  if the disconnect option bit is not set
+                    resultString = getName( ) + " / option bits not valid - looks like a 310I";
+
+                    ReturnMsg->setResultString( resultString );
+                }
+                else
                 {
                     if( getType( ) == TYPEMCT310   ||
                         getType( ) == TYPEMCT310ID ||
@@ -2741,14 +2754,6 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
                     resultString += getName( ) + " / sspec verified as \'" + sspecIsFrom( sspec ) + "\'.";
-                    ReturnMsg->setResultString( resultString );
-                }
-                else
-                {
-                    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-                    resultString = getName( ) + " / sspec \'" + CtiNumStr(sspec) + "\' not valid - looks like an \'" + sspecIsFrom( sspec ) + "\'." + "\n" +
-                                   getName( ) + " / install command aborted";
                     ReturnMsg->setResultString( resultString );
                 }
 
