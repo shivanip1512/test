@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/04/12 21:08:24 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/05/21 16:04:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -163,7 +163,7 @@ private:
 
 public:
 
-   CtiProtocolVersacom(INT tt, bool opt = OptimizeVersacomConfiguration()) :
+   CtiProtocolVersacom(INT tt) :
       _last(0),
       _transmitterType(tt),
       _addressMode(0)

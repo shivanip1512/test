@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2004/05/17 07:55:13 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2004/05/21 16:04:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,7 +65,6 @@ IM_EX_CTIBASE extern RWCString      gSMTPServer;
 IM_EX_CTIBASE extern RWCString      gLogDirectory;
 IM_EX_CTIBASE extern RWCString      gEmailFrom;
 IM_EX_CTIBASE extern bool           gLogPorts;                    // Write port data to portname.dayofmonth
-IM_EX_CTIBASE extern bool           gOptimizeVersacom;            // Allow an assign to section class and division in one page
 IM_EX_CTIBASE extern bool           gDoPrefix;                    // Attach a prefix to TAP transmissions
 IM_EX_CTIBASE extern bool           gCoalesceRippleBits;          // Ripple Groups combine bits to send on routes.
 IM_EX_CTIBASE extern int            DebugLevel;
@@ -83,8 +82,5 @@ IM_EX_CTIBASE extern bool           gSimulatePorts;
 
 IM_EX_CTIBASE void         InitYukonBaseGlobals(void);
 IM_EX_CTIBASE INT          getDebugLevel(void);
-
-IM_EX_CTIBASE bool         OptimizeVersacomConfiguration();
-
 
 #endif // #ifndef __DLLBASE_H__

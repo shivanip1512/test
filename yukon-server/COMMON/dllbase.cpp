@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/05/17 07:55:12 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/05/21 16:04:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -113,11 +113,6 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
     return TRUE;
 }
 
-DLLEXPORT bool OptimizeVersacomConfiguration()
-{
-    return gOptimizeVersacom;
-}
-
 DLLEXPORT void InitYukonBaseGlobals(void)
 {
     RWCString str;
@@ -219,14 +214,6 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         gDNPInternalRetries = 2;
         if(DebugLevel & 0x0001) cout << "DNP Internal Retries set to 2" << endl;
     }
-
-    if( !(str = gConfigParms.getValueAsString("OPTIMIZE_VERSACOM_CONFIGURATION")).isNull() && (!stricmp("TRUE", str.data())))
-    {
-        gOptimizeVersacom = true;
-    }
-    if(DebugLevel & 0x0001) cout << "Versacom configuration " << ( gOptimizeVersacom ? "will " : "will NOT ") << "be optimized (section,class,division) "<< endl;
-
-
 
     if( !(str = gConfigParms.getValueAsString("MAX_DBCONNECTION_COUNT")).isNull() )
     {
