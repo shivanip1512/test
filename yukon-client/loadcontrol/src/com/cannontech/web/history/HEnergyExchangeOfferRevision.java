@@ -56,7 +56,7 @@ public double getAmountCommitted() {
  * @return double[]
  */
 public double getAmountRequested() {
-	String queryStr = "SELECT AMOUNTREQUESTED FROM LMENERGYEXCHANGEHOURLYOFFER ";
+	String queryStr = "SELECT SUM(AMOUNTREQUESTED) AS TOTALREQUESTED FROM LMENERGYEXCHANGEHOURLYOFFER ";
 	queryStr += "WHERE OFFERID = " + offerId + " AND REVISIONNUMBER = " + revisionNumber;
 
 	try {
