@@ -189,21 +189,20 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 
 	public void menuItemSelected(SysTrayMenuEvent e)
 	{
-		if( e.getSource() == getMenuItemExit()
-			 || e.getSource() == getMenuItemLogout() )
+		if( e.getSource() == getMenuItemExit() )
 		{
 			yukonSysTray.hideIcon();
 			getAlarmHandler().getAlarmClient().stop();
 
-			if( e.getSource() == getMenuItemLogout() )
-			{
-				if( ClientSession.getInstance().establishSession() )
-					ClientSession.getInstance().closeSession();
-			}
-
-
 			exitApp();
 		}
+		else if( e.getSource() == getMenuItemLogout() )
+		{
+			if( ClientSession.getInstance().establishSession() )
+				ClientSession.getInstance().closeSession();
+				
+			getMenuItemLogout().setEnabled( false );
+		}		
 		else if( e.getSource() == getMenuItemAbout() )
 		{
 			JOptionPane.showMessageDialog(
