@@ -40,8 +40,10 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.LMControlHistoryUtil;
+import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
+import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -170,6 +172,9 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 		DefaultDatabaseCache.getInstance().releaseAllCache();
 		YukonListFuncs.releaseAllConstants();
 		
+		SwitchCommandQueue.getInstance().syncFromFile();
+		OptOutEventQueue.getInstance().syncFromFile();
+		
 		// Reload data into the cache if necessary
 		String preloadData = RoleFuncs.getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
 		if (CtiUtilities.isTrue( preloadData ))
@@ -193,6 +198,9 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 					it.remove();
 			}
 		}
+		
+		SwitchCommandQueue.getInstance().syncFromFile();
+		OptOutEventQueue.getInstance().syncFromFile();
 		
 		// Reload data into the cache if necessary
 		String preloadData = RoleFuncs.getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
