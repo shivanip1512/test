@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/10/30 17:41:19 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/02/10 22:53:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,8 +36,8 @@ protected:
         MCTBCAST_ResetPF            = 0x50,
         MCTBCAST_ResetPFLen         =    0,
 
-        MCTBCAST_FreezeZero         = 0x51,
-        MCTBCAST_FreezeOne          = 0x52,
+        MCTBCAST_FreezeOne          = 0x51,
+        MCTBCAST_FreezeTwo          = 0x52,
         MCTBCAST_FreezeLen          =    0,
 
         MCTBCAST_LeadMeterOffset    = 4186111  //  4186112 - 1
