@@ -16,13 +16,9 @@ function MakeArray()
 }
 function jumpPage(form)
 {
-        i = form.ext.selectedIndex;
-        if (i == 0) return;   
         form.action="/servlet/Download?";
         form.method="post";
         form.submit();
-        form.ext.selectedIndex=siteopt[0];
-        //window.location.href = url[i+1];
 }
 </SCRIPT>
 <body class="Background" text="#000000" leftmargin="0" topmargin="0" onload="init()">
@@ -158,7 +154,7 @@ function jumpPage(form)
 					<img id = "theGraph" src="/servlet/GraphGenerator?" > 
 				<%}
 				%>
-				<!--<font size="-1"><cti:text key="trending.disclaimer"/></font>-->
+				 <br><font size="-1"><cti:text roleid="<%= RoleTypes.TRENDING_DISCLAIMER_TEXT %>"></font>-->
 				</center></td>
 			</tr>
 			</table>

@@ -17,13 +17,9 @@ function MakeArray()
 }
 function jumpPage(form)
 {
-        i = form.ext.selectedIndex;
-        if (i == 0) return;   
         form.action="/servlet/Download?";
         form.method="post";
         form.submit();
-        form.ext.selectedIndex=siteopt[0];
-        //window.location.href = url[i+1];
 }
 </SCRIPT>
 
@@ -99,7 +95,7 @@ function jumpPage(form)
 
 			<table width="98%" border="0" cellspacing="0" cellpadding="0" height="18">
 			<tr>
-				<td align = "right"><a name = "top" href = "#marker" style="text-decoration:underlined" class = "TableCell" >More Options</a></td>
+				<!--<td align = "right"><a name = "top" href = "#marker" style="text-decoration:underlined" class = "TableCell" >More Options</a></td> -->
 			</tr>
 			</table>
 			<table width="87%" border="0" cellspacing="4" cellpadding="3" align="center" height="75">
