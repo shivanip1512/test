@@ -8,6 +8,8 @@
  */
 public final class PointUnits
 {
+	//not used
+	public static final int UOMID_INVALID = -1;
 
    //some predefined UOMID's that should be in all/most Databases!
    public static final int UOMID_KW = 0;
@@ -85,6 +87,18 @@ public final class PointUnits
       UOMID_KW,
       UOMID_MW
    };
+   
+   public static final boolean isInSet( int[] idSet, int uomid )
+   {
+   	if( idSet == null )
+   		return false;
+   	
+   	for( int i = 0; i < idSet.length; i++ )
+   		if( idSet[i] == uomid )
+   			return true;
+   			
+   	return false;
+   }
    
 	/**
 	 * Constructor for PointUnit.

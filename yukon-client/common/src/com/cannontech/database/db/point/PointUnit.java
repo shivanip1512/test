@@ -175,7 +175,7 @@ public void update() throws java.sql.SQLException
  * @return com.cannontech.common.util.NativeIntVector
  * @param uomid int
  */
-public static final com.cannontech.common.util.NativeIntVector getAllPointIDsByUOMID(int uomids[]) throws java.sql.SQLException
+/*public static final com.cannontech.common.util.NativeIntVector getAllPointIDsByUOMID(int uomids[]) throws java.sql.SQLException
 {
    com.cannontech.common.util.NativeIntVector idList = 
             new com.cannontech.common.util.NativeIntVector(10);
@@ -231,5 +231,6 @@ public static final com.cannontech.common.util.NativeIntVector getAllPointIDsByU
 
    return idList;
 }
+*/
 
 }

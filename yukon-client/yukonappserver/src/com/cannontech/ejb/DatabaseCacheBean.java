@@ -346,6 +346,16 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    }
 
 	/**
+	 * @ejb:interface-method
+	 * tview-type="remote" 
+	**/
+	public synchronized java.util.Map getAllPAOsMap()
+	{
+		return getCache().getAllPAOsMap();
+	}
+
+
+	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupRoleMap()
 	 */
 	public Map getYukonGroupRolePropertyMap() {

@@ -72,7 +72,15 @@ public class RolePropertyRenderer extends javax.swing.JLabel implements javax.sw
 				this.setHorizontalAlignment( javax.swing.SwingConstants.RIGHT );
 			else
 				this.setHorizontalAlignment( javax.swing.SwingConstants.CENTER );				
+
+
+			if( value != null )
+				((javax.swing.JComponent)this).setToolTipText( value.toString() );
+			else
+				((javax.swing.JComponent)this).setToolTipText("");	
 		}
+		else
+			((javax.swing.JComponent)this).setToolTipText("DBL-Click to see the roles for this group");
 	
 
 		// do anything that only needs to be assigned once per repainting here
@@ -117,7 +125,6 @@ public class RolePropertyRenderer extends javax.swing.JLabel implements javax.sw
 			setText( "" );
 		}
 
-		((javax.swing.JComponent)this).setToolTipText("DBL-Click to see the roles for this group");
 
 		return this;
 	}

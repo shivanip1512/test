@@ -317,11 +317,11 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 						
 							OkCancelDialog diag = new OkCancelDialog(
 									CtiUtilities.getParentFrame(UserGroupRoleEditorPanel.this), 
-									"Group Roles : " + getTableModel().getRowAt(row).getGroupName(), 
+									"Group Roles : " + getTableModel().getRowAt(row).getGroupName() + "  (Read-only)", 
 									true, rolePanel );
 	
 							diag.setCancelButtonVisible( false );
-							diag.setSize( 520, 640 );
+							diag.setSize( 520, 610 );
 							diag.setLocationRelativeTo( CtiUtilities.getParentFrame(UserGroupRoleEditorPanel.this) );
 						
 							diag.show();					

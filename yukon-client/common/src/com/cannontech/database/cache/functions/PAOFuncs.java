@@ -138,23 +138,11 @@ public static LitePoint[] getLitePointsForPAObject( int paoID )
 public static LiteYukonPAObject getLiteYukonPAO( int paoID )
 {
 	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-	
-	synchronized(cache)
+	synchronized( cache )
 	{
-		java.util.List paos = cache.getAllYukonPAObjects();
-		
-		for(int i = 0; i < paos.size(); i++)
-		{
-			if( paoID == ((LiteYukonPAObject)paos.get(i)).getYukonID() )
-			{
-				return (LiteYukonPAObject)paos.get(i);
-			}
-			
-		}
-
-		return null;
+		return (LiteYukonPAObject) 
+			cache.getAllPAOsMap().get( new Integer(paoID) );
 	}
-
 }
 /**
  * Insert the method's description here.
@@ -179,26 +167,11 @@ public static int getMaxPAOid()
  */
 public static String getYukonPAOName( int paoID )
 {
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-	
-	synchronized(cache)
-	{
-		java.util.List paos = cache.getAllYukonPAObjects();
-		java.util.Collections.sort(paos);
-		String name = null;
-		
-		for(int i = 0; i < paos.size(); i++)
-		{
-			if( paoID == ((LiteYukonPAObject)paos.get(i)).getYukonID() )
-			{
-				name = ((LiteYukonPAObject)paos.get(i)).getPaoName();
-				break;
-			}
-			
-		}
-
-		return name;
-	}
-
+	LiteYukonPAObject pao = getLiteYukonPAO( paoID );
+	if( pao != null )
+		return pao.getPaoName();
+	else
+		return null;
 }
+
 }

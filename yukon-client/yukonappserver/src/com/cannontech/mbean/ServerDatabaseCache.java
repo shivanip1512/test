@@ -10,6 +10,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -17,6 +18,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -94,8 +96,11 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private java.util.HashMap allPointIDOffsetHashMap = null;
 	private java.util.HashMap allPointsMap = null;
 	
+	private java.util.HashMap allPAOsMap = null;
+
+	
 /**
- * DefaultDatabaseCache constructor comment.
+ * ServerDatabaseCache constructor comment.
  */
 public ServerDatabaseCache() 
 { 
@@ -552,6 +557,24 @@ public synchronized java.util.Map getAllPointsMap()
  * Creation date: (3/14/00 3:19:19 PM)
  * @return java.util.Collection
  */
+public synchronized java.util.Map getAllPAOsMap()
+{
+	if( allPAOsMap != null )
+		return allPAOsMap;
+	else
+	{
+		releaseAllYukonPAObjects();
+		getAllYukonPAObjects();
+
+		return allPAOsMap;
+	}
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (3/14/00 3:19:19 PM)
+ * @return java.util.Collection
+ */
 public synchronized java.util.List getAllPointsUnits(){
 
 	if( allPointsUnits != null )
@@ -782,15 +805,11 @@ public synchronized java.util.List getAllUnusedCCDevices()
 			while (rset.next())
 			{
 				int paoID = rset.getInt(1);
-
-				for( int i = 0; i < allDevices.size(); i++ )
+				
+				LiteYukonPAObject pao = PAOFuncs.getLiteYukonPAO( paoID );
+				if( pao != null )
 				{
-					 com.cannontech.database.data.lite.LiteYukonPAObject paObject = (com.cannontech.database.data.lite.LiteYukonPAObject)allDevices.get(i);
-					 if( paObject.getYukonID() == paoID )
-					 {
-						  allUnusedCCDevices.add( paObject );
-						  break;
-					 }
+					allUnusedCCDevices.add( pao );
 				}
 			}
 				
@@ -840,7 +859,8 @@ public synchronized java.util.List getAllYukonPAObjects()
 	else
 	{
 		allYukonPAObjects = new java.util.ArrayList();
-		YukonPAOLoader yukLoader = new YukonPAOLoader(allYukonPAObjects, databaseAlias);
+		allPAOsMap = new HashMap();
+		YukonPAOLoader yukLoader = new YukonPAOLoader(allYukonPAObjects, allPAOsMap, databaseAlias);
 		yukLoader.run();
 		
 		return allYukonPAObjects;
@@ -2127,39 +2147,33 @@ private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
 	switch(changeType)
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
-				for(int i=0;i<allYukonPAObjects.size();i++)
-				{
-					if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allYukonPAObjects.get(i)).getYukonID() == id )
-					{
-						alreadyAdded = true;
-						lBase = (LiteBase)allYukonPAObjects.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					com.cannontech.database.data.lite.LiteYukonPAObject ld = new com.cannontech.database.data.lite.LiteYukonPAObject(id);
-					ld.retrieve(databaseAlias);
-					allYukonPAObjects.add(ld);
-					lBase = ld;
-				}
-				break;
+
+			lBase = (LiteBase)allPAOsMap.get( new Integer(id) );				
+			if( lBase == null )
+			{
+				LiteYukonPAObject ly = new LiteYukonPAObject(id);
+				ly.retrieve(databaseAlias);
+				allYukonPAObjects.add(ly);
+				allPAOsMap.put( new Integer(ly.getYukonID()), ly );
+	
+				lBase = ly;
+			}
+			break;
+
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-				for(int i=0;i<allYukonPAObjects.size();i++)
-				{
-					if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allYukonPAObjects.get(i)).getYukonID() == id )
-					{
-						((com.cannontech.database.data.lite.LiteYukonPAObject)allYukonPAObjects.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allYukonPAObjects.get(i);
-						break;
-					}
-				}
-				break;
+
+			LiteYukonPAObject ly = (LiteYukonPAObject)allPAOsMap.get( new Integer(id) );				
+			ly.retrieve( databaseAlias );
+					
+			lBase = ly;
+			break;
+
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allYukonPAObjects.size();i++)
 				{
 					if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allYukonPAObjects.get(i)).getYukonID() == id )
 					{
+						allPAOsMap.remove( new Integer(id) );
 						lBase = (LiteBase)allYukonPAObjects.remove(i);
 						break;
 					}
@@ -2190,9 +2204,10 @@ public synchronized void releaseAllAlarmCategories()
 public synchronized void releaseAllCache()
 {
 	allYukonPAObjects = null;
+	allPAOsMap = null;  //PAO
 	
 	allPoints = null;
-	allPointsMap = null;
+	allPointsMap = null; //Point
 	
 	allStateGroups = null;
 	allUnitMeasures = null;
@@ -2353,6 +2368,7 @@ public synchronized void releaseAllUnitMeasures(){
 public synchronized void releaseAllYukonPAObjects()
 {
 	allYukonPAObjects = null;
+	allPAOsMap = null;
 }
 /**
  * Insert the method's description here.

@@ -4,7 +4,8 @@ package com.cannontech.dbeditor.wizard.capsubbus;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
-import com.cannontech.database.data.capcontrol.CapControlSubBus;
+
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
  
 public class CCSubstationBusMiscSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -590,7 +591,7 @@ private javax.swing.JComboBox getJComboBoxMinRespTime() {
 			ivjJComboBoxMinRespTime.setName("JComboBoxMinRespTime");
 			// user code begin {1}
 
-			ivjJComboBoxMinRespTime.addItem(com.cannontech.common.util.CtiUtilities.STRING_NONE);
+			ivjJComboBoxMinRespTime.addItem(CtiUtilities.STRING_NONE);
 			ivjJComboBoxMinRespTime.addItem("1 minute");
 			ivjJComboBoxMinRespTime.addItem("2 minute");
 			ivjJComboBoxMinRespTime.addItem("3 minute");
@@ -1415,12 +1416,19 @@ public Object getValue(Object val)
 {
 	com.cannontech.database.data.capcontrol.CapControlSubBus subBus = ((com.cannontech.database.data.capcontrol.CapControlSubBus) val);
 
-	subBus.getCapControlSubstationBus().setControlInterval( 
-			com.cannontech.common.util.CtiUtilities.getIntervalComboBoxSecondsValue(getJComboBoxControlInterval()) );
+	if( getJComboBoxControlInterval().getSelectedIndex() != 0 )
+		subBus.getCapControlSubstationBus().setControlInterval( 
+				CtiUtilities.getIntervalComboBoxSecondsValue(getJComboBoxControlInterval()) );
+	else
+		subBus.getCapControlSubstationBus().setControlInterval( new Integer(0) );
 
-	subBus.getCapControlSubstationBus().setMinResponseTime( 
-			com.cannontech.common.util.CtiUtilities.getIntervalComboBoxSecondsValue(getJComboBoxMinRespTime()) );
-
+	
+	if( !CtiUtilities.STRING_NONE.equals(getJComboBoxMinRespTime().getSelectedItem()) )
+		subBus.getCapControlSubstationBus().setMinResponseTime( 
+				CtiUtilities.getIntervalComboBoxSecondsValue(getJComboBoxMinRespTime()) );
+	else
+		subBus.getCapControlSubstationBus().setMinResponseTime( new Integer(0) );
+	
 	
 	Object spinFieldVal = getMinConfirmPercentSpinField().getValue();
 	subBus.getCapControlSubstationBus().setMinConfirmPercent( new Integer(((Number)spinFieldVal).intValue()) );
@@ -1716,14 +1724,14 @@ public void setValue(Object val )
 	if( subBus.getCapControlSubstationBus().getControlInterval().intValue() == 0 )
 		getJComboBoxControlInterval().setSelectedIndex(0);
 	else
-		com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( 
+		CtiUtilities.setIntervalComboBoxSelectedItem( 
 				getJComboBoxControlInterval(),
 				subBus.getCapControlSubstationBus().getControlInterval().intValue() );
 
 	if( subBus.getCapControlSubstationBus().getMinResponseTime().intValue() == 0 )
 		getJComboBoxMinRespTime().setSelectedIndex(0);
 	else
-		com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( 
+		CtiUtilities.setIntervalComboBoxSelectedItem( 
 				getJComboBoxMinRespTime(),
 				subBus.getCapControlSubstationBus().getMinResponseTime().intValue() );
 

@@ -1,6 +1,15 @@
 package com.cannontech.dbeditor.editor.device.capcontrol;
 
+import java.util.ArrayList;
+
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.DeviceFuncs;
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.PointTypes;
 
 /**
  * This type was created in VisualAge.
@@ -28,7 +37,6 @@ public class DeviceCapBankEditorPanel extends com.cannontech.common.gui.util.Dat
 	private javax.swing.JLabel ivjTypeTextField = null;
 	private javax.swing.JComboBox ivjControlDeviceComboBox = null;
 	private javax.swing.JLabel ivjControlDeviceLabel = null;
-	private java.util.List points = null;
 	private javax.swing.JLabel ivjJLabelKVAR = null;
 	private javax.swing.JComboBox ivjJComboBankSize = null;
 	private javax.swing.JComboBox ivjJComboBoxBankOperation = null;
@@ -223,17 +231,16 @@ private void connEtoC8(java.awt.event.ActionEvent arg1) {
 		if( getControlPointComboBox().getModel().getSize() > 0 )
 			getControlPointComboBox().removeAllItems();
 
-		int deviceID = ((com.cannontech.database.data.lite.LiteYukonPAObject)getControlDeviceComboBox().getSelectedItem()).getYukonID();
-		com.cannontech.database.data.lite.LitePoint litePoint = null;
-		for(int i=0;i<points.size();i++)
+		int deviceID = ((LiteYukonPAObject)getControlDeviceComboBox().getSelectedItem()).getYukonID();
+		LitePoint[] litPts = PAOFuncs.getLitePointsForPAObject( deviceID );
+		for(int i = 0; i < litPts.length; i++)
 		{
-			litePoint = (com.cannontech.database.data.lite.LitePoint)points.get(i);
-			if( litePoint.getPaobjectID() == deviceID &&
-					litePoint.getPointType() == com.cannontech.database.data.point.PointTypes.STATUS_POINT)
+			if( litPts[i].getPointType() == PointTypes.STATUS_POINT)
 			{
-				getControlPointComboBox().addItem(litePoint);
+				getControlPointComboBox().addItem( litPts[i] );
 			}
 		}
+
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
 		// user code begin {3}
@@ -1018,13 +1025,13 @@ public Object getValue(Object val)
 		capBank.getCapBank().setControlDeviceID( new Integer(com.cannontech.database.db.device.Device.SYSTEM_DEVICE_ID) );
 		
 	if( getControlInhibitCheckBox().isSelected() )
-		capBank.getDevice().setControlInhibit( com.cannontech.common.util.CtiUtilities.getTrueCharacter() );
+		capBank.getDevice().setControlInhibit( CtiUtilities.getTrueCharacter() );
 	else
-		capBank.getDevice().setControlInhibit( com.cannontech.common.util.CtiUtilities.getFalseCharacter() );
+		capBank.getDevice().setControlInhibit( CtiUtilities.getFalseCharacter() );
 	if( getDisableFlagCheckBox().isSelected() )
-		capBank.setDisableFlag( com.cannontech.common.util.CtiUtilities.getTrueCharacter() );
+		capBank.setDisableFlag( CtiUtilities.getTrueCharacter() );
 	else
-		capBank.setDisableFlag( com.cannontech.common.util.CtiUtilities.getFalseCharacter() );
+		capBank.setDisableFlag( CtiUtilities.getFalseCharacter() );
 
    capBank.getCapBank().setBankSize( 
       (getJComboBankSize().getSelectedItem().toString().length() <= 0
@@ -1188,7 +1195,7 @@ public void setValue(Object val)
    getJComboBoxBankOperation().setSelectedItem( capBank.getCapBank().getOperationalState() );   
 
    //if the bank is not in the list, add it and select it   
-   com.cannontech.common.util.CtiUtilities.setJComboBoxSelection( 
+   CtiUtilities.setJComboBoxSelection( 
       getJComboBankSize(), capBank.getCapBank().getBankSize() );
 
 
@@ -1196,13 +1203,13 @@ public void setValue(Object val)
 	Integer controlDeviceID = capBank.getCapBank().getControlDeviceID();
 	
 	if( Character.toUpperCase(capBank.getPAODisableFlag().charValue() )
-		                       == com.cannontech.common.util.CtiUtilities.getTrueCharacter().charValue() )
+		                       == CtiUtilities.getTrueCharacter().charValue() )
 	{
 		getDisableFlagCheckBox().doClick();
 	}
 
 	if( Character.toUpperCase(capBank.getDevice().getControlInhibit().charValue() )
-		                       == com.cannontech.common.util.CtiUtilities.getTrueCharacter().charValue() )
+		                       == CtiUtilities.getTrueCharacter().charValue() )
 	{
 		getControlInhibitCheckBox().doClick();
 	}
@@ -1214,59 +1221,57 @@ public void setValue(Object val)
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
-		//java.util.List devices = cache.getAllDevices();
 		java.util.List devices = cache.getAllUnusedCCDevices();
-		points = cache.getAllPoints();
-
-		java.util.Collections.sort(devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-		java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator);
+		
+		ArrayList lstToAdd = new ArrayList( devices.size() );
+		java.util.List points = cache.getAllPoints();
 
 		int deviceID;
-		boolean foundDevice = false;
-		com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = null;
-		com.cannontech.database.data.lite.LitePoint litePoint = null;
-		for(int i=0;i<devices.size();i++)
+		LiteYukonPAObject liteDevice = null;
+		LitePoint litePoint = null;
+
+		for( int i = 0; i < points.size(); i++ )
 		{
-			liteDevice = (com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i);
-			deviceID = liteDevice.getYukonID();
-			for(int j=0;j<points.size();j++)
+			litePoint = 
+					(LitePoint)points.get(i);
+			
+			liteDevice = PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() );
+
+			if( litePoint.getPointType() == PointTypes.STATUS_POINT )
 			{
-				litePoint = (com.cannontech.database.data.lite.LitePoint)points.get(j);
-				if( litePoint.getPaobjectID() == deviceID )
-				{
-					//The possible point types and device types for a Control Device on a CapBank
-					if( litePoint.getPointType() == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
-					{
-						getControlDeviceComboBox().addItem(liteDevice);						
-						break;
-					}
-				}
-				else if( litePoint.getPaobjectID() > deviceID )
-					break;
+				//expensive to call the contains() method, that is why we do this lastly
+				if( devices.contains(liteDevice) ) //only add this device if it is not already used
+					lstToAdd.add( liteDevice );
+			}
+			
+		}
+		
+		if( lstToAdd.size() > 0 )
+		{
+			LiteYukonPAObject usedDevice = 
+					PAOFuncs.getLiteYukonPAO(controlDeviceID.intValue());
+
+			//we must manually add the currently used device so it is selectable, all used devices are filtered
+			// out at this point including the currently selected one!
+			lstToAdd.add( usedDevice );
+			java.util.Collections.sort( lstToAdd, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
+			for( int i = 0; i < lstToAdd.size(); i++ )
+				getControlDeviceComboBox().addItem( lstToAdd.get(i) );
+				
+
+			//usedDevice is null for all Fixed CapBanks
+			if( usedDevice != null )
+			{
+				getControlDeviceComboBox().setSelectedItem( usedDevice );
+
+				ArrayList pts = (ArrayList)
+					DeviceFuncs.getAllLiteDevicesWithPoints().get(usedDevice);
+					
+				getControlPointComboBox().setSelectedItem(
+					PointFuncs.getLitePoint(controlPointID.intValue()) );
 			}
 		}
-
 		
-		//we will not have the selected device found, so we must add it manually
-		com.cannontech.database.data.lite.LiteYukonPAObject usedDevice = com.cannontech.database.cache.functions.DeviceFuncs.getLiteDevice(controlDeviceID.intValue());
-
-		//usedDevice is null for all Fixed CapBanks
-		if( usedDevice != null )
-		{
-			getControlDeviceComboBox().insertItemAt( usedDevice, 0 ); //put the selected device in the first index
-			getControlDeviceComboBox().setSelectedItem( usedDevice );
-
-			java.util.ArrayList pts = (java.util.ArrayList)
-				com.cannontech.database.cache.functions.DeviceFuncs.getAllLiteDevicesWithPoints().get(usedDevice);
-
-			for( int i = 0; i < pts.size(); i++ )
-				if( ((com.cannontech.database.data.lite.LitePoint)pts.get(i)).getPointType() == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
-					if( ((com.cannontech.database.data.lite.LitePoint)pts.get(i)).getPointID() == controlPointID.intValue() )
-						getControlPointComboBox().setSelectedItem( pts.get(i) );			
-		}
-
-
-			
 	}
 
 }

@@ -12,8 +12,8 @@ public class NotificationGroup extends com.cannontech.database.db.DBPersistent
 	private String emailSubject = null;
 	private String emailFromAddress = null;
 	private String emailMessage = null;
-	private String numericalPagerMessage = null;
-	private String disableFlag = null;
+	private String numericalPagerMessage = CtiUtilities.STRING_NONE;
+	private String disableFlag = "N";
 
 	public static final int NONE_NOTIFICATIONGROUP_ID = 1;
 	

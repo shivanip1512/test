@@ -93,6 +93,9 @@ public interface IDatabaseCache
    public java.util.List getAllUnusedCCDevices();
 
    public java.util.List getAllYukonPAObjects();
+
+	//Map<Integer(paoID), LiteYukonPAObject>
+	public java.util.Map getAllPAOsMap();
    
 //   public IDatabaseCache getInstance();
 

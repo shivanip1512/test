@@ -1,9 +1,10 @@
 package com.cannontech.dbeditor.editor.notification.group;
 
 import javax.swing.BorderFactory;
-import javax.swing.border.BevelBorder;
+import javax.swing.JScrollPane;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.notification.GroupNotification;
 
 /**
  * Insert the type's description here.
@@ -21,6 +22,9 @@ public class GroupNotificationEditorPanel extends com.cannontech.common.gui.util
 	private javax.swing.JEditorPane ivjJEditorPaneAdditionalMessage = null;
 	private javax.swing.JLabel ivjJLabelAdditionalMessage = null;
 	private javax.swing.JLabel ivjJLabelDefaultSubject = null;
+
+	private JScrollPane editorScrollPane = null;
+
 /**
  * GroupNotificationEditorPanel constructor comment.
  */
@@ -182,11 +186,7 @@ private javax.swing.JEditorPane getJEditorPaneAdditionalMessage() {
 		try {
 			ivjJEditorPaneAdditionalMessage = new javax.swing.JEditorPane();
 			ivjJEditorPaneAdditionalMessage.setName("JEditorPaneAdditionalMessage");
-			// user code begin {1}
-			
-			ivjJEditorPaneAdditionalMessage.setBorder(
-				BorderFactory.createBevelBorder(BevelBorder.LOWERED) );
-
+			// user code begin {1}			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -196,6 +196,22 @@ private javax.swing.JEditorPane getJEditorPaneAdditionalMessage() {
 	}
 	return ivjJEditorPaneAdditionalMessage;
 }
+
+
+private JScrollPane getEditorScrollPane()
+{
+	if( editorScrollPane == null )
+	{
+		editorScrollPane = new JScrollPane();
+		editorScrollPane.setViewportView( getJEditorPaneAdditionalMessage() );
+
+		editorScrollPane.setBorder(
+				BorderFactory.createLoweredBevelBorder() );
+	}
+
+	return editorScrollPane;
+}
+
 /**
  * Return the JLabelMessage property value.
  * @return javax.swing.JLabel
@@ -355,8 +371,10 @@ private javax.swing.JPanel getJPanelEmail() {
 			constraintsJEditorPaneAdditionalMessage.weighty = 1.0;
 			constraintsJEditorPaneAdditionalMessage.ipady = 124;
 			constraintsJEditorPaneAdditionalMessage.insets = new java.awt.Insets(2, 20, 23, 19);
-			getJPanelEmail().add(getJEditorPaneAdditionalMessage(), constraintsJEditorPaneAdditionalMessage);
 			// user code begin {1}
+			
+			getJPanelEmail().add(getEditorScrollPane(), constraintsJEditorPaneAdditionalMessage);
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -436,7 +454,12 @@ private javax.swing.JTextField getJTextFieldSubject() {
  */
 public Object getValue(Object val) 
 {
-	com.cannontech.database.data.notification.GroupNotification gn = (com.cannontech.database.data.notification.GroupNotification)val;
+	GroupNotification gn = null;
+	if( val == null )
+		gn = new GroupNotification();
+	else
+		gn = (GroupNotification)val; 
+
 
 	String groupName = getJTextFieldName().getText();
 	if( groupName != null )
@@ -445,21 +468,27 @@ public Object getValue(Object val)
 	String fromAddress = getJTextFieldFromAddress().getText();
 	if( fromAddress != null )
 		gn.getNotificationGroup().setEmailFromAddress( fromAddress );
+	else
+		gn.getNotificationGroup().setEmailFromAddress(" ");
 
 	String subject = getJTextFieldSubject().getText();
 	if( subject != null )
 		gn.getNotificationGroup().setEmailSubject( subject );
+	else
+		gn.getNotificationGroup().setEmailSubject(" ");
 
 	String message = getJEditorPaneAdditionalMessage().getText();
 	if( message != null )
 		gn.getNotificationGroup().setEmailMessage( message );
+	else
+		gn.getNotificationGroup().setEmailMessage(" ");
 	
 	if( getJCheckBoxDisableGroup().isSelected() )
 		gn.getNotificationGroup().setDisableFlag("Y");
 	else
 		gn.getNotificationGroup().setDisableFlag("N");
 
-	return val;
+	return gn;
 }
 /**
  * Called whenever the part throws an exception.
@@ -592,7 +621,10 @@ public static void main(java.lang.String[] args) {
  */
 public void setValue(Object val) 
 {
-	com.cannontech.database.data.notification.GroupNotification gn = (com.cannontech.database.data.notification.GroupNotification)val;
+	if( val == null )
+		return;
+
+	GroupNotification gn = (GroupNotification)val;
 	
 	String groupName = gn.getNotificationGroup().getGroupName();
 	if( groupName != null )

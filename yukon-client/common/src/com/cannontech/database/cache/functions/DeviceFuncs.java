@@ -1,5 +1,7 @@
 package com.cannontech.database.cache.functions;
 
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+
 /**
  * Insert the type's description here.
  * Creation date: (3/26/2001 9:40:33 AM)
@@ -28,7 +30,7 @@ public static Integer[] getAllDeviceIDs()
 
 		for(int i=0;i<devices.size();i++)
 		{
-			ids.add( new Integer( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getYukonID() ) );
+			ids.add( new Integer( ((LiteYukonPAObject)devices.get(i)).getYukonID() ) );
 		}		
 		
 		return (Integer[])ids.toArray();
@@ -52,9 +54,9 @@ public static Integer[] getAllInjectorIDs()
 		 														
 		for(int i=0;i<devices.size();i++)
 		{
-			if( com.cannontech.database.data.device.DeviceTypesFuncs.isInjector( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() )  )
+			if( com.cannontech.database.data.device.DeviceTypesFuncs.isInjector( ((LiteYukonPAObject)devices.get(i)).getType() )  )
 			{
-				ids.add( new Integer( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getYukonID() ) );
+				ids.add( new Integer( ((LiteYukonPAObject)devices.get(i)).getYukonID() ) );
 			}
 
 		}		
@@ -73,38 +75,38 @@ public static Integer[] getAllInjectorIDs()
 public static java.util.Hashtable getAllLiteDevicesWithPoints() 
 {
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	java.util.Hashtable deviceTable = null;
+	java.util.Hashtable deviceTable = new java.util.Hashtable( 128 );
 
 	synchronized (cache)
 	{
-		java.util.List devices = cache.getAllDevices();
 		java.util.List points = cache.getAllPoints();
-		java.util.Collections.sort(devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
 		java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
+
 		com.cannontech.database.data.lite.LitePoint litePoint = null;
-		com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = null;
+		LiteYukonPAObject liteDevice = null;
 
-		deviceTable = new java.util.Hashtable( devices.size() );
-
-		for (int i = 0; i < devices.size(); i++)
+		for (int i = 0; i < points.size(); i++)
 		{
-			liteDevice = (com.cannontech.database.data.lite.LiteYukonPAObject) devices.get(i);
-
+			litePoint = (com.cannontech.database.data.lite.LitePoint) points.get(i);
+			liteDevice = PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() );
+			
 			if( liteDevice.getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE )
-			{
-				java.util.ArrayList pointList = new java.util.ArrayList( points.size() );
+			{				
+				java.util.ArrayList tmpPtLst= (java.util.ArrayList)deviceTable.get( liteDevice );
 				
-				for (int j = 0; j < points.size(); j++)
-				{				
-					litePoint = (com.cannontech.database.data.lite.LitePoint) points.get(j);				
-					if (litePoint.getPaobjectID() == liteDevice.getYukonID())
-						pointList.add( litePoint );
+				if( tmpPtLst == null ) //not added yet
+				{
+					java.util.ArrayList pointList = new java.util.ArrayList();
+					deviceTable.put( liteDevice, pointList );
 				}
-
-				//add the liteDevice along with its litePoints
-				deviceTable.put( liteDevice, pointList );
+				else				 
+				{
+					//all ready added the device, just add the point
+					tmpPtLst.add( litePoint );
+				}
 			}
 		}
+
 	}
 
 	return deviceTable;
@@ -114,22 +116,11 @@ public static java.util.Hashtable getAllLiteDevicesWithPoints()
  * Creation date: (3/26/2001 9:41:59 AM)
  * @return com.cannontech.database.data.lite.LitePoint
  * @param pointID int
+ * 
+ * @deprecated replaced by PAOFuncs.getLiteYukonPAO( deviceID )
  */
-public static com.cannontech.database.data.lite.LiteYukonPAObject getLiteDevice(final int deviceID) 
+public static LiteYukonPAObject getLiteDevice(final int deviceID) 
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized( cache )
-	{
-		java.util.List devices = cache.getAllDevices();
-		java.util.Collections.sort(devices, com.cannontech.database.data.lite.LiteComparators.liteYukonPAObjectIDComparator);
-		
-		for( int j = 0; j < devices.size(); j++ )
-		{
-			if( deviceID == ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(j)).getYukonID() )
-				return (com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(j);
-		}
-	}
-
-	return null;
+	return PAOFuncs.getLiteYukonPAO( deviceID );
 }
 }

@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.notification.group;
 
+import com.cannontech.dbeditor.editor.notification.group.GroupNotificationEditorPanel;
+
 /**
  * Insert the type's description here.
  * Creation date: (11/16/00 12:50:47 PM)
@@ -8,7 +10,7 @@ package com.cannontech.dbeditor.wizard.notification.group;
 public class NotificationGroupWizardPanel extends com.cannontech.common.wizard.WizardPanel 
 {
 	//private GroupNameTypePanel groupGroupNameTypePanel;
-	private GroupEmailSetup groupEmailSetup;
+	private GroupNotificationEditorPanel groupNotificationEditorPanel;
 	private GroupPagerSetup groupPagerSetup;
 /**
  * NotificationGroupWizardPanel constructor comment.
@@ -32,12 +34,12 @@ public java.awt.Dimension getActualSize()
  * Creation date: (11/16/00 4:23:02 PM)
  * @return com.cannontech.dbeditor.wizard.notification.group.GroupEmailSetup
  */
-public GroupEmailSetup getGroupEmailSetup() 
+public GroupNotificationEditorPanel getGroupNotificationEditorPanel() 
 {
-	if( groupEmailSetup == null )
-		groupEmailSetup = new GroupEmailSetup();
+	if( groupNotificationEditorPanel == null )
+		groupNotificationEditorPanel = new GroupNotificationEditorPanel();
 		
-	return groupEmailSetup;
+	return groupNotificationEditorPanel;
 }
 /**
  * Insert the method's description here.
@@ -71,7 +73,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 	}
 	else if( currentInputPanel == getGroupNameTypePanel() )
 	{*/
-		return getGroupEmailSetup();
+		return getGroupNotificationEditorPanel();
 
 		/*
 		//Depending on the group type selected
@@ -91,7 +93,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 		}
 		*/
 	}
-	else if( (currentInputPanel == getGroupEmailSetup()) )/* &&
+	else if( currentInputPanel == getGroupNotificationEditorPanel() )/* &&
 			 (getGroupNameTypePanel().getSelectedType() == GroupNameTypePanel.PAGER_TYPE) )*/
 	{
 		return getGroupPagerSetup();
@@ -106,6 +108,6 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
  */
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) 
 {
-	return ( currentPanel == getGroupEmailSetup() );
+	return ( currentPanel == getGroupNotificationEditorPanel() );
 }
 }

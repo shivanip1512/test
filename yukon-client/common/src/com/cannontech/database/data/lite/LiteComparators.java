@@ -9,9 +9,17 @@ public final class LiteComparators
 	{
 		public int compare(Object o1, Object o2)
 		{
-			int thisVal = ((com.cannontech.database.data.lite.LitePoint)o1).getPaobjectID();
-			int anotherVal = ((com.cannontech.database.data.lite.LitePoint)o2).getPaobjectID();
+			int thisVal = ((LitePoint)o1).getPaobjectID();
+			int anotherVal = ((LitePoint)o2).getPaobjectID();
 			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
+/*
+			if( thisVal != anotherVal )
+				return( thisVal < anotherVal ? -1 : 1 );
+
+			int val = ((LitePoint)o1).getPointName().compareToIgnoreCase(
+										((LitePoint)o2).getPointName() );
+			return (val < 0 ? -1 : (val > 0 ? 1 : 0) );
+*/
 		}
 		public boolean equals(Object obj)
 		{
@@ -51,8 +59,8 @@ public final class LiteComparators
 	{
 		public int compare(Object o1, Object o2)
 		{
-			int thisVal = ((com.cannontech.database.data.lite.LitePoint)o1).getPointID();
-			int anotherVal = ((com.cannontech.database.data.lite.LitePoint)o2).getPointID();
+			int thisVal = ((LitePoint)o1).getPointID();
+			int anotherVal = ((LitePoint)o2).getPointID();
 			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 		}
 		public boolean equals(Object obj)
@@ -94,8 +102,8 @@ public final class LiteComparators
    {
       public int compare(Object o1, Object o2)
       {
-         String thisVal = ((com.cannontech.database.data.lite.LiteYukonImage)o1).getImageCategory();
-         String anotherVal = ((com.cannontech.database.data.lite.LiteYukonImage)o2).getImageCategory();
+         String thisVal = ((LiteYukonImage)o1).getImageCategory();
+         String anotherVal = ((LiteYukonImage)o2).getImageCategory();
 
          return ( thisVal.compareToIgnoreCase(anotherVal) );
       }
@@ -109,8 +117,8 @@ public final class LiteComparators
 	{
 		public int compare(Object o1, Object o2)
 		{
-			int thisVal = ((com.cannontech.database.data.lite.LiteBase)o1).getLiteID();
-			int anotherVal = ((com.cannontech.database.data.lite.LiteBase)o2).getLiteID();
+			int thisVal = ((LiteBase)o1).getLiteID();
+			int anotherVal = ((LiteBase)o2).getLiteID();
 			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 		}
 		public boolean equals(Object obj)
@@ -196,16 +204,15 @@ public final class LiteComparators
 			}
 			else if(o1 instanceof com.cannontech.database.data.lite.LiteHolidaySchedule && o2 instanceof com.cannontech.database.data.lite.LiteHolidaySchedule)
 			{
-				thisVal = ((com.cannontech.database.data.lite.LiteHolidaySchedule)o1).getHolidayScheduleName();
-				anotherVal = ((com.cannontech.database.data.lite.LiteHolidaySchedule)o2).getHolidayScheduleName();
+				thisVal = ((LiteHolidaySchedule)o1).getHolidayScheduleName();
+				anotherVal = ((LiteHolidaySchedule)o2).getHolidayScheduleName();
 			}
 			
 			else if(o1 instanceof com.cannontech.database.data.lite.LiteBaseline && o2 instanceof com.cannontech.database.data.lite.LiteBaseline)
-					{
-						thisVal = ((com.cannontech.database.data.lite.LiteBaseline)o1).getBaselineName();
-						anotherVal = ((com.cannontech.database.data.lite.LiteBaseline)o2).getBaselineName();
-					}
-					
+			{
+				thisVal = ((LiteBaseline)o1).getBaselineName();
+				anotherVal = ((LiteBaseline)o2).getBaselineName();
+			}					
 			else if(o1 instanceof LiteGraphDefinition && o2 instanceof LiteGraphDefinition)
 			{
 				thisVal = ((LiteGraphDefinition)o1).getName();

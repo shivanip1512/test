@@ -1,6 +1,7 @@
 package com.cannontech.yukon.server.cache;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * Insert the type's description here.
@@ -9,6 +10,9 @@ import java.math.BigDecimal;
  */
 public class YukonPAOLoader implements Runnable 
 {
+	//Map<Integer(paoID), LiteYukonPAObject>
+	private Map allPAOsMap = null;
+
 	private java.util.ArrayList allPAObjects = null;
 	private String databaseAlias = null;
 	
@@ -16,10 +20,11 @@ public class YukonPAOLoader implements Runnable
 	/**
 	 * YukonPAOLoader constructor comment.
 	 */
-	public YukonPAOLoader(java.util.ArrayList pAObjectArray, String alias) 
+	public YukonPAOLoader(java.util.ArrayList pAObjectArray, Map paoMap_, String alias) 
 	{
 		super();
 		this.allPAObjects = pAObjectArray;
+		this.allPAOsMap = paoMap_;
 		this.databaseAlias = alias;
 	}
 
@@ -83,6 +88,7 @@ public class YukonPAOLoader implements Runnable
 					pao.setPortID( portID.intValue() );
 	
 				allPAObjects.add( pao );
+				allPAOsMap.put( new Integer(paoID), pao );
 			}
 	
 		}
@@ -155,6 +161,7 @@ public class YukonPAOLoader implements Runnable
 							paoDescription );
 	
 				allPAObjects.add( pao );
+				allPAOsMap.put( new Integer(paoID), pao );
 			}
 	
 			if( rset != null )

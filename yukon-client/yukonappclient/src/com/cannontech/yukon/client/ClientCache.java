@@ -543,6 +543,23 @@ public class ClientCache implements IDatabaseCache
    }
 
 	/**
+	 * @ejb:interface-method
+	 * tview-type="remote" 
+	**/
+	public synchronized java.util.Map getAllPAOsMap()
+	{
+		try
+		{
+			return getCache().getAllPAOsMap();
+		}
+		catch( java.rmi.RemoteException e )
+		{
+			com.cannontech.clientutils.CTILogger.info( e );
+			return new java.util.HashMap();
+		}
+	}
+
+	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupRoleMap()
 	 */
 	public Map getYukonGroupRolePropertyMap() {

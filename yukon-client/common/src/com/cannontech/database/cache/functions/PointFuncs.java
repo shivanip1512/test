@@ -63,31 +63,26 @@ public static int getMaxPointID()
 public static LitePoint[] getLitePointsByUOMID(int[] uomIDs) 
 {
    DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-   java.util.ArrayList pointList = new java.util.ArrayList(20);
+   java.util.ArrayList pointList = new java.util.ArrayList(32);
    
    synchronized( cache )
    {
       java.util.List points = cache.getAllPoints();
-      java.util.Collections.sort( points, com.cannontech.database.data.lite.LiteComparators.litePointIDComparator );
+      //java.util.Collections.sort( points, com.cannontech.database.data.lite.LiteComparators.litePointIDComparator );
       
-      try
-      {
-         com.cannontech.common.util.NativeIntVector ptIds = 
-            com.cannontech.database.db.point.PointUnit.getAllPointIDsByUOMID( uomIDs );
-
-         for( int i = 0; i < ptIds.size(); i++ )
-         {      
-				LitePoint litePoint = PointFuncs.getLitePoint( ptIds.elementAt(i) );
-				
-            if( litePoint != null )
+      for( int i = 0; i < points.size(); i++ )
+      {      
+			LitePoint litePoint = (LitePoint)points.get(i);
+			
+			for( int j = 0; j < uomIDs.length; j++ )
+            if( litePoint.getUofmID() != uomIDs[j] )
+            {
                pointList.add( litePoint );
-         }
+               break;
+            }
+            
       }
-      catch( java.sql.SQLException sq )
-      {         
-         com.cannontech.clientutils.CTILogger.error( sq.getMessage(), sq );
-      }
-      
+
    }
 
    LitePoint retVal[] = new LitePoint[ pointList.size() ];

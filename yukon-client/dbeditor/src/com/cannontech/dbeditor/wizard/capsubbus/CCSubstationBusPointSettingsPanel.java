@@ -27,7 +27,7 @@ public void actionPerformed(java.awt.event.ActionEvent e)
 {
 	if( e.getSource() == getJPanelVar_Watts() )
 	{
-		com.cannontech.clientutils.CTILogger.info("Got a change for the VarWatts Panel!!");
+		//com.cannontech.clientutils.CTILogger.info("Got a change for the VarWatts Panel!!");
 		fireInputUpdate();
 	}
 

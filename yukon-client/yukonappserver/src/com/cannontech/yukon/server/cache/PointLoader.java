@@ -5,6 +5,7 @@ import java.util.Map;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointUnits;
 
 /**
  * Insert the type's description here.
@@ -106,7 +107,7 @@ timerStart = new java.util.Date();
 //	String sqlString = "SELECT POINTID,POINTNAME,POINTTYPE,PAOBJECTID, " +
 //		"POINTOFFSET,STATEGROUPID FROM POINT WHERE POINTID > 0 ORDER BY PAObjectID, POINTOFFSET";
 
-	String sqlString = "SELECT P.POINTID, POINTNAME, POINTTYPE, PAOBJECTID, POINTOFFSET, STATEGROUPID, FORMULA"+
+	String sqlString = "SELECT P.POINTID, POINTNAME, POINTTYPE, PAOBJECTID, POINTOFFSET, STATEGROUPID, UM.FORMULA, UM.UOMID" +
 						" FROM ( POINT P LEFT OUTER JOIN POINTUNIT PU "+
 						" ON P.POINTID = PU.POINTID )  LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID "+
 						" WHERE P.POINTID > " + PointTypes.SYS_PID_SYSTEM +
@@ -129,16 +130,20 @@ timerStart = new java.util.Date();
 			int paobjectID = rset.getInt(4);
 			int pointOffset = rset.getInt(5);
 			int stateGroupID = rset.getInt(6);
-			long tags = LitePoint.POINT_UOFM_GRAPH;
 			String formula = rset.getString(7);
+			int uofmID = rset.getInt(8);
+			if( rset.wasNull() ) //if uomid is null, set it to an INVALID int
+				uofmID = PointUnits.UOMID_INVALID;
+
 			
          //process all the bit mask tags here
+			long tags = LitePoint.POINT_UOFM_GRAPH;
          if( "usage".equalsIgnoreCase(formula) )
 				tags = LitePoint.POINT_UOFM_USAGE;
 									
 			LitePoint lp =
 				new LitePoint( pointID, pointName, com.cannontech.database.data.point.PointTypes.getType(pointType),
-																						paobjectID, pointOffset, stateGroupID, tags );
+																						paobjectID, pointOffset, stateGroupID, tags, uofmID );
 
 			allPoints.add(lp);
 			allPointsMap.put( new Integer(pointID), lp );
@@ -179,7 +184,12 @@ timerStart = new java.util.Date();
       {
          com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
       }
-      
+
+		//temp code
+		timerStop = new java.util.Date();
+		com.cannontech.clientutils.CTILogger.info( 
+			(timerStop.getTime() - timerStart.getTime())*.001 + " Secs for PointLoader (" + allPoints.size() + " found)" );
+		//temp code
    }
 
 	// we've only defaulted the point tags to GRAPH in our constructor (mainly because status points have no unitmeasure)
@@ -195,18 +205,7 @@ private synchronized void loadPointTags()
 	if( allPoints == null )
 		return;
 	
-	//temp code
-	java.util.Date timerStart = null;
-	java.util.Date timerStop = null;
-	//temp code
-	
-	//temp code
-	timerStart = new java.util.Date();
-	//temp code
-	
-	int ptUpdateCnt = 0;
-	
-	String sqlString = "SELECT PU.POINTID, UM.FORMULA " +
+	String sqlString = "SELECT PU.POINTID, UM.FORMULA, UM.UOMID" +
 		"FROM POINTUNIT PU , UNITMEASURE UM WHERE PU.UOMID = UM.UOMID";
 	
 	java.sql.Connection conn = null;
@@ -220,22 +219,27 @@ private synchronized void loadPointTags()
 		rset = stmt.executeQuery(sqlString);
 		System.out.println(" END TAG LOADER QUERY");
 		//All points NOT in the unitmeasure table have been defaulted to GRAPH tag in the allPoints loader.
-		while (rset.next())
+		while( rset.next() )
 		{
 			boolean isStatus = true;
 			int pointID = rset.getInt(1);
 			String formula = rset.getString(2);
+			int uofmID = rset.getInt(3); //null returns zero
+			if( rset.wasNull() ) //if uomid is null, set it to an INVALID int
+				uofmID = PointUnits.UOMID_INVALID;
+
 
 			LitePoint point = PointFuncs.getLitePoint( pointID );
 			if( point != null )
 			{
+				point.setUofmID( uofmID );
+
 				// tags may need to be changed here if there are more tags added to this bit field
 				long tags = LitePoint.POINT_UOFM_GRAPH;      //default value of tags for now.
 			
 				if( formula.equalsIgnoreCase("usage"))
 				{
 					 tags = LitePoint.POINT_UOFM_USAGE;
-					 ptUpdateCnt++;
 				}
 			
 				point.setTags(tags);
@@ -260,12 +264,6 @@ private synchronized void loadPointTags()
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
-
-		//temp code
-		timerStop = new java.util.Date();
-		com.cannontech.clientutils.CTILogger.info( 
-			(timerStop.getTime() - timerStart.getTime())*.001 + " Secs for loadAllPointTags(" + ptUpdateCnt + " updated)" );
-		//temp code
 
 	}
 }

@@ -9,7 +9,7 @@ public class LiteYukonPAObject extends LiteBase
 	public static final com.cannontech.database.data.lite.LiteYukonPAObject LITEPAOBJECT_NONE = new com.cannontech.database.data.lite.LiteYukonPAObject
 	(
 		com.cannontech.database.data.pao.PAOGroups.INVALID,
-		"System Device",
+		com.cannontech.common.util.CtiUtilities.STRING_NONE,
 		com.cannontech.database.data.pao.PAOGroups.INVALID,
 		com.cannontech.database.data.pao.PAOGroups.INVALID,
 		com.cannontech.database.data.pao.PAOGroups.INVALID,

@@ -452,7 +452,11 @@ public final static String getPAOTypeString(int type)
  */
 public final static int getPAOClass( String category, String paoClass )
 {
-
+	//TODO: Change the DeciceClass to PAOClasses and have every PaoClass int be unique
+	if( paoClass.equalsIgnoreCase(PAOGroups.STRING_CAT_CAPCONTROL) )
+	{
+		return PAOGroups.CLASS_CAPCONTROL;
+	}
 	if( category.equalsIgnoreCase(PAOGroups.STRING_CAT_DEVICE)
 		 || category.equalsIgnoreCase(PAOGroups.STRING_CAT_LOADMANAGEMENT) )
 	{
@@ -469,10 +473,6 @@ public final static int getPAOClass( String category, String paoClass )
 	else if( category.equalsIgnoreCase(PAOGroups.STRING_CAT_CUSTOMER) )
 	{
 		return PAOGroups.CLASS_CUSTOMER;
-	}
-	else if( category.equalsIgnoreCase(PAOGroups.STRING_CAT_CAPCONTROL) )
-	{
-		return PAOGroups.CLASS_CAPCONTROL;
 	}
 	else
 		return PAOGroups.INVALID;
