@@ -1856,7 +1856,9 @@ public void setDeviceType(int type)
 		getPeriodicHealthCheckBox().setText("General Data Collection");
 		getPeriodicHealthIntervalComboBox().setSelectedItem("1 hour");
 	}
-	else if( DeviceTypesFuncs.isRTU(type) 
+
+
+	if( DeviceTypesFuncs.isRTU(type) 
 				|| DeviceTypesFuncs.isMCT(type)
 				|| DeviceTypesFuncs.isLCU(type)
             || DeviceTypesFuncs.isCapBankController(type) )
@@ -1872,10 +1874,7 @@ public void setDeviceType(int type)
 			getIntegrityRateCheckBox().setText("Demand Rate");
 			getAccumulatorRateCheckBox().setText("Accumulator (Energy) Rate");			
 		}
-		else if( type == PAOGroups.RTUILEX 
-                || type == PAOGroups.ION_7700
-                || type == PAOGroups.ION_7330
-                || type == PAOGroups.ION_8300 )
+		else if( type == PAOGroups.RTUILEX ) 
 		{
 			getPeriodicHealthCheckBox().setText("General Scan");
 			getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");
@@ -1896,6 +1895,13 @@ public void setDeviceType(int type)
          getPeriodicHealthCheckBox().setText("Status & Analog");
          getAccumulatorRateCheckBox().setText("Accumulator Rate");         
       }
+		else if( type == PAOGroups.ION_7700
+			       || type == PAOGroups.ION_7330
+			       || type == PAOGroups.ION_8300 )
+		{
+			getAccumulatorRateCheckBox().setText("Eventlog Collection");			
+			getAccumulatorRateComboBox().setSelectedItem("1 hour");
+		}		
 		else
 		{
 			//LCU's and RTU's			
@@ -1908,6 +1914,9 @@ public void setDeviceType(int type)
       setIntegrityObjectsVisible(
          !(type == PAOGroups.LMT_2
           || type == PAOGroups.RTUILEX
+          || type == PAOGroups.ION_7700
+		    || type == PAOGroups.ION_7330
+		    || type == PAOGroups.ION_8300               
           || type == PAOGroups.LCU415) );
 		
       setHealthObjectsVisible( 
@@ -1920,9 +1929,6 @@ public void setDeviceType(int type)
                || type == PAOGroups.DNP_CBC_6510
 	            || type == PAOGroups.RTU_DNP
 	            || type == PAOGroups.RTU_DART
-	            || type == PAOGroups.ION_7700
-				   || type == PAOGroups.ION_7330
-				   || type == PAOGroups.ION_8300               
 					|| type == PAOGroups.LCU_T3026) );
 		
 
