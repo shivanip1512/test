@@ -119,8 +119,8 @@ function deleteAppliance(form) {
           </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center"><% String header = "APPLIANCES"; %> <%@ include file="InfoSearchBar.jsp" %><br>
-			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+            <div align="center"><% String header = "APPLIANCES"; %> <%@ include file="InfoSearchBar.jsp" %>
+			<% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			
               <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                 <tr>

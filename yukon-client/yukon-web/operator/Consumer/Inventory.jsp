@@ -117,8 +117,8 @@ function deleteHardware(form) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "HARDWARE"; %>
-              <%@ include file="InfoSearchBar.jsp" %><br>
-			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <%@ include file="InfoSearchBar.jsp" %>
+			  <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
 			  <form name="invForm" method="POST" action="/servlet/SOAPClient">
                 <input type="hidden" name="action" value="UpdateLMHardware">

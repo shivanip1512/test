@@ -76,8 +76,8 @@ function checkOrderNo(form) {
               
             <div align="center">
               <% String header = "WORK ORDERS - SERVICE HISTORY"; %>
-              <%@ include file="InfoSearchBar.jsp" %><br>
-			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <%@ include file="InfoSearchBar.jsp" %>
+			  <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <span class="Main">Click on an Order # to view the complete order 
               history.</span>
               </div>

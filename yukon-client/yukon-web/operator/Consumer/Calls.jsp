@@ -75,8 +75,8 @@ function checkCallNo(form) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
               <% String header = "ACCOUNT - CALL TRACKING"; %>
-              <%@ include file="InfoSearchBar.jsp" %><br>
-			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <%@ include file="InfoSearchBar.jsp" %>
+			  <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
               <form name="form1" method="post" action="/servlet/SOAPClient">
 			    <input type="hidden" name="action" value="UpdateCalls">

@@ -57,7 +57,7 @@
           <%@ include file="Nav.jsp" %></td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
-		  		  <div align="center"><% String header = "APPLIANCES - AIR CONDITIONER"; %><%@ include file="InfoSearchBar.jsp" %><br>
+		  		  <div align="center"><% String header = "APPLIANCES - AIR CONDITIONER"; %><%@ include file="InfoSearchBar.jsp" %>
              
               <br>
             </div> 

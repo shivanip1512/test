@@ -64,8 +64,8 @@ function checkPasswords(form) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
               <% String header = "ADMINISTRATION - CHANGE PASSWORD"; %>
-              <%@ include file="InfoSearchBar.jsp" %><br>
-			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <%@ include file="InfoSearchBar.jsp" %>
+			<% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			
             <form method="POST" action="/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="UpdateLogin">

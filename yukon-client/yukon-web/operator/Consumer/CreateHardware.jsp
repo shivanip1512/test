@@ -53,8 +53,8 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div class = "Main" align="center">
               <% String header = "CREATE NEW HARDWARE"; %>
-              <%@ include file="InfoSearchBar.jsp" %><br>
-			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <%@ include file="InfoSearchBar.jsp" %>
+			  <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
               <form name="MForm" method="post" action="/servlet/SOAPClient">
 			    <input type="hidden" name="action" value="CreateLMHardware">

@@ -71,8 +71,8 @@ function confirmSubmit(form) { //v1.0
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "PROGRAMS - OPT OUT HISTORY"; %>
-              <%@ include file="InfoSearchBar.jsp" %><br>
-			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <%@ include file="InfoSearchBar.jsp" %>
+			  <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
              <div align="center">
                 <p class="TableCell">

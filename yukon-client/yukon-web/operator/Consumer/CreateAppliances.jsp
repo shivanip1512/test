@@ -51,8 +51,8 @@
           <td  valign="top" width="101"><% String pageName = "CreateAppliances.jsp"; %><%@ include file="Nav.jsp" %></td>
           <td width="1" bgcolor="#000000"><img src="switch/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div class = "Main" align="center"><% String header = "CREATE NEW APPLIANCE"; %><%@ include file="InfoSearchBar.jsp" %><br>
-			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+            <div class = "Main" align="center"><% String header = "CREATE NEW APPLIANCE"; %><%@ include file="InfoSearchBar.jsp" %>
+			<% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
            
               <form name="MForm" method="post" action="/servlet/SOAPClient">
 			    <input type="hidden" name="action" value="CreateAppliance">
