@@ -85,13 +85,11 @@ public class StarsCreateCallReportResponseDescriptor extends org.exolab.castor.x
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsCallReport
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsCreateCallReportResponseDescriptor()

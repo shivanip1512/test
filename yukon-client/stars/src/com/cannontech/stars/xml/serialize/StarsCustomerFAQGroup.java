@@ -34,6 +34,13 @@ public class StarsCustomerFAQGroup implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
+    private int _subjectID;
+
+    /**
+     * keeps track of state for field: _subjectID
+    **/
+    private boolean _has_subjectID;
+
     private java.lang.String _subject;
 
     private java.util.Vector _starsCustomerFAQList;
@@ -75,6 +82,13 @@ public class StarsCustomerFAQGroup implements java.io.Serializable {
     {
         _starsCustomerFAQList.insertElementAt(vStarsCustomerFAQ, index);
     } //-- void addStarsCustomerFAQ(int, StarsCustomerFAQ) 
+
+    /**
+    **/
+    public void deleteSubjectID()
+    {
+        this._has_subjectID= false;
+    } //-- void deleteSubjectID() 
 
     /**
     **/
@@ -127,6 +141,23 @@ public class StarsCustomerFAQGroup implements java.io.Serializable {
     {
         return this._subject;
     } //-- java.lang.String getSubject() 
+
+    /**
+     * Returns the value of field 'subjectID'.
+     * 
+     * @return the value of field 'subjectID'.
+    **/
+    public int getSubjectID()
+    {
+        return this._subjectID;
+    } //-- int getSubjectID() 
+
+    /**
+    **/
+    public boolean hasSubjectID()
+    {
+        return this._has_subjectID;
+    } //-- boolean hasSubjectID() 
 
     /**
     **/
@@ -223,6 +254,17 @@ public class StarsCustomerFAQGroup implements java.io.Serializable {
     {
         this._subject = subject;
     } //-- void setSubject(java.lang.String) 
+
+    /**
+     * Sets the value of field 'subjectID'.
+     * 
+     * @param subjectID the value of field 'subjectID'.
+    **/
+    public void setSubjectID(int subjectID)
+    {
+        this._subjectID = subjectID;
+        this._has_subjectID = true;
+    } //-- void setSubjectID(int) 
 
     /**
      * 

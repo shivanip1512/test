@@ -45,6 +45,8 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
 
     private java.util.Vector _starsThermostatManualEventList;
 
+    private StarsThermostatDynamicData _starsThermostatDynamicData;
+
 
       //----------------/
      //- Constructors -/
@@ -143,6 +145,16 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
     {
         return this._inventoryID;
     } //-- int getInventoryID() 
+
+    /**
+     * Returns the value of field 'starsThermostatDynamicData'.
+     * 
+     * @return the value of field 'starsThermostatDynamicData'.
+    **/
+    public StarsThermostatDynamicData getStarsThermostatDynamicData()
+    {
+        return this._starsThermostatDynamicData;
+    } //-- StarsThermostatDynamicData getStarsThermostatDynamicData() 
 
     /**
      * 
@@ -298,6 +310,17 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
         this._inventoryID = inventoryID;
         this._has_inventoryID = true;
     } //-- void setInventoryID(int) 
+
+    /**
+     * Sets the value of field 'starsThermostatDynamicData'.
+     * 
+     * @param starsThermostatDynamicData the value of field
+     * 'starsThermostatDynamicData'.
+    **/
+    public void setStarsThermostatDynamicData(StarsThermostatDynamicData starsThermostatDynamicData)
+    {
+        this._starsThermostatDynamicData = starsThermostatDynamicData;
+    } //-- void setStarsThermostatDynamicData(StarsThermostatDynamicData) 
 
     /**
      * 

@@ -169,6 +169,38 @@ public class StarsThermoSettingsDescriptor extends org.exolab.castor.xml.util.XM
         fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);
         
+        //-- _starsThermostatDynamicData
+        desc = new XMLFieldDescriptorImpl(StarsThermostatDynamicData.class, "_starsThermostatDynamicData", "stars-ThermostatDynamicData", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsThermoSettings target = (StarsThermoSettings) object;
+                return target.getStarsThermostatDynamicData();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsThermoSettings target = (StarsThermoSettings) object;
+                    target.setStarsThermostatDynamicData( (StarsThermostatDynamicData) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsThermostatDynamicData();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsThermostatDynamicData
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
     } //-- com.cannontech.stars.xml.serialize.StarsThermoSettingsDescriptor()
 
 
