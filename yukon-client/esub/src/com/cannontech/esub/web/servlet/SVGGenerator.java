@@ -2,6 +2,7 @@
 
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URLDecoder;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -41,6 +42,10 @@ public class SVGGenerator extends HttpServlet {
 		
 		//Assume this ends with .svg
 		jlxPath = jlxPath.substring(0, jlxPath.length()-4) + ".jlx";
+		
+		//decode the name just in case it as encoded first
+		jlxPath = URLDecoder.decode( jlxPath, "UTF-8" );
+
 				
 		Writer w = resp.getWriter();
 		
