@@ -17,7 +17,7 @@ public class GatewayEndDevice extends DBPersistent {
 	
 	private String serialNumber = null;
 	private Integer hardwareType = null;
-	private Integer dataType = new Integer( CtiUtilities.NONE_ID );
+	private Integer dataType = new Integer( CtiUtilities.NONE_ZERO_ID );
 	private String dataValue = "";
 	
 	public static final String TABLE_NAME = "GatewayEndDevice";

@@ -13,8 +13,8 @@ import com.cannontech.database.data.lite.LiteTypes;
  */
 public abstract class LiteLMCustomerEvent extends LiteBase {
 	
-	private int eventTypeID = com.cannontech.common.util.CtiUtilities.NONE_ID;
-	private int actionID = com.cannontech.common.util.CtiUtilities.NONE_ID;
+	private int eventTypeID = com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID;
+	private int actionID = com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID;
 	private long eventDateTime = 0;
 	private String notes = null;
 	

@@ -16,17 +16,17 @@ import com.cannontech.database.db.DBPersistent;
 public class CustomerResidence extends DBPersistent {
 	
 	private Integer accountSiteID = null;
-	private Integer residenceTypeID = new Integer( CtiUtilities.NONE_ID );
-	private Integer constructionMaterialID = new Integer( CtiUtilities.NONE_ID );
-	private Integer decadeBuiltID = new Integer( CtiUtilities.NONE_ID );
-	private Integer squareFeetID = new Integer( CtiUtilities.NONE_ID );
-	private Integer insulationDepthID = new Integer( CtiUtilities.NONE_ID );
-	private Integer generalConditionID = new Integer( CtiUtilities.NONE_ID );
-	private Integer mainCoolingSystemID = new Integer( CtiUtilities.NONE_ID );
-	private Integer mainHeatingSystemID = new Integer( CtiUtilities.NONE_ID );
-	private Integer numberOfOccupantsID = new Integer( CtiUtilities.NONE_ID );
-	private Integer ownershipTypeID = new Integer( CtiUtilities.NONE_ID );
-	private Integer mainFuelTypeID = new Integer( CtiUtilities.NONE_ID );
+	private Integer residenceTypeID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer constructionMaterialID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer decadeBuiltID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer squareFeetID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer insulationDepthID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer generalConditionID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer mainCoolingSystemID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer mainHeatingSystemID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer numberOfOccupantsID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer ownershipTypeID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer mainFuelTypeID = new Integer( CtiUtilities.NONE_ZERO_ID );
 	private String notes = "";
 	
 	public static final String[] SETTER_COLUMNS = {

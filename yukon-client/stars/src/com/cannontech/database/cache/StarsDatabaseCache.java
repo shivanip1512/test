@@ -764,7 +764,7 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 	 * set start date to new java.util.Date(0).
 	 */
 	public LiteStarsLMControlHistory getLMControlHistory(int groupID, Date startDate) {
-		if (groupID == CtiUtilities.NONE_ID) return null;
+		if (groupID == CtiUtilities.NONE_ZERO_ID) return null;
 		
 		LiteStarsLMControlHistory lmCtrlHist =
 				(LiteStarsLMControlHistory) getLMCtrlHistMap().get( new Integer(groupID) );

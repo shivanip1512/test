@@ -58,7 +58,7 @@ public class CustomerAccount extends DBPersistent {
 			invDB.setDbConnection( getDbConnection() );
 			invDB.retrieve();
 			
-			invDB.setAccountID( new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID) );
+			invDB.setAccountID( new Integer(com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID) );
 			invDB.setRemoveDate( new java.util.Date() );
 			invDB.update();
 			

@@ -18,7 +18,7 @@ public class LMHardwareConfiguration extends DBPersistent {
 
     private Integer inventoryID = null;
     private Integer applianceID = null;
-    private Integer addressingGroupID = new Integer( CtiUtilities.NONE_ID );
+    private Integer addressingGroupID = new Integer( CtiUtilities.NONE_ZERO_ID );
     private Integer loadNumber = new Integer(0);
 
     public static final String[] SETTER_COLUMNS = {

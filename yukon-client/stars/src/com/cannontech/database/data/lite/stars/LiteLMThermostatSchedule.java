@@ -22,8 +22,8 @@ public class LiteLMThermostatSchedule extends LiteBase {
 	
 	private String scheduleName = null;
 	private int thermostatTypeID = 0;
-	private int accountID = CtiUtilities.NONE_ID;
-	private int inventoryID = CtiUtilities.NONE_ID;
+	private int accountID = CtiUtilities.NONE_ZERO_ID;
+	private int inventoryID = CtiUtilities.NONE_ZERO_ID;
 	
 	private ArrayList thermostatSeasons = null;		// List of LiteLMThermostatSeason
 	

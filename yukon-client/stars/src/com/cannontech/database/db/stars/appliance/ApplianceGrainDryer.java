@@ -16,11 +16,11 @@ import com.cannontech.database.db.DBPersistent;
 public class ApplianceGrainDryer extends DBPersistent {
 	
 	private Integer applianceID = null;
-	private Integer dryerTypeID = new Integer( CtiUtilities.NONE_ID );
-	private Integer binSizeID = new Integer( CtiUtilities.NONE_ID );
-	private Integer blowerEnergySourceID = new Integer( CtiUtilities.NONE_ID );
-	private Integer blowerHorsePowerID = new Integer( CtiUtilities.NONE_ID );
-	private Integer blowerHeatSourceID = new Integer( CtiUtilities.NONE_ID );
+	private Integer dryerTypeID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer binSizeID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer blowerEnergySourceID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer blowerHorsePowerID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer blowerHeatSourceID = new Integer( CtiUtilities.NONE_ZERO_ID );
 	
 	public static final String[] SETTER_COLUMNS = {
 		"DryerTypeID", "BinSizeID", "BlowerEnergySourceID", "BlowerHorsePowerID", "BlowerHeatSourceID"

@@ -2837,7 +2837,7 @@ private void addTagMenuItems( int selRow )
 		mi.putClientProperty( "tdc_tag_row", new Integer(i++) );
 
 		//mi.setForeground( Colors.getColor(liteTag.getColorID()) );
-		if( liteTag.getImageID() > CtiUtilities.NONE_ID )
+		if( liteTag.getImageID() > CtiUtilities.NONE_ZERO_ID )
 			mi.setIcon( 
 				new ImageIcon(java.awt.Toolkit.getDefaultToolkit().createImage(
 					YukonImageFuncs.getLiteYukonImage(liteTag.getImageID()).getImageValue()) ) );

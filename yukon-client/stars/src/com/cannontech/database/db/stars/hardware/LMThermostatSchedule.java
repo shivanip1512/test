@@ -23,9 +23,9 @@ public class LMThermostatSchedule extends DBPersistent {
 	
 	private Integer scheduleID = null;
 	private String scheduleName = CtiUtilities.STRING_NONE;
-	private Integer thermostatTypeID = new Integer(CtiUtilities.NONE_ID);
-	private Integer accountID = new Integer(CtiUtilities.NONE_ID);
-	private Integer inventoryID = new Integer(CtiUtilities.NONE_ID);
+	private Integer thermostatTypeID = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Integer accountID = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Integer inventoryID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	
 	public static final String[] SETTER_COLUMNS = {
 		"ScheduleName", "ThermostatTypeID", "AccountID", "InventoryID"

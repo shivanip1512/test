@@ -267,7 +267,7 @@ public class StarsFactory {
 		newAccount.setPrimaryContact( (PrimaryContact)newStarsCustomerContact(PrimaryContact.class) );
         
 		Substation sub = new Substation();
-		sub.setEntryID( CtiUtilities.NONE_ID );
+		sub.setEntryID( CtiUtilities.NONE_ZERO_ID );
 		StarsSiteInformation siteInfo = new StarsSiteInformation();
 		siteInfo.setSubstation( sub );
 		siteInfo.setFeeder( "" );
@@ -346,7 +346,7 @@ public class StarsFactory {
 	public static StarsCustomerContact newStarsCustomerContact(Class type) {
 		try {
 			StarsCustomerContact newContact = (StarsCustomerContact) type.newInstance();
-			newContact.setContactID( CtiUtilities.NONE_ID );
+			newContact.setContactID( CtiUtilities.NONE_ZERO_ID );
 			newContact.setLastName( "" );
 			newContact.setFirstName( "" );
 			return newContact;
@@ -429,7 +429,7 @@ public class StarsFactory {
 			StarsInv starsInv = (StarsInv) type.newInstance();
 			
 			starsInv.setInventoryID( -1 );
-			starsInv.setDeviceID( CtiUtilities.NONE_ID );
+			starsInv.setDeviceID( CtiUtilities.NONE_ZERO_ID );
 			starsInv.setDeviceType( (DeviceType) newEmptyStarsCustListEntry(DeviceType.class) );
 			starsInv.setDeviceLabel( "" );
 			starsInv.setInstallationCompany( (InstallationCompany) newEmptyStarsCustListEntry(InstallationCompany.class) );

@@ -18,11 +18,11 @@ import com.cannontech.database.db.DBPersistent;
 public class LMThermostatManualEvent extends DBPersistent {
 	
 	private Integer eventID = null;
-	private Integer inventoryID = new Integer(CtiUtilities.NONE_ID);
+	private Integer inventoryID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private Integer previousTemperature = new Integer(0);
 	private String holdTemperature = new String("N");
-	private Integer operationStateID = new Integer(CtiUtilities.NONE_ID);
-	private Integer fanOperationID = new Integer(CtiUtilities.NONE_ID);
+	private Integer operationStateID = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Integer fanOperationID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	
 	public static final String[] SETTER_COLUMNS = {
 		"InventoryID", "PreviousTemperature", "HoldTemperature", "OperationStateID", "FanOperationID"

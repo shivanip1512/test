@@ -706,10 +706,10 @@ public class StarsAdminUtil {
 					com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
 							new com.cannontech.database.data.stars.hardware.LMHardwareBase();
 					StarsLiteFactory.setLMHardwareBase( hw, liteHw );
-					hw.getLMHardwareBase().setRouteID( new Integer(CtiUtilities.NONE_ID) );
+					hw.getLMHardwareBase().setRouteID( new Integer(CtiUtilities.NONE_ZERO_ID) );
 					
 					Transaction.createTransaction( Transaction.UPDATE, hw.getLMHardwareBase() ).execute();
-					liteHw.setRouteID( CtiUtilities.NONE_ID );
+					liteHw.setRouteID( CtiUtilities.NONE_ZERO_ID );
 					
 					if (liteHw.getAccountID() > 0) {
 						StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );

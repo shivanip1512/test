@@ -14,8 +14,8 @@ import com.cannontech.database.data.lite.LiteTypes;
  */
 public class LiteLMThermostatSeason extends LiteBase {
 	
-	private int scheduleID = CtiUtilities.NONE_ID;
-	private int webConfigurationID = CtiUtilities.NONE_ID;
+	private int scheduleID = CtiUtilities.NONE_ZERO_ID;
+	private int webConfigurationID = CtiUtilities.NONE_ZERO_ID;
 	private long startDate = 0;
 	private int displayOrder = 0;
 	private java.util.ArrayList seasonEntries = null;	// List of LiteLMThermostatSeasonEntry

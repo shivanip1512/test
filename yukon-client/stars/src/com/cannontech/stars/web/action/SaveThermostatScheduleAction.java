@@ -226,7 +226,7 @@ public class SaveThermostatScheduleAction implements ActionBase {
 		}
 		else {
 			schedule.getLmThermostatSchedule().setScheduleID( null );
-			schedule.getLmThermostatSchedule().setInventoryID( new Integer(CtiUtilities.NONE_ID) );
+			schedule.getLmThermostatSchedule().setInventoryID( new Integer(CtiUtilities.NONE_ZERO_ID) );
 		}
 		
 		for (int i = 0; i < schedule.getThermostatSeasons().size(); i++) {

@@ -22,16 +22,16 @@ public class WorkOrderBase extends DBPersistent {
 
     private Integer orderID = null;
     private String orderNumber = "";
-    private Integer workTypeID = new Integer( CtiUtilities.NONE_ID );
-    private Integer currentStateID = new Integer( CtiUtilities.NONE_ID );
-    private Integer serviceCompanyID = new Integer( CtiUtilities.NONE_ID );
+    private Integer workTypeID = new Integer( CtiUtilities.NONE_ZERO_ID );
+    private Integer currentStateID = new Integer( CtiUtilities.NONE_ZERO_ID );
+    private Integer serviceCompanyID = new Integer( CtiUtilities.NONE_ZERO_ID );
     private java.util.Date dateReported = new java.util.Date(0);
     private String orderedBy = "";
     private String description = "";
     private java.util.Date dateScheduled = new java.util.Date(0);
     private java.util.Date dateCompleted = new java.util.Date(0);
     private String actionTaken = "";
-    private Integer accountID = new Integer( CtiUtilities.NONE_ID );
+    private Integer accountID = new Integer( CtiUtilities.NONE_ZERO_ID );
 
     public static final String[] SETTER_COLUMNS = {
         "OrderNumber", "WorkTypeID", "CurrentStateID", "ServiceCompanyID", "DateReported",

@@ -15,7 +15,7 @@ public class LiteLMThermostatSeasonEntry extends LiteBase {
 	
 	private int entryID = com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry.NONE_INT;
 	private int seasonID = com.cannontech.database.db.stars.hardware.LMThermostatSeason.NONE_INT;
-	private int timeOfWeekID = com.cannontech.common.util.CtiUtilities.NONE_ID;
+	private int timeOfWeekID = com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID;
 	private int startTime = 0;
 	private int temperature = 0;
 

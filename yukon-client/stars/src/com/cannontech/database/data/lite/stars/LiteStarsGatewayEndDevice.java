@@ -22,9 +22,9 @@ public class LiteStarsGatewayEndDevice extends LiteBase {
 	private int coolSetpoint = Integer.MIN_VALUE;
 	private int heatSetpoint = Integer.MIN_VALUE;
 	private String setpointStatus = null;
-	private int fanSwitch = CtiUtilities.NONE_ID;
-	private int systemSwitch = CtiUtilities.NONE_ID;
-	private int lastSystemSwitch = CtiUtilities.NONE_ID;
+	private int fanSwitch = CtiUtilities.NONE_ZERO_ID;
+	private int systemSwitch = CtiUtilities.NONE_ZERO_ID;
+	private int lastSystemSwitch = CtiUtilities.NONE_ZERO_ID;
 	private int lowerCoolSetpointLimit = Integer.MIN_VALUE;
 	private int upperHeatSetpointLimit = Integer.MIN_VALUE;
 	private int outdoorTemperature = Integer.MIN_VALUE;

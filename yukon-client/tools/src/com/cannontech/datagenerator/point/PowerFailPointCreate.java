@@ -95,7 +95,7 @@ public class PowerFailPointCreate extends PointCreate
 			accumPoint.getPointAlarming().setExcludeNotifyStates( accumPoint.getPointAlarming().DEFAULT_EXCLUDE_NOTIFY );
 			accumPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
 			accumPoint.getPointAlarming().setNotificationGroupID(  new Integer(accumPoint.getPointAlarming().NONE_NOTIFICATIONID) );
-			accumPoint.getPointAlarming().setRecipientID( new Integer(CtiUtilities.NONE_ID) );
+			accumPoint.getPointAlarming().setRecipientID( new Integer(CtiUtilities.NONE_ZERO_ID) );
 	
 			// set default settings for point POINTUNIT
 			accumPoint.getPointUnit().setPointID(new Integer(pointID));

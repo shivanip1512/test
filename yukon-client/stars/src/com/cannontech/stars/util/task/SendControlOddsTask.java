@@ -60,7 +60,7 @@ public class SendControlOddsTask implements Runnable {
 		ArrayList programs = energyCompany.getAllPrograms();
 		for (int i = 0; i < programs.size(); i++) {
 			LiteLMProgramWebPublishing program = (LiteLMProgramWebPublishing) programs.get(i);
-			if (program.getChanceOfControlID() != CtiUtilities.NONE_ID)
+			if (program.getChanceOfControlID() != CtiUtilities.NONE_ZERO_ID)
 				progList.add( program );
 		}
 		

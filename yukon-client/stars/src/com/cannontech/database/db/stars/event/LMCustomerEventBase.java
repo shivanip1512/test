@@ -16,8 +16,8 @@ public class LMCustomerEventBase extends DBPersistent {
     public static final int NONE_INT = 0;
 
     private Integer eventID = null;
-    private Integer eventTypeID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
-    private Integer actionID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
+    private Integer eventTypeID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID );
+    private Integer actionID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID );
     private java.util.Date eventDateTime = new java.util.Date(0);
     private String notes = "";
     private String authorizedBy = "";

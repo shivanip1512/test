@@ -17,8 +17,8 @@ import com.cannontech.database.data.lite.LiteTypes;
 public class LiteApplianceCategory extends LiteBase {
 	
 	private String description = null;
-	private int categoryID = com.cannontech.common.util.CtiUtilities.NONE_ID;
-	private int webConfigurationID = CtiUtilities.NONE_ID;
+	private int categoryID = com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID;
+	private int webConfigurationID = CtiUtilities.NONE_ZERO_ID;
 	
 	// Array of published programs
 	private ArrayList publishedPrograms = null;

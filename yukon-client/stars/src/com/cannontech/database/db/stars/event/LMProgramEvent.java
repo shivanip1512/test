@@ -17,8 +17,8 @@ import com.cannontech.database.db.DBPersistent;
 public class LMProgramEvent extends DBPersistent {
 
     private Integer eventID = null;
-    private Integer accountID = new Integer( CtiUtilities.NONE_ID );
-    private Integer programID = new Integer( CtiUtilities.NONE_ID );
+    private Integer accountID = new Integer( CtiUtilities.NONE_ZERO_ID );
+    private Integer programID = new Integer( CtiUtilities.NONE_ZERO_ID );
     
     public static final String[] SETTER_COLUMNS = {
         "AccountID", "ProgramID"

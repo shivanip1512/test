@@ -18,7 +18,7 @@ import com.cannontech.database.db.DBPersistent;
 public class CustomerFAQ extends DBPersistent {
 	
 	private Integer questionID = null;
-	private Integer subjectID = new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID);
+	private Integer subjectID = new Integer(com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID);
 	private String question = "";
 	private String answer = "";
 	

@@ -13,7 +13,7 @@ import com.cannontech.database.data.lite.LiteTypes;
  */
 public class LiteCustomerFAQ extends LiteBase {
 	
-	private int subjectID = com.cannontech.common.util.CtiUtilities.NONE_ID;
+	private int subjectID = com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID;
 	private String question = null;
 	private String answer = null;
 	

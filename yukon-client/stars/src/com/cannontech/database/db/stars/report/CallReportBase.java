@@ -19,7 +19,7 @@ public class CallReportBase extends DBPersistent {
 
     private Integer callID = null;
     private String callNumber = "";
-    private Integer callTypeID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
+    private Integer callTypeID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID );
     private java.util.Date dateTaken = new java.util.Date(0);
     private String takenBy = "";
     private String description = "";

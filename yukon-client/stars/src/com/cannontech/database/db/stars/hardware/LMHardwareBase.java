@@ -19,9 +19,9 @@ public class LMHardwareBase extends DBPersistent {
 
     private Integer inventoryID = null;
     private String manufacturerSerialNumber = "";
-    private Integer lmHardwareTypeID = new Integer( CtiUtilities.NONE_ID );
-    private Integer routeID = new Integer( CtiUtilities.NONE_ID );
-    private Integer configurationID = new Integer( CtiUtilities.NONE_ID );
+    private Integer lmHardwareTypeID = new Integer( CtiUtilities.NONE_ZERO_ID );
+    private Integer routeID = new Integer( CtiUtilities.NONE_ZERO_ID );
+    private Integer configurationID = new Integer( CtiUtilities.NONE_ZERO_ID );
 
     public static final String[] SETTER_COLUMNS = {
         "ManufacturerSerialNumber", "LMHardwareTypeID", "RouteID", "ConfigurationID"

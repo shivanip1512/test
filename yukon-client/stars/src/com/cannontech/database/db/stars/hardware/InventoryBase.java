@@ -21,16 +21,16 @@ import com.cannontech.database.db.DBPersistent;
 public class InventoryBase extends DBPersistent {
 
 	private Integer inventoryID = null;
-	private Integer accountID = new Integer( CtiUtilities.NONE_ID );
-	private Integer installationCompanyID = new Integer( CtiUtilities.NONE_ID );
-	private Integer categoryID = new Integer( CtiUtilities.NONE_ID );
+	private Integer accountID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer installationCompanyID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer categoryID = new Integer( CtiUtilities.NONE_ZERO_ID );
 	private Date receiveDate = new Date(0);
 	private Date installDate = new Date(0);
 	private Date removeDate = new Date(0);
 	private String alternateTrackingNumber = "";
-	private Integer voltageID = new Integer( CtiUtilities.NONE_ID );
+	private Integer voltageID = new Integer( CtiUtilities.NONE_ZERO_ID );
 	private String notes = "";
-	private Integer deviceID = new Integer( CtiUtilities.NONE_ID );
+	private Integer deviceID = new Integer( CtiUtilities.NONE_ZERO_ID );
 	private String deviceLabel = "";
 
 	public static final String[] SETTER_COLUMNS = {

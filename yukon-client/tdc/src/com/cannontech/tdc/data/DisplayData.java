@@ -15,7 +15,7 @@ import com.cannontech.common.util.CtiUtilities;
 public class DisplayData implements java.io.Externalizable
 {
 	private long displayNumber = Display.UNKNOWN_DISPLAY_NUMBER;
-	private int filterID = CtiUtilities.NONE_ID;
+	private int filterID = CtiUtilities.NONE_ZERO_ID;
 
 	// a list a properties that has different meanings for each display
 	private int prop0 = -1;

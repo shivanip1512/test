@@ -89,7 +89,7 @@ public class ContactNotificationGroupLoader implements Runnable
 				"n.Notification, nd.NotificationgroupID FROM " + 
 		 		ContactNotification.TABLE_NAME + " n, " +
 		 		NotificationDestination.TABLE_NAME + " nd " +
-		 		"WHERE nd.notificationgroupID > " + CtiUtilities.NONE_ID + " " +
+		 		"WHERE nd.notificationgroupID > " + CtiUtilities.NONE_ZERO_ID + " " +
 		 		"and n.ContactNotifID = nd.RecipientID " +
 		 		"ORDER BY nd.destinationorder";
 

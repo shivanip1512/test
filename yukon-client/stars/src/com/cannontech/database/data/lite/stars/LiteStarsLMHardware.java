@@ -22,9 +22,9 @@ public class LiteStarsLMHardware extends LiteInventoryBase {
 	public static final int THERMOSTAT_TYPE_TWO_WAY = 2;
 	
 	private String manufacturerSerialNumber = null;
-	private int lmHardwareTypeID = CtiUtilities.NONE_ID;
-	private int routeID = CtiUtilities.NONE_ID;
-	private int configurationID = CtiUtilities.NONE_ID;
+	private int lmHardwareTypeID = CtiUtilities.NONE_ZERO_ID;
+	private int routeID = CtiUtilities.NONE_ZERO_ID;
+	private int configurationID = CtiUtilities.NONE_ZERO_ID;
 	
 	// Extended fields
 	private int thermostatType = THERMOSTAT_TYPE_UNKNOWN;

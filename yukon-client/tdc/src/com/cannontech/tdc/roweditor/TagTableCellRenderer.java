@@ -73,7 +73,7 @@ public class TagTableCellRenderer extends javax.swing.JLabel implements javax.sw
 			((javax.swing.JComponent)this).setToolTipText( value.toString() );
 			
 			if( value instanceof LiteTag 
-				 && ((LiteTag)value).getImageID() > CtiUtilities.NONE_ID )
+				 && ((LiteTag)value).getImageID() > CtiUtilities.NONE_ZERO_ID )
 			{
 				setIcon( 
 					new ImageIcon(java.awt.Toolkit.getDefaultToolkit().createImage(

@@ -338,7 +338,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 									LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
 									if (liteAcctInfo != null) {
 										LiteYukonUser login = ContactFuncs.getYukonUser( liteAcctInfo.getCustomer().getPrimaryContactID() );
-										if (login != null && login.getUserID() != UserUtils.USER_STARS_DEFAULT_ID && !removedUsernames.contains( login.getUsername() ))
+										if (login != null && login.getUserID() != UserUtils.USER_DEFAULT_ID && !removedUsernames.contains( login.getUsername() ))
 											removedUsernames.add( login.getUsername() );
 									}
 									else if (prevFields[ImportManagerUtil.IDX_USERNAME].trim().length() > 0) {
@@ -354,7 +354,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 									custFieldsMap.put( custFields[ImportManagerUtil.IDX_ACCOUNT_NO], custFields );
 									
 									LiteYukonUser login = ContactFuncs.getYukonUser( liteAcctInfo.getCustomer().getPrimaryContactID() );
-									if (login != null && login.getUserID() != UserUtils.USER_STARS_DEFAULT_ID && !removedUsernames.contains( login.getUsername() ))
+									if (login != null && login.getUserID() != UserUtils.USER_DEFAULT_ID && !removedUsernames.contains( login.getUsername() ))
 										removedUsernames.add( login.getUsername() );
 								}
 								else {
@@ -407,7 +407,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 									custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION] = "UPDATE";
 									
 									LiteYukonUser login = ContactFuncs.getYukonUser( liteAcctInfo.getCustomer().getPrimaryContactID() );
-									if (login != null && login.getUserID() != UserUtils.USER_STARS_DEFAULT_ID)
+									if (login != null && login.getUserID() != UserUtils.USER_DEFAULT_ID)
 										custFields[ImportManagerUtil.IDX_USERNAME] = login.getUsername();
 									else
 										checkUsername = custFields[ImportManagerUtil.IDX_USERNAME].trim().length() > 0;

@@ -24,21 +24,21 @@ import com.cannontech.stars.util.InventoryUtils;
  */
 public class LiteInventoryBase extends LiteBase {
 
-	private int accountID = CtiUtilities.NONE_ID;
-	private int categoryID = CtiUtilities.NONE_ID;
-	private int installationCompanyID = CtiUtilities.NONE_ID;
+	private int accountID = CtiUtilities.NONE_ZERO_ID;
+	private int categoryID = CtiUtilities.NONE_ZERO_ID;
+	private int installationCompanyID = CtiUtilities.NONE_ZERO_ID;
 	private long receiveDate = 0;
 	private long installDate = 0;
 	private long removeDate = 0;
 	private String alternateTrackingNumber = null;
-	private int voltageID = CtiUtilities.NONE_ID;
+	private int voltageID = CtiUtilities.NONE_ZERO_ID;
 	private String notes = null;
-	private int deviceID = CtiUtilities.NONE_ID;
+	private int deviceID = CtiUtilities.NONE_ZERO_ID;
 	private String deviceLabel = null;
 	
 	// Extended fields
 	private ArrayList inventoryHistory = null;		// List of LiteLMHardwareEvent
-	private int deviceStatus = CtiUtilities.NONE_ID;
+	private int deviceStatus = CtiUtilities.NONE_ZERO_ID;
 	
 	private boolean extended = false;
 	
@@ -238,7 +238,7 @@ public class LiteInventoryBase extends LiteBase {
 	 * @return int
 	 */
 	public int getDeviceStatus() {
-		if (deviceStatus == CtiUtilities.NONE_ID)
+		if (deviceStatus == CtiUtilities.NONE_ZERO_ID)
 			updateDeviceStatus();
 		return deviceStatus;
 	}

@@ -348,7 +348,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			
 			StarsDatabaseCache.getInstance().deleteEnergyCompany( energyCompany.getLiteID() );
 			ServerUtils.handleDBChange( energyCompany, DBChangeMsg.CHANGE_TYPE_DELETE );
-			if (energyCompany.getPrimaryContactID() != CtiUtilities.NONE_ID) {
+			if (energyCompany.getPrimaryContactID() != CtiUtilities.NONE_ZERO_ID) {
 				LiteContact liteContact = ContactFuncs.getContact( energyCompany.getPrimaryContactID() );
 				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
 			}
@@ -358,7 +358,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			
 			// Delete the default operator login
 			if (energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_ADMIN_ID &&
-				energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID)
+				energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_DEFAULT_ID)
 			{
 				com.cannontech.database.data.user.YukonUser.deleteOperatorLogin( new Integer(energyCompany.getUserID()) );
 				ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(energyCompany.getUserID()), DBChangeMsg.CHANGE_TYPE_DELETE );

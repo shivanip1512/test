@@ -4191,7 +4191,7 @@ public void mainPanel_JComboCurrentDisplayAction_actionPerformed(java.util.Event
 					source.getCurrentDisplay().getDisplayData().getFilterID() );
 		}
 		else
-			getAlarmToolBar().setSelectedFilter( CtiUtilities.NONE_ID );
+			getAlarmToolBar().setSelectedFilter( CtiUtilities.NONE_ZERO_ID );
 
 		TDCMainFrame.messageLog.addMessage( 
 				"Current Filter is " + source.getCurrentDisplay().getTdcFilter(), MessageBoxFrame.INFORMATION_MSG );		

@@ -12,7 +12,7 @@ import com.cannontech.common.util.CtiUtilities;
  */
 public abstract class TDCFilterBase implements ITDCFilter
 {
-	private int id = CtiUtilities.NONE_ID;
+	private int id = CtiUtilities.NONE_ZERO_ID;
 	private BitSet conditions = new BitSet();
 	private Object[] values = null;
 	

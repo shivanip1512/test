@@ -18,7 +18,7 @@ import com.cannontech.database.cache.functions.YukonListFuncs;
 public class LiteStarsLMProgram {
 
 	private LiteLMProgramWebPublishing publishedProgram = null;
-	private int groupID = CtiUtilities.NONE_ID;
+	private int groupID = CtiUtilities.NONE_ZERO_ID;
 	private boolean inService = false;
 	
 	public LiteStarsLMProgram() {

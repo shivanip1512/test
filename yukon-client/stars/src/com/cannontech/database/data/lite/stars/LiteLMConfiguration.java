@@ -407,7 +407,7 @@ public class LiteLMConfiguration extends LiteBase {
 		}
 	}
 	
-	private int configurationID = CtiUtilities.NONE_ID;
+	private int configurationID = CtiUtilities.NONE_ZERO_ID;
 	private String coldLoadPickup = null;
 	private String tamperDetect = null;
 	

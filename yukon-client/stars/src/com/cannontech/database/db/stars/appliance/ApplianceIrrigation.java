@@ -16,12 +16,12 @@ import com.cannontech.database.db.DBPersistent;
 public class ApplianceIrrigation extends DBPersistent {
 
     private Integer applianceID = null;
-    private Integer irrigationTypeID = new Integer( CtiUtilities.NONE_ID );
-    private Integer horsePowerID = new Integer( CtiUtilities.NONE_ID );
-    private Integer energySourceID = new Integer( CtiUtilities.NONE_ID );
-    private Integer soilTypeID = new Integer( CtiUtilities.NONE_ID );
-    private Integer meterLocationID = new Integer( CtiUtilities.NONE_ID );
-    private Integer meterVoltageID = new Integer( CtiUtilities.NONE_ID );
+    private Integer irrigationTypeID = new Integer( CtiUtilities.NONE_ZERO_ID );
+    private Integer horsePowerID = new Integer( CtiUtilities.NONE_ZERO_ID );
+    private Integer energySourceID = new Integer( CtiUtilities.NONE_ZERO_ID );
+    private Integer soilTypeID = new Integer( CtiUtilities.NONE_ZERO_ID );
+    private Integer meterLocationID = new Integer( CtiUtilities.NONE_ZERO_ID );
+    private Integer meterVoltageID = new Integer( CtiUtilities.NONE_ZERO_ID );
 
     public static final String[] SETTER_COLUMNS = {
         "IrrigationTypeID", "HorsePowerID", "EnergySourceID",

@@ -92,12 +92,12 @@ public class WorkOrderBean {
 		}
 	};
 	
-	private int sortBy = CtiUtilities.NONE_ID;
+	private int sortBy = CtiUtilities.NONE_ZERO_ID;
 	private int sortOrder = SORT_ORDER_ASCENDING;
-	private int filterBy = CtiUtilities.NONE_ID;
-	private int serviceStatus = CtiUtilities.NONE_ID;
-	private int serviceType = CtiUtilities.NONE_ID;
-	private int serviceCompany = CtiUtilities.NONE_ID;
+	private int filterBy = CtiUtilities.NONE_ZERO_ID;
+	private int serviceStatus = CtiUtilities.NONE_ZERO_ID;
+	private int serviceType = CtiUtilities.NONE_ZERO_ID;
+	private int serviceCompany = CtiUtilities.NONE_ZERO_ID;
 	private int page = 1;
 	private int pageSize = DEFAULT_PAGE_SIZE;
 	private int energyCompanyID = 0;

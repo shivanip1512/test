@@ -772,7 +772,7 @@ public class PointImportUtility
 				} catch(java.sql.SQLException e) { }
 		}
 		//strange, should not get here
-		return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID);
+		return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID);
 	}
 
 	public static Integer findStateGroupID(String sgName)
@@ -812,7 +812,7 @@ public class PointImportUtility
 				} catch(java.sql.SQLException e) { }
 		}
 		//strange, should not get here
-		return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID);
+		return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID);
 	}
 	
 	//Oh the hackishness...

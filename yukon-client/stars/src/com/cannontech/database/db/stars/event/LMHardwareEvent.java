@@ -18,7 +18,7 @@ import com.cannontech.database.db.DBPersistent;
 public class LMHardwareEvent extends DBPersistent {
 
     private Integer eventID = null;
-    private Integer inventoryID = new Integer( CtiUtilities.NONE_ID );
+    private Integer inventoryID = new Integer( CtiUtilities.NONE_ZERO_ID );
 
     public static final String[] SETTER_COLUMNS = { "InventoryID" };
 

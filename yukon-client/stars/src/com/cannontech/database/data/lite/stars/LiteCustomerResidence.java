@@ -14,17 +14,17 @@ import com.cannontech.database.data.lite.LiteTypes;
  */
 public class LiteCustomerResidence extends LiteBase {
 	
-	private int residenceTypeID = CtiUtilities.NONE_ID;
-	private int constructionMaterialID = CtiUtilities.NONE_ID;
-	private int decadeBuiltID = CtiUtilities.NONE_ID;
-	private int squareFeetID = CtiUtilities.NONE_ID;
-	private int insulationDepthID = CtiUtilities.NONE_ID;
-	private int generalConditionID = CtiUtilities.NONE_ID;
-	private int mainCoolingSystemID = CtiUtilities.NONE_ID;
-	private int mainHeatingSystemID = CtiUtilities.NONE_ID;
-	private int numberOfOccupantsID = CtiUtilities.NONE_ID;
-	private int ownershipTypeID = CtiUtilities.NONE_ID;
-	private int mainFuelTypeID = CtiUtilities.NONE_ID;
+	private int residenceTypeID = CtiUtilities.NONE_ZERO_ID;
+	private int constructionMaterialID = CtiUtilities.NONE_ZERO_ID;
+	private int decadeBuiltID = CtiUtilities.NONE_ZERO_ID;
+	private int squareFeetID = CtiUtilities.NONE_ZERO_ID;
+	private int insulationDepthID = CtiUtilities.NONE_ZERO_ID;
+	private int generalConditionID = CtiUtilities.NONE_ZERO_ID;
+	private int mainCoolingSystemID = CtiUtilities.NONE_ZERO_ID;
+	private int mainHeatingSystemID = CtiUtilities.NONE_ZERO_ID;
+	private int numberOfOccupantsID = CtiUtilities.NONE_ZERO_ID;
+	private int ownershipTypeID = CtiUtilities.NONE_ZERO_ID;
+	private int mainFuelTypeID = CtiUtilities.NONE_ZERO_ID;
 	private String notes = null;
 	
 	public LiteCustomerResidence() {

@@ -50,7 +50,7 @@ public class ContactLoader implements Runnable
 			"SELECT cnt.contactID, cnt.ContFirstName, cnt.ContLastName, " + 
 			"cnt.Loginid, cnt.AddressID " + 
 			"FROM " + Contact.TABLE_NAME + " cnt " +
-			"where cnt.ContactID > " + CtiUtilities.NONE_ID + " " +
+			"where cnt.ContactID > " + CtiUtilities.NONE_ZERO_ID + " " +
 			"order by cnt.contactID";
 	
 		java.sql.Connection conn = null;
@@ -81,7 +81,7 @@ public class ContactLoader implements Runnable
 				"SELECT cn.ContactNotifID, cn.ContactID, cn.NotificationCategoryID, " + 
 				"cn.DisableFlag, cn.Notification " + 
 				"FROM " + ContactNotification.TABLE_NAME + " cn " +
-				"where cn.ContactNotifID > " + CtiUtilities.NONE_ID + " " +
+				"where cn.ContactNotifID > " + CtiUtilities.NONE_ZERO_ID + " " +
 				"order by cn.ContactID";
 			
 			Vector vectVals = new Vector(8);

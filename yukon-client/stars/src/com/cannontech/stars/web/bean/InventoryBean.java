@@ -160,14 +160,14 @@ public class InventoryBean {
 		}
 	};
 	
-	private int sortBy = CtiUtilities.NONE_ID;
+	private int sortBy = CtiUtilities.NONE_ZERO_ID;
 	private int sortOrder = SORT_ORDER_ASCENDING;
-	private int filterBy = CtiUtilities.NONE_ID;
-	private int deviceType = CtiUtilities.NONE_ID;
-	private int serviceCompany = CtiUtilities.NONE_ID;
+	private int filterBy = CtiUtilities.NONE_ZERO_ID;
+	private int deviceType = CtiUtilities.NONE_ZERO_ID;
+	private int serviceCompany = CtiUtilities.NONE_ZERO_ID;
 	private int location = INV_LOCATION_WAREHOUSE;
-	private int addressingGroup = CtiUtilities.NONE_ID;
-	private int deviceStatus = CtiUtilities.NONE_ID;
+	private int addressingGroup = CtiUtilities.NONE_ZERO_ID;
+	private int deviceStatus = CtiUtilities.NONE_ZERO_ID;
 	private int page = 1;
 	private int pageSize = DEFAULT_PAGE_SIZE;
 	private int energyCompanyID = 0;
@@ -175,7 +175,7 @@ public class InventoryBean {
 	private String referer = null;
 	private ArrayList inventorySet = null;
 	private int member = -1;
-	private int searchBy = CtiUtilities.NONE_ID;
+	private int searchBy = CtiUtilities.NONE_ZERO_ID;
 	private String searchValue = null;
 	private String action = null;
 	
@@ -307,8 +307,8 @@ public class InventoryBean {
 				LiteInventoryBase liteInv = (LiteInventoryBase)
 						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
 				
-				if (getLocation() == INV_LOCATION_WAREHOUSE && liteInv.getAccountID() == CtiUtilities.NONE_ID
-					|| getLocation() == INV_LOCATION_RESIDENCE && liteInv.getAccountID() != CtiUtilities.NONE_ID)
+				if (getLocation() == INV_LOCATION_WAREHOUSE && liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID
+					|| getLocation() == INV_LOCATION_RESIDENCE && liteInv.getAccountID() != CtiUtilities.NONE_ZERO_ID)
 				{
 					sortedInvs.add( hardwares.get(i) );
 				}
@@ -320,7 +320,7 @@ public class InventoryBean {
 			for (int i = 0; i < hardwares.size(); i++) {
 				LiteInventoryBase liteInv = (LiteInventoryBase)
 						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
-				if (!(liteInv instanceof LiteStarsLMHardware) || liteInv.getAccountID() == CtiUtilities.NONE_ID)
+				if (!(liteInv instanceof LiteStarsLMHardware) || liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID)
 					continue;
 				
 				LiteStarsEnergyCompany company = (showEnergyCompany)?
@@ -955,14 +955,14 @@ public class InventoryBean {
 	 * @param i
 	 */
 	public void setSearchBy(int i) {
-		if (searchBy != CtiUtilities.NONE_ID || i != CtiUtilities.NONE_ID) {
+		if (searchBy != CtiUtilities.NONE_ZERO_ID || i != CtiUtilities.NONE_ZERO_ID) {
 			searchBy = i;
 			inventoryList = null;
 			inventorySet = null;
 		}
 		
-		if (searchBy != CtiUtilities.NONE_ID) {
-			filterBy = CtiUtilities.NONE_ID;
+		if (searchBy != CtiUtilities.NONE_ZERO_ID) {
+			filterBy = CtiUtilities.NONE_ZERO_ID;
 			htmlStyle |= HTML_STYLE_INVENTORY_SET;
 		}
 	}

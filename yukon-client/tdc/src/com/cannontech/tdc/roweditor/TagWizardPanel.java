@@ -53,7 +53,7 @@ public class TagWizardPanel extends ManualEntryJPanel implements RowEditorDialog
 			if( value instanceof LiteTag )
 			{
 				LiteTag tag = (LiteTag)value;
-				if( tag.getImageID() > CtiUtilities.NONE_ID )
+				if( tag.getImageID() > CtiUtilities.NONE_ZERO_ID )
 				{
 					setIcon( 
 						new ImageIcon(java.awt.Toolkit.getDefaultToolkit().createImage(

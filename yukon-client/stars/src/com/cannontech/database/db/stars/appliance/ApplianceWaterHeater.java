@@ -16,8 +16,8 @@ import com.cannontech.database.db.DBPersistent;
 public class ApplianceWaterHeater extends DBPersistent {
 
 	private Integer applianceID = null;
-	private Integer numberOfGallonsID = new Integer( CtiUtilities.NONE_ID );
-	private Integer energySourceID = new Integer( CtiUtilities.NONE_ID );
+	private Integer numberOfGallonsID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer energySourceID = new Integer( CtiUtilities.NONE_ZERO_ID );
 	private Integer numberOfElements = new Integer(0);
 	
 	public static final String[] SETTER_COLUMNS = {

@@ -15,8 +15,8 @@ import com.cannontech.database.data.lite.LiteTypes;
 public class LiteStarsAppliance extends LiteBase {
 	
 	public static class AirConditioner {
-		private int tonnageID = CtiUtilities.NONE_ID;
-		private int typeID = CtiUtilities.NONE_ID;
+		private int tonnageID = CtiUtilities.NONE_ZERO_ID;
+		private int typeID = CtiUtilities.NONE_ZERO_ID;
 		
 		/**
 		 * @return
@@ -48,8 +48,8 @@ public class LiteStarsAppliance extends LiteBase {
 	}
 	
 	public static class WaterHeater {
-		private int numberOfGallonsID = CtiUtilities.NONE_ID;
-		private int energySourceID = CtiUtilities.NONE_ID;
+		private int numberOfGallonsID = CtiUtilities.NONE_ZERO_ID;
+		private int energySourceID = CtiUtilities.NONE_ZERO_ID;
 		private int numberOfElements = 0;
 		
 		/**
@@ -96,9 +96,9 @@ public class LiteStarsAppliance extends LiteBase {
 	}
 	
 	public static class DualFuel {
-		private int switchOverTypeID = CtiUtilities.NONE_ID;
+		private int switchOverTypeID = CtiUtilities.NONE_ZERO_ID;
 		private int secondaryKWCapacity = 0;
-		private int secondaryEnergySourceID = CtiUtilities.NONE_ID;
+		private int secondaryEnergySourceID = CtiUtilities.NONE_ZERO_ID;
 		
 		/**
 		 * @return
@@ -144,8 +144,8 @@ public class LiteStarsAppliance extends LiteBase {
 	}
 	
 	public static class Generator {
-		private int transferSwitchTypeID = CtiUtilities.NONE_ID;
-		private int transferSwitchMfgID = CtiUtilities.NONE_ID;
+		private int transferSwitchTypeID = CtiUtilities.NONE_ZERO_ID;
+		private int transferSwitchMfgID = CtiUtilities.NONE_ZERO_ID;
 		private int peakKWCapacity = 0;
 		private int fuelCapGallons = 0;
 		private int startDelaySeconds = 0;
@@ -222,11 +222,11 @@ public class LiteStarsAppliance extends LiteBase {
 	}
 	
 	public static class GrainDryer {
-		private int dryerTypeID = CtiUtilities.NONE_ID;
-		private int binSizeID = CtiUtilities.NONE_ID;
-		private int blowerEnergySourceID = CtiUtilities.NONE_ID;
-		private int blowerHorsePowerID = CtiUtilities.NONE_ID;
-		private int blowerHeatSourceID = CtiUtilities.NONE_ID;
+		private int dryerTypeID = CtiUtilities.NONE_ZERO_ID;
+		private int binSizeID = CtiUtilities.NONE_ZERO_ID;
+		private int blowerEnergySourceID = CtiUtilities.NONE_ZERO_ID;
+		private int blowerHorsePowerID = CtiUtilities.NONE_ZERO_ID;
+		private int blowerHeatSourceID = CtiUtilities.NONE_ZERO_ID;
 		
 		/**
 		 * @return
@@ -300,7 +300,7 @@ public class LiteStarsAppliance extends LiteBase {
 	}
 	
 	public static class StorageHeat {
-		private int storageTypeID = CtiUtilities.NONE_ID;
+		private int storageTypeID = CtiUtilities.NONE_ZERO_ID;
 		private int peakKWCapacity = 0;
 		private int hoursToRecharge = 0;
 		
@@ -348,9 +348,9 @@ public class LiteStarsAppliance extends LiteBase {
 	}
 	
 	public static class HeatPump {
-		private int pumpTypeID = CtiUtilities.NONE_ID;
-		private int pumpSizeID = CtiUtilities.NONE_ID;
-		private int standbySourceID = CtiUtilities.NONE_ID;
+		private int pumpTypeID = CtiUtilities.NONE_ZERO_ID;
+		private int pumpSizeID = CtiUtilities.NONE_ZERO_ID;
+		private int standbySourceID = CtiUtilities.NONE_ZERO_ID;
 		private int secondsDelayToRestart = 0;
 		
 		/**
@@ -411,12 +411,12 @@ public class LiteStarsAppliance extends LiteBase {
 	}
 	
 	public static class Irrigation {
-		private int irrigationTypeID = CtiUtilities.NONE_ID;
-		private int horsePowerID = CtiUtilities.NONE_ID;
-		private int energySourceID = CtiUtilities.NONE_ID;
-		private int soilTypeID = CtiUtilities.NONE_ID;
-		private int meterLocationID = CtiUtilities.NONE_ID;
-		private int meterVoltageID = CtiUtilities.NONE_ID;
+		private int irrigationTypeID = CtiUtilities.NONE_ZERO_ID;
+		private int horsePowerID = CtiUtilities.NONE_ZERO_ID;
+		private int energySourceID = CtiUtilities.NONE_ZERO_ID;
+		private int soilTypeID = CtiUtilities.NONE_ZERO_ID;
+		private int meterLocationID = CtiUtilities.NONE_ZERO_ID;
+		private int meterVoltageID = CtiUtilities.NONE_ZERO_ID;
 		
 		/**
 		 * @return
@@ -507,14 +507,14 @@ public class LiteStarsAppliance extends LiteBase {
 	private int applianceCategoryID = com.cannontech.database.db.stars.appliance.ApplianceCategory.NONE_INT;
 	private int programID = 0;
 	private int yearManufactured = 0;
-	private int manufacturerID = CtiUtilities.NONE_ID;
-	private int locationID = CtiUtilities.NONE_ID;
+	private int manufacturerID = CtiUtilities.NONE_ZERO_ID;
+	private int locationID = CtiUtilities.NONE_ZERO_ID;
 	private String notes = null;
 	private String modelNumber = null;
 	private int kwCapacity = 0;
 	private int efficiencyRating = 0;
 	
-	private int inventoryID = CtiUtilities.NONE_ID;
+	private int inventoryID = CtiUtilities.NONE_ZERO_ID;
 	private int addressingGroupID = 0;
 	private int loadNumber = 0;
 	

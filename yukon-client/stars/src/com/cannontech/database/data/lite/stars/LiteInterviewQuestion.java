@@ -13,12 +13,12 @@ import com.cannontech.database.data.lite.LiteTypes;
  */
 public class LiteInterviewQuestion extends LiteBase {
 	
-	private int questionType = com.cannontech.common.util.CtiUtilities.NONE_ID;
+	private int questionType = com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID;
 	private String question = null;
 	private String mandatory = null;
 	private int displayOrder = 0;
-	private int answerType = com.cannontech.common.util.CtiUtilities.NONE_ID;
-	private int expectedAnswer = com.cannontech.common.util.CtiUtilities.NONE_ID;
+	private int answerType = com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID;
+	private int expectedAnswer = com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID;
 	
 	public LiteInterviewQuestion() {
 		super();

@@ -20,8 +20,8 @@ public class ApplianceCategory extends DBPersistent {
 
     private Integer applianceCategoryID = null;
     private String description = "";
-    private Integer categoryID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
-    private Integer webConfigurationID = new Integer( CtiUtilities.NONE_ID );
+    private Integer categoryID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID );
+    private Integer webConfigurationID = new Integer( CtiUtilities.NONE_ZERO_ID );
 
     public static final String[] SETTER_COLUMNS = {
         "Description", "CategoryID", "WebConfigurationID"

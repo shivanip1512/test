@@ -154,8 +154,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	
 	private String name = null;
-	private int primaryContactID = CtiUtilities.NONE_ID;
-	private int userID = com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID;
+	private int primaryContactID = CtiUtilities.NONE_ZERO_ID;
+	private int userID = com.cannontech.user.UserUtils.USER_DEFAULT_ID;
 	
 	private Hashtable custAccountInfos = null;	// Map of Integer(AccountID) to LiteStarsCustAccountInformation
 	private Hashtable addresses = null;			// Map of Integer(AddressID) to LiteAddress
@@ -189,7 +189,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private long loadInvTaskID = 0;
 	private long loadOrdersTaskID = 0;
 	
-	private int dftRouteID = CtiUtilities.NONE_ID;
+	private int dftRouteID = CtiUtilities.NONE_ZERO_ID;
 	private int operDftGroupID = com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID - 1;
 	
 	private OptOutEventQueue optOutEventQueue = null;
@@ -296,7 +296,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public int getDefaultRouteID() {
 		if (dftRouteID == INVALID_ROUTE_ID) return dftRouteID;
 		
-		if (dftRouteID == CtiUtilities.NONE_ID) {
+		if (dftRouteID == CtiUtilities.NONE_ZERO_ID) {
 			String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 			
 			String sql = 
@@ -618,7 +618,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		nextOrderNo = 0;
 		hierarchyLoaded = false;
 		
-		dftRouteID = CtiUtilities.NONE_ID;
+		dftRouteID = CtiUtilities.NONE_ZERO_ID;
 		operDftGroupID = com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID - 1;
 		
 		optOutEventQueue = null;
@@ -1897,7 +1897,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		for (int i = 0; i < inventory.size(); i++) {
 			LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
 			if (liteInv.getInventoryID() < 0) continue;
-			if (liteInv.getDeviceID() == CtiUtilities.NONE_ID) continue;
+			if (liteInv.getDeviceID() == CtiUtilities.NONE_ZERO_ID) continue;
 			
 			if (liteInv.getCategoryID() == categoryID &&
 				PAOFuncs.getYukonPAOName( liteInv.getDeviceID() ).equalsIgnoreCase( deviceName ))

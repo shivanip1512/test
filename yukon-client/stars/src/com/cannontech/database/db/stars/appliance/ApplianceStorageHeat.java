@@ -16,7 +16,7 @@ import com.cannontech.database.db.DBPersistent;
 public class ApplianceStorageHeat extends DBPersistent {
 	
 	private Integer applianceID = null;
-	private Integer storageTypeID = new Integer( CtiUtilities.NONE_ID );
+	private Integer storageTypeID = new Integer( CtiUtilities.NONE_ZERO_ID );
 	private Integer peakKWCapacity = new Integer(0);
 	private Integer hoursToRecharge = new Integer(0);
 	

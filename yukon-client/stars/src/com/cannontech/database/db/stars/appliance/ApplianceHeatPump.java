@@ -16,10 +16,10 @@ import com.cannontech.database.db.DBPersistent;
 public class ApplianceHeatPump extends DBPersistent {
 	
 	private Integer applianceID = null;
-	private Integer pumpTypeID = new Integer( CtiUtilities.NONE_ID );
-	private Integer standbySourceID = new Integer( CtiUtilities.NONE_ID );
+	private Integer pumpTypeID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer standbySourceID = new Integer( CtiUtilities.NONE_ZERO_ID );
 	private Integer secondsDelayToRestart = new Integer(0);
-	private Integer pumpSizeID = new Integer( CtiUtilities.NONE_ID );
+	private Integer pumpSizeID = new Integer( CtiUtilities.NONE_ZERO_ID );
 	
 	public static final String[] SETTER_COLUMNS = {
 		"PumpTypeID", "StandBySourceID", "SecondsDelayToRestart", "PumpSizeID"

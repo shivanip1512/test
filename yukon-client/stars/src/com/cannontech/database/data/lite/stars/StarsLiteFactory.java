@@ -942,7 +942,7 @@ public class StarsLiteFactory {
 		app.getApplianceBase().setKWCapacity( new Integer(liteApp.getKWCapacity()) );
 		app.getApplianceBase().setEfficiencyRating( new Integer(liteApp.getEfficiencyRating()) );
 		
-		if (liteApp.getInventoryID() != CtiUtilities.NONE_ID) {
+		if (liteApp.getInventoryID() != CtiUtilities.NONE_ZERO_ID) {
 			app.getLMHardwareConfig().setApplianceID( app.getApplianceBase().getApplianceID() );
 			app.getLMHardwareConfig().setInventoryID( new Integer(liteApp.getInventoryID()) );
 			app.getLMHardwareConfig().setAddressingGroupID( new Integer(liteApp.getAddressingGroupID()) );
@@ -1464,7 +1464,7 @@ public class StarsLiteFactory {
 				starsInvs.addStarsInventory( (StarsInventory)list.get(i) );
 		}
 		
-		if (liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID &&
+		if (liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_DEFAULT_ID &&
 			liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_ADMIN_ID)
 		{
 			LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteContact.getLoginID() );
@@ -1511,7 +1511,7 @@ public class StarsLiteFactory {
 		starsCompany.setCompanyAddress( (CompanyAddress) StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
 		starsCompany.setTimeZone( liteCompany.getDefaultTimeZone().getID() );
 		
-		if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ID) {
+		if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ZERO_ID) {
 			LiteContact liteContact = ContactFuncs.getContact( liteCompany.getPrimaryContactID() );
 			
 			if (liteContact != null) {
@@ -1524,7 +1524,7 @@ public class StarsLiteFactory {
 				LiteContactNotification liteNotifEmail = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
 				starsCompany.setEmail( StarsUtils.getNotification(liteNotifEmail) );
 				
-				if (liteContact.getAddressID() != CtiUtilities.NONE_ID) {
+				if (liteContact.getAddressID() != CtiUtilities.NONE_ZERO_ID) {
 					LiteAddress liteAddr = liteCompany.getAddress( liteContact.getAddressID() );
 					CompanyAddress starsAddr = new CompanyAddress();
 					setStarsCustomerAddress( starsAddr, liteAddr );
@@ -1543,14 +1543,14 @@ public class StarsLiteFactory {
 		starsCompany.setCompanyAddress( (CompanyAddress) StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
 		starsCompany.setPrimaryContact( (PrimaryContact) StarsFactory.newStarsCustomerContact(PrimaryContact.class) );
 		
-		if (liteCompany.getAddressID() != CtiUtilities.NONE_ID) {
+		if (liteCompany.getAddressID() != CtiUtilities.NONE_ZERO_ID) {
 			LiteAddress liteAddr = energyCompany.getAddress( liteCompany.getAddressID());
 			CompanyAddress companyAddr = new CompanyAddress();
 			setStarsCustomerAddress( companyAddr, liteAddr );
 			starsCompany.setCompanyAddress( companyAddr );
 		}
 		
-		if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ID) {
+		if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ZERO_ID) {
 			LiteContact liteContact = ContactFuncs.getContact( liteCompany.getPrimaryContactID() );
 			PrimaryContact primContact = new PrimaryContact();
 			setStarsCustomerContact( primContact, liteContact );

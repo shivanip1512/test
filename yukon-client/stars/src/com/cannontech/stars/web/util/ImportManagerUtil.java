@@ -467,7 +467,7 @@ public class ImportManagerUtil {
 	    account.setStreetAddress( propAddr );
 	
 		Substation starsSub = new Substation();
-		starsSub.setEntryID( CtiUtilities.NONE_ID );
+		starsSub.setEntryID( CtiUtilities.NONE_ZERO_ID );
 		if (fields[IDX_SUBSTATION].length() > 0) {
 			try {
 				// If importing old STARS data, this field is substation id
@@ -583,7 +583,7 @@ public class ImportManagerUtil {
 	    UpdateCustAccountAction.updateCustomerAccount( updateAccount, liteAcctInfo, energyCompany );
 	    
 		int loginID = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() ).getLoginID();
-		if (loginID == UserUtils.USER_STARS_DEFAULT_ID && fields[IDX_USERNAME].trim().length() > 0) {
+		if (loginID == UserUtils.USER_DEFAULT_ID && fields[IDX_USERNAME].trim().length() > 0) {
 			StarsUpdateLogin login = createStarsUpdateLogin( fields, energyCompany );
 			UpdateLoginAction.updateLogin( login, liteAcctInfo, energyCompany );
 		}
@@ -668,7 +668,7 @@ public class ImportManagerUtil {
 		
 		if (fields[IDX_SERVICE_COMPANY].length() > 0) {
 			InstallationCompany company = new InstallationCompany();
-			company.setEntryID( CtiUtilities.NONE_ID );
+			company.setEntryID( CtiUtilities.NONE_ZERO_ID );
 			
 			try {
 				// If importing old STARS data, this field is the service company id
@@ -888,14 +888,14 @@ public class ImportManagerUtil {
 		}
 		
 		Location location = new Location();
-		location.setEntryID( CtiUtilities.NONE_ID );
+		location.setEntryID( CtiUtilities.NONE_ZERO_ID );
 		app.setLocation( location );
 		
 		Manufacturer mfc = new Manufacturer();
 		if (fields[IDX_MANUFACTURER].length() > 0)
 			mfc.setEntryID( Integer.parseInt(fields[IDX_MANUFACTURER]) );
 		else
-			mfc.setEntryID( CtiUtilities.NONE_ID );
+			mfc.setEntryID( CtiUtilities.NONE_ZERO_ID );
 		app.setManufacturer( mfc );
 		
 		if (fields[IDX_APP_CAT_DEF_ID].equals("")) return;
@@ -1140,7 +1140,7 @@ public class ImportManagerUtil {
 		if (liteAcctInfo != null)
 			createOrder.setAccountID( liteAcctInfo.getAccountID() );
 		else
-			createOrder.setAccountID( CtiUtilities.NONE_ID );
+			createOrder.setAccountID( CtiUtilities.NONE_ZERO_ID );
 		
 		StarsUtils.starsDateFormat.setTimeZone( energyCompany.getDefaultTimeZone() );
 		

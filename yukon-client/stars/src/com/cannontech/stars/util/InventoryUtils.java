@@ -56,7 +56,7 @@ public class InventoryUtils {
 			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT).getEntryID();
 		}
 		
-		return CtiUtilities.NONE_ID;
+		return CtiUtilities.NONE_ZERO_ID;
 	}
 	
 	public static boolean isLMHardware(int categoryID) {

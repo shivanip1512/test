@@ -16,8 +16,8 @@ import com.cannontech.database.db.DBPersistent;
 public class ApplianceGenerator extends DBPersistent {
 	
 	private Integer applianceID = null;
-	private Integer transferSwitchTypeID = new Integer( CtiUtilities.NONE_ID );
-	private Integer transferSwitchMfgID = new Integer( CtiUtilities.NONE_ID );
+	private Integer transferSwitchTypeID = new Integer( CtiUtilities.NONE_ZERO_ID );
+	private Integer transferSwitchMfgID = new Integer( CtiUtilities.NONE_ZERO_ID );
 	private Integer peakKWCapacity = new Integer(0);
 	private Integer fuelCapGallons = new Integer(0);
 	private Integer startDelaySeconds = new Integer(0);

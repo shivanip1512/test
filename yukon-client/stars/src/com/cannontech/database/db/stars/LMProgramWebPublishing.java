@@ -19,10 +19,10 @@ import com.cannontech.database.db.DBPersistent;
 public class LMProgramWebPublishing extends DBPersistent {
 
 	private Integer programID = null;
-	private Integer applianceCategoryID = new Integer(CtiUtilities.NONE_ID);
-	private Integer deviceID = new Integer(CtiUtilities.NONE_ID);
-	private Integer webSettingsID = new Integer(CtiUtilities.NONE_ID);
-	private Integer chanceOfControlID = new Integer(CtiUtilities.NONE_ID);
+	private Integer applianceCategoryID = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Integer deviceID = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Integer webSettingsID = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Integer chanceOfControlID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private Integer programOrder = new Integer(0);
 
 	public static final String[] SETTER_COLUMNS = {

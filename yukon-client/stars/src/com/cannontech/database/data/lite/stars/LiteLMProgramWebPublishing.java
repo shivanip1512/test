@@ -14,10 +14,10 @@ import com.cannontech.database.data.lite.LiteTypes;
  */
 public class LiteLMProgramWebPublishing extends LiteBase {
 
-	private int applianceCategoryID = CtiUtilities.NONE_ID;
-	private int deviceID = CtiUtilities.NONE_ID;
-	private int webSettingsID = CtiUtilities.NONE_ID;
-	private int chanceOfControlID = CtiUtilities.NONE_ID;
+	private int applianceCategoryID = CtiUtilities.NONE_ZERO_ID;
+	private int deviceID = CtiUtilities.NONE_ZERO_ID;
+	private int webSettingsID = CtiUtilities.NONE_ZERO_ID;
+	private int chanceOfControlID = CtiUtilities.NONE_ZERO_ID;
 	private int programOrder = 0;
 	private int[] groupIDs = null;
 	

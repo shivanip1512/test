@@ -14,8 +14,8 @@ import com.cannontech.database.data.lite.LiteTypes;
 public class LiteWorkOrderBase extends LiteBase {
 
 	private String orderNumber = null;
-	private int workTypeID = com.cannontech.common.util.CtiUtilities.NONE_ID;
-	private int currentStateID = com.cannontech.common.util.CtiUtilities.NONE_ID;
+	private int workTypeID = com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID;
+	private int currentStateID = com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID;
 	private int serviceCompanyID = com.cannontech.database.db.stars.report.ServiceCompany.NONE_INT;
 	private long dateReported = 0;
 	private long dateScheduled = 0;

@@ -16,9 +16,9 @@ import com.cannontech.database.db.DBPersistent;
 public class ApplianceDualFuel extends DBPersistent {
 	
 	private Integer applianceID = null;
-	private Integer switchOverTypeID = new Integer( CtiUtilities.NONE_ID );
+	private Integer switchOverTypeID = new Integer( CtiUtilities.NONE_ZERO_ID );
 	private Integer secondaryKWCapacity = new Integer(0);
-	private Integer secondaryEnergySourceID = new Integer( CtiUtilities.NONE_ID );
+	private Integer secondaryEnergySourceID = new Integer( CtiUtilities.NONE_ZERO_ID );
 	
 	public static final String[] SETTER_COLUMNS = {
 		"SwitchOverTypeID", "SecondaryKWCapacity", "SecondaryEnergySourceID"

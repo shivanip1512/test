@@ -16,8 +16,8 @@ import com.cannontech.database.db.DBPersistent;
 public class ApplianceAirConditioner extends DBPersistent {
 
     private Integer applianceID = null;
-    private Integer tonnageID = new Integer( CtiUtilities.NONE_ID );
-    private Integer typeID = new Integer( CtiUtilities.NONE_ID );
+    private Integer tonnageID = new Integer( CtiUtilities.NONE_ZERO_ID );
+    private Integer typeID = new Integer( CtiUtilities.NONE_ZERO_ID );
 
     public static final String[] SETTER_COLUMNS = {
         "TonnageID", "TypeID"
