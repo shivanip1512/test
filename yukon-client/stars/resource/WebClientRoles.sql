@@ -3,7 +3,8 @@ insert into YukonRoleProperty values(-1105,-2,'customer_group_name','Residential
 insert into YukonRoleProperty values(-1106,-2,'operator_group_name','Web Client Operators','Group name of all the web client operator logins');
 
 /* Web Client Role Properties */
-insert into YukonRoleProperty values(-10806,-108,'log_off_url','(none)','The url to take the user after logging off the Yukon web application');
+insert into YukonRoleProperty values(-10806,-108,'nav_connector_middle','MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
+insert into YukonRoleProperty values(-10807,-108,'nav_connector_bottom','BottomConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of the last hardware under each category');
 
 /* Operator Administrator Role Properties */
 insert into YukonRoleProperty values(-20000,-200,'Config Energy Company','false','Controls whether to allow configuring the energy company');
@@ -18,6 +19,7 @@ insert into YukonRoleProperty values(-20900,-209,'Show All Inventory','true','Co
 insert into YukonRoleProperty values(-20901,-209,'Add SN Range','true','Controls whether to allow adding hardwares by serial number range');
 insert into YukonRoleProperty values(-20902,-209,'Update SN Range','true','Controls whether to allow updating hardwares by serial number range');
 insert into YukonRoleProperty values(-20903,-209,'Config SN Range','true','Controls whether to allow configuring hardwares by serial number range');
+insert into YukonRoleProperty values(-20904,-209,'Delete SN Range','true','Controls whether to allow deleting hardwares by serial number range');
 
 /* Operator Consumer Info Role Properties */
 insert into YukonRoleProperty values(-20100,-201,'Not Implemented','false','Controls whether to show the features not implemented yet (not recommended)');
@@ -41,7 +43,8 @@ insert into YukonRoleProperty values(-20117,-201,'Thermostats All','false','Cont
 insert into YukonRoleProperty values(-20150,-201,'Super Operator','false','Used for some testing functions (not recommended)');
 insert into YukonRoleProperty values(-20151,-201,'New Account Wizard','true','Controls whether to enable the new account wizard');
 insert into YukonRoleProperty values(-20152,-201,'Import Customer Account','false','Controls whether to enable the customer account importing feature');
-insert into YukonRoleProperty values(-20153,-201,'Inventory Checking Time','EARLY','Controls when the inventory checking is performed while creating or updating hardware information. Possible values are EARLY, LATE, and NONE');
+insert into YukonRoleProperty values(-20153,-201,'Inventory Checking Time','EARLY','Controls when to perform inventory checking while creating or updating hardware information. Possible values are EARLY, LATE, and NONE');
+insert into YukonRoleProperty values(-20154,-201,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment');
 insert into YukonRoleProperty values(-20800,-201,'Link FAQ','(none)','The customized FAQ link');
 insert into YukonRoleProperty values(-20801,-201,'Link Thermostat Instructions','(none)','The customized thermostat instructions link');
 insert into YukonRoleProperty values(-20810,-201,'Text Control','control','Term for control');
@@ -123,6 +126,7 @@ insert into yukongrouprole values (503,-300,-108,-10803,'(none)');
 insert into yukongrouprole values (504,-300,-108,-10804,'(none)');
 insert into yukongrouprole values (505,-300,-108,-10805,'DemoHeaderCES.gif');
 insert into yukongrouprole values (506,-300,-108,-10806,'(none)');
+insert into yukongrouprole values (507,-300,-108,-10807,'(none)');
 insert into yukongrouprole values (520,-300,-400,-40000,'true');
 insert into yukongrouprole values (521,-300,-400,-40001,'true');
 insert into yukongrouprole values (522,-300,-400,-40002,'false');
@@ -176,6 +180,7 @@ insert into yukongrouprole values (703,-301,-108,-10803,'(none)');
 insert into yukongrouprole values (704,-301,-108,-10804,'(none)');
 insert into yukongrouprole values (705,-301,-108,-10805,'(none)');
 insert into yukongrouprole values (706,-301,-108,-10806,'(none)');
+insert into yukongrouprole values (707,-301,-108,-10807,'(none)');
 insert into yukongrouprole values (720,-301,-201,-20100,'true');
 insert into yukongrouprole values (721,-301,-201,-20101,'true');
 insert into yukongrouprole values (722,-301,-201,-20102,'true');
@@ -198,6 +203,7 @@ insert into yukongrouprole values (750,-301,-201,-20150,'true');
 insert into yukongrouprole values (751,-301,-201,-20151,'true');
 insert into yukongrouprole values (752,-301,-201,-20152,'false');
 insert into yukongrouprole values (753,-301,-201,-20153,'(none)');
+insert into yukongrouprole values (754,-301,-201,-20154,'false');
 insert into yukongrouprole values (770,-301,-202,-20200,'(none)');
 insert into yukongrouprole values (775,-301,-203,-20300,'(none)');
 insert into yukongrouprole values (776,-301,-203,-20301,'(none)');
@@ -208,6 +214,7 @@ insert into yukongrouprole values (791,-301,-209,-20900,'(none)');
 insert into yukongrouprole values (792,-301,-209,-20901,'(none)');
 insert into yukongrouprole values (793,-301,-209,-20902,'(none)');
 insert into yukongrouprole values (794,-301,-209,-20903,'(none)');
+insert into yukongrouprole values (795,-301,-209,-20904,'(none)');
 insert into yukongrouprole values (800,-301,-201,-20800,'(none)');
 insert into yukongrouprole values (801,-301,-201,-20801,'(none)');
 insert into yukongrouprole values (810,-301,-201,-20810,'(none)');
