@@ -336,7 +336,7 @@ private SmartMultiDBPersistent createPoints( Integer paoID )
 
 	smartDB.addDBPersistent( 
 		PointFactory.createAnalogPoint(
-			"kVAr Demand",
+			"LP kVAr Demand",
 			paoID,
 			new Integer(ids[3]),
 			PointTypes.PT_OFFSET_KVAR_DEMAND,
