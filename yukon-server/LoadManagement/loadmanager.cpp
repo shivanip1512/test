@@ -162,7 +162,7 @@ void CtiLoadManager::controlLoop()
 
                 currentDateTime.now();
                 LONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
-                LONG secondsFrom1901 = currentDateTime.seconds();
+                ULONG secondsFrom1901 = currentDateTime.seconds();
 
                 if(_LM_DEBUG)
                 {
@@ -527,7 +527,7 @@ CtiConnection* CtiLoadManager::getPILConnection()
 
     Reads off the Dispatch connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::checkDispatch(LONG secondsFrom1901)
+void CtiLoadManager::checkDispatch(ULONG secondsFrom1901)
 {
 
     bool done = FALSE;
@@ -551,7 +551,7 @@ void CtiLoadManager::checkDispatch(LONG secondsFrom1901)
 
     Reads off the PIL connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::checkPIL(LONG secondsFrom1901)
+void CtiLoadManager::checkPIL(ULONG secondsFrom1901)
 {
 
     bool done = FALSE;
@@ -648,7 +648,7 @@ void CtiLoadManager::registerForPoints(const RWOrdered& controlAreas)
 
     Reads off the Dispatch connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::parseMessage(RWCollectable *message, LONG secondsFrom1901)
+void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
 {
     CtiMultiMsg* msgMulti;
     CtiPointDataMsg* pData;
@@ -747,7 +747,7 @@ void CtiLoadManager::parseMessage(RWCollectable *message, LONG secondsFrom1901)
 
     Handles point data messages and updates strategy point values.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, RWTime& timestamp, LONG secondsFrom1901 )
+void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, RWTime& timestamp, ULONG secondsFrom1901 )
 {
     if( _LM_DEBUG )
     {
@@ -871,7 +871,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
     Handles porter return messages and updates the status of strategy cap
     bank controls.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString, LONG secondsFrom1901 )
+void CtiLoadManager::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString, ULONG secondsFrom1901 )
 {
     /*if( _LM_DEBUG )
     {
@@ -885,7 +885,7 @@ void CtiLoadManager::porterReturnMsg( long deviceId, RWCString commandString, in
 
     Handles signal messages and updates strategy tags.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional, LONG secondsFrom1901 )
+void CtiLoadManager::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional, ULONG secondsFrom1901 )
 {
     /*if( _LM_DEBUG )
     {

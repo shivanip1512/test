@@ -35,7 +35,7 @@ class CtiLMControlAreaStore : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
 public:   
 
-    RWOrdered* getControlAreas(LONG secondsFrom1901);
+    RWOrdered* getControlAreas(ULONG secondsFrom1901);
 
     static CtiLMControlAreaStore* getInstance();
     static void deleteInstance();

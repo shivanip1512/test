@@ -80,7 +80,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiLMControlArea& setDefDailyStartTime(LONG start);
     CtiLMControlArea& setDefDailyStopTime(LONG stop);
     CtiLMControlArea& setRequireAllTriggersActiveFlag(BOOL requireall);
-    CtiLMControlArea& figureNextCheckTime(LONG secondsFrom1901);
+    CtiLMControlArea& figureNextCheckTime(ULONG secondsFrom1901);
     CtiLMControlArea& setNewPointDataReceivedFlag(BOOL newdatareceived);
     CtiLMControlArea& setUpdatedFlag(BOOL updated);
     CtiLMControlArea& setControlAreaStatusPointId(LONG statuspointid);
@@ -91,15 +91,15 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
 
     BOOL isControlTime(LONG secondsFromBeginningOfDay);
     BOOL isControlStillNeeded();
-    BOOL isPastMinResponseTime(LONG secondsFrom1901);
+    BOOL isPastMinResponseTime(ULONG secondsFrom1901);
     BOOL isManualControlReceived();
     BOOL isThresholdTriggerTripped();
     DOUBLE calculateLoadReductionNeeded();
-    DOUBLE reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    DOUBLE takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    BOOL maintainCurrentControl(LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    DOUBLE reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    DOUBLE takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    BOOL maintainCurrentControl(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     BOOL stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    void handleManualControl(LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    void handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);

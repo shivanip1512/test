@@ -100,7 +100,7 @@ public:
     //virtual CtiRequestMsg* createRequestMsg() const = 0;
     //pure virtuals
 
-    virtual BOOL doesMasterCycleNeedToBeUpdated(LONG secondsFrom1901, LONG groupControlDone, LONG offTime);
+    virtual BOOL doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
