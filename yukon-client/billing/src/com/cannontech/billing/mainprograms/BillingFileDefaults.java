@@ -13,13 +13,13 @@ public class BillingFileDefaults
 	public static final String BILLING_DEFAULTS_FILENAME = "\\BillingDefaultSetting.DAT";
 	public static final String BILLING_DEFAULTS_DIRECTORY = com.cannontech.common.util.CtiUtilities.getConfigDirPath();
 	//Number of members in this class.
-	private final int NUMBER_OF_PARAMETERS = 5;
+	private final int NUMBER_OF_PARAMETERS = 6;
 
 	private int formatID = -1;
 	private int demandDaysPrev = 30;
 	private int energyDaysPrev = 7;
 	//private String[] collectionGroup = null;
-	private java.util.Vector collectionGroup = null;
+	private java.util.Vector billGroup = null;
 	private String outputFileDir = null;
 
 	//USED BUT NOT STORED IN THE FILE BECAUSE WE CAN'T PREDICT THIS, YET?
@@ -27,7 +27,9 @@ public class BillingFileDefaults
 	private java.util.Date endDate = null;
 	private java.util.Date energyStartDate = null;
 	private java.util.Date demandStartDate = null;
-	
+
+
+	private String billGroupColumn = "COLLECTIONGROUP";
 /**
  * DynamicBilling constructor comment.
  */
@@ -40,13 +42,15 @@ public BillingFileDefaults()
  * DynamicBilling constructor comment.
  */
 public BillingFileDefaults(int newFormatID, int newDemandDays, int newEnergyDays, 
-				String newSingleCollectionGrp, String newOutFile, String newInFile, java.util.Date newEndDate)
+				String newSingleBillGrp, String newBillGrpColumn, String newOutFile, 
+				String newInFile, java.util.Date newEndDate)
 {
 	super();
 	setFormatID( newFormatID );
 	setDemandDaysPrev( newDemandDays );
 	setEnergyDaysPrev( newEnergyDays );
-	setCollectionGroup( newSingleCollectionGrp );
+	setBillGroup( newSingleBillGrp );
+	setBillGroupColumn( newBillGrpColumn );
 	setOutputFile( newOutFile );
 	
 	setInputFile( newInFile );
@@ -56,17 +60,27 @@ public BillingFileDefaults(int newFormatID, int newDemandDays, int newEnergyDays
  * DynamicBilling constructor comment.
  */
 public BillingFileDefaults(int newFormatID, int newDemandDays, int newEnergyDays, 
-				java.util.Vector newCollectionGrp, String newOutFile, String newInFile, java.util.Date newEndDate)
+				java.util.Vector newBillGrp, String newBillGrpColumn, String newOutFile, 
+				String newInFile, java.util.Date newEndDate)
 {
 	super();
 	setFormatID( newFormatID );
 	setDemandDaysPrev( newDemandDays );
 	setEnergyDaysPrev( newEnergyDays );
-	setCollectionGroup( newCollectionGrp );
+	setBillGroup( newBillGrp );
+	setBillGroupColumn( newBillGrpColumn);
 	setOutputFile( newOutFile );
 
 	setInputFile( newInFile );
 	setEndDate( newEndDate );
+}
+public java.util.Vector getBillGroup()
+{
+	return billGroup;
+}
+public String getBillGroupColumn()
+{
+	return billGroupColumn;
 }
 public java.util.Date getBillingEndDate()
 {
@@ -82,10 +96,6 @@ public java.util.Date getBillingEndDate()
 		endDate = cal.getTime();
 	}
 	return endDate;
-}
-public java.util.Vector getCollectionGroup()
-{
-	return collectionGroup;
 }
 public int getDemandDaysPrev()
 {
@@ -268,39 +278,43 @@ public void parseDefaultsFile()
 // These are the collection groups the user last used.
 // Ex.  collection1,collection2,collection3...
 
-private void setCollectionGroup(String newCollGrpString)
+private void setBillGroup(String newBillGrpString)
 {
 	int beginIndex = 0;
-	int endIndex = newCollGrpString.indexOf(",");
+	int endIndex = newBillGrpString.indexOf(",");
 
-	String temp = newCollGrpString.substring(beginIndex, endIndex);
+	String temp = newBillGrpString.substring(beginIndex, endIndex);
 
 	if( endIndex < 0)
 	{
-		collectionGroup = new java.util.Vector(1);
-		collectionGroup.add(newCollGrpString);
+		billGroup = new java.util.Vector(1);
+		billGroup.add(newBillGrpString);
 	}
 	else
 	{	
-		collectionGroup = new java.util.Vector();
+		billGroup = new java.util.Vector();
 		int count = 0;
 		
 		while ( endIndex > 0)			//returns -1 "," not found
 		{
-			temp = newCollGrpString.substring(beginIndex, endIndex);
+			temp = newBillGrpString.substring(beginIndex, endIndex);
 
-			collectionGroup.add(count++, temp);
+			billGroup.add(count++, temp);
 			beginIndex = endIndex + 1;
 
-			newCollGrpString = newCollGrpString.substring(beginIndex);			
-			endIndex = newCollGrpString.indexOf(",");
+			newBillGrpString = newBillGrpString.substring(beginIndex);			
+			endIndex = newBillGrpString.indexOf(",");
 
 		}
 	}
 }
-private void setCollectionGroup(java.util.Vector newCollectionGroup)
+private void setBillGroup(java.util.Vector newBillGroup)
 {
-	collectionGroup = newCollectionGroup;
+	billGroup = newBillGroup;
+}
+public void setBillGroupColumn(String newBillGroupColumn)
+{
+	billGroupColumn = newBillGroupColumn;
 }
 public void setDemandDaysPrev(int newDemandDaysPrev)
 {
@@ -373,8 +387,11 @@ public void updateFileDefaults(java.util.Vector infileDefaultsVector)
 	//setEndDate(new java.util.Date((String)infileDefaultsVector.get(index++)));
 	setDemandDaysPrev((new Integer((String)infileDefaultsVector.get(index++))).intValue());
 	setEnergyDaysPrev((new Integer((String)infileDefaultsVector.get(index++))).intValue());
-	setCollectionGroup((String)infileDefaultsVector.get(index++));
+	setBillGroup((String)infileDefaultsVector.get(index++));
 	setOutputFile((String)infileDefaultsVector.get(index++));
+	
+	if( index < infileDefaultsVector.size())
+		setBillGroupColumn((String)infileDefaultsVector.get(index++));
 	//setInputFile((String)infileDefaultsVector.get(index++));
 }
 /**
@@ -405,17 +422,17 @@ public void writeDefaultsFile()
 
 		String collGrpString = new String();
 		// write the last collection group
-		for (int i = 0; i < getCollectionGroup().size(); i++)
+		for (int i = 0; i < getBillGroup().size(); i++)
 		{
-			collGrpString += getCollectionGroup().get(i) + ",";
+			collGrpString += getBillGroup().get(i) + ",";
 		}			
 		writer.write( collGrpString + "\r\n" );
 
 		// write the default output file dir
 		writer.write( getOutputFileDir() + "\r\n" );
 
-		// write the default input file dir
-		//writer.write( getInputFileDir() + "\r\n" );
+		// write the type of bill Group being used (MUST BE A DB COLUMN FROM DEVICEMETERGROUP table)
+		writer.write( getBillGroupColumn() + "\r\n" );
 
 		writer.close();
 	}

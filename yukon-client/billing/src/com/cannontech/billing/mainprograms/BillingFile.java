@@ -12,7 +12,8 @@ public class BillingFile extends java.util.Observable implements Runnable
 	private BillingFileDefaults billingDefaults = null;
 	private FileFormatBase fileFormatBase = null;
 	//private java.util.Date billingEndDate = null;
-	private java.util.Vector allCollectionGroupsVector = null;
+	private java.util.Vector allBillGroupsVector = null;
+	
 	private String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 /**
  * BillingFile constructor comment.
@@ -22,11 +23,11 @@ public BillingFile()
 	super();
 	initialize();
 }
-public java.util.Vector getAllCollectionGroupsVector ()
+public java.util.Vector getAllBillGroupsVector ()
 {
-	if (allCollectionGroupsVector == null)
-		allCollectionGroupsVector = retreiveAllCollectionGroupsVector();
-	return allCollectionGroupsVector;
+	if (allBillGroupsVector == null)
+		allBillGroupsVector = retreiveAllBillGroupsVector();
+	return allBillGroupsVector;
 }
 public BillingFileDefaults getBillingDefaults()
 {
@@ -66,16 +67,17 @@ public static void main(String[] args)
 }
 /**
  */
-public java.util.Vector retreiveAllCollectionGroupsVector()
+public java.util.Vector retreiveAllBillGroupsVector()
 {
-	java.util.Vector collectionGroupVector = new java.util.Vector();
+	java.util.Vector billGroupVector = new java.util.Vector();
 		
 	java.sql.Statement stmt = null;
 	java.sql.Connection conn = null;
 	java.sql.ResultSet rset = null;
 	
-	String sql = new String( "SELECT DISTINCT COLLECTIONGROUP FROM " + 
-					com.cannontech.database.db.device.DeviceMeterGroup.TABLE_NAME +" ORDER BY COLLECTIONGROUP");
+	String sql = new String( "SELECT DISTINCT " + getBillingDefaults().getBillGroupColumn() + " FROM "
+					+ com.cannontech.database.db.device.DeviceMeterGroup.TABLE_NAME
+					+ " ORDER BY " + getBillingDefaults().getBillGroupColumn());
 	try
 	{
 		conn = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias);
@@ -85,7 +87,7 @@ public java.util.Vector retreiveAllCollectionGroupsVector()
 
 		while (rset.next())
 		{
-			collectionGroupVector.addElement(rset.getString(1));
+			billGroupVector.addElement(rset.getString(1));
 		}
 
 		//getGroupList().setListData(collectionGroupVector);
@@ -110,7 +112,7 @@ public java.util.Vector retreiveAllCollectionGroupsVector()
 			e.printStackTrace();
 		}
 	}
-	return collectionGroupVector;
+	return billGroupVector;
 }
 /**
  * Insert the method's description here.
@@ -205,8 +207,14 @@ public void run()
 		System.out.println(" ** FYI ** Valid entries are for meters with: ");
 		System.out.println(" ** DEMAND readings > " + getBillingDefaults().getDemandStartDate() + " AND <= " + getBillingDefaults().getEndDate());
 		System.out.println(" ** ENERGY readings > " + getBillingDefaults().getEnergyStartDate() + " AND <= " + getBillingDefaults().getEndDate());
+
+		boolean success = false;
 		
-		boolean success = fileFormatBase.retrieveBillingData( getBillingDefaults().getCollectionGroup(), null );
+		if (getBillingDefaults().getBillGroup().isEmpty())
+			success = false;
+		else
+			success = fileFormatBase.retrieveBillingData( null );	// null is the dbalias.  It's set in
+																	// every method but should be updated sometime.
 
 		try
 		{
@@ -232,9 +240,9 @@ public void run()
 		}
 	}
 }
-public void setAllCollectionGroupsVector(java.util.Vector newCollectionGrpsVector)
+public void setAllBillGroupsVector(java.util.Vector newBillGrpsVector)
 {
-	allCollectionGroupsVector = newCollectionGrpsVector;
+	allBillGroupsVector = newBillGrpsVector;
 }
 public void setBillingDefaults(BillingFileDefaults newBillingFileDefaults)
 {

@@ -151,7 +151,7 @@ public static void main(String[] args)
 			//tell our formatter about needing to append or not
 			fileFormatBase.setIsAppending( appendFlag );
 
-			boolean success = fileFormatBase.retrieveBillingData(collectionGroupVector, null);
+			boolean success = fileFormatBase.retrieveBillingData( null);
 
 			try
 			{
