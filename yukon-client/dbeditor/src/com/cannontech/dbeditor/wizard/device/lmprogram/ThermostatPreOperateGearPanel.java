@@ -4,10 +4,11 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * Creation date: (8/1/2002 4:37:34 PM)
  * @author: 
  */
+import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
  
-public class ThermostatPreOperateGearPanel extends GenericGearPanel {
+public class ThermostatPreOperateGearPanel extends GenericGearPanel implements com.cannontech.common.gui.util.DataInputPanelListener {
 	private javax.swing.JComboBox ivjJComboBoxHowToStop = null;
 	private javax.swing.JComboBox ivjJComboBoxWhenChange = null;
 	private com.klg.jclass.field.JCSpinField ivjJCSpinFieldChangeDuration = null;
@@ -857,6 +858,7 @@ private void initConnections() throws java.lang.Exception {
 	getJComboBoxWhenChange().addActionListener(this);
 	getJComboBoxHowToStop().addActionListener(this);
 	getJTextFieldChangeTriggerOffset().addCaretListener(this);
+	getStatEditorPanel().addDataInputPanelListener(this);
 
 	// user code end
 }
@@ -1192,4 +1194,13 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1)
 	//fire this event for all JCSpinFields!!
 	this.fireInputUpdate();
 }
+
+/* (non-Javadoc)
+ * @see com.cannontech.common.gui.util.DataInputPanelListener#inputUpdate(com.cannontech.common.editor.PropertyPanelEvent)
+ */
+public void inputUpdate(PropertyPanelEvent event) 
+{
+	fireInputUpdate();	
+}
+
 }

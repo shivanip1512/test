@@ -61,8 +61,18 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC2(e);
 	if (e.getSource() == getJButtonDeltasAbsolute()) 
 		connEtoC3(e);
+		
 	// user code begin {2}
 
+	//takes care of the actions of the statEditorPanel for ThermostatGears
+	if (e.getSource() == getJCheckBoxCoolMode() || e.getSource() == getJCheckBoxDeltaB() 
+		|| e.getSource() == getJCheckBoxDeltaD() || e.getSource() == getJCheckBoxDeltaF() 
+		|| e.getSource() == getJCheckBoxHeatMode() || e.getSource() == getJCheckBoxMax() 
+		|| e.getSource() == getJCheckBoxMin() || e.getSource() == getJCheckBoxRand() 
+		|| e.getSource() == getJCheckBoxTa() || e.getSource() == getJCheckBoxTb() 
+		|| e.getSource() == getJCheckBoxTc() || e.getSource() == getJCheckBoxTd() 
+		|| e.getSource() == getJCheckBoxTe() || e.getSource() == getJCheckBoxTf())
+		fireInputUpdate();
 	// user code end
 }
 
@@ -78,6 +88,7 @@ private void connEtoC2(java.awt.event.ActionEvent arg1) {
 		// user code end
 		this.jButtonFahrenheitCelsius_ActionPerformed(arg1);
 		// user code begin {2}
+		fireInputUpdate();
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
 		// user code begin {3}
@@ -98,6 +109,7 @@ private void connEtoC3(java.awt.event.ActionEvent arg1) {
 		// user code end
 		this.jButtonDeltasAbsolute_ActionPerformed(arg1);
 		// user code begin {2}
+		fireInputUpdate();
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
 		// user code begin {3}
@@ -121,6 +133,7 @@ private void connEtoC4(java.awt.event.MouseEvent arg1) {
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
 		// user code begin {3}
+		fireInputUpdate();
 		// user code end
 		handleException(ivjExc);
 	}
@@ -1476,6 +1489,23 @@ private void initConnections() throws java.lang.Exception {
 	getJButtonFahrenheitCelsius().addActionListener(this);
 	getJButtonDeltasAbsolute().addActionListener(this);
 	getJTableCurve().addMouseListener(this);
+	
+	//necessary for statEditorPanel, utilized by thermostat gears
+	getJCheckBoxCoolMode().addActionListener(this);
+	getJCheckBoxDeltaB().addActionListener(this);
+	getJCheckBoxDeltaD().addActionListener(this);
+	getJCheckBoxDeltaF().addActionListener(this); 
+	getJCheckBoxHeatMode().addActionListener(this);
+	getJCheckBoxMax().addActionListener(this);
+	getJCheckBoxMin().addActionListener(this);
+	getJCheckBoxRand().addActionListener(this); 
+	getJCheckBoxTa().addActionListener(this);
+	getJCheckBoxTb().addActionListener(this); 
+	getJCheckBoxTc().addActionListener(this);
+	getJCheckBoxTd().addActionListener(this); 
+	getJCheckBoxTe().addActionListener(this);
+	getJCheckBoxTf().addActionListener(this);
+	
 }
 
 

@@ -3,10 +3,12 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * This type was created in VisualAge.
  */
 
+import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 
-public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {
+public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener, com.cannontech.common.gui.util.DataInputPanelListener {
 	private String gearType = null;
 	private java.util.Hashtable paoHashTable = null;
 	private javax.swing.JLabel ivjJLabelGearName = null;
@@ -583,6 +585,16 @@ private void initConnections() throws java.lang.Exception {
 	getJComboBoxGearType().addActionListener(this);
 	getJTextFieldGearName().addCaretListener(this);
 	
+	//Listeners for the variety of gear panels
+	getIvjTimeGearPanel1().addDataInputPanelListener(this);
+	getIvjLatchingGearPanel1().addDataInputPanelListener(this);
+	getIvjMasterGearPanel1().addDataInputPanelListener(this);
+	getIvjRotationGearPanel1().addDataInputPanelListener(this);
+	getIvjSmartGearPanel1().addDataInputPanelListener(this);
+	getIvjThermoPreOpGearPanel1().addDataInputPanelListener(this);
+	getIvjThermoSetbackGearPanel1().addDataInputPanelListener(this);
+	
+
 }
 
 /**
@@ -975,6 +987,14 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
 	 */
 	public void setIvjTimeGearPanel1(TimeRefreshGearPanel ivjTimeGearPanel1) {
 		this.ivjTimeGearPanel1 = ivjTimeGearPanel1;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.common.gui.util.DataInputPanelListener#inputUpdate(com.cannontech.common.editor.PropertyPanelEvent)
+	 */
+	public void inputUpdate(PropertyPanelEvent event) {
+		fireInputUpdate();		
 	}
 
 }
