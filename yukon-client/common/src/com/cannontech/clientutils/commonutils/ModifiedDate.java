@@ -10,67 +10,70 @@ import java.text.SimpleDateFormat;
 public class ModifiedDate extends java.util.Date 
 {
 	//default pattern for this guy
-	private static SimpleDateFormat formatter = 
+	private static SimpleDateFormat formatter_def = 
 				new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+
+	private static SimpleDateFormat formatter_nosecs = 
+				new SimpleDateFormat("MM-dd-yyyy HH:mm");
+
+	private static SimpleDateFormat formatter_nosecs_noyr = 
+				new SimpleDateFormat("MM-dd HH:mm");
+
+
+	public static final short FRMT_DEFAULT = 0;
+	public static final short FRMT_NOSECS = 1;
+	public static final short FRMT_NOSECS_NOYR = 2;
+	
+	
+	//private boolean showSecs = true;
+	private final short _formatID;// = FRMT_DEFAULT;
 
 	/**
 	 * ModifiedDate constructor comment.
 	 */
 	public ModifiedDate() {
+		this( FRMT_DEFAULT );
+	}
+
+	public ModifiedDate( short formatID ) {
 		super();
+		_formatID = formatID;
 	}
-	/**
-	 * ModifiedDate constructor comment.
-	 * @param year int
-	 * @param month int
-	 * @param date int
-	 */
-	public ModifiedDate(int year, int month, int date) {
-		super(year, month, date);
+
+	private SimpleDateFormat getFormatter()
+	{
+		switch( _formatID )
+		{
+			case FRMT_NOSECS:
+				return formatter_nosecs;
+			case FRMT_NOSECS_NOYR:
+				return formatter_nosecs_noyr;
+				
+			default:
+				return formatter_def;
+		}
 	}
-	/**
-	 * ModifiedDate constructor comment.
-	 * @param year int
-	 * @param month int
-	 * @param date int
-	 * @param hrs int
-	 * @param min int
-	 */
-	public ModifiedDate(int year, int month, int date, int hrs, int min) {
-		super(year, month, date, hrs, min);
-	}
-	/**
-	 * ModifiedDate constructor comment.
-	 * @param year int
-	 * @param month int
-	 * @param date int
-	 * @param hrs int
-	 * @param min int
-	 * @param sec int
-	 */
-	public ModifiedDate(int year, int month, int date, int hrs, int min, int sec) {
-		super(year, month, date, hrs, min, sec);
-	}
+
 	/**
 	 * ModifiedDate constructor comment.
 	 * @param date long
 	 */
 	public ModifiedDate(long date) {
+		this( date, FRMT_DEFAULT );
+	}
+
+	public ModifiedDate(long date, short formatID) {
 		super(date);
+		_formatID = formatID;
 	}
-	
-	public static synchronized void setFormatPattern( String pattern )
-	{
-		formatter.applyPattern( pattern );
-	}
-	
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (6/14/00 11:08:21 AM)
 	 */
 	public String getDateString() 
 	{
-		return formatter.format( this );
+		return toString();
 	}
 	/**
 	 * Insert the method's description here.
@@ -78,15 +81,16 @@ public class ModifiedDate extends java.util.Date
 	 */
 	public String getTimeString() 
 	{
-		return formatter.format( this );
+		return toString();
 	}
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (6/14/00 11:08:21 AM)
 	 */
 	public String toString() 
 	{
-		return formatter.format( this );
+		return getFormatter().format( this );
 	}
 
 }
