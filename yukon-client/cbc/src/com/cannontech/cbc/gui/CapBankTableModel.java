@@ -105,7 +105,7 @@ public void clear()
 	currentRowBGColors = null;
 	
 	if( currenBlinkingAlarms != null )
-		currenBlinkingAlarms.destory();
+		currenBlinkingAlarms.destroy();
 		
 	currenBlinkingAlarms = null;
 	getAlarmingRowVector().removeAllElements();
@@ -498,7 +498,7 @@ public void reInitTable()
 	getAlarmingRowVector().removeAllElements();
 
 	if( currenBlinkingAlarms != null )
-		currenBlinkingAlarms.destory();
+		currenBlinkingAlarms.destroy();
 	
 	currenBlinkingAlarms = null;
 		
@@ -728,7 +728,7 @@ public void setRowUnAlarmed( Integer rowNumber )
 
 		if( getAlarmingRowVector().size() == 0 )
 		{
-			currenBlinkingAlarms.destory();
+			currenBlinkingAlarms.destroy();
 			currenBlinkingAlarms = null;
 		}
 
@@ -873,7 +873,7 @@ public void toggleAlarms( boolean toggle )
 	else //turn any alarms off
 	{
 		if( currenBlinkingAlarms != null )
-			currenBlinkingAlarms.destory();
+			currenBlinkingAlarms.destroy();
 		
 		currenBlinkingAlarms = null;
 	}
