@@ -3195,6 +3195,10 @@ int CtiCommandParser::getControlled() const
         {
             ctrld = UNCONTROLLED;
         }
+        else if(isKeyValid("xcsetpoint") && getiValue("control_interval") <= 0 )
+        {
+            ctrld = UNCONTROLLED;
+        }
         else
         {
             ctrld = CONTROLLED;                             // Juice is NOT flowing electrically speaking...!
@@ -3503,6 +3507,8 @@ void  CtiCommandParser::doParseControlExpresscom(const RWCString &CmdStr)
                 }
             }
         }
+
+        _actionItems.insert("SETPOINT");
     }
 }
 
