@@ -1,7 +1,8 @@
 package com.cannontech.dbeditor.editor.user;
 
-import javax.swing.ComboBoxEditor;
 import javax.swing.JComboBox;
+
+import com.cannontech.common.gui.table.ICTITableRenderer;
 
 /**
  * @author rneuharth
@@ -21,21 +22,30 @@ public class RolePropertyRenderer extends javax.swing.JLabel implements javax.sw
 	/**
 	 * RolePropertyRenderer constructor comment.
 	 */
-	public RolePropertyRenderer() {
+	public RolePropertyRenderer() 
+	{
 		super();
-		setOpaque(true);
 	}
+
 
 	/**
 	 * getTableCellRendererComponent - requres that table be a
 	 */
 	public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) 
 	{
-		RolePropertyTableModel model = null;
+		ICTITableRenderer model = null;
+
+		if( table.getModel() instanceof ICTITableRenderer )
+			model = (ICTITableRenderer)table.getModel();
+		else
+			throw new IllegalStateException(
+						"Unknown table model in class: " + 
+						this.getClass().getName() );
+
 	
 		if( table.getModel() instanceof RolePropertyTableModel )
 		{
-			model = (RolePropertyTableModel)table.getModel();
+			RolePropertyTableModel rpModel = (RolePropertyTableModel)model;
 
 			//fill in our editor component
 			if( table.getEditorComponent() != null 
@@ -46,21 +56,23 @@ public class RolePropertyRenderer extends javax.swing.JLabel implements javax.sw
 				combo.removeAllItems();
 				
 				//add the set value and the default value every time
-				combo.addItem( model.getRowAt(row).getValue() );
+				combo.addItem( rpModel.getRowAt(row).getValue() );
 				
 				//only add the default if it is not selected
-				if( !model.getRowAt(row).getValue().equals(
-						model.getRowAt(row).getLiteProperty().getDefaultValue()) )
+				if( !rpModel.getRowAt(row).getValue().equals(
+						rpModel.getRowAt(row).getLiteProperty().getDefaultValue()) )
 				{
-					combo.addItem( model.getRowAt(row).getLiteProperty().getDefaultValue() );
+					combo.addItem( rpModel.getRowAt(row).getLiteProperty().getDefaultValue() );
 				}
 				
 			}
-				
+
+
+			if( column == RolePropertyTableModel.COL_KEY )
+				this.setHorizontalAlignment( javax.swing.SwingConstants.RIGHT );
+			else
+				this.setHorizontalAlignment( javax.swing.SwingConstants.CENTER );				
 		}
-		else
-			throw new IllegalStateException("Unknown table model in class: " + 
-						this.getClass().getName() );
 	
 
 		// do anything that only needs to be assigned once per repainting here
@@ -80,7 +92,7 @@ public class RolePropertyRenderer extends javax.swing.JLabel implements javax.sw
 				setBorder( javax.swing.BorderFactory.createMatteBorder( 2, 0, 2, 2, borderColor) );
 			else
 				setBorder( javax.swing.BorderFactory.createMatteBorder( 2, 0, 2, 0, borderColor) );
-	
+
 			setForeground( model.getCellForegroundColor( row, column ).brighter());
 			setFont( boldFont );
 		}
@@ -96,7 +108,6 @@ public class RolePropertyRenderer extends javax.swing.JLabel implements javax.sw
 	
 		//do the BG color here
 		//setBackground( model.getCellBackgroundColor(row, column) );
-
 		if( value != null )
 		{
 			setText( value.toString() );
@@ -107,13 +118,6 @@ public class RolePropertyRenderer extends javax.swing.JLabel implements javax.sw
 			setText( "" );
 			((javax.swing.JComponent)this).setToolTipText( "" );
 		}
-		
-
-		if( column == RolePropertyTableModel.COL_KEY )
-			this.setHorizontalAlignment( javax.swing.SwingConstants.RIGHT );
-		else
-			this.setHorizontalAlignment( javax.swing.SwingConstants.CENTER );
-		
 
 		return this;
 	}

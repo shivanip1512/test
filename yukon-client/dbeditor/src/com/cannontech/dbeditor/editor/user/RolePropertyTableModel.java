@@ -6,7 +6,7 @@ import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.gui.table.ICTITableRenderer;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 
 /**
@@ -16,7 +16,7 @@ import com.cannontech.database.data.lite.LiteYukonRoleProperty;
  * com.cannontech.database.data.lite.LiteYukonRoleProperty.
  * 
  */
-public class RolePropertyTableModel extends AbstractTableModel
+public class RolePropertyTableModel extends AbstractTableModel implements ICTITableRenderer
 {
 	/* ROW DATA */
 	private Vector allRows = null;
@@ -71,7 +71,7 @@ public class RolePropertyTableModel extends AbstractTableModel
 	}
 
 
-private void d()
+private void debugJunk()
 {
 	java.util.Iterator c = changedValues.values().iterator();
 	while( c.hasNext() )
