@@ -605,13 +605,6 @@ go
 alter table DynamicLMProgramDirect alter column NotifyTime datetime not null;
 go
 
-alter table DeviceSeries5RTU add Retries numeric;
-go
-update DeviceSeries5RTU set Retries = 0;
-go
-alter table DeviceSeries5RTU alter column Retries numeric not null;
-go
-
 sp_rename 'LMControlScenarioProgram.StartDelay', 'StartOffset', 'COLUMN';
 
 
