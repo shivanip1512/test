@@ -734,11 +734,7 @@ public void makeTheProgramHash()
 
 					//while we are at it, throw it into the list of available programs
 					availablePrograms.addElement(((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)));
-				}
-				
-				//FIXME : TP For my ....
-				if( i == 25 )
-					break;
+				}				
 			}
 		}
 		catch (java.sql.SQLException e2)
