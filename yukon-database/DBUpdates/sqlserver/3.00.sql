@@ -103,19 +103,12 @@ alter table YukonWebConfiguration alter column AlternateDisplayName varchar(100)
 /* energy company role properties */
 update YukonRoleProperty set Description='(Deprecated) Use this value as the admin email address only if the energy company''s primary contact doesn''t have an email address.' where RolePropertyId=-1100;
 update YukonRoleProperty set DefaultValue='override@cannontech.com' where RolePropertyID=-1101;
-update YukonRoleProperty set KeyName='customer_group_ids', DefaultValue='-300', Description='Group IDs of all the residential customer logins' where RolePropertyID=-1105;
-update YukonRoleProperty set KeyName='operator_group_ids', DefaultValue='-301', Description='Group IDs of all the web client operator logins' where RolePropertyID=-1106;
 
 /* web client role properties */
 update YukonRoleProperty set DefaultValue='yukon/CannonStyle.css' where RolePropertyId=-10802 and DefaultValue='CannonStyle.css';
 update YukonRoleProperty set DefaultValue='yukon/Bullet.gif' where RolePropertyId=-10803 and DefaultValue='Bullet.gif';
 update YukonRoleProperty set DefaultValue='yukon/BulletExpand.gif' where RolePropertyId=-10804 and DefaultValue='BulletExpand.gif';
 update YukonRoleProperty set DefaultValue='yukon/DemoHeader.gif' where RolePropertyId=-10805 and DefaultValue='DemoHeader.gif';
-update YukonRoleProperty set KeyName='log_in_url', DefaultValue='/login.jsp', Description='The url where the user login from. It is used as the url to send the users to when they log off.' where RolePropertyID=-10806;
-/* @error ignore */
-insert into YukonRoleProperty values(-10807,-108,'nav_connector_bottom','yukon/BottomConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of the last hardware under each category');
-/* @error ignore */
-insert into YukonRoleProperty values(-10808,-108,'nav_connector_middle','yukon/MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
 update YukonRoleProperty set DefaultValue='yukon/BottomConnector.gif' where RolePropertyId=-10807 and DefaultValue='BottomConnector.gif';
 update YukonRoleProperty set DefaultValue='yukon/MidConnector.gif' where RolePropertyId=-10808 and DefaultValue='MidConnector.gif';
 
@@ -123,102 +116,21 @@ update YukonRoleProperty set DefaultValue='yukon/MidConnector.gif' where RolePro
 insert into YukonRoleProperty values(-20003,-200,'Manage Members','false','Controls whether to allow managing the energy company''s members');
 
 /* operator consumer info role properties */
-update YukonRoleProperty set KeyName='Super Operator', DefaultValue='false', Description='Used for some testing functions (not recommended)' where RolePropertyID=-20150;
-update YukonRoleProperty set KeyName='New Account Wizard', DefaultValue='true', Description='Controls whether to enable the new account wizard' where RolePropertyID=-20151;
 update YukonRoleProperty set DefaultValue='(none)' where RolePropertyID=-20152;
-/* @error ignore */
-insert into YukonRoleProperty values(-20153,-201,'Inventory Checking','true','Controls when to perform inventory checking while creating or updating hardware information');
-/* @error ignore */
-insert into YukonRoleProperty values(-20154,-201,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment');
-/* @error ignore */
-insert into YukonRoleProperty values(-20155,-201,'Order Number Auto Generation','false','Controls whether the order number is automatically generated or entered by user');
-/* @error ignore */
-insert into YukonRoleProperty values(-20156,-201,'Call Number Auto Generation','false','Controls whether the call number is automatically generated or entered by user');
-/* @error ignore */
 insert into YukonRoleProperty values(-20157,-201,'Opt Out Rules','(none)','Defines the rules for opting out.');
-update YukonRoleProperty set DefaultValue='(none)' where RolePropertyID=-20800;
-/* @error ignore */
-insert into YukonRoleProperty values(-20801,-201,'Link Thermostat Instructions','(none)','The customized thermostat instructions link');
-update YukonRoleProperty set DefaultValue='THERMOSTAT - SCHEDULE' where RolePropertyID=-20855;
-update YukonRoleProperty set DefaultValue='THERMOSTAT - MANUAL' where RolePropertyID=-20856;
-
-/* operator inventory management role properties */
-/* @error ignore */
-insert into YukonRoleProperty values(-20904,-209,'Delete SN Range','true','Controls whether to allow deleting hardwares by serial number range');
-
-/* operator work order management role */
-/* @error ignore */
-insert into YukonRole values (-210,'Work Order','Operator','Operator Access to work order management');
-
-/* operator work order management role properties */
-/* @error ignore */
-insert into YukonRoleProperty values(-21000,-210,'Show All Work Orders','true','Controls whether to allow showing all work orders');
-/* @error ignore */
-insert into YukonRoleProperty values(-21001,-210,'Create Work Order','true','Controls whether to allow creating new work orders');
 
 /* residential customer role properties */
-update YukonRoleProperty set KeyName='Notification on General Page', DefaultValue='false', Description='Controls whether to show the notification email box on the general page (useful only when the programs enrollment feature is not selected)' where RolePropertyID=-40050;
-update YukonRoleProperty set KeyName='Hide Opt Out Box', DefaultValue='false', Description='Controls whether to show the opt out box on the programs opt out page' where RolePropertyID=-40051;
-/* @error ignore */
-insert into YukonRoleProperty values(-40052,-400,'Automatic Configuration','false','Controls whether to automatically send out config command when changing program enrollment');
-update YukonRoleProperty set KeyName='Disable Program Signup', DefaultValue='false', Description='Controls whether to prevent the customers from enrolling in or out of the programs' where RolePropertyID=-40054;
-/* @error ignore */
 insert into YukonRoleProperty values(-40055,-400,'Opt Out Rules','(none)','Defines the rules for opting out.');
-update YukonRoleProperty set DefaultValue='(none)' where RolePropertyID=-40100;
-update YukonRoleProperty set DefaultValue='(none)', Description='(Deprecated) Use the "Description Utility" role property to handle the customized utility email.' where RolePropertyID=-40101;
-/* @error ignore */
-insert into YukonRoleProperty values(-40102,-400,'Link Thermostat Instructions','(none)','The customized thermostat instructions link');
-update YukonRoleProperty set DefaultValue='THERMOSTAT - SCHEDULE' where RolePropertyID=-40157;
-update YukonRoleProperty set DefaultValue='THERMOSTAT - MANUAL' where RolePropertyID=-40158;
 update YukonRoleProperty set KeyName='Description Enrollment', DefaultValue='Select the check boxes and corresponding radio button of the programs you would like to be enrolled in.', Description='Description on the program enrollment page' where RolePropertyId=-40172;
-update YukonRoleProperty set Description='Description on the contact us page. The special fields will be replaced by real information when displayed on the web.' where RolePropertyID=-40173;
 update YukonRoleProperty set DefaultValue='yukon/Mom.jpg' where RolePropertyId=-40180 and DefaultValue='Mom.jpg';
 update YukonRoleProperty set DefaultValue='yukon/Family.jpg' where RolePropertyId=-40181 and DefaultValue='Family.jpg';
 
 /* residential customers group */
-/* @error ignore */
-insert into yukongrouprole values (507,-300,-108,-10807,'(none)');
-/* @error ignore */
-insert into yukongrouprole values (508,-300,-108,-10808,'(none)');
-/* @error ignore */
-insert into yukongrouprole values (552,-300,-400,-40052,'false');
-/* @error ignore */
 insert into yukongrouprole values (555,-300,-400,-40055,'(none)');
-/* @error ignore */
-insert into yukongrouprole values (602,-300,-400,-40102,'(none)');
 update YukonGroupRole set Value='yukon/DemoHeaderCES.gif' where Value='DemoHeaderCES.gif';
 
 /* web client operators group */
-/* @error ignore */
-insert into yukongrouprole values (707,-301,-108,-10807,'(none)');
-/* @error ignore */
-insert into yukongrouprole values (708,-301,-108,-10808,'(none)');
-/* @error ignore */
-insert into yukongrouprole values (753,-301,-201,-20153,'(none)');
-/* @error ignore */
-insert into yukongrouprole values (754,-301,-201,-20154,'false');
-/* @error ignore */
-insert into yukongrouprole values (755,-301,-201,-20155,'true');
-/* @error ignore */
-insert into yukongrouprole values (756,-301,-201,-20156,'true');
-/* @error ignore */
 insert into yukongrouprole values (757,-301,-201,-20157,'(none)');
-/* @error ignore */
-insert into yukongrouprole values (765,-301,-210,-21000,'(none)');
-/* @error ignore */
-insert into yukongrouprole values (766,-301,-210,-21001,'(none)');
-/* @error ignore */
-insert into yukongrouprole values (791,-301,-209,-20900,'(none)');
-/* @error ignore */
-insert into yukongrouprole values (792,-301,-209,-20901,'(none)');
-/* @error ignore */
-insert into yukongrouprole values (793,-301,-209,-20902,'(none)');
-/* @error ignore */
-insert into yukongrouprole values (794,-301,-209,-20903,'(none)');
-/* @error ignore */
-insert into yukongrouprole values (795,-301,-209,-20904,'(none)');
-/* @error ignore */
-insert into yukongrouprole values (801,-301,-201,-20801,'(none)');
 update YukonGroupRole set Value='(none)' where RolePropertyID=-20152 and Value='false';
 
 
