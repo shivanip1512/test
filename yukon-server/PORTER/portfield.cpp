@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/06/10 22:29:24 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/06/11 16:48:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -256,7 +256,7 @@ VOID PortThread (VOID *arg)
             }
         }
 
-        statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID);
+        statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID);
 
         if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
         {
@@ -2145,7 +2145,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTME
 
     if(status == RETRY_SUBMITTED)
     {
-        statisticsNewAttempt( OutMessage->Port, OutMessage->DeviceID, CommResult );
+        statisticsNewAttempt( OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, CommResult );
     }
 
     return status;
@@ -2372,11 +2372,11 @@ INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS
     // Statistics processing.
     if(status == RETRY_SUBMITTED)
     {
-        statisticsNewAttempt( InMessage->Port, InMessage->DeviceID, CommResult );
+        statisticsNewAttempt( InMessage->Port, InMessage->DeviceID, InMessage->TargetID, CommResult );
     }
     else
     {
-        statisticsNewCompletion( InMessage->Port, InMessage->DeviceID, CommResult );
+        statisticsNewCompletion( InMessage->Port, InMessage->DeviceID, InMessage->TargetID, CommResult );
     }
 
     return status;

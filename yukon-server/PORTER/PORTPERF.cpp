@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/06/06 19:53:27 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/11 16:48:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,6 +74,7 @@ static CtiStatisticsSet_t   gDeviceStatSet;
 static CtiMutex             gDeviceStatSetMux;
 
 static CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId);
+bool statisticsDoTargetId(long deviceid, long targetid);
 
 /* Thread to copy statistics hourly and clear at midnight */
 VOID PerfThread (VOID *Arg)
@@ -760,6 +761,17 @@ VOID PerfUpdateThread (PVOID Arg)
     }
 }
 
+bool statisticsDoTargetId(long deviceid, long targetid)
+{
+    long doit = false;
+
+    if(targetid != 0 && targetid != deviceid)
+    {
+        doit = true;
+    }
+
+    return doit;
+}
 
 CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
 {
@@ -808,7 +820,7 @@ CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
 }
 
 
-void statisticsNewRequest(long paoportid, long paoid)
+void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
 {
     CtiLockGuard<CtiMutex> guard(gDeviceStatSetMux);
 
@@ -820,16 +832,27 @@ void statisticsNewRequest(long paoportid, long paoid)
         dStats.incrementRequest( RWTime() );
     }
 
-    dStatItr = statisticsPaoFind( paoid );
+    dStatItr = statisticsPaoFind( devicepaoid );
 
     if( dStatItr != gDeviceStatSet.end() )
     {
         CtiStatistics &dStats = *dStatItr;
         dStats.incrementRequest( RWTime() );
     }
+
+    if(statisticsDoTargetId( devicepaoid, targetpaoid ))
+    {
+        dStatItr = statisticsPaoFind( targetpaoid );
+
+        if( dStatItr != gDeviceStatSet.end() )
+        {
+            CtiStatistics &dStats = *dStatItr;
+            dStats.incrementRequest( RWTime() );
+        }
+    }
 }
 
-void statisticsNewAttempt(long paoportid, long paoid, int result)
+void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, int result)
 {
     CtiLockGuard<CtiMutex> guard(gDeviceStatSetMux);
 
@@ -846,7 +869,7 @@ void statisticsNewAttempt(long paoportid, long paoid, int result)
         }
     }
 
-    dStatItr = statisticsPaoFind( paoid );
+    dStatItr = statisticsPaoFind( devicepaoid );
 
     if( dStatItr != gDeviceStatSet.end() )
     {
@@ -854,9 +877,21 @@ void statisticsNewAttempt(long paoportid, long paoid, int result)
         dStats.incrementAttempts( RWTime(), result );
         dStats.decrementRequest( RWTime() );       // Because I don't want it counted to try again.
     }
+
+    if(statisticsDoTargetId( devicepaoid, targetpaoid ))
+    {
+        dStatItr = statisticsPaoFind( targetpaoid );
+
+        if( dStatItr != gDeviceStatSet.end() )
+        {
+            CtiStatistics &dStats = *dStatItr;
+            dStats.incrementAttempts( RWTime(), result );
+            dStats.decrementRequest( RWTime() );       // Because I don't want it counted to try again.
+        }
+    }
 }
 
-void statisticsNewCompletion(long paoportid, long paoid, int result)
+void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid, int result)
 {
     CtiLockGuard<CtiMutex> guard(gDeviceStatSetMux);
 
@@ -868,12 +903,23 @@ void statisticsNewCompletion(long paoportid, long paoid, int result)
         dStats.incrementCompletion( RWTime(), result );
     }
 
-    dStatItr = statisticsPaoFind( paoid );
+    dStatItr = statisticsPaoFind( devicepaoid );
 
     if( dStatItr != gDeviceStatSet.end() )
     {
         CtiStatistics &dStats = *dStatItr;
         dStats.incrementCompletion( RWTime(), result );
+    }
+
+    if(statisticsDoTargetId( devicepaoid, targetpaoid ))
+    {
+        dStatItr = statisticsPaoFind( targetpaoid );
+
+        if( dStatItr != gDeviceStatSet.end() )
+        {
+            CtiStatistics &dStats = *dStatItr;
+            dStats.incrementCompletion( RWTime(), result );
+        }
     }
 }
 
