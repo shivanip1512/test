@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/08/20 22:44:16 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/08/28 14:58:20 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -304,6 +304,7 @@ INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &par
 
     if(OutMessage != NULL)
     {
+        if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
