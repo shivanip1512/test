@@ -1,5 +1,8 @@
 package com.cannontech.common.util;
 
+import java.io.InputStream;
+import java.util.Properties;
+
 /**
  * Insert the type's description here.
  * Creation date: (2/18/2002 10:43:31 AM)
@@ -10,7 +13,7 @@ public class CtiProperties extends java.util.Properties implements ClientRights
 	private static CtiProperties props = null;
 
 	public static final String COMMON_JAR = "common.jar";
-	public static final String CONFIG_RESOURCE_NAME = "config";
+	public static final String CONFIG_RESOURCE_NAME = "/config.properties";
 
 	//all expected values
 	public static final String VALUE_CC_INTERFACE_AMFM = "AMFM";
@@ -114,13 +117,28 @@ private void initialize()
 
 
 	//all config.properties values go here
-	java.util.ResourceBundle cb = java.util.ResourceBundle.getBundle( CONFIG_RESOURCE_NAME );
+//	java.util.ResourceBundle cb = java.util.ResourceBundle.getBundle( CONFIG_RESOURCE_NAME );
+		
+	InputStream is = getClass().getResourceAsStream( CONFIG_RESOURCE_NAME );
+	Properties cfgProps = new Properties();
+	try
+	{
+		cfgProps.load(is);
+	}
+	catch (Exception e)
+	{
+		System.out.println("Can't read the properties file. " +
+			"Make sure " + CONFIG_RESOURCE_NAME + " is in the CLASSPATH" );
+
+		return;
+	}
+		
 
 	for( int i = 0; i < ALL_CONFIG_KEYS.length; i++ )
 	{
 		try
 		{
-			put( ALL_CONFIG_KEYS[i], cb.getString(ALL_CONFIG_KEYS[i]) );
+			put( ALL_CONFIG_KEYS[i], cfgProps.getProperty(ALL_CONFIG_KEYS[i]) );//cb.getString(ALL_CONFIG_KEYS[i]) );
 		}
 		catch( Exception e )
 		{
