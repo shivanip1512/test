@@ -49,7 +49,7 @@ public int doStartTag() throws javax.servlet.jsp.JspException {
 	
 		String redirectURL = "/login.jsp";
 		Cookie[] cookies = request.getCookies();
-		for(int i = 0; i < cookies.length; i++) {
+		for(int i = 0; cookies != null && i < cookies.length; i++) {
 			Cookie c = cookies[i];
 			System.out.println(c.getName());
 			if(c.getName().equalsIgnoreCase(Integer.toString(WebClientRole.LOG_OFF_URL))) {
