@@ -3,7 +3,7 @@
 <%@ page import="com.cannontech.stars.web.StarsOperator" %>
 <%@ page import="com.cannontech.stars.web.util.Mappings" %>
 <%@ page import="com.cannontech.stars.web.util.CommonUtils" %>
-<%@ page import="com.cannontech.database.db.starshardware.LMHardwareBase" %>
+<%@ page import="com.cannontech.database.db.stars.hardware.LMHardwareBase" %>
 
 <%
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
@@ -30,6 +30,7 @@
 	StarsAppliances appliances = accountInfo.getStarsAppliances();
 	StarsInventories inventories = accountInfo.getStarsInventories();
 	StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
+	StarsGetEnrollmentProgramsResponse categories = (StarsGetEnrollmentProgramsResponse) operator.getAttribute( "ENROLLMENT_PROGRAMS" );
 	
     String dbAlias = operator.getDatabaseAlias();
 %>

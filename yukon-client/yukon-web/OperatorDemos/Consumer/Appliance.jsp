@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <%
 	String appNoStr = request.getParameter("AppNo");
 	int appNo = -1;
@@ -6,6 +7,39 @@
 			appNo = Integer.parseInt(appNoStr);
 		}
 		catch (NumberFormatException e) {}
+		
+	StarsAppliance appliance = null;
+	StarsLMHardware hardware = null;
+	StarsLMProgram program = null;
+	StarsApplianceCategory category = null;
+	
+	if (appNo >= 0) {
+		appliance = appliances.getStarsAppliance(appNo);
+		
+		for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
+			StarsLMHardware hw = inventories.getStarsLMHardware(i);
+			if (hw.getInventoryID() == appliance.getInventoryID()) {
+				hardware = hw;
+				break;
+			}
+		}
+	
+		for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
+			StarsLMProgram starsProg = programs.getStarsLMProgram(i);
+			if (starsProg.getProgramID() == appliance.getLmProgramID()) {
+				program = starsProg;
+				break;
+			}
+		}
+		
+		for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
+			StarsApplianceCategory appCat = categories.getStarsApplianceCategory(i);
+			if (appCat.getApplianceCategoryID() == appliance.getApplianceCategoryID()) {
+				category = appCat;
+				break;
+			}
+		}
+	}
 %>
 
 <html>
@@ -57,36 +91,10 @@
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101">
-		  <% String pageName = "Appliance.jsp?AppNo=" + appNoStr; %>
-          <%@ include file="Nav.jsp" %>
-<%	
-	// Header files have already been included in Nav.jsp
-	StarsAppliance appliance = null;
-	StarsLMHardware hardware = null;
-	
-	if (appNo >= 0) {
-		appliance = appliances.getStarsAppliance(appNo);
-		
-		for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
-			StarsLMHardware hw = inventories.getStarsLMHardware(i);
-			if (hw.getInventoryID() == appliance.getInventoryID()) {
-				hardware = hw;
-				break;
-			}
-		}
-	}
-	
-	StarsLMProgram program = null;
-	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
-		StarsLMProgram starsProg = (StarsLMProgram) programs.getStarsLMProgram(i);
-		if (starsProg.getProgramID() == appliance.getLmProgramID()) {
-			program = starsProg;
-			break;
-		}
-	}
-%>
-		  </td>
+          <td  valign="top" width="101"> 
+            <% String pageName = "Appliance.jsp?AppNo=" + appNoStr; %>
+            <%@ include file="Nav.jsp" %>
+          </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><% String header = "APPLIANCES"; %> <%@ include file="InfoSearchBar.jsp" %>
@@ -100,7 +108,7 @@
                             <div align="right">Description: </div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="textfield5322" maxlength="40" size="30" value="<%= appliance.getStarsApplianceCategory().getDescription() %>">
+                            <input type="text" name="textfield5322" maxlength="40" size="30" value="<%= appliance.getCategoryDescription() %>">
                           </td>
                         </tr>
                         <tr> 
@@ -176,8 +184,7 @@
                         </tr>
                         <tr valign="top"> 
                           <td width="109" bgcolor="#FFFFFF"> 
-                            <div align="center">
-							  <img src="<%= Mappings.getApplianceImage(appliance.getStarsApplianceCategory().getCategory()) %>" width="60" height="59"><br>
+                            <div align="center"> <img src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
 							  <span class="TableCell"><%= program.getProgramName() %></span>
 							</div>
                           </td>

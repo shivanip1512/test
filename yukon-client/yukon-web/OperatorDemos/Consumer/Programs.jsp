@@ -1,7 +1,19 @@
+<%@ include file="StarsHeader.jsp" %>
 <%
-	String programStatus = "In Service";
-	if (session.getAttribute("PROGRAM_STATUS") != null)
-		programStatus = (String) session.getAttribute("PROGRAM_STATUS");
+	StarsLMHardwareHistory hwHist = null;
+	if (inventories.getStarsLMHardwareCount() > 0) {
+		StarsLMHardware hw = inventories.getStarsLMHardware(0);
+		hwHist = hw.getStarsLMHardwareHistory();
+	}
+	
+	String programStatus = "Not Enrolled";
+	if (hwHist != null && hwHist.getLMHardwareEventCount() > 0) {
+		LMHardwareEvent event = hwHist.getLMHardwareEvent(0);
+		if (event.getEventAction().equals("Activation Completed"))
+			programStatus = "In Service";
+		else
+			programStatus = "Out of Service";
+	}
 %>
 <html>
 <head>
@@ -372,6 +384,42 @@ function MM_popupMsg(msg) { //v1.0
                     <td class="TableCell" width="100" >Signup</td>
                     <td class="TableCell" width="100" >Water Heater</td>
                   </tr>
+<!--
+<%
+	boolean optOut = false;
+	Calendar startCal = Calendar.getInstance();
+	Calendar stopCal = Calendar.getInstance();
+	
+	for (int i = 0; i < hwHist.getLMHardwareEventCount(); i++) {
+		LMHardwareEvent event = hwHist.getLMHardwareEvent(i);
+		if (event.getYukonDefinition().equals( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION )
+			|| event.getYukonDefinition().equals( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED )) {
+			optOut = true;
+			stopCal.setTime( event.getEventDateTime() );
+		}
+		else if (event.getYukonDefinition().equals( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TEMPTERMINATION ) && optOut) {
+			optOut = false;
+			startCal.setTime( event.getEventDateTime() );
+			int duration = stopCal.get(Calendar.DATE) - startCal.get(Calendar.DATE);
+			
+			String durStr = String.valueOf(duration);
+			if (duration > 1)
+				durStr += " Days";
+			else
+				durStr += " Day";
+%>
+                <tr> 
+                  <td class="TableCell"><%= dateFormat.format(event.getEventDateTime()) %></td>
+                  <td class="TableCell"><%= durStr %></td>
+                </tr>
+<%
+		}
+		else {
+			optOut = false;
+		}
+	}
+%>
+-->
                 </table>
                 <br>
               </form>

@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <%
 	String invNoStr = request.getParameter("InvNo");
 	int invNo = -1;
@@ -6,6 +7,32 @@
 			invNo = Integer.parseInt(invNoStr);
 		}
 		catch (NumberFormatException e) {}
+
+	StarsLMHardware hardware = null;
+	ArrayList appList = new ArrayList();
+	String hwStatus = "Unavailable";
+	
+	if (invNo >= 0) {
+		hardware = inventories.getStarsLMHardware(invNo);
+		
+		for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
+			StarsAppliance app = appliances.getStarsAppliance(i);
+			if (app.getInventoryID() == hardware.getInventoryID())
+				appList.add(app);
+		}
+	
+		StarsLMHardwareHistory hwHist = hardware.getStarsLMHardwareHistory();
+		if (hwHist != null && hwHist.getLMHardwareEventCount() > 0) {
+			LMHardwareEvent event = hwHist.getLMHardwareEvent(0);
+			if (event.getEventAction().equals("Activation Completed"))
+				hwStatus = "Available";
+			else if (event.getEventAction().equals("Temporary Termination"))
+				hwStatus = "Temporary Unavail";
+		}
+	}
+	
+	StarsAppliance[] starsApps = new StarsAppliance[ appList.size() ];
+	appList.toArray( starsApps );
 %>
 
 <html>
@@ -57,29 +84,10 @@
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101">
-		  <% String pageName = "Inventory.jsp?InvNo=" + invNoStr; %>
-          <%@ include file="Nav.jsp" %>
-<%	
-	// Header files have already been included in Nav.jsp
-	StarsLMHardware hardware = null;
-	ArrayList appList = new ArrayList();
-	StarsAppliance[] starsApps = null;
-	
-	if (invNo >= 0) {
-		hardware = inventories.getStarsLMHardware(invNo);
-		
-		for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
-			StarsAppliance app = appliances.getStarsAppliance(i);
-			if (app.getInventoryID() == hardware.getInventoryID())
-				appList.add(app);
-		}
-	}
-	
-	starsApps = new StarsAppliance[ appList.size() ];
-	appList.toArray( starsApps );
-%>
-		  </td>
+          <td  valign="top" width="101"> 
+            <% String pageName = "Inventory.jsp?InvNo=" + invNoStr; %>
+            <%@ include file="Nav.jsp" %>
+          </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><% String header = "HARDWARE"; %><%@ include file="InfoSearchBar.jsp" %>
@@ -98,7 +106,7 @@
                                 <div align="right">Type: </div>
                               </td>
                               <td width="200"> 
-                                <input type="text" name="textfield" size="24" maxlength="30" value="<%= Mappings.getLMHardwareName(hardware.getLMDeviceType()) %>">
+                                <input type="text" name="textfield" size="24" maxlength="30" value="<%= hardware.getLMDeviceType() %>">
                               </td>
                             </tr>
                             <tr> 
@@ -122,7 +130,7 @@
                                 <div align="right">Receive Date: </div>
                               </td>
                               <td width="200"> 
-                                <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= dateFormat1.format(hardware.getReceiveDate().toDate()) %>">
+                                <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= dateFormat.format(hardware.getReceiveDate()) %>">
                               </td>
                             </tr>
                             <tr> 
@@ -130,7 +138,7 @@
                                 <div align="right">Remove Date: </div>
                               </td>
                               <td width="200"> 
-                                <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= dateFormat1.format(hardware.getRemoveDate().toDate()) %>">
+                                <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= dateFormat.format(hardware.getRemoveDate()) %>">
                               </td>
                             </tr>
                             <tr> 
@@ -147,9 +155,9 @@
                               </td>
                               <td width="200"> 
                                 <select name="select6">
-                                  <option>Available</option>
-                                  <option>Temp Unavail</option>
-                                  <option>Unavailable</option>
+                                  <option <% if (hwStatus.equals("Available")) { %>selected<% } %>>Available</option>
+                                  <option <% if (hwStatus.equals("Temp Unavail")) { %>selected<% } %>>Temp Unavail</option>
+                                  <option <% if (hwStatus.equals("Unavailable")) { %>selected<% } %>>Unavailable</option>
                                 </select>
                               </td>
                             </tr>
@@ -199,121 +207,46 @@
                       </form>
                     </tr>
                   </table>
-                  <br>
-                </td>
-                <td width="300" valign="top" bgcolor="#FFFFFF"> 
-                  <div align="center">
-                    <table width="300" border="0" cellspacing="0" cellpadding="0">
-                      <tr> 
-                        <form name="form3" method="get" action="">
-                          <td valign="top"><span class="MainHeader"><b>INSTALL</b></span> 
-                            <hr>
-                            <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                              <tr> 
-                                <td width="100" class="TableCell"> 
-                                  <div align="right">Date Installed: </div>
-                                </td>
-                                <td width="200"> 
-                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= dateFormat1.format(hardware.getInstallDate().toDate()) %>">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="100" class="TableCell"> 
-                                  <div align="right">Service Company: </div>
-                                </td>
-                                <td width="200"> 
-                                  <select name="ServiceCompany">
-                                    <option><%= hardware.getInstallationCompany() %></option>
-                                  </select>
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="100" class="TableCell"> 
-                                  <div align="right">Location: </div>
-                                </td>
-                                <td width="200"> 
-                                  <select name="select4">
-                                    <option>Outside North</option>
-                                  </select>
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="100" class="TableCell"> 
-                                  <div align="right">Notes: </div>
-                                </td>
-                                <td width="200"> 
-                                  <textarea name="notes" rows="3 wrap="soft" cols="28" class = "TableCell"></textarea>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </form>
-                      </tr>
-                    </table><br>
-                    <table width="100%" border="0" height="68" >
-                      <tr > 
-                        <td class = "TableCell" align = "center">Service Company<br>
-                          <table width="250" border="1" height="86" cellpadding="10" cellspacing = "0">
-                            <tr>
-                              <td valign = "top" align = "center" class = "TableCell">
-                                <b>XYZ Company<br>12345 W Main Street<br>
-                                Golden Valley, MN 55427<br>	1-800-000-0000</b>
-							</td>
-                            </tr>
-                          </table>
-                        </td>
-                      </tr>
-                    </table>
-                    <br>
-                    
-                    <table width="305" border="0" cellspacing="0" cellpadding="0">
-                      <tr> 
-                        <form name="form3" method="get" action="">
-                          <td valign="top" align = "center" class = "TableCell"> 
-                            <span class="MainHeader">Hardware History</span> <br>
-                            <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
-                              <tr> 
-                                <td width="104" class="HeaderCell">Date</td>
-                                <td width="100" class="HeaderCell">Action</td>
-                              </tr>
-                              <tr valign="top"> 
-                                <td width="104" class="TableCell" bgcolor="#FFFFFF">11/02/99</td>
-                                <td width="100" class="TableCell" bgcolor="#FFFFFF">Install</td>
-                              </tr>
-                              <tr valign="top"> 
-                                <td width="104" class="TableCell" bgcolor="#FFFFFF">07/30/00</td>
-                                <td width="100" class="TableCell" bgcolor="#FFFFFF">Reconfigure</td>
-                              </tr>
-                              <tr valign="top"> 
-                                <td width="104" class="TableCell" bgcolor="#FFFFFF">04/05/01</td>
-                                <td width="100" class="TableCell" bgcolor="#FFFFFF">Repair</td>
-                              </tr>
-                            </table>
-                          </td>
-                        </form>
-                      </tr>
-                    </table>
+                  <div align="center"><br>
+                    <span class="MainHeader">Hardware History</span><br>
                   </div>
-                  
-                </td>
+                  <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
+                    <tr> 
+                      <td width="104" class="HeaderCell">Date</td>
+                      <td width="100" class="HeaderCell">Action</td>
+                    </tr>
+<%
+	StarsLMHardwareHistory hwHist = hardware.getStarsLMHardwareHistory();
+	for (int i = 0; i < hwHist.getLMHardwareEventCount(); i++) {
+		LMHardwareEvent event = hwHist.getLMHardwareEvent(i);
+%>
+                    <tr valign="top"> 
+                      <td width="104" class="TableCell" bgcolor="#FFFFFF"><%= dateFormat.format(event.getEventDateTime()) %></td>
+                      <td width="100" class="TableCell" bgcolor="#FFFFFF"><%= event.getEventAction() %></td>
+                    </tr>
+<%
+	}
+%>
+                  </table>
+                  </td>
               </tr>
             </table>
-            <table width="400" border="0" cellspacing="0" cellpadding="3" align="center" bgcolor="#FFFFFF">
+            <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
               <tr> 
                 <form name="form1" type="get" action="LCR5000.jsp">
-                  <td width="42%"> 
+                  <td width="50%"> 
                     <div align="right"> 
                       <input type="submit" name="Submit2" value="Submit">
                     </div>
                   </td>
-                  <td width="15%" align = "center"> 
+                  <td width="194">
                     <input type="reset" name="Cancel2" value="Cancel">
                   </td>
                 </form>
                 <form name="form1">
-                  <td width="43%"> 
+                  <td width="194"> 
                     <div align="left">
-                      <input type="button" name="Submit" value="Delete" onclick = "Javascript:confirm('Are you sure you would like to delete this hardware?');">
+                      <input type="button" name="Submit" value="Delete">
                     </div>
                   </td>
                 </form>
@@ -348,19 +281,27 @@
 	for (int i = 0; i < starsApps.length; i++) {
 		StarsLMProgram program = null;
 		for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
-			StarsLMProgram starsProg = (StarsLMProgram) programs.getStarsLMProgram(j);
+			StarsLMProgram starsProg = programs.getStarsLMProgram(j);
 			if (starsProg.getProgramID() == starsApps[i].getLmProgramID()) {
 				program = starsProg;
 				break;
 			}
 		}
+		
+		StarsApplianceCategory category = null;
+		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
+			StarsApplianceCategory appCat = categories.getStarsApplianceCategory(j);
+			if (appCat.getApplianceCategoryID() == starsApps[i].getApplianceCategoryID()) {
+				category = appCat;
+				break;
+			}
+		}
 %>
                 <tr bgcolor="#FFFFFF" valign="top"> 
-                  <td width="104" class="TableCell"> <%= Mappings.getApplianceName(starsApps[i].getStarsApplianceCategory().getCategory()) %></td>
+                  <td width="104" class="TableCell"> <%= starsApps[i].getCategoryDescription() %></td>
                   <td width="100" class="TableCell"> In Service</td>
                   <td width="120"> 
-                    <div align="center">
-					  <img src="<%= Mappings.getApplianceImage(starsApps[i].getStarsApplianceCategory().getCategory()) %>" width="60" height="59"><br>
+                    <div align="center"> <img src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
 					  <span class="TableCell"><%= program.getProgramName() %></span>
 					</div>
                   </td>

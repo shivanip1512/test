@@ -1,3 +1,11 @@
+<%@ include file="StarsHeader.jsp" %>
+<%
+	String callNumber = "";
+	Integer callNo = operator.getIncAttribute("NEXT_CALL_NUMBER");
+	if (callNo != null)
+		callNumber = callNo.toString();
+%>
+
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -84,7 +92,9 @@ function getCurrentDateFormatted() {
             <div class = "Main" align="center"><% String header = "ACCOUNT - CREATE NEW CALL"; %><%@ include file="InfoSearchBar.jsp" %><br>
      
               
-              <form name = "MForm">
+              <form name = "MForm" method="POST" action="/servlet/SOAPClient">
+			    <input type="hidden" name="action" value="CreateCall">
+				<input type="hidden" name="CallNumber" value="<%= callNumber %>">
                 <span class="MainHeader"><b>&nbsp;</b></span> 
                 <table width="34%" border="0" height="179" cellspacing = "0">
                   <tr>
@@ -98,7 +108,7 @@ function getCurrentDateFormatted() {
                         <tr> 
                           <td width = "50%" align = "right">Date:</td>
                           <td width="50%" > 
-                            <input type="text" name="date" size = "10">
+                            <input type="text" name="CallDate" size = "10" value="<%= dateFormat.format(Calendar.getInstance().getTime()) %>">
                             <a href="javascript:show_calendar('MForm.date')"
 						onMouseOver="window.status='Pop Calendar';return true;"
 						onMouseOut="window.status='';return true;"> <img src="StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
@@ -107,22 +117,22 @@ function getCurrentDateFormatted() {
                         <tr> 
                           <td width = "50%" align = "right">Type:</td>
                           <td width="50%"> 
-                            <select name="select2">
-                              <option selected>General</option>
-                              <option>Credit</option>
+                            <select name="CallType">
+                              <option value="16" selected>General</option>
+                              <option value="17">Credit</option>
                             </select>
                           </td>
                         </tr>
                         <tr> 
                           <td width = "50%" align = "right">Taken By:</td>
                           <td width="50%"> 
-                            <input type="text" name="textfield22">
+                            <input type="text" name="TakenBy">
                           </td>
                         </tr>
                         <tr> 
                           <td width = "50%" align = "right">Description:</td>
                           <td width="50%"> 
-                            <textarea name="textarea2" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+                            <textarea name="Description" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                           </td>
                         </tr>
                       </table>
@@ -136,7 +146,7 @@ function getCurrentDateFormatted() {
                     <input type="submit" name="Submit" value=" Save ">
                   </td>
                   <td width = "50%"> 
-                    <input type="button" name="Submit2" value="Cancel" >
+                    <input type="reset" name="Submit2" value="Cancel" >
                   </td>
                 </tr>
               </table><br>
