@@ -106,7 +106,7 @@
   	<name>checkProperty</name>
   	<tagclass>com.cannontech.web.taglib.CheckProperty</tagclass>
   	<attribute>
-  		<name>roleid</name>
+  		<name>propertyid</name>
   		<required>true</required>
   		<rtexprvalue>true</rtexprvalue>
   	</attribute>	
@@ -116,10 +116,30 @@
   	<name>checkNoProperty</name>
   	<tagclass>com.cannontech.web.taglib.CheckNoProperty</tagclass>
   	<attribute>
-  		<name>roleid</name>
+  		<name>propertyid</name>
   		<required>true</required>
   		<rtexprvalue>true</rtexprvalue>
   	</attribute>	
+  </tag>
+  
+  <tag>
+  	<name>checkMultiRole</name>
+  	<tagclass>com.cannontech.web.taglib.CheckMultiRole</tagclass>
+  	<attribute>
+  		<name>roleid</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>
+  </tag>
+  
+  <tag>
+  	<name>checkMultiProperty</name>
+  	<tagclass>com.cannontech.web.taglib.CheckMultiProperty</tagclass>
+  	<attribute>
+  		<name>propertyid</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>
   </tag>
   
    <tag>
