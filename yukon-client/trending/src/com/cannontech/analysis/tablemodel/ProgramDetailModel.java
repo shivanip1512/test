@@ -341,9 +341,9 @@ public class ProgramDetailModel extends ReportModelBase
 				//posX, posY, width, height, numberFormatString
 				new ColumnProperties(offset, 1, 150, 18, null),
 				new ColumnProperties(offset, 1, offset+=250, 18, null),
-				new ColumnProperties(offset, 1, offset+=100, 18, null),
-				new ColumnProperties(offset, 1, offset+=100, 18, null),
-				new ColumnProperties(offset, 1, offset+=150, 18, null)
+				new ColumnProperties(offset, 1, offset+=150, 18, null),
+				new ColumnProperties(offset, 1, offset+=90, 18, null),
+				new ColumnProperties(offset, 1, offset+=110, 18, null)
 			};				
 		}
 		return columnProperties;
