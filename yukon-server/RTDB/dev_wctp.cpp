@@ -350,11 +350,48 @@ CHAR* CtiDeviceWctpTerminal::removeDocType(const CHAR *src, CHAR *dst)
 }
 
 
+CHAR* CtiDeviceWctpTerminal::trimMessage(CHAR *message)
+{
+	CHAR buf[256];
+	CHAR *ptr, *ptr1, *lastPtr;
+
+	strcpy(buf, message);
+	ptr = buf;				// Pointer to buf
+	ptr1 = message;			// Pointer to message
+	lastPtr = NULL;			// Pointer to the start of a series of consecutive blank chars
+
+	while (*ptr != 0)
+	{
+		if (*ptr == ' ' || *ptr == '\t' || *ptr == '\r' || *ptr == '\n')
+		{
+			// ptr points to a blank char
+			if (lastPtr == NULL)
+			{
+				lastPtr = ptr;
+			}
+		}
+		else
+		{
+			if (lastPtr != NULL)
+			{
+				// There are a series of blank chars before this, shrink them to one space char
+				*ptr1++ = ' ';
+				lastPtr = NULL;
+			}
+			*ptr1++ = *ptr;
+		}
+		ptr++;
+	}
+
+	*ptr1 = 0;
+	return message;
+}
+
+
 INT CtiDeviceWctpTerminal::traceOut (PCHAR Message, ULONG Count, RWTPtrSlist< CtiMessage > &traceList)
 {
     ULONG i;
     RWCString outStr;
-    ULONG TracePointer;
 
     for(i = 0; i < Count; i++)
     {
@@ -385,6 +422,7 @@ INT CtiDeviceWctpTerminal::traceOut (PCHAR Message, ULONG Count, RWTPtrSlist< Ct
 INT CtiDeviceWctpTerminal::traceIn(PCHAR  Message, ULONG  Count, RWTPtrSlist< CtiMessage > &traceList, BOOL CompletedMessage)
 {
     ULONG i;
+
     if(Count && Message != NULL)
     {
         for(i = 0; i < Count; i++)
@@ -456,6 +494,7 @@ CHAR* CtiDeviceWctpTerminal::buildXMLMessage(const CHAR *recipientId,
 											 const CHAR *timeStamp)
 {
 	CHAR* xmlMsg = getXMLBuffer();
+	xmlMsg[0] = 0;
 	strcat(xmlMsg, "<?xml version=\"1.0\"?>");
 	strcat(xmlMsg, "<!DOCTYPE wctp-Operation SYSTEM \"");
 	strcat(xmlMsg, WCTP_DOCTYPE);
@@ -592,6 +631,7 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
 										   timeStamp);
 
 			CHAR* out = getOutBuffer();
+			out[0] = 0;
 			strcat(out, "POST ");
 			strcat(out, getPassword());					// The path information is stored in password for now
 			strcat(out, " HTTP/1.0\r\n");
@@ -677,6 +717,9 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, R
 				in = (CHAR*)xfer.getInBuffer();
 				out = (CHAR*)xfer.getOutBuffer();
 				out[0] = 0;
+
+				statusParsed = FALSE;
+				headerParsed = FALSE;
 				
 				setCurrentState( StateScanDecode2 );
 
@@ -835,7 +878,7 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, R
 						_snprintf(buf, 255, "WCTP response: %d %s\n%s",
 								  handler->getResponseCode(),
 								  handler->getResponseText(),
-								  handler->getResponseMessage());
+								  trimMessage( handler ->getResponseMessage() ));
 						traceIn(buf, strlen(buf), traceList, TRUE);
 					}
 
@@ -992,6 +1035,7 @@ CtiDeviceWctpTerminal& CtiDeviceWctpTerminal::operator=(const CtiDeviceWctpTermi
             _pageLength = aRef.getPageLength();
         }
 
+		_inStr = RWCString();
 		_outBuffer = NULL;
 		_inBuffer = NULL;
 		_xmlBuffer = NULL;

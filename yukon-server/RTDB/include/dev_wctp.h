@@ -136,6 +136,8 @@ private:
 
    CHAR* removeDocType(const CHAR *src, CHAR *dst);
 
+   CHAR* trimMessage(CHAR *message);
+
 };
 
 
