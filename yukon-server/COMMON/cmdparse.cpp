@@ -1279,6 +1279,11 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
                 }
             }
         }
+
+        if(!(CmdStr.match(" disc")).isNull())
+        {
+            _cmd["disconnect"] = CtiParseValue("TRUE");
+        }
     }
     else
     {
@@ -1595,6 +1600,10 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
         if(!(CmdStr.match("minmax")).isNull())
         {
             _cmd["minmax"] = CtiParseValue(TRUE);
+        }
+        if(!(CmdStr.match("disconnect")).isNull())
+        {
+            _cmd["disconnect"] = CtiParseValue(TRUE);
         }
         if(!(CmdStr.match("group")).isNull())
         {
@@ -2753,6 +2762,11 @@ void  CtiCommandParser::doParsePutStatusEmetcon(const RWCString &CmdStr)
             {
                 _cmd["freeze"] = CtiParseValue(0);
             }
+
+            if(CmdStr.contains(" voltage"))
+            {
+                _cmd["voltage"] = CtiParseValue(TRUE);
+            }
         }
     }
     else
@@ -3245,8 +3259,22 @@ bool CtiCommandParser::isTwoWay() const
 
     if(getCommand() == GetValueRequest  ||
        getCommand() == GetConfigRequest ||
+       getCommand() == GetStatusRequest ||
        getCommand() == ScanRequest      ||
        getCommand() == LoopbackRequest)
+    {
+        bret = true;
+    }
+
+    return bret;
+}
+
+bool CtiCommandParser::isDisconnect() const
+{
+    bool bret = false;
+
+    if( getCommand() == ControlRequest &&
+        getFlags() & (CMD_FLAG_CTL_CONNECT | CMD_FLAG_CTL_DISCONNECT) )
     {
         bret = true;
     }
