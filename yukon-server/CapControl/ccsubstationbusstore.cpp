@@ -245,7 +245,8 @@ void CtiCCSubstationBusStore::reset()
                              << dynamicCCSubstationBusTable["lastfeederposition"]
                              << dynamicCCSubstationBusTable["ctitimestamp"]
                              << pointTable["pointid"]
-                             << pointTable["pointoffset"];
+                             << pointTable["pointoffset"]
+                             << pointTable["pointtype"];
     
                     selector.from(yukonPAObjectTable);
                     selector.from(capControlSubstationBusTable);
@@ -256,9 +257,7 @@ void CtiCCSubstationBusStore::reset()
                     selector.where(yukonPAObjectTable["paobjectid"]==capControlSubstationBusTable["substationbusid"] &&
                                    capControlSubstationBusTable["currentvarloadpointid"]==pointUnitTable["pointid"] &&
                                    capControlSubstationBusTable["substationbusid"].leftOuterJoin(dynamicCCSubstationBusTable["substationbusid"]) &&
-                                   capControlSubstationBusTable["substationbusid"].leftOuterJoin(pointTable["paobjectid"]) &&
-                                   (pointTable["pointoffset"]==1 || pointTable["pointoffset"]==2) &&
-                                   pointTable["pointtype"]=="Analog" );
+                                   capControlSubstationBusTable["substationbusid"].leftOuterJoin(pointTable["paobjectid"]) );
         
                     selector.orderBy(yukonPAObjectTable["description"]);
                     selector.orderBy(yukonPAObjectTable["paoname"]);
@@ -276,7 +275,7 @@ void CtiCCSubstationBusStore::reset()
                     RWDBNullIndicator isNull;
                     while ( rdr() )
                     {
-                        ULONG tempPAObjectId = 0;
+                        ULONG tempPAObjectId = -1000;
                         rdr["paobjectid"] >> tempPAObjectId;
                         if( currentCCSubstationBus != NULL &&
                             tempPAObjectId == currentCCSubstationBus->getPAOId() )
@@ -284,22 +283,32 @@ void CtiCCSubstationBusStore::reset()
                             rdr["pointid"] >> isNull;
                             if( !isNull )
                             {
-                                LONG tempPointId = 0;
-                                LONG tempPointOffset = 0;
+                                LONG tempPointId = -1000;
+                                LONG tempPointOffset = -1000;
+                                RWCString tempPointType = "(none)";
                                 rdr["pointid"] >> tempPointId;
                                 rdr["pointoffset"] >> tempPointOffset;
-                                if( tempPointOffset==1 )
-                                {//estimated vars point
-                                    currentCCSubstationBus->setEstimatedVarLoadPointId(tempPointId);
-                                }
-                                else if( tempPointOffset==2 )
-                                {//daily operations point
-                                    currentCCSubstationBus->setDailyOperationsAnalogPointId(tempPointId);
+                                rdr["pointtype"] >> tempPointType;
+                                if( resolvePointType(tempPointType) == AnalogPointType )
+                                {
+                                    if( tempPointOffset==1 )
+                                    {//estimated vars point
+                                        currentCCSubstationBus->setEstimatedVarLoadPointId(tempPointId);
+                                    }
+                                    else if( tempPointOffset==2 )
+                                    {//daily operations point
+                                        currentCCSubstationBus->setDailyOperationsAnalogPointId(tempPointId);
+                                    }
+                                    else
+                                    {//undefined bus point
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << RWTime() << " - Undefined Substation Bus point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                    }
                                 }
                                 else
-                                {//undefined bus point
+                                {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - Undefined Substation Bus point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                    dout << RWTime() << " - Undefined Substation Bus point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 }
                             }
                         }
@@ -350,7 +359,8 @@ void CtiCCSubstationBusStore::reset()
                              << dynamicCCFeederTable["busoptimizedvaroffset"]
                              << dynamicCCFeederTable["ctitimestamp"]
                              << pointTable["pointid"]
-                             << pointTable["pointoffset"];
+                             << pointTable["pointoffset"]
+                             << pointTable["pointtype"];
     
                     selector.from(yukonPAObjectTable);
                     selector.from(capControlFeederTable);
@@ -361,9 +371,7 @@ void CtiCCSubstationBusStore::reset()
                     selector.where( yukonPAObjectTable["paobjectid"]==ccFeederSubAssignmentTable["feederid"] &&
                                     capControlFeederTable["feederid"]==ccFeederSubAssignmentTable["feederid"] &&
                                     capControlFeederTable["feederid"].leftOuterJoin(dynamicCCFeederTable["feederid"]) &&
-                                    capControlFeederTable["feederid"].leftOuterJoin(pointTable["paobjectid"]) &&
-                                    (pointTable["pointoffset"]==1 || pointTable["pointoffset"]==2) &&
-                                    pointTable["pointtype"]=="Analog");
+                                    capControlFeederTable["feederid"].leftOuterJoin(pointTable["paobjectid"]) );
     
                     selector.orderBy(ccFeederSubAssignmentTable["substationbusid"]);
                     selector.orderBy(ccFeederSubAssignmentTable["displayorder"]);
@@ -389,22 +397,32 @@ void CtiCCSubstationBusStore::reset()
                             rdr["pointid"] >> isNull;
                             if( !isNull )
                             {
-                                LONG tempPointId = 0;
-                                LONG tempPointOffset = 0;
+                                LONG tempPointId = -1000;
+                                LONG tempPointOffset = -1000;
+                                RWCString tempPointType = "(none)";
                                 rdr["pointid"] >> tempPointId;
                                 rdr["pointoffset"] >> tempPointOffset;
-                                if( tempPointOffset==1 )
-                                {//estimated vars point
-                                    currentCCFeeder->setEstimatedVarLoadPointId(tempPointId);
-                                }
-                                else if( tempPointOffset==2 )
-                                {//daily operations point
-                                    currentCCFeeder->setDailyOperationsAnalogPointId(tempPointId);
+                                rdr["pointtype"] >> tempPointType;
+                                if( resolvePointType(tempPointType) == AnalogPointType )
+                                {
+                                    if( tempPointOffset==1 )
+                                    {//estimated vars point
+                                        currentCCFeeder->setEstimatedVarLoadPointId(tempPointId);
+                                    }
+                                    else if( tempPointOffset==2 )
+                                    {//daily operations point
+                                        currentCCFeeder->setDailyOperationsAnalogPointId(tempPointId);
+                                    }
+                                    else
+                                    {//undefined feeder point
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << RWTime() << " - Undefined Feeder point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                    }
                                 }
                                 else
-                                {//undefined feeder point
+                                {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - Undefined Feeder point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                    dout << RWTime() << " - Undefined Feeder point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 }
                             }
                         }
@@ -465,6 +483,7 @@ void CtiCCSubstationBusStore::reset()
                                      << dynamicCCCapBankTable["tagscontrolstatus"]
                                      << dynamicCCCapBankTable["ctitimestamp"]
                                      << pointTable["pointid"]
+                                     << pointTable["pointoffset"]
                                      << pointTable["pointtype"];
 
                             selector.from(yukonPAObjectTable);
@@ -480,9 +499,7 @@ void CtiCCSubstationBusStore::reset()
                                            ccFeederSubAssignmentTable["feederid"]==ccFeederBankListTable["feederid"] &&
                                            capBankTable["deviceid"]==ccFeederBankListTable["deviceid"] &&
                                            capBankTable["deviceid"].leftOuterJoin(dynamicCCCapBankTable["capbankid"]) &&
-                                           capBankTable["deviceid"].leftOuterJoin(pointTable["paobjectid"]) &&
-                                           pointTable["pointoffset"]==1 &&
-                                           (pointTable["pointtype"]=="Status" || pointTable["pointtype"]=="Analog") );
+                                           capBankTable["deviceid"].leftOuterJoin(pointTable["paobjectid"]) );
 
                             selector.orderBy(ccFeederSubAssignmentTable["substationbusid"]);
                             selector.orderBy(ccFeederSubAssignmentTable["displayorder"]);
@@ -508,22 +525,32 @@ void CtiCCSubstationBusStore::reset()
                                     rdr["pointid"] >> isNull;
                                     if( !isNull )
                                     {
-                                        LONG tempPointId = 0;
-                                        RWCString tempPointType = "none";
+                                        LONG tempPointId = -1000;
+                                        LONG tempPointOffset = -1000;
+                                        RWCString tempPointType = "(none)";
                                         rdr["pointid"] >> tempPointId;
+                                        rdr["pointoffset"] >> tempPointOffset;
                                         rdr["pointtype"] >> tempPointType;
-                                        if( tempPointType == "Status" )
-                                        {//control status point
-                                            currentCCCapBank->setStatusPointId(tempPointId);
-                                        }
-                                        else if( tempPointType == "Analog" )
-                                        {//daily operations point
-                                            currentCCCapBank->setOperationAnalogPointId(tempPointId);
+                                        if( tempPointOffset == 1 )
+                                        {
+                                            if( resolvePointType(tempPointType) == StatusPointType )
+                                            {//control status point
+                                                currentCCCapBank->setStatusPointId(tempPointId);
+                                            }
+                                            else if( resolvePointType(tempPointType) == AnalogPointType )
+                                            {//daily operations point
+                                                currentCCCapBank->setOperationAnalogPointId(tempPointId);
+                                            }
+                                            else
+                                            {//undefined cap bank point
+                                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                dout << RWTime() << " - Undefined Cap Bank point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                            }
                                         }
                                         else
-                                        {//undefined cap bank point
+                                        {
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << RWTime() << " - Undefined Cap Bank point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                            dout << RWTime() << " - Undefined Cap Bank point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                         }
                                     }
                                 }

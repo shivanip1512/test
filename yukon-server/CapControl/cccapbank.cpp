@@ -18,6 +18,7 @@
 #include "pointdefs.h"
 #include "device.h"
 #include "logger.h"
+#include "resolvers.h"
 
 RWDEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
 
@@ -852,22 +853,32 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     rdr["pointid"] >> isNull;
     if( !isNull )
     {
-        LONG tempPointId = 0;
-        RWCString tempPointType = "none";
+        LONG tempPointId = -1000;
+        LONG tempPointOffset = -1000;
+        RWCString tempPointType = "(none)";
         rdr["pointid"] >> tempPointId;
+        rdr["pointoffset"] >> tempPointOffset;
         rdr["pointtype"] >> tempPointType;
-        if( tempPointType=="Status" )
-        {//control status point
-            setStatusPointId(tempPointId);
-        }
-        else if( tempPointType=="Analog" )
-        {//daily operations point
-            setOperationAnalogPointId(tempPointId);
+        if( tempPointOffset == 1 )
+        {
+            if( resolvePointType(tempPointType) == StatusPointType )
+            {//control status point
+                setStatusPointId(tempPointId);
+            }
+            else if( resolvePointType(tempPointType) == AnalogPointType )
+            {//daily operations point
+                setOperationAnalogPointId(tempPointId);
+            }
+            else
+            {//undefined cap bank point
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Undefined Cap Bank point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            }
         }
         else
-        {//undefined feeder point
+        {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Undefined Cap Bank point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << RWTime() << " - Undefined Cap Bank point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }

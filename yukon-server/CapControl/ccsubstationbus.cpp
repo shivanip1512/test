@@ -23,6 +23,7 @@
 #include "pointtypes.h"
 #include "logger.h"
 #include "capcontroller.h"
+#include "resolvers.h"
 
 extern BOOL _CC_DEBUG;
 
@@ -2132,22 +2133,32 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     rdr["pointid"] >> isNull;
     if( !isNull )
     {
-        LONG tempPointId = 0;
-        LONG tempPointOffset = 0;
+        LONG tempPointId = -1000;
+        LONG tempPointOffset = -1000;
+        RWCString tempPointType = "(none)";
         rdr["pointid"] >> tempPointId;
         rdr["pointoffset"] >> tempPointOffset;
-        if( tempPointOffset==1 )
-        {//estimated vars point
-            setEstimatedVarLoadPointId(tempPointId);
-        }
-        else if( tempPointOffset==2 )
-        {//daily operations point
-            setDailyOperationsAnalogPointId(tempPointId);
+        rdr["pointtype"] >> tempPointType;
+        if( resolvePointType(tempPointType) == AnalogPointType )
+        {
+            if( tempPointOffset==1 )
+            {//estimated vars point
+                setEstimatedVarLoadPointId(tempPointId);
+            }
+            else if( tempPointOffset==2 )
+            {//daily operations point
+                setDailyOperationsAnalogPointId(tempPointId);
+            }
+            else
+            {//undefined bus point
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Undefined Substation Bus point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            }
         }
         else
-        {//undefined bus point
+        {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Undefined Substation Bus point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << RWTime() << " - Undefined Substation Bus point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
