@@ -84,7 +84,7 @@ public class GetCustAccountAction implements ActionBase {
         	user.setAttribute("CUSTOMER_ACCOUNT_INFORMATION", liteAcctInfo);
         	
 			StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation(
-					liteAcctInfo, new Integer(user.getEnergyCompanyID()) );
+					liteAcctInfo, new Integer(user.getEnergyCompanyID()), false );
 			
 			StarsGetCustomerAccountResponse resp = new StarsGetCustomerAccountResponse();
 			resp.setStarsCustAccountInformation( starsAcctInfo );

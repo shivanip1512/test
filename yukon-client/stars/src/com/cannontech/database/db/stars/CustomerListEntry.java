@@ -23,7 +23,7 @@ public class CustomerListEntry extends DBPersistent {
     public static final String YUKONDEF_ACT_TEMPTERMINATION = "ACT_TEMPTERMINATION";
     public static final String YUKONDEF_ACT_FUTUREACTIVATION = "ACT_FUTUREACTIVATION";
     public static final String YUKONDEF_ACT_INSTALL = "ACT_INSTALL";
-    public static final String YUKONDEF_ACT_RECONFIG = "ACT_RECONFIG";
+    public static final String YUKONDEF_ACT_CONFIG = "ACT_CONFIG";
     public static final String YUKONDEF_ACT_REPAIR = "ACT_REPAIR";
     public static final String YUKONDEF_CUSTTYPE_RES = "CUSTTYPE_RES";
     public static final String YUKONDEF_CUSTTYPE_COMM = "CUSTTYPE_COMM";

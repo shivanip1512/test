@@ -122,4 +122,17 @@ public class ServletUtils {
     		
     	return format.format( date );
     }
+    
+    public static StarsLMControlHistory getTodaysControlHistory(StarsLMControlHistory ctrlHist) {
+        StarsLMControlHistory ctrlHistToday = new StarsLMControlHistory();
+        Date today = com.cannontech.util.ServletUtil.getToday();
+        
+        for (int i = 0; i < ctrlHist.getControlHistoryCount(); i++) {
+        	ControlHistory hist = ctrlHist.getControlHistory(i);
+        	if ( hist.getStartDateTime().before(today) ) break;
+        	ctrlHistToday.addControlHistory( hist );
+        }
+        
+        return ctrlHistToday;
+    }
 }

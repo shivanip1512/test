@@ -284,7 +284,7 @@ public class UpdateCustAccountAction implements ActionBase {
             	liteSiteInfo = (LiteSiteInformation) StarsLiteFactory.createLite( siteInfo );
             }
 
-			StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID );
+			StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
 			StarsUpdateCustomerAccountResponse resp = new StarsUpdateCustomerAccountResponse();
 			resp.setStarsCustAccountInformation( starsAcctInfo );
 

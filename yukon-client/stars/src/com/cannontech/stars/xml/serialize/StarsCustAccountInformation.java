@@ -44,6 +44,8 @@ public class StarsCustAccountInformation implements java.io.Serializable {
 
     private StarsServiceRequestHistory _starsServiceRequestHistory;
 
+    private StarsThermostatSettings _starsThermostatSettings;
+
 
       //----------------/
      //- Constructors -/
@@ -117,6 +119,16 @@ public class StarsCustAccountInformation implements java.io.Serializable {
     {
         return this._starsServiceRequestHistory;
     } //-- StarsServiceRequestHistory getStarsServiceRequestHistory() 
+
+    /**
+     * Returns the value of field 'starsThermostatSettings'.
+     * 
+     * @return the value of field 'starsThermostatSettings'.
+    **/
+    public StarsThermostatSettings getStarsThermostatSettings()
+    {
+        return this._starsThermostatSettings;
+    } //-- StarsThermostatSettings getStarsThermostatSettings() 
 
     /**
     **/
@@ -217,6 +229,17 @@ public class StarsCustAccountInformation implements java.io.Serializable {
     {
         this._starsServiceRequestHistory = starsServiceRequestHistory;
     } //-- void setStarsServiceRequestHistory(StarsServiceRequestHistory) 
+
+    /**
+     * Sets the value of field 'starsThermostatSettings'.
+     * 
+     * @param starsThermostatSettings the value of field
+     * 'starsThermostatSettings'.
+    **/
+    public void setStarsThermostatSettings(StarsThermostatSettings starsThermostatSettings)
+    {
+        this._starsThermostatSettings = starsThermostatSettings;
+    } //-- void setStarsThermostatSettings(StarsThermostatSettings) 
 
     /**
      * 

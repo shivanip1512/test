@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMProgramDescriptor.java,v 1.13 2002/11/12 15:58:38 zyao Exp $
+ * $Id: StarsLMProgramDescriptor.java,v 1.14 2002/11/14 16:13:14 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.13 $ $Date: 2002/11/12 15:58:38 $
+ * @version $Revision: 1.14 $ $Date: 2002/11/14 16:13:14 $
 **/
 public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -135,6 +135,48 @@ public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClas
         addFieldDescriptor(desc);
         
         //-- validation code for: _groupID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _applianceCategoryID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_applianceCategoryID", "applianceCategoryID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsLMProgram target = (StarsLMProgram) object;
+                if(!target.hasApplianceCategoryID())
+                    return null;
+                return new Integer(target.getApplianceCategoryID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsLMProgram target = (StarsLMProgram) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteApplianceCategoryID();
+                        return;
+                    }
+                    target.setApplianceCategoryID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _applianceCategoryID
         fieldValidator = new FieldValidator();
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();

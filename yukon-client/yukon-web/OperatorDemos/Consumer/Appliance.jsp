@@ -18,6 +18,7 @@
 	StarsLMHardware hardware = null;
 	StarsLMProgram program = null;
 	StarsApplianceCategory category = null;
+	int progNo = 0;
 	
 	for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
 		StarsLMHardware hw = inventories.getStarsLMHardware(i);
@@ -31,6 +32,7 @@
 		StarsLMProgram starsProg = programs.getStarsLMProgram(i);
 		if (starsProg.getProgramID() == appliance.getLmProgramID()) {
 			program = starsProg;
+			progNo = i;
 			break;
 		}
 	}
@@ -167,9 +169,9 @@
 				    <form name="form7" method="POST" action="/servlet/SOAPClient">
 					  <input type="hidden" name="action" value="GetLMCtrlHist">
 					  <input type="hidden" name="Group" value="<%= program.getGroupID() %>">
-					  <input type="hidden" name="AppNo" value="<%= appNoStr %>">
+					  <input type="hidden" name="prog" value="<%= progNo %>">
 					  <input type="hidden" name="REDIRECT" value="/OperatorDemos/Consumer/ContHist.jsp">
-					  <input type="hidden" name="REFERRER" value="Appliance.jsp">
+					  <input type="hidden" name="REFERRER" value="<%= java.net.URLEncoder.encode("Appliance.jsp?AppNo=" + appNoStr) %>">
                       <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
                         <tr> 
                           <td width="109" class="HeaderCell"> 

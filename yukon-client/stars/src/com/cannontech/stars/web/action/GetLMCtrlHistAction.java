@@ -81,17 +81,6 @@ public class GetLMCtrlHistAction implements ActionBase {
             if (ctrlHist == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
 			// Update today's control history
-            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsGetLMControlHistory getCtrlHist = reqOper.getStarsGetLMControlHistory();
-            StarsLMControlHistory ctrlHistToday = new StarsLMControlHistory();
-            Date today = com.cannontech.util.ServletUtil.getToday();
-            
-            for (int i = 0; i < ctrlHist.getControlHistoryCount(); i++) {
-            	ControlHistory hist = ctrlHist.getControlHistory(i);
-            	if ( hist.getStartDateTime().before(today) ) break;
-            	ctrlHistToday.addControlHistory( hist );
-            }
-            
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			StarsUser user = (StarsUser) session.getAttribute("USER");
 			StarsCustAccountInformation accountInfo = null;
@@ -101,19 +90,15 @@ public class GetLMCtrlHistAction implements ActionBase {
 			else
 				accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
 				
+            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+            StarsGetLMControlHistory getCtrlHist = reqOper.getStarsGetLMControlHistory();
+            
 			StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
 			for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
 				StarsLMProgram program = programs.getStarsLMProgram(i);
-				if (program.getGroupID() == getCtrlHist.getGroupID()) {
-					program.getStarsLMControlHistory().setControlHistory( ctrlHistToday.getControlHistory() );
-					program.getStarsLMControlHistory().setControlSummary( ctrlHist.getControlSummary() );
-				}
+				if (program.getGroupID() == getCtrlHist.getGroupID())
+					program.setStarsLMControlHistory( ctrlHist );
 			}
-
-			if (operator != null)
-	            operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "LM_CONTROL_HISTORY", ctrlHist );
-	        else
-	        	user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "LM_CONTROL_HISTORY", ctrlHist );
             
             return 0;
         }

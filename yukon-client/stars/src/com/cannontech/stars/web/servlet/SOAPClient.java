@@ -127,7 +127,7 @@ public class SOAPClient extends HttpServlet {
         else if (action.equalsIgnoreCase("GetLMCtrlHist")) {
             clientAction = new GetLMCtrlHistAction();
             destURL = req.getParameter("REDIRECT")
-            		+ "?AppNo=" + req.getParameter("AppNo")
+            		+ "?prog=" + req.getParameter("prog")
                     + "&REFERRER=" + req.getParameter("REFERRER");
         }
         else if (action.equalsIgnoreCase("CreateCall")) {

@@ -119,24 +119,12 @@
 <%
 	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
 		StarsLMProgram program = programs.getStarsLMProgram(i);
-		
-		StarsAppliance appliance = null;
-		int appNo = -1;
 		StarsApplianceCategory category = null;
 		
-		for (int j = 0; j < appliances.getStarsApplianceCount(); j++) {
-			StarsAppliance starsApp = appliances.getStarsAppliance(j);
-			if (starsApp.getLmProgramID() == program.getProgramID()) {
-				appliance = starsApp;
-				appNo = j;
-				
-				for (int k = 0; k < categories.getStarsApplianceCategoryCount(); k++) {
-					StarsApplianceCategory appCat = categories.getStarsApplianceCategory(k);
-					if (appCat.getApplianceCategoryID() == appliance.getApplianceCategoryID()) {
-						category = appCat;
-						break;
-					}
-				}
+		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
+			StarsApplianceCategory appCat = categories.getStarsApplianceCategory(j);
+			if (appCat.getApplianceCategoryID() == program.getApplianceCategoryID()) {
+				category = appCat;
 				break;
 			}
 		}
@@ -155,8 +143,8 @@
                         <td width="93" class="TableCell"> Duration </td>
                       </tr>
 <%
-		StarsLMControlHistory ctrlHist = program.getStarsLMControlHistory();
-		if (ctrlHist.getControlHistoryCount() == 0) {
+		StarsLMControlHistory ctrlHistToday = ServletUtils.getTodaysControlHistory( program.getStarsLMControlHistory() );
+		if (ctrlHistToday.getControlHistoryCount() == 0) {
 %>
                       <tr> 
                         <td width="219" class="TableCell">No Control </td>
@@ -172,8 +160,8 @@
 		}
 		else {
 			int totalSec = 0;
-			for (int j = 0; j < ctrlHist.getControlHistoryCount(); j++) {
-				ControlHistory hist = ctrlHist.getControlHistory(j);
+			for (int j = 0; j < ctrlHistToday.getControlHistoryCount(); j++) {
+				ControlHistory hist = ctrlHistToday.getControlHistory(j);
 				
 				int durationSec = hist.getControlDuration();
 				totalSec += durationSec;
@@ -197,7 +185,7 @@
                     </table>
                   </td>
 <%
-		ControlSummary summary = ctrlHist.getControlSummary();
+		ControlSummary summary = program.getStarsLMControlHistory().getControlSummary();
 %>
                   <td width="332" valign="top"> 
                     <table width="150" border="0" cellspacing="0" bgcolor="white" cellpadding="2" align="center">
@@ -223,7 +211,7 @@
 					<form method="POST" action="/servlet/SOAPClient">
 					<input type="hidden" name="action" value="GetLMCtrlHist">
 					<input type="hidden" name="Group" value="<%= program.getGroupID() %>">
-					<input type="hidden" name="AppNo" value="<%= appNo %>">
+					<input type="hidden" name="prog" value="<%= i %>">
 					<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/stat/ContHist.jsp">
 					<input type="hidden" name="REFERRER" value="ProgramHist.jsp">
                     <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">

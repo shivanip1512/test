@@ -153,13 +153,11 @@ public class StarsCustAccountInformationDescriptor extends org.exolab.castor.xml
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsAppliances
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsInventories
@@ -187,13 +185,11 @@ public class StarsCustAccountInformationDescriptor extends org.exolab.castor.xml
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsInventories
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsCallReportHistory
@@ -257,6 +253,38 @@ public class StarsCustAccountInformationDescriptor extends org.exolab.castor.xml
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsServiceRequestHistory
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsThermostatSettings
+        desc = new XMLFieldDescriptorImpl(StarsThermostatSettings.class, "_starsThermostatSettings", "stars-ThermostatSettings", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustAccountInformation target = (StarsCustAccountInformation) object;
+                return target.getStarsThermostatSettings();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustAccountInformation target = (StarsCustAccountInformation) object;
+                    target.setStarsThermostatSettings( (StarsThermostatSettings) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsThermostatSettings();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsThermostatSettings
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

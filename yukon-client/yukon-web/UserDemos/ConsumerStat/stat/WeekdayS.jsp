@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -58,24 +59,24 @@ else if (navigator.appName.indexOf("Microsoft") != -1)
 
 function showTimeWake(){
   var s = document.getElementById('MovingLayer1');
-  var txt = document.getElementById('textfield1');
+  var txt = document.getElementById('time1');
   showTime(s,txt);
 }
 
 function showTimeLeave(){
   var s = document.getElementById('MovingLayer2');
-  var txt = document.getElementById('textfield2');
+  var txt = document.getElementById('time2');
   showTime(s,txt);
 }
 function showTimeReturn(){
   var s = document.getElementById('MovingLayer3');
-  var txt = document.getElementById('textfield3');
+  var txt = document.getElementById('time3');
   showTime(s,txt);
 }
 
 function showTimeSleep(){
   var s = document.getElementById('MovingLayer4');
-  var txt = document.getElementById('textfield4');
+  var txt = document.getElementById('time4');
   showTime(s,txt);
 }
 
@@ -94,36 +95,60 @@ function showTime(s, txt) {
 function showTemp1(){
 var a = document.getElementById('arrow1');
 var div = document.getElementById('div1');
- showTempIE(a, div);
+var text = document.getElementByID('temp1');
+ showTempIE(a, div, text);
 }
 function showTemp2(){
 var a = document.getElementById('arrow2');
 var div = document.getElementById('div2');
- showTempIE(a,div);
+var text = document.getElementByID('temp2');
+ showTempIE(a, div, text);
 }
 function showTemp3(){
 var a = document.getElementById('arrow3');
 var div = document.getElementById('div3');
- showTempIE(a,div);
+var text = document.getElementByID('temp3');
+ showTempIE(a, div, text);
 }
 function showTemp4(){
 var a = document.getElementById('arrow4');
 var div = document.getElementById('div4');
- showTempIE(a,div);
+var text = document.getElementByID('temp4');
+ showTempIE(a, div, text);
 }
 
 
-function showTempIE(a, div)
+function showTempIE(a, div, text)
 { 
   var curPos = parseInt(a.style.top);
   var temp = Math.floor((-curPos-35) / 100 * 43 + 45);
   div.innerHTML = temp + '&deg;';
+  text.value = temp;
 }
 
 
 
+var changed = false;
 
+function setChanged() {
+	changed = true;
+}
 
+function saveChanges() {
+	if (!changed) return;
+	
+	var form = document.form1;
+	form.action = "/servlet/UpdateThermostat";
+	form.elements('action').value = "SaveChanges";
+	form.submit();
+}
+
+function setDefault() {
+	var form = document.form1;
+	form.action = "/servlet/UpdateThermostat";
+	form.elements('action').value = "SetDefault";
+	form.submit();
+}
 
 //end hiding -->
 
@@ -131,7 +156,7 @@ function showTempIE(a, div)
 
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0" onload="">
+<body class="Background" leftmargin="0" topmargin="0" onunload="saveChanges()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -208,6 +233,9 @@ function showTempIE(a, div)
                 </tr>
               </table>
               <br>
+			<form name="form1" method="POST" action="/servlet/SOAPClient">
+			  <input type="hidden" name="action" value="ConfigThermostat">
+			  <input type="hidden" name="schedule" value="WeekdayH">
               <table width="80%" border="1" height="411" cellspacing = "0" cellpadding = "2">
                 <tr> 
                   <td align = "center"  valign = "bottom" height="84"> 
@@ -328,27 +356,27 @@ function showTempIE(a, div)
                       </tr>
                       <tr> 
                         <td width="25%" class = "TableCell"> Start At: 
-                          <input id = "textfield1" type="text"  size = "4" value = "06:00" name="text">
+                          <input id = "time1" type="text"  size = "4" value = "06:00" name="time1" onchange="setChanged()">
                         </td>
                         <td class = "TableCell" width="25%"> Start At: 
-                          <input id = "textfield2" type="text"  size = "4" value = "08:30" name="text2" >
+                          <input id = "time2" type="text"  size = "4" value = "08:30" name="time2" onchange="setChanged()">
                         </td>
                         <td class = "TableCell" width="25%"> <span class = "Main"> 
                           </span> Start At: 
-                          <input id = "textfield3" type="text"  size = "4" value = "17:00" name="text3">
+                          <input id = "time3" type="text"  size = "4" value = "17:00" name="time3" onchange="setChanged()">
                         </td>
                         <td width="25%" class = "TableCell"> Start At: 
-                          <input id = "textfield4" type="text"  size = "4" value = "21:00" name="text4">
+                          <input id = "time4" type="text"  size = "4" value = "21:00" name="time4" onchange="setChanged()">
                         </td>
                       </tr>
                     </table><noscript><table width="100%" border="0" class = "TableCell">
   <tr>
                         <td>Temp:
-                          <input type="text" size = "3">
+                          <input id="temp1" type="text" size = "3" name="temp1" onchange="setChanged()">
                         </td>
-                        <td>Temp: <input type="text" size = "3"></td>
-                        <td>Temp: <input type="text" size = "3"></td>
-                        <td>Temp: <input type="text"  size = "3"></td>
+                        <td>Temp: <input id="temp2" type="text" size = "3" name="temp2" onchange="setChanged()"></td>
+                        <td>Temp: <input id="temp3" type="text" size = "3" name="temp3" onchange="setChanged()"></td>
+                        <td>Temp: <input id="temp4" type="text" size = "3" name="temp4" onchange="setChanged()"></td>
   </tr>
 </table>
                     <div class = "TableCell" align = "left">
@@ -367,16 +395,17 @@ function showTempIE(a, div)
                 </tr>
               </table><br>
               <table width="75%" border="0">
-                <tr> <form name="form1" method="post" action="">
+                <tr>
                     <td width="44%" align = "right" class = "TableCell" > 
-                      <input type="button" name="Submit" value="Submit">
+                      <input type="submit" name="Submit" value="Submit">
                   </td>
                     <td width="56%" align = "left" class = "TableCell"> 
-                      <input type="submit" name="Submit2" value="Default Settings">
+                      <input type="button" name="Default" value="Default Settings" onclick="setDefault()">
             
-                  </td>        </form>
+                  </td>
                 </tr>
               </table>
+			</form>
               <p align="center" class="Main"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
                 &copy; 2002, Cannon Technologies, Inc. All rights reserved.</font></p>
                 </div>

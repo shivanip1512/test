@@ -103,7 +103,7 @@ public class SearchCustAccountAction implements ActionBase {
             }
             
             operator.setAttribute( "CUSTOMER_ACCOUNT_INFORMATION", liteAcctInfo );
-            StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID );
+            StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
             
 			StarsSearchCustomerAccountResponse resp = new StarsSearchCustomerAccountResponse();
 			resp.setStarsCustAccountInformation( starsAcctInfo );

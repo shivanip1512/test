@@ -7,7 +7,9 @@
 						  {"Installer.jsp", "Installer"},
 						  {"FAQ.jsp", "FAQ"},
 						  {"Enrollment.jsp", "Enrollment"},
-						  {"OptOut.jsp", "Opt Out"}
+						  {"OptOut.jsp", "Opt Out"},
+						  {"Thermostat.jsp", "Manual"},
+						  {"WeekdayS.jsp", "Schedule"}
 						 };
 						   
 	Hashtable links = new Hashtable();
@@ -33,7 +35,13 @@
         <%= links.get("ProgramHist.jsp") %><br>
 		<%= links.get("Enrollment.jsp") %><br>
 		<%= links.get("OptOut.jsp") %></div>
-		
+    </td>
+  </tr>
+  <tr>
+    <td height="65">
+<div align="left"><span class="NavHeader">Thermostat</span><br>
+        <%= links.get("WeekdayS.jsp") %><br>
+        <%= links.get("Thermostat.jsp") %></div>
     </td>
   </tr>
   <tr> 

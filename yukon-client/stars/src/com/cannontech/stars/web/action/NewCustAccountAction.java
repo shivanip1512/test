@@ -251,7 +251,7 @@ public class NewCustAccountAction implements ActionBase {
 			LiteStarsCustAccountInformation liteAcctInfo = SOAPServer.addCustAccountInformation( energyCompanyID, account );
             
             operator.setAttribute( "CUSTOMER_ACCOUNT_INFORMATION", liteAcctInfo );
-            StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID );
+            StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
 
             StarsNewCustomerAccountResponse resp = new StarsNewCustomerAccountResponse();
             resp.setStarsCustAccountInformation( starsAcctInfo );

@@ -1,38 +1,22 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
-	String appNoStr = request.getParameter("AppNo");
-	int appNo = -1;
-	if (appNoStr != null)
-		try {
-			appNo = Integer.parseInt(appNoStr);
-		}
-		catch (NumberFormatException e) {}
-
 	String referrer = request.getParameter("REFERRER");
-	if (appNoStr != null)
-		referrer += "?AppNo=" + appNoStr;
 	
-	StarsAppliance appliance = appliances.getStarsAppliance(appNo);
+	String progNoStr = request.getParameter("prog");
+	int progNo = Integer.parseInt( progNoStr );
 	
-	StarsLMProgram program = null;
-	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
-		StarsLMProgram starsProg = programs.getStarsLMProgram(i);
-		if (starsProg.getProgramID() == appliance.getLmProgramID()) {
-			program = starsProg;
-			break;
-		}
-	}
+	StarsLMProgram program = programs.getStarsLMProgram( progNo );
 	
 	StarsApplianceCategory category = null;
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory appCat = categories.getStarsApplianceCategory(i);
-		if (appCat.getApplianceCategoryID() == appliance.getApplianceCategoryID()) {
+		if (appCat.getApplianceCategoryID() == program.getApplianceCategoryID()) {
 			category = appCat;
 			break;
 		}
 	}
 	
-	StarsLMControlHistory ctrlHist = (StarsLMControlHistory) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "LM_CONTROL_HISTORY");
+	StarsLMControlHistory ctrlHist = program.getStarsLMControlHistory();
 %>
 <html>
 <head>

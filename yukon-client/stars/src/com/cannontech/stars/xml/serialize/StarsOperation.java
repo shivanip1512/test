@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.13 2002/11/12 15:58:42 zyao Exp $
+ * $Id: StarsOperation.java,v 1.14 2002/11/14 16:13:17 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.13 $ $Date: 2002/11/12 15:58:42 $
+ * @version $Revision: 1.14 $ $Date: 2002/11/14 16:13:17 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -115,6 +115,8 @@ public class StarsOperation implements java.io.Serializable {
     private StarsCreateLMHardware _starsCreateLMHardware;
 
     private StarsCreateLMHardwareResponse _starsCreateLMHardwareResponse;
+
+    private StarsDefaultThermostatSettings _starsDefaultThermostatSettings;
 
 
       //----------------/
@@ -211,6 +213,16 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsCreateServiceRequestResponse;
     } //-- StarsCreateServiceRequestResponse getStarsCreateServiceRequestResponse() 
+
+    /**
+     * Returns the value of field 'starsDefaultThermostatSettings'.
+     * 
+     * @return the value of field 'starsDefaultThermostatSettings'.
+    **/
+    public StarsDefaultThermostatSettings getStarsDefaultThermostatSettings()
+    {
+        return this._starsDefaultThermostatSettings;
+    } //-- StarsDefaultThermostatSettings getStarsDefaultThermostatSettings() 
 
     /**
      * Returns the value of field 'starsFailure'.
@@ -642,6 +654,17 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsCreateServiceRequestResponse = starsCreateServiceRequestResponse;
     } //-- void setStarsCreateServiceRequestResponse(StarsCreateServiceRequestResponse) 
+
+    /**
+     * Sets the value of field 'starsDefaultThermostatSettings'.
+     * 
+     * @param starsDefaultThermostatSettings the value of field
+     * 'starsDefaultThermostatSettings'.
+    **/
+    public void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings starsDefaultThermostatSettings)
+    {
+        this._starsDefaultThermostatSettings = starsDefaultThermostatSettings;
+    } //-- void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings) 
 
     /**
      * Sets the value of field 'starsFailure'.

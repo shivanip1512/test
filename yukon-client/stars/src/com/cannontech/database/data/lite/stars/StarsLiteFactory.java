@@ -298,7 +298,15 @@ public class StarsLiteFactory {
 				
 			// set hardware status and installation notes
 			for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0; i--) {
-				if (hwHist.getStarsLMHardwareEvent(i).getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED )) {
+				if (hwHist.getStarsLMHardwareEvent(i).getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_CONFIG)) {
+					hwStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
+							StarsCustListEntryFactory.getStarsCustListEntry(
+								(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS),
+								com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_AVAIL ),
+							DeviceStatus.class );
+					starsHw.setDeviceStatus( hwStatus );
+				}
+				else if (hwHist.getStarsLMHardwareEvent(i).getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED )) {
 					hwStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
 							StarsCustListEntryFactory.getStarsCustListEntry(
 								(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS),
@@ -437,7 +445,7 @@ public class StarsLiteFactory {
         return starsCtrlHist;
 	}
 	
-	public static StarsCustAccountInformation createStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo, Integer energyCompanyID) {
+	public static StarsCustAccountInformation createStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo, Integer energyCompanyID, boolean isOperator) {
 		StarsCustAccountInformation starsAcctInfo = new StarsCustAccountInformation();
 		Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
 		
@@ -500,6 +508,13 @@ public class StarsLiteFactory {
 					starsProg.setProgramID( lProg.getProgramID() );
 					starsProg.setGroupID( liteProg.getGroupID() );
 					starsProg.setProgramName( lProg.getProgramName() );
+					
+					ArrayList liteApps = liteAcctInfo.getAppliances();
+					for (int k = 0; k < liteApps.size(); k++) {
+						StarsAppliance starsApp = (StarsAppliance) liteApps.get(k);
+						if (starsApp.getLmProgramID() == lProg.getProgramID())
+							starsProg.setApplianceCategoryID( starsApp.getApplianceCategoryID() );
+					}
 			
 					LiteStarsLMControlHistory liteCtrlHist = SOAPServer.getLMControlHistory( energyCompanyID, new Integer(liteProg.getGroupID()) );
 					if (liteCtrlHist != null)
@@ -521,40 +536,42 @@ public class StarsLiteFactory {
 			}
 		}
 		
-		ArrayList liteApps = liteAcctInfo.getAppliances();
-		StarsAppliances starsApps = new StarsAppliances();
-		starsAcctInfo.setStarsAppliances( starsApps );
-		
-		for (int i = 0; i < liteApps.size(); i++) {
-			StarsAppliance starsApp = (StarsAppliance) liteApps.get(i);
-			starsApps.addStarsAppliance( starsApp );
-		}
-		
-		ArrayList liteInvs = liteAcctInfo.getInventories();
-		StarsInventories starsInvs = new StarsInventories();
-		starsAcctInfo.setStarsInventories( starsInvs );
-		
-		for (int i = 0; i < liteInvs.size(); i++) {
-			LiteLMHardware liteHw = SOAPServer.getLMHardware( energyCompanyID, (Integer) liteInvs.get(i), true );
-			starsInvs.addStarsLMHardware( createStarsLMHardware(liteHw, selectionLists) );
-		}
-		
-		ArrayList liteCalls = liteAcctInfo.getCallReportHistory();
-		StarsCallReportHistory starsCalls = new StarsCallReportHistory();
-		starsAcctInfo.setStarsCallReportHistory( starsCalls );
-		
-		for (int i = 0; i < liteCalls.size(); i++) {
-			StarsCallReport starsCall = (StarsCallReport) liteCalls.get(i);
-			starsCalls.addStarsCallReport( starsCall );
-		}
-		
-		ArrayList liteOrders = liteAcctInfo.getServiceRequestHistory();
-		StarsServiceRequestHistory starsOrders = new StarsServiceRequestHistory();
-		starsAcctInfo.setStarsServiceRequestHistory( starsOrders );
-		
-		for (int i = 0; i < liteOrders.size(); i++) {
-			LiteWorkOrderBase liteOrder = SOAPServer.getWorkOrderBase( energyCompanyID, (Integer) liteOrders.get(i) );
-			starsOrders.addStarsServiceRequest( createStarsServiceRequest(liteOrder, selectionLists) );
+		if (isOperator) {
+			ArrayList liteApps = liteAcctInfo.getAppliances();
+			StarsAppliances starsApps = new StarsAppliances();
+			starsAcctInfo.setStarsAppliances( starsApps );
+			
+			for (int i = 0; i < liteApps.size(); i++) {
+				StarsAppliance starsApp = (StarsAppliance) liteApps.get(i);
+				starsApps.addStarsAppliance( starsApp );
+			}
+			
+			ArrayList liteInvs = liteAcctInfo.getInventories();
+			StarsInventories starsInvs = new StarsInventories();
+			starsAcctInfo.setStarsInventories( starsInvs );
+			
+			for (int i = 0; i < liteInvs.size(); i++) {
+				LiteLMHardware liteHw = SOAPServer.getLMHardware( energyCompanyID, (Integer) liteInvs.get(i), true );
+				starsInvs.addStarsLMHardware( createStarsLMHardware(liteHw, selectionLists) );
+			}
+			
+			ArrayList liteCalls = liteAcctInfo.getCallReportHistory();
+			StarsCallReportHistory starsCalls = new StarsCallReportHistory();
+			starsAcctInfo.setStarsCallReportHistory( starsCalls );
+			
+			for (int i = 0; i < liteCalls.size(); i++) {
+				StarsCallReport starsCall = (StarsCallReport) liteCalls.get(i);
+				starsCalls.addStarsCallReport( starsCall );
+			}
+			
+			ArrayList liteOrders = liteAcctInfo.getServiceRequestHistory();
+			StarsServiceRequestHistory starsOrders = new StarsServiceRequestHistory();
+			starsAcctInfo.setStarsServiceRequestHistory( starsOrders );
+			
+			for (int i = 0; i < liteOrders.size(); i++) {
+				LiteWorkOrderBase liteOrder = SOAPServer.getWorkOrderBase( energyCompanyID, (Integer) liteOrders.get(i) );
+				starsOrders.addStarsServiceRequest( createStarsServiceRequest(liteOrder, selectionLists) );
+			}
 		}
 		
 		return starsAcctInfo;

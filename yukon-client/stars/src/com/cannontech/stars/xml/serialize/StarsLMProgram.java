@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMProgram.java,v 1.13 2002/11/12 15:58:50 zyao Exp $
+ * $Id: StarsLMProgram.java,v 1.14 2002/11/14 16:13:21 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.13 $ $Date: 2002/11/12 15:58:50 $
+ * @version $Revision: 1.14 $ $Date: 2002/11/14 16:13:21 $
 **/
 public class StarsLMProgram implements java.io.Serializable {
 
@@ -45,6 +45,13 @@ public class StarsLMProgram implements java.io.Serializable {
      * keeps track of state for field: _groupID
     **/
     private boolean _has_groupID;
+
+    private int _applianceCategoryID;
+
+    /**
+     * keeps track of state for field: _applianceCategoryID
+    **/
+    private boolean _has_applianceCategoryID;
 
     private java.lang.String _programName;
 
@@ -70,10 +77,27 @@ public class StarsLMProgram implements java.io.Serializable {
 
     /**
     **/
+    public void deleteApplianceCategoryID()
+    {
+        this._has_applianceCategoryID= false;
+    } //-- void deleteApplianceCategoryID() 
+
+    /**
+    **/
     public void deleteGroupID()
     {
         this._has_groupID= false;
     } //-- void deleteGroupID() 
+
+    /**
+     * Returns the value of field 'applianceCategoryID'.
+     * 
+     * @return the value of field 'applianceCategoryID'.
+    **/
+    public int getApplianceCategoryID()
+    {
+        return this._applianceCategoryID;
+    } //-- int getApplianceCategoryID() 
 
     /**
      * Returns the value of field 'groupID'.
@@ -137,6 +161,13 @@ public class StarsLMProgram implements java.io.Serializable {
 
     /**
     **/
+    public boolean hasApplianceCategoryID()
+    {
+        return this._has_applianceCategoryID;
+    } //-- boolean hasApplianceCategoryID() 
+
+    /**
+    **/
     public boolean hasGroupID()
     {
         return this._has_groupID;
@@ -185,6 +216,18 @@ public class StarsLMProgram implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'applianceCategoryID'.
+     * 
+     * @param applianceCategoryID the value of field
+     * 'applianceCategoryID'.
+    **/
+    public void setApplianceCategoryID(int applianceCategoryID)
+    {
+        this._applianceCategoryID = applianceCategoryID;
+        this._has_applianceCategoryID = true;
+    } //-- void setApplianceCategoryID(int) 
 
     /**
      * Sets the value of field 'groupID'.
