@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/08/01 22:16:05 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/08/05 15:42:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -728,6 +728,9 @@ VOID ResultThread (VOID *Arg)
     RWTPtrSlist< CtiMessage > retList;
     RWTPtrSlist< CtiMessage > vgList;
 
+
+    // I want an attitude!
+    CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 30, 0);
 
     int TracePrint (PBYTE, INT);
 
