@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2003/11/07 20:19:23 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2004/01/13 23:27:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1033,6 +1033,11 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
         if(CM)
         {
+            if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
+            {
+                pcRet->dump();
+            }
+
             CM->WriteConnQue(pcRet);
         }
         else
