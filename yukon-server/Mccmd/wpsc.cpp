@@ -148,7 +148,7 @@ bool DecodeCFDATALine( char* line, RWCString* decoded )
     unsigned short class_id = 0;
     unsigned short div_id = 0;
 
-    *decoded = "set MessagePriority 10 ; putconfig versacom serial ";
+    *decoded = "set MessagePriority 6 ; putconfig versacom serial ";
 
     //DLC Function (2bytes)
     if( (pos = strtok( line, &delim)) == NULL )
@@ -378,7 +378,7 @@ bool DecodeEOILine( char* line, RWOrdered* results)
 
     if( contract != NULL ) {
         RWCollectableString* decoded = new RWCollectableString();
-        *decoded = "set MessagePriority 10 ; putconfig versacom ";
+        *decoded = "set MessagePriority 6 ; putconfig versacom ";
         *decoded += serial_str;
         *decoded += " service ";
         *decoded += contract;
@@ -389,7 +389,7 @@ bool DecodeEOILine( char* line, RWOrdered* results)
 
     if( temp != NULL ) {
         RWCollectableString* decoded = new RWCollectableString();
-        *decoded = "set MessagePriority 10 ; putconfig versacom ";
+        *decoded = "set MessagePriority 6 ; putconfig versacom ";
         *decoded += serial_str;
         *decoded += " service ";
         *decoded += temp;
@@ -416,8 +416,8 @@ bool DecodeWepcoLine( char* line, RWOrdered* results)
     char buf[80];
     int temp;
    
-    RWCString serviceCmd("set MessagePriority 9 ; putconfig versacom serial ");
-    RWCString configCmd("set MessagePriority 8 ; putconfig versacom serial ");
+    RWCString serviceCmd("set MessagePriority 6 ; putconfig versacom serial ");
+    RWCString configCmd("set MessagePriority 5 ; putconfig versacom serial ");
 
     // function
     if( (token = strtok(line,delim)) == NULL )
