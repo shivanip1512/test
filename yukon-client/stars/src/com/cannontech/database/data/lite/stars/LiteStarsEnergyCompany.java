@@ -376,17 +376,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 
 	/**
-	 * Returns the optOutEventQueue.
+	 * Returns the opt out event queue.
 	 * @return OptOutEventQueue
 	 */
 	public OptOutEventQueue getOptOutEventQueue() {
 		if (optOutEventQueue == null) {
 			try {
-				String filename = getEnergyCompanySetting(EnergyCompanyRole.OPTOUT_COMMAND_FILE);
-				if (filename != null) {
-					optOutEventQueue = new OptOutEventQueue( filename );
-					optOutEventQueue.syncFromFile();
-				}
+				optOutEventQueue = OptOutEventQueue.getInstance();
+				optOutEventQueue.syncFromFile();
 			}
 			catch (IOException e) {
 				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
@@ -396,10 +393,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return optOutEventQueue;
 	}
 	
+	/**
+	 * Returns the switch command queue
+	 * @return SwitchCommandQueue
+	 */
 	public SwitchCommandQueue getSwitchCommandQueue() {
 		if (switchCommandQueue == null) {
 			try {
-				switchCommandQueue = new SwitchCommandQueue( getEnergyCompanySetting(EnergyCompanyRole.SWITCH_COMMAND_FILE) );
+				switchCommandQueue = SwitchCommandQueue.getInstance();
 				switchCommandQueue.syncFromFile();
 			}
 			catch (IOException e) {

@@ -26,6 +26,8 @@ import com.cannontech.clientutils.CTILogger;
  */
 public class SwitchCommandQueue {
 	
+	private static SwitchCommandQueue instance = null;
+	
 	public static class SwitchCommand {
 		private int energyCompanyID = 0;
 		private int accountID = 0;
@@ -115,13 +117,20 @@ public class SwitchCommandQueue {
 	private boolean reCreateFile = false;
 	private ArrayList newCommands = new ArrayList();
 	
-	public SwitchCommandQueue(String fileName) throws IOException {
-		diskFile = new File( fileName );
-		if (!diskFile.exists()) {
-			File dir = diskFile.getParentFile();
-			if (dir != null && !dir.exists()) dir.mkdirs();
-			diskFile.createNewFile();
+	public static SwitchCommandQueue getInstance() throws IOException {
+		if (instance == null) {
+			File tempDir = new File( ServerUtils.getStarsTempDir() );
+			if (!tempDir.exists())
+				tempDir.mkdirs();
+			
+			instance = new SwitchCommandQueue( new File(tempDir, ServerUtils.SWITCH_COMMAND_FILE) );
 		}
+		
+		return instance;
+	}
+	
+	private SwitchCommandQueue(File file) {
+		diskFile = file;
 	}
 	
 	public synchronized void syncFromFile() {

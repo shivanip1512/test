@@ -30,7 +30,10 @@ public class OptOutEventQueue {
 	public static final int PERIOD_REENABLE = -1;
 	private static final int PERIOD_REENABLE2 = -2;
 	
-	private static final long OVERLAP_INTERVAL = 1000 * 60 * 30;	// 30 minutes: if two events are apart for less than this interval, we consider they are overlapping
+	// If two events are apart for less than this interval, we consider they are overlapping
+	private static final long OVERLAP_INTERVAL = 1000 * 60 * 30;
+	
+	private static OptOutEventQueue instance = null;
 	
 	public static class OptOutEvent {
 		private int energyCompanyID = 0;
@@ -147,13 +150,20 @@ public class OptOutEventQueue {
 	private boolean reCreateFile = false;
 	private ArrayList newEvents = new ArrayList();
 	
-	public OptOutEventQueue(String fileName) throws IOException {
-		diskFile = new File( fileName );
-		if (!diskFile.exists()) {
-			File dir = diskFile.getParentFile();
-			if (dir != null && !dir.exists()) dir.mkdirs();
-			diskFile.createNewFile();
+	public static OptOutEventQueue getInstance() throws IOException {
+		if (instance == null) {
+			File tempDir = new File( ServerUtils.getStarsTempDir() );
+			if (!tempDir.exists())
+				tempDir.mkdirs();
+			
+			instance = new OptOutEventQueue( new File(tempDir, ServerUtils.OPTOUT_EVENT_FILE) );
 		}
+		
+		return instance;
+	}
+	
+	private OptOutEventQueue(File file) {
+		diskFile = file;
 	}
 	
 	public OptOutEvent findOptOutEvent(int accountID) {

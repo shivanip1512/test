@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 
 import com.cannontech.clientutils.CTILogger;
@@ -22,8 +21,6 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
-
-import org.apache.commons.fileupload.FileItem;
 
 /**
  * @author yao
@@ -51,9 +48,13 @@ public class ServerUtils {
 	private static final java.text.SimpleDateFormat dateTimeFormat =
 			new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
 	
-	// Directory to store all the uploaded files
-	private static final String UPLOAD_PATH = "C:/yukon/upload";
+	// Directory for all the temporary files
+    private static final String STARS_TEMP_DIR = "stars_temp";
     
+    // Temporary data files/directories
+	public static final String SWITCH_COMMAND_FILE = "switch_commands.txt";
+	public static final String OPTOUT_EVENT_FILE = "optout_events.txt";
+	public static final String UPLOAD_DIR = "upload";
 	
 	public static void sendCommand(String command)
 	{
@@ -282,44 +283,6 @@ public class ServerUtils {
 		fw.close();
 	}
 	
-	public static String getFormField(List items, String fieldName) {
-		for (int i = 0; i < items.size(); i++) {
-			FileItem item = (FileItem) items.get(i);
-			if (item.isFormField() && item.getFieldName().equals(fieldName))
-				return item.getString();
-		}
-		
-		return null;
-	}
-	
-	public static File getUploadFile(List items, String fieldName) throws WebClientException {
-		for (int i = 0; i < items.size(); i++) {
-			FileItem item = (FileItem) items.get(i);
-			if (!item.isFormField() && item.getFieldName().equals(fieldName)) {
-				if (item.getName().equals("")) break;
-				
-				Date uploadDate = new Date();
-				String uploadFileName = fieldName + "_" + starsDateFormat.format(uploadDate) +
-						"_" + starsTimeFormat.format(uploadDate) + ".csv";
-				
-				File uploadPath = new File(UPLOAD_PATH);
-				if (!uploadPath.exists()) uploadPath.mkdirs();
-				
-				File uploadFile = new File(uploadPath, uploadFileName);
-				try {
-					item.write( uploadFile );
-				}
-				catch (Exception e) {
-					throw new WebClientException("Failed to upload file '" + item.getName() + "'");
-				}
-				
-				return uploadFile;
-			}
-		}
-		
-		return null;
-	}
-	
 	public static String[] splitString(String str, String delim) {
 		StreamTokenizer st = new StreamTokenizer( new StringReader(str) );
 		st.resetSyntax();
@@ -358,6 +321,27 @@ public class ServerUtils {
 		String[] tokens = new String[ tokenList.size() ];
 		tokenList.toArray( tokens );
 		return tokens;
+	}
+	
+	public static String getStarsTempDir() {
+		final String fs = System.getProperty( "file.separator" );
+		String serverBase = null;
+		
+		String catBase = System.getProperty( "catalina.base" );
+		if (catBase != null) {
+			serverBase = catBase;
+		} 
+		else {
+			String yukonBase = System.getProperty( "yukon.base" );
+			if (yukonBase != null) {
+				serverBase = yukonBase;
+			} 
+			else {
+				serverBase = "C:" + fs + "yukon";
+			}
+		}
+		
+		return serverBase + fs + STARS_TEMP_DIR;
 	}
 
 }

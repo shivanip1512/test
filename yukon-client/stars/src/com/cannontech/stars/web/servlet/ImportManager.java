@@ -143,6 +143,7 @@ import com.cannontech.user.UserUtils;
 import com.cannontech.util.ServletUtil;
 
 import org.apache.commons.fileupload.DiskFileUpload;
+import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 
 interface ImportFileParser {
@@ -1538,6 +1539,49 @@ public class ImportManager extends HttpServlet {
 	}
 	
 	
+	private String getFormField(List items, String fieldName) {
+		for (int i = 0; i < items.size(); i++) {
+			FileItem item = (FileItem) items.get(i);
+			if (item.isFormField() && item.getFieldName().equals(fieldName))
+				return item.getString();
+		}
+		
+		return null;
+	}
+	
+	private File getUploadFile(List items, String fieldName, LiteStarsEnergyCompany energyCompany)
+		throws WebClientException
+	{
+		final String fs = System.getProperty( "file.separator" );
+		
+		for (int i = 0; i < items.size(); i++) {
+			FileItem item = (FileItem) items.get(i);
+			if (!item.isFormField() && item.getFieldName().equals(fieldName)) {
+				if (item.getName().equals("")) break;
+				
+				Date uploadDate = new Date();
+				String uploadFileName = fieldName + "_" + ServerUtils.starsDateFormat.format(uploadDate) +
+						"_" + ServerUtils.starsTimeFormat.format(uploadDate) + ".csv";
+				
+				File uploadDir = new File(
+						ServerUtils.getStarsTempDir() + fs + ServerUtils.UPLOAD_DIR + fs + energyCompany.getName());
+				if (!uploadDir.exists()) uploadDir.mkdirs();
+				
+				File uploadFile = new File(uploadDir, uploadFileName);
+				try {
+					item.write( uploadFile );
+				}
+				catch (Exception e) {
+					throw new WebClientException("Failed to upload file '" + item.getName() + "'");
+				}
+				
+				return uploadFile;
+			}
+		}
+		
+		return null;
+	}
+	
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
@@ -1561,8 +1605,8 @@ public class ImportManager extends HttpServlet {
 			try {
 				DiskFileUpload upload = new DiskFileUpload();
 				items = upload.parseRequest( req );
-				action = ServerUtils.getFormField( items, "action" );
-				redirect = ServerUtils.getFormField( items, ServletUtils.ATT_REDIRECT );
+				action = getFormField( items, "action" );
+				redirect = getFormField( items, ServletUtils.ATT_REDIRECT );
 			}
 			catch (FileUploadException e) {
 				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
@@ -1599,9 +1643,11 @@ public class ImportManager extends HttpServlet {
 	}
 	
 	private void importCustomerAccounts(List items, StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
 		try {
-			File custFile = ServerUtils.getUploadFile( items, "CustFile" );
-			File hwFile = ServerUtils.getUploadFile( items, "HwFile" );
+			File custFile = getUploadFile( items, "CustFile", energyCompany );
+			File hwFile = getUploadFile( items, "HwFile", energyCompany );
 			
 			ImportCustAccountsTask task = new ImportCustAccountsTask( user, custFile, hwFile );
 			long id = ProgressChecker.addTask( task );
