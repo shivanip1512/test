@@ -23,7 +23,6 @@ public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataIn
 	private SmartCycleGearPanel ivjSmartGearPanel1 = null;
 	private TimeRefreshGearPanel ivjTimeGearPanel1 = null;
 	private RotationGearPanel ivjRotationGearPanel1= null;
-	private ThermostatPreOperateGearPanel ivjThermoPreOpGearPanel1 = null;
 	private ThermostatSetbackGearPanel ivjThermoSetbackGearPanel1 = null;
 	
 /**
@@ -376,7 +375,6 @@ private javax.swing.JComboBox getJComboBoxGearType() {
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_SMART_CYCLE ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_TRUE_CYCLE ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_LATCHING ) );
-			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.THERMOSTAT_PRE_OPERATE ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.THERMOSTAT_SETBACK ) );
 
 			// user code end
@@ -549,10 +547,6 @@ public Object getValue(Object o)
 	{
 		return getIvjLatchingGearPanel1().getValue(gear);		
 	}
-	else if( gear instanceof com.cannontech.database.data.device.lm.ThermostatPreOperateGear )
-	{
-		return getIvjThermoPreOpGearPanel1().getValue(gear);	
-	}
 	else if( gear instanceof com.cannontech.database.data.device.lm.ThermostatSetbackGear )
 	{
 		return getIvjThermoSetbackGearPanel1().getValue(gear);	
@@ -591,7 +585,6 @@ private void initConnections() throws java.lang.Exception {
 	getIvjMasterGearPanel1().addDataInputPanelListener(this);
 	getIvjRotationGearPanel1().addDataInputPanelListener(this);
 	getIvjSmartGearPanel1().addDataInputPanelListener(this);
-	getIvjThermoPreOpGearPanel1().addDataInputPanelListener(this);
 	getIvjThermoSetbackGearPanel1().addDataInputPanelListener(this);
 	
 
@@ -763,13 +756,6 @@ private void setGearType(java.lang.String newGearType)
 		getJScrollPane1().setViewportView(getIvjTimeGearPanel1());
 	}
 
-	else if( getGearType().equalsIgnoreCase(LMProgramDirectGear.THERMOSTAT_PRE_OPERATE) )
-	{
-		//Thermostat Pre-operate
-		getJScrollPane1().setViewportView(getIvjThermoPreOpGearPanel1());
-
-	}
-
 	else if( getGearType().equalsIgnoreCase(LMProgramDirectGear.THERMOSTAT_SETBACK) )
 	{
 		//Thermostat Setback
@@ -831,10 +817,7 @@ public void setValue(Object o)
 	{
 		getIvjLatchingGearPanel1().setValue(gear);		
 	}
-	else if( gear instanceof com.cannontech.database.data.device.lm.ThermostatPreOperateGear )
-	{
-		getIvjThermoPreOpGearPanel1().setValue(gear);	
-	}
+
 	else if( gear instanceof com.cannontech.database.data.device.lm.ThermostatSetbackGear )
 	{
 		getIvjThermoSetbackGearPanel1().setValue(gear);	
@@ -903,15 +886,6 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
 		return ivjSmartGearPanel1;
 	}
 
-	/**
-	 * Returns the ivjThermoPreOpGearPanel1.
-	 * @return ThermostatPreOperateGearPanel
-	 */
-	public ThermostatPreOperateGearPanel getIvjThermoPreOpGearPanel1() {
-		if(ivjThermoPreOpGearPanel1 == null)
-			ivjThermoPreOpGearPanel1 = new ThermostatPreOperateGearPanel();
-		return ivjThermoPreOpGearPanel1;
-	}
 
 	/**
 	 * Returns the ivjThermoSetbackGearPanel1.
@@ -963,14 +937,6 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
 	 */
 	public void setIvjSmartGearPanel1(SmartCycleGearPanel ivjSmartGearPanel1) {
 		this.ivjSmartGearPanel1 = ivjSmartGearPanel1;
-	}
-
-	/**
-	 * Sets the ivjThermoPreOpGearPanel1.
-	 * @param ivjThermoPreOpGearPanel1 The ivjThermoPreOpGearPanel1 to set
-	 */
-	public void setIvjThermoPreOpGearPanel1(ThermostatPreOperateGearPanel ivjThermoPreOpGearPanel1) {
-		this.ivjThermoPreOpGearPanel1 = ivjThermoPreOpGearPanel1;
 	}
 
 	/**

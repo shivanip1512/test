@@ -952,10 +952,10 @@ public void jComboBoxWhenChange_ActionPerformed(java.awt.event.ActionEvent actio
 public static void main(java.lang.String[] args) {
 	try {
 		javax.swing.JFrame frame = new javax.swing.JFrame();
-		ThermostatPreOperateGearPanel aThermostatPreOperateGearPanel;
-		aThermostatPreOperateGearPanel = new ThermostatPreOperateGearPanel();
-		frame.setContentPane(aThermostatPreOperateGearPanel);
-		frame.setSize(aThermostatPreOperateGearPanel.getSize());
+		ThermostatSetbackGearPanel aThermostatSetbackGearPanel;
+		aThermostatSetbackGearPanel = new ThermostatSetbackGearPanel();
+		frame.setContentPane(aThermostatSetbackGearPanel);
+		frame.setSize(aThermostatSetbackGearPanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
