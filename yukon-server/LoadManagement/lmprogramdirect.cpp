@@ -5063,7 +5063,10 @@ void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
         m_iter != _master_programs.end();
         m_iter++)
     {
-        active_masters->insert(*m_iter);
+        if((*m_iter)->getProgramState() != CtiLMProgramBase::InactiveState)
+        {
+            active_masters->insert(*m_iter);
+        }
     }
     
     RWOrdered* active_subordinates = new RWOrdered();
@@ -5071,7 +5074,10 @@ void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
         s_iter != _subordinate_programs.end();
         s_iter++)
     {
-        active_subordinates->insert(*s_iter);
+        if((*s_iter)->getProgramState() != CtiLMProgramBase::InactiveState)
+        {
+            active_subordinates->insert(*s_iter);
+        }
     }
     
     ostrm << (_currentgearnumber+1)
