@@ -5,17 +5,17 @@
 		response.sendRedirect("CreateAppliances.jsp"); return;
 	}
 	
-	String appNoStr = request.getParameter("AppNo");
-	int appNo = 0;
-	if (appNoStr != null)
-		try {
-			appNo = Integer.parseInt(appNoStr);
-		}
-		catch (NumberFormatException e) {}
-	if (appNo < 0 || appNo >= appliances.getStarsApplianceCount())
-		appNo = 0;
-		
+	int appNo = Integer.parseInt(request.getParameter("AppNo"));
 	StarsAppliance appliance = appliances.getStarsAppliance(appNo);
+	
+	String kwCap = "";
+	if (appliance.hasKWCapacity())
+		kwCap = String.valueOf(appliance.getKWCapacity());
+	
+	String effRate = "";
+	if (appliance.hasEfficiencyRating())
+		effRate = String.valueOf(appliance.getEfficiencyRating());
+	
 	StarsInventory hardware = null;
 	StarsLMProgram program = null;
 	StarsApplianceCategory category = null;
@@ -198,7 +198,7 @@ function deleteAppliance(form) {
                             <div align="right">KW Capacity:</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="KWCapacity" maxlength="14" size="14" value="<%= appliance.getKWCapacity() %>">
+                            <input type="text" name="KWCapacity" maxlength="14" size="14" value="<%= kwCap %>">
                           </td>
                         </tr>
                         <tr> 
@@ -206,7 +206,7 @@ function deleteAppliance(form) {
                             <div align="right">Efficiency Rating:</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="EffRating" maxlength="14" size="14" value="<%= appliance.getEfficiencyRating() %>">
+                            <input type="text" name="EffRating" maxlength="14" size="14" value="<%= effRate %>">
                           </td>
                         </tr>
                         <tr> 
@@ -214,7 +214,7 @@ function deleteAppliance(form) {
                             <div align="right">Notes:</div>
                           </td>
                           <td width="200"> 
-                            <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= appliance.getNotes() %></textarea>
+                            <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= appliance.getNotes().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                           </td>
                         </tr>
                       </table>
@@ -230,9 +230,10 @@ function deleteAppliance(form) {
                             <select name="AC_Tonnage">
 <%
 		StarsCustSelectionList tonnageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_AC_TONNAGE );
+		int tonnageID = (appliance.getAirConditioner().getTonnage() != null)? appliance.getAirConditioner().getTonnage().getEntryID() : 0;
 		for (int i = 0; i < tonnageList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = tonnageList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getAirConditioner().getTonnage().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == tonnageID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -249,9 +250,10 @@ function deleteAppliance(form) {
                             <select name="AC_Type">
 <%
 		StarsCustSelectionList typeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_AC_TYPE );
+		int typeID = (appliance.getAirConditioner().getACType() != null)? appliance.getAirConditioner().getACType().getEntryID() : 0;
 		for (int i = 0; i < typeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = typeList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getAirConditioner().getACType().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == typeID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -264,6 +266,9 @@ function deleteAppliance(form) {
 <%
 	}
 	else if (appliance.getWaterHeater() != null) {
+		String numElmt = "";
+		if (appliance.getWaterHeater().hasNumberOfElements())
+			numElmt = String.valueOf(appliance.getWaterHeater().getNumberOfElements());
 %>
 					  <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                         <tr> 
@@ -274,9 +279,10 @@ function deleteAppliance(form) {
                             <select name="WH_GallonNum">
 <%
 		StarsCustSelectionList gallonNumList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_WH_NUM_OF_GALLONS );
+		int numGalID = (appliance.getWaterHeater().getNumberOfGallons() != null)? appliance.getWaterHeater().getNumberOfGallons().getEntryID() : 0;
 		for (int i = 0; i < gallonNumList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = gallonNumList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getWaterHeater().getNumberOfGallons().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == numGalID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -293,9 +299,10 @@ function deleteAppliance(form) {
                             <select name="WH_EnergySrc">
 <%
 		StarsCustSelectionList energySrcList1 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_WH_ENERGY_SOURCE );
+		int energySrcID = (appliance.getWaterHeater().getEnergySource() != null)? appliance.getWaterHeater().getEnergySource().getEntryID() : 0;
 		for (int i = 0; i < energySrcList1.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = energySrcList1.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getWaterHeater().getEnergySource().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == energySrcID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -309,13 +316,16 @@ function deleteAppliance(form) {
                             <div align="right"># Heating Coils:</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="WH_ElementNum" maxlength="14" size="14" value="<%= appliance.getWaterHeater().getNumberOfElements() %>">
+                            <input type="text" name="WH_ElementNum" maxlength="14" size="14" value="<%= numElmt %>">
                           </td>
                         </tr>
                       </table>
 <%
 	}
 	else if (appliance.getDualFuel() != null) {
+		String kwCap2 = "";
+		if (appliance.getDualFuel().hasSecondaryKWCapacity())
+			kwCap2 = String.valueOf(appliance.getDualFuel().getSecondaryKWCapacity());
 %>
                       <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                         <tr> 
@@ -326,9 +336,10 @@ function deleteAppliance(form) {
                             <select name="DF_SwitchOverType">
 <%
 		StarsCustSelectionList switchOverTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DF_SWITCH_OVER_TYPE );
+		int soTypeID = (appliance.getDualFuel().getSwitchOverType() != null)? appliance.getDualFuel().getSwitchOverType().getEntryID() : 0;
 		for (int i = 0; i < switchOverTypeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = switchOverTypeList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getDualFuel().getSwitchOverType().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == soTypeID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -342,7 +353,7 @@ function deleteAppliance(form) {
                             <div align="right">Secondary KW Capacity:</div>
                           </td>
                           <td width="200" height="2"> 
-                            <input type="text" name="DF_KWCapacity2" maxlength="14" size="14" value="<%= appliance.getDualFuel().getSecondaryKWCapacity() %>">
+                            <input type="text" name="DF_KWCapacity2" maxlength="14" size="14" value="<%= kwCap2 %>">
                           </td>
                         </tr>
                         <tr> 
@@ -352,10 +363,11 @@ function deleteAppliance(form) {
                           <td width="200" height="2"> 
                             <select name="DF_SecondarySrc">
 <%
-		StarsCustSelectionList energySrcList2 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DF_SECONDARY_SOURCE );
-		for (int i = 0; i < energySrcList2.getStarsSelectionListEntryCount(); i++) {
-			StarsSelectionListEntry entry = energySrcList2.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getDualFuel().getSecondaryEnergySource().getEntryID() == entry.getEntryID()) ? "selected" : "";
+		StarsCustSelectionList energySrcList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DF_SECONDARY_SOURCE );
+		int energySrcID = (appliance.getDualFuel().getSecondaryEnergySource() != null)? appliance.getDualFuel().getSecondaryEnergySource().getEntryID() : 0;
+		for (int i = 0; i < energySrcList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = energySrcList.getStarsSelectionListEntry(i);
+			String selectedStr = (entry.getEntryID() == energySrcID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -368,6 +380,17 @@ function deleteAppliance(form) {
 <%
 	}
 	else if (appliance.getGenerator() != null) {
+		String peakKW = "";
+		if (appliance.getGenerator().hasPeakKWCapacity())
+			peakKW = String.valueOf(appliance.getGenerator().getPeakKWCapacity());
+		
+		String fuelCap = "";
+		if (appliance.getGenerator().hasFuelCapGallons())
+			fuelCap = String.valueOf(appliance.getGenerator().getFuelCapGallons());
+		
+		String startDelay = "";
+		if (appliance.getGenerator().hasStartDelaySeconds())
+			startDelay = String.valueOf(appliance.getGenerator().getStartDelaySeconds());
 %>
                       <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                         <tr> 
@@ -378,9 +401,10 @@ function deleteAppliance(form) {
                             <select name="GEN_TranSwitchType">
 <%
 		StarsCustSelectionList tranSwitchTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_TYPE );
+		int tsTypeID = (appliance.getGenerator().getTransferSwitchType() != null)? appliance.getGenerator().getTransferSwitchType().getEntryID() : 0;
 		for (int i = 0; i < tranSwitchTypeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = tranSwitchTypeList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getGenerator().getTransferSwitchType().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == tsTypeID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -397,9 +421,10 @@ function deleteAppliance(form) {
                             <select name="GEN_TranSwitchMfg">
 <%
 		StarsCustSelectionList tranSwitchMfgList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_MFG );
+		int tsMfgID = (appliance.getGenerator().getTransferSwitchManufacturer() != null)? appliance.getGenerator().getTransferSwitchManufacturer().getEntryID() : 0;
 		for (int i = 0; i < tranSwitchMfgList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = tranSwitchMfgList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getGenerator().getTransferSwitchManufacturer().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == tsMfgID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -413,7 +438,7 @@ function deleteAppliance(form) {
                             <div align="right">Peak KW Capacity:</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="GEN_KWCapacity" maxlength="14" size="14" value="<%= appliance.getGenerator().getPeakKWCapacity() %>">
+                            <input type="text" name="GEN_KWCapacity" maxlength="14" size="14" value="<%= peakKW %>">
                           </td>
                         </tr>
                         <tr> 
@@ -421,7 +446,7 @@ function deleteAppliance(form) {
                             <div align="right">Fuel Capacity (gal):</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="GEN_FuelCapGal" maxlength="14" size="14" value="<%= appliance.getGenerator().getFuelCapGallons() %>">
+                            <input type="text" name="GEN_FuelCapGal" maxlength="14" size="14" value="<%= fuelCap %>">
                           </td>
                         </tr>
                         <tr> 
@@ -429,7 +454,7 @@ function deleteAppliance(form) {
                             <div align="right">Start Delay (sec):</div>
                           </td>
                           <td width="200" height="2"> 
-                            <input type="text" name="GEN_StartDelaySec" maxlength="14" size="14" value="<%= appliance.getGenerator().getStartDelaySeconds() %>">
+                            <input type="text" name="GEN_StartDelaySec" maxlength="14" size="14" value="<%= startDelay %>">
                           </td>
                         </tr>
                       </table>
@@ -446,9 +471,10 @@ function deleteAppliance(form) {
                             <select name="GD_DryerType">
 <%
 		StarsCustSelectionList dryerTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GRAIN_DRYER_TYPE );
+		int typeID = (appliance.getGrainDryer().getDryerType() != null)? appliance.getGrainDryer().getDryerType().getEntryID() : 0;
 		for (int i = 0; i < dryerTypeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = dryerTypeList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getGrainDryer().getDryerType().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == typeID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -465,9 +491,10 @@ function deleteAppliance(form) {
                             <select name="GD_BinSize">
 <%
 		StarsCustSelectionList binSizeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GD_BIN_SIZE );
+		int binSizeID = (appliance.getGrainDryer().getBinSize() != null)? appliance.getGrainDryer().getBinSize().getEntryID() : 0;
 		for (int i = 0; i < binSizeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = binSizeList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getGrainDryer().getBinSize().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == binSizeID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -483,10 +510,11 @@ function deleteAppliance(form) {
                           <td width="200"> 
                             <select name="GD_BlowerEenrgySrc">
 <%
-		StarsCustSelectionList energySrcList3 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GD_ENERGY_SOURCE );
-		for (int i = 0; i < energySrcList3.getStarsSelectionListEntryCount(); i++) {
-			StarsSelectionListEntry entry = energySrcList3.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getGrainDryer().getBlowerEnergySource().getEntryID() == entry.getEntryID()) ? "selected" : "";
+		StarsCustSelectionList energySrcList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GD_ENERGY_SOURCE );
+		int energySrcID = (appliance.getGrainDryer().getBlowerEnergySource() != null)? appliance.getGrainDryer().getBlowerEnergySource().getEntryID() : 0;
+		for (int i = 0; i < energySrcList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = energySrcList.getStarsSelectionListEntry(i);
+			String selectedStr = (entry.getEntryID() == energySrcID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -503,9 +531,10 @@ function deleteAppliance(form) {
                             <select name="GD_BlowerHorsePower">
 <%
 		StarsCustSelectionList horsePowerList1 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GD_HORSE_POWER );
+		int horsePwrID = (appliance.getGrainDryer().getBlowerHorsePower() != null)? appliance.getGrainDryer().getBlowerHorsePower().getEntryID() : 0;
 		for (int i = 0; i < horsePowerList1.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = horsePowerList1.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getGrainDryer().getBlowerHorsePower().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == horsePwrID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -522,9 +551,10 @@ function deleteAppliance(form) {
                             <select name="GD_BlowerHeatSrc">
 <%
 		StarsCustSelectionList heatSrcList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GD_HEAT_SOURCE );
+		int heatSrcID = (appliance.getGrainDryer().getBlowerHeatSource() != null)? appliance.getGrainDryer().getBlowerHeatSource().getEntryID() : 0;
 		for (int i = 0; i < heatSrcList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = heatSrcList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getGrainDryer().getBlowerHeatSource().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == heatSrcID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -537,6 +567,13 @@ function deleteAppliance(form) {
 <%
 	}
 	else if (appliance.getStorageHeat() != null) {
+		String peakKW = "";
+		if (appliance.getStorageHeat().hasPeakKWCapacity())
+			peakKW = String.valueOf(appliance.getStorageHeat().getPeakKWCapacity());
+		
+		String rechargeTime = "";
+		if (appliance.getStorageHeat().hasHoursToRecharge())
+			rechargeTime = String.valueOf(appliance.getStorageHeat().getHoursToRecharge());
 %>
                       <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                         <tr> 
@@ -547,9 +584,10 @@ function deleteAppliance(form) {
                             <select name="SH_StorageType">
 <%
 		StarsCustSelectionList storageTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_HEAT_TYPE );
+		int typeID = (appliance.getStorageHeat().getStorageType() != null)? appliance.getStorageHeat().getStorageType().getEntryID() : 0;
 		for (int i = 0; i < storageTypeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = storageTypeList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getStorageHeat().getStorageType().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == typeID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -563,7 +601,7 @@ function deleteAppliance(form) {
                             <div align="right">Peak KW Capacity:</div>
                           </td>
                           <td width="200">
-                            <input type="text" name="SH_KWCapacity" maxlength="14" size="14" value="<%= appliance.getStorageHeat().getPeakKWCapacity() %>">
+                            <input type="text" name="SH_KWCapacity" maxlength="14" size="14" value="<%= peakKW %>">
                           </td>
                         </tr>
                         <tr> 
@@ -571,13 +609,16 @@ function deleteAppliance(form) {
                             <div align="right">Recharge Time (hr):</div>
                           </td>
                           <td width="200">
-                            <input type="text" name="SH_RechargeHour" maxlength="14" size="14" value="<%= appliance.getStorageHeat().getHoursToRecharge() %>">
+                            <input type="text" name="SH_RechargeHour" maxlength="14" size="14" value="<%= rechargeTime %>">
                           </td>
                         </tr>
                       </table>
 <%
 	}
 	else if (appliance.getHeatPump() != null) {
+		String restartDelay = "";
+		if (appliance.getHeatPump().hasRestartDelaySeconds())
+			restartDelay = String.valueOf(appliance.getHeatPump().getRestartDelaySeconds());
 %>
                       <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                         <tr> 
@@ -586,14 +627,35 @@ function deleteAppliance(form) {
                           </td>
                           <td width="200"> 
                             <select name="HP_PumpType">
-<%
+                              <%
 		StarsCustSelectionList pumpTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_TYPE );
+		int typeID = (appliance.getHeatPump().getPumpType() != null)? appliance.getHeatPump().getPumpType().getEntryID() : 0;
 		for (int i = 0; i < pumpTypeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = pumpTypeList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getHeatPump().getPumpType().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == typeID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
-<%
+                              <%
+		}
+%>
+                            </select>
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="100" class="TableCell"> 
+                            <div align="right">Pump Size:</div>
+                          </td>
+                          <td width="200"> 
+                            <select name="HP_PumpSize">
+                              <%
+		StarsCustSelectionList pumpSizeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_SIZE );
+		int sizeID = (appliance.getHeatPump().getPumpSize() != null)? appliance.getHeatPump().getPumpSize().getEntryID() : 0;
+		for (int i = 0; i < pumpSizeList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = pumpSizeList.getStarsSelectionListEntry(i);
+			String selectedStr = (entry.getEntryID() == sizeID) ? "selected" : "";
+%>
+                              <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+                              <%
 		}
 %>
                             </select>
@@ -605,14 +667,15 @@ function deleteAppliance(form) {
                           </td>
                           <td width="200"> 
                             <select name="HP_StandbySrc">
-<%
+                              <%
 		StarsCustSelectionList standbySrcList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_HP_STANDBY_SOURCE );
+		int standbySrcID = (appliance.getHeatPump().getStandbySource() != null)? appliance.getHeatPump().getStandbySource().getEntryID() : 0;
 		for (int i = 0; i < standbySrcList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = standbySrcList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getHeatPump().getStandbySource().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == standbySrcID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
-<%
+                              <%
 		}
 %>
                             </select>
@@ -623,7 +686,7 @@ function deleteAppliance(form) {
                             <div align="right">Restart Delay (sec):</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="HP_RestartDelaySec" maxlength="14" size="14" value="<%= appliance.getHeatPump().getRestartDelaySeconds() %>">
+                            <input type="text" name="HP_RestartDelaySec" maxlength="14" size="14" value="<%= restartDelay %>">
                           </td>
                         </tr>
                       </table>
@@ -640,9 +703,10 @@ function deleteAppliance(form) {
                             <select name="IRR_IrrigationType">
 <%
 		StarsCustSelectionList irrTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRRIGATION_TYPE );
+		int typeID = (appliance.getIrrigation().getIrrigationType() != null)? appliance.getIrrigation().getIrrigationType().getEntryID() : 0;
 		for (int i = 0; i < irrTypeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = irrTypeList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getIrrigation().getIrrigationType().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == typeID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -659,9 +723,10 @@ function deleteAppliance(form) {
                             <select name="IRR_HorsePower">
 <%
 		StarsCustSelectionList horsePowerList2 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_HORSE_POWER );
+		int horsePwrID = (appliance.getIrrigation().getHorsePower() != null)? appliance.getIrrigation().getHorsePower().getEntryID() : 0;
 		for (int i = 0; i < horsePowerList2.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = horsePowerList2.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getIrrigation().getHorsePower().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == horsePwrID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -677,10 +742,11 @@ function deleteAppliance(form) {
                           <td width="200"> 
                             <select name="IRR_EnergySrc">
 <%
-		StarsCustSelectionList energySrcList4 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_ENERGY_SOURCE );
-		for (int i = 0; i < energySrcList4.getStarsSelectionListEntryCount(); i++) {
-			StarsSelectionListEntry entry = energySrcList4.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getIrrigation().getEnergySource().getEntryID() == entry.getEntryID()) ? "selected" : "";
+		StarsCustSelectionList energySrcList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_ENERGY_SOURCE );
+		int energySrcID = (appliance.getIrrigation().getEnergySource() != null)? appliance.getIrrigation().getEnergySource().getEntryID() : 0;
+		for (int i = 0; i < energySrcList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = energySrcList.getStarsSelectionListEntry(i);
+			String selectedStr = (entry.getEntryID() == energySrcID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -697,9 +763,10 @@ function deleteAppliance(form) {
                             <select name="IRR_SoilType">
 <%
 		StarsCustSelectionList soilTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_SOIL_TYPE );
+		int soilTypeID = (appliance.getIrrigation().getSoilType() != null)? appliance.getIrrigation().getSoilType().getEntryID() : 0;
 		for (int i = 0; i < soilTypeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = soilTypeList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getIrrigation().getSoilType().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == soilTypeID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -715,10 +782,11 @@ function deleteAppliance(form) {
                           <td width="200" height="2"> 
                             <select name="IRR_MeterLoc">
 <%
-	StarsCustSelectionList meterLocList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_METER_LOCATION );
+		StarsCustSelectionList meterLocList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_METER_LOCATION );
+		int meterLocID = (appliance.getIrrigation().getMeterLocation() != null)? appliance.getIrrigation().getMeterLocation().getEntryID() : 0;
 		for (int i = 0; i < meterLocList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = meterLocList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getIrrigation().getMeterLocation().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == meterLocID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -735,9 +803,10 @@ function deleteAppliance(form) {
                             <select name="IRR_MeterVolt">
 <%
 		StarsCustSelectionList meterVoltList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_METER_VOLTAGE );
+		int meterVoltID = (appliance.getIrrigation().getMeterVoltage() != null)? appliance.getIrrigation().getMeterVoltage().getEntryID() : 0;
 		for (int i = 0; i < meterVoltList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = meterVoltList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getIrrigation().getMeterVoltage().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (entry.getEntryID() == meterVoltID) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
