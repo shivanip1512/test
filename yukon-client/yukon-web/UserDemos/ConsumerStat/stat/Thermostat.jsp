@@ -284,12 +284,12 @@ if (text.length == 2) {
                                   <td width="47%" height="59" valign = "bottom"> 
                                     <table width="34%" border="0" cellpadding = "2" cellspacing = "0">
                                       <tr> 
-                                        <td ><img id = "auto" src="ThermImages/Arrow.gif" style="visibility:hidden"></td>
-                                        <td><img src="ThermImages/Auto.gif" onClick = "fanChange('auto')"></td>
+                                        <td ><img id="<%= StarsThermoFanSettings.AUTO.toString() %>" src="ThermImages/Arrow.gif" style="visibility:hidden"></td>
+                                        <td><img src="ThermImages/Auto.gif" onClick = "fanChange('<%= StarsThermoFanSettings.AUTO.toString() %>')"></td>
                                       </tr>
                                       <tr> 
-                                        <td><img id = "on" src="ThermImages/Arrow.gif" style="visibility:hidden"></td>
-                                        <td><img src="ThermImages/On.gif" onClick = "fanChange('on')"></td>
+                                        <td><img id="<%= StarsThermoFanSettings.ON.toString() %>" src="ThermImages/Arrow.gif" style="visibility:hidden"></td>
+                                        <td><img src="ThermImages/On.gif" onClick = "fanChange('<%= StarsThermoFanSettings.ON.toString() %>')"></td>
                                       </tr>
                                       <tr> 
                                         <td height="14"></td>
