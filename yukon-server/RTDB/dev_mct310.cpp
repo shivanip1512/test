@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2003/10/27 22:04:05 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2003/10/30 17:44:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,6 @@
 #include "pt_status.h"
 #include "numstr.h"
 #include "porter.h"
-#include "prot_emetcon.h"
 #include "utility.h"
 #include "dllyukon.h"
 
@@ -121,7 +120,7 @@ bool CtiDeviceMCT310::initCommandStore( )
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_LoadProfileInterval;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT_LPInt_Func, 0 );
+    cs._funcLen = make_pair( (int)MCT_Function_LPInt, 0 );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_Multiplier;

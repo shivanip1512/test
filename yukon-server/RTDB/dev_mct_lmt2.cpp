@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/10/27 22:04:05 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/10/30 17:44:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,6 @@
 #include "dev_mct_lmt2.h"
 #include "logger.h"
 #include "mgr_point.h"
-#include "prot_emetcon.h"
 #include "pt_numeric.h"
 #include "numstr.h"
 
@@ -78,7 +77,7 @@ bool CtiDeviceMCT_LMT2::initCommandStore()
 
    cs._cmd     = CtiProtocolEmetcon::PutConfig_LoadProfileInterval;
    cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( (int)MCT_LPInt_Func, 0 );
+   cs._funcLen = make_pair( (int)MCT_Function_LPInt, 0 );
    _commandStore.insert( cs );
 
 
