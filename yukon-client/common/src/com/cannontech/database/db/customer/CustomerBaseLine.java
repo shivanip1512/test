@@ -22,7 +22,7 @@ public class CustomerBaseLine extends com.cannontech.database.db.DBPersistent
 	
 	public static final String TABLE_NAME = "CustomerBaseLine";
 /**
- * CustomerWebSettings constructor comment.
+ * CustomerBaseLine constructor comment.
  */
 public CustomerBaseLine() {
 	super();

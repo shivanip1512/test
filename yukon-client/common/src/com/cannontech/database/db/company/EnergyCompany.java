@@ -18,7 +18,7 @@ public class EnergyCompany extends com.cannontech.database.db.DBPersistent
 	
 	public static final String TABLE_NAME = "EnergyCompany";
 /**
- * CustomerWebSettings constructor comment.
+ * EnergyCompany constructor comment.
  */
 public EnergyCompany() {
 	super();
