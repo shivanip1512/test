@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/03/10 20:52:05 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,9 +17,9 @@
 #include "dev_seriesv.h"
 #include "porter.h"
 
-CtiProtocolBase *CtiDeviceSeriesV::getProtocol() const
+Protocol::Interface *CtiDeviceSeriesV::getProtocol() const
 {
-    return (CtiProtocolBase *)&_seriesv;
+    return (Protocol::Interface *)&_seriesv;
 }
 
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/03/10 20:52:05 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,9 +33,9 @@ CtiDeviceLMI::~CtiDeviceLMI()
 }
 
 
-CtiProtocolBase *CtiDeviceLMI::getProtocol() const
+Protocol::Interface *CtiDeviceLMI::getProtocol() const
 {
-    return (CtiProtocolBase *)&_lmi;
+    return (Protocol::Interface *)&_lmi;
 }
 
 
