@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_cmd.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/09/02 18:39:20 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/01/14 17:22:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,7 +93,8 @@ public:
       ControlAblement,                 // Vector contains token, idtype (0 = Device, 1 = Point), id, ablement bit (0 = dis, 1 = enable).
       PointTagAdjust,                  // Vector contains token, pointid, tag(s) to set, tag(s) to reset.
       PorterConsoleInput,              // Vector contains token, operation (same as keyboard character. see PorterConsoleInput:porter.cpp)
-      LastCommand
+      ResetControlHours,               // By default resets the Seasonal control history, could add to the op arg list to allow for resets of other control histories; Vector contains token
+      LastCommand//this is to be the last entry in the enum, so add new entries above here, otay
    };
 };
 
