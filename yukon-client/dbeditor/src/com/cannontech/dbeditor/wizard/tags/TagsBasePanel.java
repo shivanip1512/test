@@ -413,6 +413,7 @@ public Object getValue(Object o)
 		aTag.setInhibit(new Character('Y'));
 	else
 		aTag.setInhibit(new Character('N'));
+		
 	aTag.setColorID(new Integer(getColorComboBox().getSelectedIndex()));	
 
    	Integer yukImgId = 
@@ -422,7 +423,7 @@ public Object getValue(Object o)
 				
 	aTag.setImageID(yukImgId);
       
-   	return o;
+   	return aTag;
 }
 /**
  * Called whenever the part throws an exception.

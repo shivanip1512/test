@@ -89,11 +89,12 @@ public final static Integer getNextTagID(String databaseAlias) throws java.sql.S
 	try
 	{
 		stmt.execute();
-		return ((Integer)stmt.getRow(0)[0] );
+		return new Integer(stmt.getRow(0)[0].toString());
 	}
 	catch( Exception e )
 	{
-		return new Integer(-5);
+	   com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	   return new Integer(-5);
 	}
 }
 
@@ -175,7 +176,6 @@ public void update()
 {
 	Object setValues[] =
 	{ 
-		getTagID(),
 		getTagName(), getTagLevel(),
 		getInhibit(), getColorID(),
 		getImageID()
@@ -209,6 +209,11 @@ public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( in
 
 
 	return msgs;
+}
+
+public String toString()
+{
+	return getTagName();
 }
 
 }
