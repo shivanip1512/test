@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2003/06/27 21:06:27 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2003/10/27 22:04:06 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,7 +99,7 @@ bool CtiDeviceRepeater900::getOperation( const UINT &cmd, USHORT &function, USHO
         CtiDeviceRepeater900::initCommandStore();
     }
 
-    CTICMDSET::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
+    DLCCommandSet::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
 
     if( itr != _commandStore.end() )
     {

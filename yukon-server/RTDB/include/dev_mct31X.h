@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct31X.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/08/11 20:13:47 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/10/27 22:04:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,7 @@ class IM_EX_DEVDB CtiDeviceMCT31X : public CtiDeviceMCT310
 {
 protected:
 
-    static CTICMDSET _commandStore;
+    static DLCCommandSet _commandStore;
     static const double MCT360_GEKV_KWHMultiplier;
 
 private:

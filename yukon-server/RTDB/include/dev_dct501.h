@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dct501.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/06/27 20:59:50 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/10/27 22:04:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,7 +33,7 @@ protected:
 
 private:
 
-   static CTICMDSET _commandStore;
+   static DLCCommandSet _commandStore;
    RWTime _lastLPRequestAttempt[4], _lastLPRequestBlockStart[4], _lastLPTime[4], _nextLPTime[4];
 
 public:

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/10/21 16:31:47 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/10/27 22:04:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -95,7 +95,7 @@ bool CtiDeviceMCT_LMT2::getOperation( const UINT &cmd, USHORT &function, USHORT 
       CtiDeviceMCT_LMT2::initCommandStore();
    }
 
-   CTICMDSET::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
+   DLCCommandSet::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
 
    if( itr != _commandStore.end() )    // It's prego!
    {

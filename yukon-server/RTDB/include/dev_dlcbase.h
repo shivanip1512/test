@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/10/06 18:43:45 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/10/27 22:04:06 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -96,7 +96,7 @@ protected:
 
 public:
 
-   typedef set< CtiDLCCommandStore > CTICMDSET;
+   typedef set< CtiDLCCommandStore > DLCCommandSet;
 
    typedef CtiDeviceSingle Inherited;
 

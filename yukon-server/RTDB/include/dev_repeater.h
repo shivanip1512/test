@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_repeater.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/06/27 21:06:28 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/10/27 22:04:07 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,7 +39,7 @@ protected:
 
 private:
 
-   static CTICMDSET _commandStore;
+   static DLCCommandSet _commandStore;
 
 public:
 

@@ -36,7 +36,7 @@ protected:
 
 private:
 
-   static CTICMDSET _commandStore;
+   static DLCCommandSet _commandStore;
 
 public:
 

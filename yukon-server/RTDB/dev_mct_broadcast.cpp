@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/08/11 20:12:22 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/10/27 22:04:05 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -455,7 +455,7 @@ bool CtiDeviceMCTBroadcast::getOperation( const UINT &cmd, USHORT &function, USH
         initCommandStore();
     }
 
-    CTICMDSET::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
+    DLCCommandSet::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
 
     if( itr != _commandStore.end() )    // It's prego!
     {

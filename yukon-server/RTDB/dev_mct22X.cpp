@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct22X.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/06/27 21:01:03 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/10/27 22:04:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -115,7 +115,7 @@ bool CtiDeviceMCT22X::getOperation( const UINT &cmd, USHORT &function, USHORT &l
       CtiDeviceMCT22X::initCommandStore();
    }
 
-   CTICMDSET::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
+   DLCCommandSet::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
 
    if( itr != _commandStore.end() )
    {

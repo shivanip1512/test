@@ -1,40 +1,49 @@
 /*-----------------------------------------------------------------------------*
 *
-* File:   dev_mct310
+* File:   dev_MCT410
 *
-* Class:  CtiDeviceMCT310
+* Class:  CtiDeviceMCT410
 * Date:   4/24/2001
 *
 * Author: Corey G. Plender
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct310.h-arc  $
-* REVISION     :  $Revision: 1.7 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
+* REVISION     :  $Revision: 1.2 $
 * DATE         :  $Date: 2003/10/27 22:04:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#ifndef __DEV_MCT310_H__
-#define __DEV_MCT310_H__
+#ifndef __DEV_MCT410_H__
+#define __DEV_MCT410_H__
 #pragma warning( disable : 4786)
 
 
 #include "dev_mct.h"
 
-class IM_EX_DEVDB CtiDeviceMCT310 : public CtiDeviceMCT
+class IM_EX_DEVDB CtiDeviceMCT410 : public CtiDeviceMCT
 {
 protected:
 
     enum
     {
-        MCT310_DemandPos = 0x2c,
-        MCT310_DemandLen =    2,
+        MCT410_StatusPos         = 0x05,
+        MCT410_StatusLen         =    2,
 
-        MCT310_StatusPos = 0x05,
-        MCT310_StatusLen =    2
+        MCT410_PowerfailCountPos = 0x07,
+        MCT410_PowerfailCountLen =    2,
+
+        MCT410_AlarmsPos         = 0x15,
+        MCT410_AlarmsLen         =    2,
+
+        MCT410_FuncReadMReadPos  = 0x90,
+        MCT410_FuncReadMReadLen  =    3,  //  this is for the 410 KWH Only;  will need to be increased later
+
+        MCT410_FuncReadDemandPos = 0x92,
+        MCT410_FuncReadDemandLen =    3   //  again, this is just getting the status byte and one demand reading
     };
 
-    enum
+/*    enum
     {
         MCT3XX_FuncReadMReadPos  = 0x90,  //  144
         MCT3XX_FuncReadMReadLen  =    9,  //  Variable based on point count... Max of 9.
@@ -87,7 +96,7 @@ protected:
         MCT3XX_GroupAddrGoldSilverLen  =    1,
         MCT3XX_UniqAddrPos             = 0x1A,
         MCT3XX_UniqAddrLen             =    6
-    };
+    };*/
 
 private:
 
@@ -99,32 +108,20 @@ public:
 
    typedef CtiDeviceMCT Inherited;
 
-   CtiDeviceMCT310( );
-   CtiDeviceMCT310( const CtiDeviceMCT310 &aRef );
-   virtual ~CtiDeviceMCT310( );
+   CtiDeviceMCT410( );
+   CtiDeviceMCT410( const CtiDeviceMCT410 &aRef );
+   virtual ~CtiDeviceMCT410( );
 
-   CtiDeviceMCT310 &operator=( const CtiDeviceMCT310 &aRef );
+   CtiDeviceMCT410 &operator=( const CtiDeviceMCT410 &aRef );
 
    static bool initCommandStore( );
    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
-
-   //  virtual so that the MCT318 can override them
-   virtual ULONG calcNextLPScanTime( void );
-   virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
-   virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
    virtual INT ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
 
    INT decodeGetValueKWH         ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
    INT decodeGetValueDemand      ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-   INT decodeGetStatusDisconnect ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
    INT decodeGetStatusInternal   ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-   INT decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
    INT decodeGetConfigModel      ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-   INT decodeGetConfigOptions    ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-   INT decodeScanLoadProfile     ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-
-   void decodeAccumulators( ULONG *result, INT accum_cnt, BYTE *Data );
-   void decodeStati( INT &stat, INT which, BYTE *Data );
 };
-#endif // #ifndef __DEV_MCT310_H__
+#endif // #ifndef __DEV_MCT410_H__

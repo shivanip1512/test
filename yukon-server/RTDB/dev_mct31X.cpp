@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2003/10/06 18:43:44 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2003/10/27 22:04:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -203,7 +203,7 @@ bool CtiDeviceMCT31X::getOperation( const UINT &cmd, USHORT &function, USHORT &l
         CtiDeviceMCT31X::initCommandStore( );
     }
 
-    CTICMDSET::iterator itr = _commandStore.find( CtiDLCCommandStore( cmd ) );
+    DLCCommandSet::iterator itr = _commandStore.find( CtiDLCCommandStore( cmd ) );
 
     //  the 318L is the only 31x that supports load profile that we're concerned about here, and it'd be silly to make another class for one function
     //    we want it to stop here, no matter what, no Inherited::anything...

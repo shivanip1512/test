@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct_lmt2.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/06/27 21:09:59 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/10/27 22:04:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,7 @@ protected:
 
 private:
 
-   static CTICMDSET _commandStore;
+   static DLCCommandSet _commandStore;
    RWTime _lastLPRequestAttempt, _lastLPRequestBlockStart;
 
 public:

@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/03/13 19:36:13 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/10/27 22:04:07 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,7 @@ private:
 
     bool _lastFreeze;                   // if false... last freeze sent was a zero if true, last freeze was a One;
 
-    static CTICMDSET _commandStore;
+    static DLCCommandSet _commandStore;
 
 public:
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/10/21 16:32:20 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2003/10/27 22:04:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -229,7 +229,7 @@ bool CtiDeviceMCT310::getOperation( const UINT &cmd, USHORT &function, USHORT &l
         CtiDeviceMCT310::initCommandStore( );
     }
 
-    CTICMDSET::iterator itr = _commandStore.find( CtiDLCCommandStore( cmd ) );
+    DLCCommandSet::iterator itr = _commandStore.find( CtiDLCCommandStore( cmd ) );
 
     //  the 310IL is the only 310 that supports load profile, and i didn't want to add a seperate class for the one action
     if( getType( ) != TYPEMCT310IL &&

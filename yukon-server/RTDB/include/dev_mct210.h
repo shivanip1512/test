@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct210.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/06/27 21:00:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/10/27 22:04:06 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,7 +50,7 @@ protected:
 
 private:
 
-   static CTICMDSET _commandStore;
+   static DLCCommandSet _commandStore;
 
 public:
 
