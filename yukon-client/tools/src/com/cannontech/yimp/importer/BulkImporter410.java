@@ -115,7 +115,7 @@ public java.lang.Integer getImportInterval()
  * Insert the method's description here.
  * Creation date: (02/2/2005 7:27:20 PM)
  */
-
+/*
 //this is a problem...I am going to need last import time
 //instead of last failure, and I am not keeping track of it
 public static GregorianCalendar getLastImportTimeStamp()
@@ -182,7 +182,7 @@ public static GregorianCalendar getLastImportTimeStamp()
 	
 	return lastImportTime;
 }
-
+*/
 /**
  * Insert the method's description here.
  * Creation date: (02/2/2005 7:27:20 PM)
@@ -495,7 +495,8 @@ public void runImport(Vector imps, Connection conn)
 	
 	DBFuncs.writeTotalSuccess(successCounter);
 	DBFuncs.writeTotalAttempted(imps.size());
-	DBFuncs.writeLastImportTime(lastImportTime.getTime());
+	Date now = new Date();
+	DBFuncs.writeLastImportTime(now);
 	
 }
 
