@@ -16,9 +16,9 @@ import com.cannontech.cbc.messages.DefineCollectableCBCStateGroupMessage;
 import com.cannontech.cbc.messages.DefineCollectableCBCSubAreaName;
 import com.cannontech.cbc.messages.DefineCollectableCBCSubstationBuses;
 import com.cannontech.cbc.messages.DefineCollectableCBCTempMoveCapBank;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageListener;
@@ -232,11 +232,10 @@ protected com.cannontech.message.util.ClientConnection getConnection()
  */
 private void getExternalResources() 
 {
-	setHost( ClientSession.getInstance().getRolePropertyValue(
-		SystemRole.CAP_CONTROL_MACHINE, "127.0.0.1" ) );
+	setHost( RoleFuncs.getGlobalPropertyValue( SystemRole.CAP_CONTROL_MACHINE ) );
 
-	setPort( new Integer( ClientSession.getInstance().getRolePropertyValue(
-		SystemRole.CAP_CONTROL_PORT, "1910") ).intValue() );
+	setPort( Integer.parseInt(
+		RoleFuncs.getGlobalPropertyValue( SystemRole.CAP_CONTROL_PORT ) ) );
 
 }
 
