@@ -9,7 +9,7 @@
 
 <script language="JavaScript">
 function validate(form) {
-	if (form.OrderNo.value == '') {
+	if (form.OrderNo != null && form.OrderNo.value == "") {
 		alert("Order # cannot be empty");
 		return false;
 	}

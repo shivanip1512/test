@@ -25,7 +25,7 @@
 
 <script language="JavaScript">
 function validate(form) {
-	if (form.OrderNo.value == "") {
+	if (form.OrderNo != null && form.OrderNo.value == "") {
 		alert("Work Order # cannot be empty");
 		return false;
 	}

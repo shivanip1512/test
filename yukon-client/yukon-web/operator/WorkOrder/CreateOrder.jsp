@@ -9,7 +9,7 @@
 
 <script language="JavaScript">
 function validate(form) {
-	if (form.OrderNo.value == "") {
+	if (form.OrderNo != null && form.OrderNo.value == "") {
 		alert("Work Order # cannot be empty");
 		return false;
 	}
@@ -70,7 +70,7 @@ function validate(form) {
               <%@ include file="include/SearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               
-			  <form name="soForm" method="post" action="<%= request.getContextPath() %>/servlet/WorkOrderManager" onsubmit="return validate(this)" onreset="resetOrder(this)">
+			  <form name="soForm" method="post" action="<%= request.getContextPath() %>/servlet/WorkOrderManager" onsubmit="return validate(this)">
                 <input type="hidden" name="action" value="CreateWorkOrder">
                 <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/WorkOrder/WorkOrder.jsp?OrderId=">
                 <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
