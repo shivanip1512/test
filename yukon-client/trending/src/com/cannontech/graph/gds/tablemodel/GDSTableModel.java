@@ -260,7 +260,8 @@ public boolean isCellEditable(int row, int column)
 {
 	return ( column == LABEL_NAME_COLUMN ||
 			 column == COLOR_NAME_COLUMN || 
-			 column == AXIS_NAME_COLUMN);
+			 column == AXIS_NAME_COLUMN ||
+			 column == TYPE_NAME_COLUMN);
 }
 /**
  * Insert the method's description here.
