@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/07/25 20:53:21 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/10/09 19:31:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,12 +22,13 @@
 #include "dlldefs.h"
 #include "pointtypes.h"
 
+#include "prot_base.h"
+
 #include "dnp_application.h"
 #include "dnp_objects.h"
 #include "dnp_object_binaryoutput.h"
-#include "xfer.h"
 
-class IM_EX_PROT CtiProtocolDNP
+class IM_EX_PROT CtiProtocolDNP : public CtiProtocolBase
 {
     enum   DNPCommand;
     struct dnp_output_point;
@@ -38,10 +39,14 @@ private:
     unsigned short    _masterAddress, _slaveAddress;
     DNPCommand        _currentCommand;
 
+protected:
+
+    int commOut( OUTMESS *&OutMessage );
+    int commIn ( INMESS   *InMessage  );
+
 public:
 
     CtiProtocolDNP();
-    CtiProtocolDNP(int address);
     CtiProtocolDNP(const CtiProtocolDNP &aRef);
 
     virtual ~CtiProtocolDNP();
@@ -58,14 +63,11 @@ public:
 
     bool isTransactionComplete( void );
 
-    int commOut( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
-    int commIn ( INMESS *InMessage,   RWTPtrSlist< OUTMESS > &outList );
+    int sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
+    int recvCommResult ( INMESS   *InMessage,  RWTPtrSlist< OUTMESS > &outList );
 
-    int sendOutbound( OUTMESS *&OutMessage );
-    int recvOutbound( OUTMESS  *OutMessage );
-
-    int sendInbound( INMESS *InMessage );
-    int recvInbound( INMESS *InMessage );
+    int recvCommRequest( OUTMESS  *OutMessage );
+    int sendCommResult ( INMESS   *InMessage  );
 
     bool hasInboundPoints( void );
     void getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList );

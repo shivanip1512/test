@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/09/18 21:18:53 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/10/09 19:31:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -188,47 +188,7 @@ int CtiProtocolDNP::decode( CtiXfer &xfer, int status )
 }
 
 
-//  just a nice wrapper for sendOutbound
-int CtiProtocolDNP::commOut( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
-{
-    int retVal;
-
-    retVal = sendOutbound(OutMessage);
-
-    if( OutMessage != NULL )
-    {
-        outList.append(OutMessage);
-        OutMessage = NULL;
-    }
-
-    return retVal;
-}
-
-
-//  just a nice wrapper for recvInbound
-int CtiProtocolDNP::commIn( INMESS *InMessage, RWTPtrSlist< OUTMESS > &outList )
-{
-    int retVal;
-
-    retVal = recvInbound(InMessage);
-
-    if( _appLayer.hasOutput() )
-    {
-        OUTMESS *OutMessage = new CtiOutMessage();
-
-        InEchoToOut(InMessage, OutMessage);
-        //  copy over the other stuff we need
-        OutMessage->DeviceID = InMessage->DeviceID;
-        OutMessage->Port     = InMessage->Port;
-
-        retVal = commOut(OutMessage, outList);
-    }
-
-    return retVal;
-}
-
-
-int CtiProtocolDNP::sendOutbound( OUTMESS *&OutMessage )
+int CtiProtocolDNP::commOut( OUTMESS *&OutMessage )
 {
     int retVal = NoError;
 
@@ -259,7 +219,66 @@ int CtiProtocolDNP::sendOutbound( OUTMESS *&OutMessage )
 }
 
 
-int CtiProtocolDNP::sendInbound( INMESS *InMessage )
+int CtiProtocolDNP::commIn( INMESS *InMessage )
+{
+    int retVal = NoError;
+
+    _appLayer.restoreRsp(InMessage->Buffer.InMessage, InMessage->InLength);
+
+    return retVal;
+}
+
+
+int CtiProtocolDNP::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
+{
+    int retVal;
+
+    retVal = commOut(OutMessage);
+
+    if( OutMessage != NULL )
+    {
+        outList.append(OutMessage);
+        OutMessage = NULL;
+    }
+
+    return retVal;
+}
+
+
+int CtiProtocolDNP::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &outList )
+{
+    int retVal;
+
+    retVal = commIn(InMessage);
+
+    if( _appLayer.hasOutput() )
+    {
+        OUTMESS *OutMessage = new CtiOutMessage();
+
+        InEchoToOut(InMessage, OutMessage);
+        //  copy over the other stuff we need
+        OutMessage->DeviceID = InMessage->DeviceID;
+        OutMessage->TargetID = InMessage->TargetID;
+        OutMessage->Port     = InMessage->Port;
+
+        retVal = sendCommRequest(OutMessage, outList);
+    }
+
+    return retVal;
+}
+
+
+int CtiProtocolDNP::recvCommRequest( OUTMESS *OutMessage )
+{
+    int retVal = NoError;
+
+    _appLayer.restoreReq(OutMessage->Buffer.OutMessage, OutMessage->OutLength);
+
+    return retVal;
+}
+
+
+int CtiProtocolDNP::sendCommResult( INMESS *InMessage )
 {
     int retVal = NoError;
 
@@ -286,26 +305,6 @@ int CtiProtocolDNP::sendInbound( INMESS *InMessage )
     {
         InMessage->InLength = 0;
     }
-
-    return retVal;
-}
-
-
-int CtiProtocolDNP::recvOutbound( OUTMESS *OutMessage )
-{
-    int retVal = NoError;
-
-    _appLayer.restoreReq(OutMessage->Buffer.OutMessage, OutMessage->OutLength);
-
-    return retVal;
-}
-
-
-int CtiProtocolDNP::recvInbound( INMESS *InMessage )
-{
-    int retVal = NoError;
-
-    _appLayer.restoreRsp(InMessage->Buffer.InMessage, InMessage->InLength);
 
     return retVal;
 }
