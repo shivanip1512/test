@@ -226,6 +226,7 @@ public void update() throws java.sql.SQLException {
 
 public static boolean inUseByPoint(Integer baselineID, String databaseAlias)
 {
-	return false;
+	return com.cannontech.database.db.point.calculation.CalcPointBaseline.inUseByPoint(baselineID, databaseAlias);
 }
+
 }

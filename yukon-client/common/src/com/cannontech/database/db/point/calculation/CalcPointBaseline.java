@@ -77,6 +77,26 @@ public class CalcPointBaseline extends com.cannontech.database.db.DBPersistent
 	
 		return true;
 	}
+	
+	public static boolean inUseByPoint(Integer baselineID, String databaseAlias)
+	{
+		com.cannontech.database.SqlStatement stmt = 
+					new com.cannontech.database.SqlStatement(
+						"SELECT PointID FROM " + 
+						TABLENAME + 
+						" WHERE BaselineID=" + baselineID,
+						databaseAlias );
+	
+				try
+				{
+					stmt.execute();
+					return (stmt.getRowCount() > 0 );
+				}
+				catch( Exception e )
+				{
+					return false;
+				}		
+	}
 	/**
 	 * This method was created in VisualAge.
 	 * @param pointID java.lang.Integer

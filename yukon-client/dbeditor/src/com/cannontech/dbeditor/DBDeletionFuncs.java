@@ -175,10 +175,17 @@ public class DBDeletionFuncs
 					theID, CtiUtilities.getDatabaseAlias() ) )
 			{
 				theWarning.delete(0, theWarning.length());
-				theWarning.append(CR_LF + "because it is used by a calculated point.");
+				theWarning.append(CR_LF + "because it is in use by a calculated point.");
 				return STATUS_DISALLOW;
 			}
-
+//			this is crappy
+			else if(baselineID == com.cannontech.database.data.baseline.Baseline.IDForDefaultBaseline.intValue())
+			{
+				theWarning.delete(0, theWarning.length());
+				theWarning.append(CR_LF + "because the default baseline should not be removed from the database.");
+				return STATUS_DISALLOW;
+			}
+			
 			//this object is deleteable
 			return STATUS_ALLOW;
 		}

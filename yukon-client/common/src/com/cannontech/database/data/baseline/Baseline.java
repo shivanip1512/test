@@ -8,6 +8,7 @@ package com.cannontech.database.data.baseline;
 public class Baseline extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
 {
 	private com.cannontech.database.db.baseline.Baseline basil = null;
+	public final static Integer IDForDefaultBaseline = new Integer(1);
 	
 
 /**
@@ -62,12 +63,6 @@ public void delete() throws java.sql.SQLException
 {
 	//com.cannontech.database.db.baseline.Baseline.deleteAllBaselines(getBaseline().getBaselineID(), getDbConnection());
 	
-	//this is crappy
-	if(getBaselineName() == "Default Baseline")
-	{
-		System.out.println("YOU ARE DELETING THE DEFAULT BASELINE!");
-		return;
-	}
 	getBaseline().delete();	
 }
 
