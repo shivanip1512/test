@@ -27,6 +27,8 @@ public:
         CtiIONValue(valueType)
         { };
     ~CtiIONNumeric( ) { };
+
+    virtual double getNumericValue( void ) = 0;
 };
 
 
