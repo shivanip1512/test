@@ -84,6 +84,8 @@ public interface RoleTypes {
 	public static final int CONSUMERINFO_THERMOSTAT = -177;
 	public static final int CONSUMERINFO_QUESTIONS = -178;
 	public static final int CONSUMERINFO_ACCOUNT_RESIDENCE = -179;
+	public static final int CONSUMERINFO_QUESTIONS_UTIL = -180;
+	public static final int CONSUMERINFO_QUESTIONS_FAQ = -181;
 
 	//Esub category
 	public static final int ESUBVIEW = -200;
@@ -96,6 +98,7 @@ public interface RoleTypes {
 	public static final int WEB_OPERATOR_SUPER = -1000;
 	public static final int NEW_ACCOUNT_WIZARD = -1001;
 	public static final int SWITCH_COMMAND_BATCH = -1002;
+	public static final int NOTIFICATION_ON_GENERAL_PAGE = -1003;
 
 	// WebText category
 	// text formerly specified in text.properties, sorta belongs near energy exchange and curtailment stuff
