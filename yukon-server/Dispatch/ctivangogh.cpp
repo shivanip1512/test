@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.71 $
-* DATE         :  $Date: 2004/07/19 16:35:37 $
+* REVISION     :  $Revision: 1.72 $
+* DATE         :  $Date: 2004/07/21 19:47:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -929,6 +929,8 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
         }
     case (CtiCommandMsg::PointTagAdjust):
         {
+            if(Cmd->getOpArgList().entries() >= 4)
+            {
             // Vector contains token, pointid, tag(s) to set.
             LONG token      = Cmd->getOpArgList().at(0);
             LONG pointid    = Cmd->getOpArgList().at(1);
@@ -940,6 +942,14 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
                 pDyn->getDispatch().setTags( tagstoset );
                 pDyn->getDispatch().resetTags( tagstoreset );
+            }
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Invalid PointTagAdjust vector size. " << endl;
+                }
             }
 
             break;
@@ -1832,29 +1842,6 @@ INT CtiVanGogh::assembleMultiFromPointDataForConnection(const CtiVanGoghConnecti
                 if(pTempPoint != NULL)
                 {
                     CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pTempPoint->getDynamic();
-
-                    if(pDat->getType() == InvalidPointType)
-                    {
-                        pDat->setType(pTempPoint->getType());
-                    }
-                    else if(pTempPoint->getType() != pDat->getType())
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "**** WARNING **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  Point Type mismatch.  Received point data message indicated a type" << endl;
-                        dout << "  for point " << pDat->getId() << " which does not match the memory image held by dispatch." << endl;
-
-                        dout << " Memory Image point type = " << pTempPoint->getType() << endl;
-                        dout << " Message point type = " << pDat->getType() << endl;
-
-                        if(pDat->getConnectionHandle() != NULL)
-                        {
-                            CtiConnectionManager *CM = ((CtiConnectionManager*)pDat->getConnectionHandle());
-
-                            dout << " Submitting client   " << CM->getClientName() << endl;
-                            dout << "  Client Information " << CM->getPeer() << endl;
-                        }
-                    }
 
                     if( pDat->getQuality() == ManualQuality || !(pDyn->getDispatch().getTags() & (MASK_ANY_SERVICE_DISABLE)) ) // (MASK_ANY_SERVICE_DISABLE | MASK_ANY_CONTROL_DISABLE)) )
                     {
@@ -2957,6 +2944,32 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
 
         if(pPoint != NULL)      // We do know this point..
         {
+            if(pData->getType() == InvalidPointType)
+            {
+                pData->setType(pPoint->getType());
+            }
+            else if(pPoint->getType() != pData->getType())
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "**** WARNING **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  Point Type mismatch.  Received point data message indicated a type" << endl;
+                dout << "  for point " << pData->getId() << " which does not match the memory image held by dispatch." << endl;
+
+                dout << " Memory Image point type = " << pPoint->getType() << endl;
+                dout << " Message point type = " << pData->getType() << endl;
+                dout << "   Point \"" << pPoint->getName() << "\" is attached to " << resolveDeviceName( *pPoint ) << endl;
+
+                if(pData->getConnectionHandle() != NULL)
+                {
+                    CtiConnectionManager *CM = ((CtiConnectionManager*)pData->getConnectionHandle());
+
+                    dout << " Submitting client   " << CM->getClientName() << endl;
+                    dout << "  Client Information " << CM->getPeer() << endl;
+                }
+
+                pData->setType(pPoint->getType());
+            }
+
             // We need to make sure there is no pending pointdata on this pointid.
             // Arrival of a pointdata message eliminates a pending data msg.
             if( removePointDataFromPending( pData->getId(), *pData) )
@@ -2977,7 +2990,7 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Delayed update is indicated on point data for " << resolveDeviceName(*pPoint) << " / " << pPoint->getName() << endl;
+                    dout << RWTime() << " Delayed update \"" << pData->getTime() << "\" is indicated on point data for " << resolveDeviceName(*pPoint) << " / " << pPoint->getName() << endl;
                 }
 
                 CtiPendingPointOperations pendingPointData(pData->getId());
