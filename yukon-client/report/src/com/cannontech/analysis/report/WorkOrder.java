@@ -25,6 +25,7 @@ import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
+import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 
 /**
@@ -52,11 +53,18 @@ public class WorkOrder extends YukonReportBase
 	{
 		super();
 		setModel(woModel_);
-		// Show the report header and footer if there is no specific work order
-		setShowReportFooter(woModel_.getOrderID() == null);
-		setShowReportHeader(woModel_.getOrderID() == null);
 	}
 
+	/**
+	 * @param base
+	 */
+	public void setModel(ReportModelBase base)
+	{
+	    super.setModel(base);
+		// Show the report header and footer if there is no specific work order
+		setShowReportFooter( ((WorkOrderModel)getModel()).getOrderID() == null);
+		setShowReportHeader(((WorkOrderModel)getModel()).getOrderID() == null);
+	}
 	/**
 	 * Runs this report and shows a preview dialog.
  	 * @param args the arguments (ignored).
