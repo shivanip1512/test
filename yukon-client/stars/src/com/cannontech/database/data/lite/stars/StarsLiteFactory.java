@@ -8,7 +8,7 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.stars.CustomerSelectionList;
 import com.cannontech.database.db.stars.CustomerListEntry;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.*;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.serialize.types.*;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
@@ -35,8 +35,8 @@ public class StarsLiteFactory {
 			setLiteCustomerAddress( (LiteCustomerAddress) lite, (com.cannontech.database.db.customer.CustomerAddress) db );
 		}
 		else if (db instanceof com.cannontech.database.data.stars.hardware.LMHardwareBase) {
-			lite = new LiteLMHardware();
-			setLiteLMHardware( (LiteLMHardware) lite, (com.cannontech.database.data.stars.hardware.LMHardwareBase) db );
+			lite = new LiteLMHardwareBase();
+			setLiteLMHardware( (LiteLMHardwareBase) lite, (com.cannontech.database.data.stars.hardware.LMHardwareBase) db );
 		}
 		else if (db instanceof com.cannontech.database.data.stars.event.LMHardwareEvent) {
 			lite = new LiteLMHardwareEvent();
@@ -66,6 +66,10 @@ public class StarsLiteFactory {
 			lite = new LiteSiteInformation();
 			setLiteSiteInformation( (LiteSiteInformation) lite, (com.cannontech.database.db.stars.customer.SiteInformation) db );
 		}
+		else if (db instanceof com.cannontech.database.db.customer.CustomerLogin) {
+			lite = new com.cannontech.database.data.lite.LiteYukonUser();
+			setLiteCustomerLogin( (com.cannontech.database.data.lite.LiteYukonUser) lite, (com.cannontech.database.db.customer.CustomerLogin) db );
+		}
 		
 		return lite;
 	}
@@ -87,8 +91,9 @@ public class StarsLiteFactory {
 		liteAddr.setZipCode( addr.getZipCode() );
 	}
 	
-	public static void setLiteLMHardware(LiteLMHardware liteHw, com.cannontech.database.data.stars.hardware.LMHardwareBase hw) {
+	public static void setLiteLMHardware(LiteLMHardwareBase liteHw, com.cannontech.database.data.stars.hardware.LMHardwareBase hw) {
 		liteHw.setInventoryID( hw.getInventoryBase().getInventoryID().intValue() );
+		liteHw.setAccountID( hw.getInventoryBase().getAccountID().intValue() );
 		liteHw.setCategoryID( hw.getInventoryBase().getCategoryID().intValue() );
 		liteHw.setInstallationCompanyID( hw.getInventoryBase().getInstallationCompanyID().intValue() );
 		liteHw.setReceiveDate( hw.getInventoryBase().getReceiveDate().getTime() );
@@ -122,8 +127,6 @@ public class StarsLiteFactory {
 		liteOrder.setOrderNumber( order.getOrderNumber() );
 		liteOrder.setWorkTypeID( order.getWorkTypeID().intValue() );
 		liteOrder.setCurrentStateID( order.getCurrentStateID().intValue() );
-		liteOrder.setCustomerID( order.getCustomerID().intValue() );
-		liteOrder.setSiteID( order.getSiteID().intValue() );
 		liteOrder.setServiceCompanyID( order.getServiceCompanyID().intValue() );
 		liteOrder.setDateReported( order.getDateReported().getTime() );
 		liteOrder.setDateScheduled( order.getDateScheduled().getTime() );
@@ -131,6 +134,7 @@ public class StarsLiteFactory {
 		liteOrder.setDescription( order.getDescription() );
 		liteOrder.setActionTaken( order.getActionTaken() );
 		liteOrder.setOrderedBy( order.getOrderedBy() );
+		liteOrder.setAccountID( order.getAccountID().intValue() );
 	}
 	
 	public static void setLiteSiteInformation(LiteSiteInformation liteSiteInfo, com.cannontech.database.db.stars.customer.SiteInformation siteInfo) {
@@ -172,6 +176,12 @@ public class StarsLiteFactory {
 		liteAcctSite.setPropertyNotes( acctSite.getPropertyNotes() );
 	}
 	
+	public static void setLiteCustomerLogin(com.cannontech.database.data.lite.LiteYukonUser liteLogin, com.cannontech.database.db.customer.CustomerLogin login) {
+		liteLogin.setUserID( login.getLoginID().intValue() );
+		liteLogin.setUsername( login.getUserName() );
+		liteLogin.setPassword( login.getUserPassword() );
+	}
+	
 	
 	public static DBPersistent createDBPersistent(LiteBase lite) {
 		DBPersistent db = null;
@@ -179,47 +189,134 @@ public class StarsLiteFactory {
 		switch (lite.getLiteType()) {
 			case LiteTypes.STARS_CUSTOMER_CONTACT:
 				db = new com.cannontech.database.db.customer.CustomerContact();
-				((com.cannontech.database.db.customer.CustomerContact) db).setContactID( new Integer(lite.getLiteID()) );
+				setCustomerContact( (com.cannontech.database.db.customer.CustomerContact) db, (LiteCustomerContact) lite );
 				break;
 			case LiteTypes.STARS_CUSTOMER_ADDRESS:
 				db = new com.cannontech.database.db.customer.CustomerAddress();
-				((com.cannontech.database.db.customer.CustomerAddress) db).setAddressID( new Integer(lite.getLiteID()) );
+				setCustomerAddress( (com.cannontech.database.db.customer.CustomerAddress) db, (LiteCustomerAddress) lite );
 				break;
 			case LiteTypes.STARS_CUSTOMER_ACCOUNT:
 				db = new com.cannontech.database.db.stars.customer.CustomerAccount();
-				((com.cannontech.database.db.stars.customer.CustomerAccount) db).setAccountID( new Integer(lite.getLiteID()) );
+				setCustomerAccount( (com.cannontech.database.db.stars.customer.CustomerAccount) db, (LiteCustomerAccount) lite );
 				break;
 			case LiteTypes.STARS_CUSTOMER_BASE:
 				db = new com.cannontech.database.db.stars.customer.CustomerBase();
-				((com.cannontech.database.db.stars.customer.CustomerBase) db).setCustomerID( new Integer(lite.getLiteID()) );
+				setCustomerBase( (com.cannontech.database.db.stars.customer.CustomerBase) db, (LiteCustomerBase) lite );
 				break;
 			case LiteTypes.STARS_ACCOUNT_SITE:
 				db = new com.cannontech.database.db.stars.customer.AccountSite();
-				((com.cannontech.database.db.stars.customer.AccountSite) db).setAccountSiteID( new Integer(lite.getLiteID()) );
+				setAccountSite( (com.cannontech.database.db.stars.customer.AccountSite) db, (LiteAccountSite) lite );
 				break;
 			case LiteTypes.STARS_SITE_INFORMATION:
 				db = new com.cannontech.database.db.stars.customer.SiteInformation();
-				((com.cannontech.database.db.stars.customer.SiteInformation) db).setSiteID( new Integer(lite.getLiteID()) );
+				setSiteInformation( (com.cannontech.database.db.stars.customer.SiteInformation) db, (LiteSiteInformation) lite );
 				break;
 			case LiteTypes.STARS_LMHARDWARE_EVENT:
 				db = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-				((com.cannontech.database.data.stars.event.LMHardwareEvent) db).setEventID( new Integer(lite.getLiteID()) );
+				setLMCustomerEventBase( (com.cannontech.database.data.stars.event.LMCustomerEventBase) db, (LiteLMCustomerEvent) lite );
 				break;
 			case LiteTypes.STARS_LMPROGRAM_EVENT:
 				db = new com.cannontech.database.data.stars.event.LMProgramEvent();
-				((com.cannontech.database.data.stars.event.LMProgramEvent) db).setEventID( new Integer(lite.getLiteID()) );
+				setLMCustomerEventBase( (com.cannontech.database.data.stars.event.LMCustomerEventBase) db, (LiteLMCustomerEvent) lite );
+				break;
+			case LiteTypes.STARS_LMHARDWARE:
+				db = new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+				setLMHardwareBase( (com.cannontech.database.data.stars.hardware.LMHardwareBase) db, (LiteLMHardwareBase) lite );
+				break;
+			case LiteTypes.YUKON_USER:
+				db = new com.cannontech.database.db.customer.CustomerLogin();
+				setCustomerLogin( (com.cannontech.database.db.customer.CustomerLogin) db, (com.cannontech.database.data.lite.LiteYukonUser) lite );
 				break;
 		}
 		
 		return db;
 	}
 	
+	public static void setCustomerContact(com.cannontech.database.db.customer.CustomerContact contact, LiteCustomerContact liteContact) {
+		contact.setContactID( new Integer(liteContact.getContactID()) );
+		contact.setContLastName( liteContact.getLastName() );
+		contact.setContFirstName( liteContact.getFirstName() );
+		contact.setContPhone1( liteContact.getHomePhone() );
+		contact.setContPhone2( liteContact.getWorkPhone() );
+	}
+	
+	public static void setCustomerAddress(com.cannontech.database.db.customer.CustomerAddress addr, LiteCustomerAddress liteAddr) {
+		addr.setAddressID( new Integer(liteAddr.getAddressID()) );
+		addr.setLocationAddress1( liteAddr.getLocationAddress1() );
+		addr.setLocationAddress2( liteAddr.getLocationAddress2() );
+		addr.setCityName( liteAddr.getCityName() );
+		addr.setStateCode( liteAddr.getStateCode() );
+		addr.setZipCode( liteAddr.getZipCode() );
+	}
+	
+	public static void setCustomerAccount(com.cannontech.database.db.stars.customer.CustomerAccount account, LiteCustomerAccount liteAccount) {
+		account.setAccountID( new Integer(liteAccount.getAccountID()) );
+		account.setAccountSiteID( new Integer(liteAccount.getAccountSiteID()) );
+		account.setAccountNumber( liteAccount.getAccountNumber() );
+		account.setCustomerID( new Integer(liteAccount.getCustomerID()) );
+		account.setBillingAddressID( new Integer(liteAccount.getBillingAddressID()) );
+		account.setAccountNotes( liteAccount.getAccountNotes() );
+	}
+	
+	public static void setCustomerBase(com.cannontech.database.db.stars.customer.CustomerBase customer, LiteCustomerBase liteCustomer) {
+		customer.setCustomerID( new Integer(liteCustomer.getCustomerID()) );
+		customer.setPrimaryContactID( new Integer(liteCustomer.getPrimaryContactID()) );
+		customer.setCustomerTypeID( new Integer(liteCustomer.getCustomerTypeID()) );
+	}
+	
+	public static void setAccountSite(com.cannontech.database.db.stars.customer.AccountSite acctSite, LiteAccountSite liteAcctSite) {
+		acctSite.setAccountSiteID( new Integer(liteAcctSite.getAccountSiteID()) );
+		acctSite.setSiteInformationID( new Integer(liteAcctSite.getSiteInformationID()) );
+		acctSite.setSiteNumber( liteAcctSite.getSiteNumber() );
+		acctSite.setStreetAddressID( new Integer(liteAcctSite.getStreetAddressID()) );
+		acctSite.setPropertyNotes( liteAcctSite.getPropertyNotes() );
+	}
+	
+	public static void setSiteInformation(com.cannontech.database.db.stars.customer.SiteInformation siteInfo, LiteSiteInformation liteSiteInfo) {
+		siteInfo.setSiteID( new Integer(liteSiteInfo.getSiteID()) );
+		siteInfo.setSubstationID( new Integer(liteSiteInfo.getSubstationID()) );
+		siteInfo.setFeeder( liteSiteInfo.getFeeder() );
+		siteInfo.setPole( liteSiteInfo.getPole() );
+		siteInfo.setTransformerSize( liteSiteInfo.getTransformerSize() );
+		siteInfo.setServiceVoltage( liteSiteInfo.getServiceVoltage() );
+	}
+	
+	public static void setLMCustomerEventBase(com.cannontech.database.data.stars.event.LMCustomerEventBase event, LiteLMCustomerEvent liteEvent) {
+		event.setEventID( new Integer(liteEvent.getEventID()) );
+		event.getLMCustomerEventBase().setEventTypeID( new Integer(liteEvent.getEventTypeID()) );
+		event.getLMCustomerEventBase().setActionID( new Integer(liteEvent.getActionID()) );
+		event.getLMCustomerEventBase().setEventDateTime( new Date(liteEvent.getEventDateTime()) );
+		event.getLMCustomerEventBase().setNotes( liteEvent.getNotes() );
+	}
+	
+	public static void setLMHardwareBase(com.cannontech.database.data.stars.hardware.LMHardwareBase hw, LiteLMHardwareBase liteHw) {
+		hw.setInventoryID( new Integer(liteHw.getInventoryID()) );
+		hw.getInventoryBase().setAccountID( new Integer(liteHw.getAccountID()) );
+		hw.getInventoryBase().setCategoryID( new Integer(liteHw.getCategoryID()) );
+		hw.getInventoryBase().setInstallationCompanyID( new Integer(liteHw.getInstallationCompanyID()) );
+		hw.getInventoryBase().setReceiveDate( new Date(liteHw.getReceiveDate()) );
+		hw.getInventoryBase().setInstallDate( new Date(liteHw.getInstallDate()) );
+		hw.getInventoryBase().setRemoveDate( new Date(liteHw.getRemoveDate()) );
+		hw.getInventoryBase().setAlternateTrackingNumber( liteHw.getAlternateTrackingNumber() );
+		hw.getInventoryBase().setVoltageID( new Integer(liteHw.getVoltageID()) );
+		hw.getInventoryBase().setNotes( liteHw.getNotes() );
+		hw.getLMHardwareBase().setManufacturerSerialNumber( liteHw.getManufactureSerialNumber() );
+		hw.getLMHardwareBase().setLMHardwareTypeID( new Integer(liteHw.getLmHardwareTypeID()) );
+	}
+	
+	public static void setCustomerLogin(com.cannontech.database.db.customer.CustomerLogin login, com.cannontech.database.data.lite.LiteYukonUser liteLogin) {
+		login.setLoginID( new Integer(liteLogin.getUserID()) );
+		login.setUserName( liteLogin.getUsername() );
+		login.setUserPassword( liteLogin.getPassword() );
+	}
+
+	
 	public static void setStarsCustomerContact(StarsCustomerContact starsContact, LiteCustomerContact liteContact) {
 		starsContact.setContactID( liteContact.getContactID() );
 		starsContact.setLastName( liteContact.getLastName() );
 		starsContact.setFirstName( liteContact.getFirstName() );
-		starsContact.setHomePhone( liteContact.getHomePhone() );
-		starsContact.setWorkPhone( liteContact.getWorkPhone() );
+		starsContact.setHomePhone( ServletUtils.formatPhoneNumber(liteContact.getHomePhone()) );
+		starsContact.setWorkPhone( ServletUtils.formatPhoneNumber(liteContact.getWorkPhone()) );
 	}
 	
 	public static void setStarsCustomerAddress(StarsCustomerAddress starsAddr, LiteCustomerAddress liteAddr) {
@@ -260,7 +357,7 @@ public class StarsLiteFactory {
 		return starsSite;
 	}
 	
-	public static StarsLMHardware createStarsLMHardware(LiteLMHardware liteHw, Hashtable selectionLists) {
+	public static StarsLMHardware createStarsLMHardware(LiteLMHardwareBase liteHw, Hashtable selectionLists) {
 		StarsLMHardware starsHw = new StarsLMHardware();
 		
 		starsHw.setInventoryID( liteHw.getInventoryID() );
@@ -283,7 +380,7 @@ public class StarsLiteFactory {
 		Voltage volt = new Voltage();
 		volt.setEntryID( liteHw.getVoltageID() );
 		volt.setContent( StarsCustListEntryFactory.getStarsCustListEntry(
-				(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_INVENTORYVOLTAGE),
+				(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_DEVICEVOLTAGE),
 				liteHw.getVoltageID()).getContent() );
 		starsHw.setVoltage( volt );
 		
@@ -556,18 +653,55 @@ public class StarsLiteFactory {
 			StarsAppliances starsApps = new StarsAppliances();
 			starsAcctInfo.setStarsAppliances( starsApps );
 			
+			TreeMap tmap = new TreeMap();
 			for (int i = 0; i < liteApps.size(); i++) {
 				StarsAppliance starsApp = (StarsAppliance) liteApps.get(i);
-				starsApps.addStarsAppliance( starsApp );
+				ArrayList list = (ArrayList) tmap.get( starsApp.getCategoryName() );
+				if (list == null) {
+					list = new ArrayList();
+					tmap.put( starsApp.getCategoryName(), list );
+				}
+				list.add( starsApp );
+			}
+			
+			Iterator it = tmap.values().iterator();
+			while (it.hasNext()) {
+				ArrayList list = (ArrayList) it.next();
+				for (int i = 0; i < list.size(); i++)
+					starsApps.addStarsAppliance( (StarsAppliance) list.get(i) );
 			}
 			
 			ArrayList liteInvs = liteAcctInfo.getInventories();
 			StarsInventories starsInvs = new StarsInventories();
 			starsAcctInfo.setStarsInventories( starsInvs );
 			
+			tmap.clear();
 			for (int i = 0; i < liteInvs.size(); i++) {
-				LiteLMHardware liteHw = SOAPServer.getLMHardware( energyCompanyID, (Integer) liteInvs.get(i), true );
-				starsInvs.addStarsLMHardware( createStarsLMHardware(liteHw, selectionLists) );
+				LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, (Integer) liteInvs.get(i), true );
+				StarsLMHardware starsHw = createStarsLMHardware(liteHw, selectionLists);
+				ArrayList list = (ArrayList) tmap.get( starsHw.getLMDeviceType().getContent() );
+				if (list == null) {
+					list = new ArrayList();
+					tmap.put( starsHw.getLMDeviceType().getContent(), list );
+				}
+				list.add( starsHw );
+			}
+			
+			it = tmap.values().iterator();
+			while (it.hasNext()) {
+				ArrayList list = (ArrayList) it.next();
+				for (int i = 0; i < list.size(); i++)
+					starsInvs.addStarsLMHardware( (StarsLMHardware) list.get(i) );
+			}
+			
+			ArrayList liteCompanies = liteAcctInfo.getServiceCompanies();
+			StarsServiceCompanies starsCompanies = new StarsServiceCompanies();
+			starsAcctInfo.setStarsServiceCompanies( starsCompanies );
+			
+			for (int i = 0; i < liteCompanies.size(); i++) {
+				LiteServiceCompany liteCompany = SOAPServer.getServiceCompany( energyCompanyID, (Integer) liteCompanies.get(i) );
+				StarsServiceCompany starsCompany = StarsLiteFactory.createStarsServiceCompany( liteCompany, energyCompanyID );
+				starsCompanies.addStarsServiceCompany( starsCompany );
 			}
 			
 			ArrayList liteCalls = liteAcctInfo.getCallReportHistory();
@@ -587,6 +721,15 @@ public class StarsLiteFactory {
 				LiteWorkOrderBase liteOrder = SOAPServer.getWorkOrderBase( energyCompanyID, (Integer) liteOrders.get(i) );
 				starsOrders.addStarsServiceRequest( createStarsServiceRequest(liteOrder, selectionLists) );
 			}
+			
+			if (liteAcctInfo.getCustomerLogin() == null) {
+				StarsLogin starsLogin = new StarsLogin();
+				starsLogin.setUsername( "" );
+				starsLogin.setPassword( "" );
+				starsAcctInfo.setStarsLogin( starsLogin );
+			}
+			else
+				starsAcctInfo.setStarsLogin( createStarsLogin(liteAcctInfo.getCustomerLogin()) );
 		}
 		
 		return starsAcctInfo;
@@ -647,6 +790,28 @@ public class StarsLiteFactory {
 		return starsAppCat;
 	}
 	
+	public static StarsServiceCompany createStarsServiceCompany(LiteServiceCompany liteCompany, Integer energyCompanyID) {
+		StarsServiceCompany starsCompany = new StarsServiceCompany();
+		starsCompany.setCompanyID( liteCompany.getCompanyID() );
+		starsCompany.setCompanyName( liteCompany.getCompanyName() );
+		starsCompany.setMainPhoneNumber( liteCompany.getMainPhoneNumber() );
+		starsCompany.setMainFaxNumber( liteCompany.getMainFaxNumber() );
+		
+		CompanyAddress companyAddr = new CompanyAddress();
+		setStarsCustomerAddress( companyAddr, SOAPServer.getCustomerAddress( energyCompanyID, new Integer(liteCompany.getAddressID())) );
+		starsCompany.setCompanyAddress( companyAddr );
+		
+		return starsCompany;
+	}
+	
+	public static StarsLogin createStarsLogin(com.cannontech.database.data.lite.LiteYukonUser liteLogin) {
+		StarsLogin starsLogin = new StarsLogin();
+		starsLogin.setUsername( liteLogin.getUsername() );
+		starsLogin.setPassword( liteLogin.getPassword() );
+		
+		return starsLogin;
+	}
+	
 	
 	public static StarsAppliance createStarsAppliance(com.cannontech.database.data.stars.appliance.ApplianceBase app, Integer energyCompanyID) {
         StarsAppliance starsApp = new StarsAppliance();
@@ -656,11 +821,21 @@ public class StarsLiteFactory {
         if (app.getLMHardwareConfig().getInventoryID() != null)
         	starsApp.setInventoryID( app.getLMHardwareConfig().getInventoryID().intValue() );
     	starsApp.setLmProgramID( app.getApplianceBase().getLMProgramID().intValue() );
-        starsApp.setManufacturer( "" );
-        starsApp.setManufactureYear( "" );
-        starsApp.setLocation( "" );
-        starsApp.setServiceCompany( new ServiceCompany() );
+        starsApp.setYearManufactured( app.getApplianceBase().getYearManufactured() );
         starsApp.setNotes( app.getApplianceBase().getNotes() );
+        
+       	Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
+       	StarsSelectionListEntry entry = StarsCustListEntryFactory.getStarsCustListEntry(
+       			(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_MANUFACTURER),
+       			app.getApplianceBase().getManufacturerID().intValue() );
+        starsApp.setManufacturer( (Manufacturer) StarsCustListEntryFactory.newStarsCustListEntry( entry, Manufacturer.class ) );
+        
+        entry = StarsCustListEntryFactory.getStarsCustListEntry(
+       			(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LOCATION),
+       			app.getApplianceBase().getLocationID().intValue() );
+        starsApp.setLocation( (Location) StarsCustListEntryFactory.newStarsCustListEntry( entry, Location.class ) );
+        
+        starsApp.setServiceCompany( new ServiceCompany() );
         
         LiteApplianceCategory liteAppCat = SOAPServer.getApplianceCategory( energyCompanyID, app.getApplianceBase().getApplianceCategoryID() );
         if (liteAppCat != null)

@@ -20,19 +20,18 @@ public class WorkOrderBase extends DBPersistent {
     private String orderNumber = "";
     private Integer workTypeID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
     private Integer currentStateID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
-    private Integer customerID = new Integer( com.cannontech.database.db.stars.customer.CustomerBase.NONE_INT );
-    private Integer siteID = new Integer( com.cannontech.database.db.stars.customer.SiteInformation.NONE_INT );
     private Integer serviceCompanyID = new Integer( ServiceCompany.NONE_INT );
     private java.util.Date dateReported = new java.util.Date(0);
+    private String orderedBy = "";
     private String description = "";
     private java.util.Date dateScheduled = new java.util.Date(0);
     private java.util.Date dateCompleted = new java.util.Date(0);
     private String actionTaken = "";
-    private String orderedBy = "";
+    private Integer accountID = new Integer( com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT );
 
     public static final String[] SETTER_COLUMNS = {
-        "OrderNumber", "WorkTypeID", "CurrentStateID", "CustomerID", "SiteID", "ServiceCompanyID",
-        "DateReported", "Description", "DateScheduled", "DateCompleted", "ActionTaken", "OrderedBy"
+        "OrderNumber", "WorkTypeID", "CurrentStateID", "ServiceCompanyID", "DateReported",
+        "OrderedBy", "Description", "DateScheduled", "DateCompleted", "ActionTaken", "AccountID"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "OrderID" };
@@ -57,9 +56,9 @@ public class WorkOrderBase extends DBPersistent {
     		setOrderID( getNextOrderID() );
     		
         Object[] addValues = {
-            getOrderID(), getOrderNumber(), getWorkTypeID(), getCurrentStateID(), getCustomerID(),
-            getSiteID(), getServiceCompanyID(), getDateReported(), getDescription(),
-            getDateScheduled(),getDateCompleted(), getActionTaken(), getOrderedBy()
+            getOrderID(), getOrderNumber(), getWorkTypeID(), getCurrentStateID(),
+            getServiceCompanyID(), getDateReported(), getOrderedBy(), getDescription(),
+            getDateScheduled(),getDateCompleted(), getActionTaken(), getAccountID()
         };
 
         add( TABLE_NAME, addValues );
@@ -67,9 +66,9 @@ public class WorkOrderBase extends DBPersistent {
 
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
-            getOrderNumber(), getWorkTypeID(), getCurrentStateID(), getCustomerID(),
-            getSiteID(), getServiceCompanyID(), getDateReported(), getDescription(),
-            getDateScheduled(), getDateCompleted(), getActionTaken(), getOrderedBy()
+            getOrderNumber(), getWorkTypeID(), getCurrentStateID(),
+            getServiceCompanyID(), getDateReported(), getOrderedBy(), getDescription(),
+            getDateScheduled(),getDateCompleted(), getActionTaken(), getAccountID()
         };
 
         Object[] constraintValues = { getOrderID() };
@@ -86,15 +85,14 @@ public class WorkOrderBase extends DBPersistent {
             setOrderNumber( (String) results[0] );
             setWorkTypeID( (Integer) results[1] );
             setCurrentStateID( (Integer) results[2] );
-            setCustomerID( (Integer) results[3] );
-            setSiteID( (Integer) results[4] );
-            setServiceCompanyID( (Integer) results[5] );
-            setDateReported( new java.util.Date(((java.sql.Timestamp) results[6]).getTime()) );
-            setDescription( (String) results[7] );
-            setDateScheduled( new java.util.Date(((java.sql.Timestamp) results[8]).getTime()) );
-            setDateCompleted( new java.util.Date(((java.sql.Timestamp) results[9]).getTime()) );
-            setActionTaken( (String) results[10] );
-            setOrderedBy( (String) results[11] );
+            setServiceCompanyID( (Integer) results[3] );
+            setDateReported( new java.util.Date(((java.sql.Timestamp) results[4]).getTime()) );
+            setOrderedBy( (String) results[5] );
+            setDescription( (String) results[6] );
+            setDateScheduled( new java.util.Date(((java.sql.Timestamp) results[7]).getTime()) );
+            setDateCompleted( new java.util.Date(((java.sql.Timestamp) results[8]).getTime()) );
+            setActionTaken( (String) results[9] );
+            setAccountID( (Integer) results[10] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -128,9 +126,9 @@ public class WorkOrderBase extends DBPersistent {
         return new Integer( nextOrderID );
     }
 
-    public static WorkOrderBase[] getAllCustomerSiteWorkOrders(Integer customerID, Integer siteID) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE CustomerID = " + customerID
-        		   + " AND SiteID = " + siteID.toString() + " ORDER BY DateReported DESC";
+    public static WorkOrderBase[] getAllAccountWorkOrders(Integer accountID) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = " + accountID.toString()
+        		   + " ORDER BY DateReported DESC";
 
 		try {
 			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement( sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
@@ -145,15 +143,14 @@ public class WorkOrderBase extends DBPersistent {
                 orders[i].setOrderNumber( (String) row[1] );
                 orders[i].setWorkTypeID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
                 orders[i].setCurrentStateID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
-                orders[i].setCustomerID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
-                orders[i].setSiteID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
-                orders[i].setServiceCompanyID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
-                orders[i].setDateReported( (java.util.Date) row[7] );
-                orders[i].setDescription( (String) row[8] );
-                orders[i].setDateScheduled( (java.util.Date) row[9] );
-                orders[i].setDateCompleted( (java.util.Date) row[10] );
-                orders[i].setActionTaken( (String) row[11] );
-                orders[i].setOrderedBy( (String) row[12] );
+                orders[i].setServiceCompanyID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+                orders[i].setDateReported( (java.util.Date) row[5] );
+                orders[i].setOrderedBy( (String) row[6] );
+                orders[i].setDescription( (String) row[7] );
+                orders[i].setDateScheduled( (java.util.Date) row[8] );
+                orders[i].setDateCompleted( (java.util.Date) row[9] );
+                orders[i].setActionTaken( (String) row[10] );
+                orders[i].setAccountID( new Integer(((java.math.BigDecimal) row[11]).intValue()) );
             }
             
             return orders;
@@ -183,15 +180,14 @@ public class WorkOrderBase extends DBPersistent {
                 orders[i].setOrderNumber( (String) row[1] );
                 orders[i].setWorkTypeID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
                 orders[i].setCurrentStateID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
-                orders[i].setCustomerID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
-                orders[i].setSiteID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
-                orders[i].setServiceCompanyID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
-                orders[i].setDateReported( (java.util.Date) row[7] );
-                orders[i].setDescription( (String) row[8] );
-                orders[i].setDateScheduled( (java.util.Date) row[9] );
-                orders[i].setDateCompleted( (java.util.Date) row[10] );
-                orders[i].setActionTaken( (String) row[11] );
-                orders[i].setOrderedBy( (String) row[12] );
+                orders[i].setServiceCompanyID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+                orders[i].setDateReported( (java.util.Date) row[5] );
+                orders[i].setOrderedBy( (String) row[6] );
+                orders[i].setDescription( (String) row[7] );
+                orders[i].setDateScheduled( (java.util.Date) row[8] );
+                orders[i].setDateCompleted( (java.util.Date) row[9] );
+                orders[i].setActionTaken( (String) row[10] );
+                orders[i].setAccountID( new Integer(((java.math.BigDecimal) row[11]).intValue()) );
             }
             
             return orders;
@@ -218,14 +214,6 @@ public class WorkOrderBase extends DBPersistent {
 	 */
 	public Integer getCurrentStateID() {
 		return currentStateID;
-	}
-
-	/**
-	 * Returns the customerID.
-	 * @return Integer
-	 */
-	public Integer getCustomerID() {
-		return customerID;
 	}
 
 	/**
@@ -285,14 +273,6 @@ public class WorkOrderBase extends DBPersistent {
 	}
 
 	/**
-	 * Returns the siteID.
-	 * @return Integer
-	 */
-	public Integer getSiteID() {
-		return siteID;
-	}
-
-	/**
 	 * Returns the workTypeID.
 	 * @return Integer
 	 */
@@ -314,14 +294,6 @@ public class WorkOrderBase extends DBPersistent {
 	 */
 	public void setCurrentStateID(Integer currentStateID) {
 		this.currentStateID = currentStateID;
-	}
-
-	/**
-	 * Sets the customerID.
-	 * @param customerID The customerID to set
-	 */
-	public void setCustomerID(Integer customerID) {
-		this.customerID = customerID;
 	}
 
 	/**
@@ -381,14 +353,6 @@ public class WorkOrderBase extends DBPersistent {
 	}
 
 	/**
-	 * Sets the siteID.
-	 * @param siteID The siteID to set
-	 */
-	public void setSiteID(Integer siteID) {
-		this.siteID = siteID;
-	}
-
-	/**
 	 * Sets the workTypeID.
 	 * @param workTypeID The workTypeID to set
 	 */
@@ -410,6 +374,22 @@ public class WorkOrderBase extends DBPersistent {
 	 */
 	public void setOrderedBy(String orderedBy) {
 		this.orderedBy = orderedBy;
+	}
+
+	/**
+	 * Returns the accountID.
+	 * @return Integer
+	 */
+	public Integer getAccountID() {
+		return accountID;
+	}
+
+	/**
+	 * Sets the accountID.
+	 * @param accountID The accountID to set
+	 */
+	public void setAccountID(Integer accountID) {
+		this.accountID = accountID;
 	}
 
 }

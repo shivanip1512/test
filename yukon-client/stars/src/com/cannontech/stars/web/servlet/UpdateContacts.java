@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.xml.serialize.AdditionalContact;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -38,7 +39,8 @@ public class UpdateContacts extends HttpServlet {
 			resp.sendRedirect(loginURL); return;
 		}
 		
-        StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) operator.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+        StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) operator.getAttribute(
+        		ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION" );
         StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
         if (account == null) {
         	resp.sendRedirect(homeURL); return;
@@ -52,8 +54,8 @@ public class UpdateContacts extends HttpServlet {
             PrimaryContact primContact = new PrimaryContact();
             primContact.setLastName( lastName );
             primContact.setFirstName( firstName );
-            primContact.setHomePhone( req.getParameter("HomePhone") );
-            primContact.setWorkPhone( req.getParameter("WorkPhone") );
+            primContact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone")) );
+            primContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone")) );
             account.setPrimaryContact( primContact );
         }
 
@@ -69,8 +71,8 @@ public class UpdateContacts extends HttpServlet {
                 contact.setContactID( Integer.parseInt(req.getParameter("ContactID" + i)) );
                 contact.setLastName( lastName );
                 contact.setFirstName( firstName );
-                contact.setHomePhone( req.getParameter("HomePhone" + i) );
-                contact.setWorkPhone( req.getParameter("WorkPhone" + i) );
+                contact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone" + i)) );
+                contact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone" + i)) );
                 account.addAdditionalContact( contact );
             }
         }

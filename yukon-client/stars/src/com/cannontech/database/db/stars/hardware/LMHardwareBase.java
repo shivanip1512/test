@@ -66,6 +66,27 @@ public class LMHardwareBase extends DBPersistent {
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
     }
+    
+    public static int[] searchBySerialNumber(String serialNo) {
+    	String sql = "SELECT InventoryID FROM " + TABLE_NAME
+    			   + " WHERE ManufacturerSerialNumber = '" + serialNo + "'";
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    	
+    	try {
+    		stmt.execute();
+    		int[] invIDs = new int[ stmt.getRowCount() ];
+    		
+    		for (int i = 0; i < invIDs.length; i++)
+    			invIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+    		return invIDs;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return null;
+    }
 
     public Integer getInventoryID() {
         return inventoryID;

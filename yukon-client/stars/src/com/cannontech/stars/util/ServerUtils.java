@@ -4,6 +4,7 @@ import java.util.*;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
 import com.cannontech.servlet.PILConnectionServlet;
@@ -116,18 +117,16 @@ public class ServerUtils {
 		return false;
 	}
 	
-	public static StarsSelectionListEntry getInventoryCategory(StarsCustListEntry deviceType, Hashtable selectionLists) {
-		LiteCustomerSelectionList invCatList = (LiteCustomerSelectionList)
-				selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_INVENTORYCATEGORY );
-				
-		if (deviceType.getContent().startsWith("LCR")) {	// LCR-XXXX
-			for (int i = 0; i < invCatList.getListEntries().length; i++) {
-				StarsSelectionListEntry entry = invCatList.getListEntries()[i];
-				if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_INVCAT_ONEWAYREC ))
-					return entry;
-			}
-		}
+	public static void updateServiceCompanies(LiteStarsCustAccountInformation liteAcctInfo, Integer energyCompanyID) {
+		ArrayList companyList = new ArrayList();
+		liteAcctInfo.setServiceCompanies( companyList );
 		
-		return null;
+		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
+			Integer invID = (Integer) liteAcctInfo.getInventories().get(i);
+			LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID, true );
+			Integer companyID = new Integer( liteHw.getInstallationCompanyID() );
+			if (!companyList.contains( companyID ))
+				companyList.add( companyID );
+		}
 	}
 }

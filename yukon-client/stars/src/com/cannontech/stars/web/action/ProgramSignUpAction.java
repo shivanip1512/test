@@ -94,7 +94,7 @@ public class ProgramSignUpAction implements ActionBase {
 	            	energyCompanyID = user.getEnergyCompanyID();
             }
             
-            LiteStarsCustAccountInformation liteAcctInfo = SOAPServer.getCustAccountInformation( new Integer(energyCompanyID), progSignUp.getAccountNumber() );
+            LiteStarsCustAccountInformation liteAcctInfo = SOAPServer.searchByAccountNumber( new Integer(energyCompanyID), progSignUp.getAccountNumber() );
             com.cannontech.database.data.stars.customer.CustomerAccount account =
 		            com.cannontech.database.data.stars.customer.CustomerAccount.searchByAccountNumber(
         	    		new Integer(energyCompanyID), progSignUp.getAccountNumber() );

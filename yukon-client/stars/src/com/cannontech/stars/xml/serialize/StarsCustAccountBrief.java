@@ -41,7 +41,11 @@ public class StarsCustAccountBrief implements java.io.Serializable {
 
     private java.lang.String _accountNumber;
 
-    private java.lang.String _accountNotes;
+    private java.lang.String _contactName;
+
+    private java.lang.String _contPhoneNumber;
+
+    private java.lang.String _streetAddress;
 
 
       //----------------/
@@ -75,16 +79,6 @@ public class StarsCustAccountBrief implements java.io.Serializable {
     } //-- int getAccountID() 
 
     /**
-     * Returns the value of field 'accountNotes'.
-     * 
-     * @return the value of field 'accountNotes'.
-    **/
-    public java.lang.String getAccountNotes()
-    {
-        return this._accountNotes;
-    } //-- java.lang.String getAccountNotes() 
-
-    /**
      * Returns the value of field 'accountNumber'.
      * 
      * @return the value of field 'accountNumber'.
@@ -93,6 +87,36 @@ public class StarsCustAccountBrief implements java.io.Serializable {
     {
         return this._accountNumber;
     } //-- java.lang.String getAccountNumber() 
+
+    /**
+     * Returns the value of field 'contPhoneNumber'.
+     * 
+     * @return the value of field 'contPhoneNumber'.
+    **/
+    public java.lang.String getContPhoneNumber()
+    {
+        return this._contPhoneNumber;
+    } //-- java.lang.String getContPhoneNumber() 
+
+    /**
+     * Returns the value of field 'contactName'.
+     * 
+     * @return the value of field 'contactName'.
+    **/
+    public java.lang.String getContactName()
+    {
+        return this._contactName;
+    } //-- java.lang.String getContactName() 
+
+    /**
+     * Returns the value of field 'streetAddress'.
+     * 
+     * @return the value of field 'streetAddress'.
+    **/
+    public java.lang.String getStreetAddress()
+    {
+        return this._streetAddress;
+    } //-- java.lang.String getStreetAddress() 
 
     /**
     **/
@@ -150,16 +174,6 @@ public class StarsCustAccountBrief implements java.io.Serializable {
     } //-- void setAccountID(int) 
 
     /**
-     * Sets the value of field 'accountNotes'.
-     * 
-     * @param accountNotes the value of field 'accountNotes'.
-    **/
-    public void setAccountNotes(java.lang.String accountNotes)
-    {
-        this._accountNotes = accountNotes;
-    } //-- void setAccountNotes(java.lang.String) 
-
-    /**
      * Sets the value of field 'accountNumber'.
      * 
      * @param accountNumber the value of field 'accountNumber'.
@@ -168,6 +182,36 @@ public class StarsCustAccountBrief implements java.io.Serializable {
     {
         this._accountNumber = accountNumber;
     } //-- void setAccountNumber(java.lang.String) 
+
+    /**
+     * Sets the value of field 'contPhoneNumber'.
+     * 
+     * @param contPhoneNumber the value of field 'contPhoneNumber'.
+    **/
+    public void setContPhoneNumber(java.lang.String contPhoneNumber)
+    {
+        this._contPhoneNumber = contPhoneNumber;
+    } //-- void setContPhoneNumber(java.lang.String) 
+
+    /**
+     * Sets the value of field 'contactName'.
+     * 
+     * @param contactName the value of field 'contactName'.
+    **/
+    public void setContactName(java.lang.String contactName)
+    {
+        this._contactName = contactName;
+    } //-- void setContactName(java.lang.String) 
+
+    /**
+     * Sets the value of field 'streetAddress'.
+     * 
+     * @param streetAddress the value of field 'streetAddress'.
+    **/
+    public void setStreetAddress(java.lang.String streetAddress)
+    {
+        this._streetAddress = streetAddress;
+    } //-- void setStreetAddress(java.lang.String) 
 
     /**
      * 

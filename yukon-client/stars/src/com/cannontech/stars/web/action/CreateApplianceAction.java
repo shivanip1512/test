@@ -34,21 +34,34 @@ public class CreateApplianceAction implements ActionBase {
 			java.util.Hashtable selectionLists = (java.util.Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
 
 			StarsCreateAppliance newApp = new StarsCreateAppliance();
-			
 			newApp.setApplianceCategoryID( Integer.parseInt(req.getParameter("Category")) );
-			StarsCustSelectionList appCatList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_APPLIANCECATEGORY );
 			newApp.setCategoryName( "" );
-			for (int i = 0; i < appCatList.getStarsSelectionListEntryCount(); i++) {
-				StarsSelectionListEntry entry = appCatList.getStarsSelectionListEntry(i);
-				if (entry.getEntryID() == newApp.getApplianceCategoryID()) {
-					newApp.setCategoryName( entry.getContent() );
+			newApp.setYearManufactured( req.getParameter("ManuYear") );
+			newApp.setNotes( req.getParameter("Notes") );
+			
+			Manufacturer manufacturer = new Manufacturer();
+			manufacturer.setEntryID( Integer.parseInt(req.getParameter("Manufacturer")) );
+			StarsCustSelectionList manufactList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_MANUFACTURER );
+			for (int i = 0; i < manufactList.getStarsSelectionListEntryCount(); i++) {
+				StarsSelectionListEntry entry = manufactList.getStarsSelectionListEntry(i);
+				if (entry.getEntryID() == manufacturer.getEntryID()) {
+					manufacturer.setContent( entry.getContent() );
 					break;
 				}
 			}
+			newApp.setManufacturer( manufacturer );
 			
-			newApp.setManufacturer( req.getParameter("Manufacturer") );
-			newApp.setManufactureYear( req.getParameter("ManuYear") );
-			newApp.setLocation( req.getParameter("Location") );
+			Location location = new Location();
+			location.setEntryID( Integer.parseInt(req.getParameter("Location")) );
+			StarsCustSelectionList locationList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LOCATION );
+			for (int i = 0; i < locationList.getStarsSelectionListEntryCount(); i++) {
+				StarsSelectionListEntry entry = locationList.getStarsSelectionListEntry(i);
+				if (entry.getEntryID() == location.getEntryID()) {
+					location.setContent( entry.getContent() );
+					break;
+				}
+			}
+			newApp.setLocation( location );
 			
 			ServiceCompany company = new ServiceCompany();
 			company.setEntryID( Integer.parseInt(req.getParameter("Company")) );
@@ -61,8 +74,6 @@ public class CreateApplianceAction implements ActionBase {
 				}
 			}			
 			newApp.setServiceCompany( company );
-			
-			newApp.setNotes( req.getParameter("Notes") );
 			
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsCreateAppliance( newApp );
@@ -107,6 +118,9 @@ public class CreateApplianceAction implements ActionBase {
             appDB.setAccountID( new Integer(accountInfo.getCustomerAccount().getAccountID()) );
             appDB.setLMProgramID( new Integer(0) );
             appDB.setNotes( newApp.getNotes() );
+            appDB.setYearManufactured( newApp.getYearManufactured() );
+            appDB.setManufacturerID( new Integer(newApp.getManufacturer().getEntryID()) );
+            appDB.setLocationID( new Integer(newApp.getLocation().getEntryID()) );
             
             java.util.ArrayList appCats = SOAPServer.getAllApplianceCategories(	energyCompanyID );
             if (appCats == null || appCats.size() == 0)
@@ -124,11 +138,7 @@ public class CreateApplianceAction implements ActionBase {
             
             app = (com.cannontech.database.data.stars.appliance.ApplianceBase) Transaction.createTransaction( Transaction.INSERT, app ).execute();
             
-            StarsAppliance starsApp = (StarsAppliance) StarsAppFactory.newStarsApp( newApp, StarsAppliance.class );
-            starsApp.setApplianceID( app.getApplianceBase().getApplianceID().intValue() );
-            starsApp.setLmProgramID( -1 );
-            starsApp.setInventoryID( -1 );
-            
+            StarsAppliance starsApp = StarsLiteFactory.createStarsAppliance( app, energyCompanyID );
             accountInfo.getAppliances().add( starsApp );
             
             StarsCreateApplianceResponse resp = new StarsCreateApplianceResponse();
@@ -163,8 +173,17 @@ public class CreateApplianceAction implements ActionBase {
 					operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
             if (accountInfo == null)
             	return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
-            	
-			accountInfo.getStarsAppliances().addStarsAppliance( app );
+            
+            StarsAppliances starsApps = accountInfo.getStarsAppliances();
+            int i = -1;
+            for (i = starsApps.getStarsApplianceCount() - 1; i >= 0; i--) {
+            	StarsAppliance starsApp = starsApps.getStarsAppliance(i);
+            	if (starsApp.getCategoryName().compareTo( app.getCategoryName() ) <= 0)
+            		break;
+            }
+			starsApps.addStarsAppliance( i+1, app );
+			session.setAttribute( "REDIRECT", "/OperatorDemos/Consumer/Appliance.jsp?AppNo=" + String.valueOf(i+1) );
+			
             return 0;
         }
         catch (Exception e) {

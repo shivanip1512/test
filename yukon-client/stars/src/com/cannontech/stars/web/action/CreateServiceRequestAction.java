@@ -134,8 +134,7 @@ public class CreateServiceRequestAction implements ActionBase {
             com.cannontech.database.db.stars.report.WorkOrderBase workOrderDB = workOrder.getWorkOrderBase();
 
             StarsServiceRequestFactory.setWorkOrderBase( workOrderDB, createOrder );
-            workOrderDB.setCustomerID( new Integer(accountInfo.getCustomerAccount().getCustomerID()) );
-            workOrderDB.setSiteID( new Integer(accountInfo.getCustomerAccount().getAccountSiteID()) );
+            workOrderDB.setAccountID( new Integer(accountInfo.getCustomerAccount().getAccountID()) );
 
             workOrder.setEnergyCompanyID( new Integer((int) operator.getEnergyCompanyID()) );
             

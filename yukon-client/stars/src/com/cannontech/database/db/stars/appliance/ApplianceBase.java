@@ -20,10 +20,16 @@ public class ApplianceBase extends DBPersistent {
     private Integer accountID = new Integer( com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT );
     private Integer applianceCategoryID = new Integer( ApplianceCategory.NONE_INT );
     private Integer lmProgramID = new Integer( NONE_INT );
+    private String yearManufactured = "";
+    private Integer manufacturerID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
+    private Integer locationID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
+    private Integer kwCapacity = new Integer(0);
+    private Integer efficiencyRating = new Integer(0);
     private String notes = "";
 
     public static final String[] SETTER_COLUMNS = {
-        "AccountID", "ApplianceCategoryID", "LMProgramID", "Notes"
+        "AccountID", "ApplianceCategoryID", "LMProgramID", "YearManufactured",
+        "ManufacturerID", "LocationID", "KWCapacity", "EfficiencyRating", "Notes"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "ApplianceID" };
@@ -37,58 +43,38 @@ public class ApplianceBase extends DBPersistent {
         super();
     }
 
-    public static ApplianceBase[] getAllAppliances(Integer accountID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = ?";
+    public static ApplianceBase[] getAllAppliances(Integer accountID) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = " + accountID.toString();
 
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        java.util.ArrayList loadList = new java.util.ArrayList();
+		try {
+			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement( sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+			stmt.execute();
 
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
+	        ApplianceBase[] apps = new ApplianceBase[ stmt.getRowCount() ];
+            for (int i = 0; i < stmt.getRowCount(); i++) {
+            	Object[] row = stmt.getRow(i);
+                apps[i] = new ApplianceBase();
+
+                apps[i].setApplianceID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+                apps[i].setAccountID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+                apps[i].setApplianceCategoryID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+                apps[i].setLMProgramID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+                apps[i].setYearManufactured( (String) row[4] );
+                apps[i].setManufacturerID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
+                apps[i].setLocationID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
+                apps[i].setKWCapacity( new Integer(((java.math.BigDecimal) row[7]).intValue()) );
+                apps[i].setEfficiencyRating( new Integer(((java.math.BigDecimal) row[8]).intValue()) );
+                apps[i].setNotes( (String) row[9] );
             }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, accountID.intValue() );
-                rset = pstmt.executeQuery();
-
-                while (rset.next()) {
-                    ApplianceBase load = new ApplianceBase();
-
-                    load.setApplianceID( new Integer(rset.getInt("ApplianceID")) );
-                    load.setAccountID( new Integer(rset.getInt("AccountID")) );
-                    load.setApplianceCategoryID( new Integer(rset.getInt("ApplianceCategoryID")) );
-                    load.setLMProgramID( new Integer(rset.getInt("LMProgramID")) );
-                    load.setNotes( rset.getString("Notes") );
-
-                    loadList.add(load);
-                }
-            }
+            
+            return apps;
         }
-        catch( java.sql.SQLException e )
+        catch( Exception e )
         {
-                e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if (rset != null) rset.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
+            e.printStackTrace();
         }
 
-        ApplianceBase[] loads = new ApplianceBase[ loadList.size() ];
-        loadList.toArray( loads );
-        return loads;
+        return null;
     }
 
     public void delete() throws java.sql.SQLException {
@@ -102,8 +88,8 @@ public class ApplianceBase extends DBPersistent {
     		setApplianceID( getNextApplianceID() );
     		
         Object[] addValues = {
-            getApplianceID(), getAccountID(), getApplianceCategoryID(),
-            getLMProgramID(), getNotes()
+            getApplianceID(), getAccountID(), getApplianceCategoryID(), getLMProgramID(), getYearManufactured(),
+            getManufacturerID(), getLocationID(), getKWCapacity(), getEfficiencyRating(), getNotes()
         };
 
         add( TABLE_NAME, addValues );
@@ -111,7 +97,8 @@ public class ApplianceBase extends DBPersistent {
 
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
-            getAccountID(), getApplianceCategoryID(), getLMProgramID(), getNotes()
+            getAccountID(), getApplianceCategoryID(), getLMProgramID(), getYearManufactured(),
+            getManufacturerID(), getLocationID(), getKWCapacity(), getEfficiencyRating(), getNotes()
         };
 
         Object[] constraintValues = { getApplianceID() };
@@ -128,7 +115,12 @@ public class ApplianceBase extends DBPersistent {
             setAccountID( (Integer) results[0] );
             setApplianceCategoryID( (Integer) results[1] );
             setLMProgramID( (Integer) results[2] );
-            setNotes( (String) results[3] );
+            setYearManufactured( (String) results[3] );
+            setManufacturerID( (Integer) results[4] );
+            setLocationID( (Integer) results[5] );
+            setKWCapacity( (Integer) results[6] );
+            setEfficiencyRating( (Integer) results[7] );
+            setNotes( (String) results[8] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -207,6 +199,102 @@ public class ApplianceBase extends DBPersistent {
 	 */
 	public void setLMProgramID(Integer lmProgramID) {
 		this.lmProgramID = lmProgramID;
+	}
+
+	/**
+	 * Returns the efficiencyRating.
+	 * @return Integer
+	 */
+	public Integer getEfficiencyRating() {
+		return efficiencyRating;
+	}
+
+	/**
+	 * Returns the kwCapacity.
+	 * @return Double
+	 */
+	public Integer getKWCapacity() {
+		return kwCapacity;
+	}
+
+	/**
+	 * Returns the lmProgramID.
+	 * @return Integer
+	 */
+	public Integer getLmProgramID() {
+		return lmProgramID;
+	}
+
+	/**
+	 * Returns the locationID.
+	 * @return Integer
+	 */
+	public Integer getLocationID() {
+		return locationID;
+	}
+
+	/**
+	 * Returns the menufacturerID.
+	 * @return Integer
+	 */
+	public Integer getManufacturerID() {
+		return manufacturerID;
+	}
+
+	/**
+	 * Returns the yearManufactured.
+	 * @return String
+	 */
+	public String getYearManufactured() {
+		return yearManufactured;
+	}
+
+	/**
+	 * Sets the efficiencyRating.
+	 * @param efficiencyRating The efficiencyRating to set
+	 */
+	public void setEfficiencyRating(Integer efficiencyRating) {
+		this.efficiencyRating = efficiencyRating;
+	}
+
+	/**
+	 * Sets the kwCapacity.
+	 * @param kwCapacity The kwCapacity to set
+	 */
+	public void setKWCapacity(Integer kwCapacity) {
+		this.kwCapacity = kwCapacity;
+	}
+
+	/**
+	 * Sets the lmProgramID.
+	 * @param lmProgramID The lmProgramID to set
+	 */
+	public void setLmProgramID(Integer lmProgramID) {
+		this.lmProgramID = lmProgramID;
+	}
+
+	/**
+	 * Sets the locationID.
+	 * @param locationID The locationID to set
+	 */
+	public void setLocationID(Integer locationID) {
+		this.locationID = locationID;
+	}
+
+	/**
+	 * Sets the menufacturerID.
+	 * @param menufacturerID The menufacturerID to set
+	 */
+	public void setManufacturerID(Integer menufacturerID) {
+		this.manufacturerID = menufacturerID;
+	}
+
+	/**
+	 * Sets the yearManufactured.
+	 * @param yearManufactured The yearManufactured to set
+	 */
+	public void setYearManufactured(String yearManufactured) {
+		this.yearManufactured = yearManufactured;
 	}
 
 }

@@ -31,7 +31,7 @@ import com.cannontech.stars.xml.util.XMLUtil;
 
 public class SOAPClient extends HttpServlet {
 
-    private static final String SOAP_SERVER_URL = "http://operations.cannontech.com/scripts/jrun.dll/servlet/SOAPServer";
+    private static final String SOAP_SERVER_URL = "/servlet/SOAPServer";
 
     private static final String loginURL = "/login.jsp";
     private static final String homeURL = "/OperatorDemos/Operations.jsp";
@@ -40,6 +40,12 @@ public class SOAPClient extends HttpServlet {
 
     public SOAPClient() {
         super();
+    }
+    
+    public void init() throws javax.servlet.ServletException {
+    	// Set PIL connection for the ServerUtils, this should be called in SOAPServer!
+        com.cannontech.stars.util.ServerUtils.setConnectionContainer( (com.cannontech.servlet.PILConnectionServlet)
+        		getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID) );
     }
 
     private StarsOperation sendRecvOperation(StarsOperation operation) {
@@ -71,12 +77,15 @@ public class SOAPClient extends HttpServlet {
         	resp.sendRedirect( loginURL ); return;
         }
 
+    	// Call getInstance() to guarantee SOAPServer has been initiated
+    	SOAPServer.getInstance();
+    	
         SOAPMessage reqMsg = null;
         SOAPMessage respMsg = null;
 
         String nextURL = homeURL;       // The next URL we're going to, operation succeed -> destURL, operation failed -> errorURL
         String destURL = null;			// URL we should go to if action succeed
-        String errorURL = null;		// URL we should go to if action failed
+        String errorURL = homeURL;		// URL we should go to if action failed
         ActionBase clientAction = null;
 
 		if (action.equalsIgnoreCase("NewCustAccount")) {
@@ -118,7 +127,7 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("GetLMCtrlHist")) {
             clientAction = new GetLMCtrlHistAction();
-            destURL = req.getParameter("REDIRECT") + "&REFERRER=" + java.net.URLEncoder.encode( req.getParameter("REFERRER"), "UTF-8" );
+            destURL = req.getParameter("REDIRECT") + "&REFERRER=" + java.net.URLEncoder.encode( req.getParameter("REFERRER") );
         }
         else if (action.equalsIgnoreCase("CreateCall")) {
         	StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );
@@ -159,11 +168,19 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("CreateAppliance")) {
         	clientAction = new CreateApplianceAction();
-        	destURL = "/OperatorDemos/Consumer/Appliance.jsp?AppNo=" + req.getParameter("AppNo");
+        	destURL = "/OperatorDemos/Consumer/Appliance.jsp";
         }
         else if (action.equalsIgnoreCase("CreateLMHardware")) {
         	clientAction = new CreateLMHardwareAction();
-        	destURL = "/OperatorDemos/Consumer/Inventory.jsp?InvNo=" + req.getParameter("InvNo");
+        	destURL = "/OperatorDemos/Consumer/Inventory.jsp";
+        }
+        else if (action.equalsIgnoreCase("UpdateLMHardware")) {
+        	clientAction = new UpdateLMHardwareAction();
+        	destURL = "/OperatorDemos/Consumer/Inventory.jsp";
+        }
+        else if (action.equalsIgnoreCase("UpdateLogin")) {
+        	clientAction = new UpdateLoginAction();
+        	destURL = "/OperatorDemos/Consumer/Password.jsp";
         }
         else if (action.equalsIgnoreCase("OperatorLogin")) {
         	session.removeAttribute("OPERATOR");
@@ -184,13 +201,12 @@ public class SOAPClient extends HttpServlet {
         	
             MultiAction actions = new MultiAction();
         	actions.getActionVector().addElement( new LoginAction() );
-        	actions.getActionVector().addElement( new GetAllCustAccountsAction() );
+        	actions.getActionVector().addElement( new GetCustAccountAction() );
         	if (session.getAttribute("ENROLLMENT_PROGRAMS") == null)
         		actions.getActionVector().addElement( new GetEnrollmentProgramsAction() );
         	
         	clientAction = (ActionBase) actions;
-        	destURL = "/servlet/SOAPClient?action=GetCustAccount&REDIRECT=" + req.getParameter("REDIRECT")
-        			+ "&REFERRER=" + req.getParameter("REFERRER");
+        	destURL = req.getParameter("REDIRECT");
         	nextURL = errorURL = req.getParameter( "REFERRER" );
         }
         else if (action.equalsIgnoreCase("HoneywellSearchCustAccount")) {
@@ -210,7 +226,11 @@ public class SOAPClient extends HttpServlet {
 
                 if (respMsg != null) {
                 	SOAPUtil.logSOAPMsgForOperation( respMsg, "*** Receive Message *** " );
+                	
+                	session.removeAttribute( "REDIRECT" );
                 	int status = clientAction.parse(reqMsg, respMsg, session);
+                	if (session.getAttribute( "REDIRECT" ) != null)
+                		destURL = (String) session.getAttribute( "REDIRECT" );
                 	
                     if (status == 0)	// Operation succeed
                         nextURL = destURL;

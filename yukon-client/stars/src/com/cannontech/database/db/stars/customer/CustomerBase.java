@@ -20,10 +20,10 @@ public class CustomerBase extends DBPersistent {
     private Integer primaryContactID = new Integer(NONE_INT);
     private Integer customerTypeID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
     private String timeZone = "";
-    private Integer paObjectID = new Integer(NONE_INT);
+    private Integer paoID = new Integer(NONE_INT);
 
     public static final String[] SETTER_COLUMNS = {
-        "PrimaryContactID", "CustomerTypeID", "TimeZone", "PAObjectID"
+        "PrimaryContactID", "CustomerTypeID", "TimeZone", "PaoID"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "CustomerID" };
@@ -48,8 +48,7 @@ public class CustomerBase extends DBPersistent {
     		setCustomerID( getNextCustomerID() );
     		
         Object[] addValues = {
-            getCustomerID(), getPrimaryContactID(), getCustomerTypeID(),
-            getTimeZone(), getPAObjectID()
+            getCustomerID(), getPrimaryContactID(), getCustomerTypeID(), getTimeZone(), getPaoID()
         };
 
         add( TABLE_NAME, addValues );
@@ -57,7 +56,7 @@ public class CustomerBase extends DBPersistent {
 
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
-            getPrimaryContactID(), getCustomerTypeID(), getTimeZone(), getPAObjectID()
+            getPrimaryContactID(), getCustomerTypeID(), getTimeZone(), getPaoID()
         };
 
         Object[] constraintValues = { getCustomerID() };
@@ -108,62 +107,39 @@ public class CustomerBase extends DBPersistent {
         return new Integer( nextCustomerID );
     }
     
-    public com.cannontech.database.db.customer.CustomerContact[] getAllCustomerContacts(java.sql.Connection conn) throws java.sql.SQLException {
+    public com.cannontech.database.db.customer.CustomerContact[] getAllCustomerContacts() {
         String sql = "SELECT cont.* FROM " + com.cannontech.database.db.customer.CustomerContact.TABLE_NAME
-        		   + " cont, CstBaseCstContactMap map WHERE map.CustomerID = ? AND map.CustomerContactID = cont.ContactID";
-
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        java.util.ArrayList contactList = new java.util.ArrayList();
+        		   + " cont, CustomerAdditionalContact map WHERE map.CustomerID = " + getCustomerID().toString()
+        		   + " AND map.ContactID = cont.ContactID";
 
         try
         {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
+			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+					sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+			stmt.execute();
+			
+			com.cannontech.database.db.customer.CustomerContact[] contacts = new com.cannontech.database.db.customer.CustomerContact[ stmt.getRowCount() ];
+			for (int i = 0; i < contacts.length; i++) {
+				Object[] row = stmt.getRow(i);
+				contacts[i] = new com.cannontech.database.db.customer.CustomerContact();
+            	
+            	contacts[i].setContactID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+            	contacts[i].setContFirstName( (String) row[1] );
+            	contacts[i].setContLastName( (String) row[2] );
+            	contacts[i].setContPhone1( (String) row[3] );
+            	contacts[i].setContPhone2( (String) row[4] );
+            	contacts[i].setLocationID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
+            	contacts[i].setLogInID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
             }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, getCustomerID().intValue() );
-                rset = pstmt.executeQuery();
-
-                while (rset.next()) {
-                	com.cannontech.database.db.customer.CustomerContact contact = new com.cannontech.database.db.customer.CustomerContact();
-                	
-                	contact.setContactID( new Integer(rset.getInt("ContactID")) );
-                	contact.setContFirstName( rset.getString("ContFirstName") );
-                	contact.setContLastName( rset.getString("ContLastName") );
-                	contact.setContPhone1( rset.getString("ContPhone1") );
-                	contact.setContPhone2( rset.getString("ContPhone2") );
-                	contact.setLocationID( new Integer(rset.getInt("LocationID")) );
-                	contact.setLogInID( new Integer(rset.getInt("LogInID")) );
-                	
-                	contactList.add( contact );
-                }
-            }
+            
+            return contacts;
         }
-        catch( java.sql.SQLException e )
+        catch(Exception e)
         {
             e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if (rset != null) rset.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
-
-		com.cannontech.database.db.customer.CustomerContact[] contacts =
-				new com.cannontech.database.db.customer.CustomerContact[ contactList.size() ];
-		contactList.toArray( contacts );
-		return contacts;
+        
+        return null;
     }
 
     public Integer getCustomerID() {
@@ -190,13 +166,6 @@ public class CustomerBase extends DBPersistent {
         timeZone = newTimeZone;
     }
 
-    public Integer getPAObjectID() {
-        return paObjectID;
-    }
-
-    public void setPaoID(Integer newPAObjectID) {
-        paObjectID = newPAObjectID;
-    }
 	/**
 	 * Returns the customerTypeID.
 	 * @return Integer
@@ -211,6 +180,22 @@ public class CustomerBase extends DBPersistent {
 	 */
 	public void setCustomerTypeID(Integer customerTypeID) {
 		this.customerTypeID = customerTypeID;
+	}
+
+	/**
+	 * Returns the paoID.
+	 * @return Integer
+	 */
+	public Integer getPaoID() {
+		return paoID;
+	}
+
+	/**
+	 * Sets the paoID.
+	 * @param paoID The paoID to set
+	 */
+	public void setPaoID(Integer paoID) {
+		this.paoID = paoID;
 	}
 
 }

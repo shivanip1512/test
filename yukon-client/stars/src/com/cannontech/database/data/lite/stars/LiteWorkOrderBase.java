@@ -16,8 +16,6 @@ public class LiteWorkOrderBase extends LiteBase {
 	private String orderNumber = null;
 	private int workTypeID = com.cannontech.database.db.stars.CustomerListEntry.NONE_INT;
 	private int currentStateID = com.cannontech.database.db.stars.CustomerListEntry.NONE_INT;
-	private int customerID = com.cannontech.database.db.stars.customer.CustomerBase.NONE_INT;
-	private int siteID = com.cannontech.database.db.stars.customer.SiteInformation.NONE_INT;
 	private int serviceCompanyID = com.cannontech.database.db.stars.report.ServiceCompany.NONE_INT;
 	private long dateReported = 0;
 	private long dateScheduled = 0;
@@ -25,6 +23,7 @@ public class LiteWorkOrderBase extends LiteBase {
 	private String description = null;
 	private String actionTaken = null;
 	private String orderedBy = null;
+	private int accountID = com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT;
 	
 	public LiteWorkOrderBase() {
 		super();
@@ -58,14 +57,6 @@ public class LiteWorkOrderBase extends LiteBase {
 	 */
 	public int getCurrentStateID() {
 		return currentStateID;
-	}
-
-	/**
-	 * Returns the customerID.
-	 * @return int
-	 */
-	public int getCustomerID() {
-		return customerID;
 	}
 
 	/**
@@ -125,14 +116,6 @@ public class LiteWorkOrderBase extends LiteBase {
 	}
 
 	/**
-	 * Returns the siteID.
-	 * @return int
-	 */
-	public int getSiteID() {
-		return siteID;
-	}
-
-	/**
 	 * Returns the workTypeID.
 	 * @return int
 	 */
@@ -154,14 +137,6 @@ public class LiteWorkOrderBase extends LiteBase {
 	 */
 	public void setCurrentStateID(int currentStateID) {
 		this.currentStateID = currentStateID;
-	}
-
-	/**
-	 * Sets the customerID.
-	 * @param customerID The customerID to set
-	 */
-	public void setCustomerID(int customerID) {
-		this.customerID = customerID;
 	}
 
 	/**
@@ -221,19 +196,27 @@ public class LiteWorkOrderBase extends LiteBase {
 	}
 
 	/**
-	 * Sets the siteID.
-	 * @param siteID The siteID to set
-	 */
-	public void setSiteID(int siteID) {
-		this.siteID = siteID;
-	}
-
-	/**
 	 * Sets the workTypeID.
 	 * @param workTypeID The workTypeID to set
 	 */
 	public void setWorkTypeID(int workTypeID) {
 		this.workTypeID = workTypeID;
+	}
+
+	/**
+	 * Returns the accountID.
+	 * @return int
+	 */
+	public int getAccountID() {
+		return accountID;
+	}
+
+	/**
+	 * Sets the accountID.
+	 * @param accountID The accountID to set
+	 */
+	public void setAccountID(int accountID) {
+		this.accountID = accountID;
 	}
 
 }

@@ -18,9 +18,8 @@ public class WorkOrderBase extends DBPersistent {
     private com.cannontech.database.db.stars.CustomerListEntry workType = null;
     private com.cannontech.database.db.stars.CustomerListEntry currentState = null
     ;
-    private com.cannontech.database.data.stars.customer.AccountSite site = null;
     private com.cannontech.database.data.stars.report.ServiceCompany serviceCompany = null;
-    private com.cannontech.database.data.stars.customer.CustomerBase customerBase = null;
+    private com.cannontech.database.data.stars.customer.CustomerAccount customerAccount = null;
     private Integer energyCompanyID = null;
 
     public WorkOrderBase() {
@@ -75,25 +74,18 @@ public class WorkOrderBase extends DBPersistent {
         getCurrentState().setEntryID( getWorkOrderBase().getCurrentStateID() );
         getCurrentState().retrieve();
 */        
-        if (getSite() == null) {
-        	site = new com.cannontech.database.data.stars.customer.AccountSite();
-        	site.setAccountSiteID( getWorkOrderBase().getSiteID() );
-        	site.setDbConnection( getDbConnection() );
-        	site.retrieve();
-        }
-        
         if (getServiceCompany() == null) {
         	serviceCompany = new ServiceCompany();
         	serviceCompany.setCompanyID( getWorkOrderBase().getServiceCompanyID() );
         	serviceCompany.setDbConnection( getDbConnection() );
         	serviceCompany.retrieve();
         }
-        
-        if (getCustomerBase() == null) {
-        	customerBase = new com.cannontech.database.data.stars.customer.CustomerBase();
-        	customerBase.setCustomerID( getWorkOrderBase().getCustomerID() );
-        	customerBase.setDbConnection( getDbConnection() );
-        	customerBase.retrieve();
+
+        if (getCustomerAccount() == null) {
+        	customerAccount = new com.cannontech.database.data.stars.customer.CustomerAccount();
+        	customerAccount.setAccountID( getWorkOrderBase().getAccountID() );
+        	customerAccount.setDbConnection( getDbConnection() );
+        	customerAccount.retrieve();
         }
     }
     
@@ -117,27 +109,11 @@ public class WorkOrderBase extends DBPersistent {
 	}
 
 	/**
-	 * Returns the customerBase.
-	 * @return com.cannontech.database.data.stars.customer.CustomerBase
-	 */
-	public com.cannontech.database.data.stars.customer.CustomerBase getCustomerBase() {
-		return customerBase;
-	}
-
-	/**
 	 * Returns the serviceCompany.
 	 * @return com.cannontech.database.data.stars.report.ServiceCompany
 	 */
 	public com.cannontech.database.data.stars.report.ServiceCompany getServiceCompany() {
 		return serviceCompany;
-	}
-
-	/**
-	 * Returns the site.
-	 * @return com.cannontech.database.data.stars.customer.AccountSite
-	 */
-	public com.cannontech.database.data.stars.customer.AccountSite getSite() {
-		return site;
 	}
 
 	/**
@@ -160,30 +136,12 @@ public class WorkOrderBase extends DBPersistent {
 	}
 
 	/**
-	 * Sets the customerBase.
-	 * @param customerBase The customerBase to set
-	 */
-	public void setCustomerBase(
-		com.cannontech.database.data.stars.customer.CustomerBase customerBase) {
-		this.customerBase = customerBase;
-	}
-
-	/**
 	 * Sets the serviceCompany.
 	 * @param serviceCompany The serviceCompany to set
 	 */
 	public void setServiceCompany(
 		com.cannontech.database.data.stars.report.ServiceCompany serviceCompany) {
 		this.serviceCompany = serviceCompany;
-	}
-
-	/**
-	 * Sets the site.
-	 * @param site The site to set
-	 */
-	public void setSite(
-		com.cannontech.database.data.stars.customer.AccountSite site) {
-		this.site = site;
 	}
 
 	/**
@@ -197,6 +155,22 @@ public class WorkOrderBase extends DBPersistent {
 	
 	public void setEnergyCompanyID(Integer energyCompanyID) {
 		this.energyCompanyID = energyCompanyID;
+	}
+
+	/**
+	 * Returns the customerAccount.
+	 * @return com.cannontech.database.data.stars.customer.CustomerAccount
+	 */
+	public com.cannontech.database.data.stars.customer.CustomerAccount getCustomerAccount() {
+		return customerAccount;
+	}
+
+	/**
+	 * Sets the customerAccount.
+	 * @param customerAccount The customerAccount to set
+	 */
+	public void setCustomerAccount(com.cannontech.database.data.stars.customer.CustomerAccount customerAccount) {
+		this.customerAccount = customerAccount;
 	}
 
 }

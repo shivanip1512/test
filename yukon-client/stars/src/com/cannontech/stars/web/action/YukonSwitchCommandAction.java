@@ -23,6 +23,7 @@ import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsAppliances;
+import com.cannontech.stars.xml.serialize.StarsConfig;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDisableService;
 import com.cannontech.stars.xml.serialize.StarsEnableService;
@@ -88,6 +89,12 @@ public class YukonSwitchCommandAction implements ActionBase {
                 service.setInventoryID( invID );
                 command.setStarsEnableService( service );
             }
+            else if (action.equalsIgnoreCase("Config")) {
+            	if (invID < 0) return null;
+            	StarsConfig service = new StarsConfig();
+            	service.setInventoryID( invID );
+            	command.setStarsConfig( service );
+            }
 
             StarsOperation operation = new StarsOperation();
             operation.setStarsYukonSwitchCommand( command );
@@ -152,11 +159,15 @@ public class YukonSwitchCommandAction implements ActionBase {
             		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
             		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED)
             		.getEntryID() );
+            Integer configEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
+            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
+            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_CONFIG)
+            		.getEntryID() );
             
             if (command.getStarsDisableService() != null) {
                 StarsDisableService service = command.getStarsDisableService();
                 Integer invID = new Integer( service.getInventoryID() );
-        		LiteLMHardware liteHw = SOAPServer.getLMHardware( energyCompanyID, invID, true );
+        		LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID, true );
         		
         		if (liteHw == null) {
 	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
@@ -198,7 +209,7 @@ public class YukonSwitchCommandAction implements ActionBase {
             else if (command.getStarsEnableService() != null) {
                 StarsEnableService service = command.getStarsEnableService();
                 Integer invID = new Integer( service.getInventoryID() );
-        		LiteLMHardware liteHw = SOAPServer.getLMHardware( energyCompanyID, invID, true );
+        		LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID, true );
         		
         		if (liteHw == null) {
 	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
@@ -217,6 +228,47 @@ public class YukonSwitchCommandAction implements ActionBase {
         		eventDB.setInventoryID( invID );
         		eventBase.setEventTypeID( hwEventEntryID );
         		eventBase.setActionID( actCompEntryID );
+        		eventBase.setEventDateTime( new Date() );
+        		
+        		event.setEnergyCompanyID( energyCompanyID );
+        		event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+        				Transaction.createTransaction( Transaction.INSERT, event ).execute();
+				
+				// Update lite object and create response
+				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+				liteHw.getLmHardwareHistory().add( liteEvent );
+					
+				StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
+				hwHist.setInventoryID( liteHw.getInventoryID() );
+				for (int k = 0; k < liteHw.getLmHardwareHistory().size(); k++) {
+					liteEvent = (LiteLMCustomerEvent) liteHw.getLmHardwareHistory().get(k);
+					StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
+					StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent, selectionLists );
+					hwHist.addStarsLMHardwareEvent( starsEvent );
+				}
+				cmdResp.setStarsLMHardwareHistory( hwHist );
+            }
+            else if (command.getStarsConfig() != null) {
+                StarsEnableService service = command.getStarsEnableService();
+                Integer invID = new Integer( service.getInventoryID() );
+        		LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID, true );
+        		
+        		if (liteHw == null) {
+	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the LM hardware to be enabled") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+        		}
+        		
+        		/* Send out config command here !!! */
+	            
+	            // Add "Config" to hardware events
+        		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+        		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+        		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+        		
+        		eventDB.setInventoryID( invID );
+        		eventBase.setEventTypeID( hwEventEntryID );
+        		eventBase.setActionID( configEntryID );
         		eventBase.setEventDateTime( new Date() );
         		
         		event.setEnergyCompanyID( energyCompanyID );
@@ -274,14 +326,17 @@ public class YukonSwitchCommandAction implements ActionBase {
 							com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_AVAIL),
 						DeviceStatus.class );
 			}
-			else {
+			else if (reqOper.getStarsYukonSwitchCommand().getStarsDisableService() != null) {
 				hwStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
 						StarsCustListEntryFactory.getStarsCustListEntry(
 							(StarsCustSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS),
 							com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_TEMPUNAVAIL),
 						DeviceStatus.class );
 			}
-				
+			else if (reqOper.getStarsYukonSwitchCommand().getStarsConfig() != null) {
+				/* What to do ??? */
+			}
+			
             // Update hardware history
             StarsLMHardwareHistory hwHist = resp.getStarsLMHardwareHistory();
 			StarsInventories inventories = accountInfo.getStarsInventories();

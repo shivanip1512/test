@@ -41,9 +41,9 @@ public class LiteStarsLMControlHistory extends LiteBase {
 		if (lmControlHistory == null) return;
 		
 		Calendar oldCal = Calendar.getInstance();
-		oldCal.setTimeInMillis( timeBase );		
+		oldCal.setTime( new java.util.Date(timeBase) );
 		Calendar limitCal = Calendar.getInstance();
-		timeBase = limitCal.getTimeInMillis();
+		timeBase = limitCal.getTime().getTime();
 		
 		// Set the time limit to the beginning of the day
 		limitCal.set(Calendar.HOUR, 0);
@@ -54,7 +54,7 @@ public class LiteStarsLMControlHistory extends LiteBase {
 		int curIndex = lmControlHistory.size() - 1;
 		while (curIndex >= 0) {
 			LiteLMControlHistory ctrlHist = (LiteLMControlHistory) lmControlHistory.get( curIndex );
-			if (ctrlHist.getStartDateTime() < limitCal.getTimeInMillis()) {
+			if (ctrlHist.getStartDateTime() < limitCal.getTime().getTime()) {
 				currentDayStartIndex = curIndex + 1;
 				break;
 			}
@@ -64,14 +64,14 @@ public class LiteStarsLMControlHistory extends LiteBase {
 		
 		// Set the time limit to the beggining of the week
 		Calendar limitCal2 = Calendar.getInstance();
-		limitCal2.setTimeInMillis( limitCal.getTimeInMillis() );
+		limitCal2.setTime( limitCal.getTime() );
 		limitCal2.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
 		
 		if (oldCal.before(limitCal2)) {
 			int curIndex2 = curIndex;
 			while (curIndex2 >= 0) {
 				LiteLMControlHistory ctrlHist = (LiteLMControlHistory) lmControlHistory.get( curIndex2 );
-				if (ctrlHist.getStartDateTime() < limitCal2.getTimeInMillis()) {
+				if (ctrlHist.getStartDateTime() < limitCal2.getTime().getTime()) {
 					currentWeekStartIndex = curIndex2 + 1;
 					break;
 				}
@@ -86,7 +86,7 @@ public class LiteStarsLMControlHistory extends LiteBase {
 		
 		while (curIndex >= 0) {
 			LiteLMControlHistory ctrlHist = (LiteLMControlHistory) lmControlHistory.get( curIndex );
-			if (ctrlHist.getStartDateTime() < limitCal.getTimeInMillis()) {
+			if (ctrlHist.getStartDateTime() < limitCal.getTime().getTime()) {
 				currentMonthStartIndex = curIndex + 1;
 				break;
 			}
@@ -100,7 +100,7 @@ public class LiteStarsLMControlHistory extends LiteBase {
 		
 		while (curIndex >= 0) {
 			LiteLMControlHistory ctrlHist = (LiteLMControlHistory) lmControlHistory.get( curIndex );
-			if (ctrlHist.getStartDateTime() < limitCal.getTimeInMillis()) {
+			if (ctrlHist.getStartDateTime() < limitCal.getTime().getTime()) {
 				currentYearStartIndex = curIndex + 1;
 				break;
 			}

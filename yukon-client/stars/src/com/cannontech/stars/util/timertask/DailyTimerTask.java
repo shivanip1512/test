@@ -114,7 +114,7 @@ public class DailyTimerTask extends StarsTimerTask {
 								Transaction.createTransaction( Transaction.INSERT, event2 ).execute();
 						
 						// Update the lite object
-						LiteLMHardware liteHw = SOAPServer.getLMHardware( companies[i].getEnergyCompanyID(), hw.getInventoryID(), false );
+						LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( companies[i].getEnergyCompanyID(), hw.getInventoryID(), false );
 						if (liteHw != null) {
 							ArrayList hwHist = liteHw.getLmHardwareHistory();
 							if (hwHist != null) {

@@ -40,11 +40,15 @@ public class StarsCustAccountInformation implements java.io.Serializable {
 
     private StarsInventories _starsInventories;
 
+    private StarsServiceCompanies _starsServiceCompanies;
+
     private StarsCallReportHistory _starsCallReportHistory;
 
     private StarsServiceRequestHistory _starsServiceRequestHistory;
 
     private StarsThermostatSettings _starsThermostatSettings;
+
+    private StarsLogin _starsLogin;
 
 
       //----------------/
@@ -109,6 +113,26 @@ public class StarsCustAccountInformation implements java.io.Serializable {
     {
         return this._starsLMPrograms;
     } //-- StarsLMPrograms getStarsLMPrograms() 
+
+    /**
+     * Returns the value of field 'starsLogin'.
+     * 
+     * @return the value of field 'starsLogin'.
+    **/
+    public StarsLogin getStarsLogin()
+    {
+        return this._starsLogin;
+    } //-- StarsLogin getStarsLogin() 
+
+    /**
+     * Returns the value of field 'starsServiceCompanies'.
+     * 
+     * @return the value of field 'starsServiceCompanies'.
+    **/
+    public StarsServiceCompanies getStarsServiceCompanies()
+    {
+        return this._starsServiceCompanies;
+    } //-- StarsServiceCompanies getStarsServiceCompanies() 
 
     /**
      * Returns the value of field 'starsServiceRequestHistory'.
@@ -218,6 +242,27 @@ public class StarsCustAccountInformation implements java.io.Serializable {
     {
         this._starsLMPrograms = starsLMPrograms;
     } //-- void setStarsLMPrograms(StarsLMPrograms) 
+
+    /**
+     * Sets the value of field 'starsLogin'.
+     * 
+     * @param starsLogin the value of field 'starsLogin'.
+    **/
+    public void setStarsLogin(StarsLogin starsLogin)
+    {
+        this._starsLogin = starsLogin;
+    } //-- void setStarsLogin(StarsLogin) 
+
+    /**
+     * Sets the value of field 'starsServiceCompanies'.
+     * 
+     * @param starsServiceCompanies the value of field
+     * 'starsServiceCompanies'.
+    **/
+    public void setStarsServiceCompanies(StarsServiceCompanies starsServiceCompanies)
+    {
+        this._starsServiceCompanies = starsServiceCompanies;
+    } //-- void setStarsServiceCompanies(StarsServiceCompanies) 
 
     /**
      * Sets the value of field 'starsServiceRequestHistory'.

@@ -38,56 +38,131 @@ public class CustomerAccount extends DBPersistent {
         super();
     }
 
-    public static CustomerAccount searchByAccountNumber(Integer energyCompanyID, String accountNumber, java.sql.Connection conn) {
-        String sql = "SELECT account.* FROM ECToAccountMapping map, CustomerAccount account "
-                   + "WHERE map.EnergyCompanyID = ? AND account.AccountNumber = ? "
-                   + "AND map.AccountID = account.AccountID";
-
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
+    public static CustomerAccount searchByAccountNumber(Integer energyCompanyID, String accountNumber) {
+        String sql = "SELECT account.* FROM ECToAccountMapping map, " + TABLE_NAME + " account "
+                   + "WHERE map.EnergyCompanyID = " + energyCompanyID.toString()
+                   + " AND account.AccountNumber = '" + accountNumber + "' AND map.AccountID = account.AccountID";
+        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+        		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
         try
         {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, energyCompanyID.intValue() );
-                pstmt.setString( 2, accountNumber );
-                rset = pstmt.executeQuery();
+			stmt.execute();
+			
+			if (stmt.getRowCount() > 0) {
+				Object[] row = stmt.getRow(0);
+				CustomerAccount account = new CustomerAccount();
 
-                if (rset.next()) {
-                    CustomerAccount account = new CustomerAccount();
+                account.setAccountID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+                account.setAccountSiteID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+                account.setAccountNumber( (String) row[2] );
+                account.setCustomerID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+                account.setBillingAddressID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+                account.setAccountNotes( (String) row[5] );
 
-                    account.setAccountID( new Integer(rset.getInt("AccountID")) );
-                    account.setAccountSiteID( new Integer(rset.getInt("AccountSiteID")) );
-                    account.setAccountNumber( rset.getString("AccountNumber") );
-                    account.setCustomerID( new Integer(rset.getInt("CustomerID")) );
-                    account.setBillingAddressID( new Integer(rset.getInt("BillingAddressID")) );
-                    account.setAccountNotes( rset.getString("AccountNotes") );
-
-                    return account;
-                }
+                return account;
             }
         }
-        catch( java.sql.SQLException e )
+        catch( Exception e )
         {
             e.printStackTrace();
         }
-        finally
+
+        return null;
+    }
+    
+    private static CustomerAccount[] searchByPrimaryContactIDs(Integer energyCompanyID, int[] contactIDs) {
+    	if (contactIDs == null || contactIDs.length == 0) return null;
+    	
+    	String sql = "SELECT DISTINCT account.* FROM ECToAccountMapping map, " + TABLE_NAME + " account, " + CustomerBase.TABLE_NAME + " cust "
+    			   + "WHERE map.EnergyCompanyID = " + energyCompanyID.toString() + " AND map.AccountID = account.AccountID "
+    			   + "AND account.CustomerID = cust.CustomerID AND (cust.PrimaryContactID = " + String.valueOf(contactIDs[0]);
+    	for (int i = 1; i < contactIDs.length; i++)
+    		sql += " OR cust.PrimaryContactID = " + String.valueOf(contactIDs[i]);
+    	sql += ")";
+    	
+        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+        		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    	
+    	try {
+    		stmt.execute();
+    		CustomerAccount[] accounts = new CustomerAccount[ stmt.getRowCount() ];
+    		
+    		for (int i = 0; i < accounts.length; i++) {
+				Object[] row = stmt.getRow(i);
+				accounts[i] = new CustomerAccount();
+
+                accounts[i].setAccountID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+                accounts[i].setAccountSiteID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+                accounts[i].setAccountNumber( (String) row[2] );
+                accounts[i].setCustomerID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+                accounts[i].setBillingAddressID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+                accounts[i].setAccountNotes( (String) row[5] );
+    		}
+    		
+    		return accounts;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return null;
+    }
+    
+    public static CustomerAccount[] searchByPhoneNumber(Integer energyCompanyID, String phoneNumber) {
+		int[] contactIDs = com.cannontech.database.db.stars.CustomerContact.searchByPhoneNumber( phoneNumber );
+		if (contactIDs == null) return null;
+		if (contactIDs.length == 0) return new CustomerAccount[0];
+    		
+        return CustomerAccount.searchByPrimaryContactIDs( energyCompanyID, contactIDs );
+    }
+    
+    public static CustomerAccount[] searchByLastName(Integer energyCompanyID, String lastName) {
+		int[] contactIDs = com.cannontech.database.db.stars.CustomerContact.searchByLastName( lastName );
+		if (contactIDs == null) return null;
+		if (contactIDs.length == 0) return new CustomerAccount[0];
+		
+        return searchByPrimaryContactIDs( energyCompanyID, contactIDs );
+    }
+    
+    public static CustomerAccount[] searchBySerialNumber(Integer energyCompanyID, String serialNo) {
+    	int[] invIDs = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber( serialNo );
+    	if (invIDs == null) return null;
+    	if (invIDs.length == 0) return new CustomerAccount[0];
+    	
+    	String sql = "SELECT DISTINCT account.* FROM ECToAccountMapping map, " + TABLE_NAME + " account, "
+    			   + com.cannontech.database.db.stars.hardware.InventoryBase.TABLE_NAME + " inv "
+    			   + "WHERE map.EnergyCompanyID = " + energyCompanyID.toString() + " AND map.AccountID = account.AccountID "
+    			   + "AND account.AccountID = inv.AccountID AND (inv.InventoryID = " + String.valueOf(invIDs[0]);
+    	for (int i = 1; i < invIDs.length; i++)
+    		sql += " OR inv.InventoryID = " + String.valueOf(invIDs[i]);
+    	sql += ")";
+    	
+        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+        		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+
+        try
         {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if (rset != null) rset.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
+    		stmt.execute();
+    		CustomerAccount[] accounts = new CustomerAccount[ stmt.getRowCount() ];
+    		
+    		for (int i = 0; i < accounts.length; i++) {
+				Object[] row = stmt.getRow(i);
+				accounts[i] = new CustomerAccount();
+
+                accounts[i].setAccountID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+                accounts[i].setAccountSiteID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+                accounts[i].setAccountNumber( (String) row[2] );
+                accounts[i].setCustomerID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+                accounts[i].setBillingAddressID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+                accounts[i].setAccountNotes( (String) row[5] );
+    		}
+    		
+    		return accounts;
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
         }
 
         return null;

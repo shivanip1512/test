@@ -19,8 +19,8 @@ public class StarsAppFactory {
 			starsApp.setApplianceID( app.getApplianceID() );
 			starsApp.setApplianceCategoryID( app.getApplianceCategoryID() );
 			starsApp.setCategoryName( app.getCategoryName() );
+			starsApp.setYearManufactured( app.getYearManufactured() );
 			starsApp.setManufacturer( app.getManufacturer() );
-			starsApp.setManufactureYear( app.getManufactureYear() );
 			starsApp.setLocation( app.getLocation() );
 			starsApp.setServiceCompany( app.getServiceCompany() );
 			starsApp.setNotes( app.getNotes() );

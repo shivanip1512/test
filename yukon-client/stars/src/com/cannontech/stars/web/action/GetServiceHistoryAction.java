@@ -82,8 +82,7 @@ public class GetServiceHistoryAction implements ActionBase {
         	
         	if (accountInfo.getServiceRequestHistory() == null) {
 		        com.cannontech.database.db.stars.report.WorkOrderBase[] orders =
-		        		com.cannontech.database.db.stars.report.WorkOrderBase.getAllCustomerSiteWorkOrders(
-		        			new Integer(accountInfo.getCustomerAccount().getCustomerID()), new Integer(accountInfo.getCustomerAccount().getAccountSiteID()) );
+		        		com.cannontech.database.db.stars.report.WorkOrderBase.getAllAccountWorkOrders( new Integer(accountInfo.getCustomerAccount().getAccountID()) );
 		        if (orders == null) {
 		        	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
 		        			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find service request history") );

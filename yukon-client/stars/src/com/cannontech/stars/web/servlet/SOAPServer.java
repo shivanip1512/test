@@ -1,9 +1,13 @@
 package com.cannontech.stars.web.servlet;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.*;
 
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.xml.messaging.JAXMServlet;
 import javax.xml.messaging.ReqRespListener;
 import javax.xml.soap.SOAPMessage;
@@ -15,7 +19,7 @@ import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.servlet.PILConnectionServlet;
 
-import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.*;
 import com.cannontech.stars.util.timertask.*;
 import com.cannontech.stars.xml.*;
 import com.cannontech.stars.xml.serialize.*;
@@ -36,6 +40,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     
     // Instance of the SOAPServer object
     private static SOAPServer instance = null;
+    private static boolean initialized = false;
     
     // Timer object for periodical tasks
     private static Timer timer = new Timer();
@@ -80,6 +85,10 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     // Map of energy company to work order list
     // key: Integer energyCompanyID, value: ArrayList workOrders
     private static Hashtable workOrderTable = new Hashtable();
+    
+    // Map of energy company to service company list
+    // key: Integer energyCompanyID, value: ArrayList serviceCompanies
+    private static Hashtable serviceCompanyTable = new Hashtable();
 	
 	// Map of energy company to customer selection lists
 	// key: Integer energyCompanyID, value: Hashtable selectionLists
@@ -94,8 +103,16 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     }
     
     public static SOAPServer getInstance() {
-    	if (instance == null)
+    	if (instance == null) {
     		instance = new SOAPServer();
+    		if (!initialized)
+    			try {
+    				instance.init();
+    			}
+    			catch (javax.servlet.ServletException e) {
+    				e.printStackTrace();
+    			}
+    	}
     		
     	return instance;
     }
@@ -123,17 +140,13 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     /*
      * Start implementation of ReqRespListener
      */
-    public void init(javax.servlet.ServletConfig config) throws javax.servlet.ServletException {
-    	super.init( config );
-    	
-    	ServerUtils.setConnectionContainer( (PILConnectionServlet)
-    			getServletContext().getAttribute(PILConnectionServlet.SERVLET_CONTEXT_ID) );
-    			
+    public void init() throws javax.servlet.ServletException {
     	com.cannontech.database.db.company.EnergyCompany[] companies = getAllEnergyCompanies();
     	if (companies != null) {
 	    	for (int i = 0; i < companies.length; i++) {
 	    		getAllLMPrograms( companies[i].getEnergyCompanyID() );
 	    		getAllApplianceCategories( companies[i].getEnergyCompanyID() );
+	    		getAllServiceCompanies( companies[i].getEnergyCompanyID() );
 	    		getAllSelectionLists( companies[i].getEnergyCompanyID() );
 	    		
 	    		custAccountInfoTable.put( companies[i].getEnergyCompanyID(), new ArrayList() );
@@ -148,6 +161,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	
     	initDispatchConnection();    	
     	startTimers();
+    	
+    	initialized = true;	// Set to true so that the servlet will only be initialized once
     }
 
     public SOAPMessage onMessage(SOAPMessage message) {
@@ -263,6 +278,20 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	}
     }
     
+    public static void refreshCache() {
+		custAccountInfoTable = new Hashtable();
+		custContactTable = new Hashtable();
+		custAddressTable = new Hashtable();
+		lmProgramTable = new Hashtable();
+		lmHardwareTable = new Hashtable();
+		lmCtrlHistTable = new Hashtable();
+		appCatTable = new Hashtable();
+		workOrderTable  = new Hashtable();
+		serviceCompanyTable = new Hashtable();
+		selectionListTable = new Hashtable();
+		webConfigList = null;
+    }
+    
     public static EnergyCompany[] getAllEnergyCompanies() {
     	if (energyCompanies == null) {
     		try {
@@ -273,9 +302,9 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     		catch (Exception e) {
     			e.printStackTrace();
     		}
+	    	
+	    	CTILogger.info( "All energy companies loaded" );
     	}
-    	
-    	CTILogger.info( "All energy companies loaded" );
     	
     	return energyCompanies;
     }
@@ -314,9 +343,9 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				
 				lmPrograms.add( program );
     		}
+	    	
+	    	CTILogger.info( "All LM programs loaded for energy company #" + energyCompanyID.toString() );
     	}
-    	
-    	CTILogger.info( "All LM programs loaded for energy company #" + energyCompanyID.toString() );
     	
     	return lmPrograms;
     }
@@ -354,9 +383,9 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     			
     			appCategories.add( appCat );
     		}
+	    	
+	    	CTILogger.info( "All appliance categories loaded for energy company #" + energyCompanyID.toString() );
     	}
-    	
-    	CTILogger.info( "All appliance categories loaded for energy company #" + energyCompanyID.toString() );
     	
     	return appCategories;
     }
@@ -376,10 +405,11 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     			webConfig.setUrl( webConfigs[i].getURL() );
     			
     			webConfigList.add( webConfig );
+    			//CTILogger.info( "WebConfig URL: \"" + webConfigs[i].getURL() + "\"" );
     		}
+	    	
+	    	CTILogger.info( "All customer web configurations loaded" );
     	}
-    	
-    	CTILogger.info( "All customer web configurations loaded" );
     	
     	return webConfigList;
     }
@@ -450,11 +480,38 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	        
 	        companyList.setListEntries( listEntries );
 	        selectionLists.put( companyList.getListName(), companyList );
+			
+			CTILogger.info( "All customer selection lists loaded for energy company #" + energyCompanyID.toString() );
 		}
 		
-		CTILogger.info( "All customer selection lists loaded for energy company #" + energyCompanyID.toString() );
-		
 		return selectionLists;
+	}
+	
+	public static ArrayList getAllServiceCompanies(Integer energyCompanyID) {
+		ArrayList serviceCompanies = (ArrayList) serviceCompanyTable.get( energyCompanyID );
+		if (serviceCompanies == null) {
+			serviceCompanies = new ArrayList();
+			serviceCompanyTable.put( energyCompanyID, serviceCompanies );
+			
+	        com.cannontech.database.db.stars.report.ServiceCompany[] companies =
+	        		com.cannontech.database.db.stars.report.ServiceCompany.getAllServiceCompanies( energyCompanyID );
+	        for (int i = 0; i < companies.length; i++) {
+	        	LiteServiceCompany serviceCompany = new LiteServiceCompany();
+	        	serviceCompany.setCompanyID( companies[i].getCompanyID().intValue() );
+	        	serviceCompany.setCompanyName( companies[i].getCompanyName() );
+	        	serviceCompany.setAddressID( companies[i].getAddressID().intValue() );
+	        	serviceCompany.setMainPhoneNumber( companies[i].getMainPhoneNumber() );
+	        	serviceCompany.setMainFaxNumber( companies[i].getMainFaxNumber() );
+	        	serviceCompany.setPrimaryContactID( companies[i].getPrimaryContactID().intValue() );
+	        	serviceCompany.setHiType( companies[i].getHIType() );
+	        	
+	        	serviceCompanies.add( serviceCompany );
+	        }
+			
+			CTILogger.info( "All service companies loaded for energy company #" + energyCompanyID.toString() );
+		}
+		
+		return serviceCompanies;
 	}
 	
 	public static ArrayList getAllCustomerContacts(Integer energyCompanyID) {
@@ -531,6 +588,19 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		return null;
 	}
 	
+	public static LiteServiceCompany getServiceCompany(Integer energyCompanyID, Integer serviceCompanyID) {
+		ArrayList serviceCompanies = getAllServiceCompanies( energyCompanyID );
+		
+		LiteServiceCompany serviceCompany = null;
+		for (int i = 0; i < serviceCompanies.size(); i++) {
+			serviceCompany = (LiteServiceCompany) serviceCompanies.get(i);
+			if (serviceCompany.getCompanyID() == serviceCompanyID.intValue())
+				return serviceCompany;
+		}
+		
+		return null;
+	}
+	
 	public static LiteCustomerContact getCustomerContact(Integer energyCompanyID, Integer contactID) {
 		ArrayList custContactList = getAllCustomerContacts( energyCompanyID );
 		
@@ -564,7 +634,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	}
 	
 	public static void updateCustomerContact(LiteCustomerContact liteContact) {
-/*	    
     	DBChangeMsg msg = new DBChangeMsg(
     		liteContact.getContactID(),
     		DBChangeMsg.CHANGE_CUSTOMER_CONTACT_DB,
@@ -572,7 +641,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     		DBChangeMsg.CAT_CUSTOMERCONTACT,
     		DBChangeMsg.CHANGE_TYPE_UPDATE
     		);
-    	ServerUtils.getClientConnection().write( msg );*/
+    	ServerUtils.getClientConnection().write( msg );
 	}
 	
 	public static void deleteCustomerContact(Integer energyCompanyID, LiteCustomerContact liteContact) {
@@ -622,12 +691,12 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		return null;
 	}
 	
-	public static LiteLMHardware getLMHardware(Integer energyCompanyID, Integer inventoryID, boolean autoLoad) {
+	public static LiteLMHardwareBase getLMHardware(Integer energyCompanyID, Integer inventoryID, boolean autoLoad) {
 		ArrayList lmHardwareList = getAllLMHardwares( energyCompanyID );
 		
-		LiteLMHardware liteHw = null;
+		LiteLMHardwareBase liteHw = null;
 		for (int i = 0; i < lmHardwareList.size(); i++) {
-			liteHw = (LiteLMHardware) lmHardwareList.get(i);
+			liteHw = (LiteLMHardwareBase) lmHardwareList.get(i);
 			if (liteHw.getInventoryID() == inventoryID.intValue())
 				return liteHw;
 		}
@@ -638,7 +707,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				hw.setInventoryID( inventoryID );
 				hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
 						Transaction.createTransaction( Transaction.RETRIEVE, hw ).execute();
-				liteHw = (LiteLMHardware) StarsLiteFactory.createLite( hw );
+				liteHw = (LiteLMHardwareBase) StarsLiteFactory.createLite( hw );
 				
 				lmHardwareList.add( liteHw );
 				return liteHw;
@@ -651,11 +720,11 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		return null;
 	}
 	
-	public static LiteLMHardware addLMHardware(Integer energyCompanyID, com.cannontech.database.data.stars.hardware.LMHardwareBase hw) {
+	public static LiteLMHardwareBase addLMHardware(Integer energyCompanyID, com.cannontech.database.data.stars.hardware.LMHardwareBase hw) {
 		ArrayList lmHardwareList = getAllLMHardwares( energyCompanyID );
 		
 		try {
-			LiteLMHardware liteHw = (LiteLMHardware) StarsLiteFactory.createLite( hw );
+			LiteLMHardwareBase liteHw = (LiteLMHardwareBase) StarsLiteFactory.createLite( hw );
 			lmHardwareList.add( liteHw );
 			return liteHw;
 		}
@@ -772,30 +841,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		return null;
 	}
 	
-	public static LiteStarsCustAccountInformation getCustAccountInformation(Integer energyCompanyID, String accountNo) {
-		ArrayList custAcctInfoList = getAllCustAccountInformation( energyCompanyID );
-		
-		LiteStarsCustAccountInformation accountInfo = null;
-		for (int i = 0; i < custAcctInfoList.size(); i++) {
-			accountInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
-			if (accountInfo.getCustomerAccount().getAccountNumber().equalsIgnoreCase( accountNo ))
-				return accountInfo;
-		}
-		
-		try {
-			com.cannontech.database.data.stars.customer.CustomerAccount account =
-					com.cannontech.database.data.stars.customer.CustomerAccount.searchByAccountNumber( energyCompanyID, accountNo );
-			if (account == null) return null;
-			
-			return addCustAccountInformation( energyCompanyID, account );
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return null;
-	}
-	
 	public static LiteStarsCustAccountInformation addCustAccountInformation(Integer energyCompanyID, com.cannontech.database.data.stars.customer.CustomerAccount account) {
 		ArrayList custAcctInfoList = getAllCustAccountInformation( energyCompanyID );
 		
@@ -858,6 +903,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
                     accountInfo.getInventories().add( hardware.getInventoryBase().getInventoryID() );
                 }
             }
+            
+            ServerUtils.updateServiceCompanies( accountInfo, energyCompanyID );
 
             accountInfo.setLmPrograms( new ArrayList() );
 
@@ -894,13 +941,18 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			}
 				
 	        com.cannontech.database.db.stars.report.WorkOrderBase[] orders =
-	        		com.cannontech.database.db.stars.report.WorkOrderBase.getAllCustomerSiteWorkOrders( customerDB.getCustomerID(), accountDB.getAccountSiteID() );
+	        		com.cannontech.database.db.stars.report.WorkOrderBase.getAllAccountWorkOrders( accountDB.getAccountID() );
 	        if (orders != null) {
 	        	accountInfo.setServiceRequestHistory( new ArrayList() );
 	        	for (int i = 0; i < orders.length; i++) {
 	        		addWorkOrderBase( energyCompanyID, orders[i] );
 	        		accountInfo.getServiceRequestHistory().add( orders[i].getOrderID() );
 	        	}
+	        }
+	        
+	        if (primContact.getLogInID().intValue() >= 0) {
+		        com.cannontech.database.db.customer.CustomerLogin login = com.cannontech.database.db.customer.CustomerLogin.getCustomerLogin( primContact.getLogInID() );
+		        accountInfo.setCustomerLogin( (com.cannontech.database.data.lite.LiteYukonUser) StarsLiteFactory.createLite(login) );
 	        }
 
             custAcctInfoList.add( accountInfo );
@@ -911,6 +963,23 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		}
 		
 		return null;
+	}
+	
+	public static LiteStarsCustAccountInformation searchByAccountNumber(Integer energyCompanyID, String accountNo) {
+		ArrayList custAcctInfoList = getAllCustAccountInformation( energyCompanyID );
+		
+		LiteStarsCustAccountInformation accountInfo = null;
+		for (int i = 0; i < custAcctInfoList.size(); i++) {
+			accountInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
+			if (accountInfo.getCustomerAccount().getAccountNumber().equalsIgnoreCase( accountNo ))
+				return accountInfo;
+		}
+		
+		com.cannontech.database.data.stars.customer.CustomerAccount account =
+				com.cannontech.database.data.stars.customer.CustomerAccount.searchByAccountNumber( energyCompanyID, accountNo );
+		if (account == null) return null;
+		
+		return addCustAccountInformation( energyCompanyID, account );
 	}
 
 }

@@ -15,12 +15,23 @@ import com.cannontech.database.db.DBPersistent;
 public class CustomerContact extends DBPersistent {
 	
 	private com.cannontech.database.db.customer.CustomerContact customerContact = null;
+	private com.cannontech.database.db.stars.customer.CustomerBase customerBase = null;
 	
 	public CustomerContact(com.cannontech.database.db.customer.CustomerContact contact) {
 		customerContact = contact;
 	}
+	
+	public CustomerContact(com.cannontech.database.db.customer.CustomerContact contact,
+							com.cannontech.database.db.stars.customer.CustomerBase customer) {
+		customerContact = contact;
+		customerBase = customer;
+	}
+	
+	public CustomerContact() {
+	}
 
 	public void setDbConnection(java.sql.Connection conn) {
+		super.setDbConnection( conn );
 		if (customerContact != null)
 			customerContact.setDbConnection( conn );
 	}
@@ -33,6 +44,13 @@ public class CustomerContact extends DBPersistent {
 			if (customerContact.getContactID() == null)
 				customerContact.setContactID( customerContact.getNextContactID2() );
 			customerContact.add();
+			
+			if (customerBase != null) {
+				Object[] addValues = {
+					customerBase.getCustomerID(), customerContact.getContactID()
+				};
+				add( "CustomerAdditionalContact", addValues );
+			}
 		}
 	}
 
@@ -40,8 +58,11 @@ public class CustomerContact extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
 	public void delete() throws SQLException {
-		if (customerContact != null)
-			customerContact.delete();
+		if (customerContact != null) {
+			delete( "CustomerAdditionalContact", "ContactID", customerContact.getContactID() );
+			
+			delete( com.cannontech.database.db.customer.CustomerContact.TABLE_NAME, "ContactID", customerContact.getContactID() );
+		}
 	}
 
 	/**
@@ -68,6 +89,50 @@ public class CustomerContact extends DBPersistent {
 			update( customerContact.TABLE_NAME, customerContact.SETTER_COLUMNS, setValues, customerContact.CONSTRAINT_COLUMNS, constraintValues );
 		}
 	}
+	
+	public static int[] searchByPhoneNumber(String phoneNo) {
+		String sql = "SELECT ContactID FROM " + com.cannontech.database.db.customer.CustomerContact.TABLE_NAME
+				   + " WHERE ContPhone1 = '" + phoneNo + "' OR ContPhone2 = '" + phoneNo + "'";
+		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+		
+		try {
+			stmt.execute();
+			int[] contactIDs = new int[ stmt.getRowCount() ];
+			
+			for (int i = 0; i < contactIDs.length; i++)
+				contactIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+				
+			return contactIDs;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public static int[] searchByLastName(String lastName) {
+		String sql = "SELECT ContactID FROM " + com.cannontech.database.db.customer.CustomerContact.TABLE_NAME
+				   + " WHERE ContLastName = '" + lastName + "'";
+		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+		
+		try {
+			stmt.execute();
+			int[] contactIDs = new int[ stmt.getRowCount() ];
+			
+			for (int i = 0; i < contactIDs.length; i++)
+				contactIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+				
+			return contactIDs;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 
 	/**
 	 * Returns the customerContact.
@@ -84,6 +149,22 @@ public class CustomerContact extends DBPersistent {
 	public void setCustomerContact(
 		com.cannontech.database.db.customer.CustomerContact customerContact) {
 		this.customerContact = customerContact;
+	}
+
+	/**
+	 * Returns the customerBase.
+	 * @return com.cannontech.database.db.stars.customer.CustomerBase
+	 */
+	public com.cannontech.database.db.stars.customer.CustomerBase getCustomerBase() {
+		return customerBase;
+	}
+
+	/**
+	 * Sets the customerBase.
+	 * @param customerBase The customerBase to set
+	 */
+	public void setCustomerBase(com.cannontech.database.db.stars.customer.CustomerBase customerBase) {
+		this.customerBase = customerBase;
 	}
 
 }

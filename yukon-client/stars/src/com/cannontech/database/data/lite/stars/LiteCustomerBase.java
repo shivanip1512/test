@@ -14,7 +14,7 @@ import com.cannontech.database.data.lite.LiteTypes;
 public class LiteCustomerBase extends LiteBase {
 	
 	private int primaryContactID = 0;
-	private int customerTypeID = 0;
+	private int customerTypeID = com.cannontech.database.db.stars.CustomerListEntry.NONE_INT;
 	private java.util.ArrayList additionalContacts = null;
 
 	public LiteCustomerBase() {

@@ -17,8 +17,10 @@ public class LiteStarsCustAccountInformation {
 	private java.util.ArrayList lmPrograms = null;	// List of LiteStarsLMProgram
 	private java.util.ArrayList appliances = null;	// List of StarsAppliance
 	private java.util.ArrayList inventories = null;	// List of IDs of LiteLMHardware
+	private java.util.ArrayList serviceCompanies = null;	// List of IDs of LiteServiceCompany
 	private java.util.ArrayList callReportHistory = null;	// List of StarsCallReport
 	private java.util.ArrayList serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
+	private com.cannontech.database.data.lite.LiteYukonUser customerLogin = null;
 	
 	public LiteStarsCustAccountInformation() {
 	}
@@ -166,6 +168,39 @@ public class LiteStarsCustAccountInformation {
 	 */
 	public void setSiteInformation(LiteSiteInformation siteInformation) {
 		this.siteInformation = siteInformation;
+	}
+
+	/**
+	 * Returns the serviceCompanies.
+	 * @return java.util.ArrayList
+	 */
+	public java.util.ArrayList getServiceCompanies() {
+		return serviceCompanies;
+	}
+
+	/**
+	 * Sets the serviceCompanies.
+	 * @param serviceCompanies The serviceCompanies to set
+	 */
+	public void setServiceCompanies(java.util.ArrayList serviceCompanies) {
+		this.serviceCompanies = serviceCompanies;
+	}
+
+	/**
+	 * Returns the customerLogin.
+	 * @return com.cannontech.database.data.lite.LiteYukonUser
+	 */
+	public com.cannontech.database.data.lite.LiteYukonUser getCustomerLogin() {
+		return customerLogin;
+	}
+
+	/**
+	 * Sets the customerLogin.
+	 * @param customerLogin The customerLogin to set
+	 */
+	public void setCustomerLogin(
+		com.cannontech.database.data.lite.LiteYukonUser customerLogin) {
+		this.customerLogin = customerLogin;
 	}
 
 }

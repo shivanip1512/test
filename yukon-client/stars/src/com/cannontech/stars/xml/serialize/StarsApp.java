@@ -62,11 +62,11 @@ public abstract class StarsApp implements java.io.Serializable {
 
     private java.lang.String _categoryName;
 
-    private java.lang.String _manufacturer;
+    private java.lang.String _yearManufactured;
 
-    private java.lang.String _manufactureYear;
+    private Manufacturer _manufacturer;
 
-    private java.lang.String _location;
+    private Location _location;
 
     private ServiceCompany _serviceCompany;
 
@@ -169,30 +169,20 @@ public abstract class StarsApp implements java.io.Serializable {
      * 
      * @return the value of field 'location'.
     **/
-    public java.lang.String getLocation()
+    public Location getLocation()
     {
         return this._location;
-    } //-- java.lang.String getLocation() 
-
-    /**
-     * Returns the value of field 'manufactureYear'.
-     * 
-     * @return the value of field 'manufactureYear'.
-    **/
-    public java.lang.String getManufactureYear()
-    {
-        return this._manufactureYear;
-    } //-- java.lang.String getManufactureYear() 
+    } //-- Location getLocation() 
 
     /**
      * Returns the value of field 'manufacturer'.
      * 
      * @return the value of field 'manufacturer'.
     **/
-    public java.lang.String getManufacturer()
+    public Manufacturer getManufacturer()
     {
         return this._manufacturer;
-    } //-- java.lang.String getManufacturer() 
+    } //-- Manufacturer getManufacturer() 
 
     /**
      * Returns the value of field 'notes'.
@@ -213,6 +203,16 @@ public abstract class StarsApp implements java.io.Serializable {
     {
         return this._serviceCompany;
     } //-- ServiceCompany getServiceCompany() 
+
+    /**
+     * Returns the value of field 'yearManufactured'.
+     * 
+     * @return the value of field 'yearManufactured'.
+    **/
+    public java.lang.String getYearManufactured()
+    {
+        return this._yearManufactured;
+    } //-- java.lang.String getYearManufactured() 
 
     /**
     **/
@@ -331,30 +331,20 @@ public abstract class StarsApp implements java.io.Serializable {
      * 
      * @param location the value of field 'location'.
     **/
-    public void setLocation(java.lang.String location)
+    public void setLocation(Location location)
     {
         this._location = location;
-    } //-- void setLocation(java.lang.String) 
-
-    /**
-     * Sets the value of field 'manufactureYear'.
-     * 
-     * @param manufactureYear the value of field 'manufactureYear'.
-    **/
-    public void setManufactureYear(java.lang.String manufactureYear)
-    {
-        this._manufactureYear = manufactureYear;
-    } //-- void setManufactureYear(java.lang.String) 
+    } //-- void setLocation(Location) 
 
     /**
      * Sets the value of field 'manufacturer'.
      * 
      * @param manufacturer the value of field 'manufacturer'.
     **/
-    public void setManufacturer(java.lang.String manufacturer)
+    public void setManufacturer(Manufacturer manufacturer)
     {
         this._manufacturer = manufacturer;
-    } //-- void setManufacturer(java.lang.String) 
+    } //-- void setManufacturer(Manufacturer) 
 
     /**
      * Sets the value of field 'notes'.
@@ -375,6 +365,16 @@ public abstract class StarsApp implements java.io.Serializable {
     {
         this._serviceCompany = serviceCompany;
     } //-- void setServiceCompany(ServiceCompany) 
+
+    /**
+     * Sets the value of field 'yearManufactured'.
+     * 
+     * @param yearManufactured the value of field 'yearManufactured'
+    **/
+    public void setYearManufactured(java.lang.String yearManufactured)
+    {
+        this._yearManufactured = yearManufactured;
+    } //-- void setYearManufactured(java.lang.String) 
 
     /**
     **/

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.16 2002/11/20 22:57:19 zyao Exp $
+ * $Id: StarsOperation.java,v 1.17 2002/12/09 23:11:40 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.16 $ $Date: 2002/11/20 22:57:19 $
+ * @version $Revision: 1.17 $ $Date: 2002/12/09 23:11:40 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -52,10 +52,6 @@ public class StarsOperation implements java.io.Serializable {
     private StarsSearchCustomerAccount _starsSearchCustomerAccount;
 
     private StarsSearchCustomerAccountResponse _starsSearchCustomerAccountResponse;
-
-    private StarsGetAllCustomerAccounts _starsGetAllCustomerAccounts;
-
-    private StarsGetAllCustomerAccountsResponse _starsGetAllCustomerAccountsResponse;
 
     private StarsGetCustomerAccount _starsGetCustomerAccount;
 
@@ -125,6 +121,18 @@ public class StarsOperation implements java.io.Serializable {
     private StarsCreateLMHardwareResponse _starsCreateLMHardwareResponse;
 
     private StarsDefaultThermostatSettings _starsDefaultThermostatSettings;
+
+    private StarsUpdateLMHardware _starsUpdateLMHardware;
+
+    private StarsUpdateLMHardwareResponse _starsUpdateLMHardwareResponse;
+
+    private StarsUpdateAppliance _starsUpdateAppliance;
+
+    private StarsUpdateApplianceResponse _starsUpdateApplianceResponse;
+
+    private StarsUpdateLogin _starsUpdateLogin;
+
+    private StarsUpdateLoginResponse _starsUpdateLoginResponse;
 
 
       //----------------/
@@ -241,28 +249,6 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsFailure;
     } //-- StarsFailure getStarsFailure() 
-
-    /**
-     * Returns the value of field 'starsGetAllCustomerAccounts'.
-     * 
-     * @return the value of field 'starsGetAllCustomerAccounts'.
-    **/
-    public StarsGetAllCustomerAccounts getStarsGetAllCustomerAccounts()
-    {
-        return this._starsGetAllCustomerAccounts;
-    } //-- StarsGetAllCustomerAccounts getStarsGetAllCustomerAccounts() 
-
-    /**
-     * Returns the value of field
-     * 'starsGetAllCustomerAccountsResponse'.
-     * 
-     * @return the value of field
-     * 'starsGetAllCustomerAccountsResponse'.
-    **/
-    public StarsGetAllCustomerAccountsResponse getStarsGetAllCustomerAccountsResponse()
-    {
-        return this._starsGetAllCustomerAccountsResponse;
-    } //-- StarsGetAllCustomerAccountsResponse getStarsGetAllCustomerAccountsResponse() 
 
     /**
      * Returns the value of field 'starsGetCallReportHistory'.
@@ -522,6 +508,26 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsSuccess getStarsSuccess() 
 
     /**
+     * Returns the value of field 'starsUpdateAppliance'.
+     * 
+     * @return the value of field 'starsUpdateAppliance'.
+    **/
+    public StarsUpdateAppliance getStarsUpdateAppliance()
+    {
+        return this._starsUpdateAppliance;
+    } //-- StarsUpdateAppliance getStarsUpdateAppliance() 
+
+    /**
+     * Returns the value of field 'starsUpdateApplianceResponse'.
+     * 
+     * @return the value of field 'starsUpdateApplianceResponse'.
+    **/
+    public StarsUpdateApplianceResponse getStarsUpdateApplianceResponse()
+    {
+        return this._starsUpdateApplianceResponse;
+    } //-- StarsUpdateApplianceResponse getStarsUpdateApplianceResponse() 
+
+    /**
      * Returns the value of field 'starsUpdateCustomerAccount'. The
      * field 'starsUpdateCustomerAccount' has the following
      * description: Update a customer account
@@ -546,6 +552,26 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsUpdateCustomerAccountResponse getStarsUpdateCustomerAccountResponse() 
 
     /**
+     * Returns the value of field 'starsUpdateLMHardware'.
+     * 
+     * @return the value of field 'starsUpdateLMHardware'.
+    **/
+    public StarsUpdateLMHardware getStarsUpdateLMHardware()
+    {
+        return this._starsUpdateLMHardware;
+    } //-- StarsUpdateLMHardware getStarsUpdateLMHardware() 
+
+    /**
+     * Returns the value of field 'starsUpdateLMHardwareResponse'.
+     * 
+     * @return the value of field 'starsUpdateLMHardwareResponse'.
+    **/
+    public StarsUpdateLMHardwareResponse getStarsUpdateLMHardwareResponse()
+    {
+        return this._starsUpdateLMHardwareResponse;
+    } //-- StarsUpdateLMHardwareResponse getStarsUpdateLMHardwareResponse() 
+
+    /**
      * Returns the value of field 'starsUpdateLMPrograms'. The
      * field 'starsUpdateLMPrograms' has the following description:
      * Update the LM programs for a customer account
@@ -556,6 +582,26 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsUpdateLMPrograms;
     } //-- StarsUpdateLMPrograms getStarsUpdateLMPrograms() 
+
+    /**
+     * Returns the value of field 'starsUpdateLogin'.
+     * 
+     * @return the value of field 'starsUpdateLogin'.
+    **/
+    public StarsUpdateLogin getStarsUpdateLogin()
+    {
+        return this._starsUpdateLogin;
+    } //-- StarsUpdateLogin getStarsUpdateLogin() 
+
+    /**
+     * Returns the value of field 'starsUpdateLoginResponse'.
+     * 
+     * @return the value of field 'starsUpdateLoginResponse'.
+    **/
+    public StarsUpdateLoginResponse getStarsUpdateLoginResponse()
+    {
+        return this._starsUpdateLoginResponse;
+    } //-- StarsUpdateLoginResponse getStarsUpdateLoginResponse() 
 
     /**
      * Returns the value of field 'starsYukonSwitchCommand'.
@@ -723,29 +769,6 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsFailure = starsFailure;
     } //-- void setStarsFailure(StarsFailure) 
-
-    /**
-     * Sets the value of field 'starsGetAllCustomerAccounts'.
-     * 
-     * @param starsGetAllCustomerAccounts the value of field
-     * 'starsGetAllCustomerAccounts'.
-    **/
-    public void setStarsGetAllCustomerAccounts(StarsGetAllCustomerAccounts starsGetAllCustomerAccounts)
-    {
-        this._starsGetAllCustomerAccounts = starsGetAllCustomerAccounts;
-    } //-- void setStarsGetAllCustomerAccounts(StarsGetAllCustomerAccounts) 
-
-    /**
-     * Sets the value of field
-     * 'starsGetAllCustomerAccountsResponse'.
-     * 
-     * @param starsGetAllCustomerAccountsResponse the value of
-     * field 'starsGetAllCustomerAccountsResponse'.
-    **/
-    public void setStarsGetAllCustomerAccountsResponse(StarsGetAllCustomerAccountsResponse starsGetAllCustomerAccountsResponse)
-    {
-        this._starsGetAllCustomerAccountsResponse = starsGetAllCustomerAccountsResponse;
-    } //-- void setStarsGetAllCustomerAccountsResponse(StarsGetAllCustomerAccountsResponse) 
 
     /**
      * Sets the value of field 'starsGetCallReportHistory'.
@@ -1017,6 +1040,28 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsSuccess(StarsSuccess) 
 
     /**
+     * Sets the value of field 'starsUpdateAppliance'.
+     * 
+     * @param starsUpdateAppliance the value of field
+     * 'starsUpdateAppliance'.
+    **/
+    public void setStarsUpdateAppliance(StarsUpdateAppliance starsUpdateAppliance)
+    {
+        this._starsUpdateAppliance = starsUpdateAppliance;
+    } //-- void setStarsUpdateAppliance(StarsUpdateAppliance) 
+
+    /**
+     * Sets the value of field 'starsUpdateApplianceResponse'.
+     * 
+     * @param starsUpdateApplianceResponse the value of field
+     * 'starsUpdateApplianceResponse'.
+    **/
+    public void setStarsUpdateApplianceResponse(StarsUpdateApplianceResponse starsUpdateApplianceResponse)
+    {
+        this._starsUpdateApplianceResponse = starsUpdateApplianceResponse;
+    } //-- void setStarsUpdateApplianceResponse(StarsUpdateApplianceResponse) 
+
+    /**
      * Sets the value of field 'starsUpdateCustomerAccount'. The
      * field 'starsUpdateCustomerAccount' has the following
      * description: Update a customer account
@@ -1042,6 +1087,28 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsUpdateCustomerAccountResponse(StarsUpdateCustomerAccountResponse) 
 
     /**
+     * Sets the value of field 'starsUpdateLMHardware'.
+     * 
+     * @param starsUpdateLMHardware the value of field
+     * 'starsUpdateLMHardware'.
+    **/
+    public void setStarsUpdateLMHardware(StarsUpdateLMHardware starsUpdateLMHardware)
+    {
+        this._starsUpdateLMHardware = starsUpdateLMHardware;
+    } //-- void setStarsUpdateLMHardware(StarsUpdateLMHardware) 
+
+    /**
+     * Sets the value of field 'starsUpdateLMHardwareResponse'.
+     * 
+     * @param starsUpdateLMHardwareResponse the value of field
+     * 'starsUpdateLMHardwareResponse'.
+    **/
+    public void setStarsUpdateLMHardwareResponse(StarsUpdateLMHardwareResponse starsUpdateLMHardwareResponse)
+    {
+        this._starsUpdateLMHardwareResponse = starsUpdateLMHardwareResponse;
+    } //-- void setStarsUpdateLMHardwareResponse(StarsUpdateLMHardwareResponse) 
+
+    /**
      * Sets the value of field 'starsUpdateLMPrograms'. The field
      * 'starsUpdateLMPrograms' has the following description:
      * Update the LM programs for a customer account
@@ -1053,6 +1120,27 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsUpdateLMPrograms = starsUpdateLMPrograms;
     } //-- void setStarsUpdateLMPrograms(StarsUpdateLMPrograms) 
+
+    /**
+     * Sets the value of field 'starsUpdateLogin'.
+     * 
+     * @param starsUpdateLogin the value of field 'starsUpdateLogin'
+    **/
+    public void setStarsUpdateLogin(StarsUpdateLogin starsUpdateLogin)
+    {
+        this._starsUpdateLogin = starsUpdateLogin;
+    } //-- void setStarsUpdateLogin(StarsUpdateLogin) 
+
+    /**
+     * Sets the value of field 'starsUpdateLoginResponse'.
+     * 
+     * @param starsUpdateLoginResponse the value of field
+     * 'starsUpdateLoginResponse'.
+    **/
+    public void setStarsUpdateLoginResponse(StarsUpdateLoginResponse starsUpdateLoginResponse)
+    {
+        this._starsUpdateLoginResponse = starsUpdateLoginResponse;
+    } //-- void setStarsUpdateLoginResponse(StarsUpdateLoginResponse) 
 
     /**
      * Sets the value of field 'starsYukonSwitchCommand'.

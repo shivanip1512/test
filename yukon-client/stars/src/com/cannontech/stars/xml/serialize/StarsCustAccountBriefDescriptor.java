@@ -142,22 +142,22 @@ public class StarsCustAccountBriefDescriptor extends org.exolab.castor.xml.util.
         }
         desc.setValidator(fieldValidator);
         
-        //-- _accountNotes
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_accountNotes", "AccountNotes", NodeType.Element);
+        //-- _contactName
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_contactName", "ContactName", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsCustAccountBrief target = (StarsCustAccountBrief) object;
-                return target.getAccountNotes();
+                return target.getContactName();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsCustAccountBrief target = (StarsCustAccountBrief) object;
-                    target.setAccountNotes( (java.lang.String) value);
+                    target.setContactName( (java.lang.String) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -172,7 +172,87 @@ public class StarsCustAccountBriefDescriptor extends org.exolab.castor.xml.util.
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _accountNotes
+        //-- validation code for: _contactName
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _contPhoneNumber
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_contPhoneNumber", "ContPhoneNumber", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustAccountBrief target = (StarsCustAccountBrief) object;
+                return target.getContPhoneNumber();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustAccountBrief target = (StarsCustAccountBrief) object;
+                    target.setContPhoneNumber( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _contPhoneNumber
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _streetAddress
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_streetAddress", "StreetAddress", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustAccountBrief target = (StarsCustAccountBrief) object;
+                return target.getStreetAddress();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustAccountBrief target = (StarsCustAccountBrief) object;
+                    target.setStreetAddress( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _streetAddress
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope

@@ -20,13 +20,12 @@ public class CallReportBase extends DBPersistent {
     private String callNumber = "";
     private Integer callTypeID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
     private java.util.Date dateTaken = new java.util.Date(0);
+    private String takenBy = "";
     private String description = "";
     private Integer accountID = new Integer( com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT );
-    private Integer customerID = new Integer( com.cannontech.database.db.stars.customer.CustomerBase.NONE_INT );
-    private String takenBy = "";
 
     public static final String[] SETTER_COLUMNS = {
-        "CallNumber", "CallTypeID", "DateTaken", "Description", "AccountID", "CustomerID", "TakenBy"
+        "CallNumber", "CallTypeID", "DateTaken", "TakenBy", "Description", "AccountID"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "CallID" };
@@ -52,7 +51,7 @@ public class CallReportBase extends DBPersistent {
     		
         Object[] addValues = {
             getCallID(), getCallNumber(), getCallTypeID(), getDateTaken(),
-            getDescription(), getAccountID(), getCustomerID(), getTakenBy()
+            getTakenBy(), getDescription(), getAccountID()
         };
 
         add( TABLE_NAME, addValues );
@@ -61,7 +60,7 @@ public class CallReportBase extends DBPersistent {
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
             getCallNumber(), getCallTypeID(), getDateTaken(),
-            getDescription(), getAccountID(), getCustomerID(), getTakenBy()
+            getTakenBy(), getDescription(), getAccountID()
         };
 
         Object[] constraintValues = { getCallID() };
@@ -78,10 +77,9 @@ public class CallReportBase extends DBPersistent {
             setCallNumber( (String) results[0] );
             setCallTypeID( (Integer) results[1] );
             setDateTaken( new java.util.Date(((java.sql.Timestamp) results[2]).getTime()) );
-            setDescription( (String) results[3] );
-            setAccountID( (Integer) results[4] );
-            setCustomerID( (Integer) results[5] );
-            setTakenBy( (String) results[6] );
+            setTakenBy( (String) results[3] );
+            setDescription( (String) results[4] );
+            setAccountID( (Integer) results[5] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -132,10 +130,9 @@ public class CallReportBase extends DBPersistent {
                 reports[i].setCallNumber( (String) row[1] );
                 reports[i].setCallTypeID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
                 reports[i].setDateTaken( (java.util.Date) row[3] );
-                reports[i].setDescription( (String) row[4] );
-                reports[i].setAccountID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
-                reports[i].setCustomerID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
-                reports[i].setTakenBy( (String) row[7] );
+                reports[i].setTakenBy( (String) row[4] );
+                reports[i].setDescription( (String) row[5] );
+                reports[i].setAccountID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
             }
             
             return reports;
@@ -149,61 +146,36 @@ public class CallReportBase extends DBPersistent {
     }
 
     public static CallReportBase[] getAllCustomerCallReports(Integer customerID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE CustomerID = ? "
-        		   + "ORDER BY DateTaken DESC";
+        String sql = "SELECT * FROM " + TABLE_NAME + " call, " + com.cannontech.database.db.stars.customer.CustomerAccount.TABLE_NAME + " account "
+        		   + "WHERE call.AccountID = account.AccountID AND account.CustomerID = " + customerID.toString()
+        		   + " ORDER BY DateTaken DESC";
 
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        java.util.ArrayList reportList = new java.util.ArrayList();
+        try {		   
+	        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement( sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+	        stmt.execute();
+	        
+	        CallReportBase[] reports = new CallReportBase[ stmt.getRowCount() ];
+	        for (int i = 0; i < stmt.getRowCount(); i++) {
+	        	Object[] row = stmt.getRow(i);
+                reports[i] = new CallReportBase();
 
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
+                reports[i].setCallID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+                reports[i].setCallNumber( (String) row[1] );
+                reports[i].setCallTypeID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+                reports[i].setDateTaken( (java.util.Date) row[3] );
+                reports[i].setTakenBy( (String) row[4] );
+                reports[i].setDescription( (String) row[5] );
+                reports[i].setAccountID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
             }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, customerID.intValue() );
-                rset = pstmt.executeQuery();
-
-                while (rset.next()) {
-                    CallReportBase report = new CallReportBase();
-
-                    report.setCallID( new Integer(rset.getInt("CallID")) );
-                    report.setCallNumber( rset.getString("CallNumber") );
-                    report.setCallTypeID( new Integer(rset.getInt("CallTypeID")) );
-                    report.setDateTaken( new java.util.Date(rset.getTimestamp("DateTaken").getTime()) );
-                    report.setDescription( rset.getString("Description") );
-                    report.setAccountID( new Integer(rset.getInt("AccountID")) );
-                    report.setCustomerID( new Integer(rset.getInt("CustomerID")) );
-                    report.setTakenBy( rset.getString("TakenBy") );
-
-                    reportList.add( report );
-                }
-            }
+            
+            return reports;
         }
-        catch( java.sql.SQLException e )
+        catch( Exception e )
         {
             e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if (rset != null) rset.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
-
-        CallReportBase[] reports = new CallReportBase[ reportList.size() ];
-        reportList.toArray( reports );
-        return reports;
+        
+        return null;
     }
 
     public static void deleteAllAccountCallReports(Integer accountID, java.sql.Connection conn) {
@@ -226,7 +198,7 @@ public class CallReportBase extends DBPersistent {
                 pstmt.execute();
 
                 if (reports.length > 0) {
-                    StringBuffer sql2 = new StringBuffer("DELETE FROM ECToServiceOrderMapping WHERE CallReportID = ");
+                    StringBuffer sql2 = new StringBuffer("DELETE FROM ECToCallReportMapping WHERE CallReportID = ");
                     for (int i = 0; i < reports.length; i++) {
                         sql2.append( reports[i].getCallID() );
                         if (i < reports.length - 1)
@@ -288,13 +260,6 @@ public class CallReportBase extends DBPersistent {
         description = newDescription;
     }
 
-    public Integer getCustomerID() {
-        return customerID;
-    }
-
-    public void setCustomerID(Integer newCustomerID) {
-        customerID = newCustomerID;
-    }
 	/**
 	 * Returns the accountID.
 	 * @return Integer

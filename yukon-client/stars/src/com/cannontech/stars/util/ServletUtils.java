@@ -144,7 +144,7 @@ public class ServletUtils {
     
     public static StarsLMControlHistory getTodaysControlHistory(StarsLMControlHistory ctrlHist) {
         StarsLMControlHistory ctrlHistToday = new StarsLMControlHistory();
-        Date today = com.cannontech.util.ServletUtil.getToday();
+        Date today = com.cannontech.util.ServletUtil.getToday();	
         
         for (int i = 0; i < ctrlHist.getControlHistoryCount(); i++) {
         	ControlHistory hist = ctrlHist.getControlHistory(i);
@@ -153,5 +153,73 @@ public class ServletUtils {
         }
         
         return ctrlHistToday;
+    }
+    
+    /**
+     * Format phone number to format "(...-#-)###-###-####"
+     * In the original string, each segment between adjacent "-" above must be consecutive,
+     * otherwise an empty string is returned
+     */
+    public static String formatPhoneNumber(String phoneNo) {
+    	StringBuffer formatedPhoneNo = new StringBuffer();
+    	int n = phoneNo.length() - 1;	// position of digit counted from the last
+    	
+    	/* Find the last 4 digits */
+    	while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
+    		n--;
+    	if (n < 0) return "";
+    	for (int i = 1; i < 4; i++) {
+    		n--;
+    		if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
+    			return "";
+    	}
+    	formatedPhoneNo.insert( 0, phoneNo.substring(n, n+4) );
+    	
+    	/* Find the middle 3 digits */
+    	n--;
+    	while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
+    		n--;
+    	if (n < 0) return "";
+    	for (int i = 1; i < 3; i++) {
+    		n--;
+    		if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
+    			return "";
+    	}
+    	formatedPhoneNo.insert( 0, '-' );
+    	formatedPhoneNo.insert( 0, phoneNo.substring(n, n+3) );
+    	
+    	/* Find the 3-digit area code */
+    	n--;
+    	while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
+    		n--;
+    	if (n < 0) return "";
+    	for (int i = 1; i < 3; i++) {
+    		n--;
+    		if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
+    			return "";
+    	}
+    	formatedPhoneNo.insert( 0, '-' );
+    	formatedPhoneNo.insert( 0, phoneNo.substring(n, n+3) );
+    	
+    	/* Find the 1 digit before area code of 800 number or long distance */
+    	n--;
+    	while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
+    		n--;
+    	if (n < 0) return formatedPhoneNo.toString();
+    	formatedPhoneNo.insert( 0, '-' );
+    	formatedPhoneNo.insert( 0, phoneNo.charAt(n) );
+    	
+    	/* Save all the remaining digits (country code etc.) in one segment */
+    	n--;
+    	while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
+    		n--;
+    	if (n < 0) return formatedPhoneNo.toString();
+    	formatedPhoneNo.insert( 0, '-' );
+    	for (; n >= 0; n--) {
+    		if (Character.isDigit( phoneNo.charAt(n) ))
+    			formatedPhoneNo.insert( 0, phoneNo.charAt(n) );
+    	}
+    	
+    	return formatedPhoneNo.toString();
     }
 }

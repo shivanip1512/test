@@ -106,7 +106,6 @@ public class CreateCallAction implements ActionBase {
             
             StarsCallReportFactory.setCallReportBase( callReportDB, createCall );
             callReportDB.setAccountID( new Integer(accountInfo.getCustomerAccount().getAccountID()) );
-            callReportDB.setCustomerID( new Integer(accountInfo.getCustomerAccount().getCustomerID()) );
             
             callReport.setEnergyCompanyID( new Integer((int) operator.getEnergyCompanyID()) );
             

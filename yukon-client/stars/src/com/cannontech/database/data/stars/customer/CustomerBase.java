@@ -55,13 +55,13 @@ public class CustomerBase extends DBPersistent {
             account.delete();
         }
 
-        /* Delete from CstBaseCstContactMap.
+        /* Delete from CustomerAdditionalContact
          * After merging, can be replaced with:
          * com.cannontech.database.db.customer.CustomerContact.deleteAllCustomerContacts()
          */
         com.cannontech.database.db.customer.CustomerContact[] contacts =
             com.cannontech.database.db.customer.CustomerContact.getAllCustomerContacts( getCustomerBase().getCustomerID(), getDbConnection() );
-        delete( "CstBaseCstContactMap", "CustomerID", getCustomerBase().getCustomerID() );
+        delete( "CustomerAdditionalContact", "CustomerID", getCustomerBase().getCustomerID() );
         
         // use "data" class to delete from CustomerContact
         com.cannontech.database.data.customer.CustomerContact contact = new com.cannontech.database.data.customer.CustomerContact();
@@ -94,7 +94,7 @@ public class CustomerBase extends DBPersistent {
                 getCustomerBase().getCustomerID(),
                 contact.getCustomerContact().getContactID()
             };
-            add( "CstBaseCstContactMap", addValues );
+            add( "CustomerAdditionalContact", addValues );
         }
         
         // add to EnergyCompany to CustomerBase mapping table after merging
@@ -120,10 +120,9 @@ public class CustomerBase extends DBPersistent {
 		Object constraintValues[] = { primContact.getContactID() };
 		update( primContact.TABLE_NAME, primContact.SETTER_COLUMNS, setValues, primContact.CONSTRAINT_COLUMNS, constraintValues );
 
-        // delete from CstBaseCstContactMap
-        com.cannontech.database.db.customer.CustomerContact[] contacts =
-            	getCustomerBase().getAllCustomerContacts( getDbConnection() );
-        delete( "CstBaseCstContactMap", "CustomerID", getCustomerBase().getCustomerID() );
+        // delete from CustomerAdditionalContact
+        com.cannontech.database.db.customer.CustomerContact[] contacts = getCustomerBase().getAllCustomerContacts();
+        delete( "CustomerAdditionalContact", "CustomerID", getCustomerBase().getCustomerID() );
         
         // use "data" class to delete from CustomerContact
         com.cannontech.database.data.customer.CustomerContact contact = new com.cannontech.database.data.customer.CustomerContact();
@@ -133,7 +132,7 @@ public class CustomerBase extends DBPersistent {
             contact.delete();
         }
 
-		// add back to CstBaseCstContactMap
+		// add back to CustomerAdditionalContact
         for (int i = 0; i < getCustomerContactVector().size(); i++) {
             contact.setCustomerContact( (com.cannontech.database.db.customer.CustomerContact) getCustomerContactVector().elementAt(i) );
             contact.setLogInID( new Integer(com.cannontech.database.db.customer.CustomerLogin.NONE_LOGIN_ID) );
@@ -143,7 +142,7 @@ public class CustomerBase extends DBPersistent {
                 getCustomerBase().getCustomerID(),
                 contact.getCustomerContact().getContactID()
             };
-            add( "CstBaseCstContactMap", addValues );
+            add( "CustomerAdditionalContact", addValues );
         }
     }
 
@@ -159,27 +158,9 @@ public class CustomerBase extends DBPersistent {
         getCustomerType().setEntryID( getCustomerBase().getCustomerTypeID() );
         getCustomerType().retrieve();
 */
-        com.cannontech.database.db.customer.CustomerContact[] contacts =
-            	getCustomerBase().getAllCustomerContacts( getDbConnection() );
+        com.cannontech.database.db.customer.CustomerContact[] contacts = getCustomerBase().getAllCustomerContacts();
         for (int i = 0; i < contacts.length; i++)
             getCustomerContactVector().addElement( contacts[i] );
-    }
-    
-    public static com.cannontech.database.db.customer.CustomerContact addContact(
-    	com.cannontech.database.db.stars.customer.CustomerBase customer,
-    	com.cannontech.database.db.customer.CustomerContact contact)
-    	throws com.cannontech.database.TransactionException
-    {
-    	CustomerContactMapping contactMap = new CustomerContactMapping(customer, contact);
-    	contactMap = (CustomerContactMapping)
-    			com.cannontech.database.Transaction.createTransaction( com.cannontech.database.Transaction.INSERT, contactMap ).execute();
-    	return contactMap.getContact();
-    }
-    
-    public static void deleteContact(com.cannontech.database.db.stars.customer.CustomerBase customer, com.cannontech.database.db.customer.CustomerContact contact)
-    throws com.cannontech.database.TransactionException {
-    	CustomerContactMapping contactMap = new CustomerContactMapping(customer, contact);
-    	com.cannontech.database.Transaction.createTransaction( com.cannontech.database.Transaction.DELETE, contactMap ).execute();
     }
 
 	/**
@@ -238,65 +219,6 @@ public class CustomerBase extends DBPersistent {
 	public void setCustomerType(
 		com.cannontech.database.db.stars.CustomerListEntry customerType) {
 		this.customerType = customerType;
-	}
-
-}
-    
-class CustomerContactMapping extends DBPersistent {
-	com.cannontech.database.db.stars.customer.CustomerBase customerBase = null;
-	com.cannontech.database.db.customer.CustomerContact contact = null;
-	
-	public CustomerContactMapping(com.cannontech.database.db.stars.customer.CustomerBase customerBase, com.cannontech.database.db.customer.CustomerContact contact) {
-		setCustomerBase( customerBase );
-		setContact( contact );
-	}
-	
-	public void setDbConnection(java.sql.Connection conn) {
-		super.setDbConnection( conn );
-		if (getContact() != null)
-			getContact().setDbConnection( conn );
-	}
-	
-	public void add() throws java.sql.SQLException {
-        if (getContact() != null) getContact().add();
-
-		if (getCustomerBase() != null) {
-            Object[] addValues = {
-                getCustomerBase().getCustomerID(),
-                getContact().getContactID()
-            };
-            add( "CstBaseCstContactMap", addValues );
-		}
-	}
-	
-	public void delete() throws java.sql.SQLException {
-		if (getContact() != null) getContact().delete();
-		
-		delete( "CstBaseCstContactMap", "CustomerContactID", getContact().getContactID() );
-	}
-	
-	public void update() throws java.sql.SQLException {
-		if (getContact() != null) getContact().update();
-	}
-	
-	public void retrieve() throws java.sql.SQLException {
-		throw new java.sql.SQLException( "retrieve() is not implemented in this class" );
-	}
-
-	public com.cannontech.database.db.customer.CustomerContact getContact() {
-		return contact;
-	}
-
-	public com.cannontech.database.db.stars.customer.CustomerBase getCustomerBase() {
-		return customerBase;
-	}
-
-	public void setContact(com.cannontech.database.db.customer.CustomerContact contact) {
-		this.contact = contact;
-	}
-
-	public void setCustomerBase(com.cannontech.database.db.stars.customer.CustomerBase customerBase) {
-		this.customerBase = customerBase;
 	}
 
 }

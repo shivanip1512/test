@@ -148,7 +148,7 @@ public class ProgramOptOutAction implements ActionBase {
 
             for (int i = 0; i < hwIDList.size(); i++) {
             	Integer invID = (Integer) hwIDList.get(i);
-            	LiteLMHardware liteHw = SOAPServer.getLMHardware( energyCompanyID, invID, true );
+            	LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID, true );
 
                 String cmd = "putconfig service out serial " + liteHw.getManufactureSerialNumber();
                 ServerUtils.sendCommand(cmd, conn);

@@ -7,13 +7,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.database.Transaction;
+import com.cannontech.database.db.stars.customer.*;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsCustAccountInformationFactory;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
 import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.serialize.SearchBy;
+import com.cannontech.stars.xml.serialize.StarsCustAccountBrief;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
@@ -81,34 +85,109 @@ public class SearchCustAccountAction implements ActionBase {
                 		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
-
-            StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
-            LiteStarsCustAccountInformation liteAcctInfo = null;
             
             Integer energyCompanyID = new Integer( (int) operator.getEnergyCompanyID() );
             Hashtable selectionLists = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( energyCompanyID );
+
+            StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
+            LiteStarsCustAccountInformation liteAcctInfo = null;
+            CustomerAccount[] accounts = null;
             		
             if (searchAccount.getSearchBy().getEntryID() == StarsCustListEntryFactory.getStarsCustListEntry(
             		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY),
             		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SEARCHBY_ACCTNO ).getEntryID()) {
-            	// Search by account number
-            	liteAcctInfo = com.cannontech.stars.web.servlet.SOAPServer.getCustAccountInformation(
+            	/* Search by account number */
+            	liteAcctInfo = SOAPServer.searchByAccountNumber(
             			new Integer((int) operator.getEnergyCompanyID()), searchAccount.getSearchValue() );
             }
+            else if (searchAccount.getSearchBy().getEntryID() == StarsCustListEntryFactory.getStarsCustListEntry(
+            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY),
+            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SEARCHBY_PHONENO ).getEntryID()) {
+            	/* Search by phone number */
+            	accounts = CustomerAccount.searchByPhoneNumber( energyCompanyID, ServletUtils.formatPhoneNumber(searchAccount.getSearchValue()) );
+            	if (accounts != null && accounts.length == 1)
+            		liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, accounts[0].getAccountID(), true );
+            }
+            else if (searchAccount.getSearchBy().getEntryID() == StarsCustListEntryFactory.getStarsCustListEntry(
+            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY),
+            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SEARCHBY_LASTNAME ).getEntryID()) {
+            	/* Search by last name */
+            	accounts = CustomerAccount.searchByLastName( energyCompanyID, searchAccount.getSearchValue() );
+            	if (accounts != null && accounts.length == 1)
+            		liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, accounts[0].getAccountID(), true );
+            }
+            else if (searchAccount.getSearchBy().getEntryID() == StarsCustListEntryFactory.getStarsCustListEntry(
+            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY),
+            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SEARCHBY_SERIALNO ).getEntryID()) {
+            	/* Search by hardware serial number */
+            	accounts = CustomerAccount.searchBySerialNumber( energyCompanyID, searchAccount.getSearchValue() );
+            	if (accounts != null && accounts.length == 1)
+            		liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, accounts[0].getAccountID(), true );
+            }
 
-            if (liteAcctInfo == null) {
+            if (liteAcctInfo != null) {
+	            operator.setAttribute( "CUSTOMER_ACCOUNT_INFORMATION", liteAcctInfo );
+	            StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
+	            
+				StarsSearchCustomerAccountResponse resp = new StarsSearchCustomerAccountResponse();
+				resp.setStarsCustAccountInformation( starsAcctInfo );
+	            respOper.setStarsSearchCustomerAccountResponse( resp );
+            }
+            else if (accounts != null) {
+				StarsSearchCustomerAccountResponse resp = new StarsSearchCustomerAccountResponse();
+				for (int i = 0; i < accounts.length; i++) {
+					StarsCustAccountBrief acctBrief = new StarsCustAccountBrief();
+					
+					LiteCustomerContact contact = null;
+					LiteCustomerAddress addr = null;
+					LiteStarsCustAccountInformation acctInfo =
+							SOAPServer.getCustAccountInformation( energyCompanyID, accounts[i].getAccountID(), false );
+							
+					if (acctInfo != null) {
+						acctBrief.setAccountID( acctInfo.getCustomerAccount().getAccountID() );
+						acctBrief.setAccountNumber( acctInfo.getCustomerAccount().getAccountNumber() );
+						contact = SOAPServer.getCustomerContact( energyCompanyID, new Integer(acctInfo.getCustomerBase().getPrimaryContactID()) );
+						addr = SOAPServer.getCustomerAddress( energyCompanyID, new Integer(acctInfo.getAccountSite().getStreetAddressID()) );
+					}
+					else {
+						acctBrief.setAccountID( accounts[i].getAccountID().intValue() );
+						acctBrief.setAccountNumber( accounts[i].getAccountNumber() );
+						
+						CustomerBase customer = new CustomerBase();
+						customer.setCustomerID( accounts[i].getCustomerID() );
+						customer = (CustomerBase) Transaction.createTransaction( Transaction.RETRIEVE, customer ).execute();
+						contact = SOAPServer.getCustomerContact( energyCompanyID, customer.getPrimaryContactID() );
+						
+						AccountSite site = new AccountSite();
+						site.setAccountSiteID( accounts[i].getAccountSiteID() );
+						site = (AccountSite) Transaction.createTransaction( Transaction.RETRIEVE, site ).execute();
+						addr = SOAPServer.getCustomerAddress( energyCompanyID, site.getStreetAddressID() );
+					}
+					
+					acctBrief.setContactName( contact.getLastName() + ", " + contact.getFirstName() );
+					StringBuffer phoneNo = new StringBuffer( contact.getHomePhone() );
+					if (contact.getWorkPhone().length() > 0)
+						phoneNo.append( ", " ).append( contact.getWorkPhone() );
+					acctBrief.setContPhoneNumber( phoneNo.toString() );
+					
+					StringBuffer address = new StringBuffer( addr.getLocationAddress1() );
+					if (addr.getLocationAddress2().length() > 0)
+						address.append( ", " ).append( addr.getLocationAddress2() );
+					address.append( ", " ).append( addr.getCityName() )
+						   .append( ", " ).append( addr.getStateCode() )
+						   .append( " " ).append( addr.getZipCode() );
+					acctBrief.setStreetAddress( address.toString() );
+					
+					resp.addStarsCustAccountBrief( acctBrief );
+				}
+	            respOper.setStarsSearchCustomerAccountResponse( resp );
+            }
+            else {
                 respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
-                		StarsConstants.FAILURE_CODE_SESSION_INVALID, "No customer account matching the specified account number") );
+                		StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            operator.setAttribute( "CUSTOMER_ACCOUNT_INFORMATION", liteAcctInfo );
-            StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
-            
-			StarsSearchCustomerAccountResponse resp = new StarsSearchCustomerAccountResponse();
-			resp.setStarsCustAccountInformation( starsAcctInfo );
-			
-            respOper.setStarsSearchCustomerAccountResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -129,7 +208,13 @@ public class SearchCustAccountAction implements ActionBase {
             if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            operator.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION", resp.getStarsCustAccountInformation());
+			if (resp.getStarsCustAccountInformation() != null)
+            	operator.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION", resp.getStarsCustAccountInformation());
+            else {
+            	/* The return value is a list of results */
+            	operator.setAttribute( "ACCOUNT_SEARCH_RESULTS", resp );
+            	session.setAttribute( "REDIRECT", "/OperatorDemos/Consumer/SearchResults.jsp" );
+            }
             
             return 0;
         }

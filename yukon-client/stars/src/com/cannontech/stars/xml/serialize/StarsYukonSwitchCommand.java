@@ -42,6 +42,8 @@ public class StarsYukonSwitchCommand implements java.io.Serializable {
     **/
     private StarsDisableService _starsDisableService;
 
+    private StarsConfig _starsConfig;
+
 
       //----------------/
      //- Constructors -/
@@ -55,6 +57,16 @@ public class StarsYukonSwitchCommand implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'starsConfig'.
+     * 
+     * @return the value of field 'starsConfig'.
+    **/
+    public StarsConfig getStarsConfig()
+    {
+        return this._starsConfig;
+    } //-- StarsConfig getStarsConfig() 
 
     /**
      * Returns the value of field 'starsDisableService'. The field
@@ -116,6 +128,16 @@ public class StarsYukonSwitchCommand implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'starsConfig'.
+     * 
+     * @param starsConfig the value of field 'starsConfig'.
+    **/
+    public void setStarsConfig(StarsConfig starsConfig)
+    {
+        this._starsConfig = starsConfig;
+    } //-- void setStarsConfig(StarsConfig) 
 
     /**
      * Sets the value of field 'starsDisableService'. The field

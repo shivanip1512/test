@@ -268,9 +268,48 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         }
         desc.setValidator(fieldValidator);
         
-        //-- _manufacturer
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_manufacturer", "Manufacturer", NodeType.Element);
+        //-- _yearManufactured
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_yearManufactured", "YearManufactured", NodeType.Element);
         desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsApp target = (StarsApp) object;
+                return target.getYearManufactured();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsApp target = (StarsApp) object;
+                    target.setYearManufactured( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _yearManufactured
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _manufacturer
+        desc = new XMLFieldDescriptorImpl(Manufacturer.class, "_manufacturer", "Manufacturer", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -283,14 +322,14 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             {
                 try {
                     StarsApp target = (StarsApp) object;
-                    target.setManufacturer( (java.lang.String) value);
+                    target.setManufacturer( (Manufacturer) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new Manufacturer();
             }
         } );
         desc.setHandler(handler);
@@ -301,56 +340,10 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         //-- validation code for: _manufacturer
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
-        
-        //-- _manufactureYear
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_manufactureYear", "ManufactureYear", NodeType.Element);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsApp target = (StarsApp) object;
-                return target.getManufactureYear();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsApp target = (StarsApp) object;
-                    target.setManufactureYear( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _manufactureYear
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
         desc.setValidator(fieldValidator);
         
         //-- _location
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_location", "Location", NodeType.Element);
-        desc.setImmutable(true);
+        desc = new XMLFieldDescriptorImpl(Location.class, "_location", "Location", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -363,14 +356,14 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             {
                 try {
                     StarsApp target = (StarsApp) object;
-                    target.setLocation( (java.lang.String) value);
+                    target.setLocation( (Location) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new Location();
             }
         } );
         desc.setHandler(handler);
@@ -381,11 +374,6 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         //-- validation code for: _location
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
         desc.setValidator(fieldValidator);
         
         //-- _serviceCompany

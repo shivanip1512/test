@@ -22,7 +22,7 @@ public class CustomerSelectionList extends DBPersistent {
     public static final String LISTNAME_LMCUSTOMERACTION = "LMCustomerAction";
     public static final String LISTNAME_CUSTOMERTYPE = "CustomerType";
     public static final String LISTNAME_INVENTORYCATEGORY = "InventoryCategory";
-    public static final String LISTNAME_INVENTORYVOLTAGE = "InventoryVoltage";
+    public static final String LISTNAME_DEVICEVOLTAGE = "DeviceVoltage";
     public static final String LISTNAME_DEVICETYPE = "DeviceType";
     public static final String LISTNAME_APPLIANCECATEGORY = "ApplianceCategory";
     public static final String LISTNAME_CALLTYPE = "CallType";
@@ -30,6 +30,8 @@ public class CustomerSelectionList extends DBPersistent {
     public static final String LISTNAME_SERVICESTATUS = "ServiceStatus";
     public static final String LISTNAME_SEARCHBY = "SearchBy";
     public static final String LISTNAME_DEVICESTATUS = "DeviceStatus";
+    public static final String LISTNAME_MANUFACTURER = "Manufacturer";
+    public static final String LISTNAME_LOCATION = "ApplianceLocation";
 
     private Integer listID = null;
     private String ordering = ORDERING_NATURAL;

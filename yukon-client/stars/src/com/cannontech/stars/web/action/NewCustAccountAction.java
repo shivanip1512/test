@@ -92,8 +92,8 @@ public class NewCustAccountAction implements ActionBase {
             PrimaryContact primContact = new PrimaryContact();
             primContact.setLastName( req.getParameter("LastName") );
             primContact.setFirstName( req.getParameter("FirstName") );
-            primContact.setHomePhone( req.getParameter("HomePhone") );
-            primContact.setWorkPhone( req.getParameter("WorkPhone") );
+            primContact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone")) );
+            primContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone")) );
             account.setPrimaryContact( primContact );
             
 	        for (int i = 2; i <= 4; i++) {
@@ -105,8 +105,8 @@ public class NewCustAccountAction implements ActionBase {
 	                AdditionalContact contact = new AdditionalContact();
 	                contact.setLastName( lastName );
 	                contact.setFirstName( firstName );
-	                contact.setHomePhone( req.getParameter("HomePhone" + i) );
-	                contact.setWorkPhone( req.getParameter("WorkPhone" + i) );
+	                contact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone" + i)) );
+	                contact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone" + i)) );
 	                account.addAdditionalContact( contact );
 	            }
 	        }
@@ -152,13 +152,6 @@ public class NewCustAccountAction implements ActionBase {
 
             Integer energyCompanyID = new Integer( (int)operator.getEnergyCompanyID() );
         	Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
-            
-            com.cannontech.database.data.company.EnergyCompanyBase energyCompany =
-            		new com.cannontech.database.data.company.EnergyCompanyBase();
-            energyCompany.setEnergyCompanyID( energyCompanyID );            
-            
-            energyCompany = (com.cannontech.database.data.company.EnergyCompanyBase)
-            		Transaction.createTransaction( Transaction.RETRIEVE, energyCompany ).execute();
 
             StarsNewCustomerAccount newAccount = reqOper.getStarsNewCustomerAccount();
             StarsCustomerAccount starsAccount = newAccount.getStarsCustomerAccount();
@@ -236,10 +229,9 @@ public class NewCustAccountAction implements ActionBase {
             	login.setUserPassword( "" );
 	            login.setLoginType( "STARS" );
             }
-            
+*/            
             accountDB.setAccountNumber( starsAccount.getAccountNumber() );
             accountDB.setAccountNotes( starsAccount.getAccountNotes() );
-*/
             account.setCustomerBase( customer );
             account.setEnergyCompanyID( energyCompanyID );
             //account.setCustomerLogin( login );

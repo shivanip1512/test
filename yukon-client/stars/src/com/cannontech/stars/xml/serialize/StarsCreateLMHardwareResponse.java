@@ -34,6 +34,8 @@ public class StarsCreateLMHardwareResponse implements java.io.Serializable {
 
     private StarsLMHardware _starsLMHardware;
 
+    private StarsServiceCompany _starsServiceCompany;
+
 
       //----------------/
      //- Constructors -/
@@ -57,6 +59,16 @@ public class StarsCreateLMHardwareResponse implements java.io.Serializable {
     {
         return this._starsLMHardware;
     } //-- StarsLMHardware getStarsLMHardware() 
+
+    /**
+     * Returns the value of field 'starsServiceCompany'.
+     * 
+     * @return the value of field 'starsServiceCompany'.
+    **/
+    public StarsServiceCompany getStarsServiceCompany()
+    {
+        return this._starsServiceCompany;
+    } //-- StarsServiceCompany getStarsServiceCompany() 
 
     /**
     **/
@@ -104,6 +116,17 @@ public class StarsCreateLMHardwareResponse implements java.io.Serializable {
     {
         this._starsLMHardware = starsLMHardware;
     } //-- void setStarsLMHardware(StarsLMHardware) 
+
+    /**
+     * Sets the value of field 'starsServiceCompany'.
+     * 
+     * @param starsServiceCompany the value of field
+     * 'starsServiceCompany'.
+    **/
+    public void setStarsServiceCompany(StarsServiceCompany starsServiceCompany)
+    {
+        this._starsServiceCompany = starsServiceCompany;
+    } //-- void setStarsServiceCompany(StarsServiceCompany) 
 
     /**
      * 

@@ -94,6 +94,38 @@ public class StarsCreateLMHardwareResponseDescriptor extends org.exolab.castor.x
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
+        //-- _starsServiceCompany
+        desc = new XMLFieldDescriptorImpl(StarsServiceCompany.class, "_starsServiceCompany", "stars-ServiceCompany", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCreateLMHardwareResponse target = (StarsCreateLMHardwareResponse) object;
+                return target.getStarsServiceCompany();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCreateLMHardwareResponse target = (StarsCreateLMHardwareResponse) object;
+                    target.setStarsServiceCompany( (StarsServiceCompany) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsServiceCompany();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsServiceCompany
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
     } //-- com.cannontech.stars.xml.serialize.StarsCreateLMHardwareResponseDescriptor()
 
 

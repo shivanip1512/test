@@ -2,7 +2,7 @@ package com.cannontech.stars.xml;
 
 import com.cannontech.database.db.stars.CustomerListEntry;
 import com.cannontech.database.db.stars.hardware.LMHardwareBase;
-import com.cannontech.database.data.lite.stars.LiteLMHardware;
+import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
 import com.cannontech.stars.xml.serialize.*;
 
 /**

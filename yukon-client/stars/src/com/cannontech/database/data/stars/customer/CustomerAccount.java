@@ -3,6 +3,7 @@ package com.cannontech.database.data.stars.customer;
 import java.util.Vector;
 
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.Transaction;
 
 
 /**
@@ -46,41 +47,6 @@ public class CustomerAccount extends DBPersistent {
             getCustomerBase().setDbConnection(conn);
     }
 
-    public static CustomerAccount searchByAccountNumber(Integer energyCompanyID, String accountNumber) {
-        java.sql.Connection conn = null;
-        CustomerAccount accountData = null;
-
-        try {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-                com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-            if (conn == null) return null;
-
-            com.cannontech.database.db.stars.customer.CustomerAccount accountDB =
-                        com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber(
-                            energyCompanyID, accountNumber, conn );
-            if (accountDB == null) return null;
-
-            accountData = new CustomerAccount();
-            accountData.setAccountID( accountDB.getAccountID() );
-            accountData.setDbConnection( conn );
-            accountData.retrieve();
-            accountData.setEnergyCompanyID( energyCompanyID );
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                if (conn != null) conn.close();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        return accountData;
-    }
-
     public void delete() throws java.sql.SQLException {
         getAccountSite().delete();
         getBillingAddress().delete();
@@ -97,9 +63,10 @@ public class CustomerAccount extends DBPersistent {
             hw.delete();
         }
 
-        com.cannontech.database.db.stars.appliance.ApplianceBase[] loads = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAppliances(
-            getCustomerAccount().getAccountID(), getDbConnection() );
-        com.cannontech.database.data.stars.appliance.ApplianceBase load = new com.cannontech.database.data.stars.appliance.ApplianceBase();
+        com.cannontech.database.db.stars.appliance.ApplianceBase[] loads =
+        		com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAppliances( getCustomerAccount().getAccountID() );
+        com.cannontech.database.data.stars.appliance.ApplianceBase load =
+        		new com.cannontech.database.data.stars.appliance.ApplianceBase();
         for (int i = 0; i < loads.length; i++) {
             load.setApplianceBase( loads[i] );
             load.setDbConnection( getDbConnection() );
@@ -182,8 +149,7 @@ public class CustomerAccount extends DBPersistent {
         }
 
         com.cannontech.database.db.stars.appliance.ApplianceBase[] appliances =
-                    com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAppliances(
-                        getCustomerAccount().getAccountID(), getDbConnection() );
+        		com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAppliances( getCustomerAccount().getAccountID() );
         for (int i = 0; i < appliances.length; i++) {
             com.cannontech.database.data.stars.appliance.ApplianceBase appliance =
                         new com.cannontech.database.data.stars.appliance.ApplianceBase();
@@ -207,6 +173,25 @@ public class CustomerAccount extends DBPersistent {
         }
 
         setDbConnection(null);
+    }
+
+    public static CustomerAccount searchByAccountNumber(Integer energyCompanyID, String accountNumber) {
+        try {
+            com.cannontech.database.db.stars.customer.CustomerAccount accountDB =
+                        com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber( energyCompanyID, accountNumber );
+            if (accountDB == null) return null;
+
+            CustomerAccount accountData = new CustomerAccount();
+            accountData.setAccountID( accountDB.getAccountID() );
+            accountData = (CustomerAccount) Transaction.createTransaction( Transaction.RETRIEVE, accountData ).execute();
+            
+            return accountData;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public com.cannontech.database.db.stars.customer.CustomerAccount getCustomerAccount() {

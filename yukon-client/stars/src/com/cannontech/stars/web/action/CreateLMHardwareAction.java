@@ -50,7 +50,7 @@ public class CreateLMHardwareAction implements ActionBase {
 			
 			Voltage volt = new Voltage();
 			volt.setEntryID( Integer.parseInt(req.getParameter("Voltage")) );
-			StarsCustSelectionList voltList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_INVENTORYVOLTAGE );
+			StarsCustSelectionList voltList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICEVOLTAGE );
 			for (int i = 0; i < voltList.getStarsSelectionListEntryCount(); i++) {
 				StarsSelectionListEntry entry = voltList.getStarsSelectionListEntry(i);
 				if (entry.getEntryID() == volt.getEntryID()) {
@@ -78,13 +78,13 @@ public class CreateLMHardwareAction implements ActionBase {
 			for (int i = 0; i < companyList.getStarsSelectionListEntryCount(); i++) {
 				StarsSelectionListEntry entry = companyList.getStarsSelectionListEntry(i);
 				if (entry.getEntryID() == company.getEntryID()) {
-					status.setContent( entry.getContent() );
+					company.setContent( entry.getContent() );
 					break;
 				}
 			}
 			createHw.setInstallationCompany( company );
 			
-			createHw.setCategory( StarsLMHwFactory.getCategory(type, selectionLists).getContent() );
+			createHw.setCategory( "" );
 			createHw.setManufactureSerialNumber( req.getParameter("SerialNo") );
 			createHw.setAltTrackingNumber( req.getParameter("AltTrackNo") );
 			if (req.getParameter("ReceiveDate") != null && req.getParameter("ReceiveDate").length() > 0)
@@ -129,8 +129,8 @@ public class CreateLMHardwareAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-        	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) operator.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
-        	if (accountInfo == null) {
+        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) operator.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+        	if (liteAcctInfo == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
@@ -144,9 +144,9 @@ public class CreateLMHardwareAction implements ActionBase {
             com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB = hw.getLMHardwareBase();
             com.cannontech.database.db.stars.hardware.InventoryBase invDB = hw.getInventoryBase();
             
-            invDB.setAccountID( new Integer(accountInfo.getCustomerAccount().getAccountID()) );
+            invDB.setAccountID( new Integer(liteAcctInfo.getCustomerAccount().getAccountID()) );
             invDB.setInstallationCompanyID( new Integer(createHw.getInstallationCompany().getEntryID()) );
-            invDB.setCategoryID( new Integer(ServerUtils.getInventoryCategory(createHw.getLMDeviceType(), selectionLists).getEntryID()) );
+            invDB.setCategoryID( new Integer(getInventoryCategory(createHw.getLMDeviceType(), selectionLists).getEntryID()) );
             invDB.setReceiveDate( createHw.getReceiveDate() );
             invDB.setInstallDate( createHw.getInstallDate() );
             invDB.setRemoveDate( createHw.getRemoveDate() );
@@ -160,9 +160,9 @@ public class CreateLMHardwareAction implements ActionBase {
             hw.setEnergyCompanyID( energyCompanyID );
             hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase) Transaction.createTransaction( Transaction.INSERT, hw ).execute();
             
-            LiteLMHardware liteHw = (LiteLMHardware) StarsLiteFactory.createLite( hw );
+            LiteLMHardwareBase liteHw = (LiteLMHardwareBase) StarsLiteFactory.createLite( hw );
             StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, selectionLists );
-            		
+            
             // Add "Install" to hardware events
         	com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
         	com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
@@ -231,14 +231,32 @@ public class CreateLMHardwareAction implements ActionBase {
             }
             
             SOAPServer.getAllLMHardwares( energyCompanyID ).add( liteHw );
-            if (accountInfo.getInventories() == null)
-            	accountInfo.setInventories( new ArrayList() );
-            accountInfo.getInventories().add( new Integer(liteHw.getLiteID()) );
+            if (liteAcctInfo.getInventories() == null)
+            	liteAcctInfo.setInventories( new ArrayList() );
+            liteAcctInfo.getInventories().add( new Integer(liteHw.getLiteID()) );
             
             StarsCreateLMHardwareResponse resp = new StarsCreateLMHardwareResponse();
             resp.setStarsLMHardware( starsHw );
-            respOper.setStarsCreateLMHardwareResponse( resp );
             
+            boolean newServiceCompany = true;
+            if (liteAcctInfo.getServiceCompanies() == null)
+            	liteAcctInfo.setServiceCompanies( new ArrayList() );
+            for (int i = 0; i < liteAcctInfo.getServiceCompanies().size(); i++) {
+            	int companyID = ((Integer) liteAcctInfo.getServiceCompanies().get(i)).intValue();
+            	if (liteHw.getInstallationCompanyID() == companyID) {
+            		newServiceCompany = false;
+            		break;
+            	}
+            }
+            
+            if (newServiceCompany) {
+            	LiteServiceCompany liteCompany = SOAPServer.getServiceCompany( energyCompanyID, new Integer(liteHw.getInstallationCompanyID()) );
+            	StarsServiceCompany starsCompany = StarsLiteFactory.createStarsServiceCompany( liteCompany, energyCompanyID );
+            	resp.setStarsServiceCompany( starsCompany );
+            	liteAcctInfo.getServiceCompanies().add( new Integer(liteCompany.getCompanyID()) );
+            }
+            
+            respOper.setStarsCreateLMHardwareResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -267,7 +285,20 @@ public class CreateLMHardwareAction implements ActionBase {
             if (accountInfo == null)
             	return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 			
-			accountInfo.getStarsInventories().addStarsLMHardware( hw );
+			StarsInventories starsInvs = accountInfo.getStarsInventories();
+			int i = -1;
+			for (i = starsInvs.getStarsLMHardwareCount() - 1; i >= 0; i--) {
+				StarsLMHardware starsHw = starsInvs.getStarsLMHardware(i);
+				if (starsHw.getLMDeviceType().getContent().compareTo( hw.getLMDeviceType().getContent() ) <= 0)
+					break;
+			}
+			starsInvs.addStarsLMHardware( i+1, hw );
+			session.setAttribute( "REDIRECT", "/OperatorDemos/Consumer/Inventory.jsp?InvNo=" + String.valueOf(i+1) );
+			
+			StarsServiceCompany company = resp.getStarsServiceCompany();
+			if (company != null)
+				accountInfo.getStarsServiceCompanies().addStarsServiceCompany( company );
+			
             return 0;
         }
         catch (Exception e) {
@@ -275,6 +306,21 @@ public class CreateLMHardwareAction implements ActionBase {
         }
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+	}
+	
+	public static StarsSelectionListEntry getInventoryCategory(StarsCustListEntry deviceType, Hashtable selectionLists) {
+		LiteCustomerSelectionList invCatList = (LiteCustomerSelectionList)
+				selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_INVENTORYCATEGORY );
+				
+		if (deviceType.getContent().startsWith("LCR")) {	// LCR-XXXX
+			for (int i = 0; i < invCatList.getListEntries().length; i++) {
+				StarsSelectionListEntry entry = invCatList.getListEntries()[i];
+				if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_INVCAT_ONEWAYREC ))
+					return entry;
+			}
+		}
+		
+		return null;
 	}
 
 }

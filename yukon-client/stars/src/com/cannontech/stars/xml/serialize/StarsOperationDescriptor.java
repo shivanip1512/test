@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperationDescriptor.java,v 1.16 2002/11/20 22:57:17 zyao Exp $
+ * $Id: StarsOperationDescriptor.java,v 1.17 2002/12/09 23:11:37 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.16 $ $Date: 2002/11/20 22:57:17 $
+ * @version $Revision: 1.17 $ $Date: 2002/12/09 23:11:37 $
 **/
 public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -342,70 +342,6 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsSearchCustomerAccountResponse
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsGetAllCustomerAccounts
-        desc = new XMLFieldDescriptorImpl(StarsGetAllCustomerAccounts.class, "_starsGetAllCustomerAccounts", "stars-GetAllCustomerAccounts", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsOperation target = (StarsOperation) object;
-                return target.getStarsGetAllCustomerAccounts();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsOperation target = (StarsOperation) object;
-                    target.setStarsGetAllCustomerAccounts( (StarsGetAllCustomerAccounts) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsGetAllCustomerAccounts();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsGetAllCustomerAccounts
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsGetAllCustomerAccountsResponse
-        desc = new XMLFieldDescriptorImpl(StarsGetAllCustomerAccountsResponse.class, "_starsGetAllCustomerAccountsResponse", "stars-GetAllCustomerAccountsResponse", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsOperation target = (StarsOperation) object;
-                return target.getStarsGetAllCustomerAccountsResponse();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsOperation target = (StarsOperation) object;
-                    target.setStarsGetAllCustomerAccountsResponse( (StarsGetAllCustomerAccountsResponse) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsGetAllCustomerAccountsResponse();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsGetAllCustomerAccountsResponse
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
@@ -1366,6 +1302,198 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsDefaultThermostatSettings
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsUpdateLMHardware
+        desc = new XMLFieldDescriptorImpl(StarsUpdateLMHardware.class, "_starsUpdateLMHardware", "stars-UpdateLMHardware", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsOperation target = (StarsOperation) object;
+                return target.getStarsUpdateLMHardware();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsOperation target = (StarsOperation) object;
+                    target.setStarsUpdateLMHardware( (StarsUpdateLMHardware) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsUpdateLMHardware();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsUpdateLMHardware
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsUpdateLMHardwareResponse
+        desc = new XMLFieldDescriptorImpl(StarsUpdateLMHardwareResponse.class, "_starsUpdateLMHardwareResponse", "stars-UpdateLMHardwareResponse", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsOperation target = (StarsOperation) object;
+                return target.getStarsUpdateLMHardwareResponse();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsOperation target = (StarsOperation) object;
+                    target.setStarsUpdateLMHardwareResponse( (StarsUpdateLMHardwareResponse) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsUpdateLMHardwareResponse();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsUpdateLMHardwareResponse
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsUpdateAppliance
+        desc = new XMLFieldDescriptorImpl(StarsUpdateAppliance.class, "_starsUpdateAppliance", "stars-UpdateAppliance", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsOperation target = (StarsOperation) object;
+                return target.getStarsUpdateAppliance();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsOperation target = (StarsOperation) object;
+                    target.setStarsUpdateAppliance( (StarsUpdateAppliance) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsUpdateAppliance();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsUpdateAppliance
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsUpdateApplianceResponse
+        desc = new XMLFieldDescriptorImpl(StarsUpdateApplianceResponse.class, "_starsUpdateApplianceResponse", "stars-UpdateApplianceResponse", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsOperation target = (StarsOperation) object;
+                return target.getStarsUpdateApplianceResponse();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsOperation target = (StarsOperation) object;
+                    target.setStarsUpdateApplianceResponse( (StarsUpdateApplianceResponse) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsUpdateApplianceResponse();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsUpdateApplianceResponse
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsUpdateLogin
+        desc = new XMLFieldDescriptorImpl(StarsUpdateLogin.class, "_starsUpdateLogin", "stars-UpdateLogin", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsOperation target = (StarsOperation) object;
+                return target.getStarsUpdateLogin();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsOperation target = (StarsOperation) object;
+                    target.setStarsUpdateLogin( (StarsUpdateLogin) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsUpdateLogin();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsUpdateLogin
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsUpdateLoginResponse
+        desc = new XMLFieldDescriptorImpl(StarsUpdateLoginResponse.class, "_starsUpdateLoginResponse", "stars-UpdateLoginResponse", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsOperation target = (StarsOperation) object;
+                return target.getStarsUpdateLoginResponse();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsOperation target = (StarsOperation) object;
+                    target.setStarsUpdateLoginResponse( (StarsUpdateLoginResponse) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsUpdateLoginResponse();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsUpdateLoginResponse
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

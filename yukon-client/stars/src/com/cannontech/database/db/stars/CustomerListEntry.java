@@ -38,7 +38,8 @@ public class CustomerListEntry extends DBPersistent {
     public static final String YUKONDEF_SERVSTAT_COMPLETED = "SERVSTAT_COMPLETED";
     public static final String YUKONDEF_SEARCHBY_ACCTNO = "SEARCHBY_ACCTNO";
     public static final String YUKONDEF_SEARCHBY_PHONENO = "SEARCHBY_PHONENO";
-    public static final String YUKONDEF_SEARCHBY_NAME = "SEARCHBY_NAME";
+    public static final String YUKONDEF_SEARCHBY_LASTNAME = "SEARCHBY_LASTNAME";
+    public static final String YUKONDEF_SEARCHBY_SERIALNO = "SEARCHBY_SERIALNO";
     public static final String YUKONDEF_DEVSTAT_AVAIL = "DEVSTAT_AVAIL";
     public static final String YUKONDEF_DEVSTAT_TEMPUNAVAIL = "DEVSTAT_TEMPUNAVAIL";
     public static final String YUKONDEF_DEVSTAT_UNAVAIL = "DEVSTAT_UNAVAIL";
