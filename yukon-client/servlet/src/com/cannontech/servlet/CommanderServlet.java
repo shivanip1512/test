@@ -30,13 +30,20 @@ PARAMETERS
  action				- values [updateDB]
 */
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yc.bean.YCBean;
 ;
@@ -62,11 +69,16 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 /*		java.util.Enumeration enum1 = req.getParameterNames();
 		  while (enum1.hasMoreElements()) {
 		  	String ele = enum1.nextElement().toString();
-			 CTILogger.debug(" --" + ele + "  " + req.getParameter(ele));
+			 CTILogger.info(" --" + ele + "  " + req.getParameter(ele));
 		}
 */
 		 
 		String redirectURL = req.getParameter("REDIRECT");
+
+		/** PointID is rarely collected, normally when no command is being issued, used for page reloads with pointID needed for rph data display*/
+		String pointID = req.getParameter("pointID");
+		if( pointID != null)
+			localBean.setPointID(Integer.parseInt(pointID));
 		
 		/**deviceID(opt1) or SerialNumber(opt2) must exist!
 		 * deviceID/serialNumber command is sent. */
@@ -82,7 +94,10 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		else
 		    localBean.setSerialNumber(PAOGroups.STRING_INVALID);
 		
-
+		String startDate = req.getParameter("startDate");	//only applicable for retrieving historical data (such as lp data)
+		if( startDate != null)
+			localBean.setStart(startDate);
+			
 		/** Specific route to send on, only used in the case of loops or serial number is used
 		 * When sending to a device, the route is ignored and the porter connection takes care
 		 * of sending the command on the device's assigned route. */
@@ -110,25 +125,47 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		{
 			String function = req.getParameter("function");	//user friendly command string
 			String command = req.getParameter("command");	//system command string
-			/** Time to wait for return to calling jsp
-			 * Timeout is used to <hope to> assure there is some resultText to display when we do go back. */
-			String timeOut = req.getParameter("timeOut");
-			if( timeOut == null)
-				timeOut = "8000";	// 8 secs default
-			if( timeOut != null && command != null)	//adjust the timeout for multiple command strings, separated by '&'
+
+			//HANDLE LP command - special case for "getvalue lp channel" command
+			if ( command.toLowerCase().startsWith("getvalue lp channel"))
 			{
-			    int commandCount = 1;
-			    for (int i = 0; i < command.length(); i++)
-			    {
-			        if( command.charAt(i) == '&')
-			            commandCount++;
-			    }
-			    timeOut = String.valueOf(commandCount * Integer.valueOf(timeOut).intValue());
+				DeviceLoadProfile dlp = new DeviceLoadProfile();
+				try
+				{
+					dlp.setDeviceID(new Integer(localBean.getDeviceID()));
+					Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, dlp);
+					dlp = (DeviceLoadProfile)t.execute();
+				}
+				catch(Exception e)
+				{
+					CTILogger.error(e.getMessage(), e);
+				}
+
+				Integer rate = null;
+				//get the load profile channel and it's interval
+				if (command.indexOf("channel 1") > 0)	// kw lp
+					rate = dlp.getLoadProfileDemandRate();
+				else if (command.indexOf("channel 4") > 0)	//voltage lp
+					rate = dlp.getVoltageDmdRate();
+
+				if( rate != null)
+				{
+					String execCommand = command.substring(0, command.length() - 16).trim();
+					String cmdDatePart = command.substring(command.length() - 16);	//16 for "mm/dd/yyyy HH:mm" date length
+					Date queryDate = ServletUtil.parseDateStringLiberally(cmdDatePart);
+					if( queryDate != null)
+					{
+						GregorianCalendar cal = new GregorianCalendar();
+						cal.setTime(queryDate);
+						cal.add(Calendar.SECOND, (rate.intValue() * 6));
+						
+						SimpleDateFormat lpFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+						//Add on another command to send a second command for lp interval data.
+						command += " & " + execCommand + " " + lpFormat.format(cal.getTime()); 
+					}
+				}
 			}
-	
-			localBean.setTimeOut(new Integer(timeOut).intValue());
-			
-			//Set our yc bean command string
+			//Set our yc bean command string by using a function lookup if null
 			if( command == null )
 			{
 				/** If we have no command string, see if there is a function and find it's
@@ -140,25 +177,48 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 					//WE HAVE NO COMMAND?
 					command = "";
 			}
-			localBean.setCommandString(command);
-			localBean.executeCommand();
 
-			/** Don't return to the jsp until we have the message or we've timed out.*/
-			while( (localBean.getRequestMessageIDs().size() > 0 && localBean.isWatchRunning()))// || 
-			        //localBean.getExecuteCmdsVector().size() > 0)
+			if( command.length() > 0 )
 			{
-				try
+					
+				/** Time to wait for return to calling jsp
+				 * Timeout is used to <hope to> assure there is some resultText to display when we do go back. */
+				String timeOut = req.getParameter("timeOut");
+				if( timeOut == null)
+					timeOut = "8000";	// 8 secs default
+				if( timeOut != null && command != null)	//adjust the timeout for multiple command strings, separated by '&'
 				{
-					Thread.sleep(1000);
+					int commandCount = 1;
+					for (int i = 0; i < command.length(); i++)
+					{
+						if( command.charAt(i) == '&')
+							commandCount++;
+					}
+					timeOut = String.valueOf(commandCount * Integer.valueOf(timeOut).intValue());
 				}
-				catch (InterruptedException e)
+		
+				localBean.setTimeOut(new Integer(timeOut).intValue());
+				localBean.setCommandString(command);
+				localBean.setErrorMsg("");	//clear out any old error messages
+				localBean.executeCommand();
+	
+				/** Don't return to the jsp until we have the message or we've timed out.*/
+				while( (localBean.getRequestMessageIDs().size() > 0 && localBean.isWatchRunning()))// || 
+				        //localBean.getExecuteCmdsVector().size() > 0)
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					try
+					{
+						Thread.sleep(1000);
+					}
+					catch (InterruptedException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
+				System.out.println("MessageSize " + localBean.getRequestMessageIDs().size() + " |Watching " + localBean.isWatchRunning() + 
+				        " |VectorSize " + localBean.getExecuteCmdsVector().size());
 			}
-			System.out.println("MessageSize " + localBean.getRequestMessageIDs().size() + " |Watching " + localBean.isWatchRunning() + 
-			        " |VectorSize " + localBean.getExecuteCmdsVector().size());
 			
 		}
 		
