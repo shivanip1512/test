@@ -25,7 +25,7 @@
         
         try
         {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(operator.getDatabaseAlias());       
+            conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);       
             cust.setDbConnection(conn);
             cust.retrieve();
             cust.setDbConnection(null);

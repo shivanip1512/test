@@ -127,7 +127,7 @@
 
                             String ack = customers[i].getAckStatus();
                             Date ackDateTime = customers[i].getAckDateTime();
-                            String user = customers[i].getNameOfAckPerson();
+                            String l_user = customers[i].getNameOfAckPerson();
 
                             GregorianCalendar ackCal = new GregorianCalendar();
                             ackCal.setTime(ackDateTime);
@@ -135,8 +135,8 @@
                             if( ackCal.get( Calendar.YEAR ) <= 1990 )
                                 ackDateTime = null;
 
-                            if( user.equalsIgnoreCase("null") )
-                                user = "-";
+                            if( l_user.equalsIgnoreCase("null") )
+                                l_user = "-";
 
                             if( showAck ||
                                 (!showAck && ack.equalsIgnoreCase(com.cannontech.loadcontrol.data.LMCurtailCustomer.ACK_UNACKNOWLEDGED)) )
