@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/06/02 18:17:18 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/06/12 21:33:59 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -376,7 +376,7 @@ int CtiDNPApplication::generate( CtiXfer &xfer )
 
 int CtiDNPApplication::decode( CtiXfer &xfer, int status )
 {
-    int retVal;
+    int retVal = NoError;
     int transportStatus;
 
     transportStatus = _transport.decode(xfer, status);

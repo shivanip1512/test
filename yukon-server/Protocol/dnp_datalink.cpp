@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/06/02 18:14:16 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/06/12 21:33:59 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -325,6 +325,7 @@ int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
     if( _protocol_errors > ProtocolRetryCount )
     {
         _io_state = State_IO_Failed;
+        //  ACH:  set retVal here
     }
 
     return retVal;
