@@ -33,7 +33,7 @@ var dftEntryYukDefIDs = new Array();
 	for (int i = 0; i < dftList.getYukonListEntries().size(); i++) {
 		YukonListEntry entry = (YukonListEntry) dftList.getYukonListEntries().get(i);
 %>
-	dftEntryTexts[<%= i %>] = "<%= entry.getEntryText() %>";
+	dftEntryTexts[<%= i %>] = "<%= entry.getEntryText().replaceAll("\"", "&quot;") %>";
 	dftEntryYukDefIDs[<%= i %>] = <%= entry.getYukonDefID() %>;
 <%	} %>
 	dftEntryTexts[<%= dftList.getYukonListEntries().size() %>] = "";
@@ -50,7 +50,7 @@ var dftListIndices = new Array();
 		if (isOptOutPeriodCus && sameAsOp) entryID = 0;
 %>
 	entryIDs[<%= i %>] = <%= entryID %>;
-	entryTexts[<%= i %>] = "<%= entry.getEntryText() %>";
+	entryTexts[<%= i %>] = "<%= entry.getEntryText().replaceAll("\"", "&quot;") %>";
 	entryYukDefIDs[<%= i %>] = <%= entry.getYukonDefID() %>;
 	dftListIndices[<%= i %>] = getDefaultListIndex(entryTexts[<%= i %>], entryYukDefIDs[<%= i %>]);
 <%	} %>
@@ -88,7 +88,7 @@ function showEntry(form) {
 		curIdx = entries.selectedIndex;
 		form.EntryID.value = entryIDs[curIdx];
 		form.YukonDefID.value = entryYukDefIDs[curIdx];
-		form.EntryText.value = entryTexts[curIdx];
+		form.EntryText.value = entryTexts[curIdx].replace(/&quot;/g, '"');
 		form.DefaultListEntries.selectedIndex = dftListIndices[curIdx];
 		form.Save.value = "Update";
 	}
@@ -98,13 +98,13 @@ function showDefaultEntry(form) {
 	var dftEntries = form.DefaultListEntries;
 	if (dftEntries.selectedIndex >= 0) {
 		form.YukonDefID.value = dftEntryYukDefIDs[dftEntries.selectedIndex];
-		form.EntryText.value = dftEntryTexts[dftEntries.selectedIndex];
+		form.EntryText.value = dftEntryTexts[dftEntries.selectedIndex].replace(/&quot;/g, '"');
 	}
 }
 
 function saveEntry(form) {
 	entryIDs[curIdx] = form.EntryID.value;
-	entryTexts[curIdx] = form.EntryText.value;
+	entryTexts[curIdx] = form.EntryText.value.replace(/"/g, '&quot;');
 	entryYukDefIDs[curIdx] = form.YukonDefID.value;
 	dftListIndices[curIdx] = getDefaultListIndex(entryTexts[curIdx], entryYukDefIDs[curIdx]);
 	
@@ -114,7 +114,7 @@ function saveEntry(form) {
 		entries.options.add(oOption, curIdx);
 		entries.selectedIndex = curIdx;
 	}
-	entries.options[curIdx].innerText = entryTexts[curIdx];
+	entries.options[curIdx].innerText = form.EntryText.value;
 	showEntry(form);
 	setContentChanged(true);
 }
@@ -213,7 +213,7 @@ function restoreDefault(form) {
 	for (idx = 0; idx < dftEntryTexts.length; idx++) {
 		var oOption = document.createElement("OPTION");
 		entries.options.add(oOption, idx);
-		oOption.innerText = dftEntryTexts[idx];
+		oOption.innerText = dftEntryTexts[idx].replace(/&quot;/g, '"');
 		entryIDs[idx] = 0;
 		entryTexts[idx] = dftEntryTexts[idx];
 		entryYukDefIDs[idx] = dftEntryYukDefIDs[idx];
@@ -228,11 +228,11 @@ function restoreDefault(form) {
 function prepareSubmit(form) {
 <% if (liteEC.getParent() == null) { %>
 	for (idx = 0; idx < entryTexts.length; idx++) {
-		var html = "<input type='hidden' name='EntryIDs' value='" + entryIDs[idx] + "'>";
+		var html = '<input type="hidden" name="EntryIDs" value="' + entryIDs[idx] + '">';
 		form.insertAdjacentHTML("beforeEnd", html);
-		html = "<input type='hidden' name='EntryTexts' value='" + entryTexts[idx] + "'>";
+		html = '<input type="hidden" name="EntryTexts" value="' + entryTexts[idx] + '">';
 		form.insertAdjacentHTML("beforeEnd", html);
-		html = "<input type='hidden' name='YukonDefIDs' value='" + entryYukDefIDs[idx] + "'>";
+		html = '<input type="hidden" name="YukonDefIDs" value="' + entryYukDefIDs[idx] + '">';
 		form.insertAdjacentHTML("beforeEnd", html);
 	}
 	return true;
