@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/03/10 20:57:22 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/03/16 23:07:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,11 +39,6 @@ private:
         unsigned long point_time;
     };
 
-    struct inmess_header
-    {
-        unsigned return_string_length;
-    };
-
     struct pseudo_info
     {
         bool is_pseudo;
@@ -56,7 +51,7 @@ private:
         Protocol::DNPInterface::Command      command;
         Protocol::DNPInterface::output_point parameter;
         pseudo_info                          pseudo_info;
-        //  we really only use one outbount point at the moment...  otherwise we'd need a parameter count
+        //  we really only use one outbound point at the moment...  otherwise we'd need a parameter count
         //    for passing multiple parameters around, etc
     };
 
@@ -82,12 +77,15 @@ protected:
     Protocol::DNPInterface _dnp;
     CtiTableDeviceAddress  _dnp_address;
 
-    queue< string * > _results;
+    Protocol::Interface::stringlist_t _string_results;
+    Protocol::Interface::pointlist_t  _point_results;
 
     void setDNPScanPending( int scantype, bool pending );
     void resetDNPScansPending( void );
 
     virtual Protocol::Interface *getProtocol();
+
+    virtual void processPoints( Protocol::Interface::pointlist_t &points );
 
 public:
 
