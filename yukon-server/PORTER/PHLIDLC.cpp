@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/05/05 15:31:43 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/08/11 19:51:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -583,7 +583,7 @@ IDLCSetDelaySets (CtiDeviceSPtr &Dev)
     USHORT MyRemote;
 
     // 072302 CGP. Let's just make this happen by default.
-    USHORT T_RTSOn      = 100;          // 600 CCU default
+    USHORT T_RTSOn      = 180;          // 600 CCU default
     USHORT T_CTSTo      = 168;          // 304 CCU default
     USHORT T_KeyOff     = 32;           // 32  CCU default
     USHORT T_IntraTo    = 248;          // 400 CCU default
@@ -614,7 +614,7 @@ IDLCSetDelaySets (CtiDeviceSPtr &Dev)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Device not detected in delay.dat file **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
-                T_RTSOn      = 100;
+                T_RTSOn      = 180;
                 T_CTSTo      = 168;
                 T_KeyOff     = 32;
                 T_IntraTo    = 248;
