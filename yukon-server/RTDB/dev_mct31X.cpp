@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/05/28 19:53:19 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/09/18 21:32:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -621,7 +621,7 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
     resetScanPending();
 
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
@@ -725,7 +725,7 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
         dout << RWTime() << " **** IED GetStatus Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
@@ -906,7 +906,7 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
         dout << RWTime() << " **** IED GetConfig Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
@@ -1050,7 +1050,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
         dout << RWTime() << " **** IED GetValue Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
@@ -1522,7 +1522,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
         dout << RWTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
@@ -1614,7 +1614,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
     resetScanPending();
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
@@ -1746,7 +1746,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     resetScanFreezePending( );
     resetScanFreezeFailed( );
 
-    if( !decodeCheckErrorReturn( InMessage, retList, outList ) )
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 

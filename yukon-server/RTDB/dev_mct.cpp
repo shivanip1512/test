@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2002/09/06 19:03:40 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2002/09/18 21:27:55 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1014,9 +1014,6 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
                                                 InMessage->Return.Attempt,
                                                 InMessage->Return.TrxID,
                                                 InMessage->Return.UserID);
-    CtiPointDataMsg  *commFailed;
-    CtiPointBase     *commPoint;
-
     int i;
 
     {
@@ -2304,7 +2301,7 @@ INT CtiDeviceMCT::decodeLoopback(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
 
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -2340,7 +2337,7 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     RWCString resultStr;
 
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
@@ -2407,7 +2404,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
     RWCString resultStr;
 
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
@@ -2583,7 +2580,7 @@ INT CtiDeviceMCT::decodePutValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
 
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -2617,7 +2614,7 @@ INT CtiDeviceMCT::decodePutStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
 
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -2653,7 +2650,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {

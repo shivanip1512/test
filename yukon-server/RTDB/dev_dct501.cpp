@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/28 18:22:16 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/09/18 21:27:27 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -436,7 +436,7 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
     resetScanPending();
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
@@ -563,7 +563,7 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     resetScanFreezePending( );
     resetScanFreezeFailed( );
 
-    if( !decodeCheckErrorReturn( InMessage, retList, outList ) )
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
@@ -686,7 +686,7 @@ INT CtiDeviceDCT501::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
     resetScanFreezePending();
     resetScanFreezeFailed();
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
