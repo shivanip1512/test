@@ -140,7 +140,7 @@
                                         <tr> 
                                           <td> 
                                             <div align="center">Control today 
-                                              is likely </div>
+                                              is<b><i> likely</i></b> </div>
                                           </td>
                                         </tr>
                                       </table>
