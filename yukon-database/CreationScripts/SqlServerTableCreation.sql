@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     9/19/2002 10:04:52 AM                        */
+/* Created on:     9/19/2002 3:18:03 PM                         */
 /*==============================================================*/
 
 
@@ -2402,6 +2402,7 @@ BusOptimizedVarOffset float                not null,
 CTITimeStamp         datetime             not null,
 PowerFactorValue     float                not null,
 KvarSolution         float                not null,
+EstimatedPFValue     float                not null,
 constraint PK_DYNAMICCCFEEDER primary key  (FeederID)
 )
 go
@@ -2429,6 +2430,7 @@ LastFeederPosition   numeric              not null,
 CTITimeStamp         datetime             not null,
 PowerFactorValue     float                not null,
 KvarSolution         float                not null,
+EstimatedPFValue     float                not null,
 constraint PK_DYNAMICCCSUBSTATIONBUS primary key  (SubstationBusID)
 )
 go

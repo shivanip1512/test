@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     9/19/2002 10:03:52 AM                        */
+/* Created on:     9/19/2002 3:18:49 PM                         */
 /*==============================================================*/
 
 
@@ -2647,6 +2647,7 @@ create table DynamicCCFeeder  (
    CTITimeStamp         DATE                             not null,
    PowerFactorValue     FLOAT                            not null,
    KvarSolution         FLOAT                            not null,
+   EstimatedPFValue     FLOAT                            not null,
    constraint PK_DYNAMICCCFEEDER primary key (FeederID),
    constraint FK_CCFeed_DyFeed foreign key (FeederID)
          references CapControlFeeder (FeederID)
@@ -2728,6 +2729,7 @@ create table DynamicCCSubstationBus  (
    CTITimeStamp         DATE                             not null,
    PowerFactorValue     FLOAT                            not null,
    KvarSolution         FLOAT                            not null,
+   EstimatedPFValue     FLOAT                            not null,
    constraint PK_DYNAMICCCSUBSTATIONBUS primary key (SubstationBusID),
    constraint FK_CCSubBs_DySubBs foreign key (SubstationBusID)
          references CAPCONTROLSUBSTATIONBUS (SubstationBusID)

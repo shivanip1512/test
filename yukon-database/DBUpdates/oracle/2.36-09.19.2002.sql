@@ -18,3 +18,16 @@ alter TABLE DynamicPointDispatch MODIFY LastAlarmLogID NOT NULL;
 /* Add a billing file format */
 insert into BillingFileFormats values(7,'NCDC');
 go
+
+
+/* Add a column to the DynamicCCSubstationBus table */
+alter table DynamicCCSubstationBus add EstimatedPFValue FLOAT;
+update DynamicCCSubstationBus set EstimatedPFValue = 0;
+alter TABLE DynamicCCSubstationBus MODIFY EstimatedPFValue NOT NULL;
+/
+
+/* Add a column to the DynamicCCFeeder table */
+alter table DynamicCCFeeder add EstimatedPFValue FLOAT;
+update DynamicCCFeeder set EstimatedPFValue = 0;
+alter TABLE DynamicCCFeeder MODIFY EstimatedPFValue NOT NULL;
+/

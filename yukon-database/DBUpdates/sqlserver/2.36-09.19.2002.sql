@@ -9,10 +9,19 @@ update deviceloadprofile set lastintervaldemandrate=300 where lastintervaldemand
 update deviceloadprofile set loadprofiledemandrate=300 where loadprofiledemandrate=0;
 go
 
-/* Add a column to the DynamicCCSubstationBus table */
+/* Add a column to the DynamicPointDispatch table */
 alter TABLE DynamicPointDispatch add LastAlarmLogID NUMERIC not null DEFAULT 0;
 
 
 /* Add a billing file format */
 insert into BillingFileFormats values(7,'NCDC');
+go
+
+
+/* Add a column to the DynamicCCSubstationBus table */
+alter TABLE DynamicCCSubstationBus add EstimatedPFValue FLOAT not null DEFAULT 0.0;
+go
+
+/* Add a column to the DynamicCCFeeder table */
+alter TABLE DynamicCCFeeder add EstimatedPFValue FLOAT not null DEFAULT 0.0;
 go
