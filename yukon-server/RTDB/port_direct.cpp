@@ -45,7 +45,7 @@ INT CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
     INT      status = NORMAL;
     ULONG    Result, i;
 
-    if( !gSimulatePorts )
+    if( !isSimulated() )
     {
         if( isViable() )
         {
@@ -286,7 +286,7 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMess
 
     Xfer.setInCountActual( (ULONG)0 );     // Mark it as zero to prevent any "lies"
 
-    if( gSimulatePorts && Xfer.getInCountExpected() > 0 )
+    if( (Xfer.getInCountExpected() > 0) && isSimulated() )
     {
         status = ErrPortSimulated;
     }
@@ -562,7 +562,8 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMes
     ULONG    StartWrite;
     ULONG    ReturnWrite;
 
-    if(!gSimulatePorts && (getHandle() == NULL))
+    //  if the handle is null and we're not simulating ports
+    if( (getHandle() == NULL) && !isSimulated() )
     {
         status = BADPORT;        // Invalid Handle really
     }
@@ -598,7 +599,7 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMes
         }
 #endif
 
-        if( !gSimulatePorts )
+        if( !isSimulated() )
         {
             /* Check if we need to key ... Pre Key Delay */
             if(getDelay(PRE_RTS_DELAY))
