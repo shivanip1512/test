@@ -1853,30 +1853,27 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			if (accountList.contains(liteAcctInfo)) accountList.remove( liteAcctInfo );
 		}
     	
-		// Remote all contacts from customerContacts
+		// Remote all contacts from the cache
 		deleteContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 		Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
 		for (int i = 0; i < contacts.size(); i++)
 			deleteContact( ((LiteContact)contacts.get(i)).getContactID() );
 		
-		// Remove all addresses from addresses
+		// Remove all addresses from the cache
 		deleteAddress( liteAcctInfo.getCustomerAccount().getBillingAddressID() );
 		deleteAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
 		
-		// Remove all work orders from workOrders
-		ArrayList workOrders = getAllWorkOrders();
-		synchronized (workOrders) {
-			for (int i = 0; i < liteAcctInfo.getServiceRequestHistory().size(); i++) {
-				int orderID = ((Integer) liteAcctInfo.getServiceRequestHistory().get(i)).intValue();
-				
-				for (int j = 0; j < workOrders.size(); j++) {
-					LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
-					if (liteOrder.getOrderID() == orderID) {
-						workOrders.remove(j);
-						break;
-					}
-				}
-			}
+		// Refresh all inventory information
+		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
+			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
+			deleteInventory( invID );
+			getInventoryBrief( invID, true );
+		}
+		
+		// Remove all work orders from the cache
+		for (int i = 0; i < liteAcctInfo.getServiceRequestHistory().size(); i++) {
+			int orderID = ((Integer) liteAcctInfo.getServiceRequestHistory().get(i)).intValue();
+			deleteWorkOrderBase( orderID );
 		}
 		
 		// Remove the customer account from custAccountInfos
