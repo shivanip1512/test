@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_xcu.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/03/19 15:56:16 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/04/29 17:42:23 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,8 +47,9 @@ public:
    virtual void DumpData();
 
    void resetDevicePointer();
-   CtiDevice*    getDevicePointer();
    CtiRouteXCU&  setDevicePointer(CtiDevice *p);
+
+   virtual LONG getTrxDeviceID() const;
 
    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    virtual void DecodeDatabaseReader(RWDBReader &rdr);

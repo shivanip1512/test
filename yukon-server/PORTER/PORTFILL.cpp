@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/02/16 21:04:52 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/04/29 17:42:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,8 +69,9 @@ using namespace std;
 #include "port_base.h"
 #include "dev_base.h"
 #include "rtdb.h"
-#include "mgr_port.h"
 #include "mgr_device.h"
+#include "mgr_port.h"
+#include "mgr_route.h"
 #include "mutex.h"
 #include "dev_tcu.h"
 #include "dev_tap.h"
@@ -78,6 +79,7 @@ using namespace std;
 #include "prot_versacom.h"
 #include "expresscom.h"
 
+extern CtiRouteManager RouteManager;
 extern HCTIQUEUE* QueueHandle(LONG pid);
 extern CtiRouteManager    RouteManager;
 
@@ -98,14 +100,14 @@ static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
     ULONG j;
     OUTMESS *OutMessage;
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
-    CtiRTDB<CtiDeviceBase>::CtiRTDBIterator  itr_dev(DeviceManager.getMap());
-
     try
     {
         if( !Port->isInhibited() )
         {
-            for(; ++itr_dev && !PorterQuit ;)
+            CtiRouteManager::LockGuard  guard(RouteManager.getMux());        // Protect our iteration!
+            CtiRouteManager::spiterator   rte_itr;
+
+            for(rte_itr = RouteManager.begin() ; !PorterQuit && rte_itr != RouteManager.end(); CtiRouteManager::nextPos(rte_itr) )
             {
                 if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0) )
                 {
@@ -113,21 +115,27 @@ static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
                     break;
                 }
 
-                CtiDeviceBase *TransmitterDevice = itr_dev.value();
+                CtiRouteSPtr Route = rte_itr->second;
 
-                CtiRouteSPtr Route = TransmitterDevice->getRoute( TransmitterDevice->getRouteID() );
                 if( !Route || !Route->isDefaultRoute() )
                 {
                     continue;
                 }
 
-                if(Port->getPortID() == TransmitterDevice->getPortID() && !TransmitterDevice->isInhibited())
+                CtiDeviceBase *TransmitterDevice = DeviceManager.getEqual( Route->getTrxDeviceID() );
+
+
+                if(TransmitterDevice && Port->getPortID() == TransmitterDevice->getPortID() && !TransmitterDevice->isInhibited())
                 {
                     switch(TransmitterDevice->getType())
                     {
                     case TYPE_TCU5000:
                     case TYPE_TCU5500:
                         {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
+                            }
                             CtiDeviceTCU *xcu = (CtiDeviceTCU *)TransmitterDevice;
 
                             // In the beginning (6/25/01) NONE will send a filler message.
@@ -193,10 +201,11 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
         if( !Port->isInhibited() )
         {
             /*Scan ports */
-            RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
-            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator  itr_dev(DeviceManager.getMap());
+            // RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
+            CtiRouteManager::LockGuard  guard(RouteManager.getMux());        // Protect our iteration!
+            CtiRouteManager::spiterator   rte_itr;
 
-            for(; ++itr_dev && !PorterQuit ;)
+            for(rte_itr = RouteManager.begin() ; !PorterQuit && rte_itr != RouteManager.end(); CtiRouteManager::nextPos(rte_itr) )
             {
                 if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0) )
                 {
@@ -204,15 +213,16 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                     break;
                 }
 
-                CtiDeviceBase *TransmitterDevice = itr_dev.value();
+                CtiRouteSPtr Route = rte_itr->second;
 
-                CtiRouteSPtr Route = TransmitterDevice->getRoute( TransmitterDevice->getRouteID() );
                 if( !Route || !Route->isDefaultRoute() )
                 {
                     continue;
                 }
 
-                if(Port->getPortID() == TransmitterDevice->getPortID() && !TransmitterDevice->isInhibited())
+                CtiDeviceBase *TransmitterDevice = DeviceManager.getEqual( Route->getTrxDeviceID() );
+
+                if(TransmitterDevice && Port->getPortID() == TransmitterDevice->getPortID() && !TransmitterDevice->isInhibited())
                 {
                     switch(TransmitterDevice->getType())
                     {
@@ -224,6 +234,11 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                             {
                                 if(gsUID != 0)
                                 {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " VERSACOM Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
+                                    }
+
                                     OutMessage.DeviceID = tapTRX->getID();
                                     OutMessage.TargetID = tapTRX->getID();
                                     OutMessage.Priority = MAXPRIORITY;
@@ -307,7 +322,12 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 
                                 if(gsSPID != 0)
                                 {
-                                    CtiCommandParser parse( "putconfig sync" );
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " EXPRESSCOM Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
+                                    }
+
+                                    CtiCommandParser parse( "putconfig xcom sync" );
                                     CtiProtocolExpresscom  xcom;
 
                                     RWCString byteString;
@@ -369,9 +389,13 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 
                             if(!tapTRX->isInhibited() && tapTRX->getSendFiller())
                             {
-
                                 if(gsUID != 0)
                                 {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " VERSACOM Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
+                                    }
+
                                     OutMessage.DeviceID = tapTRX->getID();
                                     OutMessage.TargetID = tapTRX->getID();
                                     OutMessage.Priority = MAXPRIORITY;
@@ -455,7 +479,12 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 
                                 if(gsSPID != 0)
                                 {
-                                    CtiCommandParser parse( "putconfig sync" );
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " EXPRESSCOM Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
+                                    }
+
+                                    CtiCommandParser parse( "putconfig xcom sync" );
                                     CtiProtocolExpresscom  xcom;
 
                                     RWCString byteString;
