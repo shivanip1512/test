@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_vectron.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/11/15 14:08:19 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/12/12 17:02:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,7 +37,6 @@
 #include "dlldefs.h"
 
 #include "dupreq.h"
-#include "portsup.h"
 
 #include "logger.h"
 #include "guard.h"

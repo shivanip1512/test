@@ -39,7 +39,6 @@
 
 #include "dupreq.h"
 #include "dialup.h"
-#include "portsup.h"
 
 #include "logger.h"
 #include "guard.h"

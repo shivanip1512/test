@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/11/20 22:28:20 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2002/12/12 17:02:47 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,6 @@
 #include "prot_emetcon.h"
 #include "pt_numeric.h"
 #include "numstr.h"
-#include "portsup.h"
 #include "dllyukon.h"
 
 set< CtiDLCCommandStore > CtiDeviceMCT31X::_commandStore;

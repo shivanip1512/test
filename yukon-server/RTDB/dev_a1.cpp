@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_a1.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/15 14:08:08 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/12/12 17:02:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,7 +37,6 @@ using namespace std ;
 
 #include "dupreq.h"
 #include "dlldefs.h"
-#include "portsup.h"
 
 #include "logger.h"
 #include "guard.h"

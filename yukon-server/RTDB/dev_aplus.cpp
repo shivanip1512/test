@@ -23,7 +23,6 @@
 #include "logger.h"
 #include "guard.h"
 
-#include "portsup.h"
 
 CTI_alpha_func   APlusFunctions[] = {
     {  0x01, 4     ,  "Password check"},
