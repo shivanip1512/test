@@ -47,8 +47,9 @@ public class LiteStarsThermostatSettings extends LiteBase {
 		int hwTypeDefID = energyCompany.getYukonListEntry(
 				YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, liteHw.getLmHardwareTypeID()
 				).getYukonDefID();
+		
 		Object[][] data = com.cannontech.database.db.stars.hardware.GatewayEndDevice.getHardwareData(
-				liteHw.getManufactureSerialNumber(), new Integer(hwTypeDefID) );
+				liteHw.getManufacturerSerialNumber(), new Integer(hwTypeDefID) );
 		if (data == null || data.length == 0) return;
 				
 		/* Thermostat schedules

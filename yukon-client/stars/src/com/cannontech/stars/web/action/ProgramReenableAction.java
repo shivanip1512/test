@@ -30,7 +30,7 @@ import com.cannontech.stars.xml.serialize.DeviceStatus;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsInventories;
-import com.cannontech.stars.xml.serialize.StarsLMHardware;
+import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareEvent;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareHistory;
 import com.cannontech.stars.xml.serialize.StarsLMProgramHistory;
@@ -126,7 +126,7 @@ public class ProgramReenableAction implements ActionBase {
 			if (e1 != null)
 				desc += ", a scheduled " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event is canceled";
 			
-			resp = processReenable( liteAcctInfo, energyCompany, reenable );
+			resp = processReenable( liteAcctInfo, energyCompany );
 			resp.setDescription( desc );
 			
             respOper.setStarsProgramReenableResponse( resp );
@@ -172,16 +172,15 @@ public class ProgramReenableAction implements ActionBase {
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
 					user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             
-            // Update program history
 			StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
-			programs.setStarsLMProgramHistory( resp.getStarsLMProgramHistory() );
+			if (resp.getStarsLMProgramHistory() != null)
+				programs.setStarsLMProgramHistory( resp.getStarsLMProgramHistory() );
 			
 			for (int i = 0; i < programs.getStarsLMProgramCount(); i++)
 				programs.getStarsLMProgram(i).setStatus( ServletUtils.IN_SERVICE );
             
-            // Update hardware history
 			StarsInventories inventories = accountInfo.getStarsInventories();
-            if (accountInfo.getStarsInventories() != null) {
+            if (inventories != null) {
 				Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 				DeviceStatus hwStatus = (DeviceStatus) StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntry(
@@ -191,11 +190,12 @@ public class ProgramReenableAction implements ActionBase {
 	            for (int i = 0; i < resp.getStarsLMHardwareHistoryCount(); i++) {
 		            StarsLMHardwareHistory hwHist = resp.getStarsLMHardwareHistory(i);
 		            
-					for (int j = 0; j < inventories.getStarsLMHardwareCount(); j++) {
-						StarsLMHardware hw = inventories.getStarsLMHardware(j);
-						if (hw.getInventoryID() == hwHist.getInventoryID()) {
-							hw.setStarsLMHardwareHistory( hwHist );
-							hw.setDeviceStatus( hwStatus );
+					for (int j = 0; j < inventories.getStarsInventoryCount(); j++) {
+						StarsInventory inv = inventories.getStarsInventory(j);
+						if (inv.getInventoryID() == hwHist.getInventoryID()) {
+							inv.setStarsLMHardwareHistory( hwHist );
+							inv.setDeviceStatus( hwStatus );
+							break;
 						}
 					}
 	            }
@@ -241,17 +241,17 @@ public class ProgramReenableAction implements ActionBase {
         	Integer invID = (Integer) hwIDList.get(i);
         	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID.intValue(), true );
         	
-    		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
+    		if (liteHw.getManufacturerSerialNumber().trim().length() == 0)
     			throw new Exception( "The manufacturer serial # of the hardware cannot be empty" );
 
-            commands[i] = "putconfig service in temp serial " + liteHw.getManufactureSerialNumber();
+            commands[i] = "putconfig service in temp serial " + liteHw.getManufacturerSerialNumber();
         }
         
         return commands;
 	}
 	
 	private static StarsProgramReenableResponse processReenable(
-			LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, StarsProgramReenable reEnable)
+			LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 			throws com.cannontech.database.TransactionException
 	{
 		StarsProgramReenableResponse resp = new StarsProgramReenableResponse();
@@ -260,7 +260,7 @@ public class ProgramReenableAction implements ActionBase {
         Integer progEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID() );
         Integer futureActEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION).getEntryID() );
         Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
-
+        
         Date now = new Date();	// Current date, all customer events will use exactly the same date
         
 		// Add "Activation Completed" to hardware events
@@ -268,8 +268,6 @@ public class ProgramReenableAction implements ActionBase {
         for (int i = 0; i < hwIDList.size(); i++) {
         	Integer invID = (Integer) hwIDList.get(i);
         	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID.intValue(), true );
-			
-			ECUtils.removeFutureActivationEvents( liteHw.getInventoryHistory(), energyCompany );
     		
     		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
     		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
@@ -330,7 +328,7 @@ public class ProgramReenableAction implements ActionBase {
 			liteAcctInfo.getProgramHistory().add( liteEvent );
 			liteProg.updateProgramStatus( liteAcctInfo.getProgramHistory() );
         }
-			
+		
 		StarsLMProgramHistory progHist = StarsLiteFactory.createStarsLMProgramHistory( liteAcctInfo.getProgramHistory() );
 		resp.setStarsLMProgramHistory( progHist );
         
@@ -338,11 +336,11 @@ public class ProgramReenableAction implements ActionBase {
 	}
 	
 	public static void updateCustAccountInfo(
-			LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, StarsProgramReenable reEnable)
+			LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 	{
 		StarsProgramReenableResponse resp = null;
 		try {
-			resp = processReenable( liteAcctInfo, energyCompany, reEnable );
+			resp = processReenable( liteAcctInfo, energyCompany );
 		}
 		catch (com.cannontech.database.TransactionException e) {
 			e.printStackTrace();
@@ -353,14 +351,13 @@ public class ProgramReenableAction implements ActionBase {
 				energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 		
 		if (starsAcctInfo != null) {
-			// Update program history
 			StarsLMPrograms programs = starsAcctInfo.getStarsLMPrograms();
-            programs.setStarsLMProgramHistory( resp.getStarsLMProgramHistory() );
+			if (resp.getStarsLMProgramHistory() != null)
+				programs.setStarsLMProgramHistory( resp.getStarsLMProgramHistory() );
+        	
+			for (int i = 0; i< programs.getStarsLMProgramCount(); i++)
+				programs.getStarsLMProgram(i).setStatus( ServletUtils.IN_SERVICE );
             
-            for (int i = 0; i< programs.getStarsLMProgramCount(); i++)
-            	programs.getStarsLMProgram(i).setStatus( ServletUtils.IN_SERVICE );
-            
-			// Update hardware history
 			StarsInventories inventories = starsAcctInfo.getStarsInventories();
             if (inventories != null) {
 				DeviceStatus hwStatus = (DeviceStatus) StarsFactory.newStarsCustListEntry(
@@ -370,11 +367,12 @@ public class ProgramReenableAction implements ActionBase {
 	            for (int i = 0; i < resp.getStarsLMHardwareHistoryCount(); i++) {
 		            StarsLMHardwareHistory hwHist = resp.getStarsLMHardwareHistory(i);
 		            
-					for (int j = 0; j < inventories.getStarsLMHardwareCount(); j++) {
-						StarsLMHardware hw = inventories.getStarsLMHardware(j);
-						if (hw.getInventoryID() == hwHist.getInventoryID()) {
-							hw.setStarsLMHardwareHistory( hwHist );
-							hw.setDeviceStatus( hwStatus );
+					for (int j = 0; j < inventories.getStarsInventoryCount(); j++) {
+						StarsInventory inv = inventories.getStarsInventory(j);
+						if (inv.getInventoryID() == hwHist.getInventoryID()) {
+							inv.setStarsLMHardwareHistory( hwHist );
+							inv.setDeviceStatus( hwStatus );
+							break;
 						}
 					}
 	            }

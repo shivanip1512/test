@@ -28,6 +28,7 @@ import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.action.DeleteLMHardwareAction;
@@ -35,13 +36,12 @@ import com.cannontech.stars.web.action.UpdateLMHardwareAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.InstallationCompany;
-import com.cannontech.stars.xml.serialize.LMDeviceType;
+import com.cannontech.stars.xml.serialize.LMHardware;
+import com.cannontech.stars.xml.serialize.LMHardwareType;
+import com.cannontech.stars.xml.serialize.MCT;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
-import com.cannontech.stars.xml.serialize.StarsDevice;
+import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsInventory;
-import com.cannontech.stars.xml.serialize.StarsLMHardware;
-import com.cannontech.stars.xml.serialize.StarsLMHw;
-import com.cannontech.stars.xml.serialize.StarsMCT;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.Voltage;
 
@@ -213,12 +213,15 @@ public class InventoryManager extends HttpServlet {
 			LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( deviceID );
 			
 			if (ECUtils.isMCT( categoryID )) {
-				StarsMCT starsMCT = (StarsMCT) StarsFactory.newStarsInventory(StarsMCT.class);
-				starsMCT.setDeviceID( deviceID );
-				starsMCT.setDeviceName( PAOFuncs.getYukonPAOName(deviceID) );
+				StarsInventory starsInv = (StarsInventory) StarsFactory.newStarsInv(StarsInventory.class);
+				starsInv.setDeviceID( deviceID );
+				
+				MCT mct = new MCT();
+				mct.setDeviceName( PAOFuncs.getYukonPAOName(deviceID) );
+				starsInv.setMCT( mct );
 				
 				String invNo = (String) session.getAttribute(STARS_INVENTORY_NO);
-				session.setAttribute( STARS_INVENTORY_TEMP + invNo, starsMCT );
+				session.setAttribute( STARS_INVENTORY_TEMP + invNo, starsInv );
 			}
 			
 			redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
@@ -257,13 +260,16 @@ public class InventoryManager extends HttpServlet {
 		
 		if (invCheckTime.equalsIgnoreCase( INVENTORY_CHECKING_TIME_EARLY )) {
 			// Save the search values
-			StarsLMHardware starsHw = (StarsLMHardware) StarsFactory.newStarsInventory(StarsLMHardware.class);
-			starsHw.setLMDeviceType( (LMDeviceType)StarsFactory.newStarsCustListEntry(
-					energyCompany.getYukonListEntry(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, devTypeID),
-					LMDeviceType.class) );
-			starsHw.setManufactureSerialNumber( searchVal );
+			StarsInventory starsInv = (StarsInventory) StarsFactory.newStarsInv(StarsInventory.class);
 			
-			session.setAttribute( STARS_INVENTORY_TEMP, starsHw );
+			LMHardware hw = new LMHardware();
+			hw.setLMHardwareType( (LMHardwareType)StarsFactory.newStarsCustListEntry(
+					energyCompany.getYukonListEntry(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, devTypeID),
+					LMHardwareType.class) );
+			hw.setManufacturerSerialNumber( searchVal );
+			starsInv.setLMHardware( hw );
+			
+			session.setAttribute( STARS_INVENTORY_TEMP, starsInv );
 		}
 		
 		LiteInventoryBase liteInv = null;
@@ -426,21 +432,6 @@ public class InventoryManager extends HttpServlet {
 			int invID = Integer.parseInt( req.getParameter("InvID") );
 			LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID, true );
 			
-			if (liteInv instanceof LiteStarsLMHardware) {
-				String serialNo = req.getParameter("SerialNo");
-				if (serialNo.equals("")) {
-					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Serial # cannot be empty");
-					return;
-				}
-				
-				if (!((LiteStarsLMHardware) liteInv).getManufactureSerialNumber().equals(serialNo)
-					&& energyCompany.searchForLMHardware( devTypeID, serialNo ) != null)
-				{
-					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Serial # already exists, please enter a different one");
-					return;
-				}
-			}
-			
 			StarsOperation operation = UpdateLMHardwareAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
 			if (liteInv.getAccountID() ==  0) {
 				UpdateLMHardwareAction.updateInventory(operation.getStarsUpdateLMHardware(), liteInv, energyCompany, conn);
@@ -450,7 +441,11 @@ public class InventoryManager extends HttpServlet {
 				redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
 			}
 		}
-		catch (java.sql.SQLException e) {
+		catch (WebClientException e) {
+			e.printStackTrace();
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update hardware information");
 		}
@@ -918,7 +913,7 @@ public class InventoryManager extends HttpServlet {
 						SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
 						cmd.setEnergyCompanyID( user.getEnergyCompanyID() );
 						cmd.setInventoryID( invID.intValue() );
-						cmd.setSerialNumber( liteHw.getManufactureSerialNumber() );
+						cmd.setSerialNumber( liteHw.getManufacturerSerialNumber() );
 						cmd.setCommandType( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE );
 						cmdQueue.addCommand( cmd, false );
 					}
@@ -1104,7 +1099,7 @@ public class InventoryManager extends HttpServlet {
 	/**
 	 * Store hardware information entered by user into a StarsLMHw object 
 	 */
-	public static void setStarsInventory(StarsInventory starsInv, HttpServletRequest req, TimeZone tz) {
+	public static void setStarsInv(StarsInv starsInv, HttpServletRequest req, TimeZone tz) {
 		if (req.getParameter("InvID") != null)
 			starsInv.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
 		if (req.getParameter("DeviceID") != null)
@@ -1136,20 +1131,20 @@ public class InventoryManager extends HttpServlet {
 			starsInv.setInstallationCompany( company );
 		}
 		
-		if (starsInv instanceof StarsLMHw) {
-			if (req.getParameter("DeviceType") != null) {
-				LMDeviceType type = new LMDeviceType();
-				type.setEntryID( Integer.parseInt(req.getParameter("DeviceType")) );
-				((StarsLMHw) starsInv).setLMDeviceType( type );
-			}
+		if (req.getParameter("DeviceType") != null && req.getParameter("SerialNo") != null) {
+			LMHardware hw = new LMHardware();
+			LMHardwareType hwType = new LMHardwareType();
+			hwType.setEntryID( Integer.parseInt(req.getParameter("DeviceType")) );
+			hw.setLMHardwareType( hwType );
+			hw.setManufacturerSerialNumber( req.getParameter("SerialNo") );
 			
-			if (req.getParameter("SerialNo") != null)
-				((StarsLMHw) starsInv).setManufactureSerialNumber( req.getParameter("SerialNo") );
+			starsInv.setLMHardware( hw );
 		}
-		
-		if (starsInv instanceof StarsDevice) {
-			if (req.getParameter("DeviceName") != null)
-				((StarsDevice) starsInv).setDeviceName( req.getParameter("DeviceName") );
+		else if (req.getParameter("DeviceName") != null) {
+			MCT mct = new MCT();
+			mct.setDeviceName( req.getParameter("DeviceName") );
+			
+			starsInv.setMCT( mct );
 		}
 	}
 	

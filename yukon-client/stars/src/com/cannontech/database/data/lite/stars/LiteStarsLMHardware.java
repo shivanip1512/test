@@ -20,7 +20,7 @@ public class LiteStarsLMHardware extends LiteInventoryBase {
 	public static final int THERMOSTAT_TYPE_ONE_WAY = 1;
 	public static final int THERMOSTAT_TYPE_TWO_WAY = 2;
 	
-	private String manufactureSerialNumber = null;
+	private String manufacturerSerialNumber = null;
 	private int lmHardwareTypeID = CtiUtilities.NONE_ID;
 	
 	// Extended fields
@@ -45,8 +45,8 @@ public class LiteStarsLMHardware extends LiteInventoryBase {
 	/**
 	 * @return
 	 */
-	public String getManufactureSerialNumber() {
-		return manufactureSerialNumber;
+	public String getManufacturerSerialNumber() {
+		return manufacturerSerialNumber;
 	}
 
 	/**
@@ -59,8 +59,8 @@ public class LiteStarsLMHardware extends LiteInventoryBase {
 	/**
 	 * @param string
 	 */
-	public void setManufactureSerialNumber(String string) {
-		manufactureSerialNumber = string;
+	public void setManufacturerSerialNumber(String string) {
+		manufacturerSerialNumber = string;
 	}
 
 	/**

@@ -97,7 +97,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 					
 					if (dueEvents[j].getPeriod() == OptOutEventQueue.PERIOD_REENABLE) {	// This is a "reenable" event
 						StarsProgramReenable reEnable = new StarsProgramReenable();
-						ProgramReenableAction.updateCustAccountInfo( liteAcctInfo, company, reEnable );
+						ProgramReenableAction.updateCustAccountInfo( liteAcctInfo, company );
 					}
 					else {	// This is a "opt out" event
 						StarsProgramOptOut optOut = new StarsProgramOptOut();

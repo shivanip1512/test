@@ -39,7 +39,7 @@ import com.cannontech.stars.xml.serialize.StarsCustListEntry;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsInventories;
-import com.cannontech.stars.xml.serialize.StarsLMHardware;
+import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareEvent;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareHistory;
 import com.cannontech.stars.xml.serialize.StarsLMProgramEvent;
@@ -224,6 +224,7 @@ public class ProgramOptOutAction implements ActionBase {
             	energyCompany.getOptOutEventQueue().addEvent( event );
             	
             	resp = processOptOut( liteAcctInfo, energyCompany, optOut );
+            	
 		        if (ServerUtils.isOperator( user ))
 			        resp.setDescription( ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " command has been sent out successfully" );
 			    else
@@ -291,6 +292,7 @@ public class ProgramOptOutAction implements ActionBase {
             	energyCompany.getOptOutEventQueue().addEvent( event );
             	
             	resp = processOptOut( liteAcctInfo, energyCompany, optOut );
+            	
 		        if (ServerUtils.isOperator( user ))
 			        resp.setDescription( ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " command has been sent out successfully" );
 			    else
@@ -340,35 +342,39 @@ public class ProgramOptOutAction implements ActionBase {
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
 					user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             
-            // Update program history
             StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
-        	programs.setStarsLMProgramHistory( resp.getStarsLMProgramHistory() );
+            if (resp.getStarsLMProgramHistory() != null)
+				programs.setStarsLMProgramHistory( resp.getStarsLMProgramHistory() );
         	
-        	for (int i = 0; i < programs.getStarsLMProgramCount(); i++)
-        		programs.getStarsLMProgram(i).setStatus( ServletUtils.OUT_OF_SERVICE );
-            
-            // Update hardware history
-			StarsInventories inventories = accountInfo.getStarsInventories();
-            if (inventories != null) {
-				Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
-				DeviceStatus hwStatus = (DeviceStatus) StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntry(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL),
-						DeviceStatus.class );
+        	if (resp.getStarsLMHardwareHistoryCount() > 0) {
+        		// If hardware history is not empty, it means the opt out command has been sent,
+        		// so update the program status to "out of service"
+				for (int i = 0; i < programs.getStarsLMProgramCount(); i++)
+					programs.getStarsLMProgram(i).setStatus( ServletUtils.OUT_OF_SERVICE );
+				
+				StarsInventories inventories = accountInfo.getStarsInventories();
+				if (inventories != null) {
+					Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
+					DeviceStatus hwStatus = (DeviceStatus) StarsFactory.newStarsCustListEntry(
+							ServletUtils.getStarsCustListEntry(
+								selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL),
+							DeviceStatus.class );
             	
-	            for (int i = 0; i < resp.getStarsLMHardwareHistoryCount(); i++) {
-		            StarsLMHardwareHistory hwHist = resp.getStarsLMHardwareHistory(i);
+					for (int i = 0; i < resp.getStarsLMHardwareHistoryCount(); i++) {
+						StarsLMHardwareHistory hwHist = resp.getStarsLMHardwareHistory(i);
 		            
-					for (int j = 0; j < inventories.getStarsLMHardwareCount(); j++) {
-						StarsLMHardware hw = inventories.getStarsLMHardware(j);
-						if (hw.getInventoryID() == hwHist.getInventoryID()) {
-							hw.setStarsLMHardwareHistory( hwHist );
-							hw.setDeviceStatus( hwStatus );
+						for (int j = 0; j < inventories.getStarsInventoryCount(); j++) {
+							StarsInventory inv = inventories.getStarsInventory(j);
+							if (inv.getInventoryID() == hwHist.getInventoryID()) {
+								inv.setStarsLMHardwareHistory( hwHist );
+								inv.setDeviceStatus( hwStatus );
+								break;
+							}
 						}
 					}
-	            }
-            }
-			
+				}
+        	}
+            
             return 0;
         }
         catch (Exception e) {
@@ -413,16 +419,19 @@ public class ProgramOptOutAction implements ActionBase {
         	Integer invID = (Integer) hwIDList.get(i);
         	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID.intValue(), true );
         	
-    		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
+    		if (liteHw.getManufacturerSerialNumber().trim().length() == 0)
     			throw new Exception( "The manufacturer serial # of the hardware cannot be empty" );
             
-            commands[i] = "putconfig serial " + liteHw.getManufactureSerialNumber() +
+            commands[i] = "putconfig serial " + liteHw.getManufacturerSerialNumber() +
             			" service out temp offhours " + String.valueOf(offHours);
         }
         
         return commands;
 	}
 	
+	/**
+	 * Update the program and hardware history when an opt out event happens
+	 */
 	private static StarsProgramOptOutResponse processOptOut(
 			LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, StarsProgramOptOut optOut)
 			throws com.cannontech.database.TransactionException
@@ -430,16 +439,14 @@ public class ProgramOptOutAction implements ActionBase {
 		TimeZone tz = TimeZone.getTimeZone( energyCompany.getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE) );
 		StarsProgramOptOutResponse resp = new StarsProgramOptOutResponse();
 		
-        Integer hwEventEntryID = new Integer(
-        		energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
         Integer progEventEntryID = new Integer(
         		energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID() );
+		Integer hwEventEntryID = new Integer(
+				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
         Integer tempTermEntryID = new Integer(
         		energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION).getEntryID() );
         Integer futureActEntryID = new Integer(
         		energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION).getEntryID() );
-        Integer actCompEntryID = new Integer(
-        		energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
 		
 		Date optOutDate = optOut.getStartDateTime();
 		if (optOutDate == null) optOutDate = new Date();
@@ -454,53 +461,34 @@ public class ProgramOptOutAction implements ActionBase {
 		else if (optOut.getPeriod() == OPTOUT_TODAY) {
 			reenableDate = ServletUtil.getTomorrow(tz);
 		}
-        
-		// Add "Temp Opt Out" and "Future Activation" to hardware events
-        ArrayList hwIDList = getHardwareIDs( liteAcctInfo );
-        for (int i = 0; i < hwIDList.size(); i++) {
-        	Integer invID = (Integer) hwIDList.get(i);
-        	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID.intValue(), true );
-        
-			ECUtils.removeFutureActivationEvents( liteHw.getInventoryHistory(), energyCompany );
-			com.cannontech.database.data.multi.MultiDBPersistent multiDB = new com.cannontech.database.data.multi.MultiDBPersistent();
+		
+		// Add "Temp Opt Out" to hardware events
+		ArrayList hwIDList = getHardwareIDs( liteAcctInfo );
+		
+		for (int i = 0; i < hwIDList.size(); i++) {
+			Integer invID = (Integer) hwIDList.get(i);
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID.intValue(), true );
+        	
+			com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+			com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
     		
-    		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-    		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-    		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
-    		
-    		eventDB.setInventoryID( invID );
-    		eventBase.setEventTypeID( hwEventEntryID );
-    		eventBase.setActionID( tempTermEntryID );
-    		eventBase.setEventDateTime( optOutDate );
-    		
-    		event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-    		multiDB.getDBPersistentVector().addElement( event );
+			eventDB.setInventoryID( invID );
+			eventBase.setEventTypeID( hwEventEntryID );
+			eventBase.setActionID( tempTermEntryID );
+			eventBase.setEventDateTime( optOutDate );
+			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 			
-    		event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-    		eventDB = event.getLMHardwareEvent();
-    		eventBase = event.getLMCustomerEventBase();
-    		
-    		eventDB.setInventoryID( invID );
-    		eventBase.setEventTypeID( hwEventEntryID );
-    		eventBase.setActionID( futureActEntryID );
-    		eventBase.setEventDateTime( reenableDate );
-    		
-    		event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-    		multiDB.getDBPersistentVector().addElement( event );
-    		
-    		multiDB = (com.cannontech.database.data.multi.MultiDBPersistent)
-    				Transaction.createTransaction( Transaction.INSERT, multiDB ).execute();
+			event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+					Transaction.createTransaction(Transaction.INSERT, event).execute();
     		
 			// Update lite objects and create response
-			for (int j = 0; j < multiDB.getDBPersistentVector().size(); j++) {
-				event = (com.cannontech.database.data.stars.event.LMHardwareEvent) multiDB.getDBPersistentVector().get(j);
-				LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) StarsLiteFactory.createLite( event );
-				liteHw.getInventoryHistory().add( liteEvent );
-			}
+			liteHw.getInventoryHistory().add( (LiteLMHardwareEvent)StarsLiteFactory.createLite(event) );
 			liteHw.updateDeviceStatus();
 			
 			StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
 			hwHist.setInventoryID( liteHw.getInventoryID() );
+			
 			for (int j = 0; j < liteHw.getInventoryHistory().size(); j++) {
 				LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) liteHw.getInventoryHistory().get(j);
 				StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
@@ -509,7 +497,7 @@ public class ProgramOptOutAction implements ActionBase {
 			}
 			
 			resp.addStarsLMHardwareHistory( hwHist );
-        }
+		}
 		
 		// Add "Temp Opt Out" and "Future Activation" to program events
 		ECUtils.removeFutureActivationEvents( liteAcctInfo.getProgramHistory(), energyCompany );
@@ -703,7 +691,7 @@ public class ProgramOptOutAction implements ActionBase {
 			Calendar timeCal = Calendar.getInstance();
 			timeCal.setTime( dueTime );
 			
-			dueCal.set(Calendar.HOUR, timeCal.get(Calendar.HOUR));
+			dueCal.set(Calendar.HOUR_OF_DAY, timeCal.get(Calendar.HOUR_OF_DAY));
 			dueCal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE));
 			dueCal.set(Calendar.SECOND, timeCal.get(Calendar.SECOND));
 			if (dueCal.getTime().after( optOutDate ))
@@ -731,35 +719,34 @@ public class ProgramOptOutAction implements ActionBase {
 		
 		StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)
 				energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );
+		if (starsAcctInfo == null) return;
 		
-		if (starsAcctInfo != null) {
-			// Update program history
-			StarsLMPrograms programs = starsAcctInfo.getStarsLMPrograms();
+		StarsLMPrograms programs = starsAcctInfo.getStarsLMPrograms();
+		if (resp.getStarsLMProgramHistory() != null)
 			programs.setStarsLMProgramHistory( resp.getStarsLMProgramHistory() );
-        	
-        	for (int i = 0; i < programs.getStarsLMProgramCount(); i++)
-        		programs.getStarsLMProgram(i).setStatus( ServletUtils.OUT_OF_SERVICE );
-	        
-	        // Update hardware history
-			StarsInventories inventories = starsAcctInfo.getStarsInventories();
-	        if (inventories != null) {
-				DeviceStatus hwStatus = (DeviceStatus) StarsFactory.newStarsCustListEntry(
-						energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL),
-						DeviceStatus.class );
+		
+		for (int i = 0; i < programs.getStarsLMProgramCount(); i++)
+			programs.getStarsLMProgram(i).setStatus( ServletUtils.OUT_OF_SERVICE );
+		
+		StarsInventories inventories = starsAcctInfo.getStarsInventories();
+        if (inventories != null) {
+			DeviceStatus hwStatus = (DeviceStatus) StarsFactory.newStarsCustListEntry(
+					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL),
+					DeviceStatus.class );
+			
+            for (int i = 0; i < resp.getStarsLMHardwareHistoryCount(); i++) {
+				StarsLMHardwareHistory hwHist = resp.getStarsLMHardwareHistory(i);
 				
-	            for (int i = 0; i < resp.getStarsLMHardwareHistoryCount(); i++) {
-		            StarsLMHardwareHistory hwHist = resp.getStarsLMHardwareHistory(i);
-		            
-					for (int j = 0; j < inventories.getStarsLMHardwareCount(); j++) {
-						StarsLMHardware hw = inventories.getStarsLMHardware(j);
-						if (hw.getInventoryID() == hwHist.getInventoryID()) {
-							hw.setStarsLMHardwareHistory( hwHist );
-							hw.setDeviceStatus( hwStatus );
-						}
+				for (int j = 0; j < inventories.getStarsInventoryCount(); j++) {
+					StarsInventory inv = inventories.getStarsInventory(j);
+					if (inv.getInventoryID() == hwHist.getInventoryID()) {
+						inv.setStarsLMHardwareHistory( hwHist );
+						inv.setDeviceStatus( hwStatus );
+						break;
 					}
-	            }
-	        }
-		}
+				}
+            }
+        }
 	}
 
 }

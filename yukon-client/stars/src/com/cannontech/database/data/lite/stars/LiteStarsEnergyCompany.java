@@ -53,6 +53,7 @@ import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
+import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
@@ -1315,7 +1316,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
 				if (liteHw.getLmHardwareTypeID() == deviceType &&
-					liteHw.getManufactureSerialNumber().equalsIgnoreCase( serialNo ))
+					liteHw.getManufacturerSerialNumber().equalsIgnoreCase( serialNo ))
 				{
 					return liteHw;
 				}
@@ -1627,9 +1628,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			LiteStarsThermostatSettings liteSettings = liteHw.getThermostatSettings();
 			liteSettings.updateThermostatSettings( liteHw, this );
 			
-			for (int j = 0; j < starsAcctInfo.getStarsInventories().getStarsLMHardwareCount(); j++) {
-				if (starsAcctInfo.getStarsInventories().getStarsLMHardware(j).getInventoryID() == invID) {
-					StarsThermostatSettings starsSettings = starsAcctInfo.getStarsInventories().getStarsLMHardware(j).getStarsThermostatSettings();
+			StarsInventories starsInvs = starsAcctInfo.getStarsInventories();
+			for (int j = 0; j < starsInvs.getStarsInventoryCount(); j++) {
+				if (starsInvs.getStarsInventory(j).getInventoryID() == invID) {
+					StarsThermostatSettings starsSettings = starsInvs.getStarsInventory(j).getLMHardware().getStarsThermostatSettings();
 					
 					starsSettings.removeAllStarsThermostatSeason();
 					for (int k = 0; k < liteSettings.getThermostatSeasons().size(); k++) {

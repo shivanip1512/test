@@ -182,7 +182,7 @@ public class StarsLiteFactory {
 	
 	public static void setLiteStarsLMHardware(LiteStarsLMHardware liteHw, com.cannontech.database.data.stars.hardware.LMHardwareBase hw) {
 		setLiteInventoryBase( liteHw, hw.getInventoryBase() );
-		liteHw.setManufactureSerialNumber( hw.getLMHardwareBase().getManufacturerSerialNumber() );
+		liteHw.setManufacturerSerialNumber( hw.getLMHardwareBase().getManufacturerSerialNumber() );
 		liteHw.setLmHardwareTypeID( hw.getLMHardwareBase().getLMHardwareTypeID().intValue() );
 	}
 	
@@ -754,7 +754,7 @@ public class StarsLiteFactory {
 		setInventoryBase( hw.getInventoryBase(), liteHw );
 		
 		hw.setInventoryID( hw.getInventoryBase().getInventoryID() );
-		hw.getLMHardwareBase().setManufacturerSerialNumber( liteHw.getManufactureSerialNumber() );
+		hw.getLMHardwareBase().setManufacturerSerialNumber( liteHw.getManufacturerSerialNumber() );
 		hw.getLMHardwareBase().setLMHardwareTypeID( new Integer(liteHw.getLmHardwareTypeID()) );
 	}
 	
@@ -1277,14 +1277,8 @@ public class StarsLiteFactory {
 		Iterator it = invMap.values().iterator();
 		while (it.hasNext()) {
 			ArrayList list = (ArrayList) it.next();
-			for (int i = 0; i < list.size(); i++) {
-				StarsInventory starsInv = (StarsInventory) list.get(i);
-				
-				if (starsInv instanceof StarsLMHardware)
-					starsInvs.addStarsLMHardware( (StarsLMHardware)starsInv );
-				else if (starsInv instanceof StarsMCT)
-					starsInvs.addStarsMCT( (StarsMCT)starsInv );
-			}
+			for (int i = 0; i < list.size(); i++)
+				starsInvs.addStarsInventory( (StarsInventory)list.get(i) );
 		}
 		
         if (liteContact.getLoginID() > com.cannontech.user.UserUtils.USER_YUKON_ID) {
@@ -1433,72 +1427,6 @@ public class StarsLiteFactory {
         }
 	}
 	
-	public static void setStarsInventory(StarsInventory starsInv, LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) {
-		starsInv.setInventoryID( liteInv.getInventoryID() );
-		starsInv.setDeviceID( liteInv.getDeviceID() );
-		starsInv.setCategory( YukonListFuncs.getYukonListEntry(liteInv.getCategoryID()).getEntryText() );
-		starsInv.setDeviceLabel( ServerUtils.forceNotNull(liteInv.getDeviceLabel()) );
-				
-		InstallationCompany company = new InstallationCompany();
-		company.setEntryID( liteInv.getInstallationCompanyID() );
-		LiteServiceCompany liteCompany = energyCompany.getServiceCompany( liteInv.getInstallationCompanyID() );
-		if (liteCompany != null)
-			company.setContent( ServerUtils.forceNotNull(liteCompany.getCompanyName()) );
-		else
-			company.setContent( "(none)" );
-		starsInv.setInstallationCompany( company );
-		
-		starsInv.setReceiveDate( ServerUtils.translateDate(liteInv.getReceiveDate()) );
-		starsInv.setInstallDate( ServerUtils.translateDate(liteInv.getInstallDate()) );
-		starsInv.setRemoveDate( ServerUtils.translateDate(liteInv.getRemoveDate()) );
-		starsInv.setAltTrackingNumber( ServerUtils.forceNotNull(liteInv.getAlternateTrackingNumber()) );
-		
-		Voltage volt = new Voltage();
-		volt.setEntryID( liteInv.getVoltageID() );
-		volt.setContent( YukonListFuncs.getYukonListEntry(liteInv.getVoltageID()).getEntryText() );
-		starsInv.setVoltage( volt );
-		
-		starsInv.setNotes( ServerUtils.forceNotNull(liteInv.getNotes()) );
-		
-		StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
-		for (int i = 0; i < liteInv.getInventoryHistory().size(); i++) {
-			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) liteInv.getInventoryHistory().get(i);
-			StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
-			setStarsLMCustomerEvent( starsEvent, liteEvent );
-			hwHist.addStarsLMHardwareEvent( starsEvent );
-		}
-		starsInv.setStarsLMHardwareHistory( hwHist );
-		
-		// set installation notes
-		for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0; i--) {
-			if (hwHist.getStarsLMHardwareEvent(i).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL) {
-				starsInv.setInstallationNotes( hwHist.getStarsLMHardwareEvent(i).getNotes() );
-				break;
-			}
-		}
-		
-		starsInv.setDeviceStatus( (DeviceStatus) StarsFactory.newStarsCustListEntry(
-				energyCompany.getYukonListEntry( liteInv.getDeviceStatus() ), DeviceStatus.class) );
-	}
-	
-	public static void setStarsLMHw(StarsLMHw starsHw, LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
-		setStarsInventory( starsHw, liteHw, energyCompany );
-		
-		starsHw.setManufactureSerialNumber( ServerUtils.forceNotNull(liteHw.getManufactureSerialNumber()) );
-		
-		LMDeviceType hwType = new LMDeviceType();
-		hwType.setEntryID( liteHw.getLmHardwareTypeID() );
-		hwType.setContent( YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()).getEntryText() );
-		starsHw.setLMDeviceType( hwType );
-		starsHw.setInstallationNotes( "" );
-	}
-	
-	public static void setStarsDevice(StarsDevice starsDev, LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) {
-		setStarsInventory( starsDev, liteInv, energyCompany );
-		
-		starsDev.setDeviceName( PAOFuncs.getYukonPAOName(liteInv.getDeviceID()) );
-	}
-	
 	public static void setStarsEnergyCompany(StarsEnergyCompany starsCompany, LiteStarsEnergyCompany liteCompany) {
 		starsCompany.setEnergyCompanyID( liteCompany.getLiteID() );
 		starsCompany.setCompanyName( liteCompany.getName() );
@@ -1554,6 +1482,79 @@ public class StarsLiteFactory {
 		}
 	}
 	
+	public static void setStarsInv(StarsInv starsInv, LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) {
+		starsInv.setInventoryID( liteInv.getInventoryID() );
+		starsInv.setDeviceID( liteInv.getDeviceID() );
+		starsInv.setCategory( YukonListFuncs.getYukonListEntry(liteInv.getCategoryID()).getEntryText() );
+		starsInv.setDeviceLabel( ServerUtils.forceNotNull(liteInv.getDeviceLabel()) );
+		
+		InstallationCompany company = new InstallationCompany();
+		company.setEntryID( liteInv.getInstallationCompanyID() );
+		LiteServiceCompany liteCompany = energyCompany.getServiceCompany( liteInv.getInstallationCompanyID() );
+		if (liteCompany != null)
+			company.setContent( ServerUtils.forceNotNull(liteCompany.getCompanyName()) );
+		else
+			company.setContent( "(none)" );
+		starsInv.setInstallationCompany( company );
+		
+		starsInv.setReceiveDate( ServerUtils.translateDate(liteInv.getReceiveDate()) );
+		starsInv.setInstallDate( ServerUtils.translateDate(liteInv.getInstallDate()) );
+		starsInv.setRemoveDate( ServerUtils.translateDate(liteInv.getRemoveDate()) );
+		starsInv.setAltTrackingNumber( ServerUtils.forceNotNull(liteInv.getAlternateTrackingNumber()) );
+		
+		Voltage volt = new Voltage();
+		volt.setEntryID( liteInv.getVoltageID() );
+		volt.setContent( YukonListFuncs.getYukonListEntry(liteInv.getVoltageID()).getEntryText() );
+		starsInv.setVoltage( volt );
+		
+		starsInv.setNotes( ServerUtils.forceNotNull(liteInv.getNotes()) );
+		
+		StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
+		for (int i = 0; i < liteInv.getInventoryHistory().size(); i++) {
+			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) liteInv.getInventoryHistory().get(i);
+			StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
+			setStarsLMCustomerEvent( starsEvent, liteEvent );
+			hwHist.addStarsLMHardwareEvent( starsEvent );
+		}
+		starsInv.setStarsLMHardwareHistory( hwHist );
+		
+		// set installation notes
+		starsInv.setInstallationNotes( "" );
+		for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0; i--) {
+			if (hwHist.getStarsLMHardwareEvent(i).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL) {
+				starsInv.setInstallationNotes( hwHist.getStarsLMHardwareEvent(i).getNotes() );
+				break;
+			}
+		}
+		
+		starsInv.setDeviceStatus( (DeviceStatus) StarsFactory.newStarsCustListEntry(
+				energyCompany.getYukonListEntry( liteInv.getDeviceStatus() ), DeviceStatus.class) );
+		
+		if (liteInv instanceof LiteStarsLMHardware) {
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
+			
+			LMHardware hw = new LMHardware();
+			hw.setLMHardwareType( (LMHardwareType)StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()),
+					LMHardwareType.class) );
+			hw.setManufacturerSerialNumber( ServerUtils.forceNotNull(((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber()) );
+			
+			if (liteHw.getThermostatSettings() != null) {
+				StarsThermostatSettings starsSettings = new StarsThermostatSettings();
+				setStarsThermostatSettings( starsSettings, liteHw.getThermostatSettings(), energyCompany );
+				hw.setStarsThermostatSettings( starsSettings );
+			}
+			
+			starsInv.setLMHardware( hw );
+		}
+		else if (ECUtils.isMCT( liteInv.getCategoryID() )) {
+			MCT mct = new MCT();
+			mct.setDeviceName( PAOFuncs.getYukonPAOName(liteInv.getDeviceID()) );
+			
+			starsInv.setMCT( mct );
+		}
+	}
+	
 	
 	public static StarsCustAccountInformation createStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, boolean isOperator) {
 		StarsCustAccountInformation starsAcctInfo = new StarsCustAccountInformation();
@@ -1581,30 +1582,9 @@ public class StarsLiteFactory {
 		return starsSite;
 	}
 	
-	public static StarsLMHardware createStarsLMHardware(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
-		StarsLMHardware starsHw = new StarsLMHardware();
-		setStarsLMHw(starsHw, liteHw, energyCompany);
-		
-		if (liteHw.getThermostatSettings() != null) {
-			StarsThermostatSettings starsSettings = new StarsThermostatSettings();
-			setStarsThermostatSettings( starsSettings, liteHw.getThermostatSettings(), energyCompany );
-			starsHw.setStarsThermostatSettings( starsSettings );
-		}
-		
-		return starsHw;
-	}
-	
 	public static StarsInventory createStarsInventory(LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) {
-		StarsInventory starsInv = null;
-		
-		if (liteInv instanceof LiteStarsLMHardware) {
-			starsInv = createStarsLMHardware( (LiteStarsLMHardware)liteInv, energyCompany );
-		}
-		else if (ECUtils.isMCT( liteInv.getCategoryID() )) {
-			starsInv = new StarsMCT();
-			setStarsDevice( (StarsDevice)starsInv, liteInv, energyCompany );
-		}
-		
+		StarsInventory starsInv = new StarsInventory();
+		setStarsInv( starsInv, liteInv, energyCompany );
 		return starsInv;
 	}
 	
@@ -2089,8 +2069,8 @@ public class StarsLiteFactory {
 		}
 		else {
 			for (int i = 0; i < entries.size(); i++) {
-				StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
 				YukonListEntry yukonEntry = (YukonListEntry) entries.get(i);
+				StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
 				setStarsCustListEntry( starsEntry, yukonEntry );
 				starsEntry.setYukonDefID( yukonEntry.getYukonDefID() );
 				starsList.addStarsSelectionListEntry( starsEntry );

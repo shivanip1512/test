@@ -223,7 +223,7 @@ public class SendOptOutNotificationAction implements ActionBase {
         				
         				if (invID == app.getInventoryID()) {
 							LiteStarsLMHardware hw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
-							serialNo = hw.getManufactureSerialNumber();
+							serialNo = hw.getManufacturerSerialNumber();
 							break;
         				}
         			}

@@ -31,7 +31,7 @@ import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDefaultThermostatSettings;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
-import com.cannontech.stars.xml.serialize.StarsLMHardware;
+import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareEvent;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsThermoSettings;
@@ -276,7 +276,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					return SOAPUtil.buildSOAPMessage( respOper );
 				}
     			
-				if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
+				if (liteHw.getManufacturerSerialNumber().trim().length() == 0) {
 					if (ServerUtils.isOperator( user )) {
 						String errorMsg = (invIDs.length == 1)?
 								"The serial # of the thermostat cannot be empty, schedule is not sent." :
@@ -467,7 +467,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 							.append(time2).append(",").append(temp2H).append(",").append(temp2C).append(", ")
 							.append(time3).append(",").append(temp3H).append(",").append(temp3C).append(", ")
 							.append(time4).append(",").append(temp4H).append(",").append(temp4C)
-							.append(" serial ").append(liteHw.getManufactureSerialNumber());
+							.append(" serial ").append(liteHw.getManufacturerSerialNumber());
 						
 						cmdList.add( cmd.toString() );
 					}
@@ -570,13 +570,13 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			}
 			
 			for (int i = 0; i < invIDs.length; i++) {
-				for (int j = 0; j < accountInfo.getStarsInventories().getStarsLMHardwareCount(); j++) {
-					StarsLMHardware hardware = accountInfo.getStarsInventories().getStarsLMHardware(j);
-					if (hardware.getInventoryID() == invIDs[i]) {
+				for (int j = 0; j < accountInfo.getStarsInventories().getStarsInventoryCount(); j++) {
+					StarsInventory inv = accountInfo.getStarsInventories().getStarsInventory(j);
+					if (inv.getInventoryID() == invIDs[i]) {
 						if (resp.getStarsLMHardwareEvent() != null)
-							hardware.getStarsLMHardwareHistory().addStarsLMHardwareEvent( resp.getStarsLMHardwareEvent() );
+							inv.getStarsLMHardwareHistory().addStarsLMHardwareEvent( resp.getStarsLMHardwareEvent() );
 	            		
-						StarsThermostatSettings settings = hardware.getStarsThermostatSettings();
+						StarsThermostatSettings settings = inv.getLMHardware().getStarsThermostatSettings();
 						if (settings.getStarsThermostatDynamicData() == null)
 							parseResponse( resp, settings );
 						

@@ -34,7 +34,7 @@ import com.cannontech.stars.xml.serialize.StarsAppliances;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsInventories;
-import com.cannontech.stars.xml.serialize.StarsLMHardware;
+import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
@@ -438,8 +438,8 @@ public class ProgramSignUpAction implements ActionBase {
 				else if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL)
 					YukonSwitchCommandAction.sendEnableCommand(energyCompany, liteHw, conn);
 				
-				StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany );
-				starsInvs.addStarsLMHardware( starsHw );
+				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+				starsInvs.addStarsInventory( starsInv );
 			}
 			
 			for (int i = 0; i < hwIDsToDisable.size(); i++) {
@@ -448,8 +448,8 @@ public class ProgramSignUpAction implements ActionBase {
 				
 				YukonSwitchCommandAction.sendDisableCommand(energyCompany, liteHw, conn);
 				
-				StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany );
-				starsInvs.addStarsLMHardware( starsHw );
+				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+				starsInvs.addStarsInventory( starsInv );
 			}
             
             if (user == null) {	// Probably from the sign up wizard?
@@ -564,14 +564,14 @@ public class ProgramSignUpAction implements ActionBase {
 					accountInfo.setStarsAppliances( resp.getStarsAppliances() );
 				
 				if (resp.getStarsInventories() != null && accountInfo.getStarsInventories() != null) {
-					for (int i = 0; i < resp.getStarsInventories().getStarsLMHardwareCount(); i++) {
-			            StarsLMHardware starsHw = resp.getStarsInventories().getStarsLMHardware(i);
+					for (int i = 0; i < resp.getStarsInventories().getStarsInventoryCount(); i++) {
+						StarsInventory starsInv = resp.getStarsInventories().getStarsInventory(i);
 						
 						StarsInventories inventories = accountInfo.getStarsInventories();
-						for (int j = 0; j < inventories.getStarsLMHardwareCount(); j++) {
-							StarsLMHardware hw = inventories.getStarsLMHardware(j);
-							if (hw.getInventoryID() == starsHw.getInventoryID()) {
-								inventories.setStarsLMHardware(j, starsHw);
+						for (int j = 0; j < inventories.getStarsInventoryCount(); j++) {
+							StarsInventory inv = inventories.getStarsInventory(j);
+							if (inv.getInventoryID() == starsInv.getInventoryID()) {
+								inventories.setStarsInventory(j, starsInv);
 								break;
 							}
 						}
@@ -606,7 +606,7 @@ public class ProgramSignUpAction implements ActionBase {
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
 					YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, conn );
-					starsInvs.addStarsLMHardware( StarsLiteFactory.createStarsLMHardware(liteHw, energyCompany) );
+					starsInvs.addStarsInventory( StarsLiteFactory.createStarsInventory(liteHw, energyCompany) );
 				}
 			}
 			catch (ClassCastException e) {}

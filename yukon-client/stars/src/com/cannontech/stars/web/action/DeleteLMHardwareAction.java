@@ -313,17 +313,9 @@ public class DeleteLMHardwareAction implements ActionBase {
 		}
 		
 		StarsInventories inventories = starsAcctInfo.getStarsInventories();
-		
-		for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
-			if (inventories.getStarsLMHardware(i).getInventoryID() == invID) {
-				inventories.removeStarsLMHardware(i);
-				return;
-			}
-		}
-		
-		for (int i = 0; i < inventories.getStarsMCTCount(); i++) {
-			if (inventories.getStarsMCT(i).getInventoryID() == invID) {
-				inventories.removeStarsMCT(i);
+		for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
+			if (inventories.getStarsInventory(i).getInventoryID() == invID) {
+				inventories.removeStarsInventory(i);
 				return;
 			}
 		}

@@ -36,7 +36,7 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
-import com.cannontech.stars.xml.serialize.StarsMCT;
+import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
@@ -634,10 +634,10 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteInv.getAccountID() );
 				
 				if (starsAcctInfo != null) {
-					for (int i = 0; i < starsAcctInfo.getStarsInventories().getStarsMCTCount(); i++) {
-						StarsMCT mct = starsAcctInfo.getStarsInventories().getStarsMCT(i);
-						if (mct.getDeviceID() == litePao.getYukonID()) {
-							mct.setDeviceName( litePao.getPaoName() );
+					for (int i = 0; i < starsAcctInfo.getStarsInventories().getStarsInventoryCount(); i++) {
+						StarsInventory starsInv = starsAcctInfo.getStarsInventories().getStarsInventory(i);
+						if (starsInv.getDeviceID() == litePao.getYukonID()) {
+							starsInv.getMCT().setDeviceName( litePao.getPaoName() );
 							break;
 						}
 					}

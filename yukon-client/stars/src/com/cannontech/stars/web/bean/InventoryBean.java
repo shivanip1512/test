@@ -6,17 +6,18 @@ import java.util.Comparator;
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -40,6 +41,8 @@ public class InventoryBean {
 	public static final int HTML_STYLE_LIST_INVENTORY = 0;
 	public static final int HTML_STYLE_SELECT_INVENTORY = 1;
 	public static final int HTML_STYLE_INVENTORY_SET = 2;
+	
+	public static final int DEVICE_TYPE_METER = -1;
 	
 	private static final int DEFAULT_PAGE_SIZE = 20;
 	private static final java.text.SimpleDateFormat dateFormat =
@@ -69,13 +72,13 @@ public class InventoryBean {
 				
 				Long sn1 = null;
 				try {
-					sn1 = Long.valueOf( hw1.getManufactureSerialNumber() );
+					sn1 = Long.valueOf( hw1.getManufacturerSerialNumber() );
 				}
 				catch (NumberFormatException e) {}
 				
 				Long sn2 = null;
 				try {
-					sn2 = Long.valueOf( hw2.getManufactureSerialNumber() );
+					sn2 = Long.valueOf( hw2.getManufacturerSerialNumber() );
 				}
 				catch (NumberFormatException e) {}
 				
@@ -86,7 +89,7 @@ public class InventoryBean {
 				else if (sn1 == null && sn2 != null)
 					return 1;
 				else
-					return hw1.getManufactureSerialNumber().compareTo( hw2.getManufactureSerialNumber() );
+					return hw1.getManufacturerSerialNumber().compareTo( hw2.getManufacturerSerialNumber() );
 			}
 			else if ((inv1 instanceof LiteStarsLMHardware) && !(inv2 instanceof LiteStarsLMHardware))
 				return -1;
@@ -156,9 +159,7 @@ public class InventoryBean {
 				if (liteInv instanceof LiteStarsLMHardware &&
 					((LiteStarsLMHardware)liteInv).getLmHardwareTypeID() == getDeviceType()
 					||
-					ECUtils.isMCT( liteInv.getCategoryID() ) &&
-					getEnergyCompany().getYukonListEntry(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, getDeviceType()).getYukonDefID()
-							== YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_METER)
+					getDeviceType() == DEVICE_TYPE_METER && ECUtils.isMCT(liteInv.getCategoryID()))
 				{
 					sortedInvs.add( liteInv );
 				}
@@ -328,11 +329,12 @@ public class InventoryBean {
         	String deviceName = null;
         	if (liteInv instanceof LiteStarsLMHardware) {
 				deviceType = YukonListFuncs.getYukonListEntry( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID() ).getEntryText();
-				deviceName = ((LiteStarsLMHardware)liteInv).getManufactureSerialNumber();
+				deviceName = ((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber();
         	}
         	else if (ECUtils.isMCT( liteInv.getCategoryID() )) {
-        		deviceType = getEnergyCompany().getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_METER ).getEntryText();
-        		deviceName = PAOFuncs.getYukonPAOName( liteInv.getDeviceID() );
+				LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( liteInv.getDeviceID() );
+				deviceType = PAOGroups.getPAOTypeString( litePao.getType() );
+				deviceName = litePao.getPaoName();
         	}
         	if (deviceName.equals("")) deviceName = "&nbsp;";
         	

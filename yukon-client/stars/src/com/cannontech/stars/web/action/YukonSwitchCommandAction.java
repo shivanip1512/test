@@ -22,7 +22,7 @@ import com.cannontech.stars.xml.serialize.StarsDisableService;
 import com.cannontech.stars.xml.serialize.StarsEnableService;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsInventories;
-import com.cannontech.stars.xml.serialize.StarsLMHardware;
+import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsYukonSwitchCommand;
 import com.cannontech.stars.xml.serialize.StarsYukonSwitchCommandResponse;
@@ -118,22 +118,22 @@ public class YukonSwitchCommandAction implements ActionBase {
             	int invID = command.getStarsDisableService().getInventoryID();
             	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
             	sendDisableCommand(energyCompany, liteHw, conn);
-				StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany );
-            	cmdResp.setStarsLMHardware( starsHw );
+				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+            	cmdResp.setStarsInventory( starsInv );
             }
             else if (command.getStarsEnableService() != null) {
             	int invID = command.getStarsEnableService().getInventoryID();
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
             	sendEnableCommand(energyCompany, liteHw, conn);
-				StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany );
-            	cmdResp.setStarsLMHardware( starsHw );
+				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+            	cmdResp.setStarsInventory( starsInv );
             }
             else if (command.getStarsConfig() != null) {
                 int invID = command.getStarsConfig().getInventoryID();
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
                 sendConfigCommand(energyCompany, liteHw, true, conn);
-				StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany );
-				cmdResp.setStarsLMHardware( starsHw );
+				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+				cmdResp.setStarsInventory( starsInv );
             }
 
             respOper.setStarsYukonSwitchCommandResponse( cmdResp );
@@ -179,13 +179,13 @@ public class YukonSwitchCommandAction implements ActionBase {
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsLMHardware hardware = resp.getStarsLMHardware();
+			StarsInventory starsInv = resp.getStarsInventory();
 			
 			StarsInventories inventories = accountInfo.getStarsInventories();
-			for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
-				StarsLMHardware hw = inventories.getStarsLMHardware(i);
-				if (hw.getInventoryID() == hardware.getInventoryID()) {
-					inventories.setStarsLMHardware(i, hardware);
+			for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
+				StarsInventory inv = inventories.getStarsInventory(i);
+				if (inv.getInventoryID() == starsInv.getInventoryID()) {
+					inventories.setStarsInventory(i, starsInv);
 					break;
 				}
 			}
@@ -201,14 +201,14 @@ public class YukonSwitchCommandAction implements ActionBase {
     
 	public static void sendDisableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, java.sql.Connection conn)
 	throws java.sql.SQLException {
-		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
+		if (liteHw.getManufacturerSerialNumber().trim().length() == 0)
 			throw new java.sql.SQLException( "The manufacturer serial # of the hardware cannot be empty" );
         
         Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
         Integer termEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID() );
         java.util.Date now = new java.util.Date();
 		
-        String cmd = "putconfig service out serial " + liteHw.getManufactureSerialNumber();
+        String cmd = "putconfig service out serial " + liteHw.getManufacturerSerialNumber();
         
 		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
 		synchronized (yc) {
@@ -238,14 +238,14 @@ public class YukonSwitchCommandAction implements ActionBase {
     
 	public static void sendEnableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, java.sql.Connection conn)
 	throws java.sql.SQLException {
-		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
+		if (liteHw.getManufacturerSerialNumber().length() == 0)
 			throw new java.sql.SQLException( "The manufacturer serial # of the hardware cannot be empty" );
         
         Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
         Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
         java.util.Date now = new java.util.Date();
 		
-        String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber();
+        String cmd = "putconfig service in serial " + liteHw.getManufacturerSerialNumber();
         
 		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
 		synchronized (yc) {
@@ -275,7 +275,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 	
 	public static void sendConfigCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, boolean forceInService, java.sql.Connection conn)
 	throws java.sql.SQLException {
-		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
+		if (liteHw.getManufacturerSerialNumber().length() == 0)
 			throw new java.sql.SQLException( "The manufacturer serial # of the hardware cannot be empty" );
         
         Integer invID = new Integer( liteHw.getInventoryID() );
@@ -294,7 +294,7 @@ public class YukonSwitchCommandAction implements ActionBase {
         	}
 			else {
 				// Only send an in service command
-		        String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber();
+		        String cmd = "putconfig service in serial " + liteHw.getManufacturerSerialNumber();
 		        
 		        com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
 		        synchronized (yc) {
@@ -328,7 +328,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				if (configs[i].getAddressingGroupID().intValue() == 0) continue;
 				
 				String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( configs[i].getAddressingGroupID().intValue() );
-	            String cmd = "putconfig serial " + liteHw.getManufactureSerialNumber() + " template '" + groupName + "'";
+	            String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " template '" + groupName + "'";
 	            
 				com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
 				synchronized (yc) {

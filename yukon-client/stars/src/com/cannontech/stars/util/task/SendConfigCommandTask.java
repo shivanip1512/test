@@ -31,7 +31,7 @@ public class SendConfigCommandTask implements Runnable {
 	public void run() {
 		CTILogger.info( "*** Start SendConfigCommand task ***" );
 		
-        String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber();
+        String cmd = "putconfig service in serial " + liteHw.getManufacturerSerialNumber();
         
 		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
 		synchronized (yc) {
@@ -51,7 +51,7 @@ public class SendConfigCommandTask implements Runnable {
 			if (configs[i].getAddressingGroupID().intValue() == 0) continue;
 			
 			String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( configs[i].getAddressingGroupID().intValue() );
-            cmd = "putconfig serial " + liteHw.getManufactureSerialNumber() + " template '" + groupName + "'";
+            cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " template '" + groupName + "'";
             
             synchronized (yc) {
 				yc.setRouteID( energyCompany.getDefaultRouteID() );

@@ -88,8 +88,11 @@ import com.cannontech.stars.xml.serialize.CurrentState;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
 import com.cannontech.stars.xml.serialize.Email;
 import com.cannontech.stars.xml.serialize.InstallationCompany;
+import com.cannontech.stars.xml.serialize.LMHardware;
+import com.cannontech.stars.xml.serialize.LMHardwareType;
 import com.cannontech.stars.xml.serialize.Location;
 import com.cannontech.stars.xml.serialize.Manufacturer;
+import com.cannontech.stars.xml.serialize.MCT;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.QuestionType;
 import com.cannontech.stars.xml.serialize.SULMProgram;
@@ -114,7 +117,7 @@ import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
 import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
-import com.cannontech.stars.xml.serialize.StarsLMHw;
+import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsOperation;
@@ -1313,37 +1316,35 @@ public class StarsAdmin extends HttpServlet {
 		return -1;
 	}
 	
-	private void setStarsLMHardware(StarsLMHw hardware, String[] fields, LiteStarsEnergyCompany energyCompany) {
-		hardware.setManufactureSerialNumber( fields[IDX_SERIAL_NO] );
-		
+	private void setStarsInventory(StarsInv inv, String[] fields, LiteStarsEnergyCompany energyCompany) {
 		if (fields[IDX_ALT_TRACK_NO].length() > 0)
-			hardware.setAltTrackingNumber( fields[IDX_ALT_TRACK_NO] );
+			inv.setAltTrackingNumber( fields[IDX_ALT_TRACK_NO] );
 		if (fields[IDX_INV_NOTES].length() > 0)
-			hardware.setNotes( fields[IDX_INV_NOTES] );
+			inv.setNotes( fields[IDX_INV_NOTES] );
 		
 		starsDateFormat.setTimeZone( energyCompany.getDefaultTimeZone() );
 		
 		if (fields[IDX_RECEIVE_DATE].length() > 0) {
 			try {
-				hardware.setReceiveDate( starsDateFormat.parse(fields[IDX_RECEIVE_DATE]) );
+				inv.setReceiveDate( starsDateFormat.parse(fields[IDX_RECEIVE_DATE]) );
 			}
 			catch (java.text.ParseException e) {}
 		}
 		
 		if (fields[IDX_INSTALL_DATE].length() > 0) {
-			hardware.setInstallDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(
+			inv.setInstallDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(
 					fields[IDX_INSTALL_DATE], energyCompany.getDefaultTimeZone()) );
 			
-			if (hardware.getInstallDate() == null) {
+			if (inv.getInstallDate() == null) {
 				try {
-					hardware.setInstallDate( starsDateFormat.parse(fields[IDX_INSTALL_DATE]) );
+					inv.setInstallDate( starsDateFormat.parse(fields[IDX_INSTALL_DATE]) );
 				}
 				catch (java.text.ParseException e) {}
 			}
 		}
 		
 		if (fields[IDX_REMOVE_DATE].length() > 0) {
-			hardware.setRemoveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(
+			inv.setRemoveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(
 					fields[IDX_REMOVE_DATE], energyCompany.getDefaultTimeZone()) );
 		}
 		
@@ -1351,17 +1352,17 @@ public class StarsAdmin extends HttpServlet {
 			// If importing old STARS data, this field is the device voltage id
 			Voltage volt = new Voltage();
 			volt.setEntryID( Integer.parseInt(fields[IDX_DEVICE_VOLTAGE]) );
-			hardware.setVoltage( volt );
+			inv.setVoltage( volt );
 		}
 		
 		if (fields[IDX_DEVICE_STATUS].length() > 0) {
 			// If importing old STARS data, this field is the device staus id
 			DeviceStatus status = new DeviceStatus();
 			status.setEntryID( Integer.parseInt(fields[IDX_DEVICE_STATUS]) );
-			hardware.setDeviceStatus( status );
+			inv.setDeviceStatus( status );
 		}
 		else
-			hardware.setDeviceStatus( null );
+			inv.setDeviceStatus( null );
 		
 		if (fields[IDX_SERVICE_COMPANY].length() > 0) {
 			try {
@@ -1369,7 +1370,7 @@ public class StarsAdmin extends HttpServlet {
 				int companyID = Integer.parseInt( fields[IDX_SERVICE_COMPANY] );
 				InstallationCompany company = new InstallationCompany();
 				company.setEntryID( companyID );
-				hardware.setInstallationCompany( company );
+				inv.setInstallationCompany( company );
 			}
 			catch (NumberFormatException e) {
 				// Otherwise, this field is the service company name
@@ -1381,11 +1382,26 @@ public class StarsAdmin extends HttpServlet {
 					if (entry.getCompanyName().equalsIgnoreCase( fields[IDX_SERVICE_COMPANY] )) {
 						InstallationCompany company = new InstallationCompany();
 						company.setEntryID( entry.getCompanyID() );
-						hardware.setInstallationCompany( company );
+						inv.setInstallationCompany( company );
 						break;
 					}
 				}
 			}
+		}
+		
+		if (fields[IDX_DEVICE_NAME].equals("")) {
+			LMHardware hw = new LMHardware();
+			LMHardwareType hwType = new LMHardwareType();
+			hwType.setEntryID( Integer.parseInt(fields[IDX_DEVICE_TYPE]) );
+			hw.setManufacturerSerialNumber( fields[IDX_SERIAL_NO] );
+			
+			inv.setLMHardware( hw );
+		}
+		else {	// Now we only have meters
+			MCT mct = new MCT();
+			mct.setDeviceName( fields[IDX_DEVICE_NAME] );
+			
+			inv.setMCT( mct );
 		}
 	}
 	
@@ -1408,17 +1424,16 @@ public class StarsAdmin extends HttpServlet {
 				throw new Exception("Cannot insert hardware with serial # " + fields[IDX_SERIAL_NO] + " because it already exists");
 			
 			createHw = new StarsCreateLMHardware();
-			StarsLiteFactory.setStarsLMHw( createHw, liteHw, energyCompany );
+			StarsLiteFactory.setStarsInv( createHw, liteHw, energyCompany );
 			createHw.setInstallDate( new java.util.Date() );
 			createHw.setRemoveDate( new java.util.Date(0) );
 			createHw.setInstallationNotes( "" );
 		}
 		else {
-			createHw = (StarsCreateLMHardware) StarsFactory.newStarsInventory(StarsCreateLMHardware.class);
-			createHw.getLMDeviceType().setEntryID( devTypeID );
+			createHw = (StarsCreateLMHardware) StarsFactory.newStarsInv(StarsCreateLMHardware.class);
 		}
 		
-		setStarsLMHardware( createHw, fields, energyCompany );
+		setStarsInventory( createHw, fields, energyCompany );
 		
 		StarsOperation operation = new StarsOperation();
 		operation.setStarsCreateLMHardware( createHw );
@@ -1460,17 +1475,16 @@ public class StarsAdmin extends HttpServlet {
 		
 		if (liteHw != null) {
 			updateHw = new StarsUpdateLMHardware();
-			StarsLiteFactory.setStarsLMHw( updateHw, liteHw, energyCompany );
+			StarsLiteFactory.setStarsInv( updateHw, liteHw, energyCompany );
 			updateHw.setInstallDate( new java.util.Date() );
 			updateHw.setRemoveDate( new java.util.Date(0) );
 			updateHw.setInstallationNotes( "" );
 		}
 		else {
-			updateHw = (StarsUpdateLMHardware) StarsFactory.newStarsInventory(StarsUpdateLMHardware.class);
-			updateHw.getLMDeviceType().setEntryID( devTypeID );
+			updateHw = (StarsUpdateLMHardware) StarsFactory.newStarsInv(StarsUpdateLMHardware.class);
 		}
 		
-		setStarsLMHardware( updateHw, fields, energyCompany );
+		setStarsInventory( updateHw, fields, energyCompany );
 		
 		int invIDOld = ((Integer) liteAcctInfo.getInventories().get(0)).intValue();
 		LiteStarsLMHardware liteHwOld = (LiteStarsLMHardware) energyCompany.getInventory( invIDOld, true );
@@ -1479,7 +1493,7 @@ public class StarsAdmin extends HttpServlet {
 		operation.setStarsUpdateLMHardware( updateHw );
 		
 		// Remove the old hardware if necessary
-		if (!liteHwOld.getManufactureSerialNumber().equals( fields[IDX_SERIAL_NO] )) {
+		if (!liteHwOld.getManufacturerSerialNumber().equals( fields[IDX_SERIAL_NO] )) {
 			StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
 			deleteHw.setInventoryID( invIDOld );
 			deleteHw.setDeleteFromInventory( false );
@@ -1522,7 +1536,7 @@ public class StarsAdmin extends HttpServlet {
 			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
 			LiteStarsLMHardware hardware = (LiteStarsLMHardware) energyCompany.getInventory(invID, true);
 			
-			if (hardware.getManufactureSerialNumber().equals( fields[IDX_SERIAL_NO] )) {
+			if (hardware.getManufacturerSerialNumber().equals( fields[IDX_SERIAL_NO] )) {
 				liteHw = hardware;
 				break;
 			}
@@ -2484,8 +2498,8 @@ public class StarsAdmin extends HttpServlet {
 					if (liteHw != null)
 						throw new Exception("Cannot insert hardware with serial # " + fields[IDX_SERIAL_NO] + " because it already exists");
 					
-					StarsCreateLMHardware createHw = (StarsCreateLMHardware) StarsFactory.newStarsInventory(StarsCreateLMHardware.class);
-					setStarsLMHardware( createHw, fields, energyCompany );
+					StarsCreateLMHardware createHw = (StarsCreateLMHardware) StarsFactory.newStarsInv(StarsCreateLMHardware.class);
+					setStarsInventory( createHw, fields, energyCompany );
 					
 					com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
 							new com.cannontech.database.data.stars.hardware.LMHardwareBase();

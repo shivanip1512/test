@@ -24,7 +24,6 @@ import com.cannontech.stars.xml.serialize.CallType;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
 import com.cannontech.stars.xml.serialize.Email;
 import com.cannontech.stars.xml.serialize.InstallationCompany;
-import com.cannontech.stars.xml.serialize.LMDeviceType;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.StarsApp;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
@@ -36,10 +35,8 @@ import com.cannontech.stars.xml.serialize.StarsCustResidence;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 import com.cannontech.stars.xml.serialize.StarsCustomerContact;
-import com.cannontech.stars.xml.serialize.StarsDevice;
 import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsInventory;
-import com.cannontech.stars.xml.serialize.StarsLMHw;
+import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
 import com.cannontech.stars.xml.serialize.StarsSrvReq;
 import com.cannontech.stars.xml.serialize.StarsThermostatSchedule;
@@ -482,9 +479,9 @@ public class StarsFactory {
     
     /* StarsInventory factory methods */
 
-	public static StarsInventory newStarsInventory(Class type) {
+	public static StarsInv newStarsInv(Class type) {
 		try {
-			StarsInventory starsInv = (StarsInventory) type.newInstance();
+			StarsInv starsInv = (StarsInv) type.newInstance();
 			
 			starsInv.setInventoryID( -1 );
 			starsInv.setDeviceID( CtiUtilities.NONE_ID );
@@ -497,14 +494,6 @@ public class StarsFactory {
 			starsInv.setInstallationNotes( "" );
 			starsInv.setDeviceStatus( (DeviceStatus) newEmptyStarsCustListEntry(DeviceStatus.class) );
 			
-			if (starsInv instanceof StarsLMHw) {
-				((StarsLMHw)starsInv).setManufactureSerialNumber( "" );
-				((StarsLMHw)starsInv).setLMDeviceType( (LMDeviceType) newEmptyStarsCustListEntry(LMDeviceType.class) );
-			}
-			else if (starsInv instanceof StarsDevice) {
-				((StarsDevice)starsInv).setDeviceName( "" );
-			}
-			
 			return starsInv;
 		}
 		catch (Exception e) {
@@ -514,9 +503,9 @@ public class StarsFactory {
 		return null;
 	}
 
-	public static StarsInventory newStarsInventory(StarsInventory inv, Class type) {
+	public static StarsInv newStarsInv(StarsInv inv, Class type) {
 		try {
-			StarsInventory starsInv = (StarsInventory) type.newInstance();
+			StarsInv starsInv = (StarsInv) type.newInstance();
 			
 			starsInv.setInventoryID( inv.getInventoryID() );
 			starsInv.setDeviceID( inv.getDeviceID() );
@@ -533,13 +522,8 @@ public class StarsFactory {
 			starsInv.setDeviceStatus( inv.getDeviceStatus() );
 			starsInv.setStarsLMHardwareHistory( inv.getStarsLMHardwareHistory() );
 			
-			if (starsInv instanceof StarsLMHw && inv instanceof StarsLMHw) {
-				((StarsLMHw)starsInv).setManufactureSerialNumber( ((StarsLMHw)inv).getManufactureSerialNumber() );
-				((StarsLMHw)starsInv).setLMDeviceType( ((StarsLMHw)inv).getLMDeviceType() );
-			}
-			else if (starsInv instanceof StarsDevice && inv instanceof StarsDevice) {
-				((StarsDevice)starsInv).setDeviceName( ((StarsDevice)inv).getDeviceName() );
-			}
+			starsInv.setLMHardware( inv.getLMHardware() );
+			starsInv.setMCT( inv.getMCT() );
 			
 			return starsInv;
 		}
@@ -550,26 +534,27 @@ public class StarsFactory {
 		return null;
 	}
 	
-	public static void setInventoryBase(com.cannontech.database.db.stars.hardware.InventoryBase invDB, StarsLMHw starsHw) {
-		if (starsHw.getInstallationCompany() != null)
-			invDB.setInstallationCompanyID( new Integer(starsHw.getInstallationCompany().getEntryID()) );
-		if (starsHw.getReceiveDate() != null)
-			invDB.setReceiveDate( starsHw.getReceiveDate() );
-		if (starsHw.getInstallDate() != null)
-			invDB.setInstallDate( starsHw.getInstallDate() );
-		if (starsHw.getRemoveDate() != null)
-			invDB.setRemoveDate( starsHw.getRemoveDate() );
-		invDB.setAlternateTrackingNumber( starsHw.getAltTrackingNumber() );
-		if (starsHw.getVoltage() != null)
-			invDB.setVoltageID( new Integer(starsHw.getVoltage().getEntryID()) );
-		invDB.setNotes( starsHw.getNotes() );
-		invDB.setDeviceID( new Integer(starsHw.getDeviceID()) );
-		if (starsHw.getDeviceLabel().trim().length() > 0)
-			invDB.setDeviceLabel( starsHw.getDeviceLabel() );
-		else if (starsHw.getDeviceID() > 0)
-			invDB.setDeviceLabel( PAOFuncs.getYukonPAOName(starsHw.getDeviceID()) );
-		else
-			invDB.setDeviceLabel( starsHw.getManufactureSerialNumber() );
+	public static void setInventoryBase(com.cannontech.database.db.stars.hardware.InventoryBase invDB, StarsInv starsInv) {
+		if (starsInv.getInstallationCompany() != null)
+			invDB.setInstallationCompanyID( new Integer(starsInv.getInstallationCompany().getEntryID()) );
+		if (starsInv.getReceiveDate() != null)
+			invDB.setReceiveDate( starsInv.getReceiveDate() );
+		if (starsInv.getInstallDate() != null)
+			invDB.setInstallDate( starsInv.getInstallDate() );
+		if (starsInv.getRemoveDate() != null)
+			invDB.setRemoveDate( starsInv.getRemoveDate() );
+		invDB.setAlternateTrackingNumber( starsInv.getAltTrackingNumber() );
+		if (starsInv.getVoltage() != null)
+			invDB.setVoltageID( new Integer(starsInv.getVoltage().getEntryID()) );
+		invDB.setNotes( starsInv.getNotes() );
+		invDB.setDeviceID( new Integer(starsInv.getDeviceID()) );
+		
+		if (starsInv.getDeviceLabel().length() > 0)
+			invDB.setDeviceLabel( starsInv.getDeviceLabel() );
+		else if (starsInv.getDeviceID() > 0)
+			invDB.setDeviceLabel( PAOFuncs.getYukonPAOName(starsInv.getDeviceID()) );
+		else if (starsInv.getLMHardware() != null)
+			invDB.setDeviceLabel( starsInv.getLMHardware().getManufacturerSerialNumber() );
 	}
 	
 	

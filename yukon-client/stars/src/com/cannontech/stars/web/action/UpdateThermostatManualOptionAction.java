@@ -21,7 +21,7 @@ import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsLMHardware;
+import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsThermostatManualEvent;
 import com.cannontech.stars.xml.serialize.StarsUpdateThermostatManualOption;
@@ -153,7 +153,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 					return SOAPUtil.buildSOAPMessage( respOper );
 				}
     			
-				if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
+				if (liteHw.getManufacturerSerialNumber().trim().length() == 0) {
 					if (ServerUtils.isOperator( user )) {
 						String errorMsg = (invIDs.length == 1)?
 								"The serial # of the thermostat cannot be empty, manual option is not sent." :
@@ -188,7 +188,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 					if (starsOption.getHold())
 						cmd.append(" hold");
 				}
-				cmd.append(" serial ").append(liteHw.getManufactureSerialNumber());
+				cmd.append(" serial ").append(liteHw.getManufacturerSerialNumber());
 				
 				com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
 				synchronized (yc) {
@@ -290,11 +290,11 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             String confirmMsg = "Thermostat settings has been sent.";
             
             for (int i = 0; i < invIDs.length; i++) {
-				for (int j = 0; j < accountInfo.getStarsInventories().getStarsLMHardwareCount(); j++) {
-					StarsLMHardware hardware = accountInfo.getStarsInventories().getStarsLMHardware(j);
+				for (int j = 0; j < accountInfo.getStarsInventories().getStarsInventoryCount(); j++) {
+					StarsInventory inv = accountInfo.getStarsInventories().getStarsInventory(j);
 					
-					if (hardware.getInventoryID() == invIDs[i]) {
-						hardware.getStarsThermostatSettings().addStarsThermostatManualEvent( resp.getStarsThermostatManualEvent() );
+					if (inv.getInventoryID() == invIDs[i]) {
+						inv.getLMHardware().getStarsThermostatSettings().addStarsThermostatManualEvent( resp.getStarsThermostatManualEvent() );
 						break;
 					}
 				}
