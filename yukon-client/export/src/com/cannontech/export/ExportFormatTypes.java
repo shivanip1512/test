@@ -21,9 +21,9 @@ public class ExportFormatTypes
 
 	public static String [] formatWrapperConf = 
 	{
-		"\\csvwrapper.conf",
-		"\\dbwrapper.conf",
-		"\\ionwrapper.conf"
+		"csvwrapper.conf",
+		"dbwrapper.conf",
+		"ionwrapper.conf"
 	};
 
 	public static String [] formatDatFileName = 
