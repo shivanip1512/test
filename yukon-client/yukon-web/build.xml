@@ -76,16 +76,20 @@
                 <exclude name="jspbuild/**" />
                 <exclude name="work/**" />
                 <exclude name="**/CVS" />
-                <exclude name="WEB-INF/web.xml" />
+                <exclude name="WEB-INF/web.xml" />                
+
+
+                <exclude name="**/.*" />
+                <exclude name="**/build.xml" />
             </fileset>
         </copy>
 
 		<!-- Put all the Yukon JAR files in here that are needed by the webserver -->
         <copy todir="build/WEB-INF/lib">
            <fileset dir="${yukon.lib}" >
-              <exclude name="*.properties"/>              
-              <exclude name="*.war"/>
+              <include name="**/*.jar" />
               <exclude name="j2ee.jar"/>
+              
            </fileset>
         </copy>
 
@@ -97,8 +101,7 @@
         </copy>
 		
 	    <war destfile="${yukon.lib}/yukon-web.war" basedir="build"
-	        webxml="WEB-INF/web.xml"
-	        duplicate="preserve">
+	        webxml="WEB-INF/web.xml" duplicate="preserve">
 	    </war>
 
 <!--
