@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/dllmain.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:35:29 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/05/23 22:16:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -72,8 +72,7 @@ BOOL APIENTRY DllMain(HANDLE hModule,
          {
             // Oh no, porter is running on this machine already.
             CloseHandle(hPorterEvents[ P_QUIT_EVENT ]);
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Porter is already running!" << endl;
+            cout << "Porter is already running!" << endl;
             exit(-1);
          }
 
@@ -83,8 +82,7 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 
             if(hPorterEvents[ i ] == (HANDLE)NULL)
             {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << "Couldn't create porter event # " << i << " " << PorterSyncs[i].syncObjName << endl;
+               cerr << "Couldn't create porter event # " << i << " " << PorterSyncs[i].syncObjName << endl;
                exit(-1);
             }
          }
