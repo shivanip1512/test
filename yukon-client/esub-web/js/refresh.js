@@ -140,12 +140,13 @@ function updateNode(node) {
 
 
 function updateImage(node) {
-		
-		url = '/servlet/StateImageServlet' + '?' + 'id=' + node.getAttribute('id');
-		getURL(url, fn);
-	
-
-
+	var imageID = node.getAttribute('id');
+    if( !isNaN(imageID) ) {        
+        alert(imageID);
+        url = '/servlet/StateImageServlet' + '?' + 'id=' + node.getAttribute('id');
+        getURL(url, fn);
+    }
+    
 	function fn(obj) {
 		//confirm(obj.content);
 	    if (obj.content) {  
