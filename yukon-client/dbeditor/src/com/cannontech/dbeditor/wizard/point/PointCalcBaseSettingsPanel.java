@@ -207,7 +207,6 @@ public Object getValue(Object val) {
 		
 		point.getCalcBase().setUpdateType((String)getUpdateTypeComboBox().getSelectedItem());
 		point.getCalcBase().setPeriodicRate(com.cannontech.common.util.CtiUtilities.getIntervalComboBoxSecondsValue(getPeriodicRateComboBox()));
-		point.getPoint().setStateGroupID( new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_CALCULATED) );
 		//point.getPoint().setPseudoFlag(new Character('P'));
 		point.getPoint().setPointOffset(new Integer(0));
 	}

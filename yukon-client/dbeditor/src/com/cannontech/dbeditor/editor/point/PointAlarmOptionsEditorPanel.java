@@ -1003,7 +1003,8 @@ public void setValue(Object val)
 			throw new ArrayIndexOutOfBoundsException("No AlarmStates exist, unable to create alarms, occured in " + this.getClass() );
 	   
       
-		if( ptType == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
+		if( ptType == com.cannontech.database.data.point.PointTypes.STATUS_POINT
+			|| ptType == com.cannontech.database.data.point.PointTypes.CALCULATED_STATUS_POINT )
 		{
 			String[] stateNames = null;
 

@@ -143,7 +143,8 @@ public void initialize()
  */
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel)
 {
-	if ((currentPanel == getPointCopyNameDevicePanel()) && (getPointType() == PointTypes.CALCULATED_POINT))
+	if ((currentPanel == getPointCopyNameDevicePanel()) 
+		&& ((getPointType() == PointTypes.CALCULATED_POINT) || (getPointType() == PointTypes.CALCULATED_STATUS_POINT)))
 		return true;
 	else if (currentPanel == getPointCopyNameDevicePanel())
 		return false;
