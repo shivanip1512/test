@@ -309,7 +309,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
 
             if(_calcpoint != NULL && componentPointPtr != NULL)
             {
-                DOUBLE componentPointValue = componentPointPtr->getPointValue();
+                double componentPointValue = componentPointPtr->getPointValue();
 
                 _lastUseUpdateNum = componentPointPtr->getNumUpdates( );
                 _calcpoint->push( componentPointValue );
@@ -442,7 +442,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
                 Rating = 1.0;
             }
 
-            DOUBLE NaNDefenseDouble = (LoadWatts*LoadWatts)+(LoadVARs*LoadVARs);
+            double NaNDefenseDouble = (LoadWatts*LoadWatts)+(LoadVARs*LoadVARs);
             if( NaNDefenseDouble <= 0.0 )
             {
                 Load = 0.0;
@@ -477,12 +477,12 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         }
         else if( !functionName.compareTo("P-Factor KW/KVar",RWCString::ignoreCase) )
         {
-            DOUBLE kvar = _calcpoint->pop();
-            DOUBLE kw = _calcpoint->pop();
-            DOUBLE newPowerFactorValue = 1.0;
-            DOUBLE kva = 0.0;
+            double kvar = _calcpoint->pop();
+            double kw = _calcpoint->pop();
+            double newPowerFactorValue = 1.0;
+            double kva = 0.0;
 
-            DOUBLE NaNDefenseDouble = (kw*kw)+(kvar*kvar);
+            double NaNDefenseDouble = (kw*kw)+(kvar*kvar);
             if( NaNDefenseDouble <= 0.0 )
             {
                 kva = 0.0;
@@ -504,13 +504,13 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         }
         else if( !functionName.compareTo("P-Factor KW/KQ",RWCString::ignoreCase) )
         {
-            DOUBLE kq = _calcpoint->pop();
-            DOUBLE kw = _calcpoint->pop();
-            DOUBLE kvar = ((2.0*kq)-kw)/SQRT3;
-            DOUBLE newPowerFactorValue = 1.0;
-            DOUBLE kva = 0.0;
+            double kq = _calcpoint->pop();
+            double kw = _calcpoint->pop();
+            double kvar = ((2.0*kq)-kw)/SQRT3;
+            double newPowerFactorValue = 1.0;
+            double kva = 0.0;
 
-            DOUBLE NaNDefenseDouble = (kw*kw)+(kvar*kvar);
+            double NaNDefenseDouble = (kw*kw)+(kvar*kvar);
             if( NaNDefenseDouble <= 0.0 )
             {
                 kva = 0.0;
@@ -532,9 +532,9 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         }
         else if( !functionName.compareTo("P-Factor KW/KVa",RWCString::ignoreCase) )
         {
-            DOUBLE kva = _calcpoint->pop();
-            DOUBLE kw = _calcpoint->pop();
-            DOUBLE newPowerFactorValue = 1.0;
+            double kva = _calcpoint->pop();
+            double kw = _calcpoint->pop();
+            double newPowerFactorValue = 1.0;
 
             if( kva != 0.0 )
             {
@@ -554,19 +554,19 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         //added 3/4/03 JW
         else if( !functionName.compareTo("KVar from KW/KQ",RWCString::ignoreCase) )
         {
-            DOUBLE kq = _calcpoint->pop();
-            DOUBLE kw = _calcpoint->pop();
-            DOUBLE kvar = ((2.0*kq)-kw)/SQRT3;
+            double kq = _calcpoint->pop();
+            double kw = _calcpoint->pop();
+            double kvar = ((2.0*kq)-kw)/SQRT3;
 
             retVal = kvar;
         }
         else if( !functionName.compareTo("KVa from KW/KVar",RWCString::ignoreCase) )
         {
-            DOUBLE kvar = _calcpoint->pop();
-            DOUBLE kw = _calcpoint->pop();
+            double kvar = _calcpoint->pop();
+            double kw = _calcpoint->pop();
 
-            DOUBLE NaNDefenseDouble = (kw*kw)+(kvar*kvar);
-            DOUBLE kva = 0.0;
+            double NaNDefenseDouble = (kw*kw)+(kvar*kvar);
+            double kva = 0.0;
             if( NaNDefenseDouble <= 0.0 )
             {
                 kva = 0.0;
@@ -580,12 +580,12 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         }
         else if( !functionName.compareTo("KVa from KW/KQ",RWCString::ignoreCase) )
         {
-            DOUBLE kq = _calcpoint->pop();
-            DOUBLE kw = _calcpoint->pop();
-            DOUBLE kvar = ((2.0*kq)-kw)/SQRT3;
+            double kq = _calcpoint->pop();
+            double kw = _calcpoint->pop();
+            double kvar = ((2.0*kq)-kw)/SQRT3;
 
-            DOUBLE kva = 0.0;
-            DOUBLE NaNDefenseDouble = (kw*kw)+(kvar*kvar);
+            double kva = 0.0;
+            double NaNDefenseDouble = (kw*kw)+(kvar*kvar);
             if( NaNDefenseDouble <= 0.0 )
             {
                 kva = 0.0;
@@ -599,11 +599,11 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         }
         else if( !functionName.compareTo("KW from KVa/KVAR",RWCString::ignoreCase) )
         {
-            DOUBLE kvar = _calcpoint->pop();
-            DOUBLE kva = _calcpoint->pop();
+            double kvar = _calcpoint->pop();
+            double kva = _calcpoint->pop();
 
-            DOUBLE kw = 0.0;
-            DOUBLE NaNDefenseDouble = (kva*kva)-(kvar*kvar);
+            double kw = 0.0;
+            double NaNDefenseDouble = (kva*kva)-(kvar*kvar);
             if( NaNDefenseDouble <= 0.0 )
             {
                 kw = 0.0;
@@ -617,11 +617,11 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         }
         else if( !functionName.compareTo("KVAR from KW/KVa",RWCString::ignoreCase) )
         {
-            DOUBLE kva = _calcpoint->pop();
-            DOUBLE kw = _calcpoint->pop();
+            double kva = _calcpoint->pop();
+            double kw = _calcpoint->pop();
 
-            DOUBLE kvar = 0.0;
-            DOUBLE NaNDefenseDouble = (kva*kva)-(kw*kw);
+            double kvar = 0.0;
+            double NaNDefenseDouble = (kva*kva)-(kw*kw);
             if( NaNDefenseDouble <= 0.0 )
             {
                 kvar = 0.0;
@@ -635,13 +635,13 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         }
         else if( !functionName.compareTo("Squared",RWCString::ignoreCase) )
         {
-            DOUBLE componentPointValue = _calcpoint->pop( );;
+            double componentPointValue = _calcpoint->pop( );;
 
             retVal = componentPointValue*componentPointValue;
         }
         else if( !functionName.compareTo("Square Root",RWCString::ignoreCase) )
         {
-            DOUBLE componentPointValue = _calcpoint->pop( );;
+            double componentPointValue = _calcpoint->pop( );;
 
             if( componentPointValue <= 0.0 )
             {
@@ -654,11 +654,11 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         }
         else if( !functionName.compareTo("COS from P/Q",RWCString::ignoreCase) )
         {
-            DOUBLE q = _calcpoint->pop();
-            DOUBLE p = _calcpoint->pop();
+            double q = _calcpoint->pop();
+            double p = _calcpoint->pop();
             if(q != 0)
             {
-                DOUBLE temp = p/q;
+                double temp = p/q;
                 retVal = cos(temp);
             }
             else
@@ -671,27 +671,27 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         }
         else if( !functionName.compareTo("ArcTan",RWCString::ignoreCase) )
         {
-            DOUBLE componentPointValue = _calcpoint->pop( );;
+            double componentPointValue = _calcpoint->pop( );;
             retVal = atan(componentPointValue);
         }
         //added 3/4/03 JW
         //added 7/31/03 JW
         else if( !functionName.compareTo("X^Y",RWCString::ignoreCase) )
         {
-            DOUBLE y = _calcpoint->pop();
-            DOUBLE x = _calcpoint->pop();
+            double y = _calcpoint->pop();
+            double x = _calcpoint->pop();
             retVal = pow(x,y);
         }
         else if( !functionName.compareTo("Absolute Value",RWCString::ignoreCase) )
         {
-            DOUBLE a = _calcpoint->pop();
+            double a = _calcpoint->pop();
             retVal = fabs(a);
         }
         else if( !functionName.compareTo("Max Difference",RWCString::ignoreCase) )
         {
-            DOUBLE a = _calcpoint->pop();
-            DOUBLE b = _calcpoint->pop();
-            DOUBLE c = _calcpoint->pop();
+            double a = _calcpoint->pop();
+            double b = _calcpoint->pop();
+            double c = _calcpoint->pop();
 
             retVal = (fabs(a-b) + fabs(b-c) + fabs(c-a)) / 2.0;
 
@@ -736,6 +736,8 @@ double CtiCalcComponent::_figureDemandAvg(long secondsInAvg)
 
     try
     {
+        if(_componentPointId > 0) _calcpoint->pop();            // This function is special and will not consume this value.
+
         if( _updatesInCurrentAvg <= 1 )
         {
             RWTime currenttime;
@@ -749,62 +751,66 @@ double CtiCalcComponent::_figureDemandAvg(long secondsInAvg)
         CtiHashKey parentHashKey(_calcpoint->getPointId());
         CtiPointStoreElement* parentPointPtr = (CtiPointStoreElement*)((*pointStore)[&parentHashKey]);
 
-        if( componentPointPtr->getPointTime().seconds() >= (_calcpoint->getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime() - secondsInAvg) &&
-            componentPointPtr->getPointTime().seconds() < (_calcpoint->getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime()) )
-        {//is the last point data received in the average or not
-            if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Current Component Point Time: " << componentPointPtr->getPointTime().asString() << endl;
-                dout << "Current Point Calc Window End Time: " << _calcpoint->getPointCalcWindowEndTime().asString() << endl;
-                //dout << "Seconds Since Previous Point Time: " << componentPointPtr->getSecondsSincePreviousPointTime() << endl;
-            }
-            double componentPointValue = componentPointPtr->getPointValue();
-            double currentCalcPointValue = parentPointPtr->getPointValue();
-
-            double currentTotal = currentCalcPointValue * _updatesInCurrentAvg;
-            _updatesInCurrentAvg++;
-            retVal = (currentTotal + componentPointValue) / _updatesInCurrentAvg;
-
-            if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Current Calc Point Value: " << currentCalcPointValue << endl;
-                //dout << "Current Total: " << currentTotal << endl;
-                dout << "Updates In Current Avg: " << _updatesInCurrentAvg << endl;
-                dout << "Component Point Value: " << componentPointValue << endl;
-                dout << "New Calc Point Value: " << retVal << endl;
-                dout << "Will Send point change at: " << _calcpoint->getPointCalcWindowEndTime() << endl;
-            }
-        }
-        else
+        if(componentPointPtr && parentPointPtr)
         {
-            if( _updatesInCurrentAvg > 0 )
-            {
-                retVal = componentPointPtr->getPointValue();
-                _updatesInCurrentAvg = 1;
+            if( componentPointPtr->getPointTime().seconds() >= (_calcpoint->getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime() - secondsInAvg) &&
+                componentPointPtr->getPointTime().seconds() < (_calcpoint->getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime()) )
+            {//is the last point data received in the average or not
                 if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "***********NEW DEMAND AVERAGE BEGUN**************: " << endl;
-                    //dout << "Current Component Point Time: " << componentPointPtr->getPointTime().asString() << endl;
+                    dout << endl;
+                    dout << "Current Component Point Time: " << componentPointPtr->getPointTime().asString() << endl;
                     dout << "Current Point Calc Window End Time: " << _calcpoint->getPointCalcWindowEndTime().asString() << endl;
                     //dout << "Seconds Since Previous Point Time: " << componentPointPtr->getSecondsSincePreviousPointTime() << endl;
-                    dout << "New Initial Demand Avg: " << retVal << endl;
+                }
+                double componentPointValue = componentPointPtr->getPointValue();
+                double currentCalcPointValue = parentPointPtr->getPointValue();
+
+                double currentTotal = currentCalcPointValue * _updatesInCurrentAvg;
+                _updatesInCurrentAvg++;
+                retVal = (currentTotal + componentPointValue) / _updatesInCurrentAvg;
+
+                if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "Current Calc Point Value: " << currentCalcPointValue << endl;
+                    //dout << "Current Total: " << currentTotal << endl;
                     dout << "Updates In Current Avg: " << _updatesInCurrentAvg << endl;
-                    dout << "Previous demand average has a timestamp of: " << _calcpoint->getPointCalcWindowEndTime() << endl;
-                    dout << "Next demand average will have timestamp of: " << RWTime(_calcpoint->getPointCalcWindowEndTime().seconds()+secondsInAvg) << endl;
+                    dout << "Component Point Value: " << componentPointValue << endl;
+                    dout << "New Calc Point Value: " << retVal << endl;
+                    dout << "Will Send point change at: " << _calcpoint->getPointCalcWindowEndTime() << endl;
                 }
             }
             else
             {
-                retVal = componentPointPtr->getPointValue();
-                _updatesInCurrentAvg = 1;
-                if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
+                if( _updatesInCurrentAvg > 0 )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " - Calc Point Id: " << _calcpoint->getPointId()
-                    << " Demand Avg Reset!" << endl;
+                    retVal = componentPointPtr->getPointValue();
+                    _updatesInCurrentAvg = 1;
+                    if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << "***********NEW DEMAND AVERAGE BEGUN**************: " << endl;
+                        //dout << "Current Component Point Time: " << componentPointPtr->getPointTime().asString() << endl;
+                        dout << "Current Point Calc Window End Time: " << _calcpoint->getPointCalcWindowEndTime().asString() << endl;
+                        //dout << "Seconds Since Previous Point Time: " << componentPointPtr->getSecondsSincePreviousPointTime() << endl;
+                        dout << "New Initial Demand Avg: " << retVal << endl;
+                        dout << "Updates In Current Avg: " << _updatesInCurrentAvg << endl;
+                        dout << "Previous demand average has a timestamp of: " << _calcpoint->getPointCalcWindowEndTime() << endl;
+                        dout << "Next demand average will have timestamp of: " << RWTime(_calcpoint->getPointCalcWindowEndTime().seconds()+secondsInAvg) << endl;
+                    }
+                }
+                else
+                {
+                    retVal = componentPointPtr->getPointValue();
+                    _updatesInCurrentAvg = 1;
+                    if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " - Calc Point Id: " << _calcpoint->getPointId()
+                        << " Demand Avg Reset!" << endl;
+                    }
                 }
             }
         }

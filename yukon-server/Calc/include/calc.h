@@ -18,7 +18,6 @@ private:
     PointUpdateType      _updateType;
     ULONG                _nextInterval;
     int                  _updateInterval;
-//   int                  _updateInterval, _countdown;
     long                 _pointId;
     BOOL                 _valid;
     RWTime               _pointCalcWindowEndTime;
@@ -65,10 +64,6 @@ public:
     BOOL ready( void );
     void push( double );
     double pop( void );
-
-    //  see FIX_ME in calc.cpp
-    //void saveGuts( RWvostream &aStream ) const;
-    //void restoreGuts( RWvistream &aStream );
 };
 
 #endif   // #ifndef __CALC_H__
