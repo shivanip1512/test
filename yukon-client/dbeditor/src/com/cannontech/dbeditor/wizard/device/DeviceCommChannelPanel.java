@@ -11,6 +11,7 @@ import java.awt.event.MouseListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDLCBase;
@@ -215,7 +216,12 @@ public Object getValue(Object val)
 		//create new route to be added
 		com.cannontech.database.data.route.RouteBase route = com.cannontech.database.data.route.RouteFactory.createRoute(routeType);
 		Integer routeID = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID();
-		route.setRouteName( ((DeviceBase) val).getPAOName() );
+		
+		//make sure the name will fit in the DB!!
+		route.setRouteName(
+			( ((DeviceBase) val).getPAOName().length() <= TextFieldDocument.MAX_ROUTE_NAME_LENGTH 
+			  ? ((DeviceBase) val).getPAOName()
+			  : ((DeviceBase) val).getPAOName().substring(0, TextFieldDocument.MAX_ROUTE_NAME_LENGTH)) );
 		
 		//set default values for route tables		
 		route.setDeviceID( ((DeviceBase) val).getDevice().getDeviceID() );
