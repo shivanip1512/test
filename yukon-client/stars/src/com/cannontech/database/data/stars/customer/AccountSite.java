@@ -37,6 +37,9 @@ public class AccountSite extends DBPersistent {
     }
 
     public void delete() throws java.sql.SQLException {
+    	// Delete residence information
+    	delete( "CustomerResidence", "AccountSiteID", getAccountSite().getAccountSiteID() );
+    	
         getAccountSite().delete();
         getStreetAddress().delete();
         if (getSiteInformation() != null)
