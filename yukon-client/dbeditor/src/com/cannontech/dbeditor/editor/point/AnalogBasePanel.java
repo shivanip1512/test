@@ -509,7 +509,10 @@ private void initialize() {
 	{
 		java.util.List allUnitMeasures = cache.getAllUnitMeasures();
 		for(int i=0; i<allUnitMeasures.size(); i++)
-			getUnitOfMeasureComboBox().addItem( allUnitMeasures.get(i) );
+      {
+			getUnitOfMeasureComboBox().addItem( allUnitMeasures.get(i) );         
+      }
+
 	}
 
 	//Load the Archive Type combo box with default possible values

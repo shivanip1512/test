@@ -171,7 +171,7 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
 	((com.cannontech.database.data.point.ScalarPoint) newPoint2).setPointUnit(
 		new com.cannontech.database.db.point.PointUnit(
 			pointID,
-			new Integer(com.cannontech.database.db.point.PointUnit.UOMID_COUNTS),
+			new Integer(com.cannontech.database.data.point.PointUnits.UOMID_COUNTS),
 			new Integer(0), //allow no decimal places
 			new Double(0.0),
 			new Double(0.0)));

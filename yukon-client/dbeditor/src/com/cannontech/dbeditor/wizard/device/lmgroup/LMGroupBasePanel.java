@@ -343,7 +343,7 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 			((com.cannontech.database.data.point.ScalarPoint)annualPoint).setPointUnit(
 				new com.cannontech.database.db.point.PointUnit(
 					new Integer(ids[1]),
-					new Integer(com.cannontech.database.db.point.PointUnit.UOMID_COUNTS),
+					new Integer(com.cannontech.database.data.point.PointUnits.UOMID_COUNTS),
 					new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
 					new Double(0.0),
 					new Double(0.0)));
@@ -380,7 +380,7 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 			((com.cannontech.database.data.point.ScalarPoint)dailyPoint).setPointUnit(
 				new com.cannontech.database.db.point.PointUnit(
 					new Integer(ids[2]),
-					new Integer(com.cannontech.database.db.point.PointUnit.UOMID_COUNTS),
+					new Integer(com.cannontech.database.data.point.PointUnits.UOMID_COUNTS),
 					new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
 					new Double(0.0),
 					new Double(0.0)));
@@ -417,7 +417,7 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 			((com.cannontech.database.data.point.ScalarPoint)seasonPoint).setPointUnit(
 				new com.cannontech.database.db.point.PointUnit(
 					new Integer(ids[3]),
-					new Integer(com.cannontech.database.db.point.PointUnit.UOMID_COUNTS),
+					new Integer(com.cannontech.database.data.point.PointUnits.UOMID_COUNTS),
 					new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
 					new Double(0.0),
 					new Double(0.0)));
@@ -454,7 +454,7 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 			((com.cannontech.database.data.point.ScalarPoint)monthPoint).setPointUnit(
 				new com.cannontech.database.db.point.PointUnit(
 					new Integer(ids[4]),
-					new Integer(com.cannontech.database.db.point.PointUnit.UOMID_COUNTS),
+					new Integer(com.cannontech.database.data.point.PointUnits.UOMID_COUNTS),
 					new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
 					new Double(0.0),
 					new Double(0.0)));

@@ -162,7 +162,7 @@ public Object getValue(Object val)
 		((com.cannontech.database.data.point.ScalarPoint) newPoint).setPointUnit(
 			new com.cannontech.database.db.point.PointUnit(
 				pointID,
-				new Integer(com.cannontech.database.db.point.PointUnit.UOMID_KWH),
+				new Integer(com.cannontech.database.data.point.PointUnits.UOMID_KWH),
 				new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
 				new Double(0.0),
 				new Double(0.0)));

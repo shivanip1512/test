@@ -1,5 +1,4 @@
 package com.cannontech.dbeditor.wizard.capsubbus;
-
 import com.cannontech.database.db.device.*;
 import com.cannontech.database.data.*;
 import com.cannontech.database.data.device.*;
@@ -18,26 +17,56 @@ public class CCSubstationBusPointSettingsPanel extends com.cannontech.common.gui
 	private javax.swing.JLabel ivjCalculatedVarDeviceLabel = null;
 	private javax.swing.JComboBox ivjCalculatedVarPointComboBox = null;
 	private javax.swing.JLabel ivjCalculatedVarPointLabel = null;
-	private java.util.List points = null;
+   //store this object locally so we dont have to hit the database every time
+   // the user clicks a VAR device
+	private final com.cannontech.database.data.lite.LitePoint[] ALL_POINTS;
+   private final com.cannontech.database.data.lite.LitePoint[] VAR_POINTS;
+   private final com.cannontech.database.data.lite.LitePoint[] WATT_POINTS;
 	private javax.swing.JPanel ivjJPanelCurrentVars = null;
 	private javax.swing.JComboBox ivjJComboBoxCalcWattsDevice = null;
 	private javax.swing.JComboBox ivjJComboBoxCalcWattsPoint = null;
 	private javax.swing.JLabel ivjJLabelCalcWattsDevice = null;
 	private javax.swing.JLabel ivjJLabelCalcWattsPoint = null;
 	private javax.swing.JPanel ivjJPanelCurrentWatts = null;
-
-	//store this object locally so we dont have to hit the database every time
-	// the user clicks a VAR device
 	private com.cannontech.common.util.NativeIntVector usedVARPtIDs = new com.cannontech.common.util.NativeIntVector(10);
-	
+	private javax.swing.JCheckBox ivjJCheckBoxDisplayVars = null;
+	private javax.swing.JCheckBox ivjJCheckBoxDisplayWatts = null;
+
 /**
  * Constructor
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-public CCSubstationBusPointSettingsPanel() {
+public CCSubstationBusPointSettingsPanel() 
+{
 	super();
+   
+   com.cannontech.database.cache.DefaultDatabaseCache cache =
+               com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+
+   synchronized(cache)
+   {
+      java.util.List ptList = cache.getAllPoints();
+      ALL_POINTS = new com.cannontech.database.data.lite.LitePoint[ptList.size()];
+      ptList.toArray( ALL_POINTS );
+      
+      java.util.Arrays.sort(ALL_POINTS, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator);
+   }   
+
+
+   VAR_POINTS = com.cannontech.database.cache.functions.PointFuncs.getLitePointsByUOMID(
+            com.cannontech.database.data.point.PointUnits.CAP_CONTROL_VAR_UOMIDS);            
+   java.util.Arrays.sort(VAR_POINTS, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator);
+
+
+   WATT_POINTS = com.cannontech.database.cache.functions.PointFuncs.getLitePointsByUOMID(
+            com.cannontech.database.data.point.PointUnits.CAP_CONTROL_WATTS_UOMIDS);   
+   java.util.Arrays.sort(WATT_POINTS, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator);
+
+   
 	initialize();
 }
+
+
 /**
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
@@ -54,9 +83,14 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC4(e);
 	if (e.getSource() == getCalculatedVarPointComboBox()) 
 		connEtoC2(e);
+	if (e.getSource() == getJCheckBoxDisplayVars()) 
+		connEtoC5(e);
+	if (e.getSource() == getJCheckBoxDisplayWatts()) 
+		connEtoC6(e);
 	// user code begin {2}
 	// user code end
 }
+
 /**
  * Comment
  */
@@ -71,16 +105,22 @@ public void calculatedVarDeviceComboBox_ActionPerformed(java.awt.event.ActionEve
 		if( getCalculatedVarPointComboBox().getModel().getSize() > 0 )
 			getCalculatedVarPointComboBox().removeAllItems();
 
-		for(int i=0;i<points.size();i++)
+      //either use all points or just the VAR points
+      com.cannontech.database.data.lite.LitePoint[] altPoints = ALL_POINTS;
+      if( getJCheckBoxDisplayVars().isSelected() )
+         altPoints = VAR_POINTS;
+         
+
+		for( int i = 0; i < altPoints.length; i++)
 		{
-			com.cannontech.database.data.lite.LitePoint point = (com.cannontech.database.data.lite.LitePoint)points.get(i);
+			com.cannontech.database.data.lite.LitePoint point = (com.cannontech.database.data.lite.LitePoint)altPoints[i];
 
 			if( deviceID == point.getPaobjectID()
 				 && (point.getPointType() == com.cannontech.database.data.point.PointTypes.ANALOG_POINT
 					  || point.getPointType() == com.cannontech.database.data.point.PointTypes.CALCULATED_POINT)				
 				 && !usedVARPtIDs.contains(point.getPointID()) )
 			{
-				getCalculatedVarPointComboBox().addItem(points.get(i));
+				getCalculatedVarPointComboBox().addItem( altPoints[i] );
 			}
 			else if( deviceID < point.getPaobjectID() )
 				break;
@@ -89,6 +129,8 @@ public void calculatedVarDeviceComboBox_ActionPerformed(java.awt.event.ActionEve
 	
 	return;
 }
+
+
 /**
  * connEtoC1:  (CalculatedVarDeviceComboBox.action.actionPerformed(java.awt.event.ActionEvent) --> CCSubstationBusPointSettingsPanel.calculatedVarDeviceComboBox_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
@@ -107,6 +149,8 @@ private void connEtoC1(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
+
 /**
  * connEtoC2:  (CalculatedVarPointComboBox.action.actionPerformed(java.awt.event.ActionEvent) --> CCSubstationBusPointSettingsPanel.calculatedVarPointComboBox_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
@@ -125,6 +169,8 @@ private void connEtoC2(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
+
 /**
  * connEtoC3:  (JComboBoxCalcWattsDevice.action.actionPerformed(java.awt.event.ActionEvent) --> CCSubstationBusPointSettingsPanel.jComboBoxCalcWattsDevice_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
@@ -143,6 +189,8 @@ private void connEtoC3(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
+
 /**
  * connEtoC4:  (JComboBoxCalcWattsPoint.action.actionPerformed(java.awt.event.ActionEvent) --> CCSubstationBusPointSettingsPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
@@ -161,6 +209,94 @@ private void connEtoC4(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
+
+/**
+ * connEtoC5:  (JCheckBoxDisplayVars.action.actionPerformed(java.awt.event.ActionEvent) --> CCSubstationBusPointSettingsPanel.jCheckBoxDisplayVars_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC5(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.jCheckBoxDisplayVars_ActionPerformed(arg1);
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+
+
+/**
+ * connEtoC6:  (JCheckBoxDisplayWatts.action.actionPerformed(java.awt.event.ActionEvent) --> CCSubstationBusPointSettingsPanel.jCheckBoxDisplayWatts_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC6(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.jCheckBoxDisplayWatts_ActionPerformed(arg1);
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+
+
+/**
+ * 
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private static void getBuilderData() {
+/*V1.1
+**start of data**
+	D0CB838494G88G88G7DD568ACGGGGGGGGGGGG8CGGGE2F5E9ECE4E5F2A0E4E1F4E14DBC8DF8D4553174BDDA31C2C5C12514A2BF41860990B1821528D1828689828A1696DE9BDB5A52A7A03E66D9DE9F2F5EACC9B6A1BFA4A1C8945070EB501884C49F84AC01C4A0385A94D20CC24D5E6C5EE4B7596CAE3BB712C054B767E74E3D3BFBB7A1D87A647B06FB4F1CB9F3664C4CB9E74E1C3B118ADF9B1516E2AA142414B4097F7B5F94C90ABDA7C9B955E336A1EE790D9633247B379DA0DF7ACDCE
+	AABC57C0DD62AFAC66BCE94E7E8CA8E7FF57E2DE7E34453C995EB7CAAEF53E85DE42749389F5D31EBD73CE4F7D3CE545FE4C34FCEBFAB6BCF38172202F83G7D3ECB7A3FBB3D08639B201C4B5F892418A449F29321D969AC526163B9DDB1549DGD8CDE9E626EF6575C321CCE8226099F79323DD8C4FCCAA5D37AB8FF23A8B370C12129F5FEA4AA1FD6978A39C9C485ADE604FE2A902AAE21DE4EB290367113A3616BF5BBC6DE5B6596D7638D54566A833B7A9F6276A7115DDF2DE16FDF628727ABB1A1ABA7C1515
+	5555E7BB1A7C2A2CBABD6E639D7EBA0F532D1ED5D45569EE715749EE4515B8100CE3E3EB866D8346816506C184F7D3AB51DD9E3C17GD48D4231AC48B902E3EE9BA5A50D5D90F6ACA38631B1448D5246927D61C51377FB047FAAEA9B52CE0272C1GA64B3BE614A566FBA84B33B6C23B824A29B7DB4CDBEFC67CE4BB419F00328540FEB34A785E6BA8E34315C9D2443D0D699B424858FDB313AD62E6CD46DDD597CDAFD37F7931CCFCA0896AD287DB4CC5GC7GAEGF483EC21FE2BDA5F006731A6355A535E6EF1
+	9F73FA0F3B6C3E8FBDF645856F1515D043F1E7941B47E717A4661BC52D258672A08C9D9C6817845858BE165017224E5CA58D35DA53538C46963368D5D3A46791BBD89B1BF48B515B3AB622372500A76D087D983E0062EBEE51704CD637D0DFA0E58754AD3C85755C100B32D8D207CBF97B0E194C86328CFB74DDD3552DCC0606DBB5D9180E0758080E7B83FE9440B40079G2B817206200E9F323E5D1B0EEBE1AE785C328B7C5DAB7B54639DCE17DD71F1DDA7277724EBA3E06DCC663E36E3FA09FCDBEF232577D5
+	996AE5E964EED36990260F1AA11ADED85F074376ED9F926A9B3942060DF4CEF48EE1B6DCA770CE0A9F2043B35BBECF6796A98F033A35G0C7E8D05602DC303FD649045779F9A6CA3536C68A311D0D7F81B454C6C3BCFA1EBE4BFA80FG0881C884D88110F1BB4C655B514619F279D54E23BA1DFDD95BC765176029F42ABE39568D4B1D5B261C13FDCE39492578A5CEB3C7A6FAED8AE8B71F4EEF9B74F1D2F1ABBE3ACC82F739DD81E772B31A1F4A79044627505AFAE73B829D34FBA5647B0C3C911EAE592F7E4DEB
+	17D5C523E0753F1309CFFCAE1F830E4000505ECE74D5CE575CA3705EF0BB6A6A33E6020B06F202500B3D29G1E9F00F3AB2E4A4A9A270D08A17B3A50C7B35B48981682FD549D96F367B00BB97B7B96F38400E3B84E53D58D680FB5B9632452C5C78D7D11C0698F38BF7EA0589F0BE8BFAE408F840882C884D88110BD82775BBBDA2D70A47D77B4C7080C39DCE6A263554CABB2B63ACEFF9F7B1ACC7B4A3C0AF91C4B7DBB67AA67F09AFFE681B03BA436905FAE05F11E82F00CC05B5C59D44CFC76386CD750CB7F62
+	8387D36C1A25986D889B5903144F9537DA23F895379DDE7C5CC7465AB2B57FED76885F9ACF71E4BD2B8687738B7CA4DBBE43838F7DEC407A2934DED6D51F3329C3D5F04797758FD3D97C81CB251F0F75898799EBBF9863B000C8B156D3760DBABF34F8BCED9D5EFAB24338BF1F217BF6AC50AF947E2058E9BCA64A9EDA566A7FE0EB38CA1BDC8D10FEC25770BC7BBF320FF5867E15AFD5A8E4EEEC663EE366FA4E64BE44E80ED21A129FDA4CF5G1DG23G92GD67F907571105D9A6407E69D9FA3F9B6736716BE
+	0C017575D3433EC8BF6166890E3D37B9278766BB0715703EFFDCB1767DD30A316FFF24746C5B6794A35FE6F5FFD748B8BD175C3A39522410755566F13B959B8B13F99309455D2B6A49B81CEE277A31535E2228E71D1795C92A9AC9FC7E84DD430B603DF4A42E3517F662DA3B6B72E8A92E719513D1FCB6EC5CA1D37F114CDF070D5456DAA6132D194CC145253403222ABD9DEE15611DF4FF60F87FBA0ADB7CE5BCE9DBD2AD3BEC9DAE58006C307555A81FBBED8A6C24CD1E631E4ED2190E2C0CBD6A94DF3347572E
+	58CBDA654F65B27912DAC6ADD3F60CD63FCF5E77963F75561F0BFBBDBD145A42F75AF8AC28B7CB786E8E6FBD37F75FBEB61E57AFBDC847F39A991101FD8C7676B37E57EFB02DE1FA6C6BC876733932D1BA14FFC31831506E2F5FD01A1DBE25566D6D60B1C989C875B617296250CD217EC2D9DCFFF7B190EB9F4AF56A507DDCD78E455686E254B87DDE175C8552792F274DC3FB6B2B3D8F88FB8F37CFB59C83B579BFEF90343B3E0E629D3E7F2750335EB4D8139281160D447D7F574D249E77FF9E64D4FBDCAE36EC
+	C25D05BB491A78D1DB21EE1DDBBB1265DDCEC19D2B1FE7D89FA16A6BDCC67553C47D82437AC4D1FF265D28BEC954FF62B72ACF3E934779E4CB9E59BF140B9D8A9CA3C80073015205E7011602203AF3322BC3BBE3BC53C276CF17AEB6E278058E63757CE78E928F35897EBFF724CB642C40F8327DA7DAA6BC3DBEE7BB0412A4586379A927D91F1F4A9885678822E7F8DEGE07E38EABB490B756AC0C0D3B31A706CD0B01F25820F01GD11C6F0AD17CDCC0698EB5A35DE0A8C70E566892C66B69D68A3A2DE3C04FG
+	75E3985D50B1FA3AFBDB10AE867009GAB8C69BA9CC8D7BA56E22E81300FE5F491E38364F3A2DDB26033A3B43A5288C6579DC1687EAE72DE658227D25C9FA0989A3B8E4F739F666973F72511AB8D77F482F11C7F420860BC473BED04EFB260D347212FB5B875B175B13F5FE3F3D2B3F13FB1376A77FB064BEEDD8FCFD8C97DEAAD84D21D68FB852DC4D6F28E65E86EBF935EFCCF8ABDD73FCFB306F8E4293EC41701FACFB59C05CF017BD60BF0681CD339846DD9EE6E5BED282F22F1986FFCF1C21F8F0C5D703AA9
+	AB0CEE6A46B11DF847E93A09BDFA5144F8273B10F774B84C855EA0F04B85AE239DF145F7A16EC601EB903841FE448D869C534577ABC99E49A807EA234AA9EB69F016F528CEF25016D519EED5EC06B01ECF51B38E6115F09766A0472EA7F3DB7A1145DC84D0814072A1A3E91E04501E82DC3F9F617AB3BEC53F7ECC83FC92C0EAA44E5934E692BF74FD2FC0FBDFFC6FB4BC7FF101994E01B19B2B384C099307CBC73E4AB09965D487ECA8B095C5B27BD6C5EAF63E3064D9D35D6FB0775B540C3A9988B47111281BBD
+	5EE05D2C053A6271E83F3B6DA761798F0A53F85E6A25961465G74639A0F326C2DB212A5E2BC5A690B162FE727783D85EC9E87C5C418CF7B1910EB9A7439DA48B52D5A48FFCA6EC6390EB92ED5AE6E378E6C778870D46F46FE132C7AFE236EE67DAE947D26B93F1EBE1667D7D35BFE6DF80C0F23490963D88EB296CF40F144EF8E9E8731EB43847431635BEA8C643816100A676B776B770E3824BDE1778E5784B6DF7ACD885EBBDE216B5B8840C7CF403DE3D0EB3EEE6FB8832B356CEE0108C31C395B08DDA03660
+	6523ED24DF9ADBC8188378EEDBDF725B7193B0CF79311B68F0B11413813223AC66DDGB5D1A85B2C36DE73756FF776102F4FF275C5AEFB9466CF867629DD27E817535E17F683C53B6F75295DA8516EB6FFDF5A4508F60BC36E849222341C57522850DCAA4B59EF4EA2F3E1F5944B5927897C8E0ACF3DC7433339B3FEBD4E1DA2286B3E877B0FD0027BCF3AA7304F3577986560A60734FBB528DCBCB1309D1B0BADAE62CFF43FA6B32D334CFF8902564ACAF11E66317027D97AD87860C416033CGCF6FC40C8712D2
+	B09E98B0917D789E8F099363203C94A099A0EF924429GF5G6AA47467CDAE2398AA501F4385D0DAEE16694251FCEDBA7CBC24DD308E07CE8AEC47F4D357EA241BA8200D1B043A793B97F533F8925AFAEB4B354979C6C83B3220F2DEF4E0BBA603358AE5A809C699122ED106D53D4AE0B5146139EA1421D348906138C61F8FE997EC2F68E8A31F7F7339F0BE4FF7A4AE6BE6B9037715A0E4F5B82F5137C25A854BAA5DEB242F7F5E0CB2945D0BF3EAA57525BAA8DB6F457963F3111CB26ED574GAA61BE75DABBB9
+	73FAFC4E96279BF13BA84E667151C4AD3BDF98CD4F9EDE60B9D070EDF4074FABB73B0D734AAE37F1DE59676E79CE6532BBDC5E1949374305720D82E038318297A3F03B5A9117A0F06384EE2940C5799137DA601E23670F5449F056180C3802CCFA0F88657A4968875B32882E934A43842E046212F89C4BF01356DF6B5D88610D6F43A6076EBB1AEFA5DCF39F7A3B1634B0B45BA85D6C17B6D05B797D0A1FAE446474466BFE2BEE128C727B9F496D0A04F93BA5742E01503C2FFA2A770939787B3DC546F3D1776D4C
+	2DD9B88726CD96E7428C3A5FC2B963BE08BD6FC3FD7FBA2527FD7F60FD21FA6477F91E70FE7E1047584F63BDE44E79BD9DBE1B926C4BF3BCC522CE5B29EAD5251D2805672CE8FBD57635A8A1F3E189ED4F6A4235DF6689B7DF184E6FEC566B1C440BCC1F83DAD11F167BD01FFBBC741B83A80FG08917AEC7276244FC483FD323E4F36687BBEA0FCD5296A09DFD2D8FE1B9DFAFE7B853F646A1E78A5076537A4005FBB025FD6D94FAFA306355F4A1F95B161785D695473FBD770130A747CEAF87B867EF49970E336
+	7D8FAF0997BBC57985DA6E9273C6B916AB7C63FD371DAF78AC3FB60D2E637F89020D1390F7082E135BD3A5E9C18A629E2038E7016E9D93628E53F572AB4025893AD80AFB9EF09F88FEB3685AC9BEBA3C1202BAC84FA0FB8A9C65BC9DA04B4298C237ADC39F9B7583DCA4C0AC9FB79B4B3D17C8BE2B59A737037B1E75AAB6A97AFE1A9F484436DB21DC81D087608598FCBF1E09130F12B940D60B6A8E9F59DA4801D65845312FA0381E9EB451BEF7E4696D338678E6CF51ECD2BCA554BEBC5E4F245F45CDE1F1FD16
+	406F2678FA9D1E477BF43DA2E5956A96CF413DE5ED8A6EADC726621C9B94705D5AC0400F1A2A4991B3B51CCC43699CCE189AACD3A445AF1F9AACD32987E54A188672CCC3193A3CA853FC016B2EC2DC710F9117D503B82F403DCDE326B8A84F973813E788EE99141385AE6A8C36159EC05C66A29A57C059AAF01F52BED4A877973807C53F039F401C42BEABB9E708FD04E48CAAABCF7A1C7663F20B05FAA4DB7B2AB3C8DB22072487F06D3BC8EDD3B49DFC8C6054F44C3BF66E413CEB54DD43A5CB3FAA436FB0136A
+	DFB7D927B31B741F2E65958ED6E15E751ECC6CB38E6A57CCA738A5197A9C897155AFCCAC06E675B96B75754447F7CA7A7A238175C45E19816DAF8654939DED636D5958666C46312D1D93A9396EAF8B7B0DE9D5AC9B131DBF571C5CA9398AFDA6E60B09F4EF9E81F55131E81F8F4B89EEA114178B1C3782ED167D200821288EAEC0399FC084C0A2C03228FF135697BE8467450758DD893937A0F792BC364A5047BD4843F09F60788B3A7A44B03488BC368A68833F61B022476FC774B1D5EF5FF18CF808FE9BEC2A69
+	01A6CD42F512C1BD34F1G6C6478EEF89F47ED47F49DC177777900DF76906AFF4AF9024BF858E25E7AB0626EECC41BD4BD0CBA9D65A1BA9F8C65E80005GEBC81BB82C1FC86B2B20EC0DE377D2644E095C7F307A7D9E3D3EC8BB7DD8884FDC4EBFF81CEB02F08B8DE8D89F9F8474917C5D8E4631415F9199594348164CA6033DFD31C93F38C01B8C0572A0EE9346EFC8D5EF7C4CBAFE2302784504705BD15397FEF1C17C9646E9BE43764953B239A7ED7638552D0F50DC81DD471300EEC59C6E351F1DA1B4AA8442
+	56C748EF83EEA4618917E746191E64C1B9D0E78E1D8F9399A2009F399F7C1F97DFFC1175D5D694A8CF8D5D9B2261BD76911467E2CD20BC8B3AB4F91E6ED1BF3D493382785938BC4C67CEE57475BBE536777E1A6EADEB9EE1FBEF0A402F227854C7B5BC5B13AFE560B77BF9D027BE0AE77E184BA496DA8C65E4006C999673AE009AG6B8CBC2BDF39D8A17512C32B77F8ADF048F1690E5FBC1712F9ED5FE1BFE246FDA46601B152346F2CCA89F7B7294EE073F9A8FF8EBE3113625978CEF6137145C3DD92C0EABC2C
+	B9G95G2762F1FCB3AE163271112B55E32AAA5B9C74569687C7AED2B5B489A4191F4C4CA2F1E91347C78FD8ACAE7D45C60CADAFGFF95A09AA0BE1E49465A594BC36359AB6541716CD2E8331A37E33EF7C34555789EC246CC986BCC66FB24DC816FAB416FFEA766C265A7649B44502F09ACF2136262327E1666E78D3ED023C40CA6F65F96E39A116BE5F4937E720AE1FF020C53CD2AA0FB015157C46C9E489A90639C19496E332CB3711E6855AC23FA951E2FD17E209B897F2DBE9A0A13A4B66FF7FFA989FFFCA6
+	9B7DF16B049FC8B5BFD91502F3BAE41D1F49FFC3B4D30B59567E0B4F4446B63DB554E71E94F95E3CD94CE7CA60F9E4165EE7661E8F7519E56703FD269E5AB8E669FDE6CAE3EFBE93305FC05B2133B41F091C45FC66B961B305BB28ED287583BF09E3750F9D5994DA4F3CC10C65EFCDC5543E46F7410CE64D154D06B46CC04AE8AE34EFB27093FE8C635FB47D4A936C8BA40796B38BFDE51D5728BEE116312FB03F987195A9052FFFD86A397E17A91A0F0DA7E66563B9FCE687BC5D4A25E2F1B9F982B62A129DF627
+	6C72346CA8AD2EA8AD5E37FFAF7A6428CB7A7B49036BCB435ECFAE65BE311ABF6DDDBBB90FF96775BC72063FE4CA89432364B1567640E31ADF33B1B4E4E86379D336B61E0FEA2EF6BC2C6DF63A3D31FD63598C6DBDD9777EC5463566A42F86D89F37DF57BE581E73606570F941784B46F94147AF9B673F67DF6E793B6A451743FFD77D0B4B7A6F2A591E79FCAE19938E30F3FF00C800D800790F61FE59FE0558157C2AA7F42FFC5F5EC272126417BCAA76DF579DFE2C9FF7777E7B9FEBB779EE2A49232A1EF6429F
+	714D5D44DE2A47CB118C5756CDF464F336B8D4C64A71973B09933914E60AE6B1113990FFBF35824636AB814F7C8F2EA7714ED5FDEBD46FD4DD4AF13A1A33B3F95AA67C4E68C2826681224AC8BFC3219C85901F00F7F7234B717C3ED4504EABA7340533AD66D2001A59D73BE7615A92CFBE01449CF8F3189CB8DD1D198CF7E4E24E7642EC146BEFA2AFBEF4B64609137349BE12886565G590F033EG8E8254815881BA818682C4G44824C87D8863086A0E38E44A2G95F35007DA3F04E9AF1D13DBC33FEA83A4CF
+	30D0C772496C4E09596C0F2DE8339A6055BD87E5BE5E06FA0F19033A5CF41E7E76944A290950FFA2524E7F8C75FEA091E97F749921F5C139BF4008443E6A7DAE0266F970D73C283F9851E725402DC8C41D1EADA438DDF3611CBC977532AA7D4D9E74D26773F8951F5A4530748BD6BEE7BFA2DBA1777583665D61F8408CBD8D2E701726D64526564BAD224DFF65061F2352065E67E866867A3DA34C2D7AAEAF3FC7485DC06F871B1B7D0AD88BB6EE489338DA584D7DCEF27F40565D99053D1D952CF30D6EC097745A
+	AE78CE1435DB3F09346B1E5BF33E86E170DC7CFDE5B11D2391F3034FDEFBA9BEFAEE7059EBF2991E3DE2212E78894CE95CD5FEEDE73F6A8AFA2772C4F07F960A9F7CC4F07F0B4A317F91D0A74D437EC7841C4D6C73189EBA79F3603CF0F912CF83F25B23B8DD8CFFA69834635F966507773139793D7B585379467B40527C50FD6019FC63FD6037797AFD0061D66413F52385561C86C1773C40FDA2F0AFD01E847731532EBA84FEAD150B60CFA924C3441B8A08DC17A82E813F8B5661BE61386C82B2CFE0488E0F8F
+	5B669750BC055365625F31D09A279B260D5047AB85C4C627D756497D1A40FDA26CA5757A2D18713C4A6D351D713CBAC95BADB57083A3D8BD8F67550DF43DCE1D9F6C5737D2FC5E7CE03F5EF29E7DFAAB54751B0FFE3D6833EB1BD73EC642EFD9C87FD7A8FEF5C87F290D587FDA2833AE407EDF8B385B0CDF404F037C39E2C138F9F5B4201D74A423AB644F12A7434D2B06C272AE62BF36AD703A4642C2097D868EE2EE67E57A097AD9A0F43730BB76380DB9345E65F4AB556C57549266FB3753D8668874DB7FA466
+	F68F14911C834A5DCF62F87710949B9FC3396EFDDA59750F55977C937A282D5046F4C6773E247C7A771DFCDD7BE0B63D0F460083401E43041DDF58CAF0D1D00E9538C7DE453CFE0240DD2431E251D396F349D3085BE127F4D036885C8DF6EC5BA0F01F3521FFC58A5C18CF513FE21FC27F3A793C2673E13A776D672F3F7EAB7F89FDF4B6EAE37A166EFDFD63756FFB67F56D035974DD9A7BA600BD978BBB9752BB2295D0DEABF0DD625EA8E3A1624E51368DD0F6885CD2CA578D650182F74C0AED07AD44BC7E41CD
+	E43FD649910D649D601D657C6B683A369C6812856D87E5E9C8ABE1BEE2A289C9F8AE63714C40FB03A4BAE7F6AD02B34DA2641133AD685E002430F89EEE712B3D65617477AA417786D66883FF33417A9A1095A84FC8BA8FDDC057A964B9E48F14A77BE5CD1E11763E6485036509DC444E4AA9C227B750399C8378B8G56DF79AB1A7EBE74864AEB23F6DD8D34EB053CEFB6864A6B5D2049BB3857BCE6CF7AABFDBAD8FF6DC1727CAB1567A05055BC0D727CBEC81EA1F91ABC8D562F23BF75E976ADC00A7035678AB4
+	DD1514DDCD5E6C00481BB5EE525A7E7B563E35DDC3FD1C3D7F74E50D4FCB763E71A95C227139ED1B466776CF7B4667051DDA5B0C463E35FDF937A6C3476B9A1F79FD64B32C0434E5FF5B4C337EA76098D1AB25B4D55A4BB34C459E372B2B58CBB2517E62F6C576F77894FB3153DDCC2EA80A7794FF70D7D55A5D9BADCDD37BFD5286A1D3AD8D6E13BEFF3BF25D2F462EB3C92935D2BABB6C54CA296444D2AB255183CD2D348E8EBB1D648F5910C3018900C81C663FA8FDC9CB695C35C80AA5D5E0B76830E6015D2C
+	63E086F9F282F4B4F374BB3FC97C79B97FBAA93DD6FA19CC17330A0FC6120A1DFC29497FB44E89A9138E117C05859056CF9FE9FE354B25D8244266B364E737FED5319F4398552FCA1B68CFF04AC99E2D7C146CF728642CF758A2253A499F71118AD835CBF63714330075B09DF14A31AAE29D096619C15E0DD4DE4225CCF059B8FD436E6D2717CDDBA719CEC86BDD9E59FEC236299EDF2D1429BAFC0A5F61F159BB3DC799230CCBE466135B45F540EE0B98BE99ECD9BDCCFEA1F4DB678F8766AC4FB9816A6A74C965
+	14122C8EE50242DE6D10FD5015622BD5499FA57278F6093AEF3D2A6E19FBF2738513144287C9CC105969D52574E6395D696A02179A6A1154B8B9AAC86B135DFE720BA5102CB8C8B22C929D148D19DDF15B78BFFECABB501A2A52EBCC1550343CC57134179FEBEE06E8DFB0G3D827BED02BD21A98B22A9683CE55369C5AFB6019F54C86B5AABAA687F7B687F7B497F7BA8E69F456C5B8F4ADDAD7578AF383E9347CC1DC74C8BE27E3293E0C175E7ABE70FD9F2E4758A985D89A90D7E988A0C1027D1FD54515E2478
+	3E93F55B362C21C9B7919BF9092BF4923E791D425FD339315F90B3469C62D5841B956A9E843DC19809148AA8E9A17DFFF31F07CCDA3DCC5BEE9112EE57A4A50B9759A45E8C195BE48C3981F3FB0F8EEBD625EC7EC9A2DD11D4E9BDBC0A694DD925AAE511823BEA03D28ED2527588DA5227A04EE1C5CE2ED317158EA1777FCBDDD6DE2E683CB6196C57D126F7B593128D15640608FC195FBCC95F53A44D6012128D427C4D33F34DB7504E27B56D117BB7B35762B7504EFF8D343319532673BB603DDF696F0057FCBB
+	A76CBDF2DE924BC16DCA8A7E1D6B3F65924ED640F7A761DD46DB39EFC9616FA14E364BAE17AA3B5A0E396D64CE62F8172AE8F7163F4CA57C7DC843AB795F654BA5F2376A5A7C9FD0CB8788020A2441F59BGG64D6GGD0CB818294G94G88G88G7DD568AC020A2441F59BGG64D6GG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG2F9BGGGG
+**end of data**/
+}
+
 /**
  * Return the CalculatedVarDeviceComboBox property value.
  * @return javax.swing.JComboBox
@@ -181,6 +317,8 @@ private javax.swing.JComboBox getCalculatedVarDeviceComboBox() {
 	}
 	return ivjCalculatedVarDeviceComboBox;
 }
+
+
 /**
  * Return the CalculatedVarDeviceLabel property value.
  * @return javax.swing.JLabel
@@ -203,6 +341,8 @@ private javax.swing.JLabel getCalculatedVarDeviceLabel() {
 	}
 	return ivjCalculatedVarDeviceLabel;
 }
+
+
 /**
  * Return the CalculatedVarPointComboBox property value.
  * @return javax.swing.JComboBox
@@ -223,6 +363,8 @@ private javax.swing.JComboBox getCalculatedVarPointComboBox() {
 	}
 	return ivjCalculatedVarPointComboBox;
 }
+
+
 /**
  * Return the CalculatedVarPointLabel property value.
  * @return javax.swing.JLabel
@@ -245,6 +387,56 @@ private javax.swing.JLabel getCalculatedVarPointLabel() {
 	}
 	return ivjCalculatedVarPointLabel;
 }
+
+
+/**
+ * Return the JCheckBoxDisplayVars property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxDisplayVars() {
+	if (ivjJCheckBoxDisplayVars == null) {
+		try {
+			ivjJCheckBoxDisplayVars = new javax.swing.JCheckBox();
+			ivjJCheckBoxDisplayVars.setName("JCheckBoxDisplayVars");
+			ivjJCheckBoxDisplayVars.setFont(new java.awt.Font("dialog", 0, 12));
+			ivjJCheckBoxDisplayVars.setText("Display only points measured in Vars & KQ");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxDisplayVars;
+}
+
+
+/**
+ * Return the JCheckBoxDisplayWatts property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckBoxDisplayWatts() {
+	if (ivjJCheckBoxDisplayWatts == null) {
+		try {
+			ivjJCheckBoxDisplayWatts = new javax.swing.JCheckBox();
+			ivjJCheckBoxDisplayWatts.setName("JCheckBoxDisplayWatts");
+			ivjJCheckBoxDisplayWatts.setFont(new java.awt.Font("dialog", 0, 12));
+			ivjJCheckBoxDisplayWatts.setText("Display only points measured in Watts");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJCheckBoxDisplayWatts;
+}
+
+
 /**
  * Return the JComboBoxCalcWattsDevice property value.
  * @return javax.swing.JComboBox
@@ -268,6 +460,8 @@ private javax.swing.JComboBox getJComboBoxCalcWattsDevice() {
 	}
 	return ivjJComboBoxCalcWattsDevice;
 }
+
+
 /**
  * Return the JComboBoxCalcWattsPoint property value.
  * @return javax.swing.JComboBox
@@ -288,6 +482,8 @@ private javax.swing.JComboBox getJComboBoxCalcWattsPoint() {
 	}
 	return ivjJComboBoxCalcWattsPoint;
 }
+
+
 /**
  * Return the JLabelCalcWattsDevice property value.
  * @return javax.swing.JLabel
@@ -310,6 +506,8 @@ private javax.swing.JLabel getJLabelCalcWattsDevice() {
 	}
 	return ivjJLabelCalcWattsDevice;
 }
+
+
 /**
  * Return the JLabelCalcWattsPoint property value.
  * @return javax.swing.JLabel
@@ -332,6 +530,8 @@ private javax.swing.JLabel getJLabelCalcWattsPoint() {
 	}
 	return ivjJLabelCalcWattsPoint;
 }
+
+
 /**
  * Return the JPanelCurrentVars property value.
  * @return javax.swing.JPanel
@@ -342,7 +542,7 @@ private javax.swing.JPanel getJPanelCurrentVars() {
 		try {
 			com.cannontech.common.gui.util.TitleBorder ivjLocalBorder;
 			ivjLocalBorder = new com.cannontech.common.gui.util.TitleBorder();
-			ivjLocalBorder.setTitleFont(new java.awt.Font("dialog.bold", 1, 14));
+			ivjLocalBorder.setTitleFont(new java.awt.Font("dialog", 0, 14));
 			ivjLocalBorder.setTitle("Current Vars");
 			ivjJPanelCurrentVars = new javax.swing.JPanel();
 			ivjJPanelCurrentVars.setName("JPanelCurrentVars");
@@ -350,37 +550,45 @@ private javax.swing.JPanel getJPanelCurrentVars() {
 			ivjJPanelCurrentVars.setLayout(new java.awt.GridBagLayout());
 
 			java.awt.GridBagConstraints constraintsCalculatedVarPointLabel = new java.awt.GridBagConstraints();
-			constraintsCalculatedVarPointLabel.gridx = 0; constraintsCalculatedVarPointLabel.gridy = 1;
+			constraintsCalculatedVarPointLabel.gridx = 1; constraintsCalculatedVarPointLabel.gridy = 3;
 			constraintsCalculatedVarPointLabel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsCalculatedVarPointLabel.ipadx = 7;
-			constraintsCalculatedVarPointLabel.insets = new java.awt.Insets(8, 10, 31, 4);
+			constraintsCalculatedVarPointLabel.insets = new java.awt.Insets(9, 10, 25, 7);
 			getJPanelCurrentVars().add(getCalculatedVarPointLabel(), constraintsCalculatedVarPointLabel);
 
 			java.awt.GridBagConstraints constraintsCalculatedVarDeviceLabel = new java.awt.GridBagConstraints();
-			constraintsCalculatedVarDeviceLabel.gridx = 0; constraintsCalculatedVarDeviceLabel.gridy = 0;
-			constraintsCalculatedVarDeviceLabel.gridwidth = 2;
+			constraintsCalculatedVarDeviceLabel.gridx = 1; constraintsCalculatedVarDeviceLabel.gridy = 2;
 			constraintsCalculatedVarDeviceLabel.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsCalculatedVarDeviceLabel.ipadx = 6;
-			constraintsCalculatedVarDeviceLabel.insets = new java.awt.Insets(25, 10, 9, 220);
+			constraintsCalculatedVarDeviceLabel.ipadx = 2;
+			constraintsCalculatedVarDeviceLabel.insets = new java.awt.Insets(7, 10, 8, 1);
 			getJPanelCurrentVars().add(getCalculatedVarDeviceLabel(), constraintsCalculatedVarDeviceLabel);
 
 			java.awt.GridBagConstraints constraintsCalculatedVarDeviceComboBox = new java.awt.GridBagConstraints();
-			constraintsCalculatedVarDeviceComboBox.gridx = 1; constraintsCalculatedVarDeviceComboBox.gridy = 0;
+			constraintsCalculatedVarDeviceComboBox.gridx = 2; constraintsCalculatedVarDeviceComboBox.gridy = 2;
 			constraintsCalculatedVarDeviceComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsCalculatedVarDeviceComboBox.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsCalculatedVarDeviceComboBox.weightx = 1.0;
-			constraintsCalculatedVarDeviceComboBox.ipadx = 81;
-			constraintsCalculatedVarDeviceComboBox.insets = new java.awt.Insets(25, 25, 5, 42);
+			constraintsCalculatedVarDeviceComboBox.ipadx = 82;
+			constraintsCalculatedVarDeviceComboBox.insets = new java.awt.Insets(5, 2, 6, 40);
 			getJPanelCurrentVars().add(getCalculatedVarDeviceComboBox(), constraintsCalculatedVarDeviceComboBox);
 
 			java.awt.GridBagConstraints constraintsCalculatedVarPointComboBox = new java.awt.GridBagConstraints();
-			constraintsCalculatedVarPointComboBox.gridx = 1; constraintsCalculatedVarPointComboBox.gridy = 1;
+			constraintsCalculatedVarPointComboBox.gridx = 2; constraintsCalculatedVarPointComboBox.gridy = 3;
 			constraintsCalculatedVarPointComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsCalculatedVarPointComboBox.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsCalculatedVarPointComboBox.weightx = 1.0;
-			constraintsCalculatedVarPointComboBox.ipadx = 81;
-			constraintsCalculatedVarPointComboBox.insets = new java.awt.Insets(5, 25, 27, 42);
+			constraintsCalculatedVarPointComboBox.ipadx = 82;
+			constraintsCalculatedVarPointComboBox.insets = new java.awt.Insets(7, 2, 23, 40);
 			getJPanelCurrentVars().add(getCalculatedVarPointComboBox(), constraintsCalculatedVarPointComboBox);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxDisplayVars = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxDisplayVars.gridx = 1; constraintsJCheckBoxDisplayVars.gridy = 1;
+			constraintsJCheckBoxDisplayVars.gridwidth = 2;
+			constraintsJCheckBoxDisplayVars.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxDisplayVars.ipadx = 23;
+			constraintsJCheckBoxDisplayVars.ipady = -2;
+			constraintsJCheckBoxDisplayVars.insets = new java.awt.Insets(5, 11, 4, 42);
+			getJPanelCurrentVars().add(getJCheckBoxDisplayVars(), constraintsJCheckBoxDisplayVars);
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -391,6 +599,7 @@ private javax.swing.JPanel getJPanelCurrentVars() {
 	}
 	return ivjJPanelCurrentVars;
 }
+
 /**
  * Return the JPanelCurrentWatts property value.
  * @return javax.swing.JPanel
@@ -401,7 +610,7 @@ private javax.swing.JPanel getJPanelCurrentWatts() {
 		try {
 			com.cannontech.common.gui.util.TitleBorder ivjLocalBorder1;
 			ivjLocalBorder1 = new com.cannontech.common.gui.util.TitleBorder();
-			ivjLocalBorder1.setTitleFont(new java.awt.Font("dialog.bold", 1, 14));
+			ivjLocalBorder1.setTitleFont(new java.awt.Font("dialog", 0, 14));
 			ivjLocalBorder1.setTitle("Current Watts");
 			ivjJPanelCurrentWatts = new javax.swing.JPanel();
 			ivjJPanelCurrentWatts.setName("JPanelCurrentWatts");
@@ -409,37 +618,45 @@ private javax.swing.JPanel getJPanelCurrentWatts() {
 			ivjJPanelCurrentWatts.setLayout(new java.awt.GridBagLayout());
 
 			java.awt.GridBagConstraints constraintsJLabelCalcWattsPoint = new java.awt.GridBagConstraints();
-			constraintsJLabelCalcWattsPoint.gridx = 0; constraintsJLabelCalcWattsPoint.gridy = 1;
+			constraintsJLabelCalcWattsPoint.gridx = 1; constraintsJLabelCalcWattsPoint.gridy = 3;
 			constraintsJLabelCalcWattsPoint.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsJLabelCalcWattsPoint.ipadx = 7;
-			constraintsJLabelCalcWattsPoint.insets = new java.awt.Insets(8, 10, 31, 4);
+			constraintsJLabelCalcWattsPoint.insets = new java.awt.Insets(9, 7, 17, 8);
 			getJPanelCurrentWatts().add(getJLabelCalcWattsPoint(), constraintsJLabelCalcWattsPoint);
 
 			java.awt.GridBagConstraints constraintsJLabelCalcWattsDevice = new java.awt.GridBagConstraints();
-			constraintsJLabelCalcWattsDevice.gridx = 0; constraintsJLabelCalcWattsDevice.gridy = 0;
-			constraintsJLabelCalcWattsDevice.gridwidth = 2;
+			constraintsJLabelCalcWattsDevice.gridx = 1; constraintsJLabelCalcWattsDevice.gridy = 2;
 			constraintsJLabelCalcWattsDevice.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelCalcWattsDevice.ipadx = 6;
-			constraintsJLabelCalcWattsDevice.insets = new java.awt.Insets(25, 10, 9, 220);
+			constraintsJLabelCalcWattsDevice.ipadx = 4;
+			constraintsJLabelCalcWattsDevice.insets = new java.awt.Insets(6, 7, 8, 0);
 			getJPanelCurrentWatts().add(getJLabelCalcWattsDevice(), constraintsJLabelCalcWattsDevice);
 
 			java.awt.GridBagConstraints constraintsJComboBoxCalcWattsDevice = new java.awt.GridBagConstraints();
-			constraintsJComboBoxCalcWattsDevice.gridx = 1; constraintsJComboBoxCalcWattsDevice.gridy = 0;
+			constraintsJComboBoxCalcWattsDevice.gridx = 2; constraintsJComboBoxCalcWattsDevice.gridy = 2;
 			constraintsJComboBoxCalcWattsDevice.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsJComboBoxCalcWattsDevice.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsJComboBoxCalcWattsDevice.weightx = 1.0;
-			constraintsJComboBoxCalcWattsDevice.ipadx = 81;
-			constraintsJComboBoxCalcWattsDevice.insets = new java.awt.Insets(25, 25, 5, 42);
+			constraintsJComboBoxCalcWattsDevice.ipadx = 70;
+			constraintsJComboBoxCalcWattsDevice.insets = new java.awt.Insets(4, 1, 6, 41);
 			getJPanelCurrentWatts().add(getJComboBoxCalcWattsDevice(), constraintsJComboBoxCalcWattsDevice);
 
 			java.awt.GridBagConstraints constraintsJComboBoxCalcWattsPoint = new java.awt.GridBagConstraints();
-			constraintsJComboBoxCalcWattsPoint.gridx = 1; constraintsJComboBoxCalcWattsPoint.gridy = 1;
+			constraintsJComboBoxCalcWattsPoint.gridx = 2; constraintsJComboBoxCalcWattsPoint.gridy = 3;
 			constraintsJComboBoxCalcWattsPoint.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsJComboBoxCalcWattsPoint.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsJComboBoxCalcWattsPoint.weightx = 1.0;
-			constraintsJComboBoxCalcWattsPoint.ipadx = 81;
-			constraintsJComboBoxCalcWattsPoint.insets = new java.awt.Insets(5, 25, 27, 42);
+			constraintsJComboBoxCalcWattsPoint.ipadx = 70;
+			constraintsJComboBoxCalcWattsPoint.insets = new java.awt.Insets(7, 1, 15, 41);
 			getJPanelCurrentWatts().add(getJComboBoxCalcWattsPoint(), constraintsJComboBoxCalcWattsPoint);
+
+			java.awt.GridBagConstraints constraintsJCheckBoxDisplayWatts = new java.awt.GridBagConstraints();
+			constraintsJCheckBoxDisplayWatts.gridx = 1; constraintsJCheckBoxDisplayWatts.gridy = 1;
+			constraintsJCheckBoxDisplayWatts.gridwidth = 2;
+			constraintsJCheckBoxDisplayWatts.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJCheckBoxDisplayWatts.ipadx = 49;
+			constraintsJCheckBoxDisplayWatts.ipady = -2;
+			constraintsJCheckBoxDisplayWatts.insets = new java.awt.Insets(5, 9, 3, 43);
+			getJPanelCurrentWatts().add(getJCheckBoxDisplayWatts(), constraintsJCheckBoxDisplayWatts);
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -450,6 +667,7 @@ private javax.swing.JPanel getJPanelCurrentWatts() {
 	}
 	return ivjJPanelCurrentWatts;
 }
+
 /**
  * This method was created in VisualAge.
  * @return java.awt.Dimension
@@ -457,6 +675,8 @@ private javax.swing.JPanel getJPanelCurrentWatts() {
 public Dimension getMinimumSize() {
 	return getPreferredSize();
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return java.awt.Dimension
@@ -464,6 +684,8 @@ public Dimension getMinimumSize() {
 public Dimension getPreferredSize() {
 	return new Dimension( 350, 200);
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Object
@@ -484,6 +706,8 @@ public Object getValue(Object val)
 		
 	return val;
 }
+
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -494,6 +718,8 @@ private void handleException(Throwable exception) {
 	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
+
+
 /**
  * Initializes connections
  * @exception java.lang.Exception The exception description.
@@ -506,7 +732,10 @@ private void initConnections() throws java.lang.Exception {
 	getJComboBoxCalcWattsDevice().addActionListener(this);
 	getJComboBoxCalcWattsPoint().addActionListener(this);
 	getCalculatedVarPointComboBox().addActionListener(this);
+	getJCheckBoxDisplayVars().addActionListener(this);
+	getJCheckBoxDisplayWatts().addActionListener(this);
 }
+
 /**
  * Initialize the class.
  */
@@ -517,7 +746,7 @@ private void initialize() {
 		// user code end
 		setName("CCSubstationBusPointSettingsPanel");
 		setLayout(new java.awt.GridBagLayout());
-		setSize(345, 259);
+		setSize(354, 318);
 
 		java.awt.GridBagConstraints constraintsJPanelCurrentVars = new java.awt.GridBagConstraints();
 		constraintsJPanelCurrentVars.gridx = 1; constraintsJPanelCurrentVars.gridy = 1;
@@ -525,9 +754,9 @@ private void initialize() {
 		constraintsJPanelCurrentVars.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsJPanelCurrentVars.weightx = 1.0;
 		constraintsJPanelCurrentVars.weighty = 1.0;
-		constraintsJPanelCurrentVars.ipadx = -31;
-		constraintsJPanelCurrentVars.ipady = -30;
-		constraintsJPanelCurrentVars.insets = new java.awt.Insets(4, 4, 4, 5);
+		constraintsJPanelCurrentVars.ipadx = -10;
+		constraintsJPanelCurrentVars.ipady = -12;
+		constraintsJPanelCurrentVars.insets = new java.awt.Insets(4, 4, 6, 14);
 		add(getJPanelCurrentVars(), constraintsJPanelCurrentVars);
 
 		java.awt.GridBagConstraints constraintsJPanelCurrentWatts = new java.awt.GridBagConstraints();
@@ -536,9 +765,9 @@ private void initialize() {
 		constraintsJPanelCurrentWatts.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsJPanelCurrentWatts.weightx = 1.0;
 		constraintsJPanelCurrentWatts.weighty = 1.0;
-		constraintsJPanelCurrentWatts.ipadx = -45;
-		constraintsJPanelCurrentWatts.ipady = -30;
-		constraintsJPanelCurrentWatts.insets = new java.awt.Insets(5, 4, 32, 5);
+		constraintsJPanelCurrentWatts.ipadx = -10;
+		constraintsJPanelCurrentWatts.ipady = -9;
+		constraintsJPanelCurrentWatts.insets = new java.awt.Insets(7, 4, 38, 14);
 		add(getJPanelCurrentWatts(), constraintsJPanelCurrentWatts);
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
@@ -548,6 +777,7 @@ private void initialize() {
 	
 	// user code end
 }
+
 /**
  * This method was created in VisualAge.
  * @return boolean
@@ -566,6 +796,13 @@ public boolean isInputValid()
 				return false;
 			}
 		}
+      
+      if( getCalculatedVarPointComboBox().getSelectedItem() == null )
+      {
+         setErrorString("A Var Point needs to be selected");
+         return false;
+      }
+      
 	}
 	catch( ClassCastException e )
 	{
@@ -576,6 +813,36 @@ public boolean isInputValid()
 
 	return true;
 }
+
+
+/**
+ * Comment
+ */
+public void jCheckBoxDisplayVars_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+   initializeComboBoxes( getCalculatedVarDeviceComboBox() );
+
+   //fire the deviceComboBox event so the points fill into the pointComboBox
+   calculatedVarDeviceComboBox_ActionPerformed( actionEvent );
+
+	return;
+}
+
+
+/**
+ * Comment
+ */
+public void jCheckBoxDisplayWatts_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+   initializeComboBoxes( getJComboBoxCalcWattsDevice() );
+
+   //fire the wattComboBox event so the points fill into the pointComboBox
+   jComboBoxCalcWattsDevice_ActionPerformed( actionEvent );
+
+	return;
+}
+
+
 /**
  * Comment
  */
@@ -587,16 +854,23 @@ public void jComboBoxCalcWattsDevice_ActionPerformed(java.awt.event.ActionEvent 
 	
 	getJComboBoxCalcWattsPoint().removeAllItems();
 
-	for(int i=0;i<points.size();i++)
+   //either use all points or just the WATT points
+   com.cannontech.database.data.lite.LitePoint[] altPoints = ALL_POINTS;
+   if( getJCheckBoxDisplayVars().isSelected() )
+      altPoints = WATT_POINTS;
+
+	for( int i=0; i < altPoints.length; i++)
 	{
-		if( deviceID == ((com.cannontech.database.data.lite.LitePoint)points.get(i)).getPaobjectID() )
-			getJComboBoxCalcWattsPoint().addItem(points.get(i));
-		else if( deviceID < ((com.cannontech.database.data.lite.LitePoint)points.get(i)).getPaobjectID() )
+		if( deviceID == altPoints[i].getPaobjectID() )
+			getJComboBoxCalcWattsPoint().addItem( altPoints[i] );
+		else if( deviceID < altPoints[i].getPaobjectID() )
 			break;
 	}
 
 	return;
 }
+
+
 /**
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
@@ -622,6 +896,8 @@ public static void main(java.lang.String[] args) {
 		exception.printStackTrace(System.out);
 	}
 }
+
+
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object
@@ -633,18 +909,18 @@ private void setPointComboBoxes(Object val)
 	com.cannontech.database.data.lite.LitePoint wattPoint = null;
 
 	//find the var point we have assigned to the sub bus
-	for( int i = 0; i < points.size(); i++ )
+	for( int i = 0; i < ALL_POINTS.length; i++ )
 	{
 		if( ccBus.getCapControlSubstationBus().getCurrentVarLoadPointID().intValue()
-			 == ((com.cannontech.database.data.lite.LitePoint)points.get(i)).getPointID() )
+			 == ALL_POINTS[i].getPointID() )
 		{
-			varPoint = (com.cannontech.database.data.lite.LitePoint)points.get(i);
+			varPoint = ALL_POINTS[i];
 		}
 
 		if( ccBus.getCapControlSubstationBus().getCurrentWattLoadPointID().intValue()
-			 == ((com.cannontech.database.data.lite.LitePoint)points.get(i)).getPointID() )
+			 == ALL_POINTS[i].getPointID() )
 		{
-			wattPoint = (com.cannontech.database.data.lite.LitePoint)points.get(i);
+			wattPoint = ALL_POINTS[i];
 		}
 
 		if( varPoint != null
@@ -694,111 +970,137 @@ private void setPointComboBoxes(Object val)
 	}
 	
 }
+
+
+private void initializeComboBoxes( javax.swing.JComboBox comboBox )
+{
+   if( comboBox == getCalculatedVarDeviceComboBox() )
+   {
+      getCalculatedVarDeviceComboBox().removeAllItems();
+      getCalculatedVarPointComboBox().removeAllItems();
+   }
+   
+   if( comboBox == getJComboBoxCalcWattsDevice() )
+   {
+      getJComboBoxCalcWattsDevice().removeAllItems();
+      getJComboBoxCalcWattsPoint().removeAllItems();
+   }
+   
+   
+   com.cannontech.database.cache.DefaultDatabaseCache cache =
+               com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+
+   synchronized(cache)
+   {
+      java.util.List devices = cache.getAllDevices();
+      com.cannontech.database.data.lite.LitePoint[] altPoints = null;
+
+      java.util.Collections.sort(devices);
+      
+      if( getJCheckBoxDisplayVars().isSelected() 
+          && comboBox == getCalculatedVarDeviceComboBox() )
+      {
+         altPoints = VAR_POINTS;
+      }
+
+
+      if( getJCheckBoxDisplayWatts().isSelected()
+          && comboBox == getJComboBoxCalcWattsDevice() )
+      {
+         altPoints = WATT_POINTS;
+      }
+
+      com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = null;
+
+         
+      for(int i=0;i<devices.size();i++)
+      {
+         liteDevice = (com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i);
+
+         setDeviceComboBoxes( liteDevice, altPoints, comboBox );
+      }
+   }
+
+   
+}
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
 public void setValue(Object val ) 
 {
-	getCalculatedVarDeviceComboBox().removeAllItems();
-	getCalculatedVarPointComboBox().removeAllItems();
-
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
-					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-
-	synchronized(cache)
-	{
-		java.util.List devices = cache.getAllDevices();
-		points = cache.getAllPoints();
-
-		java.util.Collections.sort(devices);
-		java.util.Collections.sort(points,com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator);
-
-		int deviceID;
-		com.cannontech.database.data.lite.LitePoint litePoint = null;
-		com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = null;
-		boolean deviceAddedToCalculated;
-
-
-		if( val == null )
-			usedVARPtIDs = com.cannontech.database.db.capcontrol.CapControlSubstationBus.getUsedVARPointIDs(0);
-		else
-			usedVARPtIDs = com.cannontech.database.db.capcontrol.CapControlSubstationBus.getUsedVARPointIDs(
-				((com.cannontech.database.data.capcontrol.CapControlSubBus)val).getCapControlPAOID().intValue() );
-			
-		for(int i=0;i<devices.size();i++)
-		{
-			liteDevice = (com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i);
-			deviceID = liteDevice.getYukonID();
-			deviceAddedToCalculated = false;
-
-
-			for(int j=0;j<points.size();j++)
-			{
-				litePoint = (com.cannontech.database.data.lite.LitePoint)points.get(j);
-				if( litePoint.getPaobjectID() == deviceID
-					 && com.cannontech.database.data.pao.DeviceClasses.isCoreDeviceClass(liteDevice.getPaoClass()) )
-				{
-					if( (litePoint.getPointType() == com.cannontech.database.data.point.PointTypes.ANALOG_POINT
-						 || litePoint.getPointType() == com.cannontech.database.data.point.PointTypes.CALCULATED_POINT)
-						 && !usedVARPtIDs.contains(litePoint.getPointID()) )
-					{
-						getCalculatedVarDeviceComboBox().addItem(liteDevice);						
-						getJComboBoxCalcWattsDevice().addItem(liteDevice);
-						break;
-					}
-
-				}
-				else if( litePoint.getPaobjectID() > deviceID )
-					break;
-			}
-		}
-	}
-
+      
+   if( val == null )
+      usedVARPtIDs = com.cannontech.database.db.capcontrol.CapControlSubstationBus.getUsedVARPointIDs(0);
+   else
+      usedVARPtIDs = com.cannontech.database.db.capcontrol.CapControlSubstationBus.getUsedVARPointIDs(
+         ((com.cannontech.database.data.capcontrol.CapControlSubBus)val).getCapControlPAOID().intValue() );
+   
+   initializeComboBoxes( getCalculatedVarDeviceComboBox() );
+   initializeComboBoxes( getJComboBoxCalcWattsDevice() );
 
 	//val will not be null if we are using this panel for an editor
 	if( val != null )
 		setPointComboBoxes( val );
 
 }
-/**
- * 
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private static void getBuilderData() {
-/*V1.1
-**start of data**
-	D0CB838494G88G88GE0F954ACGGGGGGGGGGGG8CGGGE2F5E9ECE4E5F2A0E4E1F4E155BB8DD8D45715287813E8A2C6CC08A109FFC9E8240DD9ED57EC2D2554FCB10D5DF5D3734526EEEB92F76337CB32EE42FE350979F299E0C445008A9185949084D203E834A2E282028410C4A208A4319B5EB08F989C660DB38F9990F54F39775D775E8CEFA03035DF574F43FB771C7BF36E793B675E7B06246C1F959FE3CAA1A4A61EA87FCE4490D2F2161006851967B8AEC00CB4935D3FEC009D44F1A28E
-	1EC1C0DB7B3DC8F3B21936A3814A73209CB0A7523C9B5EF7119F652CAC0397BF6304814D32AFB4E468F1E66E6663EC2665ED16C4F83E8F9086B8FCC60BB87E81CB1A02DF2160B9441888D95F0EF5BE31E4A83892A8B7G4C83D85C4E6A2F046796BA72785292255E65E933C874AF72CD5B319FDD1F9C0ABBD85BA66519C51E08595401E3F5D0BE314D94A8AF83404947121F27FF864F3206AB9D1F34C95DC5ED0243A1B9E4312D33285756AF382C00F13AFBAC169EF7E9E9E5E5E30F45AD8B32CDF21C69F1B7C8B6
-	075CA84A324D5161EE909C221DF8BAF12CA7AC8934EFC24A219CE7C31C338947DF8265D5GD1AA7E44C5445740FBAB00474667FCBA3FCC19D34B75A7C8600B0E58A4BFF38E323139AE36E9F38E6EF9FB739E2A1F1752D08F51C0CB6B0AB49F82E8GF082848124D33BF8F97707702C304815D2F7376428F0BA4F582D2E4FA52BE8077752D220A8388BE21B64329242F45FEDB9E4404FD0405ADD9FF1BBA613300F399D04DFF8142CD9F84E3459C0A6EB420ACDE1DDCC9691DD1ACC58580B7C0E3D364B5BCE3D473E
-	C474E34B932458F80331973DD0E80AD67AC938220DDDF285F53D0E5AC0813C47A8764170EFD07C008E4FEC769A45E3F98A50B6DC61365172BE6725BEEEA6C9BED2EFA80710488AD3131D71E0377B72B21F5ADD081D0D39C565E5B145AF526199AF27A99E4BAB01F62CBB524C6C6B553D6843A1D0DE843082E09DC01CA3521C85F04C41ED6C4334435F51469A8417FC2647E6370AAE425A3E1A7681BCC50F6C92EA9D60FF0EB631D9F059840BDDF49325CED49A4A4062556E3F286D3741981F098E51C57D96FA973A
-	C5D9F439D91D3753F6E09D17C829CD36EE918668F6925E2FE94FAE141F6016AFBA2D02ACEAB598FD6B9E1449B52199FA048E601D49A5B9836555847337838C28F298CF7BBBA73AA0DC141656CB52159EE7934E042CF0201C1F2331A3885E439CDC46091908CB16A24D85926FE7491E1D3AFE2AECED483E606A63BE766FCD98274BA4EEB3EF34F01B295A7E88B974C21D214DD0DB11182D84CA3E3E93CD7BC43ED8F92029E504FEBC9414C95E7E47461871979DA356274C645B3F8FF5958E63AF87D82F4A7877FB32
-	184D1E915CA2375273AEB0B0512AC91C71796445E4F862BA9B2F701E2E4EE1A92591A7688F2081406364B22C3C281F9FEFBB549CF6AB4F746FB0DFB64665910F41653465BB0C41E4757ADEDC1F44EB22C32E921D22438AAFEE05963D977BD17C37DDD25B3CCD71CE7077CAF0B0370AA769681302AC3BEC169ED964CB2CCACFC84731E0D5F6EA21020F15140E7313FA415F557AA96968ABED1243A1363135DBE92250BF203EAA5A45EEE03AD26AF1488C1F110176FEC56CD3E2C5D686A6C45784FB8F469D16BFAC90
-	36619CDC36EEB0858CDDA46EAA7A71ABEA7E03B08B740DF950EAF8C6B939CF769E60BE195BBF1BC4FC1BE7B2DAD3C29E29B255DFE53E51FAD573C946530ECCE35EF7531821605D319477C6B666F043E7B15CAF966E473E83E04CE000702B5CAF26E7A21D479E45A1AAA53B1D09D715FB40BE34FB37F835C704100DC16E1CAA4B097BF67A501A9539B27A54FDA8D73BAEBE863BD02EEFDE64B963B260E78D40262BCC36E5AEA69BD66FC74D3C5EDAA8EFF4E975525C7AFADD17F8BDBB6083816639D93DF5DE750ADA
-	F83DB8B9521C81D0A6FB57E3763079DB4CAF0C72490E9EDBD10FEC43E8AD4860884E9E190A1B650C75ED89CA9F83B24F8DBD6DF4AD46F1G56495CEE7EF9BB4F8D032F4CA2EB676E751B8FEF1295FB69516CA6EB9C4F8D5F4D42B1DB01666C613A5D3ADF3FBED5385DD21B0D1A0A221727766B6D0A61166E5F8A4FF61B4BAD570263FB388E176DC7FEF16DD450CAAE115E1C284CB59046DD8250F48D7133EAD3F43CC783BE837065G4CFE47B69F4538C00D2C08BD9AC4D73B646A962D85DD42B521C868150BE88C
-	AA2A20643378DE48F5F375F49D4681415E56E307255C8AC9C415F84D56A6C2CEE2114EC81EEFABFCBA2D775F6B2942E61E9B4E59D52E703C6287B3C9592DDDA623DCFDD2D226A9749A534332EB1ABE867E4E9C9B75BF6FECE632791DAA1B645EC8F3CDAF170DD463AB1BG204D6B657B18472D380F6962B32904C9DE02886AE6939C694498AF53AFF1DE9643B89BD4DE5E98B062254043757476257F1B1E16956EE476A4D2AFE109D7814A1B71F5290573D586E34A9E4E575F779B59CF384A5752165172455651AF
-	5BFC778E919EADE7D965993CFFE0B9F5947563759E16D3472B785FD37CA69D1E4D6FE63BEA83FDB03FBE1E87CE4941B5E5B5142381927BA34D39GD5G56FE6E3F75D99F13E1726CDA08C7AE07E0EF74DAC0F93E1B0D3202B5CFA91B33118F3A6691AE076CE6DFB98474FB4FBD345FA817BBBC285DBEDFF97A34E37650E1CF67B1953564A9F27742E2D5DADA472DDDD9F38FF768575C557DAC075E844F646B10F351B87BE2AD5F1B97DC677174C635BE1EAEC9BAEA5A66A71E36DEE77C85DC577C77103A577ED3AE
-	2E9191C0DB83908D10BCGFBA00086GF9006BA8A87B74F0BA220657A4D5822E865640CA5F5CC515693F0ED297EF8D2B0B60816FF6CC469FDDB012F1B8540D9860B2FE34064BF875G4FF36F3FB4BABE9F9B542E48271CFC433B9D63A16F062A679B1C07BF370C0E07AB035A797250EA48439B7D1C878F50597E2E132E738B203CCC451D9591379E4A64A667754DF64465C239CA453DCBF19853B05EB2DCE07BE877C758B7FF2F3AB9B8F6E973FFF054E36877DB71FE6AB01F181163FF7F901AE33CFF1813E33CFF
-	884B59417050077EB4015397648C3D3FD81CE3343F482473F97603A45A375BAD3A2913E2B22750DE13D30941BE638B21DBD4E4310B34B4EFD16A1C15254AA3044738378A512F8CE21CAEC76C68C8D0F4E23D49F344E7BC38D604C2F991408A55D656548EF546364EC05FAC067DA48F57500DC0CF3995E9BE84D085E03D45E357978706DDDF4EFA06D8DF4AF37D6B7933DCE3BDFF1E0B792DDB6AF135093E3AEC4ACDD3E9DA142C1545EE94BB2B73E75ADE96DC9D62A0DB3052760C662FFDF72EBFFBE1BA4D382457
-	69472A7F0B97383E82EFF1FDE51F246740D0DE8590F50B6BEBFE4DD07A0A8B982CAFB676CA2F310F29BE7B610D217ACB735BDFF00B3E3F23EAFFEF758F555FA13F7D5DEA43BD33DD6813FAE4C24283D086773671B5249C4AADG81G4181ECADE17E70E4AF2E416DAE219BC45D68945B4824B1587632485BC6C37D844095G54GF40E61F9DE742728AF66B915BDAE8C83106AEB7A6ABC325317CEF3E5BED7FB07FE2EAB215FF5E33479ED9C63AF4FBB55073ACD9C6BFB26DAC37185E3FD4FD4FF6961E72AD5C08B
-	9B4B570337EA79FA10B80E7B5D53F97E7DE6C51E315FBC1FE79C9FD7678D9D9F57667933F7A61F2E8BFA79DC869E1D63B419840E73A71FEF4A681973B8DF79F4D27C22F13E7249BF291EB9836DD8A017CFE48D17CF080A2B3841F16BD55C566B9CD7B29E72C05A6752B6FE8FB489F09163393D9DE9455CCD0D3F3893A8AD7D4CE5331E91BA6A2975B21FB6DB9314769B47F31FBEE645BE0BA7009D8234CE60F92567A04FAB439F1DC96A834E996E5357B69DB5F9A6B01905CE50724AB048AB5918E3C5BE66EA20A7
-	CFC45C82D13F57C13B5EECE2F989233F62C5C7FD9EA0FAFACA3B1E0E7CAE74EADF6DC5C799E5AA6D595C1E4B63F35B74DC98317F70245FB3081609ECCE834A332179G493D731D4DCCC763681A3688E84BA7F23D7DA69FF1D1D0A613B86E6BC22E4B5CC9BCE6D6746179128C659000A5G6BD45A971416F8872CE1F730F3A2BC33E134DFF974798CEFBBD49EA36B686B06294B4608720C764C156BE3283A81F7D07B2E2B9A26BFFE1F04D08FEDDA818EA87C4870BED72943E4BC062ED74BD1DEF7F0391745A00E5C
-	8979401D9C77E3136AD7F7F2198AE5A86FC9D08E43FAG9BD41A0352D2A6038FCFE6E7F1F84E46E89F1D9CAA37443E5ED77A7525ED70412DB0284346289EF28C1E177A5E8D986941C807CC973F2E9909AE1AC08E1D13B5DD8CCC56F4417AEB39B1DCFFFA186453DF68207E322F0F243F30495E3632C4579F136932C1E7A14381EB777CA85BED330E349DDBDB4CA246666513595A92236213A8FE158E4F5607D2ABDF9F56822DEA8ABFFB191B0FF9C7981417812C810886C839AB52DCFC97DF232F9DACA6436446CD
-	12339E96F13BEE59E5731BA80E6ECE7CE71BF99CDE748FF3486289FF0871F7F6D1F597738F2B72DC5FF4006215338B3A7F88865A8200D5GD1G646EC8F35A5DFCFECB8F9EE273BBEB35499532AC34F552D3E0BE39E61B582B21B1E9E379564C8E4C81AD120BA699AC87FCD2BD2BB9847DD7818CG845D4D4E6CD83BB77387670EDB8AF83B303BD96E98814FD5CABBE66BD78BC7E26BD15016CCE5360E6594F87F79FB6F3D77B4G632374AB3CF32B541F9B53DB13FA41A25A151C7235EDE93EF55851AB2D446AAC
-	B912EEDCC7BD47E275661F5FEBB81EDA0D30734E31FD7AB5BAEBAA13C155D4FE9E7AC803913D851E7B69B8045058CE7FED78F4B08EE4BF953F81F220D9AB7676F2A237370C798F102A977F90F3400F3DAD184A6C0C84E9B94D7A2ECD1B599CC3AE8C3609A754332512A0E6938D70348631738E562EB1E630CDF44570F683C14CA60261992634E3B6713CE9B81B085759C48434DD95245944FAF8FF4C4BA6D2F2D036F5D43B6AE1BB559223BFD316BA184E34CD78BE64A23DA32C73F3E64F6AEC3C3E5B308E9DCA31
-	03B9E53EFA46F9C787F1BB2828B622A7CC9B299D2C46638AE25406515FB9BAB45D095BD3A51EA70A5AFB2A6E3D5C7A173C6FB7DECB3E3A2DE330D8991E6FFF3F36B05FF83F76D43E71FE6D2779C31FD7BD136F7FBE7C9F73757761AC56179FC7FB48G7D17GDC86F08284CE63F17EF2C18E21F15EA0461F35F660B98BFE05A37371BFAD74BF576A42613F5DB9DF08770796C91625EE6C1F63AF96223EE449C9118C77F5A14A48E56B6814D9D5855FCA7787F6311D2259DABE3513FFBFB58B6636FA9A5F6B3D16D9
-	C8063B23ED3249F6710C921E14731C97BB799DED72BDFC6FD710CF3F5F03F2AB00679E3E4FBCD2407308A040AD3F071F0D7795703D9C194E7BF80C56AD01F283C067746F6A175C2FFE75A7C254F344F6BF6708B492B19E1E6A6367D28153B9DFEB9AB8EE71F43EFF7D27EF745FDDA64F4CB671DC495766B7CCE7B1FE53F4AD56B3DBB317E05CAD8E0EB45783B881A6810482AC82D88E3086E083C0420CC8F39640B1009A004BGF600G0060995CB69796236E1A05AEA53B42D4C4F2D16B842432E127866A92B0C2
-	723C6E458B5C9642202F35B3783C77B7F21D265D4B75F187413A8DD06E848838176B741E982E5390402D3C177771D28C57E942FD3C0F849356AD07F28B00733E116A741513C4353BDF17F15DCC3A0F0F69296638087B38ECEA0E7B77437347077743166374EE9F7C27294F494FCE0F63FAAB35373BC5555FAD4713D5DCAD2CC4EE9B1E19AA5FEBF58E1747EE3C4F680EE56E306DFC6F2714F3EE5AAEA5E468BDB907822847727FD06A37E5A13E7B02C718BF07786E8B0A72396E1B0036B8046FDFCF940CEEBFF3F6
-	146DEE0E389D1BD7FAA1721FF13F6FFCF3A93E60FE5F79FEDF0DDF470096F2BF1F6F52BE7D781B6EE7F2CF1E491E39B37D6D41DFEE5037ABD16A55AB4FD603F6ACFECCADC5BFD03EE9BA11C77C78BE2CCCF5906E4EDB3A44B639C968D05B6CAD716F9359A5437B4407A546EBD3F149603569F809715AF42AC43FB6A977A0A598F3BAA0DE3528754E2A382FD4DC9D6D93F117ECD639D345B7D03E90DFA362009C5FCC796A25389685770D8E7795DFAFCB502FE14A1D120B3795CB70FB37F61B5D4E4AB6DA4766GB7
-	D7656120BC5A1C020EEF370A7BCA55773FDC98DD9C780FE15B9947015CC6ECA79B581191CC1A4963403BB456074E74758BB30D75E1B3FD7DE2AA61FE3188E8E98FF03F8809991DBFBFBA4AF63F9BF1BBB62F813AAE8DBC60BB5F7194BF69815F793EEF62738D865AC6F53E3FAD733A8388E5F2F7AA4F40D0FFF160C6353EDD08D2AFDCF9C69834E3F72B913B36D3DB345B9CE2A57B221B70F34B37E8DE368A5AC60572B34A8587691A7AE024B965C14E731CFC2272B1DF77FEAC7F766FB9BE7FAB0C11DD284D69C3
-	5D7B42025BBF760A5BBA8653698BB4EF4D82FD96BF286AB996F1D5D0EED2F129F17CFC3AD545ED24796D82A8C728381F24D33B0172BA951713415BEED0F127E80ED87E9064F28FF15C8E1A3359219C7090372F5898CD66093A779964764B7F87FF05B1461A34B9CD563D2718EE7F589F5D56B118CE7F1B6659D3C01F212A1EEBD2295DC0B9C245FDBF155B488A9597CC73710C07A34D079ED66FF129AD15C339C14535E47236179F66E7DADBED38464B38632C16681EA56AE1EA0BB62C9B8E6F0B553A4F9C0C67F5
-	89BF17794FD3288BC60F6A23EBB8F4437AB051EF100AE7C51A4BE629FD44E29D99929F56BE9FBFC7D36E898E458DF5CE263F43C0E8555DA9A14D8EE3A4696A6DA2C9DFFA731377A5726301FA01AABF2B523D79297BC46367E446F07C70EFA70D78D984E3EC776267C223312C3B280FC7C07D95AADF85E4302C47FD2A49BA7134775CF2CE53B5E7F624B9F1B66F635BD46F397D31C21B5B325411483AD3F747033432593E321EDF6D4D4F4F28CD56C03DA6151F2D195E7CFCF1C663C74A9C092CFD79891C2D49DA31
-	2BDACDD6F38F62026B90FB33548FEDD17E85B9D61BE017BA0AAC125D1AF3A86B887CBFD6281CB54F6A551FBF14ECBDE1787B88042059ACEF1827BC17CCBC2070700BF39A8F73E2F306628106AFE643ABEDDF2FA76ADCEA4FEB7DBC19BE32FE6C8DDABF250DDABFF1E4A4B2E16D8FB6EB6D4BD2C746C76DA50D0FAB2DDABF2FE50C2C1F3B85EC4B76E727686F5556005CB74E666790765ABF927FE7B48DAE49A93A64BE06253F7A605F06D9D0F76AB9A7A371EF43ACF8E6E9F358E4604956CFFF125088959D9D6C37
-	4DAD47AE40C2917EBA09F73BC812BA0FDA3AF9D9FB6D635258D767461AC8DCADB1334DDCAD09439DD9AD09279B36DA928B1BB90FD3B1F01C9C7EA8F60F7BAA39C90D51981B2E43468F030DD3GFB0AD331D9BAEC3CCC92158F1232700BA519EC05C796BD6BAF1549B6AC304B81A8ED67B569FDG3424CF3572F6D6D42A03D036FBA9776959477FED45EF1B5D3144DCCB76E04CE894DDD4342295BFE9D4FE4FD8CD36B8698F04G8F92F353C73CDB6E330B75A4257D827EFE47AD0B568A2EB4E0A4157E3860B01E23
-	9E2E915C1DB2EE28CF5513B8877E72126CE4E43B6068B84CB4F80A0ABD26021AA40BB5406FAE4AAF76D22476326B47C9F959F56B964792D3B559EA1784EB355086D6D4CB36481DAE515D899E63F1FEDACEBBCA68C5535CC6256DA2696A74F132C5CD9081D5262FF89E1C32FD7D76EA48E9BCAEF218564490D9245630D6F68AAE98CAF4554A78CBD249152B52466C138F7E72335D17CDA4C619A46AB64963140939DD6836597B60250A3A92557AAEA8324D38EA2AA80C22EA180F7C526B4F4E79CD5906A8682C1A44
-	536F6E0125E42D5697BD5D9651B5A1FCC6663660351805F91CB8DD5E739659A5B85C781B8668BC4BE74E1C2432DEB47D5962995FFB7BEB4A3A56D4A67B19122069618ED16ABEDC515E8E9BAF35835098F41F29F60FF50AFC6A6C74CCCB2DFB61BD8BD8D895096DAEAE26FF0F503FC7716F910AB9C2B1C70E025AB610A17F7952BDFC4E54ACE9E1AF5A10875FF6B36AF69F43E2F25AB148C2E2911D8A0AE1A18FCB19346AFE7AB7E7443CE12BDC9F1E8ABD2A5763416FD64573937E76B8AD56B85D22F03A06703867
-	4BE90C9FCE63B827D5AA27E978A7637670FC62EFD063277F5FE83C4A0F46793DFF61ADFDAE36F1FC1A5FDCAC77F1160315BC6EFB97A452F3D09970C10F73DC6107A7BEA27E4FF49B3B853BDD966CD7AA9CD6BC5FBD53A70B5A3DE7D789766F66F594A223DD256726DD3AB67F8BD0CB87885B8237126B96GGE0C5GGD0CB818294G94G88G88GE0F954AC5B8237126B96GGE0C5GG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGGA5
-	97GGGG
-**end of data**/
+
+private void setDeviceComboBoxes( 
+   final com.cannontech.database.data.lite.LiteYukonPAObject liteDevice,
+   final com.cannontech.database.data.lite.LitePoint[] altPoints,
+   final javax.swing.JComboBox comboBox )
+{     
+   int deviceID = liteDevice.getYukonID();
+   com.cannontech.database.data.lite.LitePoint litePoint = null;
+
+   if( altPoints == null )
+   {
+      //we do not have a selected CheckBox, just add all possible devices
+      for( int j = 0; j < ALL_POINTS.length; j++ )
+      {
+         litePoint = ALL_POINTS[j];
+   
+         if( litePoint.getPaobjectID() == deviceID
+             && com.cannontech.database.data.pao.DeviceClasses.isCoreDeviceClass(liteDevice.getPaoClass()) )
+         {
+            if( litePoint.getPointType() == com.cannontech.database.data.point.PointTypes.ANALOG_POINT
+                || litePoint.getPointType() == com.cannontech.database.data.point.PointTypes.CALCULATED_POINT )
+            {               
+               comboBox.addItem(liteDevice);
+               break;
+            }
+   
+         }
+         else if( litePoint.getPaobjectID() > deviceID )
+            break;
+      }
+
+   }
+   else
+   {
+   
+      //we have a CheckBox checked, add only devices that have the specifed point UOM
+      for( int j = 0; j < altPoints.length; j++ )
+      {
+         litePoint = (com.cannontech.database.data.lite.LitePoint)altPoints[j];
+   
+         if( litePoint.getPaobjectID() == deviceID
+             && com.cannontech.database.data.pao.DeviceClasses.isCoreDeviceClass(liteDevice.getPaoClass()) )
+         {
+            if( litePoint.getPointType() == com.cannontech.database.data.point.PointTypes.ANALOG_POINT
+                || litePoint.getPointType() == com.cannontech.database.data.point.PointTypes.CALCULATED_POINT )             
+            {
+               comboBox.addItem(liteDevice);
+
+               break;
+            }
+   
+         }
+         else if( litePoint.getPaobjectID() > deviceID )
+            break;
+         
+      }
+   }
+
 }
 }

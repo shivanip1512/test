@@ -338,10 +338,19 @@ private void initialize() {
 	com.cannontech.database.cache.DefaultDatabaseCache cache =
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized (cache)
-{
+   {
 		java.util.List allUnitMeasures = cache.getAllUnitMeasures();
 		for (int i = 0; i < allUnitMeasures.size(); i++)
+      {
 			getUnitOfMeasureComboBox().addItem(allUnitMeasures.get(i));
+         
+         if( ((com.cannontech.database.data.lite.LiteUnitMeasure)allUnitMeasures.get(i)).getUomID()
+              == com.cannontech.database.data.point.PointUnits.UOMID_KW )
+         {
+            getUnitOfMeasureComboBox().setSelectedIndex( i ); //default to KW
+         }
+      }
+           
 	}
 	getMultiplierTextField().setText("1.0");
 	getDataOffsetTextField().setText("0.0");
