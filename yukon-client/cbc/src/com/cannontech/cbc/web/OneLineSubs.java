@@ -10,6 +10,7 @@ import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCCommand;
 import com.cannontech.yukon.cbc.CBCSubstationBuses;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * @author eWally
@@ -21,7 +22,6 @@ import com.cannontech.yukon.cbc.CBCSubstationBuses;
 public class OneLineSubs implements MessageListener
 {
 	private String dirBase = null;
-    private CBCClientConnection connection = null;
 
 
 	/**
@@ -83,14 +83,9 @@ public class OneLineSubs implements MessageListener
 
 		OneLineSubs thisIsThis = new OneLineSubs(); 
 		if( args.length > 0 ) 
-		{
 			thisIsThis.dirBase = args[0];
-		}
-		CBCClientConnection connection = new CBCClientConnection();
-	
-		connection.addMessageListener(thisIsThis);
-		//start the conn!!!
-		connection.connectWithoutWait();	
+
+		thisIsThis.start();
 	
 		while(true)
 		{
@@ -115,14 +110,12 @@ public class OneLineSubs implements MessageListener
 
     public void start()
     {
-        connection = new CBCClientConnection();            
-        
         try
         {
-            connection.addMessageListener( this );
-            connection.connect( 15000 );
+        	getConnection().addMessageListener( this );
+        	getConnection().connect( 15000 );
 
-            connection.executeCommand( 0, CBCCommand.REQUEST_ALL_SUBS );
+        	getConnection().executeCommand( 0, CBCCommand.REQUEST_ALL_SUBS );
         }
         catch( Exception e ) {}
     }
@@ -135,16 +128,22 @@ public class OneLineSubs implements MessageListener
     {
         try
         {
-            connection.removeMessageListener( this );
-            connection.disconnect();
+        	getConnection().removeMessageListener( this );
+        	getConnection().disconnect();
         }
         catch( Exception e ) {}
-
-        connection = null;
     }
     
     public boolean isRunning()
-    {
-        return connection != null;
+    {    	
+    	return getConnection().isValid();
     }
+    
+    private CBCClientConnection getConnection()
+    {
+    	//creates our own connection
+    	return (CBCClientConnection)ConnPool.getInstance().getConn(
+    					"ONELINE_CAPCONTROL");
+    }
+    
 }
