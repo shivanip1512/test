@@ -19,7 +19,6 @@ import com.cannontech.loadcontrol.gui.manualentry.MultiSelectProg;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
-import com.cannontech.message.dispatch.message.Multi;
 
 public class ProgramPopUpMenu extends javax.swing.JPopupMenu implements java.awt.event.ActionListener
 {
@@ -263,17 +262,15 @@ private void showDirectManualEntry( final int panelMode )
 
 				for( int i = 0; i < selected.length; i++ )
 				{
-					lmReqs[i] = panel.createMessage(
-							selected[i].getBaseProgram(),
-							selected[i].getGearNum() );
-					
 					programResp[i] = new ResponseProg(
-							selected[i].getBaseProgram(),
-							selected[i].getGearNum() );
+							panel.createMessage(
+								selected[i].getBaseProgram(),
+								selected[i].getGearNum()),
+							selected[i].getBaseProgram() );
 				}
 
 				
-				boolean success = LCUtils.executeSyncMessage( lmReqs, programResp );
+				boolean success = LCUtils.executeSyncMessage( programResp );
 
 				
 				if( !success )
@@ -301,7 +298,10 @@ private void showDirectManualEntry( final int panelMode )
 					if( diag.getButtonPressed() == OkCancelDialog.OK_PRESSED
 						&& respArr.length > 0 )
 					{
-						sendOverrides( respArr, panel );
+						for( int i = 0; i < respArr.length; i++ )
+							respArr[i].getLmRequest().setOverrideConstraints( true );
+
+						LCUtils.executeSyncMessage( respArr );
 					}
 
 					diag.dispose();
@@ -320,25 +320,6 @@ private void showDirectManualEntry( final int panelMode )
 	//destroy the JDialog
 	d.dispose();
 	
-}
-
-private void sendOverrides( ResponseProg[] respArr, DirectControlJPanel panel )
-{
-	LMManualControlRequest[] lmReqs =
-		new LMManualControlRequest[ respArr.length ];
-
-	for( int i = 0; i < respArr.length; i++ )
-	{
-		lmReqs[i] = 
-			panel.createMessage(
-				respArr[i].getProgram(),
-				respArr[i].getGearNum() );
-
-		lmReqs[i].setOverrideConstraints( true );
-	}
-
-	LCUtils.executeSyncMessage( lmReqs, null );
-
 }
 
 

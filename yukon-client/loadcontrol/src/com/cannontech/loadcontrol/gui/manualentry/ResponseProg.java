@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 
 /**
  * @author rneuharth
@@ -13,13 +14,15 @@ import com.cannontech.loadcontrol.data.LMProgramBase;
  */
 public class ResponseProg
 {
-	private LMProgramBase program = null;
-	private Integer gearNum = null;
-	
 	private ArrayList violations = new ArrayList(8);
 	private String action = null;
 	private int status = 0;
 	private Boolean override = Boolean.FALSE;
+
+	private LMProgramBase lmProgramBase = null;
+
+	//the request messages that created this response
+	private LMManualControlRequest lmRequest = null;
 
 
 	/**
@@ -30,11 +33,11 @@ public class ResponseProg
 		this( null, null );
 	}
 
-	public ResponseProg( LMProgramBase prog, Integer gearNumber )
+	public ResponseProg( LMManualControlRequest req, LMProgramBase lmProg )
 	{
 		super();
-		setProgram( prog );
-		setGearNum( gearNumber );
+		setLmRequest( req );
+		setLmProgramBase( lmProg );
 	}
 
 	/**
@@ -43,14 +46,6 @@ public class ResponseProg
 	public String getAction()
 	{
 		return action;
-	}
-
-	/**
-	 * @return
-	 */
-	public LMProgramBase getProgram()
-	{
-		return program;
 	}
 
 	/**
@@ -70,21 +65,26 @@ public class ResponseProg
 	}
 
 	/**
+	 * @return
+	 */
+	public String getViolationsAsString()
+	{
+		StringBuffer buff = new StringBuffer();
+		for( int i = 0; i < getViolations().size(); i++ )
+			buff.append(
+				(i > 0 ? ". " : "") +
+				getViolations().get(i).toString() );
+		
+		return buff.toString();
+	}
+
+	/**
 	 * @param string
 	 */
 	public void setAction(String string)
 	{
 		action = string;
 	}
-
-	/**
-	 * @param base
-	 */
-	public void setProgram(LMProgramBase base)
-	{
-		program = base;
-	}
-
 
 	/**
 	 * @return
@@ -121,17 +121,33 @@ public class ResponseProg
 	/**
 	 * @return
 	 */
-	public Integer getGearNum()
+	public LMManualControlRequest getLmRequest()
 	{
-		return gearNum;
+		return lmRequest;
 	}
 
 	/**
-	 * @param integer
+	 * @param request
 	 */
-	public void setGearNum(Integer integer)
+	public void setLmRequest(LMManualControlRequest request)
 	{
-		gearNum = integer;
+		lmRequest = request;
+	}
+
+	/**
+	 * @return
+	 */
+	public LMProgramBase getLmProgramBase()
+	{
+		return lmProgramBase;
+	}
+
+	/**
+	 * @param base
+	 */
+	public void setLmProgramBase(LMProgramBase base)
+	{
+		lmProgramBase = base;
 	}
 
 }

@@ -647,33 +647,37 @@ public class LCUtils
 	/**
 	 * Executes a batch of requests and waits for their corresponding responses.
 	 * Return false if an error occured, else true.
-	 * If programResp is null, the response from the server is not saved.
+	 * If programResp is null, false is returned.
 	 * 
 	 * @param lmReqs
 	 * @param programResp
 	 * @return
 	 */
-	public static synchronized boolean executeSyncMessage(
-				LMManualControlRequest[] lmReqs,
-				ResponseProg[] programResp )
+	public static synchronized boolean executeSyncMessage( ResponseProg[] programResp )
 	{
 		boolean success = true;
+		
+		if( programResp == null )
+			return false;
 
 		try
 		{ 
-			ServerRequest[] srvReqs = ServerRequest.makeServerRequests(
-					LoadControlClientConnection.getInstance(), lmReqs);
-					
-			//what we will show our user
-			ServerResponseMsg[] responseMsgs = new ServerResponseMsg[ srvReqs.length ];
+			ServerRequest[] srvrReq = new ServerRequest[ programResp.length ];
 
-			for( int i = 0; i < srvReqs.length; i++ )
+			ServerResponseMsg[] responseMsgs =
+					new ServerResponseMsg[ srvrReq.length ];
+
+			for( int i = 0; i < srvrReq.length; i++ )
 			{
-				responseMsgs[i] = srvReqs[i].execute();
+				srvrReq[i] = ServerRequest.makeServerRequest(
+						LoadControlClientConnection.getInstance(),
+						programResp[i].getLmRequest() );
+
+				responseMsgs[i] = srvrReq[i].execute();
 			}
-					
+
 			//fill in our responses
-			for( int i = 0; i < responseMsgs.length && programResp != null; i++ )
+			for( int i = 0; i < responseMsgs.length; i++ )
 			{
 				// some type of error occured
 				programResp[i].setStatus( responseMsgs[i].getStatus() );
@@ -692,6 +696,7 @@ public class LCUtils
 		catch(Exception e)
 		{
 			CTILogger.error( "No response received from server", e );
+			success = false;
 		}
 
 		return success;

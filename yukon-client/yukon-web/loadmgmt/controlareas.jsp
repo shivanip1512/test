@@ -1,9 +1,22 @@
 <%@ include file="lm_header.jsp" %>
 
+<%
+	if( lmSession.getResponseProgs() != null )
+	{
+		CTILogger.warn( 
+			"Found some program violations, " +
+			"showing program violation page" );
+%>
+		<%@ include file="include/progviolation.jsp" %>
+<%
+		return;
+	}
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
 <link rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="css/lm.css" type="text/css">
 </head>

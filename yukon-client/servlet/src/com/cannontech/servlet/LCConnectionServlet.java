@@ -19,9 +19,14 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.loadcontrol.LMCmdMsgFactory;
@@ -34,8 +39,8 @@ public class LCConnectionServlet extends javax.servlet.http.HttpServlet implemen
 	// Key used to store instances of this in the servlet context
 	public static final String SERVLET_CONTEXT_ID = "LCConnection";
 
-	private LoadControlClientConnection conn;
-	private com.cannontech.web.loadcontrol.LoadcontrolCache cache;
+	private LoadControlClientConnection conn = null;
+	private com.cannontech.web.loadcontrol.LoadcontrolCache cache = null;
 	
 
 /**
@@ -215,9 +220,10 @@ public void update(java.util.Observable obs, Object o)
  * itemid - the ID of the item that the command will affect
  * 
  */
-public void doPost(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException
+public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException
 {
-//	HttpSession session = req.getSession( false );
+	getLMSession(req).setRefreshRate(LMSession.REF_SECONDS_PEND);
+	
 	String redirectURL = req.getParameter("redirectURL");
 	Hashtable optionalProps = new Hashtable(8);
 
@@ -225,10 +231,12 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 	//handle any commands that we may need to send to the server from any page here
 	String cmd = req.getParameter("cmd");
 	String itemid = req.getParameter("itemid");
+	String override = req.getParameter("override");
 	
 	//add any optional properties here
 	optionalProps = getOptionalParams( req );
 
+	ResponseProg[] violatResp = null;
 
 	if( cmd != null )
 	{
@@ -236,18 +244,28 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 		{
 			WebCmdMsg msg = LMCmdMsgFactory.createCmdMsg( 
 					cmd, new Integer(itemid), optionalProps, getCache() );
-			
 
-			CTILogger.info(req.getServletPath() +
-				"	  cmd = " + cmd +
+
+			CTILogger.info("LM_COMMAND: " + req.getServletPath() +
+				"	cmd = " + cmd +
 				", itemID = " + itemid +
 				", OptionalProp Cnt = " + optionalProps.size() );
 
 			//send the LMCommand to the LoadControl server
 			if( msg.genLCCmdMsg() != null )
 			{
-				getConnection().write( msg.genLCCmdMsg() );
-				CTILogger.info("   Command was sent");
+				if( LMCmdMsgFactory.isSyncMsg(cmd) )
+				{					
+					violatResp = sendSyncMsg( msg );
+					CTILogger.info("   Syncrhounous command was sent and responded to " + 
+						"(ResponseCount= " + (violatResp==null ? 0 : violatResp.length) + ")" );
+				}				
+				else
+				{
+					getConnection().write( msg.genLCCmdMsg() );
+					CTILogger.info("   Command was sent");
+				}
+				
 			}
 			else
 				CTILogger.info("   Command was not sent since it did not have a message defined for it");
@@ -258,12 +276,16 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 			CTILogger.warn( "LC Command was attempted but failed for the following reason:", e );
 		}
 	}
+	else if( override != null )
+	{
+		resendSyncMsgs( req, (Double[])optionalProps.get("dblarray1") );
+	}
 	else
 		CTILogger.warn( "LC Command servlet was hit, but NO command was sent" );
 	
 
-	//sets optional session variables
-	setSessionInfo( req );
+	//sets any responses we got back from the server
+	getLMSession(req).setResponseProgs( violatResp );
 
 
 	//always forward the client to the specified URL
@@ -272,20 +294,126 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 }
 
 /**
- * Only sets variables if they are found in the session.
+ * Resends response messages withe the override flag set for the specified progIds.
+ * 
  * @param req
+ * @param progIds
  */
-private void setSessionInfo( HttpServletRequest req )
+private void resendSyncMsgs( HttpServletRequest req, Double[] progIds )
 {
-	//if the session has a LMSession, let us force it to a new refresh rate
 	HttpSession session = req.getSession( false );
 	if( session.getAttribute("lmSession") != null )
 	{
-		LMSession lmSession = (LMSession)session.getAttribute("lmSession");
-		lmSession.setRefreshRate(LMSession.REF_SECONDS_PEND);
+		LMSession lmSess = (LMSession)session.getAttribute("lmSession");
+		
+		try
+		{
+			if( progIds == null )
+				return;
+
+
+			ResponseProg[] resProgArr = new ResponseProg[ progIds.length ];
+			
+			/* Oh well, i j loop should contain a low number of data in each */
+			for( int i = 0; i < progIds.length; i++ )
+			{
+				int progID = progIds[i].intValue();
+				for( int j = 0; j < lmSess.getResponseProgs().length; j++ )
+				{
+					if( progID == lmSess.getResponseProgs()[j].getLmProgramBase().getYukonID().intValue() )
+					{
+						resProgArr[i] = lmSess.getResponseProgs()[j];
+						resProgArr[i].getLmRequest().setOverrideConstraints( true );
+						break;
+					}
+				}
+			}
+	
+			if( resProgArr.length > 0 )	
+				LCUtils.executeSyncMessage( resProgArr );
+		}
+		finally
+		{
+			lmSess.clearSyncMessages();
+		}
+
+	}
+	else
+		throw new IllegalStateException("Unable to find the LMSession object for resending synchrounous messages");
+}
+
+/**
+ * Processes a given WebCmd message for synchrounous messaging. The request and
+ * response is handled inside this method. Our thread is locked in here until
+ * all responses have returned OR a timeout is encountered. Returns null
+ * if all messages where successfull.
+ *  
+ * @param cmdMsg
+ * @return ResponseProg[] the message responses 
+ */
+private ResponseProg[] sendSyncMsg( final WebCmdMsg cmdMsg )
+{
+	Multi multMsg = new Multi();
+	if( cmdMsg.genLCCmdMsg() instanceof Multi )
+		multMsg = (Multi)cmdMsg.genLCCmdMsg();
+	else
+		multMsg.getVector().add( cmdMsg.genLCCmdMsg() ); //a multi of 1
+
+
+	LMManualControlRequest[] lmReqs =
+		new LMManualControlRequest[ multMsg.getVector().size() ];
+
+	ResponseProg[] programResps =
+		new ResponseProg[ multMsg.getVector().size() ];
+
+	for( int i = 0; i < multMsg.getVector().size(); i++ )
+	{
+		lmReqs[i] = (LMManualControlRequest)multMsg.getVector().get(i);
+
+
+		//better be a program for this Request Message!
+		LMProgramBase progBase =
+			getCache().getProgram( new Integer(lmReqs[i].getYukonID()) );
+
+		//may or may not be an error, just warn for now
+		if( progBase == null )
+			CTILogger.warn( " ** A LMManualControlRequest message was sent without a defined LMProgramBase object");
+
+		programResps[i] = new ResponseProg( lmReqs[i], progBase );
 	}
 
+				
+	boolean success = LCUtils.executeSyncMessage( programResps );
+	
+	if( success )
+		return null;
+	else
+		return programResps;
 }
+
+/**
+ * Gets the LMSession from this user request
+ * Never returns NULL
+ * @param req
+ */
+private LMSession getLMSession( HttpServletRequest req )
+{
+	HttpSession httpSession = req.getSession( false );
+	LMSession lmSession = (LMSession)httpSession.getAttribute("lmSession");
+	
+	if( lmSession == null )
+	{
+		CTILogger.warn( " Unable to find LMSession, creating a new one");
+		
+		//we must create an LMSession if we do not have one
+		lmSession = new LMSession();
+		httpSession.setAttribute( "lmSession", lmSession );
+	}
+	
+		
+	return lmSession;
+}
+
 
 private Hashtable getOptionalParams( HttpServletRequest req )
 {

@@ -32,4 +32,14 @@ public interface ILCCmds
 	public static final String SC_START = "sc_start";
 	public static final String SC_STOP = "sc_stop";
 
+
+	//the following commmands uses synchrounous messaging
+	// Only LMProgramBase objects can do this
+	public static final String[] SYNC_CMDS =
+	{
+		AREA_START_PROGS,
+		PROG_START,
+		SC_START
+	};
+
 }

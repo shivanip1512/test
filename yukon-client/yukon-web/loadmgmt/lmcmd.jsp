@@ -48,10 +48,11 @@ function update()
 		alert('The Start date/time must be before the Stop date/time');
 		return false;
 	}
-	
+
 	/* Post to the actual servlet to do the work (must do first to ensure the command gets out) */
-	document.cmdForm.attributes["action"].value = "/servlet/LCConnectionServlet";
+	document.cmdForm.attributes["action"].value = "<%=request.getContextPath()%>/servlet/LCConnectionServlet";
 	document.cmdForm.submit();
+	document.cmdForm.attributes["action"].value = "";
 	
 	self.close();
 	opener.location.reload(true);
@@ -638,7 +639,7 @@ function setStopPixTime()
 
 		  <tr valign="top" class="HeaderCell"> 
 			<td width="40"><div align="center">
-				<input type="checkbox" name="allChks" value="true" onClick="checkAll(cmdForm.allChks, cmdForm.dblarray1)">
+				<input type="checkbox" name="allChks" value="true" onClick="checkAll(cmdForm.allChks, document.getElementsByName('dblarray1') )">
 				All</div>
 			</td>
 			<td width="147"><div align="center">Program</div></td>
@@ -721,7 +722,7 @@ function setStopPixTime()
 
 		  <tr valign="top" class="HeaderCell"> 
 			<td width="40"><div align="center">
-				<input type="checkbox" name="allChks" value="true" onClick="checkAll(cmdForm.allChks, cmdForm.dblarray1)" checked>
+				<input type="checkbox" name="allChks" value="true" onClick="checkAll(cmdForm.allChks, document.getElementsByName('dblarray1'))" checked>
 				All</div>
 			</td>
 			<td width="127"><div align="center">Program</div></td>
@@ -813,7 +814,7 @@ function setStopPixTime()
 
 
 	  <BR>
-		<input type="submit" name="Submit2" value="Ok" class="defButton" onclick = "return update()">
+		<input type="submit" name="Submit2" value="Ok" class="defButton" onclick = "update()">
 <% }  /* Ending of the isPageGood check */ %>
 		<input type="submit" name="Submit" value="Cancel" class="defButton" onclick = "self.close()">
 	</form>

@@ -106,6 +106,15 @@ public final class LMCmdMsgFactory
 
 		return createCmdMsg( cmdMsg, lmData, optionalProps );
 	}
+	
+	public static synchronized boolean isSyncMsg( String msg )
+	{
+		for( int i = 0; i < ILCCmds.SYNC_CMDS.length; i++ )
+			if( ILCCmds.SYNC_CMDS[i].equalsIgnoreCase(msg) )
+				return true;
+		
+		return false;
+	}
 
 
 	/**

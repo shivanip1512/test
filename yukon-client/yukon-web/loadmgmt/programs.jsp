@@ -1,7 +1,27 @@
 <%@ include file="lm_header.jsp" %>
 
-<% 
-
+<%
+	if( lmSession.getResponseProgs() != null )
+	{
+		CTILogger.warn( 
+			"Found some program violations, " +
+			"showing program violation page" );
+%>
+		<%@ include file="include/progviolation.jsp" %>
+<%
+		return;
+	}
+   
+if( lmSession.getResponseProgs() != null )
+{
+	CTILogger.warn( 
+		"Found some program violations, " +
+		"redirecting request to: progviolation.jsp" ); 
+  
+	response.sendRedirect( "progviolation.jsp" );
+	return;
+}
+  
 String strID = request.getParameter("areaID");
 if( strID == null )
 {
@@ -22,7 +42,6 @@ if( lmCntrArea == null )
 	response.sendRedirect( lmSession.DEF_REDIRECT );
 	return;
 }
-
 
 NativeIntVector intVect = new NativeIntVector(16);
 String doAllProgs = request.getParameter("allChks");

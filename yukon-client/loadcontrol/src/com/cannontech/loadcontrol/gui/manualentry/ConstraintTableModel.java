@@ -178,7 +178,7 @@ public class ConstraintTableModel extends javax.swing.table.AbstractTableModel i
 				return prg.getOverride();
 				
 				case COL_PROGRAM_NAME:
-				return prg.getProgram().getYukonName();
+				return prg.getLmProgramBase().getYukonName();
 
 				case COL_STATUS:
 				return ServerResponseMsg.getStatusStr(prg.getStatus());

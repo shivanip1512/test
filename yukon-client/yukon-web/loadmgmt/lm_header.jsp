@@ -32,7 +32,9 @@
 <%@ page import="com.cannontech.database.data.lite.LiteLMProgScenario" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.database.cache.functions.LMFuncs" %>
-
+<%@ page import="com.cannontech.loadcontrol.gui.manualentry.ConstraintTableModel" %>
+<%@ page import="com.cannontech.loadcontrol.gui.manualentry.ResponseProg" %>
+<%@ page import="com.cannontech.message.server.ServerResponseMsg" %>
 
 
 <jsp:useBean 
@@ -40,6 +42,7 @@
 	class="com.cannontech.web.loadcontrol.LMSession"
 />
 
+<cti:checklogin/>
 
 <%  
     LCConnectionServlet connServlet = (LCConnectionServlet)
@@ -47,23 +50,11 @@
    
    
 	LoadcontrolCache lcCache = connServlet.getCache(); 
-/*	
-	FeederTableModel feederMdl = cbcAnnex.getFeederTableModel(); 
-	CapBankTableModel capBankMdl = cbcAnnex.getCapBankTableModel(); 
-	
-	
-	cbcAnnex.setUserName( 
-		(session.getAttribute("YUKON_USER") == null 
-		 ? "(null)"
-		 : session.getAttribute("YUKON_USER").toString()) );
-*/	
    
 	String areaState = request.getParameter("area_state");
 	if( areaState != null )
 		lmSession.setAreaView( areaState );
 	
-   
-   
 %>
 
 <script language="JavaScript">
