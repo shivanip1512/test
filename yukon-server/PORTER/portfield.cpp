@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2002/08/28 16:21:07 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2002/09/03 17:28:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,6 +94,7 @@ using namespace std;
 #include "dev_ied.h"
 #include "dev_schlum.h"
 #include "dev_remote.h"
+#include "dev_kv2.h"
 #include "msg_trace.h"
 #include "porttypes.h"
 #include "xfer.h"
@@ -1110,9 +1111,49 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     }
 
                     dnp.sendInbound(InMessage);
-
                     break;
                 }
+
+            case TYPE_KV2:
+               {
+                  BYTE  inBuffer[512];
+                  BYTE  outBuffer[300];
+                  ULONG bytesReceived=0;
+
+                  CtiDeviceKV2 *kv2dev    = ( CtiDeviceKV2 *)Device;
+                  CtiProtocolANSI &ansi   = kv2dev->getProtocol();
+
+                  //allocate some space
+                  trx.setInBuffer( inBuffer );
+                  trx.setOutBuffer( outBuffer );
+                  trx.setInCountActual( &bytesReceived );
+
+                  //unwind the message we made in scanner
+                  if( ansi.recvOutbound( OutMessage ) != 0 )
+                  {
+                     while( !ansi.isTransactionComplete() )
+                     {
+                        //jump in, check for login, build packets, send messages, etc...
+                        ansi.generate( trx );
+
+                        status = Port->outInMess( trx, Device, traceList );
+
+                        ansi.decode( trx, status );
+
+                        // Prepare for tracing
+                        if( trx.doTrace( status ) )
+                        {
+                           Port->traceXfer( trx, traceList, Device, status );
+                        }
+
+                        DisplayTraceList( Port, traceList, true );
+                     }
+                  }
+
+                  //ansi.sendInbound( InMessage );
+                  break;
+               }
+
             case TYPE_SIXNET:
                 {
                     CtiDeviceIED         *IED= (CtiDeviceIED*)Device;
@@ -1214,7 +1255,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
             case TYPE_ALPHA_PPLUS:
             case TYPE_DR87:
             case TYPE_LGS4:
-            case TYPE_KV2:
                 {
                     // Copy the request into the InMessage side....
                     memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
