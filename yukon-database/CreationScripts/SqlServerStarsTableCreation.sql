@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     1/13/2003 12:33:06 PM                        */
+/* Created on:     1/13/2003 4:26:35 PM                         */
 /*==============================================================*/
 
 
@@ -742,11 +742,12 @@ go
 /* Table : LMThermostatSeasonEntry                              */
 /*==============================================================*/
 create table LMThermostatSeasonEntry (
+EntryID              numeric              not null,
 SeasonID             numeric              not null,
-TimeOfWeekID         numeric              null,
-StartTime            numeric              null,
+TimeOfWeekID         numeric              not null,
+StartTime            numeric              not null,
 Temperature          numeric              null,
-constraint PK_LMTHERMOSTATSEASONENTRY primary key  (SeasonID)
+constraint PK_LMTHERMOSTATSEASONENTRY primary key  (EntryID)
 )
 go
 
@@ -865,13 +866,13 @@ go
 
 alter table AccountSite
    add constraint FK_AccS_CstAd foreign key (StreetAddressID)
-      references  ()
+      references CustomerAddress ()
 go
 
 
 alter table ApplianceBase
    add constraint FK_AppBs_LMPr foreign key (LMProgramID)
-      references  ()
+      references LMPROGRAM ()
 go
 
 
@@ -889,13 +890,13 @@ go
 
 alter table ContactNotification
    add constraint FK_Cnt_CntNot foreign key (ContactID)
-      references  ()
+      references CustomerContact ()
 go
 
 
 alter table CustomerAdditionalContact
    add constraint FK_CsCnt_CsAdCn foreign key (ContactID)
-      references  ()
+      references CustomerContact ()
 go
 
 
@@ -1003,7 +1004,7 @@ go
 
 alter table ServiceCompany
    add constraint FK_CstAdd_SrC foreign key (AddressID)
-      references  ()
+      references CustomerAddress ()
 go
 
 
@@ -1015,13 +1016,13 @@ go
 
 alter table CustomerBase
    add constraint FK_CstBs_CstCnt foreign key (PrimaryContactID)
-      references  ()
+      references CustomerContact ()
 go
 
 
 alter table ServiceCompany
    add constraint FK_CstCnt_SrvC foreign key (PrimaryContactID)
-      references  ()
+      references CustomerContact ()
 go
 
 
@@ -1051,7 +1052,7 @@ go
 
 alter table InventoryBase
    add constraint FK_Dev_InvB foreign key (DEVICEID)
-      references  ()
+      references DEVICE ()
 go
 
 
@@ -1063,19 +1064,19 @@ go
 
 alter table ECToAccountMapping
    add constraint FK_ECTAcc_Enc foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany ()
 go
 
 
 alter table ECToGenericMapping
    add constraint FK_ECTGn_Enc foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany ()
 go
 
 
 alter table ECToInventoryMapping
    add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany ()
 go
 
 
@@ -1093,13 +1094,13 @@ go
 
 alter table ECToCallReportMapping
    add constraint FK_ECTSrv_Enc foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany ()
 go
 
 
 alter table ECToWorkOrderMapping
    add constraint FK_ECTWrk_Enc2 foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany ()
 go
 
 
@@ -1111,7 +1112,7 @@ go
 
 alter table ECToLMCustomerEventMapping
    add constraint FK_EnCm_ECLmCs foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany ()
 go
 
 
@@ -1153,7 +1154,7 @@ go
 
 alter table LMHardwareConfiguration
    add constraint FK_LMHrd_LMGr foreign key (AddressingGroupID)
-      references  ()
+      references LMGroup ()
 go
 
 
@@ -1165,7 +1166,7 @@ go
 
 alter table LMProgramEvent
    add constraint FK_LMPrg_LMPrEv foreign key (LMProgramID)
-      references  ()
+      references LMPROGRAM ()
 go
 
 
@@ -1177,7 +1178,7 @@ go
 
 alter table LMProgramWebPublishing
    add constraint FK_LMprApp_LMPrg foreign key (LMProgramID)
-      references  ()
+      references LMPROGRAM ()
 go
 
 
@@ -1189,7 +1190,7 @@ go
 
 alter table Substation
    add constraint FK_Sub_Rt foreign key (RouteID)
-      references  ()
+      references Route ()
 go
 
 
