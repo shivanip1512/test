@@ -1,6 +1,7 @@
 package com.cannontech.graph.model;
 
 import com.cannontech.common.util.KeysAndValues;
+import com.cannontech.database.db.graph.GraphRenderers;
 
 /**
  * Properties for a Trend.
@@ -29,8 +30,8 @@ public class TrendProperties
 	private String domainLabel_LD = "Percentage";
 
 	private static long resolutionInMillis = 1;	//default to millis
-	public int optionsMaskSettings = TrendModelType.NONE_MASK;
-	public int viewType = TrendModelType.LINE_VIEW;
+	public int optionsMaskSettings = GraphRenderers.NONE_MASK;
+	public int viewType = GraphRenderers.LINE;
 	public String gdefName = "";
 	
 	/**
