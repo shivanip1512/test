@@ -30,6 +30,10 @@ public class Ion7700 extends DNPBase implements IDeviceMeterGroup
 		return deviceMeterGroup;
 	}
 
+	public void setDeviceMeterGroup( DeviceMeterGroup dvMtrGrp_ )
+	{
+		deviceMeterGroup = dvMtrGrp_;
+	}
 
 	/**
 	 * This method was created in VisualAge.

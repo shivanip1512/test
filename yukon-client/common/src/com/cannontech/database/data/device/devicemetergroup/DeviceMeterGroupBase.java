@@ -1,6 +1,7 @@
 package com.cannontech.database.data.device.devicemetergroup;
 
 import com.cannontech.database.data.device.IDeviceMeterGroup;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 
 /**
  * Insert the type's description here.
@@ -52,6 +53,12 @@ public com.cannontech.database.db.device.DeviceMeterGroup getDeviceMeterGroup()
 	
 	return deviceMeterGroup;
 }
+
+public void setDeviceMeterGroup( DeviceMeterGroup dvMtrGrp_ )
+{
+	deviceMeterGroup = dvMtrGrp_;
+}
+
 /**
  * This method was created in VisualAge.
  * @exception java.sql.SQLException The exception description.

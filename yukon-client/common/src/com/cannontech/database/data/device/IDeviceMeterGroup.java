@@ -12,4 +12,5 @@ public interface IDeviceMeterGroup
 {
 
 	DeviceMeterGroup getDeviceMeterGroup();
+	void setDeviceMeterGroup( DeviceMeterGroup dvMtrGrp_ );	
 }

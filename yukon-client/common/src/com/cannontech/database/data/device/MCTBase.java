@@ -40,7 +40,8 @@ public void addPartial() throws java.sql.SQLException
 /**
  * This method was created in VisualAge.
  */
-public void delete() throws java.sql.SQLException {
+public void delete() throws java.sql.SQLException 
+{
 	getDeviceMeterGroup().delete();
 	getDeviceLoadProfile().delete();
 	super.delete();
@@ -50,10 +51,9 @@ public void delete() throws java.sql.SQLException {
  * Creation date: (6/14/2001 11:10:07 AM)
  * @exception java.sql.SQLException The exception description.
  */
-public void deletePartial() throws java.sql.SQLException {
-
+public void deletePartial() throws java.sql.SQLException 
+{
 	super.deletePartial();
-
 }
 /**
  * This method was created in VisualAge.
@@ -75,6 +75,12 @@ public DeviceMeterGroup getDeviceMeterGroup() {
 		
 	return deviceMeterGroup;
 }
+
+public void setDeviceMeterGroup( DeviceMeterGroup dvMtrGrp_ )
+{
+	deviceMeterGroup = dvMtrGrp_;
+}
+
 /**
  * This method was created in VisualAge.
  */

@@ -2,11 +2,15 @@ package com.cannontech.dbeditor.wizard.changetype.device;
 
 import java.awt.Dimension;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.IDeviceMeterGroup;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.device.DeviceScanRate;
 
 public class DeviceTypesPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.ListSelectionListener
@@ -260,10 +264,10 @@ public int getSelectedDeviceType()
 */
 public Object getValue(Object val)
 {
-
 	String type = null;
 
 	if (getDevClass() == DeviceClasses.GROUP)
+	{
 		for (int i = 0; i < DEVICE_TYPES[5].length; i++)
 		{
 			if (getJListDeviceTypes().getSelectedValue() == DEVICE_TYPES[5][i])
@@ -272,43 +276,24 @@ public Object getValue(Object val)
 				break;
 			}
 		}
+	}
 	else
 		type = (String) getJListDeviceTypes().getSelectedValue();
 
-	if (val == null)
-		return new Integer( com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) );
 
+	if (val == null)
+	{
+		return new Integer( com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) );
+	}
 	else
 	{
-
-		((DeviceBase) val).setDeviceType( type );
-
-		String devName = ((com.cannontech.database.data.device.DeviceBase) val).getPAOName();
-		com.cannontech.database.db.device.Device device = ((com.cannontech.database.data.device.DeviceBase) val).getDevice();
-		Integer address = null;
-		Integer routeID = null;
-		Integer portID = null;
-		DeviceScanRate[] scanRates = null;
-		//DeviceStatistics[] deviceStatistics = null;
-
-		if (val instanceof com.cannontech.database.data.device.CarrierBase)
-		{
-			routeID = ((com.cannontech.database.data.device.CarrierBase) val).getDeviceRoutes().getRouteID();
-
-			address = ((com.cannontech.database.data.device.CarrierBase) val).getDeviceCarrierSettings().getAddress();
-		}
-		else if (val instanceof com.cannontech.database.data.device.lm.LMGroup)
-			if (val instanceof com.cannontech.database.data.device.lm.LMGroupEmetcon)
-				routeID = ((com.cannontech.database.data.device.lm.LMGroupEmetcon) val).getLmGroupEmetcon().getRouteID();
-			else
-				routeID = ((com.cannontech.database.data.device.lm.LMGroupVersacom) val).getLmGroupVersacom().getRouteID();
-		else if (val instanceof com.cannontech.database.data.device.IDLCBase)
-			address = ((com.cannontech.database.data.device.IDLCBase) val).getDeviceIDLCRemote().getAddress();
-		if (val instanceof com.cannontech.database.data.device.RemoteBase)
-			portID = ((com.cannontech.database.data.device.RemoteBase) val).getDeviceDirectCommSettings().getPortID();
-
+		DBPersistent oldDevice = null;
+		
+		//get a deep copy of val
 		try
 		{
+			oldDevice =
+					(DBPersistent)CtiUtilities.copyObject( val );
 
 			com.cannontech.database.Transaction t =
 				com.cannontech.database.Transaction.createTransaction(
@@ -317,46 +302,92 @@ public Object getValue(Object val)
 
 			val = t.execute();
 		}
-		catch (com.cannontech.database.TransactionException e)
+		catch( Exception e )
 		{
-
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		try
-		{
-			scanRates = DeviceScanRate.getDeviceScanRates(
-               ((DeviceBase) val).getDevice().getDeviceID(),
-               com.cannontech.database.PoolManager.getInstance().getConnection(
-                  com.cannontech.common.util.CtiUtilities.getDatabaseAlias()) );
-
-			//deviceStatistics = DeviceStatistics.getDeviceStatistics(((DeviceBase) val).getDevice().getDeviceID());
-		}
-		catch (java.sql.SQLException e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e );
+			CTILogger.info(
+					"*** An exception occured when trying to change type of " +
+					val + ", action aborted.");
+			
+			return val;
 		}
 
+
+
+		//create a brand new DeviceBase object
 		val = com.cannontech.database.data.device.DeviceFactory.createDevice( com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) );
-		((com.cannontech.database.data.device.DeviceBase) val).setDevice(device);
-		((com.cannontech.database.data.device.DeviceBase) val).setPAOName(devName);
+		
+		//set all the device specific stuff here
+		((com.cannontech.database.data.device.DeviceBase) val).setDevice(
+			((com.cannontech.database.data.device.DeviceBase) oldDevice).getDevice() );
+			
+		((com.cannontech.database.data.device.DeviceBase) val).setPAOName(
+			((com.cannontech.database.data.device.DeviceBase) oldDevice).getPAOName() );
 
-		if (val instanceof com.cannontech.database.data.device.CarrierBase)
+		((com.cannontech.database.data.device.DeviceBase) val).setDisableFlag(
+			((com.cannontech.database.data.device.DeviceBase) oldDevice).getPAODisableFlag() );
+
+		((com.cannontech.database.data.device.DeviceBase) val).setPAOStatistics(
+			((com.cannontech.database.data.device.DeviceBase) oldDevice).getPAOStatistics() );
+
+
+
+		if( val instanceof com.cannontech.database.data.device.CarrierBase
+			 && oldDevice instanceof com.cannontech.database.data.device.CarrierBase )
 		{
+			((com.cannontech.database.data.device.CarrierBase) val).getDeviceCarrierSettings().setAddress(
+				((com.cannontech.database.data.device.CarrierBase) oldDevice).getDeviceCarrierSettings().getAddress() );
 
-			((com.cannontech.database.data.device.CarrierBase) val).getDeviceCarrierSettings().setAddress(address);
+			((com.cannontech.database.data.device.CarrierBase) val).getDeviceRoutes().setRouteID(
+				((com.cannontech.database.data.device.CarrierBase) oldDevice).getDeviceRoutes().getRouteID() );
 
-			((com.cannontech.database.data.device.CarrierBase) val).getDeviceRoutes().setRouteID(routeID);
 		}
-		else if (val instanceof com.cannontech.database.data.device.lm.LMGroup)
-			if (val instanceof com.cannontech.database.data.device.lm.LMGroupEmetcon)
-				 ((com.cannontech.database.data.device.lm.LMGroupEmetcon) val).getLmGroupEmetcon().setRouteID(routeID);
+		else if( val instanceof com.cannontech.database.data.device.lm.LMGroup
+			 		 && oldDevice instanceof com.cannontech.database.data.device.lm.LMGroup )
+		{
+			if( val instanceof com.cannontech.database.data.device.lm.LMGroupEmetcon
+			 	 && oldDevice instanceof com.cannontech.database.data.device.lm.LMGroupEmetcon)
+			{
+				 ((com.cannontech.database.data.device.lm.LMGroupEmetcon) val).getLmGroupEmetcon().setRouteID(
+						((com.cannontech.database.data.device.lm.LMGroupEmetcon) val).getLmGroupEmetcon().getRouteID() );
+			}
 			else
-				 ((com.cannontech.database.data.device.lm.LMGroupVersacom) val).getLmGroupVersacom().setRouteID(routeID);
-		else if (val instanceof com.cannontech.database.data.device.IDLCBase)
-			 ((com.cannontech.database.data.device.IDLCBase) val).getDeviceIDLCRemote().setAddress(address);
-		if (val instanceof com.cannontech.database.data.device.RemoteBase)
-			 ((com.cannontech.database.data.device.RemoteBase) val).getDeviceDirectCommSettings().setPortID(portID);
+			{
+				 ((com.cannontech.database.data.device.lm.LMGroupVersacom) val).getLmGroupVersacom().setRouteID(
+						((com.cannontech.database.data.device.lm.LMGroupVersacom) oldDevice).getLmGroupVersacom().getRouteID() );				 
+			}
+			
+		}
+		else if( val instanceof com.cannontech.database.data.device.IDLCBase
+			 	    && oldDevice instanceof com.cannontech.database.data.device.IDLCBase)
+		
+		{
+			 ((com.cannontech.database.data.device.IDLCBase) val).getDeviceIDLCRemote().setAddress(
+					((com.cannontech.database.data.device.IDLCBase) oldDevice).getDeviceIDLCRemote().getAddress() );
+		}
+			 
+		if( val instanceof com.cannontech.database.data.device.RemoteBase
+	 	    && oldDevice instanceof com.cannontech.database.data.device.RemoteBase)
+		{
+			 ((com.cannontech.database.data.device.RemoteBase) val).getDeviceDirectCommSettings().setPortID(
+					((com.cannontech.database.data.device.RemoteBase) oldDevice).getDeviceDirectCommSettings().getPortID() );			 
+		}
 
+		if( val instanceof IDeviceMeterGroup
+	 	    && oldDevice instanceof IDeviceMeterGroup )
+		{
+			 ((IDeviceMeterGroup) val).setDeviceMeterGroup(
+					((IDeviceMeterGroup) oldDevice).getDeviceMeterGroup() );			 			
+		}
+
+
+		if( val instanceof TwoWayDevice
+	 	    && oldDevice instanceof TwoWayDevice )
+		{
+			((TwoWayDevice) val).setDeviceScanRateVector(
+					((TwoWayDevice) oldDevice).getDeviceScanRateVector() );
+		}
+		
 		try
 		{
 			com.cannontech.database.Transaction t2 =
@@ -373,22 +404,6 @@ public Object getValue(Object val)
 
 		}
 
-		if (scanRates != null)
-		{
-			for (int i = 0; i < scanRates.length; i++)
-			{
-				((TwoWayDevice) val).getDeviceScanRateVector().add(scanRates[i]);
-			}
-		}
-		
-/*		if (deviceStatistics != null)
-		{
-			for (int i = 0; i < deviceStatistics.length; i++)
-			{
-				((TwoWayDevice) val).getDeviceScanRateVector().add(deviceStatistics[i]);
-			}
-		}
-*/
 
 		return val;
 	}
