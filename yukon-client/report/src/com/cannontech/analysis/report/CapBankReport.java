@@ -1,10 +1,8 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
-import java.awt.geom.Point2D;
 
 import org.jfree.report.Boot;
-import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
 import org.jfree.report.GroupHeader;
@@ -12,16 +10,11 @@ import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
 import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.NumberFieldElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
 import org.jfree.report.modules.gui.base.PreviewDialog;
-import org.jfree.report.style.ElementStyleSheet;
-import org.jfree.report.style.FontDefinition;
-import org.jfree.ui.FloatDimension;
 
-import com.cannontech.analysis.ReportFuncs;
-import com.cannontech.analysis.ReportTypes;
+import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.CapBankListModel;
 
 /**
@@ -98,29 +91,19 @@ public class CapBankReport extends YukonReportBase
 		final Group collHdgGroup = new Group();
 		collHdgGroup.setName("Column Heading");
 	
-		final GroupHeader header = new GroupHeader();
-	
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 30));
-		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
+		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 	
 		LabelElementFactory factory;
 		for (int i = 0; i < getModel().getColumnNames().length; i++)
 		{
-			factory = new LabelElementFactory();
-			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY()));
-			factory.setText(getModel().getColumnNames()[i]);
-			factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), getModel().getColumnProperties(i).getHeight() ));
-			factory.setHorizontalAlignment(ElementAlignment.LEFT);
-			factory.setVerticalAlignment(ElementAlignment.BOTTOM);
+			factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
 			header.addElement(factory.createElement());
 		}
 	
-		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 22, 0, 22)));
+		header.addElement(ReportFactory.createBasicLine("chGroupLine", 0.5f, 22));
 		collHdgGroup.setHeader(header);
 	
-		final GroupFooter footer = new GroupFooter();
-		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 30));
-		footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
+		GroupFooter footer = ReportFactory.createGroupFooterDefault();
 		collHdgGroup.setFooter(footer);
 
 		return collHdgGroup;
@@ -143,9 +126,7 @@ public class CapBankReport extends YukonReportBase
 	 */
 	protected ItemBand createItemBand()
 	{
-		final ItemBand items = new ItemBand();
-		items.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 10));
-		items.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 10));
+		ItemBand items = ReportFactory.createItemBandDefault();
 	
 		if( showBackgroundColor )
 		{
@@ -160,39 +141,13 @@ public class CapBankReport extends YukonReportBase
 					new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
 		}
 			
-		TextFieldElementFactory factory = new TextFieldElementFactory();
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(0).getPositionX(),getModel().getColumnProperties(0).getPositionY()));
-		factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(0).getWidth(), 10));
-		factory.setHorizontalAlignment(ElementAlignment.LEFT);
-		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-		factory.setNullString("<null>");
-		factory.setFieldname(getModel().getColumnNames()[0]);
+		TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), 0);
 		items.addElement(factory.createElement());
 	
 		for (int i = 0; i < getModel().getColumnNames().length; i++)
 		{
-			NumberFieldElementFactory nfactory;			
-			if( getModel().getColumnClass(i).equals(String.class))
-			{
-				factory = new TextFieldElementFactory();
-			}
-			else if( getModel().getColumnClass(i).equals(Integer.class) ||
-					getModel().getColumnClass(i).equals(Double.class))
-			{
-				factory = new NumberFieldElementFactory();
-				((NumberFieldElementFactory)factory).setFormatString(getModel().getColumnProperties(i).getValueFormat());
-			}
-			
-			if( factory != null)
-			{
-				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(i).getPositionX(),getModel().getColumnProperties(i).getPositionY()));
-				factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), 10));
-				factory.setHorizontalAlignment(ElementAlignment.LEFT);
-				factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-				factory.setNullString("<null>");
-				factory.setFieldname(getModel().getColumnNames()[i]);
-				items.addElement(factory.createElement());
-			}
+			factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
+			items.addElement(factory.createElement());
 		}
 
 		return items;
