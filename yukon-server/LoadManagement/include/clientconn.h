@@ -55,9 +55,10 @@ private:
     RWpostream        *oStream;
     RWpistream        *iStream;
 
-  
     RWThread _recvrunnable;
     RWThread _sendrunnable;
+
+    unsigned _max_out_queue_size;
 };
 
 #endif

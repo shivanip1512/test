@@ -18,6 +18,7 @@
 #include "loadmanager.h"
 #include "ctibase.h"
 #include "logger.h"
+#include "cparms.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -33,6 +34,8 @@ CtiLMConnection::CtiLMConnection(RWPortal portal) : _valid(TRUE), _portal(new RW
 
     try
     {
+	_max_out_queue_size = gConfigParms.getValueAsInt("LOAD_MANAGEMENT_MAX_OUT_QUEUE", 0);
+	
         sinbuf  = new RWPortalStreambuf(*_portal);
         soubuf  = new RWPortalStreambuf(*_portal);
         oStream = new RWpostream(soubuf);
@@ -146,7 +149,17 @@ void CtiLMConnection::write(RWCollectable* msg)
 {
     if( _queue.isOpen() )
     {
-        _queue.write( (RWCollectable*) msg );
+	if(_max_out_queue_size != 0 &&
+	   _queue.entries() >= _max_out_queue_size)
+	{
+	    CtiLockGuard<CtiLogger> dout_guard(dout);
+	    dout << RWTime() << " Client connection to " << ((RWSocketPortal*)_portal)->socket().getpeername() << " has reached its maximum queue size of " << _max_out_queue_size << " entries!!" << __FILE__ << "(" << __LINE__ << ")" << endl;
+	    delete msg;
+	}
+	else
+	{
+	    _queue.write( (RWCollectable*) msg );
+	}
     }
 }
 

@@ -127,21 +127,25 @@ void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
 
     try
     {
-        for( int i = 0; i < _connections.entries(); i++ )
+	//Make a copy of msg for all the clients except the first
+        for( int i = 1; i < _connections.entries(); i++ )
         {
             // replicate message makes a deep copy
             if( _connections[i]->isValid() )
             {
                 CtiMessage* replicated_msg = msg->replicateMessage();
-
-                /*if( _CC_DEBUG )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " Broadcasting classID:  " << replicated_msg->isA() << endl;
-                }*/
                 _connections[i]->write(replicated_msg);
             }
         }
+	//Use up the original on the first client, no waste
+	if(_connections.entries() > 0)
+	{
+	    if( _connections[0]->isValid())
+	    {
+		_connections[0]->write(msg);
+		msg = 0;
+	    }
+	}
     }
     catch(...)
     {
