@@ -137,7 +137,7 @@
   </tr>
 </cti:checkRole>
 
-<cti:checkMultiRole roleid="<%= Integer.toString(DirectLoadcontrolRole.ROLEID) + "," + Integer.toString(DirectCurtailmentRole.ROLEID) + "," + Integer.toString(EnergyBuybackRole.ROLEID) %>">
+<cti:checkMultiRole roleid="<%= Integer.toString(DirectLoadcontrolRole.ROLEID) + ',' + Integer.toString(DirectCurtailmentRole.ROLEID) + ',' + Integer.toString(EnergyBuybackRole.ROLEID) %>">
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
     <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
