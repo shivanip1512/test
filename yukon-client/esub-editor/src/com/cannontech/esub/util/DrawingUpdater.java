@@ -60,7 +60,7 @@ public class DrawingUpdater extends TimerTask {
 						if (comp[i] instanceof DynamicText) {
 							DynamicText dt = (DynamicText) comp[i];
 							String text = UpdateUtil.getDynamicTextString(dt.getPointID(), dt.getDisplayAttribs());
-	
+							
 							// only update if there is something to update
 							if( !text.equals(dt.getText()) ) {
 								if( !text.equals(dt.getText()) ) {

@@ -93,6 +93,19 @@ public void setPoint(com.cannontech.database.data.lite.LitePoint newPoint) {
 		this.currentState = currentState;
 	}
 	
+	public String getImageName() {
+		String imageName = Util.DEFAULT_IMAGE_NAME;
+		
+		LiteState state = getCurrentState();
+		if(state != null) {
+			int imageID = state.getImageID();
+			LiteYukonImage lyi = YukonImageFuncs.getLiteYukonImage(imageID);
+			if(lyi != null) {
+				imageName = lyi.getImageName();
+			}
+		}
+			return imageName;		
+		}
 	/**
 	 * Updates the elements actual image with the currentStates
 	 * Displays the default image if there is no current state

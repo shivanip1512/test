@@ -198,8 +198,8 @@ public class SVGGenerator {
 		if(isEditEnabled() && text.isEditable()) {
 			textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
 		}
-		
-		Text theText = doc.createTextNode("-");
+System.out.println("inserting text: " + text.getText());		
+		Text theText = doc.createTextNode(text.getText());
 		textElem.insertBefore(theText, null);
 		
 		return textElem;					
@@ -303,7 +303,7 @@ public class SVGGenerator {
 		int width = (int) r.getMaxX() - x;
 		int height = (int) r.getMaxY() - y;
 
-		String imgName = "X.gif";		
+		String imgName = img.getImageName();
 
 		Element imgElem = doc.createElementNS(svgNS, "image");
 		imgElem.setAttributeNS(null, "id", Integer.toString(img.getPoint().getPointID()));
@@ -343,7 +343,7 @@ public class SVGGenerator {
 		textElem.setAttributeNS(null, "x", Integer.toString(x));
 		textElem.setAttributeNS(null, "y", Integer.toString(y));
 		textElem.setAttributeNS(null, "style", "fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";");
-		
+
 		Text theText = doc.createTextNode(text.getText());
 		textElem.insertBefore(theText, null);
 		
