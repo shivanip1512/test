@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.Properties;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.GraphFuncs;
@@ -47,7 +48,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	private int viewType; // see com.cannontech.graph.model.TrendModelType;
 	private int displayRange; // one of the static ints above
 	private transient Drawing drawing = null;
-	private String linkTo = "";
+	private Properties props = new Properties();
  	
 	/** 
 	 * Returns the drawing.
@@ -74,62 +75,13 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	}
 
 	/**
-	 * Returns the linkTo.
-	 * @return String
-	 */
-	public String getLinkTo() {
-		return linkTo;
-	}
-
-	/**
 	 * Sets the drawing.
 	 * @param drawing The drawing to set
 	 */
 	public void setDrawing(Drawing drawing) {
 		this.drawing = drawing;
 	}
-
-	/**
-	 * Sets the linkTo.
-	 * @param linkTo The linkTo to set
-	 */
-	public void setLinkTo(String linkTo) {
-		this.linkTo = linkTo;
-	}
-
-	/**
-	 * @see com.loox.jloox.LxComponent#readFromJLX(InputStream, String)
-	 */
-	public void readFromJLX(InputStream in, String version) throws IOException {
-		super.readFromJLX(in, version);
 	
-		setGraphDefinitionID(LxSaveUtils.readInt(in));
-		setTrendType(LxSaveUtils.readInt(in));
-		setDisplayRange(LxSaveUtils.readInt(in));
-		resetDisplayRange();
-		
-		//read link
-		setLinkTo( LxSaveUtils.readString(in));
-	
-		LxSaveUtils.readEndOfPart(in);
-	}
-
-	/**
-	 * @see com.loox.jloox.LxComponent#saveAsJLX(OutputStream)
-	 */
-	public void saveAsJLX(OutputStream out) throws IOException {
-		super.saveAsJLX(out);
-	
-		LxSaveUtils.writeInt(out, getGraphDefinitionID());
-		LxSaveUtils.writeInt(out, getTrendType());
-		LxSaveUtils.writeInt(out, getDisplayRange());
-		
-		//save link
-		LxSaveUtils.writeString(out, getLinkTo() );
-	
-		LxSaveUtils.writeEndOfPart(out);
-	}
-
 	/**
 	 * Returns the graphDefinition.
 	 * @return LiteGraphDefinition
@@ -449,6 +401,55 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	public void setDirty(boolean dirty) {
 		this.dirty = dirty;
 	}
+
+	/**
+	 * @see com.cannontech.esub.editor.element.DrawingElement#getElementProperties()
+	 */
+	public Properties getElementProperties() {
+		return props;
+	}
+
+	/**
+	 * @see com.cannontech.esub.editor.element.DrawingElement#setElementProperties(Properties)
+	 */
+	public void setElementProperties(Properties props) {
+		this.props = props;
+	}
+	
+	    /**
+         * @see com.loox.jloox.LxComponent#readFromJLX(InputStream, String)
+         */
+        public void readFromJLX(InputStream in, String version) throws IOException {
+                super.readFromJLX(in, version);
+        
+                setGraphDefinitionID(LxSaveUtils.readInt(in));
+                setTrendType(LxSaveUtils.readInt(in));
+                setDisplayRange(LxSaveUtils.readInt(in));
+                resetDisplayRange();
+                
+                //read link
+                //setLinkTo( LxSaveUtils.readString(in));
+        
+                LxSaveUtils.readEndOfPart(in);
+        }
+
+        /**
+         * @see com.loox.jloox.LxComponent#saveAsJLX(OutputStream)
+         */
+        public void saveAsJLX(OutputStream out) throws IOException {
+                super.saveAsJLX(out);
+        
+                LxSaveUtils.writeInt(out, getGraphDefinitionID());
+                LxSaveUtils.writeInt(out, getTrendType());
+                LxSaveUtils.writeInt(out, getDisplayRange());
+                
+                //save link
+                //LxSaveUtils.writeString(out, getLinkTo() );
+        
+                LxSaveUtils.writeEndOfPart(out);
+        }
+
+
 
 }
  

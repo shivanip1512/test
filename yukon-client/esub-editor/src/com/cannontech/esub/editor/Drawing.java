@@ -1,12 +1,14 @@
 package com.cannontech.esub.editor;
 
 import java.awt.Dimension;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 
 import com.cannontech.esub.editor.element.DrawingElement;
 import com.cannontech.esub.editor.element.DrawingMetaElement;
+import com.cannontech.esub.util.DrawingGenerator;
 import com.cannontech.esub.util.HTMLGenerator;
 import com.cannontech.esub.util.SVGGenerator;
 import com.loox.jloox.LxComponent;
@@ -39,6 +41,14 @@ public class Drawing implements Serializable {
 	public synchronized void load(String file) {
 		clear();
 		
+try {
+DrawingGenerator gen = new DrawingGenerator();
+FileInputStream in = new FileInputStream(file);
+//FileReader rdr = new FileReader(file);
+gen.generate(in,this);		
+} catch(Exception e) {
+	e.printStackTrace();
+}
 		// the saved drawing willhave its own meta element, remove the default
 	//	getLxGraph().remove(getMetaElement());
 		
@@ -56,63 +66,53 @@ public class Drawing implements Serializable {
 		getLxView().setSize( getMetaElement().getDrawingWidth(), getMetaElement().getDrawingHeight());
 	}
 
-	public synchronized void save(String fileName) {
+	public synchronized void save(String fileName) {		
 		String jlxFileName = fileName;
 
-		if (!jlxFileName.endsWith(".jlx")) {
-			jlxFileName = jlxFileName.concat(".jlx");
-		}
+        if (!jlxFileName.endsWith(".jlx")) {
+        	jlxFileName = jlxFileName.concat(".jlx");
+        }
 
-		setFileName(jlxFileName);
-		
-		// make sure meta info reflects our saving width, height
-		//getMetaElement().setDrawingWidth( getLxView().getWidth() );
-		//getMetaElement().setDrawingHeight( getLxView().getHeight() );
-		
-		getLxGraph().save(jlxFileName);
+        setFileName(jlxFileName);
+                
+        getLxGraph().save(jlxFileName);
 
-		String svgFileName = fileName;
-		if (svgFileName.endsWith(".jlx")) {
-			svgFileName = svgFileName.substring(0, svgFileName.length() - 4);
-		}
+        String svgFileName = fileName;
+        if (svgFileName.endsWith(".jlx")) {
+        	svgFileName = svgFileName.substring(0, svgFileName.length() - 4);
+        }
 
-		svgFileName = svgFileName.concat(".svg");
+        svgFileName = svgFileName.concat(".svg");
 
-		try {
-			SVGGenerator gen2 = new SVGGenerator();
-			FileWriter fw = new FileWriter(svgFileName);
+        try {
+                SVGGenerator gen2 = new SVGGenerator();
+                FileWriter fw = new FileWriter(svgFileName);
 
-			gen2.generate(fw, this);
-			fw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		String htmlFileName = fileName;
-		
-		if (htmlFileName.endsWith(".jlx")) {
-			htmlFileName = htmlFileName.substring(0, htmlFileName.length() - 4);
-		}
+                gen2.generate(fw, this);
+                fw.close();
+        } catch (IOException e) {
+                e.printStackTrace();
+        }
+        
+        String htmlFileName = fileName;
+        
+        if (htmlFileName.endsWith(".jlx")) {
+                htmlFileName = htmlFileName.substring(0, htmlFileName.length() - 4);
+        }
 
-		htmlFileName = htmlFileName.concat(".html");
+        htmlFileName = htmlFileName.concat(".html");
 
-		try { 
-			HTMLGenerator gen3 = new HTMLGenerator();
-			FileWriter fw = new FileWriter(htmlFileName);
-			
-			gen3.generate(fw, this);
-			fw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		
+        try { 
+                HTMLGenerator gen3 = new HTMLGenerator();
+                FileWriter fw = new FileWriter(htmlFileName);
+                
+                gen3.generate(fw, this);
+                fw.close();
+        } catch (IOException e) {
+                e.printStackTrace();
+        }
+        
 
-		
-	/*
-	 * 	LxSVGGenerator lxGen = new LxSVGGenerator();
-		lxGen.saveAsSVG(lxGraph, svgFileName + ".svg");		
-	*/
 	}
 
 	public synchronized void save() {

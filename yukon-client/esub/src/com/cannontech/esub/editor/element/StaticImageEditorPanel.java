@@ -8,6 +8,7 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.dbeditor.wizard.state.YukonImagePanel;
+import com.cannontech.esub.util.Util;
 
 /**
  * Creation date: (1/22/2002 10:23:18 AM)
@@ -168,8 +169,11 @@ public class StaticImageEditorPanel extends DataInputPanel {
 	 * @param o java.lang.Object
 	 */
 	public Object getValue(Object o) {
-		staticImage.setLinkTo(getLinkToPanel().getLinkTo());
-
+		String link = getLinkToPanel().getLinkTo();
+		if(link.length() > 0) {
+			staticImage.getElementProperties().put("onclick","followLink('"+link+"')");
+		}
+		
 		return staticImage;
 	}
 	/**
@@ -286,7 +290,7 @@ public class StaticImageEditorPanel extends DataInputPanel {
 	public void setValue(Object o) {
 		staticImage = (StaticImage) o;
 
-		getLinkToPanel().setLinkTo(staticImage.getLinkTo());
+		getLinkToPanel().setLinkTo(Util.stripArgument(staticImage.getElementProperties().getProperty("onclick")));
 				
 		getImageNameLabel().setText(staticImage.getYukonImage().getImageName());
 		getImageNameLabel().setIcon(new javax.swing.ImageIcon(staticImage.getYukonImage().getImageValue()));

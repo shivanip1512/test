@@ -7,9 +7,11 @@ import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.editor.element.CurrentAlarmsTable;
 import com.cannontech.esub.editor.element.DynamicGraphElement;
 import com.cannontech.esub.editor.element.DynamicText;
 import com.cannontech.esub.editor.element.StateImage;
+import com.cannontech.esub.model.PointAlarmTableModel;
 import com.cannontech.message.dispatch.message.PointData;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxView;
@@ -104,6 +106,12 @@ public class DrawingUpdater extends TimerTask {
 								dge.updateGraph();
 								change = true;
 							}							
+						}
+						
+						if(comp[i] instanceof CurrentAlarmsTable) {
+							CurrentAlarmsTable cat = (CurrentAlarmsTable) comp[i];
+							((PointAlarmTableModel)cat.getTable().getModel()).refresh();
+							change = true;
 						}
 					}
 

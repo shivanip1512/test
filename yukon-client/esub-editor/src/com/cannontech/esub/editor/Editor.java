@@ -26,12 +26,12 @@ import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.esub.editor.element.CurrentAlarmsTable;
 import com.cannontech.esub.editor.element.DrawingElement;
 import com.cannontech.esub.editor.element.DynamicGraphElement;
 import com.cannontech.esub.util.DrawingUpdater;
 
 import com.loox.jloox.LxComponent;
-import com.loox.jloox.LxElement;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxMouseAdapter;
 import com.loox.jloox.LxMouseEvent;
@@ -41,7 +41,7 @@ import com.loox.jloox.LxView;
 /**
  * Main editor class.
  * Creation date: (12/11/2001 3:53:52 PM)
- * @author: 
+ * @author: alauinger
  */
 public class Editor extends JPanel {
 	
@@ -106,7 +106,7 @@ public class Editor extends JPanel {
 				synchronized(getDrawing()) {
 
 				try {
-					LxElement elem = placer.getElement();
+					LxComponent elem = placer.getElement();
 					elem.setCenter(
 						placer.getXPosition(),
 						placer.getYPosition());
@@ -358,7 +358,7 @@ public class Editor extends JPanel {
 			String selectedFile = fileChooser.getSelectedFile().getPath();
 			
 			getDrawing().save(selectedFile);
-			setFrameTitle(selectedFile);
+			setFrameTitle(getDrawing().getFileName());
 
 			try {
 				EditorPrefs.getPreferences().setWorkingDir(
@@ -384,7 +384,7 @@ public class Editor extends JPanel {
 
 	} 
 	
-	public void saveDrawing() {
+	public void saveDrawing() {		
 		getDrawing().save();
 	}
 
@@ -392,7 +392,6 @@ public class Editor extends JPanel {
 	 * Creation date: (12/12/2001 3:28:20 PM)
 	 * @return int
 	 */
-
 	int saveOption() {
 
 		int result = 0;
@@ -426,7 +425,8 @@ public class Editor extends JPanel {
 			elem.addMouseListener(editElementMouseListener);
 		}
 		
-		if( elem instanceof DynamicGraphElement ) {
+		if( elem instanceof DynamicGraphElement ||
+			elem instanceof CurrentAlarmsTable) {
 			elem.removeDefaultDoubleClickBehavior();
 			elem.addMouseListener(editElementMouseListener);	
 		}

@@ -3,7 +3,10 @@ package com.cannontech.esub.util;
 import java.awt.Component;
 import java.awt.Image;
 import java.awt.MediaTracker;
+import java.awt.Shape;
 import java.awt.Toolkit;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -11,6 +14,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.util.FileFilter;
 import com.cannontech.esub.editor.Drawing;
@@ -408,4 +412,44 @@ public class Util {
 		return dispatchConnection;
 	}
 
+	public static String stripArgument(String fn) {
+		return ( fn == null || fn.length() < 3 ? null :
+					fn.substring( fn.indexOf('(')+1, fn.indexOf(')')));
+	}
+	
+		/**
+	 * Builds up a svg path string given a shape and the center of the element.
+	 * @param s
+	 * @param cx
+	 * @param cy
+	 * @return String
+	 */
+	public static String getPathString(Shape[] s, double cx, double cy) {
+		String pathStr = "";
+				
+		//array to store segment info
+		double[] seg = new double[6];
+		for( int i = 0; i < s.length; i++ ) {
+	 		PathIterator pi = s[i].getPathIterator(AffineTransform.getTranslateInstance(cx, cy));
+			while( !pi.isDone() ) {
+				int type = pi.currentSegment(seg);
+				switch(type) {
+					case PathIterator.SEG_MOVETO:
+						pathStr += "M " + seg[0] + " " + seg[1] + " ";
+						break;						
+					case PathIterator.SEG_LINETO:
+						pathStr += "L " + seg[0] + " " + seg[1] + " ";
+						break;
+					case PathIterator.SEG_CLOSE:
+						pathStr += "Z ";
+						break;
+					default: 
+						CTILogger.info("unknown path type");
+				}	
+			
+				pi.next();
+			}
+		}
+		return pathStr;		
+	}
 }

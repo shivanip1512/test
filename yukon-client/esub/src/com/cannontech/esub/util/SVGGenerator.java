@@ -8,6 +8,8 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Enumeration;
+import java.util.Properties;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
@@ -25,6 +27,7 @@ import com.cannontech.database.cache.functions.YukonImageFuncs;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.editor.element.CurrentAlarmsTable;
 import com.cannontech.esub.editor.element.DrawingElement;
 import com.cannontech.esub.editor.element.DynamicGraphElement;
 import com.cannontech.esub.editor.element.DynamicText;
@@ -60,7 +63,7 @@ public class SVGGenerator {
 	 	
 	 	DOMImplementation impl = SVGDOMImplementation.getDOMImplementation();
 	 	SVGDocument doc = (SVGDocument) impl.createDocument(svgNS, "svg", null);
-	 	
+		
 	 	// get the root element (the svg element)
 		Element svgRoot = doc.getDocumentElement();
 
@@ -73,11 +76,11 @@ public class SVGGenerator {
 		scriptElem.setAttributeNS(null, "xlink:href", "refresh.js");
 		svgRoot.appendChild(scriptElem);
 		
-		Element scriptElem2 = doc.createElementNS(null, "script");
-		scriptElem2.setAttributeNS(null, "type", "text/ecmascript");
-		scriptElem2.setAttributeNS(null, "xlink:href", "edit.js");
-		svgRoot.appendChild(scriptElem2);
-	
+		Element scriptElem3 = doc.createElementNS(null, "script");
+		scriptElem3.setAttributeNS(null, "type", "text/ecmascript");
+		scriptElem3.setAttributeNS(null, "xlink:href", "action.js");
+		svgRoot.appendChild(scriptElem3);
+		
 		Element backRect = doc.createElementNS(svgNS, "rect");
 		backRect.setAttributeNS(null, "width", "100%");
 		backRect.setAttributeNS(null, "height", "100%");
@@ -86,51 +89,9 @@ public class SVGGenerator {
 
 		LxComponent[] c	= graph.getComponents();
 		for( int i = 0; i < c.length; i++ ) {
-						
-			Element elem = null;
-			
-			if( c[i] instanceof LxLine ) {
-				elem = createLine(doc, (LxLine) c[i]);
-			}
-			else			
-			if( c[i] instanceof LxRectangle ) {
-				elem = createRectangle(doc, (LxRectangle) c[i]);
-			}
-			else
-			if( c[i] instanceof StaticImage ) {
-				elem = createStaticImage(doc, (StaticImage) c[i]);
-			}
-			else
-			if( c[i] instanceof StaticText ) {
-				elem = createStaticText(doc, (StaticText) c[i]);
-			}
-			else
-			if( c[i] instanceof StateImage ) {
-				elem = createStateImage(doc, (StateImage) c[i]);
-			}
-			else 
-			if( c[i] instanceof DynamicText ) {
-				elem = createDynamicText(doc, (DynamicText) c[i]);
-			}
-			else
-			if( c[i] instanceof DynamicGraphElement ) {
-				elem = createDynamicGraph(doc, (DynamicGraphElement) c[i]);
-			}
-
-			if( c[i] instanceof DrawingElement &&
-				((DrawingElement) c[i]).getLinkTo() != null &&
-				((DrawingElement) c[i]).getLinkTo().length() > 0 ) {
-					Element linkElem = createLink(doc, (DrawingElement) c[i]);
-					
-					if( elem != null ) {
-						linkElem.insertBefore(elem, null);
-						elem = linkElem;
-					}					
-			}
-			
-			if( elem != null ) {
+			Element elem = createElement(doc,c[i]);
+			if(elem != null)
 				svgRoot.appendChild(elem);
-			}
 		}
 	
 		OutputFormat format  = new OutputFormat( doc );   //Serialize DOM
@@ -139,13 +100,72 @@ public class SVGGenerator {
         serial.serialize( doc.getDocumentElement() );       		 		
 	}
 	
-	private Element createLink(SVGDocument doc, DrawingElement elem) {
+	private Element createElement(SVGDocument doc, LxComponent comp) {
+			
+			Element elem = null;
+			
+			if( comp instanceof LxLine ) {
+				elem = createLine(doc, (LxLine) comp);
+			}
+			else			
+			if( comp instanceof LxRectangle ) {
+				elem = createRectangle(doc, (LxRectangle) comp);
+			}
+			else
+			if( comp instanceof StaticImage ) {
+				elem = createStaticImage(doc, (StaticImage) comp);
+			}
+			else
+			if( comp instanceof StaticText ) {
+				elem = createStaticText(doc, (StaticText) comp);
+			}
+			else
+			if( comp instanceof StateImage ) {
+				elem = createStateImage(doc, (StateImage) comp);
+			}
+			else 
+			if( comp instanceof DynamicText ) {
+				elem = createDynamicText(doc, (DynamicText) comp);
+			}
+			else
+			if( comp instanceof DynamicGraphElement ) {
+				elem = createDynamicGraph(doc, (DynamicGraphElement) comp);
+			}
+			else
+			if( comp instanceof CurrentAlarmsTable ) {
+				elem = createAlarmsTable(doc, (CurrentAlarmsTable) comp);
+			}	
+			
+			if(elem != null)	
+				//elem.setAttributeNS(null,"onclick","refreshDrawing()");
+			
+				elem.setAttributeNS(null,"onclick","editValue()");
+			if( comp instanceof DrawingElement ) {
+			/*	Properties props = ((DrawingElement) comp).getElementProperties();
+				Enumeration e = props.propertyNames();
+				while(e.hasMoreElements()) {
+					String key = e.nextElement().toString();
+					String val = props.getProperty(key);
+					if(val != null) {
+						elem.setAttributeNS(null, key, val);
+					}
+				}*/
+			}
+			
+			if( elem != null ) {
+				elem.setAttributeNS(null,"classid",comp.getClass().getName());				
+			}
+		
+		return elem;
+	}
+	
+	/*private Element createLink(SVGDocument doc, DrawingElement elem) {
 		Element linkElem = doc.createElementNS(svgNS, "a");
 		linkElem.setAttributeNS(null, "xlink:href", elem.getLinkTo());
 		return linkElem;		
 	}
-	
-	private Element createDynamicText(SVGDocument doc, DynamicText text) throws IOException {
+	*/
+	private Element createDynamicText(SVGDocument doc, DynamicText text)  {
 		//Ignore stroke color for now, always use fill color
 		//could become a problem, pay attention
 		Rectangle2D r = text.getBounds2D();
@@ -174,9 +194,9 @@ public class SVGGenerator {
 		textElem.setAttributeNS(null, "x", Integer.toString(x));
 		textElem.setAttributeNS(null, "y", Integer.toString(y));
 		textElem.setAttributeNS(null, "style", "fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";");
-		textElem.setAttributeNS(null, "xlink:href", "Javascript:editValue(evt)");
 		
 		if(text.isEditable()) {
+//			textElem.setAttributeNS(null, "onclick", "go()");
 			textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
 		}
 		
@@ -220,7 +240,7 @@ public class SVGGenerator {
 	 * @param line
 	 * @throws IOException
 	 */
-	private  Element createLine(SVGDocument doc, LxLine line) throws IOException {		
+	private  Element createLine(SVGDocument doc, LxLine line)  {		
 		Color c = line.getStyle().getLineColor();
 		Shape[] s = line.getShape();
 		float opacity = line.getStyle().getTransparency();
@@ -254,7 +274,7 @@ public class SVGGenerator {
 		
 		
 		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:dd:ss");
-						
+			
 		retElement.setAttributeNS(null, "x", Integer.toString(x));
 		retElement.setAttributeNS(null, "y", Integer.toString(y));
 		retElement.setAttributeNS(null, "width", Integer.toString(width));
@@ -272,7 +292,7 @@ public class SVGGenerator {
 	}
 	
 
-	private Element createStaticImage(SVGDocument doc, StaticImage img) throws IOException {
+	private Element createStaticImage(SVGDocument doc, StaticImage img) {
 		Rectangle2D r = img.getBounds2D();
 		int x = (int) r.getMinX();
 		int y = (int) r.getMinY();
@@ -291,7 +311,7 @@ public class SVGGenerator {
 	}
 
 
-	private Element createStateImage(SVGDocument doc, StateImage img) throws IOException {
+	private Element createStateImage(SVGDocument doc, StateImage img) {
 		Rectangle2D r = img.getBounds2D();
 		int x = (int) r.getMinX();
 		int y = (int) r.getMinY();
@@ -318,7 +338,7 @@ public class SVGGenerator {
 		return imgElem;		
 	}	
 	
-	private Element createStaticText(SVGDocument doc, StaticText text) throws IOException {
+	private Element createStaticText(SVGDocument doc, StaticText text) {
 		//Ignore stroke color for now, always use fill color
 		//could become a problem, pay attention
 		Rectangle2D r = text.getBounds2D();
@@ -352,6 +372,41 @@ public class SVGGenerator {
 		return textElem;		
 	}
 	
+	private Element createAlarmsTable(SVGDocument doc, CurrentAlarmsTable table) {
+		Rectangle2D r = table.getStrokedBounds2D();
+		int x = (int) r.getMinX();
+		int y = (int) r.getMinY();
+		
+		int width = (int) r.getMaxX() - x; 
+		int height = (int) r.getMaxY() - y;
+			
+		Element retElement = null;
+				
+		SVGGraphics2D svgGenerator = new SVGGraphics2D(doc);
+		table.getTable().draw(svgGenerator,new Rectangle(width,height));
+		retElement = svgGenerator.getRoot();
+		
+		
+		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:dd:ss");
+						
+		retElement.setAttributeNS(null, "x", Integer.toString(x));
+		retElement.setAttributeNS(null, "y", Integer.toString(y));
+		retElement.setAttributeNS(null, "width", Integer.toString(width));
+		retElement.setAttributeNS(null, "height", Integer.toString(height));			
+		retElement.setAttributeNS(null, "object", "table");
+		
+		Element text = doc.createElementNS(svgNS,"text");
+		text.setAttributeNS(null, "fill","rgb(0,125,122)");
+		text.setAttributeNS(null, "x", "5");
+		text.setAttributeNS(null, "y", "5");
+		Text theText = doc.createTextNode("Press ME!");
+		text.insertBefore(theText,null);
+		retElement.appendChild(text);
+		return retElement;
+		
+	}
+		
+		
 	/**
 	 * Builds up a svg path string given a shape and the center of the element.
 	 * @param s

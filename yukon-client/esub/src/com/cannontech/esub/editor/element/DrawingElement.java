@@ -13,6 +13,6 @@ public interface DrawingElement {
 	public Drawing getDrawing();
 	public void setDrawing(Drawing d);
 	
-	public String getLinkTo();
-	public void setLinkTo(String linkTo);
+	//public String getLinkTo();
+	//public void setLinkTo(String linkTo);
 }

@@ -3,6 +3,7 @@ package com.cannontech.esub.editor.element;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Properties;
 
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.EditorPrefs;
@@ -29,7 +30,8 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	private int roleID = DEFAULT_ROLE_ID;	
 	
 	private transient Drawing drawing = null;
-
+	private Properties props = new Properties();
+	
 	public DrawingMetaElement() {
 		EditorPrefs prefs = EditorPrefs.getPreferences();		
 		setDrawingWidth(prefs.getDefaultDrawingWidth());
@@ -134,23 +136,26 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	}
 
 	/**
-	 * @see com.cannontech.esub.editor.element.DrawingElement#getLinkTo()
-	 */
-	public String getLinkTo() {
-		return null;
-	}
-
-	/**
 	 * @see com.cannontech.esub.editor.element.DrawingElement#setDrawing(Drawing)
 	 */
 	public void setDrawing(Drawing d) {
 		drawing = d;
 	}
 
+
+
 	/**
-	 * @see com.cannontech.esub.editor.element.DrawingElement#setLinkTo(String)
+	 * @see com.cannontech.esub.editor.element.DrawingElement#getElementProperties()
 	 */
-	public void setLinkTo(String linkTo) {
+	public Properties getElementProperties() {
+		return props;
+	}
+
+	/**
+	 * @see com.cannontech.esub.editor.element.DrawingElement#setElementProperties(Properties)
+	 */
+	public void setElementProperties(Properties props) {
+		this.props = props;
 	}
 
 }

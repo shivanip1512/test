@@ -4,6 +4,7 @@ import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Properties;
 
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.YukonImageFuncs;
@@ -26,7 +27,7 @@ public class StateImage extends LxAbstractImage implements DrawingElement {
 	private LiteState currentState;
 		
 	private Drawing drawing;
-	private String linkTo;
+	private Properties props = new Properties();
 	
 /**
  * StateImage constructor comment.
@@ -36,13 +37,6 @@ public StateImage() {
 	initialize();
 }
 
-/**
- * Creation date: (1/14/2002 1:47:27 PM)
- * @return java.lang.String
- */
-public java.lang.String getLinkTo() {
-	return linkTo;
-}
 /**
  * Creation date: (1/8/2002 1:56:26 PM)
  * @return com.cannontech.database.data.lite.LitePoint
@@ -56,55 +50,7 @@ public com.cannontech.database.data.lite.LitePoint getPoint() {
  */
 private void initialize() {
 }
-/**
- * Creation date: (12/17/2001 3:50:28 PM)
- * @param in java.io.InputStream
- * @param version java.lang.String
- */
-public synchronized void readFromJLX(InputStream in, String version) throws IOException
-{
-	super.readFromJLX(in, version);
 
-	//restore point id
-	LitePoint lp = PointFuncs.getLitePoint( LxSaveUtils.readInt(in));
-	setPoint(lp);
-				
-	//restore link
-	setLinkTo(LxSaveUtils.readString(in));	
-	LxSaveUtils.readEndOfPart(in);
-	
-	updateImage();
-}
-/**
- * Creation date: (12/17/2001 3:49:44 PM)
- * @param out java.io.OutputStream
- */
-public synchronized void saveAsJLX(OutputStream out) throws IOException 
-{
-	super.saveAsJLX(out);
-
-	// save point id
-	LitePoint lp = getPoint();
-	int pointID = -1;
-	
-	if( lp != null ) {
-		pointID = lp.getPointID();
-	}	
-
-	LxSaveUtils.writeInt(out, pointID);
-	
-	//save link
-	LxSaveUtils.writeString(out, getLinkTo());
-	
-	LxSaveUtils.writeEndOfPart(out);
-}
-/**
- * Creation date: (1/14/2002 1:47:27 PM)
- * @param newLinkTo java.lang.String
- */
-public void setLinkTo(java.lang.String newLinkTo) {
-	linkTo = newLinkTo;
-}
 /**
  * Creation date: (1/8/2002 1:56:26 PM)
  * @param newPoint com.cannontech.database.data.lite.LitePoint
@@ -174,5 +120,63 @@ public void setPoint(com.cannontech.database.data.lite.LitePoint newPoint) {
 		}
 		super.setImage(img);			
 	}
+
+	/**
+	 * @see com.cannontech.esub.editor.element.DrawingElement#getElementProperties()
+	 */
+	public Properties getElementProperties() {
+		return props;
+	}
+
+	/**
+	 * @see com.cannontech.esub.editor.element.DrawingElement#setElementProperties(Properties)
+	 */
+	public void setElementProperties(Properties props) {
+		this.props = props;
+	}
+	
+	/**
+ * Creation date: (12/17/2001 3:50:28 PM)
+ * @param in java.io.InputStream
+ * @param version java.lang.String
+ */
+public synchronized void readFromJLX(InputStream in, String version) throws IOException
+{
+        super.readFromJLX(in, version);
+
+        //restore point id
+        LitePoint lp = PointFuncs.getLitePoint( LxSaveUtils.readInt(in));
+        setPoint(lp);
+                                
+        //restore link
+       // setLinkTo(LxSaveUtils.readString(in));        
+        LxSaveUtils.readEndOfPart(in);
+        
+        updateImage();
+}
+/**
+ * Creation date: (12/17/2001 3:49:44 PM)
+ * @param out java.io.OutputStream
+ */
+public synchronized void saveAsJLX(OutputStream out) throws IOException 
+{
+        super.saveAsJLX(out);
+
+        // save point id
+        LitePoint lp = getPoint();
+        int pointID = -1;
+        
+        if( lp != null ) {
+                pointID = lp.getPointID();
+        }        
+
+        LxSaveUtils.writeInt(out, pointID);
+        
+        //save link
+        //LxSaveUtils.writeString(out, getLinkTo());
+        
+        LxSaveUtils.writeEndOfPart(out);
+}
+
 
 }

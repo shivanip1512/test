@@ -5,6 +5,7 @@ import javax.swing.event.TreeSelectionListener;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.esub.util.Util;
 
 /**
  * Creation date: (1/14/2002 3:37:58 PM)
@@ -126,7 +127,10 @@ private PointSelectionPanel getPointSelectionPanel() {
  * @param o java.lang.Object
  */
 public Object getValue(Object o) {
-	stateImage.setLinkTo( getLinkToPanel().getLinkTo() );
+	String link = getLinkToPanel().getLinkTo();
+	if(link.length() > 0 ) {
+		stateImage.getElementProperties().put("onclick","followLink('"+link+"')");
+	}
 	stateImage.setPoint(getPointSelectionPanel().getSelectedPoint());
 	
 	return stateImage;
@@ -202,7 +206,7 @@ public void setValue(Object o) {
 	stateImage = (StateImage) o;
 
 	// Set link
-	getLinkToPanel().setLinkTo(stateImage.getLinkTo());
+	getLinkToPanel().setLinkTo(Util.stripArgument(stateImage.getElementProperties().getProperty("onclick")));
 
 	// Set selected point
 	LitePoint lp = stateImage.getPoint();

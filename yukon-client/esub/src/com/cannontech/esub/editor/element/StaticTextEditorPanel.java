@@ -6,6 +6,7 @@ import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.esub.util.Util;
 
 /**
  * Creation date: (1/22/2002 10:23:18 AM)
@@ -385,7 +386,10 @@ private javax.swing.JTextField getTextTextField() {
  */
 public Object getValue(Object o) {
 		
-	staticText.setLinkTo( getLinkToPanel().getLinkTo() );
+	String link = getLinkToPanel().getLinkTo();
+	if(link.length() > 0) {
+		staticText.getElementProperties().put("onclick","followLink('"+link+"')");
+	}
 	staticText.setText( getTextTextField().getText() );
 	staticText.setFont( getFontComboBox().getSelectedItem().toString(),
 						((Integer) getFontSizeComboBox().getSelectedItem()).intValue() );
@@ -490,7 +494,7 @@ public static void main(java.lang.String[] args) {
 public void setValue(Object o) {
 	staticText = (StaticText) o;
 
-	getLinkToPanel().setLinkTo(staticText.getLinkTo());
+	getLinkToPanel().setLinkTo(Util.stripArgument(staticText.getElementProperties().getProperty("onclick")));
 	getTextTextField().setText( staticText.getText());
 	
 	for( int i = 0; i < getFontComboBox().getItemCount(); i++ ) {

@@ -9,6 +9,7 @@ import javax.swing.JDialog;
 import javax.swing.event.TreeSelectionEvent;
 
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.esub.util.Util;
 
 /**
  * Creation date: (12/18/2001 2:05:01 PM)
@@ -452,7 +453,11 @@ public Object getValue(Object o) {
 	dynamicText.setPoint(getPointSelectionPanel().getSelectedPoint());
 	dynamicText.setFont( new Font( getFontComboBox().getSelectedItem().toString(), Font.PLAIN, ((Integer) getFontSizeComboBox().getSelectedItem()).intValue() ));
 	dynamicText.setPaint(colorChooser.getColor());
-	dynamicText.setLinkTo( getLinkToPanel().getLinkTo());
+	
+	String link = getLinkToPanel().getLinkTo();
+	if(link.length() > 0 ) {
+		dynamicText.getElementProperties().put("onclick","followLink('" + link + "')");
+	}
 	
 	int att = PointAttributes.VALUE;
 	String attStr = getDisplayAttributesComboBox().getSelectedItem().toString();
@@ -623,8 +628,8 @@ public void setValue(Object o) {
 		LitePoint point = dynamicText.getPoint();
 		getPointSelectionPanel().selectPoint(point);
 	}
-
-	getLinkToPanel().setLinkTo( dynamicText.getLinkTo());
+		
+	getLinkToPanel().setLinkTo(Util.stripArgument(dynamicText.getElementProperties().getProperty("onclick")));
 
 	for( int i = 0; i < getFontComboBox().getItemCount(); i++ ) {
 		if( getFontComboBox().getItemAt(i).toString().equalsIgnoreCase(dynamicText.getFont().getFontName()) ) {

@@ -1,23 +1,23 @@
 package com.cannontech.esub.editor;
 
+import com.loox.jloox.LxComponent;
+
 /**
  * Creation date: (12/13/2001 12:26:52 PM)
  * @author: Aaron Lauinger
  */
 
-import com.loox.jloox.LxElement;
-
 class ElementPlacer {
 
 	private boolean placing = false;
 	
-	private LxElement element;
+	private LxComponent element;
 	private double x;
 	private double y;
 
 	ElementPlacer() {
 	}
-	LxElement getElement() {
+	LxComponent getElement() {
 		return element;
 	}
 	double getXPosition() {
@@ -29,7 +29,7 @@ class ElementPlacer {
 	boolean isPlacing() {
 		return placing;
 	}
-	void setElement(LxElement elem) {
+	void setElement(LxComponent elem) {
 		element = elem;
 	}
 	void setIsPlacing(boolean b) {
