@@ -1,3 +1,5 @@
 @include /custom/ExpresscomSerial.txt
 Reset CopCount = putconfig raw 0x10 0x05
-Cold Load Pickup (load, time x 0.5 sec) = putconfig raw 0x10 0x01 0x02 0x58
+Cold Load Pickup (load, time x 0.5 sec) = putconfig raw 0x10 0x01 0x0258
+Protocol Mode (01 Versacom, 02 Expresscom ) = putconfig raw 0x10 0x01 0x01
+
