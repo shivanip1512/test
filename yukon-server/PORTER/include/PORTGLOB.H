@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/PORTGLOB.H-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/10/23 21:10:29 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/03/12 21:12:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,8 @@ using namespace std;
 #define PORTER_DEBUG_PRIORITIES        0x00001000
 #define PORTER_DEBUG_CCUMESSAGES       0x00010000
 #define PORTER_DEBUG_CCUCONFIG         0x00020000
+
+#define PORTER_DEBUG_DIALBACK_PILDIRECT     0x10000000
 
 #define PORTER_DBGBIT_VERBOSEERRORS    0x00000001
 

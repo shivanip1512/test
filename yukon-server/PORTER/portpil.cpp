@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/08/28 16:20:11 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/12 21:12:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,6 +57,7 @@ using namespace std;
 extern CtiDeviceManager   DeviceManager;
 extern CtiRouteManager    RouteManager;
 
+CtiPILServer PIL(&DeviceManager, &RouteManager);
 
 VOID PorterInterfaceThread (VOID *Arg)
 {
@@ -69,8 +70,6 @@ VOID PorterInterfaceThread (VOID *Arg)
 
    try
    {
-      CtiPILServer PIL(&DeviceManager, &RouteManager);
-
       PIL.execute();
 
       for(;;)

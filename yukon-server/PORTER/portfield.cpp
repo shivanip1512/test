@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2003/03/12 16:41:05 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2003/03/12 21:12:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -98,6 +98,7 @@ using namespace std;
 #include "dev_kv2.h"
 #include "msg_trace.h"
 #include "msg_cmd.h"
+#include "pilserver.h"
 #include "xfer.h"
 #include "rtdb.h"
 
@@ -2977,6 +2978,7 @@ INT verifyConnectedDevice(CtiPortSPtr Port, CtiDevice *pDevice, LONG &oldid, LON
 VOID PortDialbackThread(void *pid)
 {
     extern CtiConnection  VanGoghConnection;
+    extern CtiPILServer     PIL;
 
     INT            i, status = NORMAL;
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
@@ -3181,6 +3183,11 @@ VOID PortDialbackThread(void *pid)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " Device " << strdev << " not found in the yukon database." << endl;
+                        }
+
+                        if(PorterDebugLevel & PORTER_DEBUG_DIALBACK_PILDIRECT)
+                        {
+                            PIL.putQueue( new CtiRequestMsg(pDevice->getID(), "scan general") );
                         }
                     }
                 }

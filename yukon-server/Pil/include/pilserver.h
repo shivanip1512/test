@@ -70,6 +70,7 @@ public:
    INT analyzeWhiteRabbits(CtiRequestMsg& pReq, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > & retList);
    INT analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > & retList);
 
+   void putQueue(CtiMessage *Msg);
 };
 
 #endif // #ifndef __PILSERVER_H__

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2003/02/04 17:23:30 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2003/03/12 21:12:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1439,5 +1439,10 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
     }
 
     return status;
+}
+
+void CtiPILServer::putQueue(CtiMessage *Msg)
+{
+    MainQueue_.putQueue( Msg );
 }
 
