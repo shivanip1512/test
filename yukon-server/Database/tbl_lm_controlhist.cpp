@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2004/11/09 06:12:49 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2004/11/23 14:19:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -359,7 +359,7 @@ void CtiTableLMControlHistory::getDynamicSQL(RWDBDatabase &db,  RWDBTable &keyTa
 
 void CtiTableLMControlHistory::getSQLForOutstandingControls(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    keyTable = db.table(getTableName());
+    keyTable = db.table(getDynamicTableName());
 
     selector <<
     keyTable["paobjectid"] <<
@@ -386,7 +386,7 @@ RWDBStatus CtiTableLMControlHistory::deleteOutstandingControls()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getDynamicTableName() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["activerestore"] == LMAR_DISPATCH_SHUTDOWN );
@@ -402,11 +402,18 @@ RWDBStatus CtiTableLMControlHistory::updateCompletedOutstandingControls()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getDynamicTableName() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["activerestore"] == LMAR_DISPATCH_SHUTDOWN && table["stopdatetime"] <= RWDBDateTime() );
     updater << table["activerestore"].assign( LMAR_DISPATCH_MISSED_COMPLETION );
+
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << updater.asString() << endl;
+    }
 
     if( updater.execute( conn ).status().errorCode() != RWDBStatus::ok)
     {
@@ -886,6 +893,12 @@ void CtiTableLMControlHistory::getSQLForIncompleteControls(RWDBDatabase &db,  RW
 }
 
 
+RWDBStatus CtiTableLMControlHistory::UpdateDynamic()
+{
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+    return UpdateDynamic(conn);
+}
 
 RWDBStatus CtiTableLMControlHistory::UpdateDynamic(RWDBConnection &conn)
 {

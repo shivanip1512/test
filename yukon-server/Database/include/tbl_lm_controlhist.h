@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_lm_controlhist.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/10/26 16:12:47 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/11/23 14:19:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -197,6 +197,7 @@ public:
     static void getDynamicSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     static void decodeDynamicControls(RWDBReader &rdr);
 
+    RWDBStatus UpdateDynamic();
     RWDBStatus UpdateDynamic(RWDBConnection &conn);
     RWDBStatus InsertDynamic(RWDBConnection &conn);
 

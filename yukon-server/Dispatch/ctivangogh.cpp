@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.88 $
-* DATE         :  $Date: 2004/11/19 17:10:28 $
+* REVISION     :  $Revision: 1.89 $
+* DATE         :  $Date: 2004/11/23 14:19:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -343,7 +343,7 @@ void CtiVanGogh::VGMainThread()
                         MessageCount += increment;
                         MessageLog += increment;
 
-                        if(increment > 20)
+                        if(increment > 250)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** BIGMULTI Checkpoint **** submessages to process " << increment << " from " << MsgPtr->getSource() << " " << MsgPtr->getUser() << endl;
@@ -2334,6 +2334,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 
                 QueryPerformanceCounter(&t7Time);
 
+                #if 0
                 if(PERF_TO_MS(t7Time, startTime, perfFrequency) > 500)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2346,6 +2347,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                     dout << " t6Time " << PERF_TO_MS(t6Time, startTime, perfFrequency) << endl;
                     dout << " t7Time " << PERF_TO_MS(t7Time, startTime, perfFrequency) << endl;
                 }
+                #endif
             }
         }
     }
@@ -3145,19 +3147,17 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
                 removePointDataFromPending(pData->getId());
             }
 
+            if( pDyn != NULL &&
+                pDyn->getDispatch().getTags() & TAG_ATTRIB_CONTROL_AVAILABLE &&     // This is a controllable point.
+                !(pDyn->getDispatch().getTags() & TAG_CONTROL_PENDING) &&           // This point is not expecting a control point change.
+                !(pData->getTags() & TAG_POINT_DELAYED_UPDATE) &&                   // This data message is not delayed point data (future).
+                pData->getValue() != pDyn->getValue() )                             // The point value has changed
             {
-                if( pDyn != NULL &&
-                    pDyn->getDispatch().getTags() & TAG_ATTRIB_CONTROL_AVAILABLE &&     // This is a controllable point.
-                    !(pData->getTags() & TAG_CONTROL_PENDING) &&                        // This point is not expecting a control point change.
-                    !(pData->getTags() & TAG_POINT_DELAYED_UPDATE) &&                   // This data is not delayed point data (future).
-                    pData->getValue() != pDyn->getValue() )                             // The point value has changed
-                {
-                    // The value changed.  Any control in progress was just terminated manually.
-                    CtiPendable *pendable = CTIDBG_new CtiPendable(pData->getId(), CtiPendable::CtiPendableAction_ControlStatusChanged);
-                    pendable->_tags = pDyn->getDispatch().getTags();
-                    pendable->_value = pData->getValue();
-                    _pendingOpThread.push( pendable );
-                }
+                // The value changed.  Any control in progress was just terminated manually.
+                CtiPendable *pendable = CTIDBG_new CtiPendable(pData->getId(), CtiPendable::CtiPendableAction_ControlStatusChanged);
+                pendable->_tags = pDyn->getDispatch().getTags();
+                pendable->_value = pData->getValue();
+                _pendingOpThread.push( pendable );
             }
 
             /*
@@ -6503,8 +6503,6 @@ int CtiVanGogh::loadPendingControls()
     typedef map< pair<LONG, LONG>, CtiTableLMControlHistory > LMCHMap_t;    // Key is make_pair(PAOID, SOE)
 
     CtiLockGuard<CtiMutex> pmguard(_server_mux);
-
-    RWDBStatus upStat = CtiTableLMControlHistory::updateCompletedOutstandingControls();     // This cleans up any controls which "completed" while dispatch was not running.
 
     // This block will clean up any non closed control blocks.
     {

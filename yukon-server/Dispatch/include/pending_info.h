@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/pending_info.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/11/18 23:56:08 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/11/23 14:19:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -100,7 +100,7 @@ protected:
     CtiPointDataMsg *_pdata;          // PointData to send to the peoples.
 
     CtiOffsetPIDMap_t _opidMap;     // Once found this is where we keep point offsets.
-
+    RWTime _opidNextTime;           // This is the last time the opid search failed.  Use this to keep us from constantly doing deep scans.
 
 private:
 
