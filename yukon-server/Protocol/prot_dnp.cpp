@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/06/02 18:20:08 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/09/30 18:49:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -242,7 +242,11 @@ int CtiProtocolDNP::generate( CtiXfer &xfer )
 
 int CtiProtocolDNP::decode( CtiXfer &xfer, int status )
 {
-    return _appLayer.decode(xfer, status);
+    int retVal;
+
+    retVal = _appLayer.decode(xfer, status);
+
+    return retVal;
 }
 
 
@@ -266,8 +270,8 @@ int CtiProtocolDNP::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS 
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "ACH:  need to learn how to fragment application layer.  Abandoning outbound message." << endl;
+            dout << RWTime() << " **** Checkpoint - application layer > " << sizeof( OutMessage->Buffer )
+                 << "; need to learn how to fragment application layer.  Abandoning outbound message. *****" << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         delete OutMessage;
@@ -294,19 +298,6 @@ int CtiProtocolDNP::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
     if( InMessage != NULL )
     {
         _appLayer.restoreRsp(InMessage->Buffer.InMessage, InMessage->InLength);
-
-        if( _appLayer.hasOutput() )
-        {
-            OUTMESS *OutMessage = CTIDBG_new CtiOutMessage();
-
-            InEchoToOut(InMessage, OutMessage);
-            //  copy over the other stuff we need
-            OutMessage->DeviceID = InMessage->DeviceID;
-            OutMessage->TargetID = InMessage->TargetID;
-            OutMessage->Port     = InMessage->Port;
-
-            retVal = sendCommRequest(OutMessage, outList);
-        }
     }
     else
     {
@@ -333,9 +324,9 @@ int CtiProtocolDNP::sendCommResult( INMESS *InMessage )
 {
     int retVal = NoError;
 
-    if( _appLayer.isReplyExpected() )
+    if( _appLayer.isReplyExpected() && !_appLayer.errorCondition() )
     {
-        if( _appLayer.getLengthRsp() < sizeof( InMessage->Buffer ) )
+        if( _appLayer.getLengthRsp() < sizeof(InMessage->Buffer) )
         {
             _appLayer.serializeRsp(InMessage->Buffer.InMessage);
             InMessage->InLength = _appLayer.getLengthRsp();
@@ -344,8 +335,7 @@ int CtiProtocolDNP::sendCommResult( INMESS *InMessage )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "!!!  application layer > 4k!  !!!" << endl;
+                dout << RWTime() << " **** Checkpoint - _appLayer.getLengthRsp() (" << _appLayer.getLengthRsp() << " >= sizeof(InMessage->Buffer) (" << sizeof( InMessage->Buffer ) << ") , not sending **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             //  oh well, closest thing to reality - not enough room in outmess
