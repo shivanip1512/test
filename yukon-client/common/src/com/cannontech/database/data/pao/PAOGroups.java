@@ -142,6 +142,8 @@ public final static int getDeviceType(String typeString)
 	  return KV;
    else if (isStringDevice(compareString, STRING_KVII))
 	  return KVII;
+   else if (isStringDevice(compareString, STRING_KVII))
+	  return KVII;
    else if (isStringDevice(compareString, STRING_LANDISGYR_RS4))
 	  return LANDISGYRS4;
    else if (isStringDevice(compareString, STRING_QUANTUM))
@@ -267,6 +269,10 @@ public final static int getDeviceType(String typeString)
    	  return RTM;
 	else if (isStringDevice(compareString, STRING_CBC_EXPRESSCOM))
 		return CBC_EXPRESSCOM;
+	else if (isStringDevice(compareString, STRING_SENTINEL))
+	   return SENTINEL;
+	else if (isStringDevice(compareString, STRING_ALPHA_A3))
+	   return ALPHA_A3;
    else
 	  return INVALID;
 }
@@ -485,6 +491,10 @@ public final static String getPAOTypeString(int type)
 	  	  return STRING_KV[0];
 	  case KVII:
 	  	  return STRING_KVII[0];
+	  case SENTINEL:
+	  	  return STRING_SENTINEL[0];
+	  case ALPHA_A3:
+	  	  return STRING_ALPHA_A3[0];
 	  	  
 	case CBC_EXPRESSCOM:
 		return STRING_CBC_EXPRESSCOM[0];

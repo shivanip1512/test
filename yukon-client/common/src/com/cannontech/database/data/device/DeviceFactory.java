@@ -92,6 +92,12 @@ public final static DeviceBase createDevice(int deviceType) {
 		case PAOGroups.KVII:
 			returnDevice = new KV();
 			break;
+		case PAOGroups.SENTINEL:
+			returnDevice = new Sentinel();
+			break;
+		case PAOGroups.ALPHA_A3:
+			returnDevice = new Alpha();
+			break;
 		case PAOGroups.LANDISGYRS4:
 			returnDevice = new LandisGyrS4();
 			break;

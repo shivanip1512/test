@@ -95,6 +95,9 @@ public interface DeviceTypes extends TypeBase
 	
 	public final static int CBC_EXPRESSCOM			= DEVICE_OFFSET + 77;
 	
+	public final static int SENTINEL				= DEVICE_OFFSET + 78;
+	public final static int ALPHA_A3					= DEVICE_OFFSET + 79;
+	
 
 	//***IMPORTANT ** If you add a deviceType, please update the total device type count!
 	public final static int DEVICE_TYPES_COUNT = 76;
@@ -117,7 +120,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_VECTRON = {"VECTRON"}; //replaced Schlumberger
 	public static final String[] STRING_QUANTUM = {"QUANTUM"}; //replaced Schlumberger
 	public static final String[] STRING_KV = {"KV"};
-	public static final String[] STRING_KVII = {"KVII"};
+	public static final String[] STRING_KVII = {"KV2", "KVII"};
 	public static final String[] STRING_LANDISGYR_RS4 = {"LANDIS-GYR S4", "LANDISGYRS4", "LANDIS GYR S4"};
 	public static final String[] STRING_DR_87 = {"DR-87", "DR87"};
 	public static final String[] STRING_DAVIS_WEATHER = {"DAVIS WEATHER", "DAVISWEATHER"};
@@ -179,4 +182,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_SERIES_5_LMI = {"RTU-LMI", "RTU LMI"};
 	public static final String[] STRING_RTC = {"RTC"};
 	public static final String[] STRING_RTM = {"RTM"};
+	public static final String[] STRING_SENTINEL = {"SENTINEL"};
+	public static final String[] STRING_ALPHA_A3 = {"ALPHA A3"};
+	
 }

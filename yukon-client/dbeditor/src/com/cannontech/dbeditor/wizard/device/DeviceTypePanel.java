@@ -62,18 +62,23 @@ public class DeviceTypePanel extends com.cannontech.common.gui.util.DataInputPan
 								{	//Electronic Meters
 									PAOGroups.STRING_ALPHA_POWERPLUS[0],
 									PAOGroups.STRING_ALPHA_A1[0],
+									PAOGroups.STRING_ALPHA_A3[0],
 									PAOGroups.STRING_DR_87[0],
 									PAOGroups.STRING_FULCRUM[0],  // Schlumberger
                            PAOGroups.STRING_ION_7330[0],
                            PAOGroups.STRING_ION_7700[0],
-                           PAOGroups.STRING_ION_8300[0],									
+                           PAOGroups.STRING_ION_8300[0],
+						   			PAOGroups.STRING_KV[0],
+							   		PAOGroups.STRING_KVII[0],									
 									PAOGroups.STRING_LANDISGYR_RS4[0],
 									PAOGroups.STRING_QUANTUM[0],
+									PAOGroups.STRING_SENTINEL[0],
 									PAOGroups.STRING_SIXNET[0],
 									PAOGroups.STRING_TRANSDATA_MARKV[0],
 									PAOGroups.STRING_VECTRON[0],
-									PAOGroups.STRING_KV[0],
-									PAOGroups.STRING_KVII[0]
+	
+									
+									
 
 								},								
 								{	//RTUs

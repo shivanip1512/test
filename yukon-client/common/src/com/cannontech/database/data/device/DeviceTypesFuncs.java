@@ -600,6 +600,8 @@ public final static boolean isMeter(int deviceType)
 		case TRANSDATA_MARKV:
 		case KV:
 		case KVII:
+		case SENTINEL:
+		case ALPHA_A3:
 			return true;
 	
 		default:
