@@ -38,6 +38,7 @@ typedef enum
    StatusOutputPointType,
    AnalogOutputPointType,
    SystemPointType,
+   CalculatedStatusPointType,
 
    InvalidPointType               // Place Holder - allows point type looping.
 

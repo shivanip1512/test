@@ -2,8 +2,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_status.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/12/21 21:23:28 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/12/31 14:08:32 $
 *
 */
 #ifndef __PT_STATUS_H__
@@ -45,5 +45,8 @@ public:
    virtual int getControlOffset() const;
 
 };
+
+typedef CtiPointStatus CtiPointCalculatedStatus;
+
 #endif // #ifndef __PT_STATUS_H__
 

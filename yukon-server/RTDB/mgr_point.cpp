@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2004/06/28 16:41:38 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2004/12/31 14:08:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -416,6 +416,11 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
     case CalculatedPointType:
         {
             Point = (CtiPointBase*) CTIDBG_new CtiPointCalculated;          // This too is really a numeric!
+            break;
+        }
+    case CalculatedStatusPointType:
+        {
+            Point = (CtiPointBase*) CTIDBG_new CtiPointCalculatedStatus;
             break;
         }
     case SystemPointType:

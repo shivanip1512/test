@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctpnt.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/08/22 21:43:31 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/12/31 14:08:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,7 +63,7 @@ DLLEXPORT BOOL isCalcPoint(CtiPoint* pSp, void *arg)
 {
    BOOL bRet = FALSE;
 
-   if(pSp->getType() == CalculatedPointType)
+   if(pSp->getType() == CalculatedPointType || pSp->getType() == CalculatedStatusPointType)
    {
       bRet = TRUE;
    }

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/10/12 20:14:18 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/12/31 14:08:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -132,6 +132,7 @@ bool CtiPointBase::isNumeric() const
     case SystemPointType:
     case StatusOutputPointType:
     case StatusPointType:
+    case CalculatedStatusPointType:
     case InvalidPointType:               // Place Holder - allows point type looping.
     default:
         {
@@ -159,6 +160,7 @@ bool CtiPointBase::isStatus() const
     case SystemPointType:
     case StatusOutputPointType:
     case StatusPointType:
+    case CalculatedStatusPointType:
     case InvalidPointType:               // Place Holder - allows point type looping.
     default:
         {

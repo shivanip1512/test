@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2004/12/10 21:58:39 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2004/12/31 14:08:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -149,6 +149,10 @@ INT resolvePointType(RWCString rwsTemp)
     {
         Ret = CalculatedPointType;
     }
+    else if(rwsTemp == "calcstatus")
+    {
+        Ret = CalculatedStatusPointType;
+    }
     else if(rwsTemp == "system")
     {
         Ret = SystemPointType;
@@ -160,13 +164,6 @@ INT resolvePointType(RWCString rwsTemp)
     else if(rwsTemp == "analogoutput")
     {
         Ret = AnalogOutputPointType;
-    }
-    else if(rwsTemp == "calcstatus")
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** ACH: PointType Calculated Status DNE. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
     }
 
     return Ret;
