@@ -11,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/09/30 14:58:14 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/05 19:36:46 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,7 +76,7 @@ INT CtiPortDialout::connectToDevice(CtiDevice *Device, INT trace)
      *  we must assume that we still are connected and should send a hangup.
      */
 
-    if(_superPort->connected() && !_superPort->connectedTo(DeviceCRC))      // This port connected to a device, and is not connected to this device.
+    if(_superPort->isViable() && _superPort->connected() && !_superPort->connectedTo(DeviceCRC))      // This port connected to a device, and is not connected to this device.
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -435,6 +435,7 @@ INT CtiPortDialout::modemSetup(USHORT Trace, BOOL dcdTest)
 
     if(j >= 5)
     {
+        _superPort->close(TRUE);
         return(!NORMAL);
     }
 
@@ -641,30 +642,34 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
 
             // Check for command mode by pegging the modem with an AT.
             _superPort->writePort("AT\r", 3, 1, &BytesWritten);
+
+#if 0
             if(Trace)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " " << _superPort->getName()  << " Sent to Modem:  AT" << endl;
             }
-
-            if(_superPort->waitForPortResponse(&ResponseSize, Response, 3, "OK"))
+#endif
+            if(_superPort->waitForPortResponse(&ResponseSize, Response, 1, "OK"))
             {
+#if 0
                 if(Trace)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " " << _superPort->getName()  << " Modem Response Timeout (this may be ok)" << endl;
                 }
-
+#endif
                 // Maybe we are not in command mode...
                 _superPort->writePort("+++", 3, 1, &BytesWritten);    // Escape to command mode please
-                CTISleep ( 1500L );
-                _superPort->writePort("AT\r", 3, 1, &BytesWritten);   // escape does not give response do AT
-
                 if(Trace)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " " << _superPort->getName()  << " Sent to Modem:  +++" << endl;
                 }
+
+                CTISleep ( 1500L );
+                _superPort->writePort("AT\r", 3, 1, &BytesWritten);   // escape does not give response do AT
+
                 if(_superPort->waitForPortResponse(&ResponseSize, Response, 3, "OK"))
                 {
                     if(Trace)
