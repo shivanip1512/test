@@ -37,6 +37,9 @@ public final class PointTypes implements IPointOffsets
 	public static final int CONTROLTYPE_LATCH = 21;
 	public static final int CONTROLTYPE_NORMAL = 22;
 	public static final int CONTROLTYPE_PSEUDO = 23;
+
+	public static final int CONTROLTYPE_SBO_LATCH = 35;
+	public static final int CONTROLTYPE_SBO_PULSE = 36;
 	
 	//Accumulator point reading types
 	public static final int ACCUMULATOR_DIALREAD = 24;
@@ -84,7 +87,10 @@ public final class PointTypes implements IPointOffsets
 		"4-20ma",
 		"None",
 		"Use Last",
-		"Use Default" //34
+		"Use Default", //34
+		"SBO Latch",
+		"SBO Pulse",
+		
 	};	
 /**
  * This method was created in VisualAge.
@@ -126,7 +132,9 @@ public final static boolean hasControl(String controlString)
 {
 
 	return controlString.equalsIgnoreCase(PointTypes.getType(PointTypes.CONTROLTYPE_NORMAL))
-				|| controlString.equalsIgnoreCase(PointTypes.getType(PointTypes.CONTROLTYPE_LATCH) );
+				|| controlString.equalsIgnoreCase(PointTypes.getType(PointTypes.CONTROLTYPE_LATCH))
+				|| controlString.equalsIgnoreCase(PointTypes.getType(PointTypes.CONTROLTYPE_SBO_LATCH))
+				|| controlString.equalsIgnoreCase(PointTypes.getType(PointTypes.CONTROLTYPE_SBO_PULSE));
 	
 }
 /**

@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.point;
 
+import com.cannontech.database.data.point.PointTypes;
+
 /**
  * This type was created in VisualAge.
  */
@@ -82,7 +84,7 @@ private void connEtoC3(com.klg.jclass.util.value.JCValueEvent arg1) {
 public void controlTypeComboBox_ItemStateChanged(java.awt.event.ItemEvent itemEvent) 
 {
 
-	boolean value = com.cannontech.database.data.point.PointTypes.hasControl(
+	boolean value = PointTypes.hasControl(
 							getControlTypeComboBox().getSelectedItem().toString() );
 
 	getControlOffsetLabel().setEnabled( value );
@@ -350,8 +352,7 @@ public Object getValue(Object val)
 	else
 		point.getPoint().setPointOffset( null );
 
-	if( (controlType.equals(com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.CONTROLTYPE_LATCH))) ||
-			(controlType.equals(com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.CONTROLTYPE_NORMAL))) )
+	if( PointTypes.hasControl(controlType) )
 	{
 		point.getPointStatus().setControlOffset(controlOffset);
 	}
@@ -454,11 +455,14 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
-	getControlTypeComboBox().addItem( com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.CONTROLTYPE_NONE ) );
-	getControlTypeComboBox().addItem( com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.CONTROLTYPE_LATCH ) );
-	getControlTypeComboBox().addItem( com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.CONTROLTYPE_NORMAL ));
-	getControlTypeComboBox().addItem( com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.CONTROLTYPE_PSEUDO ) );
-	getControlTypeComboBox().setSelectedItem( com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.CONTROLTYPE_NONE ));
+	getControlTypeComboBox().addItem( PointTypes.getType(PointTypes.CONTROLTYPE_NONE ) );
+	getControlTypeComboBox().addItem( PointTypes.getType(PointTypes.CONTROLTYPE_LATCH ) );
+	getControlTypeComboBox().addItem( PointTypes.getType(PointTypes.CONTROLTYPE_NORMAL ));
+	getControlTypeComboBox().addItem( PointTypes.getType(PointTypes.CONTROLTYPE_PSEUDO ) );
+	getControlTypeComboBox().addItem( PointTypes.getType(PointTypes.CONTROLTYPE_SBO_LATCH ) );
+	getControlTypeComboBox().addItem( PointTypes.getType(PointTypes.CONTROLTYPE_SBO_PULSE ) );
+
+	getControlTypeComboBox().setSelectedItem( PointTypes.getType(PointTypes.CONTROLTYPE_NONE ));
 	// user code end
 }
 /**
