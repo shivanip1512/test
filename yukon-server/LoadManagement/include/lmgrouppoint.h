@@ -46,8 +46,6 @@ RWDECLARE_COLLECTABLE( CtiLMGroupPoint )
     CtiLMGroupPoint& setPointIdUsage(ULONG pointiduse);
     CtiLMGroupPoint& setStartControlRawState(ULONG startcontrolstate);
 
-    void restorePointSpecificDatabaseEntries(RWDBReader& rdr);
-
     virtual CtiLMGroupBase* replicate() const;
     virtual CtiRequestMsg* createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime, int priority) const;
     virtual CtiRequestMsg* createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const;
