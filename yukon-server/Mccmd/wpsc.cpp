@@ -610,7 +610,8 @@ bool DecodeWepcoServiceLine( char* line, RWOrdered* results )
     char buf[80];
     int temp;
 
-    RWCString serviceCmd("set MessagePriority 6 ; putconfig versacom serial ");
+    RWCString serviceTempCmd("set MessagePriority 6 ; putconfig versacom serial ");
+    RWCString serviceCmd("set MessagePriority 5 ; putconfig versacom serial ");
 
     // function
     if( (token = strtok(line,delim)) == NULL )
@@ -631,6 +632,10 @@ bool DecodeWepcoServiceLine( char* line, RWOrdered* results )
 
     if( func == 3 )
     {
+        serviceTempCmd += " service in t";
+        serviceTempCmd += GetSelectCustomRouteID(serial_num);
+        results->insert(new RWCollectableString(serviceTempCmd));
+
         serviceCmd += " service in ";
         serviceCmd += GetSelectCustomRouteID(serial_num);
         results->insert(new RWCollectableString(serviceCmd));
@@ -664,7 +669,7 @@ bool DecodeWepcoConfigLine( char* line, RWOrdered* results )
     char buf[80];
     int temp;
 
-    RWCString configCmd("set MessagePriority 5 ; putconfig versacom serial ");
+    RWCString configCmd("set MessagePriority 4 ; putconfig versacom serial ");
 
     // function
     if( (token = strtok(line,delim)) == NULL )
