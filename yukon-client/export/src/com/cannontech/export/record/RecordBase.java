@@ -10,6 +10,7 @@ package com.cannontech.export.record;
  */
 public interface RecordBase
 {
+	public final java.text.SimpleDateFormat parseDateFormat = new java.text.SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");	
 	/**
 	 * Write an instance of Record base to a comma separated String.
 	 * @return String
