@@ -11,6 +11,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
 import com.cannontech.tdc.utils.TDCDefines;
@@ -22,6 +23,10 @@ public class RowBlinker implements Runnable
 	private AlarmingRowVector alarmedRows = null;
 	private AlarmTableModel model = null;
 	private Thread runningThread = null;
+    
+    //if a LineUnavailableException is ever caught, do not try to
+    // reconnect ever again. Cuases memory leak inside native code
+    private boolean lineUnavailable = false;
 
 
 	private byte tempBuffer[] = new byte[10000];
@@ -164,8 +169,8 @@ public void destroy()
 }
 private synchronized void playSound()
 {
-	//must not have found the sound file
-	if( sourceDataLine == null )
+	//must not have found the sound file or the line is unavailable
+	if( sourceDataLine == null || lineUnavailable )
 		return;
 
 
@@ -193,9 +198,10 @@ private synchronized void playSound()
 		sourceDataLine.drain();
 		sourceDataLine.stop();
 	}
-	catch (Exception e) 
+	catch( LineUnavailableException e ) 
 	{
 		handleException( e );
+        lineUnavailable = true;
 	}
 
 }
