@@ -346,16 +346,16 @@ portfield.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		tbl_2way.h tbl_stats.h tbl_scanrate.h utility.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
 		pointdefs.h msg_signal.h tbl_dv_scandata.h tbl_dv_wnd.h \
+		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
 		prot_base.h xfer.h dialup.h tbl_dialup.h tbl_direct.h \
 		tbl_dv_idlcremote.h trx_info.h porter.h trx_711.h mgr_point.h \
 		rtdb.h hashkey.h pt_base.h pt_dyn_base.h tbl_pt_base.h \
 		slctpnt.h dev_tap.h tbl_dv_tappaging.h dev_ied.h tbl_dv_ied.h \
-		dev_rtc.h queue.h tbl_dv_rtc.h dev_rtm.h \
-		verification_objects.h boost_time.h dev_wctp.h routes.h \
-		master.h portdecl.h port_base.h tbl_port_base.h \
-		tbl_port_statistics.h tcpsup.h perform.h tapterm.h porttcp.h \
-		portglob.h statistics.h prot_sa3rdparty.h protocol_sa.h \
-		portverify.h connection.h exchange.h msg_ptreg.h msg_reg.h \
+		dev_rtc.h tbl_dv_rtc.h dev_rtm.h verification_objects.h \
+		boost_time.h dev_wctp.h routes.h master.h portdecl.h \
+		port_base.h tbl_port_base.h tbl_port_statistics.h tcpsup.h \
+		perform.h tapterm.h porttcp.h portglob.h statistics.h \
+		prot_sa3rdparty.h protocol_sa.h portverify.h \
 		c_port_interface.h group.h elogger.h alarmlog.h mgr_port.h \
 		smartmap.h slctprt.h mgr_device.h slctdev.h dev_cbc6510.h \
 		dev_dnp.h prot_dnp.h dnp_application.h dnp_objects.h \
@@ -400,6 +400,7 @@ portfill.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		repeaterrole.h dev_tcu.h ctitypes.h dev_idlc.h dev_remote.h \
 		dev_single.h msg_pcrequest.h msg_pcreturn.h msg_multi.h \
 		msg_pdata.h msg_signal.h tbl_dv_scandata.h tbl_dv_wnd.h \
+		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
 		prot_base.h tbl_dialup.h tbl_direct.h tbl_dv_idlcremote.h \
 		trx_info.h trx_711.h mgr_point.h slctpnt.h dev_tap.h \
 		tbl_dv_tappaging.h dev_ied.h tbl_dv_ied.h dev_wctp.h \
@@ -455,7 +456,8 @@ portload.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		tbl_rtrepeater.h trx_711.h trx_info.h dev_ccu.h ctitypes.h \
 		dev_idlc.h dev_remote.h dev_single.h msg_pcreturn.h \
 		msg_multi.h msg_pdata.h msg_signal.h tbl_dv_scandata.h \
-		tbl_dv_wnd.h prot_base.h tbl_dialup.h tbl_direct.h \
+		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
+		queue.h prot_base.h tbl_dialup.h tbl_direct.h \
 		tbl_dv_idlcremote.h mgr_point.h slctpnt.h
 portmain.obj:	yukon.h precompiled.h ctidbgmem.h portsvc.h cservice.h \
 		dlldefs.h CServiceConfig.h ctibase.h ctinexus.h dllbase.h \
@@ -522,7 +524,8 @@ portque.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		tbl_pt_base.h trx_711.h trx_info.h dev_ccu.h ctitypes.h \
 		dev_idlc.h dev_remote.h dev_single.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h msg_signal.h \
-		tbl_dv_scandata.h tbl_dv_wnd.h prot_base.h tbl_dialup.h \
+		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
+		msg_ptreg.h msg_reg.h queue.h prot_base.h tbl_dialup.h \
 		tbl_direct.h tbl_dv_idlcremote.h mgr_point.h slctpnt.h
 portsvc.obj:	yukon.h precompiled.h ctidbgmem.h dlldefs.h portsvc.h \
 		cservice.h ctibase.h ctinexus.h dllbase.h os2_2w32.h types.h \
@@ -542,8 +545,17 @@ porttime.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		elogger.h portglob.h tcpsup.h statistics.h c_port_interface.h \
 		group.h alarmlog.h mgr_port.h smartmap.h hashkey.h slctprt.h \
 		pt_base.h pointdefs.h pt_dyn_base.h tbl_pt_base.h \
-		mgr_device.h rtdb.h slctdev.h mgr_route.h repeaterrole.h \
-		trx_info.h trx_711.h prot_welco.h
+		mgr_device.h rtdb.h slctdev.h dev_ccu.h ctitypes.h dev_idlc.h \
+		dev_remote.h dev_single.h msg_pcrequest.h msg_pcreturn.h \
+		msg_multi.h msg_pdata.h msg_signal.h tbl_dv_scandata.h \
+		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
+		queue.h prot_base.h tbl_dialup.h tbl_direct.h \
+		tbl_dv_idlcremote.h trx_info.h trx_711.h mgr_point.h \
+		slctpnt.h dev_mct410.h dev_mct.h dev_carrier.h dev_dlcbase.h \
+		tbl_route.h tbl_carrier.h prot_emetcon.h tbl_metergrp.h \
+		vcomdefs.h tbl_loadprofile.h tbl_dv_mctiedport.h pt_numeric.h \
+		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h mgr_route.h \
+		repeaterrole.h prot_welco.h
 portverify.obj:	yukon.h precompiled.h ctidbgmem.h boost_time.h \
 		mgr_port.h dlldefs.h smartmap.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h hashkey.h logger.h thread.h \
