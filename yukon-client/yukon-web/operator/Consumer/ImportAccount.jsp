@@ -85,18 +85,20 @@
 			  <form name="form2" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager">
                 <input type="hidden" name="action" value="ImportINIData">
                 <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount.jsp">
-                <table width="500" border="0" cellspacing="0" cellpadding="0">
+                <table width="600" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
                     <td class="MainText"> 
-                      <div align="center">If you want to import any INI file, 
-                        please do so before importing any other file:</div>
+                      <div align="center">Import the INI files before importing 
+                        any other file. The S3DATA.INI file only needs to be imported 
+                        once. The STARS3.INI file must be re-imported every time 
+                        your session times out or the web server restarts.</div>
                     </td>
                   </tr>
                 </table>
                 <table width="400" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                   <tr> 
                     <td width="150"> 
-                      <div align="right">Selection List File: </div>
+                      <div align="right">S3DATA.INI: </div>
                     </td>
                     <td width="250"> 
                       <input type="file" name="SelListFile" size="35">
@@ -104,7 +106,7 @@
                   </tr>
                   <tr> 
                     <td width="150"> 
-                      <div align="right">User Label File: </div>
+                      <div align="right">STARS3.INI: </div>
                     </td>
                     <td width="250"> 
                       <input type="file" name="UsrLabelFile" size="35">
