@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_numeric.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/03 14:11:30 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/10 20:47:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -270,7 +270,7 @@ void        CtiPointNumeric::setDataOffset(DOUBLE d)
    return;
 }
 
-bool CtiPointNumeric::limitStateCheck( const int limitOrState, double &val, int &direction)
+bool CtiPointNumeric::limitStateCheck( const int limitOrState, double val, int &direction)
 {
    direction = LIMIT_IN_RANGE;          // This indicates that
 

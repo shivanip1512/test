@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_numeric.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:19 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/10 20:47:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,8 +21,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_numeric.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:19 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/10 20:47:30 $
 *
 */
 
@@ -100,7 +100,7 @@ public:
    virtual void        setMultiplier(DOUBLE d);
    virtual void        setDataOffset(DOUBLE d);
 
-   virtual bool limitStateCheck( const int limitOrState, double &val, int &direction);
+   virtual bool limitStateCheck( const int limitOrState, double val, int &direction);
    virtual UINT getStaticTags();
    virtual UINT adjustStaticTags(UINT &tag) const;
    virtual double getDefaultValue( ) const;
