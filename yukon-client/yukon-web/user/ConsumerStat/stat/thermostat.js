@@ -89,11 +89,11 @@ function timeChange(t, divId, nextTxtBox, prevTxtBox) {
   var val = timeStrToVal( t.value );
   if (prevTxtBox != null) {
     var prevVal = timeStrToVal( document.getElementById(prevTxtBox).value );
-    if (val < prevVal) val = prevVal;
+    if (val < prevVal) val = prevVal + 10;
   }
   if (nextTxtBox != null) {
     var nextVal = timeStrToVal( document.getElementById(nextTxtBox).value );
-    if (val > nextVal) val = nextVal;
+    if (val > nextVal) val = nextVal - 10;
   }
   t.value = timeValToStr( val );
   
