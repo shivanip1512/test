@@ -457,7 +457,8 @@ public Object getValue(Object val)
 	String prefixString = getPrefixNumberTextField().getText();
 	String suffixString = getSuffixNumberTextField().getText();
 	
-	if( val instanceof PortDialupModem )
+	if( val instanceof LocalDialupPort
+		 || val instanceof TerminalServerDialupPort )
 	{
 		PortDialupModem pdm;
 	
