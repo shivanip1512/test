@@ -17,8 +17,8 @@
 						  {"PrintExport.jsp", "Print/Export"},
 						  {"FAQ.jsp", "FAQ"},
 						  {"CreateAppliances.jsp", "New"},
-						  {(AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING_TIME).equalsIgnoreCase(InventoryManager.INVENTORY_CHECKING_TIME_EARLY))?
-						  	"SerialNumber.jsp?action=New" : "CreateHardware.jsp", "New", "CreateHardware.jsp"},
+						  {(AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING)?
+						  	"SerialNumber.jsp?action=New" : "CreateHardware.jsp"), "New", "CreateHardware.jsp"},
 						 };
 
 	String bulletImg = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif") + "' width='9' height='9'>";
@@ -241,7 +241,14 @@
 	
 	for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
 		StarsInventory inv = inventories.getStarsInventory(i);
+		
 		String linkLabel = inv.getDeviceLabel();
+		if (linkLabel.equals("")) {
+			if (inv.getLMHardware() != null)
+				linkLabel= inv.getLMHardware().getManufacturerSerialNumber();
+			else if (inv.getMCT() != null)
+				linkLabel = inv.getMCT().getDeviceName();
+		}
 		
 		String linkHtml = null;
 		String linkImgExp = null;
