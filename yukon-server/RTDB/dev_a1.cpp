@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_a1.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/04/15 15:19:31 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/04/15 22:14:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1539,9 +1539,10 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
                     // only build one of these if the point was found and configured correctly
                     if (getMeterDataFromScanStruct (i, PValue, peakTime, ptr))
                     {
+                        PValue = pNumericPoint->computeValueForUOM(PValue);
 
                         verifyAndAddPointToReturnMsg (pNumericPoint->getPointID(),
-                                                      PValue * pNumericPoint->getMultiplier(),
+                                                      PValue,
                                                       NormalQuality,
                                                       peakTime,
                                                       pPIL);
