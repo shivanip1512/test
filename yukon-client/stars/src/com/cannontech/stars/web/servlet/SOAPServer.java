@@ -11,7 +11,6 @@ import javax.xml.messaging.ReqRespListener;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
@@ -539,29 +538,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				break;
 				
 			case DBChangeMsg.CHANGE_TYPE_UPDATE:
-				energyCompany.getAddress( liteAcctInfo.getCustomerAccount().getBillingAddressID() ).retrieve();
-				liteAcctInfo.getCustomerAccount().retrieve();
-				
-				LiteContact litePrimContact = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
-				litePrimContact.retrieve( CtiUtilities.getDatabaseAlias() );;
-				
-				Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
-				for (int i = 0; i < contacts.size(); i++)
-					ServerUtils.handleDBChange( (LiteContact)contacts.get(i), DBChangeMsg.CHANGE_TYPE_DELETE );
-				
-				liteAcctInfo.getCustomer().retrieve( CtiUtilities.getDatabaseAlias() );
-				contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
-				for (int i = 0; i < contacts.size(); i++)
-					ServerUtils.handleDBChange( (LiteContact)contacts.get(i), DBChangeMsg.CHANGE_TYPE_ADD );
-				
-				energyCompany.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() ).retrieve();
-				liteAcctInfo.getAccountSite().retrieve();
-				
-				liteAcctInfo.getSiteInformation().retrieve();
-				
-				energyCompany.updateStarsCustAccountInformation( liteAcctInfo );
-				break;
-				
 			case DBChangeMsg.CHANGE_TYPE_DELETE:
 				energyCompany.deleteCustAccountInformation( liteAcctInfo );
 				energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
