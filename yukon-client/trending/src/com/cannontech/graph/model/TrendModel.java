@@ -18,7 +18,6 @@ import com.jrefinery.chart.renderer.VerticalBarRenderer;
 import com.jrefinery.chart.renderer.VerticalBarRenderer3D;
 import com.jrefinery.chart.renderer.XYItemRenderer;
 import com.jrefinery.chart.renderer.XYStepRenderer;
-import com.jrefinery.chart.tooltips.StandardCategoryToolTipGenerator;
 import com.jrefinery.data.DefaultCategoryDataset;
 
 public class TrendModel implements com.cannontech.graph.GraphDataFormats
@@ -78,8 +77,8 @@ public TrendModel(com.cannontech.database.data.graph.GraphDefinition newGraphDef
 		serie.setPointId(gds.getPointID());
 		serie.setColor( com.cannontech.common.gui.util.Colors.getColor(gds.getColor().intValue()));
 		serie.setLabel(gds.getLabel().toString());
-		serie.setType(gds.getType().toString());
-		serie.setTypeMask(gds.getTypeMask());
+//		serie.setType(gds.getType().toString());
+		serie.setTypeMask(gds.getTypeInt());
 
 
 
@@ -94,9 +93,9 @@ public TrendModel(com.cannontech.database.data.graph.GraphDefinition newGraphDef
 	{
 		trendSeries = new TrendSerie[dsVector.size()];
 		dsVector.toArray(trendSeries);
-		hitDatabase_Basic(GraphDataSeries.NORMAL_QUERY_MASK);
-		hitDatabase_Basic(GraphDataSeries.YESTERDAY_MASK);
-		hitDatabase_Basic(GraphDataSeries.PEAK_VALUE_MASK);
+		hitDatabase_Basic(GraphDataSeries.NORMAL_QUERY_TYPE);
+		hitDatabase_Basic(GraphDataSeries.YESTERDAY_TYPE);
+		hitDatabase_Basic(GraphDataSeries.PEAK_INTERVAL_TYPE);
 	}
 	else
 	{
@@ -123,7 +122,7 @@ public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, Strin
 
 		trendSeries[i] = tempSerie;
 	}		
-	hitDatabase_Basic(GraphDataSeries.NORMAL_QUERY_MASK);
+	hitDatabase_Basic(GraphDataSeries.NORMAL_QUERY_TYPE);
 }
 
 public Character getAutoScaleLeft()
@@ -167,10 +166,10 @@ private java.awt.Color [] getDatasetColors(com.jrefinery.data.AbstractSeriesData
 		for( int i = 0; i < trendSeries.length; i++)
 		{
 			TrendSerie serie = trendSeries[i];
-			if( serie != null && ((serie.getTypeMask() & GraphDataSeries.VALID_INTERVAL_MASK) == serie.getTypeMask()))
+			if( serie != null && (GraphDataSeries.isValidIntervalType(serie.getTypeMask())))
 			{
 				if(serie.getColor() != null)
-				{
+				{ 
 					colors[colorCount++] = serie.getColor();
 				}
 			}
@@ -221,6 +220,7 @@ private DateAxis getHorizontalDateAxis()
 	domainAxis.setAutoRange(false);
 	domainAxis.setMaximumDate(getStopDate());
 	domainAxis.setMinimumDate(getStartDate());
+
 	domainAxis.setTickMarksVisible(true);	
 	((HorizontalDateAxis)domainAxis).setVerticalTickLabels(false);
 	return domainAxis;
@@ -270,7 +270,7 @@ private Integer getPeakPointId()
 	{
 		for (int i = 0; i < trendSeries.length; i++)
 		{
-			if( trendSeries[i].getType().equalsIgnoreCase(GraphDataSeries.PEAK_SERIES))
+			if( GraphDataSeries.isPeakType(trendSeries[i].getTypeMask()))
 				peakPointId = trendSeries[i].getPointId();
 		}
 	}
@@ -293,7 +293,7 @@ private com.jrefinery.chart.StandardLegend getLegend(JFreeChart fChart)
 		for( int i = 0; i < trendSeries.length; i++)
 		{
 			String stat = "";					
-			if(( trendSeries[i].getTypeMask() & GraphDataSeries.VALID_INTERVAL_MASK) == trendSeries[i].getTypeMask())
+			if(GraphDataSeries.isValidIntervalType(trendSeries[i].getTypeMask()))
 			{
 				if ((getOptionsMaskSettings() & TrendModelType.LEGEND_LOAD_FACTOR_MASK) == TrendModelType.LEGEND_LOAD_FACTOR_MASK)
 				{
@@ -466,17 +466,17 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 			// YESTERDAY series type //
 			long day = 0;			
 
-			if ((seriesTypeMask & GraphDataSeries.YESTERDAY_MASK) == GraphDataSeries.YESTERDAY_MASK)
+			if (GraphDataSeries.isYesterdayType(seriesTypeMask))
 			{
 				day = 86400000;
 				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() - day) );
 				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() - day) );
 			}
-			else if ((seriesTypeMask & GraphDataSeries.PEAK_VALUE_MASK) == GraphDataSeries.PEAK_VALUE_MASK)
+			else if (GraphDataSeries.isPeakIntervalType(seriesTypeMask))
 			{
 				for (int i = 0; i < trendSeries.length; i++)
 				{
-					if ((trendSeries[i].getTypeMask() & GraphDataSeries.PEAK_VALUE_MASK) ==  GraphDataSeries.PEAK_VALUE_MASK)
+					if (GraphDataSeries.isPeakIntervalType(trendSeries[i].getTypeMask()))
 					{
 						day = retrievePeakIntervalTranslateMillis(trendSeries[i].getPointId().intValue());
 						pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() - day) );
@@ -534,7 +534,7 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 			if( !dataPairVector.isEmpty())
 			{
 				// Repeat the interval x # of days with Peak_interval data series.
-				if ((seriesTypeMask & GraphDataSeries.PEAK_VALUE_MASK) == GraphDataSeries.PEAK_VALUE_MASK)
+				if (GraphDataSeries.isPeakIntervalType(seriesTypeMask ))
 				{
 					int size = dataPairVector.size();
 					long numDays = (getStopDate().getTime() - getStartDate().getTime()) / 86400000;
@@ -584,11 +584,51 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 			e2.printStackTrace();//sometin is up
 			return null;
 		}	
+			com.cannontech.clientutils.CTILogger.info("Finished executing:  " + seriesTypeMask );		
 	}
 	return trendSeries;
 }
 
 private long retrievePeakIntervalTranslateMillis(int peakIntervalPointID)
+{
+	long translateMillis = 0;
+	com.cannontech.database.cache.TimedDatabaseCache cache = com.cannontech.database.cache.TimedDatabaseCache.getInstance();
+	synchronized(cache)
+	{
+		java.util.List peakPoints = cache.getAllPeakPointHistory();
+		java.util.Iterator iter = peakPoints.iterator();
+		while( iter.hasNext() )
+		{
+			com.cannontech.database.db.point.PeakPointHistory pt = (com.cannontech.database.db.point.PeakPointHistory) iter.next();
+			if( pt.getPointID().intValue() == peakIntervalPointID)
+			{
+				System.out.println(" PEAK TS= " + pt.getTimeStamp().getTime());
+				java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
+				cal.setTime(pt.getTimeStamp().getTime());
+				String time = TRANSLATE_DATE.format(cal.getTime());
+	
+				if( Integer.valueOf(time).intValue() == 0)	//must have Day+1 00:00:00 instead of Day 00:00:01+
+				{	
+					cal.roll(java.util.Calendar.DAY_OF_YEAR, false);
+				}
+				else
+				{
+					cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+					cal.set(java.util.Calendar.MINUTE, 0);
+					cal.set(java.util.Calendar.SECOND, 0);
+					cal.set(java.util.Calendar.MILLISECOND, 0);
+				}
+				translateMillis = (getStartDate().getTime() - cal.getTime().getTime());
+				System.out.println(" PEAK POINT TS/VALUE = " + pt.getPointID() + " | " + pt.getTimeStamp().getTime() + " | " + pt.getValue());
+				break;
+			}
+		}
+	}	
+
+	return translateMillis;
+}
+/*
+ * private long retrievePeakIntervalTranslateMillis(int peakIntervalPointID)
 {
 	long timerStart = System.currentTimeMillis();
 	long translateMillis = 0;
@@ -648,6 +688,7 @@ private long retrievePeakIntervalTranslateMillis(int peakIntervalPointID)
 	}
 	return translateMillis;
 }
+*/
 /**
  * Starting point for the demonstration application.
  */
@@ -770,6 +811,12 @@ public JFreeChart refresh(int rendererType)
 //        com.jrefinery.chart.data.PlotFit pf = new com.jrefinery.chart.data.PlotFit((com.jrefinery.data.XYDataset)dataset, mavg);
 //        dataset = (com.jrefinery.data.AbstractSeriesDataset)pf.getFit();
 		System.out.println(" REND = " + rend.getClass());
+		
+	java.awt.Paint [] p = getDatasetColors(dataset);
+    java.awt.Paint [][] p1 = new java.awt.Paint[][] {p};
+	com.jrefinery.chart.PaintTable pt = new com.jrefinery.chart.DefaultPaintTable(p1);
+	rend.setFillPaintTable(pt);
+		
 		plot = new com.jrefinery.chart.XYPlot( (com.jrefinery.data.XYDataset)dataset, domainAxis, getVerticalNumberAxis_primary(), rend);
 	}
 	else if( rendererType == TrendModelType.STEP_VIEW)
@@ -806,18 +853,31 @@ public JFreeChart refresh(int rendererType)
 			rend = new XYStepRenderer();
 		}
 
+	java.awt.Paint [] p = getDatasetColors(dataset);
+    java.awt.Paint [][] p1 = new java.awt.Paint[][] {p};
+	com.jrefinery.chart.PaintTable pt = new com.jrefinery.chart.DefaultPaintTable(p1);
+	rend.setFillPaintTable(pt);
+
 		plot = new com.jrefinery.chart.XYPlot( (com.jrefinery.data.XYDataset)dataset, domainAxis, getVerticalNumberAxis_primary(), rend);	
 	}
 	else if( rendererType == TrendModelType.BAR_VIEW)
 	{
-		if( (getOptionsMaskSettings()  & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)		
+		if( (getOptionsMaskSettings()  & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)
 			dataset = YukonDataSetFactory.createVerticalCategoryDataSet_LD(trendSeries, getPeakPointId());
 		else
 			dataset = YukonDataSetFactory.createVerticalCategoryDataSet(trendSeries);
 
 		CategoryItemRenderer rend = new VerticalBarRenderer(new com.jrefinery.chart.tooltips.StandardCategoryToolTipGenerator());
+//
+	java.awt.Paint [] p = getDatasetColors(dataset);
+    java.awt.Paint [][] p1 = new java.awt.Paint[][] {p};
+	com.jrefinery.chart.PaintTable pt = new com.jrefinery.chart.DefaultPaintTable(p1);
+	rend.setFillPaintTable(pt);
+
 		
 		plot = new com.jrefinery.chart.VerticalCategoryPlot( (DefaultCategoryDataset)dataset, getHorizontalCategoryAxis(), getVerticalNumberAxis_primary(), rend);
+		
+//		plot.setSeriesPaint(getDatasetColors(dataset));
 	}
 	else if( rendererType == TrendModelType.BAR_3D_VIEW)
 	{
@@ -828,10 +888,23 @@ public JFreeChart refresh(int rendererType)
 
 //		CategoryItemRenderer rend = new VerticalBarRenderer3D(new StandardCategoryToolTipGenerator(), 10);
 		CategoryItemRenderer rend = new VerticalBarRenderer3D(10, 10);
-		plot = new com.jrefinery.chart.VerticalCategoryPlot( (DefaultCategoryDataset)dataset, getHorizontalCategoryAxis(), getVerticalNumberAxis3D_primary(), rend);
-	}
 
-	plot.setSeriesPaint(getDatasetColors(dataset));
+	java.awt.Paint [] p = getDatasetColors(dataset);
+    java.awt.Paint [][] p1 = new java.awt.Paint[][] {p};
+	com.jrefinery.chart.PaintTable pt = new com.jrefinery.chart.DefaultPaintTable(p1);
+	rend.setFillPaintTable(pt);
+		
+		plot = new com.jrefinery.chart.VerticalCategoryPlot( (DefaultCategoryDataset)dataset, getHorizontalCategoryAxis(), getVerticalNumberAxis3D_primary(), rend);
+//		plot.setSeriesPaint(getDatasetColors(dataset));		
+	}
+//	plot.setSeriesPaint(getDatasetColors(dataset));
+	/*
+	java.awt.Paint [] x = getDatasetColors(dataset);
+	for (int i = 0; i < x.length; i++)
+	{
+		plot.setSeriesPaint(i, x[i]);
+	}	
+	*/
 //	plot.setSeriesPaint(2, java.awt.Color.black);
 //	plot.setSeriesPaint(3, java.awt.Color.black);
 
