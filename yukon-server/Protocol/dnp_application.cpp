@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/03/13 19:35:36 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/04/25 22:40:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,8 +55,6 @@ CtiDNPApplication &CtiDNPApplication::operator=(const CtiDNPApplication &aRef)
 }
 
 
-/*---  Scanner-side Functions  ---*/
-
 void CtiDNPApplication::setAddresses( unsigned short dstAddr, unsigned short srcAddr )
 {
     _dstAddr = dstAddr;
@@ -72,11 +70,7 @@ void CtiDNPApplication::setOptions( int options )
 }
 
 
-void CtiDNPApplication::resetLink( void )
-{
-    _transport.resetLink();
-}
-
+/*---  Scanner-side Functions  ---*/
 
 void CtiDNPApplication::setCommand( AppFuncCode func )
 {
@@ -140,6 +134,8 @@ void CtiDNPApplication::serializeReq( unsigned char *buf )
 
     //  add on the addressing bytes that sit in front of the _appReq struct...
     //    kind of a hack, but it has to be passed layer to layer
+    //    ACH:  make this a struct so it's less offensive
+    //  wait, why am i doing this?  they're being loaded up in both Porter and Scanner.  umduh?
     src    -= 2 * (sizeof(short));
     srcLen += 2 * (sizeof(short));
 
@@ -298,6 +294,12 @@ bool CtiDNPApplication::hasOutput( void )
 
 
 /*---  Porter-side functions  ---*/
+
+void CtiDNPApplication::resetLink( void )
+{
+    _transport.resetLink();
+}
+
 
 void CtiDNPApplication::restoreReq( unsigned char *buf, int len )
 {
