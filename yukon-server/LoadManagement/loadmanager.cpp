@@ -782,7 +782,10 @@ void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
 		(resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_DEVICE ||
 		 resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_LOAD_MANAGEMENT) ) ||
 	      dbChange->getDatabase() == ChangePointDb ||
-	      dbChange->getDatabase() == ChangeStateGroupDb ) )
+	      dbChange->getDatabase() == ChangeStateGroupDb ||
+	      dbChange->getDatabase() == ChangeLMConstraintDb ||
+	      dbChange->getDatabase() == ChangeSeasonScheduleDb ||
+	      dbChange->getDatabase() == ChangeHolidayScheduleDb) )
 	{
 	    if( dbChange->getTypeOfChange() == ChangeTypeDelete &&
 		resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_LM_CONTROL_AREA )

@@ -18,6 +18,9 @@
 #include <rw/thr/thrfunc.h>
 #include <rw/tphdict.h>
 
+#include "mgr_holiday.h"
+#include "mgr_season.h"
+
 #include "lmcontrolareastore.h"
 #include "lmcurtailcustomer.h"
 #include "lmenergyexchangecustomer.h"
@@ -2425,6 +2428,10 @@ void CtiLMControlAreaStore::reset()
 
     try
     {
+	//Make sure holidays and season schedules are refreshed
+	CtiHolidayManager::getInstance().refresh();
+	CtiSeasonManager::getInstance().refresh();
+	
         _reregisterforpoints = true;
         _lastdbreloadtime.now();
 	
