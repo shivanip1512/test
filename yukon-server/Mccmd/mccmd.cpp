@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2003/05/13 19:21:32 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2003/07/15 15:34:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -417,10 +417,6 @@ int Mccmd_Init(Tcl_Interp* interp)
     Tcl_CreateCommand( interp, "Control", Control, NULL, NULL );
     Tcl_CreateCommand( interp, "control", Control, NULL, NULL );
     Tcl_CreateCommand( interp, "CONTROL", Control, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "Scan", Scan, NULL, NULL );
-    Tcl_CreateCommand( interp, "scan", Scan, NULL, NULL );
-    Tcl_CreateCommand( interp, "SCAN", Scan, NULL, NULL );
 
     Tcl_CreateCommand( interp, "Pil", Pil, NULL, NULL );
     Tcl_CreateCommand( interp, "pil", Pil, NULL, NULL );
