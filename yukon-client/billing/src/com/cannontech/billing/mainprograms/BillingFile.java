@@ -59,10 +59,65 @@ public static void main(String[] args)
 	try
 	{
 		BillingFile billingFile = new BillingFile();
+		for ( int i = 0; i < args.length; i++)
+		{
+			String argLowerCase = (String)args[i].toLowerCase();
+	
+			if( argLowerCase.startsWith("format") || argLowerCase.startsWith("type"))
+			{
+				int startIndex = argLowerCase.indexOf("=") + 1;
+				String subString = argLowerCase.substring(startIndex);
+				billingFile.getBillingDefaults().setFormatID(Integer.valueOf(subString).intValue());
+			}
+			else if( argLowerCase.startsWith("demand"))
+			{
+				int startIndex = argLowerCase.indexOf("=") + 1;
+				String subString = argLowerCase.substring(startIndex);
+				billingFile.getBillingDefaults().setDemandDaysPrev(Integer.valueOf(subString).intValue());
+			}
+			else if( argLowerCase.startsWith("energy"))
+			{
+				int startIndex = argLowerCase.indexOf("=") + 1;
+				String subString = argLowerCase.substring(startIndex);
+				billingFile.getBillingDefaults().setEnergyDaysPrev(Integer.valueOf(subString).intValue());
+			}
+			else if( argLowerCase.startsWith("billgr"))
+			{
+				int startIndex = argLowerCase.indexOf("=") + 1;
+				String subString = argLowerCase.substring(startIndex);
+				billingFile.getBillingDefaults().setBillGroup(subString);
+			}
+			else if( argLowerCase.startsWith("sqlcol"))
+			{
+				int startIndex = argLowerCase.indexOf("=") + 1;
+				String subString = argLowerCase.substring(startIndex);
+				if( subString.length() == 1)	//we have the integer value of the sqlcolumn
+					billingFile.getBillingDefaults().setBillGroupSQLString(Integer.valueOf(subString).intValue());
+				else
+					billingFile.getBillingDefaults().setBillGroupSQLString(subString);
+			}
+			else if( argLowerCase.startsWith("end"))
+			{
+				int startIndex = argLowerCase.indexOf("=") + 1;
+				String subString = argLowerCase.substring(startIndex);
+				com.cannontech.util.ServletUtil.parseDateStringLiberally(subString);
+				billingFile.getBillingDefaults().setEndDate(com.cannontech.util.ServletUtil.parseDateStringLiberally(subString));
+			}
+			else if( argLowerCase.startsWith("file"))
+			{
+				int startIndex = argLowerCase.indexOf("=") + 1;
+				String subString = argLowerCase.substring(startIndex);
+				billingFile.getBillingDefaults().setOutputFile(subString);
+			}
+		}
+		
+		billingFile.setFileFormatBase( com.cannontech.billing.FileFormatFactory.createFileFormat(billingFile.getBillingDefaults().getFormatID() ));
+		billingFile.run();
+		billingFile.getBillingDefaults().writeDefaultsFile();
 	} 
 	catch (Throwable exception)
 	{
-		System.err.println("Exception occurred in main() of javax.swing.JFrame");
+		com.cannontech.clientutils.CTILogger.error("Exception occurred in main() of BillingFile");
 		exception.printStackTrace(System.out);
 	}
 }
@@ -226,17 +281,16 @@ public void run()
 			else				
 			{
 				setChanged();
-				this.notifyObservers("Unsuccessfull database query" );
+				notify("Unsuccessfull database query" );
 			}
 
 			setChanged();
-			this.notifyObservers("Successfully created the file : " + fileFormatBase.getOutputFileName() + "\n" + fileFormatBase.getRecordCount() + " Valid Readings Reported.");
-			com.cannontech.clientutils.CTILogger.info("notified observers!");
+			notify("Successfully created the file : " + fileFormatBase.getOutputFileName() + "\n" + fileFormatBase.getRecordCount() + " Valid Readings Reported.");
 		}
 		catch(java.io.IOException ioe)
 		{
 			setChanged();
-			this.notifyObservers("Unsuccessfull reading of file : " + fileFormatBase.getOutputFileName() );
+			notify("Unsuccessfull reading of file : " + fileFormatBase.getOutputFileName() );
 			ioe.printStackTrace();
 		}
 	}
@@ -283,15 +337,18 @@ public void encodeOutput(java.io.OutputStream out) throws java.io.IOException
 			}
 			else				
 			{
-				this.notifyObservers("Unsuccessfull database query" );
+				notify("Unsuccessfull database query" );
 			}
-
-			com.cannontech.clientutils.CTILogger.info("notified observers!");
 		}
 		catch(java.io.IOException ioe)
 		{
 			ioe.printStackTrace();
 		}
 	}
+}
+private void notify(String notifyString)
+{
+	this.notifyObservers(notifyString );
+	com.cannontech.clientutils.CTILogger.info(notifyString);
 }
 }
