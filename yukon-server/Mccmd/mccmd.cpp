@@ -9,13 +9,11 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/15 16:15:21 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/15 16:18:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
-//hi
 
 #include <set>
 
@@ -46,14 +44,14 @@
 #include <rw/collstr.h>
 #include <rw/thr/thrutil.h>
 
-#include <rw\re.h> 
+#include <rw\re.h>
 #include <rw/ctoken.h>
 
 const RWCRExpr   re_num("[0-9]+");
 const RWCRExpr   re_timeout("timeout[= ]+[0-9]+");
 const RWCRExpr   re_select("select[ ]+[^ ]+[ ]+");
 const RWCRExpr   re_select_list("select[ ]+list[ ]+");
- 
+
 char* SelectedVariable = "Selected";
 char* GoodListVariable = "SuccessList";
 char* BadListVariable  = "MissedList";
@@ -87,10 +85,10 @@ void _MessageThrFunc()
                     {
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
-                            dout << RWTime() << " [" << rwThreadId() << 
+                            dout << RWTime() << " [" << rwThreadId() <<
                                 "] Received unexpected message for interpreter [" <<
                                 msgid << "]" << endl;
-                            DumpReturnMessage(*in);                        
+                            DumpReturnMessage(*in);
                         }
                         delete in;
                     }
@@ -118,7 +116,7 @@ void _MessageThrFunc()
         }
     } catch ( RWCancellation& )
     {
-        //anything to do here?        
+        //anything to do here?
         throw;
     }
 }
@@ -147,7 +145,7 @@ void DumpReturnMessage(CtiReturnMsg& msg)
     out += CtiNumStr(msg.ExpectMore());
     out += "\r\nresult: ";
     out += msg.ResultString();
-         
+
     RWOrdered rw_set = msg.PointData();
     RWOrderedIterator iter(rw_set);
     CtiPointDataMsg* p_data;
@@ -155,14 +153,14 @@ void DumpReturnMessage(CtiReturnMsg& msg)
     while ( (p_data = (CtiPointDataMsg*) iter()) != NULL )
     {
         out += "\r\n  ";
-        out += p_data->getString();        
+        out += p_data->getString();
     }
 
     WriteOutput((char*) out.data());
 }
 
 void WriteOutput(const char* output)
-{ 
+{
     int thrId = rwThreadId();
 
     //Write the output to stdout
@@ -237,23 +235,23 @@ int Mccmd_Connect()
 
        /* The next few are optional cparms for customs */
        if ( (*fpGetAsString)("PAGING_CONFIG_ROUTE_ID", temp, 64) )
-       {           
+       {
            gPagingConfigRouteID = atoi(temp);
            dout << RWTime()  << " PAGING_CONFIG_ROUTE_ID=" << gPagingConfigRouteID << endl;
-       } 
-                   
+       }
+
        if ( (*fpGetAsString)("FM_CONFIG_ROUTE_ID", temp, 64) )
-       {           
+       {
            gFMConfigRouteID = atoi(temp);
            dout << RWTime()  << " FM_CONFIG_ROUTE_ID=" << gFMConfigRouteID << endl;
        }
-             
+
        // init these in case none are found
        gFMConfigSerialLow[0] = -1;
        gFMConfigSerialHigh[0] = -1;
 
        if ( (*fpGetAsString)("FM_CONFIG_SERIAL_RANGE", temp, 64) )
-       {           
+       {
            RWCTokenizer nextRange(temp);
            RWCString range;
 
@@ -269,7 +267,7 @@ int Mccmd_Connect()
                 high = high.strip(RWCString::leading, '-');
 
                 if( !low.isNull() && !high.isNull() )
-                {                    
+                {
                     int lowi = atoi(low.data());
                     int highi = atoi(high.data());
 
@@ -354,7 +352,7 @@ int Mccmd_Disconnect()
 }
 
 int Mccmd_Init(Tcl_Interp* interp)
-{    
+{
     /* Register MACS commands with the interpreter */
     Tcl_CreateCommand( interp, "GetValue", GetValue, NULL, NULL );
     Tcl_CreateCommand( interp, "getvalue", GetValue, NULL, NULL );
@@ -387,7 +385,7 @@ int Mccmd_Init(Tcl_Interp* interp)
     Tcl_CreateCommand( interp, "Control", Control, NULL, NULL );
     Tcl_CreateCommand( interp, "control", Control, NULL, NULL );
     Tcl_CreateCommand( interp, "CONTROL", Control, NULL, NULL );
-    
+
     Tcl_CreateCommand( interp, "Wait", Wait, NULL, NULL );
     Tcl_CreateCommand( interp, "wait", Wait, NULL, NULL );
     Tcl_CreateCommand( interp, "WAIT", Wait, NULL, NULL );
@@ -429,17 +427,17 @@ int Mccmd_Init(Tcl_Interp* interp)
         char temp[80];
 
         CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
-                
-        if ( (*fpGetAsString)("CTL_SCRIPTS_DIR", temp, 64) )                   
+
+        if ( (*fpGetAsString)("CTL_SCRIPTS_DIR", temp, 64) )
            init_script = temp;
-        
+
 
         if ( (*fpGetAsString)("INIT_SCRIPT", temp, 64) )
-        {        
+        {
             init_script += "\\";
             init_script += temp;
         }
-                
+
         FreeLibrary(hLib);
     } else
     {
@@ -452,7 +450,7 @@ int Mccmd_Init(Tcl_Interp* interp)
         CtiLockGuard< CtiLogger > guard(dout);
         dout << "Using: " << init_script << endl;
     }
-   
+
     Tcl_EvalFile(interp, (char*) init_script.data() );
 
     /* declare that we are implementing the MCCmd package so that scripts that have
@@ -474,7 +472,7 @@ int Exit(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     //copied from default tcl exit handler
     int value;
 
-    if ( argc != 1 && argc != 2) {    
+    if ( argc != 1 && argc != 2) {
         return TCL_ERROR;
    }
 
@@ -537,7 +535,7 @@ int PutConfig(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     RWCString cmd;
     AppendToString(cmd, argc, argv);
-    
+
     return DoOneWayRequest(interp, cmd);
 }
 
@@ -551,15 +549,15 @@ int Loop(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 int Control(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     RWCString cmd;
-    AppendToString(cmd, argc, argv);    
+    AppendToString(cmd, argc, argv);
     return DoOneWayRequest(interp, cmd);
 }
 
 int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     if( argc != 2 )
-    {             
-        WriteOutput("Usage: mcu8100 filename");            
+    {
+        WriteOutput("Usage: mcu8100 filename");
         return TCL_ERROR;
     }
 
@@ -567,8 +565,8 @@ int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     RWOrdered results;
 
     if( DecodeCFDATAFile( file, &results) == false )
-    {        
-        WriteOutput("Error decoding file");                 
+    {
+        WriteOutput("Error decoding file");
         return TCL_ERROR;
     }
 
@@ -586,15 +584,15 @@ int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 
 /*
     $VSERV=<address>,CONTRACT=(IN|OUT),TEMP=(IN|OUT)
-    
+
     address := <service area>[,VN<serial #>]
-*/    
+*/
 int mcu9000eoi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-  
-    if( argc != 2 ) 
+
+    if( argc != 2 )
     {
-        WriteOutput("Usage: mcu9000eoi filename");        
+        WriteOutput("Usage: mcu9000eoi filename");
         return TCL_ERROR;
     }
 
@@ -622,8 +620,8 @@ int mcu9000eoi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]
 int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     if( argc != 2 )
-    {             
-        WriteOutput("Usage: mcu8100wepco filename");            
+    {
+        WriteOutput("Usage: mcu8100wepco filename");
         return TCL_ERROR;
     }
 
@@ -631,8 +629,8 @@ int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
     RWOrdered results;
 
     if( DecodeWepcoFile( file, &results) == false )
-    {        
-        WriteOutput("Error decoding file");                 
+    {
+        WriteOutput("Error decoding file");
         return TCL_ERROR;
     }
 
@@ -798,9 +796,9 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 
         }
         else
-        
+
         {
-        
+
             decodeResult = decodeTextCommandFile( file, commandsPerTime, &results);
 
             if(decodeResult == TEXT_CMD_FILE_LOG_FAIL )
@@ -875,23 +873,23 @@ int isHoliday(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     time_t t = time(NULL);
     int id = 0;
 
-    if( argc >= 2 ) {    
+    if( argc >= 2 ) {
         t = (time_t) atoi(argv[1]);
     }
-    
-    if( argc >= 3 ) {    
+
+    if( argc >= 3 ) {
         id = atoi(argv[2]);
     }
     else {
-        // This will only get set if running inside MACS        
+        // This will only get set if running inside MACS
         char* h_sched_id = Tcl_GetVar(interp, HolidayScheduleIDVariable, 0 );
         if( h_sched_id != NULL ) {
             id = atoi(h_sched_id);
         }
     }
-        
+
     CtiHolidayManager& mgr = CtiHolidayManager::getInstance();
-    if( mgr.isHoliday(RWDate(localtime(&t)), id) ) {        
+    if( mgr.isHoliday(RWDate(localtime(&t)), id) ) {
         Tcl_SetResult(interp, "true", NULL );
         return TCL_OK;
     }
@@ -950,7 +948,7 @@ int Dout(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
         return TCL_ERROR;
 
     WriteOutput( argv[1]);
-    
+
     return TCL_OK;
 }
 
@@ -1015,7 +1013,7 @@ int Select(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 
         WriteOutput( (char*) selection.data() );
     }
-    else {    
+    else {
         RWCString cmd;
         AppendToString(cmd, argc, argv);
 
@@ -1024,7 +1022,7 @@ int Select(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     }
     return TCL_OK;
 }
-        
+
 int Wait(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     if ( argc < 2 )
@@ -1041,7 +1039,7 @@ int Wait(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
         //Check for cancellation
         if ( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 )
         {
-            WriteOutput("interrupted");            
+            WriteOutput("interrupted");
             Tcl_SetResult( interp, "interrupted", NULL );
             return TCL_ERROR;
         }
@@ -1059,12 +1057,12 @@ int DoOneWayRequest(Tcl_Interp* interp, RWCString& cmd_line)
     RWCString timeoutStr;
 
     if( !((timeoutStr = cmd_line.match(re_timeout)).isNull()) )
-    {                
-        if( !((timeoutStr = timeoutStr.match(re_num)).isNull()) ) 
+    {
+        if( !((timeoutStr = timeoutStr.match(re_num)).isNull()) )
         {
             timeout = strtol(timeoutStr.data(),&p,10);
-        }        
-    }                                                      
+        }
+    }
     return DoRequest(interp,cmd_line,timeout,false);
 }
 
@@ -1075,19 +1073,19 @@ int DoTwoWayRequest(Tcl_Interp* interp, RWCString& cmd_line)
     RWCString timeoutStr;
 
     if( !((timeoutStr = cmd_line.match(re_timeout)).isNull()) )
-    {                
-        if( !((timeoutStr = timeoutStr.match(re_num)).isNull()) ) 
+    {
+        if( !((timeoutStr = timeoutStr.match(re_num)).isNull()) )
         {
             timeout = strtol(timeoutStr.data(),&p,10);
-        }        
-    }                                                     
+        }
+    }
     return DoRequest(interp,cmd_line,timeout,true);
 }
 
 static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool two_way)
 {
     bool interrupted = false;
-   
+
    RWSet req_set;
    RWSet req_set_copy;
 
@@ -1096,7 +1094,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
    int thrid = (int) rwThreadId();
    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue_ptr = new CtiCountedPCPtrQueue<RWCollectable>();
 
-   {   
+   {
         RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
         InQueueStore.insertKeyAndValue(  thrid, queue_ptr );
    }
@@ -1107,15 +1105,15 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
    //and write out all of the requests
    RWSetIterator iter(req_set);
    for( ; iter(); ) {
-   
+
        CtiRequestMsg* req = (CtiRequestMsg*) iter.key();
        CtiRequestMsg* req_copy = new CtiRequestMsg(*req);
        req_set_copy.insert( req_copy );
-       
+
        WriteOutput( (char*) req->CommandString().data() );
        PILConnection->WriteConnQue(req);
    }
-      
+
    // Set up good and bad lists
    Tcl_Obj* good_list = Tcl_NewListObj(0,NULL);
    Tcl_Obj* bad_list = Tcl_NewListObj(0,NULL);
@@ -1124,18 +1122,18 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
 
    long start = time(NULL);
 
-   set< long, less<long> > device_set;    
+   set< long, less<long> > device_set;
    bool waiting_for_readings = false;
 
    RWCollectable* msg = NULL;
    RWWaitStatus status;
 
-   do {        
+   do {
        status = queue_ptr->read(msg, 100);
 
-            
+
        if( status != RW_THR_TIMEOUT && msg != NULL ) {
-           
+
            if( msg->isA() == MSG_PCRETURN ) {
 
                // received a message, reset the timeout
@@ -1152,7 +1150,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
                        }
 
                        device_set.insert( ret_msg->DeviceId() );
-                        
+
                        if( !ret_msg->ExpectMore() ) {
 
                            RWSetIterator req_iter(req_set_copy);
@@ -1160,16 +1158,16 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
                                req_set_copy.remove( req_iter.key() );
                                break;
                            }
-                           
-                           if( req_set_copy.entries() == 0 ) {                               
+
+                           if( req_set_copy.entries() == 0 ) {
                                if( two_way ) {
                                     CtiLockGuard< CtiLogger > guard(dout);
                                     //dout << "Waiting for each device" << endl;
                                     waiting_for_readings = true;
                                 }
-                                else {                               
+                                else {
                                    break;
-                                }   
+                                }
                            }
                        }
                    }
@@ -1180,31 +1178,31 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
                    dout << "Removing id: " << ret_msg->DeviceId() << endl;*/
 
                    if( !ret_msg->ExpectMore() ) {
-                   
+
                        RWCString dev_name;
                        GetDeviceName(ret_msg->DeviceId(),dev_name);
-    
+
                        if( ret_msg->Status() == 0 ) {
-                            
+
                             Tcl_ListObjAppendElement(interp, good_list, Tcl_NewStringObj(dev_name, -1));
                        }
                        else {
                             Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name, -1));
-                       } 
+                       }
                        device_set.erase(ret_msg->DeviceId());
                        //dout << "Device count: " << device_set.size() << endl;
                        if( device_set.size() == 0 ) {
                            break;
-                           
+
                        }
                    }
-               }                
+               }
            }
            else {
                RWCString err("Received unknown message __LINE__, __FILE__");
                WriteOutput(err.data());
-               //received unknown msg                
-           } 
+               //received unknown msg
+           }
 
            delete msg;
            msg = NULL;
@@ -1232,7 +1230,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
         {
             RWCString dev_name;
             GetDeviceName( *iter,dev_name);
-            Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name, -1));    
+            Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name, -1));
         }
    }
 
@@ -1245,7 +1243,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
    if( interrupted ) {
        return TCL_ERROR;
    }
-   else {    
+   else {
        return TCL_OK;
    }
 
@@ -1316,12 +1314,12 @@ static void GetDeviceName(long deviceID, RWCString& name)
 
             if ( rdr() )
             {
-                rdr >> name;                
+                rdr >> name;
             }
         }
     } catch ( RWExternalErr err )
     {
-        dout << "Error retreive device name __LINE__ __FILE__" << endl;        
+        dout << "Error retreive device name __LINE__ __FILE__" << endl;
     }
 }
 
@@ -1330,11 +1328,11 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
     if( !cmd_line.contains("select") ) {
        // cmd_line doesn't specify a select string so lets append
        // this interpreters current select string
-       RWCString select = Tcl_GetVar(interp, SelectedVariable, 0);               
+       RWCString select = Tcl_GetVar(interp, SelectedVariable, 0);
        cmd_line += " ";
        cmd_line += select;
 
-       
+
     }
 
 
@@ -1342,13 +1340,13 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
     size_t end_index;
 
     if( cmd_line.index(".*select[ ]+list[ ]+", &end_index) != RW_NPOS ) {
-                       
+
         int list_len;
         Tcl_Obj* sel_str = Tcl_NewStringObj( cmd_line.data() + end_index, -1 );
         Tcl_ListObjLength(interp, sel_str, &list_len );
 
         cmd_line.replace("select.*","");
-        
+
         if( list_len > 0 ) {
             Tcl_Obj* sel_list;
             Tcl_ListObjIndex(interp, sel_str, 0, &sel_list);
@@ -1377,30 +1375,30 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
     }
     else
     if( cmd_line.index(".*select[ ]+[^ ]+[ ]+", &end_index) != RW_NPOS )   {
-             
-        //PIL likes to see ' around any device, group, etc        
+
+        //PIL likes to see ' around any device, group, etc
         cmd_line.insert(end_index, "'");
-        cmd_line = cmd_line.strip(RWCString::both, ' '); 
+        cmd_line = cmd_line.strip(RWCString::both, ' ');
         cmd_line.append("'");
 
         //strip out the braces
-        while( (index = cmd_line.index("{")) != RW_NPOS ) {            
+        while( (index = cmd_line.index("{")) != RW_NPOS ) {
             cmd_line.remove(index,1);
         }
 
        while( (index = cmd_line.index('}')) != RW_NPOS ) {
             cmd_line.remove(index,1);
         }
-                         
+
         req_set.insert( new CtiRequestMsg( 0, cmd_line, (int) rwThreadId() ) );
     }
 /*
-    if( !(sel_str = cmd_line.match(re_list)).isNull() ) {    
+    if( !(sel_str = cmd_line.match(re_list)).isNull() ) {
         //Found a select list in the command
         //Create a pil request for each in the list
-            
+
         cmd_line.replace(re_select_list,"");
-            
+
         sel_str = sel_str.match(re_list);
         sel_str = sel_str.strip(RWCString::both, '\'');
         sel_str = sel_str.strip(RWCString::both, '\"');
@@ -1408,16 +1406,16 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
         RWCTokenizer next(sel_str);
         RWCString name;
 
-        while( !(name=next()).isNull() ) {                
+        while( !(name=next()).isNull() ) {
             RWCString cmd;
             cmd = cmd_line;
             cmd += " select name '";
             cmd += name;
-            cmd += "\'";            
+            cmd += "\'";
             req_set.insert( new CtiRequestMsg(0, cmd, (int) rwThreadId()));
         }
      }
-     else {           
+     else {
         req_set.insert( new CtiRequestMsg( 0, cmd_line, (int) rwThreadId() ) );
      }    */
 }
