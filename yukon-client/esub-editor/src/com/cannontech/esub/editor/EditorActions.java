@@ -58,12 +58,8 @@ class EditorActions {
 			int r = editor.saveOption();
 
             if(r != JOptionPane.CANCEL_OPTION){
+				editor.newDrawing();
 
-				// Create blank graph by removing all.
-				editor.getLxGraph().removeAll();
-				editor.getLxGraph().setModified(false);
-				editor.setOpenFile(null);
-				//undoEdits.discardAllEdits();
 			}
 		}
 	};
@@ -76,36 +72,8 @@ class EditorActions {
 		* user to save current file.
 		*/
 		public void processAction(ActionEvent e) {
-
-			// Give an option to save the current graph if modified.
-			int r = editor.saveOption();
-			if(r != JOptionPane.CANCEL_OPTION){
-
-				JFileChooser fileChooser = com.cannontech.esub.util.Util.getDrawingJFileChooser();
-				fileChooser.setApproveButtonText("Open");
-				
-				String currentDir = 
-					EditorPrefs.getPreferences().getWorkingDir();
-							
-				fileChooser.setCurrentDirectory(new File(currentDir));
-				int returnVal = fileChooser.showOpenDialog(null);
-
-				if(returnVal == JFileChooser.APPROVE_OPTION) {
-
-					// Remove old components.
-					String newDrawing = fileChooser.getSelectedFile().getPath();										
-					editor.loadDrawing(newDrawing);	
-					
-					try {
-					EditorPrefs.getPreferences().setWorkingDir(
-						fileChooser.getSelectedFile().getParentFile().getCanonicalPath());				
-					}
-					catch(IOException ioe) {
-						ioe.printStackTrace();
-					}			
-
-				}	
-				}
+			editor.openDrawing();
+			
 	    }
 	};
 
@@ -114,16 +82,16 @@ class EditorActions {
 		public void processAction(ActionEvent evt) {
 			String openFile = editor.getOpenFile();
 			if( openFile == null )
-				editor.saveFile();
+				editor.saveAsDrawing();
 		 	else
-		 		editor.getLxGraph().save(openFile);
+		 		editor.saveDrawing();
 		}
 	};
 
 	private final LxAbstractAction saveDrawingAsAction = 
 		new LxAbstractAction(SAVE_AS_DRAWING, "Save As...", "Save the current drawing", null, true) {
 		public void processAction(ActionEvent evt) {
-			editor.saveFile();
+			editor.saveAsDrawing();
 		}
 	};
 
@@ -146,7 +114,7 @@ class EditorActions {
 	private final LxAbstractAction deleteElementAction =
 		new LxAbstractAction(DELETE_ELEMENT, "Delete", "Delete", null, true ) {
 			public void processAction(ActionEvent e) {
-				LxGraph graph = editor.getLxGraph();
+				LxGraph graph = editor.getDrawing().getLxGraph();
 				for( int i = 0; i < graph.getSelectedObjectCount(); i++ ) {
 					com.loox.jloox.LxComponent c = graph.getSelectedObject(i);
 					graph.remove(c);
@@ -158,14 +126,14 @@ class EditorActions {
 	private final LxAbstractAction toFrontLayerAction =
 		new LxAbstractAction(TO_FRONT_LAYER, "Send to front", "Send to front", null, true ) {
 			public void processAction(ActionEvent e) {
-				editor.getLxGraph().raiseSelection();
+				editor.getDrawing().getLxGraph().raiseSelection();
 			}
 		};
 
 	private final LxAbstractAction toBackLayerAction =
 		new LxAbstractAction(TO_BACK_LAYER, "Send to back", "Send to back", null, true ) {
 			public void processAction(ActionEvent e) {
-				editor.getLxGraph().lowerSelection();
+				editor.getDrawing().getLxGraph().lowerSelection();
 			}
 		};
 	
@@ -173,9 +141,9 @@ class EditorActions {
 		new LxAbstractAction(MAGNETIC_GRID, "Grid...", "Grid Settings", null, true ) {
 			
 			public void processAction(ActionEvent evt) {
-			LxView view = editor.getLxView();
+			LxView view = editor.getDrawing().getLxView();
 			MagneticGridPanel p = new MagneticGridPanel(view);
-			JOptionPane.showMessageDialog(editor.getLxView(), p, "Magnetic Grid Settings", javax.swing.JOptionPane.PLAIN_MESSAGE, null);
+			JOptionPane.showMessageDialog(view, p, "Magnetic Grid Settings", javax.swing.JOptionPane.PLAIN_MESSAGE, null);
 			}
 		};
 
@@ -195,11 +163,13 @@ class EditorActions {
 	    	
 	    	 com.cannontech.esub.editor.element.StaticImage image = 
 	    	 	new com.cannontech.esub.editor.element.StaticImage();
-	    	 
-	    	 editor.setBehavior(image);
+	    	 	    	 
+			 image.setDrawing(editor.getDrawing());
+			 	    	 	    	 
+	    	 editor.setBehavior(image);	    	 
 			 editor.elementPlacer.setElement(image);
-			 editor.elementPlacer.setIsPlacing(true);
-    		 editor.getLxView().setCursor(new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR)); 
+			 editor.elementPlacer.setIsPlacing(true);			 
+    		 editor.getDrawing().getLxView().setCursor(new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR)); 
     	}
 	};
     
@@ -210,18 +180,20 @@ class EditorActions {
 
 	    	 com.cannontech.esub.editor.element.DynamicText text = 
 	    	 	new com.cannontech.esub.editor.element.DynamicText();
+	    	 	
+	    	 text.setDrawing(editor.getDrawing());
 	    	 
 	    	 editor.setBehavior(text);
 			 editor.elementPlacer.setElement(text);
 			 editor.elementPlacer.setIsPlacing(true);
-    		 editor.getLxView().setCursor(new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR)); 
+    		 editor.getDrawing().getLxView().setCursor(new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR)); 
     	}
 	};
 
     private final LxAbstractAction setDynamicTextColor = new LxAbstractAction(SET_DYNAMIC_TEXT_COLOR,
 	    "Set Color", "Set Color", null, true) {
 		    public void processAction(ActionEvent e) {
-			    Object[] o = editor.getLxGraph().getSelectedObjects();
+			    Object[] o = editor.getDrawing().getLxGraph().getSelectedObjects();
 			    for( int i = 0; i < o.length; i++ ) {
 				    System.out.println(o.getClass());
 			    }
@@ -236,10 +208,12 @@ class EditorActions {
 	    	 com.cannontech.esub.editor.element.StateImage si = 
 	    	 	new com.cannontech.esub.editor.element.StateImage();
 	    	 
+	    	 si.setDrawing(editor.getDrawing());
+	    	  
 	    	 editor.setBehavior(si);
 			 editor.elementPlacer.setElement(si);
 			 editor.elementPlacer.setIsPlacing(true);
-    		 editor.getLxView().setCursor(new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR)); 
+    		 editor.getDrawing().getLxView().setCursor(new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR)); 
     	}
 	};
 
@@ -251,10 +225,12 @@ class EditorActions {
 	    	 com.cannontech.esub.editor.element.StaticText text = 
 	    	 	new com.cannontech.esub.editor.element.StaticText();
 	    	 
+	    	 text.setDrawing(editor.getDrawing());
+	    	 
 	    	 editor.setBehavior(text);
 			 editor.elementPlacer.setElement(text);
 			 editor.elementPlacer.setIsPlacing(true);
-    		 editor.getLxView().setCursor(new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR)); 
+    		 editor.getDrawing().getLxView().setCursor(new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR)); 
     	}
 	};	
     	
@@ -287,10 +263,10 @@ class EditorActions {
 		actionMap.put(STATIC_TEXT, staticTextAction );
 		actionMap.put(SET_DYNAMIC_TEXT_COLOR, setDynamicTextColor);
 
-		LxView v = e.getLxView();
+		LxView v = e.getDrawing().getLxView();
 		
 		LxAbstractAction action = (LxAbstractAction) v.getAction(LxView.CREATE_LINE_ACTION);					
-		action.setIcon(new ImageIcon( Util.loadImage("LineIcon.gif")));
+		action.setIcon(new ImageIcon( Util.findImage("LineIcon.gif")));
 	
 		actionMap.put(CREATE_LINE, action);
 
@@ -299,7 +275,7 @@ class EditorActions {
 //		actionMap.put(CREATE_LINK, action);
 		 
 		action = (LxAbstractAction) v.getAction(LxView.CREATE_RECTANGLE_ACTION); 
-		action.setIcon(new ImageIcon( Util.loadImage("SquareIcon.gif")));	
+		action.setIcon(new ImageIcon( Util.findImage("SquareIcon.gif")));	
 		actionMap.put(CREATE_RECTANGLE, action);
 //		actionMap.put(CREATE_IMAGE, v.getAction(LxView.CREATE_IMAGE_ACTION));
 

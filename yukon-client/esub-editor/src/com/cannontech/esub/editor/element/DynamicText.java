@@ -1,5 +1,6 @@
 package com.cannontech.esub.editor.element;
 
+import com.cannontech.esub.editor.Drawing;
 import com.loox.jloox.*;
 import java.io.*;
 import java.awt.Font;
@@ -10,13 +11,16 @@ import java.awt.Color;
  * Creation date: (12/17/2001 1:44:37 PM)
  * @author: 
  */
-public class DynamicText extends LxAbstractText implements LinkedElement {
+public class DynamicText extends LxAbstractText implements DrawingElement {
 	static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
 	static final Color DEFAULT_COLOR = java.awt.Color.white;
 	static final int INVALID_POINT = -1;	
 
 	private com.cannontech.database.data.lite.LitePoint point;	
+	
+	private Drawing drawing = null;
 	private String linkTo = "";
+	
 /**
  * DynamicText constructor comment.
  */
@@ -184,4 +188,18 @@ public void setPoint(com.cannontech.database.data.lite.LitePoint newPoint) {
 public void setPointID(int newPointID) {
 	point.setPointID(newPointID);
 }
+	/**
+	 * @see com.cannontech.esub.editor.element.DrawingElement#getDrawing()
+	 */
+	public Drawing getDrawing() {
+		return drawing;
+	}
+
+	/**
+	 * @see com.cannontech.esub.editor.element.DrawingElement#setDrawing(Drawing)
+	 */
+	public void setDrawing(Drawing d) {
+		this.drawing = d;
+	}
+
 }

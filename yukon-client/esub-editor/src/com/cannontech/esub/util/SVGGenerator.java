@@ -5,11 +5,12 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 
 import com.cannontech.esub.editor.element.DynamicText;
-import com.cannontech.esub.editor.element.LinkedElement;
+import com.cannontech.esub.editor.element.DrawingElement;
 import com.cannontech.esub.editor.element.StateImage;
 import com.cannontech.esub.editor.element.StaticImage;
 import com.cannontech.esub.editor.element.StaticText;
@@ -52,11 +53,11 @@ public class SVGGenerator {
 		writer.write("<rect width=\"100%\" height=\"100%\" color=\"#000000\" />\n");
 		
 		for( int i = 0; i < c.length; i++ ) {
-			if( c[i] instanceof LinkedElement &&
-				((LinkedElement) c[i]).getLinkTo() != null &&
-				((LinkedElement) c[i]).getLinkTo().length() > 0 ) {
+			if( c[i] instanceof DrawingElement &&
+				((DrawingElement) c[i]).getLinkTo() != null &&
+				((DrawingElement) c[i]).getLinkTo().length() > 0 ) {
 				
-				generateStartLink(writer, (LinkedElement) c[i]);
+				generateStartLink(writer, (DrawingElement) c[i]);
 			}
 			
 			if( c[i] instanceof LxLine ) {
@@ -83,9 +84,9 @@ public class SVGGenerator {
 				generateStateImage(writer, (StateImage) c[i]);
 			}
 			
-			if( c[i] instanceof LinkedElement &&
-				((LinkedElement) c[i]).getLinkTo() != null &&
-				((LinkedElement) c[i]).getLinkTo().length() > 0 ) {
+			if( c[i] instanceof DrawingElement &&
+				((DrawingElement) c[i]).getLinkTo() != null &&
+				((DrawingElement) c[i]).getLinkTo().length() > 0 ) {
 				generateEndLink(writer);
 			}
 		}
@@ -100,7 +101,7 @@ public class SVGGenerator {
 	 * @param elem
 	 * @throws IOException
 	 */
-	private void generateStartLink(Writer writer, LinkedElement elem) throws IOException {		
+	private void generateStartLink(Writer writer, DrawingElement elem) throws IOException {		
 			writer.write("<a xlink:href=\"" + elem.getLinkTo() + "\">\n");
 	}
 	
@@ -195,7 +196,10 @@ public class SVGGenerator {
 		int width = (int) r.getMaxX() - x;
 		int height = (int) r.getMaxY() - y;
 		
-		writer.write("<image id=\"" + img.getName() + "\" xlink:href=\"" + img.getImageName() + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\" />\n");
+	 	String relImage = Util.getRelativePath( new File(img.getDrawing().getFileName()), new File(img.getImageName()));
+	 	relImage = relImage.replace('\\','/');
+	 	
+		writer.write("<image id=\"" + img.getName() + "\" xlink:href=\"" + relImage + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\" />\n");
 	}
 	
 	private void generateStateImage(Writer writer, StateImage img) throws IOException {
@@ -205,7 +209,10 @@ public class SVGGenerator {
 		int width = (int) r.getMaxX() - x;
 		int height = (int) r.getMaxY() - y;
 		
-		writer.write("<image id=\"" + img.getName() + "\" xlink:href=\"" + StateImage.INVALID_STATE_IMAGE_NAME + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\" />\n");
+		String relImage = Util.getRelativePath( new File(img.getDrawing().getFileName()), new File(img.getImage(img.getState())));
+	 	relImage = relImage.replace('\\','/');
+	 	
+		writer.write("<image id=\"" + img.getName() + "\" xlink:href=\"" + relImage + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\" />\n");
 	}
 	
 	/**

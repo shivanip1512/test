@@ -10,7 +10,7 @@ import javax.swing.Timer;
 
 import java.util.*;
 
-import com.cannontech.esub.editor.element.LinkedElement;
+import com.cannontech.esub.editor.element.DrawingElement;
 import com.cannontech.esub.util.ClientSession;
 
 /**
@@ -24,8 +24,8 @@ public class ViewerPanel extends javax.swing.JPanel implements LoginPanelListene
 			System.out.println("view mouselistener");
 			com.loox.jloox.LxComponent c = drawingPanel.getLxView().getLxComponentAt( evt.getX(), evt.getY() );
 
-			if( c != null && c instanceof LinkedElement) {
-				String link = ((LinkedElement) c).getLinkTo().trim();
+			if( c != null && c instanceof DrawingElement) {
+				String link = ((DrawingElement) c).getLinkTo().trim();
 				System.out.println("Link: " + link + " len: " + link.length());
 				if( link != null && link.length() > 0 )
 					showDrawing(link);					

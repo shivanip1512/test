@@ -1,21 +1,23 @@
 package com.cannontech.esub.editor.element;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
-
 import java.awt.Color;
 import java.awt.Font;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import com.loox.jloox.*;
+import com.cannontech.esub.editor.Drawing;
+import com.loox.jloox.LxAbstractText;
+import com.loox.jloox.LxSaveUtils;
 /**
  * Creation date: (1/23/2002 11:36:05 AM)
  * @author: 
  */
-public class StaticText extends LxAbstractText implements LinkedElement {
+public class StaticText extends LxAbstractText implements DrawingElement {
 	static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
 	static final Color DEFAULT_COLOR = java.awt.Color.white;
 	
+	private Drawing drawing;
 	private String linkTo;	
 /**
  * StaticText constructor comment.
@@ -105,4 +107,18 @@ public void setFont(String name, int size) {
 public void setLinkTo(java.lang.String newLinkTo) {
 	linkTo = newLinkTo;
 }
+
+	/**
+	 * @see com.cannontech.esub.editor.element.DrawingElement#getDrawing()
+	 */
+	public Drawing getDrawing() {
+		return drawing;
+	}
+	/**
+	 * @see com.cannontech.esub.editor.element.DrawingElement#setDrawing(Drawing)
+	 */
+	public void setDrawing(Drawing d) {
+		this.drawing = d;
+	}
+
 }

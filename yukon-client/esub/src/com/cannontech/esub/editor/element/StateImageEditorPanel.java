@@ -1,8 +1,11 @@
 package com.cannontech.esub.editor.element;
 
+import java.io.File;
 import javax.swing.event.*;
 
 import com.cannontech.common.gui.util.*;
+import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.util.Util;
 
 /**
  * Creation date: (1/14/2002 3:37:58 PM)
@@ -303,8 +306,10 @@ public Object getValue(Object o) {
 	String[] states = getStateImageTableModel().getStates();
 	stateImage.setStates(states);
 
-	for( int i = 0; i < states.length; i++ ) {		
-		stateImage.setImage(states[i], getStateImageTableModel().getImage(states[i]));
+	for( int i = 0; i < states.length; i++ ) {	
+		String image = 	getStateImageTableModel().getImage(states[i]);
+//		String imageRel = Util.getRelativePath( stateImage.getDrawing(), image);			
+		stateImage.setImage(states[i], image);		
 	}
 
 	stateImage.setState(states[0]);
@@ -358,11 +363,12 @@ private void initialize() {
 
 			//must be a image column
 			if( col == 1 ) {
-				javax.swing.JFileChooser fc = com.cannontech.esub.util.ImageChooser.getInstance();
+				javax.swing.JFileChooser fc = com.cannontech.esub.util.ImageChooser.getInstance();	
+				//fc.setCurrentDirectory( new File(stateImage.getDrawing().getFileName()).getParentFile());			
 				int returnVal = fc.showDialog(StateImageEditorPanel.this, "Attach");				
                 if (returnVal == javax.swing.JFileChooser.APPROVE_OPTION) {
                     java.io.File file = fc.getSelectedFile();
-                    String img = file.getName();
+                    String img = file.getPath();
                     getStateImageTableModel().setValueAt(img, row, col);
                     getStatusImageTable().tableChanged(new TableModelEvent(getStateImageTableModel()));
                 } 
@@ -436,4 +442,5 @@ public void valueChanged(TreeSelectionEvent evt) {
 		
 	fireInputUpdate();
 }
+
 }

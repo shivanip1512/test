@@ -3,10 +3,12 @@ package com.cannontech.esub.editor.element;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import com.loox.jloox.*;
 
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.util.Util;
 
 /**
@@ -14,7 +16,7 @@ import com.cannontech.esub.util.Util;
  * Creation date: (1/8/2002 1:47:20 PM)
  * @author: Aaron Lauinger
  */
-public class StateImage extends LxAbstractImage implements LinkedElement {
+public class StateImage extends LxAbstractImage implements DrawingElement {
 	public static final String INVALID_STATE_IMAGE_NAME = "X.gif";
 	private static final int INVALID_POINT = -1;
 
@@ -23,6 +25,8 @@ public class StateImage extends LxAbstractImage implements LinkedElement {
 	private String[] states;
 	private String[] images;
 	private String state;
+	
+	private Drawing drawing;
 	private String linkTo;
 /**
  * StateImage constructor comment.
@@ -88,7 +92,7 @@ public String[] getStates() {
  * Creation date: (1/8/2002 2:07:06 PM)
  */
 private void initialize() {
-	setImage( Util.loadImage(INVALID_STATE_IMAGE_NAME));
+	setImage( Util.findImage(INVALID_STATE_IMAGE_NAME));
 	point = new com.cannontech.database.data.lite.LitePoint(INVALID_POINT);
 }
 /**
@@ -191,9 +195,10 @@ public void setState(java.lang.String newState) {
 	// find the correct image for the new state
 	for( int i = 0; i < states.length; i++ ) {
 		if( states[i].equalsIgnoreCase(newState) ) {	
-			System.out.println("Looking for image: " + images[i]);
-			setImage( Util.loadImage(images[i]));	
-			break;
+			System.out.println("Looking for image: " + images[i]);			
+			setImage(Util.loadImage(images[i]));	
+
+			break; 
 		}
 	}
 		
@@ -207,4 +212,18 @@ public void setStates(String[] states) {
 	this.images = new String[states.length];
 	this.state = states[0];
 }
+
+	/**
+	 * @see com.cannontech.esub.editor.element.DrawingElement#getDrawing()
+	 */
+	public Drawing getDrawing() {
+		return drawing;
+	}
+	/**
+	 * @see com.cannontech.esub.editor.element.DrawingElement#setDrawing(Drawing)
+	 */
+	public void setDrawing(Drawing d) {
+		this.drawing = d;
+	}
+
 }

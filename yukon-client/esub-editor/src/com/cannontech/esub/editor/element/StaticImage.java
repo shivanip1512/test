@@ -4,17 +4,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
+import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.util.Util;
 import com.loox.jloox.*;
 /**
  * Creation date: (1/22/2002 10:15:09 AM)
  * @author: 
  */
-public class StaticImage extends LxAbstractImage implements LinkedElement {
+public class StaticImage extends LxAbstractImage implements DrawingElement {
 
 	public static final String INVALID_IMAGE_NAME = "X.gif";
 	
 	private String imageName;
+	private Drawing drawing;
 	private String linkTo;
 /**
  * StaticImage constructor comment.
@@ -41,7 +43,7 @@ public java.lang.String getLinkTo() {
  * Creation date: (1/22/2002 10:20:30 AM)
  */
 private void initialize() {
-	setImageName(INVALID_IMAGE_NAME);	
+	setImage( Util.findImage(INVALID_IMAGE_NAME));	
 }
 /**
  * Creation date: (12/17/2001 3:50:28 PM)
@@ -85,4 +87,17 @@ public void setImageName(java.lang.String newImageName) {
 public void setLinkTo(java.lang.String newLinkTo) {
 	linkTo = newLinkTo;
 }
+	/**
+	 * @see com.cannontech.esub.editor.element.DrawingElement#getDrawing()
+	 */
+	public Drawing getDrawing() {
+		return drawing;
+	}
+	/**
+	 * @see com.cannontech.esub.editor.element.DrawingElement#setDrawing(Drawing)
+	 */
+	public void setDrawing(Drawing d) {
+		this.drawing = d;
+	}
+
 }

@@ -1,0 +1,2 @@
+java.io.File f = new java.io.File("c:/temp/happy.svg");
+System.out.println(f.getParent());
