@@ -5,7 +5,6 @@
 	<projects>
 		<project>common</project>
 		<project>resource</project>
-		<project>yukonappserver</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
