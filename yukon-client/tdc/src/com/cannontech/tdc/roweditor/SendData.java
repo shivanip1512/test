@@ -148,7 +148,7 @@ private void initialize()
 		
 		try
 		{
-			connection.connect();
+			connection.connectWithoutWait();
 		}
 		catch( java.io.IOException e )
 		{
