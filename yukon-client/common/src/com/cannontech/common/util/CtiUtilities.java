@@ -191,7 +191,7 @@ public static Object copyObject(Object s) throws java.io.IOException
 	   return result ;
 	}
 	else
-		throw new java.io.NotSerializableException("The object '" + s.getClass().getName() + "' does not implement java.io.Serializable" );
+		throw new java.io.NotSerializableException("The object '" + s + "' does not implement java.io.Serializable" );
 }
 
 
