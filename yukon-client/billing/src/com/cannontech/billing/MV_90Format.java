@@ -154,7 +154,7 @@ public boolean retrieveBillingData(String dbAlias)
 					Date tsDate = new Date(ts.getTime());
 					
 					inValidTimestamp:
-					if( lastTimeStamp.compareTo(ts) == 0)
+					if( lastTimeStamp.compareTo((Object)ts) == 0)
 					{
 						if( isKW_demand(ptOffset) )
 						{
