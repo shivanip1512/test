@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiProperties;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
