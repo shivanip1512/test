@@ -351,8 +351,6 @@ public class Editor extends JPanel {
 			CTILogger.info("Loading " + file);
 			editor.loadDrawing(file);
 		}
-		
-		System.
 	}
 	/**
 	 * Creation date: (12/12/2001 3:29:49 PM)
