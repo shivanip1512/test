@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_sched.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:12 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/08 22:16:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -156,6 +156,12 @@ public:
     // For RW Streaming
     virtual void saveGuts(RWvostream &aStream) const;
     virtual void restoreGuts(RWvistream& aStream);
+
+
+//debug
+    bool checkSchedule() const;
+    bool checkField(const string& fld, const string& msg) const;
+
 protected:
 
     RWTime _current_start_time;
