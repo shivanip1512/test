@@ -16,6 +16,7 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.esub.util.UpdateUtil;
 import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Command;
@@ -68,6 +69,11 @@ public class ControlServlet extends HttpServlet {
 		}
 		catch(NumberFormatException nfe) {
 			out.write("error");		
+			return;
+		}
+		
+		if(!UpdateUtil.isControllable(id)) {
+			out.write("error");
 			return;
 		}
 		
