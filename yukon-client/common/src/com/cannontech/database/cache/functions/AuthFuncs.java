@@ -115,7 +115,7 @@ public class AuthFuncs {
 			Iterator i = cache.getAllYukonRoles().iterator();
 			while(i.hasNext()) {
 				LiteYukonRole r = (LiteYukonRole) i.next();
-				if(r.getCategory().equals(category)) {
+				if(r.getCategory().equalsIgnoreCase(category)) {
 					retList.add(r);
 				}
 			}
