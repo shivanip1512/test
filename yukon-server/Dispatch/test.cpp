@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/01/02 16:57:27 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/01/05 15:38:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 BOOL           bQuit = FALSE;
 
-int tagProcessInbounds(CtiMessage *&pMsg, int desiredInstance);
+int tagProcessInbounds(CtiMessage *&pMsg, int clientId);
 void tagExecute(int argc, char **argv);
 void tagHelp();
 void defaultExecute(int argc, char **argv);
@@ -302,7 +302,7 @@ void tagExecute(int argc, char **argv)
             instance = tagProcessInbounds( pMsg, 21 );
             delete pMsg;
 
-            if(instance == 21)
+            if(instance != 0)
             {
                 break;
             }
@@ -322,10 +322,11 @@ void tagExecute(int argc, char **argv)
             pTag->setTagID(1);
             pTag->setPointID(1);
             pTag->setAction(CtiTagMsg::UpdateAction);
-            pTag->setDescriptionStr(RWTime().asString() + " TEST");
+            pTag->setDescriptionStr(RWTime().asString() + " TEST UPDATE");
             pTag->setSource("Corey's Tester");
             pTag->setClientMsgId(22);
             pTag->setUser("Harley's Ghost");
+            pTag->setReferenceStr("What is a reference string");
 
             pTag->dump();
             Connect.WriteConnQue(pTag);
@@ -335,7 +336,6 @@ void tagExecute(int argc, char **argv)
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "  TAG UPDATED!" << endl;
             }
-            Sleep(30000);
 
             // Remove
 
@@ -343,6 +343,8 @@ void tagExecute(int argc, char **argv)
             pTag->setInstanceID(instance);
             pTag->setPointID(1);
             pTag->setAction(CtiTagMsg::RemoveAction);
+            pTag->setDescriptionStr(RWTime().asString() + " TEST REMOVE");
+            pTag->setReferenceStr("This string is a reference string");
             pTag->dump();
             Connect.WriteConnQue(pTag);
             {
@@ -663,7 +665,7 @@ void defaultExecute(int argc, char **argv)
 }
 
 
-int tagProcessInbounds(CtiMessage *&pMsg, int desiredInstance)
+int tagProcessInbounds(CtiMessage *&pMsg, int clientId)
 {
     int instance = 0;
     CtiTagMsg *pTag;
@@ -674,15 +676,9 @@ int tagProcessInbounds(CtiMessage *&pMsg, int desiredInstance)
     {
         pTag = (CtiTagMsg*)pMsg;
 
-        if(pTag->getClientMsgId() == desiredInstance)
+        if(pTag->getClientMsgId() == clientId)
         {
             instance = pTag->getInstanceID();
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Instance " << instance << endl;
-            }
         }
     }
     else if(pMsg->isA() == MSG_MULTI)
@@ -694,8 +690,8 @@ int tagProcessInbounds(CtiMessage *&pMsg, int desiredInstance)
 
         for(;NULL != (pMyMsg = (CtiMessage*)itr());)
         {
-            instance = tagProcessInbounds(pMyMsg, desiredInstance);
-            if(instance == desiredInstance)
+            instance = tagProcessInbounds(pMyMsg, clientId);
+            if(instance == clientId)
             {
                 break;
             }

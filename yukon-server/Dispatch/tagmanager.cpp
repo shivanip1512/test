@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/01/02 16:57:27 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/01/05 15:38:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -422,10 +422,26 @@ bool CtiTagManager::removeInstance(int instance, CtiTagMsg &tag)
         TagMgrMap_t::value_type vt = *itr;
         CtiTagMsg *pTag = vt.second;
 
-        tag.setAction( CtiTagMsg::RemoveAction );
-
         pTag->setAction( CtiTagMsg::RemoveAction );
         pTag->setTagTime( tag.getTagTime() );
+
+        if(!tag.getUser().isNull())
+        {
+            pTag->setUser(tag.getUser());
+        }
+        if(!tag.getDescriptionStr().isNull())
+        {
+            pTag->setDescriptionStr(tag.getDescriptionStr());
+        }
+        if(!tag.getReferenceStr().isNull())
+        {
+            pTag->setReferenceStr(tag.getReferenceStr());
+        }
+        if(!tag.getTaggedForStr().isNull())
+        {
+            pTag->setTaggedForStr(tag.getTaggedForStr());
+        }
+
         queueTagLogEntry(*pTag);
 
         if(pTag) delete pTag;
