@@ -70,6 +70,10 @@ private:
     void SendAllSubstationBuses();
     void ReturnCapToOriginalFeeder();
     void ResetDailyOperations();
+    void WaiveSubstationBus();
+    void UnwaiveSubstationBus();
+    void WaiveFeeder();
+    void UnwaiveFeeder();
 
     CtiCCCommand* _command;
 };

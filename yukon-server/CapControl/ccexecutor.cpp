@@ -88,6 +88,22 @@ void CtiCCCommandExecutor::Execute()
         ResetDailyOperations();
         break;
 
+    case CtiCCCommand::WAIVE_SUBSTATION_BUS:
+        WaiveSubstationBus();
+        break;
+
+    case CtiCCCommand::UNWAIVE_SUBSTATION_BUS:
+        UnwaiveSubstationBus();
+        break;
+
+    case CtiCCCommand::WAIVE_FEEDER:
+        WaiveFeeder();
+        break;
+
+    case CtiCCCommand::UNWAIVE_FEEDER:
+        UnwaiveFeeder();
+        break;
+
     default:
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -760,7 +776,8 @@ void CtiCCCommandExecutor::ConfirmOpen()
                     else if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
                     {
                         if( savedFeederRecentlyControlledFlag ||
-                            ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMinResponseTime()/_SEND_TRIES)) >= currentFeeder->getLastOperationTime().seconds()) )
+                            ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/_SEND_TRIES)) >= currentFeeder->getLastOperationTime().seconds()) ||
+                            ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/(currentSubstationBus->getControlSendRetries()+1))) >= currentFeeder->getLastOperationTime().seconds()) )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -774,7 +791,8 @@ void CtiCCCommandExecutor::ConfirmOpen()
                              !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
                     {
                         if( savedBusRecentlyControlledFlag ||
-                            ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getMinResponseTime()/_SEND_TRIES)) >= currentSubstationBus->getLastOperationTime().seconds()) )
+                            ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/_SEND_TRIES)) >= currentSubstationBus->getLastOperationTime().seconds()) ||
+                            ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/(currentSubstationBus->getControlSendRetries()+1))) >= currentSubstationBus->getLastOperationTime().seconds()) )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -929,7 +947,8 @@ void CtiCCCommandExecutor::ConfirmClose()
                     else if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
                     {
                         if( savedFeederRecentlyControlledFlag ||
-                            ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMinResponseTime()/_SEND_TRIES)) >= currentFeeder->getLastOperationTime().seconds()) )
+                            ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/_SEND_TRIES)) >= currentFeeder->getLastOperationTime().seconds()) ||
+                            ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/(currentSubstationBus->getControlSendRetries()+1))) >= currentFeeder->getLastOperationTime().seconds()) )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -943,7 +962,8 @@ void CtiCCCommandExecutor::ConfirmClose()
                              !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
                     {
                         if( savedBusRecentlyControlledFlag ||
-                            ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getMinResponseTime()/_SEND_TRIES)) >= currentSubstationBus->getLastOperationTime().seconds()) )
+                            ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/_SEND_TRIES)) >= currentSubstationBus->getLastOperationTime().seconds()) ||
+                            ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/(currentSubstationBus->getControlSendRetries()+1))) >= currentSubstationBus->getLastOperationTime().seconds()) )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -1346,6 +1366,126 @@ void CtiCCCommandExecutor::ResetDailyOperations()
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << "Cannot find PAO Id: " << paoId << " in ResetDailyOperations() in: " << __FILE__ << " at: " << __LINE__ << endl;
+    }
+}
+
+/*---------------------------------------------------------------------------
+    WaiveSubstationBus
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::WaiveSubstationBus()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG subID = _command->getId();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+
+    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    {
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        if( subID == currentSubstationBus->getPAOId() )
+        {
+            currentSubstationBus->setWaiveControlFlag(TRUE);
+            currentSubstationBus->setBusUpdatedFlag(TRUE);
+            RWCString text = RWCString("Substation Bus Waived");
+            RWCString additional = RWCString("Bus: ");
+            additional += currentSubstationBus->getPAOName();
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+            break;
+        }
+    }
+}
+
+/*---------------------------------------------------------------------------
+    EnableSubstationBus
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::UnwaiveSubstationBus()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG subID = _command->getId();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+
+    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    {
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        if( subID == currentSubstationBus->getPAOId() )
+        {
+            currentSubstationBus->setWaiveControlFlag(FALSE);
+            currentSubstationBus->setBusUpdatedFlag(TRUE);
+            RWCString text = RWCString("Substation Bus Unwaived");
+            RWCString additional = RWCString("Bus: ");
+            additional += currentSubstationBus->getPAOName();
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+            break;
+        }
+    }
+}
+
+/*---------------------------------------------------------------------------
+    WaiveFeeder
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::WaiveFeeder()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG feederID = _command->getId();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+
+    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    {
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+
+        for(LONG j=0;j<ccFeeders.entries();j++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+            if( feederID == currentFeeder->getPAOId() )
+            {
+                currentFeeder->setWaiveControlFlag(TRUE);
+                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                RWCString text = RWCString("Feeder Waived");
+                RWCString additional = RWCString("Feeder: ");
+                additional += currentFeeder->getPAOName();
+                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                break;
+            }
+        }
+    }
+}
+
+/*---------------------------------------------------------------------------
+    EnableFeeder
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::UnwaiveFeeder()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG feederID = _command->getId();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+
+    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    {
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+
+        for(LONG j=0;j<ccFeeders.entries();j++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+            if( feederID == currentFeeder->getPAOId() )
+            {
+                currentFeeder->setWaiveControlFlag(FALSE);
+                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                RWCString text = RWCString("Feeder Unwaived");
+                RWCString additional = RWCString("Feeder: ");
+                additional += currentFeeder->getPAOName();
+                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                break;
+            }
+        }
     }
 }
 
