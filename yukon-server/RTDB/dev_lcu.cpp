@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/05/12 17:07:54 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/08/10 16:52:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1183,7 +1183,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(INMESS *InMessage)
                     itemp *= 10;
                     itemp += (InMessage->Buffer.InMessage[offset]) & 0x0f;
 
-                    PValue = pNum->computeValueForUOM( (DOUBLE) (itemp - 500) );
+                    PValue = pNum->computeValueForUOM( (DOUBLE) (itemp - gConfigParms.getValueAsInt("LCUT3026_ANALOG_SKEW", 500)) );
 
                     resultString = getName() + " / " + PointRecord->getName() + " = " + CtiNumStr(PValue);
 
