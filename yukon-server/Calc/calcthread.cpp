@@ -453,9 +453,9 @@ BOOL CtiCalculateThread::isAPeriodicCalcPointID(const long aPointID)
 
     CtiHashKey recalcKey(aPointID);
     
-    calcPoint = (CtiCalc *)(_periodicPoints[&recalcKey]);
+    calcPoint = (CtiCalc *)(_periodicPoints.find(&recalcKey));
 
-    if (calcPoint != 0)
+    if (calcPoint != rwnil)
     {
         foundPoint = TRUE;
     }
@@ -473,9 +473,9 @@ BOOL CtiCalculateThread::isAnOnUpdateCalcPointID(const long aPointID)
 
     CtiHashKey recalcKey(aPointID);
     
-    calcPoint = (CtiCalc *)(_onUpdatePoints[&recalcKey]);
+    calcPoint = (CtiCalc *)(_onUpdatePoints.find(&recalcKey));
 
-    if (calcPoint != 0)
+    if (calcPoint != rwnil)
     {
         foundPoint = TRUE;
     }
