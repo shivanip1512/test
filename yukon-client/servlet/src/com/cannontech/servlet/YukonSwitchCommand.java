@@ -104,6 +104,14 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 	{
 		command.append("control close");		
 	}
+	else if(function.equals("ovenable")) 
+	{
+		command.append("putstatus ovuv enable");
+	}
+	else if(function.equals("ovdisable"))
+	{
+		command.append("putstatus ovuv disable");
+	}
 	else  // unknown function
 	{
 		failed = true;
