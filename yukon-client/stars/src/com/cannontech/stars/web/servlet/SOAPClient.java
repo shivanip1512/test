@@ -323,7 +323,7 @@ public class SOAPClient extends HttpServlet {
 			clientAction = new ProgramOptOutAction();
 			SOAPMessage msg = clientAction.build( req, session );
 			if (msg == null) {
-				resp.sendRedirect( req.getRequestURI() );
+				resp.sendRedirect( errorURL );
 				return;
 			}
 			
@@ -347,7 +347,7 @@ public class SOAPClient extends HttpServlet {
 				SendOptOutNotificationAction action2 = new SendOptOutNotificationAction();
 				SOAPMessage msg2 = action2.build( req, session );
 				if (msg2 == null) {
-					resp.sendRedirect( req.getRequestURI() );
+					resp.sendRedirect( errorURL );
 					return;
 				}
 				
@@ -359,7 +359,7 @@ public class SOAPClient extends HttpServlet {
 			clientAction = new SendOptOutNotificationAction();
 			SOAPMessage msg = clientAction.build( req, session );
 			if (msg == null) {
-				resp.sendRedirect( req.getRequestURI() );
+				resp.sendRedirect( errorURL );
 				return;
 			}
 			
