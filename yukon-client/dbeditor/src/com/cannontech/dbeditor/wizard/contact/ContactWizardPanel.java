@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.wizard.contact;
 
+import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.dbeditor.wizard.customer.AddressPanel;
 
 /**
@@ -7,7 +8,7 @@ import com.cannontech.dbeditor.wizard.customer.AddressPanel;
  * Creation date: (11/22/00 12:18:12 PM)
  * @author: 
  */
-public class ContactWizardPanel extends com.cannontech.common.wizard.EditorlessWizardPanel
+public class ContactWizardPanel extends WizardPanel
 {
 	private ContactPanel contactPanel;
 	private AddressPanel addressPanel;

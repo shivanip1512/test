@@ -2478,7 +2478,7 @@ public void selectionPerformed(WizardPanelEvent event)
 			//getTreeViewPanel().refresh();
 
 			//Bring the editor up for the newly created Object
-			if (!(event.getSource() instanceof com.cannontech.common.wizard.EditorlessWizardPanel) && successfullInsertion)
+			if (successfullInsertion)
 			{
 				getTreeViewPanel().selectObject(newItem);
 			}
