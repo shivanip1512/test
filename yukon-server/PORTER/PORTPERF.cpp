@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/07/18 16:22:50 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/08/05 19:15:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -739,6 +739,8 @@ VOID PerfUpdateThread (PVOID Arg)
 
             Sleep(1000);                // Make sure we don't get a runaway.
         }
+
+        statisticsRecord();
     }
     catch(...)
     {
@@ -923,11 +925,30 @@ void statisticsRecord()
 
     try
     {
+#ifdef OLD_WAY
         for(dstatitr = gDeviceStatSet.begin(); dstatitr != gDeviceStatSet.end(); dstatitr++)
         {
             CtiStatistics &dStats = *dstatitr;
             dStats.markForUpdate();
         }
+#else
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+
+        if(conn.isValid())
+        {
+            conn.beginTransaction();
+            for(dstatitr = gDeviceStatSet.begin(); dstatitr != gDeviceStatSet.end(); dstatitr++)
+            {
+                CtiStatistics &dStats = *dstatitr;
+                if(dStats.isUpdatable())
+                {
+                    dStats.Update(conn);
+                }
+            }
+            conn.commitTransaction();
+        }
+#endif
     }
     catch(...)
     {

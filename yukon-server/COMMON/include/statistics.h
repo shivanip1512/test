@@ -13,8 +13,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/18 16:24:03 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/08/05 19:15:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,6 +84,7 @@ public:
 
     CtiStatistics& operator=(const CtiStatistics& aRef);
 
+    bool isUpdatable();
     void markForUpdate();
     void incrementRequest(const RWTime &stattime);
     void decrementRequest(const RWTime &stattime);

@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/06/18 16:24:03 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/08/05 19:15:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -145,6 +145,7 @@ void CtiStatistics::incrementCompletion(const RWTime &stattime, int CompletionSt
 
     verifyThresholds();
 
+#ifdef OLD_WAY
     if(_updateOnNextCompletion)
     {
         if( Update() == RWDBStatus::ok )
@@ -152,6 +153,7 @@ void CtiStatistics::incrementCompletion(const RWTime &stattime, int CompletionSt
             _updateOnNextCompletion = false;
         }
     }
+#endif
 }
 
 void CtiStatistics::incrementFail(const RWTime &stattime, CtiStatisticsCounters_t failtype)
@@ -835,3 +837,9 @@ void CtiStatistics::markForUpdate()
 {
     _updateOnNextCompletion = true;
 }
+
+bool CtiStatistics::isUpdatable()
+{
+    return _updateOnNextCompletion;
+}
+
