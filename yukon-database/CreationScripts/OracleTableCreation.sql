@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i2                           */
-/* Created on:     4/1/2005 12:20:04 PM                         */
+/* Created on:     4/5/2005 10:16:47 AM                         */
 /*==============================================================*/
 
 
@@ -1187,7 +1187,10 @@ alter table DEVICESCANRATE
 /*==============================================================*/
 create table DEVICETAPPAGINGSETTINGS  (
    DEVICEID             NUMBER                          not null,
-   PAGERNUMBER          VARCHAR2(20)                    not null
+   PAGERNUMBER          VARCHAR2(20)                    not null,
+   Sender               VARCHAR2(64)                    not null,
+   SecurityCode         VARCHAR2(64)                    not null,
+   POSTPath             VARCHAR2(64)                    not null
 );
 
 alter table DEVICETAPPAGINGSETTINGS
@@ -4820,7 +4823,7 @@ create table YukonImage  (
    ImageID              NUMBER                          not null,
    ImageCategory        VARCHAR2(20)                    not null,
    ImageName            VARCHAR2(80)                    not null,
-   ImageValue           LONG RAW
+   ImageValue           VARCHAR2(1)
 );
 
 insert into YukonImage values( 0, '(none)', '(none)', null );

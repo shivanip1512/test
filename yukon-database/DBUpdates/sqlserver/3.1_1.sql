@@ -80,4 +80,4 @@ insert into YukonGroupRole values(-91,-1,-4,-1306,'(none)');
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.1', 'Ryan', '1-APR-2005', 'Manual version insert done', 3);

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     4/1/2005 9:14:18 AM                          */
+/* Created on:     4/5/2005 10:15:16 AM                         */
 /*==============================================================*/
 
 
@@ -2741,7 +2741,10 @@ go
 /*==============================================================*/
 create table DEVICETAPPAGINGSETTINGS (
    DEVICEID             numeric              not null,
-   PAGERNUMBER          varchar(20)          not null
+   PAGERNUMBER          varchar(20)          not null,
+   Sender               varchar(64)          not null,
+   SecurityCode         varchar(64)          not null,
+   POSTPath             varchar(64)          not null
 )
 go
 
@@ -6948,7 +6951,7 @@ create table YukonImage (
    ImageID              numeric              not null,
    ImageCategory        varchar(20)          not null,
    ImageName            varchar(80)          not null,
-   ImageValue           image                null
+   ImageValue           varchar(1)           null
 )
 go
 
