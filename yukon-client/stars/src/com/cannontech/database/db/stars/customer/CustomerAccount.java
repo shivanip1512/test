@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -184,12 +186,7 @@ public class CustomerAccount extends DBPersistent {
     }
     
     public static int[] searchBySerialNumber(String serialNo, int energyCompanyID) {
-    	java.sql.Connection conn = null;
-    	
     	try {
-    		conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-    				com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-    		
 			com.cannontech.database.db.stars.hardware.LMHardwareBase[] hardwares =
 					com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber( serialNo, energyCompanyID );
 			if (hardwares.length == 0) return new int[0];
@@ -200,27 +197,17 @@ public class CustomerAccount extends DBPersistent {
 				sql += " OR inv.InventoryID = " + hardwares[i].getInventoryID();
 			sql += ")";
 			
-			java.sql.Statement stmt = conn.createStatement();
-			java.sql.ResultSet rset = stmt.executeQuery( sql );
+			SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+			stmt.execute();
 			
-			ArrayList acctIDList = new ArrayList();
-			while (rset.next())
-				acctIDList.add( new Integer(rset.getInt(1)) );
-			
-			int[] accountIDs = new int[ acctIDList.size() ];
-			for (int i = 0; i < accountIDs.length; i++)
-				accountIDs[i] = ((Integer) acctIDList.get(i)).intValue();
+			int[] accountIDs = new int[ stmt.getRowCount() ];
+			for (int i = 0; i < stmt.getRowCount(); i++)
+				accountIDs[i] = ((java.math.BigDecimal)stmt.getRow(i)[0]).intValue();
 			
 			return accountIDs;
     	}
-    	catch (java.sql.SQLException e) {
+    	catch (Exception e) {
     		CTILogger.error( e.getMessage(), e );
-    	}
-    	finally {
-    		try {
-    			if (conn != null) conn.close();
-    		}
-    		catch (java.sql.SQLException e) {}
     	}
     	
 		return null;
@@ -229,8 +216,7 @@ public class CustomerAccount extends DBPersistent {
     public static CustomerAccount getCustomerAccount(Integer accountID) {
         String sql = "SELECT AccountID, AccountSiteID, AccountNumber, CustomerID, BillingAddressID, AccountNotes "
         		   + "FROM " + TABLE_NAME + " WHERE AccountID = " + accountID;
-        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-        		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+        SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 
         try
         {
@@ -265,8 +251,7 @@ public class CustomerAccount extends DBPersistent {
 		String sql = "SELECT Contact.ContactID FROM Contact, Address "
 				+ "WHERE UPPER(Address.LocationAddress1) LIKE '%" + addr1.toUpperCase() + "%' "
 				+ "AND Contact.AddressID = Address.AddressID";
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 		
 		try {
 			stmt.execute();
