@@ -28,7 +28,7 @@
   <table width="740" border="0" cellspacing="0" cellpadding="10">
     <tr> 
       <td width="350" valign="top"> 
-        <p align="center"><a href="UserDemos/ConsumerSwitch/login.jsp"><img src="demos/CESswitch.gif" width="346" height="24" border="0"></a></p>
+        <p align="center"><a href="user/ConsumerSwitch/login.jsp"><img src="demos/CESswitch.gif" width="346" height="24" border="0"></a></p>
         <table width="290" border="0" cellspacing="0" cellpadding="0" align="center">
           <tr valign="top"> 
             <td width="160"> 
@@ -38,17 +38,17 @@
               <p>&nbsp;</p>
             </td>
             <td width="130"> 
-              <p align="right"><a href="UserDemos/ConsumerSwitch/login.jsp"><img src="demos/CESswitchImage.gif" width="126" height="110" border="0"></a></p>
+              <p align="right"><a href="user/ConsumerSwitch/login.jsp"><img src="demos/CESswitchImage.gif" width="126" height="110" border="0"></a></p>
             </td>
           </tr>
         </table>
       </td>
       <td width="350" valign="top"> 
-        <p align="center"><a href="UserDemos/ConsumerStat/login.jsp"><img src="demos/CESstat.gif" width="327" height="24" border="0"></a></p>
+        <p align="center"><a href="user/ConsumerStat/login.jsp"><img src="demos/CESstat.gif" width="327" height="24" border="0"></a></p>
         <table width="290" border="0" cellspacing="0" cellpadding="0" align="center">
           <tr valign="top"> 
             <td width="130"> 
-              <p align="left"><a href="UserDemos/ConsumerStat/login.jsp"><img src="demos/CESstatImage.gif" width="126" height="110" border="0"></a></p>
+              <p align="left"><a href="user/ConsumerStat/login.jsp"><img src="demos/CESstatImage.gif" width="126" height="110" border="0"></a></p>
             </td>
             <td width="160"> 
               <p><font face="Arial, Helvetica, sans-serif" size="1">Residential 
@@ -81,7 +81,7 @@
           <input name="PASSWORD" value="cti2" type="hidden">
           <input name="ACTION" value="LOGIN" type="hidden">
           <input name="DATABASEALIAS" value="yukon" type="hidden">
-          <input name="REDIRECT" type="hidden" value="/UserDemos/CILC/user_trending.jsp">
+          <input name="REDIRECT" type="hidden" value="/user/CILC/user_trending.jsp">
         </form>
       </td>
       <td width="350" valign="top"> 
@@ -105,7 +105,7 @@
           <input name="USERNAME" value="op1" type="hidden">
           <input name="PASSWORD" value="op1" type="hidden">
           <input name="DATABASEALIAS" value="yukon" type="hidden">
-		  <input name="REDIRECT" type="hidden" value="/OperatorDemos/Operations.jsp">
+		  <input name="REDIRECT" type="hidden" value="/operator/Operations.jsp">
           <input name="REFERRER" type="hidden" value="/login.jsp">
         </form>
       </td>

@@ -85,7 +85,7 @@ function setScheduleChanged() {
 
 function switchSettings(day, mode) {
 	var form = document.form1;
-	form.REDIRECT.value = "/UserDemos/ConsumerStat/stat/ThermSchedule.jsp?day=" + day + "&mode=" + mode;
+	form.REDIRECT.value = "/user/ConsumerStat/stat/ThermSchedule.jsp?day=" + day + "&mode=" + mode;
 	form.tempval1.value = document.getElementById('div1').innerHTML.substr(0,2);
 	form.tempval2.value = document.getElementById('div2').innerHTML.substr(0,2);
 	form.tempval3.value = document.getElementById('div3').innerHTML.substr(0,2);
@@ -221,8 +221,8 @@ MM_reloadPage(true);
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
-			  <input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/stat/ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
-			  <input type="hidden" name="REFERRER" value="/UserDemos/ConsumerStat/stat/ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REDIRECT" value="/user/ConsumerStat/stat/ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REFERRER" value="/user/ConsumerStat/stat/ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
 			  <input type="hidden" name="tempval1">
 			  <input type="hidden" name="tempval2">
 			  <input type="hidden" name="tempval3">

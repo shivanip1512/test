@@ -7,9 +7,9 @@
 <script language="JavaScript">
 function setRedirect(form, progNo) {
 	if (form.Period.value == 'None')
-		form.REDIRECT.value = '/UserDemos/ConsumerStat/stat/Summary.jsp?prog=' + progNo;
+		form.REDIRECT.value = '/user/ConsumerStat/stat/Summary.jsp?prog=' + progNo;
 	else
-		form.REDIRECT.value = '/UserDemos/ConsumerStat/stat/ContHist.jsp?prog=' + progNo;
+		form.REDIRECT.value = '/user/ConsumerStat/stat/ContHist.jsp?prog=' + progNo;
 }
 </script>
 </head>
@@ -188,8 +188,8 @@ function setRedirect(form, progNo) {
                     <form method="POST" action="/servlet/SOAPClient" onsubmit="setRedirect(this, <%= i %>)">
                       <input type="hidden" name="action" value="GetLMCtrlHist">
                       <input type="hidden" name="Group" value="<%= program.getGroupID() %>">
-                      <input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/stat/ContHist.jsp?prog=<%= i %>">
-                      <input type="hidden" name="REFERRER" value="/UserDemos/ConsumerStat/stat/ProgramHist.jsp">
+                      <input type="hidden" name="REDIRECT" value="/user/ConsumerStat/stat/ContHist.jsp?prog=<%= i %>">
+                      <input type="hidden" name="REFERRER" value="/user/ConsumerStat/stat/ProgramHist.jsp">
                       <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">
                         <tr> 
                           <td width="180" valign="top" align="center"> 

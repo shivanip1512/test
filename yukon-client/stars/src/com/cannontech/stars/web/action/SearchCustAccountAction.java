@@ -225,7 +225,7 @@ public class SearchCustAccountAction implements ActionBase {
             else {
             	/* The return value is a list of results */
             	user.setAttribute( ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS, resp );
-            	session.setAttribute( ServletUtils.ATT_REDIRECT, "/OperatorDemos/Consumer/SearchResults.jsp" );
+            	session.setAttribute( ServletUtils.ATT_REDIRECT, "/operator/Consumer/SearchResults.jsp" );
             }
             
             return 0;

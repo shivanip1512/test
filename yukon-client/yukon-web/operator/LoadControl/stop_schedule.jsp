@@ -121,7 +121,7 @@
       return true;
   }
   function goBack() {
-  location = "/OperatorDemos/LoadControl/oper_direct.jsp"
+  location = "/operator/LoadControl/oper_direct.jsp"
   }
 
   //End hiding script -->
@@ -232,7 +232,7 @@
               <input name="ID" type="hidden" value="<%= scheduleID %>">
               <input name="ACTION" type="hidden" value="STOP">
               <struts:hidden property="STARTAT" value="-1"/> <struts:hidden property="STOPAT" value="0"/> 
-              <input name="URL" type="hidden" value="/OperatorDemos/LoadControl/oper_direct.jsp?pending=true">
+              <input name="URL" type="hidden" value="/operator/LoadControl/oper_direct.jsp?pending=true">
               </struts:form> 
             </table>
           </td>

@@ -3,7 +3,7 @@
 	StarsGetEnrollmentProgramsResponse categories = (StarsGetEnrollmentProgramsResponse)
 			session.getAttribute("ENROLLMENT_PROGRAMS_SWITCH");
 	if (categories == null) {
-		response.sendRedirect("/UserDemos/ConsumerSwitch/login.jsp"); return;
+		response.sendRedirect("/user/ConsumerSwitch/login.jsp"); return;
 	}
 %>
 <html>

@@ -197,7 +197,7 @@ public class CreateApplianceAction implements ActionBase {
             		break;
             }
 			starsApps.addStarsAppliance( i+1, app );
-			session.setAttribute( ServletUtils.ATT_REDIRECT, "/OperatorDemos/Consumer/Appliance.jsp?AppNo=" + String.valueOf(i+1) );
+			session.setAttribute( ServletUtils.ATT_REDIRECT, "/operator/Consumer/Appliance.jsp?AppNo=" + String.valueOf(i+1) );
 			
             return 0;
         }

@@ -67,8 +67,8 @@
                           account number and password.</div>
                         <form name="form1" method="post" action="/servlet/SOAPClient">
                      	<input type="hidden" name="action" value="UserLogin">
-				  		<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/stat/General.jsp">
-				  		<input type="hidden" name="REFERRER" value="/UserDemos/ConsumerStat/login.jsp">
+				  		<input type="hidden" name="REDIRECT" value="/user/ConsumerStat/stat/General.jsp">
+				  		<input type="hidden" name="REFERRER" value="/user/ConsumerStat/login.jsp">
                           <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
                             <tr> 
                               <td width="83" class = "Main"> 
@@ -119,8 +119,8 @@
 %>
 					    <input type="hidden" name="action" value="GetEnrPrograms">
 						<input type="hidden" name="CompanyID" value="1">
-						<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/ProgramsNew.jsp">
-						<input type="hidden" name="REFERRER" value="/UserDemos/ConsumerStat/login.jsp">
+						<input type="hidden" name="REDIRECT" value="/user/ConsumerStat/ProgramsNew.jsp">
+						<input type="hidden" name="REFERRER" value="/user/ConsumerStat/login.jsp">
 <%
 	}
 %>

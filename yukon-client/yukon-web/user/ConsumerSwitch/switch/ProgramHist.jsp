@@ -179,7 +179,7 @@
                       <input type="hidden" name="action" value="GetLMCtrlHist">
                       <input type="hidden" name="Group" value="<%= program.getGroupID() %>">
                       <input type="hidden" name="AppNo" value="<%= appNo %>">
-                      <input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerSwitch/switch/ContHist.jsp">
+                      <input type="hidden" name="REDIRECT" value="/user/ConsumerSwitch/switch/ContHist.jsp">
                       <input type="hidden" name="REFERRER" value="ProgramHist.jsp">
                       <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">
                         <tr> 

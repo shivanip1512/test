@@ -68,8 +68,8 @@
 <%
 		}
 %>
-			  <input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/login.jsp">
-			  <input type="hidden" name="REFERRER" value="/UserDemos/ConsumerStat/ProgramsNew.jsp">
+			  <input type="hidden" name="REDIRECT" value="/user/ConsumerStat/login.jsp">
+			  <input type="hidden" name="REFERRER" value="/user/ConsumerStat/ProgramsNew.jsp">
 			  <div align="center"><br>
               <b><span class="Main">SIGN UP WIZARD<br>
               <br>

@@ -76,8 +76,8 @@
 <%
 		}
 %>
-			  <input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerSwitch/login.jsp">
-			  <input type="hidden" name="REFERRER" value="/UserDemos/ConsumerSwitch/ProgramsNew.jsp">
+			  <input type="hidden" name="REDIRECT" value="/user/ConsumerSwitch/login.jsp">
+			  <input type="hidden" name="REFERRER" value="/user/ConsumerSwitch/ProgramsNew.jsp">
 			  <div align="center"><br>
               <b><span class="Main">SIGN UP WIZARD<br>
               <br>

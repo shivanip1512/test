@@ -252,7 +252,7 @@ function jumpPage(form)
 				</div>
 				<div id="trendMenu" class = "bgmenu" style = "width:75px"> 
 					<div id = "LINEID" name = "view"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "jumpPage(document.exportForm)">&nbsp;&nbsp;&nbsp;Export</div>
-					<div id = "PRINTID" name = "print" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "location='/OperatorDemos/oper_print_trend.jsp?';">&nbsp;&nbsp;&nbsp;Print</div>
+					<div id = "PRINTID" name = "print" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "location='/operator/oper_print_trend.jsp?';">&nbsp;&nbsp;&nbsp;Print</div>
 				</div>
 				
 				<script language = "JavaScript">

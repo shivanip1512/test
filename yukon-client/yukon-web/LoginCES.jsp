@@ -38,7 +38,7 @@
               Please enter your user name and password below.</div>
             <form name="form1" method="post" action="/servlet/SOAPClient">
               <input type="hidden" name="action" value="UserLogin">
-			  <input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/stat/General.jsp">
+			  <input type="hidden" name="REDIRECT" value="/user/ConsumerStat/stat/General.jsp">
 			  <input type="hidden" name="REFERRER" value="/login.jsp">
               <table width="250" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 

@@ -96,8 +96,8 @@ function MM_popupMsg(msg) { //v1.0
                   <form method="post" action="/servlet/SOAPClient">
 					<input type="hidden" name="action" value="DisableService">
 					<input type="hidden" name="OptOutPeriod" value="<%= request.getParameter("OptOutPeriod") %>">
-					<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerSwitch/switch/Enrollment.jsp">
-					<input type="hidden" name="REFERRER" value="/UserDemos/ConsumerSwitch/switch/OptOut.jsp">
+					<input type="hidden" name="REDIRECT" value="/user/ConsumerSwitch/switch/Enrollment.jsp">
+					<input type="hidden" name="REFERRER" value="/user/ConsumerSwitch/switch/OptOut.jsp">
                   <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
                     <tr> 
                       <td class="TableCell"> 

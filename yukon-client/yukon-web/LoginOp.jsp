@@ -39,7 +39,7 @@
               Please enter your account number and password below.</div>
             <form name="form1" method="post" action="/servlet/SOAPClient">
               <input type="hidden" name="action" value="OperatorLogin">
-			  <input type="hidden" name="REDIRECT" value="/OperatorDemos/Operations.jsp">
+			  <input type="hidden" name="REDIRECT" value="/operator/Operations.jsp">
 			  <input type="hidden" name="REFERRER" value="/LoginOp.jsp">
               <table width="250" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 

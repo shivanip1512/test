@@ -57,7 +57,7 @@
      return true;
   }
    function goBack() {
-  location = "/OperatorDemos/LoadControl/oper_direct.jsp"
+  location = "/operator/LoadControl/oper_direct.jsp"
   }
   //End hiding script -->
 
@@ -506,7 +506,7 @@ document.ddmessage.serialNumberField.value=thecontents[document.ddmessage.select
   		<input name="serialNumber" type="hidden" value="0">
 		<input name="groupid" type="hidden">
         <input name="DATABASEALIAS" type="hidden" value="demo">
-        <input name="nextURL" type="hidden" value="/OperatorDemos/LoadControl/switch_commands.jsp">
+        <input name="nextURL" type="hidden" value="/operator/LoadControl/switch_commands.jsp">
 		</FORM>
             </td>
         <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>

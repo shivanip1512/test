@@ -9,7 +9,7 @@ function confirm_form(f) {
 	return true;
 }
   function goBack() {
-  location = "/OperatorDemos/LoadControl/oper_mand.jsp"
+  location = "/operator/LoadControl/oper_mand.jsp"
   }
 </script>
 </head>

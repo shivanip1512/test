@@ -45,7 +45,7 @@
 							<%}
 							else 
 							{%>
-								<img src="Bullet2.gif" width="12" height="12">&nbsp;<a href="/UserDemos/CILC/user_trending.jsp?<%= "gdefid=" + gData[i][0]%>" class = "link2"><span class="NavText"><%=gData[i][1] %></span></a><br>
+								<img src="Bullet2.gif" width="12" height="12">&nbsp;<a href="/user/CILC/user_trending.jsp?<%= "gdefid=" + gData[i][0]%>" class = "link2"><span class="NavText"><%=gData[i][1] %></span></a><br>
 							<%}
 						}
 					}%></div>

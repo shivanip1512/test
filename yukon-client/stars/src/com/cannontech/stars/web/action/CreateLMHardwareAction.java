@@ -307,7 +307,7 @@ public class CreateLMHardwareAction implements ActionBase {
 					break;
 			}
 			starsInvs.addStarsLMHardware( i+1, hw );
-			session.setAttribute( ServletUtils.ATT_REDIRECT, "/OperatorDemos/Consumer/Inventory.jsp?InvNo=" + String.valueOf(i+1) );
+			session.setAttribute( ServletUtils.ATT_REDIRECT, "/operator/Consumer/Inventory.jsp?InvNo=" + String.valueOf(i+1) );
 			
 			StarsServiceCompany company = resp.getStarsServiceCompany();
 			if (company != null)

@@ -2,7 +2,7 @@
 <%
 	StarsGetEnrollmentProgramsResponse categories = (StarsGetEnrollmentProgramsResponse) session.getAttribute(ServletUtils.ATT_ENROLLMENT_PROGRAMS);
 	if (categories == null)
-		response.sendRedirect("/UserDemos/ConsumerSwitch/login.jsp");
+		response.sendRedirect("/user/ConsumerSwitch/login.jsp");
 %>
 <html>
 <head>

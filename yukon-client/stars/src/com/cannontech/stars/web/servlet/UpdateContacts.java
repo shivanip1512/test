@@ -24,8 +24,8 @@ import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 public class UpdateContacts extends HttpServlet {
 
     private static final String loginURL = "/login.jsp";
-    private static final String homeURL = "/OperatorDemos/Operations.jsp";
-    private static final String nextURL = "/OperatorDemos/Consumer/Update.jsp";
+    private static final String homeURL = "/operator/Operations.jsp";
+    private static final String nextURL = "/operator/Consumer/Update.jsp";
 
     public UpdateContacts() {
     }

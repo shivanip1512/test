@@ -75,8 +75,8 @@ function MM_popupMsg(msg) { //v1.0
           
 			<form method="post" action="/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="SendExitAnswers">
-			  <input type="hidden" name="REDIRECT" value="/OperatorDemos/Consumer/Programs.jsp">
-			  <input type="hidden" name="REFERRER" value="/OperatorDemos/Consumer/OptOut.jsp">
+			  <input type="hidden" name="REDIRECT" value="/operator/Consumer/Programs.jsp">
+			  <input type="hidden" name="REFERRER" value="/operator/Consumer/OptOut.jsp">
                 <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
 <%
 	StarsGetExitInterviewQuestionsResponse questions = (StarsGetExitInterviewQuestionsResponse) operator.getAttribute(ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS);

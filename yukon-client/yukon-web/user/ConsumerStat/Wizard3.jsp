@@ -3,7 +3,7 @@
 	StarsGetEnrollmentProgramsResponse categories = (StarsGetEnrollmentProgramsResponse)
 			session.getAttribute("ENROLLMENT_PROGRAMS_THERMOSTAT");
 	if (categories == null) {
-		response.sendRedirect("/UserDemos/ConsumerStat/login.jsp"); return;
+		response.sendRedirect("/user/ConsumerStat/login.jsp"); return;
 	}
 %>
 <html>

@@ -88,7 +88,7 @@
 <SCRIPT LANGUAGE="JAVASCRIPT" TYPE="TEXT/JAVASCRIPT">
   <!-- Hide the script from older browsers
    function goBack() {
-  location = "/OperatorDemos/LoadControl/oper_ee.jsp?tab=current&prog=<%= program.getYukonID() %>&offer=<%= offerID %>&rev=<%= revisionNumber %>"
+  location = "/operator/LoadControl/oper_ee.jsp?tab=current&prog=<%= program.getYukonID() %>&offer=<%= offerID %>&rev=<%= revisionNumber %>"
   }
   //End hiding script -->
 

@@ -158,7 +158,7 @@
                 <input type="hidden" name="CUSTOMERID" value="<%= user.getCustomerId() %>">
                 <input type="hidden" name="CURTAILID" value="<%= curtailID %>">
                 <input type="hidden" name="ACKTIME" value="<%= System.currentTimeMillis() %>">
-                <input type="hidden" name="redirect" value="/UserDemos/CILC/user_curtail.jsp">
+                <input type="hidden" name="redirect" value="/user/CILC/user_curtail.jsp">
                 <span class="Main"> Initials:</span> 
                 <input type="text" name="initials" size="8">
                 <p> 

@@ -39,7 +39,7 @@ public class SOAPClient extends HttpServlet {
     private static boolean serverInitiated = false;
 
     private static final String loginURL = "/login.jsp";
-    private static final String homeURL = "/OperatorDemos/Operations.jsp";
+    private static final String homeURL = "/operator/Operations.jsp";
 
     public SOAPClient() {
         super();
@@ -125,8 +125,8 @@ public class SOAPClient extends HttpServlet {
         }
 		else if (action.equalsIgnoreCase("NewCustAccount")) {
 			clientAction = new NewCustAccountAction();
-			destURL = "/OperatorDemos/Consumer/Update.jsp";
-			nextURL = errorURL = "/OperatorDemos/Consumer/New.jsp";
+			destURL = "/operator/Consumer/Update.jsp";
+			nextURL = errorURL = "/operator/Consumer/New.jsp";
 		}
 		else if (action.equalsIgnoreCase("ProgramSignUp")) {
 			clientAction = new ProgramSignUpAction();
@@ -135,8 +135,8 @@ public class SOAPClient extends HttpServlet {
 		}
         else if (action.equalsIgnoreCase("SearchCustAccount")) {
             clientAction = new SearchCustAccountAction();
-            destURL = "/OperatorDemos/Consumer/Update.jsp";
-            nextURL = errorURL = "/OperatorDemos/Consumer/SearchResults.jsp";
+            destURL = "/operator/Consumer/Update.jsp";
+            nextURL = errorURL = "/operator/Consumer/SearchResults.jsp";
         }
         else if (action.equalsIgnoreCase("GetCustAccount")) {
         	clientAction = new GetCustAccountAction();
@@ -145,8 +145,8 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("UpdateCustAccount")) {
             clientAction = new UpdateCustAccountAction();
-            destURL = "/OperatorDemos/Consumer/Update.jsp";
-            nextURL = errorURL = "/OperatorDemos/Consumer/Update.jsp";
+            destURL = "/operator/Consumer/Update.jsp";
+            nextURL = errorURL = "/operator/Consumer/Update.jsp";
         }
         else if (action.equalsIgnoreCase("OptOutProgram")) {
         	MultiAction actions = new MultiAction();
@@ -217,12 +217,12 @@ public class SOAPClient extends HttpServlet {
 	        	actions.addAction( new CreateCallAction(), req, session );
 	        	clientAction = (ActionBase) actions;
 	        }
-        	destURL = "/OperatorDemos/Consumer/Calls.jsp";
-        	nextURL = errorURL = "/OperatorDemos/Consumer/CreateCalls.jsp";
+        	destURL = "/operator/Consumer/Calls.jsp";
+        	nextURL = errorURL = "/operator/Consumer/CreateCalls.jsp";
         }
         else if (action.equalsIgnoreCase("CallTracking")) {
         	clientAction = new CallTrackingAction();
-        	destURL = "/OperatorDemos/Consumer/Calls.jsp";
+        	destURL = "/operator/Consumer/Calls.jsp";
         }
         else if (action.equalsIgnoreCase("CreateOrder")) {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
@@ -234,12 +234,12 @@ public class SOAPClient extends HttpServlet {
 	        	actions.addAction( new CreateServiceRequestAction(), req, session );
 	        	clientAction = (ActionBase) actions;
 	        }
-        	destURL = "/OperatorDemos/Consumer/ServiceSummary.jsp";
-        	nextURL = errorURL = "/OperatorDemos/Consumer/Service.jsp";
+        	destURL = "/operator/Consumer/ServiceSummary.jsp";
+        	nextURL = errorURL = "/operator/Consumer/Service.jsp";
         }
         else if (action.equalsIgnoreCase("GetServiceHistory")) {
         	clientAction = new GetServiceHistoryAction();
-        	destURL = "/OperatorDemos/Consumer/ServiceSummary.jsp";
+        	destURL = "/operator/Consumer/ServiceSummary.jsp";
         }
         else if (action.equalsIgnoreCase("GetEnrPrograms")) {
         	clientAction = new GetEnrollmentProgramsAction();
@@ -248,23 +248,23 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("CreateAppliance")) {
         	clientAction = new CreateApplianceAction();
-        	destURL = "/OperatorDemos/Consumer/Appliance.jsp";
-        	nextURL = errorURL = "/OperatorDemos/Consumer/CreateAppliances.jsp";
+        	destURL = "/operator/Consumer/Appliance.jsp";
+        	nextURL = errorURL = "/operator/Consumer/CreateAppliances.jsp";
         }
         else if (action.equalsIgnoreCase("CreateLMHardware")) {
         	clientAction = new CreateLMHardwareAction();
-        	destURL = "/OperatorDemos/Consumer/Inventory.jsp";
-        	nextURL = errorURL = "/OperatorDemos/Consumer/CreateHardware.jsp";
+        	destURL = "/operator/Consumer/Inventory.jsp";
+        	nextURL = errorURL = "/operator/Consumer/CreateHardware.jsp";
         }
         else if (action.equalsIgnoreCase("UpdateLMHardware")) {
         	clientAction = new UpdateLMHardwareAction();
-        	destURL = "/OperatorDemos/Consumer/Inventory.jsp";
-        	nextURL = errorURL = "/OperatorDemos/Consumer/Inventory.jsp";
+        	destURL = "/operator/Consumer/Inventory.jsp";
+        	nextURL = errorURL = "/operator/Consumer/Inventory.jsp";
         }
         else if (action.equalsIgnoreCase("UpdateLogin")) {
         	clientAction = new UpdateLoginAction();
-        	destURL = "/OperatorDemos/Consumer/Password.jsp";
-        	nextURL = errorURL = "/OperatorDemos/Consumer/Password.jsp";
+        	destURL = "/operator/Consumer/Password.jsp";
+        	nextURL = errorURL = "/operator/Consumer/Password.jsp";
         }
         else if (action.equalsIgnoreCase("UpdateThermostatSchedule")) {
         	clientAction = new UpdateThermostatScheduleAction();
@@ -273,8 +273,8 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("UpdateThermostatOption")) {
         	clientAction = new UpdateThermostatOptionAction();
-        	destURL = "/UserDemos/ConsumerStat/stat/Thermostat.jsp";
-        	nextURL = errorURL = "/UserDemos/ConsumerStat/stat/Thermostat.jsp";
+        	destURL = "/user/ConsumerStat/stat/Thermostat.jsp";
+        	nextURL = errorURL = "/user/ConsumerStat/stat/Thermostat.jsp";
         }
         else {
             CTILogger.debug( "SOAPClient: Invalid action type: " + action );

@@ -7,7 +7,7 @@
   <!-- Hide the script from older browsers
 
    function goBack() {
-  location = "/OperatorDemos/LoadControl/oper_ee.jsp?tab=revise&prog=<%= progIdStr %>&offer=<%= offerIdStr %>&rev=<%= revNumStr %>&error=false"
+  location = "/operator/LoadControl/oper_ee.jsp?tab=revise&prog=<%= progIdStr %>&offer=<%= offerIdStr %>&rev=<%= revNumStr %>&error=false"
   }
 
   //End hiding script -->

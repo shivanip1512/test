@@ -189,7 +189,7 @@
 				    <form name="form7" method="POST" action="/servlet/SOAPClient">
 					  <input type="hidden" name="action" value="GetLMCtrlHist">
 					  <input type="hidden" name="Group" value="<%= program.getGroupID() %>">
-					  <input type="hidden" name="REDIRECT" value="/OperatorDemos/Consumer/ContHist.jsp?prog=<%= progNo %>">
+					  <input type="hidden" name="REDIRECT" value="/operator/Consumer/ContHist.jsp?prog=<%= progNo %>">
 					  <input type="hidden" name="REFERRER" value="Appliance.jsp?AppNo=<%= appNo %>">
                       <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
                         <tr> 

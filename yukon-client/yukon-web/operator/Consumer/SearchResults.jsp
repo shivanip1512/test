@@ -87,8 +87,8 @@ function selectAccount(accountID) {
 			<form name="resultForm" method="POST" action="/servlet/SOAPClient">
 		      <input type="hidden" name="action" value="GetCustAccount">
               <input type="hidden" name="AccountID" value="">
-			  <input type="hidden" name="REDIRECT" value="/OperatorDemos/Consumer/Update.jsp">
-			  <input type="hidden" name="REFERRER" value="/OperatorDemos/Consumer/SearchResults.jsp">
+			  <input type="hidden" name="REDIRECT" value="/operator/Consumer/Update.jsp">
+			  <input type="hidden" name="REFERRER" value="/operator/Consumer/SearchResults.jsp">
 			  
               <table width="615" border="1" cellspacing="0" cellpadding="3" align="center">
               <tr> 

@@ -225,7 +225,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 			for (int i = 0; i < starsInvs.getStarsLMHardwareCount(); i++) {
 				if (starsInvs.getStarsLMHardware(i).getInventoryID() == hw.getInventoryID()) {
 					starsInvs.setStarsLMHardware(i, hw);
-					session.setAttribute( ServletUtils.ATT_REDIRECT, "/OperatorDemos/Consumer/Inventory.jsp?InvNo=" + String.valueOf(i) );
+					session.setAttribute( ServletUtils.ATT_REDIRECT, "/operator/Consumer/Inventory.jsp?InvNo=" + String.valueOf(i) );
 					break;
 				}
 			}

@@ -279,7 +279,7 @@
 <INPUT NAME="ACTION" TYPE="hidden" VALUE="STARTSTOP">
 <struts:hidden property="STARTAT" value="0"/>
 <struts:hidden property="STOPAT" value="0"/>
-<INPUT NAME="URL" TYPE="hidden" VALUE="/UserDemos/CILC/user_direct.jsp?pending=true">
+<INPUT NAME="URL" TYPE="hidden" VALUE="/user/CILC/user_direct.jsp?pending=true">
 </struts:form>
 
 

@@ -71,8 +71,8 @@
                      	<input type="hidden" name="action" value="UserLogin">
 						<input type="hidden" name="CompanyID" value="1">
 						<input type="hidden" name="DATABASEALIAS" value="yukon">
-				  		<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerSwitch/switch/ProgramHist.jsp">
-				  		<input type="hidden" name="REFERRER" value="/UserDemos/ConsumerSwitch/login.jsp">
+				  		<input type="hidden" name="REDIRECT" value="/user/ConsumerSwitch/switch/ProgramHist.jsp">
+				  		<input type="hidden" name="REFERRER" value="/user/ConsumerSwitch/login.jsp">
                           <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
                             <tr> 
                               <td width="83" class = "Main"> 
@@ -124,8 +124,8 @@
 					    <input type="hidden" name="action" value="GetEnrPrograms">
 						<input type="hidden" name="CompanyID" value="1">
 						<input type="hidden" name="Category" value="Switch">
-						<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerSwitch/ProgramsNew.jsp">
-						<input type="hidden" name="REFERRER" value="/UserDemos/ConsumerSwitch/login.jsp">
+						<input type="hidden" name="REDIRECT" value="/user/ConsumerSwitch/ProgramsNew.jsp">
+						<input type="hidden" name="REFERRER" value="/user/ConsumerSwitch/login.jsp">
 <%
 	}
 %>

@@ -241,7 +241,7 @@
 <INPUT NAME="ID" TYPE="hidden" VALUE="<%= programID %>">
 <INPUT NAME="ACTION" TYPE="hidden" VALUE="STOP">
 <struts:hidden property="STARTAT" value="-1"/> <struts:hidden property="STOPAT" value="0"/> 
-<INPUT NAME="URL" TYPE="hidden" VALUE="/UserDemos/CILC/user_direct.jsp?pending=true">
+<INPUT NAME="URL" TYPE="hidden" VALUE="/user/CILC/user_direct.jsp?pending=true">
 </struts:form> 
           </td>
 		  
