@@ -156,7 +156,7 @@ function changeSerialNo() {
                                 </td>
                               </tr>
                               <tr> 
-                                <td width="100" class="TableCell" align="right"><span id="NameLabel"></span>: </td>
+                                <td width="100" class="TableCell" align="right"><span id="NameLabel">Serial #</span>: </td>
                                 <td width="120" class="MainText"><%= devName %></td>
                               </tr>
                             </table>

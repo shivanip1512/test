@@ -203,7 +203,7 @@ function changeDeviceType() {
                                 </td>
                               </tr>
                               <tr> 
-                                <td align="right" width="30%"><span id="NameLabel"></span>: </td>
+                                <td align="right" width="30%"><span id="NameLabel">Serial #</span>: </td>
                                 <td width="70%"> 
                                   <input type="text" name="SerialNo" maxlength="30" size="20" value="<%= devName %>">
                                 </td>
