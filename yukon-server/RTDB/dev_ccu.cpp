@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:35:52 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/12/22 21:45:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,100 +49,145 @@ using namespace std;
 
 
 
-CtiDeviceCCU::CtiDeviceCCU() {}
+CtiDeviceCCU::CtiDeviceCCU()
+{
+    for( int i = 0; i < (TimeSyncToggles * 2); i++ )
+    {
+        _tsAlgStatus[i] = 0;
+    }
+
+    _tsPos = 0;
+}
+
 
 CtiDeviceCCU::CtiDeviceCCU(const CtiDeviceCCU& aRef)
 {
-   *this = aRef;
+    *this = aRef;
 }
+
 
 CtiDeviceCCU::~CtiDeviceCCU()
 {
 }
 
+
 CtiDeviceCCU& CtiDeviceCCU::operator=(const CtiDeviceCCU& aRef)
 {
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
-   }
-   return *this;
+    if( this != &aRef )
+    {
+        Inherited::operator=(aRef);
+    }
+    return *this;
 }
+
+
+bool CtiDeviceCCU::checkForTimeSyncLoop(int status)
+{
+    bool retVal = true;
+
+    _tsAlgStatus[_tsPos] = status;
+
+    _tsPos = (_tsPos + 1) % (TimeSyncToggles * 2);
+
+    for( int i = 0; i < (TimeSyncToggles * 2 - 1); i++ )
+    {
+        //  if the state toggled are toggles
+        if( ((_tsAlgStatus[i] == ALGO_ENABLED) && (_tsAlgStatus[i+1] != ALGO_ENABLED)) ||
+            ((_tsAlgStatus[i] != ALGO_ENABLED) && (_tsAlgStatus[i+1] == ALGO_ENABLED)) )
+        {
+            retVal &= true;
+        }
+        else
+        {
+            retVal &= false;
+        }
+    }
+
+    if( retVal )
+    {
+        for( int i = 0; i < (TimeSyncToggles * 2); i++ )
+        {
+            _tsAlgStatus[i] = 0;
+        }
+    }
+
+    return retVal;
+}
+
 
 INT CtiDeviceCCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
-   INT status = NORMAL;
+    INT status = NORMAL;
 
-   // Get a loop done maybe?
-   if(OutMessage != NULL)
-   {
-      CCULoop(OutMessage);
-      outList.insert( OutMessage );
-      OutMessage = NULL;
-   }
+    // Get a loop done maybe?
+    if( OutMessage != NULL )
+    {
+        CCULoop(OutMessage);
+        outList.insert( OutMessage );
+        OutMessage = NULL;
+    }
 
-   return status;
+    return status;
 }
 
 INT CtiDeviceCCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList,  INT ScanPriority)
 {
-   return( GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority) );
+    return( GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority) );
 }
 
 
 INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
-
     /* Clear the Scan Pending flag, if neccesary it will be reset */
     resetScanPending();
 
-    switch(InMessage->Sequence)
+    switch( InMessage->Sequence )
     {
         case (CtiProtocolEmetcon::Command_Loop):
         {
-        char temp[10];
+            char temp[10];
             RWCString cmd(InMessage->Return.CommandStr);
 
 
             CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
-                                                     cmd,
-                                                     RWCString("Loopback Successful"),
-                                                     InMessage->EventCode & 0x7fff,
-                                                     InMessage->Return.RouteID,
-                                                     InMessage->Return.MacroOffset,
-                                                     InMessage->Return.Attempt,
-                                                     InMessage->Return.TrxID,
-                                                     InMessage->Return.UserID);
+                                                            cmd,
+                                                            RWCString("Loopback Successful"),
+                                                            InMessage->EventCode & 0x7fff,
+                                                            InMessage->Return.RouteID,
+                                                            InMessage->Return.MacroOffset,
+                                                            InMessage->Return.Attempt,
+                                                            InMessage->Return.TrxID,
+                                                            InMessage->Return.UserID);
 
 
-            if(pLoop != NULL)
-            {
-                retList.insert(pLoop);
-            }
-            break;
-       }
-
-    case (CtiProtocolEmetcon::PutStatus_Reset):
-        {
-            CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
-                                                     InMessage->Return.CommandStr,
-                                                     "Reset Submitted",
-                                                     InMessage->EventCode & 0x7fff,
-                                                     InMessage->Return.RouteID,
-                                                     InMessage->Return.MacroOffset,
-                                                     InMessage->Return.Attempt,
-                                                     InMessage->Return.TrxID,
-                                                     InMessage->Return.UserID);
-
-
-            if(pLoop != NULL)
+            if( pLoop != NULL )
             {
                 retList.insert(pLoop);
             }
             break;
         }
 
-    default:
+        case (CtiProtocolEmetcon::PutStatus_Reset):
+        {
+            CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
+                                                            InMessage->Return.CommandStr,
+                                                            "Reset Submitted",
+                                                            InMessage->EventCode & 0x7fff,
+                                                            InMessage->Return.RouteID,
+                                                            InMessage->Return.MacroOffset,
+                                                            InMessage->Return.Attempt,
+                                                            InMessage->Return.TrxID,
+                                                            InMessage->Return.UserID);
+
+
+            if( pLoop != NULL )
+            {
+                retList.insert(pLoop);
+            }
+            break;
+        }
+
+        default:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -175,7 +220,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
      *   That method prepares an outmessage for submission to the internals..
      */
 
-    switch(parse.getCommand())
+    switch( parse.getCommand() )
     {
         case LoopbackRequest:
         {
@@ -184,15 +229,16 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
             OutMessage = NULL;
             break;
         }
+
         case PutStatusRequest:
         {
-            if(parse.getFlags() & CMD_FLAG_PS_RESET)
+            if( parse.getFlags() & CMD_FLAG_PS_RESET )
             {
-                if(getType() == TYPE_CCU711)
+                if( getType() == TYPE_CCU711 )
                 {
                     OUTMESS *OutMTemp = CTIDBG_new OUTMESS(*OutMessage);
 
-                    if(OutMTemp != NULL)
+                    if( OutMTemp != NULL )
                     {
                         // Get a reset done maybe?
                         CCU711Reset(OutMTemp);
@@ -203,16 +249,16 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                 {
                     nRet = NoMethod;
                     retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                                     RWCString(OutMessage->Request.CommandStr),
-                                                     RWCString("Non-711 CCUs do not support this command"),
-                                                     nRet,
-                                                     OutMessage->Request.RouteID,
-                                                     OutMessage->Request.MacroOffset,
-                                                     OutMessage->Request.Attempt,
-                                                     OutMessage->Request.TrxID,
-                                                     OutMessage->Request.UserID,
-                                                     OutMessage->Request.SOE,
-                                                     RWOrdered()));
+                                                            RWCString(OutMessage->Request.CommandStr),
+                                                            RWCString("Non-711 CCUs do not support this command"),
+                                                            nRet,
+                                                            OutMessage->Request.RouteID,
+                                                            OutMessage->Request.MacroOffset,
+                                                            OutMessage->Request.Attempt,
+                                                            OutMessage->Request.TrxID,
+                                                            OutMessage->Request.UserID,
+                                                            OutMessage->Request.SOE,
+                                                            RWOrdered()));
                 }
             }
 
@@ -231,16 +277,16 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
             retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                             RWCString(OutMessage->Request.CommandStr),
-                                             RWCString("CCU Devices do not support this command (yet?)"),
-                                             nRet,
-                                             OutMessage->Request.RouteID,
-                                             OutMessage->Request.MacroOffset,
-                                             OutMessage->Request.Attempt,
-                                             OutMessage->Request.TrxID,
-                                             OutMessage->Request.UserID,
-                                             OutMessage->Request.SOE,
-                                             RWOrdered()));
+                                                    RWCString(OutMessage->Request.CommandStr),
+                                                    RWCString("CCU Devices do not support this command (yet?)"),
+                                                    nRet,
+                                                    OutMessage->Request.RouteID,
+                                                    OutMessage->Request.MacroOffset,
+                                                    OutMessage->Request.Attempt,
+                                                    OutMessage->Request.TrxID,
+                                                    OutMessage->Request.UserID,
+                                                    OutMessage->Request.SOE,
+                                                    RWOrdered()));
             break;
         }
     }

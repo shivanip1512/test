@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2003/11/12 22:04:04 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2003/12/22 21:45:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -72,6 +72,7 @@
 #include "logger.h"
 #include "guard.h"
 #include "trx_711.h"
+#include "dev_ccu.h"
 
 extern CtiPortManager   PortManager;
 extern HCTIQUEUE*       QueueHandle(LONG pid);
@@ -526,22 +527,35 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
             }
         }
 
-        /* Check the time sync Algorithm status */
-        if(AlgStatus[DEST_TSYNC] != ALGO_ENABLED)
+        if( ((CtiDeviceCCU *)Dev)->checkForTimeSyncLoop(AlgStatus[DEST_TSYNC]) )
         {
-            if(AlgStatus[DEST_TSYNC] == ALGO_HALTED)
             {
-                IDLCFunction (Dev, 0, DEST_TSYNC, ENPRO);
-                /* Now send a message to logger */
-                if(NULL != Dev)
-                {
-                    _snprintf(Message, 50,  "%0.20sTS Alg ENABLED", Dev->getName());
-                    SendTextToLogger ("Inf", Message);
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - time sync loop detected, sending cold start **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            else if(AlgStatus[DEST_TSYNC] == ALGO_RUNNING || AlgStatus[DEST_TSYNC] == ALGO_SUSPENDED)
+
+            //  Send a cold start, the time sync algorithm has been set to 0 seconds
+            IDLCFunction (Dev, 0, DEST_BASE, COLD);
+        }
+        else
+        {
+            /* Check the time sync Algorithm status */
+            if(AlgStatus[DEST_TSYNC] != ALGO_ENABLED)
             {
-                IDLCFunction (Dev, 0, DEST_TSYNC, HOPRO);
+                if(AlgStatus[DEST_TSYNC] == ALGO_HALTED)
+                {
+                    IDLCFunction (Dev, 0, DEST_TSYNC, ENPRO);
+                    /* Now send a message to logger */
+                    if(NULL != Dev)
+                    {
+                        _snprintf(Message, 50,  "%0.20sTS Alg ENABLED", Dev->getName());
+                        SendTextToLogger ("Inf", Message);
+                    }
+                }
+                else if(AlgStatus[DEST_TSYNC] == ALGO_RUNNING || AlgStatus[DEST_TSYNC] == ALGO_SUSPENDED)
+                {
+                    IDLCFunction (Dev, 0, DEST_TSYNC, HOPRO);
+                }
             }
         }
 
