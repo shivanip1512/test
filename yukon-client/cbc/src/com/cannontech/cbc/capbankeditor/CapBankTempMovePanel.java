@@ -448,7 +448,7 @@ private javax.swing.JTextField getJTextFieldCapBankOrder() {
 			{
 				com.cannontech.common.util.MessageEvent msgEvent = new com.cannontech.common.util.MessageEvent( this, "Unable to send Move Cap Bank, no connection found." );
 				msgEvent.setMessageType( com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE );
-				getConnectionWrapper().fireMessageEvent(msgEvent);
+				getConnectionWrapper().fireMsgEventGUI(msgEvent);
 			}
 		}
 		finally

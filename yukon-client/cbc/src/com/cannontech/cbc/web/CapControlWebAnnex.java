@@ -62,7 +62,7 @@ public class CapControlWebAnnex implements java.util.Observer
 
 	public boolean isConnected()
 	{
-		return getConnection().isConnValid();
+		return getConnection().isValid();
 	}
 
 	public CBCClientConnection getConnection()
@@ -127,7 +127,7 @@ public class CapControlWebAnnex implements java.util.Observer
 
 	protected void finalize() throws Throwable
 	{
-		getConnection().deleteObserver( getSubTableModel() );
+		getConnection().removeMessageListener( getSubTableModel() );
 		getConnection().deleteObserver( thisWeakObsrvr );
 
 		super.finalize();
@@ -155,7 +155,7 @@ public class CapControlWebAnnex implements java.util.Observer
 		getConnection().addObserver( thisWeakObsrvr );
 
 		//let us observe the SubTableModel
-		getConnection().addObserver( getSubTableModel() );		
+		getConnection().addMessageListener( getSubTableModel() );		
 
 
 		//remember, 2 observers per web client
@@ -198,7 +198,7 @@ public class CapControlWebAnnex implements java.util.Observer
 
 
 		//Clear the list table of schedules if the connection isn't good
-		if ( !getConnection().isConnValid() )
+		if ( !getConnection().isValid() )
 		{
 			getSubTableModel().clear();
 			getFeederTableModel().clear();

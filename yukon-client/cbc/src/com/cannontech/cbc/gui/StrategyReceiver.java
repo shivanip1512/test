@@ -3,12 +3,15 @@ package com.cannontech.cbc.gui;
 /**
  * This type was created in VisualAge.
  */
-import javax.swing.JRootPane;
-
 import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.messages.CBCSubAreaNames;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.commonutils.ModifiedDate;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 
-public class StrategyReceiver implements com.cannontech.tdc.SpecialTDCChild, java.util.Observer
+public class StrategyReceiver implements com.cannontech.tdc.SpecialTDCChild, MessageListener
 {
 	//a band aid to always allow us to insert the last CBCSubAreaNames we received
 	private CBCSubAreaNames lastSubAreaMsg = null;
@@ -66,14 +69,15 @@ public void destroy()
 	{
 		if( connectionWrapper != null )
 		{
-			connectionWrapper.stopInThread();
-			connectionWrapper.disconnect();
+			connectionWrapper.removeMessageListener( this );
+//			connectionWrapper.stopInThread();
+//			connectionWrapper.disconnect();
 		}
 
 		if( mainPanel != null )
 			mainPanel.destroy();
 	}
-	catch( java.io.IOException e )
+	catch( Exception e )
 	{
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
@@ -87,7 +91,7 @@ public void destroy()
 }
 /**
  * This method was created in VisualAge.
- */
+ *
 public static void displayStrategyReceiver( StrategyReceiver strategyReceiver, JRootPane owner) 
 {
 	ReceiverMainPanel mainPanel = new ReceiverMainPanel( strategyReceiver.getConnectionWrapper() );
@@ -100,6 +104,7 @@ public static void displayStrategyReceiver( StrategyReceiver strategyReceiver, J
 	// initDividerPostition is called to set the JSplitPane's divider at the very bottom
 	mainPanel.initDividerPosition();
 }
+*/
 /**
  * Insert the method's description here.
  * Creation date: (4/19/2001 10:18:56 AM)
@@ -175,12 +180,13 @@ private CBCClientConnection getConnectionWrapper()
 		try
 		{	
 			connectionWrapper = new CBCClientConnection();
-			connectionWrapper.addObserver( this );
+			connectionWrapper.addMessageListener( this );
+
 
 			//start the conn!!!
-			connectionWrapper.startInThread();		
+			connectionWrapper.connect( 15000 );		
 
-		 	if( connectionWrapper.isConnValid() )
+		 	if( connectionWrapper.isValid() )
 				com.cannontech.clientutils.CTILogger.info("Retrieving CBC strategies...");
 		}
 		catch( Exception e)
@@ -198,11 +204,9 @@ private CBCClientConnection getConnectionWrapper()
  */
 public java.awt.Font getFont() 
 {
-	if( mainPanel == null )
-		return null;
-	else	
-		return mainPanel.getSubBusTable().getFont();
+	return mainPanel.getSubBusTable().getFont();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (8/4/00 9:00:06 AM)
@@ -239,21 +243,16 @@ public String getJComboLabel()
  */
 public javax.swing.JTable[] getJTables()
 {
-	if( mainPanel == null )
-		return null;
-	else
+	javax.swing.JTable[] tables =
 	{
-		javax.swing.JTable[] tables =
-		{
-			mainPanel.getSubBusTable(),
-			mainPanel.getCapBankTable(),
-			mainPanel.getFeederTable()
-		};
-		
-		return tables;
-	}
+		mainPanel.getSubBusTable(),
+		mainPanel.getCapBankTable(),
+		mainPanel.getFeederTable()
+	};
 	
+	return tables;
 }
+
 /**
  * This method was created in VisualAge.
  * @param event java.awt.event.ActionEvent
@@ -263,9 +262,7 @@ public javax.swing.JPanel getMainJPanel()
 	if( mainPanel == null )
 	{
 		//initConnection();
-		ReceiverMainPanel mPanel = new ReceiverMainPanel( getConnectionWrapper() );
-		
-		mainPanel = mPanel;
+		mainPanel = new ReceiverMainPanel( getConnectionWrapper() );
 
 		javax.swing.JButton[] buttons =
 		{
@@ -283,6 +280,7 @@ public javax.swing.JPanel getMainJPanel()
 	
 	return mainPanel;	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (8/7/00 3:51:22 PM)
@@ -302,7 +300,7 @@ public String getVersion()
 /**
  * This method was created in VisualAge.
  * @param args java.lang.String[]
- */
+ *
 public static void main(String args[]) 
 {
 	try
@@ -338,6 +336,7 @@ public static void main(String args[])
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 } 
+*/
 /**
  * Insert the method's description here.
  * Creation date: (8/7/00 3:51:22 PM)
@@ -358,7 +357,7 @@ public void removeActionListenerFromJComponent( javax.swing.JComponent component
 	{
 		//((javax.swing.JComboBox)component).removeActionListener( getCapBankActionListener() );
 		getJComboBox().removeActionListener( getCapBankActionListener() );
-		getConnectionWrapper().deleteObserver( this );
+		getConnectionWrapper().removeMessageListener( this );
 		
 		comboBox = null;
 	}
@@ -370,13 +369,7 @@ public void removeActionListenerFromJComponent( javax.swing.JComponent component
  */
 public void setTableFont(java.awt.Font font ) 
 {
-	if( mainPanel == null )
-		return;
 
-	// Set the values for the table model
-	mainPanel.getSubBusTableModel().setFontValues( font.getName(), font.getSize() );
-
-		
 	for( int i = 0; i < getJTables().length; i++ )
 	{
 		getJTables()[i].setFont( font );
@@ -397,9 +390,6 @@ public void setTableFont(java.awt.Font font )
  */
 public void setGridLines(boolean hGridLines, boolean vGridLines ) 
 {
-	if( mainPanel == null )
-		return;
-
 	int vLines = ((vGridLines == true) ? 1 : 0);
 	int hLines = ((hGridLines == true) ? 1 : 0);
 
@@ -459,28 +449,6 @@ public void silenceAlarms()
 }
 
 /**
- * This method was created in VisualAge.
- * @param source Observable
- * @param obj java.lang.Object
- */
-public void update(java.util.Observable source, Object obj )
-{
-
-	if( source instanceof CBCClientConnection )
-	{
-		if( obj instanceof CBCSubAreaNames )
-		{	
-			CBCSubAreaNames areaNames = (CBCSubAreaNames)obj;
-			
-			lastSubAreaMsg = areaNames;
-
-			updateAreaList( lastSubAreaMsg );
-			
-		}
-	}
-	
-}
-/**
  * Insert the method's description here.
  * Creation date: (4/12/2002 1:53:27 PM)
  * @param areaNames com.cannontech.cbc.messages.CBCSubAreaNames
@@ -516,6 +484,26 @@ private void updateAreaList(CBCSubAreaNames areaNames)
 			getJComboBox().addActionListener( getCapBankActionListener() );
 		}
 
+	}
+}
+
+public synchronized void messageReceived( MessageEvent e )
+{
+	Message in = e.getMessage();
+
+
+	if( in instanceof CBCSubAreaNames )
+	{	
+		CBCSubAreaNames areaNames = (CBCSubAreaNames)in;
+		CTILogger.info( new ModifiedDate(new java.util.Date().getTime()).toString()
+				+ " : Got an Area Message with " + areaNames.getNumberOfAreas()
+				+ " areas" );
+		
+		
+		lastSubAreaMsg = areaNames;
+
+		updateAreaList( lastSubAreaMsg );
+		
 	}
 }
 

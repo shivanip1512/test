@@ -617,7 +617,7 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		{
 			MessageEvent msgEvent = new MessageEvent( this, "Unable to send message to CapControl Server, no connection found." );
 			msgEvent.setMessageType( MessageEvent.INFORMATION_MESSAGE );
-			getConnectionWrapper().fireMessageEvent(msgEvent);
+			getConnectionWrapper().fireMsgEventGUI(msgEvent);
 		}
 			
 	}

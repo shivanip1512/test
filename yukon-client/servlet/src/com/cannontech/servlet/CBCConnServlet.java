@@ -17,6 +17,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.gui.CapBankTableModel;
 import com.cannontech.cbc.gui.SubBusTableModel;
+import com.cannontech.cbc.messages.CBCStates;
 import com.cannontech.cbc.messages.CBCSubAreaNames;
 import com.cannontech.cbc.web.CBCCommandExec;
 import com.cannontech.cbc.web.CapControlWebAnnex;
@@ -25,8 +26,11 @@ import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.state.State;
 import com.cannontech.message.dispatch.message.Registration;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 
-public class CBCConnServlet extends javax.servlet.http.HttpServlet implements java.util.Observer 
+public class CBCConnServlet extends javax.servlet.http.HttpServlet implements MessageListener 
 {		
 	// Key used to store instances of this in the servlet context
 	public static final String SERVLET_CONTEXT_ID = "CBCConnection";
@@ -43,7 +47,7 @@ public class CBCConnServlet extends javax.servlet.http.HttpServlet implements ja
 
 public synchronized boolean isConnected()
 {
-	return getConnection().isConnValid();
+	return getConnection().isValid();
 }
 
 public synchronized CBCClientConnection getConnection()
@@ -60,10 +64,19 @@ public synchronized CBCClientConnection getConnection()
 		//The CBC server does not take this registration for now, dont use it
 		//conn = new CBCClientConnection( reg );
 		conn = new CBCClientConnection();
-		conn.addObserver( this );
 		
+		conn.addMessageListener( this );
+
+
 		//start the conn!!!
-		conn.startInThread();	
+		try
+		{
+			conn.connect( 15000 );	
+		}
+		catch( java.io.IOException ex )
+		{
+			CTILogger.error( ex );
+		}
 	}
 			
 	return conn;
@@ -231,28 +244,28 @@ private synchronized void executeCommand( int cmdID_, String cmdType_, int paoID
 }
 
 
-/**
- * This method is called whenever the observed object is changed. An
- * application calls an <tt>Observable</tt> object's
- * <code>notifyObservers</code> method to have all the object's
- * observers notified of the change.
- *
- * @param   o     the observable object.
- * @param   arg   an argument passed to the <code>notifyObservers</code>
- *                 method.
- */
-public synchronized void update(java.util.Observable o, java.lang.Object arg) 
+public void messageReceived( MessageEvent e )
 {
-	CTILogger.debug( getClass().getName() + ": received type: " + arg.getClass());
+	Message in = e.getMessage();
 
+	CTILogger.debug( getClass().getName() + ": received type: " + in.getClass());
 
-	if( arg instanceof CBCSubAreaNames )
+	if( in instanceof CBCSubAreaNames )
 	{
-		updateAreaList( (CBCSubAreaNames)arg );
+		updateAreaList( (CBCSubAreaNames)in );
 	}
-	else if( arg instanceof State[] )
+	else if( in instanceof CBCStates )
 	{
-		State[] states = (State[])arg;
+		CBCStates cbcStates = (CBCStates)in;
+		State[] states = new State[cbcStates.getNumberOfStates()];
+		
+		for( int i = 0; i < cbcStates.getNumberOfStates(); i++ )
+		{
+			cbcStates.getState(i).setRawState( new Integer(i) ); // set the rawstate value
+			states[i] = cbcStates.getState(i);
+		}		
+
+
 		Color[][] colors = new Color[states.length][2];
 		String[] stateNames = new String[states.length];
 			
@@ -265,14 +278,6 @@ public synchronized void update(java.util.Observable o, java.lang.Object arg)
 
 		CapBankTableModel.setStates( colors, stateNames );			
 	}
-
-
-	//Clear the list table of schedules if the connection isn't good
-	if ( !getConnection().isConnValid() )
-	{
-		getAreaNames().clear();
-	}
-
 }
 
 }

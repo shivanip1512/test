@@ -4,24 +4,26 @@ package com.cannontech.cbc.gui;
  * This type was created in VisualAge.
  */
 import java.awt.Color;
-import java.awt.Font;
-import java.util.Observable;
 import java.util.Vector;
 
 import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.data.CapBankDevice;
 import com.cannontech.cbc.data.CapControlConst;
 import com.cannontech.cbc.data.SubBus;
+import com.cannontech.cbc.messages.CBCStates;
 import com.cannontech.cbc.messages.CBCSubstationBuses;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
+import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.login.ClientSession;
 
-public class SubBusTableModel extends javax.swing.table.AbstractTableModel implements java.util.Observer, com.cannontech.tdc.alarms.gui.AlarmTableModel, com.cannontech.common.gui.util.SortableTableModel
+public class SubBusTableModel extends javax.swing.table.AbstractTableModel implements MessageListener, com.cannontech.tdc.alarms.gui.AlarmTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
 	private CBCClientConnection connection = null;
 
@@ -78,9 +80,6 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 		//Pending subbus
 		Color.yellow
 	};
-
-   //the default font of our model	
-   private Font cellFont = new Font("dialog", Font.PLAIN, 12);
 
 	public static final java.util.Comparator SUB_AREA_COMPARATOR = new java.util.Comparator()
 	{
@@ -174,16 +173,7 @@ public java.awt.Color getCellBackgroundColor(int row, int col)
 	//since we dont alamr yet, just return the default color
 	return CapControlTableModel.DEFUALT_BGCOLOR;
 }
-/**
- * This method was created in VisualAge.
- * @return java.awt.Font
- * @param row int
- * @param col int
- */
-public Font getCellFont(int row, int col) 
-{
-	return cellFont;
-}
+
 /**
  * This method was created in VisualAge.
  * @return java.awt.Color
@@ -613,18 +603,6 @@ public synchronized void setFilter(java.lang.String newFilter)
 		}
 	});
 }
-/**
- * Insert the method's description here.
- * Creation date: (8/14/00 2:16:54 PM)
- * @param int
- */
-public void setFontValues(String name, int size) 
-{
-	cellFont = new Font( 
-                  name, 
-                  cellFont.getStyle(), 
-                  size );
-}
 
 
 private void handleDeletedSub( CBCSubstationBuses msg )
@@ -678,55 +656,72 @@ private void removeControlArea( SubBus bus_ )
  * @param source Observable
  * @param obj java.lang.Object
  */
-public synchronized void update(final Observable source, final Object obj ) 
-{	
-	javax.swing.SwingUtilities.invokeLater( new Runnable()
-	{
-	public void run()
-	{
+public void messageReceived( com.cannontech.message.util.MessageEvent e )
+{
+	Message in = e.getMessage();
+	int oldRowCount = getRowCount();
 
-	if( source instanceof CBCClientConnection )
-	{
-		int oldRowCount = getRowCount();
 
-		if( obj instanceof com.cannontech.database.db.state.State[] )
-		{
-			StateTableModelEvent e = 
-				new StateTableModelEvent(SubBusTableModel.this, 0, getRowCount()-1,
-						javax.swing.event.TableModelEvent.ALL_COLUMNS, 
-						javax.swing.event.TableModelEvent.UPDATE);
-			
-			e.setStates( (com.cannontech.database.db.state.State[])obj );
+	if( in instanceof CBCStates )
+	{			
+		CBCStates cbcStates = (CBCStates)in;
+		CTILogger.info( new ModifiedDate(new java.util.Date().getTime()).toString()
+				+ " : Got a CapBank State Message with " + cbcStates.getNumberOfStates()
+				+ " states" );
 
-			fireTableChanged( e );
+		
+		com.cannontech.database.db.state.State[] states =
+				new com.cannontech.database.db.state.State[cbcStates.getNumberOfStates()];
+		
+		synchronized ( states ) 
+		{		
+			for( int i = 0; i < cbcStates.getNumberOfStates(); i++ )
+			{
+				cbcStates.getState(i).setRawState( new Integer(i) ); // set the rawstate value
+				states[i] = cbcStates.getState(i);
+			}		
 		}
-		else if( obj instanceof CBCSubstationBuses )
+		
+
+		StateTableModelEvent stMe = 
+			new StateTableModelEvent(SubBusTableModel.this, 0, getRowCount()-1,
+					javax.swing.event.TableModelEvent.ALL_COLUMNS, 
+					javax.swing.event.TableModelEvent.UPDATE);
+		
+		stMe.setStates( states );
+
+		fireTableChanged( stMe );
+	}
+	else if( in instanceof CBCSubstationBuses )
+	{
+		CBCSubstationBuses busesMsg = (CBCSubstationBuses)in;
+		for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )
 		{
-			CBCSubstationBuses busesMsg = (CBCSubstationBuses)obj;
-			
-			//since this is all the subs, lets just clear what we currently have
-			if( busesMsg.isSubDeleted() )
-				handleDeletedSub( busesMsg );
-				//getAllSubBuses().clear();
-
-
-			SubBus[] allBuses = new SubBus[busesMsg.getNumberOfBuses()];
-			for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )			
-				allBuses[i] = busesMsg.getSubBusAt(i);
-			
-			updateSubBuses( allBuses );
+			CTILogger.info(new ModifiedDate(new java.util.Date().getTime()).toString()
+					+ " : Received SubBus - " + busesMsg.getSubBusAt(i).getCcName() 
+					+ "/" + busesMsg.getSubBusAt(i).getCcArea() );
 		}
+		
+		
+		
+		//since this is all the subs, lets just clear what we currently have
+		if( busesMsg.isSubDeleted() )
+			handleDeletedSub( busesMsg );
+			//getAllSubBuses().clear();
 
-		//by using fireTableRowsUpdated(int,int) we do not clear the table selection		
-		if( oldRowCount == getRowCount() )
-			fireTableRowsUpdated( 0, getRowCount()-1 );
-		else
-			fireTableDataChanged();
+
+		SubBus[] allBuses = new SubBus[busesMsg.getNumberOfBuses()];
+		for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )			
+			allBuses[i] = busesMsg.getSubBusAt(i);
+		
+		updateSubBuses( allBuses );
 	}
 
-
-	}
-	});
+	//by using fireTableRowsUpdated(int,int) we do not clear the table selection		
+	if( oldRowCount == getRowCount() )
+		fireTableRowsUpdated( 0, getRowCount()-1 );
+	else
+		fireTableDataChanged();
 
 }
 /**

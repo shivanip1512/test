@@ -277,7 +277,9 @@ public String[] createPrintableText()
 public void destroy() 
 {
 	getCapBankTableModel().clear();
+	getConnectionWrapper().deleteObserver( this );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (12/3/2001 11:47:38 AM)
@@ -1003,7 +1005,7 @@ public SubBusTableModel getSubBusTableModel()
 		// Set up the subbus table
 		subBusTableModel = new SubBusTableModel();
 		subBusTableModel.setConnection( getConnectionWrapper() );
-		getConnectionWrapper().addObserver( subBusTableModel );		
+		getConnectionWrapper().addMessageListener( subBusTableModel );		
 	}
 
 	return subBusTableModel;
@@ -1169,8 +1171,7 @@ private void initialize()
 	createMessagePanel();	
 
 	//Observer connection state changes
-	com.cannontech.cbc.data.CBCClientConnection conn = getConnectionWrapper();	
-	conn.addObserver(this);
+	getConnectionWrapper().addObserver(this);
 	update( getConnectionWrapper(), getConnectionWrapper() );
 	
 }
@@ -1454,7 +1455,7 @@ public void update(java.util.Observable o, Object val)
 	//notifying us of a change in the connections state
 	com.cannontech.cbc.data.CBCClientConnection conn = (com.cannontech.cbc.data.CBCClientConnection)o;
 
-	boolean validConn = conn.isConnValid();
+	boolean validConn = conn.isValid();
 	
 	//Clear the list table of schedules if the connection isn't good
 	if ( !validConn && (lastConnectionStatus || startingUp) )
@@ -1480,13 +1481,7 @@ public void update(java.util.Observable o, Object val)
 		else
 			title += "   [Not Connected to CBCServer]";
 		
-		final String t = title;
-		javax.swing.SwingUtilities.invokeLater( new Runnable()
-		{
-		public void run()
-		{		
-			f.setTitle(t);
-		}});
+		f.setTitle( title );
 	}
 
 	lastConnectionStatus = validConn;
