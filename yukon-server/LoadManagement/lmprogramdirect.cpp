@@ -236,6 +236,11 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG c
                         ULONG shedTime = currentGearObject->getMethodPeriod();
                         ULONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
 
+                        if( numberOfGroupsToTake == 0 )
+                        {
+                            numberOfGroupsToTake = _lmprogramdirectgroups.entries();
+                        }
+
                         for(ULONG i=0;i<numberOfGroupsToTake;i++)
                         {
                             CtiLMGroupBase* currentLMGroup = findGroupToTake(currentGearObject);
@@ -358,6 +363,11 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG c
                         ULONG sendRate = currentGearObject->getMethodRate();
                         ULONG shedTime = currentGearObject->getMethodPeriod();
                         ULONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
+
+                        if( numberOfGroupsToTake == 0 )
+                        {
+                            numberOfGroupsToTake = _lmprogramdirectgroups.entries();
+                        }
 
                         for(ULONG i=0;i<numberOfGroupsToTake;i++)
                         {
@@ -624,6 +634,11 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                     ULONG sendRate = currentGearObject->getMethodRate();
                     ULONG shedTime = currentGearObject->getMethodPeriod();
                     ULONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
+
+                    if( numberOfGroupsToTake == 0 )
+                    {
+                        numberOfGroupsToTake = _lmprogramdirectgroups.entries();
+                    }
 
                     for(ULONG i=0;i<numberOfGroupsToTake;i++)
                     {
@@ -1160,6 +1175,11 @@ void CtiLMProgramDirect::updateProgramControlForGearChange(ULONG previousGearNum
                     ULONG shedTime = currentGearObject->getMethodPeriod();
                     ULONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
 
+                    if( numberOfGroupsToTake == 0 )
+                    {
+                        numberOfGroupsToTake = _lmprogramdirectgroups.entries();
+                    }
+
                     for(ULONG j=0;j<numberOfGroupsToTake;j++)
                     {
                         CtiLMGroupBase* currentLMGroup = findGroupToTake(currentGearObject);
@@ -1228,6 +1248,11 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG nowInSeconds, CtiMu
                 ULONG refreshRate = currentGearObject->getMethodRate();
                 ULONG shedTime = currentGearObject->getMethodPeriod();
                 ULONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
+
+                if( numberOfGroupsToTake == 0 )
+                {
+                    numberOfGroupsToTake = _lmprogramdirectgroups.entries();
+                }
 
                 for(ULONG i=0;i<_lmprogramdirectgroups.entries();i++)
                 {
@@ -1454,6 +1479,11 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG nowInSeconds, CtiMu
                 ULONG sendRate = currentGearObject->getMethodRate();
                 ULONG shedTime = currentGearObject->getMethodPeriod();
                 ULONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
+
+                if( numberOfGroupsToTake == 0 )
+                {
+                    numberOfGroupsToTake = _lmprogramdirectgroups.entries();
+                }
 
                 ULONG sendRateEndInSeconds = (getLastControlSent().hour() * 3600) +
                                              (getLastControlSent().minute() * 60) +
