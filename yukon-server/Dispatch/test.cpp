@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/28 17:59:26 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/03 20:18:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,6 +76,39 @@ void main(int argc, char **argv)
 
 
 #if 0
+
+
+   RWTime now;
+
+   now = now.seconds() - (now.seconds() % 3600);   // hour aligned now!
+
+   RWTime startdt;
+   RWTime stopdt;
+
+   int starthour = (now.hour() + 1) % 24;      // This is 24 hours ago.
+   int i;
+
+
+   for(i = 23 ; starthour != now.hour() ; starthour = (starthour + 1) % 24, i--)
+   {
+       startdt = (now.seconds() - (3600 * i));
+       stopdt = RWTime(startdt.seconds() + 3600);
+
+        {
+            cout << "Hour " << starthour << endl;
+            cout << "  Start " << startdt << endl;
+            cout << "  Stop  " << stopdt  << endl;
+        }
+   }
+
+   startdt = now;
+   stopdt = (RWTime(now.seconds() + 3600));
+
+   {
+       cout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+       cout << "  Start " << startdt << endl;
+       cout << "  Stop  " << stopdt  << endl;
+   }
 
    // An ugly little test of the counter class.
    CtiCounter cnt1, cnt2;
