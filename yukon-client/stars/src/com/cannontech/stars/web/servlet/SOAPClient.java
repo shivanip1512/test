@@ -27,9 +27,7 @@ import com.cannontech.stars.web.action.DeleteCustAccountAction;
 import com.cannontech.stars.web.action.DeleteLMHardwareAction;
 import com.cannontech.stars.web.action.DeleteServiceRequestAction;
 import com.cannontech.stars.web.action.GetCustAccountAction;
-import com.cannontech.stars.web.action.GetEnergyCompanySettingsAction;
 import com.cannontech.stars.web.action.GetLMCtrlHistAction;
-import com.cannontech.stars.web.action.LoginAction;
 import com.cannontech.stars.web.action.MultiAction;
 import com.cannontech.stars.web.action.NewCustAccountAction;
 import com.cannontech.stars.web.action.ProgramOptOutAction;
@@ -158,11 +156,13 @@ public class SOAPClient extends HttpServlet {
 		if (action.equalsIgnoreCase("RefreshCache")) {
 			if (isServerLocal()) SOAPServer.refreshCache();
 			if (session != null) session.invalidate();
-			resp.sendRedirect( req.getContextPath() + LOGIN_URL ); return;
+			resp.sendRedirect( req.getContextPath() + LOGIN_URL );
+			return;
 		}
 		
-		if (session == null && !action.endsWith("Login")) {
-			resp.sendRedirect( req.getContextPath() + LOGIN_URL ); return;
+		if (session == null) {
+			resp.sendRedirect( req.getContextPath() + LOGIN_URL );
+			return;
 		}
     	
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
@@ -177,26 +177,7 @@ public class SOAPClient extends HttpServlet {
 		String errorURL = null;		// URL we should go to if action failed
 		ActionBase clientAction = null;
 		
-		if (action.equalsIgnoreCase("OperatorLogin")) {
-			MultiAction actions = new MultiAction();
-			actions.addAction( new LoginAction(), req, session );
-			actions.addAction( new GetEnergyCompanySettingsAction(), req, session );
-
-			clientAction = (ActionBase) actions;
-			destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-			errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
-		}
-		else if (action.equalsIgnoreCase("UserLogin")) {
-			MultiAction actions = new MultiAction();
-			actions.addAction( new LoginAction(), req, session );
-			actions.addAction( new GetEnergyCompanySettingsAction(), req, session );
-			actions.addAction( new GetCustAccountAction(), req, session );
-        	
-			clientAction = (ActionBase) actions;
-			destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-			errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
-		}
-		else if (action.equalsIgnoreCase("NewCustAccount")) {
+		if (action.equalsIgnoreCase("NewCustAccount")) {
 			clientAction = new NewCustAccountAction();
 			destURL = req.getContextPath() + "/operator/Consumer/NewFinal.jsp";
 			errorURL = req.getContextPath() + "/operator/Consumer/New.jsp";
@@ -210,8 +191,17 @@ public class SOAPClient extends HttpServlet {
 				}
 				
 				session.setAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD, actions );
-				resp.sendRedirect( req.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true" );
-				return;
+				
+				if (req.getParameter("Submit").equals("Done")) {
+					// Wizard terminated and submitted in the middle
+					destURL = errorURL = req.getContextPath() + "/operator/Consumer/NewFinal.jsp?Wizard=true";
+					session.setAttribute( ServletUtils.ATT_REDIRECT, destURL );
+					clientAction = actions;
+				}
+				else {
+					resp.sendRedirect( req.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true" );
+					return;
+				}
 			}
 		}
 		else if (action.equalsIgnoreCase("ProgramSignUp")) {
@@ -392,8 +382,15 @@ public class SOAPClient extends HttpServlet {
 					return;
 				}
 				
-				resp.sendRedirect( req.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true" );
-				return;
+				if (req.getParameter("Done") == null) {
+					resp.sendRedirect( req.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true" );
+					return;
+				}
+				else {	// Wizard terminated and submitted in the middle
+					destURL = errorURL = req.getContextPath() + "/operator/Consumer/NewFinal.jsp?Wizard=true";
+					session.setAttribute( ServletUtils.ATT_REDIRECT, destURL );
+					clientAction = actions;
+				}
 			}
 		}
 		else if (action.equalsIgnoreCase("UpdateLMHardware")) {
