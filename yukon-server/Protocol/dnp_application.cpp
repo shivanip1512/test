@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/11/15 14:08:04 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/12/21 17:20:44 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -160,7 +160,7 @@ void CtiDNPApplication::processInput( void )
 {
     _inHasPoints = false;
 
-    //  mere output...
+    if( gDNPVerbose )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
@@ -200,7 +200,6 @@ void CtiDNPApplication::processInput( void )
         dout << endl << endl;
     }
 
-    //  real code
     if( _appRsp.ctrl.app_confirm )
     {
         setCommand(RequestConfirm);
