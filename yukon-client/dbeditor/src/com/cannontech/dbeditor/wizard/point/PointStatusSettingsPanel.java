@@ -3,6 +3,7 @@ package com.cannontech.dbeditor.wizard.point;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.database.data.lite.LiteState;
 
 /**
  * This type was created in VisualAge.
@@ -11,7 +12,6 @@ import com.cannontech.database.db.state.StateGroupUtils;
 public class PointStatusSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ItemListener {
 	private javax.swing.JComboBox ivjStateTableComboBox = null;
 	private javax.swing.JLabel ivjStateTableLabel = null;
-	private java.util.List allStateGroups = null;
 	private javax.swing.JComboBox ivjJComboBoxInitialState = null;
 	private javax.swing.JLabel ivjJLabelInitialState = null;
 /**
@@ -251,20 +251,14 @@ private void setInitialComboBoxes()
 		getJComboBoxInitialState().removeAllItems();
 	
 	//Load all the states for the stategroup
-	for(int i=0;i<allStateGroups.size();i++)
-	{
-		if( ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStateGroupID() == stateGroupID )
-		{
-			java.util.List statesList = ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStatesList();
-			for(int j=0;j<statesList.size();j++)
-			{				
-				getJComboBoxInitialState().addItem(((com.cannontech.database.data.lite.LiteState)statesList.get(j)));
-			}
-			break;
-		}
+	LiteState[] states = StateFuncs.getLiteStates(stateGroupID);
+	for(int j=0;j<states.length;j++)
+	{				
+		getJComboBoxInitialState().addItem(states[j]);
 	}
-	
+
 }
+	
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object
@@ -293,6 +287,7 @@ public void stateTableComboBox_ItemStateChanged(java.awt.event.ItemEvent itemEve
 
 	if( itemEvent.getStateChange() == java.awt.event.ItemEvent.SELECTED )
 		setInitialComboBoxes();
+		
 }
 /**
  * 
