@@ -1040,13 +1040,14 @@ APIRET IM_EX_CTIBASE CTISetPriority  (ULONG   ulScope,
 
    if(ulPriClass == 0) ulPriClass = GetPriorityClass((HANDLE)ulID);
 
-   if(SetPriorityClass((HANDLE)CurrentPID(), ulPriClass) )
-   {
-      return(!SetThreadPriority((HANDLE)CurrentTID(),      // CGP - This is a guess, should work though
-                                THREAD_PRIORITY_ABOVE_NORMAL));
-   }
+    if(SetPriorityClass(GetCurrentProcess(), ulPriClass) )
+    {
+        return(!SetThreadPriority((HANDLE)GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL));
+    }
    else
    {
+        DWORD lerror = GetLastError();
+        printf("Error in CTISetPriority %d\n", lerror);
       return(1);
    }
 
