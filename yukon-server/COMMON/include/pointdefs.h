@@ -195,9 +195,6 @@
 
 #define OFFSET_HIGHEST_CURRENT_OFFSET              160
 
-//  to be added to a point to yield the load profile equivalent
-//    (the first load profile demand accumulator on an MCT is 101, for example.)
-#define OFFSET_LOADPROFILE_OFFSET                  100
 
 /*
  * Qualities are singular (non-bit-masked) and based upon point values in conjunction with the tags
