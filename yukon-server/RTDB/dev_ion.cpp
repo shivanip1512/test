@@ -1011,7 +1011,7 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
 void CtiDeviceION::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
     Inherited::getSQL(db, keyTable, selector);
-    CtiTableDeviceDNP::getSQL(db, keyTable, selector);
+    CtiTableDeviceAddress::getSQL(db, keyTable, selector);
 }
 
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/10/12 01:13:28 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/04/14 16:39:01 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,7 @@
 
 #include "dev_remote.h"
 #include "prot_dnp.h"
-#include "tbl_dv_dnp.h"
+#include "tbl_dv_address.h"
 
 #include <map>
 
@@ -41,8 +41,8 @@ private:
 
 protected:
 
-    CtiProtocolDNP    _dnp;
-    CtiTableDeviceDNP _dnpAddress;
+    CtiProtocolDNP        _dnp;
+    CtiTableDeviceAddress _dnpAddress;
 
 public:
 

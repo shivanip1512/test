@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2004/03/02 20:54:54 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2004/04/14 16:39:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -880,7 +880,7 @@ RWCString CtiDeviceDNP::getDescription(const CtiCommandParser &parse) const
 void CtiDeviceDNP::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
    Inherited::getSQL(db, keyTable, selector);
-   CtiTableDeviceDNP::getSQL(db, keyTable, selector);
+   CtiTableDeviceAddress::getSQL(db, keyTable, selector);
 }
 
 void CtiDeviceDNP::DecodeDatabaseReader(RWDBReader &rdr)

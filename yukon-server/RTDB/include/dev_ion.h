@@ -22,7 +22,7 @@
 #include "dev_meter.h"
 #include "mgr_point.h"
 
-#include "tbl_dv_dnp.h"
+#include "tbl_dv_address.h"
 #include "prot_ion.h"
 
 class IM_EX_DEVDB CtiDeviceION : public CtiDeviceRemote
@@ -33,8 +33,8 @@ private:
 
     int _postControlScanCount;
 
-    CtiProtocolION    _ion;
-    CtiTableDeviceDNP _address;
+    CtiProtocolION        _ion;
+    CtiTableDeviceAddress _address;
 
     RWCString _collectionGroup,
               _testCollectionGroup,
