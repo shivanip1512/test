@@ -1382,7 +1382,7 @@ alter table TOUDeviceMapping
    add constraint FK_TOU_Dev foreign key (DeviceID)
       references DEVICE (DEVICEID);
 alter table TOUDeviceMapping
-   add constraint FK_TOUd_TOUSc2 foreign key (TOUScheduleID)
+   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
       references TOUSchedule (TOUScheduleID);
 
 create table TOURateOffset  (
@@ -1393,7 +1393,7 @@ create table TOURateOffset  (
 alter table TOURateOffset
    add constraint PK_TOURATEOFFSET primary key (TOUScheduleID, SwitchOffset);
 alter table TOURateOffset
-   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
+   add constraint FK_TOUr_TOUSc foreign key (TOUScheduleID)
       references TOUSchedule (TOUScheduleID);
 
 

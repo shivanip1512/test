@@ -891,7 +891,7 @@ alter table TOUDeviceMapping
       references DEVICE (DEVICEID);
 /* @error ignore */
 alter table TOUDeviceMapping
-   add constraint FK_TOUd_TOUSc2 foreign key (TOUScheduleID)
+   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
       references TOUSchedule (TOUScheduleID);
 
 /* @error ignore */
@@ -905,7 +905,7 @@ alter table TOURateOffset
    add constraint PK_TOURATEOFFSET primary key (TOUScheduleID, SwitchOffset);
 /* @error ignore */
 alter table TOURateOffset
-   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
+   add constraint FK_TOUr_TOUSc foreign key (TOUScheduleID)
       references TOUSchedule (TOUScheduleID);
 
 

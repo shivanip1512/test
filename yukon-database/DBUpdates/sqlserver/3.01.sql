@@ -1023,7 +1023,7 @@ alter table TOURateOffset
 go
 /* @error ignore */
 alter table TOURateOffset
-   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
+   add constraint FK_TOUr_TOUSc foreign key (TOUScheduleID)
       references TOUSchedule (TOUScheduleID);
 go
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     9/30/2004 10:26:41 AM                        */
+/* Created on:     9/30/2004 4:03:28 PM                         */
 /*==============================================================*/
 
 
@@ -3976,6 +3976,58 @@ alter table TEMPLATECOLUMNS
 
 
 /*==============================================================*/
+/* Table : TOUDeviceMapping                                     */
+/*==============================================================*/
+
+
+create table TOUDeviceMapping  (
+   TOUScheduleID        numeric                          not null,
+   DeviceID             numeric                          not null
+)
+/
+
+
+alter table TOUDeviceMapping
+   add constraint PK_TOUDEVICEMAPPING primary key (TOUScheduleID, DeviceID)
+/
+
+
+/*==============================================================*/
+/* Table : TOURateOffset                                        */
+/*==============================================================*/
+
+
+create table TOURateOffset  (
+   TOUScheduleID        numeric                          not null,
+   SwitchRate           varchar(4)                       not null,
+   SwitchOffset         numeric                          not null
+)
+/
+
+
+alter table TOURateOffset
+   add constraint PK_TOURATEOFFSET primary key (TOUScheduleID, SwitchOffset)
+/
+
+
+/*==============================================================*/
+/* Table : TOUSchedule                                          */
+/*==============================================================*/
+
+
+create table TOUSchedule  (
+   TOUScheduleID        numeric                          not null,
+   TOUScheduleName      varchar(32)                      not null
+)
+/
+
+
+alter table TOUSchedule
+   add constraint PK_TOUSCHEDULE primary key (TOUScheduleID)
+/
+
+
+/*==============================================================*/
 /* Table : TagLog                                               */
 /*==============================================================*/
 
@@ -7300,6 +7352,24 @@ alter table MACSchedule
 alter table LMProgramConstraints
    add constraint FK_SesSch_LmPrC foreign key (SeasonScheduleID)
       references SeasonSchedule (ScheduleID)
+/
+
+
+alter table TOUDeviceMapping
+   add constraint FK_TOU_Dev foreign key (DeviceID)
+      references DEVICE (DEVICEID)
+/
+
+
+alter table TOUDeviceMapping
+   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID)
+/
+
+
+alter table TOURateOffset
+   add constraint FK_TOUr_TOUSc foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID)
 /
 
 
