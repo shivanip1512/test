@@ -586,7 +586,27 @@ public String getSelectedDays8Chars()
 	return buff.toString();
 }
 
+public String getSelectedDays7Chars() 
+{
+	StringBuffer buff = new StringBuffer("NNNNNNN");
+	
+	if( getJCheckBoxSunday().isSelected() )
+		buff.setCharAt( 0, 'Y' );		
+	if( getJCheckBoxMonday().isSelected() )
+		buff.setCharAt( 1, 'Y' );
+	if( getJCheckBoxTuesday().isSelected() )
+		buff.setCharAt( 2, 'Y' );
+	if( getJCheckBoxWednesday().isSelected() )
+		buff.setCharAt( 3, 'Y' );
+	if( getJCheckBoxThursday().isSelected() )
+		buff.setCharAt( 4, 'Y' );
+	if( getJCheckBoxFriday().isSelected() )
+		buff.setCharAt( 5, 'Y' );
+	if( getJCheckBoxSaturday().isSelected() )
+		buff.setCharAt( 6, 'Y' );
 
+	return buff.toString();
+}
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -719,6 +739,11 @@ public void setHolidayVisible(boolean value)
 	getJCheckBoxHoliday().setVisible( value );
 }
 
+public void setHolidaySelected(boolean value)
+{
+	getJCheckBoxHoliday().setSelected(value);
+}
+
 
 /**
  * Insert the method's description here.
@@ -825,4 +850,6 @@ public void setSelectedDays( int[] days )
 	else
 		getJCheckBoxMonday().setSelected( true );
 }
+
+
 }
