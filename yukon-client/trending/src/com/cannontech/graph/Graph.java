@@ -847,16 +847,18 @@ public void getDataNow(java.util.List paobjects)
 				getClientConnection().write(dbChange[i]);
 			}
 			/**TODO think about this a bit more, is this really what we want to do?*/
-			if( getFreeChart().getPlot() instanceof org.jfree.chart.plot.CategoryPlot)
-			{
-				((CategoryPlot)getFreeChart().getPlot()).setDataset(null);
-				((CategoryPlot)getFreeChart().getPlot()).setSecondaryDataset(0, null);
-			}
-			else if( getFreeChart().getPlot() instanceof org.jfree.chart.plot.XYPlot)
-			{
-				((XYPlot)getFreeChart().getPlot()).setDataset(null);
-				((XYPlot)getFreeChart().getPlot()).setSecondaryDataset(0, null);
-			}
+//			if( getFreeChart().getPlot() instanceof org.jfree.chart.plot.CategoryPlot)
+//			{
+//				((CategoryPlot)getFreeChart().getPlot()).setDataset(null);
+//				((CategoryPlot)getFreeChart().getPlot()).setSecondaryDataset(0, null);
+////				((CategoryPlot)getFreeChart().getPlot()).setDataset(1, null);
+//			}
+//			else if( getFreeChart().getPlot() instanceof org.jfree.chart.plot.XYPlot)
+//			{
+//				((XYPlot)getFreeChart().getPlot()).setDataset(null);
+//				((CategoryPlot)getFreeChart().getPlot()).setSecondaryDataset(0, null);
+////				((XYPlot)getFreeChart().getPlot()).setDataset(1, null);
+//			}
 		}
 		catch( com.cannontech.database.TransactionException e )
 		{
