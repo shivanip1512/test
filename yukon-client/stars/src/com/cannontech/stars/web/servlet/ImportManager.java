@@ -2546,7 +2546,7 @@ public class ImportManager extends HttpServlet {
 		else if (action.equalsIgnoreCase("ImportCustAccounts"))
 			importCustomerAccounts( user, req, session );
 		else if (action.equalsIgnoreCase("PreprocessStarsData"))
-			preprocessStarsData( user, req, session );
+			preprocessStarsData( user, items, session );
 		else if (action.equalsIgnoreCase("AssignSelectionList"))
 			assignSelectionList( user, req, session );
 		else if (action.equalsIgnoreCase("ImportStarsData"))
@@ -2622,27 +2622,77 @@ public class ImportManager extends HttpServlet {
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
-	private void preprocessStarsData(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+	private void preprocessStarsData(StarsYukonUser user, List items, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
-			File custFile = new File( req.getParameter("CustFile") );
-			File servInfoFile = new File( req.getParameter("ServInfoFile") );
-			File invFile = new File( req.getParameter("InvFile") );
-			File recvrFile = new File( req.getParameter("RecvrFile") );
-			File meterFile = new File( req.getParameter("MeterFile") );
-			File loadInfoFile = new File( req.getParameter("LoadInfoFile") );
-			File acInfoFile = new File( req.getParameter("ACInfoFile") );
-			File whInfoFile = new File( req.getParameter("WHInfoFile") );
-			File genInfoFile = new File( req.getParameter("GenInfoFile") );
-			File irrInfoFile = new File( req.getParameter("IrrInfoFile") );
-			File gdryInfoFile = new File( req.getParameter("GDryInfoFile") );
-			File hpInfoFile = new File( req.getParameter("HPInfoFile") );
-			File shInfoFile = new File( req.getParameter("SHInfoFile") );
-			File dfInfoFile = new File( req.getParameter("DFInfoFile") );
-			File genlInfoFile = new File( req.getParameter("GenlInfoFile") );
-			File workOrderFile = new File( req.getParameter("WorkOrderFile") );
-			File resInfoFile = new File( req.getParameter("ResInfoFile") );
+			File custFile = ServerUtils.getUploadFile( items, "CustFile" );
+			if (custFile == null)
+				throw new WebClientException("Failed to upload the customer file");
+			
+			File servInfoFile = ServerUtils.getUploadFile( items, "ServInfoFile" );
+			if (servInfoFile == null)
+				throw new WebClientException("Failed to upload the service info file");
+			
+			File invFile = ServerUtils.getUploadFile( items, "InvFile" );
+			if (custFile == null)
+				throw new WebClientException("Failed to upload the inventory file");
+			
+			File recvrFile = ServerUtils.getUploadFile( items, "RecvrFile" );
+			if (custFile == null)
+				throw new WebClientException("Failed to upload the receiver file");
+			
+			File meterFile = ServerUtils.getUploadFile( items, "MeterFile" );
+			if (custFile == null)
+				throw new WebClientException("Failed to upload the meter file");
+			
+			File loadInfoFile = ServerUtils.getUploadFile( items, "LoadInfoFile" );
+			if (custFile == null)
+				throw new WebClientException("Failed to upload the load info file");
+			
+			File acInfoFile = ServerUtils.getUploadFile( items, "ACInfoFile" );
+			if (custFile == null)
+				throw new WebClientException("Failed to upload the AC info file");
+			
+			File whInfoFile = ServerUtils.getUploadFile( items, "WHInfoFile" );
+			if (custFile == null)
+				throw new WebClientException("Failed to upload the WH info file");
+			
+			File genInfoFile = ServerUtils.getUploadFile( items, "GenInfoFile" );
+			if (custFile == null)
+				throw new WebClientException("Failed to upload the generator info file");
+			
+			File irrInfoFile = ServerUtils.getUploadFile( items, "IrrInfoFile" );
+			if (custFile == null)
+				throw new WebClientException("Failed to upload the irrigation info file");
+			
+			File gdryInfoFile = ServerUtils.getUploadFile( items, "GDryInfoFile" );
+			if (custFile == null)
+				throw new WebClientException("Failed to upload the grain dryer info file");
+			
+			File hpInfoFile = ServerUtils.getUploadFile( items, "HPInfoFile" );
+			if (custFile == null)
+				throw new WebClientException("Failed to upload the heat pump info file");
+			
+			File shInfoFile = ServerUtils.getUploadFile( items, "SHInfoFile" );
+			if (custFile == null)
+				throw new WebClientException("Failed to upload the storage heat info file");
+			
+			File dfInfoFile = ServerUtils.getUploadFile( items, "DFInfoFile" );
+			if (custFile == null)
+				throw new WebClientException("Failed to upload the dual fuel info file");
+			
+			File genlInfoFile = ServerUtils.getUploadFile( items, "GenlInfoFile" );
+			if (custFile == null)
+				throw new WebClientException("Failed to upload the general info file");
+			
+			File workOrderFile = ServerUtils.getUploadFile( items, "WorkOrderFile" );
+			if (custFile == null)
+				throw new WebClientException("Failed to upload the work order file");
+			
+			File resInfoFile = ServerUtils.getUploadFile( items, "ResInfoFile" );
+			if (custFile == null)
+				throw new WebClientException("Failed to upload the residence info file");
 			
 			ArrayList custLines = ServerUtils.readFile( custFile, true );
 			ArrayList servInfoLines = ServerUtils.readFile( servInfoFile );
