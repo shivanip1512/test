@@ -6,25 +6,40 @@ package com.cannontech.graph;
  * Creation date: (10/23/00 3:24:57 PM)
  * @author: 
  */
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.gui.util.ColorComboBoxCellRenderer;
+import com.cannontech.common.gui.util.ColorTableCellRenderer;
+import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.gui.util.CtiTreeCellRenderer;
+import com.cannontech.common.gui.util.TreeViewPanel;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.graph.GDSTypes;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
+import com.cannontech.database.model.DBTreeNode;
+import com.cannontech.database.model.DeviceTree_CustomPointsModel;
+import com.cannontech.database.model.DummyTreeNode;
+import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.graph.gds.tablemodel.GDSTableModel;
+import com.cannontech.util.ServletUtil;
 public class CreateGraphPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener
 {
 	public static final int OK = 1;
 	public static final int CANCEL = 2;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	private int buttonPushed = CANCEL;
-	private com.cannontech.database.model.DeviceTree_CustomPointsModel graphPointsModel = null;
-	private com.cannontech.database.model.DeviceTree_CustomPointsModel usagePointsModel = null;
+	private DeviceTree_CustomPointsModel graphPointsModel = null;
+	private DeviceTree_CustomPointsModel usagePointsModel = null;
 	private GraphColors graphColors;
 	private javax.swing.JButton ivjThresholdsButton = null;
-	private com.cannontech.database.data.graph.GraphDefinition value;
+	private GraphDefinition value;
 	private javax.swing.JPanel ivjPointOptionsPanel = null;
 	private javax.swing.JButton ivjAddGDSButton_Graph = null;
 	private javax.swing.JPanel ivjAddRemoveButtonsPanel_Graph = null;
@@ -42,7 +57,7 @@ public class CreateGraphPanel extends com.cannontech.common.gui.util.DataInputPa
 	private javax.swing.JButton ivjOkButton = null;
 	private javax.swing.JPanel ivjOkCancelButtonsPanel = null;
 	private javax.swing.JPanel ivjJPanel1 = null;
-	private com.cannontech.common.gui.util.TreeViewPanel ivjTreeViewPanel = null;
+	private TreeViewPanel ivjTreeViewPanel = null;
 	private javax.swing.JComboBox ivjPrimaryPointComboBox = null;
 	private javax.swing.JLabel ivjPrimaryPointLabel = null;
 
@@ -105,15 +120,15 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		if( getTypeComboBox().getModel().getSelectedItem() instanceof String)
 		{
 			String item = (String)getTypeComboBox().getModel().getSelectedItem();
-			if(com.cannontech.util.ServletUtil.parseDateStringLiberally(item) != null)
+			if(ServletUtil.parseDateStringLiberally(item) != null)
 			{
 				//If item not already in ComboBox Model, add it to the model.
-				if( ((javax.swing.DefaultComboBoxModel)getTypeComboBox().getModel()).getIndexOf(item) < 0)
-					((javax.swing.DefaultComboBoxModel)getTypeComboBox().getModel()).addElement(item);
+				if( ((DefaultComboBoxModel)getTypeComboBox().getModel()).getIndexOf(item) < 0)
+					((DefaultComboBoxModel)getTypeComboBox().getModel()).addElement(item);
 			}
 
 			if( getTypeComboBox().getSelectedItem().equals("mm/dd/yy") ||
-				(com.cannontech.util.ServletUtil.parseDateStringLiberally((String)getTypeComboBox().getSelectedItem())!= null))
+				(ServletUtil.parseDateStringLiberally((String)getTypeComboBox().getSelectedItem())!= null))
 				getTypeComboBox().setEditable(true);	//Date types are editable comboBox text field
 			else
 				getTypeComboBox().setEditable(false);
@@ -124,32 +139,32 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 /**
  * Comment
  */
-public void addGDS_ActionPerformed(javax.swing.tree.DefaultMutableTreeNode node)
+public void addGDS_ActionPerformed(DefaultMutableTreeNode node)
 {
 	if( node == null)
 		return;
-	com.cannontech.database.data.lite.LitePoint pt = null;
+	LitePoint pt = null;
 	String deviceName = null;
 	
 	//Get the DEVICE Object selected in the tree.
 	Object tempNode = node;
-	while (tempNode instanceof javax.swing.tree.DefaultMutableTreeNode &&
-			((javax.swing.tree.DefaultMutableTreeNode)tempNode).getParent() !=((javax.swing.tree.DefaultMutableTreeNode)tempNode).getRoot())	//root node is instance of TreeNode
+	while (tempNode instanceof DefaultMutableTreeNode &&
+			((DefaultMutableTreeNode)tempNode).getParent() !=((DefaultMutableTreeNode)tempNode).getRoot())	//root node is instance of TreeNode
 	{
-		tempNode = ((javax.swing.tree.DefaultMutableTreeNode)tempNode).getParent();
+		tempNode = ((DefaultMutableTreeNode)tempNode).getParent();
 	}
-	deviceName = ((com.cannontech.database.data.lite.LiteYukonPAObject)((javax.swing.tree.DefaultMutableTreeNode)tempNode).getUserObject()).getPaoName();
+	deviceName = ((LiteYukonPAObject)((DefaultMutableTreeNode)tempNode).getUserObject()).getPaoName();
 	
-	if( node.getUserObject() instanceof com.cannontech.database.data.lite.LitePoint)	//  The selected node is one point
+	if( node.getUserObject() instanceof LitePoint)	//  The selected node is one point
 	{
-		pt = (com.cannontech.database.data.lite.LitePoint) node.getUserObject();
+		pt = (LitePoint) node.getUserObject();
 
 		// Create the GDS to add in the tables.
 		GraphDataSeries gds = createGDS(pt, deviceName );
 		GDSTableModel model = (GDSTableModel) getGraphGDSTable().getModel();
 		model.addRow( gds );
 	}
-	else if( node instanceof javax.swing.tree.DefaultMutableTreeNode )	// The device and all points are added to the GDS, e loop through the children.
+	else if( node instanceof DefaultMutableTreeNode )	// The device and all points are added to the GDS, e loop through the children.
 	{	
 		java.util.Enumeration e = node.children();
 		elementLoad(deviceName, e);
@@ -182,7 +197,7 @@ private void connEtoM1(javax.swing.event.CaretEvent arg1) {
  * @param point com.cannontech.database.data.lite.LitePoint
  * @param deviceName java.lang.String
  */
-public GraphDataSeries createGDS(com.cannontech.database.data.lite.LitePoint point, String deviceName)
+public GraphDataSeries createGDS(LitePoint point, String deviceName)
 {
 	GraphDataSeries gds = new GraphDataSeries();
 	gds.setPointID(new Integer( point.getPointID() ));
@@ -216,18 +231,22 @@ public GraphDataSeries createGDS(com.cannontech.database.data.lite.LitePoint poi
 	
 	return gds;
 }
+/**
+ * @param devName
+ * @param e
+ */
 private void elementLoad(String devName, java.util.Enumeration e)
 {
-	com.cannontech.database.data.lite.LitePoint pt = null;
+	LitePoint pt = null;
 	while( e.hasMoreElements() )
 	{
 		Object nextElem = e.nextElement();
-		if( nextElem instanceof com.cannontech.database.model.DummyTreeNode)
+		if( nextElem instanceof DummyTreeNode)
 		{
-			java.util.Enumeration e2 = ((com.cannontech.database.model.DummyTreeNode)nextElem).children();
+			java.util.Enumeration e2 = ((DummyTreeNode)nextElem).children();
 			while (e2.hasMoreElements())
 			{
-				pt = (com.cannontech.database.data.lite.LitePoint) ((com.cannontech.database.model.DBTreeNode) e2.nextElement()).getUserObject();
+				pt = (LitePoint) ((DBTreeNode) e2.nextElement()).getUserObject();
 
 				GraphDataSeries gds = createGDS(pt, devName);
 				GDSTableModel tModel = (GDSTableModel) getGraphGDSTable().getModel();
@@ -236,7 +255,7 @@ private void elementLoad(String devName, java.util.Enumeration e)
 		}
 		else 
 		{
-			pt = (com.cannontech.database.data.lite.LitePoint)((com.cannontech.database.model.DBTreeNode)nextElem).getUserObject();
+			pt = (LitePoint)((DBTreeNode)nextElem).getUserObject();
 
 			// Create the GDS to add in the tables.
 			GraphDataSeries gds = createGDS(pt, devName );
@@ -481,7 +500,7 @@ public GraphColors getGraphColors()
  * Creation date: (10/31/00 3:07:24 PM)
  * @return com.cannontech.database.data.graph.GraphDefinition
  */
-private com.cannontech.database.data.graph.GraphDefinition getGraphDefinitionValue()
+private GraphDefinition getGraphDefinitionValue()
 {
 	return value;
 }
@@ -519,7 +538,7 @@ private javax.swing.JTable getGraphGDSTable() {
 			ivjGraphGDSTable = new javax.swing.JTable();
 			ivjGraphGDSTable.setName("GraphGDSTable");
 			getGraphGDSScrollPane().setColumnHeaderView(ivjGraphGDSTable.getTableHeader());
-			ivjGraphGDSTable.setModel(new com.cannontech.graph.gds.tablemodel.GDSTableModel());
+			ivjGraphGDSTable.setModel(new GDSTableModel());
 			ivjGraphGDSTable.setCellSelectionEnabled(false);
 			ivjGraphGDSTable.setDoubleBuffered(false);
 			ivjGraphGDSTable.setBounds(0, 0, 200, 200);
@@ -576,10 +595,10 @@ private javax.swing.JTable getGraphGDSTable() {
 			*/
 			for( int i = 0 ; i < colors.length; i++ )
 			{
-				colorStrings[i] = com.cannontech.common.gui.util.Colors.getColorString(com.cannontech.common.gui.util.Colors.getColorID(colors[i]));
+				colorStrings[i] = Colors.getColorString(com.cannontech.common.gui.util.Colors.getColorID(colors[i]));
 			}
 			javax.swing.JComboBox colorComboBox = new javax.swing.JComboBox( colorStrings );
-			colorComboBox.setRenderer(new com.cannontech.common.gui.util.ColorComboBoxCellRenderer() );
+			colorComboBox.setRenderer(new ColorComboBoxCellRenderer() );
 			javax.swing.DefaultCellEditor colorEditor = new javax.swing.DefaultCellEditor(colorComboBox);
 
 //			javax.swing.JColorChooser colorChooser = new javax.swing.JColorChooser(java.awt.Color.BLUE);
@@ -590,7 +609,7 @@ private javax.swing.JTable getGraphGDSTable() {
 
 			colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN).setCellEditor(colorEditor);
 			javax.swing.table.TableColumn tblColumn = colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN);
-			tblColumn.setCellRenderer( new com.cannontech.common.gui.util.ColorTableCellRenderer() );
+			tblColumn.setCellRenderer( new ColorTableCellRenderer() );
 
 			javax.swing.JComboBox axisComboBox = new javax.swing.JComboBox( new String[] { "Left", "Right" } );
 			javax.swing.DefaultCellEditor axisEditor = new javax.swing.DefaultCellEditor(axisComboBox);
@@ -632,12 +651,12 @@ private javax.swing.JComboBox getTypeComboBox()
 	}
 	return typeComboBox;
 }
-private com.cannontech.database.model.DeviceTree_CustomPointsModel getGraphPointsModel()
+private DeviceTree_CustomPointsModel getGraphPointsModel()
 {
 	if( graphPointsModel == null)
 	{
-		graphPointsModel = new com.cannontech.database.model.DeviceTree_CustomPointsModel(true);
-		graphPointsModel.setIncludeUOFMType(com.cannontech.database.data.lite.LitePoint.POINT_UOFM_GRAPH);
+		graphPointsModel = new DeviceTree_CustomPointsModel(true);
+		graphPointsModel.setIncludeUOFMType(LitePoint.POINT_UOFM_GRAPH);
 	}
 	return graphPointsModel;
 }
@@ -1031,8 +1050,8 @@ public com.cannontech.common.gui.util.TreeViewPanel getTreeViewPanel() {
 			ivjTreeViewPanel = new com.cannontech.common.gui.util.TreeViewPanel();
 			ivjTreeViewPanel.setName("TreeViewPanel");
 			// user code begin {1}
-			ivjTreeViewPanel.setTreeModels( new com.cannontech.database.model.LiteBaseTreeModel[] { getGraphPointsModel(), getUsagePointsModel()} );
-			ivjTreeViewPanel.getTree().setCellRenderer( new com.cannontech.common.gui.util.CtiTreeCellRenderer() );
+			ivjTreeViewPanel.setTreeModels( new LiteBaseTreeModel[] { getGraphPointsModel(), getUsagePointsModel()} );
+			ivjTreeViewPanel.getTree().setCellRenderer( new CtiTreeCellRenderer() );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1042,12 +1061,12 @@ public com.cannontech.common.gui.util.TreeViewPanel getTreeViewPanel() {
 	}
 	return ivjTreeViewPanel;
 }
-private com.cannontech.database.model.DeviceTree_CustomPointsModel getUsagePointsModel()
+private DeviceTree_CustomPointsModel getUsagePointsModel()
 {
 	if( usagePointsModel == null)
 	{
-		usagePointsModel = new com.cannontech.database.model.DeviceTree_CustomPointsModel(true);
-		usagePointsModel.setIncludeUOFMType(com.cannontech.database.data.lite.LitePoint.POINT_UOFM_USAGE);
+		usagePointsModel = new DeviceTree_CustomPointsModel(true);
+		usagePointsModel.setIncludeUOFMType(LitePoint.POINT_UOFM_USAGE);
 	}
 	return usagePointsModel;
 }
@@ -1059,7 +1078,7 @@ private com.cannontech.database.model.DeviceTree_CustomPointsModel getUsagePoint
  */
 public Object getValue(Object object)
 {
-	com.cannontech.database.data.graph.GraphDefinition gDef;
+	GraphDefinition gDef;
 	com.cannontech.database.db.graph.GraphDefinition gDefInfo;
 
 	if (getGraphDefinitionValue() != null)
@@ -1069,7 +1088,7 @@ public Object getValue(Object object)
 	}
 	else
 	{
-		gDef = new com.cannontech.database.data.graph.GraphDefinition();
+		gDef = new GraphDefinition();
 		gDefInfo = new com.cannontech.database.db.graph.GraphDefinition();
 	}
 
@@ -1145,7 +1164,7 @@ public Object getValue(Object object)
 	java.util.ArrayList dataSeries = new java.util.ArrayList(model.getRowCount());
 
 	// Copy the graphdataseries into a temp array to loop through
-	com.cannontech.database.db.graph.GraphDataSeries[] modelGDSArray = model.getAllDataSeries();
+	GraphDataSeries[] modelGDSArray = model.getAllDataSeries();
 
 	for( int i = 0; i < modelGDSArray.length; i++ )
 	{
@@ -1308,7 +1327,7 @@ public void setGraphColors(GraphColors newGraphColors)
  * Creation date: (10/31/00 3:07:24 PM)
  * @param newValue com.cannontech.database.data.graph.GraphDefinition
  */
-private void setGraphDefinitionValue(com.cannontech.database.data.graph.GraphDefinition newValue)
+private void setGraphDefinitionValue(GraphDefinition newValue)
 {
 	value = newValue;
 }
@@ -1322,7 +1341,7 @@ public void setValue(Object val)
 	if( val == null)
 		return;
 		
-	com.cannontech.database.data.graph.GraphDefinition gDef = (com.cannontech.database.data.graph.GraphDefinition) val;
+	GraphDefinition gDef = (GraphDefinition) val;
 	setGraphDefinitionValue(gDef);
 
 	//SET GRAPH NAME
@@ -1365,7 +1384,7 @@ public void setValue(Object val)
 	int currentRowIndex = 0;
 	while( iter.hasNext() )
 	{
-		com.cannontech.database.db.graph.GraphDataSeries elem = (com.cannontech.database.db.graph.GraphDataSeries) iter.next();
+		GraphDataSeries elem = (GraphDataSeries) iter.next();
 		model.addRow(elem);
 	
 		// ADD TABLE ELEMENTS TO PRIMARY POINT COMBOBOX
@@ -1383,7 +1402,7 @@ public void setValue(Object val)
  * Creation date: (10/24/00 4:07:55 PM)
  * @return com.cannontech.database.data.graph.GraphDefinition
  */
-public com.cannontech.database.data.graph.GraphDefinition showCreateGraphPanelDialog(java.awt.Frame parent)
+public GraphDefinition showCreateGraphPanelDialog(java.awt.Frame parent)
 {
 	javax.swing.JDialog dialog = new javax.swing.JDialog(parent);
 	dialog.setTitle("Yukon Trending Reports Editor");
@@ -1431,7 +1450,7 @@ public com.cannontech.database.data.graph.GraphDefinition showCreateGraphPanelDi
 	getCancelButton().removeActionListener(listener);
 		
 	if( getButtonPushed() == CreateGraphPanel.OK )
-		return (com.cannontech.database.data.graph.GraphDefinition) getValue(null);
+		return (GraphDefinition) getValue(null);
 	else
 		return null;
 }
