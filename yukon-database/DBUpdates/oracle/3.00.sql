@@ -93,9 +93,12 @@ insert into YukonRoleProperty values(-20003,-200,'Manage Members','false','Contr
 /* operator consumer info role properties */
 update YukonRoleProperty set DefaultValue='(none)' where RolePropertyID=-20152;
 insert into YukonRoleProperty values(-20157,-201,'Opt Out Rules','(none)','Defines the rules for opting out.');
+update YukonRoleProperty set DefaultValue='PROGRAMS - CONTROL HISTORY', Description='Title of the programs control history page' where RolePropertyID=-20850;
 
 /* residential customer role properties */
 insert into YukonRoleProperty values(-40055,-400,'Opt Out Rules','(none)','Defines the rules for opting out.');
+update YukonRoleProperty set Description='(Deprecated) Use the "Description Utility" role property to handle the customized utility email.' where RolePropertyId=-40101;
+update YukonRoleProperty set DefaultValue='PROGRAMS - CONTROL HISTORY', Description='Title of the programs control history page' where RolePropertyID=-40151;
 update YukonRoleProperty set KeyName='Description Enrollment', DefaultValue='Select the check boxes and corresponding radio button of the programs you would like to be enrolled in.', Description='Description on the program enrollment page' where RolePropertyId=-40172;
 update YukonRoleProperty set DefaultValue='yukon/Mom.jpg' where RolePropertyId=-40180 and DefaultValue='Mom.jpg';
 update YukonRoleProperty set DefaultValue='yukon/Family.jpg' where RolePropertyId=-40181 and DefaultValue='Family.jpg';
