@@ -31,6 +31,7 @@ public abstract class LMProgramDirectGear
 
 	public static final String SETTER_COLUMNS[] =
    {
+   		"DeviceID",
 		"GearName",
 		"gearNumber",
 		"ControlMethod",
@@ -48,7 +49,6 @@ public abstract class LMProgramDirectGear
 		"GroupSelectionMethod",
 		"MethodOptionType",
 		"MethodOptionMax",
-		"GearID" 
    };
 
 	public static final String CONSTRAINT_COLUMNS[] = { "GearID" };
@@ -71,26 +71,14 @@ public abstract class LMProgramDirectGear
 			setGearID( new Integer(getNextGearID(getDbConnection())) );
 
 		Object addValues[] =
-			{
-				getDeviceID(),
-				getGearName(),
-				getGearNumber(),
-				getControlMethod(),
-				getMethodRate(),
-				getMethodPeriod(),
-				getMethodRateCount(),
-				getCycleRefreshRate(),
-				getMethodStopType(),
-				getChangeCondition(),
-				getChangeDuration(),
-				getChangePriority(),
-				getChangeTriggerNumber(),
-				getChangeTriggerOffset(),
-				getPercentReduction(),
-				getGroupSelectionMethod(),
-				getMethodOptionType(),
-				getMethodOptionMax(),
-				getGearID()};
+		{ 
+			getDeviceID(), getGearName(), getGearNumber(), getControlMethod(),
+			getMethodRate(), getMethodPeriod(), getMethodRateCount(),
+			getCycleRefreshRate(), getMethodStopType(), getChangeCondition(),
+			getChangeDuration(), getChangePriority(), getChangeTriggerNumber(),
+			getChangeTriggerOffset(), getPercentReduction(), getGroupSelectionMethod(),
+			getMethodOptionType(), getMethodOptionMax(), getGearID()
+		};
 
 		add(TABLE_NAME, addValues);
 	}
@@ -439,25 +427,25 @@ public abstract class LMProgramDirectGear
 
 		if (results.length == SETTER_COLUMNS.length)
 		{
-			setGearName((String) results[0]);
-			setGearNumber((Integer) results[1]);
-			setControlMethod((String) results[2]);
-			setMethodRate((Integer) results[3]);
-			setMethodPeriod((Integer) results[4]);
-			setMethodRateCount((Integer) results[5]);
-			setCycleRefreshRate((Integer) results[6]);
-			setMethodStopType((String) results[7]);
-			setChangeCondition((String) results[8]);
-			setChangeDuration((Integer) results[9]);
+			setDeviceID((Integer) results[0]);
+			setGearName((String) results[1]);
+			setGearNumber((Integer) results[2]);
+			setControlMethod((String) results[3]);
+			setMethodRate((Integer) results[4]);
+			setMethodPeriod((Integer) results[5]);
+			setMethodRateCount((Integer) results[6]);
+			setCycleRefreshRate((Integer) results[7]);
+			setMethodStopType((String) results[8]);
+			setChangeCondition((String) results[9]);
+			setChangeDuration((Integer) results[10]);
 
-			setChangePriority((Integer) results[10]);
-			setChangeTriggerNumber((Integer) results[11]);
-			setChangeTriggerOffset((Double) results[12]);
-			setPercentReduction((Integer) results[13]);
-			setGroupSelectionMethod((String) results[14]);
-			setMethodOptionType((String) results[15]);
-			setMethodOptionMax((Integer) results[16]);
-			setGearID((Integer) results[17]);
+			setChangePriority((Integer) results[11]);
+			setChangeTriggerNumber((Integer) results[12]);
+			setChangeTriggerOffset((Double) results[13]);
+			setPercentReduction((Integer) results[14]);
+			setGroupSelectionMethod((String) results[15]);
+			setMethodOptionType((String) results[16]);
+			setMethodOptionMax((Integer) results[17]);
 		}
 		else
 			throw new Error(
@@ -641,26 +629,14 @@ public abstract class LMProgramDirectGear
 	public void update() throws java.sql.SQLException
 	{
 		Object setValues[] =
-      {
-			getDeviceID(),
-         getGearName(),
-			getGearNumber(),
-			getControlMethod(),
-			getMethodRate(),
-			getMethodPeriod(),
-			getMethodRateCount(),
-			getCycleRefreshRate(),
-			getMethodStopType(),
-			getChangeCondition(),
-			getChangeDuration(),
-			getChangePriority(),
-			getChangeTriggerNumber(),
-			getChangeTriggerOffset(),
-			getPercentReduction(),
-			getGroupSelectionMethod(),
-			getMethodOptionType(),
-			getMethodOptionMax()
-      };
+		{ 
+			getDeviceID(), getGearName(), getGearNumber(), getControlMethod(),
+			getMethodRate(), getMethodPeriod(), getMethodRateCount(),
+			getCycleRefreshRate(), getMethodStopType(), getChangeCondition(),
+			getChangeDuration(), getChangePriority(), getChangeTriggerNumber(),
+			getChangeTriggerOffset(), getPercentReduction(), getGroupSelectionMethod(),
+			getMethodOptionType(), getMethodOptionMax()
+		};
 
 		Object constraintValues[] = { getGearID() };
 
@@ -714,7 +690,7 @@ public abstract class LMProgramDirectGear
 
          while( rset.next() )
          {
-            return rset.getInt(0);
+            return rset.getInt(1);
          }
 
       }
