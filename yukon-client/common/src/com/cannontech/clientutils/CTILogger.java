@@ -1,22 +1,23 @@
 package com.cannontech.clientutils;
 
 import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
 
 /**
  * @author rneuharth
  * Jul 26, 2002 at 10:46:37 AM
  * 
- * A undefined generated comment
+ * A undefined generated comment!!!
  */
 public class CTILogger
 {
    private static Logger logger = null;
 
+   private static String MAX_LOG_FILE_SIZE = "2MB";
    
 	/**
 	 * Constructor for CTILogger.
@@ -35,7 +36,6 @@ public class CTILogger
          logger = Logger.getLogger(CTILogger.class.getName());      
          Layout layout = new PatternLayout("[%d{HH:mm:ss}] %-5p [%-11.11t] %m%n");
    
-         
          /*
           * All levels that are greater than the current level will be printed
           * 
@@ -49,7 +49,6 @@ public class CTILogger
          */ 
          logger.setLevel( Level.INFO );  //default log level
    
-   
          logger.addAppender( new ConsoleAppender(layout, ConsoleAppender.SYSTEM_OUT) );
          
          String writeToFile = null;
@@ -59,15 +58,22 @@ public class CTILogger
                com.cannontech.common.util.CtiProperties.KEY_CLIENT_LOG_FILE, "false" );
    
             if( Boolean.valueOf(writeToFile).booleanValue() )
-               logger.addAppender(new FileAppender(
-                     layout, 
-                     com.cannontech.common.util.CtiUtilities.getLogDirPath() +
-                     com.cannontech.common.util.CtiUtilities.getApplicationName() + ".log",
-                     false)); //create a new file everytime
+            {
+            	RollingFileAppender appender = new RollingFileAppender(
+            		layout,
+					com.cannontech.common.util.CtiUtilities.getLogDirPath() +
+					com.cannontech.common.util.CtiUtilities.getApplicationName() + ".log",
+					true);
+				
+				// limit the size of the log file and don't back it up
+				appender.setMaxFileSize(MAX_LOG_FILE_SIZE);
+				appender.setMaxBackupIndex(1);
+				
+				logger.addAppender(appender);
+            }
          }
          catch( Exception e )
          {}
-   
    
          try
          {  
@@ -79,21 +85,6 @@ public class CTILogger
          }
          catch( Exception e )
          {}
-   
-
-
-         //add all appenders below
-			try
-			{
-//				logger.addAppender( new SocketAppender(
-//						"127.0.0.1",
-//						11111) );
-			}
-			catch( Exception e )
-			{}
-
-
-         
          
          logger.info( "Logging started..." );
       }
