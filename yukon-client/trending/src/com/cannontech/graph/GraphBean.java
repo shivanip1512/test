@@ -19,7 +19,6 @@ import com.cannontech.util.ServletUtil;
 
 public class GraphBean implements GraphDataFormats, GraphDefines
 {
-	private java.text.SimpleDateFormat beanDateFormat = dateFormat;
 	private Graph graphClass = null;
 	private final java.lang.String DB_ALIAS = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 //	private String directory = null;
@@ -48,13 +47,14 @@ public class GraphBean implements GraphDataFormats, GraphDefines
 	private String tab = GRAPH_PANE_STRING;
 	private int gdefid = -1;
 	private com.cannontech.database.data.graph.GraphDefinition gdef = null;
-	private String startStr = null;
 	private Date start = null;
 	private Date stop = null;
 	private int viewType = com.cannontech.graph.model.TrendModelType.LINE_VIEW;
 	private int options = 0x000;
 	private String format = "png";
 	
+	private int page = 1;
+
 /**
  * This method needs to be implemented for the abstract class JCValueListener.
  *  JCValueListener is the DatePopupComboBox's listener.  This particular method is
@@ -341,6 +341,8 @@ private String buildHTMLBuffer( HTMLBuffer htmlBuffer)
 				((TabularHtml) htmlBuffer).setTabularEndDate(tModel.getStopDate());
 
 				sliderValueSelected = formatDateRangeSlider(tModel, (TabularHtml)htmlBuffer);
+				System.out.println("SLIDER VALUE = " + sliderValueSelected);
+				System.out.println("Tabular Start = " + tModel.getStartDate() + " | Tabular Stop = " + tModel.getStopDate());
 			}
 
 			htmlBuffer.getHtml( returnBuffer );
@@ -668,26 +670,18 @@ public java.util.Date getStart()
 	}
 	return start;
 }
-private void setStart(java.util.Date newStart)
+public void setStart(String newStart)
+{
+	setStart(ServletUtil.parseDateStringLiberally(newStart));
+}
+
+public void setStart(java.util.Date newStart)
 {
 	if(start == null || start.compareTo((Object)newStart) != 0 )	//date changed
 	{
 		com.cannontech.clientutils.CTILogger.info("Changing Date!");
 		start = newStart;
 		getGraph().setUpdateTrend(true);
-	}
-}
-
-public void setStartStr(String newStartStr)
-{
-	startStr = newStartStr;
-	try
-	{
-		setStart( getBeanDateFormat().parse(startStr));
-	}
-	catch (java.text.ParseException e)
-	{
-		e.printStackTrace();
 	}
 }
 
@@ -751,14 +745,6 @@ public static void main(String[] args)
 	GraphBean gb = new GraphBean();
 }
 
-public void setBeanDateFormat(String dateFormatString)
-{
-	beanDateFormat = new java.text.SimpleDateFormat(dateFormatString);
-}
-public java.text.SimpleDateFormat getBeanDateFormat()
-{
-	return beanDateFormat;
-}
 /**
  * Insert the method's description here.
  * Creation date: (10/31/00 1:53:46 PM)
@@ -862,6 +848,19 @@ private int setLabelData(int minIndex, int maxIndex, int value)
 
 	return value;
 
+}
+public int getPage()
+{
+	return page;
+}
+public void setPage(int newPage)
+{
+	page = newPage;
+}
+public int getNumDays()
+{
+	int numDays = com.cannontech.common.util.TimeUtil.differenceInDays(getStart(), getStop());
+	return numDays;
 }
 /**
  * Insert the method's description here.
