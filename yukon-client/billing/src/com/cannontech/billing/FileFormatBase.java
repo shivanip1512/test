@@ -120,7 +120,7 @@ public abstract class FileFormatBase
 		    // of being a preloaded vector of records from the database.
 		    MVRSRecord mvrsRecord = new MVRSRecord();
 		    mvrsRecord.setInputFile(getInputFileName());
-		    mvrsRecord.dataToString();
+		    returnBuffer.append(mvrsRecord.dataToString());
 		}
 		else
 		{
