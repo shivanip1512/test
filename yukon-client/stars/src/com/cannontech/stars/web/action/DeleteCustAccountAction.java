@@ -131,7 +131,7 @@ public class DeleteCustAccountAction implements ActionBase {
 	}
 	
 	public static void deleteCustomerAccount(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
-		throws Exception
+		throws java.sql.SQLException, com.cannontech.common.util.CommandExecutionException
 	{
 		java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 		
