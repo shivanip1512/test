@@ -35,9 +35,6 @@ function checkPasswords(form) {
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td id="Header" colspan="4" height="74" background="../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
-<script language="JavaScript">
-	document.getElementById("Header").background = '../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
-</script>
               </tr>
               <tr> 
                   <td width="265" height="28">&nbsp;</td>
