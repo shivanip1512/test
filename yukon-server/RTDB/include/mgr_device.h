@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.22 $
- * DATE         :  $Date: 2005/01/18 19:11:03 $
+ * REVISION     :  $Revision: 1.23 $
+ * DATE         :  $Date: 2005/03/17 19:18:29 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -112,6 +112,7 @@ public:
 
     ptr_type getEqual(LONG Remote);
     ptr_type RemoteGetPortRemoteEqual (LONG Port, LONG Remote);
+    ptr_type RemoteGetPortRemoteTypeEqual (LONG Port, LONG Remote, INT Type);
     ptr_type RemoteGetEqual(LONG Remote);
     ptr_type RemoteGetEqualbyName (const RWCString &RemoteName);
 
