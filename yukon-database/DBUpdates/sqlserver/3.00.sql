@@ -103,8 +103,8 @@ insert into YukonUser values (-9999,'(none)','(none)',0,'01-JAN-2000','Disabled'
 /* energy company role properties */
 update YukonRoleProperty set Description='(Deprecated) Use this value as the admin email address only if the energy company''s primary contact doesn''t have an email address.' where RolePropertyId=-1100;
 update YukonRoleProperty set DefaultValue='override@cannontech.com' where RolePropertyID=-1101;
-update YukonRoleProperty set DefaultValue='Residential Customers', Description='Group name of all the residential customer logins' where RolePropertyID=-1105;
-update YukonRoleProperty set DefaultValue='Web Client Operators' where RolePropertyID=-1106;
+update YukonRoleProperty set KeyName='customer_group_ids', DefaultValue='-300', Description='Group IDs of all the residential customer logins' where RolePropertyID=-1105;
+update YukonRoleProperty set KeyName='operator_group_ids', DefaultValue='-301', Description='Group IDs of all the web client operator logins' where RolePropertyID=-1106;
 
 /* web client role properties */
 update YukonRoleProperty set DefaultValue='yukon/CannonStyle.css' where RolePropertyId=-10802 and DefaultValue='CannonStyle.css';
