@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/06/20 21:48:14 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/06/24 21:05:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -183,6 +183,10 @@ INT resolvePointArchiveType(RWCString rwsTemp)
         Ret = ArchiveTypeOnTimer;
     }
     else if(rwsTemp == "on update")
+    {
+        Ret = ArchiveTypeOnUpdate;
+    }
+    else if(rwsTemp == "on timed update")       // This should help catch interval ending reads.
     {
         Ret = ArchiveTypeOnTimerAndUpdated;
     }

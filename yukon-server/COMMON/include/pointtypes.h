@@ -73,6 +73,7 @@ typedef enum
    ArchiveTypeNone = 0,
    ArchiveTypeOnChange,
    ArchiveTypeOnTimer,
+   ArchiveTypeOnUpdate,
    ArchiveTypeOnTimerAndUpdated,
 
 } CtiArchiveType_t;
