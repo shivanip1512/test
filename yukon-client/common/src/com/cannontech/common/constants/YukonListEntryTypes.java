@@ -37,9 +37,13 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_INV_CAT_TWOWAYREC			= 1202;
 	public static final int YUK_DEF_ID_INV_CAT_MCT					= 1203;
 	public static final int YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT			= 1301;
-	public static final int YUK_DEF_ID_DEV_TYPE_LCR					= 1302;
+	public static final int YUK_DEF_ID_DEV_TYPE_LCR_5000			= 1302;
 	public static final int YUK_DEF_ID_DEV_TYPE_MCT					= 1303;
-	public static final int YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT		= 1304;
+	public static final int YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT	= 1304;
+	public static final int YUK_DEF_ID_DEV_TYPE_LCR_4000			= 1305;
+	public static final int YUK_DEF_ID_DEV_TYPE_LCR_3000			= 1306;
+	public static final int YUK_DEF_ID_DEV_TYPE_LCR_2000			= 1307;
+	public static final int YUK_DEF_ID_DEV_TYPE_LCR_1000			= 1308;
 	public static final int YUK_DEF_ID_APP_CAT_DEFAULT				= 1400;
 	public static final int YUK_DEF_ID_APP_CAT_AIR_CONDITIONER		= 1401;
 	public static final int YUK_DEF_ID_APP_CAT_WATER_HEATER			= 1402;
