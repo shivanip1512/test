@@ -1,0 +1,130 @@
+/*==============================================================*/
+/* Index: Indx_PtNDeID                                          */
+/*==============================================================*/
+create unique  index Indx_PtNDeID on POINT (
+POINTNAME,
+DEVICEID
+)
+go
+
+
+/*==============================================================*/
+/* Index: Indx_DEVICE2                                          */
+/*==============================================================*/
+create unique  index Indx_DEVICE2 on DEVICE (
+NAME
+)
+go
+
+
+/* Remove the Historical Event Viewer */
+delete from displaycolumns where displaynum=2;
+delete from display where displaynum=2;
+
+alter table dynamiccapcontrolstrategy add LastPointUpdate DATETIME not null DEFAULT '01-JAN-1990';
+alter table lmgroupversacomserial alter column relayusage CHAR(7);
+
+
+
+
+/*==============================================================*/
+/* Table : EnergyCompany                                        */
+/*==============================================================*/
+create table EnergyCompany (
+EnergyCompanyID      numeric              not null,
+Name                 varchar(60)          not null,
+RouteID              numeric              not null,
+constraint PK_ENERGYCOMPANY primary key  (EnergyCompanyID)
+)
+go
+create unique  index EnCmpName on EnergyCompany (
+Name
+)
+go
+alter table EnergyCompany
+   add constraint FK_EnCmpRt foreign key (RouteID)
+      references ROUTE (ROUTEID)
+go
+
+
+/*==============================================================*/
+/* Table : OperatorLogin                                        */
+/*==============================================================*/
+create table OperatorLogin (
+LoginID              numeric              not null,
+Username             varchar(30)          not null,
+Password             varchar(20)          null,
+LoginType            varchar(20)          not null,
+LoginCount           numeric              not null,
+LastLogin            datetime             not null,
+Status               varchar(20)          not null,
+constraint PK_OPERATORLOGIN primary key  (LoginID)
+)
+go
+/*==============================================================*/
+/* Index: Index_OpLogNam                                        */
+/*==============================================================*/
+create unique  index Index_OpLogNam on OperatorLogin (
+Username
+)
+go
+
+
+
+/*==============================================================*/
+/* Table : LMMACSScheduleOperatorList                           */
+/*==============================================================*/
+create table LMMACSScheduleOperatorList (
+ScheduleID           numeric              null,
+OperatorLoginID      numeric              null
+)
+go
+alter table LMMACSScheduleOperatorList
+   add constraint FK_MCSchLMMcSchOpLs foreign key (ScheduleID)
+      references MACSchedule (ScheduleID)
+go
+alter table LMMACSScheduleOperatorList
+   add constraint FK_OpLgLMMcSchOpLs foreign key (OperatorLoginID)
+      references OperatorLogin (LoginID)
+go
+
+
+/*==============================================================*/
+/* Table : EnergyCompanyCustomerList                            */
+/*==============================================================*/
+create table EnergyCompanyCustomerList (
+EnergyCompanyID      numeric              null,
+CustomerID           numeric              null
+)
+go
+alter table EnergyCompanyCustomerList
+   add constraint FK_CICstBsEnCmpCsLs foreign key (CustomerID)
+      references CICustomerBase (DeviceID)
+go
+alter table EnergyCompanyCustomerList
+   add constraint FK_EnCmpEnCmpCsLs foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
+go
+
+
+
+/*==============================================================*/
+/* Table : OperatorLoginGraphList                               */
+/*==============================================================*/
+create table OperatorLoginGraphList (
+OperatorLoginID      numeric              null,
+GraphDefinitionID    numeric              null
+)
+go
+alter table OperatorLoginGraphList
+   add constraint FK_OpLgOpLgGrLs foreign key (GraphDefinitionID)
+      references GRAPHDEFINITION (GRAPHDEFINITIONID)
+go
+alter table OperatorLoginGraphList
+   add constraint FK_OpLgOpLgGrLs2 foreign key (OperatorLoginID)
+      references OperatorLogin (LoginID)
+go
+
+
+insert into CTIDatabase values('1.03', 'Ryan Neuharth', '12-JUL-01', 'Remove the historical viewer from TDC, made device names unique, created some new tables for EnergyExchange')
+go

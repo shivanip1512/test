@@ -1,0 +1,1 @@
+insert into CTIDatabase values('1.03', 'Ryan Neuharth', '12-JUL-01', 'Remove the historical viewer from TDC, made device names unique, created some new tables for EnergyExchange');

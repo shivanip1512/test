@@ -1,0 +1,41 @@
+alter table display alter column type VARCHAR(40)
+go
+update display set name = 'Load Management Client', type = 'Load Management Client', title = 'Load Management' where displaynum=-3
+go
+insert into display values(-4, 'Energy Exchange Client', 'Energy Exchange Client', 'Energy Exchange', 'com.cannontech.loadcontrol.energyexchange.gui.EnergyExchangeMainPanel')
+go
+
+
+drop table LMGroupRipple
+go
+create table LMGroupRipple (
+DeviceID             numeric              not null,
+RouteID              numeric              not null,
+ShedTime             numeric              not null,
+ControlValue         char(50)             not null,
+RestoreValue         char(50)             not null,
+constraint PK_LMGROUPRIPPLE primary key  (DeviceID)
+)
+go
+alter table LMGroupRipple
+   add constraint FK_LmGr_LmGrpRip foreign key (DeviceID)
+      references LMGroup (DeviceID)
+go
+alter table LMGroupRipple
+   add constraint FK_LmGrpRip_Rout foreign key (RouteID)
+      references ROUTE (ROUTEID)
+go
+
+
+create table GenericMacro (
+OwnerID              numeric              not null,
+ChildID              numeric              not null,
+ChildOrder           numeric              not null,
+MacroType            varchar(20)          not null,
+constraint PK_GENERICMACRO primary key  (OwnerID, ChildOrder, MacroType)
+)
+go
+
+
+insert into CTIDatabase values('1.05', 'Ryan Neuharth', '17-AUG-01', 'Readded the LMGroupRipple table and created the GenericMacro table. Change some data in the TDC tables.')
+go

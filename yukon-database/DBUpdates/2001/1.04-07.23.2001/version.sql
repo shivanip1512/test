@@ -1,0 +1,1 @@
+insert into CTIDatabase values('1.04', 'Ryan Neuharth', '23-JUL-01', 'Changed the structure of FDRINTERFACE and LMPROGRAMENERGYEXCHANGE.  Added the Ripple group to LM and some other tables.');

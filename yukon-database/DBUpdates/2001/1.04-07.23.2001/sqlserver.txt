@@ -1,0 +1,109 @@
+/* Did not add the alter table LMPROGRAMENERGYEXCHANGE */
+
+
+
+/*Alter the table: FDRInterface */
+alter table fdrinterface add hasDestination CHAR(1) not null DEFAULT 'f'
+go
+update fdrinterface set hasDestination='t' where interfaceid=1
+go
+
+
+/*==============================================================*/
+/* Table : LMGroupRipple                                        */
+/*==============================================================*/
+create table LMGroupRipple (
+DeviceID             numeric              not null,
+RouteID              numeric              not null,
+ShedTime             numeric              not null,
+ControlValue         char(50)             not null,
+RestoreValue         char(50)             not null,
+constraint PK_LMGROUPRIPPLE primary key  (DeviceID)
+)
+go
+
+
+alter table LMGroupRipple
+   add constraint FK_LmGr_LmGrpRip foreign key (DeviceID)
+      references LMGroup (DeviceID)
+go
+
+
+alter table LMGroupRipple
+   add constraint FK_LmGrpRip_Rout foreign key (RouteID)
+      references ROUTE (ROUTEID)
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMCONTROLAREATRIGGER')
+            and   type = 'U')
+   drop table LMCONTROLAREATRIGGER
+go
+
+
+/*==============================================================*/
+/* Table : LMCONTROLAREATRIGGER                                 */
+/*==============================================================*/
+create table LMCONTROLAREATRIGGER (
+DEVICEID             numeric              not null,
+TRIGGERNUMBER        numeric              not null,
+TRIGGERTYPE          varchar(20)          not null,
+POINTID              numeric              not null,
+NORMALSTATE          numeric              not null,
+THRESHOLD            float                not null,
+PROJECTIONTYPE       varchar(14)          not null,
+PROJECTIONPOINTS     numeric              not null,
+PROJECTAHEADDURATION numeric              not null,
+THRESHOLDKICKPERCENT numeric              not null,
+MINRESTOREOFFSET     float                not null,
+PEAKPOINTID          numeric              not null,
+constraint PK_LMCONTROLAREATRIGGER primary key  (DEVICEID, TRIGGERNUMBER)
+)
+go
+
+
+alter table LMCONTROLAREATRIGGER
+   add constraint FK_Point_LMCntlArTrig foreign key (POINTID)
+      references POINT (POINTID)
+go
+
+
+alter table LMCONTROLAREATRIGGER
+   add constraint FK_Point_LMCtrlArTrigPk foreign key (PEAKPOINTID)
+      references POINT (POINTID)
+go
+
+
+alter table LMCONTROLAREATRIGGER
+   add constraint FK_LMCntlArea_LMCntlArTrig foreign key (DEVICEID)
+      references LMCONTROLAREA (DEVICEID)
+go
+
+
+
+/*==============================================================*/
+/* Table : DynamicLMControlAreaTrigger                          */
+/*==============================================================*/
+create table DynamicLMControlAreaTrigger (
+DeviceID             numeric              not null,
+TriggerNumber        numeric              not null,
+PointValue           float                not null,
+LastPointValueTimeStamp datetime             not null,
+PeakPointValue       float                not null,
+LastPeakPointValueTimeStamp datetime             not null,
+constraint PK_DYNAMICLMCONTROLAREATRIGGER primary key  (DeviceID, TriggerNumber)
+)
+go
+
+
+alter table DynamicLMControlAreaTrigger
+   add constraint FK_LMCntArTr_DyLMCnArTr foreign key (DeviceID, TriggerNumber)
+      references LMCONTROLAREATRIGGER (DEVICEID, TRIGGERNUMBER)
+go
+
+
+
+insert into CTIDatabase values('1.04', 'Ryan Neuharth', '23-JUL-01', 'Changed the structure of FDRINTERFACE and LMPROGRAMENERGYEXCHANGE.  Added the Ripple group to LM and some other tables.')
+go

@@ -1,0 +1,1 @@
+insert into CTIDatabase values('1.05', 'Ryan Neuharth', '17-AUG-01', 'Readded the LMGroupRipple table and created the GenericMacro table. Change some data in the TDC tables.');
