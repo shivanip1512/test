@@ -98,7 +98,18 @@ function confirm_form(f) {
                     <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
                       <tr> 
                         <td width="21%" class="SubtitleHeader" valign = "top"><p align=RIGHT>Program:</td>
-                        <td width="12%" class="Subtext" valign = "top"><cti:select name="program" selectValues="<%= programIds %>" selectNames="<%= programNames %>" selectedValue='<%= checker.get("program") %>'/></td>
+                        <td width="12%" class="Subtext" valign = "top">
+	                      <select name="program">
+	                      <%
+							for (int i = 0; i < programIds.length; i++)
+							{
+								if (checker.get("program")!= null && checker.get("program").equalsIgnoreCase(programIds[i]))
+									out.println("<OPTION VALUE=" + programIds[i] + " SELECTED>" + programNames[i]);
+								else
+									out.println("<OPTION VALUE=" + programIds[i] + ">" + programNames[i]);
+							}%>
+						  </select>
+                        </td>
                         <td width="21%" class="SubtitleHeader" valign = "top"><p align=RIGHT>Notify Date:</td>
                         <td width="12%" class="Subtext" valign = "top"><struts:text property="notifydate" size="10" pattern="@date"/>
                           <span class = "TableCell"><%= checker.getError("notifydate")%></span>

@@ -98,7 +98,17 @@ function confirm_form(f) {
             <td width="150" class="TableCell"> 
               <div align="right">&nbsp;Program:</div>
             </td>
-            <td width="150" class="TableCell"><cti:select name="program" selectValues="<%= programIds %>" selectNames="<%= programNames %>" selectedValue='<%= checker.get("program") %>'/> 
+            <td width="150" class="TableCell">            
+            <select name="program">
+	          <%
+				for (int i = 0; i < programIds.length; i++)
+				{
+					if (checker.get("program")!= null && checker.get("program").equalsIgnoreCase(programIds[i]))
+						out.println("<OPTION VALUE=" + programIds[i] + " SELECTED>" + programNames[i]);
+					else
+						out.println("<OPTION VALUE=" + programIds[i] + ">" + programNames[i]);
+				}%>
+			  </select>
             </td>
           </tr>
           <tr> 
