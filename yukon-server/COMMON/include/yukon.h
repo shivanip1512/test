@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/03/13 19:35:28 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/05/15 22:32:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -411,6 +411,13 @@ typedef enum
     ProtocolExpresscomType
 
 } CtiProtocol_t;
+
+
+typedef enum
+{
+    MSGFLG_APPLY_EXCLUSION_LOGIC = 0x00000001
+
+} CtiOutMessageFlags_t;
 
 
 #endif // __YUKON_H__
