@@ -525,13 +525,8 @@ go
 
 delete from SeasonSchedule where scheduleid > 0;
 
-
-
-
-
-
-
-
+alter table dynamicLMProgram drop column LMProgramID
+go
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

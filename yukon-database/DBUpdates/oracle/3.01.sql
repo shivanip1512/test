@@ -425,10 +425,7 @@ alter table SeasonSchedule drop column SpringMonth;
 
 delete from SeasonSchedule where scheduleid > 0;
 
-
-
-
-
+alter table dynamicLMProgram drop column LMProgramID;
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
