@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/11 21:24:22 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/20 21:47:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,6 +99,7 @@
 #define TYPE_ALPHA_A1                        1820
 #define TYPE_DR87                            1825
 #define TYPE_QUANTUM                         1830  // Schlumberger Quantum
+#define TYPE_KV2                             1835  // GE KV2
 
 #define TYPE_SIXNET                          1850  // Sixnet VersaTrak/SiteTrak firmware > 7/1/01
 

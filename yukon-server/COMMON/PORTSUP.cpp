@@ -1005,6 +1005,13 @@ USHORT  CCITT16CRC(INT Id, UCHAR* buffer, LONG length, BOOL bAdd)
             }
             break;
          }
+      case TYPE_KV2:
+          {
+
+              CtiLockGuard<CtiLogger> doubt_guard(dout);
+              dout << __FILE__ << " (" << __LINE__ << "): May need CRC code for kv2 implemented here" << endl;
+              break;
+          }
       }
 
    }

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2002/06/20 21:00:38 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2002/06/20 21:48:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1236,6 +1236,7 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
             case TYPE_ALPHA_PPLUS:
             case TYPE_DR87:
             case TYPE_LGS4:
+            case TYPE_KV2:
                 {
                     // Copy the request into the InMessage side....
                     memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
@@ -1520,6 +1521,7 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
                 case TYPE_QUANTUM:
                 case TYPE_DR87:
                 case TYPE_LGS4:
+                case TYPE_KV2:
                 default:
                     {
                         /*  These guys are handled in a special way...  */
@@ -1543,6 +1545,7 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
                 case TYPE_QUANTUM:
                 case TYPE_DR87:
                 case TYPE_LGS4:
+                case TYPE_KV2:
                     break;
                 default:
                     // There was an outbound error, the Xfer was not traced...
@@ -2499,6 +2502,7 @@ INT VTUPrep(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *De
       Device->getType() != TYPE_QUANTUM &&
       Device->getType() != TYPE_LGS4 &&
       Device->getType() != TYPE_DR87 &&
+      Device->getType() != TYPE_KV2 &&
       Device->getType() != TYPE_ALPHA_A1
 
       )

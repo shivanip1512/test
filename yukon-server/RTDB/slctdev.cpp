@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/06/18 16:20:11 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/06/20 21:48:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -216,6 +216,13 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
     case TYPE_DR87:
         {
             Device = (CtiDeviceBase*) new CtiDeviceDR87;
+            break;
+        }
+    case TYPE_KV2:
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << " " << __FILE__ << " (" << __LINE__ << ") KV2 device class needs to be here! " << endl;
+//            Device = (CtiDeviceBase*) new CtiDeviceKV2;
             break;
         }
 
