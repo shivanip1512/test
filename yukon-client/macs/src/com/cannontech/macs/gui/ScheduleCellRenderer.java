@@ -1,7 +1,7 @@
 package com.cannontech.macs.gui;
 
 /**
- * This type was created in VisualAge.
+ * This class will renderer the MACs JTable
  */
 public class ScheduleCellRenderer extends javax.swing.JLabel implements javax.swing.table.TableCellRenderer 
 {
@@ -23,6 +23,7 @@ public ScheduleCellRenderer() {
  */
 public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) 
 {
+
 	javax.swing.table.TableModel model = table.getModel();
 	
 	if( model instanceof ScheduleTableModel )
