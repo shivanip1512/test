@@ -1,5 +1,6 @@
 package com.cannontech.util;
 
+import java.awt.Color;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -629,6 +630,26 @@ public static java.util.Date getEndingDateOfInterval(java.util.Date startingDate
 
 	return cal.getTime();
 }
+
+
+/**
+ * Returns the HTML string definition for a Java Color object.
+ * @return String
+ * @param Color
+ */
+public static synchronized String getHTMLColor( Color c )
+{
+	String r = Integer.toHexString(c.getRed());
+	String g = Integer.toHexString(c.getGreen());
+	String b = Integer.toHexString(c.getBlue());
+
+	return
+			(r.length() <= 1 ? "0"+r : r) + 
+			(g.length() <= 1 ? "0"+g : g) +
+			(b.length() <= 1 ? "0"+b : b);
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (7/11/2001 12:56:06 PM)
