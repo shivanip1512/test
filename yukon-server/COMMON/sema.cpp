@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/02/10 23:23:45 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/03/17 19:14:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,11 +66,13 @@ bool CtiSemaphore::acquire(unsigned long millis)
 
     Releases the mux.
 -----------------------------------------------------------------------------*/
-void CtiSemaphore::release()
+bool CtiSemaphore::release()
 {
-    ReleaseSemaphore( hSema, 1, NULL );
+    BOOL result = ReleaseSemaphore( hSema, 1, NULL );
 
 #ifdef DEBUG
     _threadID = 0;
 #endif
+
+    return result;
 }

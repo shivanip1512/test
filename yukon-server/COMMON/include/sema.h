@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/03/13 19:35:28 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/03/17 19:14:25 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,6 +40,6 @@ public:
 
     bool acquire();
     bool acquire(unsigned long millis);
-    void release();
+    bool release();
 };
 #endif // #ifndef __SEMA_H__
