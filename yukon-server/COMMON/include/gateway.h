@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/12/17 15:28:04 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/09/15 20:49:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,6 +44,7 @@
 #define TYPE_SETUTILSETPOINTS           2008
 #define TYPE_SETUTILOVERRIDE            2009
 #define TYPE_TM_CLOCK                   2010
+#define TYPE_GMTTM_CLOCK                2011
 
 #define TYPE_SETADDRESSING              2990
 #define TYPE_SETTIMEZONE                2991
@@ -68,6 +69,7 @@
 #define TYPE_CLOCK                      3017
 #define TYPE_DEVICEBOUND                3018
 #define TYPE_DEVICEUNBOUND              3019
+#define TYPE_CLOCKDST                   3020
 
 #define TYPE_SETPOINTS_CH               3103
 #define TYPE_DLC_CH                     3108
@@ -124,26 +126,21 @@
 #define INVALIDPERIOD                   0003
 #define DUPLICATEDEVICEID               0004
 
-
-typedef struct {
-   unsigned short Type;
-   unsigned short Length;
-   unsigned long DeviceID;
-} GWHEADER;
-
-
 // Structure to receive messages from the gateway
 
 typedef     union {
     struct {
+        unsigned long DeviceID;
         unsigned char AllowedSystemSwitch;
     } AllowedSystemSwitch;
 
     struct {
+        unsigned long DeviceID;
         unsigned char Battery;
     } Battery;
 
     struct {
+        unsigned long DeviceID;
         unsigned char Day;
         unsigned char Hour;
         unsigned char Minute;
@@ -151,16 +148,24 @@ typedef     union {
     } Clock;
 
     struct {
+        unsigned long DeviceID;
+        unsigned char DST;
+    } ClockDST;
+
+    struct {
+        unsigned long DeviceID;
         unsigned short CoolRuntime;
         unsigned short HeatRuntime;
     } Runtime;
 
     struct {
+        unsigned long DeviceID;
         unsigned short LocalRSSI;
         unsigned short RemoteRSSI;
     } Rssi;
 
     struct {
+        unsigned long DeviceID;
         short CoolSetpoint;
         short HeatSetpoint;
         unsigned char SetpointStatus;
@@ -169,23 +174,28 @@ typedef     union {
     } Setpoints;
 
     struct {
+        unsigned long DeviceID;
         unsigned char Deadband;
     } Deadband;
 
     struct {
+        unsigned long DeviceID;
         unsigned char DeviceAbsent;
     } DeviceAbsent;
 
     struct {
+        unsigned long DeviceID;
         unsigned char DeviceType;
     } DeviceType;
 
     struct {
+        unsigned long DeviceID;
         short DisplayedTemperature;
         unsigned char DisplayedTempUnits;
     } DisplayedTemp;
 
     struct {
+        unsigned long DeviceID;
         unsigned short CycleDuration;
         unsigned short CyclePeriod;
         unsigned short Duration;
@@ -194,28 +204,34 @@ typedef     union {
     } DLC;
 
     struct {
+        unsigned long DeviceID;
         unsigned char FanSwitch;
     } FanSwitch;
 
     struct {
+        unsigned long DeviceID;
         unsigned char FilterRemaining;
         unsigned char FilterRestart;
     } Filter;
 
     struct {
+        unsigned long DeviceID;
         unsigned char HeatPumpFault;
     } HeatPumpFault;
 
     struct {
+        unsigned long DeviceID;
         short LowerCoolSetpointLimit;
         short UpperHeatSetpointLimit;
     } SetpointLimits;
 
     struct {
+        unsigned long DeviceID;
         short OutdoorTemperature;
     } OutdoorTemp;
 
     struct {
+        unsigned long DeviceID;
         unsigned char Day;
         unsigned char Period;
         unsigned char Fan;
@@ -226,10 +242,12 @@ typedef     union {
     } Schedule;
 
     struct {
+        unsigned long DeviceID;
         unsigned char SystemSwitch;
     } SystemSwitch;
 
     struct {
+        unsigned long DeviceID;
         short UtilHeatSetpoint;
         short UtilCoolSetpoint;
         unsigned short UtilDuration;
@@ -239,6 +257,14 @@ typedef     union {
         unsigned char UtilAIRDisable;
         unsigned char UtilUserOverride;
     } UtilSetpoint;
+
+    struct {
+        unsigned long DeviceID;
+    } DeviceBound;
+
+    struct {
+        unsigned long DeviceID;
+    } DeviceUnbound;
 
     struct {
         unsigned char CommFaultStatus;
@@ -259,6 +285,7 @@ typedef     union {
 } GWCOMMAND;
 
 typedef struct {
+    unsigned long DeviceID;
     unsigned short ReturnCode;
     unsigned short SetType;
 
@@ -293,9 +320,6 @@ typedef struct
 {
     unsigned char   Mac[6];
     unsigned long   IPAddress;
-
-    unsigned long   DefaultServer;
-
     unsigned short  Spid;
     unsigned short  Geo;
     unsigned short  Feeder;
@@ -304,21 +328,21 @@ typedef struct
     unsigned char   Program;
     unsigned char   Splinter;
 
-
 } ADDRESSING_REPORT;
 
 typedef struct
 {
     unsigned long   ZoneMinutesWestOfGreenwich;
-    unsigned char   DoDST;
+    unsigned char   ObserveDST;
     unsigned short  DSTMinutesOffset;
+    unsigned char   StatsSyncTimeToGW;
 
 } TIMEZONE_REPORT;
 
 // This is the _only_ structure we receive from the gateway.
 typedef struct {
+    unsigned short Type;
 
-    GWHEADER Hdr;
     union {
         GWCOMMAND U;
         RETURNCODEREPORT Return;
@@ -335,20 +359,21 @@ typedef struct {
 
 typedef struct
 {
-    GWHEADER Hdr;                       // DeviceID not used (0) or represents the gateway.
+    unsigned short  Type;
     ADDRESSING_REPORT Addressing;
 
 } ADDRESSING;
 
 typedef struct
 {
-    GWHEADER Hdr;                       // DeviceID not used (0) or represents the gateway.
+    unsigned short  Type;
     TIMEZONE_REPORT Timezone;
 
-} TIMEZONEMSG;
+} TIMEZONE;
+
 
 typedef struct {
-    GWHEADER Hdr;                       // DeviceID not used (0) or represents the gateway.
+    unsigned short Type;
     unsigned char tm_sec;
     unsigned char tm_min;
     unsigned char tm_hour;
@@ -360,42 +385,41 @@ typedef struct {
 } TM_CLOCK;
 
 typedef struct {
-    GWHEADER Hdr;                       // DeviceID not used (0) or represents the gateway.
+    unsigned short Type;
     unsigned char BindMode;
 } SETBINDMODE;
 
 
 typedef struct {
-    GWHEADER Hdr;                       // DeviceID not used (0) or represents the gateway.
+    unsigned short Type;
     unsigned char PingMode;
 } SETPINGMODE;
 
 
 typedef struct {
-    GWHEADER Hdr;                       // DeviceID not used (0) or represents the gateway.
+    unsigned short Type;
     unsigned short NetworkID;
 } SETNETWORKID;
 
 typedef struct {
-    GWHEADER Hdr;                       // DeviceID not used (0) or represents the gateway.
+    unsigned short Type;
+    unsigned long DeviceID;
+} RESTARTFILTER;
+
+typedef struct {
+    unsigned short Type;
     unsigned char AllMessages;
 } SETRSSICONFIGURATION;
 
 typedef struct {
-    GWHEADER Hdr;                       // DeviceID not used (0) or represents the gateway.
-} KEEPALIVE;
-
-typedef struct {
-    GWHEADER Hdr;
-} RESTARTFILTER;
-
-typedef struct {
-    GWHEADER Hdr;
+    unsigned short Type;
+    unsigned long DeviceID;
     unsigned char Reset;
 } QUERYRUNTIME;
 
 typedef struct {
-    GWHEADER Hdr;
+    unsigned short Type;
+    unsigned long DeviceID;
     unsigned char OffCycleDuration;
     unsigned char CyclePeriod;
     unsigned short DLCDuration;
@@ -403,22 +427,26 @@ typedef struct {
 } SETDLC;
 
 typedef struct {
-    GWHEADER Hdr;
+    unsigned short Type;
+    unsigned long DeviceID;
     unsigned char DLCOverride;
 } SETDLCOVERRIDE;
 
 typedef struct {
-    GWHEADER Hdr;
+    unsigned short Type;
+    unsigned long DeviceID;
     unsigned char FanSwitch;
 } SETFANSWITCH;
 
 typedef struct {
-    GWHEADER Hdr;
+    unsigned short Type;
+    unsigned long DeviceID;
     unsigned char Restart;
 } SETFILTERRESTART;
 
 typedef struct {
-    GWHEADER Hdr;
+    unsigned short Type;
+    unsigned long DeviceID;
     unsigned char Day;
     unsigned char Period;
     short HeatSetpoint;
@@ -429,13 +457,15 @@ typedef struct {
 } SETSCHEDULE;
 
 typedef struct {
-    GWHEADER Hdr;
+    unsigned short Type;
+    unsigned long DeviceID;
     short UpperHeatLimit;
     short LowerCoolLimit;
 } SETSETPOINTLIMITS;
 
 typedef struct {
-    GWHEADER Hdr;
+    unsigned short Type;
+    unsigned long DeviceID;
     short HeatSetpoint;
     short CoolSetpoint;
     unsigned char SetpointPriority;
@@ -445,12 +475,14 @@ typedef struct {
 } SETSETPOINTS;
 
 typedef struct {
-    GWHEADER Hdr;
+    unsigned short Type;
+    unsigned long DeviceID;
     unsigned char SystemSwitch;
 } SETSYSTEMSWITCH;
 
 typedef struct {
-    GWHEADER Hdr;
+    unsigned short Type;
+    unsigned long DeviceID;
     short UtilHeatSetpoint;
     short UtilCoolSetpoint;
     unsigned short UtilDuration;
@@ -461,27 +493,31 @@ typedef struct {
 } SETUTILSETPOINTS;
 
 typedef struct {
-    GWHEADER Hdr;
+    unsigned short Type;
+    unsigned long DeviceID;
     unsigned char Override;
 } SETUTILOVERRIDE;
 
 typedef struct {
-    GWHEADER Hdr;
+    unsigned short Type;
+    unsigned long DeviceID;
 } UNBINDDEVICE;
 
 typedef struct {
-    GWHEADER Hdr;
+    unsigned short Type;
+    unsigned long DeviceID;
 } GET;
 
 typedef struct {
-    GWHEADER Hdr;
+    unsigned short Type;
+    unsigned long DeviceID;
     unsigned char Day;
     unsigned char Period;
 } GETSCHEDULE;
 
 typedef struct {
-    GWHEADER Hdr;
-    CONTROL_SETPOINT Control;
-} SETCONTROLSETPOINT;
+    unsigned short Type;
+} KEEPALIVE;
+
 
 #endif // #ifndef __GATEWAY_H__

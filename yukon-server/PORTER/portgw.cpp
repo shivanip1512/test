@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/06/30 14:39:00 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/09/15 20:49:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -134,13 +134,7 @@ void GWTimeSyncThread (void *Dummy)
                     for(itr = gwMap.begin(); itr != gwMap.end() ;itr++)
                     {
                         CtiDeviceGateway *pGW = (*itr).second;
-#if 0  // 10/23/03 CGP // until we solve the timezone issue
-                        pGW->sendtm_Clock();
-#endif
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Gateway timesync disabled. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        pGW->sendGMTClock();
                     }
                 }
             }
@@ -316,6 +310,7 @@ void GWConnectionThread(VOID *Arg)
         pGW = new CtiDeviceGateway(msgsock);
         pGW->start();
         pGW->sendGet( TYPE_GETADDRESSING, 0 );
+        pGW->sendGet( TYPE_GETALL, 0 );
 
         address_request = 0;
 

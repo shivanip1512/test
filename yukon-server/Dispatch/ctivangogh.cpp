@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.76 $
-* DATE         :  $Date: 2004/08/31 16:02:18 $
+* REVISION     :  $Revision: 1.77 $
+* DATE         :  $Date: 2004/09/15 20:49:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -812,6 +812,11 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                     pCRP = 0;
 
                                     pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
+                                }
+                                else
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " " << resolveDeviceName(*pPoint) << " / " << pPoint->getName() << " CONTROL SENT to port control. Control expires at " << RWTime( Cmd->getMessageTime() + pPoint->getControlExpirationTime()) << endl;
                                 }
 
                                 writeControlMessageToPIL(did, rawstate, (CtiPointStatus*)pPoint, Cmd);

@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/06/30 14:39:00 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/09/15 20:49:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -190,7 +190,6 @@ public:
 
     static int estimateSetpointPriority();
 
-    static void BuildHeader(GWHEADER *pGWH, unsigned short  Type, unsigned short Length, unsigned myid);
     virtual CtiMessage* rsvpToDispatch(bool clearMessage = true);
     RWCString printListAsString(UINT Type) const;
 
@@ -247,6 +246,12 @@ private:
         UCHAR _second;
 
     } _clock;
+
+    struct {
+        ULONG _utime;
+        UCHAR _dst;
+
+    } _clockDST;
 
     struct {
         ULONG _utime;

@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/06/30 14:39:00 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/09/15 20:49:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,6 +90,7 @@ public:
     int sendGet(USHORT Type, LONG dev = 0);
     int sendQueryRuntime(LONG dev, UCHAR Reset);
     void sendtm_Clock (BYTE hour = -1, BYTE minute = -1);
+    void sendGMTClock (BYTE hour = -1, BYTE minute = -1);
     int sendKeepAlive (void);
     void sendSetBindMode (UCHAR BindMode = TRUE);
     void sendSetPingMode (UCHAR PingMode = TRUE);
@@ -97,7 +98,7 @@ public:
     void sendSetNetworkID (USHORT NetworkID);
 
     void sendSetAddressing(ULONG DeviceId, USHORT Spid, USHORT Geo, USHORT Feeder, ULONG Zip, USHORT Uda, UCHAR Program, UCHAR Splinter, ULONG ServerIP);
-    void sendSetTimezone(ULONG minutesWestOfGreenwich, UCHAR doIt, USHORT DSTMinutesOffset);
+    void sendSetTimezone(ULONG minutesWestOfGreenwich, UCHAR doIt, USHORT DSTMinutesOffset, UCHAR syncStats);
 
 
     static int getMessageLength(GATEWAYRXSTRUCT *GatewayRX);

@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/06/30 14:39:00 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/09/15 20:49:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -112,12 +112,43 @@ void CtiDeviceGateway::sendtm_Clock (BYTE hour, BYTE minute)
     TM_CLOCK tm_Clock;
     struct tm *newtime;
     RWTime now;
+    RWDate today( now );
+
+
+    RWCString gmt_str = today.asString("%Y/%m/%d ") + CtiNumStr(now.hour()).zpad(2) + ":" + CtiNumStr(now.minute()).zpad(2) + ":" + CtiNumStr(now.second()).zpad(2) + " GMT";
+
+    tm_Clock.Type = htons (TYPE_TM_CLOCK);
+    tm_Clock.tm_sec = now.second();
+    tm_Clock.tm_min = now.minute();
+    tm_Clock.tm_hour = now.hour();
+    tm_Clock.tm_mday = today.dayOfMonth();
+    tm_Clock.tm_mon = today.month();
+    tm_Clock.tm_year = today.year() - 1900;
+    tm_Clock.tm_wday = (today.weekDay() % 7);    // Put it in a tm form.
+
+    if(now.isDST())
+    {
+        tm_Clock.tm_isdst = TRUE;
+    }
+    else
+    {
+        tm_Clock.tm_isdst = FALSE;
+    }
+
+    send (_msgsock, (char *)&tm_Clock, sizeof (TM_CLOCK), 0);
+}
+
+void CtiDeviceGateway::sendGMTClock (BYTE hour, BYTE minute)
+{
+    TM_CLOCK tm_Clock;
+    struct tm *newtime;
+    RWTime now;
     RWDate today( now, RWZone::utc() );
 
 
     RWCString gmt_str = today.asString("%Y/%m/%d ") + CtiNumStr(now.hourGMT()).zpad(2) + ":" + CtiNumStr(now.minuteGMT()).zpad(2) + ":" + CtiNumStr(now.second()).zpad(2) + " GMT";
 
-    CtiDeviceGatewayStat::BuildHeader((GWHEADER*)&tm_Clock, TYPE_TM_CLOCK, sizeof(TM_CLOCK), 0 );
+    tm_Clock.Type = htons (TYPE_TM_CLOCK);
     tm_Clock.tm_sec = now.second();
     tm_Clock.tm_min = now.minuteGMT();
     tm_Clock.tm_hour = now.hourGMT();
@@ -148,15 +179,17 @@ int CtiDeviceGateway::processParse(CtiCommandParser &parse, CtiOutMessage *&OutM
     {
         if( (parse.getCommand() == PutConfigRequest) )
         {
-            if(parse.getCommandStr().contains("timezone"))
+            if(parse.getCommandStr().contains("timezone") &&
+               (( serialnumber == 0 || _statMap.find( serialnumber ) != _statMap.end() )) )
             {
-                RWCString CmdStr = parse.getCommandStr().match(" timezone [0-9]+[, ]+[yn]?[, ]+([0-9]+)?");
+                RWCString CmdStr = parse.getCommandStr().match(" timezone [0-9]+[, ]+[yn]?[, ]+([0-9]+)?[, ]+[yn]?");
                 RWCString tstr;
                 RWCTokenizer tokens(CmdStr);
 
                 USHORT zone = 0;    // Default to GMT
                 USHORT minoffset = 0;    // Default to GMT
                 BOOL dodst = FALSE;
+                BOOL syncstats = TRUE;
 
                 tokens(" \t\n\0");  // Hop the timezone string.
 
@@ -172,9 +205,13 @@ int CtiDeviceGateway::processParse(CtiCommandParser &parse, CtiOutMessage *&OutM
                 {
                     minoffset = atoi(tstr.data());
                 }
+                if(!(tstr = tokens(", \t\n\0")).isNull())
+                {
+                    syncstats = (tstr.contains("y") ? TRUE : FALSE);
+                }
 
-                sendSetTimezone( zone, dodst, minoffset );
-                sendtm_Clock(0,0);
+                sendSetTimezone( zone, dodst, minoffset, syncstats );
+                sendGMTClock();
 
                 processed++;
             }
@@ -193,7 +230,10 @@ int CtiDeviceGateway::processParse(CtiCommandParser &parse, CtiOutMessage *&OutM
             {
                 if( serialnumber == 0 || _statMap.find( serialnumber ) != _statMap.end() )
                 {
+                    if(parse.getCommandStr().contains(" local") )
                     sendtm_Clock();
+                    else
+                        sendGMTClock();
 
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Timesync sent to gateway hosting thermostat " << serialnumber << endl;
@@ -325,7 +365,10 @@ int CtiDeviceGateway::sendGet(USHORT Type, LONG dev)
     if( dev == 0 || cnt > 0 )
     {
         GET Get;
-        CtiDeviceGatewayStat::BuildHeader((GWHEADER*)&Get, Type, sizeof(GET), dev );
+
+        Get.Type = htons (Type);
+        Get.DeviceID = htonl(dev);
+
         send (_msgsock, (char *)&Get, sizeof(GET), 0);
     }
 
@@ -338,8 +381,7 @@ int CtiDeviceGateway::sendKeepAlive (void)
     int val = NORMAL;
     KEEPALIVE KeepAlive;
 
-    CtiDeviceGatewayStat::BuildHeader((GWHEADER*)&KeepAlive, TYPE_KEEPALIVE, sizeof(KEEPALIVE), 0 );
-
+    KeepAlive.Type = htons (TYPE_KEEPALIVE);
     if( SOCKET_ERROR == send (_msgsock, (char *)&KeepAlive, sizeof (KEEPALIVE), 0) )
     {
         set(GW_CLEAN_ME);
@@ -354,7 +396,7 @@ void CtiDeviceGateway::sendSetBindMode (UCHAR BindMode)
 {
     SETBINDMODE SetBindMode;
 
-    CtiDeviceGatewayStat::BuildHeader((GWHEADER*)&SetBindMode, TYPE_SETBINDMODE, sizeof(SETBINDMODE), 0 );
+    SetBindMode.Type = htons (TYPE_SETBINDMODE);
     SetBindMode.BindMode = BindMode;
 
     send (_msgsock, (char *)&SetBindMode, sizeof (SETBINDMODE), 0);
@@ -365,10 +407,24 @@ void CtiDeviceGateway::sendSetPingMode (UCHAR PingMode)
 {
     SETPINGMODE SetPingMode;
 
-    CtiDeviceGatewayStat::BuildHeader((GWHEADER*)&SetPingMode, TYPE_SETPINGMODE, sizeof(SETPINGMODE), 0 );
+    SetPingMode.Type = htons (TYPE_SETPINGMODE);
     SetPingMode.PingMode = PingMode;
 
     send (_msgsock, (char *)&SetPingMode, sizeof (SETPINGMODE), 0);
+}
+
+void CtiDeviceGateway::sendSetTimezone(ULONG minutesWestOfGreenwich, UCHAR doIt, USHORT DSTMinutesOffset, UCHAR syncStats)
+{
+    TIMEZONE SetTimezone;
+
+    SetTimezone.Type = htons (TYPE_SETTIMEZONE);
+    SetTimezone.Timezone.ZoneMinutesWestOfGreenwich = htonl( minutesWestOfGreenwich );
+    SetTimezone.Timezone.ObserveDST = doIt;
+    SetTimezone.Timezone.DSTMinutesOffset = htons(DSTMinutesOffset);
+    SetTimezone.Timezone.StatsSyncTimeToGW = syncStats;
+
+
+    send (_msgsock, (char *)&SetTimezone, sizeof(TIMEZONE), 0);
 }
 
 
@@ -376,7 +432,7 @@ void CtiDeviceGateway::sendSetRSSIConfiguration (UCHAR AllMessages)
 {
     SETRSSICONFIGURATION SetRSSIConfiguration;
 
-    CtiDeviceGatewayStat::BuildHeader((GWHEADER*)&SetRSSIConfiguration, TYPE_SETRSSICONFIGURATION, sizeof(SETRSSICONFIGURATION), 0 );
+    SetRSSIConfiguration.Type = htons (TYPE_SETRSSICONFIGURATION);
     SetRSSIConfiguration.AllMessages = AllMessages;
 
     send (_msgsock, (char *)&SetRSSIConfiguration, sizeof (SETRSSICONFIGURATION), 0);
@@ -387,7 +443,7 @@ void CtiDeviceGateway::sendSetNetworkID (USHORT NetworkID)
 {
     SETNETWORKID SetNetworkID;
 
-    CtiDeviceGatewayStat::BuildHeader((GWHEADER*)&SetNetworkID, TYPE_SETNETWORKID, sizeof(SETNETWORKID), 0 );
+    SetNetworkID.Type = ntohs (TYPE_SETNETWORKID);
     SetNetworkID.NetworkID = ntohs (NetworkID);
 
     send (_msgsock, (char *)&SetNetworkID, sizeof (SETNETWORKID), 0);
@@ -395,7 +451,152 @@ void CtiDeviceGateway::sendSetNetworkID (USHORT NetworkID)
 
 int CtiDeviceGateway::getMessageLength(GATEWAYRXSTRUCT *GatewayRX)
 {
-    int Length = ntohs(GatewayRX->Hdr.Length);
+    int Length = 0;
+
+    // Based on the Type figure out how many more bytes we need
+    switch(ntohs (GatewayRX->Type) )
+    {
+    case TYPE_ALLOWEDSYSTEMSWITCH:
+        Length = sizeof (GatewayRX->U.AllowedSystemSwitch);
+        break;
+
+    case TYPE_BATTERY:
+        Length = sizeof (GatewayRX->U.Battery);
+        break;
+
+    case TYPE_RUNTIME:
+        Length = sizeof (GatewayRX->U.Clock);
+        break;
+
+    case TYPE_SETPOINTS_CH:
+    case TYPE_SETPOINTS:
+        Length = sizeof (GatewayRX->U.Setpoints);
+        break;
+
+    case TYPE_DEADBAND:
+        Length = sizeof (GatewayRX->U.Deadband);
+        break;
+
+    case TYPE_DEVICEABSENT:
+        Length = sizeof (GatewayRX->U.DeviceAbsent);
+        break;
+
+    case TYPE_DEVICETYPE:
+        Length = sizeof (GatewayRX->U.DeviceType);
+        break;
+
+    case TYPE_DISPLAYEDTEMPERATURE:
+        Length = sizeof (GatewayRX->U.DisplayedTemp);
+        break;
+
+    case TYPE_DLC_CH:
+    case TYPE_DLC:
+        Length = sizeof (GatewayRX->U.DLC);
+        break;
+
+    case TYPE_FANSWITCH_CH:
+    case TYPE_FANSWITCH:
+        Length = sizeof (GatewayRX->U.FanSwitch);
+        break;
+
+    case TYPE_FILTER_CH:
+    case TYPE_FILTER:
+        Length = sizeof (GatewayRX->U.Filter);
+        break;
+
+    case TYPE_HEATPUMPFAULT:
+        Length = sizeof (GatewayRX->U.HeatPumpFault);
+        break;
+
+    case TYPE_SETPOINTLIMITS_CH:
+    case TYPE_SETPOINTLIMITS:
+        Length = sizeof (GatewayRX->U.SetpointLimits);
+        break;
+
+    case TYPE_OUTDOORTEMP:
+        Length = sizeof (GatewayRX->U.OutdoorTemp);
+        break;
+
+    case TYPE_SCHEDULE_CH:
+    case TYPE_SCHEDULE:
+        Length = sizeof (GatewayRX->U.Schedule);
+        break;
+
+    case TYPE_SYSTEMSWITCH_CH:
+    case TYPE_SYSTEMSWITCH:
+        Length = sizeof (GatewayRX->U.SystemSwitch);
+        break;
+
+    case TYPE_UTILSETPOINT_CH:
+    case TYPE_UTILSETPOINT:
+        Length = sizeof (GatewayRX->U.UtilSetpoint);
+        break;
+
+    case TYPE_CLOCK:
+        Length = sizeof (GatewayRX->U.Clock);
+        break;
+
+    case TYPE_CLOCKDST:
+        Length = sizeof (GatewayRX->U.ClockDST);
+        break;
+
+    case TYPE_DEVICEBOUND:
+        Length = sizeof (GatewayRX->U.DeviceBound);
+        break;
+
+    case TYPE_DEVICEUNBOUND:
+        Length = sizeof (GatewayRX->U.DeviceUnbound);
+        break;
+
+    case TYPE_COMMSTATUS:
+        Length = sizeof (GatewayRX->U.CommFaultStatus);
+        break;
+
+    case TYPE_BINDMODE:
+        Length = sizeof (GatewayRX->U.BindMode);
+        break;
+
+    case TYPE_PINGMODE:
+        Length = sizeof (GatewayRX->U.PingMode);
+        break;
+
+    case TYPE_ERROR:
+        Length = sizeof (GatewayRX->U.ErrorReport);
+        break;
+
+    case TYPE_RSSI:
+        Length = sizeof (GatewayRX->U.Rssi);
+        break;
+
+    case TYPE_RESET:
+        Length = sizeof (GatewayRX->Reset);
+        break;
+
+    case TYPE_RETURNCODE:
+        Length = sizeof (GatewayRX->Return);
+        break;
+
+    case TYPE_ADDRESSING:
+        Length = sizeof(GatewayRX->Addressing);
+        break;
+
+    case TYPE_KEEPALIVE:
+        Length = 0;
+        break;
+
+    default:
+        Length = 0;
+        break;
+
+    }
+
+    if(0)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "   " << ntohs (GatewayRX->Type) << ": " << Length << " and " << sizeof(GWCOMMAND) << " and " << sizeof(RETURNCODEREPORT) << endl;
+    }
+
     return Length;
 }
 
@@ -415,14 +616,14 @@ void CtiDeviceGateway::run()
         {
             ioctlsocket(_msgsock, FIONREAD, &bytesavail);
 
-            if(bytesavail < sizeof(GWHEADER))
+            if(bytesavail < 2)
             {
                 sleep(500);
                 continue;
             }
 
-            /* Wait for GWHEADER bytes to be available so we can get the type in */
-            rc = recv (_msgsock, (char *)&GatewayRX, sizeof(GWHEADER), 0);
+            /* Wait for 2 bytes to be available so we can get the type in */
+            rc = recv (_msgsock, (char *)&GatewayRX , 2,0);
 
             if(rc == SOCKET_ERROR)
             {
@@ -448,8 +649,10 @@ void CtiDeviceGateway::run()
             }
             else
             {
-                Length = getMessageLength(&GatewayRX) - sizeof(GWHEADER);
+                Length = getMessageLength(&GatewayRX);
             }
+
+            // Get the number of bytes based on the type
 
             if(Length)
             {
@@ -473,7 +676,7 @@ void CtiDeviceGateway::run()
                 }
 
                 /* Wait for the rest of the bytes, or clean out the mess! */
-                char *cp = ((char *)&GatewayRX) + sizeof(GWHEADER);
+                char *cp = ((char *)&GatewayRX) + 2;
                 int getlen = (bytesavail < Length ? bytesavail : Length);
                 int gotlen = 0;
 
@@ -527,9 +730,6 @@ void CtiDeviceGateway::run()
                 }
             }
 
-            // Look at the message as the gateway!
-            processGatewayMessage(GatewayRX);
-
             // Now let any gwstat have at the message!
             ULONG did = getDeviceID(&GatewayRX);
 
@@ -565,17 +765,45 @@ void CtiDeviceGateway::run()
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << " Gateway Message Type " << (int)ntohs(GatewayRX.Hdr.Type) << endl;
+                            dout << " Gateway " << getMACAddress() << " / " << getIPAddress() <<" Message Type " << (int)ntohs(GatewayRX.Type) << endl;
                         }
                     }
                 }
 
+                if(rc == SOCKET_ERROR)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() <<  " recv() failed with error " << WSAGetLastError() << endl;
+                    }
+                    shutdown(_msgsock, 0x02);
+                    closesocket (_msgsock);
+                    break;
+                }
+                else if(rc == 0)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() <<  " Connection closed by client" << endl;
+                    }
+                    shutdown(_msgsock, 0x02);
+                    closesocket (_msgsock);
+                    break;
+                }
+                else
+                {
                 if(pGW)
                 {
                     pGW->clearPrintList();
                     pGW->convertGatewayRXStruct(GatewayRX);
                     pGW->printPacketData();
                 }
+            }
+            }
+            else
+            {
+                // Look at the message as the gateway!
+                processGatewayMessage(GatewayRX);
             }
 
             postPorter();
@@ -597,7 +825,54 @@ void CtiDeviceGateway::run()
 
 ULONG CtiDeviceGateway::getDeviceID(GATEWAYRXSTRUCT *GatewayRX)
 {
-    ULONG did = ntohl (GatewayRX->Hdr.DeviceID);
+    ULONG did = 0;
+
+    // Based on the Type figure out how many more bytes we need
+    switch(ntohs(GatewayRX->Type))
+    {
+    case TYPE_ALLOWEDSYSTEMSWITCH:
+    case TYPE_BATTERY:
+    case TYPE_RSSI:
+    case TYPE_RUNTIME:
+    case TYPE_SETPOINTS_CH:
+    case TYPE_SETPOINTS:
+    case TYPE_DEADBAND:
+    case TYPE_DEVICEABSENT:
+    case TYPE_DEVICETYPE:
+    case TYPE_DISPLAYEDTEMPERATURE:
+    case TYPE_DLC_CH:
+    case TYPE_DLC:
+    case TYPE_FANSWITCH_CH:
+    case TYPE_FANSWITCH:
+    case TYPE_FILTER_CH:
+    case TYPE_FILTER:
+    case TYPE_HEATPUMPFAULT:
+    case TYPE_SETPOINTLIMITS_CH:
+    case TYPE_SETPOINTLIMITS:
+    case TYPE_OUTDOORTEMP:
+    case TYPE_SCHEDULE_CH:
+    case TYPE_SCHEDULE:
+    case TYPE_SYSTEMSWITCH_CH:
+    case TYPE_SYSTEMSWITCH:
+    case TYPE_UTILSETPOINT_CH:
+    case TYPE_UTILSETPOINT:
+    case TYPE_CLOCK:
+    case TYPE_CLOCKDST:
+    case TYPE_DEVICEBOUND:
+    case TYPE_DEVICEUNBOUND:
+        did = ntohl (GatewayRX->U.DLC.DeviceID);
+        break;
+
+    case TYPE_RETURNCODE:
+        did = ntohl (GatewayRX->Return.DeviceID);
+        break;
+
+    default:
+        did = 0;
+        break;
+
+    }
+
     return did;
 }
 
@@ -617,9 +892,7 @@ const CtiDeviceGateway::SNVECT_t& CtiDeviceGateway::getThermostatSerialNumbers()
 void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
 {
     // this is a message type that does not require more than type
-
-
-    switch(ntohs (GatewayRX.Hdr.Type))
+    switch(ntohs (GatewayRX.Type))
     {
     case TYPE_KEEPALIVE:
         {
@@ -685,7 +958,6 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
     case TYPE_ADDRESSING:
         {
             IN_ADDR ipaddr;
-            ULONG did = ntohl(GatewayRX.Hdr.DeviceID);
 
             memcpy(_mac, GatewayRX.Addressing.Mac, 6);
             _ipaddr = ntohl(GatewayRX.Addressing.IPAddress);
@@ -709,7 +981,6 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
                 }
                 dout << hex << (int)GatewayRX.Addressing.Mac[5] << dec << endl;
 
-                dout << "Device ID              " << did << endl;
                 dout << "Local IP               " << getIPAddress() << endl;
                 dout << "SPID                   " << ntohs(GatewayRX.Addressing.Spid) << endl;
                 dout << "GEO                    " << ntohs(GatewayRX.Addressing.Geo) << endl;
@@ -722,29 +993,9 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
 
             break;
         }
-    case TYPE_TIMEZONE_MWG:
-        {
-            _minutesWestOfGreenwich = ntohl(GatewayRX.Timezone.ZoneMinutesWestOfGreenwich);
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << endl;
-                dout << "TIMEZONE               " << ntohl(GatewayRX.Timezone.ZoneMinutesWestOfGreenwich) << endl;
-            }
-
-            break;
-        }
     default:
-        {
-#if 0
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Unknown Message Type Received: " << ntohs(GatewayRX.Hdr.Type) << endl;
-            }
-#endif
             break;
         }
-    }
 
     return;
 }
@@ -806,54 +1057,6 @@ RWCString CtiDeviceGateway::getIPAddress() const
     }
 
     return ipstr;
-}
-
-/*
-    typedef struct
-    {
-        unsigned char   Mac[6];
-        unsigned long   IPAddress;
-        unsigned long   DefaultServer;
-        unsigned short  Spid;
-        unsigned short  Geo;
-        unsigned short  Feeder;
-        unsigned long   Zip;
-        unsigned short  Uda;
-        unsigned char   Program;
-        unsigned char   Splinter;
-
-    } ADDRESSING_REPORT;
- */
-
-void CtiDeviceGateway::sendSetAddressing(ULONG DeviceId, USHORT Spid, USHORT Geo, USHORT Feeder, ULONG Zip, USHORT Uda, UCHAR Program, UCHAR Splinter, ULONG ServerIP)
-{
-    ADDRESSING SetAddress;
-
-    CtiDeviceGatewayStat::BuildHeader((GWHEADER*)&SetAddress, TYPE_SETADDRESSING, sizeof(ADDRESSING), DeviceId );
-
-    SetAddress.Addressing.DefaultServer = htonl(ServerIP);
-    SetAddress.Addressing.Spid     = htons(Spid);
-    SetAddress.Addressing.Geo      = htons(Geo);
-    SetAddress.Addressing.Feeder   = htons(Feeder);
-    SetAddress.Addressing.Zip      = htonl(Zip);
-    SetAddress.Addressing.Uda      = htons(Uda);
-    SetAddress.Addressing.Program  = Program;
-    SetAddress.Addressing.Splinter = Splinter;
-
-    send (_msgsock, (char *)&SetAddress, sizeof(ADDRESSING), 0);
-}
-
-void CtiDeviceGateway::sendSetTimezone(ULONG minutesWestOfGreenwich, UCHAR doIt, USHORT DSTMinutesOffset)
-{
-    TIMEZONEMSG SetTimezone;
-
-    CtiDeviceGatewayStat::BuildHeader((GWHEADER*)&SetTimezone, TYPE_SETTIMEZONE, sizeof(TIMEZONEMSG), 0 );
-
-    SetTimezone.Timezone.ZoneMinutesWestOfGreenwich = htonl( minutesWestOfGreenwich );
-    SetTimezone.Timezone.DoDST = doIt;
-    SetTimezone.Timezone.DSTMinutesOffset = htons(DSTMinutesOffset);
-
-    send (_msgsock, (char *)&SetTimezone, sizeof(TIMEZONEMSG), 0);
 }
 
 bool CtiDeviceGateway::shouldClean()
