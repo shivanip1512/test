@@ -22,7 +22,7 @@ com.cannontech.esub.editor.element.StateImage
 A 0 1 0 0 $ 1 ! 0 0
 0 0 0 0 0
 !
-217 2 "No" "images\OpenMotor.gif" "Yes" "images\ClosedMotor.gif" "No" ""
+217 2 "No" "images\ClosedMotor.gif" "Yes" "images\ClosedMotor.gif" "No" "test4.svg"
 
 
 0

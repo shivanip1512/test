@@ -1,6 +1,8 @@
 package com.cannontech.esub.editor.element;
 
 import java.io.File;
+
+import javax.swing.SwingUtilities;
 import javax.swing.event.*;
 
 import com.cannontech.common.gui.util.*;
@@ -52,7 +54,7 @@ private void changeStateImageTable(StateImage stateImage, com.cannontech.databas
 					(com.cannontech.database.data.lite.LiteState) stateIter.next();
 
 				String stateText = ls.getStateText();
-				String img = stateImage.getImage(ls.getStateText());
+				String img = stateImage.getAbsoluteImagePath(ls.getStateText());
 
 				if( img == null )
 					img = StateImage.INVALID_STATE_IMAGE_NAME;
@@ -309,7 +311,7 @@ public Object getValue(Object o) {
 	for( int i = 0; i < states.length; i++ ) {	
 		String image = 	getStateImageTableModel().getImage(states[i]);
 //		String imageRel = Util.getRelativePath( stateImage.getDrawing(), image);			
-		stateImage.setImage(states[i], image);		
+		stateImage.setAbsoluteImagePath(states[i], image);		
 	}
 
 	stateImage.setState(states[0]);
@@ -363,7 +365,21 @@ private void initialize() {
 
 			//must be a image column
 			if( col == 1 ) {
-				javax.swing.JFileChooser fc = com.cannontech.esub.util.ImageChooser.getInstance();	
+				final javax.swing.JFileChooser fc = com.cannontech.esub.util.ImageChooser.getInstance();	
+				
+				final String iPath = (String) getStateImageTableModel().getValueAt(row, col);
+				if(iPath != null && !iPath.equalsIgnoreCase("X.gif")) {
+						
+						SwingUtilities.invokeLater( new Runnable() {
+							public void run() {
+								fc.setSelectedFile(new File(iPath));		
+							}
+						} );
+						
+//						fc.
+					}
+				 
+				
 				//fc.setCurrentDirectory( new File(stateImage.getDrawing().getFileName()).getParentFile());			
 				int returnVal = fc.showDialog(StateImageEditorPanel.this, "Attach");				
                 if (returnVal == javax.swing.JFileChooser.APPROVE_OPTION) {

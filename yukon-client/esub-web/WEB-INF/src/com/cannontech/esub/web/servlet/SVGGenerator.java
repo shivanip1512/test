@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.loox.jloox.LxGraph;
 
 import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.util.DrawingUpdater;
 
 
 /**
@@ -56,6 +57,8 @@ public class SVGGenerator extends HttpServlet {
 			Drawing d = new Drawing();
 			d.load(jlxPath);
 			
+			DrawingUpdater du = new DrawingUpdater(d);
+			du.run();
 			/*LxGraph g = new LxGraph();
 			g.read(jlxPath);
 			*/

@@ -23,11 +23,13 @@ public class StateImage extends LxAbstractImage implements DrawingElement {
 	
 	private LitePoint point;
 	private String[] states;
-	private String[] images;
+	private String[] absoluteImagePaths;
+	private String[] relativeImagePaths;
 	private String state;
-	
+		
 	private Drawing drawing;
 	private String linkTo;
+	
 /**
  * StateImage constructor comment.
  */
@@ -40,19 +42,54 @@ public StateImage() {
  * @return java.lang.String
  * @param state java.lang.String
  */
-public String getImage(String state) {
+public String getAbsoluteImagePath(String state) {
 
 	if( states == null )
 		return null;
 		
 	for( int i = 0; i < states.length; i++ ) {
 		if( states[i].equalsIgnoreCase(state) ) {
-			return images[i];			
+			return absoluteImagePaths[i];			
 		}
 	}
 
 	return null;
 }
+
+/**
+ * Creation date: (1/21/2002 12:21:07 PM)
+ * @return java.lang.String
+ * @param state java.lang.String
+ */
+public String getRelativeImagePath(String state) {
+
+	if( states == null )
+		return null;
+		
+	for( int i = 0; i < states.length; i++ ) {
+		if( states[i].equalsIgnoreCase(state) ) {
+			return relativeImagePaths[i];			
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Creation date: (1/21/2002 12:21:07 PM)
+ * @return java.lang.String
+ * @param state java.lang.String
+ */
+public String calcRelativeImagePath(String state) {
+
+	if( getDrawing() != null ) {
+		return Util.getRelativePath(getDrawing(), getAbsoluteImagePath(state));
+	}
+	else {
+		return null;
+	}
+}
+
 /**
  * Creation date: (1/14/2002 1:47:27 PM)
  * @return java.lang.String
@@ -101,7 +138,7 @@ private void initialize() {
  * @param version java.lang.String
  */
 public synchronized void readFromJLX(InputStream in, String version) throws IOException
-{System.out.println("StateImage::readFromJLX");
+{
 	super.readFromJLX(in, version);
 
 	//restore point id
@@ -110,11 +147,16 @@ public synchronized void readFromJLX(InputStream in, String version) throws IOEx
 	int numStates = LxSaveUtils.readInt(in);
 
 	states = new String[numStates];
-	images = new String[numStates];
+	relativeImagePaths = new String[numStates];	
+	absoluteImagePaths = new String[numStates];
+	
 	for( int i = 0; i < numStates; i++ ) {
+		System.out.println("!!");
 		states[i] = LxSaveUtils.readString(in);
-		images[i] = LxSaveUtils.readString(in);
-		System.out.println(states[i] + "," + images[i]);
+		System.out.println("!! read: " + states[i]);
+		//absoluteImagePaths[i] = LxSaveUtils.readString(in);
+		relativeImagePaths[i] = LxSaveUtils.readString(in);		
+		System.out.println("!!" + states[i] + "," + relativeImagePaths[i]);
 	}	
 
 	//restore state
@@ -139,8 +181,12 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
 	LxSaveUtils.writeInt(out, states.length);
 	
 	for( int i = 0; i < states.length; i++ ) {
+		System.out.println("!! writing: " + states[i]);
 		LxSaveUtils.writeString(out, states[i]);
-		LxSaveUtils.writeString(out, images[i]);
+		//LxSaveUtils.writeString(out, absoluteImagePaths[i]);
+		System.out.println("!! writing: " + calcRelativeImagePath(states[i]));
+//		LxSaveUtils.writeString(out, "yoyo");		
+		LxSaveUtils.writeString(out, calcRelativeImagePath(states[i]));
 	}
 
 	//save current state	
@@ -155,14 +201,23 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
  * Creation date: (1/21/2002 1:04:51 PM)
  * @param state java.lang.String
  */
-public void setImage(String state, String image) {
+public void setAbsoluteImagePath(String state, String image) {
 	for( int i = 0; i < states.length; i++ ) {
 		if( states[i].equalsIgnoreCase(state) ) {
-			images[i] = image;
+			absoluteImagePaths[i] = image;
 			break;
 		}
 	}
 			
+}
+
+public void setRelativeImagePath(String state, String relImagePath) {
+	for( int i = 0; i < states.length; i++ ) {
+		if( states[i].equalsIgnoreCase(state) ) {
+			relativeImagePaths[i] = relImagePath;
+			break;
+		}
+	}	
 }
 /**
  * Creation date: (1/14/2002 1:47:27 PM)
@@ -195,8 +250,8 @@ public void setState(java.lang.String newState) {
 	// find the correct image for the new state
 	for( int i = 0; i < states.length; i++ ) {
 		if( states[i].equalsIgnoreCase(newState) ) {	
-			System.out.println("Looking for image: " + images[i]);			
-			setImage(Util.loadImage(images[i]));	
+			System.out.println("Looking for image: " + absoluteImagePaths[i]);			
+			setImage(Util.loadImage(absoluteImagePaths[i]));	
 
 			break; 
 		}
@@ -209,7 +264,7 @@ public void setState(java.lang.String newState) {
  */
 public void setStates(String[] states) {
 	this.states = states;
-	this.images = new String[states.length];
+	this.absoluteImagePaths = new String[states.length];
 	this.state = states[0];
 }
 
@@ -226,4 +281,5 @@ public void setStates(String[] states) {
 		this.drawing = d;
 	}
 
+	
 }

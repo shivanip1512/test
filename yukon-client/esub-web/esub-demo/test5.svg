@@ -3,5 +3,7 @@
 <svg width="800.0px" height="600.0px" >
 <rect width="100%" height="100%" color="#000000" />
 <path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,255); stroke-width:1.0;" d="M 10.0 40.0 L 200.0 60.0 " />
-<image id="LxAbstractImage" xlink:href="images/OpenMotor.gif" x="52" y="94" width="48" height="27" />
+<a xlink:href="test4.svg">
+<image id="LxAbstractImage" xlink:href="images/ClosedMotor.gif" x="52" y="94" width="48" height="27" />
+</a>
 </svg>

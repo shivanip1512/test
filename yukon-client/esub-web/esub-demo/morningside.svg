@@ -2,20 +2,16 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000802//EN" "http://www.w3.org/TR/2000/CR-SVG-20000802/DTD/svg-20000802.dtd" >
 <svg width="800.0px" height="600.0px" >
 <rect width="100%" height="100%" color="#000000" />
-<text id="LxAbstractText" x="40" y="33" style="fill:rgb(102,153,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:18;opacity:1.0;" >RAUN</text>
-<text id="LxAbstractText" x="240" y="33" style="fill:rgb(102,153,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:18;opacity:1.0;" >PLYMOUTH</text>
-<text id="LxAbstractText" x="80" y="70" style="fill:rgb(102,153,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:14;opacity:1.0;" >8560</text>
-<text id="LxAbstractText" x="300" y="70" style="fill:rgb(102,153,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:14;opacity:1.0;" >8580</text>
-<a xlink:href="mec.svg">
-<image id="LxAbstractImage" xlink:href="images/SubListButton.gif" x="370" y="180" width="117" height="22" />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(153,153,255); stroke-width:1.0;" d="M 80.0 50.0 L 80.0 210.0 M 80.0 50.0 L 76.0 56.0 L 77.0 56.0 L 80.0 52.0 L 83.0 56.0 L 84.0 56.0 Z " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(153,153,255); stroke-width:1.0;" d="M 80.0 140.0 L 480.0 140.0 " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(153,153,255); stroke-width:1.0;" d="M 480.0 190.0 L 480.0 50.0 M 480.0 50.0 L 476.0 56.0 L 477.0 56.0 L 480.0 52.0 L 483.0 56.0 L 484.0 56.0 Z " />
+<text id="LxAbstractText" x="100" y="80" style="fill:rgb(153,153,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:14;opacity:1.0;" >8560</text>
+<text id="LxAbstractText" x="100" y="113" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >N/A</text>
+<image id="LxAbstractImage" xlink:href="images/RedBox.gif" x="70" y="90" width="20" height="20" />
+<text id="LxAbstractText" x="130" y="113" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >MVAR</text>
+<text id="LxAbstractText" x="130" y="98" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >MW</text>
+<text id="LxAbstractText" x="100" y="98" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >N/A</text>
+<a xlink:href="sublist.jsp">
+<image id="LxAbstractImage" xlink:href="images\SubListButton.gif" x="365" y="220" width="117" height="22" />
 </a>
-<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(102,153,255); stroke-width:1.0;" d="M 60.0 200.0 L 60.0 40.0 M 60.0 40.0 L 56.0 46.0 L 64.0 46.0 Z " />
-<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(102,153,255); stroke-width:1.0;" d="M 60.0 110.0 L 280.0 110.0 " />
-<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(102,153,255); stroke-width:1.0;" d="M 280.0 190.0 L 280.0 40.0 M 280.0 40.0 L 276.0 46.0 L 284.0 46.0 Z " />
-<a xlink:href="8560_details.svg">
-<image id="LxAbstractImage" xlink:href="images/GreenBox.gif" x="50" y="70" width="20" height="20" />
-</a>
-<image id="LxAbstractImage" xlink:href="images/RedBox.gif" x="270" y="70" width="20" height="20" />
-<image id="LxAbstractImage" xlink:href="images/ClosedMotor.gif" x="50" y="210" width="48" height="27" />
-<image id="LxAbstractImage" xlink:href="images/OpenMotor.gif" x="280" y="200" width="48" height="27" />
 </svg>

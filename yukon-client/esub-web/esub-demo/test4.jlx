@@ -18,11 +18,11 @@ A 0 1 0 0 ffffffff 1 ! 0 0
 0 0
 
 com.cannontech.esub.editor.element.StateImage
-! 111101100 52;94;48;27 5 0 $ ! ! 0
+! 111101100 52;94;20;20 5 0 $ ! ! 0
 A 0 1 0 0 $ 1 ! 0 0
 0 0 0 0 0
 !
-217 2 "No" "images\OpenMotor.gif" "Yes" "images\ClosedMotor.gif" "No" ""
+217 2 "No" "images\RedBox.gif" "Yes" "images\ClosedMotor.gif" "No" ""
 
 
 0

@@ -1,8 +1,11 @@
 package com.cannontech.esub.util;
 
+import java.text.DecimalFormat;
+
 import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.DynamicText;
+import com.cannontech.esub.editor.element.StateImage;
 import com.cannontech.message.dispatch.message.PointData;
 
 import com.loox.jloox.LxComponent;
@@ -54,8 +57,19 @@ public class DrawingUpdater implements Runnable {
 					PointData pData = pcc.getValue(dt.getPointID());
 					
 					if( pData != null ) {
-						dt.setText( Double.toString(pData.getValue()));
+						DecimalFormat f = new DecimalFormat();
+						f.setMaximumFractionDigits(2);
+						
+						dt.setText( f.format(pData.getValue()));
 					}
+				}
+				
+				if( comp[i] instanceof StateImage ) {
+					StateImage si = (StateImage) comp[i];
+					PointData pData = pcc.getValue(si.getPointID());
+					String state = pcc.getState(si.getPointID(), pData.getValue());	
+					
+					si.setState(state);								
 				}
 			}
 		}

@@ -206,8 +206,9 @@ public class SVGGenerator {
 		int width = (int) r.getMaxX() - x;
 		int height = (int) r.getMaxY() - y;
 		
-	 	String relImage = Util.getRelativePath( new File(img.getDrawing().getFileName()), new File(img.getImageName()));
-	 	relImage = relImage.replace('\\','/');
+//	 	String relImage = Util.getRelativePath( new File(img.getDrawing().getFileName()), new File(img.getAbsoluteImagePath()));
+		String relImage = img.calcRelativeImagePath();
+	 	//relImage = relImage.replace('\\','/');
 	 	
 		writer.write("<image id=\"" + img.getName() + "\" xlink:href=\"" + relImage + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\" />\n");
 	}
@@ -219,7 +220,7 @@ public class SVGGenerator {
 		int width = (int) r.getMaxX() - x;
 		int height = (int) r.getMaxY() - y;
 		
-		String relImage = Util.getRelativePath( new File(img.getDrawing().getFileName()), new File(img.getImage(img.getState())));
+		String relImage = Util.getRelativePath( new File(img.getDrawing().getFileName()), new File(img.getAbsoluteImagePath(img.getState())));
 	 	relImage = relImage.replace('\\','/');
 	 	
 		writer.write("<image id=\"" + img.getName() + "\" xlink:href=\"" + relImage + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\" />\n");

@@ -1,100 +1,86 @@
 JLoox 2.0.2
 "UTF8"
-A 0 1 0 0 ff6699ff 1 ! 0
+A 0 1 0 0 ff9999ff 1 B ff9999ff ffcccc99 0
 !
 "Default" 0 32
-0 0 001
+2 0 001
 1
 "0" 1
 
-12
+10
 
-com.cannontech.esub.editor.element.StaticText
-! 111101100 40;20;49.24707;13.109375 5 0 $ ! ! 0
-A 0 0 0 0 $ 1 C ff6699ff 0 0
+com.loox.jloox.LxLine
+! 111101100 80;50;0;160 5 0 $ ! ! 0
+A 0 1 0 0 ff9999ff 1 B ffffffff ffcccc99 0 0
+2
+0 0;-80
+1 0;80
+0 1
+
+com.loox.jloox.LxLine
+! 111101100 80;140;400;0 5 0 $ ! ! 0
+A 0 1 0 0 ff9999ff 1 B ff9999ff ffcccc99 0 0
+2
+0 -200;0
+1 200;0
 0 0
-"Arial Bold" 0 18 "RAUN"
-"Arial Bold" 18 102 153 255 ""
+
+com.loox.jloox.LxLine
+! 111101100 480;50;0;140 5 0 $ ! ! 0
+A 0 1 0 0 ff9999ff 1 B ff9999ff ffcccc99 0 0
+2
+0 0;70
+1 0;-70
+0 2
 
 com.cannontech.esub.editor.element.StaticText
-! 111101100 240;20;98.308594;13.328125 5 0 $ ! ! 0
-A 0 0 0 0 $ 1 C ff6699ff 0 0
-0 0
-"Arial Bold" 0 18 "PLYMOUTH"
-"Arial Bold" 18 102 153 255 ""
-
-com.cannontech.esub.editor.element.StaticText
-! 111101100 80;60;29.889648;10.234375 5 0 $ ! ! 0
-A 0 0 0 0 $ 1 C ff6699ff 0 0
+! 111101100 100;70;29.889648;10.234375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff9999ff 0 0
 0 0
 "Arial Bold" 0 14 "8560"
-"Arial Bold" 14 102 153 255 ""
+"Arial Bold" 14 153 153 255 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 111101100 100;105;19.734375;8.875 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "N/A"
+765 ""
+
+com.cannontech.esub.editor.element.StateImage
+! 111101100 70;90;20;20 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+947 2 "Closed" "images\RedBox.gif" "Open" "images\GreenBox.gif" "Closed" ""
 
 com.cannontech.esub.editor.element.StaticText
-! 111101100 300;60;29.889648;10.234375 5 0 $ ! ! 0
-A 0 0 0 0 $ 1 C ff6699ff 0 0
+! 111101100 130;105;34.431641;8.59375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
 0 0
-"Arial Bold" 0 14 "8580"
-"Arial Bold" 14 102 153 255 ""
+"Arial Bold" 0 12 "MVAR"
+"Arial Bold" 12 255 255 255 ""
 
-com.cannontech.esub.editor.element.StaticImage
-! 111101100 370;180;117;22 5 0 $ ! ! 0
-A 0 1 0 0 $ 1 ! 0 0
-0 0 0 0 0
-!
-"C:\eclipse\workspace\esub-web-tom\esub-demo\images\SubListButton.gif" "mec.svg"
-
-com.loox.jloox.LxLine
-! 111101100 60;40;0;160 5 0 $ ! ! 0
-A 0 1 0 0 ff6699ff 1 ! 0 0
-2
-0 0;80
-1 0;-80
-0 6
-
-com.loox.jloox.LxLine
-! 111101100 60;110;220;0 5 0 $ ! ! 0
-A 0 1 0 0 ff6699ff 1 ! 0 0
-2
-0 -110;0
-1 110;0
+com.cannontech.esub.editor.element.StaticText
+! 111101100 130;90;20.464844;8.59375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
 0 0
+"Arial Bold" 0 12 "MW"
+"Arial Bold" 12 255 255 255 ""
 
-com.loox.jloox.LxLine
-! 111101100 280;40;0;150 5 0 $ ! ! 0
-A 0 1 0 0 ff6699ff 1 ! 0 0
-2
-0 0;75
-1 0;-75
-0 6
+com.cannontech.esub.editor.element.DynamicText
+! 111101100 100;90;19.734375;8.875 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "N/A"
+759 ""
 
 com.cannontech.esub.editor.element.StaticImage
-! 111101100 50;70;20;20 5 0 $ ! ! 0
+! 111101100 365;220;117;22 5 0 $ ! ! 0
 A 0 1 0 0 $ 1 ! 0 0
 0 0 0 0 0
 !
-"C:\eclipse\workspace\esub-web-tom\esub-demo\images\GreenBox.gif" "8560_details.svg"
-
-com.cannontech.esub.editor.element.StaticImage
-! 111101100 270;70;20;20 5 0 $ ! ! 0
-A 0 1 0 0 $ 1 ! 0 0
-0 0 0 0 0
-!
-"C:\eclipse\workspace\esub-web-tom\esub-demo\images\RedBox.gif" ""
-
-com.cannontech.esub.editor.element.StaticImage
-! 111101100 50;210;48;27 5 0 $ ! ! 0
-A 0 1 0 0 $ 1 ! 0 0
-0 0 0 0 0
-!
-"C:\eclipse\workspace\esub-web-tom\esub-demo\images\ClosedMotor.gif" ""
-
-com.cannontech.esub.editor.element.StaticImage
-! 111101100 280;200;48;27 5 0 $ ! ! 0
-A 0 1 0 0 $ 1 ! 0 0
-0 0 0 0 0
-!
-"C:\eclipse\workspace\esub-web-tom\esub-demo\images\OpenMotor.gif" ""
+"images\SubListButton.gif" "sublist.jsp"
 
 
 0

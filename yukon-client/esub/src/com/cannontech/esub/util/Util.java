@@ -73,7 +73,7 @@ public static synchronized javax.swing.JColorChooser getJColorChooser()
 public static String getAbsolutePath(Drawing d, String relPath) {
 	return new File(d.getFileName()).getParent() + "/" + relPath;
 }
-
+	
 /**
  * Determines the image in image paths relative path to the drawing
  * Returns null if it cannot be determined
@@ -81,9 +81,15 @@ public static String getAbsolutePath(Drawing d, String relPath) {
  * @param imagePath
  * @return String
  */
-public static String getRelativePath(Drawing d, String imagePath) {
+public static String getRelativePath(Drawing d, String absImagePath) {	
+	String dFileName = d.getFileName();
+	
+	if( dFileName == null ) {
+		return null;
+	}
+	
 	File dFile = new File(d.getFileName());
-	File iFile = new File(imagePath);
+	File iFile = new File(absImagePath);
 	
 	String relPath = null;
 	

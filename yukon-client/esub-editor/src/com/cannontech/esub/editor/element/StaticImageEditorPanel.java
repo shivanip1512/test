@@ -8,6 +8,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 
+import javax.swing.SwingUtilities;
+
 /**
  * Creation date: (1/22/2002 10:23:18 AM)
  * @author: 
@@ -158,7 +160,7 @@ private LinkToPanel getLinkToPanel() {
  */
 public Object getValue(Object o) {
 	staticImage.setLinkTo( getLinkToPanel().getLinkTo() );
-	staticImage.setImageName( getImageNameLabel().getText());
+	staticImage.setAbsoluteImagePath( getImageNameLabel().getText());
 
 	return staticImage;
 }
@@ -207,8 +209,17 @@ private void initialize() {
 
 	getImageNameLabel().addMouseListener( new MouseAdapter() {
 		public void mousePressed(MouseEvent e) {
-			javax.swing.JFileChooser fc = com.cannontech.esub.util.ImageChooser.getInstance();
+			final javax.swing.JFileChooser fc = com.cannontech.esub.util.ImageChooser.getInstance();
 				//fc.setCurrentDirectory( new File(staticImage.getDrawing().getFileName()).getParentFile());
+				final String iPath = staticImage.getAbsoluteImagePath();
+				if(iPath != null ) {
+					SwingUtilities.invokeLater( new Runnable() {
+							public void run() {
+								fc.setSelectedFile(new File(iPath));		
+							}
+						} );
+				}
+				
 				int returnVal = fc.showDialog(StaticImageEditorPanel.this, "Attach");								
                 if (returnVal == javax.swing.JFileChooser.APPROVE_OPTION) {
                     java.io.File file = fc.getSelectedFile();                    
@@ -254,7 +265,7 @@ public void setValue(Object o) {
 	staticImage = (StaticImage) o;
 
 	getLinkToPanel().setLinkTo(staticImage.getLinkTo());
-	getImageNameLabel().setText(staticImage.getImageName());
+	getImageNameLabel().setText(staticImage.getAbsoluteImagePath());
 
 //	Image i = Util.loadImage(staticImage.getImageName());
 	getImageNameLabel().setIcon(new javax.swing.ImageIcon(staticImage.getImage()));	

@@ -48,12 +48,20 @@ public class ImagePreview extends JComponent
     }
     public void propertyChange(PropertyChangeEvent e) {
         String prop = e.getPropertyName();
-        if (prop.equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)) {
+        if ( prop.equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY ) )
+              {
             file = (File) e.getNewValue();
             if (isShowing()) {
                 loadImage();
                 repaint();
             }
         }
+        
+      /*  if( prop.equals("ancestor") ) {
+        	if (isShowing()) {
+                loadImage();
+                repaint();
+            }
+        }*/
     }
 }
