@@ -47,15 +47,16 @@ public JPanelCCPointVarWatts()
    }   
 
 
-   VAR_POINTS = null; /*com.cannontech.database.cache.functions.PointFuncs.getLitePointsByUOMID(
+	//init our UofM point measurements
+   VAR_POINTS = com.cannontech.database.cache.functions.PointFuncs.getLitePointsByUOMID(
             com.cannontech.database.data.point.PointUnits.CAP_CONTROL_VAR_UOMIDS);            
    java.util.Arrays.sort(VAR_POINTS, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator);
-*/
 
-   WATT_POINTS = null; /*com.cannontech.database.cache.functions.PointFuncs.getLitePointsByUOMID(
+
+   WATT_POINTS = com.cannontech.database.cache.functions.PointFuncs.getLitePointsByUOMID(
             com.cannontech.database.data.point.PointUnits.CAP_CONTROL_WATTS_UOMIDS);   
    java.util.Arrays.sort(WATT_POINTS, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator);
-*/
+
    
 	initialize();
 }

@@ -1,5 +1,7 @@
 package com.cannontech.database.db.device.lm;
 
+import java.sql.Statement;
+
 import com.cannontech.database.data.device.lm.ThermostatPreOperateGear;
 import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
 
@@ -143,17 +145,22 @@ public abstract class LMProgramDirectGear
 		java.sql.Connection conn)
 		throws java.sql.SQLException
 	{
-		String sql = "DELETE FROM " + TABLE_NAME + " WHERE deviceID=" + deviceID;
+		String tGear = "DELETE FROM " + LMThermostatGear.TABLE_NAME +
+							" where gearid in (select gearid from " + TABLE_NAME + 
+							" where deviceID=" + deviceID + ")";
+
+		String dGear = "DELETE FROM " + TABLE_NAME + " WHERE deviceID=" + deviceID;
 
 		if (conn == null)
 			throw new IllegalArgumentException("Received a (null) database connection");
 
-		java.sql.PreparedStatement pstmt = null;
+		Statement stmt = null;
 
 		try
 		{
-			pstmt = conn.prepareStatement(sql.toString());
-			pstmt.execute();
+			stmt = conn.createStatement();
+			stmt.execute( tGear );
+			stmt.execute( dGear );
 		}
 		catch (java.sql.SQLException e)
 		{
@@ -163,8 +170,8 @@ public abstract class LMProgramDirectGear
 		{
 			try
 			{
-				if (pstmt != null)
-					pstmt.close();
+				if (stmt != null)
+					stmt.close();
 			}
 			catch (java.sql.SQLException e2)
 			{

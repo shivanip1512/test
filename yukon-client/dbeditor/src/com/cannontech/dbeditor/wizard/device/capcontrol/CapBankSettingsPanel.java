@@ -137,15 +137,14 @@ private void connEtoC6(java.awt.event.ActionEvent arg1) {
  * @return com.cannontech.database.data.multi.SmartMultiDBPersistent
  * @param capBank com.cannontech.database.data.capcontrol.CapBank
  */
-private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObjects()
+private static void createBankStatusPt(
+		com.cannontech.database.data.multi.SmartMultiDBPersistent newVal )
 {
-	//a status point and an analog point will be added automatically to all CapBanks
-	com.cannontech.database.data.multi.SmartMultiDBPersistent newVal = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
 
 	//a status point is created
 	com.cannontech.database.data.point.PointBase newPoint =
 		com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.STATUS_POINT);
-	Integer pointID = null; //new Integer( newPoint.getPoint().getNextPointID() );
+	Integer pointID = null;
 
 	//defaults point
 	newPoint = com.cannontech.database.data.point.PointBase.createNewPoint(		
@@ -160,12 +159,18 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
 	//defaults pointStatus
 	((com.cannontech.database.data.point.StatusPoint) newPoint).setPointStatus(
 		new com.cannontech.database.db.point.PointStatus(pointID) );
-	
+
+	newVal.addDBPersistent(newPoint);		
+}
+
+private static void createBankOpCntPoint(
+		com.cannontech.database.data.multi.SmartMultiDBPersistent newVal )
+{	
 	//defaults pointControl
 	//an analog point is created
 	com.cannontech.database.data.point.PointBase newPoint2 =
 		com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.ANALOG_POINT);
-	pointID = null; //new Integer( newPoint.getPoint().getNextPointID() );
+	Integer pointID = null;
 
 	//defaults point
 	newPoint2 = com.cannontech.database.data.point.PointBase.createNewPoint(		
@@ -178,7 +183,6 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
 	newPoint2.getPoint().setStateGroupID( new Integer(-1) );
 
 	//defaults - pointUnit
-
 	((com.cannontech.database.data.point.ScalarPoint) newPoint2).setPointUnit(
 		new com.cannontech.database.db.point.PointUnit(
 			pointID,
@@ -187,8 +191,8 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
 			new Double(0.0),
 			new Double(0.0)));
 
+	
 	//defaults - pointAccumulator
-
 	((com.cannontech.database.data.point.AnalogPoint) newPoint2).setPointAnalog(
 		new com.cannontech.database.db.point.PointAnalog(
 			pointID,
@@ -198,11 +202,8 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
 			new Double(0.0)));
 	
 
-	//add all the objects here
-	newVal.addDBPersistent(newPoint);
+	//add the point here
 	newVal.addDBPersistent(newPoint2);
-
-	return newVal;
 }
 /**
  * Return the PhysicalAddressLabel property value.
@@ -495,9 +496,16 @@ public Object getValue(Object val)
 	//add any objects that get created automaitcally
 	com.cannontech.database.data.multi.SmartMultiDBPersistent newVal = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
 
-	//do not create points if the capbank is Fixed
-	if( !capBank.getCapBank().getOperationalState().equalsIgnoreCase(com.cannontech.database.data.capcontrol.CapBank.FIXED_OPSTATE) )
-		newVal = createExtraObjects();
+	//only create Status point if the capbank is Fixed
+	if( capBank.getCapBank().getOperationalState().equalsIgnoreCase(com.cannontech.database.data.capcontrol.CapBank.FIXED_OPSTATE) )
+	{
+		createBankStatusPt( newVal );
+	}
+	else
+	{
+		createBankStatusPt( newVal );
+		createBankOpCntPoint( newVal );		
+	}
 
 	((DeviceBase) val).setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
 	newVal.addDBPersistent( capBank );
