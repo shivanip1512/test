@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2004/12/02 22:15:14 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2004/12/08 21:17:38 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.20  2004/12/08 21:17:38  cplender
+* Expiration Code was shady.  Expired commands which had not set an expiration time...
+*
 * Revision 1.19  2004/12/02 22:15:14  cplender
 * Added OM-ExpirationTime to the device queue processing.
 *
@@ -249,10 +252,17 @@ INT CtiDeviceRTC::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
 
     if( !ErrReturn )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
+                                                       RWCString(InMessage->Return.CommandStr),
+                                                       getName() + " / operation complete",
+                                                       InMessage->EventCode & 0x7fff,
+                                                       InMessage->Return.RouteID,
+                                                       InMessage->Return.MacroOffset,
+                                                       InMessage->Return.Attempt,
+                                                       InMessage->Return.TrxID,
+                                                       InMessage->Return.UserID);
+
+        retList.append(retMsg);
     }
     else
     {
@@ -471,11 +481,11 @@ bool CtiDeviceRTC::getOutMessage(CtiOutMessage *&OutMessage)
         {
             OutMessage = _workQueue.getQueue( 500 );
 
-            if(OutMessage && OutMessage->ExpirationTime < now)
+            if(OutMessage && OutMessage->ExpirationTime > 0 && OutMessage->ExpirationTime < now.seconds())
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Expired command on " << getName() << "'s device queue.  Expired at " << RWTime(OutMessage->ExpirationTime) << endl;
+                    dout << RWTime() << " Expired command on " << getName() << "'s device queue.  Expired at " << RWTime(OutMessage->ExpirationTime) << "  ET = " << OutMessage->ExpirationTime << endl;
                 }
                 delete OutMessage;
                 OutMessage = 0;

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/12/02 22:15:13 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/12/08 21:19:30 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -519,7 +519,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 
                         om = _codes.front();
 
-                        if(om && om->ExpirationTime >= NowTime)
+                        if(om && ( om->ExpirationTime <= 0 || om->ExpirationTime >= NowTime.seconds()) )
                         {
                             om->Buffer.SASt._codeSimple[6] = 0;  //  make sure it's null-terminated, just to be safe...
                             char (&codestr)[7] = om->Buffer.SASt._codeSimple;
