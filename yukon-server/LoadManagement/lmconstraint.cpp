@@ -5,6 +5,7 @@
 #include "lmprogramcontrolwindow.h"
 #include "lmid.h"
 #include "mgr_season.h"
+#include "mgr_holiday.h"
 #include "numstr.h"
 
 extern ULONG _LM_DEBUG;
@@ -23,7 +24,7 @@ bool CtiLMConstraintChecker::checkConstraints(const CtiLMProgramDirect& lm_progr
 					      vector<string>& results)
 {
     bool ret_val = true;
-    
+
     ret_val = (checkSeason(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
     ret_val = (checkWeekDays(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
     ret_val = (checkMaxHoursDaily(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
@@ -61,6 +62,7 @@ bool CtiLMConstraintChecker::checkConstraints(const CtiLMProgramDirect& lm_progr
 {
     return (!lm_program.getDisableFlag());
 }*/
+
 
 /*
  * Checks if the given program is allowed to run during the given period.
@@ -107,6 +109,7 @@ bool CtiLMConstraintChecker::checkSeason(const CtiLMProgramDirect& lm_program,
 bool CtiLMConstraintChecker::checkWeekDays(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results)
 {
     bool violated = false;
+    
     const RWCString& weekdays = lm_program.getAvailableWeekDays();
     
     RWTime startTime(proposed_start_from_1901);
@@ -115,22 +118,57 @@ bool CtiLMConstraintChecker::checkWeekDays(const CtiLMProgramDirect& lm_program,
     RWDate startDate(startTime);
     RWDate stopDate(stopTime);
 
-    do
+    if(weekdays[(size_t)7] == 'Y' || weekdays[(size_t)7] == 'y')
     {
-	int week_day = startDate.weekDay(); 
-	if(week_day == 7) //yukon is 0-6, sunday-sat, rw is 1-7, monday-sunday
-	{
-	    week_day = 0;
-	}
-	if(weekdays[(size_t)week_day] != 'Y' && weekdays[(size_t)week_day] != 'y')
-	{
-	    string result = "The program is not allowed to run on " + startDate.weekDayName();
-	    results->push_back(result);
-	    violated = true;
-	    break;
-	}
-    } while(++startDate <= stopDate);
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " **Checkpoint** " <<  " Found 'N' for the holiday slot in the available weekdays constraint for program: " << lm_program.getPAOName() << "  F (force), E (exclude), N (no effect) - update the database and/or your database editor" << __FILE__ << "(" << __LINE__ << ")" << endl;
+        dout << RWTime() << " Cowardly deciding that holidays have no effect on this program." << endl;
+    }
+    
+    bool force_holiday = true;
+    if(weekdays[(size_t)7] == 'F' || weekdays[(size_t)7] == 'f')
+    {
+        do
+        {
+            if(!CtiHolidayManager::getInstance().isHoliday(startDate))
+            {   // The entire time the program is to run isn't a holiday,
+                // make sure to do a normal week day check
+                force_holiday = false;
+                break;
+            }
+        } while(++startDate <= stopDate);
+    }
 
+    if(!force_holiday)
+    {
+        string result;
+        do
+        {
+            bool is_holiday = CtiHolidayManager::getInstance().isHoliday(startDate);
+            if(is_holiday && (weekdays[(size_t)7] == 'E' || weekdays[(size_t)7] == 'e'))
+            {
+                result = "The program is not allowed to run on ";
+                result += startDate.asString();
+                result += ", which is a holiday";
+                results->push_back(result);
+                violated = true;
+                break;
+            }
+
+            int week_day = startDate.weekDay(); 
+            if(week_day == 7) //yukon is 0-6, sunday-sat, rw is 1-7, monday-sunday
+            {
+                week_day = 0;
+            }
+            if(weekdays[(size_t)week_day] != 'Y' && weekdays[(size_t)week_day] != 'y')
+            {
+                result = "The program is not allowed to run on " + startDate.weekDayName();
+                results->push_back(result);
+                violated = true;
+                break;
+            }
+        } while(++startDate <= stopDate);
+    }
     return !violated;
 }
 
