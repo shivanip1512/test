@@ -155,9 +155,10 @@ private javax.swing.JPanel getBasePanel() {
 			constraintsPointNameTextField.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsPointNameTextField.weightx = 1.0;
 			constraintsPointNameTextField.ipadx = 192;
-			constraintsPointNameTextField.insets = new java.awt.Insets(4, 4, 0, 6);
+			constraintsPointNameTextField.ipady = 5;
+			constraintsPointNameTextField.insets = new java.awt.Insets(2, 4, 0, 6);
 			getBasePanel().add(getPointNameTextField(), constraintsPointNameTextField);
-
+			
 			java.awt.GridBagConstraints constraintsDeviceNameActualLabel = new java.awt.GridBagConstraints();
 			constraintsDeviceNameActualLabel.gridx = 2; constraintsDeviceNameActualLabel.gridy = 5;
 			constraintsDeviceNameActualLabel.gridwidth = 2;
@@ -171,8 +172,8 @@ private javax.swing.JPanel getBasePanel() {
 			constraintsGroupLabel.gridx = 1; constraintsGroupLabel.gridy = 2;
 			constraintsGroupLabel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsGroupLabel.ipadx = 71;
-			constraintsGroupLabel.ipady = 2;
-			constraintsGroupLabel.insets = new java.awt.Insets(3, 8, 4, 3);
+			constraintsGroupLabel.ipady = 4;
+			constraintsGroupLabel.insets = new java.awt.Insets(2, 8, 1, 3);
 			getBasePanel().add(getGroupLabel(), constraintsGroupLabel);
 
 			java.awt.GridBagConstraints constraintsGroupComboBox = new java.awt.GridBagConstraints();
@@ -181,7 +182,7 @@ private javax.swing.JPanel getBasePanel() {
 			constraintsGroupComboBox.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsGroupComboBox.weightx = 1.0;
 			constraintsGroupComboBox.ipadx = 35;
-			constraintsGroupComboBox.insets = new java.awt.Insets(1, 4, 2, 4);
+			constraintsGroupComboBox.insets = new java.awt.Insets(2, 4, 0, 4);
 			getBasePanel().add(getGroupComboBox(), constraintsGroupComboBox);
 
 			java.awt.GridBagConstraints constraintsPointNumberLabel = new java.awt.GridBagConstraints();
@@ -418,6 +419,7 @@ private javax.swing.JTextField getPointNameTextField() {
 			ivjPointNameTextField.setMinimumSize(new java.awt.Dimension(132, 19));
 			ivjPointNameTextField.setColumns(12);
 			// user code begin {1}
+			ivjPointNameTextField.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjPointNameTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_POINT_NAME_LENGTH));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
