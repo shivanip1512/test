@@ -27,11 +27,6 @@
 	catch (IllegalStateException ise)
 	{
 	}
-	if (liteYukonUser == null)
-	{
-		response.sendRedirect("/login.jsp"); return;
-	}
-
     Class[] types = { Integer.class,String.class };    
 	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "SELECT GDEF.GRAPHDEFINITIONID, GDEF.NAME FROM GRAPHDEFINITION GDEF, OPERATORLOGINGRAPHLIST OLGL WHERE GDEF.GRAPHDEFINITIONID = OLGL.GRAPHDEFINITIONID  AND OLGL.OPERATORLOGINID = " + liteYukonUserID + " ORDER BY GDEF.NAME", types );    
 %>
