@@ -24,7 +24,7 @@ import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.util.ServletUtil;
 import com.jrefinery.chart.JFreeChart;
 
-public class Graph implements GraphDataFormats, GraphDefines, TrendModelType, com.jrefinery.chart.event.ChartChangeListener
+public class Graph implements GraphDataFormats, GraphDefines, com.jrefinery.chart.event.ChartChangeListener
 {
 public void chartChanged(com.jrefinery.chart.event.ChartChangeEvent event)
 {
@@ -36,7 +36,7 @@ public void chartChanged(com.jrefinery.chart.event.ChartChangeEvent event)
 	private java.lang.String DB_ALIAS = "yukon";
 	private java.lang.String databaseAlias = DB_ALIAS;	//defaults set to yukon! 5/24/01
 	
-	private int viewType = LINE_VIEW;
+	private int viewType = TrendModelType.LINE_VIEW;
 
 	// This is the type of data series the graph will load
 	// !HACK!HACK! AL- a value of null will cause all types to be loaded!
@@ -517,6 +517,14 @@ public void setOptionsMaskHolder(int newMask, boolean setMasked)
 		getTrendModel().setOptionsMask(getOptionsMaskHolder());
 }
 
+public void setOptionsMaskHolder(int newMask)
+{
+	//this method does a true set of the mask, overwriting any old mask values.	
+	options_mask_holder = newMask;
+	if( getTrendModel() != null)
+		getTrendModel().setOptionsMask(getOptionsMaskHolder());
+	
+}	
 /**
  * Insert the method's description here.
  * Creation date: (9/13/2001 3:03:38 PM)

@@ -12,7 +12,7 @@ package com.cannontech.graph.model;
 /**
  * A quick and dirty implementation.
  */
-public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormats, TrendModelType
+public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormats
 {
     private static java.text.SimpleDateFormat LEGEND_FORMAT = new java.text.SimpleDateFormat("MMM dd");
     private static java.text.SimpleDateFormat CATEGORY_FORMAT = new java.text.SimpleDateFormat(" MMM dd, HH:mm ");
