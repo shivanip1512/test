@@ -9,6 +9,8 @@ package com.cannontech.database.data.device.lm;
 import com.cannontech.database.data.pao.YukonPAObject;
 import java.util.Vector;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.db.NestedDBPersistent;
 
 /**
  * @author jdayton
@@ -31,8 +33,16 @@ public class LMScenario extends YukonPAObject implements com.cannontech.database
 	public void add() throws java.sql.SQLException 
 	{
 		if( getScenarioID() == null )
+		{
 			setScenarioID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
-
+			if(getAllThePrograms() != null)
+			{
+				for(int j = 0; j < getAllThePrograms().size(); j++)
+				{
+					((LMControlScenarioProgram)getAllThePrograms().elementAt(j)).setScenarioID(getScenarioID());
+				}
+			}
+		}
 		super.add();
 		
 		//add all the wee programs to the database
@@ -77,11 +87,23 @@ public class LMScenario extends YukonPAObject implements com.cannontech.database
 	
 	public Vector getAllThePrograms()
 	{
+		if(allThePrograms == null)
+			allThePrograms = new Vector();
 		return allThePrograms;
 	}
 	
 	
-	
+	public void retrieve() throws java.sql.SQLException
+	{
+		super.retrieve();
+
+		//retrieve all the programs for this scenario
+		java.util.Vector progs = LMControlScenarioProgram.getAllProgramsForAScenario( getPAObjectID(), getDbConnection() );
+		for( int i = 0; i < progs.size(); i++ )
+			getAllThePrograms().add( progs.elementAt(i) );
+
+			
+	}
 	
 	public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
 	{
@@ -137,4 +159,47 @@ public class LMScenario extends YukonPAObject implements com.cannontech.database
 			
 		
 	}
+	
+	/**
+	* This method was created in VisualAge.
+	*/
+   public void update() throws java.sql.SQLException
+   {
+	   super.update();
+
+	   //grab all the previous program entries for this scenario
+	   java.util.Vector oldProgs = LMControlScenarioProgram.getAllProgramsForAScenario(getPAObjectID(), getDbConnection());
+	
+	   //unleash the power of the NestedDBPersistent
+	   Vector comparedPrograms = CtiUtilities.NestedDBPersistentComparator(oldProgs, getAllThePrograms());
+
+	   //throw the programs into the Db
+	   for( int i = 0; i < comparedPrograms.size(); i++ )
+	   {
+		   ((LMControlScenarioProgram)comparedPrograms.elementAt(i)).setScenarioID( getPAObjectID() );
+		   ((NestedDBPersistent)comparedPrograms.elementAt(i)).executeNestedOp();
+
+	   }
+   }
+	
+   public static Integer getDefaultGearID(Integer programID)
+   {
+		java.sql.Connection conn = null;
+	
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+
+		Integer id = new Integer(0);
+		
+		try
+		{
+			id = com.cannontech.database.db.device.lm.LMProgramDirectGear.getDefaultGearID(programID, conn);
+			conn.close();
+		}
+		catch (java.sql.SQLException e2)
+		{
+			e2.printStackTrace(); //something is up
+		}
+	return id;	
+   }
+	
 }
