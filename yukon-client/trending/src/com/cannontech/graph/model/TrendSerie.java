@@ -17,7 +17,7 @@ public class TrendSerie
 	private Color color = null;
 	private String deviceName = null;
 	private Double multiplier = null;	//This is different then the point multiplier, this is a GDS
-	private Character axis = null;
+	private Character axis = new Character('L');
 	public int typeMask = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_TYPE;
 	
 	// Flag for using graph multiplier
@@ -54,6 +54,10 @@ public class TrendSerie
 		}
 		return areaOfSet;
 	}
+	public Character getAxis()
+	{
+		return axis;
+	}
 	public Color getColor()
 	{
 		return color;
@@ -69,7 +73,7 @@ public class TrendSerie
 //		if( getMultiplier() != null)
 		if( getUseMultiplier())
 		{
-			com.jrefinery.data.TimePeriod tp = dataPairArray[serie].getPeriod();
+			com.jrefinery.data.RegularTimePeriod tp = dataPairArray[serie].getPeriod();
 			Number val = new Double(dataPairArray[serie].getValue().doubleValue() * getMultiplier().doubleValue());
 			com.jrefinery.data.TimeSeriesDataPair multDP = new com.jrefinery.data.TimeSeriesDataPair(tp, val);
 			return (multDP);
@@ -222,12 +226,16 @@ public class TrendSerie
 			periodsArray = new long[getDataPairArray().length];
 			for (int i = 0; i < getDataPairArray().length; i++)
 			{
-				periodsArray[i] = getDataPairArray(i).getPeriod().getStart();
+				periodsArray[i] = getDataPairArray(i).getPeriod().getStart().getTime();
 			}
 		}
 		return periodsArray;
 	}	
 	
+	protected void setAxis(Character newAxis)
+	{
+		axis = newAxis;
+	}
 	protected void setColor(Color newColor)
 	{
 		color = newColor;
