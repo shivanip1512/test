@@ -49,6 +49,8 @@ public:
     void setReloadFromAMFMSystemFlag(BOOL reload);
     const RWDBDateTime& getLastDBReloadTime() const;
 
+    void verifySubBusAndFeedersStates();
+
     bool UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus);
     bool UpdateFeederDisableFlagInDB(CtiCCFeeder* feeder);
     bool UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank);

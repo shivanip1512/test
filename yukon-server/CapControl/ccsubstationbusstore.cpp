@@ -793,7 +793,7 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
             /*if( _CC_DEBUG )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << selector.asString().data() << endl;
+                dout << RWTime() << " - " << selector.asString() << endl;
             }*/
 
             RWDBReader rdr = selector.reader(amfmConn);
@@ -1597,6 +1597,169 @@ void CtiCCSubstationBusStore::setReloadFromAMFMSystemFlag(BOOL reload)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _reloadfromamfmsystemflag = reload;
+}
+
+/*---------------------------------------------------------------------------
+    verifySubBusAndFeedersStates
+
+    This method goes through the entire list of sub buses, feeders, and
+    cap banks and determines whether there are sub buses or feeders with a
+    recently controlled flag of true with no pending cap banks or pending
+    cap banks where the sub bus or feeder isn't recently controlled.
+---------------------------------------------------------------------------*/
+void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
+    for(int i=0;i<_ccSubstationBuses->entries();i++)
+    {
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)((*_ccSubstationBuses)[i]);
+
+        ULONG numberOfFeedersRecentlyControlled = 0;
+        ULONG numberOfCapBanksPending = 0;
+
+        if( currentSubstationBus->getRecentlyControlledFlag() )
+        {
+            RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+
+            for(int j=0;j<ccFeeders.entries();j++)
+            {
+                numberOfCapBanksPending = 0;
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+                if( currentFeeder->getRecentlyControlledFlag() )
+                {
+                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                    for(int k=0;k<ccCapBanks.entries();k++)
+                    {
+                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+
+                        if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ||
+                            currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
+                        {
+                            numberOfCapBanksPending++;
+                        }
+                    }
+
+                    if( numberOfCapBanksPending == 0 )
+                    {
+                        currentFeeder->setRecentlyControlledFlag(FALSE);
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Feeder: " << currentFeeder->getPAOName() << ", no longer recently controlled because no banks were pending in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        }
+                    }
+                    else if( numberOfCapBanksPending > 1 )
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Multiple cap banks pending in Feeder: " << currentFeeder->getPAOName() << ", setting status to questionable in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        }
+                        for(int k=0;k<ccCapBanks.entries();k++)
+                        {
+                            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+
+                            if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << RWTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                }
+                                CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType));
+                            }
+                            else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << RWTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                }
+                                CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType));
+                            }
+                        }
+                    }
+                    else
+                    {//normal pending feeder
+                        numberOfFeedersRecentlyControlled++;
+                    }
+                }
+                else
+                {
+                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                    for(int k=0;k<ccCapBanks.entries();k++)
+                    {
+                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+
+                        if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
+                            }
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType));
+                        }
+                        else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
+                            }
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType));
+                        }
+                    }
+                }
+            }
+
+            if( numberOfFeedersRecentlyControlled == 0 )
+            {
+                currentSubstationBus->setRecentlyControlledFlag(FALSE);
+                currentSubstationBus->setBusUpdatedFlag(TRUE);
+            }
+        }
+        else//sub bus not recently controlled
+        {
+            RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+
+            for(int j=0;j<ccFeeders.entries();j++)
+            {
+                numberOfCapBanksPending = 0;
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+
+                if( currentFeeder->getRecentlyControlledFlag() )
+                {
+                    currentFeeder->setRecentlyControlledFlag(FALSE);
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Feeder: " << currentFeeder->getPAOName() << ", no longer recently controlled because sub bus not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
+                    }
+                }
+
+                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                for(int k=0;k<ccCapBanks.entries();k++)
+                {
+                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+
+                    if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        }
+                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType));
+                    }
+                    else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        }
+                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType));
+                    }
+                }
+            }
+        }
+    }
 }
 
 /*---------------------------------------------------------------------------
