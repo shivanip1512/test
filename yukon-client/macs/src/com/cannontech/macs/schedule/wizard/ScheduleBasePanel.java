@@ -1685,11 +1685,8 @@ public boolean isInputValid()
 		return false;
 	}
 
-	// synch our editor component of the JComboBox and the JCombobox itself
-	getJComboBoxCategory().setSelectedItem( getJComboBoxCategory().getEditor().getItem() );
-	
-	if( getJComboBoxCategory().getSelectedItem() == null 
-		 || getJComboBoxCategory().getSelectedItem().toString().length() <= 0 )
+	if( getJComboBoxCategory().getEditor().getItem() == null
+		 || getJComboBoxCategory().getEditor().getItem().toString().length() <= 0 )
 	{
 		setErrorString("The Category text field must be filled in");
 		return false;
