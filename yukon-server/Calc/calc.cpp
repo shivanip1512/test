@@ -11,6 +11,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "calc.h"
 #include "logger.h"
 #include "numstr.h"
+#include "utility.h"
 
 extern ULONG _CALC_DEBUG;
 
@@ -280,10 +281,10 @@ BOOL CtiCalc::ready( void )
 */
 CtiCalc& CtiCalc::setNextInterval( int aInterval )
 {
+    RWTime timeNow;
     if(aInterval > 0)
     {
-        RWTime timeNow;
-        _nextInterval = nextScheduledTimeAlignedOnRate(timeNow, aInterval)
+        _nextInterval = nextScheduledTimeAlignedOnRate(timeNow, aInterval).seconds();
     }
     else
         _nextInterval = timeNow.seconds();

@@ -9,6 +9,7 @@ using namespace std;
 #include "calccomponent.h"
 #include "logger.h"
 #include "calc.h"
+#include "utility.h"
 
 extern ULONG _CALC_DEBUG;
 
