@@ -626,9 +626,11 @@ public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	int row = getJTableHolidays().getSelectedRow();
 
 	if( row >= 0 && row < getJTableModel().getRowCount() )
+	{
 		getJTableModel().removeRow(row);
+		fireInputUpdate();
+	}
 
-	
 	return;
 }
 /**
