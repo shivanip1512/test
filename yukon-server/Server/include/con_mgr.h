@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/con_mgr.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:49 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/18 15:23:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,27 +55,9 @@ public:
 
    typedef CtiConnection Inherited;
 
-   CtiConnectionManager( const INT &Port, const RWCString &HostMachine, InQ_t *inQ = NULL );/* :
-      ClientName("DEFAULT"),
-      ClientAppId(0),
-      ClientUnique(FALSE),
-      ClientQuestionable(FALSE),
-      ClientRegistered(FALSE),
-      _clientExpirationDelay(180),
-      CtiConnection(Port, HostMachine, inQ)
-   {
-      // cout << "**** Connection Manager!!! *****" << endl;
-   }                                                                                          */
+   CtiConnectionManager( const INT &Port, const RWCString &HostMachine, InQ_t *inQ = NULL );
 
-   CtiConnectionManager(CtiExchange *xchg, InQ_t *inQ = NULL);/* :
-      ClientName("DEFAULT"),
-      ClientAppId(0),
-      ClientUnique(FALSE),
-      ClientQuestionable(FALSE),
-      ClientRegistered(FALSE),
-      _clientExpirationDelay(180),
-      CtiConnection(xchg, inQ)
-   {}                                                           */
+   CtiConnectionManager(CtiExchange *xchg, InQ_t *inQ = NULL);
 
    virtual ~CtiConnectionManager();
    RWThreadId  getClientAppId() const;//              { return ClientAppId; }
