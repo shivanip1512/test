@@ -43,6 +43,8 @@ public interface DatabaseCache
    
    public java.util.List getAllConfigs(  ) throws java.rmi.RemoteException;
 
+   public java.util.List getAllTags(  ) throws java.rmi.RemoteException;
+   
    public java.util.List getAllLMPrograms(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllLoadManagement(  ) throws java.rmi.RemoteException;
@@ -121,6 +123,8 @@ public interface DatabaseCache
    
    public void releaseAllConfigs(  ) throws java.rmi.RemoteException;
 
+   public void releaseAllTags(  ) throws java.rmi.RemoteException;
+   
    public void releaseAllNotificationGroups(  ) throws java.rmi.RemoteException;
 
    public void releaseAllNotificationRecipients(  ) throws java.rmi.RemoteException;
