@@ -428,6 +428,15 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
 
         retVal = kw;
     }
+    else if( !functionName.compareTo("KVAR from KW/KVa",RWCString::ignoreCase) )
+    {
+        DOUBLE kva = _parent->pop();
+        DOUBLE kw = _parent->pop();
+
+        DOUBLE kvar = sqrt((kva*kva)-(kw*kw));
+
+        retVal = kvar;
+    }
     else if( !functionName.compareTo("Squared",RWCString::ignoreCase) )
     {
         CtiPointStore* pointStore = CtiPointStore::getInstance();
