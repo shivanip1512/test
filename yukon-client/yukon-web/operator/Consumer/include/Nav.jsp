@@ -309,6 +309,7 @@
 %>
               <span class="NavGroup"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_SUB_HEADING_THERMOSTATS %>" defaultvalue="Thermostats"/></span><br>
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT %>">
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_THERMOSTATS_ALL %>"> 
 <%
 			String linkHtml = null;
@@ -327,6 +328,7 @@
                   <td><%= linkHtml %></td>
                   <td width="10" valign="bottom" style="padding-bottom:1"><%= linkImgExp %></td>
                 </tr>
+</cti:checkProperty>
 </cti:checkProperty>
 <%
 			for (int i = 0; i < thermostatLabels.size(); i++) {
@@ -463,9 +465,10 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 	for (int i = 0; i < thermostatLabels.size(); i++) {
 		int num = Integer.parseInt( ((String[]) thermostatLabels.get(i))[0] );
 %>
-	pageLinks[<%= num %>] = new Array(5);
+	pageLinks[<%= num %>] = new Array(2);
 	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
 	pageLinks[<%= num %>][1] = "ConfigHardware.jsp?InvNo=<%= num %>";
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT %>">
 <%
 		StarsThermostatTypes type = inventories.getStarsInventory(num).getLMHardware().getStarsThermostatSettings().getStarsThermostatProgram().getThermostatType();
 		if (type.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
@@ -488,6 +491,7 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 		}
 %>
 	pageLinks[<%= num %>][4] = "SavedSchedules.jsp?InvNo=<%= num %>";
+</cti:checkProperty>
 <%
 	}
 	for (int i = 0; i < meterLabels.size(); i++) {
@@ -569,6 +573,7 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
   <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
   &nbsp;&#149;&nbsp;Configuration
   </div>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT %>">
   <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
   &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
   </div>
@@ -582,11 +587,12 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
   &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
   </div>
   <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(4)">
-  &nbsp;&nbsp;&nbsp;Saved Schedules
+  &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SAVED_SCHED, "Saved Schedules") %>
   </div>
   <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(4)">
-  &nbsp;&#149;&nbsp;Saved Schedules
+  &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SAVED_SCHED, "Saved Schedules") %>
   </div>
+</cti:checkProperty>
 </div>
 
 <div id="meterMenu" class="bgMenu" style="width:100px" align="left">
