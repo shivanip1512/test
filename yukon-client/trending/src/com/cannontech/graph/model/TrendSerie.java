@@ -26,7 +26,8 @@ public class TrendSerie
 	private Double multiplier = new Double(1.0);	//This is different then the point multiplier, this is a GDS
 	private Character axis = new Character('L');
 	public int typeMask = GraphDataSeries.BASIC_GRAPH_TYPE;
-	
+	public Double moreData = new Double(0.0);
+	 
 	// Flag for using graph multiplier
 	public boolean useMultiplier = false;
 	public long resolution = 1;
@@ -406,6 +407,22 @@ public class TrendSerie
 	public void setResolution(long l)
 	{
 		resolution = l;
+	}
+
+	/**
+	 * @return
+	 */
+	public Double getMoreData()
+	{
+		return moreData;
+	}
+
+	/**
+	 * @param double1
+	 */
+	public void setMoreData(Double double1)
+	{
+		moreData = double1;
 	}
 
 }
