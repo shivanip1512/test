@@ -94,8 +94,8 @@
                     <input type="submit" value="Re-enable" onclick="this.form.action.value='ReenableProgram'"
 					 <% if (programs.getStarsLMProgramCount() == 0) out.print("disabled"); %>>
                   </td>
-                    <td width="211"> 
-                      <%
+                  <td width="211"> 
+<%
 	String disabled = "disabled";
 	if (programHistory != null && programHistory.getStarsLMProgramEventCount() > 0) {
 		StarsLMProgramEvent lastEvent = programHistory.getStarsLMProgramEvent(programHistory.getStarsLMProgramEventCount() - 1);
