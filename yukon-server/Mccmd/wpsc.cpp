@@ -1,13 +1,13 @@
 /*-----------------------------------------------------------------------------
     Filename:  cfdata.h
-    
+
     Programmer:  Aaron Lauinger
-    
+
     Description:    Source file for wisconsin public service company(corp)
                     file format decoders.
-    
+
     Initial Date:  4/7/99
-    
+
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
 
@@ -21,13 +21,13 @@ int gFMConfigSerialHigh[10];  //   = -1;
 
 /*-----------------------------------------------------------------------------
     DecodeCFDATAFile
-    
+
     file is a cstring that represents the full path of the file to decode
-    
-    
+
+
     returns TRUE if successfull
     FALSE otherwise
------------------------------------------------------------------------------*/    
+-----------------------------------------------------------------------------*/
 bool DecodeCFDATAFile(const RWCString& file, RWOrdered* ordered)
 {
     FILE* fptr;
@@ -35,7 +35,7 @@ bool DecodeCFDATAFile(const RWCString& file, RWOrdered* ordered)
 
     if( ordered == NULL )
         return false;
- 
+
     if( (fptr = fopen( file, "r")) == NULL )
     {
         CtiLockGuard< CtiLogger > guard(dout);
@@ -56,7 +56,7 @@ bool DecodeCFDATAFile(const RWCString& file, RWOrdered* ordered)
             delete decoded;
             break;
         }
- 
+
         ordered->insert(decoded);
     }
 
@@ -76,7 +76,7 @@ bool DecodeEOIFile(const RWCString& file, RWOrdered* ordered)
 
     if( ordered == NULL )
         return false;
- 
+
     if( (fptr = fopen( file, "r")) == NULL )
     {
         CtiLockGuard< CtiLogger > guard(dout);
@@ -85,12 +85,12 @@ bool DecodeEOIFile(const RWCString& file, RWOrdered* ordered)
     }
 
     while( fgets( (char*) l_buf, 1000, fptr) != NULL )
-    {               
+    {
         if( DecodeEOILine( l_buf, ordered ) == false)
         {
-            fclose(fptr);            
+            fclose(fptr);
             break;
-        }        
+        }
     }
 
     fclose(fptr);
@@ -104,11 +104,11 @@ bool DecodeEOIFile(const RWCString& file, RWOrdered* ordered)
 bool DecodeWepcoFile(const RWCString& file, RWOrdered* ordered)
 {
     FILE* fptr;
-    char l_buf[1000];  
+    char l_buf[1000];
 
     if( ordered == NULL )
         return true;
- 
+
     if( (fptr = fopen( file, "r")) == NULL )
     {
         CtiLockGuard< CtiLogger > guard(dout);
@@ -117,12 +117,12 @@ bool DecodeWepcoFile(const RWCString& file, RWOrdered* ordered)
     }
 
     while( fgets( (char*) l_buf, 1000, fptr) != NULL )
-    {                
+    {
         if( DecodeWepcoLine( l_buf, ordered ) == false)
         {
             fclose(fptr);
             break;
-        }        
+        }
     }
 
     fclose(fptr);
@@ -136,7 +136,7 @@ bool DecodeWepcoFile(const RWCString& file, RWOrdered* ordered)
 bool DecodeWepcoFileService(const RWCString& file, RWOrdered* results)
 {
     FILE* fptr;
-    char l_buf[1000];  
+    char l_buf[1000];
 
     if ( results == NULL )
         return true;
@@ -170,7 +170,7 @@ bool DecodeWepcoFileService(const RWCString& file, RWOrdered* results)
 bool DecodeWepcoFileConfig(const RWCString& file, RWOrdered* results)
 {
     FILE* fptr;
-    char l_buf[1000];  
+    char l_buf[1000];
 
     if ( results == NULL )
         return false;
@@ -207,7 +207,7 @@ bool DecodeCFDATALine( char* line, RWCString* decoded )
     char delim = ' ';
     char* pos = 0;
     char buf[80];
-    
+
     int func;
     int temp;
 
@@ -221,32 +221,32 @@ bool DecodeCFDATALine( char* line, RWCString* decoded )
     //DLC Function (2bytes)
     if( (pos = strtok( line, &delim)) == NULL )
         return false;
-        
+
     line += 3;
 
     func = atoi(pos);
-       
+
     //Serial number of switch (6 bytes)
     if( (pos = strtok( line, &delim)) == NULL )
         return false;
 
     line += 7;
-   
+
     serial_num = atol(pos);
-    
+
     *decoded += pos;
 
     if( func == 4 )
     {
         *decoded += " service in ";
-        *decoded += GetSelectCustomRouteID(serial_num);        
+        *decoded += GetSelectCustomRouteID(serial_num);
         return true;
     }
     else
     if( func == 5 )
     {
         *decoded += " service out ";
-        *decoded += GetSelectCustomRouteID(serial_num);        
+        *decoded += GetSelectCustomRouteID(serial_num);
         return true;
     }
 
@@ -257,10 +257,10 @@ bool DecodeCFDATALine( char* line, RWCString* decoded )
     line += 4;
 
     if( func != 2 )
-    {    
+    {
         temp = atoi(pos);
         sprintf( buf, "%d", temp );
-    
+
         *decoded += " utility ";
         *decoded += buf;
     }
@@ -292,13 +292,13 @@ bool DecodeCFDATALine( char* line, RWCString* decoded )
     //Class #1 (2bytes)
     if( (pos = strtok( line, &delim)) == NULL )
         return false;
-    
+
     line += 3;
 
     temp = atoi(pos);
 
     if( temp > 0 )
-        class_id |= (1 << (temp-1));   
+        class_id |= (1 << (temp-1));
 
     //Class #2 (2bytes)
     if( (pos = strtok( line, &delim)) == NULL )
@@ -307,34 +307,34 @@ bool DecodeCFDATALine( char* line, RWCString* decoded )
     line += 3;
 
     temp = atoi(pos);
-    
+
     if( temp > 0 )
-        class_id |= (1 << (temp-1));   
+        class_id |= (1 << (temp-1));
 
     //Class #3 (2bytes)
     if( (pos = strtok( line, &delim)) == NULL )
         return false;
 
     line += 3;
-     
+
     temp = atoi(pos);
-    
+
     if( temp > 0 )
-        class_id |= (1 << (temp-1));   
+        class_id |= (1 << (temp-1));
 
     sprintf(buf, "0x%04x", class_id);
-    
+
     *decoded += " class ";
     *decoded += buf;
-                                                    
+
     //DLC Division (2 bytes)
     if( (pos = strtok( line, &delim)) == NULL )
         return false;
-   
+
     line += 3;
 
     temp = atoi(pos);
-        
+
     if( temp > 0 )
            div_id |= (1 << (temp-1));
 
@@ -342,13 +342,13 @@ bool DecodeCFDATALine( char* line, RWCString* decoded )
 
     *decoded += " division ";
     *decoded += buf;
-    
-    RWCString route_select = GetSelectCustomRouteID(serial_num);        
+
+    RWCString route_select = GetSelectCustomRouteID(serial_num);
     if( route_select.length() > 0 ) {
         *decoded += " ";
         *decoded += route_select;
     }
-    
+
     return true;
 }
 
@@ -356,7 +356,7 @@ bool DecodeCFDATALine( char* line, RWCString* decoded )
     Decodes a line from an EOI command file.
     $VSERV=<groupname>,VN<serial num>,CONTRACT=(IN|OUT),TEMP=(IN|OUT)
 */
-    
+
 bool DecodeEOILine( char* line, RWOrdered* results)
 {
     char* group = NULL;
@@ -372,11 +372,11 @@ bool DecodeEOILine( char* line, RWOrdered* results)
 
     if( token == NULL || strcmp(token, "$VSERV") != 0 )
         return false;
-        
+
     delim = ",";
     token = strtok(NULL,delim);
     while( token != NULL ) {
-              
+
         if( strncmp(token, "VN", 2) == 0) {
             serial = token;
         }
@@ -387,35 +387,35 @@ bool DecodeEOILine( char* line, RWOrdered* results)
         else
         if( strncmp(token, "TEMP=", 5) == 0 ) {
             temp = token;
-        }           
+        }
         else {
             group = token;
         }
-        
+
         token = strtok(NULL, delim);
     }
-   
+
     if( serial != NULL ) {
         serial += 2;
     }
-    
+
     delim = "=\r\n";
-    if( contract != NULL ) {    
+    if( contract != NULL ) {
         if( (token = strtok(contract,delim)) != NULL ) {
             if( (token = strtok(NULL,delim)) != NULL ) {
                 contract = token;
-            }            
+            }
         }
     }
-        
+
     if( temp != NULL ) {
         if( (token = strtok(temp,delim)) != NULL ) {
             if( (token = strtok(NULL,delim)) != NULL ) {
                 temp = token;
-            }            
+            }
         }
     }
-        
+
 
     //Either use the serial number or the group, not both
     RWCString serial_str;
@@ -425,22 +425,22 @@ bool DecodeEOILine( char* line, RWOrdered* results)
 
         serial_str += "serial ";
         serial_str += serial;
-        
-        long serial_num = atol(serial);        
 
-        RWCString route_select = GetSelectCustomRouteID(serial_num);        
+        long serial_num = atol(serial);
+
+        RWCString route_select = GetSelectCustomRouteID(serial_num);
         if( route_select.length() > 0 ) {
             select_str = " ";
             select_str += route_select;
         }
     }
-    else 
+    else
     if( group != NULL ) {
         select_str = " select name \"";
         select_str += group;
         select_str += "\"";
     }
-    else {       
+    else {
         return false;
     }
 
@@ -463,7 +463,7 @@ bool DecodeEOILine( char* line, RWOrdered* results)
         *decoded += temp;
         *decoded += " t";
         *decoded += select_str;
-    
+
         results->insert(decoded);
     }
 
@@ -475,7 +475,7 @@ bool DecodeWepcoLine( char* line, RWOrdered* results)
 {
     char* token;
     char* delim = ",";
-    
+
     int func;
     long serial_num;
     unsigned short class_id;
@@ -483,9 +483,10 @@ bool DecodeWepcoLine( char* line, RWOrdered* results)
 
     char buf[80];
     int temp;
-   
-    RWCString serviceCmd("set MessagePriority 6 ; putconfig versacom serial ");
-    RWCString configCmd("set MessagePriority 5 ; putconfig versacom serial ");
+
+    RWCString serviceTempCmd("set MessagePriority 6 ; putconfig versacom serial ");
+    RWCString serviceCmd("set MessagePriority 5 ; putconfig versacom serial ");
+    RWCString configCmd("set MessagePriority 4 ; putconfig versacom serial ");
 
     // function
     if( (token = strtok(line,delim)) == NULL )
@@ -501,12 +502,16 @@ bool DecodeWepcoLine( char* line, RWOrdered* results)
         return false;
 
     serial_num = atol(token);
-    
+
     serviceCmd += token;
     configCmd += token;
-    
-    if( func == 3 ) 
+
+    if( func == 3 )
     {
+        serviceTempCmd += " service in t";
+        serviceTempCmd += GetSelectCustomRouteID(serial_num);
+        results->insert(new RWCollectableString(serviceTempCmd));
+
         serviceCmd += " service in ";
         serviceCmd += GetSelectCustomRouteID(serial_num);
         results->insert(new RWCollectableString(serviceCmd));
@@ -518,15 +523,15 @@ bool DecodeWepcoLine( char* line, RWOrdered* results)
         serviceCmd += GetSelectCustomRouteID(serial_num);
         results->insert(new RWCollectableString(serviceCmd));
         return true;
-    } 
-    
+    }
+
     //Utility ID
     if( (token = strtok(NULL,delim)) == NULL )
         return false;
-    
+
     configCmd += " aux ";
-    configCmd += token;        
-    
+    configCmd += token;
+
     //Section
     if( (token = strtok(NULL,delim)) == NULL )
         return false;
@@ -548,12 +553,12 @@ bool DecodeWepcoLine( char* line, RWOrdered* results)
     configCmd += " division ";
     configCmd += token;
 
-    RWCString route_select = GetSelectCustomRouteID(serial_num);        
+    RWCString route_select = GetSelectCustomRouteID(serial_num);
     if( route_select.length() > 0 ) {
         configCmd += " ";
         configCmd += route_select;
     }
-    
+
     results->insert(new RWCollectableString(configCmd));
     return true;
 }
@@ -572,31 +577,31 @@ RWCString GetSelectCustomRouteID(long serial_num) {
                gFMConfigSerialHigh[i] != -1 )
         {
             if ( serial_num >= gFMConfigSerialLow[i] &&
-                 serial_num <= gFMConfigSerialHigh[i] ) 
+                 serial_num <= gFMConfigSerialHigh[i] )
             {
                 cmd += " select route id ";
                 cmd += CtiNumStr(gFMConfigRouteID);
                 return cmd;
             }
-            
+
             i++;
         }
     }
-    
-    if( gPagingConfigRouteID != -1 ) 
+
+    if( gPagingConfigRouteID != -1 )
     {
         cmd = " select route id ";
-        cmd += CtiNumStr(gPagingConfigRouteID);           
+        cmd += CtiNumStr(gPagingConfigRouteID);
     }
-        
-    return cmd;    
+
+    return cmd;
 }
 
 bool DecodeWepcoServiceLine( char* line, RWOrdered* results )
 {
     char* token;
     char* delim = ",";
-    
+
     int func;
     long serial_num;
     unsigned short class_id;
@@ -604,9 +609,9 @@ bool DecodeWepcoServiceLine( char* line, RWOrdered* results )
 
     char buf[80];
     int temp;
-   
+
     RWCString serviceCmd("set MessagePriority 6 ; putconfig versacom serial ");
-    
+
     // function
     if( (token = strtok(line,delim)) == NULL )
         return false;
@@ -621,10 +626,10 @@ bool DecodeWepcoServiceLine( char* line, RWOrdered* results )
         return false;
 
     serial_num = atol(token);
-    
-    serviceCmd += token;    
-    
-    if( func == 3 ) 
+
+    serviceCmd += token;
+
+    if( func == 3 )
     {
         serviceCmd += " service in ";
         serviceCmd += GetSelectCustomRouteID(serial_num);
@@ -650,7 +655,7 @@ bool DecodeWepcoConfigLine( char* line, RWOrdered* results )
 {
     char* token;
     char* delim = ",";
-    
+
     int func;
     long serial_num;
     unsigned short class_id;
@@ -658,7 +663,7 @@ bool DecodeWepcoConfigLine( char* line, RWOrdered* results )
 
     char buf[80];
     int temp;
-   
+
     RWCString configCmd("set MessagePriority 5 ; putconfig versacom serial ");
 
     // function
@@ -679,16 +684,16 @@ bool DecodeWepcoConfigLine( char* line, RWOrdered* results )
         return false;
 
     serial_num = atol(token);
-       
+
     configCmd += token;
-      
+
     //Utility ID
     if( (token = strtok(NULL,delim)) == NULL )
         return false;
-    
+
     configCmd += " aux ";
-    configCmd += token;        
-    
+    configCmd += token;
+
     //Section
     if( (token = strtok(NULL,delim)) == NULL )
         return false;
@@ -710,12 +715,12 @@ bool DecodeWepcoConfigLine( char* line, RWOrdered* results )
     configCmd += " division ";
     configCmd += token;
 
-    RWCString route_select = GetSelectCustomRouteID(serial_num);        
+    RWCString route_select = GetSelectCustomRouteID(serial_num);
     if( route_select.length() > 0 ) {
         configCmd += " ";
         configCmd += route_select;
     }
-    
+
     results->insert(new RWCollectableString(configCmd));
     return true;
 }
