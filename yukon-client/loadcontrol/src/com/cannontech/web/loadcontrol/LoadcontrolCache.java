@@ -522,7 +522,7 @@ private synchronized void refresh()
 	energyCompanyCustomer.clear();
 	customerEnergyCompany.clear();
 	
-	long[] ids = com.cannontech.database.db.company.EnergyCompany.getAllEnergyCompanieIDs();
+	long[] ids = com.cannontech.database.db.company.EnergyCompany.getAllEnergyCompanyIDs();
 
 	for( int i = 0; i < ids.length; i++ )
 	{

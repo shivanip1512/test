@@ -77,15 +77,15 @@ public boolean equals(Object o)
  * @return com.cannontech.database.db.web.EnergyCompany
  * @param dbAlias java.lang.String
  */
-public static long[] getAllEnergyCompanieIDs() {
-	return getAllEnergyCompanieIDs("yukon");
+public static long[] getAllEnergyCompanyIDs() {
+	return getAllEnergyCompanyIDs("yukon");
 }
 /**
  * Creation date: (6/11/2001 3:38:14 PM)
  * @return com.cannontech.database.db.web.EnergyCompany
  * @param dbAlias java.lang.String
  */
-public static long[] getAllEnergyCompanieIDs(String dbAlias) {
+public static long[] getAllEnergyCompanyIDs(String dbAlias) {
 	
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
