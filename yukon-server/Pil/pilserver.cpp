@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/05/28 18:20:06 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/06/14 21:06:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -753,6 +753,14 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
         }
     }
 
+    if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Submitting " << outList.entries() << " CtiOutMessage objects to porter" << endl;
+        }
+    }
+
     for( i = outList.entries() ; i > 0; i-- )
     {
         OutMessage = outList.get();
@@ -764,21 +772,6 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
             {
                 status = PIPEWASBROKEN;
             }
-        }
-
-        if( DebugLevel & 0x00200000 )
-        {
-            Dev = DeviceManager->RemoteGetEqual(OutMessage->DeviceID);
-
-            {
-                RWTime NowTime;
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << NowTime << " **** Executing **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                if(Dev != NULL)
-                    dout << NowTime << "   Device:  " << Dev->getName() << endl;
-                dout << NowTime << "   Command: " << pReq->CommandString() << endl;
-            }
-            DumpOutMessage(OutMessage);
         }
 
         /* And send them to porter */
@@ -797,6 +790,14 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
         delete OutMessage;
     }
 
+    if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Submitting " << retList.entries() << " CtiReturnMsg objects to client" << endl;
+        }
+    }
+
     while( (i = retList.entries()) > 0 )
     {
         pcRet = (CtiReturnMsg*)retList.removeFirst();
@@ -810,10 +811,6 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
         if(CM)
         {
-            if( DebugLevel & 0x00200000 )
-            {
-                pcRet->dump();
-            }
             CM->WriteConnQue(pcRet);
         }
         else
@@ -824,6 +821,14 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
             }
 
             delete pcRet;
+        }
+    }
+
+    if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Submitting " << vgList.entries() << " CtiMessage objects to dispatch" << endl;
         }
     }
 
@@ -1037,6 +1042,8 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             RWRecursiveLock<RWMutexLock>::LockGuard dev_guard(DeviceManager->getMux());
             CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(DeviceManager->getMap());
 
+            int groupsubmitcnt = 0;
+
             for(; ++itr_dev ;)
             {
                 CtiDeviceBase &device = *(itr_dev.value());
@@ -1049,10 +1056,12 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
                     if( !mgname.isNull() && !gname.compareTo(mgname, RWCString::ignoreCase) )
                     {
+                        groupsubmitcnt++;
+
                         // We have a name match
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Adding device " << device.getName() << " for group execution" << endl;
+                            dout << RWTime() << " Adding device " << device.getID() << " / " << device.getName() << " for group execution" << endl;
                         }
 
                         // Create a message for this one!
@@ -1065,6 +1074,11 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                     }
                 }
             }
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Collection Group " << gname << " found " << groupsubmitcnt << " target devices." << endl;
+            }
         }
     }
     else if(!pReq->DeviceId() && parse.isKeyValid("altgroup"))
@@ -1075,6 +1089,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         {
             RWRecursiveLock<RWMutexLock>::LockGuard dev_guard(DeviceManager->getMux());
             CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(DeviceManager->getMap());
+            int groupsubmitcnt = 0;
 
             for(; ++itr_dev ;)
             {
@@ -1088,6 +1103,8 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
                     if( !mgname.isNull() && !gname.compareTo(mgname, RWCString::ignoreCase) )
                     {
+                        groupsubmitcnt++;
+
                         // We have a name match
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1103,6 +1120,11 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                         execList.insert( pNew );
                     }
                 }
+            }
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Alternate Collection Group " << gname << " found " << groupsubmitcnt << " target devices." << endl;
             }
         }
     }
