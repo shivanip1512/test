@@ -8,8 +8,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/05/28 18:26:07 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/05/28 21:12:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -699,6 +699,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 msg = Ret->ResultString() + "\nError " + CtiNumStr(nRet) + ": " + FormatError(nRet);
                 Ret->setResultString( msg );
                 Ret->setExpectMore();           // Help MACS know this is intermediate.
+                Ret->setStatus( nRet );
 
                 retList.insert( Ret );
             }
