@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_commerrhist.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/08/06 18:52:21 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/08/08 23:17:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -113,5 +113,7 @@ public:
    virtual RWDBStatus Insert(RWDBConnection &conn);
    virtual RWDBStatus Update();
    virtual RWDBStatus Delete();
+   static  RWDBStatus Prune(RWDate &earliestDate);
+
 };
 #endif // #ifndef __TBL_COMMERRHIST_H__

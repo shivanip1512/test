@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_commerrhist.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/08/06 18:52:21 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/08/08 23:17:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -377,6 +377,19 @@ RWDBStatus CtiTableCommErrorHistory::Delete()
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["paobjectid"] == getPAOID() );
+    deleter.execute( conn );
+    return deleter.status();
+}
+
+RWDBStatus CtiTableCommErrorHistory::Prune(RWDate &earliestDate)
+{
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBDeleter deleter = table.deleter();
+
+    deleter.where( table["datetime"] < RWDBDateTime( earliestDate ) );
     deleter.execute( conn );
     return deleter.status();
 }
