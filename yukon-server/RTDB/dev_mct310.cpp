@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/20 21:27:02 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/20 21:37:13 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1104,30 +1104,30 @@ INT CtiDeviceMCT310::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
 
         if( InMessage->Buffer.DSt.Message[3] & 0x08 )
         {
-            options += "  Pulse input 1: 2-wire\n";
+            options += "  Pulse input 1: 3-wire\n";
         }
         else
         {
-            options += "  Pulse input 1: 3-wire\n";
+            options += "  Pulse input 1: 2-wire\n";
         }
 
         if( getType() == TYPEMCT318 || getType() == TYPEMCT318L || getType() == TYPEMCT360 || getType() == TYPEMCT370 )
         {
             if( InMessage->Buffer.DSt.Message[3] & 0x10 )
             {
-                options += "  Pulse input 2: 2-wire\n";
+                options += "  Pulse input 2: 3-wire\n";
             }
             else
             {
-                options += "  Pulse input 2: 3-wire\n";
+                options += "  Pulse input 2: 2-wire\n";
             }
             if( InMessage->Buffer.DSt.Message[3] & 0x20 )
             {
-                options += "  Pulse input 3: 2-wire\n";
+                options += "  Pulse input 3: 3-wire\n";
             }
             else
             {
-                options += "  Pulse input 3: 3-wire\n";
+                options += "  Pulse input 3: 2-wire\n";
             }
         }
 
