@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/id_pntdll.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/05/20 20:44:02 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/05/24 15:22:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,8 +19,8 @@
 #define PROJECT   "CTI Point RTDB DLL "
 
 #define MAJORREVISION   2
-#define MINORREVISION   20
-#define BUILDNUMBER     1
+#define MINORREVISION   21
+#define BUILDNUMBER     0
 
 CTICOMPILEINFO CompileInfo = {
    PROJECT,
