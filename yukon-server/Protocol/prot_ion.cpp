@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/04/02 15:53:20 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/04/04 19:59:12 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -160,6 +160,7 @@ int CtiProtocolION::generate( CtiXfer &xfer )
             switch( _currentCommand.command )
             {
                 case Command_ExceptionScan:
+                case Command_ExceptionScanPostControl:
                 {
                     generateExceptionScan();
 
@@ -236,6 +237,7 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
             switch( _currentCommand.command )
             {
                 case Command_ExceptionScan:
+                case Command_ExceptionScanPostControl:
                 {
                     decodeExceptionScan();
 
@@ -1755,6 +1757,12 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
                 {
                     tmpEvent = (CtiIONEvent *)tmpRecord->getLogValues();
 
+                    //  DESCRIPTION :
+                    //  pri=xxx, cause=xxxxxxxxx, effect=xxxxxxxxxx, nlog=xxxxx
+                    //
+                    //  ACTION (Additional Info) :
+                    //  c_h=xxx, e_h=xxx, state=x, record=xxxxx
+
                     desc  = RWCString("pri=")      + tmpEvent->getPriority()->toString();
                     desc += RWCString(", cause=")  + tmpEvent->getCauseValue()->toString();
                     desc += RWCString(", effect=") + tmpEvent->getEffectValue()->toString();
@@ -1798,6 +1806,45 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
         pointList.append(pointdata);
     }
 }
+
+
+
+bool CtiProtocolION::hasPointUpdate( CtiPointType_t type, int offset ) const
+{
+    vector< ion_pointdata_struct >::const_iterator p_itr;
+    bool found = false;
+
+    for( p_itr = _pointData.begin(); p_itr != _pointData.end() && !found; p_itr++ )
+    {
+        if( (*p_itr).offset == offset && (*p_itr).type == type )
+        {
+            found = true;
+        }
+    }
+
+    return found;
+}
+
+
+
+double CtiProtocolION::getPointUpdateValue( CtiPointType_t type, int offset ) const
+{
+    vector< ion_pointdata_struct >::const_iterator p_itr;
+    bool   found = false;
+    double value = 0.0;
+
+    for( p_itr = _pointData.begin(); p_itr != _pointData.end() && !found; p_itr++ )
+    {
+        if( (*p_itr).offset == offset && (*p_itr).type == type )
+        {
+            value = (*p_itr).value;
+            found = true;
+        }
+    }
+
+    return value;
+}
+
 
 
 bool CtiProtocolION::areEventLogsComplete( void )

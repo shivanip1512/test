@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/03/13 19:35:49 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/04/04 19:59:12 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,12 +90,6 @@ private:
 
     vector< ion_pointdata_struct > _pointData;
     vector< CtiIONLogArray * >     _eventLogs;
-
-    //  DESCRIPTION- (format below)
-    //  ION_Pri=xxx, ION_Cause=xxxxxxxxx, ION_Effect=xxxxxxxxxx, Nlog=xxxxx
-    //
-    //  ACTION (Additional Info) - (format below)
-    //  C_H=xxx, E_H=xxx, State=x, Record=xxxxx
 
     struct ion_result_descriptor_struct
     {
@@ -336,6 +330,9 @@ public:
     bool hasInboundData( void );
     void getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList );
 
+    bool   hasPointUpdate     ( CtiPointType_t pointType, int offset ) const;
+    double getPointUpdateValue( CtiPointType_t pointType, int offset ) const;
+
     bool areEventLogsComplete( void );
 
     enum IONCommand
@@ -348,7 +345,8 @@ public:
         Command_CollectLoadProfile,
         Command_SetAnalogOut,
         Command_SetDigitalOut,
-        Command_ExternalPulseTrigger
+        Command_ExternalPulseTrigger,
+        Command_ExceptionScanPostControl
     };
 
     enum IONConstants
