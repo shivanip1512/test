@@ -193,7 +193,6 @@ public void encodeGif(java.io.OutputStream out) throws java.io.IOException
 
 		encFrame.setSize(getWidth(),getHeight() );
 		cp.setSize(getWidth(),getHeight());
-		javax.swing.JPanel panel = new javax.swing.JPanel();
 		encFrame.getContentPane().add( cp, "Center");
 		
 		//make sure to create its peer
