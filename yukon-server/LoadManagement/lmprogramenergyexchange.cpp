@@ -407,7 +407,7 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
                 newCustomerReply->setCustomerId(currentCustomer->getCustomerId());
                 newCustomerReply->setOfferId(offer->getOfferId());
                 newCustomerReply->setAcceptStatus(CtiLMEnergyExchangeCustomerReply::NoResponseAcceptStatus);
-                newCustomerReply->setAcceptDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
+                newCustomerReply->setAcceptDateTime(gInvalidRWDBDateTime);
                 newCustomerReply->setRevisionNumber(currentOfferRevision->getRevisionNumber());
                 newCustomerReply->setIPAddressOfAcceptUser("(none)");
                 newCustomerReply->setUserIdName("(none)");

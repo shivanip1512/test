@@ -1370,9 +1370,9 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirect* lm
     if(stopTime.seconds() < lmProgramDirect->getDirectStartTime().seconds())
     {
         lmProgramDirect->setManualControlReceivedFlag(FALSE);
-        lmProgramDirect->setDirectStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
-        lmProgramDirect->setDirectStopTime(RWDBDateTime(1990,1,1,0,0,0,0));
-        lmProgramDirect->setNotifyTime(RWDBDateTime(1990,1,1,0,0,0,0));
+        lmProgramDirect->setDirectStartTime(gInvalidRWDBDateTime);
+        lmProgramDirect->setDirectStopTime(gInvalidRWDBDateTime);
+        lmProgramDirect->setNotifyTime(gInvalidRWDBDateTime);
         lmProgramDirect->setProgramState(CtiLMProgramBase::InactiveState);
         controlArea->setUpdatedFlag(TRUE);
     }

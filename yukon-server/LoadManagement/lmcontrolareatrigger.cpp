@@ -746,9 +746,9 @@ void CtiLMControlAreaTrigger::restore(RWDBReader& rdr)
     else
     {
         setPointValue(0.0);
-        setLastPointValueTimestamp(RWDBDateTime(1990,1,1,0,0,0,0));
+        setLastPointValueTimestamp(gInvalidRWDBDateTime);
         setPeakPointValue(0.0);
-        setLastPeakPointValueTimestamp(RWDBDateTime(1990,1,1,0,0,0,0));
+        setLastPeakPointValueTimestamp(gInvalidRWDBDateTime);
 
         _insertDynamicDataFlag = TRUE;
     }

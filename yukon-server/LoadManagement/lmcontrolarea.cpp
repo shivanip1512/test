@@ -1821,11 +1821,11 @@ void CtiLMControlArea::handleNotification(ULONG secondsFrom1901, CtiMultiMsg* mu
         if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
         {
             CtiLMProgramDirect* currentLMDirectProgram = (CtiLMProgramDirect*) currentLMProgram;
-            if( currentLMDirectProgram->getNotifyTime().seconds() > RWDBDateTime(1991,1,1,0,0,0,0).seconds() &&
+            if( currentLMDirectProgram->getNotifyTime() > gInvalidRWDBDateTime &&
                 currentLMDirectProgram->getNotifyTime().seconds() <= secondsFrom1901 )
             {
                 currentLMDirectProgram->notifyGroupsOfStart(multiDispatchMsg);
-                currentLMDirectProgram->setNotifyTime(RWDBDateTime(1990,1,1,0,0,0,0));
+                currentLMDirectProgram->setNotifyTime(gInvalidRWDBDateTime);
                 currentLMDirectProgram->dumpDynamicData();
             }
         }

@@ -244,7 +244,7 @@ void CtiLMCurtailCustomer::restore(RWDBReader& rdr)
 
     setCurtailReferenceId(0);
     setAcknowledgeStatus(CtiLMCurtailCustomer::NotRequiredAckStatus);
-    setAckDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
+    setAckDateTime(gInvalidRWDBDateTime);
     setIPAddressOfAckUser("1.1.1.1");
     setUserIdName("Null");
     setNameOfAckPerson("Null");

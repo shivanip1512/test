@@ -447,11 +447,11 @@ BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
             setRunStatus(CtiLMProgramCurtailment::CompletedRunStatus);
             dumpDynamicData();
             setCurtailReferenceId(0);
-            setActionDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
-            setNotificationDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
-            setCurtailmentStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
-            //setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
-            setCurtailmentStopTime(RWDBDateTime(1990,1,1,0,0,0,0));
+            setActionDateTime(gInvalidRWDBDateTime);
+            setNotificationDateTime(gInvalidRWDBDateTime);
+            setCurtailmentStartTime(gInvalidRWDBDateTime);
+            //setStartedControlling(gInvalidRWDBDateTime);
+            setCurtailmentStopTime(gInvalidRWDBDateTime);
         }
         else if( currentDateTime >= getCurtailmentStartTime() && currentDateTime <= getCurtailmentStopTime() )
         {
@@ -460,11 +460,11 @@ BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
             notifyCustomersOfStop(multiDispatchMsg);
             dumpDynamicData();
             setCurtailReferenceId(0);
-            setActionDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
-            setNotificationDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
-            setCurtailmentStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
-            //setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
-            setCurtailmentStopTime(RWDBDateTime(1990,1,1,0,0,0,0));
+            setActionDateTime(gInvalidRWDBDateTime);
+            setNotificationDateTime(gInvalidRWDBDateTime);
+            setCurtailmentStartTime(gInvalidRWDBDateTime);
+            //setStartedControlling(gInvalidRWDBDateTime);
+            setCurtailmentStopTime(gInvalidRWDBDateTime);
             for(LONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
             {
                 ((CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i])->setAcknowledgeStatus(CtiLMCurtailCustomer::NotRequiredAckStatus);
@@ -476,11 +476,11 @@ BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
             notifyCustomersOfStop(multiDispatchMsg);
             dumpDynamicData();
             setCurtailReferenceId(0);
-            setActionDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
-            setNotificationDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
-            setCurtailmentStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
-            //setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
-            setCurtailmentStopTime(RWDBDateTime(1990,1,1,0,0,0,0));
+            setActionDateTime(gInvalidRWDBDateTime);
+            setNotificationDateTime(gInvalidRWDBDateTime);
+            setCurtailmentStartTime(gInvalidRWDBDateTime);
+            //setStartedControlling(gInvalidRWDBDateTime);
+            setCurtailmentStopTime(gInvalidRWDBDateTime);
             for(LONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
             {
                 ((CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i])->setAcknowledgeStatus(CtiLMCurtailCustomer::NotRequiredAckStatus);
@@ -1087,10 +1087,10 @@ void CtiLMProgramCurtailment::restore(RWDBReader& rdr)
     rdr["canceledmsg"] >> _canceledmsg;
     rdr["stoppedearlymsg"] >> _stoppedearlymsg;
     setCurtailReferenceId(0);
-    setActionDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
-    setNotificationDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
-    setCurtailmentStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
-    setCurtailmentStopTime(RWDBDateTime(1990,1,1,0,0,0,0));
+    setActionDateTime(gInvalidRWDBDateTime);
+    setNotificationDateTime(gInvalidRWDBDateTime);
+    setCurtailmentStartTime(gInvalidRWDBDateTime);
+    setCurtailmentStopTime(gInvalidRWDBDateTime);
     setRunStatus(CtiLMProgramCurtailment::NullRunStatus);
     setAdditionalInfo("null");
 }

@@ -33,7 +33,7 @@ LONG CtiLMGroupBase::numberOfReferences = 0;
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase::CtiLMGroupBase()
-    : _next_control_time(1990,1,1,0,0,0,0), _insertDynamicDataFlag(TRUE)
+    : _next_control_time(gInvalidRWDBDateTime), _insertDynamicDataFlag(TRUE)
 {
 #ifdef _DEBUG_MEMORY    
         numberOfReferences++;
@@ -46,7 +46,7 @@ CtiLMGroupBase::CtiLMGroupBase()
 }
 
 CtiLMGroupBase::CtiLMGroupBase(RWDBReader& rdr)
-    : _next_control_time(1990,1,1,0,0,0,0), _insertDynamicDataFlag(TRUE)
+    : _next_control_time(gInvalidRWDBDateTime), _insertDynamicDataFlag(TRUE)
 {
 #ifdef _DEBUG_MEMORY    
         numberOfReferences++;
@@ -1088,10 +1088,10 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
         setCurrentHoursMonthly(0);
         setCurrentHoursSeasonal(0);
         setCurrentHoursAnnually(0);
-        setLastControlSent(RWDBDateTime(1990,1,1,0,0,0,0));
-        setControlStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
-        setControlCompleteTime(RWDBDateTime(1990,1,1,0,0,0,0));
-        setNextControlTime(RWDBDateTime(1990,1,1,0,0,0,0));
+        setLastControlSent(gInvalidRWDBDateTime);
+        setControlStartTime(gInvalidRWDBDateTime);
+        setControlCompleteTime(gInvalidRWDBDateTime);
+        setNextControlTime(gInvalidRWDBDateTime);
         _internalState = 0;
         
         _insertDynamicDataFlag = TRUE;

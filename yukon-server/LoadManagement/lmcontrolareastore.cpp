@@ -73,7 +73,7 @@ void lmprogram_delete(const LONG& program_id, CtiLMProgramBase*const& lm_program
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaStore::CtiLMControlAreaStore() : _isvalid(false), _reregisterforpoints(true), _lastdbreloadtime(RWDBDateTime(1990,1,1,0,0,0,0)), _wascontrolareadeletedflag(false)
+CtiLMControlAreaStore::CtiLMControlAreaStore() : _isvalid(false), _reregisterforpoints(true), _lastdbreloadtime(gInvalidRWDBDateTime), _wascontrolareadeletedflag(false)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     _controlAreas = new RWOrdered();

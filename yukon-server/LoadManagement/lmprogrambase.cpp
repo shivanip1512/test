@@ -1145,8 +1145,8 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     {
         setProgramState(InactiveState);
         setReductionTotal(0.0);
-        setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0)); 
-        setLastControlSent(RWDBDateTime(1990,1,1,0,0,0,0));
+        setStartedControlling(gInvalidRWDBDateTime);
+        setLastControlSent(gInvalidRWDBDateTime);
         setManualControlReceivedFlag(FALSE);
 
         _insertDynamicDataFlag = TRUE;
