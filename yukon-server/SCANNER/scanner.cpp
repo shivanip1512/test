@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/05/17 18:48:45 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/05/28 18:27:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -135,14 +135,20 @@ extern BOOL ScannerQuit;
 
 CtiConnection     VanGoghConnection;
 ULONG             ScannerDebugLevel = 0;
-
-int               CCUNoQueueScans = 0;  //  false
+int               CCUNoQueueScans = TRUE;
 
 HANDLE hLockArray[] = {
     hScannerSyncs[S_QUIT_EVENT],
     hScannerSyncs[S_LOCK_MUTEX]
 };
 
+void barkAboutCurrentTime(CtiDevice *Device, RWTime &rt, INT line)
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Next scan is for " << Device->getName() << " at " << rt << " on " << line << endl;
+    }
+}
 
 void applyUseScanFlags(const CtiHashKey *unusedKey, CtiDevice *&DeviceRecord, void *unusedPtr)
 {
@@ -212,11 +218,16 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 CCUNoQueue = TRUE;
                 continue;
             }
+
+            #ifdef PIGS_FLY
             if(!(stricmp (argv[i], "/NQS")))
             {
                 CCUNoQueueScans = TRUE;
                 continue;
             }
+
+            #endif
+
             if(!(stricmp (argv[i], "/NLP")))
             {
                 SuspendLoadProfile = TRUE;
@@ -613,8 +624,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                             if((nRet = DeviceRecord->initiateGeneralScan(outList)) > 0)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " General Scan Fail to Device: " << DeviceRecord->getName() << endl;
-                                dout << "\tError " << nRet << ": " << GetError(nRet) << endl;
+                                dout << RWTime() << " General Scan Fail to Device: " << DeviceRecord->getName() << ". Error " << nRet << ": " << GetError(nRet) << endl;
                             }
                             else
                             {
@@ -952,15 +962,17 @@ RWTime TimeOfNextRemoteScan()
                     if(!(DeviceRecord->isScanPending()) && !(DeviceRecord->isScanFreezePending()) && !(DeviceRecord->isScanResetting()))
                     {
                         nRet = TimeNow;
+                        barkAboutCurrentTime( DeviceRecord, TimeNow, __LINE__ );
                         break;
                     }
                 }
 
-                TempTime = DeviceRecord->nextNearestTime();
+                TempTime = DeviceRecord->nextRemoteScan();
 
                 if(nRet > TempTime)
                 {
                     nRet = TempTime;
+                    barkAboutCurrentTime( DeviceRecord, TempTime, __LINE__ );
                 }
             }
         }
@@ -1004,6 +1016,7 @@ RWTime TimeOfNextLPScan( void )
                 if(nRet > TempTime)
                 {
                     nRet = TempTime;
+                    barkAboutCurrentTime( DeviceRecord, TempTime, __LINE__ );
                 }
             }
         }
@@ -1074,6 +1087,21 @@ void InitScannerGlobals(void)
         else
         {
             printf ("Using %d as alternate DLC queue priority for Analog/PA points.\n", DLCValuePriority);
+        }
+    }
+
+    if(gConfigParms.isOpt("SCANNER_QUEUE_SCANS"))
+    {
+        RWCString Temp = gConfigParms.getValueAsString("SCANNER_QUEUE_SCANS");
+        Temp.toLower();
+
+        if(Temp == "true" || Temp == "yes")
+        {
+            CCUNoQueueScans = TRUE;
+        }
+        else
+        {
+            CCUNoQueueScans = FALSE;
         }
     }
 
