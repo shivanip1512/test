@@ -431,16 +431,6 @@
           </tr>
 <%	} %>
 		  </cti:checkProperty>
-		  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_NOT_IMPLEMENTED %>">
-          <tr>
-            <td width="10"><%= ((String[]) links.get("Privileges.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("Privileges.jsp"))[1] %></td>
-          </tr>
-          <tr>
-            <td width="10"><%= ((String[]) links.get("PrintExport.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("PrintExport.jsp"))[1] %></td>
-          </tr>
-		  </cti:checkProperty>
         </table>
 	  </div>
     </td>

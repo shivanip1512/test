@@ -334,7 +334,11 @@ function confirmCancel() {
                     <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">
                       <tr> 
                         <td width="40%" align="right"> 
+<% if (needMoreInfo) { %>
+                          <input type="submit" name="Next" value="Next">
+<% } else { %>
                           <input type="submit" name="Submit" value="Done">
+<% } %>
                         </td>
                         <td width="20%" align="center"> 
                           <input type="button" name="Back" value="Back" onclick="location.href='CreateHardware.jsp?Wizard=true'" <% if (!hasPrevStep) { %>disabled<% } %>>
