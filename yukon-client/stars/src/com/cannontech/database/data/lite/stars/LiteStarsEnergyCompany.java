@@ -2583,6 +2583,40 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	/**
+	 * Search customer accounts by hardware alternate tracking #.
+	 * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
+	 * otherwise it returns a list of LiteStarsCustAccountInformation.
+	 */
+	public ArrayList searchAccountByAltTrackNo(String altTrackNo, boolean searchMembers) {
+		ArrayList invList = searchInventoryByAltTrackNo( altTrackNo, false );
+		ArrayList accountList = new ArrayList();
+		
+		for (int i = 0; i < invList.size(); i++) {
+			LiteInventoryBase inv = (LiteInventoryBase) invList.get(i);
+			if (inv.getAccountID() > 0) {
+				LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( inv.getAccountID(), true );
+				if (searchMembers)
+					accountList.add( new Pair(liteAcctInfo, this) );
+				else
+					accountList.add( liteAcctInfo );
+			}
+		}
+		
+		if (searchMembers) {
+			ArrayList children = getChildren();
+			synchronized (children) {
+				for (int i = 0; i < children.size(); i++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
+					ArrayList memberList = company.searchAccountByAltTrackNo( altTrackNo, searchMembers );
+					accountList.addAll( memberList );
+				}
+			}
+		}
+		
+		return accountList;
+	}
+	
+	/**
 	 * Search customer account by residence map #, search results based on partial match
 	 * If searchMembers is true, the return type is Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
 	 * otherwise the return type is LiteStarsCustAccountInformation.

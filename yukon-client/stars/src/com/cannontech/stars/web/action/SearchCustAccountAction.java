@@ -185,7 +185,12 @@ public class SearchCustAccountAction implements ActionBase {
             	accountList = energyCompany.searchAccountByMapNo( searchAccount.getSearchValue(), searchMembers );
             }
             else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ADDRESS) {
+            	/* Search by address */
             	accountList = energyCompany.searchAccountByAddress( searchAccount.getSearchValue(), searchMembers );
+            }
+            else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ALT_TRACK_NO) {
+            	/* Search by alternate tracking number */
+            	accountList = energyCompany.searchAccountByAltTrackNo( searchAccount.getSearchValue(), searchMembers );
             }
             
 			StarsSearchCustomerAccountResponse resp = new StarsSearchCustomerAccountResponse();
