@@ -181,7 +181,8 @@ public class AddSNRangeTask implements TimeConsumingTask {
 		
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares added to inventory successfully.</span><br>" +
-					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (listed below).<br>Those serial numbers may already exist in the inventory.</span><br>";
+					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (listed below).<br>" +
+					"Those serial numbers may already exist in the inventory.</span><br>";
 			if (serialNoSet.size() > 0) {
 				resultDesc += "<br><table width='100' cellspacing='0' cellpadding='0' border='0' align='center' class='TableCell'>";
 				for (int i = 0; i < serialNoSet.size(); i++) {
