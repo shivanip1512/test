@@ -28,6 +28,7 @@ constraint PK_YUKONSELECTIONLIST primary key  (ListID)
 )
 go
 insert into YukonSelectionList values( 0, 'N', '(none)', '(none)', '(none)', 'N' )
+insert into YukonSelectionList values( 1, 'A', 'Contact', 'DBEditor contact type list', 'ContactType', 'N' )
 go
 create table YukonListEntry (
 EntryID              numeric              not null,
@@ -38,15 +39,15 @@ YukonDefinitionID    numeric              not null,
 constraint PK_YUKONLISTENTRY primary key  (EntryID)
 )
 go
-insert into YukonListEntry values( 0, 0, 0, '(none)', 0 )
+insert into YukonListEntry values( 0, 1, 0, '(none)', 0 )
 go
-insert into YukonListEntry values( 1, 0, 0, 'Email', 1 )
+insert into YukonListEntry values( 1, 1, 0, 'Email', 1 )
 go
-insert into YukonListEntry values( 2, 0, 0, 'Phone Number', 2 )
+insert into YukonListEntry values( 2, 1, 0, 'Phone Number', 2 )
 go
-insert into YukonListEntry values( 3, 0, 0, 'Pager Number', 2 )
+insert into YukonListEntry values( 3, 1, 0, 'Pager Number', 2 )
 go
-insert into YukonListEntry values( 4, 0, 0, 'Fax Number', 2 )
+insert into YukonListEntry values( 4, 1, 0, 'Fax Number', 2 )
 go
 create index Indx_YkLstDefID on YukonListEntry (YukonDefinitionID)
 go
@@ -210,4 +211,6 @@ alter table ContactNotification
       references YukonListEntry (EntryID)
 go
 alter TABLE YukonRole add RoleDescription VARCHAR(200) not null DEFAULT '(none)'
+go
+insert into YukonRole values(-104,'WEB_OPERATOR','WebClient','(none)', '(none)')
 go

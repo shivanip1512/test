@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     1/22/2003 8:29:24 AM                         */
+/* Created on:     2/19/2003 10:17:52 AM                        */
 /*==============================================================*/
 
 
@@ -50,22 +50,6 @@ if exists (select 1
            where  id = object_id('CustomerAccount')
             and   type = 'U')
    drop table CustomerAccount
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('CustomerAdditionalContact')
-            and   type = 'U')
-   drop table CustomerAdditionalContact
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('CustomerBase')
-            and   type = 'U')
-   drop table CustomerBase
 go
 
 
@@ -375,31 +359,6 @@ go
 /*==============================================================*/
 create   index CstAccCstPro_FK on CustomerAccount (
 AccountSiteID
-)
-go
-
-
-/*==============================================================*/
-/* Table : CustomerAdditionalContact                            */
-/*==============================================================*/
-create table CustomerAdditionalContact (
-CustomerID           numeric              not null,
-ContactID            numeric              not null,
-constraint PK_CUSTOMERADDITIONALCONTACT primary key  (CustomerID, ContactID)
-)
-go
-
-
-/*==============================================================*/
-/* Table : CustomerBase                                         */
-/*==============================================================*/
-create table CustomerBase (
-CustomerID           numeric              not null,
-PrimaryContactID     numeric              null,
-CustomerTypeID       numeric              not null,
-TimeZone             varchar(30)          null,
-PaoID                numeric              null,
-constraint PK_CUSTOMERBASE primary key  (CustomerID)
 )
 go
 
@@ -811,20 +770,8 @@ alter table ApplianceBase
 go
 
 
-alter table CustomerAdditionalContact
-   add constraint FK_CsCnt_CsAdCn foreign key (ContactID)
-      references Contact (ContactID)
-go
-
-
 alter table LMProgramWebPublishing
    add constraint FK_CsLEn_LPWbP foreign key (ChanceOfControlID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table WorkOrderBase
-   add constraint FK_CsLsE_WkB_c foreign key (CurrentStateID)
       references YukonListEntry (EntryID)
 go
 
@@ -835,14 +782,20 @@ alter table ApplianceAirConditioner
 go
 
 
-alter table LMCustomerEventBase
-   add constraint FK_CsLsE_LCstE foreign key (EventTypeID)
+alter table LMThermostatSeasonEntry
+   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
       references YukonListEntry (EntryID)
 go
 
 
-alter table LMThermostatSeasonEntry
-   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
+alter table WorkOrderBase
+   add constraint FK_CsLsE_WkB_c foreign key (CurrentStateID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table LMCustomerEventBase
+   add constraint FK_CsLsE_LCstE foreign key (EventTypeID)
       references YukonListEntry (EntryID)
 go
 
@@ -927,13 +880,7 @@ go
 
 alter table CustomerAccount
    add constraint FK_CstBs_CstAcc foreign key (CustomerID)
-      references CustomerBase (CustomerID)
-go
-
-
-alter table CustomerBase
-   add constraint FK_CstBs_CstCnt foreign key (PrimaryContactID)
-      references Contact (ContactID)
+      references Customer (CustomerID)
 go
 
 
@@ -955,14 +902,14 @@ alter table ApplianceCategory
 go
 
 
-alter table InventoryBase
-   add constraint FK_INV_REF__YUK foreign key (CategoryID)
+alter table LMHardwareBase
+   add constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
       references YukonListEntry (EntryID)
 go
 
 
-alter table LMHardwareBase
-   add constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
+alter table InventoryBase
+   add constraint FK_INV_REF__YUK foreign key (CategoryID)
       references YukonListEntry (EntryID)
 go
 
@@ -992,14 +939,14 @@ go
 
 
 alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
-      references InventoryBase (InventoryID)
+   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
 alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
+      references InventoryBase (InventoryID)
 go
 
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     2/17/2003 9:55:22 AM                         */
+/* Created on:     2/19/2003 10:21:20 AM                        */
 /*==============================================================*/
 
 
@@ -1407,12 +1407,12 @@ insert into YukonGroup values(-1,'default users');
 insert into YukonGroup values(-2,'web users');
 insert into YukonGroup values(-3,'web operators');
 
+insert into yukongroup values(-200,'Esub Users');
+insert into yukongroup values(-201,'Esub Operators');
+
 insert into yukongroup values(-210,'Web Demo Operators');
 insert into yukongroup values(-211,'Web Demo Residential Customers');
 insert into yukongroup values(-212,'Web Demo CICustomers');
-
-insert into yukongroup values(-200,'Esub Users');
-insert into yukongroup values(-201,'Esub Operators');
 
 
 /*==============================================================*/
@@ -1470,6 +1470,7 @@ insert into YukonRole values(-100,'HOME_URL','WebClient','default.jsp','(none)')
 insert into YukonRole values(-101,'WEB_USER','WebClient','(none)','(none)');
 insert into YukonRole values(-102,'WEB_RESIDENTIAL_CUSTOMER','WebClient','(none)','(none)');
 insert into YukonRole values(-103,'WEB_CICUSTOMER','WebClient','(none)','(none)');
+insert into YukonRole values(-104,'WEB_OPERATOR','WebClient','(none)', '(none)');
 
 insert into YukonRole values(-120,'OPERATOR_CONSUMER_INFO','WebClient','(none)','(none)');
 insert into YukonRole values(-121,'OPERATOR_COMMERCIAL_METERING','WebClient','(none)','(none)');
@@ -1505,6 +1506,11 @@ insert into YukonRole values(-178,'CONSUMERINFO_QUESTIONS','ConsumerInfo','(none
 insert into yukonrole values(-200,'ESUBVIEW','Esub','true','(none)');
 insert into yukonrole values(-201,'ESUBEDIT','Esub','true','(none)');
 insert into yukonrole values(-202,'ESUBCONTROL','Esub','true','(none)');
+
+insert into yukonrole values(-9000,'TRENDING_DISCLAIMER_TEXT','WebClient','','(none)','(none)');
+insert into yukonrole values(-9001,'ENERGYEXCHANGE_TEXT','WebClient','Energy Exchange','(none)','(none)');
+insert into yukonrole values(-9002,'ENERGYEXCHANGE_HEADING_TEXT','WebClient','Energy Exchange','(none)','(none)');
+insert into yukonrole values(-9003,'CURTAILMENT_PROVIDER_TEXT','WebClient','Curtailment Provider','(none)','(none)');
 
 /*==============================================================*/
 /* Index: Indx_YukRol_Nm                                        */
@@ -1567,10 +1573,21 @@ insert into YukonGroupRole values(-1,-31,'false');
 insert into YukonGroupRole values(-1,-32,'c:\yukon\client\bin\BillingIn.txt');
 insert into YukonGroupRole values(-1,-33,'INFO');
 insert into YukonGroupRole values(-1,-34,'false');
+
 insert into YukonGroupRole values(-2,-101,'(none)');
-insert into YukonGroupRole values(-3,-102,'(none)');
 insert into YukonGroupRole values(-2,-100,'/user/user_trending.jsp?tab=graph');
+insert into yukongrouprole values(-2,-9000,'(none)');
+insert into yukongrouprole values(-2,-9001,'(none)');
+insert into yukongrouprole values(-2,-9002,'(none)');
+insert into yukongrouprole values(-2,-9003,'(none)');
+
+insert into YukonGroupRole values(-3,-102,'(none)');
 insert into YukonGroupRole values(-3,-100,'/operator/oper_trending.jsp?tab=graph');
+insert into yukongrouprole values(-3,-9000,'(none)');
+insert into yukongrouprole values(-3,-9001,'(none)');
+insert into yukongrouprole values(-3,-9002,'(none)');
+insert into yukongrouprole values(-3,-9003,'(none)');
+
 
 insert into yukongrouprole values(-200,-200,'(none)');
 insert into yukongrouprole values(-201,-200,'(none)');
@@ -1652,6 +1669,8 @@ create table YukonSelectionList  (
 
 
 insert into YukonSelectionList values( 0, 'N', '(none)', '(none)', '(none)', 'N' );
+insert into YukonSelectionList values( 1, 'A', 'Contact', 'DBEditor contact type list', 'ContactType', 'N' );
+
 
 /*==============================================================*/
 /* Table : LOGIC                                                */
@@ -2568,11 +2587,11 @@ create table YukonListEntry  (
 /
 
 
-insert into YukonListEntry values( 0, 0, 0, '(none)', 0 );
-insert into YukonListEntry values( 1, 0, 0, 'Email', 1 );
-insert into YukonListEntry values( 2, 0, 0, 'Phone Number', 2 );
-insert into YukonListEntry values( 3, 0, 0, 'Pager Number', 2 );
-insert into YukonListEntry values( 4, 0, 0, 'Fax Number', 2 );
+insert into YukonListEntry values( 0, 1, 0, '(none)', 0 );
+insert into YukonListEntry values( 1, 1, 0, 'Email', 1 );
+insert into YukonListEntry values( 2, 1, 0, 'Phone Number', 2 );
+insert into YukonListEntry values( 3, 1, 0, 'Pager Number', 2 );
+insert into YukonListEntry values( 4, 1, 0, 'Fax Number', 2 );
 
 /*==============================================================*/
 /* Index: Indx_YkLstDefID                                       */
