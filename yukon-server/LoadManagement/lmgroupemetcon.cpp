@@ -174,6 +174,11 @@ CtiRequestMsg* CtiLMGroupEmetcon::createTimeRefreshRequestMsg(ULONG refreshRate,
     RWCString controlString = RWCString("control shed ");
     controlString += convertSecondsToEvenTimeString(shedTime);
 
+    if( _LM_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << endl;
+    }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
@@ -204,6 +209,11 @@ CtiRequestMsg* CtiLMGroupEmetcon::createRotationRequestMsg(ULONG sendRate, ULONG
     RWCString controlString = RWCString("control shed ");
     controlString += convertSecondsToEvenTimeString(shedTime);
 
+    if( _LM_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << endl;
+    }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
@@ -232,6 +242,11 @@ CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(ULONG offTime, ULO
 
     controlString += convertSecondsToEvenTimeString(shedTime);
 
+    if( _LM_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << endl;
+    }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
@@ -240,11 +255,11 @@ CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(ULONG offTime, ULO
 
     
 ---------------------------------------------------------------------------*/
-BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(ULONG nowInSeconds, ULONG groupControlDone, ULONG offTime)
+BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime)
 {
     BOOL returnBOOL = FALSE;
 
-    ULONG controlTimeLeft = groupControlDone - nowInSeconds;
+    ULONG controlTimeLeft = groupControlDone - secondsFrom1901;
     if( !_refreshsent &&
         controlTimeLeft < 572 &&
         controlTimeLeft >= 569 )

@@ -151,6 +151,11 @@ CtiRequestMsg* CtiLMGroupRipple::createTimeRefreshRequestMsg(ULONG refreshRate, 
 {
     RWCString controlString = RWCString("control shed");
 
+    if( _LM_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << endl;
+    }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
@@ -180,6 +185,11 @@ CtiRequestMsg* CtiLMGroupRipple::createRotationRequestMsg(ULONG sendRate, ULONG 
 {
     RWCString controlString = RWCString("control shed");
 
+    if( _LM_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << endl;
+    }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
@@ -193,6 +203,11 @@ CtiRequestMsg* CtiLMGroupRipple::createMasterCycleRequestMsg(ULONG offTime, ULON
 {
     RWCString controlString = RWCString("control shed");
 
+    if( _LM_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << endl;
+    }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
@@ -201,11 +216,11 @@ CtiRequestMsg* CtiLMGroupRipple::createMasterCycleRequestMsg(ULONG offTime, ULON
 
     
 ---------------------------------------------------------------------------*/
-BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(ULONG nowInSeconds, ULONG groupControlDone, ULONG offTime)
+BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime)
 {
     BOOL returnBOOL = FALSE;
 
-    ULONG controlTimeLeft = groupControlDone - nowInSeconds;
+    ULONG controlTimeLeft = groupControlDone - secondsFrom1901;
     ULONG trueShedTime = getShedTime()+60;
     if( !_refreshsent &&
         controlTimeLeft < trueShedTime+2 &&
@@ -223,14 +238,10 @@ BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(ULONG nowInSeconds, ULONG 
         if( (offTime/trueShedTime) >= 2 )
         {
             ULONG numberOfTimesToExtend = (offTime/trueShedTime)-1;
-            ULONG controlStartedInSeconds = (getLastControlSent().hour() * 3600) +
-                                            (getLastControlSent().minute() * 60) +
-                                            getLastControlSent().second();
-            ULONG timeToExtendInSeconds = controlStartedInSeconds + trueShedTime;
             for(ULONG i=0;i<numberOfTimesToExtend;i++)
             {
-                if( nowInSeconds < timeToExtendInSeconds+2 &&
-                    nowInSeconds >= timeToExtendInSeconds-1 )
+                if( secondsFrom1901 < getLastControlSent().seconds()+trueShedTime+2 &&
+                    secondsFrom1901 >= getLastControlSent().seconds()+trueShedTime-1 )
                 {
                     returnBOOL = TRUE;
                     /*{
@@ -238,7 +249,6 @@ BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(ULONG nowInSeconds, ULONG 
                         dout << RWTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle extended in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }*/
                 }
-                timeToExtendInSeconds += trueShedTime;
             }
         }
     }
