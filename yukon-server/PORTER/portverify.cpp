@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/11/18 23:40:29 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/11/24 17:01:00 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -496,6 +496,11 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWD
     long transmitter_id = work.getTransmitterID();
     long sequence       = work.getSequence();
 
+    if( code.empty() )
+    {
+        code = "(empty)";
+    }
+
     inserter << logIDGen()
              << work.getSubmissionTime()
              << 0
@@ -564,6 +569,12 @@ void CtiPorterVerification::writeUnknown(const CtiVerificationReport &report)
     RWDBInserter inserter = table.inserter();
     RWDBStatus::ErrorCode e;
     const string &cs = CtiVerificationBase::getCodeStatusName(CtiVerificationBase::CodeStatus_Unexpected);
+    string code = report.getCode();
+
+    if( code.empty() )
+    {
+        code = "(empty)";
+    }
 
     inserter << logIDGen()
              << report.getReceiptTime()
