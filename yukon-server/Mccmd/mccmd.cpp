@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2002/08/12 20:07:53 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2002/08/28 16:08:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -338,7 +338,6 @@ int Mccmd_Connect()
     //Send a registration message
     CtiRegistrationMsg* reg = new CtiRegistrationMsg("MCCMD", 0, false );
     PILConnection->WriteConnQue( reg );
-    PILConnection->setAutoExtend();
 
     VanGoghConnection = new CtiConnection( vangogh_port, vangogh_host );
 
@@ -462,25 +461,25 @@ int Mccmd_Init(Tcl_Interp* interp)
 
         CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
 
-        if( (*fpGetAsString)(MCCMD_CTL_SCRIPTS_DIR, temp, 64) )                
-            init_script = temp;           
+        if( (*fpGetAsString)(MCCMD_CTL_SCRIPTS_DIR, temp, 64) )
+            init_script = temp;
         else
-            init_script = "c:/yukon/server/macsscripts";       
+            init_script = "c:/yukon/server/macsscripts";
 
         init_script += "/";
 
-        if( (*fpGetAsString)(MCCMD_INIT_SCRIPT, temp, 64) )        
-            init_script += temp;            
+        if( (*fpGetAsString)(MCCMD_INIT_SCRIPT, temp, 64) )
+            init_script += temp;
         else
             init_script += "init.tcl";
 
-        if( (*fpGetAsString)(MCCMD_DEBUG_LEVEL, temp, 64) )        
+        if( (*fpGetAsString)(MCCMD_DEBUG_LEVEL, temp, 64) )
         {
             char *eptr;
             gMccmdDebugLevel = strtoul(temp, &eptr, 16);
         }
-            //    gMccmdDebugLevel = atoi(temp);            
-       
+            //    gMccmdDebugLevel = atoi(temp);
+
         if( gMccmdDebugLevel > 0 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -501,7 +500,7 @@ int Mccmd_Init(Tcl_Interp* interp)
         dout << "Using: " << init_script << endl;
     }
 
-    
+
     Tcl_EvalFile(interp, (char*) init_script.data() );
 
     /* declare that we are implementing the MCCmd package so that scripts that have
@@ -1273,11 +1272,11 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
         CtiRequestMsg* req = (CtiRequestMsg*) iter.key();
         req->setUserMessageId(msgid);
 
-        if( gMccmdDebugLevel & MCCMD_DEBUG_PILREQUEST )         
-            DumpRequestMessage(*req);        
+        if( gMccmdDebugLevel & MCCMD_DEBUG_PILREQUEST )
+            DumpRequestMessage(*req);
         else
             WriteOutput( (char*) req->CommandString().data() );
-           
+
 
         PILConnection->WriteConnQue(req);
     }
