@@ -6,6 +6,12 @@ package com.cannontech.database.db.device;
 public class DeviceCarrierSettings extends com.cannontech.database.db.DBPersistent {
 	private Integer deviceID = null;
 	private Integer address = null;
+	
+	public static final String TABLE_NAME = "DeviceCarrierSettings";
+
+	public static final String SETTER_COLUMNS[] = { "Address" };
+	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
+		
 /**
  * DeviceCarrierSettings constructor comment.
  */
@@ -34,14 +40,15 @@ public void add() throws java.sql.SQLException {
 
 	Object addValues[] = { getDeviceID(), getAddress() };
 
-	add( "DeviceCarrierSettings", addValues );
+	add( TABLE_NAME, addValues );
 }
 /**
  * delete method comment.
  */
 public void delete() throws java.sql.SQLException {
 
-	delete( "DeviceCarrierSettings", "DeviceID", getDeviceID() );
+	Object values [] = {getDeviceID()};
+	delete( TABLE_NAME, CONSTRAINT_COLUMNS, values );
 }
 /**
  * This method was created in VisualAge.
@@ -87,7 +94,7 @@ public static String[] isAddressUnique(int address, Integer excludedPAOId ) thro
 	String sql = 
 			"select y.paoname " +
 			"from " + com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME + " y, " + 
-			"devicecarriersettings d " +
+			TABLE_NAME + " d " +
 			"where y.paobjectid=d.deviceid " +
 			"and d.address= " + address +
 			(excludedPAOId != null 
@@ -134,14 +141,11 @@ public static String[] isAddressUnique(int address, Integer excludedPAOId ) thro
  */
 public void retrieve() throws java.sql.SQLException {
 
-	String selectColumns[] = { "Address" };
-	String constraintColumns[] = { "DeviceID" };
-
 	Object constraintValues[] = { getDeviceID() };
 
-	Object results[] = retrieve( selectColumns, "DeviceCarrierSettings", constraintColumns, constraintValues );
+	Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
-	if( results.length == selectColumns.length )
+	if( results.length == SETTER_COLUMNS.length )
 	{
 		setAddress( (Integer) results[0] );
 	}
@@ -165,12 +169,9 @@ public void setDeviceID(Integer newValue) {
  */
 public void update() throws java.sql.SQLException {
 
-	String setColumns[] = { "Address" };
 	Object setValues[] = { getAddress() };
-
-	String constraintColumns[] = { "DeviceID" };
 	Object constraintValues[] = { getDeviceID() };
 
-	update( "DeviceCarrierSettings", setColumns, setValues, constraintColumns, constraintValues );
+	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );	
 }
 }
