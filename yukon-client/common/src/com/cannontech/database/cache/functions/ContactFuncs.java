@@ -46,6 +46,24 @@ public final class ContactFuncs
 	
 		return null;
 	}
+	
+	/**
+	 * Returns the LiteContactNotification of the specified category
+	 * @param liteContact com.cannontech.database.data.lite.LiteContact
+	 * @param notifCatID int
+	 * @return com.cannontech.database.data.lite.LiteContactNotification
+	 */
+	public static LiteContactNotification getContactNotification(LiteContact liteContact, int notifCatID)
+	{
+		for (int i = 0; i < liteContact.getLiteContactNotifications().size(); i++) {
+			LiteContactNotification liteNotif = (LiteContactNotification) liteContact.getLiteContactNotifications().get(i);
+			
+			if (liteNotif.getNotificationCategoryID() == notifCatID)
+				return liteNotif;
+		}
+		
+		return null;
+	}
 
 	/**
 	 * Returns the LiteContact for firstName_.
@@ -92,7 +110,7 @@ public final class ContactFuncs
 			
 			for( int j = 0; j < cstCnts.size(); j++ )
 			{
-				if( lastName_.equalsIgnoreCase( ((LiteContact)cstCnts.get(j)).getContFirstName() ) )
+				if( lastName_.equalsIgnoreCase( ((LiteContact)cstCnts.get(j)).getContLastName() ) )
 						notifs.add( cstCnts.get(j) );
 			}
 		}
