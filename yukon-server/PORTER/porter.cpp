@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2003/09/08 20:03:11 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2003/09/12 02:42:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -181,6 +181,7 @@ void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, b
 void LoadPorterGlobals(void);
 INT  RefreshPorterRTDB(void *ptr = NULL);
 void DebugKeyEvent(KEY_EVENT_RECORD *ke);
+RWCString GetDeviceName( ULONG id );
 void KickPIL();
 bool processInputFunction(CHAR Char);
 
@@ -461,37 +462,55 @@ void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedP
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime()<< " Port: " << setw(2) << ptPort->getPortID() << " / " << ptPort->getName() << " Port Queue Entries:  " << QueEntCnt << endl;
+
+            if(ptPort->getConnectedDevice())
+            {
+                dout << ". Connected To: " << GetDeviceName(ptPort->getConnectedDevice()) << endl;
+            }
+            else
+            {
+                dout << endl;
+            }
         }
 
-        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
-        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(DeviceManager.getMap());
-        /* Do the remotes on this port */
-        for(; ++itr_dev ;)
+        RWRecursiveLock<RWMutexLock>::TryLockGuard  dev_guard(DeviceManager.getMux());
+
+        if(dev_guard.isAcquired())
         {
-            CtiDeviceBase *RemoteDevice = itr_dev.value();
-
-            if(RemoteDevice->getType() == TYPE_CCU711 && ptPort->getPortID() == RemoteDevice->getPortID())
+            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(DeviceManager.getMap());
+            /* Do the remotes on this port */
+            for(; ++itr_dev ;)
             {
-                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
+                CtiDeviceBase *RemoteDevice = itr_dev.value();
 
-                if(pInfo != NULL)
+                if(RemoteDevice->getType() == TYPE_CCU711 && ptPort->getPortID() == RemoteDevice->getPortID())
                 {
-                    QueryQueue (pInfo->QueueHandle, &QueEntCnt);
+                    CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
+
+                    if(pInfo != NULL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "    CCU:  " << RemoteDevice->getName() << endl;
-                        dout << "                   Queue Queue Entries:  " << QueEntCnt << endl;
-                    }
-                    QueryQueue (pInfo->ActinQueueHandle, &QueEntCnt);
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        CHAR oldfill = dout.fill('0');
-                        dout << "                   Actin Queue Entries:  " << QueEntCnt << endl;
-                        dout << "                   Status Byte:          " << hex << setw(4) << (int)pInfo->Status << endl;
-                        dout.fill(oldfill);
+                        QueryQueue (pInfo->QueueHandle, &QueEntCnt);
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "    CCU:  " << RemoteDevice->getName() << endl;
+                            dout << "                   Queue Queue Entries:  " << QueEntCnt << endl;
+                        }
+                        QueryQueue (pInfo->ActinQueueHandle, &QueEntCnt);
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            CHAR oldfill = dout.fill('0');
+                            dout << "                   Actin Queue Entries:  " << QueEntCnt << endl;
+                            dout << "                   Status Byte:          " << hex << setw(4) << (int)pInfo->Status << endl;
+                            dout.fill(oldfill);
+                        }
                     }
                 }
             }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Unable to acquire the device mutex." << endl;
         }
     }
 }
@@ -1593,6 +1612,20 @@ CTI_PORTTHREAD_FUNC_PTR PortThreadFactory(int porttype)
     }
 
     return fptr;
+}
+
+RWCString GetDeviceName( ULONG id )
+{
+    RWCString name;
+
+    CtiDevice  *pDev = DeviceManager.getEqual( id );
+
+    if(pDev)
+    {
+        name = pDev->getName();
+    }
+
+    return name;
 }
 
 void KickPIL()
