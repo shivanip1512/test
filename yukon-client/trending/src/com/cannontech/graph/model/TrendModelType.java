@@ -14,6 +14,8 @@ public final class TrendModelType
 	public final static int BAR_3D_VIEW = 2;
 	public final static int STEP_VIEW = 3;
 	public final static int SHAPES_LINE_VIEW = 4;
+	public final static int TABULAR_VIEW = 5;
+	public final static int SUMMARY_VIEW = 6;
 
 	public final static String DONT_CHANGE_VIEW_STRING = "Invalid";
 	public final static String LINE_VIEW_STRING = "Line Graph";
@@ -21,7 +23,9 @@ public final class TrendModelType
 	public final static String BAR_3D_VIEW_STRING = "3D Bar Graph";
 	public final static String STEP_VIEW_STRING = "Step Graph";
 	public final static String SHAPES_LINE_VIEW_STRING = "Shapes/Line Graph";
-		
+	public final static String TABULAR_VIEW_STRING = "Tabular";
+	public final static String SUMMARY_VIEW_STRING = "Summary";
+	
 	// ** NOTE ** Add more int model values here with the addition of new models.	
 
 	// Optional model/chart choices.
