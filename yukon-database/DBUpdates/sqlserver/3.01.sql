@@ -1068,6 +1068,10 @@ drop table OperatorSerialGroup;
 insert into UserPaoOwner select OperatorLoginId, programid from LMDirectOperatorList;
 drop table LMDirectOperatorList;
 
+create   index Indx_ContLstName on Contact (
+ContLastName
+);
+
 
 
 
