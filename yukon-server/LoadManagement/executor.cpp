@@ -608,6 +608,7 @@ void CtiLMCommandExecutor::ShedGroup()
 
                         if( requestMsg != NULL )
                         {
+                            currentLMGroup->setLastControlString(requestMsg->CommandString());
                             CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
                             currentLMGroup->setLastControlSent(RWDBDateTime());
                             ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
@@ -693,6 +694,7 @@ void CtiLMCommandExecutor::CycleGroup()
 
                         if( requestMsg != NULL )
                         {
+                            currentLMGroup->setLastControlString(requestMsg->CommandString());
                             CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
                             currentLMGroup->setLastControlSent(RWDBDateTime());
                             ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
@@ -771,6 +773,7 @@ void CtiLMCommandExecutor::RestoreGroup()
                             requestMsg->setRouteId(routeId);
                         }
 
+                        currentLMGroup->setLastControlString(requestMsg->CommandString());
                         CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
                         currentLMGroup->setLastControlSent(RWDBDateTime());
                         ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
@@ -912,6 +915,7 @@ void CtiLMCommandExecutor::DisableGroup()
                             dout << RWTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
                         }
 
+                        currentLMGroup->setLastControlString(requestMsg->CommandString());
                         CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
                         currentLMGroup->setLastControlSent(RWDBDateTime());
                         CtiLMControlAreaStore::getInstance()->UpdateGroupDisableFlagInDB(currentLMGroup);
@@ -932,6 +936,98 @@ void CtiLMCommandExecutor::DisableGroup()
 
 void CtiLMCommandExecutor::ConfirmGroup()
 {
+    LONG groupID = _command->getPAOId();
+    LONG routeId = _command->getAuxId();
+
+    bool found = FALSE;
+    CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
+
+    for(LONG i=0;i<controlAreas.entries();i++)
+    {
+        RWOrdered& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        for(LONG j=0;j<lmPrograms.entries();j++)
+        {
+            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
+            if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
+            {
+                RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentLMProgramBase)->getLMProgramDirectGroups();
+
+                for(LONG k=0;k<lmGroups.entries();k++)
+                {
+                    CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)lmGroups[k];
+
+                    if( currentLMGroup->getPAOId() == groupID )
+                    {
+                        RWCString str;
+                        char var[128];
+
+                        int confirmExpireInSeconds = 300;
+                        strcpy(var, "LOAD_MANAGEMENT_CONFIRM_EXPIRE");
+                        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+                        {
+                            confirmExpireInSeconds = atoi(str);
+                            /*if( _LM_DEBUG )
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - " << var << ":  " << str << endl;
+                            }*/
+                        }
+                        else
+                        {
+                            /*CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;*/
+                        }
+
+                        if( currentLMGroup->getLastControlSent().seconds() + confirmExpireInSeconds >= RWDBDateTime().seconds() &&
+                            currentLMGroup->getLastControlString().length() > 0 )
+                        {
+                            {
+                                char tempchar[80];
+                                RWCString text = RWCString("Manual Confirm: ");
+                                text += currentLMGroup->getPAOName();
+                                RWCString additional = RWCString("PAO Id: ");
+                                _ltoa(currentLMGroup->getPAOId(),tempchar,10);
+                                additional += tempchar;
+
+                                CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << RWTime() << " - " << text << ", " << additional << endl;
+                                }
+                            }
+                            int priority = 11;
+                            RWCString controlString = currentLMGroup->getLastControlString();
+                            CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+
+                            if( _LM_DEBUG )
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Sending confirm command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+                            }
+
+                            if( routeId > 0 )
+                            {
+                                requestMsg->setRouteId(routeId);
+                            }
+
+                            CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
+                            currentLMGroup->setLastControlSent(RWDBDateTime());
+                            ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
+                        }
+
+                        found = TRUE;
+                        break;
+                    }
+                }
+                if( found )
+                    break;
+            }
+        }
+        if( found )
+            break;
+    }
 }
 
 
