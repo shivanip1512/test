@@ -28,8 +28,8 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.StreetAddress;
 import com.cannontech.util.ServletUtil;
@@ -552,7 +552,7 @@ public class InventoryBean {
 					deviceName = liteInv.getDeviceLabel();
 			}
         	
-			Date installDate = ServerUtils.translateDate( liteInv.getInstallDate() );
+			Date installDate = StarsUtils.translateDate( liteInv.getInstallDate() );
 			dateFormat.setTimeZone( getEnergyCompany().getDefaultTimeZone() );
 			String instDate = (installDate != null)? dateFormat.format(installDate) : "----";
 			

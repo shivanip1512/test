@@ -57,6 +57,7 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.DeleteCustAccountsTask;
 import com.cannontech.stars.util.task.DeleteEnergyCompanyTask;
@@ -475,8 +476,8 @@ public class StarsAdmin extends HttpServlet {
 			LiteYukonGroup adminGroup = energyCompany.getOperatorAdminGroup();
 			boolean adminGroupUpdated = false;
 	        
-			adminGroupUpdated |= StarsAdminUtil.updateGroupRoleProperty(
-					adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.DEFAULT_TIME_ZONE, req.getParameter("TimeZone") );
+	        adminGroupUpdated |= StarsAdminUtil.updateGroupRoleProperty(
+	        		adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.DEFAULT_TIME_ZONE, req.getParameter("TimeZone") );
 			
 			String[] operGroupNames = req.getParameter("OperatorGroup").split(",");
 			String operGroupIDs = "";
@@ -1030,7 +1031,7 @@ public class StarsAdmin extends HttpServlet {
 					sql, CtiUtilities.getDatabaseAlias() );
         	
 			if (customizedFAQ && !value.equals(faqLink) ||
-				!customizedFAQ && ServerUtils.forceNotNone(value).length() > 0)
+				!customizedFAQ && StarsUtils.forceNotNone(value).length() > 0)
 			{
 				if (!customizedFAQ) faqLink = "(none)";
         		

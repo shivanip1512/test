@@ -17,8 +17,8 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 
 /**
@@ -270,8 +270,8 @@ public class WorkOrderBean {
 		for (int i = minOrderNo; i <= maxOrderNo; i++) {
 			LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) soList.get(i-1);
 			StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest(liteOrder, getEnergyCompany());
-			Date date = ServerUtils.translateDate( getRelevantDate(liteOrder) );
-			String dateStr = (date != null)? ServerUtils.formatDate(date, energyCompany.getDefaultTimeZone()) : "----";
+			Date date = StarsUtils.translateDate( getRelevantDate(liteOrder) );
+			String dateStr = (date != null)? StarsUtils.formatDate(date, energyCompany.getDefaultTimeZone()) : "----";
 			
 			htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='13%' >")

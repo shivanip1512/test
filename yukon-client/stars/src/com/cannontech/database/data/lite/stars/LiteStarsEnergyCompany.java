@@ -50,6 +50,7 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ProgressChecker;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.task.LoadCustAccountsTask;
@@ -376,7 +377,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public String getAdminEmailAddress() {
 		String adminEmail = getEnergyCompanySetting( EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
 		if (adminEmail == null || adminEmail.trim().length() == 0)
-			adminEmail = ServerUtils.ADMIN_EMAIL_ADDRESS;
+			adminEmail = StarsUtils.ADMIN_EMAIL_ADDRESS;
 		
 		return adminEmail;
 	}
@@ -771,7 +772,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				}
 				
 				// Order the substation list alphabetically
-				Collections.sort( entries, ServerUtils.YUK_LIST_ENTRY_ALPHA_CMPTR );
+				Collections.sort( entries, StarsUtils.YUK_LIST_ENTRY_ALPHA_CMPTR );
 				
 				selectionLists.add( subList );
 			}

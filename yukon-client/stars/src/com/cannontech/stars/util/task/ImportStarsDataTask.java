@@ -25,7 +25,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.util.ImportProblem;
-import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.ImportManagerUtil;
@@ -656,7 +656,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 			timeTaken += minTaken + " minute";
 		
 		ArrayList logMsg = new ArrayList();
-		logMsg.add("Start Time: " + ServerUtils.formatDate( new Date(startTime), java.util.TimeZone.getDefault() ));
+		logMsg.add("Start Time: " + StarsUtils.formatDate( new Date(startTime), java.util.TimeZone.getDefault() ));
 		logMsg.add("Time Taken: " + timeTaken);
 		logMsg.add("");
 		
@@ -732,14 +732,14 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 		}
 		
 		Date logDate = new Date();
-		String logFileName = "import_" + ServerUtils.starsDateFormat.format(logDate) +
-				"_" + ServerUtils.starsTimeFormat.format(logDate) + ".log";
+		String logFileName = "import_" + StarsUtils.starsDateFormat.format(logDate) +
+				"_" + StarsUtils.starsTimeFormat.format(logDate) + ".log";
 		logFile = new File(path, logFileName);
 		
 		try {
 			String[] log = new String[ logMsg.size() ];
 			logMsg.toArray( log );
-			ServerUtils.writeFile( logFile, log );
+			StarsUtils.writeFile( logFile, log );
 		}
 		catch (IOException e) {
 			logFile = null;

@@ -20,7 +20,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.xml.serialize.ContactNotification;
-import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.ControlSummary;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
@@ -156,7 +155,7 @@ public class ServletUtils {
     
 	public static String formatDate(Date date, java.text.SimpleDateFormat format, String emptyStr) {
 		if (date == null) return emptyStr;
-		if (date.getTime() < ServerUtils.VERY_EARLY_TIME) return emptyStr;
+		if (date.getTime() < StarsUtils.VERY_EARLY_TIME) return emptyStr;
 		return format.format( date );
 	}
 
@@ -264,44 +263,7 @@ public class ServletUtils {
 			return LMControlHistoryUtil.getStarsLMControlHistory( program.getGroupID(), startDate, energyCompany.getDefaultTimeZone() );
 		}
 	}
-    /*
-	public static ControlSummary getControlSummary(StarsLMControlHistory starsCtrlHist, TimeZone tz) {
-		ControlSummary summary = new ControlSummary();
-		int dailyTime = 0;
-		int monthlyTime = 0;
-		int seasonalTime = 0;
-		int annualTime = 0;
-		
-		Date pastDay = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTDAY, tz );
-		Date pastMonth = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTMONTH, tz );
-		Date pastYear = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTYEAR, tz );
-		
-		for (int i = 0; i < starsCtrlHist.getControlHistoryCount(); i++) {
-			ControlHistory ctrlHist = starsCtrlHist.getControlHistory(i);
-			if (ctrlHist.getStartDateTime().after( pastYear )) {
-				annualTime += ctrlHist.getControlDuration();
-				if (ctrlHist.getStartDateTime().after( pastMonth )) {
-					monthlyTime += ctrlHist.getControlDuration();
-					if (ctrlHist.getStartDateTime().after( pastDay ))
-						dailyTime += ctrlHist.getControlDuration();
-				}
-			}
-		}
-		
-		// Get the seasonal time from control summary, otherwise, set it the same as annual time
-		if (starsCtrlHist.getControlSummary() != null)
-			seasonalTime = starsCtrlHist.getControlSummary().getSeasonalTime();
-		else
-			seasonalTime = annualTime;
-		
-		summary.setDailyTime( dailyTime );
-		summary.setMonthlyTime( monthlyTime );
-		summary.setSeasonalTime( seasonalTime );
-		summary.setAnnualTime( annualTime );
-		
-		return summary;
-	}
-    */
+	
 	/**
 	 * Format phone number to format "[...-#-###-]###-#### x#..."
 	 * E.g. 763-595-7777 x5529 (5529 is the extension number)
@@ -485,7 +447,7 @@ public class ServletUtils {
     
 	// Return program display names: display name, short name (used in enrollment page)
 	public static String[] getProgramDisplayNames(StarsEnrLMProgram starsProg) {
-		String[] names = ServerUtils.splitString( starsProg.getStarsWebConfig().getAlternateDisplayName(), "," );
+		String[] names = StarsUtils.splitString( starsProg.getStarsWebConfig().getAlternateDisplayName(), "," );
 		String[] dispNames = new String[2];
 		for (int i = 0; i < 2; i++) {
 			if (i < names.length)

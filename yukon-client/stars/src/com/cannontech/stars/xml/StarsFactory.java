@@ -14,7 +14,7 @@ import com.cannontech.database.db.stars.customer.SiteInformation;
 import com.cannontech.database.db.stars.report.CallReportBase;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.database.db.web.YukonWebConfiguration;
-import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.CallType;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
@@ -191,10 +191,10 @@ public class StarsFactory {
 			callRprts[i] = new StarsCallReport();
         	
 			callRprts[i].setCallID( calls[i].getCallID().intValue() );
-			callRprts[i].setCallNumber( ServerUtils.forceNotNull(calls[i].getCallNumber()) );
+			callRprts[i].setCallNumber( StarsUtils.forceNotNull(calls[i].getCallNumber()) );
 			callRprts[i].setCallDate( calls[i].getDateTaken() );
-			callRprts[i].setTakenBy( ServerUtils.forceNotNull(calls[i].getTakenBy()) );
-			callRprts[i].setDescription( ServerUtils.forceNotNull(calls[i].getDescription()) );
+			callRprts[i].setTakenBy( StarsUtils.forceNotNull(calls[i].getTakenBy()) );
+			callRprts[i].setDescription( StarsUtils.forceNotNull(calls[i].getDescription()) );
         	
 			CallType callType = new CallType();
 			StarsLiteFactory.setStarsCustListEntry( callType, YukonListFuncs.getYukonListEntry(calls[i].getCallTypeID().intValue()) );

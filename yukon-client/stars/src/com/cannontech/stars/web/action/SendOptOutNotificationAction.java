@@ -28,8 +28,8 @@ import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
@@ -307,9 +307,9 @@ public class SendOptOutNotificationAction implements ActionBase {
 			hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, energyCompany );
         
 		text.append(ServletUtil.capitalizeAll( optOutTxt )).append(" Time: ")
-			.append(ServerUtils.formatDate( optOutDate, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+			.append(StarsUtils.formatDate( optOutDate, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 		text.append(ServletUtil.capitalize( reenableTxt )).append(" Time: ")
-			.append(ServerUtils.formatDate( reenableDate, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+			.append(StarsUtils.formatDate( reenableDate, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
 		text.append( getProgramInformation(energyCompany, liteAcctInfo, hardwares) );
 		text.append(LINE_SEPARATOR);
@@ -369,9 +369,9 @@ public class SendOptOutNotificationAction implements ActionBase {
 				
 				text.append(LINE_SEPARATOR);
 				text.append("Scheduled ").append(ServletUtil.capitalizeAll( optOutTxt )).append(" Time: ")
-					.append(ServerUtils.formatDate( new Date(events[i].getStartDateTime()), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+					.append(StarsUtils.formatDate( new Date(events[i].getStartDateTime()), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 				text.append("Scheduled ").append(ServletUtil.capitalizeAll( reenableTxt )).append(" Time: ")
-					.append(ServerUtils.formatDate( reenableTime.getTime(), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+					.append(StarsUtils.formatDate( reenableTime.getTime(), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 			}
 		}
 		else {
@@ -389,9 +389,9 @@ public class SendOptOutNotificationAction implements ActionBase {
 					reenableTime.add( Calendar.HOUR_OF_DAY, event.getDuration() );
 					
 					text.append("Last ").append(ServletUtil.capitalizeAll( optOutTxt )).append(" Time: ")
-						.append(ServerUtils.formatDate( event.getEventDateTime(), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+						.append(StarsUtils.formatDate( event.getEventDateTime(), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 					text.append("Scheduled ").append(ServletUtil.capitalizeAll( reenableTxt )).append(" Time: ")
-						.append(ServerUtils.formatDate( reenableTime.getTime(), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+						.append(StarsUtils.formatDate( reenableTime.getTime(), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 					
 					foundLastOptOut = true;
 					break;
@@ -402,7 +402,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 				text.append("Last ").append(ServletUtil.capitalizeAll( optOutTxt )).append(" Time: (none)").append(LINE_SEPARATOR);
 			
 			text.append(ServletUtil.capitalize( reenableTxt )).append(" Time: ")
-				.append(ServerUtils.formatDate( now, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+				.append(StarsUtils.formatDate( now, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 		}
 		
 		ArrayList hardwares = null;

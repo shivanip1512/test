@@ -325,17 +325,17 @@ public class ECUtils {
 
 	public static String getNotification(LiteContactNotification liteNotif) {
 		String notification = (liteNotif == null)? null : liteNotif.getNotification();
-		return ServerUtils.forceNotNull(notification);
+		return StarsUtils.forceNotNull(notification);
 	}
 
 	public static String formatName(LiteContact liteContact) {
 		StringBuffer name = new StringBuffer();
 		
-		String firstName = ServerUtils.forceNotNone( liteContact.getContFirstName() ).trim();
+		String firstName = StarsUtils.forceNotNone( liteContact.getContFirstName() ).trim();
 		if (firstName.length() > 0)
 			name.append( firstName );
 		
-		String lastName = ServerUtils.forceNotNone( liteContact.getContLastName() ).trim();
+		String lastName = StarsUtils.forceNotNone( liteContact.getContLastName() ).trim();
 		if (lastName.length() > 0)
 			name.append(" ").append( lastName );
 		
@@ -350,7 +350,7 @@ public class ECUtils {
 		
 		LiteWebConfiguration liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteProg.getWebSettingsID() );
 		if (liteConfig != null) {
-			String[] dispNames = ServerUtils.splitString( liteConfig.getAlternateDisplayName(), "," );
+			String[] dispNames = StarsUtils.splitString( liteConfig.getAlternateDisplayName(), "," );
 			if (dispNames.length > 0 && dispNames[0].length() > 0)
 				progName = dispNames[0];
 		}

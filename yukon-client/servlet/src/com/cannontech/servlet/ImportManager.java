@@ -36,6 +36,7 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.ImportCustAccountsTask;
 import com.cannontech.stars.util.task.ImportStarsDataTask;
@@ -470,7 +471,7 @@ public class ImportManager extends HttpServlet {
 	}
 	
 	private void importSelectionLists(File selListFile, LiteStarsEnergyCompany energyCompany) throws Exception {
-		String[] lines = ServerUtils.readFile( selListFile );
+		String[] lines = StarsUtils.readFile( selListFile );
 		if (lines == null)
 			throw new WebClientException("Unable to read file '" + selListFile.getPath() + "'");
 		
@@ -538,7 +539,7 @@ public class ImportManager extends HttpServlet {
 	}
 	
 	private void importAppSettings(File appSettingsFile, HttpSession session) throws WebClientException {
-		String[] lines = ServerUtils.readFile( appSettingsFile );
+		String[] lines = StarsUtils.readFile( appSettingsFile );
 		if (lines == null)
 			throw new WebClientException( "Unable to read file '" + appSettingsFile.getPath() + "'" );
 		
@@ -733,7 +734,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsCustomer(String line) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_ACCOUNT_FIELDS );
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 18)
 			throw new WebClientException( "Incorrect number of fields in customer file" );
 		
@@ -772,7 +773,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsServiceInfo(String line, Hashtable userLabels) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_ACCOUNT_FIELDS );
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 17)
 			throw new WebClientException( "Incorrect number of fields in service info file" );
 		
@@ -846,7 +847,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsInventory(String line, Hashtable userLabels) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields(ImportManagerUtil.NUM_INV_FIELDS);
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 19)
 			throw new WebClientException( "Incorrect number of fields in inventory file" );
 		
@@ -892,7 +893,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsReceiver(String line) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_INV_FIELDS );
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 20)
 			throw new WebClientException( "Incorrect number of fields in receiver file" );
 		
@@ -937,7 +938,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsMeter(String line) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_INV_FIELDS );
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 6)
 			throw new WebClientException( "Incorrect number of fields in meter file" );
 
@@ -970,7 +971,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsLoadInfo(String line, Hashtable userLabels) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 21)
 			throw new WebClientException( "Incorrect number of fields in load info file" );
 		
@@ -1054,7 +1055,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsWorkOrder(String line) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_ORDER_FIELDS );
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 20)
 			throw new WebClientException( "Incorrect number of fields in work order file" );
 		
@@ -1109,7 +1110,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsResidenceInfo(String line) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_RES_FIELDS );
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 21)
 			throw new WebClientException( "Incorrect number of fields in residence info file" );
 		
@@ -1149,7 +1150,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsACInfo(String line) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 7)
 			throw new WebClientException( "Incorrect number of fields in AC info file" );
 		
@@ -1180,7 +1181,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsWHInfo(String line) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 9)
 			throw new WebClientException( "Incorrect number of fields in WH info file" );
 		
@@ -1212,7 +1213,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsGeneratorInfo(String line) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 8)
 			throw new WebClientException( "Incorrect number of fields in generator info file" );
 		
@@ -1244,7 +1245,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsIrrigationInfo(String line) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 10)
 			throw new WebClientException( "Incorrect number of fields in irrigation info file" );
 		
@@ -1277,7 +1278,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsGrainDryerInfo(String line) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 9)
 			throw new WebClientException( "Incorrect number of fields in grain dryer info file" );
 		
@@ -1309,7 +1310,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsHeatPumpInfo(String line) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 9)
 			throw new WebClientException( "Incorrect number of fields in heat pump info file" );
 		
@@ -1340,7 +1341,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsStorageHeatInfo(String line) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 9)
 			throw new WebClientException( "Incorrect number of fields in storage heat info file" );
 		
@@ -1372,7 +1373,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsDualFuelInfo(String line) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 9)
 			throw new WebClientException( "Incorrect number of fields in dual fuel info file" );
 		
@@ -1400,7 +1401,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsGeneralInfo(String line) throws Exception {
 		String[] fields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
-		String[] columns = ServerUtils.splitString( line, "," );
+		String[] columns = StarsUtils.splitString( line, "," );
 		if (columns.length != 5)
 			throw new WebClientException( "Incorrect number of fields in general info file" );
 		
@@ -1485,7 +1486,7 @@ public class ImportManager extends HttpServlet {
 		String path = (String) preprocessedData.get( ImportManagerUtil.CUSTOMER_FILE_PATH );
 		File custListFile = new File( path, "custlist.map" );
 		try {
-			ServerUtils.writeFile( custListFile, lns );
+			StarsUtils.writeFile( custListFile, lns );
 		}
 		catch (IOException e) {
 			CTILogger.error( e.getMessage(), e );
@@ -1515,23 +1516,23 @@ public class ImportManager extends HttpServlet {
 			File workOrderFile = new File( req.getParameter("WorkOrderFile") );
 			File resInfoFile = new File( req.getParameter("ResInfoFile") );
 			
-			String[] custLines = ServerUtils.readFile( custFile );
-			String[] servInfoLines = ServerUtils.readFile( servInfoFile, false );
-			String[] invLines = ServerUtils.readFile( invFile );
-			String[] recvrLines = ServerUtils.readFile( recvrFile, false );
-			String[] meterLines = ServerUtils.readFile( meterFile, false );
-			String[] loadInfoLines = ServerUtils.readFile( loadInfoFile );
-			String[] acInfoLines = ServerUtils.readFile( acInfoFile, false );
-			String[] whInfoLines = ServerUtils.readFile( whInfoFile, false );
-			String[] genInfoLines = ServerUtils.readFile( genInfoFile, false );
-			String[] irrInfoLines = ServerUtils.readFile( irrInfoFile, false );
-			String[] gdryInfoLines = ServerUtils.readFile( gdryInfoFile, false );
-			String[] hpInfoLines = ServerUtils.readFile( hpInfoFile, false );
-			String[] shInfoLines = ServerUtils.readFile( shInfoFile, false );
-			String[] dfInfoLines = ServerUtils.readFile( dfInfoFile, false );
-			String[] genlInfoLines = ServerUtils.readFile( genlInfoFile, false );
-			String[] workOrderLines = ServerUtils.readFile( workOrderFile );
-			String[] resInfoLines = ServerUtils.readFile( resInfoFile );
+			String[] custLines = StarsUtils.readFile( custFile );
+			String[] servInfoLines = StarsUtils.readFile( servInfoFile, false );
+			String[] invLines = StarsUtils.readFile( invFile );
+			String[] recvrLines = StarsUtils.readFile( recvrFile, false );
+			String[] meterLines = StarsUtils.readFile( meterFile, false );
+			String[] loadInfoLines = StarsUtils.readFile( loadInfoFile );
+			String[] acInfoLines = StarsUtils.readFile( acInfoFile, false );
+			String[] whInfoLines = StarsUtils.readFile( whInfoFile, false );
+			String[] genInfoLines = StarsUtils.readFile( genInfoFile, false );
+			String[] irrInfoLines = StarsUtils.readFile( irrInfoFile, false );
+			String[] gdryInfoLines = StarsUtils.readFile( gdryInfoFile, false );
+			String[] hpInfoLines = StarsUtils.readFile( hpInfoFile, false );
+			String[] shInfoLines = StarsUtils.readFile( shInfoFile, false );
+			String[] dfInfoLines = StarsUtils.readFile( dfInfoFile, false );
+			String[] genlInfoLines = StarsUtils.readFile( genlInfoFile, false );
+			String[] workOrderLines = StarsUtils.readFile( workOrderFile );
+			String[] resInfoLines = StarsUtils.readFile( resInfoFile );
 			
 			Hashtable preprocessedData = (Hashtable) session.getAttribute(ImportManagerUtil.PREPROCESSED_DATA);
 			if (preprocessedData != null) {

@@ -41,8 +41,8 @@ import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.LMControlHistoryUtil;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -759,13 +759,10 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 		return lmCtrlHists;
 	}
 	
-	public ArrayList getAllLMControlHistory() {
-		return new ArrayList( getLMCtrlHistMap().values() );
-	}
-	
 	/**
-	 * Get control history from a given start date. To get only the control summary, set start date to null;
-	 * to get the complete control history, set start date to new java.util.Date(0).
+	 * Get control history from a given start date (control summary will always be returned as well).
+	 * To get only the control summary, set start date to null; to get the complete control history,
+	 * set start date to new java.util.Date(0).
 	 */
 	public LiteStarsLMControlHistory getLMControlHistory(int groupID, Date startDate) {
 		if (groupID == CtiUtilities.NONE_ID) return null;
@@ -780,14 +777,14 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 		{
 			// Clear the cached control history if the request date is earlier than the cache start date,
 			// or it is later than the cache stop date and the interval is too long.
-			lmCtrlHist.setLmControlHistory( null );
+			lmCtrlHist.clearLMControlHistory();
 		}
 		
 		int lastSearchedID = LMControlHistoryUtil.getLastLMCtrlHistID();
 		
 		if (startDate != null) {
 			if (lmCtrlHist.getLmControlHistory() == null) {
-				Date dateFrom = (startDate.getTime() > ServerUtils.VERY_EARLY_TIME)? startDate : null;
+				Date dateFrom = StarsUtils.translateDate( startDate.getTime() );
 				com.cannontech.database.db.pao.LMControlHistory[] ctrlHist =
 						LMControlHistoryUtil.getLMControlHistory( groupID, dateFrom, null );
 				
@@ -837,6 +834,10 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 				if (liteCtrlHist.getLmCtrlHistID() < lastSearchedID)
 					liteCtrlHist.setLmCtrlHistID( lastSearchedID );
 				lmCtrlHist.setLastControlHistory( liteCtrlHist );
+			}
+			else {
+				if (lmCtrlHist.getLastControlHistory() == null)
+					lmCtrlHist.setLastControlHistory( new LiteLMControlHistory(lastSearchedID) );
 			}
 		}
 		

@@ -31,8 +31,8 @@ import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
@@ -766,7 +766,7 @@ public class ProgramSignUpAction implements ActionBase {
 							&& programs.getSULMProgram(k).getLoadNumber() == loadNo)
 						{
 							LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
-							String label = ServerUtils.forceNotNone( liteHw.getDeviceLabel() );
+							String label = StarsUtils.forceNotNone( liteHw.getDeviceLabel() );
 							if (label.equals("")) label = liteHw.getManufacturerSerialNumber();
 							throw new WebClientException( "Load #" + loadNo + " has been selected for hardware \"" + label + "\" more than once" );
 						}

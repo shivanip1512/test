@@ -32,6 +32,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.DeleteCustAccountAction;
@@ -229,7 +230,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			if (custFile != null) {
 				String[] custLines = null;
 				try {
-					custLines = ServerUtils.readInputStream( custFile.getInputStream(), true );
+					custLines = StarsUtils.readInputStream( custFile.getInputStream(), true );
 				}
 				catch (Exception e) {
 					CTILogger.error( e.getMessage(), e );
@@ -247,7 +248,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					startLineNo = 1;
 					position = "customer file line #1";
 					
-					String[] labels = ServerUtils.splitString( custLines[0].substring(COL_NAME_LABEL.length()), "," );
+					String[] labels = StarsUtils.splitString( custLines[0].substring(COL_NAME_LABEL.length()), "," );
 					numCustCol = labels.length;
 					
 					for (int i = 0; i < labels.length; i++) {
@@ -290,7 +291,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					if (custLines[i].trim().equals("") || custLines[i].charAt(0) == '#')
 						continue;
 					
-					String[] columns = ServerUtils.splitString( custLines[i], "," );
+					String[] columns = StarsUtils.splitString( custLines[i], "," );
 					if (columns.length > numCustCol)
 						throw new WebClientException( "Incorrect number of fields" );
 					
@@ -493,7 +494,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			if (hwFile != null) {
 				String[] hwLines = null;
 				try {
-					hwLines = ServerUtils.readInputStream( hwFile.getInputStream(), true );
+					hwLines = StarsUtils.readInputStream( hwFile.getInputStream(), true );
 				}
 				catch (Exception e) {
 					CTILogger.error( e.getMessage(), e );
@@ -511,7 +512,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					startLineNo++;
 					position = "hardware file line #1";
 					
-					String[] labels = ServerUtils.splitString( hwLines[0].substring(COL_NAME_LABEL.length()), "," );
+					String[] labels = StarsUtils.splitString( hwLines[0].substring(COL_NAME_LABEL.length()), "," );
 					numHwCol = labels.length;
 					
 					for (int i = 0; i < HW_COLUMNS.length; i++)
@@ -546,7 +547,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					if (hwLines[i].trim().equals("") || hwLines[i].charAt(0) == '#')
 						continue;
 					
-					String[] columns = ServerUtils.splitString( hwLines[i], "," );;
+					String[] columns = StarsUtils.splitString( hwLines[i], "," );;
 					if (columns.length > numHwCol)
 						throw new WebClientException( "Incorrect number of fields" );
 					
@@ -646,8 +647,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		
 		// Import the data
 		Date uploadDate = new Date();
-		String uploadFileName = "IMP_" + ServerUtils.starsDateFormat.format(uploadDate) +
-				"_" + ServerUtils.starsTimeFormat.format(uploadDate);
+		String uploadFileName = "IMP_" + StarsUtils.starsDateFormat.format(uploadDate) +
+				"_" + StarsUtils.starsTimeFormat.format(uploadDate);
 		
 		final String fs = System.getProperty( "file.separator" );
 		File uploadDir = new File(
@@ -815,7 +816,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				timeTaken += minTaken + " minute";
 			
 			ArrayList logMsg = new ArrayList();
-			logMsg.add("Start Time: " + ServerUtils.formatDate( new java.util.Date(startTime), java.util.TimeZone.getDefault() ));
+			logMsg.add("Start Time: " + StarsUtils.formatDate( new java.util.Date(startTime), java.util.TimeZone.getDefault() ));
 			logMsg.add("Time Taken: " + timeTaken);
 			logMsg.add("");
 			
@@ -853,7 +854,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			try {
 				String[] log = new String[ logMsg.size() ];
 				logMsg.toArray( log );
-				ServerUtils.writeFile( logFile, log );
+				StarsUtils.writeFile( logFile, log );
 			}
 			catch (java.io.IOException e) {
 				logFile = null;

@@ -148,10 +148,10 @@ public class SwitchCommandQueue {
 			return;
 		}
 		
-		String[] lines = ServerUtils.readFile( diskFile, false );
+		String[] lines = StarsUtils.readFile( diskFile, false );
 		if (lines != null) {
 			for (int i = 0; i < lines.length; i++) {
-				String[] fields = ServerUtils.splitString( lines[i], "," );
+				String[] fields = StarsUtils.splitString( lines[i], "," );
 				
 				try {
 					SwitchCommand cmd = new SwitchCommand();

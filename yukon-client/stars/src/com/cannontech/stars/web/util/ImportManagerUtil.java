@@ -27,8 +27,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ImportProblem;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateApplianceAction;
@@ -614,11 +614,11 @@ public class ImportManagerUtil {
 		if (fields[IDX_INV_NOTES].length() > 0)
 			inv.setNotes( fields[IDX_INV_NOTES] );
 		
-		ServerUtils.starsDateFormat.setTimeZone( energyCompany.getDefaultTimeZone() );
+		StarsUtils.starsDateFormat.setTimeZone( energyCompany.getDefaultTimeZone() );
 		
 		if (fields[IDX_RECEIVE_DATE].length() > 0) {
 			try {
-				inv.setReceiveDate( ServerUtils.starsDateFormat.parse(fields[IDX_RECEIVE_DATE]) );
+				inv.setReceiveDate( StarsUtils.starsDateFormat.parse(fields[IDX_RECEIVE_DATE]) );
 			}
 			catch (java.text.ParseException e) {}
 			
@@ -632,7 +632,7 @@ public class ImportManagerUtil {
 			
 			if (inv.getInstallDate() == null) {
 				try {
-					inv.setInstallDate( ServerUtils.starsDateFormat.parse(fields[IDX_INSTALL_DATE]) );
+					inv.setInstallDate( StarsUtils.starsDateFormat.parse(fields[IDX_INSTALL_DATE]) );
 				}
 				catch (java.text.ParseException e) {}
 			}
@@ -1141,11 +1141,11 @@ public class ImportManagerUtil {
 		else
 			createOrder.setAccountID( CtiUtilities.NONE_ID );
 		
-		ServerUtils.starsDateFormat.setTimeZone( energyCompany.getDefaultTimeZone() );
+		StarsUtils.starsDateFormat.setTimeZone( energyCompany.getDefaultTimeZone() );
 		
 		if (fields[IDX_DATE_REPORTED].length() > 0) {
 			try {
-				createOrder.setDateReported( ServerUtils.starsDateFormat.parse(fields[IDX_DATE_REPORTED]) );
+				createOrder.setDateReported( StarsUtils.starsDateFormat.parse(fields[IDX_DATE_REPORTED]) );
 			}
 			catch (java.text.ParseException e) {}
 			
@@ -1155,7 +1155,7 @@ public class ImportManagerUtil {
 		
 		if (fields[IDX_DATE_COMPLETED].length() > 0) {
 			try {
-				createOrder.setDateCompleted( ServerUtils.starsDateFormat.parse(fields[IDX_DATE_COMPLETED]) );
+				createOrder.setDateCompleted( StarsUtils.starsDateFormat.parse(fields[IDX_DATE_COMPLETED]) );
 			}
 			catch (java.text.ParseException e) {}
 			
@@ -1165,7 +1165,7 @@ public class ImportManagerUtil {
 		
 		if (fields[IDX_DATE_SCHEDULED].length() > 0) {
 			try {
-				Date datePart = ServerUtils.starsDateFormat.parse( fields[IDX_DATE_SCHEDULED] );
+				Date datePart = StarsUtils.starsDateFormat.parse( fields[IDX_DATE_SCHEDULED] );
 				Date timePart = ServletUtils.parseTime(
 						formatTimeString(fields[IDX_TIME_SCHEDULED]), energyCompany.getDefaultTimeZone() );
 				

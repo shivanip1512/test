@@ -13,6 +13,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
@@ -56,6 +57,9 @@ public class DailyTimerTask extends StarsTimerTask {
 	public void run() {
 		CTILogger.debug( "*** Daily timer task start ***" );
 		
+		// Clear all the *active* control history
+		LMControlHistoryUtil.clearActiveControlHistory();
+		
 		ArrayList companies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
 		if (companies == null) return;
 		
@@ -72,7 +76,7 @@ public class DailyTimerTask extends StarsTimerTask {
 				CTILogger.debug( e.getMessage() );
 			}
 			
-			// Clear all the *active* information
+			// Clear all the *active* account information
 			company.clearActiveAccounts();
 		}
 		

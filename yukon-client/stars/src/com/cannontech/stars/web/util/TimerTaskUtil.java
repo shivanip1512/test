@@ -11,6 +11,7 @@ import java.util.Timer;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.stars.util.task.DailyTimerTask;
 import com.cannontech.stars.util.task.HourlyTimerTask;
+import com.cannontech.stars.util.task.LMCtrlHistTimerTask;
 import com.cannontech.stars.util.task.RefreshTimerTask;
 import com.cannontech.stars.util.task.StarsTimerTask;
 
@@ -49,6 +50,7 @@ public class TimerTaskUtil {
 		if (timer2 != null) timer2.cancel();
 		timer2 = new Timer();
 		runTimerTask( new HourlyTimerTask(), timer2 );
+		runTimerTask( new LMCtrlHistTimerTask(), timer2 );
 		runTimerTask( new RefreshTimerTask(), timer2 );
 		
 		CTILogger.info("All frequent timer tasks restarted");

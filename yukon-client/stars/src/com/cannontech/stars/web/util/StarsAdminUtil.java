@@ -48,6 +48,7 @@ import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.action.UpdateLMHardwareAction;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
@@ -391,7 +392,7 @@ public class StarsAdminUtil {
 				conn.commit();
 				
 				// Order the substation list alphabetically
-				Collections.sort( newEntries, ServerUtils.YUK_LIST_ENTRY_ALPHA_CMPTR );
+				Collections.sort( newEntries, StarsUtils.YUK_LIST_ENTRY_ALPHA_CMPTR );
 				
 				cList.setYukonListEntries( newEntries );
 			}
@@ -466,7 +467,7 @@ public class StarsAdminUtil {
 				
 				// Sort the entry list by the ordering specified in the selection list
 				if (cList.getOrdering().equalsIgnoreCase("A"))
-					Collections.sort( newEntries, ServerUtils.YUK_LIST_ENTRY_ALPHA_CMPTR );
+					Collections.sort( newEntries, StarsUtils.YUK_LIST_ENTRY_ALPHA_CMPTR );
 				
 				// Update the constant objects
 				Properties cListEntries = YukonListFuncs.getYukonListEntries();
