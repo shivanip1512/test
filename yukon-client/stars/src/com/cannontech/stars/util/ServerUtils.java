@@ -1,7 +1,10 @@
 package com.cannontech.stars.util;
 
-import java.util.Hashtable;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.stars.xml.StarsCustListEntryFactory;
+import com.cannontech.servlet.PILConnectionServlet;
+import com.cannontech.message.porter.ClientConnection;
 
 /**
  * @author yao
@@ -12,74 +15,29 @@ import com.cannontech.stars.xml.serialize.*;
  * Window>Preferences>Java>Code Generation.
  */
 public class ServerUtils {
-	// Map of energy company to selection list table
-	// key: Integer energyCompanyID, value: java.util.Hashtable selectionListTable
-    private static Hashtable selectionListTables = new Hashtable();
+    
+    private static PILConnectionServlet connContainer = null;
 
-	public static Hashtable getSelectionListTable(Integer energyCompanyID) {
-		Hashtable selectionListTable = (Hashtable) selectionListTables.get( energyCompanyID );
-		if (selectionListTable == null)
-			selectionListTable = loadSelectionListTable( energyCompanyID );
-			
-		return selectionListTable;
-	}
-	
-	static Hashtable loadSelectionListTable(Integer energyCompanyID) {
-        java.util.Hashtable selectionListTable = new java.util.Hashtable();
-        
-        // Get all selection lists
-        com.cannontech.database.db.stars.CustomerSelectionList[] selectionLists =
-        		com.cannontech.database.data.stars.CustomerSelectionList.getAllSelectionLists( energyCompanyID );
-        
-        for (int i = 0; i < selectionLists.length; i++) {
-        	com.cannontech.database.db.stars.CustomerListEntry[] entries =
-        			com.cannontech.database.data.stars.CustomerListEntry.getAllListEntries( selectionLists[i].getListID() );
-        	StarsCustSelectionList starsList = new StarsCustSelectionList();
-        	starsList.setListID( selectionLists[i].getListID().intValue() );
-        	starsList.setListName( selectionLists[i].getListName() );
-        	
-        	for (int j = 0; j < entries.length; j++) {
-        		StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
-        		starsEntry.setEntryID( entries[j].getEntryID().intValue() );
-        		starsEntry.setContent( entries[j].getEntryText() );
-        		starsEntry.setYukonDefinition( entries[j].getYukonDefinition() );
-        		starsList.addStarsSelectionListEntry( starsEntry );
-        	}
-        	
-        	selectionListTable.put( selectionLists[i].getListName(), starsList );
-        }
-            
-        // Get substation list
-        com.cannontech.database.db.stars.Substation[] subs =
-        		com.cannontech.database.data.stars.Substation.getAllSubstations( energyCompanyID );
-        StarsCustSelectionList subList = new StarsCustSelectionList();
-        subList.setListID( -1 );
-        subList.setListName( "Substation" );
-        
-        for (int i = 0; i < subs.length; i++) {
-        	StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
-        	starsEntry.setEntryID( subs[i].getSubstationID().intValue() );
-        	starsEntry.setContent( subs[i].getSubstationName() );
-        	subList.addStarsSelectionListEntry( starsEntry );
-        }
-        selectionListTable.put( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION, subList );
-        
-        // Get service company list
-        com.cannontech.database.db.stars.report.ServiceCompany[] companies =
-        		com.cannontech.database.db.stars.report.ServiceCompany.getAllServiceCompanies( energyCompanyID );
-        StarsCustSelectionList companyList = new StarsCustSelectionList();
-        companyList.setListID( -1 );
-        companyList.setListName( "ServiceCompany" );
-        
-        for (int i = 0; i < companies.length; i++) {
-        	StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
-        	starsEntry.setEntryID( companies[i].getCompanyID().intValue() );
-        	starsEntry.setContent( companies[i].getCompanyName() );
-        	companyList.addStarsSelectionListEntry( starsEntry );
-        }
-        selectionListTable.put( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY, companyList );
-        
-		selectionListTables.put( energyCompanyID, selectionListTable );
-		return selectionListTable;
-	}
+    // Increment this for every message
+    private static long userMessageIDCounter = 1;
+
+    public static void sendCommand(String command, ClientConnection conn)
+    {
+        com.cannontech.message.porter.message.Request req = // no need for deviceid so send 0
+            new com.cannontech.message.porter.message.Request( 0, command, userMessageIDCounter++ );
+
+        conn.write(req);
+
+        CTILogger.debug( "YukonSwitchCommandAction: Sent command to PIL: " + command );
+    }
+    
+    public static void setConnectionContainer(PILConnectionServlet servlet) {
+    	connContainer = servlet;
+    }
+    
+    public static ClientConnection getClientConnection() {
+    	if (connContainer == null) return null;
+    	
+    	return connContainer.getConnection();
+    }
 }

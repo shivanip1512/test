@@ -80,7 +80,7 @@ public class CustomerSelectionList extends DBPersistent {
                         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
             if (conn == null) return null;
             
-            return com.cannontech.database.db.stars.CustomerSelectionList.getAllSelectionLists(energyCompanyID, conn);
+            return com.cannontech.database.db.stars.CustomerSelectionList.getAllSelectionLists(energyCompanyID);
     	}
     	catch (Exception e) {
     		e.printStackTrace();

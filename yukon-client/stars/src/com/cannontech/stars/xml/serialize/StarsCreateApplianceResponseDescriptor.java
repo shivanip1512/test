@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsCreateApplianceResponseDescriptor extends StarsAppDescriptor {
+public class StarsCreateApplianceResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -49,14 +49,50 @@ public class StarsCreateApplianceResponseDescriptor extends StarsAppDescriptor {
 
     public StarsCreateApplianceResponseDescriptor() {
         super();
-        setExtendsWithoutFlatten(new StarsAppDescriptor());
         xmlName = "stars-CreateApplianceResponse";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
+        
+        //-- _starsAppliance
+        desc = new XMLFieldDescriptorImpl(StarsAppliance.class, "_starsAppliance", "stars-Appliance", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCreateApplianceResponse target = (StarsCreateApplianceResponse) object;
+                return target.getStarsAppliance();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCreateApplianceResponse target = (StarsCreateApplianceResponse) object;
+                    target.setStarsAppliance( (StarsAppliance) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsAppliance();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsAppliance
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsCreateApplianceResponseDescriptor()
 
@@ -76,15 +112,13 @@ public class StarsCreateApplianceResponseDescriptor extends StarsAppDescriptor {
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return super.getExtends();
+        return null;
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
-        if (identity == null)
-            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 

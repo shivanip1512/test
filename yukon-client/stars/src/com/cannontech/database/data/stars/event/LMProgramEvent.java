@@ -1,5 +1,7 @@
 package com.cannontech.database.data.stars.event;
 
+import com.cannontech.database.Transaction;
+import com.cannontech.stars.xml.serialize.StarsLMProgramEvent;
 import com.cannontech.stars.xml.serialize.StarsLMProgramHistory;
 
 
@@ -53,37 +55,23 @@ public class LMProgramEvent extends LMCustomerEventBase {
     }
     
     public static LMProgramEvent[] getAllLMProgramEvents(Integer accountID, Integer programID) {
-    	java.sql.Connection conn = null;
-
     	try {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-            if (conn == null) return null;
-            
 	        com.cannontech.database.db.stars.event.LMProgramEvent[] eventDBs =
-	        		com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEvents( accountID, programID, conn );
+	        		com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEvents( accountID, programID );
 	        com.cannontech.database.data.stars.event.LMProgramEvent[] events =
 	        		new com.cannontech.database.data.stars.event.LMProgramEvent[ eventDBs.length ];
 	        
 	        for (int i = 0; i < events.length; i++) {
 		    	events[i] = new com.cannontech.database.data.stars.event.LMProgramEvent();
-		    	events[i].setDbConnection(conn);
 		    	events[i].setEventID( eventDBs[i].getEventID() );
-		    	events[i].retrieve();
+		    	events[i] = (com.cannontech.database.data.stars.event.LMProgramEvent)
+		    			Transaction.createTransaction( Transaction.RETRIEVE, events[i] ).execute();
 	        }
 	        
 	        return events;
     	}
     	catch (Exception e) {
     		e.printStackTrace();
-    	}
-    	finally {
-    		try {
-    			if (conn != null) conn.close();
-    		}
-    		catch (Exception e) {
-    			e.printStackTrace();
-    		}
     	}
     	
     	return null;
@@ -101,12 +89,12 @@ public class LMProgramEvent extends LMCustomerEventBase {
 	        StarsLMProgramHistory progHist = new StarsLMProgramHistory();
 	        
 	        for (int i = 0; i < events.length; i++) {
-	        	com.cannontech.stars.xml.serialize.LMProgramEvent progEvent = new com.cannontech.stars.xml.serialize.LMProgramEvent();
+	        	StarsLMProgramEvent progEvent = new StarsLMProgramEvent();
 	        	progEvent.setEventAction( events[i].getAction().getEntryText() );
 	        	progEvent.setYukonDefinition( events[i].getAction().getYukonDefinition() );
 	        	progEvent.setEventDateTime( events[i].getLMCustomerEventBase().getEventDateTime() );
 	        	progEvent.setNotes( events[i].getLMCustomerEventBase().getNotes() );
-	        	progHist.addLMProgramEvent( progEvent );
+	        	progHist.addStarsLMProgramEvent( progEvent );
 	        }
 	        
 	        return progHist;

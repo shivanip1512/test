@@ -5,10 +5,14 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import java.util.*;
-import com.cannontech.stars.xml.util.*;
+
+import com.cannontech.database.data.lite.stars.LiteCustomerSelectionList;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.web.StarsUser;
+import com.cannontech.stars.xml.util.*;
 import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.stars.xml.StarsFailureFactory;
 
 /**
  * @author yao
@@ -64,10 +68,8 @@ public class GetCustSelListsAction implements ActionBase {
 				StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 				StarsUser user = (StarsUser) session.getAttribute("USER");
 	            if (operator == null && user == null) {
-	            	StarsFailure failure = new StarsFailure();
-	            	failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
-	            	failure.setDescription( "Session invalidated, please login again" );
-	            	respOper.setStarsFailure( failure );
+	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
 	            }
 	            
@@ -77,13 +79,13 @@ public class GetCustSelListsAction implements ActionBase {
 	            	energyCompanyID = user.getEnergyCompanyID();
             }
             
-            Hashtable selectionListTable = com.cannontech.stars.util.ServerUtils.getSelectionListTable( new Integer(energyCompanyID) );
+            Hashtable selectionListTable = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( new Integer(energyCompanyID) );
             StarsGetCustSelectionListsResponse response = new StarsGetCustSelectionListsResponse();
             
             Iterator it = selectionListTable.values().iterator();
             while (it.hasNext()) {
-            	StarsCustSelectionList list = (StarsCustSelectionList) it.next();
-            	response.addStarsCustSelectionList( list );
+            	LiteCustomerSelectionList liteList = (LiteCustomerSelectionList) it.next();
+            	response.addStarsCustSelectionList( StarsLiteFactory.createStarsCustSelectionList(liteList) );
             }
             
             respOper.setStarsGetCustSelectionListsResponse( response );

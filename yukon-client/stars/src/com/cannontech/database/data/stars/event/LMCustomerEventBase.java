@@ -18,7 +18,7 @@ public class LMCustomerEventBase extends DBPersistent {
 	private com.cannontech.database.db.stars.CustomerListEntry eventType = null;
 	private com.cannontech.database.db.stars.CustomerListEntry action = null;
 	
-	private com.cannontech.database.data.company.EnergyCompanyBase energyCompanyBase = null;
+	private Integer energyCompanyID = null;
 
 	public void setEventID(Integer eventID) {
 		getLMCustomerEventBase().setEventID( eventID );
@@ -35,19 +35,17 @@ public class LMCustomerEventBase extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	public void add() throws SQLException {
-		if (getEnergyCompanyBase() == null)
-			throw new SQLException("Add: setEnergyCompanyBase() must be called before this function");
+		if (energyCompanyID == null)
+			throw new SQLException("Add: setEnergyCompanyID() must be called before this function");
 		
 		getLMCustomerEventBase().add();
 		
-		if (getEnergyCompanyBase().getEnergyCompany() != null) {
-			// Add to the mapping table
-			Object[] addValues = {
-				getEnergyCompanyBase().getEnergyCompany().getEnergyCompanyID(),
-				getLMCustomerEventBase().getEventID()
-			};
-			add("ECToLMCustomerEventMapping", addValues);
-		}
+		// Add to the mapping table
+		Object[] addValues = {
+			energyCompanyID,
+			getLMCustomerEventBase().getEventID()
+		};
+		add("ECToLMCustomerEventMapping", addValues);
 	}
 
 	/**
@@ -136,22 +134,9 @@ public class LMCustomerEventBase extends DBPersistent {
 		com.cannontech.database.db.stars.event.LMCustomerEventBase lmCustomerEventBase) {
 		this.lmCustomerEventBase = lmCustomerEventBase;
 	}
-
-	/**
-	 * Returns the energyCompanyBase.
-	 * @return com.cannontech.database.data.company.EnergyCompanyBase
-	 */
-	public com.cannontech.database.data.company.EnergyCompanyBase getEnergyCompanyBase() {
-		return energyCompanyBase;
-	}
-
-	/**
-	 * Sets the energyCompanyBase.
-	 * @param energyCompanyBase The energyCompanyBase to set
-	 */
-	public void setEnergyCompanyBase(
-		com.cannontech.database.data.company.EnergyCompanyBase energyCompanyBase) {
-		this.energyCompanyBase = energyCompanyBase;
+	
+	public void setEnergyCompanyID(Integer energyCompanyID) {
+		this.energyCompanyID = energyCompanyID;
 	}
 
 }

@@ -8,7 +8,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.xml.serialize.AdditionalContact;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
-import com.cannontech.stars.xml.serialize.StarsCustAccountInfo;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 
 /**
@@ -38,7 +38,7 @@ public class UpdateContacts extends HttpServlet {
 			resp.sendRedirect(loginURL); return;
 		}
 		
-        StarsCustAccountInfo accountInfo = (StarsCustAccountInfo) operator.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+        StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) operator.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
         StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
         if (account == null) {
         	resp.sendRedirect(homeURL); return;
@@ -66,6 +66,7 @@ public class UpdateContacts extends HttpServlet {
             if (lastName != null && lastName.trim().length() > 0
                 && firstName != null && firstName.trim().length() > 0) {
                 AdditionalContact contact = new AdditionalContact();
+                contact.setContactID( Integer.parseInt(req.getParameter("ContactID" + i)) );
                 contact.setLastName( lastName );
                 contact.setFirstName( firstName );
                 contact.setHomePhone( req.getParameter("HomePhone" + i) );

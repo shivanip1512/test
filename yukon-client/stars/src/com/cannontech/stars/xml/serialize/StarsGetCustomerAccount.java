@@ -32,12 +32,12 @@ public class StarsGetCustomerAccount implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private int _accountNo;
+    private int _accountID;
 
     /**
-     * keeps track of state for field: _accountNo
+     * keeps track of state for field: _accountID
     **/
-    private boolean _has_accountNo;
+    private boolean _has_accountID;
 
 
       //----------------/
@@ -54,21 +54,21 @@ public class StarsGetCustomerAccount implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'accountNo'.
+     * Returns the value of field 'accountID'.
      * 
-     * @return the value of field 'accountNo'.
+     * @return the value of field 'accountID'.
     **/
-    public int getAccountNo()
+    public int getAccountID()
     {
-        return this._accountNo;
-    } //-- int getAccountNo() 
+        return this._accountID;
+    } //-- int getAccountID() 
 
     /**
     **/
-    public boolean hasAccountNo()
+    public boolean hasAccountID()
     {
-        return this._has_accountNo;
-    } //-- boolean hasAccountNo() 
+        return this._has_accountID;
+    } //-- boolean hasAccountID() 
 
     /**
     **/
@@ -108,15 +108,15 @@ public class StarsGetCustomerAccount implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'accountNo'.
+     * Sets the value of field 'accountID'.
      * 
-     * @param accountNo the value of field 'accountNo'.
+     * @param accountID the value of field 'accountID'.
     **/
-    public void setAccountNo(int accountNo)
+    public void setAccountID(int accountID)
     {
-        this._accountNo = accountNo;
-        this._has_accountNo = true;
-    } //-- void setAccountNo(int) 
+        this._accountID = accountID;
+        this._has_accountID = true;
+    } //-- void setAccountID(int) 
 
     /**
      * 

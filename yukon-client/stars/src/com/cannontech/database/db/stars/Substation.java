@@ -105,58 +105,40 @@ public class Substation extends DBPersistent {
         return new Integer( nextSubstationID );
     }
     
-    public static Substation[] getAllSubstations(Integer energyCompanyID, java.sql.Connection conn) {
-    	String sql = "SELECT sub.* FROM " + TABLE_NAME + " sub, ECToGenericMapping map "
-    			   + "WHERE map.MappingCategory = '" + TABLE_NAME + "' AND map.EnergyCompanyID = ? "
-    			   + "AND map.ItemID = sub.SubstationID";
-    			   
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        java.util.ArrayList subList = new java.util.ArrayList();
+    public static Substation[] getAllSubstations(Integer energyCompanyID) {
+    	com.cannontech.database.db.stars.ECToGenericMapping[] items =
+    			com.cannontech.database.db.stars.ECToGenericMapping.getAllMappingItems( energyCompanyID, "Substation" );
+    	if (items == null || items.length == 0)
+    		return new Substation[0];
+    			
+    	StringBuffer sql = new StringBuffer( "SELECT * FROM " + TABLE_NAME + " WHERE SubstationID = " + items[0].getItemID().toString() );
+    	for (int i = 1; i < items.length; i++)
+    		sql.append( " OR SubstationID = " ).append( items[i].getItemID() );
+    	
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql.toString(), com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, energyCompanyID.intValue() );
-                rset = pstmt.executeQuery();
+        try {
+        	stmt.execute();
+        	Substation[] subs = new Substation[ stmt.getRowCount() ];
 
-                while (rset.next()) {
-                	Substation sub = new Substation();
-                	
-                	sub.setSubstationID( new Integer(rset.getInt("SubstationID")) );
-                	sub.setSubstationName( rset.getString("SubstationName") );
-                	sub.setRouteID( new Integer(rset.getInt("RouteID")) );
-                	
-                	subList.add( sub );
-                }
+            for (int i = 0; i < subs.length; i++) {
+            	Object[] row = stmt.getRow(i);
+            	subs[i] = new Substation();
+            	
+            	subs[i].setSubstationID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+            	subs[i].setSubstationName( (String) row[1] );
+            	subs[i].setRouteID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
             }
+            
+            return subs;
         }
-        catch( java.sql.SQLException e )
+        catch(Exception e)
         {
             e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if (rset != null) rset.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
 
-        Substation[] subs = new Substation[ subList.size() ];
-        subList.toArray( subs );
-        return subs;
+        return null;
     }
 
     public Integer getSubstationID() {

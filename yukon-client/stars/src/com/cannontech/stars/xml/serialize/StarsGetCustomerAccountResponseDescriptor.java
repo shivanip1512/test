@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsGetCustomerAccountResponseDescriptor extends StarsCustAccountInfoDescriptor {
+public class StarsGetCustomerAccountResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -49,14 +49,50 @@ public class StarsGetCustomerAccountResponseDescriptor extends StarsCustAccountI
 
     public StarsGetCustomerAccountResponseDescriptor() {
         super();
-        setExtendsWithoutFlatten(new StarsCustAccountInfoDescriptor());
         xmlName = "stars-GetCustomerAccountResponse";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
+        
+        //-- _starsCustAccountInformation
+        desc = new XMLFieldDescriptorImpl(StarsCustAccountInformation.class, "_starsCustAccountInformation", "stars-CustAccountInformation", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsGetCustomerAccountResponse target = (StarsGetCustomerAccountResponse) object;
+                return target.getStarsCustAccountInformation();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsGetCustomerAccountResponse target = (StarsGetCustomerAccountResponse) object;
+                    target.setStarsCustAccountInformation( (StarsCustAccountInformation) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsCustAccountInformation();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsCustAccountInformation
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsGetCustomerAccountResponseDescriptor()
 
@@ -76,15 +112,13 @@ public class StarsGetCustomerAccountResponseDescriptor extends StarsCustAccountI
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return super.getExtends();
+        return null;
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
-        if (identity == null)
-            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 

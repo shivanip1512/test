@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsCreateLMHardwareResponseDescriptor extends StarsLMHwDescriptor {
+public class StarsCreateLMHardwareResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -49,14 +49,50 @@ public class StarsCreateLMHardwareResponseDescriptor extends StarsLMHwDescriptor
 
     public StarsCreateLMHardwareResponseDescriptor() {
         super();
-        setExtendsWithoutFlatten(new StarsLMHwDescriptor());
         xmlName = "stars-CreateLMHardwareResponse";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
+        
+        //-- _starsLMHardware
+        desc = new XMLFieldDescriptorImpl(StarsLMHardware.class, "_starsLMHardware", "stars-LMHardware", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCreateLMHardwareResponse target = (StarsCreateLMHardwareResponse) object;
+                return target.getStarsLMHardware();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCreateLMHardwareResponse target = (StarsCreateLMHardwareResponse) object;
+                    target.setStarsLMHardware( (StarsLMHardware) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsLMHardware();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsLMHardware
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsCreateLMHardwareResponseDescriptor()
 
@@ -76,15 +112,13 @@ public class StarsCreateLMHardwareResponseDescriptor extends StarsLMHwDescriptor
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return super.getExtends();
+        return null;
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
-        if (identity == null)
-            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 

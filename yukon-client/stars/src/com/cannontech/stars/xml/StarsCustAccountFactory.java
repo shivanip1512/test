@@ -1,6 +1,9 @@
 package com.cannontech.stars.xml;
 
 import com.cannontech.stars.xml.serialize.StarsCustAccount;
+import com.cannontech.database.db.stars.customer.CustomerAccount;
+import com.cannontech.database.db.stars.customer.AccountSite;
+import com.cannontech.database.db.stars.customer.SiteInformation;
 
 /**
  * <p>Title: </p>
@@ -39,5 +42,23 @@ public class StarsCustAccountFactory {
         }
 
         return null;
+    }
+    
+    public static void setCustomerAccount(CustomerAccount account, StarsCustAccount starsAccount) {
+    	account.setAccountNumber( starsAccount.getAccountNumber() );
+    	account.setAccountNotes( starsAccount.getAccountNotes() );
+    }
+    
+    public static void setAccountSite(AccountSite acctSite, StarsCustAccount starsAccount) {
+    	acctSite.setSiteNumber( starsAccount.getPropertyNumber() );
+    	acctSite.setPropertyNotes( starsAccount.getPropertyNotes() );
+    }
+    
+    public static void setSiteInformation(SiteInformation siteInfo, StarsCustAccount starsAccount) {
+    	siteInfo.setSubstationID( new Integer(starsAccount.getStarsSiteInformation().getSubstation().getEntryID()) );
+    	siteInfo.setFeeder( starsAccount.getStarsSiteInformation().getFeeder() );
+    	siteInfo.setPole( starsAccount.getStarsSiteInformation().getPole() );
+    	siteInfo.setTransformerSize( starsAccount.getStarsSiteInformation().getTransformerSize() );
+    	siteInfo.setServiceVoltage( starsAccount.getStarsSiteInformation().getServiceVoltage() );
     }
 }

@@ -20,6 +20,7 @@ public class InventoryBase extends DBPersistent {
     private com.cannontech.database.db.stars.CustomerListEntry voltage = null;
 
     private com.cannontech.database.data.stars.customer.CustomerAccount customerAccount = null;
+    private Integer energyCompanyID = null;
 
     public InventoryBase() {
         super();
@@ -45,17 +46,17 @@ public class InventoryBase extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	if (getEnergyCompanyID() == null)
+    		throw new java.sql.SQLException( "setEnergyCompanyID() must be called before this function" );
+    		
         getInventoryBase().add();
 
-        if (getCustomerAccount() != null && getCustomerAccount().getCustomerBase() != null
-            && getCustomerAccount().getCustomerBase().getEnergyCompanyBase() != null) {
-            // add to the mapping table
-            Object[] addValues = {
-                getCustomerAccount().getCustomerBase().getEnergyCompanyBase().getEnergyCompany().getEnergyCompanyID(),
-                getInventoryBase().getInventoryID()
-            };
-            add( "ECToInventoryMapping", addValues );
-        }
+        // add to the mapping table
+        Object[] addValues = {
+            getEnergyCompanyID(),
+            getInventoryBase().getInventoryID()
+        };
+        add( "ECToInventoryMapping", addValues );
     }
 
     public void update() throws java.sql.SQLException {
@@ -138,6 +139,22 @@ public class InventoryBase extends DBPersistent {
 	public void setVoltage(
 		com.cannontech.database.db.stars.CustomerListEntry voltage) {
 		this.voltage = voltage;
+	}
+
+	/**
+	 * Returns the energyCompanyID.
+	 * @return Integer
+	 */
+	public Integer getEnergyCompanyID() {
+		return energyCompanyID;
+	}
+
+	/**
+	 * Sets the energyCompanyID.
+	 * @param energyCompanyID The energyCompanyID to set
+	 */
+	public void setEnergyCompanyID(Integer energyCompanyID) {
+		this.energyCompanyID = energyCompanyID;
 	}
 
 }

@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsSwitchCommandResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsNewCustomerAccountResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class StarsSwitchCommandResponseDescriptor extends org.exolab.castor.xml.
      //- Constructors -/
     //----------------/
 
-    public StarsSwitchCommandResponseDescriptor() {
+    public StarsNewCustomerAccountResponseDescriptor() {
         super();
-        xmlName = "stars-SwitchCommandResponse";
+        xmlName = "stars-NewCustomerAccountResponse";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -60,73 +60,41 @@ public class StarsSwitchCommandResponseDescriptor extends org.exolab.castor.xml.
         
         //-- initialize element descriptors
         
-        //-- _starsLMHardwareHistoryList
-        desc = new XMLFieldDescriptorImpl(StarsLMHardwareHistory.class, "_starsLMHardwareHistoryList", "stars-LMHardwareHistory", NodeType.Element);
+        //-- _starsCustAccountInformation
+        desc = new XMLFieldDescriptorImpl(StarsCustAccountInformation.class, "_starsCustAccountInformation", "stars-CustAccountInformation", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsSwitchCommandResponse target = (StarsSwitchCommandResponse) object;
-                return target.getStarsLMHardwareHistory();
+                StarsNewCustomerAccountResponse target = (StarsNewCustomerAccountResponse) object;
+                return target.getStarsCustAccountInformation();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsSwitchCommandResponse target = (StarsSwitchCommandResponse) object;
-                    target.addStarsLMHardwareHistory( (StarsLMHardwareHistory) value);
+                    StarsNewCustomerAccountResponse target = (StarsNewCustomerAccountResponse) object;
+                    target.setStarsCustAccountInformation( (StarsCustAccountInformation) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsLMHardwareHistory();
+                return new StarsCustAccountInformation();
             }
         } );
         desc.setHandler(handler);
-        desc.setMultivalued(true);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsLMHardwareHistoryList
+        //-- validation code for: _starsCustAccountInformation
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
+        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
-        //-- _starsLMProgramHistoryList
-        desc = new XMLFieldDescriptorImpl(StarsLMProgramHistory.class, "_starsLMProgramHistoryList", "stars-LMProgramHistory", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsSwitchCommandResponse target = (StarsSwitchCommandResponse) object;
-                return target.getStarsLMProgramHistory();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsSwitchCommandResponse target = (StarsSwitchCommandResponse) object;
-                    target.addStarsLMProgramHistory( (StarsLMProgramHistory) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsLMProgramHistory();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(true);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsLMProgramHistoryList
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
-        desc.setValidator(fieldValidator);
-        
-    } //-- com.cannontech.stars.xml.serialize.StarsSwitchCommandResponseDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsNewCustomerAccountResponseDescriptor()
 
 
       //-----------/
@@ -158,7 +126,7 @@ public class StarsSwitchCommandResponseDescriptor extends org.exolab.castor.xml.
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsSwitchCommandResponse.class;
+        return com.cannontech.stars.xml.serialize.StarsNewCustomerAccountResponse.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

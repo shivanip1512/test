@@ -4,7 +4,7 @@ import java.util.*;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.xml.util.*;
 import com.cannontech.stars.xml.serialize.*;
-import com.cannontech.stars.xml.StarsCustListEntryFactory;
+import com.cannontech.database.data.lite.stars.LiteCustomerSelectionList;
 import com.cannontech.database.data.stars.customer.CustomerAccount;
 import com.cannontech.database.db.stars.*;
 
@@ -16,25 +16,24 @@ import com.cannontech.database.db.stars.*;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class StarsCustAccountInfoFactory {
+public class StarsCustAccountInformationFactory {
 
-	public static StarsCustAccountInfo getStarsCustAccountInfo(CustomerAccount account, Hashtable selectionLists, Class type) {
+	public static StarsCustAccountInformation getStarsCustAccountInfo(CustomerAccount account, Hashtable selectionLists) {
 		try {
-            StarsCustAccountInfo accountInfo = (StarsCustAccountInfo) type.newInstance();
+            StarsCustAccountInformation accountInfo = new StarsCustAccountInformation();
 
             com.cannontech.database.db.stars.customer.CustomerAccount accountDB = account.getCustomerAccount();
             com.cannontech.database.data.stars.customer.CustomerBase customer = account.getCustomerBase();
             com.cannontech.database.db.stars.customer.CustomerBase customerDB = customer.getCustomerBase();
             
-            StarsCustSelectionList custTypeList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE );            
-            int custTypeCommID = 0;
-            for (int i = 0; i < custTypeList.getStarsSelectionListEntryCount(); i++) {
-            	StarsSelectionListEntry entry = custTypeList.getStarsSelectionListEntry(i);
-            	if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_COMM ))
-            		custTypeCommID = entry.getEntryID();
-            }
+            int custTypeCommID = StarsCustListEntryFactory.getStarsCustListEntry(
+            		(LiteCustomerSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE ),
+            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_COMM )
+            		.getEntryID();
 
             StarsCustomerAccount starsAccount = new StarsCustomerAccount();
+            starsAccount.setAccountID( accountDB.getAccountID().intValue() );
+            starsAccount.setCustomerID( account.getCustomerBase().getCustomerBase().getCustomerID().intValue() );
             starsAccount.setAccountNumber( accountDB.getAccountNumber() );
             starsAccount.setIsCommercial( customerDB.getCustomerTypeID().intValue() == custTypeCommID );
             starsAccount.setCompany( "" );
@@ -55,6 +54,7 @@ public class StarsCustAccountInfoFactory {
             com.cannontech.database.db.customer.CustomerAddress addr = site.getStreetAddress();
 
             StreetAddress siteAddr = new StreetAddress();
+            siteAddr.setAddressID( addr.getAddressID().intValue() );
             siteAddr.setStreetAddr1( addr.getLocationAddress1() );
             siteAddr.setStreetAddr2( addr.getLocationAddress2() );
             siteAddr.setCity( addr.getCityName() );
@@ -71,6 +71,7 @@ public class StarsCustAccountInfoFactory {
 			starsSub.setContent( substation.getSubstationName() );
 			
             StarsSiteInformation starsSiteInfo = new StarsSiteInformation();
+            starsSiteInfo.setSiteID( siteInfoDB.getSiteID().intValue() );
             starsSiteInfo.setSubstation( starsSub );
             starsSiteInfo.setFeeder( siteInfoDB.getFeeder() );
             starsSiteInfo.setPole( siteInfoDB.getPole() );
@@ -81,6 +82,7 @@ public class StarsCustAccountInfoFactory {
             addr = account.getBillingAddress();
 
             BillingAddress billAddr = new BillingAddress();
+            billAddr.setAddressID( addr.getAddressID().intValue() );
             billAddr.setStreetAddr1( addr.getLocationAddress1() );
             billAddr.setStreetAddr2( addr.getLocationAddress2() );
             billAddr.setCity( addr.getCityName() );
@@ -91,6 +93,7 @@ public class StarsCustAccountInfoFactory {
             com.cannontech.database.db.customer.CustomerContact contact = customer.getPrimaryContact();
 
             PrimaryContact primContact = new PrimaryContact();
+            primContact.setContactID( contact.getContactID().intValue() );
             primContact.setLastName( contact.getContLastName() );
             primContact.setFirstName( contact.getContFirstName() );
             primContact.setHomePhone( contact.getContPhone1() );
@@ -103,6 +106,7 @@ public class StarsCustAccountInfoFactory {
                 contact = (com.cannontech.database.db.customer.CustomerContact) contactList.elementAt(i);
 
                 AdditionalContact addContact = new AdditionalContact();
+	            addContact.setContactID( contact.getContactID().intValue() );
                 addContact.setLastName( contact.getContLastName() );
                 addContact.setFirstName( contact.getContFirstName() );
                 addContact.setHomePhone( contact.getContPhone1() );
@@ -198,32 +202,35 @@ public class StarsCustAccountInfoFactory {
                     
                     // Set hardware status and installation notes based on hardware history
                     StarsCustListEntry entry = StarsCustListEntryFactory.getStarsCustListEntry(
-                    		selectionLists, com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_UNAVAIL );
+                    		(LiteCustomerSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS ),
+                    		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_UNAVAIL );
                     DeviceStatus status = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry( entry, DeviceStatus.class );
                     starsHW.setInstallationNotes( "" );
                     
                     StarsLMHardwareHistory hwHist = starsHW.getStarsLMHardwareHistory();
                     if (hwHist != null) {
-                    	for (int j = 0; j < hwHist.getLMHardwareEventCount(); j++) {
-	                    	LMHardwareEvent event = hwHist.getLMHardwareEvent(j);
+                    	for (int j = 0; j < hwHist.getStarsLMHardwareEventCount(); j++) {
+	                    	StarsLMHardwareEvent event = hwHist.getStarsLMHardwareEvent(j);
     	                	if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TERMINATION ))
     	                		break;
     	                	else if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED )) {
     	                		entry = StarsCustListEntryFactory.getStarsCustListEntry(
-                    					selectionLists, com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_AVAIL );
+                    					(LiteCustomerSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS ),
+                    					com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_AVAIL );
                     			status = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry( entry, DeviceStatus.class );
                     			break;
     	                	}
     	                	else if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TEMPTERMINATION )) {
     	                		entry = StarsCustListEntryFactory.getStarsCustListEntry(
-                    					selectionLists, com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_TEMPUNAVAIL );
+                    					(LiteCustomerSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS ),
+                    					com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_TEMPUNAVAIL );
                     			status = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry( entry, DeviceStatus.class );
                     			break;
     	                	}
                     	}
                     	
-                    	for (int j = hwHist.getLMHardwareEventCount() - 1; j >= 0; j--) {
-	                    	LMHardwareEvent event = hwHist.getLMHardwareEvent(j);
+                    	for (int j = hwHist.getStarsLMHardwareEventCount() - 1; j >= 0; j--) {
+	                    	StarsLMHardwareEvent event = hwHist.getStarsLMHardwareEvent(j);
 	                    	if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_INSTALL )) {
 	                    		starsHW.setInstallationNotes( event.getNotes() );
 	                    		break;

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsApplianceCategory.java,v 1.12 2002/10/11 21:44:22 zyao Exp $
+ * $Id: StarsApplianceCategory.java,v 1.13 2002/11/12 15:58:41 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.12 $ $Date: 2002/10/11 21:44:22 $
+ * @version $Revision: 1.13 $ $Date: 2002/11/12 15:58:41 $
 **/
 public class StarsApplianceCategory implements java.io.Serializable {
 
@@ -40,6 +40,13 @@ public class StarsApplianceCategory implements java.io.Serializable {
      * keeps track of state for field: _applianceCategoryID
     **/
     private boolean _has_applianceCategoryID;
+
+    private int _categoryID;
+
+    /**
+     * keeps track of state for field: _categoryID
+    **/
+    private boolean _has_categoryID;
 
     private java.lang.String _description;
 
@@ -94,6 +101,13 @@ public class StarsApplianceCategory implements java.io.Serializable {
 
     /**
     **/
+    public void deleteCategoryID()
+    {
+        this._has_categoryID= false;
+    } //-- void deleteCategoryID() 
+
+    /**
+    **/
     public java.util.Enumeration enumerateStarsEnrLMProgram()
     {
         return _starsEnrLMProgramList.elements();
@@ -108,6 +122,16 @@ public class StarsApplianceCategory implements java.io.Serializable {
     {
         return this._applianceCategoryID;
     } //-- int getApplianceCategoryID() 
+
+    /**
+     * Returns the value of field 'categoryID'.
+     * 
+     * @return the value of field 'categoryID'.
+    **/
+    public int getCategoryID()
+    {
+        return this._categoryID;
+    } //-- int getCategoryID() 
 
     /**
      * Returns the value of field 'description'.
@@ -170,6 +194,13 @@ public class StarsApplianceCategory implements java.io.Serializable {
     {
         return this._has_applianceCategoryID;
     } //-- boolean hasApplianceCategoryID() 
+
+    /**
+    **/
+    public boolean hasCategoryID()
+    {
+        return this._has_categoryID;
+    } //-- boolean hasCategoryID() 
 
     /**
     **/
@@ -238,6 +269,17 @@ public class StarsApplianceCategory implements java.io.Serializable {
         this._applianceCategoryID = applianceCategoryID;
         this._has_applianceCategoryID = true;
     } //-- void setApplianceCategoryID(int) 
+
+    /**
+     * Sets the value of field 'categoryID'.
+     * 
+     * @param categoryID the value of field 'categoryID'.
+    **/
+    public void setCategoryID(int categoryID)
+    {
+        this._categoryID = categoryID;
+        this._has_categoryID = true;
+    } //-- void setCategoryID(int) 
 
     /**
      * Sets the value of field 'description'.

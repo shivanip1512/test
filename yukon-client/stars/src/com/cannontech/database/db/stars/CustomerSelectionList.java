@@ -122,61 +122,44 @@ public class CustomerSelectionList extends DBPersistent {
         return new Integer( nextListID );
     }
     
-    public static CustomerSelectionList[] getAllSelectionLists(Integer energyCompanyID, java.sql.Connection conn) {
-    	String sql = "SELECT list.* FROM " + TABLE_NAME + " list, ECToGenericMapping map "
-    			   + "WHERE map.MappingCategory = '" + TABLE_NAME + "' AND map.EnergyCompanyID = ? "
-    			   + "AND map.ItemID = list.ListID";
-    			   
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        java.util.ArrayList listList = new java.util.ArrayList();
+    public static CustomerSelectionList[] getAllSelectionLists(Integer energyCompanyID) {
+    	com.cannontech.database.db.stars.ECToGenericMapping[] items =
+    			com.cannontech.database.db.stars.ECToGenericMapping.getAllMappingItems( energyCompanyID, TABLE_NAME );
+    	if (items == null || items.length == 0)
+    		return new CustomerSelectionList[0];
+    		
+    	StringBuffer sql = new StringBuffer( "SELECT * FROM " + TABLE_NAME + " WHERE ListID = " + items[0].getItemID().toString() );
+    	for (int i = 1; i < items.length; i++)
+    		sql.append( " OR ListID = " ).append( items[i].getItemID() );
+    	
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql.toString(), com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
         try
         {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, energyCompanyID.intValue() );
-                rset = pstmt.executeQuery();
-
-                while (rset.next()) {
-                	CustomerSelectionList list = new CustomerSelectionList();
-                	
-                	list.setListID( new Integer(rset.getInt("ListID")) );
-                	list.setOrdering( rset.getString("Ordering") );
-                	list.setSelectionLabel( (String) rset.getString("SelectionLabel") );
-                	list.setWhereIsList( (String) rset.getString("WhereIsList") );
-                	list.setListName( (String) rset.getString("ListName") );
-                	list.setUserUpdateAvailable( rset.getString("UserUpdateAvailable") );
-                	
-                	listList.add(list);
-                }
-            }
+        	stmt.execute();
+        	CustomerSelectionList[] lists = new CustomerSelectionList[ stmt.getRowCount() ];
+        	
+        	for (int i = 0; i < lists.length; i++) {
+        		Object[] row = stmt.getRow(i);
+        		lists[i] = new CustomerSelectionList();
+        		
+        		lists[i].setListID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+        		lists[i].setOrdering( (String) row[1] );
+        		lists[i].setSelectionLabel( (String) row[2] );
+        		lists[i].setWhereIsList( (String) row[3] );
+        		lists[i].setListName( (String) row[4] );
+        		lists[i].setUserUpdateAvailable( (String) row[5] );
+        	}
+        	
+        	return lists;
         }
-        catch( java.sql.SQLException e )
+        catch( Exception e )
         {
             e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if (rset != null) rset.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
 
-        CustomerSelectionList[] lists = new CustomerSelectionList[ listList.size() ];
-        listList.toArray( lists );
-        return lists;
+        return null;
     }
 
 	/**

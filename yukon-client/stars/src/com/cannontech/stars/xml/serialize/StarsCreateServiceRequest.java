@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsCreateServiceRequest extends StarsServiceRequest 
+public class StarsCreateServiceRequest extends StarsSrvReq 
 implements java.io.Serializable
 {
 

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsGetLMControlHistoryDescriptor.java,v 1.12 2002/10/11 21:44:25 zyao Exp $
+ * $Id: StarsGetLMControlHistoryDescriptor.java,v 1.13 2002/11/12 15:58:47 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.12 $ $Date: 2002/10/11 21:44:25 $
+ * @version $Revision: 1.13 $ $Date: 2002/11/12 15:58:47 $
 **/
 public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -53,10 +53,15 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
+        //-- initialize element descriptors
+        
         //-- _groupID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_groupID", "groupID", NodeType.Attribute);
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_groupID", "GroupID", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -86,6 +91,7 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
         } );
         desc.setHandler(handler);
         desc.setRequired(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _groupID
@@ -98,7 +104,7 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
         desc.setValidator(fieldValidator);
         
         //-- _period
-        desc = new XMLFieldDescriptorImpl(com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod.class, "_period", "period", NodeType.Attribute);
+        desc = new XMLFieldDescriptorImpl(com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod.class, "_period", "Period", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -123,6 +129,7 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
         } );
         desc.setHandler( new EnumFieldHandler(com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod.class, handler));
         desc.setImmutable(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _period
@@ -130,7 +137,7 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
         desc.setValidator(fieldValidator);
         
         //-- _getSummary
-        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_getSummary", "getSummary", NodeType.Attribute);
+        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_getSummary", "GetSummary", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -161,6 +168,7 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
             }
         } );
         desc.setHandler(handler);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _getSummary
@@ -170,8 +178,6 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
             fieldValidator.setValidator(bv);
         }
         desc.setValidator(fieldValidator);
-        
-        //-- initialize element descriptors
         
     } //-- com.cannontech.stars.xml.serialize.StarsGetLMControlHistoryDescriptor()
 

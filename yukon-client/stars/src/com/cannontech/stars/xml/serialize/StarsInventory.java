@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInventory.java,v 1.12 2002/10/11 21:44:24 zyao Exp $
+ * $Id: StarsInventory.java,v 1.13 2002/11/12 15:58:45 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.12 $ $Date: 2002/10/11 21:44:24 $
+ * @version $Revision: 1.13 $ $Date: 2002/11/12 15:58:45 $
 **/
 public abstract class StarsInventory implements java.io.Serializable {
 
@@ -55,8 +55,6 @@ public abstract class StarsInventory implements java.io.Serializable {
     private Voltage _voltage;
 
     private java.lang.String _notes;
-
-    private java.lang.String _installationNotes;
 
 
       //----------------/
@@ -118,16 +116,6 @@ public abstract class StarsInventory implements java.io.Serializable {
     {
         return this._installationCompany;
     } //-- InstallationCompany getInstallationCompany() 
-
-    /**
-     * Returns the value of field 'installationNotes'.
-     * 
-     * @return the value of field 'installationNotes'.
-    **/
-    public java.lang.String getInstallationNotes()
-    {
-        return this._installationNotes;
-    } //-- java.lang.String getInstallationNotes() 
 
     /**
      * Returns the value of field 'inventoryID'.
@@ -256,17 +244,6 @@ public abstract class StarsInventory implements java.io.Serializable {
     {
         this._installationCompany = installationCompany;
     } //-- void setInstallationCompany(InstallationCompany) 
-
-    /**
-     * Sets the value of field 'installationNotes'.
-     * 
-     * @param installationNotes the value of field
-     * 'installationNotes'.
-    **/
-    public void setInstallationNotes(java.lang.String installationNotes)
-    {
-        this._installationNotes = installationNotes;
-    } //-- void setInstallationNotes(java.lang.String) 
 
     /**
      * Sets the value of field 'inventoryID'.

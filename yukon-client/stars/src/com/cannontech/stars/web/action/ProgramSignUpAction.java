@@ -4,11 +4,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import java.util.*;
+
 import com.cannontech.database.Transaction;
+import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.web.*;
 import com.cannontech.stars.xml.util.*;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.StarsCustomerContactFactory;
+import com.cannontech.stars.xml.StarsCustListEntryFactory;
+import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.StarsGetEnrollmentProgramsResponseFactory;
 
 /**
@@ -77,10 +83,8 @@ public class ProgramSignUpAction implements ActionBase {
             
             if (energyCompanyID <= 0) {
 	            if (operator == null && user == null) {
-	            	StarsFailure failure = new StarsFailure();
-	            	failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
-	            	failure.setDescription( "Session invalidated, please login again" );
-	            	respOper.setStarsFailure( failure );
+	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
 	            }
 	            
@@ -90,14 +94,13 @@ public class ProgramSignUpAction implements ActionBase {
 	            	energyCompanyID = user.getEnergyCompanyID();
             }
             
+            LiteStarsCustAccountInformation liteAcctInfo = SOAPServer.getCustAccountInformation( new Integer(energyCompanyID), progSignUp.getAccountNumber() );
             com.cannontech.database.data.stars.customer.CustomerAccount account =
 		            com.cannontech.database.data.stars.customer.CustomerAccount.searchByAccountNumber(
         	    		new Integer(energyCompanyID), progSignUp.getAccountNumber() );
         	    		
             StarsSULMPrograms programs = progSignUp.getStarsSULMPrograms();
             if (programs.getSULMProgramCount() > 0) {
-	        	com.cannontech.database.data.multi.MultiDBPersistent multiDB = new com.cannontech.database.data.multi.MultiDBPersistent();
-	        	
 	        	// Get the primary IDs for table insert
 	        	int nextAppID = 0;
 	        	int nextEventID = 0;
@@ -126,42 +129,34 @@ public class ProgramSignUpAction implements ActionBase {
 	        	}
 	        	
 	        	// Get "Signup" action & event type ID
-            	java.util.Hashtable selectionLists = com.cannontech.stars.util.ServerUtils.getSelectionListTable(
-            			new Integer(energyCompanyID) );
-            			
-            	Integer progEventEntryID = null;
-	        	Integer signUpEntryID = null;
-	        	
-	            StarsCustSelectionList custEventList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT );
-	            for (int i = 0; i < custEventList.getStarsSelectionListEntryCount(); i++) {
-	            	StarsSelectionListEntry entry = custEventList.getStarsSelectionListEntry(i);
-	            	if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMPROGRAMEVENT )) {
-	            		progEventEntryID = new Integer( entry.getEntryID() );
-	            		break;
-	            	}
-	            }
-	        	
-	            StarsCustSelectionList actionList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION );
-	            for (int i = 0; i < actionList.getStarsSelectionListEntryCount(); i++) {
-	            	StarsSelectionListEntry entry = actionList.getStarsSelectionListEntry(i);
-	            	if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_SIGNUP )) {
-	            		signUpEntryID = new Integer( entry.getEntryID() );
-	            		break;
-	            	}
-	            }
+            	Hashtable selectionLists = SOAPServer.getAllSelectionLists( new Integer(energyCompanyID) );
+            	
+            	Integer progEventEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
+            			(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT),
+            			com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMPROGRAMEVENT)
+            			.getEntryID() );
+	        	Integer signUpEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
+            			(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
+            			com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_SIGNUP)
+            			.getEntryID() );
 	            
-	            java.util.Date now = new java.util.Date();
-	        	
+	            Date now = new Date();
+	            if (liteAcctInfo.getAppliances() == null)
+	            	liteAcctInfo.setAppliances( new ArrayList() );
+	            
 	        	for (int i = 0; i < programs.getSULMProgramCount(); i++) {
 	        		SULMProgram program = programs.getSULMProgram(i);
+		        	com.cannontech.database.data.multi.MultiDBPersistent multiDB = new com.cannontech.database.data.multi.MultiDBPersistent();
 	        		
-	        		com.cannontech.database.db.stars.appliance.ApplianceBase appDB = new com.cannontech.database.db.stars.appliance.ApplianceBase();
-	        		appDB.setApplianceID( new Integer(nextAppID++) );
+	        		com.cannontech.database.data.stars.appliance.ApplianceBase app = new com.cannontech.database.data.stars.appliance.ApplianceBase();
+	        		com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
+	        		
+	        		app.setApplianceID( new Integer(nextAppID++) );
 	        		appDB.setAccountID( account.getCustomerAccount().getAccountID() );
 	        		appDB.setApplianceCategoryID( new Integer(program.getApplianceCategoryID()) );
 	        		appDB.setLMProgramID( new Integer(program.getProgramID()) );
 	        		
-	        		multiDB.getDBPersistentVector().addElement( appDB );
+	        		multiDB.getDBPersistentVector().addElement( app );
 	        		
 	        		com.cannontech.database.data.stars.event.LMProgramEvent event =
 	        				new com.cannontech.database.data.stars.event.LMProgramEvent();
@@ -169,20 +164,31 @@ public class ProgramSignUpAction implements ActionBase {
 	        		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
 	        		
 	        		event.setEventID( new Integer(nextEventID++) );
+	        		event.setEnergyCompanyID( new Integer(energyCompanyID) );
 	        		eventDB.setAccountID( account.getCustomerAccount().getAccountID() );
 	        		eventDB.setLMProgramID( new Integer(program.getProgramID()) );
 	        		eventBase.setEventTypeID( progEventEntryID );
 	        		eventBase.setActionID( signUpEntryID );
 	        		eventBase.setEventDateTime( now );
 	        		
-					com.cannontech.database.data.company.EnergyCompanyBase energyCompany = new com.cannontech.database.data.company.EnergyCompanyBase();
-					energyCompany.getEnergyCompany().setEnergyCompanyID( new Integer(energyCompanyID) );
-	        		event.setEnergyCompanyBase( energyCompany );
-	        		
 	        		multiDB.getDBPersistentVector().addElement( event );
-	        	}
 	            
-	            Transaction.createTransaction( Transaction.INSERT, multiDB ).execute();
+		            multiDB = (com.cannontech.database.data.multi.MultiDBPersistent)
+		            		Transaction.createTransaction( Transaction.INSERT, multiDB ).execute();
+		            app = (com.cannontech.database.data.stars.appliance.ApplianceBase) multiDB.getDBPersistentVector().get(0);
+		            event = (com.cannontech.database.data.stars.event.LMProgramEvent) multiDB.getDBPersistentVector().get(1);
+		            
+		            liteAcctInfo.getAppliances().add( SOAPServer.addAppliance(new Integer(energyCompanyID), app) );
+		            
+		            LiteStarsLMProgram liteProg = new LiteStarsLMProgram();
+		            liteProg.setLmProgramID( app.getLMProgram().getPAObjectID().intValue() );
+		            
+		            liteProg.setProgramHistory( new ArrayList() );
+		            LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+		            liteProg.getProgramHistory().add( liteEvent );
+		            
+		            liteAcctInfo.getLmPrograms().add( liteProg );
+	        	}
             }
             
             StarsLogin starsLogin = progSignUp.getStarsLogin();
@@ -197,7 +203,7 @@ public class ProgramSignUpAction implements ActionBase {
             primContact.setLogInID( login.getLoginID() );
             
             com.cannontech.database.db.stars.CustomerContact contact = new com.cannontech.database.db.stars.CustomerContact( primContact );
-            Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
+    		Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
             
             StarsSuccess success = new StarsSuccess();
             respOper.setStarsSuccess( success );

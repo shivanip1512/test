@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsCreateServiceRequestDescriptor extends StarsServiceRequestDescriptor {
+public class StarsCreateServiceRequestDescriptor extends StarsSrvReqDescriptor {
 
 
       //--------------------------/
@@ -49,7 +49,7 @@ public class StarsCreateServiceRequestDescriptor extends StarsServiceRequestDesc
 
     public StarsCreateServiceRequestDescriptor() {
         super();
-        setExtendsWithoutFlatten(new StarsServiceRequestDescriptor());
+        setExtendsWithoutFlatten(new StarsSrvReqDescriptor());
         xmlName = "stars-CreateServiceRequest";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;

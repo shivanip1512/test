@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public abstract class StarsCustAccountInfo implements java.io.Serializable {
+public class StarsCustAccountInformation implements java.io.Serializable {
 
 
       //--------------------------/
@@ -40,14 +40,18 @@ public abstract class StarsCustAccountInfo implements java.io.Serializable {
 
     private StarsInventories _starsInventories;
 
+    private StarsCallReportHistory _starsCallReportHistory;
+
+    private StarsServiceRequestHistory _starsServiceRequestHistory;
+
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsCustAccountInfo() {
+    public StarsCustAccountInformation() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsCustAccountInfo()
+    } //-- com.cannontech.stars.xml.serialize.StarsCustAccountInformation()
 
 
       //-----------/
@@ -63,6 +67,16 @@ public abstract class StarsCustAccountInfo implements java.io.Serializable {
     {
         return this._starsAppliances;
     } //-- StarsAppliances getStarsAppliances() 
+
+    /**
+     * Returns the value of field 'starsCallReportHistory'.
+     * 
+     * @return the value of field 'starsCallReportHistory'.
+    **/
+    public StarsCallReportHistory getStarsCallReportHistory()
+    {
+        return this._starsCallReportHistory;
+    } //-- StarsCallReportHistory getStarsCallReportHistory() 
 
     /**
      * Returns the value of field 'starsCustomerAccount'.
@@ -95,6 +109,16 @@ public abstract class StarsCustAccountInfo implements java.io.Serializable {
     } //-- StarsLMPrograms getStarsLMPrograms() 
 
     /**
+     * Returns the value of field 'starsServiceRequestHistory'.
+     * 
+     * @return the value of field 'starsServiceRequestHistory'.
+    **/
+    public StarsServiceRequestHistory getStarsServiceRequestHistory()
+    {
+        return this._starsServiceRequestHistory;
+    } //-- StarsServiceRequestHistory getStarsServiceRequestHistory() 
+
+    /**
     **/
     public boolean isValid()
     {
@@ -112,16 +136,24 @@ public abstract class StarsCustAccountInfo implements java.io.Serializable {
      * 
      * @param out
     **/
-    public abstract void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public void marshal(java.io.Writer out)
+        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    {
+        
+        Marshaller.marshal(this, out);
+    } //-- void marshal(java.io.Writer) 
 
     /**
      * 
      * 
      * @param handler
     **/
-    public abstract void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    {
+        
+        Marshaller.marshal(this, handler);
+    } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
      * Sets the value of field 'starsAppliances'.
@@ -132,6 +164,17 @@ public abstract class StarsCustAccountInfo implements java.io.Serializable {
     {
         this._starsAppliances = starsAppliances;
     } //-- void setStarsAppliances(StarsAppliances) 
+
+    /**
+     * Sets the value of field 'starsCallReportHistory'.
+     * 
+     * @param starsCallReportHistory the value of field
+     * 'starsCallReportHistory'.
+    **/
+    public void setStarsCallReportHistory(StarsCallReportHistory starsCallReportHistory)
+    {
+        this._starsCallReportHistory = starsCallReportHistory;
+    } //-- void setStarsCallReportHistory(StarsCallReportHistory) 
 
     /**
      * Sets the value of field 'starsCustomerAccount'.
@@ -163,6 +206,28 @@ public abstract class StarsCustAccountInfo implements java.io.Serializable {
     {
         this._starsLMPrograms = starsLMPrograms;
     } //-- void setStarsLMPrograms(StarsLMPrograms) 
+
+    /**
+     * Sets the value of field 'starsServiceRequestHistory'.
+     * 
+     * @param starsServiceRequestHistory the value of field
+     * 'starsServiceRequestHistory'.
+    **/
+    public void setStarsServiceRequestHistory(StarsServiceRequestHistory starsServiceRequestHistory)
+    {
+        this._starsServiceRequestHistory = starsServiceRequestHistory;
+    } //-- void setStarsServiceRequestHistory(StarsServiceRequestHistory) 
+
+    /**
+     * 
+     * 
+     * @param reader
+    **/
+    public static com.cannontech.stars.xml.serialize.StarsCustAccountInformation unmarshal(java.io.Reader reader)
+        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    {
+        return (com.cannontech.stars.xml.serialize.StarsCustAccountInformation) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsCustAccountInformation.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsCustAccountInformation unmarshal(java.io.Reader) 
 
     /**
     **/

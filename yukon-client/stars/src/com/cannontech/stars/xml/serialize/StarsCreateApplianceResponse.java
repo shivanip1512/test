@@ -25,9 +25,14 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsCreateApplianceResponse extends StarsApp 
-implements java.io.Serializable
-{
+public class StarsCreateApplianceResponse implements java.io.Serializable {
+
+
+      //--------------------------/
+     //- Class/Member Variables -/
+    //--------------------------/
+
+    private StarsAppliance _starsAppliance;
 
 
       //----------------/
@@ -42,6 +47,16 @@ implements java.io.Serializable
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'starsAppliance'.
+     * 
+     * @return the value of field 'starsAppliance'.
+    **/
+    public StarsAppliance getStarsAppliance()
+    {
+        return this._starsAppliance;
+    } //-- StarsAppliance getStarsAppliance() 
 
     /**
     **/
@@ -79,6 +94,16 @@ implements java.io.Serializable
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'starsAppliance'.
+     * 
+     * @param starsAppliance the value of field 'starsAppliance'.
+    **/
+    public void setStarsAppliance(StarsAppliance starsAppliance)
+    {
+        this._starsAppliance = starsAppliance;
+    } //-- void setStarsAppliance(StarsAppliance) 
 
     /**
      * 

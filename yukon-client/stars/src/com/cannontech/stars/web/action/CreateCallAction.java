@@ -8,12 +8,17 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.xml.StarsCallReportFactory;
+import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.serialize.CallType;
+import com.cannontech.stars.xml.serialize.StarsCallReport;
 import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
 import com.cannontech.stars.xml.serialize.StarsCreateCallReport;
+import com.cannontech.stars.xml.serialize.StarsCreateCallReportResponse;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.serialize.StarsFailure;
@@ -83,31 +88,39 @@ public class CreateCallAction implements ActionBase {
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
             if (operator == null) {
-            	StarsFailure failure = new StarsFailure();
-            	failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
-            	failure.setDescription( "Session invalidated, please login again" );
-            	respOper.setStarsFailure( failure );
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            com.cannontech.database.data.stars.customer.CustomerAccount account =
-            		(com.cannontech.database.data.stars.customer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
+        	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) operator.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+        	if (accountInfo == null) {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+        	}
             
             StarsCreateCallReport createCall = reqOper.getStarsCreateCallReport();
             com.cannontech.database.data.stars.report.CallReportBase callReport = new com.cannontech.database.data.stars.report.CallReportBase();
             com.cannontech.database.db.stars.report.CallReportBase callReportDB = callReport.getCallReportBase();
             
             StarsCallReportFactory.setCallReportBase( callReportDB, createCall );
-            callReportDB.setAccountID( account.getCustomerAccount().getAccountID() );
-            callReportDB.setCustomerID( account.getCustomerBase().getCustomerBase().getCustomerID() );
+            callReportDB.setAccountID( new Integer(accountInfo.getCustomerAccount().getAccountID()) );
+            callReportDB.setCustomerID( new Integer(accountInfo.getCustomerAccount().getCustomerID()) );
             
-            callReport.setCustomerAccount( account );
+            callReport.setEnergyCompanyID( new Integer((int) operator.getEnergyCompanyID()) );
             
             Transaction transaction = Transaction.createTransaction( Transaction.INSERT, callReport );
             callReport = (com.cannontech.database.data.stars.report.CallReportBase)transaction.execute();
             
-            StarsSuccess success = new StarsSuccess();
-            respOper.setStarsSuccess( success );
+            StarsCallReport call = (StarsCallReport) StarsCallReportFactory.newStarsCallReport( createCall, StarsCallReport.class );
+            call.setCallID( callReport.getCallReportBase().getCallID().intValue() );
+            accountInfo.getCallReportHistory().add( 0, call );
+            
+            StarsCreateCallReportResponse resp = new StarsCreateCallReportResponse();
+            resp.setStarsCallReport( call );
+            
+            respOper.setStarsCreateCallReportResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -127,21 +140,17 @@ public class CreateCallAction implements ActionBase {
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) return failure.getStatusCode();
 			
-            if (operation.getStarsSuccess() == null)
-            	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-			
-			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-			StarsCreateCallReport createCall = reqOper.getStarsCreateCallReport();
-			StarsCallReportHistory callHist = (StarsCallReportHistory) StarsCallReportFactory.newStarsCallReport( createCall, StarsCallReportHistory.class );
+			StarsCreateCallReportResponse resp = operation.getStarsCreateCallReportResponse();
+			StarsCallReport call = resp.getStarsCallReport();
 			
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsGetCallReportHistoryResponse callHists = (StarsGetCallReportHistoryResponse) operator.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING" );
-			if (callHists == null) {
-				callHists = new StarsGetCallReportHistoryResponse();
-				operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING", callHists );
-			}
-			callHists.addStarsCallReportHistory( 0, callHist );
+			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+					operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+            if (accountInfo == null)
+            	return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 			
+			// Call report history must already be retrieved before, e.g. when the account info is loaded
+			accountInfo.getStarsCallReportHistory().addStarsCallReport( 0, call );
             return 0;
         }
         catch (Exception e) {

@@ -7,11 +7,15 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.data.stars.customer.CustomerAccount;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsUser;
-import com.cannontech.stars.xml.StarsCustAccountInfoFactory;
-import com.cannontech.stars.xml.serialize.StarsCustAccountInfo;
+import com.cannontech.stars.xml.StarsCustAccountInformationFactory;
+import com.cannontech.stars.xml.StarsFailureFactory;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsGetAllCustomerAccountsResponse;
 import com.cannontech.stars.xml.serialize.StarsGetCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsGetCustomerAccountResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
@@ -33,9 +37,16 @@ public class GetCustAccountAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
+			StarsUser user = (StarsUser) session.getAttribute( "USER" );
+			if (user == null) return null;
+			
+			StarsGetAllCustomerAccountsResponse accounts = (StarsGetAllCustomerAccountsResponse)
+					user.getAttribute( "ALL_CUSTOMER_ACCOUNTS" );
+			if (accounts == null || accounts.getStarsCustAccountBriefCount() == 0) return null;
+			
             StarsOperation operation = new StarsOperation();
             StarsGetCustomerAccount getAccount = new StarsGetCustomerAccount();
-            getAccount.setAccountNo( 0 );
+            getAccount.setAccountID( accounts.getStarsCustAccountBrief(0).getAccountID() );
             operation.setStarsGetCustomerAccount( getAccount );
 
             return SOAPUtil.buildSOAPMessage( operation );
@@ -57,35 +68,28 @@ public class GetCustAccountAction implements ActionBase {
 
             StarsUser user = (StarsUser) session.getAttribute("USER");
             if (user == null) {
-                StarsFailure failure = new StarsFailure();
-                failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
-                failure.setDescription("Session invalidated, please login again");
-                respOper.setStarsFailure( failure );
+                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+                		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
 
             StarsGetCustomerAccount getAccount = reqOper.getStarsGetCustomerAccount();
-            CustomerAccount account = null;
-			CustomerAccount[] accounts = user.getCustomerAccounts();
-			if (getAccount.getAccountNo() < accounts.length)
-				account = accounts[ getAccount.getAccountNo() ];
-
-            if (account == null) {
-                StarsFailure failure = new StarsFailure();
-                failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
-                failure.setDescription("No customer account found, account No. out of boundary");
-                respOper.setStarsFailure( failure );
+            LiteStarsCustAccountInformation liteAcctInfo = com.cannontech.stars.web.servlet.SOAPServer.getCustAccountInformation(
+            		new Integer(user.getEnergyCompanyID()), new Integer(getAccount.getAccountID()) );
+            if (liteAcctInfo == null) {
+                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+                		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Cannot find customer account information") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
-
-        	user.setAttribute("CUSTOMER_ACCOUNT", account);
-            Hashtable selectionLists = com.cannontech.stars.util.ServerUtils.getSelectionListTable(
-            		new Integer(user.getEnergyCompanyID()) );
-            
-			StarsCustAccountInfo accountInfo = StarsCustAccountInfoFactory.getStarsCustAccountInfo(
-					account, selectionLists, StarsGetCustomerAccountResponse.class );
-            respOper.setStarsGetCustomerAccountResponse( (StarsGetCustomerAccountResponse) accountInfo );
-
+        	user.setAttribute("CUSTOMER_ACCOUNT_INFORMATION", liteAcctInfo);
+        	
+			StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation(
+					liteAcctInfo, new Integer(user.getEnergyCompanyID()) );
+			
+			StarsGetCustomerAccountResponse resp = new StarsGetCustomerAccountResponse();
+			resp.setStarsCustAccountInformation( starsAcctInfo );
+			
+            respOper.setStarsGetCustomerAccountResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -105,7 +109,8 @@ public class GetCustAccountAction implements ActionBase {
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) return failure.getStatusCode();
 			
-            StarsCustAccountInfo accountInfo = operation.getStarsGetCustomerAccountResponse();
+            StarsGetCustomerAccountResponse resp = operation.getStarsGetCustomerAccountResponse();
+            StarsCustAccountInformation accountInfo = resp.getStarsCustAccountInformation();
             if (accountInfo == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
 			StarsUser user = (StarsUser) session.getAttribute("USER");

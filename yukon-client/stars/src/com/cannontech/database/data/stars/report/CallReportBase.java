@@ -17,7 +17,7 @@ public class CallReportBase extends DBPersistent {
     private com.cannontech.database.db.stars.report.CallReportBase callReportBase = null;
     private com.cannontech.database.db.stars.CustomerListEntry callType = null;
 
-    private com.cannontech.database.data.stars.customer.CustomerAccount customerAccount = null;
+    private Integer energyCompanyID = null;
 
     public CallReportBase() {
         super();
@@ -40,19 +40,17 @@ public class CallReportBase extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
-    	if (getCustomerAccount() == null)
-    		throw new java.sql.SQLException("Add: setCustomerAccount() must be called before this function");
+    	if (energyCompanyID == null)
+    		throw new java.sql.SQLException("Add: setEnergyCompanyID() must be called before this function");
     		
         getCallReportBase().add();
         
-        if (getCustomerAccount().getCustomerBase() != null && getCustomerAccount().getCustomerBase().getEnergyCompanyBase() != null) {
-            // add to mapping table
-            Object[] addValues = {
-                getCustomerAccount().getCustomerBase().getEnergyCompanyBase().getEnergyCompany().getEnergyCompanyID(),
-                getCallReportBase().getCallID()
-            };
-            add( "ECToCallReportMapping", addValues );
-        }
+        // add to mapping table
+        Object[] addValues = {
+            energyCompanyID,
+            getCallReportBase().getCallID()
+        };
+        add( "ECToCallReportMapping", addValues );
     }
 
     public void update() throws java.sql.SQLException {
@@ -83,14 +81,6 @@ public class CallReportBase extends DBPersistent {
 	}
 
 	/**
-	 * Returns the customerAccount.
-	 * @return com.cannontech.database.data.stars.customer.CustomerAccount
-	 */
-	public com.cannontech.database.data.stars.customer.CustomerAccount getCustomerAccount() {
-		return customerAccount;
-	}
-
-	/**
 	 * Sets the callReportBase.
 	 * @param callReportBase The callReportBase to set
 	 */
@@ -107,14 +97,9 @@ public class CallReportBase extends DBPersistent {
 		com.cannontech.database.db.stars.CustomerListEntry callType) {
 		this.callType = callType;
 	}
-
-	/**
-	 * Sets the customerAccount.
-	 * @param customerAccount The customerAccount to set
-	 */
-	public void setCustomerAccount(
-		com.cannontech.database.data.stars.customer.CustomerAccount customerAccount) {
-		this.customerAccount = customerAccount;
+	
+	public void setEnergyCompanyID(Integer energyCompanyID) {
+		this.energyCompanyID = energyCompanyID;
 	}
 
 }

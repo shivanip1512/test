@@ -100,6 +100,36 @@ public class CustomerWebConfiguration extends DBPersistent {
 
         return new Integer( nextConfigID );
     }
+    
+    public static CustomerWebConfiguration[] getAllCustomerWebConfigurations() {
+    	String sql = "SELECT * FROM " + TABLE_NAME;
+    	
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    			
+    	try {
+    		stmt.execute();
+    		CustomerWebConfiguration[] webConfigs = new CustomerWebConfiguration[ stmt.getRowCount() ];
+    		
+    		for (int i = 0; i < stmt.getRowCount(); i++) {
+    			Object[] row = stmt.getRow(i);
+    			webConfigs[i] = new CustomerWebConfiguration();
+    			
+    			webConfigs[i].setConfigurationID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+    			webConfigs[i].setLogoLocation( (String) row[1] );
+    			webConfigs[i].setDescription( (String) row[2] );
+    			webConfigs[i].setAlternateDisplayName( (String) row[3] );
+    			webConfigs[i].setURL( (String) row[4] );
+    		}
+    		
+    		return webConfigs;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return null;
+    }
 
 	/**
 	 * Returns the alternateDisplayName.

@@ -102,35 +102,35 @@ public class StarsLMHardwareHistoryDescriptor extends org.exolab.castor.xml.util
         
         //-- initialize element descriptors
         
-        //-- _LMHardwareEventList
-        desc = new XMLFieldDescriptorImpl(LMHardwareEvent.class, "_LMHardwareEventList", "LMHardwareEvent", NodeType.Element);
+        //-- _starsLMHardwareEventList
+        desc = new XMLFieldDescriptorImpl(StarsLMHardwareEvent.class, "_starsLMHardwareEventList", "stars-LMHardwareEvent", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsLMHardwareHistory target = (StarsLMHardwareHistory) object;
-                return target.getLMHardwareEvent();
+                return target.getStarsLMHardwareEvent();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsLMHardwareHistory target = (StarsLMHardwareHistory) object;
-                    target.addLMHardwareEvent( (LMHardwareEvent) value);
+                    target.addStarsLMHardwareEvent( (StarsLMHardwareEvent) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new LMHardwareEvent();
+                return new StarsLMHardwareEvent();
             }
         } );
         desc.setHandler(handler);
         desc.setMultivalued(true);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _LMHardwareEventList
+        //-- validation code for: _starsLMHardwareEventList
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);

@@ -27,8 +27,8 @@ import com.cannontech.stars.xml.serialize.LMDeviceType;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsAppliances;
-import com.cannontech.stars.xml.serialize.StarsCustAccountInfo;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.stars.xml.serialize.StarsLMHardware;
@@ -183,7 +183,7 @@ public class SearchCustAccountAction implements ActionBase {
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			}
 			
-			StarsCustAccountInfo acctInfo = new StarsSearchCustomerAccountResponse();
+			StarsCustAccountInformation acctInfo = new StarsCustAccountInformation();
 			acctInfo.setStarsCustomerAccount( new StarsCustomerAccount() );
 			acctInfo.setStarsAppliances( new StarsAppliances() );
 			acctInfo.setStarsInventories( new StarsInventories() );

@@ -10,14 +10,22 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.multi.MultiDBPersistent;
+import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.xml.StarsCustListEntryFactory;
 import com.cannontech.stars.xml.StarsCustomerAddressFactory;
 import com.cannontech.stars.xml.StarsCustomerContactFactory;
+import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.serialize.AdditionalContact;
 import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
+import com.cannontech.stars.xml.serialize.StarsNewCustomerAccountResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
@@ -135,22 +143,15 @@ public class NewCustAccountAction implements ActionBase {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             StarsOperation respOper = new StarsOperation();
 
-            /* This part is for consumer side, must be removed later */
-            Integer energyCompanyID = (Integer) session.getAttribute("ENERGY_COMPANY_ID");
-            com.cannontech.stars.web.StarsOperator operator = null;
-
-            if (energyCompanyID == null) {
-                operator = (com.cannontech.stars.web.StarsOperator) session.getAttribute("OPERATOR");
-                if (operator == null) {
-                    StarsFailure failure = new StarsFailure();
-                    failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
-                    failure.setDescription("Session invalidated, please login again");
-                    respOper.setStarsFailure( failure );
-                    return SOAPUtil.buildSOAPMessage( respOper );
-                }
-
-                energyCompanyID = new Integer( (int)operator.getEnergyCompanyID() );
+            com.cannontech.stars.web.StarsOperator operator = (com.cannontech.stars.web.StarsOperator) session.getAttribute("OPERATOR");
+            if (operator == null) {
+                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+                		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
+                return SOAPUtil.buildSOAPMessage( respOper );
             }
+
+            Integer energyCompanyID = new Integer( (int)operator.getEnergyCompanyID() );
+        	Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
             
             com.cannontech.database.data.company.EnergyCompanyBase energyCompany =
             		new com.cannontech.database.data.company.EnergyCompanyBase();
@@ -162,12 +163,12 @@ public class NewCustAccountAction implements ActionBase {
             StarsNewCustomerAccount newAccount = reqOper.getStarsNewCustomerAccount();
             StarsCustomerAccount starsAccount = newAccount.getStarsCustomerAccount();
 
-			/* Begin set CustomerAccount information */
+			/* Begin create CustomerAccount */
             com.cannontech.database.data.stars.customer.CustomerAccount account =
                     new com.cannontech.database.data.stars.customer.CustomerAccount();
             com.cannontech.database.db.stars.customer.CustomerAccount accountDB = account.getCustomerAccount();
             
-            /** Begin set Customer information **/
+            /*- Begin create Customer -*/
             com.cannontech.database.data.stars.customer.CustomerBase customer =
             		new com.cannontech.database.data.stars.customer.CustomerBase();
             com.cannontech.database.db.stars.customer.CustomerBase customerDB = customer.getCustomerBase();
@@ -183,34 +184,31 @@ public class NewCustAccountAction implements ActionBase {
 	            contactVct.addElement( contact );
             }
             
-        	Hashtable selectionList = com.cannontech.stars.util.ServerUtils.getSelectionListTable(
-        			new Integer((int) operator.getEnergyCompanyID()) );
-        			
-            StarsCustSelectionList custTypeList = (StarsCustSelectionList) selectionList.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE );
-            Integer custTypeResID = null;
-            for (int i = 0; i < custTypeList.getStarsSelectionListEntryCount(); i++) {
-            	StarsSelectionListEntry entry = custTypeList.getStarsSelectionListEntry(i);
-            	if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_RES ))
-            		custTypeResID = new Integer( entry.getEntryID() );
-            }
-            customerDB.setCustomerTypeID( custTypeResID );
+            int custTypeID = 0;
+        	LiteCustomerSelectionList custTypeList = (LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE);
+        	if (starsAccount.getIsCommercial())
+        		custTypeID = StarsCustListEntryFactory.getStarsCustListEntry(
+        				custTypeList, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_COMM ).getEntryID();
+        	else
+        		custTypeID = StarsCustListEntryFactory.getStarsCustListEntry(
+        				custTypeList, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_RES ).getEntryID();
+            customerDB.setCustomerTypeID( new Integer(custTypeID) );
             
-            customer.setEnergyCompanyBase( energyCompany );
-            customerDB.setTimeZone( "CST" );	// How to set the proper time zone???
+            customerDB.setTimeZone( "(none)" );	// How to set the proper time zone???
             customerDB.setPaoID( new Integer(0) );
-            /** End set Customer information **/
+            /*- End create Customer -*/
             
             com.cannontech.database.db.customer.CustomerAddress billAddr = account.getBillingAddress();
             StarsCustomerAddressFactory.setCustomerAddress( billAddr, starsAccount.getBillingAddress() );
             
-            /** Begin set AccountSite information **/
+            /*- Begin create AccountSite -*/
             com.cannontech.database.data.stars.customer.AccountSite acctSite = account.getAccountSite();
             com.cannontech.database.db.stars.customer.AccountSite acctSiteDB = acctSite.getAccountSite();
             
             com.cannontech.database.db.customer.CustomerAddress propAddr = acctSite.getStreetAddress();
             StarsCustomerAddressFactory.setCustomerAddress( propAddr, starsAccount.getStreetAddress() );
 
-			/*** Begin set SiteInformation information ***/
+			/*-- Begin create SiteInformation --*/
 			com.cannontech.database.data.stars.customer.SiteInformation siteInfo = acctSite.getSiteInformation();
             com.cannontech.database.db.stars.customer.SiteInformation siteInfoDB = siteInfo.getSiteInformation();
             StarsSiteInformation starsSiteInfo = starsAccount.getStarsSiteInformation();
@@ -220,12 +218,11 @@ public class NewCustAccountAction implements ActionBase {
             siteInfoDB.setPole( starsSiteInfo.getPole() );
             siteInfoDB.setTransformerSize( starsSiteInfo.getTransformerSize() );
             siteInfoDB.setServiceVoltage( starsSiteInfo.getServiceVoltage() );
-            /*** End set SiteInformation information ***/
+            /*-- End create SiteInformation --*/
             
             acctSiteDB.setSiteNumber( starsAccount.getPropertyNumber() );
             acctSiteDB.setPropertyNotes( starsAccount.getPropertyNotes() );
-            /** End set AccountSite information **/
-
+            /*- End create AccountSite -*/
 /*            
             com.cannontech.database.db.customer.CustomerLogin login = account.getCustomerLogin();
             StarsLogin starsLogin = newAccount.getStarsLogin();
@@ -243,17 +240,23 @@ public class NewCustAccountAction implements ActionBase {
             accountDB.setAccountNumber( starsAccount.getAccountNumber() );
             accountDB.setAccountNotes( starsAccount.getAccountNotes() );
 */
-            
             account.setCustomerBase( customer );
-            account.setEnergyCompanyBase( energyCompany );
+            account.setEnergyCompanyID( energyCompanyID );
             //account.setCustomerLogin( login );
-            /* End set CustomerAccount information */
+            /* End create CustomerAccount */
             
-            Transaction.createTransaction( Transaction.INSERT, account ).execute();
+            account = (com.cannontech.database.data.stars.customer.CustomerAccount)
+            		Transaction.createTransaction( Transaction.INSERT, account ).execute();
+            
+			LiteStarsCustAccountInformation liteAcctInfo = SOAPServer.addCustAccountInformation( energyCompanyID, account );
+            
+            operator.setAttribute( "CUSTOMER_ACCOUNT_INFORMATION", liteAcctInfo );
+            StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID );
 
-            StarsSuccess success = new StarsSuccess();
-            respOper.setStarsSuccess( success );
-
+            StarsNewCustomerAccountResponse resp = new StarsNewCustomerAccountResponse();
+            resp.setStarsCustAccountInformation( starsAcctInfo );
+            
+            respOper.setStarsNewCustomerAccountResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -273,8 +276,12 @@ public class NewCustAccountAction implements ActionBase {
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) return failure.getStatusCode();
 			
-            if (operation.getStarsSuccess() == null)
-            	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+			StarsNewCustomerAccountResponse resp = operation.getStarsNewCustomerAccountResponse();
+			if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+			
+			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+			operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION", resp.getStarsCustAccountInformation() );
+			
             return 0;
         }
         catch (Exception e) {

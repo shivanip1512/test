@@ -1,5 +1,6 @@
 package com.cannontech.database.data.stars.event;
 
+import com.cannontech.stars.xml.serialize.StarsLMHardwareEvent;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareHistory;
 
 /**
@@ -100,12 +101,12 @@ public class LMHardwareEvent extends LMCustomerEventBase {
 	        StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
 	        
 	        for (int i = 0; i < events.length; i++) {
-	        	com.cannontech.stars.xml.serialize.LMHardwareEvent hwEvent = new com.cannontech.stars.xml.serialize.LMHardwareEvent();
+	        	StarsLMHardwareEvent hwEvent = new StarsLMHardwareEvent();
 	        	hwEvent.setEventAction( events[i].getAction().getEntryText() );
 	        	hwEvent.setYukonDefinition( events[i].getAction().getYukonDefinition() );
 	        	hwEvent.setEventDateTime( events[i].getLMCustomerEventBase().getEventDateTime() );
 	        	hwEvent.setNotes( events[i].getLMCustomerEventBase().getNotes() );
-	        	hwHist.addLMHardwareEvent( hwEvent );
+	        	hwHist.addStarsLMHardwareEvent( hwEvent );
 	        }
 	        
 	        return hwHist;

@@ -77,12 +77,8 @@ public class LMProgramWebPublishing extends DBPersistent {
         java.sql.Connection conn = null;
         
         try {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-            if (conn == null) return null;
-            
             com.cannontech.database.db.stars.LMProgramWebPublishing webPubDB =
-            		com.cannontech.database.db.stars.LMProgramWebPublishing.getLMProgramWebPublishing( programID, conn );
+            		com.cannontech.database.db.stars.LMProgramWebPublishing.getLMProgramWebPublishing( programID );
             if (webPubDB == null) return null;
             
             com.cannontech.database.data.stars.LMProgramWebPublishing webPub =
@@ -95,14 +91,6 @@ public class LMProgramWebPublishing extends DBPersistent {
         }
         catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
-            try {
-                if (conn != null) conn.close();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
         }
 
         return null;

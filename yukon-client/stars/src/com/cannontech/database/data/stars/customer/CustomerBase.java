@@ -20,8 +20,6 @@ public class CustomerBase extends DBPersistent {
 
     private java.util.Vector customerContactVector = null;
 
-    private com.cannontech.database.data.company.EnergyCompanyBase energyCompanyBase = null;
-
     public CustomerBase() {
         super();
     }
@@ -186,6 +184,23 @@ public class CustomerBase extends DBPersistent {
             }
         }*/
     }
+    
+    public static com.cannontech.database.db.customer.CustomerContact addContact(
+    	com.cannontech.database.db.stars.customer.CustomerBase customer,
+    	com.cannontech.database.db.customer.CustomerContact contact)
+    	throws com.cannontech.database.TransactionException
+    {
+    	CustomerContactMapping contactMap = new CustomerContactMapping(customer, contact);
+    	contactMap = (CustomerContactMapping)
+    			com.cannontech.database.Transaction.createTransaction( com.cannontech.database.Transaction.INSERT, contactMap ).execute();
+    	return contactMap.getContact();
+    }
+    
+    public static void deleteContact(com.cannontech.database.db.stars.customer.CustomerBase customer, com.cannontech.database.db.customer.CustomerContact contact)
+    throws com.cannontech.database.TransactionException {
+    	CustomerContactMapping contactMap = new CustomerContactMapping(customer, contact);
+    	com.cannontech.database.Transaction.createTransaction( com.cannontech.database.Transaction.DELETE, contactMap ).execute();
+    }
 
 	/**
 	 * Returns the customerBase.
@@ -226,14 +241,6 @@ public class CustomerBase extends DBPersistent {
         customerContactVector = newCustomerContactVector;
     }
 
-    public com.cannontech.database.data.company.EnergyCompanyBase getEnergyCompanyBase() {
-        return energyCompanyBase;
-    }
-
-    public void setEnergyCompanyBase(com.cannontech.database.data.company.EnergyCompanyBase newEnergyCompanyBase) {
-        energyCompanyBase = newEnergyCompanyBase;
-    }
-
 	/**
 	 * Returns the customerType.
 	 * @return com.cannontech.database.db.stars.CustomerListEntry
@@ -251,6 +258,65 @@ public class CustomerBase extends DBPersistent {
 	public void setCustomerType(
 		com.cannontech.database.db.stars.CustomerListEntry customerType) {
 		this.customerType = customerType;
+	}
+
+}
+    
+class CustomerContactMapping extends DBPersistent {
+	com.cannontech.database.db.stars.customer.CustomerBase customerBase = null;
+	com.cannontech.database.db.customer.CustomerContact contact = null;
+	
+	public CustomerContactMapping(com.cannontech.database.db.stars.customer.CustomerBase customerBase, com.cannontech.database.db.customer.CustomerContact contact) {
+		setCustomerBase( customerBase );
+		setContact( contact );
+	}
+	
+	public void setDbConnection(java.sql.Connection conn) {
+		super.setDbConnection( conn );
+		if (getContact() != null)
+			getContact().setDbConnection( conn );
+	}
+	
+	public void add() throws java.sql.SQLException {
+        if (getContact() != null) getContact().add();
+
+		if (getCustomerBase() != null) {
+            Object[] addValues = {
+                getCustomerBase().getCustomerID(),
+                getContact().getContactID()
+            };
+            add( "CstBaseCstContactMap", addValues );
+		}
+	}
+	
+	public void delete() throws java.sql.SQLException {
+		if (getContact() != null) getContact().delete();
+		
+		delete( "CstBaseCstContactMap", "CustomerContactID", getContact().getContactID() );
+	}
+	
+	public void update() throws java.sql.SQLException {
+		if (getContact() != null) getContact().update();
+	}
+	
+	public void retrieve() throws java.sql.SQLException {
+		throw new java.sql.SQLException( "retrieve() is not implemented in this class" );
+	}
+
+	public com.cannontech.database.db.customer.CustomerContact getContact() {
+		return contact;
+	}
+
+	public com.cannontech.database.db.stars.customer.CustomerBase getCustomerBase() {
+		return customerBase;
+	}
+
+	public void setContact(com.cannontech.database.db.customer.CustomerContact contact) {
+		this.contact = contact;
+	}
+
+	public void setCustomerBase(com.cannontech.database.db.stars.customer.CustomerBase customerBase) {
+		this.customerBase = customerBase;
 	}
 
 }

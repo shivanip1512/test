@@ -81,8 +81,8 @@ public class ServletUtils {
     		StarsLMProgramHistory starsProgHist = program.getStarsLMProgramHistory();
     		if (starsProgHist == null) continue;
     		
-    		for (int j = 0; j < starsProgHist.getLMProgramEventCount(); j++) {
-    			LMProgramEvent event = starsProgHist.getLMProgramEvent(j);
+    		for (int j = 0; j < starsProgHist.getStarsLMProgramEventCount(); j++) {
+    			StarsLMProgramEvent event = starsProgHist.getStarsLMProgramEvent(j);
     			
 	    		ProgramHistory progHist = (ProgramHistory) progHistMap.get( event.getEventDateTime() );
 	    		if (progHist == null) {
@@ -95,8 +95,8 @@ public class ServletUtils {
     			if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TEMPTERMINATION )) {
     				// Getting opt out duration by looking at the next program event,
     				// the next event must be 'FutureAction' or 'Completed'
-    				if (++j >= starsProgHist.getLMProgramEventCount()) return null;
-    				LMProgramEvent event2 = starsProgHist.getLMProgramEvent(j);
+    				if (++j >= starsProgHist.getStarsLMProgramEventCount()) return null;
+    				StarsLMProgramEvent event2 = starsProgHist.getStarsLMProgramEvent(j);
     				if (!event2.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION )
     					&& !event2.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED ))
     					return null;

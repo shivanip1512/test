@@ -217,10 +217,15 @@ public class SOAPUtil {
 	    	StarsOperation operation = parseSOAPMsgForOperation( msg );
 	    	StringWriter sw = new StringWriter();
 	    	operation.marshal( sw );
-	    	CTILogger.debug( leading + sw.toString() );
+	    	CTILogger.info( leading + sw.toString() );
     	}
     	catch (Exception e) {
     		e.printStackTrace();
     	}
+    }
+    
+    public static void addSOAPHeader(SOAPMessage msg, String hdrField) throws Exception {
+    	SOAPHeader hdr = msg.getSOAPPart().getEnvelope().getHeader();
+    	hdr.addChildElement( hdrField );
     }
 }

@@ -8,15 +8,19 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
+import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
-import com.cannontech.stars.xml.StarsServiceRequestFactory;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
+import com.cannontech.stars.xml.StarsFailureFactory;
+import com.cannontech.stars.xml.StarsServiceRequestFactory;
 import com.cannontech.stars.xml.serialize.CurrentState;
 import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.ServiceType;
 import com.cannontech.stars.xml.serialize.StarsCreateServiceRequest;
-import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
+import com.cannontech.stars.xml.serialize.StarsCreateServiceRequestResponse;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 import com.cannontech.stars.xml.serialize.StarsGetServiceRequestHistoryResponse;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
@@ -109,28 +113,34 @@ public class CreateServiceRequestAction implements ActionBase {
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
             if (operator == null) {
-            	StarsFailure failure = new StarsFailure();
-            	failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
-            	failure.setDescription( "Session invalidated, please login again" );
-            	respOper.setStarsFailure( failure );
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            com.cannontech.database.data.stars.customer.CustomerAccount account =
-            		(com.cannontech.database.data.stars.customer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
+        	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) operator.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+        	if (accountInfo == null) {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+        	}
             		
             StarsCreateServiceRequest createOrder = reqOper.getStarsCreateServiceRequest();
             com.cannontech.database.data.stars.report.WorkOrderBase workOrder = new com.cannontech.database.data.stars.report.WorkOrderBase();
             com.cannontech.database.db.stars.report.WorkOrderBase workOrderDB = workOrder.getWorkOrderBase();
 
             StarsServiceRequestFactory.setWorkOrderBase( workOrderDB, createOrder );
-            workOrderDB.setCustomerID( account.getCustomerBase().getCustomerBase().getCustomerID() );
-            workOrderDB.setSiteID( account.getAccountSite().getAccountSite().getAccountSiteID() );            
+            workOrderDB.setCustomerID( new Integer(accountInfo.getCustomerAccount().getCustomerID()) );
+            workOrderDB.setSiteID( new Integer(accountInfo.getCustomerAccount().getAccountSiteID()) );
 
-            workOrder.setCustomerBase( account.getCustomerBase() );
+            workOrder.setEnergyCompanyID( new Integer((int) operator.getEnergyCompanyID()) );
             
             Transaction transaction = Transaction.createTransaction( Transaction.INSERT, workOrder );
             workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)transaction.execute();
+            
+            LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( workOrderDB );
+            com.cannontech.stars.web.servlet.SOAPServer.getAllWorkOrders( new Integer((int) operator.getEnergyCompanyID()) ).add( liteOrder );
+            accountInfo.getServiceRequestHistory().add( 0, new Integer(liteOrder.getOrderID()) );
             
             StarsSuccess success = new StarsSuccess();
             respOper.setStarsSuccess( success );
@@ -153,21 +163,16 @@ public class CreateServiceRequestAction implements ActionBase {
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) return failure.getStatusCode();
 			
-            if (operation.getStarsSuccess() == null)
-            	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-			
-			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-			StarsCreateServiceRequest createOrder = reqOper.getStarsCreateServiceRequest();
-			StarsServiceRequestHistory orderHist = (StarsServiceRequestHistory) StarsServiceRequestFactory.newStarsServiceRequest( createOrder, StarsServiceRequestHistory.class );
+			StarsCreateServiceRequestResponse resp = operation.getStarsCreateServiceRequestResponse();
+			StarsServiceRequest order = resp.getStarsServiceRequest();
 			
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsGetServiceRequestHistoryResponse orderHists = (StarsGetServiceRequestHistoryResponse) operator.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY" );
-			if (orderHists == null) {
-				orderHists = new StarsGetServiceRequestHistoryResponse();
-				operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY", orderHists );
-			}
-			orderHists.addStarsServiceRequestHistory( 0, orderHist );
-			
+			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) operator.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+			if (accountInfo == null)
+				return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+				
+			// Serivce request history must already be retrieved before, e.g. when the account info is loaded
+			accountInfo.getStarsServiceRequestHistory().addStarsServiceRequest( 0, order );
             return 0;
         }
         catch (Exception e) {

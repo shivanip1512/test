@@ -1,22 +1,28 @@
 package com.cannontech.stars.web.action;
 
 import java.util.Hashtable;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.xml.serialize.CallType;
+import com.cannontech.stars.xml.serialize.StarsCallReport;
 import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetCallReportHistory;
 import com.cannontech.stars.xml.serialize.StarsGetCallReportHistoryResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
+import com.cannontech.stars.xml.StarsCallReportFactory;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
+import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -53,71 +59,50 @@ public class CallTrackingAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
-		java.sql.Connection conn = null;
-		
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             StarsOperation respOper = new StarsOperation();
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
             if (operator == null) {
-            	StarsFailure failure = new StarsFailure();
-            	failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
-            	failure.setDescription( "Session invalidated, please login again" );
-            	respOper.setStarsFailure( failure );
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            com.cannontech.database.data.stars.customer.CustomerAccount account =
-            		(com.cannontech.database.data.stars.customer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
+        	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) operator.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+        	if (accountInfo == null) {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+        	}
             
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-            if (conn == null) return null;
-            
-            com.cannontech.database.db.stars.report.CallReportBase[] calls =
-            		com.cannontech.database.db.stars.report.CallReportBase.getAllAccountCallReports(
-            			account.getCustomerAccount().getAccountID(), conn );
-            if (calls == null) return null;
-            
-            Hashtable selectionListTable = com.cannontech.stars.util.ServerUtils.getSelectionListTable(
-            		new Integer((int) operator.getEnergyCompanyID()) );
-            StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CALLTYPE );
-            
-            StarsGetCallReportHistoryResponse callTrackingResp = new StarsGetCallReportHistoryResponse();
-            for (int i = 0; i < calls.length; i++) {
-            	StarsCallReportHistory callHist = new StarsCallReportHistory();
-            	
-				callHist.setCallNumber( calls[i].getCallNumber() );
-            	callHist.setCallDate( calls[i].getDateTaken() );
-            	
-            	for (int j = 0; j < callTypeList.getStarsSelectionListEntryCount(); j++) {
-            		StarsSelectionListEntry entry = callTypeList.getStarsSelectionListEntry(j);
-            		if (entry.getEntryID() == calls[i].getCallTypeID().intValue()) {
-            			CallType callType = (CallType) StarsCustListEntryFactory.newStarsCustListEntry( entry, CallType.class );
-		            	callHist.setCallType( callType );
-            		}
-            	}
-            	
-            	callHist.setTakenBy( calls[i].getTakenBy() );
-            	callHist.setDescription( calls[i].getDescription() );
-            	
-            	callTrackingResp.addStarsCallReportHistory( callHist );
+            if (accountInfo.getCallReportHistory() == null) {
+				StarsCallReport[] calls = StarsCallReportFactory.getStarsCallReports(
+						new Integer((int) operator.getEnergyCompanyID()), new Integer(accountInfo.getCustomerAccount().getAccountID()) );
+	            if (calls == null) {
+	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot get call report history") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+	            }
+	            
+				accountInfo.setCallReportHistory( new ArrayList() );
+				for (int i = 0; i < calls.length; i++)
+					accountInfo.getCallReportHistory().add( calls[i] );
             }
+	        
+	        StarsCallReportHistory callHist = new StarsCallReportHistory();
+	        for (int i = 0; i < accountInfo.getCallReportHistory().size(); i++)
+	        	callHist.addStarsCallReport( (StarsCallReport) accountInfo.getCallReportHistory().get(i) );
+	        	
+            StarsGetCallReportHistoryResponse callTrackingResp = new StarsGetCallReportHistoryResponse();
+            callTrackingResp.setStarsCallReportHistory( callHist );
             
             respOper.setStarsGetCallReportHistoryResponse( callTrackingResp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
         	e.printStackTrace();
-        }
-        finally {
-        	try {
-	        	if (conn != null) conn.close();
-        	}
-        	catch (Exception e) {
-        		e.printStackTrace();
-        	}
         }
         
 		return null;
@@ -137,8 +122,12 @@ public class CallTrackingAction implements ActionBase {
             if (callTrackingResp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            operator.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING", callTrackingResp);
-            
+			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+					operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+            if (accountInfo == null)
+            	return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+            	
+			accountInfo.setStarsCallReportHistory( callTrackingResp.getStarsCallReportHistory() );
 			return 0;
         }
         catch (Exception e) {

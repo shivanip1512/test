@@ -25,23 +25,38 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class LMHardwareEvent extends StarsLMCustomerEvent 
-implements java.io.Serializable
-{
+public class StarsCreateCallReportResponse implements java.io.Serializable {
+
+
+      //--------------------------/
+     //- Class/Member Variables -/
+    //--------------------------/
+
+    private StarsCallReport _starsCallReport;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public LMHardwareEvent() {
+    public StarsCreateCallReportResponse() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.LMHardwareEvent()
+    } //-- com.cannontech.stars.xml.serialize.StarsCreateCallReportResponse()
 
 
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'starsCallReport'.
+     * 
+     * @return the value of field 'starsCallReport'.
+    **/
+    public StarsCallReport getStarsCallReport()
+    {
+        return this._starsCallReport;
+    } //-- StarsCallReport getStarsCallReport() 
 
     /**
     **/
@@ -81,15 +96,25 @@ implements java.io.Serializable
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'starsCallReport'.
+     * 
+     * @param starsCallReport the value of field 'starsCallReport'.
+    **/
+    public void setStarsCallReport(StarsCallReport starsCallReport)
+    {
+        this._starsCallReport = starsCallReport;
+    } //-- void setStarsCallReport(StarsCallReport) 
+
+    /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.LMHardwareEvent unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsCreateCallReportResponse unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.LMHardwareEvent) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.LMHardwareEvent.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.LMHardwareEvent unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsCreateCallReportResponse) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsCreateCallReportResponse.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsCreateCallReportResponse unmarshal(java.io.Reader) 
 
     /**
     **/

@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
-import java.util.Enumeration;
-import java.util.Vector;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -34,7 +32,7 @@ public class StarsGetServiceRequestHistoryResponse implements java.io.Serializab
      //- Class/Member Variables -/
     //--------------------------/
 
-    private java.util.Vector _starsServiceRequestHistoryList;
+    private StarsServiceRequestHistory _starsServiceRequestHistory;
 
 
       //----------------/
@@ -43,7 +41,6 @@ public class StarsGetServiceRequestHistoryResponse implements java.io.Serializab
 
     public StarsGetServiceRequestHistoryResponse() {
         super();
-        _starsServiceRequestHistoryList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsGetServiceRequestHistoryResponse()
 
 
@@ -52,69 +49,14 @@ public class StarsGetServiceRequestHistoryResponse implements java.io.Serializab
     //-----------/
 
     /**
+     * Returns the value of field 'starsServiceRequestHistory'.
      * 
-     * 
-     * @param vStarsServiceRequestHistory
+     * @return the value of field 'starsServiceRequestHistory'.
     **/
-    public void addStarsServiceRequestHistory(StarsServiceRequestHistory vStarsServiceRequestHistory)
-        throws java.lang.IndexOutOfBoundsException
+    public StarsServiceRequestHistory getStarsServiceRequestHistory()
     {
-        _starsServiceRequestHistoryList.addElement(vStarsServiceRequestHistory);
-    } //-- void addStarsServiceRequestHistory(StarsServiceRequestHistory) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsServiceRequestHistory
-    **/
-    public void addStarsServiceRequestHistory(int index, StarsServiceRequestHistory vStarsServiceRequestHistory)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsServiceRequestHistoryList.insertElementAt(vStarsServiceRequestHistory, index);
-    } //-- void addStarsServiceRequestHistory(int, StarsServiceRequestHistory) 
-
-    /**
-    **/
-    public java.util.Enumeration enumerateStarsServiceRequestHistory()
-    {
-        return _starsServiceRequestHistoryList.elements();
-    } //-- java.util.Enumeration enumerateStarsServiceRequestHistory() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsServiceRequestHistory getStarsServiceRequestHistory(int index)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsServiceRequestHistoryList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        
-        return (StarsServiceRequestHistory) _starsServiceRequestHistoryList.elementAt(index);
-    } //-- StarsServiceRequestHistory getStarsServiceRequestHistory(int) 
-
-    /**
-    **/
-    public StarsServiceRequestHistory[] getStarsServiceRequestHistory()
-    {
-        int size = _starsServiceRequestHistoryList.size();
-        StarsServiceRequestHistory[] mArray = new StarsServiceRequestHistory[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (StarsServiceRequestHistory) _starsServiceRequestHistoryList.elementAt(index);
-        }
-        return mArray;
-    } //-- StarsServiceRequestHistory[] getStarsServiceRequestHistory() 
-
-    /**
-    **/
-    public int getStarsServiceRequestHistoryCount()
-    {
-        return _starsServiceRequestHistoryList.size();
-    } //-- int getStarsServiceRequestHistoryCount() 
+        return this._starsServiceRequestHistory;
+    } //-- StarsServiceRequestHistory getStarsServiceRequestHistory() 
 
     /**
     **/
@@ -154,52 +96,14 @@ public class StarsGetServiceRequestHistoryResponse implements java.io.Serializab
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'starsServiceRequestHistory'.
+     * 
+     * @param starsServiceRequestHistory the value of field
+     * 'starsServiceRequestHistory'.
     **/
-    public void removeAllStarsServiceRequestHistory()
+    public void setStarsServiceRequestHistory(StarsServiceRequestHistory starsServiceRequestHistory)
     {
-        _starsServiceRequestHistoryList.removeAllElements();
-    } //-- void removeAllStarsServiceRequestHistory() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsServiceRequestHistory removeStarsServiceRequestHistory(int index)
-    {
-        java.lang.Object obj = _starsServiceRequestHistoryList.elementAt(index);
-        _starsServiceRequestHistoryList.removeElementAt(index);
-        return (StarsServiceRequestHistory) obj;
-    } //-- StarsServiceRequestHistory removeStarsServiceRequestHistory(int) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsServiceRequestHistory
-    **/
-    public void setStarsServiceRequestHistory(int index, StarsServiceRequestHistory vStarsServiceRequestHistory)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsServiceRequestHistoryList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        _starsServiceRequestHistoryList.setElementAt(vStarsServiceRequestHistory, index);
-    } //-- void setStarsServiceRequestHistory(int, StarsServiceRequestHistory) 
-
-    /**
-     * 
-     * 
-     * @param starsServiceRequestHistoryArray
-    **/
-    public void setStarsServiceRequestHistory(StarsServiceRequestHistory[] starsServiceRequestHistoryArray)
-    {
-        //-- copy array
-        _starsServiceRequestHistoryList.removeAllElements();
-        for (int i = 0; i < starsServiceRequestHistoryArray.length; i++) {
-            _starsServiceRequestHistoryList.addElement(starsServiceRequestHistoryArray[i]);
-        }
+        this._starsServiceRequestHistory = starsServiceRequestHistory;
     } //-- void setStarsServiceRequestHistory(StarsServiceRequestHistory) 
 
     /**

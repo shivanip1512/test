@@ -25,18 +25,16 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class LMProgramEvent extends StarsLMCustomerEvent 
-implements java.io.Serializable
-{
+public class Period implements java.io.Serializable {
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public LMProgramEvent() {
+    public Period() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.LMProgramEvent()
+    } //-- com.cannontech.stars.xml.serialize.Period()
 
 
       //-----------/
@@ -85,11 +83,11 @@ implements java.io.Serializable
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.LMProgramEvent unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.Period unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.LMProgramEvent) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.LMProgramEvent.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.LMProgramEvent unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.Period) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.Period.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.Period unmarshal(java.io.Reader) 
 
     /**
     **/

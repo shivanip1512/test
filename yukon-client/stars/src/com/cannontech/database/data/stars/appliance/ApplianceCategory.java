@@ -57,31 +57,6 @@ public class ApplianceCategory extends DBPersistent {
         getWebConfiguration().setConfigurationID( getApplianceCategory().getWebConfigurationID() );
         getWebConfiguration().retrieve();
     }
-    
-    public static com.cannontech.database.db.stars.appliance.ApplianceCategory[] getAllApplianceCategories(Integer categoryID) {
-        java.sql.Connection conn = null;
-
-        try {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-                com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-            if (conn == null) return null;
-            
-            return com.cannontech.database.db.stars.appliance.ApplianceCategory.getAllApplianceCategories(categoryID, conn);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                if (conn != null) conn.close();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        return null;
-    }
 
     public com.cannontech.database.db.stars.appliance.ApplianceCategory getApplianceCategory() {
         if (applianceCategory == null)

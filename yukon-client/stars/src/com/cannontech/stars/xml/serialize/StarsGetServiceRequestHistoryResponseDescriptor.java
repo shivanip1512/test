@@ -60,8 +60,8 @@ public class StarsGetServiceRequestHistoryResponseDescriptor extends org.exolab.
         
         //-- initialize element descriptors
         
-        //-- _starsServiceRequestHistoryList
-        desc = new XMLFieldDescriptorImpl(StarsServiceRequestHistory.class, "_starsServiceRequestHistoryList", "stars-ServiceRequestHistory", NodeType.Element);
+        //-- _starsServiceRequestHistory
+        desc = new XMLFieldDescriptorImpl(StarsServiceRequestHistory.class, "_starsServiceRequestHistory", "stars-ServiceRequestHistory", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -74,7 +74,7 @@ public class StarsGetServiceRequestHistoryResponseDescriptor extends org.exolab.
             {
                 try {
                     StarsGetServiceRequestHistoryResponse target = (StarsGetServiceRequestHistoryResponse) object;
-                    target.addStarsServiceRequestHistory( (StarsServiceRequestHistory) value);
+                    target.setStarsServiceRequestHistory( (StarsServiceRequestHistory) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -85,12 +85,13 @@ public class StarsGetServiceRequestHistoryResponseDescriptor extends org.exolab.
             }
         } );
         desc.setHandler(handler);
-        desc.setMultivalued(true);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsServiceRequestHistoryList
+        //-- validation code for: _starsServiceRequestHistory
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
+        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsGetServiceRequestHistoryResponseDescriptor()

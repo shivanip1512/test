@@ -1,6 +1,7 @@
 package com.cannontech.database.db.stars.event;
 
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.stars.xml.StarsCustListEntryFactory;
 
 
 /**
@@ -119,57 +120,35 @@ public class LMProgramEvent extends DBPersistent {
         return events;
     }
     
-    public static LMProgramEvent[] getAllLMProgramEvents(Integer accountID, Integer programID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = ? AND LMProgramID = ?";
+    public static LMProgramEvent[] getAllLMProgramEvents(Integer accountID, Integer programID) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = " + accountID.toString()
+        		   + " AND LMProgramID = " + programID.toString();
 
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        java.util.ArrayList eventList = new java.util.ArrayList();
+        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+        		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
         try
         {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
+        	stmt.execute();
+        	LMProgramEvent[] events = new LMProgramEvent[ stmt.getRowCount() ];
+
+            for (int i = 0; i < events.length; i++) {
+            	Object[] row = stmt.getRow(i);
+                events[i] = new LMProgramEvent();
+
+                events[i].setEventID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+                events[i].setAccountID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+                events[i].setLMProgramID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
             }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, accountID.intValue() );
-                pstmt.setInt( 2, programID.intValue() );
-                rset = pstmt.executeQuery();
-
-                while (rset.next()) {
-                    LMProgramEvent event = new LMProgramEvent();
-
-                    event.setEventID( new Integer(rset.getInt("EventID")) );
-                    event.setAccountID( new Integer(rset.getInt("AccountID")) );
-                    event.setLMProgramID( new Integer(rset.getInt("LMProgramID")) );
-
-                    eventList.add(event);
-                }
-            }
+            
+            return events;
         }
-        catch( java.sql.SQLException e )
+        catch( Exception e )
         {
                 e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if (rset != null) rset.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
 
-        LMProgramEvent[] events = new LMProgramEvent[ eventList.size() ];
-        eventList.toArray( events );
-        return events;
+        return null;
     }
 
     public static void deleteAllLMProgramEvents(Integer accountID, java.sql.Connection conn) {

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsFailureDescriptor.java,v 1.12 2002/10/11 21:44:27 zyao Exp $
+ * $Id: StarsFailureDescriptor.java,v 1.13 2002/11/12 15:58:50 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.12 $ $Date: 2002/10/11 21:44:27 $
+ * @version $Revision: 1.13 $ $Date: 2002/11/12 15:58:50 $
 **/
 public class StarsFailureDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -53,6 +53,9 @@ public class StarsFailureDescriptor extends org.exolab.castor.xml.util.XMLClassD
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- _statusCode
@@ -97,8 +100,10 @@ public class StarsFailureDescriptor extends org.exolab.castor.xml.util.XMLClassD
         }
         desc.setValidator(fieldValidator);
         
+        //-- initialize element descriptors
+        
         //-- _description
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_description", "description", NodeType.Attribute);
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_description", "Description", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
@@ -123,6 +128,7 @@ public class StarsFailureDescriptor extends org.exolab.castor.xml.util.XMLClassD
             }
         } );
         desc.setHandler(handler);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _description
@@ -133,8 +139,6 @@ public class StarsFailureDescriptor extends org.exolab.castor.xml.util.XMLClassD
             fieldValidator.setValidator(sv);
         }
         desc.setValidator(fieldValidator);
-        
-        //-- initialize element descriptors
         
     } //-- com.cannontech.stars.xml.serialize.StarsFailureDescriptor()
 

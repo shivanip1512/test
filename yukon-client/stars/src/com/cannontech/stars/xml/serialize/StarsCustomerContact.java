@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerContact.java,v 1.12 2002/10/11 21:44:18 zyao Exp $
+ * $Id: StarsCustomerContact.java,v 1.13 2002/11/12 15:58:36 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.12 $ $Date: 2002/10/11 21:44:18 $
+ * @version $Revision: 1.13 $ $Date: 2002/11/12 15:58:36 $
 **/
 public abstract class StarsCustomerContact implements java.io.Serializable {
 
@@ -31,6 +31,13 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
+
+    private int _contactID;
+
+    /**
+     * keeps track of state for field: _contactID
+    **/
+    private boolean _has_contactID;
 
     private java.lang.String _lastName;
 
@@ -53,6 +60,23 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+    **/
+    public void deleteContactID()
+    {
+        this._has_contactID= false;
+    } //-- void deleteContactID() 
+
+    /**
+     * Returns the value of field 'contactID'.
+     * 
+     * @return the value of field 'contactID'.
+    **/
+    public int getContactID()
+    {
+        return this._contactID;
+    } //-- int getContactID() 
 
     /**
      * Returns the value of field 'firstName'.
@@ -96,6 +120,13 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
 
     /**
     **/
+    public boolean hasContactID()
+    {
+        return this._has_contactID;
+    } //-- boolean hasContactID() 
+
+    /**
+    **/
     public boolean isValid()
     {
         try {
@@ -122,6 +153,17 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
     **/
     public abstract void marshal(org.xml.sax.ContentHandler handler)
         throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+
+    /**
+     * Sets the value of field 'contactID'.
+     * 
+     * @param contactID the value of field 'contactID'.
+    **/
+    public void setContactID(int contactID)
+    {
+        this._contactID = contactID;
+        this._has_contactID = true;
+    } //-- void setContactID(int) 
 
     /**
      * Sets the value of field 'firstName'.

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustAccount.java,v 1.12 2002/10/11 21:44:18 zyao Exp $
+ * $Id: StarsCustAccount.java,v 1.13 2002/11/12 15:58:35 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.12 $ $Date: 2002/10/11 21:44:18 $
+ * @version $Revision: 1.13 $ $Date: 2002/11/12 15:58:35 $
 **/
 public abstract class StarsCustAccount implements java.io.Serializable {
 
@@ -33,6 +33,20 @@ public abstract class StarsCustAccount implements java.io.Serializable {
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
+
+    private int _accountID;
+
+    /**
+     * keeps track of state for field: _accountID
+    **/
+    private boolean _has_accountID;
+
+    private int _customerID;
+
+    /**
+     * keeps track of state for field: _customerID
+    **/
+    private boolean _has_customerID;
 
     private java.lang.String _accountNumber;
 
@@ -101,10 +115,34 @@ public abstract class StarsCustAccount implements java.io.Serializable {
 
     /**
     **/
+    public void deleteAccountID()
+    {
+        this._has_accountID= false;
+    } //-- void deleteAccountID() 
+
+    /**
+    **/
+    public void deleteCustomerID()
+    {
+        this._has_customerID= false;
+    } //-- void deleteCustomerID() 
+
+    /**
+    **/
     public java.util.Enumeration enumerateAdditionalContact()
     {
         return _additionalContactList.elements();
     } //-- java.util.Enumeration enumerateAdditionalContact() 
+
+    /**
+     * Returns the value of field 'accountID'.
+     * 
+     * @return the value of field 'accountID'.
+    **/
+    public int getAccountID()
+    {
+        return this._accountID;
+    } //-- int getAccountID() 
 
     /**
      * Returns the value of field 'accountNotes'.
@@ -182,6 +220,16 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- java.lang.String getCompany() 
 
     /**
+     * Returns the value of field 'customerID'.
+     * 
+     * @return the value of field 'customerID'.
+    **/
+    public int getCustomerID()
+    {
+        return this._customerID;
+    } //-- int getCustomerID() 
+
+    /**
      * Returns the value of field 'isCommercial'.
      * 
      * @return the value of field 'isCommercial'.
@@ -243,6 +291,20 @@ public abstract class StarsCustAccount implements java.io.Serializable {
 
     /**
     **/
+    public boolean hasAccountID()
+    {
+        return this._has_accountID;
+    } //-- boolean hasAccountID() 
+
+    /**
+    **/
+    public boolean hasCustomerID()
+    {
+        return this._has_customerID;
+    } //-- boolean hasCustomerID() 
+
+    /**
+    **/
     public boolean hasIsCommercial()
     {
         return this._has_isCommercial;
@@ -295,6 +357,17 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     {
         _additionalContactList.removeAllElements();
     } //-- void removeAllAdditionalContact() 
+
+    /**
+     * Sets the value of field 'accountID'.
+     * 
+     * @param accountID the value of field 'accountID'.
+    **/
+    public void setAccountID(int accountID)
+    {
+        this._accountID = accountID;
+        this._has_accountID = true;
+    } //-- void setAccountID(int) 
 
     /**
      * Sets the value of field 'accountNotes'.
@@ -365,6 +438,17 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     {
         this._company = company;
     } //-- void setCompany(java.lang.String) 
+
+    /**
+     * Sets the value of field 'customerID'.
+     * 
+     * @param customerID the value of field 'customerID'.
+    **/
+    public void setCustomerID(int customerID)
+    {
+        this._customerID = customerID;
+        this._has_customerID = true;
+    } //-- void setCustomerID(int) 
 
     /**
      * Sets the value of field 'isCommercial'.

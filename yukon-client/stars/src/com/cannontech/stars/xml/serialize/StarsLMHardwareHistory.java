@@ -41,7 +41,7 @@ public class StarsLMHardwareHistory implements java.io.Serializable {
     **/
     private boolean _has_inventoryID;
 
-    private java.util.Vector _LMHardwareEventList;
+    private java.util.Vector _starsLMHardwareEventList;
 
 
       //----------------/
@@ -50,7 +50,7 @@ public class StarsLMHardwareHistory implements java.io.Serializable {
 
     public StarsLMHardwareHistory() {
         super();
-        _LMHardwareEventList = new Vector();
+        _starsLMHardwareEventList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsLMHardwareHistory()
 
 
@@ -61,25 +61,25 @@ public class StarsLMHardwareHistory implements java.io.Serializable {
     /**
      * 
      * 
-     * @param vLMHardwareEvent
+     * @param vStarsLMHardwareEvent
     **/
-    public void addLMHardwareEvent(LMHardwareEvent vLMHardwareEvent)
+    public void addStarsLMHardwareEvent(StarsLMHardwareEvent vStarsLMHardwareEvent)
         throws java.lang.IndexOutOfBoundsException
     {
-        _LMHardwareEventList.addElement(vLMHardwareEvent);
-    } //-- void addLMHardwareEvent(LMHardwareEvent) 
+        _starsLMHardwareEventList.addElement(vStarsLMHardwareEvent);
+    } //-- void addStarsLMHardwareEvent(StarsLMHardwareEvent) 
 
     /**
      * 
      * 
      * @param index
-     * @param vLMHardwareEvent
+     * @param vStarsLMHardwareEvent
     **/
-    public void addLMHardwareEvent(int index, LMHardwareEvent vLMHardwareEvent)
+    public void addStarsLMHardwareEvent(int index, StarsLMHardwareEvent vStarsLMHardwareEvent)
         throws java.lang.IndexOutOfBoundsException
     {
-        _LMHardwareEventList.insertElementAt(vLMHardwareEvent, index);
-    } //-- void addLMHardwareEvent(int, LMHardwareEvent) 
+        _starsLMHardwareEventList.insertElementAt(vStarsLMHardwareEvent, index);
+    } //-- void addStarsLMHardwareEvent(int, StarsLMHardwareEvent) 
 
     /**
     **/
@@ -90,10 +90,10 @@ public class StarsLMHardwareHistory implements java.io.Serializable {
 
     /**
     **/
-    public java.util.Enumeration enumerateLMHardwareEvent()
+    public java.util.Enumeration enumerateStarsLMHardwareEvent()
     {
-        return _LMHardwareEventList.elements();
-    } //-- java.util.Enumeration enumerateLMHardwareEvent() 
+        return _starsLMHardwareEventList.elements();
+    } //-- java.util.Enumeration enumerateStarsLMHardwareEvent() 
 
     /**
      * Returns the value of field 'inventoryID'.
@@ -110,35 +110,35 @@ public class StarsLMHardwareHistory implements java.io.Serializable {
      * 
      * @param index
     **/
-    public LMHardwareEvent getLMHardwareEvent(int index)
+    public StarsLMHardwareEvent getStarsLMHardwareEvent(int index)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _LMHardwareEventList.size())) {
+        if ((index < 0) || (index > _starsLMHardwareEventList.size())) {
             throw new IndexOutOfBoundsException();
         }
         
-        return (LMHardwareEvent) _LMHardwareEventList.elementAt(index);
-    } //-- LMHardwareEvent getLMHardwareEvent(int) 
+        return (StarsLMHardwareEvent) _starsLMHardwareEventList.elementAt(index);
+    } //-- StarsLMHardwareEvent getStarsLMHardwareEvent(int) 
 
     /**
     **/
-    public LMHardwareEvent[] getLMHardwareEvent()
+    public StarsLMHardwareEvent[] getStarsLMHardwareEvent()
     {
-        int size = _LMHardwareEventList.size();
-        LMHardwareEvent[] mArray = new LMHardwareEvent[size];
+        int size = _starsLMHardwareEventList.size();
+        StarsLMHardwareEvent[] mArray = new StarsLMHardwareEvent[size];
         for (int index = 0; index < size; index++) {
-            mArray[index] = (LMHardwareEvent) _LMHardwareEventList.elementAt(index);
+            mArray[index] = (StarsLMHardwareEvent) _starsLMHardwareEventList.elementAt(index);
         }
         return mArray;
-    } //-- LMHardwareEvent[] getLMHardwareEvent() 
+    } //-- StarsLMHardwareEvent[] getStarsLMHardwareEvent() 
 
     /**
     **/
-    public int getLMHardwareEventCount()
+    public int getStarsLMHardwareEventCount()
     {
-        return _LMHardwareEventList.size();
-    } //-- int getLMHardwareEventCount() 
+        return _starsLMHardwareEventList.size();
+    } //-- int getStarsLMHardwareEventCount() 
 
     /**
     **/
@@ -186,22 +186,22 @@ public class StarsLMHardwareHistory implements java.io.Serializable {
 
     /**
     **/
-    public void removeAllLMHardwareEvent()
+    public void removeAllStarsLMHardwareEvent()
     {
-        _LMHardwareEventList.removeAllElements();
-    } //-- void removeAllLMHardwareEvent() 
+        _starsLMHardwareEventList.removeAllElements();
+    } //-- void removeAllStarsLMHardwareEvent() 
 
     /**
      * 
      * 
      * @param index
     **/
-    public LMHardwareEvent removeLMHardwareEvent(int index)
+    public StarsLMHardwareEvent removeStarsLMHardwareEvent(int index)
     {
-        java.lang.Object obj = _LMHardwareEventList.elementAt(index);
-        _LMHardwareEventList.removeElementAt(index);
-        return (LMHardwareEvent) obj;
-    } //-- LMHardwareEvent removeLMHardwareEvent(int) 
+        java.lang.Object obj = _starsLMHardwareEventList.elementAt(index);
+        _starsLMHardwareEventList.removeElementAt(index);
+        return (StarsLMHardwareEvent) obj;
+    } //-- StarsLMHardwareEvent removeStarsLMHardwareEvent(int) 
 
     /**
      * Sets the value of field 'inventoryID'.
@@ -218,31 +218,31 @@ public class StarsLMHardwareHistory implements java.io.Serializable {
      * 
      * 
      * @param index
-     * @param vLMHardwareEvent
+     * @param vStarsLMHardwareEvent
     **/
-    public void setLMHardwareEvent(int index, LMHardwareEvent vLMHardwareEvent)
+    public void setStarsLMHardwareEvent(int index, StarsLMHardwareEvent vStarsLMHardwareEvent)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _LMHardwareEventList.size())) {
+        if ((index < 0) || (index > _starsLMHardwareEventList.size())) {
             throw new IndexOutOfBoundsException();
         }
-        _LMHardwareEventList.setElementAt(vLMHardwareEvent, index);
-    } //-- void setLMHardwareEvent(int, LMHardwareEvent) 
+        _starsLMHardwareEventList.setElementAt(vStarsLMHardwareEvent, index);
+    } //-- void setStarsLMHardwareEvent(int, StarsLMHardwareEvent) 
 
     /**
      * 
      * 
-     * @param LMHardwareEventArray
+     * @param starsLMHardwareEventArray
     **/
-    public void setLMHardwareEvent(LMHardwareEvent[] LMHardwareEventArray)
+    public void setStarsLMHardwareEvent(StarsLMHardwareEvent[] starsLMHardwareEventArray)
     {
         //-- copy array
-        _LMHardwareEventList.removeAllElements();
-        for (int i = 0; i < LMHardwareEventArray.length; i++) {
-            _LMHardwareEventList.addElement(LMHardwareEventArray[i]);
+        _starsLMHardwareEventList.removeAllElements();
+        for (int i = 0; i < starsLMHardwareEventArray.length; i++) {
+            _starsLMHardwareEventList.addElement(starsLMHardwareEventArray[i]);
         }
-    } //-- void setLMHardwareEvent(LMHardwareEvent) 
+    } //-- void setStarsLMHardwareEvent(StarsLMHardwareEvent) 
 
     /**
      * 

@@ -60,16 +60,16 @@ public class StarsGetCustomerAccountDescriptor extends org.exolab.castor.xml.uti
         
         //-- initialize element descriptors
         
-        //-- _accountNo
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_accountNo", "AccountNo", NodeType.Element);
+        //-- _accountID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_accountID", "AccountID", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsGetCustomerAccount target = (StarsGetCustomerAccount) object;
-                if(!target.hasAccountNo())
+                if(!target.hasAccountID())
                     return null;
-                return new Integer(target.getAccountNo());
+                return new Integer(target.getAccountID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
@@ -79,7 +79,7 @@ public class StarsGetCustomerAccountDescriptor extends org.exolab.castor.xml.uti
                     // ignore null values for non optional primitives
                     if (value == null) return;
                     
-                    target.setAccountNo( ((Integer)value).intValue());
+                    target.setAccountID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -94,7 +94,7 @@ public class StarsGetCustomerAccountDescriptor extends org.exolab.castor.xml.uti
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _accountNo
+        //-- validation code for: _accountID
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope

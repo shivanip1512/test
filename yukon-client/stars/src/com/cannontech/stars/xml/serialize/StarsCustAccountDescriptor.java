@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustAccountDescriptor.java,v 1.12 2002/10/11 21:44:26 zyao Exp $
+ * $Id: StarsCustAccountDescriptor.java,v 1.13 2002/11/12 15:58:49 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.12 $ $Date: 2002/10/11 21:44:26 $
+ * @version $Revision: 1.13 $ $Date: 2002/11/12 15:58:49 $
 **/
 public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -57,6 +57,90 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
         //-- set grouping compositor
         setCompositorAsSequence();
         //-- initialize attribute descriptors
+        
+        //-- _accountID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_accountID", "accountID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustAccount target = (StarsCustAccount) object;
+                if(!target.hasAccountID())
+                    return null;
+                return new Integer(target.getAccountID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustAccount target = (StarsCustAccount) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteAccountID();
+                        return;
+                    }
+                    target.setAccountID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _accountID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _customerID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_customerID", "customerID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustAccount target = (StarsCustAccount) object;
+                if(!target.hasCustomerID())
+                    return null;
+                return new Integer(target.getCustomerID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustAccount target = (StarsCustAccount) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteCustomerID();
+                        return;
+                    }
+                    target.setCustomerID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _customerID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
         
         //-- initialize element descriptors
         

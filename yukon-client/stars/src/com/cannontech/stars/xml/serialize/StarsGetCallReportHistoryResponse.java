@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
-import java.util.Enumeration;
-import java.util.Vector;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -34,7 +32,7 @@ public class StarsGetCallReportHistoryResponse implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private java.util.Vector _starsCallReportHistoryList;
+    private StarsCallReportHistory _starsCallReportHistory;
 
 
       //----------------/
@@ -43,7 +41,6 @@ public class StarsGetCallReportHistoryResponse implements java.io.Serializable {
 
     public StarsGetCallReportHistoryResponse() {
         super();
-        _starsCallReportHistoryList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsGetCallReportHistoryResponse()
 
 
@@ -52,69 +49,14 @@ public class StarsGetCallReportHistoryResponse implements java.io.Serializable {
     //-----------/
 
     /**
+     * Returns the value of field 'starsCallReportHistory'.
      * 
-     * 
-     * @param vStarsCallReportHistory
+     * @return the value of field 'starsCallReportHistory'.
     **/
-    public void addStarsCallReportHistory(StarsCallReportHistory vStarsCallReportHistory)
-        throws java.lang.IndexOutOfBoundsException
+    public StarsCallReportHistory getStarsCallReportHistory()
     {
-        _starsCallReportHistoryList.addElement(vStarsCallReportHistory);
-    } //-- void addStarsCallReportHistory(StarsCallReportHistory) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsCallReportHistory
-    **/
-    public void addStarsCallReportHistory(int index, StarsCallReportHistory vStarsCallReportHistory)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsCallReportHistoryList.insertElementAt(vStarsCallReportHistory, index);
-    } //-- void addStarsCallReportHistory(int, StarsCallReportHistory) 
-
-    /**
-    **/
-    public java.util.Enumeration enumerateStarsCallReportHistory()
-    {
-        return _starsCallReportHistoryList.elements();
-    } //-- java.util.Enumeration enumerateStarsCallReportHistory() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsCallReportHistory getStarsCallReportHistory(int index)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsCallReportHistoryList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        
-        return (StarsCallReportHistory) _starsCallReportHistoryList.elementAt(index);
-    } //-- StarsCallReportHistory getStarsCallReportHistory(int) 
-
-    /**
-    **/
-    public StarsCallReportHistory[] getStarsCallReportHistory()
-    {
-        int size = _starsCallReportHistoryList.size();
-        StarsCallReportHistory[] mArray = new StarsCallReportHistory[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (StarsCallReportHistory) _starsCallReportHistoryList.elementAt(index);
-        }
-        return mArray;
-    } //-- StarsCallReportHistory[] getStarsCallReportHistory() 
-
-    /**
-    **/
-    public int getStarsCallReportHistoryCount()
-    {
-        return _starsCallReportHistoryList.size();
-    } //-- int getStarsCallReportHistoryCount() 
+        return this._starsCallReportHistory;
+    } //-- StarsCallReportHistory getStarsCallReportHistory() 
 
     /**
     **/
@@ -154,52 +96,14 @@ public class StarsGetCallReportHistoryResponse implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'starsCallReportHistory'.
+     * 
+     * @param starsCallReportHistory the value of field
+     * 'starsCallReportHistory'.
     **/
-    public void removeAllStarsCallReportHistory()
+    public void setStarsCallReportHistory(StarsCallReportHistory starsCallReportHistory)
     {
-        _starsCallReportHistoryList.removeAllElements();
-    } //-- void removeAllStarsCallReportHistory() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsCallReportHistory removeStarsCallReportHistory(int index)
-    {
-        java.lang.Object obj = _starsCallReportHistoryList.elementAt(index);
-        _starsCallReportHistoryList.removeElementAt(index);
-        return (StarsCallReportHistory) obj;
-    } //-- StarsCallReportHistory removeStarsCallReportHistory(int) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsCallReportHistory
-    **/
-    public void setStarsCallReportHistory(int index, StarsCallReportHistory vStarsCallReportHistory)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsCallReportHistoryList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        _starsCallReportHistoryList.setElementAt(vStarsCallReportHistory, index);
-    } //-- void setStarsCallReportHistory(int, StarsCallReportHistory) 
-
-    /**
-     * 
-     * 
-     * @param starsCallReportHistoryArray
-    **/
-    public void setStarsCallReportHistory(StarsCallReportHistory[] starsCallReportHistoryArray)
-    {
-        //-- copy array
-        _starsCallReportHistoryList.removeAllElements();
-        for (int i = 0; i < starsCallReportHistoryArray.length; i++) {
-            _starsCallReportHistoryList.addElement(starsCallReportHistoryArray[i]);
-        }
+        this._starsCallReportHistory = starsCallReportHistory;
     } //-- void setStarsCallReportHistory(StarsCallReportHistory) 
 
     /**

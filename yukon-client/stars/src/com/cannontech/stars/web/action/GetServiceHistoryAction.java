@@ -1,24 +1,31 @@
 package com.cannontech.stars.web.action;
 
 import java.util.Hashtable;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.xml.serialize.CurrentState;
 import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.ServiceType;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetServiceRequestHistory;
 import com.cannontech.stars.xml.serialize.StarsGetServiceRequestHistoryResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
+import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -55,97 +62,56 @@ public class GetServiceHistoryAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
-		java.sql.Connection conn = null;
-		
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             StarsOperation respOper = new StarsOperation();
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
             if (operator == null) {
-            	StarsFailure failure = new StarsFailure();
-            	failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
-            	failure.setDescription( "Session invalidated, please login again" );
-            	respOper.setStarsFailure( failure );
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            com.cannontech.database.data.stars.customer.CustomerAccount account =
-            		(com.cannontech.database.data.stars.customer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
-            
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-            if (conn == null) return null;
-            
-            com.cannontech.database.db.stars.report.WorkOrderBase[] orders =
-            		com.cannontech.database.db.stars.report.WorkOrderBase.getAllSiteWorkOrders(
-            			account.getAccountSite().getAccountSite().getAccountSiteID(), conn );
-            if (orders == null) return null;
+        	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) operator.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+        	if (accountInfo == null) {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+        	}
         	
-        	Hashtable selectionLists = com.cannontech.stars.util.ServerUtils.getSelectionListTable(
-        			new Integer((int) operator.getEnergyCompanyID()) );        			
-        	StarsCustSelectionList servTypeList = (StarsCustSelectionList)
-        			selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICETYPE );
-        	StarsCustSelectionList statusList = (StarsCustSelectionList)
-        			selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICESTATUS );
-        	StarsCustSelectionList servCompanyList = (StarsCustSelectionList)
-        			selectionLists.get( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
+        	if (accountInfo.getServiceRequestHistory() == null) {
+		        com.cannontech.database.db.stars.report.WorkOrderBase[] orders =
+		        		com.cannontech.database.db.stars.report.WorkOrderBase.getAllCustomerSiteWorkOrders(
+		        			new Integer(accountInfo.getCustomerAccount().getCustomerID()), new Integer(accountInfo.getCustomerAccount().getAccountSiteID()) );
+		        if (orders == null) {
+		        	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+		        			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find service request history") );
+		        	return SOAPUtil.buildSOAPMessage( respOper );
+		        }
+		        
+	        	accountInfo.setServiceRequestHistory( new ArrayList() );
+	        	for (int i = 0; i < orders.length; i++)
+	        		com.cannontech.stars.web.servlet.SOAPServer.addWorkOrderBase( new Integer((int) operator.getEnergyCompanyID()), orders[i] );
+        	}
+        	
+        	Hashtable selectionLists = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( new Integer((int) operator.getEnergyCompanyID()) );
+        	
+        	StarsServiceRequestHistory orderHist = new StarsServiceRequestHistory();
+        	for (int i = 0; i < accountInfo.getServiceRequestHistory().size(); i++) {
+        		LiteWorkOrderBase liteOrder = com.cannontech.stars.web.servlet.SOAPServer.getWorkOrderBase(
+        				new Integer((int) operator.getEnergyCompanyID()), (Integer) accountInfo.getServiceRequestHistory().get(i) );
+        		orderHist.addStarsServiceRequest( StarsLiteFactory.createStarsServiceRequest( liteOrder, selectionLists ) );
+        	}
+        	
+        	StarsGetServiceRequestHistoryResponse resp = new StarsGetServiceRequestHistoryResponse();
+            resp.setStarsServiceRequestHistory( orderHist );
             
-            StarsGetServiceRequestHistoryResponse getServHistResp = new StarsGetServiceRequestHistoryResponse();
-            for (int i = 0; i < orders.length; i++) {
-            	StarsServiceRequestHistory servHist = new StarsServiceRequestHistory();
-            	
-            	for (int j = 0; j < servTypeList.getStarsSelectionListEntryCount(); j++) {
-            		StarsSelectionListEntry entry = servTypeList.getStarsSelectionListEntry(j);
-            		if (entry.getEntryID() == orders[i].getWorkTypeID().intValue()) {
-            			ServiceType servType = (ServiceType) StarsCustListEntryFactory.newStarsCustListEntry( entry, ServiceType.class );
-            			servHist.setServiceType( servType );
-            			break;
-            		}
-            	}
-            	
-            	for (int j = 0; j < statusList.getStarsSelectionListEntryCount(); j++) {
-            		StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(j);
-            		if (entry.getEntryID() == orders[i].getCurrentStateID().intValue()) {
-            			CurrentState status = (CurrentState) StarsCustListEntryFactory.newStarsCustListEntry( entry, CurrentState.class );
-            			servHist.setCurrentState( status );
-            			break;
-            		}
-            	}
-
-            	for (int j = 0; j < servCompanyList.getStarsSelectionListEntryCount(); j++) {
-            		StarsSelectionListEntry entry = servCompanyList.getStarsSelectionListEntry(j);
-            		if (entry.getEntryID() == orders[i].getServiceCompanyID().intValue()) {
-            			ServiceCompany servCompany = (ServiceCompany) StarsCustListEntryFactory.newStarsCustListEntry( entry, ServiceCompany.class );
-            			servHist.setServiceCompany( servCompany );
-            			break;
-            		}
-            	}
-            	
-            	servHist.setOrderNumber( orders[i].getOrderNumber().toString() );
-            	servHist.setDateReported( orders[i].getDateReported() );
-            	servHist.setOrderedBy( orders[i].getOrderedBy() );
-            	servHist.setDescription( orders[i].getDescription() );
-            	servHist.setDateScheduled( orders[i].getDateScheduled() );
-            	servHist.setDateCompleted( orders[i].getDateCompleted() );
-            	servHist.setActionTaken( orders[i].getActionTaken() );
-            	
-            	getServHistResp.addStarsServiceRequestHistory( servHist );
-            }
-            
-            respOper.setStarsGetServiceRequestHistoryResponse( getServHistResp );
+            respOper.setStarsGetServiceRequestHistoryResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
         	e.printStackTrace();
-        }
-        finally {
-        	try {
-	        	if (conn != null) conn.close();
-        	}
-        	catch (Exception e) {
-        		e.printStackTrace();
-        	}
         }
         
 		return null;
@@ -165,8 +131,12 @@ public class GetServiceHistoryAction implements ActionBase {
             if (getServHistResp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            operator.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY", getServHistResp);
-            
+			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+					operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+            if (accountInfo == null)
+            	return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+            	
+            accountInfo.setStarsServiceRequestHistory( getServHistResp.getStarsServiceRequestHistory() );
 			return 0;
         }
         catch (Exception e) {

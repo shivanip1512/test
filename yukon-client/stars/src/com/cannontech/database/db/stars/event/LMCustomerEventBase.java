@@ -103,6 +103,37 @@ public class LMCustomerEventBase extends DBPersistent {
 
         return new Integer( nextEventID );
     }
+    
+    public static LMCustomerEventBase[] getAllCustomerEvents(int eventTypeID, int actionID) {
+    	String sql = "SELECT * FROM " + TABLE_NAME + " WHERE EventTypeID = " + String.valueOf(eventTypeID)
+    			   + " AND ActionID = " + String.valueOf(actionID);
+    			   
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    	
+    	try {
+    		stmt.execute();
+    		
+    		LMCustomerEventBase[] events = new LMCustomerEventBase[ stmt.getRowCount() ];
+    		for (int i = 0; i < stmt.getRowCount(); i++) {
+    			events[i] = new LMCustomerEventBase();
+    			Object[] row = stmt.getRow( i );
+    			events[i].setEventID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+    			events[i].setEventTypeID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+    			events[i].setActionID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+    			events[i].setEventDateTime( (java.util.Date) row[3] );
+    			events[i].setNotes( (String) row[4] );
+    			events[i].setAuthorizedBy( (String) row[5] );
+    		}
+    		
+    		return events;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return null;
+    }
 
 	/**
 	 * Returns the actionID.

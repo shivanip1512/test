@@ -6,9 +6,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
+import com.cannontech.database.data.lite.stars.LiteLMProgram;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.xml.StarsWebConfigFactory;
 import com.cannontech.stars.xml.StarsGetEnrollmentProgramsResponseFactory;
+import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsFailure;
@@ -72,21 +76,38 @@ public class GetEnrollmentProgramsAction implements ActionBase {
             if (energyCompanyID <= 0) {
 				StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 	            if (operator == null) {
-	            	StarsFailure failure = new StarsFailure();
-	            	failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
-	            	failure.setDescription( "Session invalidated, please login again" );
-	            	respOper.setStarsFailure( failure );
+	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
 	            }
 	            
             	energyCompanyID = (int) operator.getEnergyCompanyID();
             }
-            	
-            StarsGetEnrollmentProgramsResponse response =
-            		StarsGetEnrollmentProgramsResponseFactory.getStarsGetEnrollmentProgramsResponse(
-            			new Integer(energyCompanyID), getEnrProgs.getCategory() );
             
-            respOper.setStarsGetEnrollmentProgramsResponse( response );
+            ArrayList liteAppCats = com.cannontech.stars.web.servlet.SOAPServer.getAllApplianceCategories( new Integer(energyCompanyID) );
+            StarsGetEnrollmentProgramsResponse resp = new StarsGetEnrollmentProgramsResponse();
+            
+            // Generate the category name, example values: "LMPrograms", "LMPrograms-Switch", "LMPrograms-Thermostat"
+            String wholeCatName = "LMPrograms";
+            if (getEnrProgs.getCategory() != null && getEnrProgs.getCategory().length() > 0)
+            	wholeCatName += "-" + getEnrProgs.getCategory();
+            	
+            for (int i = 0; i < liteAppCats.size(); i++) {
+            	LiteApplianceCategory liteAppCat = (LiteApplianceCategory) liteAppCats.get(i);
+            	
+            	// Find only LM programs in the specified category
+            	LiteLMProgram[] liteProgs = liteAppCat.getPublishedPrograms();
+            	ArrayList progsInCat = new ArrayList();
+            	for (int j = 0; j < liteProgs.length; j++) {
+            		if (liteProgs[j].getProgramCategory().startsWith( wholeCatName ))
+            			progsInCat.add( liteProgs[j] );
+            	}
+            	
+            	if (progsInCat.size() > 0)
+            		resp.addStarsApplianceCategory( StarsLiteFactory.createStarsApplianceCategory(liteAppCat, progsInCat) );
+            }
+            
+            respOper.setStarsGetEnrollmentProgramsResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {

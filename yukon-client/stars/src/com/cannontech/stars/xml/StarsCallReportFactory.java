@@ -1,6 +1,11 @@
 package com.cannontech.stars.xml;
 
+import com.cannontech.stars.xml.serialize.StarsCallRprt;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
+import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
+import com.cannontech.stars.xml.serialize.CallType;
+import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
+import com.cannontech.database.data.lite.stars.LiteCustomerSelectionList;
 import com.cannontech.database.db.stars.report.CallReportBase;
 
 /**
@@ -13,10 +18,11 @@ import com.cannontech.database.db.stars.report.CallReportBase;
  */
 public class StarsCallReportFactory {
 	
-	public static StarsCallReport newStarsCallReport(StarsCallReport call, Class type) {
+	public static StarsCallRprt newStarsCallReport(StarsCallRprt call, Class type) {
 		try {
-			StarsCallReport starsCall = (StarsCallReport) type.newInstance();
+			StarsCallRprt starsCall = (StarsCallRprt) type.newInstance();
 			
+			starsCall.setCallID( call.getCallID() );
 			starsCall.setCallNumber( call.getCallNumber() );
 			starsCall.setCallDate( call.getCallDate() );
 			starsCall.setCallType( call.getCallType() );
@@ -32,11 +38,42 @@ public class StarsCallReportFactory {
 		return null;
 	}
 	
-	public static void setCallReportBase(CallReportBase callDB, StarsCallReport call) {
+	public static void setCallReportBase(CallReportBase callDB, StarsCallRprt call) {
 		callDB.setCallNumber( call.getCallNumber() );
 		callDB.setCallTypeID( new Integer(call.getCallType().getEntryID()) );
 		callDB.setDateTaken( call.getCallDate() );
 		callDB.setDescription( call.getDescription() );
 		callDB.setTakenBy( call.getTakenBy() );
+	}
+	
+	public static StarsCallReport[] getStarsCallReports(Integer energyCompanyID, Integer accountID) {
+        com.cannontech.database.db.stars.report.CallReportBase[] calls =
+        		com.cannontech.database.db.stars.report.CallReportBase.getAllAccountCallReports( accountID );
+        if (calls == null) return null;
+        
+        java.util.Hashtable selectionListTable = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( energyCompanyID );
+        LiteCustomerSelectionList callTypeList = (LiteCustomerSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CALLTYPE );
+        
+        StarsCallReport[] callRprts = new StarsCallReport[ calls.length ];
+        for (int i = 0; i < calls.length; i++) {
+        	callRprts[i] = new StarsCallReport();
+        	
+        	callRprts[i].setCallID( calls[i].getCallID().intValue() );
+			callRprts[i].setCallNumber( calls[i].getCallNumber() );
+        	callRprts[i].setCallDate( calls[i].getDateTaken() );
+        	
+        	StarsSelectionListEntry[] entries = callTypeList.getListEntries();
+        	for (int j = 0; j < entries.length; j++) {
+        		if (entries[j].getEntryID() == calls[i].getCallTypeID().intValue()) {
+        			CallType callType = (CallType) StarsCustListEntryFactory.newStarsCustListEntry( entries[j], CallType.class );
+	            	callRprts[i].setCallType( callType );
+        		}
+        	}
+        	
+        	callRprts[i].setTakenBy( calls[i].getTakenBy() );
+        	callRprts[i].setDescription( calls[i].getDescription() );
+        }
+        
+        return callRprts;
 	}
 }

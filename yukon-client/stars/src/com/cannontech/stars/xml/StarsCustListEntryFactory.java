@@ -3,6 +3,7 @@ package com.cannontech.stars.xml;
 import com.cannontech.stars.xml.serialize.StarsCustListEntry;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
+import com.cannontech.database.data.lite.stars.LiteCustomerSelectionList;
 
 /**
  * <p>Title: StarsCustListEntryFactory.java</p>
@@ -30,15 +31,41 @@ public class StarsCustListEntryFactory {
 		return null;
 	}
 	
-	public static StarsCustListEntry getStarsCustListEntry(
-		java.util.Hashtable selectionLists, String listName, String yukonDef) {
-		StarsCustSelectionList list = (StarsCustSelectionList) selectionLists.get( listName );
+	public static StarsSelectionListEntry getStarsCustListEntry(StarsCustSelectionList list, String yukonDef) {
 		for (int i = 0; i < list.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = list.getStarsSelectionListEntry(i);
 			if (entry.getYukonDefinition().equalsIgnoreCase( yukonDef ))
 				return entry;
 		}
 		
+		return null;
+	}
+	
+	public static StarsSelectionListEntry getStarsCustListEntry(StarsCustSelectionList list, int entryID) {
+		for (int i = 0; i < list.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = list.getStarsSelectionListEntry(i);
+			if (entry.getEntryID() == entryID)
+				return entry;
+		}
+		
+		return null;
+	}
+	
+	public static StarsSelectionListEntry getStarsCustListEntry(LiteCustomerSelectionList list, String yukonDef) {
+		StarsSelectionListEntry[] entries = list.getListEntries();
+		for (int i = 0; i < entries.length; i++)
+			if (entries[i].getYukonDefinition().equalsIgnoreCase( yukonDef ))
+				return entries[i];
+				
+		return null;
+	}
+	
+	public static StarsSelectionListEntry getStarsCustListEntry(LiteCustomerSelectionList list, int entryID) {
+		StarsSelectionListEntry[] entries = list.getListEntries();
+		for (int i = 0; i < entries.length; i++)
+			if (entries[i].getEntryID() == entryID)
+				return entries[i];
+				
 		return null;
 	}
 }

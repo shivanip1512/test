@@ -77,105 +77,63 @@ public class LMProgramWebPublishing extends DBPersistent {
 		update(TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
 	}
 	
-	public static LMProgramWebPublishing getLMProgramWebPublishing(Integer programID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE LMProgramID = ?";
-
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
+	public static LMProgramWebPublishing getLMProgramWebPublishing(Integer programID) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE LMProgramID = " + programID.toString();
+        
+        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+        		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
         try
         {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, programID.intValue() );
-                rset = pstmt.executeQuery();
+        	stmt.execute();
+        	
+			if (stmt.getRowCount() > 0) {
+				Object[] row = stmt.getRow(0);
+                LMProgramWebPublishing webPub = new LMProgramWebPublishing();
 
-                if (rset.next()) {
-                    LMProgramWebPublishing webPub = new LMProgramWebPublishing();
+				webPub.setApplianceCategoryID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+				webPub.setLMProgramID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+				webPub.setWebSettingsID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
 
-					webPub.setApplianceCategoryID( new Integer(rset.getInt("ApplianceCategoryID")) );
-					webPub.setLMProgramID( new Integer(rset.getInt("LMProgramID")) );
-					webPub.setWebSettingsID( new Integer(rset.getInt("WebSettingsID")) );
-
-                    return webPub;
-                }
+                return webPub;
             }
         }
-        catch( java.sql.SQLException e )
+        catch(Exception e)
         {
             e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if (rset != null) rset.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
         }
 
         return null;
 	}
 
-    public static LMProgramWebPublishing[] getALLLMProgramWebPublishing(Integer appCatID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = ?";
-
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        java.util.ArrayList webPubList = new java.util.ArrayList();
+    public static LMProgramWebPublishing[] getAllLMProgramWebPublishing(Integer appCatID) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + appCatID.toString();
+        
+        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+        		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
         try
         {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
+        	stmt.execute();
+			LMProgramWebPublishing[] webPubs = new LMProgramWebPublishing[ stmt.getRowCount() ];
+			
+			for (int i = 0; i < webPubs.length; i++) {
+				Object[] row = stmt.getRow(i);
+                webPubs[i] = new LMProgramWebPublishing();
+
+				webPubs[i].setApplianceCategoryID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+				webPubs[i].setLMProgramID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+				webPubs[i].setWebSettingsID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
             }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, appCatID.intValue() );
-                rset = pstmt.executeQuery();
-
-                while (rset.next()) {
-                    LMProgramWebPublishing webPub = new LMProgramWebPublishing();
-
-					webPub.setApplianceCategoryID( new Integer(rset.getInt("ApplianceCategoryID")) );
-					webPub.setLMProgramID( new Integer(rset.getInt("LMProgramID")) );
-					webPub.setWebSettingsID( new Integer(rset.getInt("WebSettingsID")) );
-
-                    webPubList.add(webPub);
-                }
-            }
+            
+            return webPubs;
         }
-        catch( java.sql.SQLException e )
+        catch(Exception e)
         {
             e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if (rset != null) rset.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
-
-        LMProgramWebPublishing[] webPubs = new LMProgramWebPublishing[ webPubList.size() ];
-        webPubList.toArray( webPubs );
-        return webPubs;
+        
+        return null;
     }
 
     public static void deleteAllLMProgramWebPublishing(Integer appCatID, java.sql.Connection conn) {

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSiteInformation.java,v 1.12 2002/10/11 21:44:26 zyao Exp $
+ * $Id: StarsSiteInformation.java,v 1.13 2002/11/12 15:58:48 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.12 $ $Date: 2002/10/11 21:44:26 $
+ * @version $Revision: 1.13 $ $Date: 2002/11/12 15:58:48 $
 **/
 public class StarsSiteInformation implements java.io.Serializable {
 
@@ -31,6 +31,13 @@ public class StarsSiteInformation implements java.io.Serializable {
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
+
+    private int _siteID;
+
+    /**
+     * keeps track of state for field: _siteID
+    **/
+    private boolean _has_siteID;
 
     private Substation _substation;
 
@@ -55,6 +62,13 @@ public class StarsSiteInformation implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+    **/
+    public void deleteSiteID()
+    {
+        this._has_siteID= false;
+    } //-- void deleteSiteID() 
 
     /**
      * Returns the value of field 'feeder'.
@@ -87,6 +101,16 @@ public class StarsSiteInformation implements java.io.Serializable {
     } //-- java.lang.String getServiceVoltage() 
 
     /**
+     * Returns the value of field 'siteID'.
+     * 
+     * @return the value of field 'siteID'.
+    **/
+    public int getSiteID()
+    {
+        return this._siteID;
+    } //-- int getSiteID() 
+
+    /**
      * Returns the value of field 'substation'.
      * 
      * @return the value of field 'substation'.
@@ -105,6 +129,13 @@ public class StarsSiteInformation implements java.io.Serializable {
     {
         return this._transformerSize;
     } //-- java.lang.String getTransformerSize() 
+
+    /**
+    **/
+    public boolean hasSiteID()
+    {
+        return this._has_siteID;
+    } //-- boolean hasSiteID() 
 
     /**
     **/
@@ -172,6 +203,17 @@ public class StarsSiteInformation implements java.io.Serializable {
     {
         this._serviceVoltage = serviceVoltage;
     } //-- void setServiceVoltage(java.lang.String) 
+
+    /**
+     * Sets the value of field 'siteID'.
+     * 
+     * @param siteID the value of field 'siteID'.
+    **/
+    public void setSiteID(int siteID)
+    {
+        this._siteID = siteID;
+        this._has_siteID = true;
+    } //-- void setSiteID(int) 
 
     /**
      * Sets the value of field 'substation'.

@@ -21,6 +21,7 @@ public class WorkOrderBase extends DBPersistent {
     private com.cannontech.database.data.stars.customer.AccountSite site = null;
     private com.cannontech.database.data.stars.report.ServiceCompany serviceCompany = null;
     private com.cannontech.database.data.stars.customer.CustomerBase customerBase = null;
+    private Integer energyCompanyID = null;
 
     public WorkOrderBase() {
         super();
@@ -45,19 +46,17 @@ public class WorkOrderBase extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
-    	if (getCustomerBase() == null)
-    		throw new java.sql.SQLException("Add: setCustomerBase() must be called before this function");
+    	if (energyCompanyID == null)
+    		throw new java.sql.SQLException("Add: setEnergyCompanyID() must be called before this function");
     		
         getWorkOrderBase().add();
         
-        if (getCustomerBase().getEnergyCompanyBase() != null) {
-            // add to mapping table
-            Object[] addValues = {
-                getCustomerBase().getEnergyCompanyBase().getEnergyCompany().getEnergyCompanyID(),
-                getWorkOrderBase().getOrderID()
-            };
-            add( "ECToWorkOrderMapping", addValues );
-        }
+        // add to mapping table
+        Object[] addValues = {
+            energyCompanyID,
+            getWorkOrderBase().getOrderID()
+        };
+        add( "ECToWorkOrderMapping", addValues );
     }
 
     public void update() throws java.sql.SQLException {
@@ -191,6 +190,10 @@ public class WorkOrderBase extends DBPersistent {
 	public void setWorkType(
 		com.cannontech.database.db.stars.CustomerListEntry workType) {
 		this.workType = workType;
+	}
+	
+	public void setEnergyCompanyID(Integer energyCompanyID) {
+		this.energyCompanyID = energyCompanyID;
 	}
 
 }

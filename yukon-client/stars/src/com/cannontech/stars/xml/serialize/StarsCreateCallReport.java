@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsCreateCallReport extends StarsCallReport 
+public class StarsCreateCallReport extends StarsCallRprt 
 implements java.io.Serializable
 {
 

@@ -7,11 +7,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
-import com.cannontech.stars.xml.StarsCustAccountInfoFactory;
+import com.cannontech.stars.xml.StarsCustAccountInformationFactory;
+import com.cannontech.stars.xml.StarsCustListEntryFactory;
+import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.serialize.SearchBy;
-import com.cannontech.stars.xml.serialize.StarsCustAccountInfo;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSearchCustomerAccount;
@@ -74,48 +77,38 @@ public class SearchCustAccountAction implements ActionBase {
 
             StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
             if (operator == null) {
-                StarsFailure failure = new StarsFailure();
-                failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
-                failure.setDescription("Session invalidated, please login again");
-                respOper.setStarsFailure( failure );
+                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+                		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
 
             StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
-            com.cannontech.database.data.stars.customer.CustomerAccount account = null;
-
-            Hashtable selectionLists = com.cannontech.stars.util.ServerUtils.getSelectionListTable(
-            		new Integer((int) operator.getEnergyCompanyID()) );
-            		
-            StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY );
-            StarsSelectionListEntry searchByEntry = null;
-            for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
-            	StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
-            	if (searchAccount.getSearchBy().getEntryID() == entry.getEntryID()) {
-            		searchByEntry = entry;
-            		break;
-            	}
-            }
+            LiteStarsCustAccountInformation liteAcctInfo = null;
             
-            if (searchByEntry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SEARCHBY_ACCTNO )) {
-                account = com.cannontech.database.data.stars.customer.CustomerAccount.searchByAccountNumber(
-                            new Integer((int) operator.getEnergyCompanyID()), searchAccount.getSearchValue() );
+            Integer energyCompanyID = new Integer( (int) operator.getEnergyCompanyID() );
+            Hashtable selectionLists = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( energyCompanyID );
+            		
+            if (searchAccount.getSearchBy().getEntryID() == StarsCustListEntryFactory.getStarsCustListEntry(
+            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY),
+            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SEARCHBY_ACCTNO ).getEntryID()) {
+            	// Search by account number
+            	liteAcctInfo = com.cannontech.stars.web.servlet.SOAPServer.getCustAccountInformation(
+            			new Integer((int) operator.getEnergyCompanyID()), searchAccount.getSearchValue() );
             }
 
-            if (account == null) {
-                StarsFailure failure = new StarsFailure();
-                failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
-                failure.setDescription("No customer account matching the specified account number");
-                respOper.setStarsFailure( failure );
+            if (liteAcctInfo == null) {
+                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+                		StarsConstants.FAILURE_CODE_SESSION_INVALID, "No customer account matching the specified account number") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
-
-        	operator.setAttribute("CUSTOMER_ACCOUNT", account);
             
-			StarsCustAccountInfo accountInfo = StarsCustAccountInfoFactory.getStarsCustAccountInfo(
-					account, selectionLists, StarsSearchCustomerAccountResponse.class );
-            respOper.setStarsSearchCustomerAccountResponse( (StarsSearchCustomerAccountResponse) accountInfo );
-
+            operator.setAttribute( "CUSTOMER_ACCOUNT_INFORMATION", liteAcctInfo );
+            StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID );
+            
+			StarsSearchCustomerAccountResponse resp = new StarsSearchCustomerAccountResponse();
+			resp.setStarsCustAccountInformation( starsAcctInfo );
+			
+            respOper.setStarsSearchCustomerAccountResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -132,11 +125,11 @@ public class SearchCustAccountAction implements ActionBase {
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) return failure.getStatusCode();
 			
-            StarsCustAccountInfo accountInfo = operation.getStarsSearchCustomerAccountResponse();
-            if (accountInfo == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+			StarsSearchCustomerAccountResponse resp = operation.getStarsSearchCustomerAccountResponse();
+            if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            operator.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION", accountInfo);
+            operator.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION", resp.getStarsCustAccountInformation());
             
             return 0;
         }

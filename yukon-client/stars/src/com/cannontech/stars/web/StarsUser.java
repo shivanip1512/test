@@ -1,7 +1,7 @@
 package com.cannontech.stars.web;
 
 import com.cannontech.database.data.web.User;
-import com.cannontech.database.data.stars.customer.CustomerAccount;
+import com.cannontech.database.db.stars.customer.CustomerAccount;
 
 import java.util.Hashtable;
 import java.util.Enumeration;
@@ -65,7 +65,7 @@ public class StarsUser extends User {
 		ResultSet rset = null;
 		
 		try {
-			sql = "SELECT acct.AccountID, map.EnergyCompanyID "
+			sql = "SELECT map.EnergyCompanyID, acct.* "
 				+ "FROM CustomerAccount acct, CustomerBase cust, CustomerContact cont, ECToAccountMapping map "
 				+ "WHERE cont.LogInID = ? AND cust.PrimaryContactID = cont.ContactID AND acct.CustomerID = cust.CustomerID AND acct.AccountID = map.AccountID";
 					   
@@ -75,18 +75,15 @@ public class StarsUser extends User {
 			ArrayList accountList = new ArrayList();
 			
 			while (rset.next()) {
-				energyCompanyID = rset.getInt(2);
-				
-				com.cannontech.database.data.company.EnergyCompanyBase energyCompany = new com.cannontech.database.data.company.EnergyCompanyBase();
-				energyCompany.setEnergyCompanyID( new Integer(energyCompanyID) );
-				energyCompany.setDbConnection( conn );
-				energyCompany.retrieve();
+				energyCompanyID = rset.getInt(1);
 				
 				CustomerAccount account = new CustomerAccount();
-				account.setAccountID( new Integer(rset.getInt(1)) );
-				account.setEnergyCompanyBase( energyCompany );
-				account.setDbConnection( conn );
-				account.retrieve();
+				account.setAccountID( new Integer(rset.getInt("AccountID")) );
+				account.setAccountSiteID( new Integer(rset.getInt("AccountSiteID")) );
+				account.setAccountNumber( rset.getString("AccountNumber") );
+				account.setCustomerID( new Integer(rset.getInt("CustomerID")) );
+				account.setBillingAddressID( new Integer(rset.getInt("BillingAddressID")) );
+				account.setAccountNotes( rset.getString("AccountNotes") );
 				
 				accountList.add( account );
 			}

@@ -22,7 +22,7 @@ public class CustomerAccount extends DBPersistent {
 
     private com.cannontech.database.data.stars.customer.AccountSite accountSite = null;
     private com.cannontech.database.data.stars.customer.CustomerBase customerBase = null;
-    private com.cannontech.database.data.company.EnergyCompanyBase energyCompanyBase = null;
+    private Integer energyCompanyID = null;
 
     private Vector applianceVector = null;
     private Vector inventoryVector = null;
@@ -55,12 +55,6 @@ public class CustomerAccount extends DBPersistent {
                 com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
             if (conn == null) return null;
 
-            com.cannontech.database.data.company.EnergyCompanyBase energyCompany =
-                        new com.cannontech.database.data.company.EnergyCompanyBase();
-            energyCompany.setEnergyCompanyID( energyCompanyID );
-            energyCompany.setDbConnection( conn );
-            energyCompany.retrieve();
-
             com.cannontech.database.db.stars.customer.CustomerAccount accountDB =
                         com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber(
                             energyCompanyID, accountNumber, conn );
@@ -70,7 +64,7 @@ public class CustomerAccount extends DBPersistent {
             accountData.setAccountID( accountDB.getAccountID() );
             accountData.setDbConnection( conn );
             accountData.retrieve();
-            accountData.setEnergyCompanyBase( energyCompany );
+            accountData.setEnergyCompanyID( energyCompanyID );
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -124,6 +118,9 @@ public class CustomerAccount extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	if (energyCompanyID == null)
+    		throw new java.sql.SQLException( "setEnergyCompanyID() must be called before this function" );
+    		
     	getBillingAddress().setAddressID( getBillingAddress().getNextAddressID2() );
         getBillingAddress().add();
         
@@ -146,14 +143,12 @@ public class CustomerAccount extends DBPersistent {
 		
         getCustomerAccount().add();
 
-        if (getCustomerBase() != null && getCustomerBase().getEnergyCompanyBase() != null) {
-            // add to the mapping table
-            Object[] addValues = {
-                getCustomerBase().getEnergyCompanyBase().getEnergyCompany().getEnergyCompanyID(),
-                getCustomerAccount().getAccountID()
-            };
-            add( "ECToAccountMapping", addValues );
-        }
+        // add to the mapping table
+        Object[] addValues = {
+            getEnergyCompanyID(),
+            getCustomerAccount().getAccountID()
+        };
+        add( "ECToAccountMapping", addValues );
 
         setDbConnection(null);
     }
@@ -252,16 +247,6 @@ public class CustomerAccount extends DBPersistent {
         customerBase = newCustomerBase;
     }
 
-    public com.cannontech.database.data.company.EnergyCompanyBase getEnergyCompanyBase() {
-        return energyCompanyBase;
-    }
-
-    public void setEnergyCompanyBase(com.cannontech.database.data.company.EnergyCompanyBase newEnergyCompanyBase) {
-        energyCompanyBase = newEnergyCompanyBase;
-        if (getCustomerBase() != null)
-            getCustomerBase().setEnergyCompanyBase( newEnergyCompanyBase );
-    }
-
     public Vector getApplianceVector() {
         if (applianceVector == null)
             applianceVector = new Vector(3);
@@ -298,6 +283,22 @@ public class CustomerAccount extends DBPersistent {
 	public void setCustomerLogin(
 		com.cannontech.database.db.customer.CustomerLogin customerLogin) {
 		this.customerLogin = customerLogin;
+	}
+
+	/**
+	 * Returns the energyCompanyID.
+	 * @return Integer
+	 */
+	public Integer getEnergyCompanyID() {
+		return energyCompanyID;
+	}
+
+	/**
+	 * Sets the energyCompanyID.
+	 * @param energyCompanyID The energyCompanyID to set
+	 */
+	public void setEnergyCompanyID(Integer energyCompanyID) {
+		this.energyCompanyID = energyCompanyID;
 	}
 
 }

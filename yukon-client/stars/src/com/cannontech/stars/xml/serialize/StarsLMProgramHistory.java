@@ -41,7 +41,7 @@ public class StarsLMProgramHistory implements java.io.Serializable {
     **/
     private boolean _has_programID;
 
-    private java.util.Vector _LMProgramEventList;
+    private java.util.Vector _starsLMProgramEventList;
 
 
       //----------------/
@@ -50,7 +50,7 @@ public class StarsLMProgramHistory implements java.io.Serializable {
 
     public StarsLMProgramHistory() {
         super();
-        _LMProgramEventList = new Vector();
+        _starsLMProgramEventList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsLMProgramHistory()
 
 
@@ -61,25 +61,25 @@ public class StarsLMProgramHistory implements java.io.Serializable {
     /**
      * 
      * 
-     * @param vLMProgramEvent
+     * @param vStarsLMProgramEvent
     **/
-    public void addLMProgramEvent(LMProgramEvent vLMProgramEvent)
+    public void addStarsLMProgramEvent(StarsLMProgramEvent vStarsLMProgramEvent)
         throws java.lang.IndexOutOfBoundsException
     {
-        _LMProgramEventList.addElement(vLMProgramEvent);
-    } //-- void addLMProgramEvent(LMProgramEvent) 
+        _starsLMProgramEventList.addElement(vStarsLMProgramEvent);
+    } //-- void addStarsLMProgramEvent(StarsLMProgramEvent) 
 
     /**
      * 
      * 
      * @param index
-     * @param vLMProgramEvent
+     * @param vStarsLMProgramEvent
     **/
-    public void addLMProgramEvent(int index, LMProgramEvent vLMProgramEvent)
+    public void addStarsLMProgramEvent(int index, StarsLMProgramEvent vStarsLMProgramEvent)
         throws java.lang.IndexOutOfBoundsException
     {
-        _LMProgramEventList.insertElementAt(vLMProgramEvent, index);
-    } //-- void addLMProgramEvent(int, LMProgramEvent) 
+        _starsLMProgramEventList.insertElementAt(vStarsLMProgramEvent, index);
+    } //-- void addStarsLMProgramEvent(int, StarsLMProgramEvent) 
 
     /**
     **/
@@ -90,45 +90,10 @@ public class StarsLMProgramHistory implements java.io.Serializable {
 
     /**
     **/
-    public java.util.Enumeration enumerateLMProgramEvent()
+    public java.util.Enumeration enumerateStarsLMProgramEvent()
     {
-        return _LMProgramEventList.elements();
-    } //-- java.util.Enumeration enumerateLMProgramEvent() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public LMProgramEvent getLMProgramEvent(int index)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _LMProgramEventList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        
-        return (LMProgramEvent) _LMProgramEventList.elementAt(index);
-    } //-- LMProgramEvent getLMProgramEvent(int) 
-
-    /**
-    **/
-    public LMProgramEvent[] getLMProgramEvent()
-    {
-        int size = _LMProgramEventList.size();
-        LMProgramEvent[] mArray = new LMProgramEvent[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (LMProgramEvent) _LMProgramEventList.elementAt(index);
-        }
-        return mArray;
-    } //-- LMProgramEvent[] getLMProgramEvent() 
-
-    /**
-    **/
-    public int getLMProgramEventCount()
-    {
-        return _LMProgramEventList.size();
-    } //-- int getLMProgramEventCount() 
+        return _starsLMProgramEventList.elements();
+    } //-- java.util.Enumeration enumerateStarsLMProgramEvent() 
 
     /**
      * Returns the value of field 'programID'.
@@ -139,6 +104,41 @@ public class StarsLMProgramHistory implements java.io.Serializable {
     {
         return this._programID;
     } //-- int getProgramID() 
+
+    /**
+     * 
+     * 
+     * @param index
+    **/
+    public StarsLMProgramEvent getStarsLMProgramEvent(int index)
+        throws java.lang.IndexOutOfBoundsException
+    {
+        //-- check bounds for index
+        if ((index < 0) || (index > _starsLMProgramEventList.size())) {
+            throw new IndexOutOfBoundsException();
+        }
+        
+        return (StarsLMProgramEvent) _starsLMProgramEventList.elementAt(index);
+    } //-- StarsLMProgramEvent getStarsLMProgramEvent(int) 
+
+    /**
+    **/
+    public StarsLMProgramEvent[] getStarsLMProgramEvent()
+    {
+        int size = _starsLMProgramEventList.size();
+        StarsLMProgramEvent[] mArray = new StarsLMProgramEvent[size];
+        for (int index = 0; index < size; index++) {
+            mArray[index] = (StarsLMProgramEvent) _starsLMProgramEventList.elementAt(index);
+        }
+        return mArray;
+    } //-- StarsLMProgramEvent[] getStarsLMProgramEvent() 
+
+    /**
+    **/
+    public int getStarsLMProgramEventCount()
+    {
+        return _starsLMProgramEventList.size();
+    } //-- int getStarsLMProgramEventCount() 
 
     /**
     **/
@@ -186,52 +186,22 @@ public class StarsLMProgramHistory implements java.io.Serializable {
 
     /**
     **/
-    public void removeAllLMProgramEvent()
+    public void removeAllStarsLMProgramEvent()
     {
-        _LMProgramEventList.removeAllElements();
-    } //-- void removeAllLMProgramEvent() 
+        _starsLMProgramEventList.removeAllElements();
+    } //-- void removeAllStarsLMProgramEvent() 
 
     /**
      * 
      * 
      * @param index
     **/
-    public LMProgramEvent removeLMProgramEvent(int index)
+    public StarsLMProgramEvent removeStarsLMProgramEvent(int index)
     {
-        java.lang.Object obj = _LMProgramEventList.elementAt(index);
-        _LMProgramEventList.removeElementAt(index);
-        return (LMProgramEvent) obj;
-    } //-- LMProgramEvent removeLMProgramEvent(int) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vLMProgramEvent
-    **/
-    public void setLMProgramEvent(int index, LMProgramEvent vLMProgramEvent)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _LMProgramEventList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        _LMProgramEventList.setElementAt(vLMProgramEvent, index);
-    } //-- void setLMProgramEvent(int, LMProgramEvent) 
-
-    /**
-     * 
-     * 
-     * @param LMProgramEventArray
-    **/
-    public void setLMProgramEvent(LMProgramEvent[] LMProgramEventArray)
-    {
-        //-- copy array
-        _LMProgramEventList.removeAllElements();
-        for (int i = 0; i < LMProgramEventArray.length; i++) {
-            _LMProgramEventList.addElement(LMProgramEventArray[i]);
-        }
-    } //-- void setLMProgramEvent(LMProgramEvent) 
+        java.lang.Object obj = _starsLMProgramEventList.elementAt(index);
+        _starsLMProgramEventList.removeElementAt(index);
+        return (StarsLMProgramEvent) obj;
+    } //-- StarsLMProgramEvent removeStarsLMProgramEvent(int) 
 
     /**
      * Sets the value of field 'programID'.
@@ -243,6 +213,36 @@ public class StarsLMProgramHistory implements java.io.Serializable {
         this._programID = programID;
         this._has_programID = true;
     } //-- void setProgramID(int) 
+
+    /**
+     * 
+     * 
+     * @param index
+     * @param vStarsLMProgramEvent
+    **/
+    public void setStarsLMProgramEvent(int index, StarsLMProgramEvent vStarsLMProgramEvent)
+        throws java.lang.IndexOutOfBoundsException
+    {
+        //-- check bounds for index
+        if ((index < 0) || (index > _starsLMProgramEventList.size())) {
+            throw new IndexOutOfBoundsException();
+        }
+        _starsLMProgramEventList.setElementAt(vStarsLMProgramEvent, index);
+    } //-- void setStarsLMProgramEvent(int, StarsLMProgramEvent) 
+
+    /**
+     * 
+     * 
+     * @param starsLMProgramEventArray
+    **/
+    public void setStarsLMProgramEvent(StarsLMProgramEvent[] starsLMProgramEventArray)
+    {
+        //-- copy array
+        _starsLMProgramEventList.removeAllElements();
+        for (int i = 0; i < starsLMProgramEventArray.length; i++) {
+            _starsLMProgramEventList.addElement(starsLMProgramEventArray[i]);
+        }
+    } //-- void setStarsLMProgramEvent(StarsLMProgramEvent) 
 
     /**
      * 

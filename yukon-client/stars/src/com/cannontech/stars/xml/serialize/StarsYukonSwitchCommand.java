@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsSwitchCommand implements java.io.Serializable {
+public class StarsYukonSwitchCommand implements java.io.Serializable {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class StarsSwitchCommand implements java.io.Serializable {
      //- Constructors -/
     //----------------/
 
-    public StarsSwitchCommand() {
+    public StarsYukonSwitchCommand() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsSwitchCommand()
+    } //-- com.cannontech.stars.xml.serialize.StarsYukonSwitchCommand()
 
 
       //-----------/
@@ -148,11 +148,11 @@ public class StarsSwitchCommand implements java.io.Serializable {
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsSwitchCommand unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsYukonSwitchCommand unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsSwitchCommand) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsSwitchCommand.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsSwitchCommand unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsYukonSwitchCommand) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsYukonSwitchCommand.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsYukonSwitchCommand unmarshal(java.io.Reader) 
 
     /**
     **/

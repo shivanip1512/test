@@ -6,13 +6,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.*;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.web.StarsUser;
 import com.cannontech.stars.xml.*;
 import com.cannontech.stars.xml.serialize.ControlHistory;
-import com.cannontech.stars.xml.serialize.StarsCustAccountInfo;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetLMControlHistory;
 import com.cannontech.stars.xml.serialize.StarsGetLMControlHistoryResponse;
@@ -51,6 +53,7 @@ public class GetLMCtrlHistAction implements ActionBase {
                 catch (NumberFormatException e) {}
             getHist.setGroupID( groupID );
             getHist.setPeriod( StarsCtrlHistPeriod.valueOf(req.getParameter("Period")) );
+            getHist.setGetSummary( true );
 
             StarsOperation operation = new StarsOperation();
             operation.setStarsGetLMControlHistory( getHist );
@@ -91,18 +94,20 @@ public class GetLMCtrlHistAction implements ActionBase {
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			StarsUser user = (StarsUser) session.getAttribute("USER");
-			StarsCustAccountInfo accountInfo = null;
+			StarsCustAccountInformation accountInfo = null;
 			
 			if (operator != null)
-				accountInfo = (StarsCustAccountInfo) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
 			else
-				accountInfo = (StarsCustAccountInfo) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
 				
 			StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
 			for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
 				StarsLMProgram program = programs.getStarsLMProgram(i);
-				if (program.getGroupID() == getCtrlHist.getGroupID())
+				if (program.getGroupID() == getCtrlHist.getGroupID()) {
 					program.getStarsLMControlHistory().setControlHistory( ctrlHistToday.getControlHistory() );
+					program.getStarsLMControlHistory().setControlSummary( ctrlHist.getControlSummary() );
+				}
 			}
 
 			if (operator != null)
@@ -127,21 +132,26 @@ public class GetLMCtrlHistAction implements ActionBase {
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			StarsUser user = (StarsUser) session.getAttribute("USER");
             if (operator == null && user == null) {
-            	StarsFailure failure = new StarsFailure();
-            	failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
-            	failure.setDescription( "Session invalidated, please login again" );
-            	respOper.setStarsFailure( failure );
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
+            
+            Integer energyCompanyID = null;
+            if (operator != null)
+            	energyCompanyID = new Integer( (int) operator.getEnergyCompanyID() );
+            else
+            	energyCompanyID = new Integer( user.getEnergyCompanyID() );
 
             StarsGetLMControlHistory getHist = reqOper.getStarsGetLMControlHistory();
-            StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
 
-            StarsLMControlHistory ctrlHist = LMControlHistory.getStarsLMControlHistory(
-                	new Integer(getHist.getGroupID()), getHist.getPeriod(), getHist.getGetSummary() );
+            LiteStarsLMControlHistory liteCtrlHist = com.cannontech.stars.web.servlet.SOAPServer.getLMControlHistory(
+            		energyCompanyID, new Integer(getHist.getGroupID()) );
+            StarsLMControlHistory starsCtrlHist = StarsLiteFactory.createStarsLMControlHistory(
+            		liteCtrlHist, getHist.getPeriod(), getHist.getGetSummary() );
                 
             StarsGetLMControlHistoryResponse response = new StarsGetLMControlHistoryResponse();
-            response.setStarsLMControlHistory( ctrlHist );
+            response.setStarsLMControlHistory( starsCtrlHist );
             respOper.setStarsGetLMControlHistoryResponse( response );
 
             return SOAPUtil.buildSOAPMessage( respOper );

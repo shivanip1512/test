@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class LMProgramEventDescriptor extends StarsLMCustomerEventDescriptor {
+public class StarsLMProgramEventDescriptor extends StarsLMCustomerEventDescriptor {
 
 
       //--------------------------/
@@ -47,10 +47,10 @@ public class LMProgramEventDescriptor extends StarsLMCustomerEventDescriptor {
      //- Constructors -/
     //----------------/
 
-    public LMProgramEventDescriptor() {
+    public StarsLMProgramEventDescriptor() {
         super();
         setExtendsWithoutFlatten(new StarsLMCustomerEventDescriptor());
-        xmlName = "LMProgramEvent";
+        xmlName = "stars-LMProgramEvent";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -58,7 +58,7 @@ public class LMProgramEventDescriptor extends StarsLMCustomerEventDescriptor {
         
         //-- initialize element descriptors
         
-    } //-- com.cannontech.stars.xml.serialize.LMProgramEventDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsLMProgramEventDescriptor()
 
 
       //-----------/
@@ -92,7 +92,7 @@ public class LMProgramEventDescriptor extends StarsLMCustomerEventDescriptor {
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.LMProgramEvent.class;
+        return com.cannontech.stars.xml.serialize.StarsLMProgramEvent.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

@@ -115,62 +115,37 @@ public class CallReportBase extends DBPersistent {
         return new Integer( nextCallID );
     }
 
-    public static CallReportBase[] getAllAccountCallReports(Integer accountID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = ? "
-        		   + "ORDER BY DateTaken DESC";
+    public static CallReportBase[] getAllAccountCallReports(Integer accountID) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = " + accountID.toString()
+        		   + " ORDER BY DateTaken DESC";
+        
+        try {		   
+	        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement( sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+	        stmt.execute();
+	        
+	        CallReportBase[] reports = new CallReportBase[ stmt.getRowCount() ];
+	        for (int i = 0; i < stmt.getRowCount(); i++) {
+	        	Object[] row = stmt.getRow(i);
+                reports[i] = new CallReportBase();
 
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        java.util.ArrayList reportList = new java.util.ArrayList();
-
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
+                reports[i].setCallID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+                reports[i].setCallNumber( (String) row[1] );
+                reports[i].setCallTypeID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+                reports[i].setDateTaken( (java.util.Date) row[3] );
+                reports[i].setDescription( (String) row[4] );
+                reports[i].setAccountID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
+                reports[i].setCustomerID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
+                reports[i].setTakenBy( (String) row[7] );
             }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, accountID.intValue() );
-                rset = pstmt.executeQuery();
-
-                while (rset.next()) {
-                    CallReportBase report = new CallReportBase();
-
-                    report.setCallID( new Integer(rset.getInt("CallID")) );
-                    report.setCallNumber( rset.getString("CallNumber") );
-                    report.setCallTypeID( new Integer(rset.getInt("CallTypeID")) );
-                    report.setDateTaken( new java.util.Date(rset.getTimestamp("DateTaken").getTime()) );
-                    report.setDescription( rset.getString("Description") );
-                    report.setAccountID( new Integer(rset.getInt("AccountID")) );
-                    report.setCustomerID( new Integer(rset.getInt("CustomerID")) );
-                    report.setTakenBy( rset.getString("TakenBy") );
-
-                    reportList.add( report );
-                }
-            }
+            
+            return reports;
         }
-        catch( java.sql.SQLException e )
+        catch( Exception e )
         {
             e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if (rset != null) rset.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
-
-        CallReportBase[] reports = new CallReportBase[ reportList.size() ];
-        reportList.toArray( reports );
-        return reports;
+        
+        return null;
     }
 
     public static CallReportBase[] getAllCustomerCallReports(Integer customerID, java.sql.Connection conn) {
@@ -232,7 +207,7 @@ public class CallReportBase extends DBPersistent {
     }
 
     public static void deleteAllAccountCallReports(Integer accountID, java.sql.Connection conn) {
-        CallReportBase[] reports = getAllAccountCallReports(accountID, conn);
+        CallReportBase[] reports = getAllAccountCallReports(accountID);
 
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE AccountID = ?";
         java.sql.PreparedStatement pstmt = null;

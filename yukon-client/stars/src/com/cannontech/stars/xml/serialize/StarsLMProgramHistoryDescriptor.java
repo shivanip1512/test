@@ -102,35 +102,35 @@ public class StarsLMProgramHistoryDescriptor extends org.exolab.castor.xml.util.
         
         //-- initialize element descriptors
         
-        //-- _LMProgramEventList
-        desc = new XMLFieldDescriptorImpl(LMProgramEvent.class, "_LMProgramEventList", "LMProgramEvent", NodeType.Element);
+        //-- _starsLMProgramEventList
+        desc = new XMLFieldDescriptorImpl(StarsLMProgramEvent.class, "_starsLMProgramEventList", "stars-LMProgramEvent", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsLMProgramHistory target = (StarsLMProgramHistory) object;
-                return target.getLMProgramEvent();
+                return target.getStarsLMProgramEvent();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsLMProgramHistory target = (StarsLMProgramHistory) object;
-                    target.addLMProgramEvent( (LMProgramEvent) value);
+                    target.addStarsLMProgramEvent( (StarsLMProgramEvent) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new LMProgramEvent();
+                return new StarsLMProgramEvent();
             }
         } );
         desc.setHandler(handler);
         desc.setMultivalued(true);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _LMProgramEventList
+        //-- validation code for: _starsLMProgramEventList
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerAddress.java,v 1.12 2002/10/11 21:44:25 zyao Exp $
+ * $Id: StarsCustomerAddress.java,v 1.13 2002/11/12 15:58:46 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.12 $ $Date: 2002/10/11 21:44:25 $
+ * @version $Revision: 1.13 $ $Date: 2002/11/12 15:58:46 $
 **/
 public abstract class StarsCustomerAddress implements java.io.Serializable {
 
@@ -31,6 +31,13 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
+
+    private int _addressID;
+
+    /**
+     * keeps track of state for field: _addressID
+    **/
+    private boolean _has_addressID;
 
     private java.lang.String _streetAddr1;
 
@@ -55,6 +62,23 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+    **/
+    public void deleteAddressID()
+    {
+        this._has_addressID= false;
+    } //-- void deleteAddressID() 
+
+    /**
+     * Returns the value of field 'addressID'.
+     * 
+     * @return the value of field 'addressID'.
+    **/
+    public int getAddressID()
+    {
+        return this._addressID;
+    } //-- int getAddressID() 
 
     /**
      * Returns the value of field 'city'.
@@ -108,6 +132,13 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
 
     /**
     **/
+    public boolean hasAddressID()
+    {
+        return this._has_addressID;
+    } //-- boolean hasAddressID() 
+
+    /**
+    **/
     public boolean isValid()
     {
         try {
@@ -134,6 +165,17 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
     **/
     public abstract void marshal(org.xml.sax.ContentHandler handler)
         throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+
+    /**
+     * Sets the value of field 'addressID'.
+     * 
+     * @param addressID the value of field 'addressID'.
+    **/
+    public void setAddressID(int addressID)
+    {
+        this._addressID = addressID;
+        this._has_addressID = true;
+    } //-- void setAddressID(int) 
 
     /**
      * Sets the value of field 'city'.

@@ -60,8 +60,8 @@ public class StarsGetCallReportHistoryResponseDescriptor extends org.exolab.cast
         
         //-- initialize element descriptors
         
-        //-- _starsCallReportHistoryList
-        desc = new XMLFieldDescriptorImpl(StarsCallReportHistory.class, "_starsCallReportHistoryList", "stars-CallReportHistory", NodeType.Element);
+        //-- _starsCallReportHistory
+        desc = new XMLFieldDescriptorImpl(StarsCallReportHistory.class, "_starsCallReportHistory", "stars-CallReportHistory", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -74,7 +74,7 @@ public class StarsGetCallReportHistoryResponseDescriptor extends org.exolab.cast
             {
                 try {
                     StarsGetCallReportHistoryResponse target = (StarsGetCallReportHistoryResponse) object;
-                    target.addStarsCallReportHistory( (StarsCallReportHistory) value);
+                    target.setStarsCallReportHistory( (StarsCallReportHistory) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -85,12 +85,13 @@ public class StarsGetCallReportHistoryResponseDescriptor extends org.exolab.cast
             }
         } );
         desc.setHandler(handler);
-        desc.setMultivalued(true);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsCallReportHistoryList
+        //-- validation code for: _starsCallReportHistory
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
+        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsGetCallReportHistoryResponseDescriptor()

@@ -105,44 +105,41 @@ public class ApplianceCategory extends DBPersistent {
         return new Integer( nextCategoryID );
     }
     
-    public static ApplianceCategory[] getAllApplianceCategories(Integer categoryID, java.sql.Connection conn) {
-    	String sql = "SELECT * FROM " + TABLE_NAME + " WHERE CategoryID = ?";
+    public static ApplianceCategory[] getAllApplianceCategories(Integer energyCompanyID) {
+    	com.cannontech.database.db.stars.ECToGenericMapping[] items =
+    			com.cannontech.database.db.stars.ECToGenericMapping.getAllMappingItems( energyCompanyID, TABLE_NAME );
+    	if (items == null || items.length == 0)
+    		return new ApplianceCategory[0];
+    			
+    	StringBuffer sql = new StringBuffer( "SELECT * FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + items[0].getItemID().toString() );
+    	for (int i = 1; i < items.length; i++)
+    		sql.append( " OR ApplianceCategoryID = " ).append( items[i].getItemID() );
     	
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        java.util.ArrayList appCatList = new java.util.ArrayList();
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql.toString(), com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
         try {
-            pstmt = conn.prepareStatement( sql );
-            pstmt.setInt( 1, categoryID.intValue() );
-            rset = pstmt.executeQuery();
+        	stmt.execute();
+        	ApplianceCategory[] appCats = new ApplianceCategory[ stmt.getRowCount() ];
 
-            while (rset.next()) {
-            	ApplianceCategory appCat = new ApplianceCategory();
+            for (int i = 0; i < appCats.length; i++) {
+            	Object[] row = stmt.getRow(i);
+            	appCats[i] = new ApplianceCategory();
             	
-            	appCat.setApplianceCategoryID( new Integer(rset.getInt("ApplianceCategoryID")) );
-            	appCat.setDescription( rset.getString("Description") );
-            	appCat.setCategoryID( new Integer(rset.getInt("CategoryID")) );
-            	appCat.setWebConfigurationID( new Integer(rset.getInt("WebConfigurationID")) );
-            	
-            	appCatList.add( appCat );
+            	appCats[i].setApplianceCategoryID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+            	appCats[i].setDescription( (String) row[1] );
+            	appCats[i].setCategoryID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+            	appCats[i].setWebConfigurationID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
             }
+            
+            return appCats;
         }
-        catch (java.sql.SQLException e) {
+        catch(Exception e)
+        {
             e.printStackTrace();
         }
-        finally {
-            try {
-                if (pstmt != null) pstmt.close();
-            }
-            catch (java.sql.SQLException e2) {
-                e2.printStackTrace();
-            }
-        }
-        
-        ApplianceCategory[] appCats = new ApplianceCategory[ appCatList.size() ];
-        appCatList.toArray( appCats );
-        return appCats;
+
+        return null;
     }
 
     public Integer getApplianceCategoryID() {

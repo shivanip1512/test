@@ -25,9 +25,14 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsCreateLMHardwareResponse extends StarsLMHw 
-implements java.io.Serializable
-{
+public class StarsCreateLMHardwareResponse implements java.io.Serializable {
+
+
+      //--------------------------/
+     //- Class/Member Variables -/
+    //--------------------------/
+
+    private StarsLMHardware _starsLMHardware;
 
 
       //----------------/
@@ -42,6 +47,16 @@ implements java.io.Serializable
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'starsLMHardware'.
+     * 
+     * @return the value of field 'starsLMHardware'.
+    **/
+    public StarsLMHardware getStarsLMHardware()
+    {
+        return this._starsLMHardware;
+    } //-- StarsLMHardware getStarsLMHardware() 
 
     /**
     **/
@@ -79,6 +94,16 @@ implements java.io.Serializable
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'starsLMHardware'.
+     * 
+     * @param starsLMHardware the value of field 'starsLMHardware'.
+    **/
+    public void setStarsLMHardware(StarsLMHardware starsLMHardware)
+    {
+        this._starsLMHardware = starsLMHardware;
+    } //-- void setStarsLMHardware(StarsLMHardware) 
 
     /**
      * 

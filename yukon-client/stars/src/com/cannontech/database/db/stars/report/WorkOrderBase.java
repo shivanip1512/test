@@ -128,130 +128,80 @@ public class WorkOrderBase extends DBPersistent {
         return new Integer( nextOrderID );
     }
 
-    public static WorkOrderBase[] getAllSiteWorkOrders(Integer siteID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " where SiteID = ? "
-                   + "ORDER BY DateReported DESC";
+    public static WorkOrderBase[] getAllCustomerSiteWorkOrders(Integer customerID, Integer siteID) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE CustomerID = " + customerID
+        		   + " AND SiteID = " + siteID.toString() + " ORDER BY DateReported DESC";
 
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        java.util.ArrayList orderList = new java.util.ArrayList();
+		try {
+			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement( sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+			stmt.execute();
 
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
+	        WorkOrderBase[] orders = new WorkOrderBase[ stmt.getRowCount() ];
+            for (int i = 0; i < stmt.getRowCount(); i++) {
+            	Object[] row = stmt.getRow(i);
+                orders[i] = new WorkOrderBase();
+
+                orders[i].setOrderID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+                orders[i].setOrderNumber( (String) row[1] );
+                orders[i].setWorkTypeID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+                orders[i].setCurrentStateID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+                orders[i].setCustomerID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+                orders[i].setSiteID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
+                orders[i].setServiceCompanyID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
+                orders[i].setDateReported( (java.util.Date) row[7] );
+                orders[i].setDescription( (String) row[8] );
+                orders[i].setDateScheduled( (java.util.Date) row[9] );
+                orders[i].setDateCompleted( (java.util.Date) row[10] );
+                orders[i].setActionTaken( (String) row[11] );
+                orders[i].setOrderedBy( (String) row[12] );
             }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, siteID.intValue() );
-                rset = pstmt.executeQuery();
-
-                while (rset.next()) {
-                    WorkOrderBase order = new WorkOrderBase();
-
-                    order.setOrderID( new Integer(rset.getInt("OrderID")) );
-                    order.setOrderNumber( rset.getString("OrderNumber") );
-                    order.setWorkTypeID( new Integer(rset.getInt("WorkTypeID")) );
-                    order.setCurrentStateID( new Integer(rset.getInt("CurrentStateID")) );
-                    order.setCustomerID( new Integer(rset.getInt("CustomerID")) );
-                    order.setSiteID( new Integer(rset.getInt("SiteID")) );
-                    order.setServiceCompanyID( new Integer(rset.getInt("ServiceCompanyID")) );
-                    order.setDateReported( new java.util.Date(rset.getTimestamp("DateReported").getTime()) );
-                    order.setDescription( rset.getString("Description") );
-                    order.setDateScheduled( new java.util.Date(rset.getTimestamp("DateScheduled").getTime()) );
-                    order.setDateCompleted( new java.util.Date(rset.getTimestamp("DateCompleted").getTime()) );
-                    order.setActionTaken( rset.getString("ActionTaken") );
-                    order.setOrderedBy( rset.getString("OrderedBy") );
-
-                    orderList.add(order);
-                }
-            }
+            
+            return orders;
         }
-        catch( java.sql.SQLException e )
+        catch( Exception e )
         {
             e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if (rset != null) rset.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
 
-        WorkOrderBase[] orders = new WorkOrderBase[ orderList.size() ];
-        orderList.toArray( orders );
-        return orders;
+        return null;
     }
 
     public static WorkOrderBase[] getAllServiceCompanyWorkOrders(Integer serviceCompanyID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " where ServiceCompanyID = ? "
-                   + "ORDER BY DateReported DESC";
+        String sql = "SELECT * FROM " + TABLE_NAME + " where ServiceCompanyID = " + serviceCompanyID.toString()
+                   + " ORDER BY DateReported DESC";
 
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        java.util.ArrayList orderList = new java.util.ArrayList();
+		try {
+			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement( sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+			stmt.execute();
 
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
+	        WorkOrderBase[] orders = new WorkOrderBase[ stmt.getRowCount() ];
+            for (int i = 0; i < stmt.getRowCount(); i++) {
+            	Object[] row = stmt.getRow(i);
+                orders[i] = new WorkOrderBase();
+
+                orders[i].setOrderID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+                orders[i].setOrderNumber( (String) row[1] );
+                orders[i].setWorkTypeID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+                orders[i].setCurrentStateID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+                orders[i].setCustomerID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+                orders[i].setSiteID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
+                orders[i].setServiceCompanyID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
+                orders[i].setDateReported( (java.util.Date) row[7] );
+                orders[i].setDescription( (String) row[8] );
+                orders[i].setDateScheduled( (java.util.Date) row[9] );
+                orders[i].setDateCompleted( (java.util.Date) row[10] );
+                orders[i].setActionTaken( (String) row[11] );
+                orders[i].setOrderedBy( (String) row[12] );
             }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, serviceCompanyID.intValue() );
-                rset = pstmt.executeQuery();
-
-                while (rset.next()) {
-                    WorkOrderBase order = new WorkOrderBase();
-
-                    order.setOrderID( new Integer(rset.getInt("OrderID")) );
-                    order.setOrderNumber( rset.getString("OrderNumber") );
-                    order.setWorkTypeID( new Integer(rset.getInt("WorkTypeID")) );
-                    order.setCurrentStateID( new Integer(rset.getInt("CurrentStateID")) );
-                    order.setCustomerID( new Integer(rset.getInt("CustomerID")) );
-                    order.setSiteID( new Integer(rset.getInt("SiteID")) );
-                    order.setServiceCompanyID( new Integer(rset.getInt("ServiceCompanyID")) );
-                    order.setDateReported( new java.util.Date(rset.getTimestamp("DateReported").getTime()) );
-                    order.setDescription( rset.getString("Description") );
-                    order.setDateScheduled( new java.util.Date(rset.getTimestamp("DateScheduled").getTime()) );
-                    order.setDateCompleted( new java.util.Date(rset.getTimestamp("DateCompleted").getTime()) );
-                    order.setActionTaken( rset.getString("ActionTaken") );
-                    order.setOrderedBy( rset.getString("OrderedBy") );
-
-                    orderList.add(order);
-                }
-            }
+            
+            return orders;
         }
-        catch( java.sql.SQLException e )
+        catch( Exception e )
         {
             e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if (rset != null) rset.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
 
-        WorkOrderBase[] orders = new WorkOrderBase[ orderList.size() ];
-        orderList.toArray( orders );
-        return orders;
+        return null;
     }
 
 	/**

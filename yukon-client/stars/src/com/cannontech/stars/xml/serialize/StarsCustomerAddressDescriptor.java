@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerAddressDescriptor.java,v 1.12 2002/10/11 21:44:18 zyao Exp $
+ * $Id: StarsCustomerAddressDescriptor.java,v 1.13 2002/11/12 15:58:36 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.12 $ $Date: 2002/10/11 21:44:18 $
+ * @version $Revision: 1.13 $ $Date: 2002/11/12 15:58:36 $
 **/
 public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -57,6 +57,48 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
         //-- set grouping compositor
         setCompositorAsSequence();
         //-- initialize attribute descriptors
+        
+        //-- _addressID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_addressID", "addressID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustomerAddress target = (StarsCustomerAddress) object;
+                if(!target.hasAddressID())
+                    return null;
+                return new Integer(target.getAddressID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustomerAddress target = (StarsCustomerAddress) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteAddressID();
+                        return;
+                    }
+                    target.setAddressID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _addressID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
         
         //-- initialize element descriptors
         

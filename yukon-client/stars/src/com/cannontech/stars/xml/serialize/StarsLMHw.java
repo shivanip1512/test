@@ -40,6 +40,8 @@ implements java.io.Serializable
 
     private DeviceStatus _deviceStatus;
 
+    private java.lang.String _installationNotes;
+
     private StarsLMHardwareHistory _starsLMHardwareHistory;
 
 
@@ -65,6 +67,16 @@ implements java.io.Serializable
     {
         return this._deviceStatus;
     } //-- DeviceStatus getDeviceStatus() 
+
+    /**
+     * Returns the value of field 'installationNotes'.
+     * 
+     * @return the value of field 'installationNotes'.
+    **/
+    public java.lang.String getInstallationNotes()
+    {
+        return this._installationNotes;
+    } //-- java.lang.String getInstallationNotes() 
 
     /**
      * Returns the value of field 'LMDeviceType'.
@@ -134,6 +146,17 @@ implements java.io.Serializable
     {
         this._deviceStatus = deviceStatus;
     } //-- void setDeviceStatus(DeviceStatus) 
+
+    /**
+     * Sets the value of field 'installationNotes'.
+     * 
+     * @param installationNotes the value of field
+     * 'installationNotes'.
+    **/
+    public void setInstallationNotes(java.lang.String installationNotes)
+    {
+        this._installationNotes = installationNotes;
+    } //-- void setInstallationNotes(java.lang.String) 
 
     /**
      * Sets the value of field 'LMDeviceType'.

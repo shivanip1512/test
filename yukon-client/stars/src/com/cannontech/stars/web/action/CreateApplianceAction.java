@@ -5,9 +5,11 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.xml.StarsAppFactory;
+import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.util.*;
 import com.cannontech.stars.xml.serialize.*;
 
@@ -83,39 +85,55 @@ public class CreateApplianceAction implements ActionBase {
 
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
             if (operator == null) {
-            	StarsFailure failure = new StarsFailure();
-            	failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
-            	failure.setDescription( "Session invalidated, please login again" );
-            	respOper.setStarsFailure( failure );
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            com.cannontech.database.data.stars.customer.CustomerAccount account =
-            		(com.cannontech.database.data.stars.customer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
+        	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) operator.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+        	if (accountInfo == null) {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+        	}
             
+            StarsCreateAppliance newApp = reqOper.getStarsCreateAppliance();
             com.cannontech.database.data.stars.appliance.ApplianceBase app = new com.cannontech.database.data.stars.appliance.ApplianceBase();
             com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
             
-            StarsCreateAppliance newApp = reqOper.getStarsCreateAppliance();
-            appDB.setAccountID( account.getCustomerAccount().getAccountID() );
-            com.cannontech.database.db.stars.appliance.ApplianceCategory[] appCats =
-            		com.cannontech.database.data.stars.appliance.ApplianceCategory.getAllApplianceCategories( new Integer(newApp.getApplianceCategoryID()) );
-            if (appCats == null || appCats.length == 0)
+            appDB.setAccountID( new Integer(accountInfo.getCustomerAccount().getAccountID()) );
+            java.util.ArrayList appCats = com.cannontech.stars.web.servlet.SOAPServer.getAllApplianceCategories(
+            		new Integer((int) operator.getEnergyCompanyID()) );
+            if (appCats == null || appCats.size() == 0)
             	appDB.setApplianceCategoryID( new Integer(com.cannontech.database.db.stars.appliance.ApplianceCategory.NONE_INT) );
-            else
-            	appDB.setApplianceCategoryID( appCats[0].getApplianceCategoryID() );
+            else {
+            	// Find the first appliance category that's in the specified "category"
+            	for (int i = 0; i < appCats.size(); i++) {
+            		StarsApplianceCategory appCat = (StarsApplianceCategory) appCats.get(i);
+            		if (appCat.getCategoryID() == newApp.getApplianceCategoryID()) {
+            			appDB.setApplianceCategoryID( new Integer(appCat.getApplianceCategoryID()) );
+            			break;
+            		}
+            	}
+            }
             appDB.setLMProgramID( new Integer(0) );
             appDB.setNotes( newApp.getNotes() );
             
             app = (com.cannontech.database.data.stars.appliance.ApplianceBase) Transaction.createTransaction( Transaction.INSERT, app ).execute();
             
-            StarsCreateApplianceResponse resp = (StarsCreateApplianceResponse) StarsAppFactory.newStarsApp( newApp, StarsCreateApplianceResponse.class );
-            resp.setApplianceID( app.getApplianceBase().getApplianceID().intValue() );
-            resp.setLmProgramID( -1 );
-            resp.setInventoryID( -1 );
+            StarsAppliance starsApp = (StarsAppliance) StarsAppFactory.newStarsApp( newApp, StarsAppliance.class );
+            starsApp.setApplianceID( app.getApplianceBase().getApplianceID().intValue() );
+            starsApp.setLmProgramID( -1 );
+            starsApp.setInventoryID( -1 );
+            
+            accountInfo.getAppliances().add( starsApp );
+            
+            StarsCreateApplianceResponse resp = new StarsCreateApplianceResponse();
+            resp.setStarsAppliance( starsApp );
             respOper.setStarsCreateApplianceResponse( resp );
 
-            return SOAPUtil.buildSOAPMessage( respOper );
+            SOAPMessage respMsg = SOAPUtil.buildSOAPMessage( respOper );
+            return respMsg;
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -135,16 +153,15 @@ public class CreateApplianceAction implements ActionBase {
 			if (failure != null) return failure.getStatusCode();
 			
 			StarsCreateApplianceResponse resp = operation.getStarsCreateApplianceResponse();
-			StarsAppliance app = (StarsAppliance) StarsAppFactory.newStarsApp( resp, StarsAppliance.class );
+			StarsAppliance app = resp.getStarsAppliance();
 			
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsCustAccountInfo accountInfo = (StarsCustAccountInfo) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+					operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
             if (accountInfo == null)
             	return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
             	
-			StarsAppliances appliances = accountInfo.getStarsAppliances();
-			appliances.addStarsAppliance( app );
-			
+			accountInfo.getStarsAppliances().addStarsAppliance( app );
             return 0;
         }
         catch (Exception e) {

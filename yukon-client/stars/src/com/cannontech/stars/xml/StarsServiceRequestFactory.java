@@ -1,6 +1,6 @@
 package com.cannontech.stars.xml;
 
-import com.cannontech.stars.xml.serialize.StarsServiceRequest;
+import com.cannontech.stars.xml.serialize.StarsSrvReq;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
 
 /**
@@ -13,9 +13,9 @@ import com.cannontech.database.db.stars.report.WorkOrderBase;
  */
 public class StarsServiceRequestFactory {
 
-	public static StarsServiceRequest newStarsServiceRequest(StarsServiceRequest order, Class type) {
+	public static StarsSrvReq newStarsServiceRequest(StarsSrvReq order, Class type) {
 		try {
-			StarsServiceRequest starsOrder = (StarsServiceRequest) type.newInstance();
+			StarsSrvReq starsOrder = (StarsSrvReq) type.newInstance();
 			
 			starsOrder.setOrderNumber( order.getOrderNumber() );
 			starsOrder.setServiceType( order.getServiceType() );
@@ -37,7 +37,8 @@ public class StarsServiceRequestFactory {
 		return null;
 	}
 	
-	public static void setWorkOrderBase(WorkOrderBase orderDB, StarsServiceRequest order) {
+	public static void setWorkOrderBase(WorkOrderBase orderDB, StarsSrvReq order) {
+		orderDB.setOrderID( new Integer(order.getOrderID()) );
 		orderDB.setOrderNumber( order.getOrderNumber() );
 		orderDB.setWorkTypeID( new Integer(order.getServiceType().getEntryID()) );
 		orderDB.setDateReported( order.getDateReported() );

@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsSwitchCommandDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsCreateServiceRequestResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,41 +47,41 @@ public class StarsSwitchCommandDescriptor extends org.exolab.castor.xml.util.XML
      //- Constructors -/
     //----------------/
 
-    public StarsSwitchCommandDescriptor() {
+    public StarsCreateServiceRequestResponseDescriptor() {
         super();
-        xmlName = "stars-SwitchCommand";
+        xmlName = "stars-CreateServiceRequestResponse";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
         
         //-- set grouping compositor
-        setCompositorAsChoice();
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
         
-        //-- _starsEnableService
-        desc = new XMLFieldDescriptorImpl(StarsEnableService.class, "_starsEnableService", "stars-EnableService", NodeType.Element);
+        //-- _starsServiceRequest
+        desc = new XMLFieldDescriptorImpl(StarsServiceRequest.class, "_starsServiceRequest", "stars-ServiceRequest", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsSwitchCommand target = (StarsSwitchCommand) object;
-                return target.getStarsEnableService();
+                StarsCreateServiceRequestResponse target = (StarsCreateServiceRequestResponse) object;
+                return target.getStarsServiceRequest();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsSwitchCommand target = (StarsSwitchCommand) object;
-                    target.setStarsEnableService( (StarsEnableService) value);
+                    StarsCreateServiceRequestResponse target = (StarsCreateServiceRequestResponse) object;
+                    target.setStarsServiceRequest( (StarsServiceRequest) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsEnableService();
+                return new StarsServiceRequest();
             }
         } );
         desc.setHandler(handler);
@@ -89,46 +89,12 @@ public class StarsSwitchCommandDescriptor extends org.exolab.castor.xml.util.XML
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsEnableService
+        //-- validation code for: _starsServiceRequest
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
-        //-- _starsDisableService
-        desc = new XMLFieldDescriptorImpl(StarsDisableService.class, "_starsDisableService", "stars-DisableService", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsSwitchCommand target = (StarsSwitchCommand) object;
-                return target.getStarsDisableService();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsSwitchCommand target = (StarsSwitchCommand) object;
-                    target.setStarsDisableService( (StarsDisableService) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsDisableService();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsDisableService
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        desc.setValidator(fieldValidator);
-        
-    } //-- com.cannontech.stars.xml.serialize.StarsSwitchCommandDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsCreateServiceRequestResponseDescriptor()
 
 
       //-----------/
@@ -160,7 +126,7 @@ public class StarsSwitchCommandDescriptor extends org.exolab.castor.xml.util.XML
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsSwitchCommand.class;
+        return com.cannontech.stars.xml.serialize.StarsCreateServiceRequestResponse.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

@@ -25,9 +25,14 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsGetCustomerAccountResponse extends StarsCustAccountInfo 
-implements java.io.Serializable
-{
+public class StarsGetCustomerAccountResponse implements java.io.Serializable {
+
+
+      //--------------------------/
+     //- Class/Member Variables -/
+    //--------------------------/
+
+    private StarsCustAccountInformation _starsCustAccountInformation;
 
 
       //----------------/
@@ -42,6 +47,16 @@ implements java.io.Serializable
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'starsCustAccountInformation'.
+     * 
+     * @return the value of field 'starsCustAccountInformation'.
+    **/
+    public StarsCustAccountInformation getStarsCustAccountInformation()
+    {
+        return this._starsCustAccountInformation;
+    } //-- StarsCustAccountInformation getStarsCustAccountInformation() 
 
     /**
     **/
@@ -79,6 +94,17 @@ implements java.io.Serializable
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'starsCustAccountInformation'.
+     * 
+     * @param starsCustAccountInformation the value of field
+     * 'starsCustAccountInformation'.
+    **/
+    public void setStarsCustAccountInformation(StarsCustAccountInformation starsCustAccountInformation)
+    {
+        this._starsCustAccountInformation = starsCustAccountInformation;
+    } //-- void setStarsCustAccountInformation(StarsCustAccountInformation) 
 
     /**
      * 

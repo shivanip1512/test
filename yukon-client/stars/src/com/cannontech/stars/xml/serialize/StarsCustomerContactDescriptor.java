@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerContactDescriptor.java,v 1.12 2002/10/11 21:44:27 zyao Exp $
+ * $Id: StarsCustomerContactDescriptor.java,v 1.13 2002/11/12 15:58:49 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.12 $ $Date: 2002/10/11 21:44:27 $
+ * @version $Revision: 1.13 $ $Date: 2002/11/12 15:58:49 $
 **/
 public class StarsCustomerContactDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -57,6 +57,48 @@ public class StarsCustomerContactDescriptor extends org.exolab.castor.xml.util.X
         //-- set grouping compositor
         setCompositorAsSequence();
         //-- initialize attribute descriptors
+        
+        //-- _contactID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_contactID", "contactID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustomerContact target = (StarsCustomerContact) object;
+                if(!target.hasContactID())
+                    return null;
+                return new Integer(target.getContactID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustomerContact target = (StarsCustomerContact) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteContactID();
+                        return;
+                    }
+                    target.setContactID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _contactID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
         
         //-- initialize element descriptors
         

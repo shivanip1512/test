@@ -19,6 +19,7 @@ import com.cannontech.stars.web.action.CreateApplianceAction;
 import com.cannontech.stars.web.action.CreateCallAction;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
+import com.cannontech.stars.web.action.GetAllCustAccountsAction;
 import com.cannontech.stars.web.action.GetCustAccountAction;
 import com.cannontech.stars.web.action.GetCustSelListsAction;
 import com.cannontech.stars.web.action.GetEnrollmentProgramsAction;
@@ -109,6 +110,11 @@ public class SOAPClient extends HttpServlet {
             clientAction = new SearchCustAccountAction();
             destURL = "/OperatorDemos/Consumer/Update.jsp";
         }
+        else if (action.equalsIgnoreCase("GetCustAccount")) {
+        	clientAction = new GetCustAccountAction();
+        	destURL = req.getParameter( "REDIRECT" );
+        	nextURL = errorURL = req.getParameter( "REFERRER" );
+        }
         else if (action.equalsIgnoreCase("UpdateCustAccount")) {
             clientAction = new UpdateCustAccountAction();
             destURL = "/OperatorDemos/Consumer/Update.jsp";
@@ -117,10 +123,6 @@ public class SOAPClient extends HttpServlet {
             clientAction = new YukonSwitchCommandAction();
             destURL = req.getParameter("REDIRECT");
             nextURL = errorURL = req.getParameter("REFERRER");
-
-            PILConnectionServlet connContainer = (PILConnectionServlet)
-                    getServletContext().getAttribute(PILConnectionServlet.SERVLET_CONTEXT_ID);
-            session.setAttribute(PILConnectionServlet.SERVLET_CONTEXT_ID, connContainer);
         }
         else if (action.equalsIgnoreCase("GetLMCtrlHist")) {
             clientAction = new GetLMCtrlHistAction();
@@ -192,12 +194,13 @@ public class SOAPClient extends HttpServlet {
         	
             MultiAction actions = new MultiAction();
         	actions.getActionVector().addElement( new LoginAction() );
-        	actions.getActionVector().addElement( new GetCustAccountAction() );
+        	actions.getActionVector().addElement( new GetAllCustAccountsAction() );
         	if (session.getAttribute("ENROLLMENT_PROGRAMS") == null)
         		actions.getActionVector().addElement( new GetEnrollmentProgramsAction() );
         	
         	clientAction = (ActionBase) actions;
-        	destURL = req.getParameter("REDIRECT");
+        	destURL = "/servlet/SOAPClient?action=GetCustAccount&REDIRECT=" + req.getParameter("REDIRECT")
+        			+ "&REFERRER=" + req.getParameter("REFERRER");
         	nextURL = errorURL = req.getParameter( "REFERRER" );
         }
         else if (action.equalsIgnoreCase("HoneywellSearchCustAccount")) {
