@@ -1,13 +1,17 @@
 package com.cannontech.servlet;
 
 /**
- * GraphGenerator generates a png, svg, or jpg image of a graph based on the parameters
- * passed to it.
+ * GraphGenerator generates a gif, png, svg, or jpg image of a graph based on the state
+ * of an instance of com.cannontech.graph.GraphBean stored in the session.
  *
- * Parameters:
- *	graphBean - takes in an instance of the Graphbean
+ * If an instance of GraphBean isn't found, one is created and placed in the session.
  * 
- * Optional Parameters (will change properties of the Graphbean):
+ * All parameters are optional. 
+ * (ie if you provide no parameters the same graph will be generated as last time)
+ * 
+ * 	
+ * Parameters
+ * 
  * gdefid	- GraphDefinition ID
  * start	- Start date string, see dtFormat optional parameter for formatting
  * period	- See com.cannontech.util.ServletUtil for valid period strings
