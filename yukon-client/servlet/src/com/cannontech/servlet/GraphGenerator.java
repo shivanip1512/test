@@ -68,7 +68,7 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 		String format = req.getParameter("format");
 		String dbAlias = req.getParameter("db");
 		String loadFactor = req.getParameter("loadfactor");		
-		int modelType = com.cannontech.graph.model.TrendModelType.LINE_MODEL;
+		int modelType = com.cannontech.graph.model.TrendModelType.LINE_VIEW;
 		
 		boolean showLoadFactor = true;
 		
@@ -119,20 +119,16 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 			graph.setSize(width, height);
 			graph.setCurrentGraphDefinition(gDef);
 			graph.setShowLoadFactor(showLoadFactor);
-			graph.setSeriesType( com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
+			
 
-			graph.setModelType(modelType);
+			graph.setViewType(modelType);
 
 			// Define the peak series....
 			for (int i = 0; i < gDef.getGraphDataSeries().size(); i++)
 			{
 				com.cannontech.database.db.graph.GraphDataSeries gds = (com.cannontech.database.db.graph.GraphDataSeries) gDef.getGraphDataSeries().get(i);
 
-				if ( graph.isPeakSeries( gds.getType()) )
-				{
-					graph.setHasPeakSeries( true );
-					break;
-				}
+				
 			}
 			
 			graph.update();			

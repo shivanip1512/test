@@ -97,7 +97,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		java.util.Date end = start; //just as an init!
 		String dbAlias = req.getParameter("db").toString();
 		int selectedPane = com.cannontech.graph.GraphDefines.GRAPH_PANE;
-		int modelType = com.cannontech.graph.model.TrendModelType.LINE_MODEL;
+		int modelType = com.cannontech.graph.model.TrendModelType.LINE_VIEW;
 		String period = req.getParameter("period");
 		System.out.println("PERIOD ====== " + period);
 		String modelTypeStr = req.getParameter("model");
@@ -173,8 +173,8 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 			com.cannontech.graph.Graph graph = new com.cannontech.graph.Graph();
 			graph.setDatabaseAlias(dbAlias);
 			graph.setCurrentGraphDefinition(gDef);
-			graph.setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
-			graph.setModelType(modelType);
+		
+			graph.setViewType(modelType);
 			if( width > 0 && height > 0)
 				graph.setSize(width, height);
 
@@ -183,11 +183,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 			{
 				com.cannontech.database.db.graph.GraphDataSeries gds = (com.cannontech.database.db.graph.GraphDataSeries) gDef.getGraphDataSeries().get(i);
 
-				if (graph.isPeakSeries(gds.getType()))
-				{
-					graph.setHasPeakSeries(true);
-					break;
-				}
+				
 			}
 
 			System.out.println(" *** SERVLET, RIGHT BEFORE THE GRAPH.UPDATE()!!!");

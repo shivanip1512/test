@@ -64,7 +64,7 @@ public void doGet(javax.servlet.http.HttpServletRequest req, javax.servlet.http.
 		java.util.Date start = dateFormat.parse( (String) req.getAttribute("start"));		
 		java.util.Date end = dateFormat.parse( (String) req.getAttribute("end"));	
 		String dbAlias = req.getAttribute("db").toString();
-		int modelType = com.cannontech.graph.model.TrendModelType.LINE_MODEL;
+		int modelType = com.cannontech.graph.model.TrendModelType.LINE_VIEW;
 
 		String modelTypeStr = req.getParameter("model");
 		if( modelTypeStr != null )
@@ -102,19 +102,14 @@ public void doGet(javax.servlet.http.HttpServletRequest req, javax.servlet.http.
 			com.cannontech.graph.Graph graph = new com.cannontech.graph.Graph();
 			graph.setDatabaseAlias(dbAlias);			
 			graph.setCurrentGraphDefinition(gDef);
-			graph.setSeriesType( com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES);
-			graph.setModelType(modelType);
+		
+			graph.setViewType(modelType);
 			
 			// Define the peak series....
 			for (int i = 0; i < gDef.getGraphDataSeries().size(); i++)
 			{
 				com.cannontech.database.db.graph.GraphDataSeries gds = (com.cannontech.database.db.graph.GraphDataSeries) gDef.getGraphDataSeries().get(i);
 
-				if ( graph.isPeakSeries( gds.getType()) )
-				{
-					graph.setHasPeakSeries( true );
-					break;
-				}
 			}
 			
 			graph.update();
@@ -136,7 +131,7 @@ public void doGet(javax.servlet.http.HttpServletRequest req, javax.servlet.http.
 			}	
 
 			// Do a second database access and only get the usage data
-			graph.setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES );
+		
 
 			// extend the date range by one day at the end
 			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
