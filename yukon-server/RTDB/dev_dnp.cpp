@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2004/12/07 17:58:43 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/01/13 17:50:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -760,10 +760,22 @@ INT CtiDeviceDNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
     }
     else
     {
+        char error_str[80];
+        RWCString resultString;
+
+        if( !ErrReturn )
+        {
+            ErrReturn = NOTNORMAL;
+        }
+
+        GetErrorString(ErrReturn, error_str);
+
+        resultString = getName() + " / operation failed \"" + error_str + "\" (" + RWCString(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
+
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                        RWCString(InMessage->Return.CommandStr),
-                                                       getName() + " / operation failed",
-                                                       InMessage->EventCode & 0x7fff,
+                                                       resultString,
+                                                       ErrReturn,
                                                        InMessage->Return.RouteID,
                                                        InMessage->Return.MacroOffset,
                                                        InMessage->Return.Attempt,

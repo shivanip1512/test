@@ -813,10 +813,22 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
     }
     else
     {
+        char error_str[80];
+        RWCString resultString;
+
+        if( !ErrReturn )
+        {
+            ErrReturn = NOTNORMAL;
+        }
+
+        GetErrorString(ErrReturn, error_str);
+
+        resultString = getName() + " / operation failed \"" + error_str + "\" (" + RWCString(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
+
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                        RWCString(InMessage->Return.CommandStr),
-                                                       getName() + " / operation failed",
-                                                       InMessage->EventCode & 0x7fff,
+                                                       resultString,
+                                                       ErrReturn,
                                                        InMessage->Return.RouteID,
                                                        InMessage->Return.MacroOffset,
                                                        InMessage->Return.Attempt,
@@ -937,7 +949,7 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
 
 INT CtiDeviceION::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
-    INT retCode = NORMAL;
+    INT retCode = NORMAL, ErrReturn = InMessage->EventCode & 0x3fff;
 
     //CtiCommandParser  parse(InMessage->Return.CommandStr);
     CtiReturnMsg     *retMsg;
@@ -1016,7 +1028,11 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
             }
         }
 
-        resultString = getName() + " / operation failed";
+        char error_str[80];
+
+        GetErrorString(ErrReturn, error_str);
+
+        resultString = getName() + " / operation failed \"" + error_str + "\" (" + RWCString(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 
         retMsg->setResultString(resultString);
 
