@@ -6,7 +6,7 @@ package com.cannontech.export;
  * @author: 
  */
 //import com.ms.service.*;
-public class DBPurge extends ExportFormatBase
+public class DBPurgeFormat extends ExportFormatBase
 {
 	private String filePrefix = "lg";
 	private String fileExtension = ".cvt";
@@ -20,9 +20,9 @@ public class DBPurge extends ExportFormatBase
 	private static java.text.SimpleDateFormat LOGTEXT_DATE_FORMAT = new java.text.SimpleDateFormat(" M/d/yy hh:mm:ss a ");
 
 /**
- * DBPurge constructor comment.
+ * DBPurgeFormat constructor comment.
  */
-public DBPurge()
+public DBPurgeFormat()
 {
 	super();
 

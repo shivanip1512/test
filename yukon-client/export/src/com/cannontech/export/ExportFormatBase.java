@@ -38,7 +38,7 @@ public final static ExportFormatBase createFileFormat(int formatID)
 	
 	if(formatID  == ExportFormatTypes.DBPURGE_FORMAT)
 	{
-		returnFormat = new DBPurge();
+		returnFormat = new DBPurgeFormat();
 	}
 	else if( formatID == ExportFormatTypes.CSVBILLING_FORMAT)
 	{
