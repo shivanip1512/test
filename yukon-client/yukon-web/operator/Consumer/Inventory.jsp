@@ -35,7 +35,8 @@ function deleteHardware(form) {
 	if (!confirm('Deleting the hardware will also disable all the programs associated with it. Are you sure you want to continue?'))
 		return;
 	form.attributes["action"].value = "<%= request.getContextPath() %>/servlet/InventoryManager";
-	form.elements["action"].value = "DeleteLMHardware";
+	form.action.value = "DeleteLMHardware";
+	form.REDIRECT.value = "<%= request.getContextPath() %>/operator/Consumer/Update.jsp";
 	form.submit();
 }
 

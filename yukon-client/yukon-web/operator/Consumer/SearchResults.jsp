@@ -84,7 +84,7 @@ function selectAccount(accountID) {
 		else {
 %>
             <div align="center">
-              <span class="MainText">The following search results were found:</span> 
+              <span class="MainText">The following customer accounts are found:</span> 
             </div>
 			<form name="resultForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 		      <input type="hidden" name="action" value="GetCustAccount">
