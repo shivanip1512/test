@@ -5,10 +5,8 @@ package com.cannontech.billing.record;
  * Creation date: (8/24/2001 5:32:56 PM)
  * @author: 
  */
-public class NCDCRecord extends TurtleRecordBase
+public class NCDCRecord extends NISCRecord
 {
-	private static java.text.DecimalFormat KW_FORMAT_3v2 = new java.text.DecimalFormat("##0.00");
-	private static int KW_FIELD_SIZE = 6;
 	private static java.text.SimpleDateFormat DATE_FORMAT = new java.text.SimpleDateFormat("yyyy/MM/dd");	
 
 	/**
@@ -52,14 +50,6 @@ public class NCDCRecord extends TurtleRecordBase
 				   ((NCDCRecord)o).getMeterNumber().equalsIgnoreCase(getMeterNumber()) );
 	}
 	
-	public int getKwFieldSize()
-	{
-		return KW_FIELD_SIZE;
-	}
-	public java.text.DecimalFormat getKwFormat()
-	{
-		return KW_FORMAT_3v2;
-	}
 	public java.text.SimpleDateFormat getDateFormat()
 	{
 		return DATE_FORMAT;
