@@ -71,9 +71,6 @@ int main(int argc, char* argv[] )
             
             RunningInConsole = TRUE;
             service.RunInConsole(argc, argv );
-            
-            while( service.GetStatus() == SERVICE_STOPPED ) rwSleep(500);
-
         }
     }
     else
