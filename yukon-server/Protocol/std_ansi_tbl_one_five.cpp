@@ -1,3 +1,6 @@
+
+#pragma warning( disable : 4786)
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   std_ansi_tbl_one_five
@@ -7,30 +10,28 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/03/13 19:35:42 $
-*
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_tbl_one_five.cpp-arc  $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/04/25 15:09:53 $
+*    History: 
+      $Log: std_ansi_tbl_one_five.cpp,v $
+      Revision 1.3  2003/04/25 15:09:53  dsutton
+      Standard ansi tables all inherit from a base table
+
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
 
 #include "std_ansi_tbl_one_five.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneFive::CtiAnsiTableOneFive( BYTE *dataBlob, int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2 )
+CtiAnsiTableOneFive::CtiAnsiTableOneFive( BYTE *dataBlob, int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2,
+                                          int format1, int format2 )
 {
    int      index;
-   BYTE     *tracker = dataBlob;
-
-   char     data[200];
-   double   temp1;
-   bool     temp2;
-   bool     temp3;
-
+   int      offset = 0;
+   int      bytes;
 
    _constants_table = new CONSTANTS_SELECT[constants_entries];
 
@@ -54,13 +55,13 @@ CtiAnsiTableOneFive::CtiAnsiTableOneFive( BYTE *dataBlob, int selector, int cons
          {
             if( _constants_table != NULL )
             {
-               memcpy( (void *)&(_constants_table[index].electric_constants.multiplier ), tracker, sizeof( _constants_table[index].electric_constants.multiplier));
-               tracker += sizeof( _constants_table[index].electric_constants.multiplier);
+               bytes = toDoubleParser( dataBlob + offset, _constants_table[index].electric_constants.multiplier, format1 );
+               offset += bytes;
 
                if( !noOffset )
                {
-                  memcpy( (void *)&(_constants_table[index].electric_constants.offset ), tracker, sizeof( _constants_table[index].electric_constants.offset ));
-                  tracker += sizeof( _constants_table[index].electric_constants.offset );
+                  bytes = toDoubleParser( dataBlob + offset, _constants_table[index].electric_constants.offset, format1 );
+                  offset += bytes;
                }
                else
                {
@@ -69,8 +70,14 @@ CtiAnsiTableOneFive::CtiAnsiTableOneFive( BYTE *dataBlob, int selector, int cons
 
                if( useSet1 )
                {
-                  memcpy( (void *)&(_constants_table[index].electric_constants.set1_constants ), tracker, sizeof( _constants_table[index].electric_constants.set1_constants ));
-                  tracker += sizeof( _constants_table[index].electric_constants.set1_constants );
+                  memcpy( (void *)&_constants_table[index].electric_constants.set1_constants.set_flags, dataBlob + offset, sizeof( unsigned char ));
+                  offset += 1;
+
+                  bytes = toDoubleParser( dataBlob + offset, _constants_table[index].electric_constants.set1_constants.ratio_f1, format1 );
+                  offset += bytes;
+
+                  bytes = toDoubleParser( dataBlob + offset, _constants_table[index].electric_constants.set1_constants.ratio_p1, format1 );
+                  offset += bytes;
                }
                else
                {
@@ -82,8 +89,14 @@ CtiAnsiTableOneFive::CtiAnsiTableOneFive( BYTE *dataBlob, int selector, int cons
 
                if( useSet2 )
                {
-                  memcpy( (void *)&(_constants_table[index].electric_constants.set2_constants ), tracker, sizeof( _constants_table[index].electric_constants.set2_constants ));
-                  tracker += sizeof( _constants_table[index].electric_constants.set2_constants );
+                  memcpy( (void *)&_constants_table[index].electric_constants.set2_constants.set_flags, dataBlob + offset, sizeof( unsigned char ));
+                  offset += 1;
+
+                  bytes = toDoubleParser( dataBlob + offset, _constants_table[index].electric_constants.set2_constants.ratio_f1, format1 );
+                  offset += bytes;
+
+                  bytes = toDoubleParser( dataBlob + offset, _constants_table[index].electric_constants.set2_constants.ratio_p1, format1 );
+                  offset += bytes;
                }
                else
                {
@@ -94,18 +107,6 @@ CtiAnsiTableOneFive::CtiAnsiTableOneFive( BYTE *dataBlob, int selector, int cons
                }
             }
          }
-
-         //debug
-         memcpy( data, dataBlob, 20 );
-
-         for( index = 0; index < constants_entries; index++ )
-         {
-            temp1 = _constants_table[index].electric_constants.multiplier;
-            temp2 = _constants_table[index].electric_constants.set1_constants.set_flags.set_applied_flag;
-            temp3 = _constants_table[index].electric_constants.set2_constants.set_flags.set_applied_flag;
-         }
-         ///
-
       }
       break;
 

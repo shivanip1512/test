@@ -1,3 +1,6 @@
+
+#pragma warning( disable : 4786)
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   std_ansi_tbl_two_one
@@ -7,14 +10,17 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/03/13 19:35:43 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_two_one.cpp-arc  $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/04/25 15:09:54 $
+*    History: 
+      $Log: std_ansi_tbl_two_one.cpp,v $
+      Revision 1.3  2003/04/25 15:09:54  dsutton
+      Standard ansi tables all inherit from a base table
+
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
 
 #include "std_ansi_tbl_two_one.h"
 
@@ -23,8 +29,35 @@
 
 CtiAnsiTableTwoOne::CtiAnsiTableTwoOne( BYTE *dataBlob )
 {
-//   memcpy(( void *)&_reg_func1_flags, dataBlob, sizeof( REG_FUNC1_BFLD ) + sizeof( REG_FUNC2_BFLD ) + 8 );
-   memcpy(( void *)&_reg_func1_flags, dataBlob, sizeof( unsigned char ) *10 );
+   memcpy(( void *)&_reg_func1_flags, dataBlob, sizeof( unsigned char ));
+   dataBlob += sizeof( unsigned char);
+
+   memcpy(( void *)&_reg_func2_flags, dataBlob, sizeof( unsigned char ));
+   dataBlob += sizeof( unsigned char);
+
+   memcpy(( void *)&_nbr_self_reads, dataBlob, sizeof( unsigned char ));
+   dataBlob += sizeof( unsigned char);
+
+   memcpy(( void *)&_nbr_summations, dataBlob, sizeof( unsigned char ));
+   dataBlob += sizeof( unsigned char);
+
+   memcpy(( void *)&_nbr_demands, dataBlob, sizeof( unsigned char ));
+   dataBlob += sizeof( unsigned char);
+
+   memcpy(( void *)&_nbr_coin_values, dataBlob, sizeof( unsigned char ));
+   dataBlob += sizeof( unsigned char);
+
+   memcpy(( void *)&_occur, dataBlob, sizeof( unsigned char ));
+   dataBlob += sizeof( unsigned char);
+
+   memcpy(( void *)&_tiers, dataBlob, sizeof( unsigned char ));
+   dataBlob += sizeof( unsigned char);
+
+   memcpy(( void *)&_nbr_present_demands, dataBlob, sizeof( unsigned char ));
+   dataBlob += sizeof( unsigned char);
+
+   memcpy(( void *)&_nbr_present_values, dataBlob, sizeof( unsigned char ));
+   dataBlob += sizeof( unsigned char);
 }
 
 //=========================================================================================================================================
@@ -43,8 +76,8 @@ CtiAnsiTableTwoOne& CtiAnsiTableTwoOne::operator=(const CtiAnsiTableTwoOne& aRef
    if(this != &aRef)
    {
    }
-   return *this;
 
+   return *this;
 }
 
 //=========================================================================================================================================
@@ -85,9 +118,9 @@ int CtiAnsiTableTwoOne::getOccur( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableTwoOne::getTier( void )
+int CtiAnsiTableTwoOne::getTiers( void )
 {
-   return _tier;
+   return _tiers;
 }
 
 //=========================================================================================================================================

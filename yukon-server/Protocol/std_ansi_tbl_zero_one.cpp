@@ -1,3 +1,6 @@
+
+#pragma warning( disable : 4786)
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   std_ansi_tbl_zero_one
@@ -7,40 +10,67 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/03/13 19:35:44 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_zero_one.cpp-arc  $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/04/25 15:09:54 $
+*    History: 
+      $Log: std_ansi_tbl_zero_one.cpp,v $
+      Revision 1.3  2003/04/25 15:09:54  dsutton
+      Standard ansi tables all inherit from a base table
+
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
 
-
+#include "logger.h"
 #include "std_ansi_tbl_zero_one.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-
-CtiAnsiTableZeroOne::CtiAnsiTableZeroOne( BYTE *dataBlob )
+CtiAnsiTableZeroOne::CtiAnsiTableZeroOne( bool sn_flag, bool id_form )
 {
-/*
-   manufacturer[4];
-   ed_model[8];
-   hw_version_number;
-   hw_revision_number;
-   fw_version_number;
-   fw_revision_number;
+    _serialNumberFlag = sn_flag;
+    _idForm = id_form;
+}
 
-   union
+CtiAnsiTableZeroOne::CtiAnsiTableZeroOne( BYTE *dataBlob, bool sn_flag, bool id_form )
+{
+    _serialNumberFlag = sn_flag;
+    _idForm = id_form;
+
+   memcpy( (void *)&_manufacturer, dataBlob, 4 * sizeof( unsigned char ));
+   dataBlob += 4 * sizeof( unsigned char );
+
+   memcpy( (void *)&_ed_model, dataBlob, 8 * sizeof( unsigned char ));
+   dataBlob += 8 * sizeof( unsigned char );
+
+   memcpy( (void *)&_hw_version_number, dataBlob, sizeof( unsigned char ));
+   dataBlob += sizeof( unsigned char );
+
+   memcpy( (void *)&_hw_revision_number, dataBlob, sizeof( unsigned char ));
+   dataBlob += sizeof( unsigned char );
+
+   memcpy( (void *)&_fw_version_number, dataBlob, sizeof( unsigned char ));
+   dataBlob += sizeof( unsigned char );
+
+   memcpy( (void *)&_fw_revision_number, dataBlob, sizeof( unsigned char ));
+   dataBlob += sizeof( unsigned char );
+
+   if( _serialNumberFlag == false )
    {
-      BCD       bcd_sn[8];
-      char      char_sn[16];
-      UINT64    ll_sn;
-
-   }mfg_serial_number;
-
-*/
-   memcpy( manufacturer, dataBlob, 32 /*bytes for the above parts*/ );
+      if( _idForm == false )
+      {
+         memcpy( (void *)&_mfg_serial_number, dataBlob, 16 * sizeof( char ));
+      }
+      else
+      {
+         memcpy( (void *)&_mfg_serial_number, dataBlob, 8 * sizeof( BCD ));
+      }
+   }
+   else
+   {
+      memcpy( (void *)&_mfg_serial_number, dataBlob, sizeof( UINT64 ));
+   }
 
 }
 
@@ -54,6 +84,44 @@ CtiAnsiTableZeroOne::~CtiAnsiTableZeroOne()
 
 //=========================================================================================================================================
 //=========================================================================================================================================
+void CtiAnsiTableZeroOne::printResult(  )
+{
+    int integer;
+    RWCString string1,string2;
+    bool flag;
+
+    /**************************************************************
+    * its been discovered that if a method goes wrong while having the logger locked
+    * unpleasant consquences may happen (application lockup for instance)  Because
+    * of this, we make ugly printout calls so we aren't locking the logger at the time
+    * of the method call
+    ***************************************************************
+    */
+    string2 = getRawManufacturer();
+    string1 = getResolvedManufacturer();
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << endl << "=======================  Std Table 1 =========================" << endl;
+        dout << "   Manufacturer: " << string1 << " (" << string2 <<")" << endl;
+    }
+
+    string2 = getRawModel();
+    string1 = getResolvedModel();
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << "   Model: " << string1 << " (" << string2 <<")" << endl;
+    }
+
+    string2 = getRawSerialNumber();
+    string1 = getResolvedSerialNumber();
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << "   Model: " << string1 << " (" << string2 <<")" << endl;
+    }
+}
+
+//=========================================================================================================================================
+//=========================================================================================================================================
 
 CtiAnsiTableZeroOne& CtiAnsiTableZeroOne::operator=(const CtiAnsiTableZeroOne& aRef)
 {
@@ -63,4 +131,178 @@ CtiAnsiTableZeroOne& CtiAnsiTableZeroOne::operator=(const CtiAnsiTableZeroOne& a
    return *this;
 
 }
+//=========================================================================================================================================
+//=========================================================================================================================================
+RWCString CtiAnsiTableZeroOne::getRawManufacturer( void )
+{
+    CHAR temp[5];
+    memset (temp,'\0',5);
+    memcpy (temp, _manufacturer, 4);
+   return RWCString (temp);
+}
+//=========================================================================================================================================
+//=========================================================================================================================================
+RWCString CtiAnsiTableZeroOne::getResolvedManufacturer( void )
+{
+    CHAR temp[5];
+    memset (temp,'\0',5);
+    memcpy (temp, _manufacturer, 4);
+   return RWCString (temp);
+}
+//=========================================================================================================================================
+//=========================================================================================================================================
+RWCString CtiAnsiTableZeroOne::getRawModel( void )
+{
+    CHAR temp[9];
+    memset (temp,'\0',9);
+    memcpy (temp, _ed_model, 8);
+    return RWCString (temp);
+}
+//=========================================================================================================================================
+//=========================================================================================================================================
+RWCString CtiAnsiTableZeroOne::getResolvedModel( void )
+{
+    // need to take data format into account !!
+    CHAR temp[9];
+    memset (temp,'\0',9);
+    memcpy (temp, _ed_model, 8);
+    return RWCString (temp);
+}
+
+//=========================================================================================================================================
+//=========================================================================================================================================
+RWCString CtiAnsiTableZeroOne::getRawSerialNumber( void )
+{
+    RWCString ret;
+
+    if( _serialNumberFlag == false )
+    {
+       if( _idForm == false )
+       {
+           CHAR temp[9];
+           memset (temp,'\0',9);
+           memcpy (temp, _mfg_serial_number.bcd_sn, 8);
+           ret=RWCString (temp);
+       }
+       else
+       {
+           CHAR temp[17];
+           memset (temp,'\0',17);
+           memcpy (temp, _mfg_serial_number.char_sn, 16);
+           ret=RWCString (temp);
+       }
+    }
+    else
+    {
+        CHAR temp[8];
+        ret=RWCString (_ui64toa(_mfg_serial_number.ll_sn,temp,10));
+    }
+
+   return RWCString(ret);
+}
+//=========================================================================================================================================
+//=========================================================================================================================================
+RWCString CtiAnsiTableZeroOne::getResolvedSerialNumber( void )
+{
+    RWCString ret;
+
+    if( _serialNumberFlag == false )
+    {
+       if( _idForm == false )
+       {
+           CHAR temp[9];
+           memset (temp,'\0',9);
+           for (int x=0; x < 8; x++)
+           {
+               temp[x] = _mfg_serial_number.bcd_sn[x];
+           }
+           ret=RWCString (temp);
+       }
+       else
+       {
+           CHAR temp[17];
+           memset (temp,'\0',17);
+           for (int x=0; x < 16; x++)
+           {
+               temp[x] = _mfg_serial_number.char_sn[x];
+           }
+           ret=RWCString (temp);
+       }
+    }
+    else
+    {
+        BYTEUINT64 temp;
+        BYTEUINT64 sn;
+
+        temp.u64=_mfg_serial_number.ll_sn;
+        for (int x=0; x < 8; x++)
+        {
+            sn.ch[x] = temp.ch[x];
+        }
+        CHAR strTmp[8];
+        ret=RWCString (_ui64toa(sn.u64,strTmp,10));
+    }
+
+   return RWCString(ret);
+}
+
+//=========================================================================================================================================
+//=========================================================================================================================================
+void CtiAnsiTableZeroOne::generateResultPiece( BYTE **dataBlob )
+{
+    memcpy(*dataBlob, (void *)&_manufacturer, sizeof( _manufacturer ));
+    *dataBlob += sizeof( _manufacturer );
+    memcpy(*dataBlob, (void *)&_ed_model, sizeof(_ed_model));
+    *dataBlob += sizeof( _ed_model );
+
+    if( _serialNumberFlag == false )
+    {
+       if( _idForm == false )
+       {
+          memcpy(*dataBlob, (void *)&_mfg_serial_number, 16 * sizeof( char ));
+          *dataBlob += 16;
+       }
+       else
+       {
+          memcpy(*dataBlob, (void *)&_mfg_serial_number, 8 * sizeof( BCD ));
+          *dataBlob += 8;
+       }
+    }
+    else
+    {
+       memcpy( *dataBlob, (void *)&_mfg_serial_number, sizeof( UINT64 ));
+       *dataBlob += sizeof (UINT64);
+    }
+}
+//=========================================================================================================================================
+//=========================================================================================================================================
+void CtiAnsiTableZeroOne::decodeResultPiece( BYTE **dataBlob )
+{
+    memcpy( (void *)&_manufacturer, *dataBlob, 4 * sizeof( unsigned char ));
+    *dataBlob += 4 * sizeof( unsigned char );
+
+    memcpy( (void *)&_ed_model, *dataBlob, 8 * sizeof( unsigned char ));
+    *dataBlob += 8 * sizeof( unsigned char );
+
+
+    if( _serialNumberFlag == false )
+    {
+       if( _idForm == false )
+       {
+          memcpy( (void *)&_mfg_serial_number, *dataBlob, 16 * sizeof( char ));
+          *dataBlob += 16;
+       }
+       else
+       {
+          memcpy( (void *)&_mfg_serial_number, *dataBlob, 8 * sizeof( BCD ));
+          *dataBlob += 8;
+       }
+    }
+    else
+    {
+       memcpy( (void *)&_mfg_serial_number, *dataBlob, sizeof( UINT64 ));
+       *dataBlob += sizeof (UINT64);
+    }
+}
+
 
