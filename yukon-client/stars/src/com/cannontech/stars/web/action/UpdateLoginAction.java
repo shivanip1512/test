@@ -90,7 +90,7 @@ public class UpdateLoginAction implements ActionBase {
             }
             catch (WebClientException e) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_SESSION_INVALID, e.getMessage()) );
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, e.getMessage()) );
 				return SOAPUtil.buildSOAPMessage( respOper );
             }
             

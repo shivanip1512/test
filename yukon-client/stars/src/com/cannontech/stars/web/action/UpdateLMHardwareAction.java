@@ -142,7 +142,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 				
 				if (liteInv.getAccountID() == 0) {
 					respOper.setStarsFailure( StarsFactory.newStarsFailure(
-							StarsConstants.FAILURE_CODE_SESSION_INVALID, "The hardware doesn't belong to any customer account") );
+							StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The hardware doesn't belong to any customer account") );
 					return SOAPUtil.buildSOAPMessage( respOper );
 				}
 				
