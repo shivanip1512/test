@@ -1,5 +1,6 @@
 
 
+
 #include <windows.h>
 #include <iostream>
 using namespace std;
@@ -121,11 +122,28 @@ IM_EX_CTIBASE INT WriteQueue (HCTIQUEUE QueueHandle,
     }
 
     /* get the block semaphore */
-    if(CTIRequestMutexSem (QueueHandle->BlockSem,
-                           SEM_INDEFINITE_WAIT))
+#if 1
+    int dlcnt = 0;
+    while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        autopsy(__FILE__, __LINE__);
+
+        if(++dlcnt > 10)
+        {
+            return(ERROR_QUE_UNABLE_TO_ACCESS);
+        }
+    }
+#else
+    if(CTIRequestMutexSem (QueueHandle->BlockSem, SEM_INDEFINITE_WAIT))
     {
         return(ERROR_QUE_UNABLE_TO_ACCESS);
     }
+#endif
 
     /* get the Memory */
     if((Entry = (QUEUEENT*)malloc (sizeof (QUEUEENT))) == NULL)
@@ -277,8 +295,6 @@ IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
         if(WaitFlag == DCWW_WAIT)
         {
             /* Wait for an element */
-#if 1
-
             INT      WaitHandles = 2;
             DWORD    dwWait;
 
@@ -303,12 +319,6 @@ IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
                     break;
                 }
             }
-#else
-            if(CTIWaitEventSem (QueueHandle->WaitArray[0], SEM_INDEFINITE_WAIT))
-            {
-                return(ERROR_QUE_UNABLE_TO_ACCESS);
-            }
-#endif
         }
     }
 
@@ -318,10 +328,28 @@ IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
     }
 
     /* get the exclusion semaphore */
+#if 1
+    int dlcnt = 0;
+    while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        autopsy(__FILE__, __LINE__);
+
+        if(++dlcnt > 10)
+        {
+            return(ERROR_QUE_UNABLE_TO_ACCESS);
+        }
+    }
+#else
     if(CTIRequestMutexSem (QueueHandle->BlockSem, SEM_INDEFINITE_WAIT))
     {
         return(ERROR_QUE_UNABLE_TO_ACCESS);
     }
+#endif
 
     /* We the man so unless there has been a fubar...*/
     if(QueueHandle->First == NULL)
@@ -418,10 +446,28 @@ IM_EX_CTIBASE INT ReadQueue (HCTIQUEUE QueueHandle, PREQUESTDATA RequestData, PU
     }
 
     /* get the exclusion semaphore */
+#if 1
+    int dlcnt = 0;
+    while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        autopsy(__FILE__, __LINE__);
+
+        if(++dlcnt > 10)
+        {
+            return(ERROR_QUE_UNABLE_TO_ACCESS);
+        }
+    }
+#else
     if(CTIRequestMutexSem (QueueHandle->BlockSem, SEM_INDEFINITE_WAIT))
     {
         return(ERROR_QUE_UNABLE_TO_ACCESS);
     }
+#endif
 
     /* We the man so unless there has been a fubar...*/
     if(QueueHandle->First == NULL)
@@ -486,11 +532,28 @@ IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle)
     }
 
     /* get the exclusion semaphore */
-    if(CTIRequestMutexSem (QueueHandle->BlockSem,
-                           SEM_INDEFINITE_WAIT))
+#if 1
+    int dlcnt = 0;
+    while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        autopsy(__FILE__, __LINE__);
+
+        if(++dlcnt > 10)
+        {
+            return(ERROR_QUE_UNABLE_TO_ACCESS);
+        }
+    }
+#else
+    if(CTIRequestMutexSem (QueueHandle->BlockSem, SEM_INDEFINITE_WAIT))
     {
         return(ERROR_QUE_UNABLE_TO_ACCESS);
     }
+#endif
 
     while(QueueHandle->First != NULL)
     {
@@ -532,11 +595,25 @@ IM_EX_CTIBASE INT SearchQueue( HCTIQUEUE QueueHandle, void *ptr, BOOL (*myFunc)(
 
                 while(Entry != NULL)
                 {
-                    if( (*myFunc)(ptr, Entry->Data) )
+                    try
                     {
-                        element = Entry->Element;
-                        break;         // We found a match!
+                        if( (*myFunc)(ptr, Entry->Data) )
+                        {
+                            element = Entry->Element;
+                            break;         // We found a match!
+                        }
                     }
+                    catch(...)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " EXCEPTION " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << " SearchQueue function exception " << endl;
+                        }
+
+                        autopsy( __FILE__, __LINE__ );
+                    }
+
                     Entry = Entry->Next;
                 }
 
@@ -573,10 +650,28 @@ IM_EX_CTIBASE INT SearchQueue (HCTIQUEUE     QueueHandle,
     }
 
     /* get the exclusion semaphore */
+#if 1
+    int dlcnt = 0;
+    while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        autopsy(__FILE__, __LINE__);
+
+        if(++dlcnt > 10)
+        {
+            return(ERROR_QUE_UNABLE_TO_ACCESS);
+        }
+    }
+#else
     if(CTIRequestMutexSem (QueueHandle->BlockSem, SEM_INDEFINITE_WAIT))
     {
         return(ERROR_QUE_UNABLE_TO_ACCESS);
     }
+#endif
 
     /* We the man so unless there has been a fubar...*/
     if(QueueHandle->First == NULL)
@@ -648,16 +743,28 @@ IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
                 {
                     DeleteEntry = Entry;        // This is our deletion candidate.
                     Entry = Entry->Next;        // Hang on to the next guy, so we can continue;
-
-                    if( (*myFindFunc)(ptr, DeleteEntry->Data) )
+                    try
                     {
-                        purgecnt++;
-                        (*myCleanFunc)( ptr, DeleteEntry->Data);         // Call the cleanup function.  It better delete the data
-                        RemoveQueueEntry(QueueHandle, DeleteEntry, Previous);     // No longer linked.
+                        if( (*myFindFunc)(ptr, DeleteEntry->Data) )
+                        {
+                            purgecnt++;
+                            (*myCleanFunc)( ptr, DeleteEntry->Data);         // Call the cleanup function.  It better delete the data
+                            RemoveQueueEntry(QueueHandle, DeleteEntry, Previous);     // No longer linked.
+                        }
+                        else
+                        {
+                            Previous = DeleteEntry;     // This holds the last entry NOT deleted!
+                        }
                     }
-                    else
+                    catch(...)
                     {
-                        Previous = DeleteEntry;     // This holds the last entry NOT deleted!
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " EXCEPTION " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << " CleanQueue function exception " << endl;
+                        }
+
+                        autopsy( __FILE__, __LINE__ );
                     }
                 }
 
@@ -721,7 +828,17 @@ IM_EX_CTIBASE INT ApplyQueue( HCTIQUEUE QueueHandle, void *ptr, void (*myFunc)(v
                 while(Entry != NULL)
                 {
                     count++;
-                    (*myFunc)(ptr, Entry->Data);
+                    try
+                    {
+                        (*myFunc)(ptr, Entry->Data);
+                    }
+                    catch(...)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
                     Entry = Entry->Next;
                 }
 
@@ -732,5 +849,4 @@ IM_EX_CTIBASE INT ApplyQueue( HCTIQUEUE QueueHandle, void *ptr, void (*myFunc)(v
 
     return count;
 }
-
 
