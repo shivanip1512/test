@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/09/20 16:12:44 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/11/16 20:46:43 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,6 +60,7 @@ private:
 
     unsigned int  _num_codes_retrieved;
     bool _verification_pending;
+    bool _untransmitted_codes;
 
     enum LMIOpcode
     {
@@ -82,6 +83,8 @@ private:
     {
         LMIPacketOverheadLen = 8,
         LMIPacketHeaderLen   = 6,
+
+        LMIMaxCodesPerTransaction = 42,
 
         LMITransmitterPowerPointOffset = 1000
     };
