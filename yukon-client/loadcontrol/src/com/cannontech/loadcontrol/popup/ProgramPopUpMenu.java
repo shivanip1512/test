@@ -5,10 +5,13 @@ package com.cannontech.loadcontrol.popup;
  * Creation date: (1/21/2001 4:40:03 PM)
  * @author: 
  */
+import javax.swing.JOptionPane;
+
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.LCUtils;
+import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramCurtailment;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
@@ -167,7 +170,7 @@ private void jMenuItemDisableEnable_ActionPerformed(java.awt.event.ActionEvent a
 	{
 		//send a message to the server telling it to ENABLE this program
 
-		com.cannontech.loadcontrol.LoadControlClientConnection.getInstance().write(
+		LoadControlClientConnection.getInstance().write(
 				new LMCommand( LMCommand.ENABLE_PROGRAM,
 					 				getLoadControlProgram().getYukonID().intValue(),
 					 				0, 0.0) );
@@ -175,8 +178,16 @@ private void jMenuItemDisableEnable_ActionPerformed(java.awt.event.ActionEvent a
 	else
 	{
 		//send a message to the server telling it to DISABLE this program
+		int res = JOptionPane.showConfirmDialog( this, "Supress sending restoration commands?", 
+					"Supress Restores", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
 
-		com.cannontech.loadcontrol.LoadControlClientConnection.getInstance().write(
+		if( res == JOptionPane.YES_OPTION )		
+			LoadControlClientConnection.getInstance().write(
+				new LMCommand( LMCommand.EMERGENCY_DISABLE_PROGRAM,
+									getLoadControlProgram().getYukonID().intValue(),
+									0, 0.0) );
+		else
+			LoadControlClientConnection.getInstance().write(
 				new LMCommand( LMCommand.DISABLE_PROGRAM,
 					 				getLoadControlProgram().getYukonID().intValue(),
 					 				0, 0.0) );
@@ -360,7 +371,7 @@ private void showCurtailManualEntry()
 	if( getJMenuItemStartStop().getText().equalsIgnoreCase("Stop...") )
 	{
 		//send the new message to the server
-		com.cannontech.loadcontrol.LoadControlClientConnection.getInstance().write( 
+		LoadControlClientConnection.getInstance().write( 
 				((LMProgramCurtailment)getLoadControlProgram()).createStartStopNowMsg(
 					com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime(), 
 					0, null, false) );
