@@ -89,7 +89,7 @@ public class NotifMsgHandler implements Observer, MessageListener
 							lGrp.getNotificationGroupName() + ")", 
 							NotifResultMsg.RESULT_FAILED);
 
-				outMsg.setTo( NotificationGroupFuncs.getNotifEmailsByLiteGroup(lGrp) );
+				outMsg.addTo_Array( NotificationGroupFuncs.getNotifEmailsByLiteGroup(lGrp) );
 				outMsg.setSubject( lGrp.getEmailSubject() );
 				outMsg.setFrom( lGrp.getEmailFrom() );
 				outMsg.setBody( lGrp.getEmailBody() );

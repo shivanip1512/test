@@ -63,7 +63,7 @@ public class EmailMessage
 	public EmailMessage(String[] to_, String subject_, String body_)
 	{
 		super();
-		setTo(to_);
+		addTo_Array(to_);
 		subject = subject_;
 		body = body_;
 	}	
@@ -407,36 +407,41 @@ public class EmailMessage
 		to_CC = string;
 	}
 
-	public void setTo_CC(String[] ccEmailAddress)
+	public void addTo_CC_Array(String[] ccEmailAddress)
 	{
-		String cc = "";
+		String cc = (getTo_CC() == null ? "" : getTo_CC());
+
 		if( ccEmailAddress != null && ccEmailAddress.length > 0)
 		{
-			cc = ccEmailAddress[0];
+			cc += (cc.length() > 0 ? ", " + ccEmailAddress[0] : ccEmailAddress[0]);
 			for (int i = 1; i < ccEmailAddress.length; i++)
 				cc += ", " + ccEmailAddress[i];
 		}
 		setTo_CC(cc);
 	}
-	public void setTo_BCC(String[] bccEmailAddress)
+	
+	public void addTo_BCC_Array(String[] bccEmailAddress)
 	{
-		String bcc = "";
+		String bcc = (getTo_BCC() == null ? "" : getTo_BCC());
+
 		if( bccEmailAddress != null && bccEmailAddress.length > 0)
 		{
-			bcc = bccEmailAddress[0];
+			bcc += (bcc.length() > 0 ? ", " + bccEmailAddress[0] : bccEmailAddress[0]);
 			for (int i = 1; i < bccEmailAddress.length; i++)
 				bcc += ", " + bccEmailAddress[i];
 		}
 		setTo_BCC(bcc);
 	}
-	public void setTo(String[] emailAddress)
+	
+	public void addTo_Array(String[] emailAddress)
 	{
-		String to = "";
+		String oldTo = (getTo() == null ? "" : getTo());
+
 		if( emailAddress != null && emailAddress.length > 0)
 		{
-			to = emailAddress[0];
+			oldTo += (oldTo.length() > 0 ? ", " + emailAddress[0] : emailAddress[0]);
 			for (int i = 1; i < emailAddress.length; i++)
-				to += ", " + emailAddress[i];
+				oldTo += ", " + emailAddress[i];
 		}
 		setTo(to);
 	}
