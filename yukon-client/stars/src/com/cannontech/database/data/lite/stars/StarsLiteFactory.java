@@ -1143,16 +1143,7 @@ public class StarsLiteFactory {
 	public static void setStarsThermostatSettings(StarsThermostatSettings starsSettings, LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
 		LiteStarsThermostatSettings liteSettings = liteHw.getThermostatSettings();
 		
-		if (liteSettings.getThermostatSchedule().getScheduleName().equals( CtiUtilities.STRING_NONE )) {
-			starsSettings.setStarsThermostatProgram( createStarsThermostatProgram(liteSettings.getThermostatSchedule(), energyCompany) );
-		}
-		else {
-			StarsThermostatProgram starsThermProg = new StarsThermostatProgram();
-			starsThermProg.setScheduleID( liteSettings.getThermostatSchedule().getScheduleID() );
-			starsThermProg.setScheduleName( liteSettings.getThermostatSchedule().getScheduleName() );
-			starsThermProg.setThermostatType( ECUtils.getThermostatType(liteSettings.getThermostatSchedule().getThermostatTypeID()) );
-			starsSettings.setStarsThermostatProgram( starsThermProg );
-		}
+		starsSettings.setStarsThermostatProgram( createStarsThermostatProgram(liteSettings.getThermostatSchedule(), energyCompany) );
 		
 		starsSettings.removeAllStarsThermostatManualEvent();
 		for (int i = 0; i < liteSettings.getThermostatManualEvents().size(); i++) {

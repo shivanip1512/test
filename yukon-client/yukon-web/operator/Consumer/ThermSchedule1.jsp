@@ -32,16 +32,6 @@
 		invID = thermostat.getInventoryID();
 		thermNoStr = "InvNo=" + thermNo;
 	}
-	
-	if (thermoProgram.getScheduleName() != null) {
-		// If this is a "named" schedule, find the real schedule from the saved schedules of the account
-		for (int i = 0; i < thermSchedules.getStarsThermostatProgramCount(); i++) {
-			if (thermSchedules.getStarsThermostatProgram(i).getScheduleID() == thermoProgram.getScheduleID()) {
-				thermoProgram = thermSchedules.getStarsThermostatProgram(i);
-				break;
-			}
-		}
-	}
 %>
 <html>
 <head>

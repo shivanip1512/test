@@ -34,16 +34,6 @@
 		thermNoStr = "Item=" + thermNo;
 	}
 	
-	if (thermoProgram.getScheduleName() != null) {
-		// If this is a "named" schedule, find the real schedule from the saved schedules of the account
-		for (int i = 0; i < thermSchedules.getStarsThermostatProgramCount(); i++) {
-			if (thermSchedules.getStarsThermostatProgram(i).getScheduleID() == thermoProgram.getScheduleID()) {
-				thermoProgram = thermSchedules.getStarsThermostatProgram(i);
-				break;
-			}
-		}
-	}
-	
 	if (curSettings != null && ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
 		if (request.getParameter("OmitTimeout") != null)
 			session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT, "true");

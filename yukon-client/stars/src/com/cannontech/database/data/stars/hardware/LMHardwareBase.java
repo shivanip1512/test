@@ -1,7 +1,5 @@
 package com.cannontech.database.data.stars.hardware;
 
-import com.cannontech.common.util.CtiUtilities;
-
 /**
  * <p>Title: </p>
  * <p>Description: </p>
@@ -36,12 +34,12 @@ public class LMHardwareBase extends InventoryBase {
 		com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.deleteAllLMHardwareConfiguration(
 				getInventoryBase().getInventoryID() );
 		
-		// delete from LMThermostatSchedule if it's "unnamed"
+		// delete from LMThermostatSchedule
 		com.cannontech.database.db.stars.hardware.LMThermostatSchedule scheduleDB =
 				com.cannontech.database.db.stars.hardware.LMThermostatSchedule.getThermostatSchedule(
 					getInventoryBase().getInventoryID().intValue() );
 		
-		if (scheduleDB != null && scheduleDB.getScheduleName().equals( CtiUtilities.STRING_NONE )) {
+		if (scheduleDB != null) {
 			LMThermostatSchedule schedule = new LMThermostatSchedule();
 			schedule.setScheduleID( scheduleDB.getScheduleID() );
 			schedule.setDbConnection( getDbConnection() );
