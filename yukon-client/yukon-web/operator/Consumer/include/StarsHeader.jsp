@@ -171,6 +171,7 @@
 			com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
 		}
 	}
+
 	com.cannontech.graph.GraphBean graphBean = (com.cannontech.graph.GraphBean) session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
 	if(graphBean == null)
 	{

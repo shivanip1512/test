@@ -6,7 +6,7 @@
 		  <td><span class="TitleHeader"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
 			<span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
 			<!--<%= account.getCompany() %><br> -->
-			<%= ServletUtils.getFormattedAddress(propAddr) %><br>
+			<%= ServletUtils.formatAddress(propAddr) %><br>
 		  </span></td>
 		</tr>
 	  </table>

@@ -339,9 +339,15 @@ function init() {
 		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
 		LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
 		
+		String name = ServerUtils.formatName(liteContact);
 		String homePhone = ServerUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
 		String workPhone = ServerUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
 		String mapNo = ServerUtils.forceNotNone(liteAcctSite.getSiteNumber());
+		
+		StreetAddress starsAddr = new StreetAddress();
+		StarsLiteFactory.setStarsCustomerAddress(starsAddr, liteAddr);
+		String address = ServletUtils.formatAddress(starsAddr);
+		if (address.length() == 0) address = "Address N/A";
 %>
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
@@ -351,7 +357,7 @@ function init() {
                               <tr> 
                                 <td class="TableCell"><a href="" onClick="document.cusForm.submit(); return false;"> 
                                   Account # <%= liteAccount.getAccountNumber() %></a><br>
-                                  <%= ServerUtils.getFormattedName(liteContact) %><br>
+                                  <% if (name.length() > 0) { %><%= name %><br><% } %>
                                   <% if (homePhone.length() > 0) { %>Home #: <%= homePhone %><br><% } %>
                                   <% if (workPhone.length() > 0) { %>Work #: <%= workPhone %><br><% } %>
                                 </td>
@@ -367,10 +373,8 @@ function init() {
                             <hr>
                             <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
-                                <td class="TableCell"> <%= ServerUtils.getFormattedAddress(liteAddr) %><br>
-                                  <% if (mapNo.length() > 0) { %>
-                                  Map # <%= mapNo %>
-                                  <% } %>
+                                <td class="TableCell"><%= address %><br>
+                                  <% if (mapNo.length() > 0) { %>Map # <%= mapNo %><% } %>
                                 </td>
                               </tr>
                               <tr> 

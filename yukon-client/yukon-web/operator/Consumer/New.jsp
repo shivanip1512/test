@@ -3,10 +3,13 @@
 	boolean inWizard = request.getParameter("Wizard") != null;
 	StarsNewCustomerAccount newAccount = null;
 	
-	if (inWizard) {
+	if (request.getParameter("Init") != null) {
+		session.removeAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
 		session.removeAttribute(ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT);
-		session.removeAttribute(InventoryManager.STARS_INVENTORY_TEMP);
-		
+		session.removeAttribute(InventoryManager.STARS_INVENTORY_TEMP + "_NEW");
+	}
+	
+	if (inWizard) {
 		MultiAction actions = (MultiAction) session.getAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
 		if (actions != null) {
 			SOAPMessage reqMsg = actions.build(request, session);
@@ -16,9 +19,9 @@
 			}
 		}
 	}
-	else {
-		newAccount = (StarsNewCustomerAccount) user.getAttribute(ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT);
-	}
+	
+	if (newAccount == null)
+		newAccount = (StarsNewCustomerAccount) session.getAttribute(ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT);
 	
 	if (newAccount != null)
 		account = newAccount.getStarsCustomerAccount();
@@ -108,6 +111,11 @@ function clearPage() {
 	document.form1.reset();
 <% } %>
 }
+
+function confirmCancel() {
+	if (confirm("Are you sure you want to quit from this wizard and discard all changes you've been made?"))
+		location.href = "../Operations.jsp";
+}
 </script>
 </head>
 
@@ -137,7 +145,10 @@ function clearPage() {
 			
             <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onSubmit="return validate(this)">
               <input type="hidden" name="action" value="NewCustAccount">
-			  <% if (inWizard) { %><input type="hidden" name="Wizard" value="true"><% } %>
+<% if (inWizard) { %>
+			  <input type="hidden" name="REDIRECT2" value="<%= request.getContextPath() %>/operator/Consumer/CreateHardware.jsp?Wizard=true">
+			  <input type="hidden" name="Wizard" value="true">
+<% } %>
               <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
                   <td width="300" valign="top"><span class="SubtitleHeader">CUSTOMER CONTACT</span> 
@@ -548,25 +559,32 @@ function clearPage() {
               </table>
               <br>
 </cti:checkProperty>
+<% if (inWizard) { %>
               <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">
                 <tr> 
-<% if (!inWizard) { %>
-                  <td width="40%" align="right"> 
-                    <input type="submit" name="Submit" value="Save">
-                  </td>
-<% } else { %>
                   <td width="40%" align="right"> 
                     <input type="submit" name="Submit" value="Next">
                   </td>
                   <td width="20%" align="center"> 
                     <input type="submit" name="Submit" value="Done">
                   </td>
-<% } %>
                   <td width="40%" align="left"> 
-                    <input type="button" name="Cancel" value="Clear" onclick="clearPage()">
+                    <input type="button" name="Cancel" value="Cancel" onclick="confirmCancel()">
                   </td>
                 </tr>
               </table>
+<% } else { %>
+              <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">
+                <tr> 
+                  <td width="50%" align="right"> 
+                    <input type="submit" name="Submit" value="Save">
+                  </td>
+                  <td width="50%" align="left"> 
+                    <input type="button" name="Cancel" value="Cancel" onclick="location.href='../Operations.jsp'">
+                  </td>
+                </tr>
+              </table>
+<% } %>
             </form>
             <p>&nbsp;</p>
           </td>

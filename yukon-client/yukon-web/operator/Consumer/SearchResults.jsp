@@ -3,6 +3,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
+<%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
 <%
 	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse)
 			user.getAttribute(ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS);
@@ -119,6 +120,11 @@ function selectMemberAccount(accountID, contextID) {
 					phoneNo.append( workPhone ).append( "(W)" );
 				}
 				if (phoneNo.length() == 0) phoneNo.append( "(none)" );
+				
+				StreetAddress starsAddr = new StreetAddress();
+				StarsLiteFactory.setStarsCustomerAddress(starsAddr, addr);
+				String address = ServletUtils.getOneLineAddress(starsAddr);
+				if (address.length() == 0) address = "(none)";
 %>
                 <tr valign="top"> 
                   <td width="15%" class="TableCell">
@@ -131,7 +137,7 @@ function selectMemberAccount(accountID, contextID) {
                   <td width="18%" class="TableCell"><%= contact.getContLastName() + ", " + contact.getContFirstName() %> 
                   </td>
                   <td width="17%" class="TableCell"><%= phoneNo.toString() %></td>
-                  <td class="TableCell"><%= ServerUtils.getOneLineAddress(addr) %></td>
+                  <td class="TableCell"><%= address %></td>
 <% if (showEnergyCompany) { %>
                   <td width="15%" class="TableCell"><%= member.getName() %></td>
 <% } %>

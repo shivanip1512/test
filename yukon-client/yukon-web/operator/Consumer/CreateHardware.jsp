@@ -10,9 +10,9 @@
 	
 	boolean invChecking = AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING);
 	if (!invChecking)
-		session.removeAttribute(InventoryManager.STARS_INVENTORY_TEMP);
+		session.removeAttribute(InventoryManager.STARS_INVENTORY_TEMP + "_NEW");
 	
-	StarsInventory inventory = (StarsInventory) session.getAttribute(InventoryManager.STARS_INVENTORY_TEMP);
+	StarsInventory inventory = (StarsInventory) session.getAttribute(InventoryManager.STARS_INVENTORY_TEMP + "_NEW");
 	
 	if (inventory == null && inWizard) {
 		MultiAction actions = (MultiAction) session.getAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
@@ -87,6 +87,11 @@ function validate(form) {
 function changeSerialNo() {
 	document.snForm.submit();
 }
+
+function confirmCancel() {
+	if (confirm("Are you sure you want to quit from this wizard and discard all changes you've been made?"))
+		location.href = "../Operations.jsp";
+}
 </script>
 </head>
 <body class="Background" leftmargin="0" topmargin="0">
@@ -127,7 +132,10 @@ function changeSerialNo() {
 			    <input type="hidden" name="action" value="CreateLMHardware">
 				<input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
 				<input type="hidden" name="DeviceID" value="<%= inventory.getDeviceID() %>">
-				<% if (inWizard) { %><input type="hidden" name="Wizard" value="true"><% } %>
+<% if (inWizard) { %>
+				<input type="hidden" name="REDIRECT2" value="<%= request.getContextPath() %>/operator/Consumer/Programs.jsp?Wizard=true">
+				<input type="hidden" name="Wizard" value="true">
+<% } %>
                 <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
                   <tr> 
                     <td width="300" valign="top" bgcolor="#FFFFFF"> 
@@ -356,31 +364,36 @@ function changeSerialNo() {
                   </tr>
                 </table>
                 <br>
-                <table width="400" border="0">
-                <tr>
-<% if (!inWizard) { %>
-                  <td width="40%" align="right"> 
-                    <input type="submit" name="Submit" value="Save">
-                  </td>
+<% if (inWizard) { %>
+                <table width="400" border="0" cellpadding="5" cellspacing="0">
+                  <tr>
+                    <td width="35%" align="right"> 
+                      <input type="submit" name="Submit" value="Next">
+                    </td>
+                    <td width="15%" align="center"> 
+                      <input type="submit" name="Done" value="Done">
+                    </td>
+                    <td width="15%" align="center"> 
+                      <input type="button" name="Back" value="Back" onclick="location.href = 'New.jsp?Wizard=true'">
+                    </td>
+                    <td width="35%" align="left"> 
+                      <input type="button" name="Cancel" value="Cancel" onclick="confirmCancel()">
+                    </td>
+                  </tr>
+                </table>
 <% } else { %>
-                  <td width="40%" align="right"> 
-                    <input type="submit" name="Submit" value="Next">
-                  </td>
-                  <td width="20%" align="center"> 
-                    <input type="submit" name="Done" value="Done">
-                  </td>
+                <table width="400" border="0" cellpadding="5" cellspacing="0">
+                  <tr>
+                    <td width="50%" align="right"> 
+                      <input type="submit" name="Submit" value="Save">
+                    </td>
+                    <td width="50%" align="left"> 
+                      <input type="reset" name="Cancel" value="Reset">
+                    </td>
+                  </tr>
+                </table>
 <% } %>
-<% if (!inWizard) { %>
-                  <td width="40%" align="left"> 
-                    <input type="reset" name="Cancel" value="Reset">
-                  </td>
-<% } else { %>
-                  <td width="40%" align="left"> 
-                    <input type="button" name="Cancel" value="Cancel" onclick="location.href = '../Operations.jsp'">
-                  </td>
-<% } %>
-                </tr>
-              </table><br>
+			    <br>
               </form>
               <form name="snForm" method="post" action="SerialNumber.jsp">
                 <input type="hidden" name="action" value="Change">

@@ -4,6 +4,7 @@
 <%@ page import="com.cannontech.database.data.lite.stars.LiteInventoryBase" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
+<%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
 <%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 <%
 	LiteStarsEnergyCompany ec = com.cannontech.stars.web.servlet.SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
@@ -128,6 +129,14 @@
 		LiteStarsCustAccountInformation liteAcctInfo = ec.getBriefCustAccountInfo(liteInv.getAccountID(), true);
 		LiteContact liteContact = ec.getContact(liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo);
 		LiteAddress liteAddr = ec.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
+		
+		String name = ServerUtils.formatName(liteContact);
+		if (name.length() == 0) name = "(none)";
+		
+		StreetAddress starsAddr = new StreetAddress();
+		StarsLiteFactory.setStarsCustomerAddress(starsAddr, liteAddr);
+		String address = ServletUtils.getOneLineAddress(starsAddr);
+		if (address.length() == 0) address = "(none)";
 %>
 			    <p class="MainText">The hardware or device is currently assigned 
                   to the following account:</p>
@@ -139,8 +148,8 @@
                   </tr>
                   <tr> 
                     <td width="100" class="TableCell"><%= ServerUtils.forceNotNull(liteAcctInfo.getCustomerAccount().getAccountNumber()) %></td>
-                    <td width="120" class="TableCell"><%= ServerUtils.getFormattedName(liteContact) %></td>
-                    <td width="230" class="TableCell"><%= ServerUtils.getOneLineAddress(liteAddr) %></td>
+                    <td width="120" class="TableCell"><%= name %></td>
+                    <td width="230" class="TableCell"><%= address %></td>
                   </tr>
                 </table>
                 <p class="MainText">Would you like to move it to the new account? 

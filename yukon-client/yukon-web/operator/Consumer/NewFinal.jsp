@@ -1,20 +1,21 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%
 	MultiAction actions = (MultiAction) session.getAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
-	ActionBase failedAction = actions.getFailedAction();
-	
-	if (failedAction != null) {
-		session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, errorMsg);
-		
-		if (failedAction instanceof NewCustAccountAction)
-			response.sendRedirect(request.getContextPath() + "/operator/Consumer/New.jsp?Wizard=true");
-		else if (failedAction instanceof CreateLMHardwareAction)
-			response.sendRedirect(request.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true");
-		else if (failedAction instanceof ProgramSignUpAction)
-			response.sendRedirect(request.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true");
-	}
-	else {
-		session.removeAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
+	if (actions != null) {
+		ActionBase failedAction = actions.getFailedAction();
+		if (failedAction != null) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, errorMsg);
+			
+			if (failedAction instanceof NewCustAccountAction)
+				response.sendRedirect(request.getContextPath() + "/operator/Consumer/New.jsp?Wizard=true");
+			else if (failedAction instanceof CreateLMHardwareAction)
+				response.sendRedirect(request.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true");
+			else if (failedAction instanceof ProgramSignUpAction)
+				response.sendRedirect(request.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true");
+		}
+		else {
+			session.removeAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
+		}
 	}
 %>
 <html>
@@ -79,7 +80,7 @@
                         <td height="30"> 
                           <div align="center"><span class="MainText">Create another 
                             account</span><br>
-                            <input type="button" name="New" value="New" onclick="location.href='New.jsp<% if (request.getParameter("Wizard") != null) { %>?Wizard=true<% } %>'">
+                            <input type="button" name="New" value="New" onclick="location.href='New.jsp?Init=true<% if (request.getParameter("Wizard") != null) { %>&Wizard=true<% } %>'">
                           </div>
                         </td>
                       </tr>

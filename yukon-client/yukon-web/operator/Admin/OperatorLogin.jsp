@@ -26,6 +26,10 @@ function validate(form) {
 		alert("Username cannot be empty!");
 		return false;
 	}
+	if (form.Password.value == "") {
+		alert("Password cannot be empty!");
+		return false;
+	}
 	if (form.Password.value != form.Password2.value) {
 		alert("The passwords you entered don't match, please enter them again");
 		return false;
@@ -103,9 +107,9 @@ function validate(form) {
                         </td>
                       </tr>
                       <tr> 
-                        <td width="25%" align="right" class="TableCell">Passoword:</td>
+                        <td width="25%" align="right" class="TableCell">Password:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="Password" name="Password" value="<%= liteUser.getPassword() %>">
+                          <input type="Password" name="Password">
                         </td>
                       </tr>
                       <tr> 

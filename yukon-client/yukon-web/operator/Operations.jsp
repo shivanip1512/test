@@ -75,7 +75,7 @@ function confirmDelete() {
         <tr> 
           <td width="25%" class="MainText"> 
             <div align = "center" style = "border:solid 1px #666999;">
-              <a href = 'Consumer/New.jsp<cti:checkProperty propertyid="<%= ConsumerInfoRole.NEW_ACCOUNT_WIZARD %>">?Wizard=true</cti:checkProperty>' class = "Link1" style = "text-decoration:none;">New Account</a>
+              <a href='Consumer/New.jsp?Init=true<cti:checkProperty propertyid="<%= ConsumerInfoRole.NEW_ACCOUNT_WIZARD %>">&Wizard=true</cti:checkProperty>' class="Link1" style="text-decoration:none;">New Account</a>
             </div>
           </td>
           <td class="MainText" width="25%">

@@ -41,22 +41,27 @@
 			  <%@ include file="include/InfoSearchBar.jsp" %>
               <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 			    <input type="hidden" name="action" value="ConfirmDelete">
-                <p class="MainText"> 
-                  <%
+                <table width="80%" border="0" cellspacing="0" cellpadding="0" class="MainText">
+                  <tr>
+                    <td> 
+                      <%
 	if (liteInv instanceof LiteStarsLMHardware) {
 		String serialNo = ((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber();
 %>
-                  The hardware with serial no. <%= serialNo %> will be removed 
-                  from the account. 
-                  <%
+                      The hardware with serial no. <%= serialNo %> will be removed 
+                      from the account. 
+                      <%
 	} else {
 		String deviceName = PAOFuncs.getYukonPAOName(liteInv.getDeviceID());
 %>
-                  The device &quot;<%= deviceName %>&quot; will be removed from 
-                  the account. 
-                  <%	} %>
-                  What would you like to do with it?</p>
-				<table width="250" border="0" cellspacing="0" cellpadding="3" class="TableCell">
+                      The device &quot;<%= deviceName %>&quot; will be removed 
+                      from the account. 
+                      <%	} %>
+                      What would you like to do with it?</td>
+                  </tr>
+                </table>
+                <br>
+                <table width="250" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                   <tr>
                     <td width="25">
                       <input type="radio" name="DeletePerm" value="false" checked>

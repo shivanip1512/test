@@ -56,8 +56,12 @@
 		session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
 		
 		MultiAction actions = new MultiAction();
-		actions.addAction( new GetEnergyCompanySettingsAction(), request, session );
-		actions.addAction( new GetCustAccountAction(), request, session );
+		GetEnergyCompanySettingsAction action1 = new GetEnergyCompanySettingsAction();
+		SOAPMessage msg1 = action1.build( request, session );
+		actions.addAction( action1, msg1 );
+		GetCustAccountAction action2 = new GetCustAccountAction();
+		SOAPMessage msg2 = action2.build( request, session );
+		actions.addAction( action2, msg2 );
 		
 		SOAPMessage reqMsg = actions.build(request, session);
 		SOAPUtil.logSOAPMsgForOperation( reqMsg, "*** Send Message *** " );

@@ -217,7 +217,7 @@
                   <td width="171" valign="top"><span class="TitleHeader">Acct #<%= account.getAccountNumber() %></span><br> 
                     <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
                     <!--<%= account.getCompany() %><br> -->
-					<%= ServletUtils.getFormattedAddress(propAddr) %><br>
+					<%= ServletUtils.formatAddress(propAddr) %><br>
                     <%= primContact.getHomePhone() %></span><br>
                     <br>
 <%

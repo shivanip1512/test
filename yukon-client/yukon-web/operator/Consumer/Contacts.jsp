@@ -271,7 +271,7 @@ function saveChanges() {
                 <tr> 
                   <td width="50%"> 
                     <div align="right"> 
-                      <input type="submit" name="Save" value="Save">
+                      <input type="submit" name="Submit" value="Submit">
                     </div>
                   </td>
                   <td width="50%"> 

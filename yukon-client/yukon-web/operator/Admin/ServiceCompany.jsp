@@ -51,6 +51,9 @@
 	
 	StarsServiceCompany sc = (StarsServiceCompany) session.getAttribute(StarsAdmin.SERVICE_COMPANY_TEMP);
 	if (sc == null) sc = company;
+	
+	String address = ServletUtils.getOneLineAddress(sc.getCompanyAddress());
+	if (address.length() == 0) address = "(none)";
 %>
 <html>
 <head>
@@ -146,7 +149,7 @@ function editAddress(form) {
                         <td width="75%" class="TableCell"> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                             <tr> 
-                              <td width="75%"><%= ServletUtils.getOneLineAddress(sc.getCompanyAddress()) %></td>
+                              <td width="75%"><%= address %></td>
                               <td width="25%"> 
                                 <input type="button" name="EditAddress" value="Edit" onClick="editAddress(this.form)">
                               </td>

@@ -6,7 +6,7 @@
 	String redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
 	
 	String invNo = request.getParameter("InvNo");
-	if (invNo == null) invNo = "";
+	if (invNo == null) invNo = "_NEW";
 	session.setAttribute(InventoryManager.STARS_INVENTORY_NO, invNo);
 	
 	int deviceType = 0;
@@ -15,7 +15,7 @@
 	if (action != null) {
 		if (action.equalsIgnoreCase("New")) {
 			// Came from the nav link, next page is CreateHardware.jsp
-			session.removeAttribute(InventoryManager.STARS_INVENTORY_TEMP);
+			session.removeAttribute(InventoryManager.STARS_INVENTORY_TEMP + "_NEW");
 			
 			referer = request.getContextPath() + "/operator/Consumer/CreateHardware.jsp";
 			if (request.getParameter("Wizard") != null) referer += "?Wizard=true";
@@ -87,6 +87,11 @@ function selectInventory(form) {
 function selectMCT(form) {
 	form.attributes["action"].value = "SelectMCT.jsp";
 	form.submit();
+}
+
+function confirmCancel() {
+	if (confirm("Are you sure you want to quit from this wizard and discard all changes you've been made?"))
+		location.href = "../Operations.jsp";
 }
 </script>
 </head>
@@ -212,10 +217,10 @@ function selectMCT(form) {
                   </tr>
                 </table>
                 </form>
-			  <% if (!inWizard) { %>
+			  <% if (!inWizard || session.getAttribute(InventoryManager.STARS_INVENTORY_TEMP) != null) { %>
                 <input type="button" name="Cancel" value="Cancel" onclick="location.href = '<%= referer %>'">
 			  <% } else { %>
-                <input type="button" name="Cancel" value="Cancel" onclick="location.href = '../Operations.jsp'">
+                <input type="button" name="Back" value="Back" onclick="location.href = 'New.jsp?Wizard=true'">
 			  <% } %>
               <p>&nbsp;</p>
               <p>&nbsp;</p>

@@ -1,4 +1,8 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%
+	boolean inWizard = false;
+	boolean needMoreInfo = false;
+%>
 <html>
 <head>
 <title>Consumer Energy Services</title>

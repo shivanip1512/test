@@ -1,6 +1,7 @@
 <%
 /* Required parameters:
  * inWizard: boolean
+ * needMoreInfo: boolean
  */
 	boolean isOperator = ServerUtils.isOperator(user);
 	String inWizardStr = (inWizard)? "&Wizard=true" : "";
@@ -27,7 +28,7 @@ function changeCategory(checkBox, index) {
 		catIDs[index].value = checkBox.value;
 		progIDs[index].value = defProgIDs[index].value;
 		
-		if (numEnrolledProg == 0)
+		if (document.getElementById("NotEnrolled") != null && numEnrolledProg == 0)
 			document.getElementById("NotEnrolled").checked = false;
 		numEnrolledProg++;
 	}
@@ -41,7 +42,7 @@ function changeCategory(checkBox, index) {
 		progIDs[index].value = "";
 		
 		numEnrolledProg--;
-		if (numEnrolledProg == 0)
+		if (document.getElementById("NotEnrolled") != null && numEnrolledProg == 0)
 			document.getElementById("NotEnrolled").checked = true;
 	}
 	
@@ -56,7 +57,7 @@ function changeProgram(radioBtn, index) {
 	if (progIDs[index].value == radioBtn.value) return;	// Nothing is changed
 	
 	if (!categories[index].checked) {
-		if (numEnrolledProg == 0)
+		if (document.getElementById("NotEnrolled") != null && numEnrolledProg == 0)
 			document.getElementById("NotEnrolled").checked = false;
 		numEnrolledProg++;
 	}
@@ -87,10 +88,18 @@ function resendNotEnrolled(form) {
 }
 
 function confirmSubmit(form) {
+	if (form.NotEnrolled != null && form.NotEnrolled.checked)
+		form.NeedMoreInfo.value = "false";
 <% if (request.getParameter("Wizard") == null) { %>
 	if (!signUpChanged) return false;
 	return confirm('Are you sure you would like to modify these program options?');
 <% } %>
+	return true;
+}
+
+function confirmCancel() {
+	if (confirm("Are you sure you want to quit from this wizard and discard all changes you've been made?"))
+		location.href = "../Operations.jsp";
 }
 </script>
 
@@ -110,6 +119,8 @@ function confirmSubmit(form) {
 				    <input type="hidden" name="action" value="ProgramSignUp">
 				    <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
 				    <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
+				    <input type="hidden" name="NeedMoreInfo" value="<%= needMoreInfo %>">
+				    <% if (inWizard) { %><input type="hidden" name="Wizard" value="true"><% } %>
                     <table border="1" cellspacing="0" cellpadding="3" width="95%">
                       <tr align = "center"> 
                         <td width="90%" class="HeaderCell"> 
@@ -294,24 +305,32 @@ function confirmSubmit(form) {
                     </table>
 <script language="JavaScript">numEnrolledProg = <%= numEnrolledProg %>;</script>
                     <br>
-                    <table width="50%" border="0">
+<% if (inWizard) { %>
+                    <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">
                       <tr> 
-                        <td align = "right"> 
-<% if (inWizard) { %>
-                          <input type="submit" name="Done" value="Done">
-<% } else { %>
-                          <input type="submit" name="Submit" value="Submit">
-<% } %>
+                        <td width="40%" align="right"> 
+                          <input type="submit" name="Submit" value="Done">
                         </td>
-                        <td> 
-<% if (inWizard) { %>
-                          <input type="button" name="Cancel" value="Cancel" onclick="location.href='../Operations.jsp'">
-<% } else { %>
-                          <input type="reset" name="Reset" value="Reset">
-<% } %>
+                        <td width="20%" align="center"> 
+                          <input type="button" name="Back" value="Back" onclick="location.href='CreateHardware.jsp?Wizard=true'">
+                        </td>
+                        <td width="40%" align="left"> 
+                          <input type="button" name="Cancel" value="Cancel" onclick="confirmCancel()">
                         </td>
                       </tr>
                     </table>
+<% } else { %>
+                    <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">
+                      <tr> 
+                        <td width="40%" align="right"> 
+                          <input type="submit" name="Submit" value="Submit">
+                        </td>
+                        <td width="40%" align="left"> 
+                          <input type="reset" name="Reset" value="Reset">
+                        </td>
+                      </tr>
+                    </table>
+<% } %>
                   </form>
 <% if (savingsIconExists || controlIconExists || envrnmtIconExists) { %>
                   <table width="320" border="1" cellpadding="3" cellspacing="0">

@@ -30,6 +30,16 @@
 	}
 	
 	if (programs == null) programs = new StarsLMPrograms();
+	
+	int hardwareCnt = 0;
+	if (!inWizard) {
+		for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
+			if (inventories.getStarsInventory(i).getLMHardware() != null)
+				hardwareCnt++;
+		}
+	}
+	boolean autoConfig = AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.AUTOMATIC_CONFIGURATION);
+	boolean needMoreInfo = hardwareCnt > 1 || autoConfig && hardwareCnt > 0;
 %>
 <html>
 <head>
@@ -76,7 +86,6 @@
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
               <%@ include file="../../include/program_enrollment.jsp" %>
 <% if (request.getParameter("Wizard") == null) { %>
-              <br>
               <div align="center" class="SubtitleHeader">Program History</div>
               <table width="366" border="1" cellspacing="0" align="center" cellpadding="3">
                 <tr> 

@@ -3,6 +3,7 @@
 <%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
+<%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%
 	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(ecSettings.getEnergyCompanyID());
@@ -300,17 +301,22 @@ function validate(form) {
 		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
 		LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
 		
+		String name = ServerUtils.formatName(liteContact);
 		String homePhone = ServerUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
 		String workPhone = ServerUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
 		String mapNo = ServerUtils.forceNotNone(liteAcctSite.getSiteNumber());
+		
+		StreetAddress starsAddr = new StreetAddress();
+		StarsLiteFactory.setStarsCustomerAddress(starsAddr, liteAddr);
+		String address = ServletUtils.getFormattedAddress(starsAddr);
 %>
                               <tr>
                                 <td class="TableCell">
                                   Account # <%= liteAccount.getAccountNumber() %><br>
-                                  <%= ServerUtils.getFormattedName(liteContact) %><br>
+                                  <% if (name.length() > 0) { %><%= name %><br><% } %>
                                   <% if (homePhone.length() > 0) { %>Home #: <%= homePhone %><br><% } %>
                                   <% if (workPhone.length() > 0) { %>Work #: <%= workPhone %><br><% } %>
-                                  <%= ServerUtils.getFormattedAddress(liteAddr) %><br>
+                                  <% if (address.length() > 0) { %><%= address %><br><% } %>
                                   <% if (mapNo.length() > 0) { %>Map # <%= mapNo %><% } %>
                                 </td>
                               </tr>

@@ -309,7 +309,7 @@ function changeSerialNo() {
 								  None
 <% } else { %>
                                   <%= company.getCompanyName() %><br>
-                                  <%= ServletUtils.getFormattedAddress( company.getCompanyAddress() ) %><br>
+                                  <%= ServletUtils.formatAddress( company.getCompanyAddress() ) %><br>
                                   <%= company.getMainPhoneNumber() %> </td>
 <% } %>
                               </tr>
