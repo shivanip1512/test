@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/13 19:35:34 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/10/10 15:39:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -717,10 +717,12 @@ static CHAR saveTelegraph[7] = {0,0,0,0,0,0,0};
 
 SendTelegraphStatusToMPC (ULONG Function, const BYTE *MyTelegraph)
 {
+    #if 0
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
+    #endif
     /* That's all the initialization needed */
     return(NORMAL);
 }

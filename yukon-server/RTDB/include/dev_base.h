@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2003/05/15 22:36:40 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2003/10/10 15:38:29 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -212,7 +212,7 @@ public:
     void setExecuting(bool set);
     bool isExecutionProhibited() const;
     size_t setExecutionProhibited(unsigned long id);
-    void removeExecutionProhibited(unsigned long id);
+    bool removeExecutionProhibited(unsigned long id);
 
 protected:
 

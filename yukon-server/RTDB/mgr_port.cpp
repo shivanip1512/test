@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/09/22 14:20:17 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/10/10 15:38:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -107,9 +107,9 @@ inline void applyRemoveProhibit(const long key, CtiPortSPtr Port, void* d)
 
     if(Port->isExecutionProhibited())   // There is at least one entry in the list...
     {
-        Port->removeExecutionProhibited( pid );
+        bool found = Port->removeExecutionProhibited( pid );
 
-        if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+        if(found && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Port " << Port->getName() << " no longer prohibited because of " << pAnxiousPort->getName() << "." << endl;

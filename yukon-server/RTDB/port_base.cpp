@@ -920,8 +920,9 @@ size_t CtiPort::setExecutionProhibited(unsigned long pid)
     return _executionProhibited.size();
 }
 
-void CtiPort::removeExecutionProhibited(unsigned long pid)
+bool CtiPort::removeExecutionProhibited(unsigned long pid)
 {
+    bool removed = false;
 
     CtiPort::prohibitions::iterator itr;
 
@@ -930,13 +931,14 @@ void CtiPort::removeExecutionProhibited(unsigned long pid)
         if(*itr == pid)
         {
             itr = _executionProhibited.erase(itr);
+            removed = true;
         }
         else
         {
             itr++;
         }
     }
-    return;
+    return removed;
 }
 
 

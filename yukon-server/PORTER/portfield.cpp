@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.74 $
-* DATE         :  $Date: 2003/09/29 16:05:18 $
+* REVISION     :  $Revision: 1.75 $
+* DATE         :  $Date: 2003/10/10 15:38:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -292,7 +292,9 @@ VOID PortThread(void *pid)
             }
         }
 
-        if(gQueSlot == 0)       // This keeps us locked on if we have other work out there which we should pop off the queue next!
+        // We need to see if the next Q entry is for this Device... If it is, we should not release our exclusion
+
+        if(Port->queueCount() == 0)
         {
             ClearExclusions(Port,Device);
         }
@@ -345,6 +347,12 @@ VOID PortThread(void *pid)
                 dout << RWTime() << " Port " << Port->getName() << " has " << QueEntries << " pending OUTMESS requests " << endl;
             }
             lastQueueReportTime = RWTime() + 300;
+        }
+
+
+        if(Device && Device->getID() != OutMessage->DeviceID)
+        {
+            ClearExclusions(Port, Device);
         }
 
         statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID);
@@ -988,10 +996,10 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
                         break;
                     }
 
-                    if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                    if(getDebugLevel() & DEBUGLEVEL_LUDICROUS && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Queue unable to be shuffled.  No non-excluded outmessages exist. " << endl;
+                        dout << RWTime() << " " << Port->getName() << " queue unable to be shuffled.  No non-excluded outmessages exist. " << endl;
                     }
 
                     if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
@@ -3676,7 +3684,8 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDevice *device )
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " OutMessage Swap!" << endl;
                         }
-                        OutMessage = pOutMessage;
+                        //OutMessage = pOutMessage;
+                        OutMessage = 0;
                         bSubstitutionMade = true;
                     }
                 }

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2003/08/22 21:43:29 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2003/10/10 15:38:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -864,8 +864,9 @@ size_t CtiDeviceBase::setExecutionProhibited(unsigned long id)
     return _executionProhibited.size();
 }
 
-void CtiDeviceBase::removeExecutionProhibited(unsigned long id)
+bool CtiDeviceBase::removeExecutionProhibited(unsigned long id)
 {
+    bool removed = false;
     CtiDeviceBase::prohibitions::iterator itr;
 
     try
@@ -875,6 +876,7 @@ void CtiDeviceBase::removeExecutionProhibited(unsigned long id)
             if(*itr == id)
             {
                 itr = _executionProhibited.erase(itr);
+                removed = true;
             }
             else
             {
@@ -890,6 +892,6 @@ void CtiDeviceBase::removeExecutionProhibited(unsigned long id)
         }
     }
 
-    return;
+    return removed;
 }
 

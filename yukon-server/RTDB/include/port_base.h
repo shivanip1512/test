@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2003/09/22 15:37:05 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2003/10/10 15:38:29 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -192,7 +192,7 @@ public:
     void setExecuting(bool set);
     bool isExecutionProhibited() const;
     size_t setExecutionProhibited(unsigned long pid);
-    void removeExecutionProhibited(unsigned long pid);
+    bool removeExecutionProhibited(unsigned long pid);
 
     virtual size_t addPort(CtiPortSPtr port);
     void setParentPort(CtiPortSPtr port);

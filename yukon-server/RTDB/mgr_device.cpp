@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2003/08/22 21:43:30 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2003/10/10 15:38:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -79,9 +79,9 @@ inline void applyRemoveProhibit(const CtiHashKey *unusedkey, CtiDeviceBase *&Dev
 
     if(Device->isExecutionProhibited())     // There is at least one entry in the list...
     {
-        Device->removeExecutionProhibited( did );
+        bool found = Device->removeExecutionProhibited( did );
 
-        if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+        if(found && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Device " << Device->getName() << " no longer prohibited because of " << pAnxiousDevice->getName() << "." << endl;
