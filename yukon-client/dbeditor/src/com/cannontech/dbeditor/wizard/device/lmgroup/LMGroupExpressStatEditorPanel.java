@@ -621,7 +621,7 @@ public javax.swing.JPanel getJPanelData() {
 			java.awt.GridBagConstraints constraintsJButtonDeltasAbsolute = new java.awt.GridBagConstraints();
 			constraintsJButtonDeltasAbsolute.gridx = 1; constraintsJButtonDeltasAbsolute.gridy = 1;
 constraintsJButtonDeltasAbsolute.gridheight = 2;
-			constraintsJButtonDeltasAbsolute.ipadx = -1;
+			constraintsJButtonDeltasAbsolute.ipadx = -5;
 			constraintsJButtonDeltasAbsolute.insets = new java.awt.Insets(0, 9, 3, 47);
 			getJPanelData().add(getJButtonDeltasAbsolute(), constraintsJButtonDeltasAbsolute);
 
@@ -816,7 +816,7 @@ private com.cannontech.common.gui.util.TitleBorder getJPanelDataTitleBorder() {
  * @return javax.swing.JPanel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JPanel getJPanelTable() {
+public javax.swing.JPanel getJPanelTable() {
 	if (ivjJPanelTable == null) {
 		try {
 			ivjJPanelTable = new javax.swing.JPanel();
@@ -944,7 +944,7 @@ private javax.swing.JPanel getJPanelTable() {
  * @return javax.swing.JScrollPane
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JScrollPane getJScrollPaneJTable() {
+public javax.swing.JScrollPane getJScrollPaneJTable() {
 	if (ivjJScrollPaneJTable == null) {
 		try {
 			ivjJScrollPaneJTable = new javax.swing.JScrollPane();
@@ -971,7 +971,7 @@ private javax.swing.JScrollPane getJScrollPaneJTable() {
  * @return javax.swing.JTable
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTable getJTableCurve() {
+public javax.swing.JTable getJTableCurve() {
 	if (ivjJTableCurve == null) {
 		try {
 			ivjJTableCurve = new javax.swing.JTable();

@@ -919,6 +919,7 @@ private void initialize() {
 	}
 	// user code begin {2}
 	add(getStatEditorPanel().getJPanelData(), holderConstraints());
+	getStatEditorPanel().getJPanelTable().remove(getStatEditorPanel().getJScrollPaneJTable());
 	getJComboBoxWhenChange().setSelectedItem( LMProgramDirectGear.CHANGE_NONE );
 		try
 	{
