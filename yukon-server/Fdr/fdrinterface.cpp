@@ -17,10 +17,15 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2002/05/08 15:34:14 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2002/08/06 21:59:56 $
 *    History: 
       $Log: fdrinterface.cpp,v $
+      Revision 1.5  2002/08/06 21:59:56  dsutton
+      Programming around the error that happens if the dataset is empty when it is
+      returned from the database and shouldn't be.  The interfaces fail the call and
+      we now try to reload the db every 60 seconds until successful
+
       Revision 1.4  2002/05/08 15:34:14  dsutton
       removed the debug levels around the db reload code so it was easier to keep
       track of what caused the reload
@@ -1081,10 +1086,10 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
                     {
                         // sleep a second and try again
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << " - Error Reloading points for " << getInterfaceName() << " Interface, trying again - " << endl;
+                        dout << RWTime() << " - Error reloading points for " << getInterfaceName() << " will reset periodic timer to 60 seconds" << endl;
                     }
-
-                    pSelf.sleep(1000);
+                    setDbReloadReason(NotReloaded);
+                    refreshTime = timeNow - (timeNow.seconds() % 60) + 60;
                 }
             }
         }
