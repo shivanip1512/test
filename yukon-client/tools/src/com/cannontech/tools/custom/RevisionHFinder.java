@@ -73,12 +73,12 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 			for (int i = 0; i < args.length; i++)
 			{
 				// Check the delimiter of '=', if not found check ':'
-				int startIndex = args[i].indexOf('=');
+				int startIndex = args[i].indexOf(':');
 				String key = args[i].substring(0, startIndex).toLowerCase();
 				startIndex += 1;
 				String value = args[i].substring(startIndex);
 				
-				if( key.startsWith("logfile"))
+				if( key.startsWith("log"))
 				{
 					finder.logFileName = value;
 				}
@@ -90,7 +90,7 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 				{
 					finder.collGroup = value;
 				}
-				else if( key.startsWith("reportfile"))
+				else if( key.startsWith("report"))
 				{
 					finder.reportFile = value;
 				}
