@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/10/24 17:29:22 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/10/28 16:09:34 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -382,7 +382,6 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     OutMessage->Port     = getPortID();
     OutMessage->DeviceID = getID();
     OutMessage->TargetID = getID();
-    OutMessage->Retry    = 2;
 
     if( nRet == NoError )
     {
