@@ -217,10 +217,6 @@ function confirmDelete() {
 </cti:checkMultiRole>
 
 <cti:checkRole roleid="<%= InventoryRole.ROLEID %>">
-<%
-	// Start loading all inventory (if not yet) in the background
-	if (liteEC != null) liteEC.init();
-%>
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
     <td width="555" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>

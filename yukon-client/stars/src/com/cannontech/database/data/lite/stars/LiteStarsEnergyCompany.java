@@ -422,7 +422,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		if (!inventoryLoaded && loadInvTask == null && !ECUtils.isDefaultEnergyCompany( this )) {
 			loadInvTask = new LoadInventoryTask( this );
 			new Thread( loadInvTask ).start();
-			CTILogger.info( "*** Start loading all inventory ***" );
+			CTILogger.info( "*** Start loading inventory for energy company #" + getEnergyCompanyID() );
 		}
 	}
 	

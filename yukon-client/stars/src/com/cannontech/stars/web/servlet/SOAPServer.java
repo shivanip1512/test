@@ -287,8 +287,10 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		synchronized (companies) {
     		for (int i = 0; i < companies.size(); i++) {
 	    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-    			if (company.getEnergyCompanyID().intValue() == energyCompanyID)
+    			if (company.getEnergyCompanyID().intValue() == energyCompanyID) {
+    				company.init();
 					return company;
+    			}
     		}
 		}
     	
