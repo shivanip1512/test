@@ -1973,7 +1973,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	 */
 	public ArrayList searchInventoryByPhoneNo(String phoneNo, boolean searchMembers) {
 		LiteContact[] contacts = ContactFuncs.getContactsByPhoneNo(
-				phoneNo, new int[] {YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE} );
+				phoneNo, new int[] {YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE}, true );
 		
 		int[] contactIDs = new int[ contacts.length ];
 		for (int i = 0; i < contacts.length; i++)
@@ -1988,7 +1988,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	 * otherwise it returns a list of LiteInventoryBase.
 	 */
 	public ArrayList searchInventoryByLastName(String lastName, boolean searchMembers) {
-		LiteContact[] contacts = ContactFuncs.getContactsByLName( lastName );
+		LiteContact[] contacts = ContactFuncs.getContactsByLName( lastName, true );
 		
 		int[] contactIDs = new int[ contacts.length ];
 		for (int i = 0; i < contacts.length; i++)
@@ -2666,7 +2666,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	 */
 	public ArrayList searchAccountByPhoneNo(String phoneNo, boolean searchMembers) {
 		LiteContact[] contacts = ContactFuncs.getContactsByPhoneNo(
-				phoneNo, new int[] {YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE} );
+				phoneNo, new int[] {YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE}, true );
 		
 		int[] contactIDs = new int[ contacts.length ];
 		for (int i = 0; i < contacts.length; i++)
@@ -2681,22 +2681,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	 * otherwise it returns a list of LiteStarsCustAccountInformation.
 	 */
 	public ArrayList searchAccountByLastName(String lastName, boolean searchMembers) {
-		ArrayList contactList = new ArrayList();
+		LiteContact[] contacts = ContactFuncs.getContactsByLName( lastName, true );
 		
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		synchronized( cache ) {
-			java.util.List cstCnts = cache.getAllContacts();
-			
-			for( int j = 0; j < cstCnts.size(); j++ ) {
-				LiteContact contact = (LiteContact) cstCnts.get(j);
-				if(contact.getContLastName().toUpperCase().startsWith( lastName.toUpperCase() ))
-					contactList.add( contact );
-			}
-		}
-		
-		int[] contactIDs = new int[ contactList.size() ];
-		for (int i = 0; i < contactList.size(); i++)
-			contactIDs[i] = ((LiteContact)contactList.get(i)).getContactID();
+		int[] contactIDs = new int[ contacts.length ];
+		for (int i = 0; i < contacts.length; i++)
+			contactIDs[i] = contacts[i].getContactID();
 		
 		return searchAccountByContactIDs( contactIDs, searchMembers );
 	}

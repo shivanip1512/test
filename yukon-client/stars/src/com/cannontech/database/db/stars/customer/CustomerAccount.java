@@ -3,7 +3,6 @@ package com.cannontech.database.db.stars.customer;
 import java.util.ArrayList;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
@@ -112,93 +111,6 @@ public class CustomerAccount extends DBPersistent {
     	}
     	
     	return null;
-    }
-    
-    public static int[] searchByPhoneNumber(Integer energyCompanyID, String phoneNumber) {
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement stmt = null;
-		java.sql.ResultSet rset = null;
-		
-		try {
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-    				
-			String sql = "SELECT DISTINCT ContactID FROM " + com.cannontech.database.db.contact.ContactNotification.TABLE_NAME
-					   + " WHERE Notification = ? AND (NotificationCategoryID = " + YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE
-					   + " OR NotificationCategoryID = " + YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE + ")";
-			
-			stmt = conn.prepareStatement( sql );
-			stmt.setString(1, phoneNumber);
-			rset = stmt.executeQuery();
-			
-			ArrayList contactIDList = new ArrayList();
-			while (rset.next())
-				contactIDList.add( new Integer(rset.getInt(1)) );
-			
-			if (contactIDList.size() == 0)
-				return new int[0];
-			
-			int[] contactIDs = new int[ contactIDList.size() ];
-			for (int i = 0; i < contactIDs.length; i++)
-				contactIDs[i] = ((Integer) contactIDList.get(i)).intValue();
-			
-			return searchByPrimaryContactIDs( contactIDs, energyCompanyID.intValue() );
-		}
-		catch (java.sql.SQLException e) {
-			CTILogger.error( e.getMessage(), e );
-		}
-		finally {
-			try {
-				if (rset != null) rset.close();
-				if (stmt != null) stmt.close();
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
-		}
-		
-        return null;
-    }
-    
-    public static int[] searchByLastName(Integer energyCompanyID, String lastName) {
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement stmt = null;
-		java.sql.ResultSet rset = null;
-		
-		try {
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-    		
-			String sql = "SELECT ContactID FROM " + com.cannontech.database.db.contact.Contact.TABLE_NAME
-					   + " WHERE UPPER(ContLastName) LIKE UPPER(?)";
-			
-			stmt = conn.prepareStatement( sql );
-			stmt.setString(1, lastName + "%");
-			rset = stmt.executeQuery();
-			
-			ArrayList contactIDList = new ArrayList();
-			while (rset.next())
-				contactIDList.add( new Integer(rset.getInt(1)) );
-			
-			if (contactIDList.size() == 0)
-				return new int[0];
-			
-			int[] contactIDs = new int[ contactIDList.size() ];
-			for (int i = 0; i < contactIDs.length; i++)
-				contactIDs[i] = ((Integer) contactIDList.get(i)).intValue();
-			
-	        return searchByPrimaryContactIDs( contactIDs, energyCompanyID.intValue() );
-		}
-		catch (java.sql.SQLException e) {
-			CTILogger.error( e.getMessage(), e );
-		}
-		finally {
-			try {
-				if (rset != null) rset.close();
-				if (stmt != null) stmt.close();
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
-		}
-		
-		return null;
     }
     
     public static int[] searchBySerialNumber(String serialNo, int energyCompanyID) {
