@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2003/06/10 21:05:56 $
+* REVISION     :  $Revision: 1.69 $
+* DATE         :  $Date: 2003/06/12 21:28:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1210,6 +1210,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 case TYPE_DARTRTU:
                     {
                         CtiProtocolBase *protocol;
+                        int protocolStatus;
 
                         if( (protocol = Device->getProtocol()) != NULL )
                         {
@@ -1223,7 +1224,14 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                                 status = Port->outInMess(trx, Device, traceList);
 
-                                protocol->decode(trx, status);
+                                protocolStatus = protocol->decode(trx, status);
+
+                                //  if we had no comm errors, copy over the protocol's status -
+                                //    it may've had non-comm-related errors (NACK, bad inbound address, etc)
+                                if( !status )
+                                {
+                                    status = protocolStatus;
+                                }
 
                                 // Prepare for tracing
                                 if(trx.doTrace(status))
