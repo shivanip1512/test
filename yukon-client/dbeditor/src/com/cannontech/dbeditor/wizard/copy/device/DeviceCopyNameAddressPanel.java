@@ -111,7 +111,9 @@ private javax.swing.JTextField getAddressTextField() {
 			ivjAddressTextField.setColumns(6);
 			// user code begin {1}
          
-         ivjAddressTextField.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(-99999999, 99999999) );
+         ivjAddressTextField.setDocument( 
+            new com.cannontech.common.gui.unchanging.LongRangeDocument(
+               -999999999, 999999999) );
          
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
