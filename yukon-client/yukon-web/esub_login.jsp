@@ -7,7 +7,7 @@ String email = (String) com.cannontech.common.util.CtiProperties.getInstance().g
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="esubBGStyle.css" type="text/css">
+<link rel="stylesheet" href="WebConfig/esubBGStyle.css" type="text/css">
 
 <SCRIPT LANGUAGE="JavaScript">
 function popUp(url) {
