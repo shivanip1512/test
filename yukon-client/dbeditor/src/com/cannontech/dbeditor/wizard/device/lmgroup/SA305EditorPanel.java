@@ -1511,7 +1511,7 @@ public Object getValue(Object o)
 
 	}
 	
-	return threeOhFive;
+	return o;
 	
 }
 /**

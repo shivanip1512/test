@@ -1,4 +1,4 @@
-package com.cannontech.dbeditor.wizard.device.lmgroup;
+package com.cannontech.dbeditor.editor.device.lmgroup;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
@@ -985,25 +985,14 @@ public Object getValue(Object val)
 	}
 
 	//only set the route ID for certain LmGroups
-	if( val instanceof IGroupRoute )
+	if( lmGroup instanceof IGroupRoute )
 	{
 		((IGroupRoute) val).setRouteID( 
 			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getRouteComboBox().getSelectedItem()).getYukonID()) );
 	}
+	
+	return lmGroup;
 
-	if( val instanceof MacroGroup )
-		return val;  //Macros will not have record history capability
-	else
-	{
-		//some status points are needed for control history
-		com.cannontech.database.data.multi.SmartMultiDBPersistent smartDB = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
-		smartDB.addDBPersistent( lmGroup );
-		smartDB.setOwnerDBPersistent( lmGroup );
-			
-		createExtraObjects( smartDB );
-
-		return smartDB;
-	}
 }
 /**
  * Called whenever the part throws an exception.

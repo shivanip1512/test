@@ -13,7 +13,7 @@ public class LMGroupEditor extends com.cannontech.common.editor.PropertyPanel im
 	
 	private static final int[][] EDITOR_TYPES =
 	{
-		//com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupBasePanel
+		//com.cannontech.dbeditor.editor.device.lmgroup.LMGroupBasePanel
 		{ PAOGroups.LM_GROUP_EMETCON, PAOGroups.LM_GROUP_RIPPLE, 
 		  PAOGroups.LM_GROUP_VERSACOM, PAOGroups.MACRO_GROUP, PAOGroups.LM_GROUP_MCT,
 		  PAOGroups.LM_GROUP_POINT, PAOGroups.LM_GROUP_EXPRESSCOMM, 
@@ -76,7 +76,7 @@ public Object[] createNewPanel(int panelIndex)
 	switch( panelIndex )
 	{
 		case 0: 
-			objs[0] = new com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupBasePanel(false);
+			objs[0] = new com.cannontech.dbeditor.editor.device.lmgroup.LMGroupBasePanel(false);
 			objs[1] = "General";
 			break;
 

@@ -8,7 +8,7 @@ public class LMGroupWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private GroupTypePanel groupTypePanel;
 	private SwitchTypePanel switchTypePanel;
 	
-	private LMGroupBasePanel lmGroupBasePanel = null;
+	private LMGroupBaseWizardPanel lmGroupBasePanel = null;
 	private GroupMacroLoadGroupsPanel groupMacroLoadGroupsPanel;
 	
 	private LMGroupVersacomEditorPanel lmGroupVersacomEditorPanel = null;
@@ -118,10 +118,10 @@ protected String getHeaderText() {
  * This method was created in VisualAge.
  * @return LMGroupBasePanel
  */
-public LMGroupBasePanel getLMGroupBasePanel() 
+public LMGroupBaseWizardPanel getLMGroupBasePanel() 
 {
 	if( lmGroupBasePanel == null )
-		lmGroupBasePanel = new LMGroupBasePanel( true );
+		lmGroupBasePanel = new LMGroupBaseWizardPanel( true );
 	
 	return lmGroupBasePanel;
 }

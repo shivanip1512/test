@@ -381,6 +381,7 @@ private javax.swing.JTextField getJTextFieldMarkIndex() {
 			ivjJTextFieldMarkIndex.setPreferredSize(new java.awt.Dimension(39, 20));
 			ivjJTextFieldMarkIndex.setMinimumSize(new java.awt.Dimension(39, 20));
 			// user code begin {1}
+			ivjJTextFieldMarkIndex.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0, 9999) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -403,6 +404,7 @@ private javax.swing.JTextField getJTextFieldSpaceIndex() {
 			ivjJTextFieldSpaceIndex.setPreferredSize(new java.awt.Dimension(39, 20));
 			ivjJTextFieldSpaceIndex.setMinimumSize(new java.awt.Dimension(39, 20));
 			// user code begin {1}
+			ivjJTextFieldSpaceIndex.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0, 9999) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -614,7 +616,7 @@ public Object getValue(Object o)
 			digital.getLMGroupSASimple().setSpaceIndex(new Integer(getJTextFieldSpaceIndex().getText()));
 			
 	}
-	return digital;
+	return o;
 }
 
 /**

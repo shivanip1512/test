@@ -473,43 +473,42 @@ public Object getValue(Object o) {
 	
 	LMGroupGolay golay = null;
 	
-		if( o instanceof com.cannontech.database.data.multi.MultiDBPersistent )
-		{
-			golay = (LMGroupGolay)
-					com.cannontech.database.data.multi.MultiDBPersistent.getFirstObjectOfType(
-					LMGroupGolay.class,
-					(com.cannontech.database.data.multi.MultiDBPersistent)o );
-		}
-		else if( o instanceof com.cannontech.database.data.multi.SmartMultiDBPersistent )
-			golay = (LMGroupGolay)
-						((com.cannontech.database.data.multi.SmartMultiDBPersistent)o).getOwnerDBPersistent();
+	if( o instanceof com.cannontech.database.data.multi.MultiDBPersistent )
+	{
+		golay = (LMGroupGolay)
+				com.cannontech.database.data.multi.MultiDBPersistent.getFirstObjectOfType(
+				LMGroupGolay.class,
+				(com.cannontech.database.data.multi.MultiDBPersistent)o );
+	}
+	else if( o instanceof com.cannontech.database.data.multi.SmartMultiDBPersistent )
+		golay = (LMGroupGolay)
+				((com.cannontech.database.data.multi.SmartMultiDBPersistent)o).getOwnerDBPersistent();
 	
 	
-		if( o instanceof LMGroupGolay || golay != null )
-		{
-			if( golay == null )
-				golay = (LMGroupGolay) o;
-			
-			
-			//some annoying checks to verify that the user hasn't messed up the six digit address
-			StringBuffer opAddress = new StringBuffer();
-			if(getOpAddressJTextField1().getText().length() < 2)
-				opAddress.append( (getOpAddressJTextField1().getText().length()==0 ? "00" : "0") );
-			opAddress.append(getOpAddressJTextField1().getText());
+	if( o instanceof LMGroupGolay || golay != null )
+	{
+		if( golay == null )
+			golay = (LMGroupGolay) o;
+		
+		//some annoying checks to verify that the user hasn't messed up the six digit address
+		StringBuffer opAddress = new StringBuffer();
+		if(getOpAddressJTextField1().getText().length() < 2)
+			opAddress.append( (getOpAddressJTextField1().getText().length()==0 ? "00" : "0") );
+		opAddress.append(getOpAddressJTextField1().getText());
 
-			if(getOpAddressJTextField2().getText().length() < 2)
-				opAddress.append( (getOpAddressJTextField2().getText().length()==0 ? "00" : "0") );
-			opAddress.append(getOpAddressJTextField2().getText());
+		if(getOpAddressJTextField2().getText().length() < 2)
+			opAddress.append( (getOpAddressJTextField2().getText().length()==0 ? "00" : "0") );
+		opAddress.append(getOpAddressJTextField2().getText());
 
-			if(getOpAddressJTextField3().getText().length() < 2)
-				opAddress.append( (getOpAddressJTextField3().getText().length()==0 ? "00" : "0") );
-			opAddress.append(getOpAddressJTextField3().getText());
+		if(getOpAddressJTextField3().getText().length() < 2)
+			opAddress.append( (getOpAddressJTextField3().getText().length()==0 ? "00" : "0") );
+		opAddress.append(getOpAddressJTextField3().getText());
 
-			golay.getLMGroupSASimple().setOperationalAddress(opAddress.toString());			
-			golay.getLMGroupSASimple().setNominalTimeout(com.cannontech.common.util.CtiUtilities.getIntervalSecondsValueFromDecimal((String)getJComboBoxNominalTimeout().getSelectedItem()));
+		golay.getLMGroupSASimple().setOperationalAddress(opAddress.toString());			
+		golay.getLMGroupSASimple().setNominalTimeout(com.cannontech.common.util.CtiUtilities.getIntervalSecondsValueFromDecimal((String)getJComboBoxNominalTimeout().getSelectedItem()));
 						
-		}
-	return golay;
+	}
+	return o;
 }
 
 /**
