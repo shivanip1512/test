@@ -96,7 +96,7 @@ function setEnabled(form, checked, idx) {
               </table>
             </div>
 			
-			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
+			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager">
 			  <input type="hidden" name="action" value="AssignSelectionList">
 			  <input type="hidden" name="ListName" value="<%= listName %>">
 			  <input type="hidden" name="NewList" value="<%= newList %>">

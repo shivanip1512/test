@@ -77,7 +77,7 @@
               </table>
             </div>
 			
-			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
+			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager">
 			  <input type="hidden" name="action" value="ImportStarsData">
 			  <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount.jsp">
               <table width="300" border="0" cellspacing="0" cellpadding="3" align="center" class="MainText">
