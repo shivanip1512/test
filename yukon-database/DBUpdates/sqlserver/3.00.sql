@@ -1437,48 +1437,6 @@ insert into fdrinterfaceoption values(18, 'Point ID', 2, 'Text', '(none)');
 
 update fdrinterfaceoption set OptionValues='PSEUDO,REAL,CALCULATED' where interfaceid=2 and optionlabel='Category';
 
-
-
-create table TOUSchedule (
-TOUScheduleID        numeric              not null,
-TOUScheduleName      varchar(32)          not null
-);
-go
-alter table TOUSchedule
-   add constraint PK_TOUSCHEDULE primary key  (TOUScheduleID);
-go
-
-create table TOUDeviceMapping (
-TOUScheduleID        numeric              not null,
-DeviceID             numeric              not null
-);
-go
-alter table TOUDeviceMapping
-   add constraint PK_TOUDEVICEMAPPING primary key  (TOUScheduleID, DeviceID);
-go
-alter table TOUDeviceMapping
-   add constraint FK_TOU_Dev foreign key (DeviceID)
-      references DEVICE (DEVICEID);
-go
-alter table TOUDeviceMapping
-   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
-      references TOUSchedule (TOUScheduleID);
-go
-
-create table TOURateOffset (
-TOUScheduleID        numeric              not null,
-SwitchRate           varchar(4)           not null,
-SwitchOffset         numeric              not null
-);
-go
-alter table TOURateOffset
-   add constraint PK_TOURATEOFFSET primary key  (TOUScheduleID, SwitchOffset);
-go
-alter table TOURateOffset
-   add constraint FK_TOUr_TOUSc foreign key (TOUScheduleID)
-      references TOUSchedule (TOUScheduleID);
-go
-
 create table DynamicLMControlHistory (
 PAObjectID           numeric              not null,
 LMCtrlHistID         numeric              not null,
@@ -1502,6 +1460,78 @@ alter table DynamicLMControlHistory
    add constraint FK_DYNLMCNT_PAO foreign key (PAObjectID)
       references YukonPAObject (PAObjectID);
 go
+
+
+create table TOUSchedule (
+TOUScheduleID        numeric              not null,
+TOUScheduleName      varchar(32)          not null,
+TOUDefaultRate       varchar(8)           not null
+);
+go
+alter table TOUSchedule
+   add constraint PK_TOUSCHEDULE primary key  (TOUScheduleID);
+go
+
+create table TOUDay (
+TOUDayID             numeric              not null,
+SwitchRate           varchar(4)           not null,
+SwitchOffset         numeric              not null
+);
+go
+alter table TOUDay
+   add constraint PK_TOUDAY primary key  (TOUDayID);
+go
+
+create table TOUDayMapping (
+TOUScheduleID        numeric              not null,
+TOUDayID             numeric              not null,
+TOUDayOffset         numeric              not null
+);
+go
+alter table TOUDayMapping
+   add constraint PK_TOUDAYMAPPING primary key  (TOUScheduleID, TOUDayID);
+go
+alter table TOUDayMapping
+   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID);
+go
+alter table TOUDayMapping
+   add constraint FK_TOUm_TOUd foreign key (TOUDayID)
+      references TOUDay (TOUDayID);
+go
+
+alter table MCTConfig add DisplayDigits numeric;
+go
+update MCTConfig set DisplayDigits = 0;
+go
+alter table MCTConfig alter column DisplayDigits numeric not null;
+go
+
+create table DeviceMCT400Series (
+DeviceID             numeric              not null,
+DisconnectAddress    numeric              not null,
+TOUScheduleID        numeric              not null
+);
+go
+alter table DeviceMCT400Series
+   add constraint PK_DEV400S primary key  (DeviceID);
+go
+alter table DeviceMCT400Series
+   add constraint FK_Dev4_DevC foreign key (DeviceID)
+      references DEVICECARRIERSETTINGS (DEVICEID);
+go
+alter table DeviceMCT400Series
+   add constraint FK_Dev4_TOU foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID);
+go
+
+update yukonpaobject set type = 'MCT-410IL' where type like '%410%';
+
+
+
+
+
+
 
 
 
