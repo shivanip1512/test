@@ -996,8 +996,26 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                     CtiLMGroupBase* currentGroup = (CtiLMGroupBase*)lmGroups[l];
                     if( currentGroup->getHoursDailyPointId() == pointID )
                     {
-                        currentGroup->setCurrentHoursDaily(value);
-                        currentControlArea->setUpdatedFlag(TRUE);
+                        RWTime now;
+                        struct tm now_tm, timestamp_tm;
+
+                        now.extract(&now_tm);
+                        timestamp.extract(&timestamp_tm);
+
+                        long nowDaysSince1900 = (now_tm.tm_year*365) + now_tm.tm_yday;
+                        long timestampDaysSince1900 = (timestamp_tm.tm_year*365) + timestamp_tm.tm_yday;
+
+                        if( nowDaysSince1900 == timestampDaysSince1900  )
+                        {//i.e. is this daily control history from today or from some previous day
+                            currentGroup->setCurrentHoursDaily(value);
+                            currentControlArea->setUpdatedFlag(TRUE);
+                        }
+                        else
+                        {
+                            if( currentGroup->getCurrentHoursDaily() != 0 )
+                                currentControlArea->setUpdatedFlag(TRUE);
+                            currentGroup->setCurrentHoursDaily(0.0);
+                        }
                     }
                     if( currentGroup->getHoursMonthlyPointId() == pointID )
                     {
