@@ -308,19 +308,7 @@ public String[] getAllPoolsStrings()
    		
 		try
 		{
-			InputStream is = PoolManager.class.getResourceAsStream( DB_PROPERTIES_FILE );
-
-			if( is == null ) //not in CLASSPATH, check catalina
-			{
-				File f = new File( DB_BASE + DB_PROPERTIES_FILE);
-				is = new FileInputStream( DB_BASE + DB_PROPERTIES_FILE );
-
-				CTILogger.info( " Searching for db.properties in : " + f.getAbsolutePath() );
-				CTILogger.info( "   catalina.base = " + DB_BASE );
-//				CTILogger.info( " Con = " + f.getCanonicalPath() );
-//				CTILogger.info( " ppp = " + f.getPath() );
-			}
-			
+			InputStream is = getDBInputStream();
 
 			props = new Properties();
 			props.load(is);
@@ -352,6 +340,11 @@ public String[] getAllPoolsStrings()
 			{
 				File f = new File( DB_BASE + DB_PROPERTIES_FILE);
 				is = new FileInputStream( DB_BASE + DB_PROPERTIES_FILE );
+				
+				CTILogger.info( " Searching for db.properties in : " + f.getAbsolutePath() );
+				CTILogger.info( "   catalina.base = " + DB_BASE );
+//				CTILogger.info( " Con = " + f.getCanonicalPath() );
+//				CTILogger.info( " ppp = " + f.getPath() );				
 			}
 			
 		 }
