@@ -290,8 +290,8 @@ public GraphDefinition getGraphDefinition()
  */
 public void setGraphDefinition(GraphDefinition newGraphDefinition)
 {
+	graphDefinition = newGraphDefinition;
 	setUpdateTrend(true);
-	graphDefinition = newGraphDefinition;	
 }
 
 /**
@@ -299,10 +299,13 @@ public void setGraphDefinition(GraphDefinition newGraphDefinition)
  * Creates a GraphDefinition and calls setGraphDefinition(GraphDefinition)
  * @param graphDefinitionID int values of the GraphDefinition
  */
-public void setGraphDefinition(com.cannontech.database.data.lite.LiteGraphDefinition liteGraphDefinitionID)
+public void setGraphDefinition(com.cannontech.database.data.lite.LiteGraphDefinition liteGraphDefinition)
 {
-	GraphDefinition tempGraphDefinition = (GraphDefinition)com.cannontech.database.cache.functions.DBPersistentFuncs.retrieve(liteGraphDefinitionID);
-	setGraphDefinition(tempGraphDefinition);
+	if( liteGraphDefinition != null)
+	{
+		GraphDefinition tempGraphDefinition = (GraphDefinition)com.cannontech.database.cache.functions.DBPersistentFuncs.retrieve(liteGraphDefinition);
+		setGraphDefinition(tempGraphDefinition);
+	}
 }
 
 /**
@@ -312,8 +315,11 @@ public void setGraphDefinition(com.cannontech.database.data.lite.LiteGraphDefini
  */
 public void setGraphDefinition(int newGraphDefinitionID)
 {
-	com.cannontech.database.data.lite.LiteGraphDefinition liteGraphDef = com.cannontech.database.cache.functions.GraphFuncs.getLiteGraphDefinition(newGraphDefinitionID);
-	setGraphDefinition(liteGraphDef);
+	if( newGraphDefinitionID > 0)
+	{
+		com.cannontech.database.data.lite.LiteGraphDefinition liteGraphDef = com.cannontech.database.cache.functions.GraphFuncs.getLiteGraphDefinition(newGraphDefinitionID);
+		setGraphDefinition(liteGraphDef);
+	}
 }
 
 /**
