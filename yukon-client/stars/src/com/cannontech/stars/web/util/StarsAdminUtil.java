@@ -697,20 +697,222 @@ public class StarsAdminUtil {
 		}
 	}
 	
+	private static String getReferenceColumn(String listName) {
+		if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE))
+			return "VoltageID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE))
+			return "LMHardwareTypeID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE))
+			return "CallTypeID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE))
+			return "WorkTypeID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER))
+			return "ManufactureID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION))
+			return "LocationID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL))
+			return "ChanceOfControlID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_RESIDENCE_TYPE))
+			return "ResidenceTypeID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_CONSTRUCTION_MATERIAL))
+			return "ConstructionMaterialID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DECADE_BUILT))
+			return "DecadeBuiltID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_SQUARE_FEET))
+			return "SquareFeetID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_INSULATION_DEPTH))
+			return "InsulationDepthID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_GENERAL_CONDITION))
+			return "GeneralConditionID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_COOLING_SYSTEM))
+			return "MainCoolingSystemID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_HEATING_SYSTEM))
+			return "MainHeatingSystemID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_NUM_OF_OCCUPANTS))
+			return "NumberOfOccupantsID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_OWNERSHIP_TYPE))
+			return "OwnershipTypeID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_FUEL_TYPE))
+			return "MainFuelTypeID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_AC_TONNAGE))
+			return "TonnageID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_AC_TYPE))
+			return "TypeID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_WH_NUM_OF_GALLONS))
+			return "NumberOfGallonsID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_WH_ENERGY_SOURCE))
+			return "EnergySourceId";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_WH_LOCATION))
+			return null;
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DF_SECONDARY_SOURCE))
+			return "SecondaryEnergySourceID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DF_SWITCH_OVER_TYPE))
+			return "SwitchOverTypeID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_GRAIN_DRYER_TYPE))
+			return "DryerTypeID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_GD_BIN_SIZE))
+			return "BinSizeID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_GD_ENERGY_SOURCE))
+			return "BlowerEnergySourceID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_GD_HEAT_SOURCE))
+			return "BlowerHeatSourceID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_GD_HORSE_POWER))
+			return "BlowerHorsePowerID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_HEAT_TYPE))
+			return "StorageTypeID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_SIZE))
+			return "PumpSizeID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_TYPE))
+			return "PumpTypeID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_HP_STANDBY_SOURCE))
+			return "StandbySourceID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_IRR_ENERGY_SOURCE))
+			return "EnergySourceID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_IRR_HORSE_POWER))
+			return "HorsePowerID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_IRR_METER_LOCATION))
+			return "MeterLocationID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_IRR_METER_VOLTAGE))
+			return "MeterVoltageID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_IRR_SOIL_TYPE))
+			return "SoilTypeID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_IRRIGATION_TYPE))
+			return "IrrigationTypeID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_MFG))
+			return "TransferSwitchMfgID";
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_TYPE))
+			return "TransferSwitchTypeID";
+		return null;
+	}
+	
+	private static String[] getReferenceTableConstraint(String listName) {
+		if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE))
+			return new String[] {
+				"InventoryBase",
+				"InventoryID IN (SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID = ?)"
+			};
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE))
+			return new String[] {
+				"LMHardwareBase",
+				"InventoryID IN (SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID = ?)"
+			};
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE))
+			return new String[] {
+				"CallReportBase",
+				"AccountID IN (SELECT AccountID FROM ECToAccountMapping WHERE EnergyCompanyID = ?)"
+			};
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE))
+			return new String[] {
+				"WorkOrderBase",
+				"OrderID IN (SELECT WorkOrderID FROM ECToWorkOrderMapping WHERE EnergyCompanyID = ?)"
+			};
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION))
+			return new String[] {
+				"ApplianceBase",
+				"AccountID IN (SELECT AccountID FROM ECToAccountMapping WHERE EnergyCompanyID = ?)"
+			};
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL))
+			return new String[] {
+				"LMProgramWebPublishing",
+				"ApplianceCategoryID IN (SELECT ItemID FROM ECToGenericMapping " +
+					"WHERE MappingCategory = 'ApplianceCategory' AND EnergyCompanyID = ?)"
+			};
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_RESIDENCE_TYPE)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_CONSTRUCTION_MATERIAL)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DECADE_BUILT)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_SQUARE_FEET)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_INSULATION_DEPTH)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_GENERAL_CONDITION)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_COOLING_SYSTEM)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_HEATING_SYSTEM)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_NUM_OF_OCCUPANTS)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_OWNERSHIP_TYPE)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_FUEL_TYPE))
+			return new String[] {
+				"CustomerResidence",
+				"AccountSiteID IN (SELECT AccountSiteID FROM CustomerAccount acc, ECToAccountMapping map " +
+					"WHERE acc.AccountID = map.AccountID AND map.EnergyCompanyID = ?)"
+			};
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_AC_TONNAGE)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_AC_TYPE))
+			return new String[] {
+				"ApplianceAirConditioner",
+				"ApplianceID IN (SELECT ApplianceID FROM ApplianceBase app, ECToAccountMapping map " +
+					"WHERE app.AccountID = map.AccountID AND map.EnergyCompanyID = ?)"
+			};
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_WH_NUM_OF_GALLONS)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_WH_ENERGY_SOURCE)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_WH_LOCATION))
+			return new String[] {
+				"ApplianceWaterHeater",
+				"ApplianceID IN (SELECT ApplianceID FROM ApplianceBase app, ECToAccountMapping map " +
+					"WHERE app.AccountID = map.AccountID AND map.EnergyCompanyID = ?)"
+			};
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DF_SECONDARY_SOURCE)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DF_SWITCH_OVER_TYPE))
+			return new String[] {
+				"ApplianceDualFuel",
+				"ApplianceID IN (SELECT ApplianceID FROM ApplianceBase app, ECToAccountMapping map " +
+					"WHERE app.AccountID = map.AccountID AND map.EnergyCompanyID = ?)"
+			};
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_GRAIN_DRYER_TYPE)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_GD_BIN_SIZE)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_GD_ENERGY_SOURCE)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_GD_HEAT_SOURCE)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_GD_HORSE_POWER))
+			return new String[] {
+				"ApplianceGrainDryer",
+				"ApplianceID IN (SELECT ApplianceID FROM ApplianceBase app, ECToAccountMapping map " +
+					"WHERE app.AccountID = map.AccountID AND map.EnergyCompanyID = ?)"
+			};
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_HEAT_TYPE))
+			return new String[] {
+				"ApplianceStorageHeat",
+				"ApplianceID IN (SELECT ApplianceID FROM ApplianceBase app, ECToAccountMapping map " +
+					"WHERE app.AccountID = map.AccountID AND map.EnergyCompanyID = ?)"
+			};
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_SIZE)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_TYPE)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_HP_STANDBY_SOURCE))
+			return new String[] {
+				"ApplianceHeatPump",
+				"ApplianceID IN (SELECT ApplianceID FROM ApplianceBase app, ECToAccountMapping map " +
+					"WHERE app.AccountID = map.AccountID AND map.EnergyCompanyID = ?)"
+			};
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_IRR_ENERGY_SOURCE)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_IRR_HORSE_POWER)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_IRR_METER_LOCATION)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_IRR_METER_VOLTAGE)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_IRR_SOIL_TYPE)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_IRRIGATION_TYPE))
+			return new String[] {
+				"ApplianceIrrigation",
+				"ApplianceID IN (SELECT ApplianceID FROM ApplianceBase app, ECToAccountMapping map " +
+					"WHERE app.AccountID = map.AccountID AND map.EnergyCompanyID = ?)"
+			};
+		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_MFG)
+			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_TYPE))
+			return new String[] {
+				"ApplianceGenerator",
+				"ApplianceID IN (SELECT ApplianceID FROM ApplianceBase app, ECToAccountMapping map " +
+					"WHERE app.AccountID = map.AccountID AND map.EnergyCompanyID = ?)"
+			};
+		return null;
+	}
+	
 	public static void updateListEntryReferences(LiteStarsEnergyCompany energyCompany, YukonSelectionList newList)
 		throws WebClientException, java.sql.SQLException
 	{
-		String sql1 = null;
-		String sql2 = null;
-		if (newList.getListName().equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE)) {
-			sql1 = "SELECT DISTINCT LMHardwareTypeID FROM LMHardwareBase WHERE InventoryID IN " +
-				"(SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID = ?)";
-			sql2 = "UPDATE LMHardwareBase SET LMHardwareTypeID = ? WHERE LMHardwareTypeID = ? AND InventoryID IN " +
-				"(SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID = ?)";
-		}
+		String columnName = getReferenceColumn( newList.getListName() );
+		if (columnName == null) return;
 		
-		if (sql1 == null || sql2 == null)
-			throw new WebClientException("How to update references to selection list \"" + newList.getListName() + "\" has not been defined yet");
+		String[] res = getReferenceTableConstraint( newList.getListName() );
+		String tableName = res[0];
+		String constraint = res[1];
+		
+		String sql1 = "SELECT DISTINCT " + columnName + " FROM " + tableName + " WHERE " + constraint;
+		String sql2 = "UPDATE " + tableName + " SET " + columnName + " = ? WHERE " + columnName + " = ? AND " + constraint;
 		
 		Hashtable entryIDMap = new Hashtable();
 		
