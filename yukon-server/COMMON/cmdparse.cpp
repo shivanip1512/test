@@ -542,7 +542,7 @@ void  CtiCommandParser::doParseGetStatus(const RWCString &CmdStr)
     RWCString   temp2;
     RWCString   token;
 
-    RWCRExpr   re_lp("lp");
+    RWCRExpr   re_lp("lp( +channel +[0-9]+)?");
     RWCRExpr   re_disc("disc");
     RWCRExpr   re_erro("err");
     RWCRExpr   re_pfco("powerf");
@@ -566,7 +566,13 @@ void  CtiCommandParser::doParseGetStatus(const RWCString &CmdStr)
     {
         if(!(token = CmdStr.match(re_lp)).isNull())
         {
-            flag |= CMD_FLAG_GS_LOADSURVEY;
+            flag |= CMD_FLAG_GS_LOADPROFILE;
+
+            //  was an offset specified?
+            if(!(temp2 = token.match(re_num)).isNull())
+            {
+                _cmd["loadprofile_offset"] = atoi(temp2.data());
+            }
         }
         else if(!(token = CmdStr.match(re_disc)).isNull())      // Sourcing from CmdStr, which is the entire command string.
         {
