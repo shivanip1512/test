@@ -175,7 +175,7 @@ public class SVGGenerator {
 			if( comp instanceof DynamicGraphElement ) {
 				elem = createDynamicGraph(doc, (DynamicGraphElement) comp);
 			}
-			else
+			else 
 			if( comp instanceof CurrentAlarmsTable ) {
 				elem = createAlarmsTable(doc, (CurrentAlarmsTable) comp);
 			}
@@ -311,44 +311,47 @@ public class SVGGenerator {
 
 		return lineElem;		
 	}
-	
+		
 	private Element createDynamicGraph(SVGDocument doc, DynamicGraphElement graph) {
-			
+	
 		Rectangle2D r = graph.getBounds2D();
 		int x = (int) r.getMinX();
 		int y = (int) r.getMinY();
 		
 		int width = (int) r.getMaxX() - x;
 		int height = (int) r.getMaxY() - y;
-			
-		Element retElement = null;
 		
-		SVGGraphics2D svgGenerator = new SVGGraphics2D(doc);
-		graph.getCTIGraph().getFreeChart().draw(svgGenerator, new Rectangle(width, height));
-		retElement = svgGenerator.getRoot();
+		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM/dd/yy"); 
 		
-		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM/dd/yy");
-			
-		retElement.setAttributeNS(null, "x", Integer.toString(x));
-		retElement.setAttributeNS(null, "y", Integer.toString(y));
-		retElement.setAttributeNS(null, "width", Integer.toString(width));
-		retElement.setAttributeNS(null, "height", Integer.toString(height));			
-		retElement.setAttributeNS(null, "object", "graph");
-		retElement.setAttributeNS(null, "gdefid", Integer.toString(graph.getGraphDefinitionID()));
-		retElement.setAttributeNS(null, "view", Integer.toString(graph.getTrendType()));
-		retElement.setAttributeNS(null, "format", "svg");
-		retElement.setAttributeNS(null, "db", CtiUtilities.getDatabaseAlias());
-		retElement.setAttributeNS(null, "loadfactor", "false");
-		retElement.setAttributeNS(null, "start", dateFormat.format(graph.getCurrentStartDate()));
-		retElement.setAttributeNS(null, "period", graph.getDisplayPeriod());
+		Element imgElem = doc.createElementNS(svgNS, "image");
+ 
+		imgElem.setAttributeNS(null, "id", Integer.toString(graph.getGraphDefinitionID()));
+		if(genOptions.isStaticSVG()) {
+			imgElem.setAttributeNS(xlinkNS, "xlink:href", Util.genExportedGraphName(graph));
+		}
+		else {
+			imgElem.setAttributeNS(xlinkNS, "xlink:href", "/servlet/GraphGenerator?gdefid=" + graph.getGraphDefinitionID() + "&view=" + graph.getTrendType() + "&width=" + width + "&height=" + height + "&format=png&start=" + dateFormat.format(graph.getCurrentStartDate()) + "&period=" + graph.getDisplayPeriod());
+		}
+		imgElem.setAttributeNS(null, "x", Integer.toString(x));
+		imgElem.setAttributeNS(null, "y", Integer.toString(y));
+		imgElem.setAttributeNS(null, "width", Integer.toString(width));
+		imgElem.setAttributeNS(null, "height", Integer.toString(height));
+		imgElem.setAttributeNS(null, "object", "graph");
+		imgElem.setAttributeNS(null, "gdefid", Integer.toString(graph.getGraphDefinitionID()));
+		imgElem.setAttributeNS(null, "view", Integer.toString(graph.getTrendType()));
+		imgElem.setAttributeNS(null, "format", "png");
+		imgElem.setAttributeNS(null, "db", CtiUtilities.getDatabaseAlias());
+		imgElem.setAttributeNS(null, "loadfactor", "false");
+		imgElem.setAttributeNS(null, "start", dateFormat.format(graph.getCurrentStartDate()));
+		imgElem.setAttributeNS(null, "period", graph.getDisplayPeriod());
+
 		if(genOptions.isScriptingEnabled()) {
-			retElement.setAttributeNS(null, "onclick", "updateGraphChange(evt)");
+			imgElem.setAttributeNS(null, "onclick", "updateGraphChange(evt)");
 		}
 		
-		return retElement;
+		return imgElem; 	 		
 	}
 	
-
 	private Element createStaticImage(SVGDocument doc, StaticImage img) {
 		Rectangle2D r = img.getBounds2D();
 		int x = (int) r.getMinX();
@@ -377,7 +380,7 @@ public class SVGGenerator {
 		String imgName = img.getImageName();
 
 		Element imgElem = doc.createElementNS(svgNS, "image");
-		imgElem.setAttributeNS(null, "id", Integer.toString(img.getPoint().getPointID()));
+		imgElem.setAttributeNS(null, "id", Integer.toString(img.getPointID()));
 		imgElem.setAttributeNS(xlinkNS, "xlink:href", imgName);
 		imgElem.setAttributeNS(null, "x", Integer.toString(x));
 		imgElem.setAttributeNS(null, "y", Integer.toString(y));
