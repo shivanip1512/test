@@ -1,6 +1,11 @@
 package com.cannontech.graph.model;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.Rectangle;
+import java.awt.TexturePaint;
+import java.awt.image.BufferedImage;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -131,7 +136,29 @@ public class TrendSerie
 	{
 		return color;
 	}
+	/**
+	 * Returns the color value.
+	 * @return java.awt.Color
+	 */
+	public Paint getTexture()
+	{
+//		Create a buffered image texture patch of size 5x5
+		BufferedImage bi = new BufferedImage(5, 5,   
+							BufferedImage.TYPE_INT_RGB);
+		Graphics2D big = bi.createGraphics();
+		// Render into the BufferedImage graphics to create the texture
+		big.setColor(Color.white);
+		big.fillRect(0,0,5,5);
+		big.setColor(color);
+		big.fillOval(0,0,4,4);
+		
+		// Create a texture paint from the buffered image
+		Rectangle r = new Rectangle(0,0,5,5);
+		TexturePaint tp = new TexturePaint(bi,r);
+		// Add the texture paint to the graphics context.
 
+		return tp;
+	}
 	/**
 	 * Returns the dataItemMap value.
 	 * @return TreeMap
