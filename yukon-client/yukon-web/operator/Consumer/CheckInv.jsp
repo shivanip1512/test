@@ -80,8 +80,19 @@
 
               <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 			    <input type="hidden" name="action" value="ConfirmCheck">
-<%
-	if (liteInv == null) {
+<%	if (request.getParameter("InOther") != null) { %>
+                <p class="ErrorMsg">The hardware or device is found in another 
+                  energy company. Please contact <%= ec.getParent().getName() %> 
+                  for more information.</p>
+                <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
+                  <tr> 
+                    <td align="center"> 
+                      <input type="button" name="OK2" value="OK" onClick="history.back()">
+                    </td>
+                  </tr>
+                </table>
+<%	}
+	else if (liteInv == null) {
 %>
                 <p class="MainText">This serial number is not found in inventory. 
                   Would you like to add it now?</p>
@@ -98,8 +109,8 @@
 <%	}
 	else if (liteInv.getInventoryID() < 0) {
 %>
-                <p class="MainText">The device for this device name is currently 
-                  not in the inventory. Would you like to add it?</p>
+                <p class="MainText">The device name is found but it's not in inventory 
+                  yet. Would you like to add it?</p>
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
                     <td width="100" align="right"> 
@@ -112,16 +123,9 @@
                 </table>
 <%	}
 	else if (liteInv.getAccountID() == com.cannontech.common.util.CtiUtilities.NONE_ID) {
-		if (liteInv instanceof LiteStarsLMHardware) {
 %>
-                <p class="MainText">The hardware for this serial number is currently 
-                  in the warehouse. Would you like to select it?</p>
-<%		}
-		else {
-%>
-                <p class="MainText">The device for this device name is currently 
-                  in the warehouse. Would you like to select it?</p>
-<%		} %>
+                <p class="MainText">The hardware or device is currently in the 
+                  warehouse. Would you like to select it?</p>
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
                     <td width="100" align="right"> 
@@ -137,17 +141,9 @@
 		LiteStarsCustAccountInformation liteAcctInfo = ec.getBriefCustAccountInfo(liteInv.getAccountID(), true);
 		LiteContact liteContact = ec.getContact(liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo);
 		LiteAddress liteAddr = ec.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
-		
-		if (liteInv instanceof LiteStarsLMHardware) {
 %>
-			    <p class="MainText">The hardware for this serial number is currently 
-                  assigned to the following account:</p>
-<%		}
-		else {
-%>
-			    <p class="MainText">The device for this device name is currently 
-                  assigned to the following account:</p>
-<%		} %>
+			    <p class="MainText">The hardware or device is currently assigned 
+                  to the following account:</p>
                 <table width="450" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
                     <td width="100" class="HeaderCell">Account #</td>
@@ -174,16 +170,9 @@
                 </table>
 <%	}
 	else {
-		if (liteInv instanceof LiteStarsLMHardware) {
 %>
-                <p class="MainText">The hardware for this serial number is already 
-                  assigned to this account.</p>
-<%		}
-		else {
-%>
-                <p class="MainText">The device for this device name is already 
-                  assigned to this account.</p>
-<%		} %>
+                <p class="ErrorMsg">The hardware or device is already assigned 
+                  to this account.</p>
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
                     <td align="center"> 
