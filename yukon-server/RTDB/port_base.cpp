@@ -514,11 +514,6 @@ INT CtiPort::connectToDevice(CtiDevice *Device, INT trace)
 
     if(connected() && !connectedTo(DeviceCRC))      // This port connected to a device, and is not connected to this device.
     {
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Connected to the wrong device! " << endl;
-        }
         disconnect(Device, trace);
     }
 
