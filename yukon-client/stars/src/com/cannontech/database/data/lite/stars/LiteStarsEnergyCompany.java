@@ -373,13 +373,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public String getAdminEmailAddress() {
-		if (getPrimaryContactID() > 0) {
-			String[] emails = ContactFuncs.getAllEmailAddresses( getPrimaryContactID() );
-			if (emails.length > 0)
-				return emails[0];
-		}
+		String adminEmail = getEnergyCompanySetting( EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
+		if (adminEmail == null || adminEmail.trim().length() == 0)
+			adminEmail = ServerUtils.ADMIN_EMAIL_ADDRESS;
 		
-		return ServerUtils.ADMIN_EMAIL_ADDRESS;
+		return adminEmail;
 	}
 
 	/**

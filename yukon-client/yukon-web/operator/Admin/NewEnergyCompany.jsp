@@ -15,6 +15,14 @@
 		Collections.sort(groups, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
 		yukonGroups = new ArrayList(groups);
 	}
+	
+	Properties savedReq = (Properties) session.getAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
+	if (savedReq == null) savedReq = new Properties();
+	session.removeAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
+	
+	int dftRouteID = 0;
+	if (savedReq.getProperty("Route") != null)
+		dftRouteID = Integer.parseInt(savedReq.getProperty("Route"));
 %>
 <html>
 <head>
@@ -24,6 +32,14 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
 function validate(form) {
+	if (form.CompanyName.value == "") {
+		alert("Company name cannot be empty");
+		return false;
+	}
+	if (form.OperatorGroup.value == "") {
+		alert("Operator groups cannot be empty");
+		return false;
+	}
 	if (form.Username.value == "") {
 		alert("Username of default operator login cannot be empty");
 		return false;
@@ -112,21 +128,21 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Company Name:</td>
                               <td width="75%"> 
-                                <input type="text" name="CompanyName" size="30">
+                                <input type="text" name="CompanyName" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("CompanyName")) %>">
                                 <span class="ErrorMsg">*</span> </td>
                             </tr>
 <% if (!ECUtils.isDefaultEnergyCompany(liteEC)) { %>
                             <tr>
                               <td width="25%" align="right">&nbsp;</td>
                               <td width="75%">
-                                <input type="checkbox" name="AddMember" value="true">
+                                <input type="checkbox" name="AddMember" value="true" <% if (savedReq.getProperty("AddMember") != null) { %>checked<% } %>>
                                 Add as a member of the current energy company</td>
                             </tr>
 <% } %>
                             <tr> 
                               <td width="25%" align="right">Email:</td>
                               <td width="75%"> 
-                                <input type="text" name="Email" size="30">
+                                <input type="text" name="Email" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("Email")) %>">
                                 <font color="#FF0000">(Required for password request)</font> 
                               </td>
                             </tr>
@@ -138,12 +154,12 @@ function addCustomerGroup(form) {
                           2:</td>
                         <td width="90%" class="TableCell"><span class="ConfirmMsg">Select 
                           one or more operator groups and one or more residential 
-                          customer groups (optional):</span> 
+                          customer groups:</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
                               <td width="25%" align="right">Operator Groups:</td>
                               <td width="75%"> 
-                                <input type="text" name="OperatorGroup" size="30">
+                                <input type="text" name="OperatorGroup" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("OperatorGroup")) %>">
                                 <span class="ErrorMsg">*</span></td>
                             </tr>
                             <tr> 
@@ -165,7 +181,7 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Res. Customer Groups:</td>
                               <td width="75%"> 
-                                <input type="text" name="CustomerGroup" size="30">
+                                <input type="text" name="CustomerGroup" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("CustomerGroup")) %>">
                               </td>
                             </tr>
                             <tr> 
@@ -198,7 +214,7 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Username:</td>
                               <td width="75%"> 
-                                <input type="text" name="Username" size="30">
+                                <input type="text" name="Username" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("Username")) %>">
                                 <span class="ErrorMsg">*</span> </td>
                             </tr>
                             <tr> 
@@ -226,7 +242,7 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Username:</td>
                               <td width="75%"> 
-                                <input type="text" name="Username2" size="30">
+                                <input type="text" name="Username2" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("Username2")) %>">
                               </td>
                             </tr>
                             <tr> 
@@ -248,7 +264,7 @@ function addCustomerGroup(form) {
                         <td width="10%" align="right" class="TableCell" valign="top">Step 
                           5:</td>
                         <td width="90%" class="ConfirmMsg">Select a default route 
-                          for the energy company (If this doesn't apply to you, 
+                          for the energy company (If this does not apply to you, 
                           leave it &quot;(none)&quot;): 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
@@ -259,8 +275,9 @@ function addCustomerGroup(form) {
 <%
 	LiteYukonPAObject[] routes = PAOFuncs.getAllLiteRoutes();
 	for (int i = 0; i < routes.length; i++) {
+		String selected = (routes[i].getYukonID() == dftRouteID)? "selected" : "";
 %>
-                                  <option value="<%= routes[i].getYukonID() %>"><%= routes[i].getPaoName() %></option>
+                                  <option value="<%= routes[i].getYukonID() %>" <%= selected %>><%= routes[i].getPaoName() %></option>
 <%
 	}
 %>

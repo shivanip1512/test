@@ -643,9 +643,22 @@ public class StarsAdmin extends HttpServlet {
 				adminGroupUpdated = true;
 			}
 			
-			String optOutNotif = req.getParameter( "OptOutNotif" );
-			if (optOutNotif == null || optOutNotif.trim().length() == 0)
-				optOutNotif = CtiUtilities.STRING_NONE;
+			String adminEmail = req.getParameter( "AdminEmail" ).trim();
+			value = AuthFuncs.getRolePropValueGroup(adminGroup, EnergyCompanyRole.ADMIN_EMAIL_ADDRESS, CtiUtilities.STRING_NONE);
+			
+			if (!value.equalsIgnoreCase( adminEmail )) {
+				String sql = "UPDATE YukonGroupRole SET Value = '" + adminEmail + "'" +
+						" WHERE GroupID = " + adminGroup.getGroupID() +
+						" AND RoleID = " + EnergyCompanyRole.ROLEID +
+						" AND RolePropertyID = " + EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS;
+				com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+						sql, CtiUtilities.getDatabaseAlias() );
+				stmt.execute();
+	        	
+				adminGroupUpdated = true;
+			}
+			
+			String optOutNotif = req.getParameter( "OptOutNotif" ).trim();
 			value = AuthFuncs.getRolePropValueGroup(adminGroup, EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS, CtiUtilities.STRING_NONE);
 			
 			if (!value.equalsIgnoreCase( optOutNotif )) {
@@ -2109,6 +2122,9 @@ public class StarsAdmin extends HttpServlet {
 	}
 	
 	private void createEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		ServletUtils.saveRequest( req, session, new String[] {
+				"CompanyName", "AddMember", "Email", "OperatorGroup", "CustomerGroup", "Username", "Username2", "Route"} );
+		
 		try {
 			String warning = null;
 			LiteYukonGroup operGroup = null;
@@ -2121,7 +2137,7 @@ public class StarsAdmin extends HttpServlet {
 				
 				LiteYukonGroup group = AuthFuncs.getGroup( groupName );
 				if (group == null)
-					throw new WebClientException( "Operator group '" + groupName + "' doesn't exist");
+					throw new WebClientException( "Operator group '" + groupName + "' does not exist");
 				
 				if (i == 0)
 					operGroupIDs += String.valueOf( group.getGroupID() );
@@ -2129,6 +2145,9 @@ public class StarsAdmin extends HttpServlet {
 					operGroupIDs += "," + String.valueOf( group.getGroupID() );
 				if (i == 0) operGroup = group;
 			}
+			
+			if (operGroup == null)
+				throw new WebClientException( "You must select at least one operator group" );
 			
 			String[] custGroupNames = req.getParameter("CustomerGroup").split(",");
 			String custGroupIDs = "";
@@ -2138,7 +2157,7 @@ public class StarsAdmin extends HttpServlet {
 				
 				LiteYukonGroup group = AuthFuncs.getGroup( groupName );
 				if (group == null)
-					throw new WebClientException( "Customer group '" + groupName + "' doesn't exist");
+					throw new WebClientException( "Customer group '" + groupName + "' does not exist");
 				
 				if (i == 0)
 					custGroupIDs += String.valueOf( group.getGroupID() );
@@ -2154,8 +2173,7 @@ public class StarsAdmin extends HttpServlet {
 				throw new WebClientException( "Username of second operator login already exists" );
 			
 			// Create a privilege group with EnergyCompany and Administrator role
-			String dftOperGroupName = (operGroupNames.length > 0)?
-					operGroupNames[0] + " Admin Grp" : "Web Client Operators Admin Grp";
+			String dftOperGroupName = operGroup.getGroupName() + " Admin Grp";
 			
 			if (AuthFuncs.getGroup( dftOperGroupName ) != null) {
 				int num = 2;
