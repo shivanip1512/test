@@ -606,4 +606,17 @@ public final static boolean isTransmitter(int deviceType)
 			return false;
 	}
 }
+
+public final static boolean isVirtualDevice(int deviceType) 
+{
+	switch(deviceType)
+	{
+		case VIRTUAL_SYSTEM:
+			return true;
+	
+		default:
+			return false;
+	}
+}
+
 }
