@@ -10,10 +10,13 @@ import javax.swing.JMenuItem;
 
 import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 
+import com.cannontech.common.gui.util.CommandableMenuItem;
+
 public class HelpMenu extends javax.swing.JMenu 
 {
 	public JMenuItem helpTopicMenuItem;
 	public JMenuItem aboutMenuItem;
+	public CommandableMenuItem ptOffsetLegendMenuItem;
 
 	/**
 	 * HelpMenu constructor comment.
@@ -42,14 +45,18 @@ public class HelpMenu extends javax.swing.JMenu
 		aboutMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke( 
 														java.awt.event.KeyEvent.VK_B,
 														java.awt.Event.CTRL_MASK));
+														
+		ptOffsetLegendMenuItem = new CommandableMenuItem("Point Offset Legend");
+		ptOffsetLegendMenuItem.setFont( font );
+		ptOffsetLegendMenuItem.setMnemonic('o');
 	
 		setText("Help");
 		setFont( font );
 		setMnemonic('h');
 	
 		add( helpTopicMenuItem );
-		add( aboutMenuItem );
-		
+		add(ptOffsetLegendMenuItem);	
+		add( aboutMenuItem );	
 		
 
 		/* 

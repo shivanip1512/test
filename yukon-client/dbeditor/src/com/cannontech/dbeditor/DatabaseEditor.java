@@ -316,7 +316,7 @@ public void actionPerformed(ActionEvent event)
 	{
 		executeDefaultButton_ActionPerformed(event);
 	}
-	else if ( item == toolsMenu.ptOffsetLegendMenuItem )
+	else if ( item == helpMenu.ptOffsetLegendMenuItem )
 	{
 		executePointOffsetLegend_ActionPerformed( event );
 	}

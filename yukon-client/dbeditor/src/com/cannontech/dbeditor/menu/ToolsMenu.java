@@ -13,7 +13,6 @@ public class ToolsMenu extends javax.swing.JMenu
 
 	public CommandableMenuItem regenerateMenuItem;
 	public CommandableMenuItem defaultMenuItem;
-	public CommandableMenuItem ptOffsetLegendMenuItem;
 
 	/**
 	 * ToolsMenu constructor comment.
@@ -43,15 +42,10 @@ public class ToolsMenu extends javax.swing.JMenu
 	   defaultMenuItem.setFont( font );
 		defaultMenuItem.setMnemonic('d');
 
-		ptOffsetLegendMenuItem = new CommandableMenuItem("Point Offset Legend...");
-		ptOffsetLegendMenuItem.setFont( font );
-		ptOffsetLegendMenuItem.setMnemonic('o');
-
 		setText("Tools");
 		setFont(font);
 		setMnemonic('t');
 		add(regenerateMenuItem);
 		add(defaultMenuItem);
-		add(ptOffsetLegendMenuItem);
 	}
 }
