@@ -62,7 +62,7 @@
 	StarsServiceCompanies companies = null;
 	StarsCustomerFAQs customerFAQs = null;
 	StarsExitInterviewQuestions exitQuestions = null;
-	StarsDefaultThermostatSettings dftThermoSettings = null;
+	StarsDefaultThermostatSettings[] allDftThermoSettings = null;
 	
 	Hashtable selectionListTable = null;
 	
@@ -108,7 +108,7 @@
 			companies = ecSettings.getStarsServiceCompanies();
 			customerFAQs = ecSettings.getStarsCustomerFAQs();
 			exitQuestions = ecSettings.getStarsExitInterviewQuestions();
-			dftThermoSettings = ecSettings.getStarsDefaultThermostatSettings();
+			allDftThermoSettings = ecSettings.getStarsDefaultThermostatSettings();
 		}
 		
 		selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );

@@ -31,6 +31,14 @@
 		invID = thermostat.getInventoryID();
 	}
 	
+	StarsDefaultThermostatSettings dftThermoSettings = null;
+	for (int i = 0; i < allDftThermoSettings.length; i++) {
+		if (allDftThermoSettings[i].getThermostatType().getType() == StarsThermostatTypes.BASIC_TYPE) {
+			dftThermoSettings = allDftThermoSettings[i];
+			break;
+		}
+	}
+	
 	String dayStr = request.getParameter("day");
 	StarsThermoDaySettings daySetting = null;
 	if (dayStr != null)
@@ -167,7 +175,7 @@ function prepareSubmit(form) {
 
 function switchSettings(day, mode) {
 	var form = document.form1;
-	form.REDIRECT.value = "<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule.jsp?Item=<%= itemNo %>&day=" + day + "&mode=" + mode;
+	form.REDIRECT.value = "<%= request.getRequestURI() %>?Item=<%= itemNo %>&day=" + day + "&mode=" + mode;
 	if (changed && confirm('You have made changes to the thermostat schedule. Click "Ok" to submit these changes before leaving the page, or click "Cancel" to discard them.'))
 	{
 		var form = document.form1;
@@ -314,8 +322,8 @@ MM_reloadPage(true);
 <%	if (itemNo == -1) { %>
               <table width="80%" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
-                  <td align="right" class="MainText"><a href="AllTherm.jsp" class="Link1">Change 
-                    Thermostat Selection</a></td>
+                    <td align="right" class="MainText"><a href="AllTherm.jsp" class="Link1">Change 
+                      Selected Thermostats</a></td>
                 </tr>
               </table>
 <%	} %>

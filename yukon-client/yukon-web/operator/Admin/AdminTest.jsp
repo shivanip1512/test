@@ -96,7 +96,7 @@ function confirmDeleteAllCompanies() {
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
             </div>
 			
-			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
+			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin" onsubmit="return confirmDeleteAccount(this)">
               <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
                   <td class="HeaderCell">Delete Customer Accounts</td>
@@ -111,7 +111,7 @@ function confirmDeleteAllCompanies() {
                           <input type="text" name="AcctNo" maxlength="40" size="14">
                         </td>
                         <td width="25%">
-                          <input type="submit" name="Submit" value="Submit" onclick="return confirmDeleteAccount(this.form)">
+                          <input type="submit" name="Submit" value="Submit">
                         </td>
                       </tr>
                     </table>
@@ -358,13 +358,25 @@ function confirmDeleteAllCompanies() {
                       <td><b><font color="#0000FF">Default Thermostat Settings: 
                         </font></b> 
                         <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+<%
+		for (int i = 0; i < allDftThermoSettings.length; i++) {
+			StarsThermostatTypes type = allDftThermoSettings[i].getThermostatType();
+			String url = "";
+			if (type.getType() == StarsThermostatTypes.BASIC_TYPE)
+				url = "ThermSchedule.jsp";
+			else if (type.getType() == StarsThermostatTypes.ENERGYPRO_TYPE)
+				url = "ThermSchedule2.jsp";
+%>
                           <tr> 
                             <td width="5%">&nbsp;</td>
-                            <td width="70%">Default Thermostat Schedule</td>
+                            <td width="70%"><%= type.toString() %> Thermostat Schedule</td>
                             <td width="25%"> 
-                              <input type="button" name="Edit" value="Edit" onclick="location.href = 'ThermSchedule.jsp'">
+                              <input type="button" name="Edit" value="Edit" onclick="location.href = '<%= url %>'">
                             </td>
                           </tr>
+<%
+		}
+%>
                         </table>
                         </td>
                     </tr>

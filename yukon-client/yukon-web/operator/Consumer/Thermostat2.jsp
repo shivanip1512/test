@@ -4,8 +4,15 @@
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
 	StarsInventory inventory = inventories.getStarsInventory(invNo);
 	StarsThermostatSettings thermoSettings = inventory.getLMHardware().getStarsThermostatSettings();
-
 	StarsThermostatDynamicData curSettings = thermoSettings.getStarsThermostatDynamicData();
+	
+	StarsDefaultThermostatSettings dftThermoSettings = null;
+	for (int i = 0; i < allDftThermoSettings.length; i++) {
+		if (allDftThermoSettings[i].getThermostatType().getType() == thermoSettings.getThermostatType().getType()) {
+			dftThermoSettings = allDftThermoSettings[i];
+			break;
+		}
+	}
 	
 	if (ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
 		if (request.getParameter("OmitTimeout") != null)
@@ -18,24 +25,14 @@
 		}
 	}
 	
-	StarsThermostatManualEvent lastEvent = null;
-	boolean useDefault = false;
-	if (thermoSettings.getStarsThermostatManualEventCount() > 0) {
-		lastEvent = thermoSettings.getStarsThermostatManualEvent(
-				thermoSettings.getStarsThermostatManualEventCount() - 1);
-	}
-	else {
-		lastEvent = dftThermoSettings.getStarsThermostatManualEvent(
-				dftThermoSettings.getStarsThermostatManualEventCount() - 1);
-		useDefault = true;
-	}
-	
 	int setpoint = 72;
 	int coolSetpoint = 72;
 	int heatSetpoint = 72;
 	boolean hold = false;
 	String modeStr = "";
 	String fanStr = "";
+	StarsThermostatManualEvent lastEvent = null;
+	boolean useDefault = false;
 	
 	if (curSettings != null) {
 		if (curSettings.hasCoolSetpoint())
@@ -54,6 +51,16 @@
 			fanStr = curSettings.getFan().toString();
 	}
 	else {
+		if (thermoSettings.getStarsThermostatManualEventCount() > 0) {
+			lastEvent = thermoSettings.getStarsThermostatManualEvent(
+					thermoSettings.getStarsThermostatManualEventCount() - 1);
+		}
+		else {
+			lastEvent = dftThermoSettings.getStarsThermostatManualEvent(
+					dftThermoSettings.getStarsThermostatManualEventCount() - 1);
+			useDefault = true;
+		}
+		
 		if (lastEvent.getThermostatManualOption().getTemperature() != -1) {
 			setpoint = lastEvent.getThermostatManualOption().getTemperature();
 			hold = lastEvent.getThermostatManualOption().getHold();
@@ -313,15 +320,15 @@ function prepareSubmit() {
                 <td width="25">&nbsp;</td>
                 <td width="597" class="TableCell">Please use the thermostat below 
                   to temporarily change your current settings. To adjust your 
-                  thermostat's programming, please click the Schedule link at 
-                  the left.</td>
+                  thermostat's programming, please click the <%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule") %> 
+                  link in the pop-up menu of the thermostat.</td>
               </tr>
             </table>
             <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="prepareSubmit()">
               <input type="hidden" name="action" value="UpdateThermostatOption">
 			  <input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
-              <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Thermostat2.jsp?InvNo=<%= invNo %>">
-              <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Thermostat2.jsp?InvNo=<%= invNo %>">
+              <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
+              <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
               <input type="hidden" name="mode" value="">
               <input type="hidden" name="fan" value="">
               <input type="hidden" name="RunProgram" value="false">
@@ -382,7 +389,7 @@ function prepareSubmit() {
 								  
                                 <div id="LastSettings" style="display:none"> 
                                   <b>Last Settings:</b><br>
-<%	if (useDefault) { %>
+<%	if (useDefault || lastEvent == null) { %>
 									(None)
 <%	} else { %>
 									Time: <%= histDateFormat.format(lastEvent.getEventDateTime()) %><br>

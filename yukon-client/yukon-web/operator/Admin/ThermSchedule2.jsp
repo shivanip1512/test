@@ -1,46 +1,33 @@
-<%@ include file="include/StarsHeader.jsp" %>
-<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
+<%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%
-	int invNo = Integer.parseInt(request.getParameter("InvNo"));
-	StarsInventory inventory = inventories.getStarsInventory(invNo);
-	StarsThermostatSettings thermoSettings = inventory.getLMHardware().getStarsThermostatSettings();
-	
-	StarsDefaultThermostatSettings dftThermoSettings = null;
+	StarsDefaultThermostatSettings thermoSettings = null;
 	for (int i = 0; i < allDftThermoSettings.length; i++) {
-		if (allDftThermoSettings[i].getThermostatType().getType() == thermoSettings.getThermostatType().getType()) {
-			dftThermoSettings = allDftThermoSettings[i];
+		if (allDftThermoSettings[i].getThermostatType().getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
+			thermoSettings = allDftThermoSettings[i];
 			break;
 		}
 	}
+	
+	StarsDefaultThermostatSettings dftThermoSettings = SOAPServer.getDefaultEnergyCompany().getStarsDefaultThermostatSettings()[0];
 
 	String dayStr = request.getParameter("day");
-	StarsThermoDaySettings daySetting = null;
-	if (dayStr != null)
-		daySetting = StarsThermoDaySettings.valueOf(dayStr);
-	if (daySetting == null) {
-		daySetting = ServletUtils.getCurrentDay();
-		if (ServletUtils.isWeekday(daySetting))
-			daySetting = StarsThermoDaySettings.WEEKDAY;
-		dayStr = daySetting.toString();
-	}
+	if (dayStr == null) dayStr = StarsThermoDaySettings.MONDAY.toString();
+	StarsThermoDaySettings daySetting = StarsThermoDaySettings.valueOf(dayStr);
 	
 	String modeStr = request.getParameter("mode");
-	StarsThermoModeSettings modeSetting = null;
-	if (modeStr != null)
-		modeSetting = StarsThermoModeSettings.valueOf(modeStr);
-	if (modeStr == null) {
-		modeSetting = StarsThermoModeSettings.COOL;
-		modeStr = modeSetting.toString();
-	}
+	if (modeStr == null) modeStr = StarsThermoModeSettings.COOL.toString();
 	
 	boolean isCooling = modeStr.equalsIgnoreCase( StarsThermoModeSettings.COOL.toString() );
 	String visibleC = isCooling ? "visible" : "hidden";
 	String visibleH = isCooling ? "hidden" : "visible";
+	String tempUnit = "F";
 	
 	String seasonStr = null;
 	StarsThermostatSchedule coolSched = null;
 	StarsThermostatSchedule heatSched = null;
 	StarsThermostatSchedule schedule = null;
+	StarsThermostatSchedule dftCoolSched = null;
+	StarsThermostatSchedule dftHeatSched = null;
 	StarsThermostatSchedule dftSchedule = null;
 	
 	if (thermoSettings != null) {
@@ -48,25 +35,23 @@
 			StarsThermostatSeason season = thermoSettings.getStarsThermostatSeason(i);
 			if (season.getMode().getType() == StarsThermoModeSettings.COOL_TYPE) {
 				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
-					if (season.getStarsThermostatSchedule(j).getDay().toString().equalsIgnoreCase( dayStr )) {
+					if (season.getStarsThermostatSchedule(j).getDay().getType() == daySetting.getType()) {
 						coolSched = season.getStarsThermostatSchedule(j);
+						if (isCooling) schedule = coolSched;
 						break;
 					}
 				}
 			}
 			else {
 				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
-					if (season.getStarsThermostatSchedule(j).getDay().toString().equalsIgnoreCase( dayStr )) {
+					if (season.getStarsThermostatSchedule(j).getDay().getType() == daySetting.getType()) {
 						heatSched = season.getStarsThermostatSchedule(j);
+						if (!isCooling) schedule = heatSched;
 						break;
 					}
 				}
 			}
 		}
-		if (isCooling)
-			schedule = coolSched;
-		else
-			schedule = heatSched;
 	}
 	
 	if (dftThermoSettings != null) {
@@ -74,20 +59,24 @@
 			StarsThermostatSeason season = dftThermoSettings.getStarsThermostatSeason(i);
 			if (season.getMode().getType() == StarsThermoModeSettings.COOL_TYPE) {
 				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
-					if (season.getStarsThermostatSchedule(j).getDay().toString().equalsIgnoreCase( dayStr )) {
-						StarsThermostatSchedule sched = season.getStarsThermostatSchedule(j);
-						if (coolSched == null) coolSched = sched;
-						if (isCooling) dftSchedule = sched;
+					if (season.getStarsThermostatSchedule(j).getDay().getType() == daySetting.getType() ||
+						ServletUtils.isWeekday(daySetting) && season.getStarsThermostatSchedule(j).getDay().getType() == StarsThermoDaySettings.WEEKDAY_TYPE)
+					{
+						dftCoolSched = season.getStarsThermostatSchedule(j);
+						if (coolSched == null) coolSched = dftCoolSched;
+						if (isCooling) dftSchedule = dftCoolSched;
 						break;
 					}
 				}
 			}
 			else {
 				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
-					if (season.getStarsThermostatSchedule(j).getDay().toString().equalsIgnoreCase( dayStr )) {
-						StarsThermostatSchedule sched = season.getStarsThermostatSchedule(j);
-						if (heatSched == null) heatSched = sched;
-						if (!isCooling) dftSchedule = sched;
+					if (season.getStarsThermostatSchedule(j).getDay().getType() == daySetting.getType() ||
+						ServletUtils.isWeekday(daySetting) && season.getStarsThermostatSchedule(j).getDay().getType() == StarsThermoDaySettings.WEEKDAY_TYPE)
+					{
+						dftHeatSched = season.getStarsThermostatSchedule(j);
+						if (heatSched == null) heatSched = dftHeatSched;
+						if (!isCooling) dftSchedule = dftHeatSched;
 						break;
 					}
 				}
@@ -95,8 +84,6 @@
 		}
 		if (schedule == null) schedule = dftSchedule;
 	}
-	
-	char tempUnit = 'F';
 %>
 <html>
 <head>
@@ -105,6 +92,8 @@
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
+<script language="JavaScript" src ="../../JavaScript/nav_menu.js">
+</script>
 <script language="JavaScript" src ="../../JavaScript/drag.js">
 </script>
 <script language="JavaScript" src ="../../JavaScript/thermostat2.js">
@@ -149,13 +138,13 @@ function prepareSubmit(form) {
 
 function switchSettings(day, mode) {
 	var form = document.form1;
-	form.REDIRECT.value = "<%= request.getRequestURI() %>?InvNo=<%= invNo %>&day=" + day + "&mode=" + mode;
-	if (changed && confirm('You have made changes to the thermostat schedule. Click "Ok" to submit these changes before leaving the page, or click "Cancel" to discard them.'))
+	form.REDIRECT.value = "<%= request.getRequestURI() %>?day=" + day + "&mode=" + mode;
+	if (changed &&
+		confirm('You have made changes to the thermostat schedule. Click "Ok" to submit these changes before leaving the page, or click "Cancel" to discard them.'))
 	{
 		var form = document.form1;
 		prepareSubmit(form);
 		form.submit();
-		return;
 	}
 	location.href = form.REDIRECT.value;
 }
@@ -189,20 +178,46 @@ function setToDefault() {
 		<%= dftSchedule.getTime3().getHour() %>,<%= dftSchedule.getTime3().getMinute() %>,temp3C,temp3H,
 		<%= dftSchedule.getTime4().getHour() %>,<%= dftSchedule.getTime4().getMinute() %>,temp4C,temp4H
 	);
+	
+	toggleThermostat(1, true);
+	toggleThermostat(2, true);
+	toggleThermostat(3, true);
+	toggleThermostat(4, true);
 	setChanged();
 }
 
 function init() {
+<%	
+	boolean skip1 = (schedule.getTemperature1() == -1);
+	if (skip1) schedule.setTime1(dftSchedule.getTime1());
+	int ct1 = (skip1)? dftCoolSched.getTemperature1() : coolSched.getTemperature1();
+	int ht1 = (skip1)? dftHeatSched.getTemperature1() : heatSched.getTemperature1();
+	boolean skip2 = (schedule.getTemperature2() == -1);
+	if (skip2) schedule.setTime2(dftSchedule.getTime2());
+	int ct2 = (skip2)? dftCoolSched.getTemperature2() : coolSched.getTemperature2();
+	int ht2 = (skip2)? dftHeatSched.getTemperature2() : heatSched.getTemperature2();
+	boolean skip3 = (schedule.getTemperature3() == -1);
+	if (skip3) schedule.setTime3(dftSchedule.getTime3());
+	int ct3 = (skip3)? dftCoolSched.getTemperature3() : coolSched.getTemperature3();
+	int ht3 = (skip3)? dftHeatSched.getTemperature3() : heatSched.getTemperature3();
+	boolean skip4 = (schedule.getTemperature4() == -1);
+	if (skip4) schedule.setTime4(dftSchedule.getTime4());
+	int ct4 = (skip4)? dftCoolSched.getTemperature4() : coolSched.getTemperature4();
+	int ht4 = (skip4)? dftHeatSched.getTemperature4() : heatSched.getTemperature4();
+%>
 	updateLayout(
-		<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>,<%= coolSched.getTemperature1() %>,<%= heatSched.getTemperature1() %>,
-		<%= schedule.getTime2().getHour() %>,<%= schedule.getTime2().getMinute() %>,<%= coolSched.getTemperature2() %>,<%= heatSched.getTemperature2() %>,
-		<%= schedule.getTime3().getHour() %>,<%= schedule.getTime3().getMinute() %>,<%= coolSched.getTemperature3() %>,<%= heatSched.getTemperature3() %>,
-		<%= schedule.getTime4().getHour() %>,<%= schedule.getTime4().getMinute() %>,<%= coolSched.getTemperature4() %>,<%= heatSched.getTemperature4() %>
+		<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>,<%= ct1 %>,<%= ht1 %>,
+		<%= schedule.getTime2().getHour() %>,<%= schedule.getTime2().getMinute() %>,<%= ct2 %>,<%= ht2 %>,
+		<%= schedule.getTime3().getHour() %>,<%= schedule.getTime3().getMinute() %>,<%= ct3 %>,<%= ht3 %>,
+		<%= schedule.getTime4().getHour() %>,<%= schedule.getTime4().getMinute() %>,<%= ct4 %>,<%= ht4 %>
 	);
-	document.getElementById('MovingLayer1').style.display = "";
-	document.getElementById('MovingLayer2').style.display = "";
-	document.getElementById('MovingLayer3').style.display = "";
-	document.getElementById('MovingLayer4').style.display = "";
+	
+	// The wake time cannot be turned off
+	toggleThermostat(1, true);
+	toggleThermostat(2, <%= !skip2 %>);
+	toggleThermostat(3, <%= !skip3 %>);
+	toggleThermostat(4, <%= !skip4 %>);
+	
 	document.getElementById('Default').value = '<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>';
 }
 </script>
@@ -225,7 +240,7 @@ MM_reloadPage(true);
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="ConsumerImage.jpg">&nbsp;</td>
+          <td width="102" height="102" background="AdminImage.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
@@ -233,8 +248,7 @@ MM_reloadPage(true);
               </tr>
               <tr> 
 				  
-                <td width="265" height="28" valign="middle" class="PageHeader">&nbsp;&nbsp;&nbsp;Customer 
-                  Account Information&nbsp;&nbsp;</td>
+                <td width="265" height="28" valign="middle" class="PageHeader">&nbsp;&nbsp;&nbsp;Administration</td>
                   <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">
 				  	<div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -260,27 +274,23 @@ MM_reloadPage(true);
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101">
-		  <% String pageName = "ThermSchedule.jsp?InvNo=" + invNo; %>
-          <%@ include file="include/Nav.jsp" %>
-		  </td>
+          <td  valign="top" width="101">&nbsp; </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
-              
-            <div align="center">
-              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_THERM_SCHED, "THERMOSTAT - SCHEDULE"); %>
-              <%@ include file="include/InfoSearchBar.jsp" %>
+            <div align="center"> <br>
+              <span class="TitleHeader">ADMINISTRATION - DEFAULT THERMOSTAT SCHEDULE</span><br>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  
-			<form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
+			<form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/StarsAdmin" onsubmit="prepareSubmit(this)">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
-			  <input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
+			  <input type="hidden" name="InvID" value="<%= thermoSettings.getInventoryID() %>">
+			  <input type="hidden" name="type" value="<%= StarsThermostatTypes.ENERGYPRO.toString() %>">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
-			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
-			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?day=<%= dayStr %>&mode=<%= modeStr %>">
 			  <input type="hidden" name="tempval1">
 			  <input type="hidden" name="tempval2">
 			  <input type="hidden" name="tempval3">
@@ -290,63 +300,60 @@ MM_reloadPage(true);
                     <td align = "center"  valign = "bottom" class = "Background" > 
                       <table width="478" border="0" height="8" valign = "bottom" cellpadding="0" cellspacing="0" >
                         <tr> 
-                          <td class = "TableCell1" align = "left" width="54%"> 
-                            <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.WEEKDAY.toString() )) { %>
-                            <b><span class="Header2">Weekday</span></b> 
+                          <td class = "TableCell1" align = "left" width="50%"> 
+                            <% if (daySetting.getType() == StarsThermoDaySettings.MONDAY_TYPE) { %>
+                            <b><span class="Header2">Mon</span></b> 
                             <% } else { %>
-                            <a href="" class="Link2" onClick="switchSettings('<%= StarsThermoDaySettings.WEEKDAY.toString() %>', '<%= modeStr %>'); return false;">Weekday</a> 
+                            <a href="" class="Link2" onClick="switchSettings('<%= StarsThermoDaySettings.MONDAY.toString() %>', '<%= modeStr %>'); return false;">Mon</a> 
                             <% } %>
                             &nbsp;&nbsp; 
-                            <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.SATURDAY.toString() )) { %>
-                            <b><span class="Header2">Saturday</span> </b>
+                            <% if (daySetting.getType() == StarsThermoDaySettings.TUESDAY_TYPE) { %>
+                            <b><span class="Header2">Tue</span></b> 
                             <% } else { %>
-                            <a href="" class="Link2" onclick="switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>', '<%= modeStr %>'); return false;">Saturday</a> 
+                            <a href="" class="Link2" onClick="switchSettings('<%= StarsThermoDaySettings.TUESDAY.toString() %>', '<%= modeStr %>'); return false;">Tue</a> 
                             <% } %>
                             &nbsp;&nbsp; 
-                            <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.SUNDAY.toString() )) { %>
-                            <b><span class="Header2">Sunday</span></b> 
+                            <% if (daySetting.getType() == StarsThermoDaySettings.WEDNESDAY_TYPE) { %>
+                            <b><span class="Header2">Wed</span></b> 
                             <% } else { %>
-                            <a href="" class="Link2" onclick="switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeStr %>'); return false;">Sunday</a> 
+                            <a href="" class="Link2" onClick="switchSettings('<%= StarsThermoDaySettings.WEDNESDAY.toString() %>', '<%= modeStr %>'); return false;">Wed</a> 
                             <% } %>
-                          <td class = "Background" align = "right" width="46%"> 
-<%	String visibleStr = (dayStr.equalsIgnoreCase( StarsThermoDaySettings.WEEKDAY.toString() ))? "visible" : "hidden"; %>
-                            <span style="visibility:<%= visibleStr %>"> 
+                            &nbsp;&nbsp; 
+                            <% if (daySetting.getType() == StarsThermoDaySettings.THURSDAY_TYPE) { %>
+                            <b><span class="Header2">Thu</span></b> 
+                            <% } else { %>
+                            <a href="" class="Link2" onClick="switchSettings('<%= StarsThermoDaySettings.THURSDAY.toString() %>', '<%= modeStr %>'); return false;">Thu</a> 
+                            <% } %>
+                            &nbsp;&nbsp; 
+                            <% if (daySetting.getType() == StarsThermoDaySettings.FRIDAY_TYPE) { %>
+                            <b><span class="Header2">Fri</span></b> 
+                            <% } else { %>
+                            <a href="" class="Link2" onClick="switchSettings('<%= StarsThermoDaySettings.FRIDAY.toString() %>', '<%= modeStr %>'); return false;">Fri</a> 
+                            <% } %>
+                            &nbsp;&nbsp; 
+                            <% if (daySetting.getType() == StarsThermoDaySettings.SATURDAY_TYPE) { %>
+                            <b><span class="Header2">Sat</span> </b> 
+                            <% } else { %>
+                            <a href="" class="Link2" onClick="switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>', '<%= modeStr %>'); return false;">Sat</a> 
+                            <% } %>
+                            &nbsp;&nbsp; 
+                            <% if (daySetting.getType() == StarsThermoDaySettings.SUNDAY_TYPE) { %>
+                            <b><span class="Header2">Sun</span></b> 
+                            <% } else { %>
+                            <a href="" class="Link2" onClick="switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeStr %>'); return false;">Sun</a> 
+                            <% } %>
+                          <td class = "Background" align = "right" width="50%"> 
+                            <input type="checkbox" name="ApplyToWeekdays" value="true">
+                            <span class="TableCell1">Apply to weekdays </span> 
                             <input type="checkbox" name="ApplyToWeekend" value="true">
-                            <span class="TableCell1">Apply settings to Saturday 
-                            and Sunday </span></span> 
-                        </tr>
+                            <span class="TableCell1">Apply to weekends </span> 
+                          </td>
+						</tr>
                       </table>
                     </td>
                 </tr>
                 <tr> 
                     <td align = "center"> 
-                      <table width="478" border="0">
-                        <tr> 
-                          <td class = "TableCell" width="71%" height="4" align = "center" valign="middle" > 
-                            <div align="left"> 
-                              <p>1) Select Cooling or Heating.<br>
-                                2) Slide thermometers to change start times.<br>
-                                3) Adjust your cooling or heating temperatures.<br>
-<%
-	String instLink = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_THERM_INSTRUCTIONS);
-	String targetStr = "target='instructions'";
-	if (ServerUtils.forceNotNone(instLink).length() == 0) {
-		instLink = "Instructions.jsp";
-		targetStr = "";
-	}
-%>
-                                <a class="Link1" href="<%= instLink %>" <%= targetStr %>>Click 
-                                for hints and details</a>. <br>
-                                <br>
-                              </p>
-                            </div>
-                          </td>
-                          <td class = "TableCell" width="29%" height="4" align = "left" valign="top" > 
-                            <i>Make temporary adjustments to your heating and 
-                            cooling system<a class="Link1" href="Thermostat.jsp?InvNo=<%= invNo %>"> 
-                            here</a>.</i> </td>
-                        </tr>
-                      </table>
                       <table width="175" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td width="68"> 
@@ -367,7 +374,7 @@ MM_reloadPage(true);
                       <table width="478" height="186" background="../../Images/ThermImages/TempBG2.gif" style="background-repeat: no-repeat" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
                           <td width="50"> 
-                            <div id="MovingLayer1" style="position:relative; width:30px; height:162px; left:0px; z-index:1; top:5px; display:none" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer2').style.left,10)-3+50,layerLeftBnd,'showTimeWake()','horizontal','MovingLayer1');setChanged()"> 
+                            <div id="MovingLayer1" style="position:relative; width:30px; height:162px; left:0px; z-index:1; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer2').style.left,10)-3+50,layerLeftBnd,'showTimeWake()','horizontal','MovingLayer1');setChanged()"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -396,7 +403,7 @@ MM_reloadPage(true);
                             </div>
                           </td>
                           <td width="50"> 
-                            <div id="MovingLayer2" style="position:relative; width:30px; height:162px; left:0px; z-index:2; top:5px; display:none" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer3').style.left,10)-3+50,parseInt(document.getElementById('MovingLayer1').style.left,10)+3-50,'showTimeLeave()','horizontal','MovingLayer2');setChanged()"> 
+                            <div id="MovingLayer2" style="position:relative; width:30px; height:162px; left:0px; z-index:2; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer3').style.left,10)-3+50,parseInt(document.getElementById('MovingLayer1').style.left,10)+3-50,'showTimeLeave()','horizontal','MovingLayer2');setChanged()"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -425,7 +432,7 @@ MM_reloadPage(true);
                             </div>
                           </td>
                           <td width="50"> 
-                            <div id="MovingLayer3" style="position:relative; width:30px; height:162px; left:0px; z-index:3; top:5px; display:none" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer4').style.left,10)-3+50,parseInt(document.getElementById('MovingLayer2').style.left,10)+3-50,'showTimeReturn()','horizontal','MovingLayer3');setChanged()"> 
+                            <div id="MovingLayer3" style="position:relative; width:30px; height:162px; left:0px; z-index:3; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer4').style.left,10)-3+50,parseInt(document.getElementById('MovingLayer2').style.left,10)+3-50,'showTimeReturn()','horizontal','MovingLayer3');setChanged()"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -453,8 +460,8 @@ MM_reloadPage(true);
                               </table>
                             </div>
                           </td>
-                          <td width="50"> 
-                            <div id="MovingLayer4" style="position:relative; width:30px; height:162px; left:0px; z-index:4; top:5px; display:none" onMouseDown = "beginDrag(event,0,0,layerRightBnd-150,parseInt(document.getElementById('MovingLayer3').style.left,10)+3-50,'showTimeSleep()','horizontal','MovingLayer4');setChanged()"> 
+                          <td> 
+                            <div id="MovingLayer4" style="position:relative; width:30px; height:162px; left:0px; z-index:4; top: 5px" onMouseDown = "beginDrag(event,0,0,layerRightBnd-150,parseInt(document.getElementById('MovingLayer3').style.left,10)+3-50,'showTimeSleep()','horizontal','MovingLayer4');setChanged()"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -482,18 +489,33 @@ MM_reloadPage(true);
                               </table>
                             </div>
                           </td>
-                          <td>&nbsp;</td>
                         </tr>
                       </table>
                       <table width="100%" border="0" height="27">
                         <tr>
-					  	  <td width="10%">&nbsp;</td> 
+					  	  <td width="10%">
+                            <div align="right">
+                              <input type="checkbox" id="WakeEnabled" onClick="toggleThermostat(1, this.checked);setChanged();" disabled name="checkbox">
+                            </div>
+                          </td> 
                           <td class = "TableCell" align = "left" width="15%"><span class = "TitleHeader">Wake (W)</span></td>
-                          <td width="10%">&nbsp;</td>
-						  <td class = "TableCell" align = "left" width="15%"><span class = "TitleHeader">Leave (L)</span> </td>
-                          <td width="10%">&nbsp;</td>
+                          <td width="10%">
+                            <div align="right">
+                              <input type="checkbox" id="LeaveEnabled" onClick="toggleThermostat(2, this.checked);setChanged();" name="checkbox2">
+                            </div>
+                          </td>
+						  <td class = "TableCell" align = "left" width="15%"><span class = "TitleHeader">Leave (L)</span></td>
+                          <td width="10%">
+                            <div align="right">
+                              <input type="checkbox" id="ReturnEnabled" onClick="toggleThermostat(3, this.checked);setChanged();" name="checkbox3">
+                            </div>
+                          </td>
 						  <td class = "TableCell" align = "left" width="15%"><span class = "TitleHeader">Return (R)</span></td>
-                          <td width="10%">&nbsp;</td>
+                          <td width="10%">
+                            <div align="right">
+                              <input type="checkbox" id="SleepEnabled" onClick="toggleThermostat(4, this.checked);setChanged();" name="checkbox4">
+                            </div>
+                          </td>
 						  <td class = "TableCell" align = "left" width="15%"><span class = "TitleHeader">Sleep (S)</span></td>
                       </tr>
                       <tr> 
@@ -501,25 +523,25 @@ MM_reloadPage(true);
                             <div align="right">Start At:</div>
                           </td>
 						  <td class = "TableCell" width="15%"> 
-                            <input id="time1" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime1().toDate()) %>" name="time1" onchange="Javascript:setChanged();timeChange(this,1);">
+                            <input id="time1" type="text" size="8" name="time1" onchange="Javascript:setChanged();timeChange(this,1);">
                         </td>
                           <td class = "TableCell" width="10%"> 
                             <div align="right">Start At: </div>
                           </td>
 						  <td class = "TableCell" width="15%"> 
-                            <input id="time2" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime2().toDate()) %>" name="time2" onchange="Javascript:setChanged();timeChange(this,2);">
+                            <input id="time2" type="text" size="8" name="time2" onchange="Javascript:setChanged();timeChange(this,2);">
                         </td>
                           <td class = "TableCell" width="10%"> 
                             <div align="right">Start At: </div>
                           </td>
 						  <td class = "TableCell" width="15%"> 
-                            <input id="time3" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime3().toDate()) %>" name="time3" onchange="Javascript:setChanged();timeChange(this,3);">
+                            <input id="time3" type="text" size="8" name="time3" onchange="Javascript:setChanged();timeChange(this,3);">
                         </td>
                           <td class = "TableCell" width="10%"> 
                             <div align="right">Start At: </div>
                           </td>
 						  <td class = "TableCell" width="15%"> 
-                            <input id="time4" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime4().toDate()) %>" name="time4" onchange="Javascript:setChanged();timeChange(this,4);">
+                            <input id="time4" type="text" size="8" name="time4" onchange="Javascript:setChanged();timeChange(this,4);">
                         </td>
                       </tr>
                     </table>
@@ -566,13 +588,16 @@ MM_reloadPage(true);
                   </td>
                 </tr>
               </table><br>
-              <table width="75%" border="0">
+              <table width="80%" border="0">
                 <tr>
-                    <td width="36%" align = "right" class = "TableCell" > 
-                      <input type="submit" name="Submit" value="Submit">
+                  <td width="35%" align = "right" class = "TableCell"> 
+                    <input type="submit" name="Submit" value="Submit">
                   </td>
-                    <td width="64%" align = "left" class = "TableCell"> 
-                      <input type="button" id="Default" value="Recommended Settings" onclick="setToDefault()">
+                  <td width="50%" align = "left" class = "TableCell"> 
+                    <input type="button" id="Default" value="Recommended Settings" onclick="setToDefault()">
+                  </td>
+                  <td width="15%" align = "right" class = "TableCell"> 
+                    <input type="button" name="Done" value="Done" onclick="location.href='AdminTest.jsp'">
                   </td>
                 </tr>
               </table>
@@ -582,12 +607,16 @@ MM_reloadPage(true);
               </p>
               <p align="center" class="MainText">&nbsp; </p>
             </div>
+			
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-        </tr>
+		  
+		  
+        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+    </tr>
       </table>
+	  
     </td>
-  </tr>
+	</tr>
 </table>
 <br>
 </body>

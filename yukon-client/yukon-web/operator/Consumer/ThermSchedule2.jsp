@@ -4,8 +4,15 @@
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
 	StarsInventory inventory = inventories.getStarsInventory(invNo);
 	StarsThermostatSettings thermoSettings = inventory.getLMHardware().getStarsThermostatSettings();
-	
 	StarsThermostatDynamicData curSettings = thermoSettings.getStarsThermostatDynamicData();
+	
+	StarsDefaultThermostatSettings dftThermoSettings = null;
+	for (int i = 0; i < allDftThermoSettings.length; i++) {
+		if (allDftThermoSettings[i].getThermostatType().getType() == thermoSettings.getThermostatType().getType()) {
+			dftThermoSettings = allDftThermoSettings[i];
+			break;
+		}
+	}
 
 	String dayStr = request.getParameter("day");
 	StarsThermoDaySettings daySetting = null;
@@ -180,7 +187,7 @@ function prepareSubmit(form) {
 
 function switchSettings(day, mode) {
 	var form = document.form1;
-	form.REDIRECT.value = "<%=request.getContextPath()%>/operator/Consumer/ThermSchedule2.jsp?InvNo=<%= invNo %>&day=" + day + "&mode=" + mode;
+	form.REDIRECT.value = "<%= request.getRequestURI() %>?InvNo=<%= invNo %>&day=" + day + "&mode=" + mode;
 	if (changed && confirm('You have made changes to the thermostat schedule. Click "Ok" to submit these changes before leaving the page, or click "Cancel" to discard them.'))
 	{
 		var form = document.form1;
@@ -340,8 +347,8 @@ MM_reloadPage(true);
 			  <input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
-			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/ThermSchedule2.jsp?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
-			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/ThermSchedule2.jsp?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
 			  <input type="hidden" name="tempval1">
 			  <input type="hidden" name="tempval2">
 			  <input type="hidden" name="tempval3">

@@ -63,7 +63,7 @@
 	StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
 	StarsCustomerFAQs customerFAQs = ecSettings.getStarsCustomerFAQs();
 	StarsExitInterviewQuestions exitQuestions = ecSettings.getStarsExitInterviewQuestions();
-	StarsDefaultThermostatSettings dftThermoSettings = ecSettings.getStarsDefaultThermostatSettings();
+	StarsDefaultThermostatSettings[] allDftThermoSettings = ecSettings.getStarsDefaultThermostatSettings();
 	
 	StarsCustAccountInformation accountInfo = null;
 	StarsCustomerAccount account = null;

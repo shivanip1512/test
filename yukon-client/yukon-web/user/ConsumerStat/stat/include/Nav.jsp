@@ -71,9 +71,9 @@
 			}
 %>
           <tr onMouseOver="hardwareMenuAppear(event, this, 'thermostatAllMenu', <%= tstatCnt %>)"> 
-            <td width="10">&nbsp;</td>
+            <td width="10" class="Nav">&nbsp;</td>
             <td><%= linkHtml %></td>
-            <td width="10"><%= linkImgExp %></td>
+            <td width="10" valign="bottom" style="padding-bottom:1"><%= linkImgExp %></td>
           </tr>
 </cti:checkProperty>
 <%
@@ -92,7 +92,10 @@
 		
 		for (int i = 0; i < thermostats.getStarsInventoryCount(); i++) {
 			StarsInventory inv = thermostats.getStarsInventory(i);
+			
 			String linkLabel = inv.getDeviceLabel();
+			if (linkLabel.equals(""))
+				linkLabel= inv.getLMHardware().getManufacturerSerialNumber();
 			
 			String linkHtml = null;
 			String linkImgExp = null;

@@ -31,6 +31,14 @@
 		invID = thermostat.getInventoryID();
 	}
 	
+	StarsDefaultThermostatSettings dftThermoSettings = null;
+	for (int i = 0; i < allDftThermoSettings.length; i++) {
+		if (allDftThermoSettings[i].getThermostatType().getType() == StarsThermostatTypes.BASIC_TYPE) {
+			dftThermoSettings = allDftThermoSettings[i];
+			break;
+		}
+	}
+	
 	StarsThermostatManualEvent lastEvent = null;
 	boolean useDefault = false;
 	if (thermoSettings != null && thermoSettings.getStarsThermostatManualEventCount() > 0) {
@@ -229,36 +237,41 @@ if (text.length == 2) {
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  
-              <div align = "left">
-                <table width="632" border="0" height="47">
-                  <tr>
+              <div align = "left"> 
+                <table border="0" width="93%">
+                  <tr> 
                     <td width="25">&nbsp;</td>
-                    <td width="597"><span class="TableCell"> 
-                      <p>Please use the thermostat below to temporarily change 
-                        your current settings. To adjust your thermostat's programming, 
-                        please click the Thermostat - Schedule link at the left. 
-                      </p>
-                      </span></td>
+                    <td width="576" class="TableCell">Please use the thermostat 
+                      below to temporarily change your current settings. To adjust 
+                      your thermostat's programming, please click the <%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule") %> 
+                      link in the pop-up menu of the thermostat.</td>
                   </tr>
+<%	if (itemNo == -1) { %>
+                  <tr> 
+                    <td width="25">&nbsp;</td>
+                    <td width="576" class="MainText" align="right"><a href="AllTherm.jsp" class="Link1">Change 
+                      Selected Thermostats</a></td>
+                  </tr>
+<%	} %>
                 </table>
               </div>
 			  <form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient">
-			  <input type="hidden" name="action" value="UpdateThermostatOption">
-			  <input type="hidden" name="InvID" value="<%= invID %>">
+				<input type="hidden" name="action" value="UpdateThermostatOption">
+				<input type="hidden" name="InvID" value="<%= invID %>">
 <%	if (invIDs != null) {
 		for (int i = 0; i < invIDs.length; i++) {
 %>
-			  <input type="hidden" name="InvIDs" value="<%= invIDs[i] %>">
+				<input type="hidden" name="InvIDs" value="<%= invIDs[i] %>">
 <%		}
 	}
 %>
-			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?Item=<%= itemNo %>">
-			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?Item=<%= itemNo %>">
-			  <input type="hidden" name="mode" value="">
-			  <input type="hidden" name="fan" value="">
-			  <input type="hidden" name="RunProgram" value="false">
-              <div align = "left">
-                  <table width="93%" border="0" background="../../../Images/ThermImages/Bkgd.gif" style = "background-repeat:no-repeat" cellspacing = "0" cellpadding = "0" height="246">
+				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?Item=<%= itemNo %>">
+				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?Item=<%= itemNo %>">
+				<input type="hidden" name="mode" value="">
+				<input type="hidden" name="fan" value="">
+				<input type="hidden" name="RunProgram" value="false">
+                <div align = "left">
+				  <table width="93%" border="0" background="../../../Images/ThermImages/Bkgd.gif" style = "background-repeat:no-repeat" cellspacing = "0" cellpadding = "0" height="246">
                     <tr> 
                       <td width="73%" height="40" > 
                         <table width="91%" border="0" height="100">
@@ -371,10 +384,6 @@ if (text.length == 2) {
                         <br>
                       </td>
                       <td width="27%" height="40" class="TableCell" valign="top"> 
-<%	if (itemNo == -1) { %>
-                        <p class="MainText"><a href="AllTherm.jsp" class="Link1">Change 
-                          Thermostat Selection</a></p> 
-<%	} %>
                         <p><b>1)</b> Select the new temperature to maintain until 
                           the next program scheduled change. Check <b>HOLD</b> 
                           to maintain this setting across program changes. <br>

@@ -4,6 +4,14 @@
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
 	StarsInventory inventory = inventories.getStarsInventory(invNo);
 	StarsThermostatSettings thermoSettings = inventory.getLMHardware().getStarsThermostatSettings();
+	
+	StarsDefaultThermostatSettings dftThermoSettings = null;
+	for (int i = 0; i < allDftThermoSettings.length; i++) {
+		if (allDftThermoSettings[i].getThermostatType().getType() == thermoSettings.getThermostatType().getType()) {
+			dftThermoSettings = allDftThermoSettings[i];
+			break;
+		}
+	}
 
 	StarsThermostatManualEvent lastEvent = null;
 	boolean useDefault = false;
@@ -207,17 +215,16 @@ if (text.length == 2) {
                     <td width="25">&nbsp;</td>
                     <td width="597"><span class="TableCell"> Please use the thermostat 
                       below to temporarily change your current settings. To adjust 
-                      your thermostat's programming, please click the Thermostat 
-                      - Schedule link at the left. 
-                      </span></td>
+                      your thermostat's programming, please click the <%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule") %> 
+                      link in the pop-up menu of the thermostat. </span></td>
                   </tr>
                 </table>
               </div>
               <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="UpdateThermostatOption">
               <input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
-              <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Thermostat.jsp?InvNo=<%= invNo %>">
-			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Thermostat.jsp?InvNo=<%= invNo %>">
+              <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
+			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
 			  <input type="hidden" name="mode" value="">
 			  <input type="hidden" name="fan" value="">
 			  <input type="hidden" name="RunProgram" value="false">
