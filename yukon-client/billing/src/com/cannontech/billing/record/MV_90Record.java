@@ -8,14 +8,14 @@ package com.cannontech.billing.record;
 public class MV_90Record implements BillingRecordBase 
 {
 	private String timeKW = null;			//HH:mm
-	private String dateKW = null;			//yy/MM/dd
+	private String dateKW = null;			//MM/dd/yyyy
 
 	private String meterNumber = null;	//10
 	private boolean newMeterNumber = false;
 	private java.util.Vector readingKWVector = null;
 	private Double readingKW = null;	//8.1
 
-	private static java.text.SimpleDateFormat DATE_FORMAT = new java.text.SimpleDateFormat("yy/MM/dd");
+	private static java.text.SimpleDateFormat DATE_FORMAT = new java.text.SimpleDateFormat("MM/dd/yyyy");
 	private static java.text.SimpleDateFormat TIME_FORMAT = new java.text.SimpleDateFormat("HH:mm");
 	private static java.text.DecimalFormat KW_FORMAT_8v1 = new java.text.DecimalFormat("#######0.0");
 	
@@ -82,16 +82,19 @@ public String dataToString()
 		
 	if( getReadingKWVector() != null)
 	{
-		for( int i = 0; i < getReadingKWVector().size(); i++)
+		Double value = (Double)getReadingKWVector().get(0);
+		writeToFile.append(KW_FORMAT_8v1.format(value.doubleValue()));
+		
+		for( int i = 1; i < getReadingKWVector().size(); i++)
 		{
-			Double value = (Double)getReadingKWVector().get(i);
+			value = (Double)getReadingKWVector().get(i);
 			{
 //				for ( int j = 0; j < (10 - KW_FORMAT_8v1.format(value.length()));j++)
 //				{
 //					writeToFile.append(" ");
 //				}
 			}
-			writeToFile.append(KW_FORMAT_8v1.format(value.doubleValue()) + ',');
+			writeToFile.append(',' + KW_FORMAT_8v1.format(value.doubleValue()));
 		}
 	}
 
