@@ -5,7 +5,7 @@ package com.cannontech.database.db.device.lm;
  */
 public class LMProgramCurtailCustomerList extends com.cannontech.database.db.DBPersistent implements DeviceListItem
 {
-	private Integer deviceID = null;
+	private Integer programID = null;
 	private Integer customerID = null;
 	private Integer customerOrder = null;
 	private String requireAck = null;
@@ -13,10 +13,10 @@ public class LMProgramCurtailCustomerList extends com.cannontech.database.db.DBP
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"LMCustomerDeviceID", "CustomerOrder", "RequireAck"
+		"CustomerID", "CustomerOrder", "RequireAck"
 	};
 
-	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
+	public static final String CONSTRAINT_COLUMNS[] = { "ProgramID" };
 
 	public static final String TABLE_NAME = "LMProgramCurtailCustomerList";
 
@@ -31,7 +31,7 @@ public LMProgramCurtailCustomerList() {
  */
 public void add() throws java.sql.SQLException 
 {
-	Object addValues[] = { getDeviceID(), getCustomerID(), 
+	Object addValues[] = { getProgramID(), getCustomerID(), 
 					getCustomerOrder(), getRequireAck() };
 
 	add( TABLE_NAME, addValues );
@@ -41,7 +41,7 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {
-	delete( TABLE_NAME, "DeviceID", getDeviceID() );
+	delete( TABLE_NAME, "ProgramID", getProgramID() );
 }
 /**
  * Insert the method's description here.
@@ -50,13 +50,6 @@ public void delete() throws java.sql.SQLException
  */
 public java.lang.Integer getCustomerOrder() {
 	return customerOrder;
-}
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer
- */
-public Integer getDeviceID() {
-	return deviceID;
 }
 /**
  * Insert the method's description here.
@@ -71,7 +64,7 @@ public java.lang.String getRequireAck() {
  */
 public void retrieve() throws java.sql.SQLException 
 {
-	Object constraintValues[] = { getDeviceID() };	
+	Object constraintValues[] = { getProgramID() };	
 	Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
 	if( results.length == SETTER_COLUMNS.length )
@@ -93,13 +86,6 @@ public void setCustomerOrder(java.lang.Integer newCustomerOrder) {
 	customerOrder = newCustomerOrder;
 }
 /**
- * This method was created in VisualAge.
- * @param newValue java.lang.Integer
- */
-public void setDeviceID(Integer newValue) {
-	this.deviceID = newValue;
-}
-/**
  * Insert the method's description here.
  * Creation date: (5/7/2001 2:20:23 PM)
  * @param newRequireAck java.lang.String
@@ -115,7 +101,7 @@ public void update() throws java.sql.SQLException
 	Object setValues[] = { getCustomerID(), 
 					getCustomerOrder(), getRequireAck() };
 
-	Object constraintValues[] = { getDeviceID() };
+	Object constraintValues[] = { getProgramID() };
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
@@ -133,6 +119,34 @@ public void update() throws java.sql.SQLException
 	 */
 	public void setCustomerID(Integer customerID) {
 		this.customerID = customerID;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getProgramID() {
+		return programID;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setProgramID(Integer integer) {
+		programID = integer;
+	}
+
+	/* 
+	 * @see com.cannontech.database.db.device.lm.DeviceListItem#getDeviceID()
+	 */
+	public Integer getDeviceID() {
+		return getProgramID();
+	}
+
+	/* 
+	 * @see com.cannontech.database.db.device.lm.DeviceListItem#setDeviceID(java.lang.Integer)
+	 */
+	public void setDeviceID(Integer deviceID) {
+		setProgramID(deviceID);
 	}
 
 }
