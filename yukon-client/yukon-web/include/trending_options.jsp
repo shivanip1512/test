@@ -65,16 +65,21 @@
 <table width="575" border="0" align="center" cellpadding="0" cellspacing="0">
   <tr>
     <td>
-      <div id="viewMenu" class = "bgmenu" style = "width:120px" align = "left"> 
-        <div id = "LINEID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.LINE%>);">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.LINE_STRING%></div>
-        <div id = "BARID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.BAR%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.BAR_STRING%></div>
-        <div id = "3DBARID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.BAR_3D%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.BAR_3D_STRING%></div>
-        <div id = "SHAPEID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.SHAPES_LINE%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.SHAPES_LINE_STRING%></div>
-        <div id = "STEPID" name = "view" style = "width:120px"  onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.STEP%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.STEP_STRING%></div>
-        <div id = "TABULARID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.TABULAR%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.TABULAR_STRING%></div>
-        <div id = "SUMMARYID" name = "view" style = "width:120px"  onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.SUMMARY%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.SUMMARY_STRING%></div>
+      <div id="viewMenu" class = "bgmenu" style = "width:130px" align = "left"> 
+        <div id = "LINEID" name = "view"  style = "width:130px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.LINE%>);">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.LINE_STRING%></div>
+        <div id = "LINESHAPESID" name = "view"  style = "width:130px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.LINE_SHAPES%>);">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.LINE_SHAPES_STRING%></div>
+        <div id = "LINEAREAID" name = "view"  style = "width:130px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.LINE_AREA%>);">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.LINE_AREA_STRING%></div>
+        <div id = "LINEAREASHAPESID" name = "view"  style = "width:130px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.LINE_AREA_SHAPES%>);">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.LINE_AREA_SHAPES_STRING%></div>
+        <div id = "STEPID" name = "view" style = "width:130px"  onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.STEP%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.STEP_STRING%></div>
+        <div id = "STEPSHAPESID" name = "view" style = "width:130px"  onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.STEP_SHAPES%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.STEP_SHAPES_STRING%></div>
+        <div id = "STEPAREAID" name = "view" style = "width:130px"  onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.STEP_AREA%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.STEP_AREA_STRING%></div>
+        <div id = "STEPAREASHAPESID" name = "view" style = "width:130px"  onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.STEP_AREA_SHAPES%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.STEP_AREA_SHAPES_STRING%></div>
+        <div id = "BARID" name = "view"  style = "width:130px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.BAR%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.BAR_STRING%></div>
+        <div id = "3DBARID" name = "view"  style = "width:130px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.BAR_3D%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.BAR_3D_STRING%></div>
+        <div id = "TABULARID" name = "view"  style = "width:130px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.TABULAR%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.TABULAR_STRING%></div>
+        <div id = "SUMMARYID" name = "view" style = "width:130px"  onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.SUMMARY%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.SUMMARY_STRING%></div>
           <hr>
-        <div id = "LDID" onmouseover = "changeOptionStyle(this)" style = "width:120px" class = "optmenu1" onclick = "changeLD()">&nbsp;&nbsp;&nbsp;Load Duration</div>
+        <div id = "LDID" onmouseover = "changeOptionStyle(this)" style = "width:130px" class = "optmenu1" onclick = "changeLD()">&nbsp;&nbsp;&nbsp;Load Duration</div>
       </div>
       <form name="exportForm">
 	    <div id="trendMenu" class = "bgmenu" style = "width:75px" align = "left"> 

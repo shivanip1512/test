@@ -1,10 +1,15 @@
 <SCRIPT> <!--trend/view menu items-->
 //view types
 var LINE  = parseInt(<%=GraphRenderers.LINE%>);
+var LINE_SHAPES = parseInt(<%=GraphRenderers.LINE_SHAPES%>);
+var LINE_AREA  = parseInt(<%=GraphRenderers.LINE_AREA%>);
+var LINE_AREA_SHAPES  = parseInt(<%=GraphRenderers.LINE_AREA_SHAPES%>);
+var STEP  = parseInt(<%=GraphRenderers.STEP%>);
+var STEP_SHAPES = parseInt(<%=GraphRenderers.STEP_SHAPES%>);
+var STEP_AREA  = parseInt(<%=GraphRenderers.STEP_AREA%>);
+var STEP_AREA_SHAPES = parseInt(<%=GraphRenderers.STEP_AREA_SHAPES%>);
 var BAR   = parseInt(<%=GraphRenderers.BAR%>);
 var DBAR  = parseInt(<%=GraphRenderers.BAR_3D%>);
-var STEP  = parseInt(<%=GraphRenderers.STEP%>);
-var SHAPE = parseInt(<%=GraphRenderers.SHAPES_LINE%>);
 var TABULAR = parseInt(<%=GraphRenderers.TABULAR%>);
 var SUMMARY = parseInt(<%=GraphRenderers.SUMMARY%>);
 
@@ -32,17 +37,32 @@ function initViewMenu()
 		case LINE:
 			document.getElementById('LINEID').innerHTML = "&nbsp;&#149;&nbsp;<%=GraphRenderers.LINE_STRING%>";
 			break;
+		case LINE_SHAPES:
+			document.getElementById('LINESHAPESID').innerHTML = "&nbsp;&#149;&nbsp;<%=GraphRenderers.LINE_SHAPES_STRING%>";
+			break;
+		case LINE_AREA:
+			document.getElementById('LINEAREAID').innerHTML = "&nbsp;&#149;&nbsp;<%=GraphRenderers.LINE_AREA_STRING%>";
+			break;
+		case LINE_AREA_SHAPES:
+			document.getElementById('LINEAREASHAPESID').innerHTML = "&nbsp;&#149;&nbsp;<%=GraphRenderers.LINE_AREA_SHAPES_STRING%>";
+			break;
+		case STEP:
+			document.getElementById('STEPID').innerHTML =  "&nbsp;&#149;&nbsp;<%=GraphRenderers.STEP_STRING%>";
+			break;
+		case STEP_SHAPES:
+			document.getElementById('STEPSHAPESID').innerHTML =  "&nbsp;&#149;&nbsp;<%=GraphRenderers.STEP_SHAPES_STRING%>";
+			break;
+		case STEP_AREA:
+			document.getElementById('STEPAREAID').innerHTML =  "&nbsp;&#149;&nbsp;<%=GraphRenderers.STEP_AREA_STRING%>";
+			break;
+		case STEP_AREA_SHAPES:
+			document.getElementById('SHAPEAREASHAPESID').innerHTML =  "&nbsp;&#149;&nbsp;<%=GraphRenderers.STEP_AREA_SHAPES_STRING%>";
+			break;
 		case BAR:
 			document.getElementById('BARID').innerHTML =  "&nbsp;&#149;&nbsp;<%=GraphRenderers.BAR_STRING%>";
 			break;
 		case DBAR:
 			document.getElementById('3DBARID').innerHTML =  "&nbsp;&#149;&nbsp;<%=GraphRenderers.BAR_3D_STRING%>";
-			break;
-		case STEP:
-			document.getElementById('STEPID').innerHTML =  "&nbsp;&#149;&nbsp;<%=GraphRenderers.STEP_STRING%>";
-			break;
-		case SHAPE:
-			document.getElementById('SHAPEID').innerHTML =  "&nbsp;&#149;&nbsp;<%=GraphRenderers.SHAPES_LINE_STRING%>";
 			break;
 		case TABULAR:
 			document.getElementById('TABULARID').innerHTML =  "&nbsp;&#149;&nbsp;<%=GraphRenderers.TABULAR_STRING%>";
@@ -196,7 +216,7 @@ function exportData(extension)
 
 function reportData(extension)
 {
-	document.exportForm.action="<%=request.getContextPath()%>/servlet/ReportGenerator?ext="+extension;
+	document.exportForm.action="<%=request.getContextPath()%>/servlet/ReportGenerator?action=download&ext="+extension;
 	document.exportForm.method="post";
 	document.exportForm.submit();
 }
