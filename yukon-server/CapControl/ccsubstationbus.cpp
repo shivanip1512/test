@@ -1297,7 +1297,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
 
     if( keepGoing )
     {
-        if( _controlmethod == CtiCCSubstationBus::IndividualFeederControlMethod )
+        if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
         {
             for(LONG i=0;i<_ccfeeders.entries();i++)
             {
@@ -1326,16 +1326,16 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
             if( !_IGNORE_NOT_NORMAL_FLAG ||
                 getCurrentVarPointQuality() == NormalQuality )
             {
-                if( _controlunits == CtiCCSubstationBus::KVARControlUnits )
+                if( !_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
                 {
                     if( (-1*getKVARSolution()) > getUpperBandwidth() ||
                         getKVARSolution() > getLowerBandwidth() )
                     {
-                        if( _controlmethod == CtiCCSubstationBus::SubstationBusControlMethod )
+                        if( !_controlmethod.compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) )
                         {
                             regularSubstationBusControl(setPoint, currentDateTime, pointChanges, pilMessages);
                         }
-                        else if( _controlmethod == CtiCCSubstationBus::BusOptimizedFeederControlMethod )
+                        else if( !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
                         {
                             optimizedSubstationBusControl(setPoint, currentDateTime, pointChanges, pilMessages);
                         }
@@ -1346,14 +1346,14 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
                         }
                     }
                 }
-                else if( _controlunits == CtiCCSubstationBus::PF_BY_KVARControlUnits ||
-                         _controlunits == CtiCCSubstationBus::PF_BY_KQControlUnits )
+                else if( !_controlunits.compareTo(CtiCCSubstationBus::PF_BY_KVARControlUnits,RWCString::ignoreCase) ||
+                         !_controlunits.compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
                 {
-                    if( _controlmethod == CtiCCSubstationBus::SubstationBusControlMethod )
+                    if( !_controlmethod.compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) )
                     {
                         regularSubstationBusControl(setPoint, currentDateTime, pointChanges, pilMessages);
                     }
-                    else if( _controlmethod == CtiCCSubstationBus::BusOptimizedFeederControlMethod )
+                    else if( !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
                     {
                         optimizedSubstationBusControl(setPoint, currentDateTime, pointChanges, pilMessages);
                     }
@@ -1384,12 +1384,12 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
 DOUBLE CtiCCSubstationBus::calculateKVARSolution(const RWCString& controlUnits, DOUBLE setPoint, DOUBLE varValue, DOUBLE wattValue)
 {
     DOUBLE returnKVARSolution = 0.0;
-    if( controlUnits == CtiCCSubstationBus::KVARControlUnits )
+    if( !controlUnits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
     {
         returnKVARSolution = setPoint - varValue;
     }
-    else if( controlUnits == CtiCCSubstationBus::PF_BY_KVARControlUnits ||
-             controlUnits == CtiCCSubstationBus::PF_BY_KQControlUnits)
+    else if( !controlUnits.compareTo(CtiCCSubstationBus::PF_BY_KVARControlUnits,RWCString::ignoreCase) ||
+             !controlUnits.compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase))
     {
         DOUBLE targetKVA = wattValue / (setPoint/100.0);
         DOUBLE targetKVAR = sqrt((targetKVA*targetKVA)-(wattValue*wattValue));
@@ -1418,7 +1418,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
         CtiCCFeeder* currentFeeder = NULL;
         LONG currentPosition = getLastFeederControlledPosition();
         LONG iterations = 0;
-        if( _controlunits == CtiCCSubstationBus::KVARControlUnits )
+        if( !_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
         {
             if( setpoint < getCurrentVarLoadPointValue() )
             {
@@ -1455,7 +1455,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
                 if( request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Can Not Reduce Var level for substation bus: " << getPAOName()
+                    dout << RWTime() << " - Can Not Decrease Var level for substation bus: " << getPAOName()
                     << " any further.  All cap banks are already in the Close state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
     
                     try
@@ -1537,8 +1537,8 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
                 }
             }
         }
-        else if( _controlunits == CtiCCSubstationBus::PF_BY_KVARControlUnits ||
-                 _controlunits == CtiCCSubstationBus::PF_BY_KQControlUnits )
+        else if( !_controlunits.compareTo(CtiCCSubstationBus::PF_BY_KVARControlUnits,RWCString::ignoreCase) ||
+                 !_controlunits.compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
         {
             if( getKVARSolution() < 0 )
             {
@@ -1585,7 +1585,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
                 if( capBank == NULL && request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Can Not Reduce Var level for substation bus: " << getPAOName()
+                    dout << RWTime() << " - Can Not Decrease Var level for substation bus: " << getPAOName()
                     << " any further.  All cap banks are already in the Close state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
     
                     try
@@ -1727,7 +1727,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
             varSortedFeeders.insert(currentFeeder);
         }
 
-        if( _controlunits == CtiCCSubstationBus::KVARControlUnits )
+        if( !_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
         {
             if( setpoint < getCurrentVarLoadPointValue() )
             {
@@ -1756,7 +1756,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
                 if( request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Can Not Reduce Var level for substation bus: " << getPAOName()
+                    dout << RWTime() << " - Can Not Decrease Var level for substation bus: " << getPAOName()
                     << " any further.  All cap banks are already in the Close state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
     
                     try
@@ -1831,8 +1831,8 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
                 }
             }
         }
-        else if( _controlunits == CtiCCSubstationBus::PF_BY_KVARControlUnits ||
-                 _controlunits == CtiCCSubstationBus::PF_BY_KQControlUnits )
+        else if( !_controlunits.compareTo(CtiCCSubstationBus::PF_BY_KVARControlUnits,RWCString::ignoreCase) ||
+                 !_controlunits.compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
         {
             if( getKVARSolution() < 0 )
             {
@@ -1871,7 +1871,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
                 if( capBank == NULL && request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Can Not Reduce Var level for substation bus: " << getPAOName()
+                    dout << RWTime() << " - Can Not Decrease Var level for substation bus: " << getPAOName()
                     << " any further.  All cap banks are already in the Close stateor Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
     
                     try
@@ -2034,8 +2034,8 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
     RWCString text = "";
     RWCString additional = "";
 
-    if( _controlmethod == CtiCCSubstationBus::IndividualFeederControlMethod ||
-        _controlmethod == CtiCCSubstationBus::BusOptimizedFeederControlMethod )
+    if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) ||
+        !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
     {
         LONG recentlyControlledFeeders = 0;
         for(LONG i=0;i<_ccfeeders.entries();i++)
@@ -2062,7 +2062,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
         }
         figureEstimatedVarLoadPointValue();
     }
-    else if( _controlmethod == CtiCCSubstationBus::SubstationBusControlMethod )
+    else if( !_controlmethod.compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) )
     {
         CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[getLastFeederControlledPosition()];
 
@@ -2115,7 +2115,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
     }
     else
     {
-        if( _controlmethod == CtiCCSubstationBus::BusOptimizedFeederControlMethod )
+        if( !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
         {
             if( _ccfeeders.entries() > 0 )
             {
@@ -2201,7 +2201,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
                 }
             }
         }
-        else if( _controlmethod == CtiCCSubstationBus::IndividualFeederControlMethod )
+        else if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
         {
             if( _ccfeeders.entries() > 0 )
             {
@@ -2215,7 +2215,119 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
                 }
             }
         }
-        else if( _controlmethod == CtiCCSubstationBus::SubstationBusControlMethod )
+        else if( !_controlmethod.compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) )
+        {
+            if( _ccfeeders.entries() > 0 )
+            {
+                returnBoolean = _newpointdatareceivedflag;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Invalid Control Method in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
+    }
+
+    return returnBoolean;
+}
+
+/*---------------------------------------------------------------------------
+    isConfirmCheckNeeded
+
+    Returns a boolean if the if new point data has
+    been received for all the points associated with the bus.
+---------------------------------------------------------------------------*/
+BOOL CtiCCSubstationBus::isConfirmCheckNeeded()
+{
+    BOOL returnBoolean = FALSE;
+
+    if( getRecentlyControlledFlag() )
+    {
+        if( !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
+        {
+            if( _ccfeeders.entries() > 0 )
+            {
+                //confirm cap bank changes on just the feeder var value
+                try
+                {
+                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[getLastFeederControlledPosition()];
+    
+                    if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
+                    {
+                        if( currentFeeder->getNewPointDataReceivedFlag() )
+                        {
+                            returnBoolean = TRUE;
+                        }
+                    }
+                    else
+                    {
+                        for(LONG i=0;i<_ccfeeders.entries();i++)
+                        {
+                            currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+    
+                            if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
+                            {
+                                if( currentFeeder->getNewPointDataReceivedFlag() )
+                                {
+                                    returnBoolean = TRUE;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+    
+                if( !returnBoolean )
+                {
+                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[getLastFeederControlledPosition()];
+    
+                    if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
+                    {
+                        if( currentFeeder->getNewPointDataReceivedFlag() )
+                        {
+                            returnBoolean = TRUE;
+                        }
+                    }
+                    else
+                    {
+                        for(LONG i=0;i<_ccfeeders.entries();i++)
+                        {
+                            currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+    
+                            if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
+                            {
+                                if( currentFeeder->getNewPointDataReceivedFlag() )
+                                {
+                                    returnBoolean = TRUE;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+        {
+            if( _ccfeeders.entries() > 0 )
+            {
+                for(LONG i=0;i<_ccfeeders.entries();i++)
+                {
+                    if( ((CtiCCFeeder*)_ccfeeders[i])->getNewPointDataReceivedFlag() )
+                    {
+                        returnBoolean = TRUE;
+                        break;
+                    }
+                }
+            }
+        }
+        else if( !_controlmethod.compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) )
         {
             if( _ccfeeders.entries() > 0 )
             {
@@ -2284,8 +2396,8 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
     if( !_IGNORE_NOT_NORMAL_FLAG ||
         getCurrentVarPointQuality() == NormalQuality )
     {
-        if( _controlmethod == CtiCCSubstationBus::IndividualFeederControlMethod ||
-            _controlmethod == CtiCCSubstationBus::BusOptimizedFeederControlMethod )
+        if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) ||
+            !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
         {
             if( getMinConfirmPercent() > 0 )
             {
@@ -2303,7 +2415,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                 }
             }
         }
-        else if( _controlmethod == CtiCCSubstationBus::SubstationBusControlMethod )
+        else if( !_controlmethod.compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) )
         {
             if( getMinConfirmPercent() > 0 )
             {
@@ -2435,7 +2547,7 @@ BOOL CtiCCSubstationBus::isPastResponseTime(const RWDBDateTime& currentDateTime)
 {
     BOOL returnBoolean = FALSE;
 
-    if( _controlmethod == CtiCCSubstationBus::IndividualFeederControlMethod )
+    if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
     {
         for(LONG i=0;i<_ccfeeders.entries();i++)
         {

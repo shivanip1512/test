@@ -224,7 +224,8 @@ void CtiCapController::controlLoop()
                     try
                     {
                         currentSubstationBus->isPeakTime(currentDateTime);//put here to make sure the peak time flag is set correctly
-                        if( currentSubstationBus->isVarCheckNeeded(currentDateTime) )
+                        if( currentSubstationBus->isVarCheckNeeded(currentDateTime) ||
+                            currentSubstationBus->isConfirmCheckNeeded() )
                         {
                             if( currentSubstationBus->getRecentlyControlledFlag() )
                             {
@@ -238,7 +239,7 @@ void CtiCapController::controlLoop()
                                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                                         }
                                     }
-                                    else if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
+                                    else if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
                                     {
                                         if( !currentSubstationBus->getDisableFlag() )
                                         {
@@ -252,8 +253,8 @@ void CtiCapController::controlLoop()
                                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                 }
                             }
-                            else//not recently controlled
-                            {
+                            else if( currentSubstationBus->isVarCheckNeeded(currentDateTime) )
+                            {//not recently controlled and var check needed
                                 try
                                 {
                                     if( !currentSubstationBus->getDisableFlag() )
@@ -270,11 +271,10 @@ void CtiCapController::controlLoop()
     
                             try
                             {
-                                if( currentSubstationBus->getControlInterval() == 0 )
-                                {//so we don't do this over and over we need to clear out
-                                    currentSubstationBus->clearOutNewPointReceivedFlags();
-                                }
-                                else
+                                //so we don't do this over and over we need to clear out
+                                currentSubstationBus->clearOutNewPointReceivedFlags();
+                                if( currentSubstationBus->isVarCheckNeeded(currentDateTime) &&
+                                    currentSubstationBus->getControlInterval() > 0 )
                                 {
                                     currentSubstationBus->figureNextCheckTime();
                                 }
@@ -877,8 +877,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                     dout << RWTime() << " - Last Point Update: " << currentSubstationBus->LastCurrentVarPointUpdateTime().asString() << endl;
                 }*/
                 currentSubstationBus->setLastCurrentVarPointUpdateTime(timestamp);
-                if( currentSubstationBus->getControlInterval() == 0 )
-                    currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
+                currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
             }
             currentSubstationBus->setCurrentVarLoadPointValue(value);
             currentSubstationBus->setBusUpdatedFlag(TRUE);
@@ -891,7 +890,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
 
             if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
             {
-                if( currentSubstationBus->getControlUnits() == CtiCCSubstationBus::PF_BY_KQControlUnits )
+                if( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
                 {
                     currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(value,currentSubstationBus->getCurrentWattLoadPointValue()));
                 }
@@ -906,8 +905,9 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                     sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
                 }
             }
-            else if( currentSubstationBus->getControlUnits() != CtiCCSubstationBus::KVARControlUnits )
-            {
+            //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+            else if( currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+            {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
@@ -916,7 +916,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
         }
         else if( currentSubstationBus->getCurrentWattLoadPointId() == pointID )
         {
-            if( currentSubstationBus->getControlUnits() == CtiCCSubstationBus::PF_BY_KQControlUnits )
+            if( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
             {
                 DOUBLE tempKQ = currentSubstationBus->convertKVARToKQ(value,currentSubstationBus->getCurrentWattLoadPointValue());
                 currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value));
@@ -938,8 +938,9 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                     sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
                 }
             }
-            else if( currentSubstationBus->getControlUnits() != CtiCCSubstationBus::KVARControlUnits )
-            {
+            //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+            else if( currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+            {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
@@ -962,8 +963,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             dout << RWTime() << " - Last Point Update: " << currentFeeder->LastCurrentVarPointUpdateTime().asString() << endl;
                         }*/
                         currentFeeder->setLastCurrentVarPointUpdateTime(timestamp);
-                        if( currentSubstationBus->getControlInterval() == 0 )
-                            currentFeeder->setNewPointDataReceivedFlag(TRUE);
+                        currentFeeder->setNewPointDataReceivedFlag(TRUE);
                     }
                     currentFeeder->setCurrentVarLoadPointValue(value);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
@@ -976,7 +976,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
 
                     if( currentFeeder->getCurrentWattLoadPointId() > 0 )
                     {
-                        if( currentSubstationBus->getControlUnits() == CtiCCSubstationBus::PF_BY_KQControlUnits )
+                        if( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
                         {
                             currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(value,currentFeeder->getCurrentWattLoadPointValue()));
                         }
@@ -991,8 +991,9 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
                         }
                     }
-                    else if( currentSubstationBus->getControlUnits() != CtiCCSubstationBus::KVARControlUnits )
-                    {
+                    //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                    else if( currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+                    {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
@@ -1001,7 +1002,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                 }
                 else if( currentFeeder->getCurrentWattLoadPointId() == pointID )
                 {
-                    if( currentSubstationBus->getControlUnits() == CtiCCSubstationBus::PF_BY_KQControlUnits )
+                    if( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
                     {
                         DOUBLE tempKQ = currentSubstationBus->convertKVARToKQ(value,currentFeeder->getCurrentWattLoadPointValue());
                         currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value));
@@ -1023,8 +1024,9 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
                         }
                     }
-                    else if( currentSubstationBus->getControlUnits() != CtiCCSubstationBus::KVARControlUnits )
-                    {
+                    //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                    else if( currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+                    {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
@@ -1053,7 +1055,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             {
                                 currentSubstationBus->setRecentlyControlledFlag(FALSE);
                                 currentFeeder->setRecentlyControlledFlag(FALSE);
-                                if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
+                                if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
                                 {
                                     for(LONG x=0;x<ccFeeders.entries();x++)
                                     {
@@ -1094,11 +1096,11 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         else if( currentCapBank->getOperationAnalogPointId() == pointID )
                         {
                             if( timestamp > currentCapBank->getLastStatusChangeTime() ||
-                                currentCapBank->getCurrentDailyOperations() != (LONG)value )
+                                currentCapBank->getTotalOperations() != (LONG)value )
                             {
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                             }
-                            currentCapBank->setCurrentDailyOperations((LONG)value);
+                            currentCapBank->setTotalOperations((LONG)value);
                             found = TRUE;
                             break;
                         }

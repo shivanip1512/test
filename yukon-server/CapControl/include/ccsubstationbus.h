@@ -144,6 +144,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     BOOL isPastResponseTime(const RWDBDateTime& currentDateTime);
     BOOL isVarCheckNeeded(const RWDBDateTime& currentDateTime);
+    BOOL isConfirmCheckNeeded();
     BOOL capBankControlStatusUpdate(RWOrdered& pointChanges);
     DOUBLE figureCurrentSetPoint(const RWDBDateTime& currentDateTime);
     BOOL isPeakDay();
