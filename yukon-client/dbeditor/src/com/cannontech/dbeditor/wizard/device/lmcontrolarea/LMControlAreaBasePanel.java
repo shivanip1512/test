@@ -253,6 +253,7 @@ private javax.swing.JComboBox getJComboBoxControlInterval() {
 			ivjJComboBoxControlInterval.addItem("5 minute");
 			ivjJComboBoxControlInterval.addItem("10 minute");
 			ivjJComboBoxControlInterval.addItem("15 minute");
+			ivjJComboBoxControlInterval.addItem("30 minute");
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
