@@ -17,7 +17,7 @@ import com.cannontech.graph.model.TrendModel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.util.ServletUtil;
 
-public class GraphBean implements GraphDataFormats, GraphDefines, com.cannontech.graph.model.TrendModelType
+public class GraphBean implements GraphDataFormats, GraphDefines
 {
 	private static Graph graphClass = null;
 	private final java.lang.String DB_ALIAS = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
@@ -31,18 +31,17 @@ public class GraphBean implements GraphDataFormats, GraphDefines, com.cannontech
 	private static final int THIRD_WEEK = 3;
 	private static final int FOURTH_WEEK = 4;
 	private static final int FIFTH_WEEK = 5;	//exactly the last week
+
 	//Components for controlling the view toggle (historical or current data)
 	private int currIndex = 0;	//Current timeperiodComboBox index 
 	private int histIndex = 0;	//Historical timeperiodComboBox index
 	private Object currDate = null;
 	private Object histDate = null;
-//	private Date currentStartDate = null;
 	private int histWeek = 0;
 	private int currentWeek = NO_WEEK;	//used when more than one week is selected.
 	private boolean timeToUpdate = true;	//true, update button was pushed, initial is ture also
 
 	private java.util.Date[] sliderValuesArray = null;
-//	private static boolean showPointLabels = true;
 
 	private String period = com.cannontech.util.ServletUtil.historicalPeriods[0];
 	private String tab = null;
@@ -51,9 +50,8 @@ public class GraphBean implements GraphDataFormats, GraphDefines, com.cannontech
 	private String startStr = null;
 	private Date start = null;
 	private Date stop = null;
-	private String uri = null;
-	private javax.servlet.http.HttpServletResponse response = null;
-//	private int viewType = TrendModelType.LINE_VIEW;
+	private int viewType = com.cannontech.graph.model.TrendModelType.LINE_VIEW;
+	private int options = 0x000;
 /**
  * This method needs to be implemented for the abstract class JCValueListener.
  *  JCValueListener is the DatePopupComboBox's listener.  This particular method is
@@ -337,7 +335,6 @@ private String buildHTMLBuffer( HTMLBuffer htmlBuffer)
 			if ( htmlBuffer instanceof TabularHtml)
 			{
 				((TabularHtml) htmlBuffer).setTabularStartDate(tModel.getStartDate());
-				System.out.println(" MODEL DATES = " + tModel.getStartDate() + " " + tModel.getStopDate());
 				((TabularHtml) htmlBuffer).setTabularEndDate(tModel.getStopDate());
 
 				sliderValueSelected = formatDateRangeSlider(tModel, (TabularHtml)htmlBuffer);
@@ -552,13 +549,13 @@ public Graph getGraph()
 		graphClass = new Graph();
 	return graphClass;
 }
-public int getOptionsMaskHolder()
+public int getOption()
 {
 	return getGraph().getOptionsMaskHolder();
 }
-public void setOptionsMaskHolder(int newMask, boolean setMasked)
+public void setOption(int newOption)
 {
-	getGraph().setOptionsMaskHolder(newMask, setMasked);
+	getGraph().setOptionsMaskHolder(newOption);
 }
 public int getViewType()
 {
@@ -568,14 +565,7 @@ public void setViewType(int newViewType)
 {
 	getGraph().setViewType(newViewType);
 }
-public void setUri(String newURI)
-{
-	uri = newURI;
-}
-public String getUri()
-{
-	return uri;
-}
+
 public String getPeriod()
 {
 	if(period == null)
@@ -665,7 +655,6 @@ public Date getStop()
 }
 public java.util.Date getStart()
 {
-	System.out.println(" getStart() = " + start);
 	return start;
 }
 private void setStart(java.util.Date newStart)
@@ -676,7 +665,6 @@ private void setStart(java.util.Date newStart)
 		start = newStart;
 		getGraph().setUpdateTrend(true);
 	}
-	System.out.println(" Start DATE NOW = " + start);
 }
 
 public void setStartStr(String newStartStr)
@@ -797,7 +785,6 @@ public void setGraphDefinitionDates(java.util.Date newStart, java.util.Date newS
 
 	newStart = com.cannontech.util.ServletUtil.getStartingDateOfInterval( newStart, getPeriod().toString() );
 
-	System.out.println(" GDEF DATES = " + newStart + " " + newStop);
 	getGraph().getCurrentGraphDefinition().getGraphDefinition().setStartDate(newStart);
 	getGraph().getCurrentGraphDefinition().getGraphDefinition().setStopDate(newStop);
 }
@@ -1025,17 +1012,7 @@ private com.cannontech.database.data.graph.GraphDefinition updateGraphDefinition
 }*/
 public void saySomething(String firstPart, String secondPart)
 {
+	//Debug function!!!
 	System.out.println(firstPart + "  " + secondPart + " " + count++);
-}
-public void encode(javax.servlet.ServletOutputStream outStr)
-{
-	try
-	{
-		getGraph().encodePng(outStr);		
-	}
-	catch (IOException e)
-	{
-	}
-	System.out.println(" Break point");
 }
 }
