@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/08/20 13:53:05 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/08/20 14:33:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4307,14 +4307,9 @@ int CtiDeviceGatewayStat::processSchedulePeriod(SOCKET msgsock, CtiCommandParser
 
             if(heat == 0xff)
             {
-                if(_schedule[dow][pod]._heatSetpoint >= 0x7f00)
+                if(_schedule[dow][pod]._heatSetpoint < 0x7f00)
                 {
                     heat = convertFromStatTemp(_schedule[dow][pod]._heatSetpoint, scaleFahrenheit);
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " hsp " << _schedule[dow][pod]._heatSetpoint << endl;
-                    }
                 }
                 else
                 {
@@ -4323,13 +4318,8 @@ int CtiDeviceGatewayStat::processSchedulePeriod(SOCKET msgsock, CtiCommandParser
             }
             if(cool == 0xff)
             {
-                if(_schedule[dow][pod]._coolSetpoint >= 0x7f00)
+                if(_schedule[dow][pod]._coolSetpoint < 0x7f00)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " csp 0x" << _schedule[dow][pod]._coolSetpoint << endl;
-                    }
                     cool = convertFromStatTemp(_schedule[dow][pod]._coolSetpoint, scaleFahrenheit);
                 }
                 else
