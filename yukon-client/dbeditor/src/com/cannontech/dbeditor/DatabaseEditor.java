@@ -135,7 +135,8 @@ public class DatabaseEditor
 			new Integer(ModelFactory.NOTIFICATION_GROUP),
 			new Integer(ModelFactory.ALARM_STATES),
 			new Integer(ModelFactory.HOLIDAY_SCHEDULE),
-			new Integer(ModelFactory.BASELINE)
+			new Integer(ModelFactory.BASELINE),
+			new Integer(ModelFactory.TAG)
 		};
 
 	private Vector messageListeners = new Vector();
