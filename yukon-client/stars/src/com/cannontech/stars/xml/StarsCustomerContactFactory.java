@@ -5,6 +5,8 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.db.contact.ContactNotification;
+import com.cannontech.stars.xml.serialize.Email;
+import com.cannontech.stars.xml.serialize.StarsContactNotification;
 import com.cannontech.stars.xml.serialize.StarsCustomerContact;
 
 /**
@@ -20,17 +22,32 @@ public class StarsCustomerContactFactory {
 
     public StarsCustomerContactFactory() {
     }
+    
+    public static StarsContactNotification newStarsContactNotification(boolean enabled, String notification, Class type) {
+        try {
+            StarsContactNotification newNotif = (StarsContactNotification) type.newInstance();
+            newNotif.setEnabled( enabled );
+            newNotif.setNotification( notification );
+            
+            return newNotif;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 
     public static StarsCustomerContact newStarsCustomerContact(StarsCustomerContact contact, Class type) {
         try {
             StarsCustomerContact newContact = (StarsCustomerContact) type.newInstance();
-
             newContact.setContactID( contact.getContactID() );
             newContact.setLastName( contact.getLastName() );
             newContact.setFirstName( contact.getFirstName() );
             newContact.setHomePhone( contact.getHomePhone() );
             newContact.setWorkPhone( contact.getWorkPhone() );
-            newContact.setEmail( contact.getEmail() );
+            newContact.setEmail( (Email) newStarsContactNotification(
+            		contact.getEmail().getEnabled(), contact.getEmail().getNotification(), Email.class) );
 
             return newContact;
         }
@@ -53,6 +70,7 @@ public class StarsCustomerContactFactory {
 	        ContactNotification notif = new ContactNotification();
 	        notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_DEF_ID_HOME_PHONE) );
 	        notif.setNotification( starsContact.getHomePhone() );
+	        notif.setDisableFlag( "Y" );
 	        contactNotifVect.add( notif );
         }
         
@@ -60,13 +78,15 @@ public class StarsCustomerContactFactory {
 	        ContactNotification notif = new ContactNotification();
 	        notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_DEF_ID_WORK_PHONE) );
 	        notif.setNotification( starsContact.getWorkPhone() );
+	        notif.setDisableFlag( "Y" );
 	        contactNotifVect.add( notif );
         }
         
-        if (starsContact.getEmail() != null && starsContact.getEmail().length() > 0) {
+        if (starsContact.getEmail().getNotification().length() > 0) {
 	        ContactNotification notif = new ContactNotification();
 	        notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_DEF_ID_EMAIL) );
-	        notif.setNotification( starsContact.getEmail() );
+	        notif.setNotification( starsContact.getEmail().getNotification() );
+	        notif.setDisableFlag( starsContact.getEmail().getEnabled() ? "N" : "Y" );
 	        contactNotifVect.add( notif );
         }
     }

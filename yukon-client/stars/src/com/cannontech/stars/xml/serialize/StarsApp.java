@@ -72,6 +72,8 @@ public abstract class StarsApp implements java.io.Serializable {
 
     private java.lang.String _notes;
 
+    private java.lang.String _modelNumber;
+
 
       //----------------/
      //- Constructors -/
@@ -183,6 +185,16 @@ public abstract class StarsApp implements java.io.Serializable {
     {
         return this._manufacturer;
     } //-- Manufacturer getManufacturer() 
+
+    /**
+     * Returns the value of field 'modelNumber'.
+     * 
+     * @return the value of field 'modelNumber'.
+    **/
+    public java.lang.String getModelNumber()
+    {
+        return this._modelNumber;
+    } //-- java.lang.String getModelNumber() 
 
     /**
      * Returns the value of field 'notes'.
@@ -345,6 +357,16 @@ public abstract class StarsApp implements java.io.Serializable {
     {
         this._manufacturer = manufacturer;
     } //-- void setManufacturer(Manufacturer) 
+
+    /**
+     * Sets the value of field 'modelNumber'.
+     * 
+     * @param modelNumber the value of field 'modelNumber'.
+    **/
+    public void setModelNumber(java.lang.String modelNumber)
+    {
+        this._modelNumber = modelNumber;
+    } //-- void setModelNumber(java.lang.String) 
 
     /**
      * Sets the value of field 'notes'.

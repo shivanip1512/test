@@ -338,7 +338,7 @@ public class ProgramSignUpAction implements ActionBase {
 					starsProgs.addStarsLMProgram( StarsLiteFactory.createStarsLMProgram(liteProg, liteApp, energyCompanyID) );
 				}
 				
-				if (ServerUtils.isOperator( user )) {
+				if (SOAPServer.isClientLocal() || ServerUtils.isOperator( user )) {
 					ArrayList liteApps = liteAcctInfo.getAppliances();
 					StarsAppliances starsApps = new StarsAppliances();
 					resp.setStarsAppliances( starsApps );

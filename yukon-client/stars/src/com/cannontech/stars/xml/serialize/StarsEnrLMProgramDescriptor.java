@@ -100,6 +100,48 @@ public class StarsEnrLMProgramDescriptor extends org.exolab.castor.xml.util.XMLC
         }
         desc.setValidator(fieldValidator);
         
+        //-- _chanceOfControlID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_chanceOfControlID", "chanceOfControlID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsEnrLMProgram target = (StarsEnrLMProgram) object;
+                if(!target.hasChanceOfControlID())
+                    return null;
+                return new Integer(target.getChanceOfControlID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsEnrLMProgram target = (StarsEnrLMProgram) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteChanceOfControlID();
+                        return;
+                    }
+                    target.setChanceOfControlID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _chanceOfControlID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
         //-- initialize element descriptors
         
         //-- _programName
@@ -128,13 +170,11 @@ public class StarsEnrLMProgramDescriptor extends org.exolab.castor.xml.util.XMLC
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _programName
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");

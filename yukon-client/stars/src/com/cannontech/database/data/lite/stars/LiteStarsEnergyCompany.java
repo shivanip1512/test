@@ -186,6 +186,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				program.setProgramID( progPao.getYukonID() );
 				program.setProgramName( progPao.getPaoName() );
 				program.setWebSettingsID( pubProgram.getWebSettingsID().intValue() );
+				program.setChanceOfControlID( pubProgram.getChanceOfControlID().intValue() );
 				program.setProgramCategory( items[i].getMappingCategory() );
 				
 				try {
@@ -657,7 +658,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				else if (lNotif.getNotificationCategoryID() == com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_WORK_PHONE)
 					liteContact.setWorkPhone( lNotif.getNotification() );
 				else if (lNotif.getNotificationCategoryID() == com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_EMAIL)
-					liteContact.setEmail( lNotif.getNotification() );
+					liteContact.setEmail( LiteCustomerContact.ContactNotification.newInstance(
+							lNotif.getDisableFlag().equals("N"), lNotif.getNotification()) );
 			}
 			
 			synchronized (contactList) { contactList.add( liteContact ); }
@@ -1166,70 +1168,21 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	/* The following methods are only used when SOAPClient exists locally */
 	
 	public StarsCustomerSelectionLists getStarsCustomerSelectionLists() {
-		if (starsCustSelLists == null) {
-			starsCustSelLists = new StarsCustomerSelectionLists();
-            ArrayList selectionLists = getAllSelectionLists();
-            for (int i = 0; i < selectionLists.size(); i++) {
-            	YukonSelectionList list = (YukonSelectionList) selectionLists.get(i);
-            	starsCustSelLists.addStarsCustSelectionList( StarsLiteFactory.createStarsCustSelectionList(list) );
-            }
-		}
-		
+		if (starsCustSelLists == null)
+			starsCustSelLists = StarsLiteFactory.createStarsCustomerSelectionLists( getAllSelectionLists() );
 		return starsCustSelLists;
 	}
 	
 	public StarsEnrollmentPrograms getStarsEnrollmentPrograms(String category) {
-		if (starsEnrPrograms == null) {
-			starsEnrPrograms = new StarsEnrollmentPrograms();
-            ArrayList liteAppCats = getAllApplianceCategories();
-            
-            // Generate the category name, example values: "LMPrograms", "LMPrograms-Switch", "LMPrograms-Thermostat"
-            String wholeCatName = "LMPrograms";
-            if (category != null && category.length() > 0)
-            	wholeCatName += "-" + category;
-            	
-            for (int i = 0; i < liteAppCats.size(); i++) {
-            	LiteApplianceCategory liteAppCat = (LiteApplianceCategory) liteAppCats.get(i);
-            	
-            	// Find only LM programs in the specified category
-            	LiteLMProgram[] liteProgs = liteAppCat.getPublishedPrograms();
-            	ArrayList progsInCat = new ArrayList();
-            	for (int j = 0; j < liteProgs.length; j++) {
-            		if (liteProgs[j].getProgramCategory().startsWith( wholeCatName ))
-            			progsInCat.add( liteProgs[j] );
-            	}
-            	
-            	if (progsInCat.size() > 0)
-            		starsEnrPrograms.addStarsApplianceCategory(
-            			StarsLiteFactory.createStarsApplianceCategory(liteAppCat, progsInCat, getLiteID()) );
-            }
-		}
-		
+		if (starsEnrPrograms == null)
+			starsEnrPrograms = StarsLiteFactory.createStarsEnrollmentPrograms(
+					getAllApplianceCategories(), category, getLiteID() );
 		return starsEnrPrograms;
 	}
 	
 	public StarsCustomerFAQs getStarsCustomerFAQs() {
-		if (starsCustFAQs == null) {
-			starsCustFAQs = new StarsCustomerFAQs();
-			
-            ArrayList liteFAQs = getAllCustomerFAQs();
-            int lastSubjectID = com.cannontech.common.util.CtiUtilities.NONE_ID;
-            StarsCustomerFAQGroup lastGroup = null;
-            
-            // Group the FAQs by their subjects
-            for (int i = 0; i < liteFAQs.size(); i++) {
-            	LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) liteFAQs.get(i);
-            	
-            	if (liteFAQ.getSubjectID() != lastSubjectID) {
-            		lastSubjectID = liteFAQ.getSubjectID();
-            		lastGroup = new StarsCustomerFAQGroup();
-            		lastGroup.setSubject( YukonListFuncs.getYukonListEntry(lastSubjectID).getEntryText() );
-            		starsCustFAQs.addStarsCustomerFAQGroup( lastGroup );
-            	}
-            	lastGroup.addStarsCustomerFAQ( StarsLiteFactory.createStarsCustomerFAQ(liteFAQ) );
-            }
-		}
-		
+		if (starsCustFAQs == null)
+			starsCustFAQs = StarsLiteFactory.createStarsCustomerFAQs( getAllCustomerFAQs() );
 		return starsCustFAQs;
 	}
 	

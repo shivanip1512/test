@@ -39,6 +39,13 @@ public class StarsEnrLMProgram implements java.io.Serializable {
     **/
     private boolean _has_programID;
 
+    private int _chanceOfControlID;
+
+    /**
+     * keeps track of state for field: _chanceOfControlID
+    **/
+    private boolean _has_chanceOfControlID;
+
     private java.lang.String _programName;
 
     private StarsWebConfig _starsWebConfig;
@@ -59,10 +66,27 @@ public class StarsEnrLMProgram implements java.io.Serializable {
 
     /**
     **/
+    public void deleteChanceOfControlID()
+    {
+        this._has_chanceOfControlID= false;
+    } //-- void deleteChanceOfControlID() 
+
+    /**
+    **/
     public void deleteProgramID()
     {
         this._has_programID= false;
     } //-- void deleteProgramID() 
+
+    /**
+     * Returns the value of field 'chanceOfControlID'.
+     * 
+     * @return the value of field 'chanceOfControlID'.
+    **/
+    public int getChanceOfControlID()
+    {
+        return this._chanceOfControlID;
+    } //-- int getChanceOfControlID() 
 
     /**
      * Returns the value of field 'programID'.
@@ -93,6 +117,13 @@ public class StarsEnrLMProgram implements java.io.Serializable {
     {
         return this._starsWebConfig;
     } //-- StarsWebConfig getStarsWebConfig() 
+
+    /**
+    **/
+    public boolean hasChanceOfControlID()
+    {
+        return this._has_chanceOfControlID;
+    } //-- boolean hasChanceOfControlID() 
 
     /**
     **/
@@ -137,6 +168,18 @@ public class StarsEnrLMProgram implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'chanceOfControlID'.
+     * 
+     * @param chanceOfControlID the value of field
+     * 'chanceOfControlID'.
+    **/
+    public void setChanceOfControlID(int chanceOfControlID)
+    {
+        this._chanceOfControlID = chanceOfControlID;
+        this._has_chanceOfControlID = true;
+    } //-- void setChanceOfControlID(int) 
 
     /**
      * Sets the value of field 'programID'.

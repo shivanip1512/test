@@ -22,6 +22,7 @@ function changeCategory(checkbox, index) {
 		form.CatID[index].value = "";
 		form.ProgID[index].value = "";
 	}
+	form.SignUpChanged.value = "true";
 }
 
 function changeProgram(radioBtn, index) {
@@ -29,6 +30,7 @@ function changeProgram(radioBtn, index) {
 	form.AppCat[index].checked = true;
 	form.CatID[index].value = form.AppCat[index].value;
 	form.ProgID[index].value = radioBtn.value;
+	form.SignUpChanged.value = "true";
 }
 </script>
 </head>
@@ -100,6 +102,7 @@ function changeProgram(radioBtn, index) {
                 
 				<form method="post" action="/servlet/SOAPClient">
 				  <input type="hidden" name="action" value="ProgramSignUp">
+				  <input type="hidden" name="SignUpChanged" value="false">
 				  <input type="hidden" name="REDIRECT" value="/user/ConsumerStat/stat/Enrollment.jsp">
 				  <input type="hidden" name="REFERRER" value="/user/ConsumerStat/stat/Enrollment.jsp">
                   <table border="1" cellspacing="0" cellpadding="3">
@@ -112,6 +115,8 @@ function changeProgram(radioBtn, index) {
                       </td>
                     </tr>
 <%
+	boolean showNotification = false;
+	
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
 		StarsLMProgram program = null;
@@ -147,23 +152,29 @@ function changeProgram(radioBtn, index) {
 			/* If more than one program under this category, show the program list */
 %>
                                 <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-                                  <%
+<%
 			for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
 				StarsEnrLMProgram prog = category.getStarsEnrLMProgram(j);
+				String checkStr = "";
+				if (program != null && prog.getProgramID() == program.getProgramID()) {
+					checkStr = "checked";
+					// Check whether we should show the notification box
+					if (prog.getChanceOfControlID() != com.cannontech.common.util.CtiUtilities.NONE_ID)
+						showNotification = true;
+				}
 				/* Each row is a program in this category */
 %>
                                   <tr> 
                                     <td width="37"> <div align="right"> 
-                                        <input type="radio" name="Program<%= i %>" value="<%= prog.getProgramID() %>" onclick="changeProgram(this, <%= i %>)"
-									<% if (program != null && prog.getProgramID() == program.getProgramID()) out.print("checked"); %>>
+                                        <input type="radio" name="Program<%= i %>" value="<%= prog.getProgramID() %>" onclick="changeProgram(this, <%= i %>)" <%= checkStr %>>
                                       </div></td>
                                     <td width="70" class="TableCell"><%= prog.getStarsWebConfig().getAlternateDisplayName() %></td>
                                   </tr>
-                                  <%
+<%
 			}	// End of program
 %>
                                 </table>
-                                <%
+<%
 		}	// End of program list
 %>
                               </td>
@@ -179,21 +190,26 @@ function changeProgram(radioBtn, index) {
 	}
 %>
                   </table>
-                    <p> 
-                     <!--<table width="295" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >   
+                    <p>
+<%
+	if (showNotification) {
+%> 
+                     <table width="295" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >   
                        <tr>    
                          <td height="58"> <p align="center" class="TableCell1">    
-                             <input type="checkbox" name="checkbox3" value="checkbox">
-                            <span class="TableCell3"> I would like to be notified 
-                            by e-mail the day of control.<br>   
+                             <input type="checkbox" name="NotifyControl" value="true"
+							   <% if (primContact.getEmail().getEnabled()) out.print("checked"); %>>
+                             <span class="TableCell3"> I would like to be notified 
+                             by e-mail the day of control.<br>   
                              My e-mail address is:<br>   
-                             <input type="text" name="textfield2" maxlength="20" size="20">   
+                             <input type="text" name="Email" maxlength="50" size="30" value="<%= primContact.getEmail().getNotification() %>">
                              </span></p></td>   
                        </tr>   
-                     </table> -->
-<p>
-                    <p>
-                    </p>
+                     </table>
+<%
+	}
+%>
+					<p>
                     <table width="50%" border="0">
                     <tr>
                       <td align = "right">

@@ -8,7 +8,6 @@
 						  {"ProgramHist.jsp", "Control History"},
 						  {"Programs.jsp", "Enrollment"},
 						  {"OptOut.jsp", "Opt Out"},
-						  {"Odds.jsp", "Control Odds"},
 						  {"CreateCalls.jsp", "Create Call"},
 						  {"Service.jsp", "Service Request"},
 						  {"ServiceSummary.jsp", "Service History"},
@@ -97,17 +96,12 @@
       <div align="left"><span class="Header2">Programs</span><br>
         <%= links.get("ProgramHist.jsp") %><br>
 		<%= links.get("Programs.jsp") %><br>
-        <%= links.get("OptOut.jsp") %><br>
-		<%= links.get("Odds.jsp") %></div>
+        <%= links.get("OptOut.jsp") %></div>
     </td>
   </tr>
   <tr> 
     <td> 
       <div align="left"><span class="Header2">Appliances</span><br>
-        <!--
-	  <%= links.get("Air.jsp") %><br>
-	  <%= links.get("WH.jsp") %></div>
--->
         <%
 		for (int i = 0; i < appLinks.length; i++) {
 %>
@@ -120,11 +114,6 @@
   <tr> 
     <td> 
       <div align="left"><span class="Header2">Hardware</span><br>
-        <!--
-        <%= links.get("LCR5000.jsp") %><br>
-        <%= links.get("Thermostat.jsp") %><br>
-        <%= links.get("Meter.jsp") %></div>
--->
         <%
 		for (int i = 0; i < invLinks.length; i++) {
 %>

@@ -156,6 +156,12 @@ function checkPassword(form) {
                         </td>
                       </tr>
                       <tr> 
+                        <td width="90" class="TableCell">&nbsp;</td>
+                        <td width="210">
+                          <input type="checkbox" name="NotifyControl" value="true">
+                          <span class="TableCell">Notify day of control</span></td>
+                      </tr>
+                      <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Notes:</div>
                         </td>

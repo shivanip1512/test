@@ -4,112 +4,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
-<script language="JavaScript">
-<!--
-var text = [
-<%
-	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
-		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
-%>
-			"<%= category.getStarsWebConfig().getDescription() %>",
-<%
-	}
-%>
-			""];
 
-function toolTipAppear(event, divId, index, w, text) {
-
-	var coordx = getLeftCoordinate();
-	var coordy = getTopCoordinate();
-	var source;
-	if (window.event)
-      source = window.event.srcElement;
-    else
-      source = event.target;
-	
-	source.onmouseout = closeToolTip;
-		
-	var element = document.getElementById(divId);
-	element.innerHTML = text[index]; 
-	element.style.width = w;
-	element.style.left = coordx + 'px';
-	element.style.top = coordy + 'px';
-	element.style.visibility = 'visible';
-	
-	
-	
-function closeToolTip() {
-	var element = document.getElementById(divId);
-	element.style.visibility = 'hidden';
-}
-	
-	
-	
-	
-	
-	function getLeftCoordinate() {
-	var x;
-	if (window.event) {
-		x = window.event.clientX + document.documentElement.scrollLeft + document.body.scrollLeft;
-	}
-	else {
-		x = event.clientX + window.scrollX;
-	}
-	return x;
-}
-
-function getTopCoordinate() {
-	var y;
-	if (window.event) {
-		y = window.event.clientY + document.documentElement.scrollTop + document.body.scrollTop + 20;
-	}
-	else {
-		y = event.clientY + window.scrollY + 20;
-	}
-	return y;
-}
-}
-
-
-
-
-function doReenable(form) {
-	form.action.value = "EnableService";
-	form.submit();
-}
-
-function MM_popupMsg(msg) { //v1.0
-  alert(msg);
-}
-//-->
-
-
-function changeCategory(checkbox, index) {
-	form = checkbox.form;
-	if (checkbox.checked) {
-		radioBtns = eval("form.Program" + index);
-		if (radioBtns != null)
-			radioBtns[0].checked = true;
-		form.CatID[index].value = checkbox.value;
-		form.ProgID[index].value = form.DefProgID[index].value;
-	}
-	else {
-		radioBtns = eval("form.Program" + index);
-		if (radioBtns != null)
-			for (i = 0; i < radioBtns.length; i++)
-				radioBtns[i].checked = false;
-		form.CatID[index].value = "";
-		form.ProgID[index].value = "";
-	}
-}
-
-function changeProgram(radioBtn, index) {
-	form = radioBtn.form;
-	form.AppCat[index].checked = true;
-	form.CatID[index].value = form.AppCat[index].value;
-	form.ProgID[index].value = radioBtn.value;
-}
-</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -155,24 +50,19 @@ function changeProgram(radioBtn, index) {
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101">
-		  <% String pageName = "Programs.jsp"; %>
-          <%@ include file="Nav.jsp" %>
-		  </td>
+          <td  valign="top" width="101">&nbsp; </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "PROGRAMS - ODDS FOR CONTROL"; %>
-              <%@ include file="InfoSearchBar.jsp" %>
+              <%@ include file="InfoSearchBar2.jsp" %>
 			  <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
              
               <div align="center"><span class="Main">Check the appropriate 
                 odds for control for each program.</span><br>
               </div>
 			  <form name="form1" method="post" action="/servlet/SOAPClient">
-			  <input type="hidden" name="action" value="ProgramSignUp">
-			  <input type="hidden" name="REDIRECT" value="/operator/Consumer/Programs.jsp">
-			  <input type="hidden" name="REFERRER" value="/operator/Consumer/Programs.jsp">
+			  	<input type="hidden" name="action" value="SendControlOdds">
                 <table border="1" cellspacing="0" cellpadding="3" width="366">
                   <tr> 
                     <td width="244" class="HeaderCell"> 
@@ -182,89 +72,74 @@ function changeProgram(radioBtn, index) {
                       <div align="center">Odds for Control</div>
                     </td>
                   </tr>
-                  <%
+                  
+                </table>
+             	<table border="1" cellspacing="0" cellpadding="3" width="366">
+<%
+	StarsCustSelectionList oddsList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL );
+	
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
-		StarsLMProgram program = null;
-		String programStatus = "Not Enrolled";
-		
-		for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
-			StarsLMProgram prog = programs.getStarsLMProgram(j);
-			if (prog.getApplianceCategoryID() == category.getApplianceCategoryID()) {
-				program = prog;
-				programStatus = program.getStatus();
-				break;
-			}
+		ArrayList progList = new ArrayList();	// List of programs that're eligible for notification
+		for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
+			StarsEnrLMProgram program = category.getStarsEnrLMProgram(j);
+			if (program.getChanceOfControlID() != com.cannontech.common.util.CtiUtilities.NONE_ID)
+				progList.add( program );
 		}
+		
+		if (progList.size() == 0) continue;
 %>
                   <tr> 
-                    <td width="244" align = "center"> 
-                      <table width="200" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                          <td width="69"><img id="<%= i %>" src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" onClick = "toolTipAppear(event, 'tool', <%= i %>, 350, text)"></td>
-                          <td width="131">
-                            <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-                              <tr> 
-                                <td width="23"> 
-                                  <input type="checkbox" name="AppCat" value="<%= category.getApplianceCategoryID() %>"
-						  onClick="changeCategory(this, <%= i %>)" <% if (program != null) out.print("checked"); %>>
-                                  <input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>">
-                                  <input type="hidden" name="ProgID" value="<% if (program != null) out.print(program.getProgramID()); %>">
-                                  <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrLMProgram(0).getProgramID() %>">
-                                </td>
-                                <td width="84" class="TableCell"><%= category.getStarsWebConfig().getAlternateDisplayName() %></td>
-                              </tr>
-                            </table>
-                            <%
-		if (category.getStarsEnrLMProgramCount() > 1) {
-			/* If more than one program under this category, show the program list */
+                    <td width="285" valign="middle" class="TableCell"> 
+                      <div align="center">
+                        <table width="350" border="0" cellspacing="0" cellpadding="0">
+                          <tr>
+                            <td width="88"><img src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"></td>
+                            <td width="268">
+                              <table width="280" border="0" cellspacing="0" cellpadding="3">
+<%
+		for (int j = 0; j < progList.size(); j++) {
+			StarsEnrLMProgram program = (StarsEnrLMProgram) progList.get(j);
 %>
-                            <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-                              <%
-			for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
-				StarsEnrLMProgram prog = category.getStarsEnrLMProgram(j);
-				/* Each row is a program in this category */
+                                <tr> 
+								  <input type="hidden" name="ProgID" value="<%= program.getProgramID() %>">
+                                  <td width="187" class="TableCell"><%= program.getProgramName() %>
+								  </td>
+                                  <td width="81"> 
+                                    <select name="ControlOdds">
+<%
+			for (int k = 0; k < oddsList.getStarsSelectionListEntryCount(); k++) {
+				StarsSelectionListEntry entry = oddsList.getStarsSelectionListEntry(k);
+				String selectedStr = (entry.getEntryID() == program.getChanceOfControlID()) ? "selected" : "";
 %>
-                              <tr> 
-                                <td width="37"> 
-                                  <div align="right"> 
-                                    <input type="radio" name="Program<%= i %>" value="<%= prog.getProgramID() %>" onClick="changeProgram(this, <%= i %>)"
-							<% if (program != null && prog.getProgramID() == program.getProgramID()) out.print("checked"); %>>
-                                  </div>
-                                </td>
-                                <td width="70" class="TableCell"><%= prog.getStarsWebConfig().getAlternateDisplayName() %></td>
-                              </tr>
-                              <%
-			}	// End of program
+									  <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+<%
+			}
 %>
-                            </table>
-                            <%
-		}	// End of program list
+                                    </select>
+                                  </td>
+                                </tr>
+<%
+		}
 %>
-                          </td>
-                        </tr>
-                      </table>
-                      
-                    </td>
-                    <td width="104" valign="middle" class="TableCell"> 
-                      <div align="center"> 
-                        <select name="select">
-                          <option>Likely</option>
-                          <option>Unlikely</option>
-                        </select>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                        
                       </div>
                     </td>
                   </tr>
-                  <%
+<%
 	}
 %>
                 </table>
-             
+				<p>
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                   <tr> 
                     <td width="186"> 
                       <div align="right"> 
-                        <input type="submit" name="Submit" value="Submit" onClick="MM_popupMsg('Are you sure you would like to modify these program options?')">
+                        <input type="submit" name="Submit" value="Submit">
                       </div>
                     </td>
                     <td width="194"> 

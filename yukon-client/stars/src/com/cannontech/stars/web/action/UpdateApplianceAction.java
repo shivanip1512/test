@@ -38,6 +38,7 @@ public class UpdateApplianceAction implements ActionBase {
 			updateApp.setApplianceID( Integer.parseInt(req.getParameter("AppID")) );
 			updateApp.setYearManufactured( req.getParameter("ManuYear") );
 			updateApp.setNotes( req.getParameter("Notes") );
+			updateApp.setModelNumber( req.getParameter("ModelNo") );
 			
 			Manufacturer manu = (Manufacturer) StarsCustListEntryFactory.newStarsCustListEntry(
 					StarsCustListEntryFactory.getStarsCustListEntryByID(
@@ -95,6 +96,7 @@ public class UpdateApplianceAction implements ActionBase {
             		liteApp.setYearManufactured( Integer.parseInt(updateApp.getYearManufactured()) );
             		liteApp.setLocationID( updateApp.getLocation().getEntryID() );
             		liteApp.setNotes( updateApp.getNotes() );
+            		liteApp.setModelNumber( updateApp.getModelNumber() );
             		
             		com.cannontech.database.data.stars.appliance.ApplianceBase app =
             				(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );

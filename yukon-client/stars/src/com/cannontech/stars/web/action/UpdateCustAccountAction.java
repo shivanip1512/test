@@ -13,24 +13,8 @@ import com.cannontech.stars.util.*;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.StarsCustAccountFactory;
-import com.cannontech.stars.xml.StarsCustomerAddressFactory;
-import com.cannontech.stars.xml.StarsCustomerContactFactory;
-import com.cannontech.stars.xml.StarsCustListEntryFactory;
-import com.cannontech.stars.xml.StarsFailureFactory;
-import com.cannontech.stars.xml.serialize.BillingAddress;
-import com.cannontech.stars.xml.serialize.PrimaryContact;
-import com.cannontech.stars.xml.serialize.AdditionalContact;
-import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
-import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
-import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.serialize.StarsSiteInformation;
-import com.cannontech.stars.xml.serialize.StarsSuccess;
-import com.cannontech.stars.xml.serialize.StarsUpdateCustomerAccount;
-import com.cannontech.stars.xml.serialize.StarsUpdateCustomerAccountResponse;
-import com.cannontech.stars.xml.serialize.StreetAddress;
-import com.cannontech.stars.xml.serialize.Substation;
+import com.cannontech.stars.xml.*;
+import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -101,7 +85,11 @@ public class UpdateCustAccountAction implements ActionBase {
             primContact.setFirstName( req.getParameter("FirstName") );
             primContact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone")) );
             primContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone")) );
-            primContact.setEmail( req.getParameter("Email") );
+            
+            Email email = new Email();
+            email.setNotification( req.getParameter("Email") );
+            email.setEnabled( Boolean.valueOf(req.getParameter("NotifyControl")).booleanValue() );
+            primContact.setEmail( email );
             account.setPrimaryContact( primContact );
             
             account.setTimeZone( ServletUtils.getTimeZoneStr(Calendar.getInstance().getTimeZone()) );

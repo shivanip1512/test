@@ -2,6 +2,7 @@ package com.cannontech.database.db.stars;
 
 import java.sql.SQLException;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -16,9 +17,12 @@ public class LMProgramWebPublishing extends DBPersistent {
 
     private Integer applianceCategoryID = null;
     private Integer lmProgramID = null;
-    private Integer webSettingsID = new Integer(0);
+    private Integer webSettingsID = new Integer(CtiUtilities.NONE_ID);
+    private Integer chanceOfControlID = new Integer(CtiUtilities.NONE_ID);
 
-    public static final String[] SETTER_COLUMNS = { "WebSettingsID" };
+    public static final String[] SETTER_COLUMNS = {
+    	"WebSettingsID", "ChanceOfControlID"
+    };
 
     public static final String[] CONSTRAINT_COLUMNS = {
     	"ApplianceCategoryID", "LMProgramID"
@@ -31,7 +35,7 @@ public class LMProgramWebPublishing extends DBPersistent {
 	 */
 	public void add() throws SQLException {
 		Object[] addValues = {
-			getApplianceCategoryID(), getLMProgramID(), getWebSettingsID()
+			getApplianceCategoryID(), getLMProgramID(), getWebSettingsID(), getChanceOfControlID()
 		};
 		
 		add(TABLE_NAME, addValues);
@@ -60,6 +64,7 @@ public class LMProgramWebPublishing extends DBPersistent {
 		
         if (results.length == SETTER_COLUMNS.length) {
             setWebSettingsID( (Integer) results[0] );
+            setChanceOfControlID( (Integer) results[1] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -69,7 +74,7 @@ public class LMProgramWebPublishing extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
 	public void update() throws SQLException {
-		Object[] setValues = { getWebSettingsID() };
+		Object[] setValues = { getWebSettingsID(), getChanceOfControlID() };
 		Object[] constraintValues = {
 			getApplianceCategoryID(), getLMProgramID()
 		};
@@ -78,7 +83,8 @@ public class LMProgramWebPublishing extends DBPersistent {
 	}
 	
 	public static LMProgramWebPublishing getLMProgramWebPublishing(Integer programID) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE LMProgramID = " + programID.toString();
+        String sql = "SELECT ApplianceCategoryID, LMProgramID, WebSettingsID, ChanceOfControlID "
+        		   + "FROM " + TABLE_NAME + " WHERE LMProgramID = " + programID.toString();
         
         com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
         		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
@@ -94,6 +100,7 @@ public class LMProgramWebPublishing extends DBPersistent {
 				webPub.setApplianceCategoryID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
 				webPub.setLMProgramID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
 				webPub.setWebSettingsID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+				webPub.setChanceOfControlID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
 
                 return webPub;
             }
@@ -107,7 +114,8 @@ public class LMProgramWebPublishing extends DBPersistent {
 	}
 
     public static LMProgramWebPublishing[] getAllLMProgramWebPublishing(Integer appCatID) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + appCatID.toString();
+        String sql = "SELECT ApplianceCategoryID, LMProgramID, WebSettingsID, ChanceOfControlID "
+        		   + "FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + appCatID.toString();
         
         com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
         		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
@@ -124,6 +132,7 @@ public class LMProgramWebPublishing extends DBPersistent {
 				webPubs[i].setApplianceCategoryID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
 				webPubs[i].setLMProgramID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
 				webPubs[i].setWebSettingsID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+				webPubs[i].setChanceOfControlID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
             }
             
             return webPubs;
@@ -216,6 +225,22 @@ public class LMProgramWebPublishing extends DBPersistent {
 	 */
 	public void setWebSettingsID(Integer webSettingsID) {
 		this.webSettingsID = webSettingsID;
+	}
+
+	/**
+	 * Returns the chanceOfControlID.
+	 * @return Integer
+	 */
+	public Integer getChanceOfControlID() {
+		return chanceOfControlID;
+	}
+
+	/**
+	 * Sets the chanceOfControlID.
+	 * @param chanceOfControlID The chanceOfControlID to set
+	 */
+	public void setChanceOfControlID(Integer chanceOfControlID) {
+		this.chanceOfControlID = chanceOfControlID;
 	}
 
 }

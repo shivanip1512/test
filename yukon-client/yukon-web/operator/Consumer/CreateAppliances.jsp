@@ -105,7 +105,7 @@
                     <td width="100" class="TableCell"> 
                       <div align="right">Model #:</div>
                     </td>
-                    <td width="200"><input type="text" name="ModelNumber" maxlength="40" size="30" value=""></td>
+                    <td width="200"><input type="text" name="ModelNo" maxlength="40" size="30" value=""></td>
                   </tr>
                   <tr> 
                     <td width="100" class="TableCell"> 

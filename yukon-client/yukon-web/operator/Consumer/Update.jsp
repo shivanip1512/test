@@ -150,7 +150,7 @@ function copyAddress(form) {
                           <div align="right">e-mail Address:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="Email" maxlength="50" size="24" value="<%= primContact.getEmail() %>">
+                          <input type="text" name="Email" maxlength="50" size="24" value="<%= primContact.getEmail().getNotification() %>">
                         </td>
                       </tr>
 					  <tr> 
@@ -158,7 +158,8 @@ function copyAddress(form) {
                           <div align="right"></div>
                         </td>
                         <td width="210"> 
-                          <input type="checkbox" name="checkbox" value="checkbox">
+                          <input type="checkbox" name="NotifyControl" value="true"
+						  	<% if (primContact.getEmail().getEnabled()) out.print("checked"); %>>
                           <span class="TableCell">Notify day of control</span></td>
                       </tr>
                       <tr> 

@@ -7,7 +7,9 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.xml.StarsCustomerContactFactory;
 import com.cannontech.stars.xml.serialize.AdditionalContact;
+import com.cannontech.stars.xml.serialize.Email;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
@@ -56,7 +58,8 @@ public class UpdateContacts extends HttpServlet {
             primContact.setFirstName( firstName );
             primContact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone")) );
             primContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone")) );
-            primContact.setEmail( req.getParameter("Email") );
+            primContact.setEmail( (Email) StarsCustomerContactFactory.newStarsContactNotification(
+            		false, req.getParameter("Email"), Email.class) );
             account.setPrimaryContact( primContact );
         }
 
@@ -74,7 +77,8 @@ public class UpdateContacts extends HttpServlet {
                 contact.setFirstName( firstName );
                 contact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone" + i)) );
                 contact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone" + i)) );
-                contact.setEmail( req.getParameter("Email" + i) );
+            	contact.setEmail( (Email) StarsCustomerContactFactory.newStarsContactNotification(
+            			false, req.getParameter("Email" + i), Email.class) );
                 account.addAdditionalContact( contact );
             }
         }

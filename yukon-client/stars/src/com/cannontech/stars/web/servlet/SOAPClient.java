@@ -161,7 +161,13 @@ public class SOAPClient extends HttpServlet {
 			nextURL = errorURL = "/operator/Consumer/New.jsp";
 		}
 		else if (action.equalsIgnoreCase("ProgramSignUp")) {
-			clientAction = new ProgramSignUpAction();
+            MultiAction actions = new MultiAction();
+            if (Boolean.valueOf( req.getParameter("SignUpChanged") ).booleanValue())
+            	actions.addAction( new ProgramSignUpAction(), req, session );
+			if (req.getParameter("Email") != null)
+	            actions.addAction( new UpdateControlNotificationAction(), req, session );
+	            
+			clientAction = (ActionBase) actions;
         	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
         	nextURL = errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
 		}
@@ -337,6 +343,11 @@ public class SOAPClient extends HttpServlet {
         	clientAction = new UpdateThermostatManualOptionAction();
         	destURL = "/user/ConsumerStat/stat/Thermostat.jsp";
         	nextURL = errorURL = "/user/ConsumerStat/stat/Thermostat.jsp";
+        }
+        else if (action.equalsIgnoreCase("SendControlOdds")) {
+        	clientAction = new SendOddsForControlAction();
+        	destURL = "/operator/Consumer/Odds.jsp";
+        	nextURL = errorURL = "/operator/Consumer/Odds.jsp";
         }
         else {
             CTILogger.info( "SOAPClient: Invalid action type '" + action + "'");

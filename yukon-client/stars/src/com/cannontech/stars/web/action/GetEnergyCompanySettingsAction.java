@@ -10,6 +10,7 @@ import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.serialize.*;
@@ -83,14 +84,47 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
             StarsGetEnergyCompanySettingsResponse resp = new StarsGetEnergyCompanySettingsResponse();
-            if (ServerUtils.isOperator( user )) {
-            	resp.setStarsEnrollmentPrograms( energyCompany.getStarsEnrollmentPrograms(getSettings.getProgramCategory()) );
-            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists() );
+            if (SOAPServer.isClientLocal()) {
+	            if (ServerUtils.isOperator( user )) {
+	            	resp.setStarsEnrollmentPrograms( energyCompany.getStarsEnrollmentPrograms(getSettings.getProgramCategory()) );
+	            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists() );
+	            }
+	            else if (ServerUtils.isResidentialCustomer( user )) {
+		            resp.setStarsWebConfig( energyCompany.getStarsWebConfig(energyCompany.getWebConfigID()) );
+	            	resp.setStarsEnrollmentPrograms( energyCompany.getStarsEnrollmentPrograms(getSettings.getProgramCategory()) );
+	            	resp.setStarsCustomerFAQs( energyCompany.getStarsCustomerFAQs() );
+	            }
+	        	
+	        	if (resp.getStarsWebConfig() != null)
+	        		user.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_WEB_CONFIG, resp.getStarsWebConfig() );
+	        	if (resp.getStarsEnrollmentPrograms() != null)
+		    		user.setAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS, resp.getStarsEnrollmentPrograms() );
+	        	if (resp.getStarsCustomerSelectionLists() != null) {
+		            Hashtable selectionListTable = new Hashtable();
+		            for (int i = 0; i < resp.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
+		            	StarsCustSelectionList list = resp.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
+		            	selectionListTable.put( list.getListName(), list );
+		            }
+		        	user.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
+	        	}
+	        	if (resp.getStarsCustomerFAQs() != null)
+		        	user.setAttribute( ServletUtils.ATT_CUSTOMER_FAQS, resp.getStarsCustomerFAQs() );
             }
-            else if (ServerUtils.isResidentialCustomer( user )) {
-	            resp.setStarsWebConfig( energyCompany.getStarsWebConfig(energyCompany.getWebConfigID()) );
-            	resp.setStarsEnrollmentPrograms( energyCompany.getStarsEnrollmentPrograms(getSettings.getProgramCategory()) );
-            	resp.setStarsCustomerFAQs( energyCompany.getStarsCustomerFAQs() );
+            else {
+	            if (ServerUtils.isOperator( user )) {
+	            	resp.setStarsEnrollmentPrograms( StarsLiteFactory.createStarsEnrollmentPrograms(
+	            			energyCompany.getAllApplianceCategories(), getSettings.getProgramCategory(), energyCompanyID) );
+	            	resp.setStarsCustomerSelectionLists( StarsLiteFactory.createStarsCustomerSelectionLists(
+	            			energyCompany.getAllSelectionLists()) );
+	            }
+	            else if (ServerUtils.isResidentialCustomer( user )) {
+		            resp.setStarsWebConfig( StarsLiteFactory.createStarsWebConfig(
+		            		SOAPServer.getWebConfiguration(energyCompany.getWebConfigID())) );
+	            	resp.setStarsEnrollmentPrograms( StarsLiteFactory.createStarsEnrollmentPrograms(
+	            			energyCompany.getAllApplianceCategories(), getSettings.getProgramCategory(), energyCompanyID) );
+	            	resp.setStarsCustomerFAQs( StarsLiteFactory.createStarsCustomerFAQs(
+	            			energyCompany.getAllCustomerFAQs()) );
+	            }
             }
             
             respOper.setStarsGetEnergyCompanySettingsResponse( resp );
@@ -128,33 +162,24 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
             StarsGetEnergyCompanySettingsResponse resp = operation.getStarsGetEnergyCompanySettingsResponse();
             if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             
-        	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-        	
-        	if (resp.getStarsWebConfig() != null)
-        		user.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_WEB_CONFIG, resp.getStarsWebConfig() );
-        		
-        	if (resp.getStarsEnrollmentPrograms() != null) {
-	            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-	            String category = reqOper.getStarsGetEnergyCompanySettings().getProgramCategory();
-	            StringBuffer attName = new StringBuffer( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
-	            if (category != null && category.length() > 0)
-	            	attName.append("_").append( category.toUpperCase() );
-	            	
-	    		user.setAttribute( attName.toString(), resp.getStarsEnrollmentPrograms() );
-        	}
-        	
-        	if (resp.getStarsCustomerSelectionLists() != null) {
-	            Hashtable selectionListTable = new Hashtable();
-	            for (int i = 0; i < resp.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
-	            	StarsCustSelectionList list = resp.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
-	            	selectionListTable.put( list.getListName(), list );
-	            }
-	            
-	        	user.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
-        	}
-        	
-        	if (resp.getStarsCustomerFAQs() != null)
-	        	user.setAttribute( ServletUtils.ATT_CUSTOMER_FAQS, resp.getStarsCustomerFAQs() );
+            if (!SOAPClient.isServerLocal()) {
+	        	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+	        	
+	        	if (resp.getStarsWebConfig() != null)
+	        		user.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_WEB_CONFIG, resp.getStarsWebConfig() );
+	        	if (resp.getStarsEnrollmentPrograms() != null)
+		    		user.setAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS, resp.getStarsEnrollmentPrograms() );
+	        	if (resp.getStarsCustomerSelectionLists() != null) {
+		            Hashtable selectionListTable = new Hashtable();
+		            for (int i = 0; i < resp.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
+		            	StarsCustSelectionList list = resp.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
+		            	selectionListTable.put( list.getListName(), list );
+		            }
+		        	user.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
+	        	}
+	        	if (resp.getStarsCustomerFAQs() != null)
+		        	user.setAttribute( ServletUtils.ATT_CUSTOMER_FAQS, resp.getStarsCustomerFAQs() );
+            }
             
             return 0;
         }

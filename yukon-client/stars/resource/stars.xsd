@@ -52,13 +52,14 @@
 			<xs:enumeration value="On"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:complexType name="stars-CustomerContact">
+	
+	<xs:complexType name="stars-ContactNotification"><xs:sequence><xs:element name="Enabled" type="xs:boolean"/><xs:element name="Notification" type="xs:string"/></xs:sequence></xs:complexType><xs:complexType name="stars-CustomerContact">
 		<xs:sequence>
 			<xs:element name="LastName" type="xs:string"/>
 			<xs:element name="FirstName" type="xs:string"/>
 			<xs:element name="HomePhone" type="xs:string"/>
 			<xs:element name="WorkPhone" type="xs:string"/>
-			<xs:element name="Email" type="xs:string" minOccurs="0"/>
+			<xs:element name="Email" type="stars-ContactNotification" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="contactID" type="xs:int"/>
 	</xs:complexType>
@@ -112,7 +113,7 @@
 			<xs:element name="Location" type="stars-CustListEntry"/>
 			<xs:element name="ServiceCompany" type="stars-CustListEntry" minOccurs="0"/>
 			<xs:element name="Notes" type="xs:string"/>
-		</xs:sequence>
+		<xs:element name="ModelNumber" type="xs:string"/></xs:sequence>
 		<xs:attribute name="applianceID" type="xs:int"/>
 		<xs:attribute name="applianceCategoryID" type="xs:int"/>
 		<xs:attribute name="inventoryID" type="xs:int"/>
@@ -275,7 +276,7 @@
 				<xs:element ref="stars-SendExitInterviewAnswers" minOccurs="0"/>
 				<xs:element ref="stars-GetEnergyCompanySettings" minOccurs="0"/>
 				<xs:element ref="stars-GetEnergyCompanySettingsResponse" minOccurs="0"/>
-			</xs:all>
+			<xs:element ref="stars-UpdateControlNotification" minOccurs="0"/><xs:element ref="stars-SendOddsForControl" minOccurs="0"/></xs:all>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-SULMPrograms">
@@ -743,11 +744,11 @@
 	<xs:element name="stars-EnrLMProgram">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="ProgramName" type="xs:string"/>
+				<xs:element name="ProgramName" type="xs:string" minOccurs="0"/>
 				<xs:element ref="stars-WebConfig" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="programID" type="xs:int"/>
-		</xs:complexType>
+		<xs:attribute name="chanceOfControlID" type="xs:int"/></xs:complexType>
 	</xs:element>
 	<xs:element name="stars-CustSelectionList">
 		<xs:complexType>
@@ -994,4 +995,6 @@
 	</xs:element>
 	<xs:element name="stars-GetEnergyCompanySettings"><xs:complexType><xs:sequence><xs:element name="EnergyCompanyID" minOccurs="0" type="xs:int"/><xs:element name="ProgramCategory" minOccurs="0" type="xs:string"/></xs:sequence></xs:complexType></xs:element>
 	<xs:element name="stars-GetEnergyCompanySettingsResponse"><xs:complexType><xs:sequence><xs:element ref="stars-WebConfig" minOccurs="0"/><xs:element ref="stars-EnrollmentPrograms" minOccurs="0"/><xs:element ref="stars-CustomerSelectionLists" minOccurs="0"/><xs:element ref="stars-CustomerFAQs" minOccurs="0"/></xs:sequence></xs:complexType></xs:element>
+	<xs:element name="stars-UpdateControlNotification"><xs:complexType><xs:sequence><xs:element name="Email" type="stars-ContactNotification" minOccurs="0"/></xs:sequence></xs:complexType></xs:element>
+	<xs:element name="stars-SendOddsForControl"><xs:complexType><xs:sequence><xs:element ref="stars-EnrLMProgram" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element>
 </xs:schema>

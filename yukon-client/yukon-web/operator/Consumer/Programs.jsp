@@ -101,6 +101,7 @@ function changeCategory(checkbox, index) {
 		form.CatID[index].value = "";
 		form.ProgID[index].value = "";
 	}
+	form.SignUpChanged.value = "true";
 }
 
 function changeProgram(radioBtn, index) {
@@ -108,6 +109,7 @@ function changeProgram(radioBtn, index) {
 	form.AppCat[index].checked = true;
 	form.CatID[index].value = form.AppCat[index].value;
 	form.ProgID[index].value = radioBtn.value;
+	form.SignUpChanged.value = "true";
 }
 </script>
 </head>
@@ -173,6 +175,7 @@ function changeProgram(radioBtn, index) {
               </div>
 			  <form name="form1" method="post" action="/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="ProgramSignUp">
+			  <input type="hidden" name="SignUpChanged" value="false">
 			  <input type="hidden" name="REDIRECT" value="/operator/Consumer/Programs.jsp">
 			  <input type="hidden" name="REFERRER" value="/operator/Consumer/Programs.jsp">
               <table border="1" cellspacing="0" cellpadding="3" width="366">

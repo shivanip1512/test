@@ -20,6 +20,7 @@ public class LiteStarsAppliance extends LiteBase {
 	private int manufacturerID = com.cannontech.common.util.CtiUtilities.NONE_ID;
 	private int locationID = com.cannontech.common.util.CtiUtilities.NONE_ID;
 	private String notes = null;
+	private String modelNumber = null;
 	
 	private int inventoryID = com.cannontech.database.db.stars.hardware.InventoryBase.NONE_INT;
 	private int addressingGroupID = 0;
@@ -185,6 +186,22 @@ public class LiteStarsAppliance extends LiteBase {
 	 */
 	public void setInventoryID(int inventoryID) {
 		this.inventoryID = inventoryID;
+	}
+
+	/**
+	 * Returns the modelNumber.
+	 * @return String
+	 */
+	public String getModelNumber() {
+		return modelNumber;
+	}
+
+	/**
+	 * Sets the modelNumber.
+	 * @param modelNumber The modelNumber to set
+	 */
+	public void setModelNumber(String modelNumber) {
+		this.modelNumber = modelNumber;
 	}
 
 }

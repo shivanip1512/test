@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerContactDescriptor.java,v 1.26 2003/03/11 23:34:47 zyao Exp $
+ * $Id: StarsCustomerContactDescriptor.java,v 1.27 2003/03/14 23:51:09 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.26 $ $Date: 2003/03/11 23:34:47 $
+ * @version $Revision: 1.27 $ $Date: 2003/03/14 23:51:09 $
 **/
 public class StarsCustomerContactDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -263,8 +263,7 @@ public class StarsCustomerContactDescriptor extends org.exolab.castor.xml.util.X
         desc.setValidator(fieldValidator);
         
         //-- _email
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_email", "Email", NodeType.Element);
-        desc.setImmutable(true);
+        desc = new XMLFieldDescriptorImpl(Email.class, "_email", "Email", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -277,14 +276,14 @@ public class StarsCustomerContactDescriptor extends org.exolab.castor.xml.util.X
             {
                 try {
                     StarsCustomerContact target = (StarsCustomerContact) object;
-                    target.setEmail( (java.lang.String) value);
+                    target.setEmail( (Email) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new Email();
             }
         } );
         desc.setHandler(handler);
@@ -293,11 +292,6 @@ public class StarsCustomerContactDescriptor extends org.exolab.castor.xml.util.X
         
         //-- validation code for: _email
         fieldValidator = new FieldValidator();
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsCustomerContactDescriptor()

@@ -51,7 +51,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     private static SOAPServer instance = null;
     
     // Timer object for periodical tasks
-    private Timer timer = new Timer();
+    private static Timer timer = new Timer();
     
     private StarsTimerTask[] timerTasks = {
     	new DailyTimerTask(),
@@ -105,64 +105,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		if (connToPIL == null) return null;
 		return connToPIL.getConnection();
 	}
-
-    /*
-     * Start implementation of ReqRespListener
-     */
-    public void init() throws javax.servlet.ServletException {
-    	if (instance != null) return;
-    	
-		getAllWebConfigurations();
-    	LiteStarsEnergyCompany[] companies = getAllEnergyCompanies();
-    	if (companies != null) {
-	    	for (int i = 0; i < companies.length; i++) {
-	    		if (companies[i].getEnergyCompanyID().intValue() < 0) continue;	// Don't initialize the default company now
-	    		companies[i].init();
-	    	}
-    	}
-    	
-    	connToPIL = (com.cannontech.servlet.PILConnectionServlet)
-    			getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID);
-    	initDispatchConnection();    	
-    	startTimers();
-    	
-    	instance = this;
-    }
-
-    public SOAPMessage onMessage(SOAPMessage message) {
-        StarsOperation respOper = new StarsOperation();
-
-        try {
-        	StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( message );
-        	if (reqOper == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_NODE_NOT_FOUND, "Invalid request format") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-        	}
-        	
-            StarsSuccess success = new StarsSuccess();
-            success.setDescription( "Thanks for waking me up :)" );
-            respOper.setStarsSuccess( success );
-            
-            return SOAPUtil.buildSOAPMessage( respOper );
-        }
-        catch (Exception e) {
-        	try {
-	        	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
-	        			StarsConstants.FAILURE_CODE_RUNTIME_ERROR, "Server error: cannot process request") );
-	        	return SOAPUtil.buildSOAPMessage( respOper );
-        	}
-        	catch (Exception e2) {
-        		e2.printStackTrace();
-        	}
-        }
-
-        return null;
-    }
-    
-    /*
-     * Start implementation of class functions
-     */
+	
 	void initDispatchConnection() 
 	{
 		String host = null;
@@ -208,32 +151,100 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		}
 	
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);	
-		//dbChangeListener = new DBChangeMessageListener();
-		//dbChangeListener.start();
 	}
     
-    void startTimers() {
-    	for (int i = 0; i < timerTasks.length; i++) {
-    		if (timerTasks[i].isFixedRate()) {
-    			long initRunTime = System.currentTimeMillis() + timerTasks[i].getInitialDelay();
-    			long startTime = timerTasks[i].getNextScheduledTime().getTime();
-    			if (initRunTime < startTime) {
-    				try {
-    					StarsTimerTask initTask = (StarsTimerTask) timerTasks[i].getClass().newInstance();
-	    				timer.schedule( initTask, timerTasks[i].getInitialDelay() );
-    				}
-    				catch (Exception e) {
-    					e.printStackTrace();
-    				}
-    			}
-    			
-	    		timer.scheduleAtFixedRate( timerTasks[i], timerTasks[i].getNextScheduledTime(), timerTasks[i].getTimerPeriod() );
-    		}
-    		else
-    			timer.schedule( timerTasks[i], timerTasks[i].getInitialDelay(), timerTasks[i].getTimerPeriod() );
+	public static void runTimerTask(StarsTimerTask timerTask) {
+		if (timerTask.isFixedRate()) {
+			/* Run the first time after the initial delay,
+			 * then run periodically at a fixed rate, e.g. at every midnight
+			 */
+			long initRunTime = System.currentTimeMillis() + timerTask.getInitialDelay();
+			long startTime = timerTask.getNextScheduledTime().getTime();
+			if (initRunTime < startTime) {
+				try {
+					StarsTimerTask initTask = (StarsTimerTask) timerTask.getClass().newInstance();
+    				timer.schedule( initTask, timerTask.getInitialDelay() );
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+    		timer.scheduleAtFixedRate( timerTask, timerTask.getNextScheduledTime(), timerTask.getTimerPeriod() );
+		}
+		else if (timerTask.getTimerPeriod() == 0) {
+			/* Run just once after the initial delay,
+			 * If initial delay set to 0, has the same effect as creating a new thread
+			 */
+			timer.schedule( timerTask, timerTask.getInitialDelay() );
+		}
+		else {
+			/* Run the first time after the initial delay,
+			 * then run periodically at a fixed delay, e.g. every 5 minutes
+			 */
+			timer.schedule( timerTask, timerTask.getInitialDelay(), timerTask.getTimerPeriod() );
+		}
+	}
+
+    /*
+     * Start implementation of ReqRespListener
+     */
+    public void init() throws javax.servlet.ServletException {
+    	if (instance != null) return;
+    	
+		getAllWebConfigurations();
+    	LiteStarsEnergyCompany[] companies = getAllEnergyCompanies();
+    	if (companies != null) {
+	    	for (int i = 0; i < companies.length; i++) {
+	    		if (companies[i].getEnergyCompanyID().intValue() < 0) continue;	// Don't initialize the default company now
+	    		companies[i].init();
+	    	}
     	}
+    	
+    	connToPIL = (com.cannontech.servlet.PILConnectionServlet)
+    			getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID);
+    			
+    	initDispatchConnection();
+    	
+    	for (int i = 0; i < timerTasks.length; i++)
+    		runTimerTask( timerTasks[i] );
+    	
+    	instance = this;
+    }
+
+    public SOAPMessage onMessage(SOAPMessage message) {
+        StarsOperation respOper = new StarsOperation();
+
+        try {
+        	StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( message );
+        	if (reqOper == null) {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_NODE_NOT_FOUND, "Invalid request format") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+        	}
+        	
+            StarsSuccess success = new StarsSuccess();
+            success.setDescription( "Thanks for waking me up :)" );
+            respOper.setStarsSuccess( success );
+            
+            return SOAPUtil.buildSOAPMessage( respOper );
+        }
+        catch (Exception e) {
+        	try {
+	        	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	        			StarsConstants.FAILURE_CODE_RUNTIME_ERROR, "Server error: cannot process request") );
+	        	return SOAPUtil.buildSOAPMessage( respOper );
+        	}
+        	catch (Exception e2) {
+        		e2.printStackTrace();
+        	}
+        }
+
+        return null;
     }
     
+    /*
+     * Start implementation of class functions
+     */
     public static LiteStarsEnergyCompany[] getAllEnergyCompanies() {
     	if (energyCompanies == null) {
 	    	java.sql.Connection conn = null;
@@ -415,6 +426,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				energyCompany.getAddress( liteAcctInfo.getCustomerAccount().getBillingAddressID() ).retrieve();
 				liteAcctInfo.getCustomerAccount().retrieve();
 				
+				LiteCustomerContact litePrimContact = energyCompany.getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+				litePrimContact.retrieve();
 				ArrayList contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
 				for (int i = 0; i < contacts.size(); i++)
 					energyCompany.deleteCustomerContact( ((Integer) contacts.get(i)).intValue() );

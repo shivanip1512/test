@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerContact.java,v 1.26 2003/03/11 23:34:35 zyao Exp $
+ * $Id: StarsCustomerContact.java,v 1.27 2003/03/14 23:51:00 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.26 $ $Date: 2003/03/11 23:34:35 $
+ * @version $Revision: 1.27 $ $Date: 2003/03/14 23:51:00 $
 **/
 public abstract class StarsCustomerContact implements java.io.Serializable {
 
@@ -47,7 +47,7 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
 
     private java.lang.String _workPhone;
 
-    private java.lang.String _email;
+    private Email _email;
 
 
       //----------------/
@@ -85,10 +85,10 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
      * 
      * @return the value of field 'email'.
     **/
-    public java.lang.String getEmail()
+    public Email getEmail()
     {
         return this._email;
-    } //-- java.lang.String getEmail() 
+    } //-- Email getEmail() 
 
     /**
      * Returns the value of field 'firstName'.
@@ -182,10 +182,10 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
      * 
      * @param email the value of field 'email'.
     **/
-    public void setEmail(java.lang.String email)
+    public void setEmail(Email email)
     {
         this._email = email;
-    } //-- void setEmail(java.lang.String) 
+    } //-- void setEmail(Email) 
 
     /**
      * Sets the value of field 'firstName'.

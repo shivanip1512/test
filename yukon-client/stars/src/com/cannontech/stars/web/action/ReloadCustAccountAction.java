@@ -70,10 +70,12 @@ public class ReloadCustAccountAction implements ActionBase {
         	}
         	
             int energyCompanyID = user.getEnergyCompanyID();
+            LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
 			StarsCustAccountInformation starsAcctInfo = null;
 			if (SOAPServer.isClientLocal()) {
-				starsAcctInfo = SOAPServer.getEnergyCompany( energyCompanyID ).getStarsCustAccountInformation( liteAcctInfo );
+				energyCompany.updateCustAccountInformation( liteAcctInfo );
+				starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
 				user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
 			}
 			else

@@ -2,25 +2,18 @@
 <%
 	AdditionalContact[] contacts = new AdditionalContact[3];
 	for (int i = 0; i < 3; i++) {
-		contacts[i] = new AdditionalContact();
-		contacts[i].setContactID(0);
-		contacts[i].setLastName("");
-		contacts[i].setFirstName("");
-		contacts[i].setHomePhone("");
-		contacts[i].setWorkPhone("");
-		contacts[i].setEmail("");
-	}
-	
-	for (int i = 0; i < 3; i++) {
-		if (account.getAdditionalContactCount() <= i) break;
-		
-		AdditionalContact contact = account.getAdditionalContact(i);
-		contacts[i].setContactID( contact.getContactID() );
-		contacts[i].setLastName( contact.getLastName() );
-		contacts[i].setFirstName( contact.getFirstName() );
-		contacts[i].setHomePhone( contact.getHomePhone() );
-		contacts[i].setWorkPhone( contact.getWorkPhone() );
-		contacts[i].setEmail( contact.getEmail() );
+		if (i < account.getAdditionalContactCount())
+			contacts[i] = account.getAdditionalContact(i);
+		else {
+			contacts[i] = new AdditionalContact();
+			contacts[i].setContactID(0);
+			contacts[i].setLastName("");
+			contacts[i].setFirstName("");
+			contacts[i].setHomePhone("");
+			contacts[i].setWorkPhone("");
+			contacts[i].setEmail( (Email) com.cannontech.stars.xml.StarsCustomerContactFactory
+					.newStarsContactNotification(false, "", Email.class) );
+		}
 	}
 %>
 
@@ -150,7 +143,7 @@ function saveChanges() {
                             <div align="right">e-mail Address:</div>
                           </td>
                           <td width="210">
-                            <input type="text" name="Email" maxlength="50" size="24" value="<%= primContact.getEmail() %>">
+                            <input type="text" name="Email" maxlength="50" size="24" value="<%= primContact.getEmail().getNotification() %>" onChange="setChanged()">
                           </td>
                         </tr>
                       </table>
@@ -197,7 +190,7 @@ function saveChanges() {
 								  <div align="right">e-mail Address:</div>
 							    </td>
 							    <td width="210">
-								  <input type="text" name="Email3" maxlength="50" size="24" value="<%= contacts[1].getEmail() %>">
+								  <input type="text" name="Email3" maxlength="50" size="24" value="<%= contacts[1].getEmail().getNotification() %>" onChange="setChanged()">
 							    </td>
 							  </tr>
                             </table>
@@ -244,7 +237,7 @@ function saveChanges() {
                             <div align="right">e-mail Address:</div>
                           </td>
                           <td width="210">
-                            <input type="text" name="Email2" maxlength="50" size="24" value="<%= contacts[0].getEmail() %>">
+                            <input type="text" name="Email2" maxlength="50" size="24" value="<%= contacts[0].getEmail().getNotification() %>" onChange="setChanged()">
                           </td>
                         </tr>
                       </table>
@@ -291,7 +284,7 @@ function saveChanges() {
 								<div align="right">e-mail Address:</div>
 							  </td>
 							  <td width="210">
-								<input type="text" name="Email4" maxlength="50" size="24" value="<%= contacts[2].getEmail() %>">
+								<input type="text" name="Email4" maxlength="50" size="24" value="<%= contacts[2].getEmail().getNotification() %>" onChange="setChanged()">
 							  </td>
 							</tr>
                             </table></td>

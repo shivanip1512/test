@@ -155,8 +155,8 @@ insert into YukonListEntry values (1040,1012,0,'Universal',0)
 insert into YukonListEntry values (1041,1013,0,'(Unknown)',1901)
 insert into YukonListEntry values (1042,1013,0,'Basement',0)
 insert into YukonListEntry values (1043,1013,0,'North Side',0)
-insert into YukonListEntry values (1044,1014,0,'Likely',2001)
-insert into YukonListEntry values (1045,1014,0,'Unlikely',2002)
+insert into YukonListEntry values (1044,1014,0,'Likely',0)
+insert into YukonListEntry values (1045,1014,0,'Unlikely',0)
 insert into YukonListEntry values (1046,1015,0,'Weekday',2101)
 insert into YukonListEntry values (1047,1015,0,'Weekend',2102)
 insert into YukonListEntry values (1048,1015,0,'Saturday',2103)
@@ -243,11 +243,11 @@ insert into LMHardwareConfiguration values (1,2,4)
 
 
 /* LMProgramWebPublishing */
-insert into LMProgramWebPublishing values(1,5,8,1045)	/* unlikely to control */
-insert into LMProgramWebPublishing values(1,6,9,1045)
-insert into LMProgramWebPublishing values(2,7,10,1045)
-insert into LMProgramWebPublishing values(2,8,11,1045)
-insert into LMProgramWebPublishing values(2,9,12,1045)
+insert into LMProgramWebPublishing values(1,5,8,0)
+insert into LMProgramWebPublishing values(1,6,9,1045)	/* Chance of control unlikely */
+insert into LMProgramWebPublishing values(2,7,10,0)
+insert into LMProgramWebPublishing values(2,8,11,0)
+insert into LMProgramWebPublishing values(2,9,12,0)
 
 
 /* InterviewQuestion */

@@ -170,16 +170,9 @@ public class SendInterviewAnswersAction implements ActionBase {
 				String[] to = new String[ toList.size() ];
 				toList.toArray( to );
 				
-				String from = null;
-				try {
-					from = bundle.getString( "optout_notification_sender" );
-				}
-				catch (java.util.MissingResourceException mre) {
-					from = "";
-				}
 				String subject = "Opt Out Notification";
 				
-				ServerUtils.sendEmailMsg( from, to, null, subject, text.toString() );
+				ServerUtils.sendEmailMsg( null, to, null, subject, text.toString() );
 			}
 			catch (java.util.MissingResourceException mre) {
 				CTILogger.info( "Property \"optout_notification_recipients\" not found, opt out notification email isn't sent" );

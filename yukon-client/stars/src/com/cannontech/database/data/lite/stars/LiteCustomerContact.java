@@ -14,12 +14,43 @@ import com.cannontech.database.data.customer.Contact;
  * Window>Preferences>Java>Code Generation.
  */
 public class LiteCustomerContact extends LiteBase {
+	
+	public static class ContactNotification {
+		private boolean enabled = false;
+		private String notification = null;
+		
+		protected ContactNotification() {}
+		
+		public static ContactNotification newInstance(boolean enabled, String notification) {
+			ContactNotification instance = new ContactNotification();
+			instance.setEnabled( enabled );
+			instance.setNotification( notification );
+			return instance;
+		}
+
+		public boolean isEnabled() {
+			return enabled;
+		}
+
+		public String getNotification() {
+			return notification;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public void setNotification(String notification) {
+			this.notification = notification;
+		}
+
+	}
 
 	private String lastName = null;
 	private String firstName = null;
 	private String homePhone = null;
 	private String workPhone = null;
-	private String email = null;
+	private ContactNotification email = null;
 	
 	public LiteCustomerContact() {
 		super();
@@ -29,17 +60,6 @@ public class LiteCustomerContact extends LiteBase {
 	public LiteCustomerContact(int contactID) {
 		super();
 		setContactID( contactID );
-		setLiteType( LiteTypes.STARS_CUSTOMER_CONTACT );
-	}
-	
-	public LiteCustomerContact(int contactID, String lastName, String firstName, String homePhone, String workPhone, String email) {
-		super();
-		setContactID( contactID );
-		this.lastName = lastName;
-		this.firstName = firstName;
-		this.homePhone = homePhone;
-		this.workPhone = workPhone;
-		this.email = email;
 		setLiteType( LiteTypes.STARS_CUSTOMER_CONTACT );
 	}
 	
@@ -129,9 +149,9 @@ public class LiteCustomerContact extends LiteBase {
 
 	/**
 	 * Returns the email.
-	 * @return String
+	 * @return ContactNotification
 	 */
-	public String getEmail() {
+	public ContactNotification getEmail() {
 		return email;
 	}
 
@@ -139,7 +159,7 @@ public class LiteCustomerContact extends LiteBase {
 	 * Sets the email.
 	 * @param email The email to set
 	 */
-	public void setEmail(String email) {
+	public void setEmail(ContactNotification email) {
 		this.email = email;
 	}
 

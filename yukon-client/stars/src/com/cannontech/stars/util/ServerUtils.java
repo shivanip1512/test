@@ -33,6 +33,9 @@ public class ServerUtils {
     private static long userMessageIDCounter = 1;
     
     private static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM-dd-yy HH:mm");
+    
+    private static String ADMIN_EMAIL_ADDRESS = "admin_email_address";
+    
 	
     public static void sendCommand(String command)
     {
@@ -138,6 +141,9 @@ public class ServerUtils {
 		Properties props = new Properties();
 		props.load( ServerUtils.class.getResourceAsStream("/config.properties") );
 		Session session = Session.getDefaultInstance( props, null );
+		
+		if (from == null)
+			from = props.getProperty( ADMIN_EMAIL_ADDRESS, "info@cannontech.com" );
 		
 		Message emailMsg = new MimeMessage( session );
 		emailMsg.setFrom( new InternetAddress(from) );

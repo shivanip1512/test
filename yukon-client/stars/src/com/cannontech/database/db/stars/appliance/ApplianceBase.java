@@ -26,10 +26,11 @@ public class ApplianceBase extends DBPersistent {
     private Integer kwCapacity = new Integer(0);
     private Integer efficiencyRating = new Integer(0);
     private String notes = "";
+    private String modelNumber = "";
 
     public static final String[] SETTER_COLUMNS = {
         "AccountID", "ApplianceCategoryID", "LMProgramID", "YearManufactured",
-        "ManufacturerID", "LocationID", "KWCapacity", "EfficiencyRating", "Notes"
+        "ManufacturerID", "LocationID", "KWCapacity", "EfficiencyRating", "Notes", "ModelNumber"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "ApplianceID" };
@@ -44,7 +45,8 @@ public class ApplianceBase extends DBPersistent {
     }
 
     public static ApplianceBase[] getAllAppliances(Integer accountID) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = " + accountID.toString();
+        String sql = "SELECT ApplianceID, AccountID, ApplianceCategoryID, LMProgramID, YearManufactured, ManufacturerID, LocationID, KWCapacity, EfficiencyRating, Notes, ModelNumber "
+        		   + "FROM " + TABLE_NAME + " WHERE AccountID = " + accountID.toString();
 
 		try {
 			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement( sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
@@ -65,6 +67,7 @@ public class ApplianceBase extends DBPersistent {
                 apps[i].setKWCapacity( new Integer(((java.math.BigDecimal) row[7]).intValue()) );
                 apps[i].setEfficiencyRating( new Integer(((java.math.BigDecimal) row[8]).intValue()) );
                 apps[i].setNotes( (String) row[9] );
+                apps[i].setModelNumber( (String) row[10] );
             }
             
             return apps;
@@ -89,7 +92,7 @@ public class ApplianceBase extends DBPersistent {
     		
         Object[] addValues = {
             getApplianceID(), getAccountID(), getApplianceCategoryID(), getLMProgramID(), getYearManufactured(),
-            getManufacturerID(), getLocationID(), getKWCapacity(), getEfficiencyRating(), getNotes()
+            getManufacturerID(), getLocationID(), getKWCapacity(), getEfficiencyRating(), getNotes(), getModelNumber()
         };
 
         add( TABLE_NAME, addValues );
@@ -98,7 +101,7 @@ public class ApplianceBase extends DBPersistent {
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
             getAccountID(), getApplianceCategoryID(), getLMProgramID(), getYearManufactured(),
-            getManufacturerID(), getLocationID(), getKWCapacity(), getEfficiencyRating(), getNotes()
+            getManufacturerID(), getLocationID(), getKWCapacity(), getEfficiencyRating(), getNotes(), getModelNumber()
         };
 
         Object[] constraintValues = { getApplianceID() };
@@ -121,6 +124,7 @@ public class ApplianceBase extends DBPersistent {
             setKWCapacity( (Integer) results[6] );
             setEfficiencyRating( (Integer) results[7] );
             setNotes( (String) results[8] );
+            setModelNumber( (String) results[9] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -280,6 +284,22 @@ public class ApplianceBase extends DBPersistent {
 	 */
 	public void setYearManufactured(Integer yearManufactured) {
 		this.yearManufactured = yearManufactured;
+	}
+
+	/**
+	 * Returns the modelNumber.
+	 * @return String
+	 */
+	public String getModelNumber() {
+		return modelNumber;
+	}
+
+	/**
+	 * Sets the modelNumber.
+	 * @param modelNumber The modelNumber to set
+	 */
+	public void setModelNumber(String modelNumber) {
+		this.modelNumber = modelNumber;
 	}
 
 }

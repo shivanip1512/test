@@ -81,7 +81,11 @@ public class NewCustAccountAction implements ActionBase {
             primContact.setFirstName( req.getParameter("FirstName") );
             primContact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone")) );
             primContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone")) );
-            primContact.setEmail( req.getParameter("Email") );
+            
+            Email email = new Email();
+            email.setNotification( req.getParameter("Email") );
+            email.setEnabled( Boolean.valueOf(req.getParameter("NotifyControl")).booleanValue() );
+            primContact.setEmail( email );
             account.setPrimaryContact( primContact );
             
 	        for (int i = 2; i <= 4; i++) {

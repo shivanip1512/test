@@ -40,6 +40,7 @@ public class CreateApplianceAction implements ActionBase {
 			newApp.setCategoryName( "" );
 			newApp.setYearManufactured( req.getParameter("ManuYear") );
 			newApp.setNotes( req.getParameter("Notes") );
+			newApp.setModelNumber( req.getParameter("ModelNo") );
 			
 			Manufacturer manu = (Manufacturer) StarsCustListEntryFactory.newStarsCustListEntry(
 					StarsCustListEntryFactory.getStarsCustListEntryByID(
@@ -104,11 +105,12 @@ public class CreateApplianceAction implements ActionBase {
             
             appDB.setAccountID( new Integer(accountInfo.getCustomerAccount().getAccountID()) );
             appDB.setLMProgramID( new Integer(0) );
-            appDB.setNotes( newApp.getNotes() );
             if (!newApp.getYearManufactured().equals(""))
             	appDB.setYearManufactured( Integer.valueOf(newApp.getYearManufactured()) );
             appDB.setManufacturerID( new Integer(newApp.getManufacturer().getEntryID()) );
             appDB.setLocationID( new Integer(newApp.getLocation().getEntryID()) );
+            appDB.setNotes( newApp.getNotes() );
+            appDB.setModelNumber( newApp.getModelNumber() );
             
             java.util.ArrayList appCats = energyCompany.getAllApplianceCategories();
             if (appCats == null || appCats.size() == 0)

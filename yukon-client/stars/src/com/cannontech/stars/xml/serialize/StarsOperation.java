@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.26 2003/03/11 23:34:41 zyao Exp $
+ * $Id: StarsOperation.java,v 1.27 2003/03/14 23:51:04 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.26 $ $Date: 2003/03/11 23:34:41 $
+ * @version $Revision: 1.27 $ $Date: 2003/03/14 23:51:04 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -169,6 +169,10 @@ public class StarsOperation implements java.io.Serializable {
     private StarsGetEnergyCompanySettings _starsGetEnergyCompanySettings;
 
     private StarsGetEnergyCompanySettingsResponse _starsGetEnergyCompanySettingsResponse;
+
+    private StarsUpdateControlNotification _starsUpdateControlNotification;
+
+    private StarsSendOddsForControl _starsSendOddsForControl;
 
 
       //----------------/
@@ -660,6 +664,16 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsSendExitInterviewAnswers getStarsSendExitInterviewAnswers() 
 
     /**
+     * Returns the value of field 'starsSendOddsForControl'.
+     * 
+     * @return the value of field 'starsSendOddsForControl'.
+    **/
+    public StarsSendOddsForControl getStarsSendOddsForControl()
+    {
+        return this._starsSendOddsForControl;
+    } //-- StarsSendOddsForControl getStarsSendOddsForControl() 
+
+    /**
      * Returns the value of field 'starsSuccess'.
      * 
      * @return the value of field 'starsSuccess'.
@@ -688,6 +702,16 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsUpdateCallReport;
     } //-- StarsUpdateCallReport getStarsUpdateCallReport() 
+
+    /**
+     * Returns the value of field 'starsUpdateControlNotification'.
+     * 
+     * @return the value of field 'starsUpdateControlNotification'.
+    **/
+    public StarsUpdateControlNotification getStarsUpdateControlNotification()
+    {
+        return this._starsUpdateControlNotification;
+    } //-- StarsUpdateControlNotification getStarsUpdateControlNotification() 
 
     /**
      * Returns the value of field 'starsUpdateCustomerAccount'. The
@@ -1394,6 +1418,17 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsSendExitInterviewAnswers(StarsSendExitInterviewAnswers) 
 
     /**
+     * Sets the value of field 'starsSendOddsForControl'.
+     * 
+     * @param starsSendOddsForControl the value of field
+     * 'starsSendOddsForControl'.
+    **/
+    public void setStarsSendOddsForControl(StarsSendOddsForControl starsSendOddsForControl)
+    {
+        this._starsSendOddsForControl = starsSendOddsForControl;
+    } //-- void setStarsSendOddsForControl(StarsSendOddsForControl) 
+
+    /**
      * Sets the value of field 'starsSuccess'.
      * 
      * @param starsSuccess the value of field 'starsSuccess'.
@@ -1424,6 +1459,17 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsUpdateCallReport = starsUpdateCallReport;
     } //-- void setStarsUpdateCallReport(StarsUpdateCallReport) 
+
+    /**
+     * Sets the value of field 'starsUpdateControlNotification'.
+     * 
+     * @param starsUpdateControlNotification the value of field
+     * 'starsUpdateControlNotification'.
+    **/
+    public void setStarsUpdateControlNotification(StarsUpdateControlNotification starsUpdateControlNotification)
+    {
+        this._starsUpdateControlNotification = starsUpdateControlNotification;
+    } //-- void setStarsUpdateControlNotification(StarsUpdateControlNotification) 
 
     /**
      * Sets the value of field 'starsUpdateCustomerAccount'. The
