@@ -844,7 +844,11 @@ public class YC extends Observable implements MessageListener
 			synchronized(this)
 			{
 				if( !getRequestMessageIDs().contains( new Long(returnMsg.getUserMessageID())))
+				{
+					CTILogger.info("Unknown Message: "+ returnMsg.getUserMessageID() +" Command [" + returnMsg.getCommandString()+"]");
+					CTILogger.info("Unknown Message: "+ returnMsg.getUserMessageID() +" Result [" + returnMsg.getResultString()+"]");
 					return;
+				}
 				else
 				{
 					/**TODO Should the ids be removed after being processed ? */
