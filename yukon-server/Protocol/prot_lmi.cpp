@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/12/08 21:19:30 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/12/16 17:00:40 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -636,7 +636,9 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                     else
                     {
                         //  make into a switch if any other commands need to perform commands after the Series V is done
-                        if( _command == Command_ScanAccumulator )
+                        if( _command == Command_ScanAccumulator ||
+                            _command == Command_ScanIntegrity ||
+                            _command == Command_ScanException )
                         {
                             _outbound.length = 1;
                             _outbound.body_header.message_type = Opcode_GetTransmitterPower;
@@ -824,7 +826,9 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                             }
                             else
                             {
-                                if( _command == Command_ScanAccumulator )
+                                if( _command == Command_ScanAccumulator ||
+                                    _command == Command_ScanIntegrity ||
+                                    _command == Command_ScanException )
                                 {
                                     _transmitter_power  = _inbound.data[0];
                                     _transmitter_power |= _inbound.data[1] << 8;
