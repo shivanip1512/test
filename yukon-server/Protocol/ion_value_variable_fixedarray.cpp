@@ -12,6 +12,7 @@
 
 #include "logger.h"
 
+#include "dllbase.h"
 #include "ctidbgmem.h" // defines CTIDBG_new
 
 #include "ion_value_variable_fixedarray.h"
@@ -439,6 +440,7 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
     }
     else
     {
+        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -448,11 +450,17 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
     //  was never assigned
     if( newArray == NULL )
     {
+        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
+        //  we shouldn't do this - the stream isn't necessarily corrupt.  if the array is zero-length, we should
+        //    return a zero-length array, not a NULL.
+        //    however, to make this change, we'd have to ensure that all instances that use *Arrays would check for
+        //    zero length...  that isn't something i'm willing to do in a branch (or when i can't explicitly direct
+        //    the QA person to test it).
         totalUsed = len - pos;
     }
 
