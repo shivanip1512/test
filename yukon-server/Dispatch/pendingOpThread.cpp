@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/02/17 19:02:57 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/02/18 14:34:28 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.15  2005/02/18 14:34:28  cplender
+* Make pendingOpThread announce itself every 5 like the others do.
+*
 * Revision 1.14  2005/02/17 19:02:57  mfisher
 * Removed space before CVS comment header, moved #include "yukon.h" after CVS header
 *
@@ -118,6 +121,7 @@ void CtiPendingOpThread::setMainQueue(CtiConnection::InQ_t *pMQ)
 
 void CtiPendingOpThread::run( void )
 {
+    UINT sanity = 0;
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " PendingOperationThread TID: " << CurrentTID () << endl;
@@ -164,6 +168,14 @@ void CtiPendingOpThread::run( void )
                         _multi = new CtiMultiMsg;
                         _multi->setMessagePriority(5);
                         _multi->setSource("Dispatch pendingOpThread");
+                    }
+                }
+
+                if(!(++sanity % 300))
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " PendingOperationThread run() Thread Active " << endl;
                     }
                 }
 
@@ -1756,7 +1768,7 @@ void CtiPendingOpThread::dbWriterThread()
     // And let'em know were A.D.
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Dispatch PendingOp DB Writer Thread shutting down" << endl;
+        dout << RWTime() << " Dispatch PendingOp DB Writer Thread shutdown" << endl;
     }
 
     return;
