@@ -592,11 +592,10 @@ void CtiLMCommandExecutor::ShedGroup()
             CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
-                RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentLMProgramBase)->getLMProgramDirectGroups();
-
-                for(LONG k=0;k<lmGroups.entries();k++)
+                CtiLMGroupVec program_groups  = ((CtiLMProgramDirect*) currentLMProgramBase)->getLMProgramDirectGroups();
+                for(CtiLMGroupIter k = program_groups.begin(); k != program_groups.end(); k++)
                 {
-                    CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)lmGroups[k];
+                    CtiLMGroupPtr currentLMGroup  = *k;
 
                     if( currentLMGroup->getPAOId() == groupID )
                     {
@@ -671,11 +670,10 @@ void CtiLMCommandExecutor::CycleGroup()
             CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
-                RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentLMProgramBase)->getLMProgramDirectGroups();
-
-                for(LONG k=0;k<lmGroups.entries();k++)
+                CtiLMGroupVec program_groups  = ((CtiLMProgramDirect*) currentLMProgramBase)->getLMProgramDirectGroups();
+                for(CtiLMGroupIter k = program_groups.begin(); k != program_groups.end(); k++)
                 {
-                    CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)lmGroups[k];
+                    CtiLMGroupPtr currentLMGroup  = *k;
 
                     if( currentLMGroup->getPAOId() == groupID )
                     {
@@ -754,11 +752,10 @@ void CtiLMCommandExecutor::RestoreGroup()
             CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
-                RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentLMProgramBase)->getLMProgramDirectGroups();
-
-                for(LONG k=0;k<lmGroups.entries();k++)
+                CtiLMGroupVec program_groups  = ((CtiLMProgramDirect*) currentLMProgramBase)->getLMProgramDirectGroups();
+                for(CtiLMGroupIter k = program_groups.begin(); k != program_groups.end(); k++)
                 {
-                    CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)lmGroups[k];
+                    CtiLMGroupPtr currentLMGroup  = *k;
 
                     if( currentLMGroup->getPAOId() == groupID )
                     {
@@ -827,11 +824,10 @@ void CtiLMCommandExecutor::EnableGroup()
             CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
-                RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentLMProgramBase)->getLMProgramDirectGroups();
-
-                for(LONG k=0;k<lmGroups.entries();k++)
+                CtiLMGroupVec groups  = ((CtiLMProgramDirect*)currentLMProgramBase)->getLMProgramDirectGroups();
+                for(CtiLMGroupIter k = groups.begin(); k != groups.end(); k++)
                 {
-                    CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)lmGroups[k];
+                    CtiLMGroupPtr currentLMGroup  = *k;
 
                     if( currentLMGroup->getPAOId() == groupID )
                     {
@@ -883,11 +879,10 @@ void CtiLMCommandExecutor::DisableGroup()
             CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
-                RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentLMProgramBase)->getLMProgramDirectGroups();
-
-                for(LONG k=0;k<lmGroups.entries();k++)
+                CtiLMGroupVec groups  = ((CtiLMProgramDirect*)currentLMProgramBase)->getLMProgramDirectGroups();
+                for(CtiLMGroupIter k = groups.begin(); k != groups.end(); k++)
                 {
-                    CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)lmGroups[k];
+                    CtiLMGroupPtr currentLMGroup  = *k;
 
                     if( currentLMGroup->getPAOId() == groupID )
                     {
@@ -975,12 +970,11 @@ void CtiLMCommandExecutor::ConfirmGroup()
             CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
-                RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentLMProgramBase)->getLMProgramDirectGroups();
-
-                for(LONG k=0;k<lmGroups.entries();k++)
+                CtiLMGroupVec groups  = ((CtiLMProgramDirect*)currentLMProgramBase)->getLMProgramDirectGroups();
+                for(CtiLMGroupIter k = groups.begin(); k != groups.end(); k++)
                 {
-                    CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)lmGroups[k];
-
+                    CtiLMGroupPtr currentLMGroup  = *k;
+                    
                     if( currentLMGroup->getPAOId() == groupID )
                     {
                         RWCString str;

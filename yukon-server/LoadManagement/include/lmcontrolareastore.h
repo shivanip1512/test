@@ -92,7 +92,7 @@ public:
     RWOrdered* getControlAreas(ULONG secondsFrom1901 = RWDBDateTime().seconds());
     bool findProgram(LONG programID, CtiLMProgramBase** program = NULL, CtiLMControlArea** controlArea = NULL);
 
-    CtiLMGroupBase* findGroupByPointID(long point_id);
+    CtiLMGroupPtr findGroupByPointID(long point_id);
     
     static CtiLMControlAreaStore* getInstance();
     static void deleteInstance();
@@ -109,13 +109,13 @@ public:
 
     bool UpdateControlAreaDisableFlagInDB(CtiLMControlArea* controlArea);
     bool UpdateProgramDisableFlagInDB(CtiLMProgramBase* program);
-    bool UpdateGroupDisableFlagInDB(CtiLMGroupBase* group);
+    bool UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group);
     bool UpdateTriggerInDB(CtiLMControlArea* controlArea, CtiLMControlAreaTrigger* trigger);
 
     void saveAnyProjectionData();
     void attachProjectionData(CtiLMControlAreaTrigger* trigger);
     void saveAnyControlStringData();
-    void attachControlStringData(CtiLMGroupBase* group);
+    void attachControlStringData(CtiLMGroupPtr& group);
 
     static const RWCString LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE;
 
@@ -135,8 +135,8 @@ private:
     bool checkMidnightDefaultsForReset();
 
     RWOrdered* _controlAreas;
-    map< long, CtiLMGroupBase* > _point_group_map;
-    map< long, CtiLMGroupBase* > _all_group_map;
+    map< long, CtiLMGroupPtr > _point_group_map;
+    map< long, CtiLMGroupPtr > _all_group_map;
     
     RWThread _resetthr;
 

@@ -934,12 +934,9 @@ void CtiLMProgramCurtailment::deleteLMCurtailProgramActivityTable()
     Returns boolean if groups in this program are below the max hours
     daily/monthly/seasonal/annually.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramCurtailment::hasControlHoursAvailable() const
+BOOL CtiLMProgramCurtailment::hasControlHoursAvailable() 
 {
-
-
     BOOL returnBoolean = TRUE;
-
     return returnBoolean;
 }
 
@@ -950,9 +947,6 @@ BOOL CtiLMProgramCurtailment::hasControlHoursAvailable() const
 --------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::restoreGuts(RWvistream& istrm)
 {
-
-
-
     CtiLMProgramBase::restoreGuts( istrm );
 
     RWTime tempTime1;

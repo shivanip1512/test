@@ -764,10 +764,10 @@ void CtiLoadManager::registerForPoints(const RWOrdered& controlAreas)
                 CtiLMProgramBase* currentProgram = (CtiLMProgramBase*)lmPrograms[k];
                 if( currentProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                 {
-                    RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentProgram)->getLMProgramDirectGroups();
-                    for(LONG l=0;l<lmGroups.entries();l++)
+                    CtiLMGroupVec groups  = ((CtiLMProgramDirect*)currentProgram)->getLMProgramDirectGroups();
+                    for(CtiLMGroupIter i = groups.begin(); i != groups.end(); i++)
                     {
-                        CtiLMGroupBase* currentGroup = (CtiLMGroupBase*)lmGroups[l];
+                        CtiLMGroupPtr currentGroup  = *i;
                         if( currentGroup->getHoursDailyPointId() > 0 )
                         {
                             regMsg->insert(currentGroup->getHoursDailyPointId());
@@ -1090,8 +1090,8 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                 currentControlArea->setUpdatedFlag(TRUE);
             }
         }
-        CtiLMGroupBase* lm_group = store->findGroupByPointID(pointID);
-        if(lm_group != 0)
+        CtiLMGroupPtr lm_group = store->findGroupByPointID(pointID);
+        if(lm_group.get() != 0)
         {   //we know this point is associated with this group,
             //figure out how and deal with it
             if( lm_group->getHoursDailyPointId() == pointID )

@@ -15,6 +15,10 @@
 #ifndef CTILMGROUPBASEIMPL_H
 #define CTILMGROUPBASEIMPL_H
 
+#include <vector>
+
+#include <boost/shared_ptr.hpp>
+
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/db/db.h>
@@ -25,6 +29,9 @@
 #include "observe.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
+
+using std::vector;
+using boost::shared_ptr;
 
 class CtiLMGroupBase : public CtiMemDBObject, public RWCollectable
 {
@@ -191,5 +198,11 @@ private:
     RWCString _lastcontrolstring;
 
 };
+
+typedef shared_ptr<CtiLMGroupBase> CtiLMGroupPtr;
+typedef vector<CtiLMGroupPtr> CtiLMGroupVec;
+typedef CtiLMGroupVec::iterator CtiLMGroupIter;
+typedef CtiLMGroupVec::const_iterator CtiLMGroupConstIter;
+
 #endif
 

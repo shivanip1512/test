@@ -505,12 +505,9 @@ void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffe
     Returns boolean if groups in this program are below the max hours
     daily/monthly/seasonal/annually.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramEnergyExchange::hasControlHoursAvailable() const
+BOOL CtiLMProgramEnergyExchange::hasControlHoursAvailable() 
 {
-
-
     BOOL returnBoolean = TRUE;
-
     return returnBoolean;
 }
 

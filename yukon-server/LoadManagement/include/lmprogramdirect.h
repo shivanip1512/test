@@ -60,12 +60,12 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     const RWDBDateTime& getNotifyTime() const;
     const RWDBDateTime& getStartedRampingOutTime() const;
     
-    bool getIsRampingIn() const;
-    bool getIsRampingOut() const;
+    bool getIsRampingIn();
+    bool getIsRampingOut();
     
     RWOrdered& getLMProgramDirectGears();
-    RWOrdered& getLMProgramDirectGroups();
-
+    CtiLMGroupVec& getLMProgramDirectGroups();
+        
     set<CtiLMProgramDirect*>& getMasterPrograms();
     set<CtiLMProgramDirect*>& getSubordinatePrograms();
     
@@ -87,8 +87,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
-    CtiLMGroupBase* findGroupToTake(CtiLMProgramDirectGear* currentGearObject);
-    CtiLMGroupBase* findGroupToRampOut(CtiLMProgramDirectGear* currentGearObject);
+    CtiLMGroupPtr findGroupToTake(CtiLMProgramDirectGear* currentGearObject);
+    CtiLMGroupPtr findGroupToRampOut(CtiLMProgramDirectGear* currentGearObject);
     
     BOOL maintainProgramControl(LONG currentPriority, RWOrdered& controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL isPastMinResponseTime, BOOL isTriggerCheckNeeded);
     BOOL hasGearChanged(LONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFrom1901, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded);
@@ -97,9 +97,9 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     BOOL refreshStandardProgramControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     DOUBLE manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
-    BOOL doesGroupHaveAmpleControlTime(CtiLMGroupBase* currentLMGroup, LONG estimatedControlTimeInSeconds) const;
-    LONG calculateGroupControlTimeLeft(CtiLMGroupBase* currentLMGroup, LONG estimatedControlTimeInSeconds) const;
-    BOOL stopOverControlledGroup(CtiLMProgramDirectGear* currentGearObject, CtiLMGroupBase* currentLMGroup, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    BOOL doesGroupHaveAmpleControlTime(CtiLMGroupPtr& currentLMGroup, LONG estimatedControlTimeInSeconds) const;
+    LONG calculateGroupControlTimeLeft(CtiLMGroupPtr& currentLMGroup, LONG estimatedControlTimeInSeconds) const;
+    BOOL stopOverControlledGroup(CtiLMProgramDirectGear* currentGearObject, CtiLMGroupPtr& currentLMGroup, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
     bool refreshRampOutProgramControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
@@ -109,7 +109,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 
     virtual CtiLMProgramBase* replicate() const;
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded);
-    virtual BOOL hasControlHoursAvailable() const;
+    virtual BOOL hasControlHoursAvailable();
     virtual bool stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901);
     virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901);    
     virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
@@ -153,7 +153,7 @@ private:
     RWDBDateTime  _dynamictimestamp;
     
     RWOrdered _lmprogramdirectgears;
-    RWOrdered _lmprogramdirectgroups;
+    CtiLMGroupVec  _lmprogramdirectgroups;
 
     set<CtiLMProgramDirect*> _master_programs;
     set<CtiLMProgramDirect*> _subordinate_programs;

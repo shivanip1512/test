@@ -24,7 +24,7 @@
 #include "lmgroupbase.h"
 #include "msg_cmd.h"
 #include "observe.h"
-                
+
 class CtiLMGroupPoint : public CtiLMGroupBase
 {
 

@@ -6,7 +6,7 @@
 class CtiLMGroupFactory
 {
 public:
-    CtiLMGroupBase* createLMGroup(RWDBReader& rdr);
+    CtiLMGroupPtr createLMGroup(RWDBReader& rdr);
 };
 
 #endif

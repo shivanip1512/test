@@ -172,10 +172,10 @@ bool CtiLMControlAreaStore::findProgram(LONG programID, CtiLMProgramBase** progr
   This member exists mostly for efficiency in updating groups when point
   data shows up.
 ----------------------------------------------------------------------------*/  
-CtiLMGroupBase* CtiLMControlAreaStore::findGroupByPointID(long point_id)
+CtiLMGroupPtr CtiLMControlAreaStore::findGroupByPointID(long point_id)
 {
-    map< long, CtiLMGroupBase* >::iterator iter = _point_group_map.find(point_id);
-    return (iter == _point_group_map.end() ? 0 : iter->second);
+    map< long, CtiLMGroupPtr >::iterator iter = _point_group_map.find(point_id);
+    return (iter == _point_group_map.end() ? CtiLMGroupPtr() : iter->second);
 }
 
 /*---------------------------------------------------------------------------
@@ -228,14 +228,11 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
                         CtiLMProgramDirect* currentLMProgramDirect = (CtiLMProgramDirect*)currentLMProgramBase;
                         currentLMProgramDirect->dumpDynamicData(conn,currentDateTime);
 
-                        RWOrdered& lmGroups = currentLMProgramDirect->getLMProgramDirectGroups();
-                        if( lmGroups.entries() > 0 )
+                        CtiLMGroupVec groups  = currentLMProgramDirect->getLMProgramDirectGroups();
+                        for(CtiLMGroupIter k = groups.begin(); k != groups.end(); k++)
                         {
-                            for(LONG k=0;k<lmGroups.entries();k++)
-                            {
-                                CtiLMGroupBase* currentLMGroupBase = (CtiLMGroupBase*)lmGroups[k];
-                                currentLMGroupBase->dumpDynamicData(conn,currentDateTime);
-                            }
+                            CtiLMGroupPtr currentLMGroup  = *k;
+                            currentLMGroup->dumpDynamicData(conn,currentDateTime);
                         }
                     }
                     else if( currentLMProgramBase->getPAOType() ==  TYPE_LMPROGRAM_CURTAILMENT )
@@ -287,8 +284,8 @@ void CtiLMControlAreaStore::reset()
     try
     {
         RWOrdered temp_control_areas;
-        map<long, CtiLMGroupBase*> temp_all_group_map;
-        map<long, CtiLMGroupBase*> temp_point_group_map;
+        map<long, CtiLMGroupPtr > temp_all_group_map;
+        map<long, CtiLMGroupPtr > temp_point_group_map;
         
         LONG currentAllocations = ResetBreakAlloc();
         if( _LM_DEBUG & LM_DEBUG_EXTENDED )
@@ -356,8 +353,8 @@ void CtiLMControlAreaStore::reset()
                     allGroupTimer.start();
                     
                     /* First load all the groups, and put them into a map by group id */
-                    map< long, CtiLMGroupBase* > all_assigned_group_map; //remember which groups we have assigned
-                    map< long, vector<CtiLMGroupBase*> > all_program_group_map;
+                    map< long, CtiLMGroupPtr > all_assigned_group_map; //remember which groups we have assigned
+                    map< long, vector<CtiLMGroupPtr> > all_program_group_map;
                     
                 {
                     RWDBTable paObjectTable = db.table("yukonpaobject");
@@ -399,7 +396,7 @@ void CtiLMControlAreaStore::reset()
                         string type;
                         rdr["category"] >> category;
                         rdr["type"] >> type;
-                        CtiLMGroupBase* lm_group = lm_group_factory.createLMGroup(rdr);
+                        CtiLMGroupPtr lm_group = lm_group_factory.createLMGroup(rdr);
                         temp_all_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
                         attachControlStringData(lm_group);
                     }
@@ -427,10 +424,10 @@ void CtiLMControlAreaStore::reset()
                     rdr >> point_id;
                     rdr >> start_control_raw_state;
 
-                    map< long, CtiLMGroupBase* >::iterator iter = temp_all_group_map.find(group_id);
+                    map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
                     if(iter != temp_all_group_map.end())
                     {
-                        CtiLMGroupPoint* lm_group = (CtiLMGroupPoint*) iter->second;
+                        CtiLMGroupPoint* lm_group = (CtiLMGroupPoint*) iter->second.get();
                         lm_group->setDeviceIdUsage(device_id);
                         lm_group->setPointIdUsage(point_id);
                         lm_group->setStartControlRawState(start_control_raw_state);
@@ -461,10 +458,10 @@ void CtiLMControlAreaStore::reset()
                     rdr >> group_id;
                     rdr >> shed_time;
 
-                    map< long, CtiLMGroupBase* >::iterator iter = temp_all_group_map.find(group_id);
+                    map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
                     if(iter != temp_all_group_map.end())
                     {
-                        CtiLMGroupRipple* lm_group = (CtiLMGroupRipple*) iter->second;
+                        CtiLMGroupRipple* lm_group = (CtiLMGroupRipple*) iter->second.get();
                         lm_group->setShedTime(shed_time);
                     }
                     else
@@ -518,8 +515,8 @@ void CtiLMControlAreaStore::reset()
                     rdr["pointtype"] >> point_type;
                     rdr["pointoffset"] >> point_offset;
 
-                    map< long, CtiLMGroupBase* >::iterator iter = temp_all_group_map.find(group_id);
-                    CtiLMGroupBase* lm_group = iter->second;
+                    map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
+                    CtiLMGroupPtr lm_group = iter->second;
 
                     switch(resolvePointType(point_type.data()))
                     {
@@ -618,7 +615,7 @@ void CtiLMControlAreaStore::reset()
                     rdr["nextcontroltime"] >> next_control_time;
                     rdr["internalstate"] >> internal_state;
                     
-                    CtiLMGroupBase* lm_group = temp_all_group_map.find(group_id)->second;
+                    CtiLMGroupPtr& lm_group = temp_all_group_map.find(group_id)->second;
                     lm_group->setGroupControlState(group_control_state);
                     lm_group->setCurrentHoursDaily(cur_hours_daily);
                     lm_group->setCurrentHoursMonthly(cur_hours_monthly);
@@ -699,7 +696,7 @@ void CtiLMControlAreaStore::reset()
                 }
 
                 RWDBReader rdr = selector.reader(conn);
-                map<long, vector<CtiLMGroupBase*> >::iterator cur_iter;
+                map<long, vector<CtiLMGroupPtr> >::iterator cur_iter;
                 long cur_program = -1;
                 while(rdr())
                 {
@@ -711,8 +708,8 @@ void CtiLMControlAreaStore::reset()
                     cur_iter = all_program_group_map.find(program_id);
                     if(cur_iter == all_program_group_map.end())
                     {
-                        vector<CtiLMGroupBase*> group_vec;
-                        CtiLMGroupBase* lm_group = temp_all_group_map.find(group_id)->second;
+                        vector<CtiLMGroupPtr> group_vec;
+                        CtiLMGroupPtr lm_group = temp_all_group_map.find(group_id)->second;
 
                         map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
                         if(macro_iter != group_macro_map.end())
@@ -722,7 +719,7 @@ void CtiLMControlAreaStore::reset()
                                 iter != macro_vec.end();
                                 iter++)
                             { //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
-                                CtiLMGroupBase* child_group = temp_all_group_map.find(*iter)->second;
+                                CtiLMGroupPtr child_group = temp_all_group_map.find(*iter)->second;
                                 group_vec.push_back(child_group);
                                 child_group->setGroupOrder(group_vec.size());
                                 all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
@@ -739,7 +736,7 @@ void CtiLMControlAreaStore::reset()
                     }
                     else
                     {
-                        CtiLMGroupBase* lm_group = temp_all_group_map.find(group_id)->second;
+                        CtiLMGroupPtr& lm_group = temp_all_group_map.find(group_id)->second;
                         
                         map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
                         if(macro_iter != group_macro_map.end())
@@ -749,7 +746,7 @@ void CtiLMControlAreaStore::reset()
                                 iter != macro_vec.end();
                                 iter++)
                             { //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
-                                CtiLMGroupBase* child_group = temp_all_group_map.find(*iter)->second;
+                                CtiLMGroupPtr& child_group = temp_all_group_map.find(*iter)->second;
                                 cur_iter->second.push_back(child_group);
                                 child_group->setGroupOrder(cur_iter->second.size());
                                 all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
@@ -774,597 +771,6 @@ void CtiLMControlAreaStore::reset()
                 dout << all_program_group_map.size() << "==" << all_assigned_group_map.size() << " groups are assigned to programs" << endl;
                 allGroupTimer.reset();
             }
-
-
-                 
-                    
-#ifdef _THIS_DOESNT_WORK_ON_ORACLE
-                    
-                    RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
-
-                    RWOrdered allGroupList;
-                    multimap< long, CtiLMGroupBase* > all_program_group_map_bung;
-                    map< long, CtiLMGroupBase* > _all_group_map;
-                    
-                    RWTimer allGroupTimer;
-                    allGroupTimer.start();
-
-
-                    {//loading direct groups start
-                                                
-                        //On the first pass we will run into all the macro groups attached
-                        //to lm programs, store them in here for use in the second pass
-                        //where we need to determine the rank of each group in a macro group
-                        //as well as the attached program id
-                        // key = macrogroupid, value = pair<programid, grouporder>
-                        map< long, pair< long, unsigned int > > macrogroup_map;
-                    {
-                        
-/* first pass creates and stores all the regular groups */
-
-                        RWDBTable paObjectTable = db.table("yukonpaobject");
-                        RWDBTable deviceTable = db.table("device");
-                        RWDBTable lmProgramDirectGroupTable = db.table("lmprogramdirectgroup");
-                        RWDBTable lmGroupTable = db.table("lmgroup");
-                        RWDBTable lmGroupPointTable = db.table("lmgrouppoint");
-                        RWDBTable lmGroupRippleTable = db.table("lmgroupripple");
-                        RWDBTable lmGroupSASimpleTable = db.table("lmgroupsasimple");
-                        RWDBTable dynamicLMGroupTable = db.table("dynamiclmgroup");
-
-                        RWDBSelector selector = db.selector();
-                        selector << rwdbName("groupid", paObjectTable["paobjectid"])
-                        << paObjectTable["category"]
-                        << paObjectTable["paoclass"]
-                        << paObjectTable["paoname"]
-                        << paObjectTable["type"]
-                        << paObjectTable["description"]
-                        << paObjectTable["disableflag"]
-                        << deviceTable["alarminhibit"]
-                        << deviceTable["controlinhibit"]
-                        << lmProgramDirectGroupTable["grouporder"]
-                        << rwdbName("programid", lmProgramDirectGroupTable["deviceid"])
-                        << lmGroupTable["kwcapacity"]
-                        << rwdbName("pointdeviceidusage", lmGroupPointTable["deviceidusage"])
-                        << rwdbName("pointpointidusage", lmGroupPointTable["pointidusage"])
-                        << rwdbName("pointstartcontrolrawstate", lmGroupPointTable["startcontrolrawstate"])
-                        << rwdbName("rippleshedtime", lmGroupRippleTable["shedtime"])
-                        << rwdbName("sasimplenominaltimeout", lmGroupSASimpleTable["nominaltimeout"])
-                        << dynamicLMGroupTable["groupcontrolstate"]
-                        << dynamicLMGroupTable["currenthoursdaily"]
-                        << dynamicLMGroupTable["currenthoursmonthly"]
-                        << dynamicLMGroupTable["currenthoursseasonal"]
-                        << dynamicLMGroupTable["currenthoursannually"]
-                        << dynamicLMGroupTable["lastcontrolsent"]
-                        << dynamicLMGroupTable["timestamp"]
-                        << dynamicLMGroupTable["lmprogramid"]
-                        << dynamicLMGroupTable["controlstarttime"]
-                        << dynamicLMGroupTable["controlcompletetime"]
-                        << dynamicLMGroupTable["nextcontroltime"]
-                        << dynamicLMGroupTable["internalstate"];
-
-                        selector.from(paObjectTable);
-                        selector.from(deviceTable);
-                        selector.from(lmProgramDirectGroupTable);
-                        selector.from(lmGroupTable);
-                        selector.from(lmGroupPointTable);
-                        selector.from(lmGroupRippleTable);
-                        selector.from(lmGroupSASimpleTable);
-                        selector.from(dynamicLMGroupTable);
-
-                        selector.where(lmGroupTable["deviceid"] == lmProgramDirectGroupTable["lmgroupdeviceid"] &&
-                                       paObjectTable["paobjectid"] == lmProgramDirectGroupTable["lmgroupdeviceid"] &&
-                                       deviceTable["deviceid"] == lmProgramDirectGroupTable["lmgroupdeviceid"] &&
-                                       paObjectTable["paobjectid"].leftOuterJoin(lmGroupPointTable["deviceid"]) &&
-                                       paObjectTable["paobjectid"].leftOuterJoin(lmGroupRippleTable["deviceid"]) &&
-                                       paObjectTable["paobjectid"].leftOuterJoin(lmGroupSASimpleTable["groupid"]) &&
-                                       paObjectTable["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) &&
-                                       lmProgramDirectGroupTable["deviceid"].leftOuterJoin(dynamicLMGroupTable["lmprogramid"]) );
-                        
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - " << selector.asString().data() << endl;
-                        }
-
-                        RWDBReader rdr = selector.reader(conn);
-
-                        CtiLMGroupFactory lm_group_factory;
-                        while(rdr())
-                        {
-                            //check to see if we got a macro group
-                            string category;
-                            string type;
-                            rdr["category"] >> category;
-                            rdr["type"] >> type;
-                            if(resolvePAOType(category.data(),type.data()) == TYPE_MACRO)
-                            {   // We found a macro group, save it away so we remember
-                                // the programid and order on the seconds pass.
-                                long groupid;
-                                pair< long, unsigned int > macrogroup_info;
-                                rdr["groupid"] >> groupid;
-                                rdr["programid"] >> macrogroup_info.first;
-                                rdr["grouporder"] >> macrogroup_info.second;
-                                if(!macrogroup_map.insert( make_pair(groupid, macrogroup_info)).second)
-                                {
-                                    CtiLockGuard<CtiLogger> dout_guard(dout);
-                                    dout << RWTime() << " **Checkpoint** " <<  " Loaded macro groupid: " << groupid << " twice!" << __FILE__ << "(" << __LINE__ << ")" << endl;
-                                }
-                            }
-                            else
-                            {
-                                int group_order;
-                                long programid;
-                                
-                                rdr["grouporder"] >> group_order;
-                                rdr["programid"] >> programid;
-                                
-                                CtiLMGroupBase* lm_group = lm_group_factory.createLMGroup(rdr);
-                                lm_group->setGroupOrder(group_order);
-                                lm_group->setChildOrder(-1);
-                                lm_group->setLMProgramId(programid);
-                                
-                                attachControlStringData(lm_group);
-                                allGroupList.insert(lm_group);
-                                all_program_group_map_bung.insert(make_pair(programid, lm_group));
-                                _all_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
-                            }
-                        }
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                        {
-                            CtiLockGuard<CtiLogger> dout_guard(dout);
-                            dout << RWTime() << " - Found " << macrogroup_map.size() << " macrogroups, and " << all_program_group_map_bung.size() << " LMGroups so far." << endl;
-                        }
-                    }
-
-                {  // second pass creates and stores all the groups in macro groups 
-                    /* NOTE:
-                       The point of this query is to load macro groups.
-                       If a group is attached directly to a program via lmprogramdirectgroup as well
-                       as part of a macro group then we will get more rows than expected back.  This is
-                       due to joining with the dynamiclmgroup table.
-                       This is ok as long as we check to see that the programid corresponds to a program
-                       that a macro group is attached to. */
-                  
-                    RWDBTable paObjectTable = db.table("yukonpaobject");
-                    RWDBTable deviceTable = db.table("device");
-                    RWDBTable genericMacroTable = db.table("genericmacro");
-                    RWDBTable lmGroupTable = db.table("lmgroup");
-                    RWDBTable lmGroupPointTable = db.table("lmgrouppoint");
-                    RWDBTable lmGroupRippleTable = db.table("lmgroupripple");
-                    RWDBTable lmGroupSASimpleTable = db.table("lmgroupsasimple");
-                    RWDBTable dynamicLMGroupTable = db.table("dynamiclmgroup");
-
-                    RWDBSelector selector = db.selector();
-                    selector << rwdbName("groupid", paObjectTable["paobjectid"])
-                             << paObjectTable["category"]
-                             << paObjectTable["paoclass"]
-                             << paObjectTable["paoname"]
-                             << paObjectTable["type"]
-                             << paObjectTable["description"]
-                             << paObjectTable["disableflag"]
-                             << deviceTable["alarminhibit"]
-                             << deviceTable["controlinhibit"]
-                             << genericMacroTable["childorder"]
-                             << genericMacroTable["ownerid"]
-                             << lmGroupTable["kwcapacity"]
-                             << rwdbName("pointdeviceidusage", lmGroupPointTable["deviceidusage"])
-                             << rwdbName("pointpointidusage", lmGroupPointTable["pointidusage"])
-                             << rwdbName("pointstartcontrolrawstate", lmGroupPointTable["startcontrolrawstate"])
-                             << rwdbName("rippleshedtime", lmGroupRippleTable["shedtime"])
-                             << rwdbName("sasimplenominaltimeout", lmGroupSASimpleTable["nominaltimeout"])
-                             << dynamicLMGroupTable["groupcontrolstate"]
-                             << dynamicLMGroupTable["currenthoursdaily"]
-                             << dynamicLMGroupTable["currenthoursmonthly"]
-                             << dynamicLMGroupTable["currenthoursseasonal"]
-                             << dynamicLMGroupTable["currenthoursannually"]
-                             << dynamicLMGroupTable["lastcontrolsent"]
-                             << dynamicLMGroupTable["timestamp"]
-                             << dynamicLMGroupTable["lmprogramid"]
-                             << dynamicLMGroupTable["controlstarttime"]
-                             << dynamicLMGroupTable["controlcompletetime"]
-                             << dynamicLMGroupTable["nextcontroltime"]
-                             << dynamicLMGroupTable["internalstate"];
-
-                    selector.from(paObjectTable);
-                    selector.from(deviceTable);
-                    selector.from(genericMacroTable);
-                    selector.from(lmGroupTable);
-                    selector.from(lmGroupPointTable);
-                    selector.from(lmGroupRippleTable);
-                    selector.from(lmGroupSASimpleTable);
-                    selector.from(dynamicLMGroupTable);
-
-                    selector.where(lmGroupTable["deviceid"] == genericMacroTable["childid"]  &&
-                                   paObjectTable["paobjectid"] == genericMacroTable["childid"] &&
-                                   deviceTable["deviceid"] == genericMacroTable["childid"] &&
-                                   paObjectTable["paobjectid"].leftOuterJoin(lmGroupPointTable["deviceid"]) &&
-                                   paObjectTable["paobjectid"].leftOuterJoin(lmGroupRippleTable["deviceid"]) &&
-                                   paObjectTable["paobjectid"].leftOuterJoin(lmGroupSASimpleTable["groupid"]) &&
-                                   paObjectTable["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]));
-
-                        
-                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - " << selector.asString().data() << endl;
-                    }
-
-                    RWDBReader rdr = selector.reader(conn);
-
-                    CtiLMGroupFactory lm_group_factory;
-                      
-                    while(rdr())
-                    {
-                        int program_id;
-                        int child_order;
-                        int ownerid;
-
-                        rdr["childorder"] >> child_order;
-                        rdr["ownerid"] >> ownerid;
-                        rdr["lmprogramid"] >> program_id;
-                        
-                        // Find the saved macro group information
-                        pair< long, unsigned int > macrogroup_info = macrogroup_map.find(ownerid)->second;
-
-                        if(macrogroup_info.first == program_id)
-                        {
-                            CtiLMGroupBase* lm_group = lm_group_factory.createLMGroup(rdr);
-
-                            lm_group->setChildOrder(child_order);
-                            lm_group->setLMProgramId(macrogroup_info.first);
-                            lm_group->setGroupOrder(macrogroup_info.second);
-                        
-                            attachControlStringData(lm_group);
-                            allGroupList.insert(lm_group);
-                            all_program_group_map_bung.insert(make_pair(macrogroup_info.first, lm_group));
-                            _all_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
-                        }
-                    }
-
-                if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                {
-                    CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << RWTime() << " - Loaded a total of " << all_program_group_map_bung.size() << " LMGroups" << endl;
-                }
-            
-                }// end second group pass - make sure to fix up group ordering after groups are linked with programs below.
-                { // Begin loading group point information
-                    _point_group_map.clear();
-                    
-                    RWDBTable pointTable = db.table("point");
-                    RWDBTable lmGroupTable = db.table("lmgroup");
-
-                    RWDBSelector selector = db.selector();
-                    selector << pointTable["paobjectid"]
-                             << pointTable["pointid"]
-                             << pointTable["pointoffset"]
-                             << pointTable["pointtype"];
-
-                    selector.from(pointTable);
-                    selector.from(lmGroupTable);
-                    
-                    selector.where( pointTable["paobjectid"] == lmGroupTable["deviceid"] );
-                    
-                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - " << selector.asString().data() << endl;
-                    }
-
-                    RWDBReader rdr = selector.reader(conn);
-
-                    while( rdr() )
-                    {
-                        long group_id;
-                        int point_id;
-                        string point_type;
-                        int point_offset;
-
-                        rdr["paobjectid"] >> group_id;
-                        rdr["pointid"] >> point_id;
-                        rdr["pointtype"] >> point_type;
-                        rdr["pointoffset"] >> point_offset;
-
-                        map< long, CtiLMGroupBase* >::iterator iter = _all_group_map.find(group_id);
-                        if(iter == _all_group_map.end())
-                        {  //Group may not be attached and so not loaded, ok
-                            continue;
-                        }
-                        
-                        CtiLMGroupBase* lm_group = iter->second;
-
-                        switch(resolvePointType(point_type.data()))
-                        {
-                        case AnalogPointType:
-                            switch(point_offset)
-                            {
-                            case DAILYCONTROLHISTOFFSET:
-                                lm_group->setHoursDailyPointId(point_id);
-                                _point_group_map.insert(make_pair(point_id,lm_group));
-                                break;
-                            case MONTHLYCONTROLHISTOFFSET:
-                                lm_group->setHoursMonthlyPointId(point_id);
-                                _point_group_map.insert(make_pair(point_id,lm_group));
-                                break;
-                            case SEASONALCONTROLHISTOFFSET:
-                                lm_group->setHoursSeasonalPointId(point_id);
-                                _point_group_map.insert(make_pair(point_id,lm_group));
-                                break;
-                            case ANNUALCONTROLHISTOFFSET:
-                                lm_group->setHoursAnnuallyPointId(point_id);
-                                _point_group_map.insert(make_pair(point_id,lm_group));
-                                break;
-                            default:
-                            {
-                                CtiLockGuard<CtiLogger> dout_guard(dout);
-                                dout << RWTime() << " **Checkpoint** " <<  " Unknown point offset: " << point_offset
-                                     << "  Expected daily, monthly, seasonal, or annual control history point offset" << __FILE__ << "(" << __LINE__ << ")" << endl;
-                            }
-                                break;
-                            }
-                            break;
-                        case StatusPointType:
-                            if(point_offset == 0)
-                            {
-                                long control_status_point_id;
-                                if(controlPointHashMap.findValue(point_id, control_status_point_id))
-                                {
-                                    lm_group->setControlStatusPointId(control_status_point_id);
-                                    _point_group_map.insert(make_pair(point_id,lm_group));
-                                }
-                            }
-                            break;
-                        default:
-                        {
-                            CtiLockGuard<CtiLogger> dout_guard(dout);
-                            dout << RWTime() << " **Checkpoint** " <<  " Unknown point type:  " << resolvePointType(point_type.data()) << __FILE__ << "(" << __LINE__ << ")" << endl;
-                        }
-                        }
-                    }
-                }
-#endif          
-#ifdef _OLD_                    
-                        RWDBTable lmGroupMacroExpanderView = db.table("lmgroupmacroexpander_view");
-                        RWDBTable lmGroupPointTable = db.table("lmgrouppoint");
-                        RWDBTable lmGroupRippleTable = db.table("lmgroupripple");
-                        RWDBTable lmGroupSASimpleTable = db.table("lmgroupsasimple");
-                        RWDBTable dynamicLMGroupTable = db.table("dynamiclmgroup");
-                        RWDBTable pointTable = db.table("point");
-
-                        RWDBSelector selector = db.selector();
-                        selector.distinct();
-                        selector << lmGroupMacroExpanderView["paobjectid"]
-                                 << lmGroupMacroExpanderView["category"]
-                                 << lmGroupMacroExpanderView["paoclass"]
-                                 << lmGroupMacroExpanderView["paoname"]
-                                 << lmGroupMacroExpanderView["type"]
-                                 << lmGroupMacroExpanderView["description"]
-                                 << lmGroupMacroExpanderView["disableflag"]
-                                 << lmGroupMacroExpanderView["alarminhibit"]
-                                 << lmGroupMacroExpanderView["controlinhibit"]
-                                 << lmGroupMacroExpanderView["kwcapacity"]
-                                 << lmGroupMacroExpanderView["grouporder"]
-                                 << lmGroupMacroExpanderView["childorder"]
-                                 << lmGroupMacroExpanderView["deviceid"]
-                                 << rwdbName("pointdeviceidusage",lmGroupPointTable["deviceidusage"])
-                                 << rwdbName("pointpointidusage",lmGroupPointTable["pointidusage"])
-                                 << rwdbName("pointstartcontrolrawstate",lmGroupPointTable["startcontrolrawstate"])
-                                 << rwdbName("rippleshedtime",lmGroupRippleTable["shedtime"])
-                                 << rwdbName("sasimplenominaltimeout", lmGroupSASimpleTable["nominaltimeout"])
-                                 << dynamicLMGroupTable["groupcontrolstate"]
-                                 << dynamicLMGroupTable["currenthoursdaily"]
-                                 << dynamicLMGroupTable["currenthoursmonthly"]
-                                 << dynamicLMGroupTable["currenthoursseasonal"]
-                                 << dynamicLMGroupTable["currenthoursannually"]
-                                 << dynamicLMGroupTable["lastcontrolsent"]
-                                 << dynamicLMGroupTable["timestamp"]
-                                 << dynamicLMGroupTable["lmprogramid"]
-                                 << dynamicLMGroupTable["controlstarttime"]
-                                 << dynamicLMGroupTable["controlcompletetime"]
-                                 << dynamicLMGroupTable["nextcontroltime"]
-                                 << dynamicLMGroupTable["internalstate"]
-                                 << pointTable["pointid"]
-                                 << pointTable["pointoffset"]
-                                 << pointTable["pointtype"];
-
-                        selector.from(lmGroupMacroExpanderView);
-                        selector.from(lmGroupPointTable);
-                        selector.from(lmGroupRippleTable);
-                        selector.from(lmGroupSASimpleTable);
-                        selector.from(dynamicLMGroupTable);
-                        selector.from(pointTable);
-
-                        selector.where( ( ( lmGroupMacroExpanderView["childid"].isNull() && 
-                                            lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["lmgroupdeviceid"] ) ||
-                                          ( !lmGroupMacroExpanderView["childid"].isNull() &&
-                                            lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["childid"] ) ) &&
-                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(lmGroupPointTable["deviceid"]) &&
-                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(lmGroupRippleTable["deviceid"]) &&
-                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(lmGroupSASimpleTable["groupid"]) &&
-                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) &&
-                                        lmGroupMacroExpanderView["deviceid"].leftOuterJoin(dynamicLMGroupTable["lmprogramid"]) &&
-                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(pointTable["paobjectid"]) );
-
-                        selector.orderBy( lmGroupMacroExpanderView["deviceid"] );
-                        selector.orderBy( lmGroupMacroExpanderView["grouporder"] );
-                        selector.orderBy( lmGroupMacroExpanderView["childorder"] );
-
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - " << selector.asString().data() << endl;
-                        }
-
-                        RWDBReader rdr = selector.reader(conn);
-
-                        CtiLMGroupBase* currentLMGroupBase = NULL;
-                        RWDBNullIndicator isNull;
-                        while ( rdr() )
-                        {
-                            LONG tempPAObjectId = 0;
-                            LONG tempProgramId = 0;
-                            RWCString tempPAOCategory;
-                            RWCString tempPAOType;
-                            rdr["category"] >> tempPAOCategory;
-                            rdr["type"] >> tempPAOType;
-                            rdr["paobjectid"] >> tempPAObjectId;
-                            rdr["deviceid"] >> tempProgramId;
-
-                            if( currentLMGroupBase != NULL &&
-                                tempPAObjectId == currentLMGroupBase->getPAOId() &&
-                                tempProgramId == currentLMGroupBase->getLMProgramId() )
-                            {
-                                rdr["pointid"] >> isNull;
-                                if( !isNull )
-                                {
-                                    LONG tempPointId = -1000;
-                                    LONG tempPointOffset = -1000;
-                                    RWCString tempPointType = "(none)";
-                                    rdr["pointid"] >> tempPointId;
-                                    rdr["pointoffset"] >> tempPointOffset;
-                                    rdr["pointtype"] >> tempPointType;
-
-                                    if( resolvePointType(tempPointType) == AnalogPointType )
-                                    {
-                                        if( tempPointOffset == DAILYCONTROLHISTOFFSET )
-                                        {
-                                            currentLMGroupBase->setHoursDailyPointId(tempPointId);
-                                        }
-                                        else if( tempPointOffset == MONTHLYCONTROLHISTOFFSET )
-                                        {
-                                            currentLMGroupBase->setHoursMonthlyPointId(tempPointId);
-                                        }
-                                        else if( tempPointOffset == SEASONALCONTROLHISTOFFSET )
-                                        {
-                                            currentLMGroupBase->setHoursSeasonalPointId(tempPointId);
-                                        }
-                                        else if( tempPointOffset == ANNUALCONTROLHISTOFFSET )
-                                        {
-                                            currentLMGroupBase->setHoursAnnuallyPointId(tempPointId);
-                                        }
-                                        /*else
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << RWTime() << " - Undefined Cap Bank point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-                                        }*/
-                                    }
-                                    else if( resolvePointType(tempPointType) == StatusPointType )
-                                    {
-                                        if( tempPointOffset == 0 )
-                                        {
-                                            LONG controlStatusPointId = -10000000;
-                                            if( controlPointHashMap.findValue(tempPointId,controlStatusPointId) )
-                                            {//just trying to see if this peusdo status point is controllable and has controlOffset of 1
-                                                currentLMGroupBase->setControlStatusPointId(controlStatusPointId);
-                                            }
-                                        }
-                                        /*else
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << RWTime() << " - Undefined Cap Bank point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-                                        }*/
-                                    }
-                                    /*else( resolvePointType(tempPointType) != StatusPointType )
-                                    {//undefined group point
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << RWTime() << " - Undefined Group point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-                                    }*/
-                                }
-                            }
-                            else
-                            {
-                                RWCString tempPAOCategory;
-                                RWCString tempPAOType;
-                                rdr["category"] >> tempPAOCategory;
-                                rdr["type"] >> tempPAOType;
-                                INT tempTypeInt = resolvePAOType(tempPAOCategory,tempPAOType);
-                                if( tempTypeInt == TYPE_LMGROUP_VERSACOM )
-                                {
-                                    currentLMGroupBase = new CtiLMGroupVersacom(rdr);
-                                }
-                                else if( tempTypeInt == TYPE_LMGROUP_EMETCON )
-                                {
-                                    currentLMGroupBase = new CtiLMGroupEmetcon(rdr);
-                                }
-                                else if( tempTypeInt == TYPE_LMGROUP_RIPPLE )
-                                {
-                                    currentLMGroupBase = new CtiLMGroupRipple(rdr);
-                                }
-                                else if( tempTypeInt == TYPE_LMGROUP_POINT )
-                                {
-                                    currentLMGroupBase = new CtiLMGroupPoint(rdr);
-                                }
-                                else if( tempTypeInt == TYPE_LMGROUP_EXPRESSCOM )
-                                {
-                                    currentLMGroupBase = new CtiLMGroupExpresscom(rdr);
-                                }
-                                else if( tempTypeInt == TYPE_LMGROUP_MCT )
-                                {
-                                    currentLMGroupBase = new CtiLMGroupMCT(rdr);
-                                }
-                                else if( tempTypeInt == TYPE_LMGROUP_SA105 )
-                                {
-                                    currentLMGroupBase = new CtiLMGroupSA105(rdr);
-                                }
-                                else if( tempTypeInt == TYPE_LMGROUP_SA205 )
-                                {
-                                    currentLMGroupBase = new CtiLMGroupSA205(rdr);
-                                }
-                                else if( tempTypeInt == TYPE_LMGROUP_SA305 )
-                                {
-                                    currentLMGroupBase = new CtiLMGroupSA305(rdr);
-                                }
-                                else if( tempTypeInt == TYPE_LMGROUP_SADIGITAL )
-                                {
-                                    currentLMGroupBase = new CtiLMGroupSADigital(rdr);
-                                }
-                                else if( tempTypeInt == TYPE_LMGROUP_GOLAY )
-                                {
-                                    currentLMGroupBase = new CtiLMGroupGolay(rdr);
-                                }
-                                else
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - Group device type = " << tempPAOType << " not supported yet.  In: " << __FILE__ << " at:" << __LINE__ << endl;
-                                }
-
-                                if( currentLMGroupBase != NULL )
-                                {
-                                    rdr["pointid"] >> isNull;
-                                    if( !isNull )
-                                    {//have to do this block to get the controllable pseudo status point
-                                        LONG tempPointId = -1000;
-                                        LONG tempPointOffset = -1000;
-                                        RWCString tempPointType = "(none)";
-                                        rdr["pointid"] >> tempPointId;
-                                        rdr["pointoffset"] >> tempPointOffset;
-                                        rdr["pointtype"] >> tempPointType;
-                                        if( resolvePointType(tempPointType) == StatusPointType )
-                                        {
-                                            if( tempPointOffset == 0 )
-                                            {
-                                                LONG controlStatusPointId = -10000000;
-                                                if( controlPointHashMap.findValue(tempPointId,controlStatusPointId) )
-                                                {//just trying to see if this peusdo status point is controllable and has controlOffset of 1
-                                                    currentLMGroupBase->setControlStatusPointId(controlStatusPointId);
-                                                }
-                                            }
-                                            /*else
-                                            {
-                                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                dout << RWTime() << " - Undefined Cap Bank point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-                                            }*/
-                                        }
-                                    }
-                                    attachControlStringData(currentLMGroupBase);
-                                    allGroupList.insert(currentLMGroupBase);
-                                }
-                            }
-                        }
-                    }//loading direct groups end
-#endif                  
-
-
 
                     RWTValHashMap<LONG,CtiLMProgramBase*,id_hash,equal_to<LONG> > directProgramHashMap;
 
@@ -1456,15 +862,15 @@ void CtiLMControlAreaStore::reset()
                                 tempProgramId != currentLMProgramDirect->getPAOId() )
                             {
                                 currentLMProgramDirect = new CtiLMProgramDirect(rdr);
-                                RWOrdered& directGroups = currentLMProgramDirect->getLMProgramDirectGroups();
+                                CtiLMGroupVec& directGroups = currentLMProgramDirect->getLMProgramDirectGroups();
                                 
                                 //Inserting this program's groups
-                                vector<CtiLMGroupBase*> group_vec = all_program_group_map.find(tempProgramId)->second;
-                                for(vector<CtiLMGroupBase*>::iterator iter = group_vec.begin();
+                                CtiLMGroupVec group_vec = all_program_group_map.find(tempProgramId)->second;
+                                for(CtiLMGroupIter iter = group_vec.begin();
                                     iter != group_vec.end();
                                     iter++)
                                 {
-                                    directGroups.insert(*iter);
+                                    directGroups.push_back(*iter);
                                     total_groups_assigned++;
                                 }
 
@@ -2481,36 +1887,11 @@ void CtiLMControlAreaStore::reset()
             }
         }
 
-#ifdef _BUNG_
-        for(int i = _controlAreas.entries(); i++)
-        {
-            CtiLMControlArea* control_area = (CtiLMControlArea*) _controlAreas[i];
-            RWOrdered& programs = control_area->getLMPrograms();
-            for(int j = 0; j < programs.entries(); j++)
-            {
-                CtiLMProgramBase* program = (CtiLMProgramBase*) programs[j];
-                if(program->getPAOType() == TYPE_LMPROGRAM_DIRECT)
-                {
-                    CtiLMProgramDirect* direct_program = (CtiLMProgramDirect*) program;
-                    RWOrdered& groups = direct_program->getLMProgramDirectGroups();
-                    
-                }
-            }
-        }
-#endif
-
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
                             
         // Clear out our old working objects
         _controlAreas->clearAndDestroy(); //89
-        //the line above doesn't delete groups, do that now
-        for(map<long,CtiLMGroupBase*>::iterator iter = _all_group_map.begin();
-            iter != _all_group_map.end();
-            iter++)
-        {
-            delete iter->second;
-        }
         _all_group_map.clear();
         _point_group_map.clear();
 
@@ -2842,7 +2223,7 @@ bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBase* progr
     Updates a disable flag in the yukonpaobject table in the database for
     the group.
 ---------------------------------------------------------------------------*/
-bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupBase* group)
+bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
@@ -3121,10 +2502,10 @@ void CtiLMControlAreaStore::saveAnyControlStringData()
                 CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)lmPrograms[j];
                 if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                 {
-                    RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentLMProgram)->getLMProgramDirectGroups();
-                    for(LONG k=0;k<lmGroups.entries();k++)
+                    CtiLMGroupVec groups  = ((CtiLMProgramDirect*)currentLMProgram)->getLMProgramDirectGroups();
+                    for(CtiLMGroupIter k = groups.begin(); k != groups.end(); k++)
                     {
-                        CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)lmGroups[k];
+                        CtiLMGroupPtr currentLMGroup  = *k;
                         if( currentLMGroup->getLastControlString().length() > 0 )
                         {
                             _controlStrings.insert(CtiLMSavedControlString(currentLMGroup->getPAOId(), currentLMGroup->getLastControlString()));
@@ -3141,7 +2522,7 @@ void CtiLMControlAreaStore::saveAnyControlStringData()
 
     .
 ---------------------------------------------------------------------------*/
-void CtiLMControlAreaStore::attachControlStringData(CtiLMGroupBase* group)
+void CtiLMControlAreaStore::attachControlStringData(CtiLMGroupPtr& group)
 {
     for(LONG i=0;i<_controlStrings.entries();i++)
     {

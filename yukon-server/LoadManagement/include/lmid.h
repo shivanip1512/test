@@ -74,3 +74,5 @@
 //#define LM_DEBUG_                  0x00000004
 #define LM_DEBUG_EXTENDED          0x10000000
 
+extern RWDBDateTime gInvalidRWDBDateTime;
+extern ULONG gInvalidRWDBDateTimeSeconds;

@@ -13,6 +13,9 @@ ULONG _LM_DEBUG = 0L;
 //Boolean if point enevts messages are created and sent to Dispatch
 BOOL _LM_POINT_EVENT_LOGGING = FALSE;
 
+RWDBDateTime gInvalidRWDBDateTime = RWDBDateTime(1990,1,1,0,0,0,0);
+ULONG gInvalidRWDBDateTimeSeconds = gInvalidRWDBDateTime.seconds();
+
 //Use this to indicate globally when ctrl-c was pressed
 //Kinda ugly... The Run() member function watches this
 //To know when to bail

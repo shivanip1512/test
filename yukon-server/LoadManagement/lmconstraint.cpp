@@ -191,11 +191,11 @@ bool CtiLMConstraintChecker::checkMaxHoursDaily(const CtiLMProgramDirect& lm_pro
     
     bool violated = false;
     unsigned int estimated_control_time = ((CtiLMProgramDirect&)lm_program).estimateOffTime(proposed_gear, proposed_start_from_1901,proposed_stop_from_1901)/60;//convert to minutes
-    
-    RWOrdered lm_groups = ((CtiLMProgramDirect&)lm_program).getLMProgramDirectGroups(); //cast away const, oooh
-    for(int i = 0; i < lm_groups.entries(); i++)
+
+    CtiLMGroupVec groups  = ((CtiLMProgramDirect&)lm_program).getLMProgramDirectGroups(); //cast away const, oooh
+    for(CtiLMGroupIter i = groups.begin(); i != groups.end(); i++)
     {
-        CtiLMGroupBase* lm_group = (CtiLMGroupBase*) lm_groups[i];
+        CtiLMGroupPtr lm_group  = *i;
         int diff_minutes = estimated_control_time + lm_group->getCurrentHoursDaily()/60 - lm_program.getMaxHoursDaily()*60;
         if( diff_minutes > 0)
         {
@@ -224,10 +224,10 @@ bool CtiLMConstraintChecker::checkMaxHoursMonthly(const CtiLMProgramDirect& lm_p
     bool violated = false;
     unsigned int estimated_control_time = ((CtiLMProgramDirect&)lm_program).estimateOffTime(proposed_gear, proposed_start_from_1901,proposed_stop_from_1901)/60; //convert to minutes
 
-    RWOrdered lm_groups = ((CtiLMProgramDirect&)lm_program).getLMProgramDirectGroups(); //cast away const, oooh
-    for(int i = 0; i < lm_groups.entries(); i++)
+    CtiLMGroupVec groups  = ((CtiLMProgramDirect&)lm_program).getLMProgramDirectGroups(); //cast away const, oooh
+    for(CtiLMGroupIter i = groups.begin(); i != groups.end(); i++)
     {
-        CtiLMGroupBase* lm_group = (CtiLMGroupBase*) lm_groups[i];
+        CtiLMGroupPtr lm_group  = *i;
         int diff_minutes = estimated_control_time + lm_group->getCurrentHoursMonthly()/60 - lm_program.getMaxHoursMonthly()*60;
         if( diff_minutes > 0)
         {
@@ -255,10 +255,10 @@ bool CtiLMConstraintChecker::checkMaxHoursSeasonal(const CtiLMProgramDirect& lm_
     bool violated = false;
     unsigned int estimated_control_time = ((CtiLMProgramDirect&)lm_program).estimateOffTime(proposed_gear, proposed_start_from_1901,proposed_stop_from_1901)/60;//convert to minutes
 
-    RWOrdered lm_groups = ((CtiLMProgramDirect&)lm_program).getLMProgramDirectGroups(); //cast away const, oooh
-    for(int i = 0; i < lm_groups.entries(); i++)
+    CtiLMGroupVec groups  = ((CtiLMProgramDirect&)lm_program).getLMProgramDirectGroups(); //cast away const, oooh
+    for(CtiLMGroupIter i = groups.begin(); i != groups.end(); i++)
     {
-        CtiLMGroupBase* lm_group = (CtiLMGroupBase*) lm_groups[i];
+        CtiLMGroupPtr lm_group  = *i;
         int diff_minutes = estimated_control_time + lm_group->getCurrentHoursSeasonal()/60 - lm_program.getMaxHoursSeasonal()*60;
         if( diff_minutes > 0)
         {
@@ -286,10 +286,10 @@ bool CtiLMConstraintChecker::checkMaxHoursAnnually(const CtiLMProgramDirect& lm_
     bool violated = false;
     unsigned int estimated_control_time = ((CtiLMProgramDirect&)lm_program).estimateOffTime(proposed_gear, proposed_start_from_1901,proposed_stop_from_1901)/60;//convert to minutes
 
-    RWOrdered lm_groups = ((CtiLMProgramDirect&)lm_program).getLMProgramDirectGroups(); //cast away const, oooh
-    for(int i = 0; i < lm_groups.entries(); i++)
+        CtiLMGroupVec groups  = ((CtiLMProgramDirect&)lm_program).getLMProgramDirectGroups(); //cast away const, oooh
+    for(CtiLMGroupIter i = groups.begin(); i != groups.end(); i++)
     {
-        CtiLMGroupBase* lm_group = (CtiLMGroupBase*) lm_groups[i];
+        CtiLMGroupPtr lm_group  = *i;
         int diff_minutes = estimated_control_time + lm_group->getCurrentHoursAnnually()/60 - lm_program.getMaxHoursAnnually()*60;
         if( diff_minutes > 0)
         {
@@ -343,11 +343,11 @@ bool CtiLMConstraintChecker::checkMinRestartTime(const CtiLMProgramDirect& lm_pr
     {
         return true;
     }
-    
-    RWOrdered lm_groups = ((CtiLMProgramDirect&)lm_program).getLMProgramDirectGroups(); //cast away const, oooh
-    for(int i = 0; i < lm_groups.entries(); i++)
+
+    CtiLMGroupVec groups  = ((CtiLMProgramDirect&)lm_program).getLMProgramDirectGroups(); //cast away const, oooh
+    for(CtiLMGroupIter i = groups.begin(); i != groups.end(); i++)
     {
-        CtiLMGroupBase* lm_group = (CtiLMGroupBase*) lm_groups[i];
+        CtiLMGroupPtr lm_group  = *i;
         if(lm_group->getControlCompleteTime().seconds() + lm_program.getMinRestartTime() > proposed_start_from_1901)
         {
             string result = "The program cannot control again until its minimum restart time, which is " + CtiNumStr((double)lm_program.getMinRestartTime()/60.0/60.0) + " hours, has elapsed since control last completed.";
