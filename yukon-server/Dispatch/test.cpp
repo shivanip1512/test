@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2004/09/22 16:03:53 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2004/09/22 20:34:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -238,10 +238,8 @@ void testThreads( int argc, char **argv )
    CtiThreadMonitor  *monitor = new CtiThreadMonitor;
    EThread           *bob = new EThread( ha, CtiThreadRegData::None, "Bob", booya, 30 );
    EThread           *sam = new EThread( ha, CtiThreadRegData::None, "Sam", booya, 45 );
-   EThread           *joe = new EThread( ha, CtiThreadRegData::None, "Joe", booya, 90 );
-   string arg = "'Jello";
-   void *ptr = &arg;
-   EThread           *sarah = new EThread( ha, ptr, CtiThreadRegData::Restart, "Saraita", booya, 32 );
+   EThread           *joe = new EThread( ha, CtiThreadRegData::KillApp, "Joe", booya, 90 );
+   EThread           *sarah = new EThread( ha, CtiThreadRegData::Restart, "Saraita", booya, 32 );
    int               index = 0;
 
    monitor->start();
@@ -321,7 +319,7 @@ void testThreads( int argc, char **argv )
       if( index == 150 )
       {
          monitor->dump();
-//         monitor->terminate();
+         monitor->terminate();
       }
 
       if( !sam->isRunning() )
@@ -333,11 +331,16 @@ void testThreads( int argc, char **argv )
       }
 
       if( index == 21 )
+      {
+         monitor->dump();
          bob->setQuit( true );
+         monitor->dump();
+      }
 
       if( index == 30 )
       {
-//         monitor->removeThread( sarah->getID() );
+         monitor->dump();
+         monitor->removeThread( sarah->getID() );
          sarah->setQuit( true );
          monitor->dump();
       }

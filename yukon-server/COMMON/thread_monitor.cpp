@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/09/22 16:03:54 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/09/22 20:34:15 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -48,6 +48,11 @@ void CtiThreadMonitor::run( void )
    while( !_quit )
    {
       sleep( 1000 );
+
+      {
+         CtiLockGuard<CtiLogger> doubt_guard( dout );
+         dout << now() << " Monitoring" << endl;
+      }
 
       checkForExpriration();
 
@@ -158,8 +163,7 @@ void CtiThreadMonitor::processExpired( void )
                {
                   if( altArgs != NULL )
                   {
-                     char **args = ( char **)altArgs;
-                     alt( args );
+                     alt( altArgs );
                   }
                   else
                   {
@@ -175,8 +179,7 @@ void CtiThreadMonitor::processExpired( void )
                {
                   if( altArgs != NULL )
                   {
-                     char **args = (char**)altArgs;
-                     alt( args );
+                     alt( altArgs );
                   }
                   else
                   {
@@ -188,8 +191,7 @@ void CtiThreadMonitor::processExpired( void )
                {
                   if( hammerArgs != NULL )
                   {
-                     char **args = (char**)hammerArgs;
-                     hammer( args );
+                     hammer( hammerArgs );
                   }
                   else
                   {
@@ -207,9 +209,7 @@ void CtiThreadMonitor::processExpired( void )
             break;
          }
 
-
          i = _threadData.erase( i );
-//         i = removeThread( i->first ); //like to use this, but then the return type has to be known elsewhere
 
          if( i == _threadData.end() )
             break;
@@ -256,6 +256,13 @@ void CtiThreadMonitor::insertThread( CtiThreadRegData *in )
          CtiLockGuard<CtiLogger> doubt_guard( dout );
          dout << boost::posix_time::to_simple_string( now ) << " Thread " << in->getId() << " inserted" << endl;
       }
+
+      //our thread may have shut down, so we don't want the queue to keep growing
+      //as we won't be processing it anymore
+      if( !isRunning() )
+      {
+         _queue.clearAndDestroy();
+      }
    }
    else
    {
@@ -268,7 +275,6 @@ void CtiThreadMonitor::insertThread( CtiThreadRegData *in )
 // this guy will allow a thread that has registered and is done working to un-register with us politely
 //===========================================================================================================
 
-//CtiThreadMonitor::ThreadData::iterator CtiThreadMonitor::removeThread( int id )
 void CtiThreadMonitor::removeThread( int id )
 {
    ThreadData::iterator i = _threadData.find( id );
@@ -279,8 +285,6 @@ void CtiThreadMonitor::removeThread( int id )
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       dout << now() << " Thread with id " << id << " has unregistered" << endl;
    }
-
-//   return( i );
 }
 
 //===========================================================================================================

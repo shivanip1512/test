@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/09/22 16:03:54 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/09/22 20:34:15 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -30,14 +30,14 @@ class IM_EX_CTIBASE CtiThreadRegData
 {
 public:
 
-   enum Behaviours //absence detect behaviour type
+   enum Behaviours   //absence detect behaviour type
    {
-      None,        //report missing thread and remove from list
-      Restart,    //call fooptr and remove thread from list
-      KillApp     //call all fooptrs and remove thread from list
+      None,          //report missing thread and remove from list
+      Restart,       //call fooptr and remove thread from list
+      KillApp        //call all fooptrs and remove thread from list
    };                
 
-   typedef void (*fooptr)( void * );
+   typedef void (*fooptr)( void* );
 
    CtiThreadRegData();
    virtual ~CtiThreadRegData();
@@ -87,7 +87,9 @@ private:
    ULONG          _tickleFreq;
    ptime          _tickledTime;
    void*          _shutdown_args;
+   void*          _shutdown_arg_count;
    void*          _alt_args;
+   void*          _alt_arg_count;
 };
 
 #endif // #ifndef __THREAD_REGISTER_DATA_H__
