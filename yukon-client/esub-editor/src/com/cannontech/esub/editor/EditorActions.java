@@ -5,6 +5,7 @@ package com.cannontech.esub.editor;
  * @author: 
  */
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.esub.editor.element.DynamicGraphElement;
 import com.cannontech.esub.util.Util;
 import com.loox.jloox.LxAbstractAction;
 import com.loox.jloox.LxComponent;
@@ -41,6 +43,7 @@ class EditorActions {
 	public static final String DYNAMIC_TEXT = "DYNAMIC TEXT";
 	public static final String STATE_IMAGE = "STATE IMAGE";
 	public static final String STATIC_TEXT = "STATIC TEXT";
+	public static final String DYNAMIC_GRAPH = "DYNAMIC GRAPH";
 	
 	//Element or group of elements related actions
 	public static final String ROTATE_ELEMENT_90 = "ROTATE 90";
@@ -502,6 +505,27 @@ class EditorActions {
 		}
 	};
 
+	private final LxAbstractAction dynamicGraphAction = 
+		new LxAbstractAction(
+			DYNAMIC_GRAPH,
+			"Dynamic Graph",
+			"Dynamic Graph",
+			"GraphIcon.gif",
+			true) {
+			
+		public void processAction(ActionEvent e ) {
+			DynamicGraphElement graph = 
+				new DynamicGraphElement();
+				
+			graph.setDrawing(editor.getDrawing());
+			editor.setBehavior(graph);
+			editor.elementPlacer.setElement(graph);
+			editor.elementPlacer.setIsPlacing(true);
+			editor.getDrawing().getLxView().setCursor(
+				new Cursor(Cursor.CROSSHAIR_CURSOR) );
+		}
+	};
+			
 	private Editor editor;
 	private HashMap actionMap;
 
@@ -543,7 +567,8 @@ class EditorActions {
 		actionMap.put(STATE_IMAGE, stateImageAction);
 		actionMap.put(STATIC_TEXT, staticTextAction);
 		actionMap.put(SET_DYNAMIC_TEXT_COLOR, setDynamicTextColor);
-
+		actionMap.put(DYNAMIC_GRAPH, dynamicGraphAction);
+		
 		LxView v = e.getDrawing().getLxView();
 
 		LxAbstractAction action =
