@@ -203,4 +203,13 @@ public java.util.Vector getVector() {
 	
 	return vector;
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (1/28/00 11:50:21 AM)
+ * @param newVector java.util.Vector
+ */
+public void setVector(java.util.Vector newVector) {
+	vector = newVector;
+}
 }

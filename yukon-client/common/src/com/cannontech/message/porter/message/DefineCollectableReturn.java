@@ -9,7 +9,7 @@ import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefineCollectableReturn extends com.cannontech.message.dispatch.message.DefineCollectableMulti {
+public class DefineCollectableReturn extends com.cannontech.message.util.DefineCollectableMessage {
 	private static final int classId = 1590;
 /**
  * DefineCollectableReturn constructor comment.
@@ -79,6 +79,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	super.restoreGuts( obj, vstr, polystr );
  
 	Return ret = (Return) obj;
+
+	ret.setVector( (java.util.Vector)vstr.restoreObject( polystr ) );
 
 	ret.setDeviceID( vstr.extractInt() );
 	ret.setCommandString( (String) vstr.restoreObject(SimpleMappings.CString));
