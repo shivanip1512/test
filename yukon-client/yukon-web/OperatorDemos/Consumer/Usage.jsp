@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>

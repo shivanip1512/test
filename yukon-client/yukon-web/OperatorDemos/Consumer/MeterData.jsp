@@ -235,14 +235,14 @@ document.writeln('</FORM>');
              if( tab.equalsIgnoreCase("summary") )
              {
               %>
-            <%@ include file="/../trendingsummary.jsp" %>
+            <%@ include file="../../trendingsummary.jsp" %>
             <%
              }
              else
              if( tab.equalsIgnoreCase("tab") )
              {
               %>
-            <%@ include file="/../trendingtabular.jsp" %>
+            <%@ include file="../../trendingtabular.jsp" %>
             <%
              }
              else // "graph" is default
