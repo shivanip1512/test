@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 /**
@@ -181,19 +182,34 @@ public class SwitchCommandQueue {
 	
 	public synchronized SwitchCommand[] getCommands(int energyCompanyID) {
 		ArrayList cmdList = new ArrayList();
-		for (int i = 0; i < switchCommands.size(); i++) {
-			SwitchCommand cmd = (SwitchCommand) switchCommands.get(i);
+		Iterator it = switchCommands.iterator();
+		while (it.hasNext()) {
+			SwitchCommand cmd = (SwitchCommand) it.next();
 			if (cmd.getEnergyCompanyID() == energyCompanyID) {
 				cmdList.add( cmd );
-				switchCommands.remove( cmd );
+				it.remove();
 				reCreateFile = true;
 			}
 		}
+		
 		if (reCreateFile) syncToFile();
 		
 		SwitchCommand[] commands = new SwitchCommand[ cmdList.size() ];
 		cmdList.toArray( commands );
 		return commands;
+	}
+	
+	public synchronized void clearCommands(int energyCompanyID) {
+		Iterator it = switchCommands.iterator();
+		while (it.hasNext()) {
+			SwitchCommand cmd = (SwitchCommand) it.next();
+			if (cmd.getEnergyCompanyID() == energyCompanyID) {
+				it.remove();
+				reCreateFile = true;
+			}
+		}
+		
+		if (reCreateFile) syncToFile();
 	}
 
 }
