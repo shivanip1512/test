@@ -1069,7 +1069,7 @@ private javax.swing.JTextField getJTextFieldConstraintName() {
 			ivjJTextFieldConstraintName.setDocument(
 					new TextFieldDocument(
 						TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
-						TextFieldDocument.INVALID_CHARS_PAO) );
+						TextFieldDocument.INVALID_CHARS_LMCONSTRAINTS) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
