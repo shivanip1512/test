@@ -23,7 +23,15 @@ function editValue(evt) {
 }
 
 function acknowledgeAlarm(evt) {
-	alert('sorry not implemented yet');
+	var node = evt.getTarget();
+	if(confirm("Are you sure you want to clear all current alarms for " + node.getAttribute('devicename') +"?")) {
+		url = '/servlet/ClearAlarm?deviceid=' + node.getAttribute('deviceid');
+		getURL(url,fn);
+	}
+	
+	function fn(obj) {
+		setTimeout('updateTables()',4000);
+	}
 }
 
 function controlPoint(evt) {

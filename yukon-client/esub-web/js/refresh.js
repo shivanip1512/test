@@ -3,17 +3,37 @@ function refresh(evt) {
 	dynText = SVGDoc.getElementsByTagName('text');
 	dynImages = SVGDoc.getElementsByTagName('image');
 	dynSVG = SVGDoc.documentElement.getElementsByTagName('svg');
-	
-	doRefresh();
-	changeSVGGraph();
-	
-	setInterval('doRefresh()', 30000);  //set to every minute 
-	setInterval('changeSVGGraph()', 30000); //every five minutes
 	root = evt.getTarget();	
+		
+	updateAll();
+	
+	setInterval('updateAll()',30000);
 } //end refresh
 
-function changeSVGGraph() {
- 	var url = '/servlet/GraphGenerator?';
+function updateAll() {
+	updatePoints();
+	updateGraphs();
+	updateTables();
+}
+function updatePoints() {
+	dynText = SVGDoc.getElementsByTagName('text');
+	for (var i=0; i<dynText.getLength(); i++) 
+	{
+		updateNode(dynText.item(i));
+	}
+	
+	dynImages = SVGDoc.getElementsByTagName('image');	
+	for(var j=0; j<dynImages.getLength(); j++)
+	{
+		updateImage(dynImages.item(j));
+	}
+	
+} //end updatePoints
+
+function updateGraphs() {
+	dynSVG = SVGDoc.documentElement.getElementsByTagName('svg');
+	
+	var url = '/servlet/GraphGenerator?';
 
 	for (i=0; i < dynSVG.getLength(); i++) {
 		var svgElement = dynSVG.item(i);
@@ -24,8 +44,23 @@ function changeSVGGraph() {
 			continue;
 		}
 	}
-} //end changeSVGGraph
+} //end updateGraphs
 
+function updateTables() {
+	dynSVG = SVGDoc.documentElement.getElementsByTagName('svg');
+	
+	var url = '/servlet/AlarmsTableGenerator?';
+	for(i=0; i < dynSVG.getLength(); i++ ) {
+		var svgElement = dynSVG.item(i);
+		if(svgElement.getAttribute('object') == 'table') {
+			updateAlarmsTable(svgElement,url);
+		}
+		else {
+			continue;
+		}
+	}
+} //end updateTables
+ 
 function updateGraph(node, url) {
 	url = url + "gdefid=" + node.getAttribute('gdefid') +
       		"&model=" + node.getAttribute('model') +
@@ -80,18 +115,21 @@ function updateGraph(node, url) {
 	} // end f2
 } // end updateGraph
 
-function doRefresh() {
+function updateAlarmsTable(node,url) {
+	url = url + 'deviceid=' + node.getAttribute('deviceid') +
+				'&x=' + node.getAttribute('x') + 
+				'&y=' + node.getAttribute('y') +
+				'&width=' + node.getAttribute('width') +
+				'&height=' + node.getAttribute('height');		
+	getURL(url,fn2);
 	
-	for (var i=0; i<dynText.getLength(); i++) 
-	{
-		updateNode(dynText.item(i));
-	}
-	for(var j=0; j<dynImages.getLength(); j++)
-	{
-		updateImage(dynImages.item(j));
-	}
-}  //end doRefresh
+	function fn2(obj) {   
+		var Newnode = parseXML(obj.content, SVGDoc);
 
+		SVGDoc.documentElement.removeChild(node);
+		SVGDoc.documentElement.appendChild(Newnode);		
+	} // end f2
+} // end updateAlarmsTable
 
 function updateNode(node) {
 	if (node.getAttribute('dattrib')) {

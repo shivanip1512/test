@@ -7,14 +7,7 @@ A 0 2 0 0 ffffff66 1 ! 0
 1
 "0" 1
 
-11
-
-com.cannontech.esub.editor.element.DrawingMetaElement
-! 111101100 0;0;18.640625;2.03125 5 0 $ ! ! 0
-A 0 0 0 0 $ 1 C $ 0 0
-0 0
-"Default" 0 32 "_"
-1024 768
+9
 
 com.cannontech.esub.editor.element.DrawingMetaElement
 ! 111101100 0;0;18.640625;2.03125 5 0 $ ! ! 0
@@ -78,13 +71,6 @@ A 0 1 0 0 $ 1 ! 0 0
 0 0 0 0 0
 !
 10 "8560_power_graph.html"
-
-com.cannontech.esub.editor.element.StaticImage
-! 110101100 400;160;103;22 5 0 $ ! ! 0
-A 0 1 0 0 $ 1 ! 0 0
-0 0 0 0 0
-!
-11 "8560_setup.html"
 
 
 0

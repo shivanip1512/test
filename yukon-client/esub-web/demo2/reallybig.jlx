@@ -1,0 +1,55 @@
+JLoox 2.0.2
+"UTF8"
+A 0 1 0 0 ffffff00 1 ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+6
+
+com.cannontech.esub.editor.element.DrawingMetaElement
+! 111101100 0;0;18.640625;2.03125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C $ 0 0
+0 0
+"Default" 0 32 "_"
+1 100000 100000 200
+
+com.loox.jloox.LxLine
+! 111101100 10;20;1500;1010 5 0 $ ! ! 0
+A 0 1 0 0 ffffff00 1 ! 0 0
+2
+0 -750;-505
+1 750;505
+0 0
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 320;30;522.833984;44.453125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff00cc00 0 0
+0 0
+"Arial Bold" 0 60 "MORNIGSIDE SUB"
+"Arial Bold" 60 0 204 0 ""
+
+com.cannontech.esub.editor.element.StaticImage
+! 110101100 20;1010;429;25 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+42 ""
+
+com.cannontech.esub.editor.element.DynamicGraphElement
+! 111101100 810;550;640;480 5 0 $ ! ! 0
+A 0 1 0 0 ffffffff 1 C ffffffff 0 0
+0 0 0
+686 3 4 $
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 99515.132812;99698.5625;197.111328;43.890625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff00ff00 0 0
+0 0
+"Arial Bold" 0 60 "-103.82"
+764 1 ""
+
+
+0
