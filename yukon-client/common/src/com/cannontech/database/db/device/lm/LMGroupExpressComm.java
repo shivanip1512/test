@@ -7,15 +7,15 @@ public class LMGroupExpressComm extends com.cannontech.database.db.DBPersistent
 {
 	private Integer lmGroupID = null;
 	private Integer routeID = null;
-	private String serialNumber = "0";
-	private Integer serviceProviderID = new Integer(0);
-	private Integer geoID = new Integer(0);
-	private Integer substationID = new Integer(0);
-	private Integer feederID = new Integer(0);
-	private Integer zipCodeAddress = new Integer(0);
-	private Integer udAddress = new Integer(0);
-	private Integer programID = new Integer(0);
-	private Integer splinterAddress = new Integer(0);	
+	private String serialNumber = LMGroupExpressCommAddress.NONE_ADDRESS_ID.toString();
+	private Integer serviceProviderID = LMGroupExpressCommAddress.NONE_ADDRESS_ID;
+	private Integer geoID = LMGroupExpressCommAddress.NONE_ADDRESS_ID;
+	private Integer substationID = LMGroupExpressCommAddress.NONE_ADDRESS_ID;
+	private Integer feederID = LMGroupExpressCommAddress.NONE_ADDRESS_ID;
+	private Integer zipCodeAddress = LMGroupExpressCommAddress.NONE_ADDRESS_ID;
+	private Integer udAddress = LMGroupExpressCommAddress.NONE_ADDRESS_ID;
+	private Integer programID = LMGroupExpressCommAddress.NONE_ADDRESS_ID;
+	private Integer splinterAddress = LMGroupExpressCommAddress.NONE_ADDRESS_ID;
 	private String addressUsage = " "; //default none
 	private String relayUsage = " "; //default none
 

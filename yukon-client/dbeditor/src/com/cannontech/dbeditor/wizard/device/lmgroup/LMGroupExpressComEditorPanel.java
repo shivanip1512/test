@@ -1,4 +1,6 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
+
+import com.cannontech.database.db.device.lm.LMGroupExpressCommAddress;
 /**
  * This type was created in VisualAge.
  */
@@ -2339,12 +2341,18 @@ public Object getValue(Object o)
 
 		if( getJTextFieldSplinter().getText() != null && getJTextFieldSplinter().getText().length() > 0 )
 			group.getLMGroupExpressComm().setSplinterAddress( new Integer(getJTextFieldSplinter().getText()) );
+      else
+         group.getLMGroupExpressComm().setSplinterAddress( LMGroupExpressCommAddress.NONE_ADDRESS_ID );
 
 		if( getJTextFieldUserAddress().getText() != null && getJTextFieldUserAddress().getText().length() > 0 )			
 			group.getLMGroupExpressComm().setUdAddress( new Integer(getJTextFieldUserAddress().getText()) );
+      else
+         group.getLMGroupExpressComm().setUdAddress( LMGroupExpressCommAddress.NONE_ADDRESS_ID );
 
 		if( getJTextFieldZipAddress().getText() != null && getJTextFieldZipAddress().getText().length() > 0 )		
 			group.getLMGroupExpressComm().setZipCodeAddress( new Integer(getJTextFieldZipAddress().getText()) );
+      else
+         group.getLMGroupExpressComm().setZipCodeAddress( LMGroupExpressCommAddress.NONE_ADDRESS_ID );
 
 		if( getJCheckBoxSerial().isSelected() 
 			 && getJTextFieldSerialAddress().getText() != null 
@@ -2352,7 +2360,9 @@ public Object getValue(Object o)
 		{
 			group.getLMGroupExpressComm().setSerialNumber( getJTextFieldSerialAddress().getText() );
 		}
-
+      else
+         group.getLMGroupExpressComm().setSerialNumber( LMGroupExpressCommAddress.NONE_ADDRESS_ID.toString() );
+         
 		StringBuffer addressUsage = new StringBuffer();
 		StringBuffer relayUsage = new StringBuffer();
 
@@ -2795,7 +2805,7 @@ public void setValue(Object o)
 
 		
 		Integer serial = new Integer(group.getLMGroupExpressComm().getSerialNumber());
-		if( serial.intValue() > 0 )
+		if( serial.intValue() > LMGroupExpressCommAddress.NONE_ADDRESS_ID.intValue() )
 		{
 			getJCheckBoxSerial().doClick();
 			getJTextFieldSerialAddress().setText( serial.toString() );
