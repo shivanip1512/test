@@ -202,7 +202,8 @@ DOUBLE CtiLMControlAreaTrigger::getMinRestoreOffset() const
 LONG CtiLMControlAreaTrigger::getPeakPointId() const
 {
 
-    return _peakpointid;
+
+   return _peakpointid;
 }
 
 /*---------------------------------------------------------------------------

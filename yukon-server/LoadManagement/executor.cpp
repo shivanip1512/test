@@ -1349,9 +1349,9 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirect* l
     }
     
     lmProgramDirect->setCurrentGearNumber(_controlMsg->getStartGear()-1);
-    if( _controlMsg->getStartPriority() > controlArea->getCurrentPriority() )
+    if( _controlMsg->getStartPriority() > controlArea->getCurrentStartPriority() )
     {
-	controlArea->setCurrentPriority(_controlMsg->getStartPriority());
+	controlArea->setCurrentStartPriority(_controlMsg->getStartPriority());
     }
     
     lmProgramDirect->setManualControlReceivedFlag(TRUE);

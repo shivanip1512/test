@@ -28,6 +28,7 @@
 #include "device.h"
 #include "loadmanager.h"
 #include "resolvers.h"
+#include "numstr.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -282,14 +283,45 @@ LONG CtiLMControlArea::getControlAreaState() const
 }
 
 /*---------------------------------------------------------------------------
-    getCurrentPriority
+    getCurrentStartPriority
 
     Returns the current priority of the control area
 ---------------------------------------------------------------------------*/
-LONG CtiLMControlArea::getCurrentPriority() const
+LONG CtiLMControlArea::getCurrentStartPriority() const
 {
+    //find the largest positive priority of the active programs
+    int start_priority = -1;
+    for(int i = 0; i < _lmprograms.entries(); i++)
+    {
+        CtiLMProgramBase* lm_program = (CtiLMProgramBase*) _lmprograms[i];
+        if(lm_program->getProgramState() != CtiLMProgramBase::InactiveState)
+        {
+            start_priority = max(lm_program->getStartPriority(), start_priority);
+        }
+    }
+    return start_priority;
+}
 
-    return _currentpriority;
+/*----------------------------------------------------------------------------
+  getCurrentStopPriority
+
+  Returns the current stop priority of the control area.
+  -1 is there is nothing active.  1 is the high priority possible.
+----------------------------------------------------------------------------*/
+int CtiLMControlArea::getCurrentStopPriority() 
+{
+    //find the smallest positive priority of the active programs
+    int stop_priority = numeric_limits<int>::max();
+    for(int i = 0; i < _lmprograms.entries(); i++)
+    {
+        CtiLMProgramBase* lm_program = (CtiLMProgramBase*) _lmprograms[i];
+        if(lm_program->getProgramState() != CtiLMProgramBase::InactiveState &&
+            lm_program->getStopPriority() > 0)
+        {
+            stop_priority = min(lm_program->getStopPriority(), stop_priority);
+        }
+    }
+    return (stop_priority == numeric_limits<int>::max() ? -1 : stop_priority);
 }
 
 /*---------------------------------------------------------------------------
@@ -564,11 +596,11 @@ CtiLMControlArea& CtiLMControlArea::setControlAreaState(LONG state)
 }
 
 /*---------------------------------------------------------------------------
-    setCurrentPriority
+    setCurrentStartPriority
 
     Sets the current priority of the control area
 ---------------------------------------------------------------------------*/
-CtiLMControlArea& CtiLMControlArea::setCurrentPriority(LONG currpriority)
+CtiLMControlArea& CtiLMControlArea::setCurrentStartPriority(LONG currpriority)
 {
     if(_currentpriority != currpriority)
     {
@@ -829,7 +861,7 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
     {
         LONG triggersTripped = 0;
         for(LONG i=0;i<_lmcontrolareatriggers.entries();i++)
-        {
+        {   //why is the load from all triggers added up???
             CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
             if( !currentTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::ThresholdTriggerType,RWCString::ignoreCase) )
             {
@@ -921,6 +953,57 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
     return returnLoadReductionNeeded;
 }
 
+/*----------------------------------------------------------------------------
+  calculateStopPriorityLoadReduction
+
+  Figure out how much load would increase if we stopped all the programs
+  with the highest stop priority.
+----------------------------------------------------------------------------*/
+double CtiLMControlArea::calculateExpectedLoadIncrease(int stop_priority)
+{
+    double total_load_reduction = 0.0;
+    
+    if(stop_priority < 0)
+    {
+        return 0.0;
+    }
+
+    for(int i = 0; i < _lmprograms.entries(); i++)
+    {
+        CtiLMProgramBase* lm_program = (CtiLMProgramBase*) _lmprograms[i];
+        if( lm_program->getPAOType() == TYPE_LMPROGRAM_DIRECT && lm_program->getStopPriority() == stop_priority)
+        {
+            total_load_reduction += ((CtiLMProgramDirect*)lm_program)->getCurrentLoadReduction();
+        }
+    }
+    return total_load_reduction;
+}
+
+/*----------------------------------------------------------------------------
+  shouldReduceControl
+
+  Decision as to whether we can stop the programs in the current stop priority  
+----------------------------------------------------------------------------*/
+bool CtiLMControlArea::shouldReduceControl()
+{
+    int cur_stop_priority = getCurrentStopPriority();
+    double cur_load_reduction = calculateExpectedLoadIncrease(cur_stop_priority);
+    
+    for(int i = 0; i < _lmcontrolareatriggers.entries(); i++)
+    {
+        CtiLMControlAreaTrigger* lm_trigger = (CtiLMControlAreaTrigger*) _lmcontrolareatriggers[i];
+        if(lm_trigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdTriggerType)
+        {
+            if( lm_trigger->getPointValue() > lm_trigger->getMinRestoreOffset() ||
+                lm_trigger->getPointValue() + cur_load_reduction > lm_trigger->getThreshold() )
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 /*---------------------------------------------------------------------------
     reduceControlAreaLoad
 
@@ -972,9 +1055,9 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                     if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                     {
                         CtiLMProgramDirect* lmProgramDirect = (CtiLMProgramDirect*)currentLMProgram;
-                        if( lmProgramDirect->getStartPriority() > getCurrentPriority() ) // I think this works because programs are stored in order of default priority(start priority)
+                        if( lmProgramDirect->getStartPriority() > getCurrentStartPriority() ) // I think this works because programs are stored in order of default priority(start priority)
                         {
-                            if( getCurrentPriority() < 0 ||
+                            if( getCurrentStartPriority() < 0 ||
                                 newlyActivePrograms == 0 )
                             {//is inactive or current pass hasn't controlled any new programs
                                 {
@@ -982,7 +1065,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                                     RWCString text = RWCString("Priority Change Control Area: ");
                                     text += getPAOName();
                                     RWCString additional = RWCString("Previous Priority: ");
-                                    _ltoa(getCurrentPriority(),tempchar,10);
+                                    _ltoa(getCurrentStartPriority(),tempchar,10);
                                     additional += tempchar;
                                     additional += " New Priority: ";
                                     _ltoa(lmProgramDirect->getStartPriority(),tempchar,10);
@@ -995,7 +1078,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                                         dout << RWTime() << " - " << text << ", " << additional << endl;
                                     }
                                 }
-                                setCurrentPriority(lmProgramDirect->getStartPriority());
+                                setCurrentStartPriority(lmProgramDirect->getStartPriority());
                             }
                             else
                             {
@@ -1006,7 +1089,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                             }
                         }
 
-                        expectedLoadReduced = lmProgramDirect->reduceProgramLoad(loadReductionNeeded, getCurrentPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, isTriggerCheckNeeded(secondsFrom1901));
+                        expectedLoadReduced = lmProgramDirect->reduceProgramLoad(loadReductionNeeded, getCurrentStartPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, isTriggerCheckNeeded(secondsFrom1901));
                         newlyActivePrograms++;
                         if( getControlAreaState() != CtiLMControlArea::FullyActiveState &&
                             getControlAreaState() != CtiLMControlArea::ActiveState )
@@ -1020,7 +1103,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                         dout << RWTime() << " - Load Management can not automatically manage curtailment programs yet. in: " << __FILE__ << " at:" << __LINE__ << endl;
                         /*CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)currentLMProgram;
                         expectedLoadReduced = lmProgramCurtailment->reduceProgramLoad(loadReductionNeeded, multiPilMsg);
-                        if( currentLMProgram->getStartPriority() > getCurrentPriority() )
+                        if( currentLMProgram->getStartPriority() > getCurrentStartPriority() )
                         {
                             setCurrentPriority(currentLMProgram->getStartPriority());
                         }
@@ -1093,10 +1176,85 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
     return expectedLoadReduced;
 }
 
+/*----------------------------------------------------------------------------
+  reduceControlAreaControl
+
+  Reduce the amount of control in the control area by one stop priority
+----------------------------------------------------------------------------*/  
+void CtiLMControlArea::reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+{
+    int cur_stop_priority = getCurrentStopPriority();
+    int num_active_programs = 0;
+    
+    if(cur_stop_priority < 0)
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " **Checkpoint** " <<  " Current stop priority is " << cur_stop_priority << " not reducing control" << __FILE__ << "(" << __LINE__ << ")" << endl;
+        return;
+    }
+
+    for(int i = 0; i < _lmprograms.entries(); i++)
+    {
+        CtiLMProgramBase* lm_program = (CtiLMProgramBase*) _lmprograms[i];
+        if(lm_program->getStopPriority() == cur_stop_priority &&
+           lm_program->getProgramState() != CtiLMProgramBase::InactiveState)
+        {
+            string text = "Reducing control, LM Control Area: ";
+            text += getPAOName();
+            string additional = "Stop Priority: ";
+            additional += CtiNumStr(cur_stop_priority);
+            CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+            signal->setSOE(1);
+            multiDispatchMsg->insert(signal);
+            
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << RWTime() << " " <<  text << " - " << additional << endl;
+        }
+
+        if(lm_program->getPAOType() == TYPE_LMPROGRAM_DIRECT)
+        {
+            CtiLMProgramDirect* lm_program_direct = (CtiLMProgramDirect*) lm_program;
+            lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, secondsFrom1901);
+        }
+
+
+    }
+        else
+        {
+            if(lm_program->getProgramState() == CtiLMProgramBase::FullyActiveState ||
+               lm_program->getProgramState() == CtiLMProgramBase::ManualActiveState ||
+               lm_program->getProgramState() == CtiLMProgramBase::TimedActiveState ||
+               lm_program->getProgramState() == CtiLMProgramBase::ActiveState )
+            {
+                num_active_programs++;
+            }
+
+        }
+    }
+
+    if(num_active_programs == 0)
+    { //Looks like we stopped them all
+        setControlAreaState(CtiLMControlArea::InactiveState);
+        RWCString text = RWCString("Automatic Stop, LM Control Area: ");
+        text += getPAOName();
+        RWCString additional = RWCString("");//someday we can say why we auto stopped
+        CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+        signal->setSOE(1);
+
+        multiDispatchMsg->insert(signal);
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - " << text << ", " << additional << endl;
+    }
+    }
+    return;
+}
+
 /*---------------------------------------------------------------------------
     takeAllAvailableControlAreaLoad
 
-    Reduces load in the control area by running through the lmprograms to
+    Reduce load in the control area by running through the lmprograms to
     determine current priority and controlling one or more lmprograms
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
@@ -1145,16 +1303,16 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                         CtiLMProgramDirect* lmProgramDirect = (CtiLMProgramDirect*)currentLMProgram;
                         while( lmProgramDirect->getProgramState() != CtiLMProgramBase::FullyActiveState )
                         {
-                            expectedLoadReduced += lmProgramDirect->reduceProgramLoad(0.0, getCurrentPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, isTriggerCheckNeeded(secondsFrom1901));
+                            expectedLoadReduced += lmProgramDirect->reduceProgramLoad(0.0, getCurrentStartPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, isTriggerCheckNeeded(secondsFrom1901));
                         }
-                        if( currentLMProgram->getStartPriority() > getCurrentPriority() )
+                        if( currentLMProgram->getStartPriority() > getCurrentStartPriority() )
                         {
                             {
                                 char tempchar[80];
                                 RWCString text = RWCString("Priority Change Control Area: ");
                                 text += getPAOName();
                                 RWCString additional = RWCString("Previous Priority: ");
-                                _ltoa(getCurrentPriority(),tempchar,10);
+                                _ltoa(getCurrentStartPriority(),tempchar,10);
                                 additional += tempchar;
                                 additional += " New Priority: ";
                                 _ltoa(currentLMProgram->getStartPriority(),tempchar,10);
@@ -1167,7 +1325,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                                     dout << RWTime() << " - " << text << ", " << additional << endl;
                                 }
                             }
-                            setCurrentPriority(currentLMProgram->getStartPriority());
+                            setCurrentStartPriority(currentLMProgram->getStartPriority());
                         }
                     }
                     else if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
@@ -1176,7 +1334,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                         dout << RWTime() << " - Load Management can not automatically manage curtailment programs yet. in: " << __FILE__ << " at:" << __LINE__ << endl;
                         /*CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)currentLMProgram;
                         expectedLoadReduced = lmProgramCurtailment->reduceProgramLoad(loadReductionNeeded, multiPilMsg);
-                        if( currentLMProgram->getStartPriority() > getCurrentPriority() )
+                        if( currentLMProgram->getStartPriority() > getCurrentStartPriority() )
                         {
                             setCurrentPriority(currentLMProgram->getStartPriority());
                         }
@@ -1272,7 +1430,7 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, UL
             ( currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState ||
               currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ) )
         {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
-            if( ((CtiLMProgramDirect*)currentLMProgram)->maintainProgramControl(getCurrentPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, isPastMinResponseTime(secondsFrom1901), examinedControlAreaForControlNeededFlag) )
+            if( ((CtiLMProgramDirect*)currentLMProgram)->maintainProgramControl(getCurrentStartPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, isPastMinResponseTime(secondsFrom1901), examinedControlAreaForControlNeededFlag) )
             {
                 returnBoolean = TRUE;
             }
@@ -1299,7 +1457,7 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, UL
             RWCString text = RWCString("Priority Change Control Area: ");
             text += getPAOName();
             RWCString additional = RWCString("Previous Priority: ");
-            _ltoa(getCurrentPriority(),tempchar,10);
+            _ltoa(getCurrentStartPriority(),tempchar,10);
             additional += tempchar;
             additional += " New Priority: ";
             _ltoa(newPriority,tempchar,10);
@@ -1312,7 +1470,7 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, UL
                 dout << RWTime() << " - " << text << ", " << additional << endl;
             }
         }
-        setCurrentPriority(newPriority);
+        setCurrentStartPriority(newPriority);
     }
     else if( numberOfFullyActivePrograms > 0 &&
              numberOfFullyActivePrograms == _lmprograms.entries() )
@@ -1408,7 +1566,7 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
                 RWCString text = RWCString("Priority Change Control Area: ");
                 text += getPAOName();
                 RWCString additional = RWCString("Previous Priority: ");
-                _ltoa(getCurrentPriority(),tempchar,10);
+                _ltoa(getCurrentStartPriority(),tempchar,10);
                 additional += tempchar;
                 additional += " New Priority: ";
                 _ltoa(newPriority,tempchar,10);
@@ -1421,7 +1579,7 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
                     dout << RWTime() << " - " << text << ", " << additional << endl;
                 }
             }
-            setCurrentPriority(newPriority);
+            setCurrentStartPriority(newPriority);
         }
         else if( numberOfFullyActivePrograms > 0 &&
                  numberOfFullyActivePrograms == _lmprograms.entries() )
@@ -1509,7 +1667,7 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << text << ", " << additional << endl;
             }
-            setCurrentPriority(-1);
+            setCurrentStartPriority(-1);
 			setUpdatedFlag(TRUE);
         }
     }
@@ -1619,7 +1777,7 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << text << ", " << additional << endl;
             }
-            setCurrentPriority(-1);
+            setCurrentStartPriority(-1);
             setUpdatedFlag(TRUE);
         }
     }
@@ -1781,7 +1939,7 @@ void CtiLMControlArea::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& curre
             << dynamicLMControlAreaTable["newpointdatareceivedflag"].assign(RWCString( (getNewPointDataReceivedFlag() ? 'Y':'N') ))
             << dynamicLMControlAreaTable["updatedflag"].assign(RWCString( (getUpdatedFlag() ? 'Y':'N') ))
             << dynamicLMControlAreaTable["controlareastate"].assign( getControlAreaState() )
-            << dynamicLMControlAreaTable["currentpriority"].assign( getCurrentPriority() )
+            << dynamicLMControlAreaTable["currentpriority"].assign( getCurrentStartPriority() )
             << dynamicLMControlAreaTable["timestamp"].assign((RWDBDateTime)currentDateTime)
             << dynamicLMControlAreaTable["currentdailystarttime"].assign( getCurrentDailyStartTime() )
             << dynamicLMControlAreaTable["currentdailystoptime"].assign( getCurrentDailyStopTime() );
@@ -1810,7 +1968,7 @@ void CtiLMControlArea::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& curre
             << RWCString( ( getNewPointDataReceivedFlag() ? 'Y': 'N' ) )
             << RWCString( ( getUpdatedFlag() ? 'Y': 'N' ) )
             << getControlAreaState()
-            << getCurrentPriority()
+            << getCurrentStartPriority()
             << currentDateTime
             << getCurrentDailyStartTime()
             << getCurrentDailyStopTime();
@@ -2053,7 +2211,7 @@ void CtiLMControlArea::restore(RWDBReader& rdr)
         setUpdatedFlag(TRUE);//should always be sent to clients if it is newly added!
         setControlAreaState(CtiLMControlArea::InactiveState);
         //current priority set below zero when inactive
-        setCurrentPriority(-1);
+        setCurrentStartPriority(-1);
         setCurrentDailyStartTime(getDefDailyStartTime());
         setCurrentDailyStopTime(getDefDailyStopTime());
 

@@ -62,7 +62,8 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     BOOL getUpdatedFlag() const;
     LONG getControlAreaStatusPointId() const;
     LONG getControlAreaState() const;
-    LONG getCurrentPriority() const;
+    LONG getCurrentStartPriority() const;
+    int getCurrentStopPriority();
     LONG getCurrentDailyStartTime() const;
     LONG getCurrentDailyStopTime() const;
     RWOrdered& getLMControlAreaTriggers();
@@ -86,7 +87,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiLMControlArea& setUpdatedFlag(BOOL updated);
     CtiLMControlArea& setControlAreaStatusPointId(LONG statuspointid);
     CtiLMControlArea& setControlAreaState(LONG state);
-    CtiLMControlArea& setCurrentPriority(LONG currpriority);
+    CtiLMControlArea& setCurrentStartPriority(LONG currpriority);
     CtiLMControlArea& setCurrentDailyStartTime(LONG tempstart);
     CtiLMControlArea& setCurrentDailyStopTime(LONG tempstop);
 
@@ -97,7 +98,11 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     BOOL isManualControlReceived();
     BOOL isThresholdTriggerTripped();
     DOUBLE calculateLoadReductionNeeded();
+    double calculateExpectedLoadIncrease(int stop_priority);
+    bool shouldReduceControl();
+        
     DOUBLE reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    void reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     DOUBLE takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     BOOL maintainCurrentControl(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL examinedControlAreaForControlNeededFlag);
     BOOL stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901);

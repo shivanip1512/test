@@ -255,6 +255,7 @@ void CtiLoadManager::controlLoop()
 		    {
 			if( currentControlArea->isTriggerCheckNeeded(secondsFrom1901) )
 			{
+                            // Do we need to reduce load?
 			    DOUBLE loadReductionNeeded = currentControlArea->calculateLoadReductionNeeded();
 			    if( loadReductionNeeded > 0.0 &&
 				currentControlArea->isPastMinResponseTime(secondsFrom1901) )
@@ -287,6 +288,15 @@ void CtiLoadManager::controlLoop()
 				    dout << RWTime() << " - All load reducing programs are currently running for control area: " << currentControlArea->getPAOName() << " can not reduce any more load." << endl;
 				}
 			    }
+                            //Can we let off some load? (increase/stop)
+                            if(currentControlArea->getControlAreaState() != CtiLMControlArea::InactiveState &&
+                               currentControlArea->shouldReduceControl() &&
+                               currentControlArea->isPastMinResponseTime(secondsFrom1901))
+                            {
+                                currentControlArea->reduceControlAreaControl(secondsFrom1901, multiPilMsg, multiDispatchMsg);
+                            }
+                            
+                            
 
 			    if( currentControlArea->getControlInterval() == 0 )
 			    {
@@ -299,6 +309,8 @@ void CtiLoadManager::controlLoop()
 			    examinedControlAreaForControlNeededFlag = TRUE;
 			}
 
+
+#ifdef _BUNG_
 			if( currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
 			    currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState )
 			{
@@ -321,6 +333,7 @@ void CtiLoadManager::controlLoop()
 				}
 			    }
 			}
+#endif                        
 
 			if( currentControlArea->getControlAreaState() == CtiLMControlArea::AttemptingControlState &&
 			    !currentControlArea->isControlStillNeeded() )
@@ -991,7 +1004,8 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                     }
                 }
             }
-            else if( currentTrigger->getPeakPointId() == pointID )
+
+            if( currentTrigger->getPeakPointId() == pointID )
             {
                 if( value > currentTrigger->getPeakPointValue() )
                 {

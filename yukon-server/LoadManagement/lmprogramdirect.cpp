@@ -1840,6 +1840,12 @@ CtiLMGroupBase* CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* curr
                 }
             }
         }
+
+        if(returnGroup != NULL)
+        {
+            // Mark the group so that it doesn't get picked again!
+            returnGroup->setGroupControlState(CtiLMGroupBase::ActivePendingState);
+        }
     }
 
     return returnGroup;
@@ -5132,9 +5138,31 @@ ULONG CtiLMProgramDirect::estimateOffTime(ULONG proposed_gear, ULONG start, ULON
 	dout << RWTime() << " **Checkpoint** " << "invalid gear type" << __FILE__ << "(" << __LINE__ << ")" << endl;
     }
     }
-
-       
     return 0;
+}
+
+/*----------------------------------------------------------------------------
+  getCurrentLoadReduction
+
+  Returns how much load this program currently represents.
+  Add up all the kwcapacites * group reduction %
+  ----------------------------------------------------------------------------*/
+double CtiLMProgramDirect::getCurrentLoadReduction()
+{
+    double total_load_reduction = 0.0;
+    CtiLMProgramDirectGear* lm_gear = getCurrentGearObject();
+
+    if(getProgramState() == CtiLMProgramBase::InactiveState)
+    {
+        return 0.0;
+    }
+    
+    for(int i = 0; i < _lmprogramdirectgroups.entries(); i++)
+    {
+        CtiLMGroupBase* lm_group = (CtiLMGroupBase*) _lmprogramdirectgroups[i];
+        total_load_reduction += lm_gear->getPercentReduction() * lm_group->getKWCapacity();
+    }
+    return total_load_reduction;
 }
 
 /*----------------------------------------------------------------------------

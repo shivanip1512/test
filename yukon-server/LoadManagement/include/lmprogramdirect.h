@@ -110,7 +110,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     virtual BOOL isReadyForTimedControl(LONG secondsFromBeginningOfDay);
     virtual BOOL handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     virtual BOOL isPastMinRestartTime(ULONG secondsFrom1901);
-    
+
+    double getCurrentLoadReduction();
     ULONG estimateOffTime(ULONG proposed_Gear, ULONG start, ULONG stop);
 
     //Members inherited from RWCollectable
