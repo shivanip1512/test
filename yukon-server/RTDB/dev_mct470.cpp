@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/02/21 21:45:58 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/02/25 22:00:42 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -139,8 +139,8 @@ CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_TSync;
     cs._io      = IO_FCT_WRITE;
-    cs._funcLen = make_pair((int)MCT410_FuncWriteTSyncPos,
-                            (int)MCT410_FuncWriteTSyncLen);
+    cs._funcLen = make_pair((int)CtiDeviceMCT410::FuncWrite_TSyncPos,
+                            (int)CtiDeviceMCT410::FuncWrite_TSyncLen);
     s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Time;
@@ -233,7 +233,7 @@ ULONG CtiDeviceMCT470::calcNextLPScanTime( void )
     {
         for( int i = 0; i < MCT4XX_LPChannels; i++ )
         {
-            CtiPointBase *pPoint = getDevicePointOffsetTypeEqual((i+1) + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType);
+            CtiPointBase *pPoint = getDevicePointOffsetTypeEqual((i+1) + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
             //  if we're not collecting load profile, or there's no point defined, don't scan
             if( !getLoadProfile().isChannelValid(i) || pPoint == NULL )
@@ -609,98 +609,6 @@ INT CtiDeviceMCT470::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
 
     return status;
-}
-
-
-CtiDeviceMCT470::data_pair CtiDeviceMCT470::getData( unsigned char *buf, int len, ValueType vt )
-{
-    PointQuality_t quality   = NormalQuality;
-    unsigned long  value     = 0,
-                   errorcode = 0xffffffff;
-    unsigned char  demandbits, resolution;
-    data_pair retval;
-
-    for( int i = 0; i < len; i++ )
-    {
-        //  we're pulling the bytes in MSB-wise
-        errorcode <<= 8;
-        value     <<= 8;
-
-        if( vt == ValueType_KW && !i )
-        {
-            //  save these for use later
-            demandbits  = buf[i] & 0xc0;
-
-            //  if we fill in the demand bits in the error code, we can run it through
-            //    the same switch statement as anything else
-            errorcode  |= buf[i] | 0xc0;
-            resolution  = buf[i] & 0x30;
-            value      |= buf[i] & 0x0f;
-        }
-        else if( vt == ValueType_Voltage && !i )
-        {
-            errorcode  |= buf[i] | 0x80;
-            value      |= buf[i] & 0x7f;
-        }
-        else
-        {
-            errorcode  |= buf[i];
-            value      |= buf[i];
-        }
-    }
-
-    //  i s'pose this could be a set sometime, eh?
-    QualityMap::iterator q_itr = _errorQualities.find(errorcode);
-
-    if( q_itr != _errorQualities.end() )
-    {
-        quality = q_itr->second.first;
-        value   = 0;
-    }
-    else
-    {
-        //  only take the demand bits into account if everything else is cool
-        switch( demandbits )
-        {
-            //  time was adjusted in this interval
-            case 0xc0:  quality = PartialIntervalQuality;    break;
-            //  power was restored in this interval
-            case 0x80:  quality = PartialIntervalQuality;    break;
-            //  power failed in this interval
-            case 0x40:  quality = PowerfailQuality;          break;
-        }
-
-        if( vt == ValueType_Voltage && value > 0x7fff )
-        {
-            value = 0;
-            quality = AbnormalQuality;
-        }
-    }
-
-    retval.first  = value;
-    retval.second = quality;
-
-    if( vt == ValueType_KW )
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - demand value " << value << " resolution " << (int)resolution << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-
-        switch( resolution )
-        {
-            default:
-            case 0x00:  retval.first /=    10.0;    break;  //  100 WH units -> kWH
-            case 0x10:  retval.first /=   100.0;    break;  //   10 WH units -> kWH
-            case 0x20:  retval.first /=  1000.0;    break;  //    1 WH units -> kWH
-            case 0x30:  retval.first /= 10000.0;    break;  //  0.1 WH units -> kWH
-        }
-
-        retval.first *= 10.0;  //  REMOVE THIS for HEAD or WHATEVER build HAS the proper, pretty, nice 1.0 kWH output code
-    }
-
-    return retval;
 }
 
 
@@ -1222,7 +1130,7 @@ INT CtiDeviceMCT470::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
         channel      = _llpInterest.channel;
         decode_time  = _llpInterest.time + _llpInterest.offset;
 
-        pPoint = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( channel + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
+        pPoint = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
 
         for( int i = 0; i < 6; i++ )
         {
@@ -1231,7 +1139,7 @@ INT CtiDeviceMCT470::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
             //  but we want interval *ending* times, so add on one more interval
             timeStamp += interval_len;
 
-            dp = getData(DSt->Message + (i * 2) + 1, 2, ValueType_Voltage);
+            dp = getData(DSt->Message + (i * 2) + 1, 2, ValueType_KW);
             pulses  = dp.first;
             quality = dp.second;
 
@@ -1331,7 +1239,7 @@ INT CtiDeviceMCT470::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
         {
             interval_len = getLoadProfile().getLoadProfileDemandRate();
 
-            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( channel + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
+            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
 
             if( point )
             {
