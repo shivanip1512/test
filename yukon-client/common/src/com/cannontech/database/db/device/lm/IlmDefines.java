@@ -56,9 +56,11 @@ public interface IlmDefines
 	public static final String STOP_RESTORE = "Restore";
 	public static final String STOP_TIME_IN = "TimeIn";
 	public static final String STOP_STOP_CYCLE = "StopCycle";
-	public static final String STOP_RAMP_OUT = "RampOut";
-	public static final String STOP_RAMP_OUT_RESTORE = "RampOutRestore";
-
+	public static final String STOP_RAMP_OUT_RANDOM = "RampOutRandom";
+	public static final String STOP_RAMP_OUT_FIFO = "RampOutFIFO";
+	public static final String STOP_RAMP_OUT_RANDOM_RESTORE = "RampOutRandomRest";
+	public static final String STOP_RAMP_OUT_FIFO_RESTORE = "RampOutFIFORestore";
+	
 	//all possible change conditions
 	public static final String CHANGE_NONE = "None"; //Manually Only
 	public static final String CHANGE_DURATION = "Duration"; //After a Duration
