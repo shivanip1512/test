@@ -18,6 +18,12 @@ public class TrendModel implements com.cannontech.graph.GraphDataFormats
     private TrendSerie trendSeries[] = null;
     private java.util.Date startDate = null;
     private java.util.Date	stopDate = null;
+    private Character autoScaleRight = new Character('Y');
+    private Double rightScaleMin = new Double(0.0);
+    private Double rightScaleMax = new Double(0.0);
+    private Character autoScaleLeft = new Character('Y');
+    private Double leftScaleMin = new Double(0.0);
+    private Double leftScaleMax = new Double(0.0);
     private String chartName = "Yukon Trending";
     private java.text.SimpleDateFormat TITLE_DATE_FORMAT = new java.text.SimpleDateFormat("EEE MMMMM dd, yyyy");
     private static java.text.DecimalFormat LF_FORMAT = new java.text.DecimalFormat("###.000%");
@@ -41,7 +47,15 @@ public TrendModel(com.cannontech.database.data.graph.GraphDefinition newGraphDef
 	setStartDate(newGraphDef.getGraphDefinition().getStartDate());
 	setStopDate(newGraphDef.getGraphDefinition().getStopDate());
 	setChartName(newGraphDef.getGraphDefinition().getName());
-	
+
+	setAutoScaleRight(newGraphDef.getGraphDefinition().getAutoScaleRightAxis());
+	setRightScaleMax(newGraphDef.getGraphDefinition().getRightMax());
+	setRightScaleMin(newGraphDef.getGraphDefinition().getRightMin());
+
+	setAutoScaleLeft(newGraphDef.getGraphDefinition().getAutoScaleLeftAxis());
+	setLeftScaleMax(newGraphDef.getGraphDefinition().getLeftMax());
+	setLeftScaleMin(newGraphDef.getGraphDefinition().getLeftMin());
+
 	
 	// Inititialize series properties
 	java.util.Vector dsVector = new java.util.Vector(5);	//some small initial capactiy
@@ -86,6 +100,31 @@ public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, Strin
 		trendSeries[i] = tempSerie;
 	}		
 	hitDatabase_Basic();
+}
+
+public Character getAutoScaleLeft()
+{
+	return autoScaleLeft;
+}
+public Character getAutoScaleRight()
+{
+	return autoScaleRight;
+}
+public Double getLeftScaleMin()
+{
+	return leftScaleMin;
+}
+public Double getLeftScaleMax()
+{
+	return leftScaleMax;
+}
+public Double getRightScaleMin()
+{
+	return rightScaleMin;
+}
+public Double getRightScaleMax()
+{
+	return rightScaleMax;
 }
 
 public String getChartName()
@@ -141,7 +180,9 @@ private com.jrefinery.chart.CategoryAxis getHorizontalCategoryAxis()
 private com.jrefinery.chart.DateAxis getHorizontalDateAxis()
 {
 	com.jrefinery.chart.DateAxis domainAxis = new com.jrefinery.chart.HorizontalDateAxis("Date/Time");
-	domainAxis.setAutoRange(true);
+	domainAxis.setAutoRange(false);
+	domainAxis.setMaximumDate(getStopDate());
+	domainAxis.setMinimumDate(getStartDate());
 	domainAxis.setTickMarksVisible(true);	
 	((com.jrefinery.chart.HorizontalDateAxis)domainAxis).setVerticalTickLabels(false);
 	return domainAxis;
@@ -354,7 +395,13 @@ private com.jrefinery.chart.NumberAxis getVerticalNumberAxis()
 {
 	//Vertical 'values' Axis setup
 	com.jrefinery.chart.NumberAxis rangeAxis = new com.jrefinery.chart.VerticalNumberAxis("Reading");
-	rangeAxis.setAutoRange(true);
+	if( getAutoScaleLeft().equals(new Character('Y')))
+		rangeAxis.setAutoRange(true);
+	else
+	{
+		rangeAxis.setMaximumAxisValue(getLeftScaleMax().doubleValue());
+		rangeAxis.setMinimumAxisValue(getLeftScaleMin().doubleValue());
+	}
 	rangeAxis.setTickMarksVisible(true);
 	rangeAxis.setAutoRangeIncludesZero(false);
 	return rangeAxis;
@@ -364,7 +411,13 @@ private com.jrefinery.chart.NumberAxis getVerticalNumberAxis3D()
 {
 	//Vertical 'values' Axis setup
 	com.jrefinery.chart.NumberAxis rangeAxis = new com.jrefinery.chart.VerticalNumberAxis3D("Reading");
-	rangeAxis.setAutoRange(true);
+	if( getAutoScaleLeft().equals(new Character('Y')))
+		rangeAxis.setAutoRange(true);
+	else
+	{
+		rangeAxis.setMaximumAxisValue(getLeftScaleMax().doubleValue());
+		rangeAxis.setMinimumAxisValue(getLeftScaleMin().doubleValue());
+	}
 	rangeAxis.setTickMarksVisible(true);
 	rangeAxis.setAutoRangeIncludesZero(false);
 	return rangeAxis;
@@ -561,6 +614,30 @@ public static void main(String[] args)
 */
 }
 
+private void setAutoScaleLeft(Character newAutoScale)
+{
+	autoScaleLeft = newAutoScale;
+}
+private void setAutoScaleRight(Character newAutoScale)
+{
+	autoScaleRight = newAutoScale;
+}
+private void setLeftScaleMin(Double newMin)
+{
+	leftScaleMin = newMin;
+}
+private void setLeftScaleMax(Double newMax)
+{
+	leftScaleMax = newMax;
+}
+private void setRightScaleMin(Double newMin)
+{
+	rightScaleMin = newMin;
+}
+private void setRightScaleMax(Double newMax)
+{
+	rightScaleMax = newMax;
+}
 /**
  * Insert the method's description here.
  * Creation date: (6/20/2002 8:01:46 AM)
