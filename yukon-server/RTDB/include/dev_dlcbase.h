@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/10/30 17:37:00 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/01/26 21:53:00 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,6 +91,7 @@ protected:
     int executeOnDLCRoute( CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,
                            OUTMESS                   *&OutMessage,
+                           RWTPtrSlist< OUTMESS >     &tmpOutList,
                            RWTPtrSlist< CtiMessage >  &vgList,
                            RWTPtrSlist< CtiMessage >  &retList,
                            RWTPtrSlist< OUTMESS >     &outList,

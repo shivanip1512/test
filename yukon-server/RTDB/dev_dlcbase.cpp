@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/12/09 21:05:27 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/01/26 21:53:00 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -371,6 +371,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
 int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                                          CtiCommandParser           &parse,
                                          OUTMESS                   *&OutMessage,
+                                         RWTPtrSlist< OUTMESS >     &tmpOutList,
                                          RWTPtrSlist< CtiMessage >  &vgList,
                                          RWTPtrSlist< CtiMessage >  &retList,
                                          RWTPtrSlist< OUTMESS >     &outList,
@@ -385,9 +386,9 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
 
     CtiReturnMsg* pRet = 0;
 
-    for(int i = outList.entries() ; i > 0; i-- )
+    while( !tmpOutList.isEmpty() )
     {
-        OUTMESS *pOut = outList.get();
+        OUTMESS *pOut = tmpOutList.get();
 
         if( pReq->RouteId() )
         {
@@ -438,14 +439,38 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                 }
             }
 
-            if( pOut->Buffer.BSt.IO & Q_ARMC )
+            //  send an ARMC for commands that require it...  also, make sure we won't generate an infinite loop
+            if( (pOut->Buffer.BSt.IO & Q_ARMC) && !parse.isKeyValid("armc") )
             {
                 pOut->Buffer.BSt.IO &= ~Q_ARMC;
 
-                OUTMESS *armc = CTIDBG_new CtiOutMessage(*pOut);
+                CtiRequestMsg *armc_req = CTIDBG_new CtiRequestMsg(*pReq);
 
-                armc->Sequence = CtiProtocolEmetcon::Command_ARMC;
-                armc->Buffer.BSt.Function = ARMC;
+                if( parse.isKeyValid("noqueue") )
+                {
+                    armc_req->setCommandString("putconfig emetcon armc noqueue");
+                }
+                else
+                {
+                    armc_req->setCommandString("putconfig emetcon armc");
+                }
+
+                armc_req->setMessagePriority(pReq->getMessagePriority());
+
+                if( armc_req != NULL )
+                {
+                    CtiCommandParser armc_parse(armc_req->CommandString());
+
+                    if( CtiDeviceBase::ExecuteRequest(armc_req, armc_parse, vgList, retList, outList, pOut) )
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - error sending ARMC to device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+
+                    delete armc_req;
+                }
             }
 
             /*
