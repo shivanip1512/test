@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2003/01/09 18:11:00 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2003/01/13 18:23:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -5342,15 +5342,20 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                  *  accross their occurence.
                  */
                 if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress &&
-                   ppc.getControl().getControlDuration() != RESTORE_DURATION)     // This indicates a restore.
+                   ppc.getControl().getControlDuration() != RESTORE_DURATION)                           // This indicates a restore.
                 {
-                    verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
+                    verifyControlTimesValid(ppc);                                                       // Make sure ppc has been primed.
+
+                    RWTime writetime = ppc.getControl().getStopTime();
+                    ppc.getControl().incrementTimes( thetime, 0 );                                      // This effectively primes the entry for the next write.  Critical.
+                    ppc.getControl().setStopTime( writetime );
+
                     ppc.getControl().setActiveRestore( LMAR_NEWCONTROL );                               // Record this as a start interval.
 
                     insertControlHistoryRow(ppc, now);                                                  // Drop the row in there!
                     postControlStopPoint(ppc,now);                                                      // Let everyone know when control should end.
 
-                    ppc.getControl().incrementTimes( thetime, 0 );                                      // This effectively primes the entry for the next write.  Critical.
+                    ppc.getControl().setStopTime( thetime );
                     ppc.getControl().setActiveRestore( ppc.getControl().getDefaultActiveRestore() );    // Reset to the original completion state.
                 }
 
@@ -5425,7 +5430,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                 {
                     LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
 
-                    if(addnlseconds > 0)
+                    if(addnlseconds >= 0)
                     {
                         verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
 
