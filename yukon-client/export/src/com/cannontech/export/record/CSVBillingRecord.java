@@ -228,7 +228,7 @@ public class CSVBillingRecord implements RecordBase
 	{
 		if ( rlp_adl == null)
 		{
-			rlp_adl = new Double (getRLP().doubleValue() - getADL().doubleValue());
+			rlp_adl = new Double (getAdjustedRLP().doubleValue() - getADL().doubleValue());
 		}
 		return rlp_adl;
 	}
