@@ -133,7 +133,16 @@ public final class LiteComparators
 		{
 			String thisVal = ((LiteYukonRole)o1).getCategory();
 			String anotherVal = ((LiteYukonRole)o2).getCategory();
-         return ( thisVal.compareToIgnoreCase(anotherVal) );
+
+			if( !thisVal.equalsIgnoreCase(anotherVal) )
+				return( thisVal.compareToIgnoreCase(anotherVal) );
+				
+			//if the Categories are equal, we need to sort by Role Name
+			String thisName = ((LiteYukonRole)o1).getRoleName();
+			String anotherName = ((LiteYukonRole)o2).getRoleName();
+				
+			return( thisName.compareToIgnoreCase(anotherName) );
+         //return ( thisVal.compareToIgnoreCase(anotherVal) );
 		}
 		public boolean equals(Object obj)
 		{
