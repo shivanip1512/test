@@ -55,7 +55,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	
 	Signal signal = (Signal) obj;
 
-	signal.setId(vstr.extractLong());
+	signal.setId(vstr.extractInt());
 	signal.setLogType( vstr.extractInt());
 	signal.setAlarmStateID( vstr.extractUnsignedInt() );
 	signal.setDescription( (String) vstr.restoreObject( SimpleMappings.CString ) );

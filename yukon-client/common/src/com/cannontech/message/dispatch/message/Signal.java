@@ -7,7 +7,7 @@ package com.cannontech.message.dispatch.message;
  */
 public class Signal extends com.cannontech.message.util.Message 
 {
-	private long id = 0;
+	private int id = 0;
 
 	// Identifies the signal type
 	private int logType;
@@ -100,7 +100,7 @@ public java.lang.String getDescription() {
  * Creation date: (1/28/00 11:05:49 AM)
  * @return int
  */
-public long getId() {
+public int getId() {
 	return id;
 }
 /**
@@ -150,14 +150,6 @@ public void setDescription(java.lang.String newDescription) {
  * @param newId int
  */
 public void setId(int newId) {
-	id = newId;
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/28/00 11:05:49 AM)
- * @param newId int
- */
-public void setId(long newId) {
 	id = newId;
 }
 /**

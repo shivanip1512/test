@@ -7,7 +7,7 @@ package com.cannontech.message.dispatch.message;
  */
 public class PointData extends com.cannontech.message.util.Message 
 {
-	private long id;
+	private int id;
 	private int type;
 	private long quality;
 	private long tags;
@@ -51,7 +51,7 @@ public long getForced() {
  * Creation date: (1/28/00 11:17:38 AM)
  * @return int
  */
-public long getId() {
+public int getId() {
 	return id;
 }
 /**
@@ -140,14 +140,6 @@ public void setForced(long newForced) {
  * @param newId int
  */
 public void setId(int newId) {
-	id = newId;
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/28/00 11:17:38 AM)
- * @param newId int
- */
-public void setId(long newId) {
 	id = newId;
 }
 /**

@@ -63,7 +63,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	
 	PointData pData = (PointData) obj;
 
-	pData.setId( vstr.extractLong() );
+	pData.setId( vstr.extractInt() );
 	pData.setType( vstr.extractInt() );
 	pData.setQuality( vstr.extractUnsignedInt() );
 	pData.setTags( vstr.extractUnsignedInt() );
