@@ -477,8 +477,7 @@ public void run()
  * 
  * @return nothing
  */
-
-private void sendCommand( CBCCommand cmd )
+public void sendCommand( CBCCommand cmd )
 {
 	//Don't bother sending this out if were not in a good state
 	if( !getConnection().isValid() )
@@ -494,6 +493,7 @@ private void sendCommand( CBCCommand cmd )
 	msgEvent.setMessageType( MessageEvent.INFORMATION_MESSAGE );
 	fireMessageEvent(msgEvent);
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (8/22/00 10:35:17 AM)
