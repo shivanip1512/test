@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsocketinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2003/04/24 19:41:06 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2004/02/13 20:37:04 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,16 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrsocketinterface.cpp,v $
+      Revision 1.7  2004/02/13 20:37:04  dsutton
+      Added a new cparm for ACS interface that allows the user to filter points
+      being routed to ACS by timestamp.  The filter is the number of seconds
+      since the last update.   If set to zero, system behaves as it always has,
+      routing everything that comes from dispatch.  If the cparm is > 0, FDR will
+      first check the value and route the point if it has changed.  If the value has
+      not changed, FDR will check the timestamp to see if it is greater than or equal
+      to the previous timestamp plus the cparm.  If so, route the data, if not, throw
+      the point update away.
+
       Revision 1.6  2003/04/24 19:41:06  dsutton
       Changed a dispatch connection check from isValid to verify per Corey's request
 
@@ -110,6 +120,7 @@ CtiFDRSocketInterface::CtiFDRSocketInterface(RWCString & interfaceType, int aPor
 : CtiFDRInterface(interfaceType), 
     iPortNumber (aPortNumber),
     iTimestampReasonabilityWindow(aWindow),
+    iPointTimeVariation(0),
     iRegistered(true)
 
 {
@@ -156,6 +167,16 @@ int CtiFDRSocketInterface::getPortNumber () const
 CtiFDRSocketInterface& CtiFDRSocketInterface::setPortNumber (int aPort)
 {
     iPortNumber = aPort;
+    return *this;
+}
+
+int CtiFDRSocketInterface::getPointTimeVariation () const
+{
+    return iPointTimeVariation;
+}
+CtiFDRSocketInterface& CtiFDRSocketInterface::setPointTimeVariation (int aTime)
+{
+    iPointTimeVariation = aTime;
     return *this;
 }
 
@@ -218,6 +239,7 @@ BOOL CtiFDRSocketInterface::init( void )
 {
     // init the base class
     Inherited::init();    
+    iPointTimeVariation = 0;
     return TRUE;
 }
 
@@ -328,68 +350,88 @@ int CtiFDRSocketInterface::sendAllPoints()
 bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
 {   
     bool retVal = true;
+    bool forwardPointData=true;
     CtiPointDataMsg     *localMsg = (CtiPointDataMsg *)aMessage;
     CtiFDRPoint point;
 
-    // need to update this in my list always
-    updatePointByIdInList (getSendToList(), localMsg);
-
-    // if this is a response to a registration, do nothing
-    if (localMsg->getTags() & TAG_POINT_MOA_REPORT)
+    // if requested, check the timestamp and value to see if we should forward this message
+    if (getPointTimeVariation() > 0)
     {
         findPointIdInList (localMsg->getId(), getSendToList(), point);
 
-        if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
+        // if the values are equal
+        if (point.getValue() == localMsg->getValue())
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " MOA registration tag set, point " << localMsg->getId() << " will not be sent to " << getInterfaceName() << endl;
+            // check timestamp
+            if (point.getLastTimeStamp() + getPointTimeVariation() >= localMsg->getTime())
+            {
+                forwardPointData = false;
+            }
         }
-        retVal = false;
     }
-    else
-    {
-        // see if the point exists;
-        retVal = findPointIdInList (localMsg->getId(), getSendToList(), point);
 
-        if (retVal == false)
+    if (forwardPointData)
+    {
+        // need to update this in my list always
+        updatePointByIdInList (getSendToList(), localMsg);
+
+        // if this is a response to a registration, do nothing
+        if (localMsg->getTags() & TAG_POINT_MOA_REPORT)
         {
+            findPointIdInList (localMsg->getId(), getSendToList(), point);
+
             if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Translation for point " << localMsg->getId() << " to " << getInterfaceName() << " not found " << endl;;
+                dout << RWTime() << " MOA registration tag set, point " << localMsg->getId() << " will not be sent to " << getInterfaceName() << endl;
             }
+            retVal = false;
         }
         else
         {
-            /*******************************
-            * if the timestamp is less than 01-01-2000 (completely arbitrary number)
-            * then dont' route the point because it is uninitialized
-            * note: uninitialized points come across as 11-10-1990 
-            ********************************
-            */
-            if (point.getLastTimeStamp() < RWTime(RWDate(1,1,2001)))
+            // see if the point exists;
+            retVal = findPointIdInList (localMsg->getId(), getSendToList(), point);
+
+            if (retVal == false)
             {
-                if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+                if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " PointId " << point.getPointID();
-                    dout << " was not sent to " << getInterfaceName() << " because it hasn't been initialized " << endl;
+                    dout << RWTime() << " Translation for point " << localMsg->getId() << " to " << getInterfaceName() << " not found " << endl;;
                 }
-                retVal = false;
             }
             else
             {
-                // if we haven't registered, don't bother
-                if (isRegistered())
+                /*******************************
+                * if the timestamp is less than 01-01-2000 (completely arbitrary number)
+                * then dont' route the point because it is uninitialized
+                * note: uninitialized points come across as 11-10-1990 
+                ********************************
+                */
+                if (point.getLastTimeStamp() < RWTime(RWDate(1,1,2001)))
                 {
-                    try 
-                    {
-                        retVal = buildAndWriteToForeignSystem (point);
-                    }
-                    catch (...)
+                    if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** building msg error" << endl;
+                        dout << RWTime() << " PointId " << point.getPointID();
+                        dout << " was not sent to " << getInterfaceName() << " because it hasn't been initialized " << endl;
+                    }
+                    retVal = false;
+                }
+                else
+                {
+                    // if we haven't registered, don't bother
+                    if (isRegistered())
+                    {
+                        try 
+                        {
+                            retVal = buildAndWriteToForeignSystem (point);
+                        }
+                        catch (...)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** building msg error" << endl;
+                        }
                     }
                 }
             }

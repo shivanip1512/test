@@ -51,6 +51,9 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         int  getTimestampReasonabilityWindow () const;
         CtiFDRSocketInterface& setTimestampReasonabilityWindow(int aWindow);
                        
+        int  getPointTimeVariation () const;
+        CtiFDRSocketInterface& setPointTimeVariation(int aTime);
+
 		virtual bool loadList(RWCString &aDirection, CtiFDRPointList &aList) = 0;
         virtual CHAR *buildForeignSystemHeartbeatMsg (void) = 0;
         virtual INT getMessageSize(CHAR *data)=0;
@@ -74,6 +77,7 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
 		int     iPortNumber;
 		int     iTimestampReasonabilityWindow;
         bool    iRegistered;
+        int     iPointTimeVariation;
 
         CtiMutex                    iListenerMux;
         CtiFDRSocketConnection      *iListener;

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2003/10/31 21:15:40 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2004/02/13 20:37:04 $
 *
 *
 *    AUTHOR: David Sutton
@@ -24,7 +24,17 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdracs.cpp,v $
-      Revision 1.4  2003/10/31 21:15:40  dsutton
+      Revision 1.5  2004/02/13 20:37:04  dsutton
+      Added a new cparm for ACS interface that allows the user to filter points
+      being routed to ACS by timestamp.  The filter is the number of seconds
+      since the last update.   If set to zero, system behaves as it always has,
+      routing everything that comes from dispatch.  If the cparm is > 0, FDR will
+      first check the value and route the point if it has changed.  If the value has
+      not changed, FDR will check the timestamp to see if it is greater than or equal
+      to the previous timestamp plus the cparm.  If so, route the data, if not, throw
+      the point update away.
+
+      Revision 1.3.38.1  2003/10/31 18:31:53  dsutton
       Updated to allow us to send and receive accumlator points to other systems.
       Oversite from the original implementation
 
@@ -144,6 +154,7 @@ const CHAR * CtiFDR_ACS::KEY_OUTBOUND_SEND_RATE = "FDR_ACS_SEND_RATE";
 const CHAR * CtiFDR_ACS::KEY_OUTBOUND_SEND_INTERVAL = "FDR_ACS_SEND_INTERVAL";
 const CHAR * CtiFDR_ACS::KEY_TIMESYNC_VARIATION = "FDR_ACS_MAXIMUM_TIMESYNC_VARIATION";
 const CHAR * CtiFDR_ACS::KEY_TIMESYNC_UPDATE = "FDR_ACS_RESET_PC_TIME_ON_TIMESYNC";
+const CHAR * CtiFDR_ACS::KEY_POINT_TIME_VARIATION = "FDR_ACS_POINT_TIME_VARIATION";
                                     
 // Constructors, Destructor, and Operators
 CtiFDR_ACS::CtiFDR_ACS()
@@ -252,6 +263,17 @@ int CtiFDR_ACS::readConfig()
         setTimeSyncVariation(30);
     }
 
+    tempStr = getCparmValueAsString(KEY_POINT_TIME_VARIATION);
+    if (tempStr.length() > 0)
+    {
+        setPointTimeVariation (atoi(tempStr));
+    }
+    else
+    {
+        // default to 0
+        setPointTimeVariation (0);
+    }
+
     // default to true
     setUpdatePCTimeFlag (true);
     tempStr = getCparmValueAsString(KEY_TIMESYNC_UPDATE);
@@ -280,6 +302,7 @@ int CtiFDR_ACS::readConfig()
         dout << RWTime() << " ACS send rate " << getOutboundSendRate() << endl;
         dout << RWTime() << " ACS send interval " << getOutboundSendInterval() << " second(s) " << endl;
         dout << RWTime() << " ACS max time sync variation " << getTimeSyncVariation() << " second(s) " << endl;
+        dout << RWTime() << " ACS point time variation " << getPointTimeVariation() << " second(s) " << endl;
 
         if (shouldUpdatePCTime())
             dout << RWTime() << " ACS time sync will reset PC clock" << endl;

@@ -16,6 +16,16 @@
 *				  design document for more information
 *    History: 
       $Log: fdracs.h,v $
+      Revision 1.4  2004/02/13 20:37:04  dsutton
+      Added a new cparm for ACS interface that allows the user to filter points
+      being routed to ACS by timestamp.  The filter is the number of seconds
+      since the last update.   If set to zero, system behaves as it always has,
+      routing everything that comes from dispatch.  If the cparm is > 0, FDR will
+      first check the value and route the point if it has changed.  If the value has
+      not changed, FDR will check the timestamp to see if it is greater than or equal
+      to the previous timestamp plus the cparm.  If so, route the data, if not, throw
+      the point update away.
+
       Revision 1.3  2002/04/16 15:58:43  softwarebuild
       20020416_1031_2_16
 
@@ -205,6 +215,7 @@ class IM_EX_FDRACS CtiFDR_ACS : public CtiFDRSingleSocket
         static const CHAR * KEY_OUTBOUND_SEND_INTERVAL;
         static const CHAR * KEY_TIMESYNC_UPDATE;
         static const CHAR * KEY_TIMESYNC_VARIATION;
+        static const CHAR * KEY_POINT_TIME_VARIATION;
 
         virtual int processValueMessage(CHAR *data);
         virtual int processStatusMessage(CHAR *data);
