@@ -404,7 +404,7 @@ private javax.swing.JPanel getJPanelAvailableDays() {
 			com.cannontech.common.gui.util.TitleBorder ivjLocalBorder1;
 			ivjLocalBorder1 = new com.cannontech.common.gui.util.TitleBorder();
 			ivjLocalBorder1.setTitleFont(new java.awt.Font("Arial", 1, 14));
-			ivjLocalBorder1.setTitle("Available Days");
+			ivjLocalBorder1.setTitle("Peak Operating Days");
 			ivjJPanelAvailableDays = new javax.swing.JPanel();
 			ivjJPanelAvailableDays.setName("JPanelAvailableDays");
 			ivjJPanelAvailableDays.setPreferredSize(new java.awt.Dimension(250, 218));
