@@ -107,6 +107,6 @@ public class FileVersion
 	{
 		return
 			obj instanceof FileVersion
-			&& getFile().getName().equals( ((FileVersion)obj).getFile().getName() );
+			&& FILE_COMP.compare( this, (FileVersion)obj ) == 0;
 	}
 }

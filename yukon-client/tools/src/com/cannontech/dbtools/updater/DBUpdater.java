@@ -161,11 +161,11 @@ public class DBUpdater extends MessageFrameAdaptor
 			if( executeCommands() )
 				getIMessageFrame().finish( "DBUpdate Completed Successfully" );
 			else
-				getIMessageFrame().finish( "DBUpdate was Unsuccessfully executed" );
+				getIMessageFrame().addOutput( "DBUpdate was Unsuccessfully executed" );
 		}
 		catch( Exception e )
 		{
-			getIMessageFrame().finish( "Unsuccessfully DBUpdate" );
+			getIMessageFrame().addOutput( "DBUpdate was Unsuccessfully executed" );
 			CTILogger.warn( "A problem occurred in the main execution", e );
 		}
 
