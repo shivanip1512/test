@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/15/2004 3:19:57 PM                        */
+/* Created on:     12/30/2004 1:01:07 PM                        */
 /*==============================================================*/
 
 
@@ -3272,7 +3272,8 @@ create table "MACSchedule"  (
    "ValidWeekDays"      CHAR(8),
    "Duration"           NUMBER,
    "ManualStartTime"    DATE,
-   "ManualStopTime"     DATE
+   "ManualStopTime"     DATE,
+   "Template"           NUMBER
 );
 
 alter table "MACSchedule"
@@ -5240,8 +5241,7 @@ insert into YukonRole values (-600,'Reporting','Analysis','Access to reports gen
 insert into YukonRole values (-601,'Trending','Analysis','Access to trending functionality.');
 
 /* Capacitor Control roles */
-insert into YukonRole values (-700,'CBC Control','Capacitor Control','Allows the user to control change states of the CapControl system .');
-insert into YukonRole values (-701,'CBC Display','Capacitor Control','Allows alterations to the user interface.');
+insert into YukonRole values (-700,'CBC Control','CapBank Control','Allows the user to control change states of the CapControl system .');
 
 alter table "YukonRole"
    add constraint PK_YUKONROLE primary key ("RoleID");
@@ -5644,13 +5644,11 @@ insert into yukonroleproperty values(-60118, -601, 'Default Start Date Offset', 
 insert into yukonroleproperty values(-60119, -601, 'Default Time Period', '(none)', 'Default the time period.');
 
 /* Capacitor Control role properties */
-insert into YukonRoleProperty values(-70000,-700,'Hide Field Controls','false','Sets the visibility of all field controls.');
-insert into YukonRoleProperty values(-70001,-700,'Hide Local Controls','false','Sets the visibility of all local controls.');
-insert into YukonRoleProperty values(-70002,-700,'Allow Control','true','Enables or disables field and local controls for the given user');
-
-insert into YukonRoleProperty values(-70100,-701,'Hide Reports','false','Sets the visibility of reports.');
-insert into YukonRoleProperty values(-70101,-701,'Hide Graphs','false','Sets the visibility of graphs.');
-insert into YukonRoleProperty values(-70102,-701,'Hide One-Lines','false','Sets the visibility of one-line displays.');
+insert into YukonRoleProperty values(-70000,-700,'Access','false','Sets accessibility to the CapControl module.');
+insert into YukonRoleProperty values(-70001,-700,'Allow Control','true','Enables or disables field and local controls for the given user');
+insert into YukonRoleProperty values(-70002,-700,'Hide Reports','false','Sets the visibility of reports.');
+insert into YukonRoleProperty values(-70003,-700,'Hide Graphs','false','Sets the visibility of graphs.');
+insert into YukonRoleProperty values(-70004,-700,'Hide One-Lines','false','Sets the visibility of one-line displays.');
 alter table "YukonRoleProperty"
    add constraint PK_YUKONROLEPROPERTY primary key ("RolePropertyID");
 

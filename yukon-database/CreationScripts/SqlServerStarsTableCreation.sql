@@ -1,8 +1,87 @@
 /*==============================================================*/
-/* Database name:  STARS                                        */
-/* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     7/21/2004 1:15:36 PM                         */
+/* DBMS name:      Microsoft SQL Server 2000                    */
+/* Created on:     12/30/2004 1:00:20 PM                        */
 /*==============================================================*/
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('AccountSite')
+            and   name  = 'CstSrvCstProp_FK'
+            and   indid > 0
+            and   indid < 255)
+   drop index AccountSite.CstSrvCstProp_FK
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('ApplianceBase')
+            and   name  = 'CstAcc_CstLdInfo_FK'
+            and   indid > 0
+            and   indid < 255)
+   drop index ApplianceBase.CstAcc_CstLdInfo_FK
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('ApplianceBase')
+            and   name  = 'CstLdTy_CstLdInf_FK'
+            and   indid > 0
+            and   indid < 255)
+   drop index ApplianceBase.CstLdTy_CstLdInf_FK
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CustomerAccount')
+            and   name  = 'CstAccCstPro_FK'
+            and   indid > 0
+            and   indid < 255)
+   drop index CustomerAccount.CstAccCstPro_FK
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('InventoryBase')
+            and   name  = 'CstAccCstHrdB_FK'
+            and   indid > 0
+            and   indid < 255)
+   drop index InventoryBase.CstAccCstHrdB_FK
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('InventoryBase')
+            and   name  = 'HrdInst_CstHrdBs_FK'
+            and   indid > 0
+            and   indid < 255)
+   drop index InventoryBase.HrdInst_CstHrdBs_FK
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMHardwareConfiguration')
+            and   name  = 'CstLdIn_LMHrdCfg_FK'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMHardwareConfiguration.CstLdIn_LMHrdCfg_FK
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMHardwareConfiguration')
+            and   name  = 'LmHrd_LmHrdCfg_FK'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMHardwareConfiguration.LmHrd_LmHrdCfg_FK
+go
 
 
 if exists (select 1
@@ -341,21 +420,32 @@ if exists (select 1
 go
 
 
+if exists(select 1 from systypes where name='YUKON (int)')
+   execute sp_droptype "YUKON (int)"
+go
+
+
 /*==============================================================*/
-/* Table : AccountSite                                          */
+/* Domain: "YUKON (int)"                                        */
+/*==============================================================*/
+execute sp_addtype "YUKON (int)", 'int'
+go
+
+
+/*==============================================================*/
+/* Table: AccountSite                                           */
 /*==============================================================*/
 create table AccountSite (
-AccountSiteID        numeric              not null,
-SiteInformationID    numeric              null,
-SiteNumber           varchar(40)          not null,
-StreetAddressID      numeric              null,
-PropertyNotes        varchar(300)         null
+   AccountSiteID        numeric              not null,
+   SiteInformationID    numeric              null,
+   SiteNumber           varchar(40)          not null,
+   StreetAddressID      numeric              null,
+   PropertyNotes        varchar(300)         null
 )
 go
 
 
 INSERT INTO AccountSite VALUES (0,0,'(none)',0,'(none)');
-
 alter table AccountSite
    add constraint PK_ACCOUNTSITE primary key  (AccountSiteID)
 go
@@ -371,12 +461,12 @@ go
 
 
 /*==============================================================*/
-/* Table : ApplianceAirConditioner                              */
+/* Table: ApplianceAirConditioner                               */
 /*==============================================================*/
 create table ApplianceAirConditioner (
-ApplianceID          numeric              not null,
-TonnageID            numeric              null,
-TypeID               numeric              null
+   ApplianceID          numeric              not null,
+   TonnageID            numeric              null,
+   TypeID               numeric              null
 )
 go
 
@@ -387,20 +477,20 @@ go
 
 
 /*==============================================================*/
-/* Table : ApplianceBase                                        */
+/* Table: ApplianceBase                                         */
 /*==============================================================*/
 create table ApplianceBase (
-ApplianceID          numeric              not null,
-AccountID            numeric              not null,
-ApplianceCategoryID  numeric              not null,
-ProgramID            numeric              null,
-YearManufactured     numeric              null,
-ManufacturerID       numeric              null,
-LocationID           numeric              null,
-KWCapacity           numeric              null,
-EfficiencyRating     numeric              null,
-Notes                varchar(500)         null,
-ModelNumber          varchar(40)          not null
+   ApplianceID          numeric              not null,
+   AccountID            numeric              not null,
+   ApplianceCategoryID  numeric              not null,
+   ProgramID            numeric              null,
+   YearManufactured     numeric              null,
+   ManufacturerID       numeric              null,
+   LocationID           numeric              null,
+   KWCapacity           numeric              null,
+   EfficiencyRating     numeric              null,
+   Notes                varchar(500)         null,
+   ModelNumber          varchar(40)          not null
 )
 go
 
@@ -429,32 +519,31 @@ go
 
 
 /*==============================================================*/
-/* Table : ApplianceCategory                                    */
+/* Table: ApplianceCategory                                     */
 /*==============================================================*/
 create table ApplianceCategory (
-ApplianceCategoryID  numeric              not null,
-Description          varchar(40)          null,
-CategoryID           numeric              null,
-WebConfigurationID   numeric              null
+   ApplianceCategoryID  numeric              not null,
+   Description          varchar(40)          null,
+   CategoryID           numeric              null,
+   WebConfigurationID   numeric              null
 )
 go
 
 
 insert into ApplianceCategory values (0,'(none)',0,0);
-
 alter table ApplianceCategory
    add constraint PK_APPLIANCECATEGORY primary key  (ApplianceCategoryID)
 go
 
 
 /*==============================================================*/
-/* Table : ApplianceDualFuel                                    */
+/* Table: ApplianceDualFuel                                     */
 /*==============================================================*/
 create table ApplianceDualFuel (
-ApplianceID          numeric              not null,
-SwitchOverTypeID     numeric              not null,
-SecondaryKWCapacity  numeric              not null,
-SecondaryEnergySourceID numeric              not null
+   ApplianceID          numeric              not null,
+   SwitchOverTypeID     numeric              not null,
+   SecondaryKWCapacity  numeric              not null,
+   SecondaryEnergySourceID numeric              not null
 )
 go
 
@@ -465,15 +554,15 @@ go
 
 
 /*==============================================================*/
-/* Table : ApplianceGenerator                                   */
+/* Table: ApplianceGenerator                                    */
 /*==============================================================*/
 create table ApplianceGenerator (
-ApplianceID          numeric              not null,
-TransferSwitchTypeID numeric              not null,
-TransferSwitchMfgID  numeric              not null,
-PeakKWCapacity       numeric              not null,
-FuelCapGallons       numeric              not null,
-StartDelaySeconds    numeric              not null
+   ApplianceID          numeric              not null,
+   TransferSwitchTypeID numeric              not null,
+   TransferSwitchMfgID  numeric              not null,
+   PeakKWCapacity       numeric              not null,
+   FuelCapGallons       numeric              not null,
+   StartDelaySeconds    numeric              not null
 )
 go
 
@@ -484,15 +573,15 @@ go
 
 
 /*==============================================================*/
-/* Table : ApplianceGrainDryer                                  */
+/* Table: ApplianceGrainDryer                                   */
 /*==============================================================*/
 create table ApplianceGrainDryer (
-ApplianceID          numeric              not null,
-DryerTypeID          numeric              not null,
-BinSizeID            numeric              not null,
-BlowerEnergySourceID numeric              not null,
-BlowerHorsePowerID   numeric              not null,
-BlowerHeatSourceID   numeric              not null
+   ApplianceID          numeric              not null,
+   DryerTypeID          numeric              not null,
+   BinSizeID            numeric              not null,
+   BlowerEnergySourceID numeric              not null,
+   BlowerHorsePowerID   numeric              not null,
+   BlowerHeatSourceID   numeric              not null
 )
 go
 
@@ -503,14 +592,14 @@ go
 
 
 /*==============================================================*/
-/* Table : ApplianceHeatPump                                    */
+/* Table: ApplianceHeatPump                                     */
 /*==============================================================*/
 create table ApplianceHeatPump (
-ApplianceID          numeric              not null,
-PumpTypeID           numeric              not null,
-StandbySourceID      numeric              not null,
-SecondsDelayToRestart numeric              not null,
-PumpSizeID           numeric              not null
+   ApplianceID          numeric              not null,
+   PumpTypeID           numeric              not null,
+   StandbySourceID      numeric              not null,
+   SecondsDelayToRestart numeric              not null,
+   PumpSizeID           numeric              not null
 )
 go
 
@@ -521,16 +610,16 @@ go
 
 
 /*==============================================================*/
-/* Table : ApplianceIrrigation                                  */
+/* Table: ApplianceIrrigation                                   */
 /*==============================================================*/
 create table ApplianceIrrigation (
-ApplianceID          numeric              not null,
-IrrigationTypeID     numeric              not null,
-HorsePowerID         numeric              not null,
-EnergySourceID       numeric              not null,
-SoilTypeID           numeric              not null,
-MeterLocationID      numeric              not null,
-MeterVoltageID       numeric              not null
+   ApplianceID          numeric              not null,
+   IrrigationTypeID     numeric              not null,
+   HorsePowerID         numeric              not null,
+   EnergySourceID       numeric              not null,
+   SoilTypeID           numeric              not null,
+   MeterLocationID      numeric              not null,
+   MeterVoltageID       numeric              not null
 )
 go
 
@@ -541,13 +630,13 @@ go
 
 
 /*==============================================================*/
-/* Table : ApplianceStorageHeat                                 */
+/* Table: ApplianceStorageHeat                                  */
 /*==============================================================*/
 create table ApplianceStorageHeat (
-ApplianceID          numeric              not null,
-StorageTypeID        numeric              not null,
-PeakKWCapacity       numeric              not null,
-HoursToRecharge      numeric              not null
+   ApplianceID          numeric              not null,
+   StorageTypeID        numeric              not null,
+   PeakKWCapacity       numeric              not null,
+   HoursToRecharge      numeric              not null
 )
 go
 
@@ -558,13 +647,13 @@ go
 
 
 /*==============================================================*/
-/* Table : ApplianceWaterHeater                                 */
+/* Table: ApplianceWaterHeater                                  */
 /*==============================================================*/
 create table ApplianceWaterHeater (
-ApplianceID          numeric              not null,
-NumberOfGallonsID    numeric              null,
-EnergySourceID       numeric              not null,
-NumberOfElements     numeric              not null
+   ApplianceID          numeric              not null,
+   NumberOfGallonsID    numeric              null,
+   EnergySourceID       numeric              not null,
+   NumberOfElements     numeric              not null
 )
 go
 
@@ -575,16 +664,16 @@ go
 
 
 /*==============================================================*/
-/* Table : CallReportBase                                       */
+/* Table: CallReportBase                                        */
 /*==============================================================*/
 create table CallReportBase (
-CallID               numeric              not null,
-CallNumber           varchar(20)          null,
-CallTypeID           numeric              null,
-DateTaken            datetime             null,
-TakenBy              varchar(30)          null,
-Description          varchar(300)         null,
-AccountID            numeric              null
+   CallID               numeric              not null,
+   CallNumber           varchar(20)          null,
+   CallTypeID           numeric              null,
+   DateTaken            datetime             null,
+   TakenBy              varchar(30)          null,
+   Description          varchar(300)         null,
+   AccountID            numeric              null
 )
 go
 
@@ -595,21 +684,20 @@ go
 
 
 /*==============================================================*/
-/* Table : CustomerAccount                                      */
+/* Table: CustomerAccount                                       */
 /*==============================================================*/
 create table CustomerAccount (
-AccountID            numeric              not null,
-AccountSiteID        numeric              null,
-AccountNumber        varchar(40)          null,
-CustomerID           numeric              not null,
-BillingAddressID     numeric              null,
-AccountNotes         varchar(200)         null
+   AccountID            numeric              not null,
+   AccountSiteID        numeric              null,
+   AccountNumber        varchar(40)          null,
+   CustomerID           numeric              not null,
+   BillingAddressID     numeric              null,
+   AccountNotes         varchar(200)         null
 )
 go
 
 
 INSERT INTO CustomerAccount VALUES (0,0,'(none)',-1,0,'(none)');
-
 alter table CustomerAccount
    add constraint PK_CUSTOMERACCOUNT primary key  (AccountID)
 go
@@ -625,13 +713,13 @@ go
 
 
 /*==============================================================*/
-/* Table : CustomerFAQ                                          */
+/* Table: CustomerFAQ                                           */
 /*==============================================================*/
 create table CustomerFAQ (
-QuestionID           numeric              not null,
-SubjectID            numeric              null,
-Question             varchar(200)         null,
-Answer               varchar(500)         null
+   QuestionID           numeric              not null,
+   SubjectID            numeric              null,
+   Question             varchar(200)         null,
+   Answer               varchar(500)         null
 )
 go
 
@@ -643,29 +731,28 @@ insert into CustomerFAQ values(4,1232,'Can I control my thermostat even if I do 
 insert into CustomerFAQ values(5,1232,'What does the Fan setting do?','The fan setting controls the operation of the fan. <br>Auto - the fan runs only as necessary to maintain the current temperature settings. <br>On - the fan runs continuously. <br>Off - the fan does not run.');
 insert into CustomerFAQ values(6,1232,'Does the utility company have access to my thermostat?','The utility only has access to your thermostat for control based on the programs you have signed up for. When not being controlled, you have complete control of your thermostat.');
 insert into CustomerFAQ values(7,1233,'How much credit do I receive if I opt out while controlling?','You will receive credit for the portion of time you were controlled.');
-
 alter table CustomerFAQ
    add constraint PK_CUSTOMERFAQ primary key  (QuestionID)
 go
 
 
 /*==============================================================*/
-/* Table : CustomerResidence                                    */
+/* Table: CustomerResidence                                     */
 /*==============================================================*/
 create table CustomerResidence (
-AccountSiteID        numeric              not null,
-ResidenceTypeID      numeric              not null,
-ConstructionMaterialID numeric              not null,
-DecadeBuiltID        numeric              not null,
-SquareFeetID         numeric              not null,
-InsulationDepthID    numeric              not null,
-GeneralConditionID   numeric              not null,
-MainCoolingSystemID  numeric              not null,
-MainHeatingSystemID  numeric              not null,
-NumberOfOccupantsID  numeric              not null,
-OwnershipTypeID      numeric              not null,
-MainFuelTypeID       numeric              not null,
-Notes                varchar(300)         null
+   AccountSiteID        numeric              not null,
+   ResidenceTypeID      numeric              not null,
+   ConstructionMaterialID numeric              not null,
+   DecadeBuiltID        numeric              not null,
+   SquareFeetID         numeric              not null,
+   InsulationDepthID    numeric              not null,
+   GeneralConditionID   numeric              not null,
+   MainCoolingSystemID  numeric              not null,
+   MainHeatingSystemID  numeric              not null,
+   NumberOfOccupantsID  numeric              not null,
+   OwnershipTypeID      numeric              not null,
+   MainFuelTypeID       numeric              not null,
+   Notes                varchar(300)         null
 )
 go
 
@@ -676,11 +763,11 @@ go
 
 
 /*==============================================================*/
-/* Table : ECToAccountMapping                                   */
+/* Table: ECToAccountMapping                                    */
 /*==============================================================*/
 create table ECToAccountMapping (
-EnergyCompanyID      numeric              not null,
-AccountID            numeric              not null
+   EnergyCompanyID      numeric              not null,
+   AccountID            numeric              not null
 )
 go
 
@@ -691,11 +778,11 @@ go
 
 
 /*==============================================================*/
-/* Table : ECToCallReportMapping                                */
+/* Table: ECToCallReportMapping                                 */
 /*==============================================================*/
 create table ECToCallReportMapping (
-EnergyCompanyID      numeric              not null,
-CallReportID         numeric              not null
+   EnergyCompanyID      numeric              not null,
+   CallReportID         numeric              not null
 )
 go
 
@@ -706,12 +793,12 @@ go
 
 
 /*==============================================================*/
-/* Table : ECToGenericMapping                                   */
+/* Table: ECToGenericMapping                                    */
 /*==============================================================*/
 create table ECToGenericMapping (
-EnergyCompanyID      numeric              not null,
-ItemID               numeric              not null,
-MappingCategory      varchar(40)          not null
+   EnergyCompanyID      numeric              not null,
+   ItemID               numeric              not null,
+   MappingCategory      varchar(40)          not null
 )
 go
 
@@ -781,18 +868,17 @@ insert into ECToGenericMapping values (-1, 1061, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1062, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1063, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1064, 'YukonSelectionList');
-
 alter table ECToGenericMapping
    add constraint PK_ECTOGENERICMAPPING primary key  (EnergyCompanyID, ItemID, MappingCategory)
 go
 
 
 /*==============================================================*/
-/* Table : ECToInventoryMapping                                 */
+/* Table: ECToInventoryMapping                                  */
 /*==============================================================*/
 create table ECToInventoryMapping (
-EnergyCompanyID      numeric              not null,
-InventoryID          numeric              not null
+   EnergyCompanyID      numeric              not null,
+   InventoryID          numeric              not null
 )
 go
 
@@ -803,11 +889,11 @@ go
 
 
 /*==============================================================*/
-/* Table : ECToLMCustomerEventMapping                           */
+/* Table: ECToLMCustomerEventMapping                            */
 /*==============================================================*/
 create table ECToLMCustomerEventMapping (
-EnergyCompanyID      numeric              not null,
-EventID              numeric              not null
+   EnergyCompanyID      numeric              not null,
+   EventID              numeric              not null
 )
 go
 
@@ -818,11 +904,11 @@ go
 
 
 /*==============================================================*/
-/* Table : ECToWorkOrderMapping                                 */
+/* Table: ECToWorkOrderMapping                                  */
 /*==============================================================*/
 create table ECToWorkOrderMapping (
-EnergyCompanyID      numeric              not null,
-WorkOrderID          numeric              not null
+   EnergyCompanyID      numeric              not null,
+   WorkOrderID          numeric              not null
 )
 go
 
@@ -833,16 +919,16 @@ go
 
 
 /*==============================================================*/
-/* Table : InterviewQuestion                                    */
+/* Table: InterviewQuestion                                     */
 /*==============================================================*/
 create table InterviewQuestion (
-QuestionID           numeric              not null,
-QuestionType         numeric              null,
-Question             varchar(200)         null,
-Mandatory            varchar(1)           null,
-DisplayOrder         numeric              null,
-AnswerType           numeric              null,
-ExpectedAnswer       numeric              null
+   QuestionID           numeric              not null,
+   QuestionType         numeric              null,
+   Question             varchar(200)         null,
+   Mandatory            varchar(1)           null,
+   DisplayOrder         numeric              null,
+   AnswerType           numeric              null,
+   ExpectedAnswer       numeric              null
 )
 go
 
@@ -853,27 +939,26 @@ go
 
 
 /*==============================================================*/
-/* Table : InventoryBase                                        */
+/* Table: InventoryBase                                         */
 /*==============================================================*/
 create table InventoryBase (
-InventoryID          numeric              not null,
-AccountID            numeric              null,
-InstallationCompanyID numeric              null,
-CategoryID           numeric              not null,
-ReceiveDate          datetime             null,
-InstallDate          datetime             null,
-RemoveDate           datetime             null,
-AlternateTrackingNumber varchar(40)          null,
-VoltageID            numeric              null,
-Notes                varchar(500)         null,
-DeviceID             numeric              null,
-DeviceLabel          varchar(60)          null
+   InventoryID          numeric              not null,
+   AccountID            numeric              null,
+   InstallationCompanyID numeric              null,
+   CategoryID           numeric              not null,
+   ReceiveDate          datetime             null,
+   InstallDate          datetime             null,
+   RemoveDate           datetime             null,
+   AlternateTrackingNumber varchar(40)          null,
+   VoltageID            numeric              null,
+   Notes                varchar(500)         null,
+   DeviceID             numeric              null,
+   DeviceLabel          varchar(60)          null
 )
 go
 
 
 INSERT INTO InventoryBase VALUES (0,0,0,0,'01-JAN-70','01-JAN-70','01-JAN-70','(none)',0,'(none)',0,'(none)');
-
 alter table InventoryBase
    add constraint PK_INVENTORYBASE primary key  (InventoryID)
 go
@@ -898,36 +983,35 @@ go
 
 
 /*==============================================================*/
-/* Table : LMConfigurationBase                                  */
+/* Table: LMConfigurationBase                                   */
 /*==============================================================*/
 create table LMConfigurationBase (
-ConfigurationID      numeric              not null,
-ColdLoadPickup       varchar(128)         not null,
-TamperDetect         varchar(128)         not null
+   ConfigurationID      numeric              not null,
+   ColdLoadPickup       varchar(128)         not null,
+   TamperDetect         varchar(128)         not null
 )
 go
 
 
 insert into LMConfigurationBase values (0, '(none)', '(none)');
-
 alter table LMConfigurationBase
    add constraint PK_LMCONFIGURATIONBASE primary key  (ConfigurationID)
 go
 
 
 /*==============================================================*/
-/* Table : LMConfigurationExpressCom                            */
+/* Table: LMConfigurationExpressCom                             */
 /*==============================================================*/
 create table LMConfigurationExpressCom (
-ConfigurationID      numeric              not null,
-ServiceProvider      numeric              not null,
-GEO                  numeric              not null,
-Substation           numeric              not null,
-Feeder               numeric              not null,
-Zip                  numeric              not null,
-UserAddress          numeric              not null,
-Program              varchar(80)          not null,
-Splinter             varchar(80)          not null
+   ConfigurationID      numeric              not null,
+   ServiceProvider      numeric              not null,
+   GEO                  numeric              not null,
+   Substation           numeric              not null,
+   Feeder               numeric              not null,
+   Zip                  numeric              not null,
+   UserAddress          numeric              not null,
+   Program              varchar(80)          not null,
+   Splinter             varchar(80)          not null
 )
 go
 
@@ -938,16 +1022,16 @@ go
 
 
 /*==============================================================*/
-/* Table : LMConfigurationSA205                                 */
+/* Table: LMConfigurationSA205                                  */
 /*==============================================================*/
 create table LMConfigurationSA205 (
-ConfigurationID      numeric              not null,
-Slot1                numeric              not null,
-Slot2                numeric              not null,
-Slot3                numeric              not null,
-Slot4                numeric              not null,
-Slot5                numeric              not null,
-Slot6                numeric              not null
+   ConfigurationID      numeric              not null,
+   Slot1                numeric              not null,
+   Slot2                numeric              not null,
+   Slot3                numeric              not null,
+   Slot4                numeric              not null,
+   Slot5                numeric              not null,
+   Slot6                numeric              not null
 )
 go
 
@@ -958,17 +1042,17 @@ go
 
 
 /*==============================================================*/
-/* Table : LMConfigurationSA305                                 */
+/* Table: LMConfigurationSA305                                  */
 /*==============================================================*/
 create table LMConfigurationSA305 (
-ConfigurationID      numeric              not null,
-Utility              numeric              not null,
-GroupAddress         numeric              not null,
-Division             numeric              not null,
-Substation           numeric              not null,
-RateFamily           numeric              not null,
-RateMember           numeric              not null,
-RateHierarchy        numeric              not null
+   ConfigurationID      numeric              not null,
+   Utility              numeric              not null,
+   GroupAddress         numeric              not null,
+   Division             numeric              not null,
+   Substation           numeric              not null,
+   RateFamily           numeric              not null,
+   RateMember           numeric              not null,
+   RateHierarchy        numeric              not null
 )
 go
 
@@ -979,14 +1063,14 @@ go
 
 
 /*==============================================================*/
-/* Table : LMConfigurationVersacom                              */
+/* Table: LMConfigurationVersacom                               */
 /*==============================================================*/
 create table LMConfigurationVersacom (
-ConfigurationID      numeric              not null,
-UtilityID            numeric              not null,
-Section              numeric              not null,
-ClassAddress         numeric              not null,
-DivisionAddress      numeric              not null
+   ConfigurationID      numeric              not null,
+   UtilityID            numeric              not null,
+   Section              numeric              not null,
+   ClassAddress         numeric              not null,
+   DivisionAddress      numeric              not null
 )
 go
 
@@ -997,15 +1081,15 @@ go
 
 
 /*==============================================================*/
-/* Table : LMCustomerEventBase                                  */
+/* Table: LMCustomerEventBase                                   */
 /*==============================================================*/
 create table LMCustomerEventBase (
-EventID              numeric              not null,
-EventTypeID          numeric              not null,
-ActionID             numeric              not null,
-EventDateTime        datetime             null,
-Notes                varchar(100)         null,
-AuthorizedBy         varchar(40)          null
+   EventID              numeric              not null,
+   EventTypeID          numeric              not null,
+   ActionID             numeric              not null,
+   EventDateTime        datetime             null,
+   Notes                varchar(100)         null,
+   AuthorizedBy         varchar(40)          null
 )
 go
 
@@ -1016,14 +1100,14 @@ go
 
 
 /*==============================================================*/
-/* Table : LMHardwareBase                                       */
+/* Table: LMHardwareBase                                        */
 /*==============================================================*/
 create table LMHardwareBase (
-InventoryID          numeric              not null,
-ManufacturerSerialNumber varchar(30)          null,
-LMHardwareTypeID     numeric              not null,
-RouteID              numeric              not null,
-ConfigurationID      numeric              not null
+   InventoryID          numeric              not null,
+   ManufacturerSerialNumber varchar(30)          null,
+   LMHardwareTypeID     numeric              not null,
+   RouteID              numeric              not null,
+   ConfigurationID      numeric              not null
 )
 go
 
@@ -1034,13 +1118,13 @@ go
 
 
 /*==============================================================*/
-/* Table : LMHardwareConfiguration                              */
+/* Table: LMHardwareConfiguration                               */
 /*==============================================================*/
 create table LMHardwareConfiguration (
-InventoryID          numeric              not null,
-ApplianceID          numeric              not null,
-AddressingGroupID    numeric              null,
-LoadNumber           numeric              null
+   InventoryID          numeric              not null,
+   ApplianceID          numeric              not null,
+   AddressingGroupID    numeric              null,
+   LoadNumber           numeric              null
 )
 go
 
@@ -1069,11 +1153,11 @@ go
 
 
 /*==============================================================*/
-/* Table : LMHardwareEvent                                      */
+/* Table: LMHardwareEvent                                       */
 /*==============================================================*/
 create table LMHardwareEvent (
-EventID              numeric              not null,
-InventoryID          numeric              not null
+   EventID              numeric              not null,
+   InventoryID          numeric              not null
 )
 go
 
@@ -1084,12 +1168,12 @@ go
 
 
 /*==============================================================*/
-/* Table : LMProgramEvent                                       */
+/* Table: LMProgramEvent                                        */
 /*==============================================================*/
 create table LMProgramEvent (
-EventID              numeric              not null,
-AccountID            numeric              not null,
-ProgramID            numeric              null
+   EventID              numeric              not null,
+   AccountID            numeric              not null,
+   ProgramID            numeric              null
 )
 go
 
@@ -1100,36 +1184,35 @@ go
 
 
 /*==============================================================*/
-/* Table : LMProgramWebPublishing                               */
+/* Table: LMProgramWebPublishing                                */
 /*==============================================================*/
 create table LMProgramWebPublishing (
-ApplianceCategoryID  numeric              not null,
-DeviceID             numeric              not null,
-WebsettingsID        numeric              null,
-ChanceOfControlID    numeric              null,
-ProgramOrder         numeric              null,
-ProgramID            numeric              not null
+   ApplianceCategoryID  numeric              not null,
+   DeviceID             numeric              not null,
+   WebsettingsID        numeric              null,
+   ChanceOfControlID    numeric              null,
+   ProgramOrder         numeric              null,
+   ProgramID            numeric              not null
 )
 go
 
 
 insert into LMProgramWebPublishing values (0,0,0,0,0,0);
-
 alter table LMProgramWebPublishing
    add constraint PK_LMPROGRAMWEBPUBLISHING primary key  (ProgramID)
 go
 
 
 /*==============================================================*/
-/* Table : LMThermostatManualEvent                              */
+/* Table: LMThermostatManualEvent                               */
 /*==============================================================*/
 create table LMThermostatManualEvent (
-EventID              numeric              not null,
-InventoryID          numeric              not null,
-PreviousTemperature  numeric              null,
-HoldTemperature      varchar(1)           null,
-OperationStateID     numeric              null,
-FanOperationID       numeric              null
+   EventID              numeric              not null,
+   InventoryID          numeric              not null,
+   PreviousTemperature  numeric              null,
+   HoldTemperature      varchar(1)           null,
+   OperationStateID     numeric              null,
+   FanOperationID       numeric              null
 )
 go
 
@@ -1140,55 +1223,53 @@ go
 
 
 /*==============================================================*/
-/* Table : LMThermostatSchedule                                 */
+/* Table: LMThermostatSchedule                                  */
 /*==============================================================*/
 create table LMThermostatSchedule (
-ScheduleID           numeric              not null,
-ScheduleName         varchar(60)          not null,
-ThermostatTypeID     numeric              not null,
-AccountID            numeric              not null,
-InventoryID          numeric              not null
+   ScheduleID           numeric              not null,
+   ScheduleName         varchar(60)          not null,
+   ThermostatTypeID     numeric              not null,
+   AccountID            numeric              not null,
+   InventoryID          numeric              not null
 )
 go
 
 
 INSERT INTO LMThermostatSchedule VALUES (-1,'(none)',0,0,0);
-
 alter table LMThermostatSchedule
    add constraint PK_LMTHERMOSTATSCHEDULE primary key  (ScheduleID)
 go
 
 
 /*==============================================================*/
-/* Table : LMThermostatSeason                                   */
+/* Table: LMThermostatSeason                                    */
 /*==============================================================*/
 create table LMThermostatSeason (
-SeasonID             numeric              not null,
-ScheduleID           numeric              null,
-WebConfigurationID   numeric              null,
-StartDate            datetime             null,
-DisplayOrder         numeric              null
+   SeasonID             numeric              not null,
+   ScheduleID           numeric              null,
+   WebConfigurationID   numeric              null,
+   StartDate            datetime             null,
+   DisplayOrder         numeric              null
 )
 go
 
 
 INSERT INTO LMThermostatSeason VALUES (-1,-1,-1,'01-JUN-00',1);
 INSERT INTO LMThermostatSeason VALUES (-2,-1,-2,'15-OCT-00',2);
-
 alter table LMThermostatSeason
    add constraint PK_LMTHERMOSTATSEASON primary key  (SeasonID)
 go
 
 
 /*==============================================================*/
-/* Table : LMThermostatSeasonEntry                              */
+/* Table: LMThermostatSeasonEntry                               */
 /*==============================================================*/
 create table LMThermostatSeasonEntry (
-EntryID              numeric              not null,
-SeasonID             numeric              not null,
-TimeOfWeekID         numeric              not null,
-StartTime            numeric              not null,
-Temperature          numeric              null
+   EntryID              numeric              not null,
+   SeasonID             numeric              not null,
+   TimeOfWeekID         numeric              not null,
+   StartTime            numeric              not null,
+   Temperature          numeric              null
 )
 go
 
@@ -1217,89 +1298,85 @@ INSERT INTO LMThermostatSeasonEntry VALUES (-4,-2,1174,21600,72);
 INSERT INTO LMThermostatSeasonEntry VALUES (-3,-2,1174,30600,72);
 INSERT INTO LMThermostatSeasonEntry VALUES (-2,-2,1174,61200,72);
 INSERT INTO LMThermostatSeasonEntry VALUES (-1,-2,1174,75600,72);
-
 alter table LMThermostatSeasonEntry
    add constraint PK_LMTHERMOSTATSEASONENTRY primary key  (EntryID)
 go
 
 
 /*==============================================================*/
-/* Table : ServiceCompany                                       */
+/* Table: ServiceCompany                                        */
 /*==============================================================*/
 create table ServiceCompany (
-CompanyID            numeric              not null,
-CompanyName          varchar(40)          null,
-AddressID            numeric              null,
-MainPhoneNumber      varchar(14)          null,
-MainFaxNumber        varchar(14)          null,
-PrimaryContactID     numeric              null,
-HIType               varchar(40)          null
+   CompanyID            numeric              not null,
+   CompanyName          varchar(40)          null,
+   AddressID            numeric              null,
+   MainPhoneNumber      varchar(14)          null,
+   MainFaxNumber        varchar(14)          null,
+   PrimaryContactID     numeric              null,
+   HIType               varchar(40)          null
 )
 go
 
 
 INSERT INTO ServiceCompany VALUES (0,'(none)',0,'(none)','(none)',0,'(none)');
-
 alter table ServiceCompany
    add constraint PK_SERVICECOMPANY primary key  (CompanyID)
 go
 
 
 /*==============================================================*/
-/* Table : SiteInformation                                      */
+/* Table: SiteInformation                                       */
 /*==============================================================*/
 create table SiteInformation (
-SiteID               numeric              not null,
-Feeder               varchar(20)          null,
-Pole                 varchar(20)          null,
-TransformerSize      varchar(20)          null,
-ServiceVoltage       varchar(20)          null,
-SubstationID         numeric              null
+   SiteID               numeric              not null,
+   Feeder               varchar(20)          null,
+   Pole                 varchar(20)          null,
+   TransformerSize      varchar(20)          null,
+   ServiceVoltage       varchar(20)          null,
+   SubstationID         numeric              null
 )
 go
 
 
 INSERT INTO SiteInformation VALUES (0,'(none)','(none)','(none)','(none)',0);
-
 alter table SiteInformation
    add constraint PK_SITEINFORMATION primary key  (SiteID)
 go
 
 
 /*==============================================================*/
-/* Table : Substation                                           */
+/* Table: Substation                                            */
 /*==============================================================*/
 create table Substation (
-SubstationID         numeric              not null,
-SubstationName       varchar(50)          null,
-RouteID              numeric              null
+   SubstationID         numeric              not null,
+   SubstationName       varchar(50)          null,
+   RouteID              numeric              null
 )
 go
 
 
 INSERT INTO Substation VALUES (0,'(none)',0);
-
 alter table Substation
    add constraint PK_SUBSTATION primary key  (SubstationID)
 go
 
 
 /*==============================================================*/
-/* Table : WorkOrderBase                                        */
+/* Table: WorkOrderBase                                         */
 /*==============================================================*/
 create table WorkOrderBase (
-OrderID              numeric              not null,
-OrderNumber          varchar(20)          null,
-WorkTypeID           numeric              not null,
-CurrentStateID       numeric              not null,
-ServiceCompanyID     numeric              null,
-DateReported         datetime             null,
-OrderedBy            varchar(30)          null,
-Description          varchar(200)         null,
-DateScheduled        datetime             null,
-DateCompleted        datetime             null,
-ActionTaken          varchar(200)         null,
-AccountID            numeric              null
+   OrderID              numeric              not null,
+   OrderNumber          varchar(20)          null,
+   WorkTypeID           numeric              not null,
+   CurrentStateID       numeric              not null,
+   ServiceCompanyID     numeric              null,
+   DateReported         datetime             null,
+   OrderedBy            varchar(30)          null,
+   Description          varchar(200)         null,
+   DateScheduled        datetime             null,
+   DateCompleted        datetime             null,
+   ActionTaken          varchar(200)         null,
+   AccountID            numeric              null
 )
 go
 
@@ -1309,15 +1386,33 @@ alter table WorkOrderBase
 go
 
 
-alter table InventoryBase
-   add constraint FK_CUS_CSTA_CUS3 foreign key (AccountID)
-      references CustomerAccount (AccountID)
+alter table AccountSite
+   add constraint FK_CUS_CSTS_CUS2 foreign key (SiteInformationID)
+      references SiteInformation (SiteID)
 go
 
 
-alter table CustomerAccount
-   add constraint FK_CUS_CSTA_CUS2 foreign key (AccountSiteID)
-      references AccountSite (AccountSiteID)
+alter table AccountSite
+   add constraint FK_AccS_CstAd foreign key (StreetAddressID)
+      references Address (AddressID)
+go
+
+
+alter table ApplianceAirConditioner
+   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceAirConditioner
+   add constraint FK_CsLsE_Ac foreign key (TonnageID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceAirConditioner
+   add constraint FK_APPLIANC_ISA_CSTLD_APPLIANC foreign key (ApplianceID)
+      references ApplianceBase (ApplianceID)
 go
 
 
@@ -1327,21 +1422,39 @@ alter table ApplianceBase
 go
 
 
-alter table LMHardwareConfiguration
-   add constraint FK_LMH_CSTL_CUS2 foreign key (ApplianceID)
-      references ApplianceBase (ApplianceID)
-go
-
-
 alter table ApplianceBase
-   add constraint FK_APP_CSTL_APP foreign key (ApplianceCategoryID)
+   add constraint FK_APPLIANC_CSTLDTY_C_APPLIANC foreign key (ApplianceCategoryID)
       references ApplianceCategory (ApplianceCategoryID)
 go
 
 
-alter table AccountSite
-   add constraint FK_CUS_CSTS_CUS2 foreign key (SiteInformationID)
-      references SiteInformation (SiteID)
+alter table ApplianceBase
+   add constraint FK_AppBs_LMPrPub foreign key (ProgramID)
+      references LMProgramWebPublishing (ProgramID)
+go
+
+
+alter table ApplianceBase
+   add constraint FK_CsLsEn_ApB foreign key (ManufacturerID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceBase
+   add constraint FK_CsLsEn_ApB2 foreign key (LocationID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceCategory
+   add constraint FK_CstLs_ApCt foreign key (CategoryID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceCategory
+   add constraint FK_YkWC_ApCt foreign key (WebConfigurationID)
+      references YukonWebConfiguration (ConfigurationID)
 go
 
 
@@ -1357,129 +1470,21 @@ alter table ApplianceDualFuel
 go
 
 
-alter table ApplianceGenerator
-   add constraint FK_AppGn_YkLst1 foreign key (TransferSwitchMfgID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceGenerator
-   add constraint FK_AppGn_YkLst2 foreign key (TransferSwitchTypeID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceGrainDryer
-   add constraint FK_AppGrDr_YkLst1 foreign key (BinSizeID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceGrainDryer
-   add constraint FK_AppGrDr_YkLst2 foreign key (BlowerEnergySourceID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceGrainDryer
-   add constraint FK_AppGrDr_YkLst3 foreign key (DryerTypeID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceGrainDryer
-   add constraint FK_AppGrDr_YkLst5 foreign key (BlowerHorsePowerID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceGrainDryer
-   add constraint FK_AppGrDr_YkLst6 foreign key (BlowerHeatSourceID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceHeatPump
-   add constraint FK_AppHtPm_YkLst1 foreign key (PumpTypeID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceHeatPump
-   add constraint FK_AppHtPm_YkLst2 foreign key (StandbySourceID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceIrrigation
-   add constraint FK_AppIrr_YkLst1 foreign key (EnergySourceID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceIrrigation
-   add constraint FK_AppIrr_YkLst2 foreign key (HorsePowerID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceIrrigation
-   add constraint FK_AppIrr_YkLst3 foreign key (IrrigationTypeID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceIrrigation
-   add constraint FK_AppIrr_YkLst6 foreign key (MeterLocationID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceIrrigation
-   add constraint FK_AppIrr_YkLst5 foreign key (SoilTypeID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceWaterHeater
-   add constraint FK_AppWtHt_YkLst foreign key (EnergySourceID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table InventoryBase
-   add constraint FK_CUS_HRDI_HAR2 foreign key (InstallationCompanyID)
-      references ServiceCompany (CompanyID)
-go
-
-
-alter table LMHardwareConfiguration
-   add constraint FK_LMH_LMHR_LMH foreign key (InventoryID)
-      references LMHardwareBase (InventoryID)
-go
-
-
-alter table AccountSite
-   add constraint FK_AccS_CstAd foreign key (StreetAddressID)
-      references Address (AddressID)
-go
-
-
-alter table ApplianceWaterHeater
-   add constraint FK_ApWtrHt_YkLsE foreign key (NumberOfGallonsID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceBase
-   add constraint FK_AppBs_LMPrPub foreign key (ProgramID)
-      references LMProgramWebPublishing (ProgramID)
-go
-
-
 alter table ApplianceDualFuel
    add constraint FK_AppDlF_AppB foreign key (ApplianceID)
       references ApplianceBase (ApplianceID)
+go
+
+
+alter table ApplianceGenerator
+   add constraint FK_AppGn_YkLst1 foreign key (TransferSwitchTypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceGenerator
+   add constraint FK_AppGn_YkLst2 foreign key (TransferSwitchMfgID)
+      references YukonListEntry (EntryID)
 go
 
 
@@ -1490,8 +1495,50 @@ go
 
 
 alter table ApplianceGrainDryer
+   add constraint FK_AppGrDr_YkLst1 foreign key (BinSizeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceGrainDryer
+   add constraint FK_AppGrDr_YkLst2 foreign key (BlowerHorsePowerID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceGrainDryer
+   add constraint FK_AppGrDr_YkLst3 foreign key (BlowerEnergySourceID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceGrainDryer
+   add constraint FK_AppGrDr_YkLst5 foreign key (DryerTypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceGrainDryer
+   add constraint FK_AppGrDr_YkLst6 foreign key (BlowerHeatSourceID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceGrainDryer
    add constraint FK_AppGrD_AppB foreign key (ApplianceID)
       references ApplianceBase (ApplianceID)
+go
+
+
+alter table ApplianceHeatPump
+   add constraint FK_AppHtPm_YkLst1 foreign key (StandbySourceID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceHeatPump
+   add constraint FK_AppHtPm_YkLst2 foreign key (PumpTypeID)
+      references YukonListEntry (EntryID)
 go
 
 
@@ -1508,13 +1555,43 @@ go
 
 
 alter table ApplianceIrrigation
+   add constraint FK_AppIrr_YkLst1 foreign key (MeterVoltageID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceIrrigation
+   add constraint FK_AppIrr_YkLst2 foreign key (MeterLocationID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceIrrigation
+   add constraint FK_AppIrr_YkLst3 foreign key (IrrigationTypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceIrrigation
+   add constraint FK_AppIrr_YkLst6 foreign key (HorsePowerID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceIrrigation
+   add constraint FK_AppIrr_YkLst5 foreign key (SoilTypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceIrrigation
    add constraint FK_AppIrr_AppB foreign key (ApplianceID)
       references ApplianceBase (ApplianceID)
 go
 
 
 alter table ApplianceIrrigation
-   add constraint FK_AppIrr_YkLst4 foreign key (MeterVoltageID)
+   add constraint FK_AppIrr_YkLst4 foreign key (EnergySourceID)
       references YukonListEntry (EntryID)
 go
 
@@ -1532,86 +1609,20 @@ go
 
 
 alter table ApplianceWaterHeater
+   add constraint FK_AppWtHt_YkLst foreign key (NumberOfGallonsID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceWaterHeater
+   add constraint FK_ApWtrHt_YkLsE foreign key (EnergySourceID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceWaterHeater
    add constraint FK_AppWtHt_AppB foreign key (ApplianceID)
       references ApplianceBase (ApplianceID)
-go
-
-
-alter table LMProgramWebPublishing
-   add constraint FK_CsLEn_LPWbP foreign key (ChanceOfControlID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table LMCustomerEventBase
-   add constraint FK_CsLsE_LCstE foreign key (EventTypeID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table LMThermostatSeasonEntry
-   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceAirConditioner
-   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table WorkOrderBase
-   add constraint FK_CsLsE_WkB_c foreign key (CurrentStateID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table LMCustomerEventBase
-   add constraint FK_CsLsE_LCstE_a foreign key (ActionID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table LMThermostatManualEvent
-   add constraint FK_CsLsE_LThMnO2 foreign key (OperationStateID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceAirConditioner
-   add constraint FK_CsLsE_Ac foreign key (TonnageID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table LMThermostatManualEvent
-   add constraint FK_CsLsE_LThMnO1 foreign key (FanOperationID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table WorkOrderBase
-   add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table CustomerFAQ
-   add constraint FK_CsLsEn_CsF foreign key (SubjectID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceBase
-   add constraint FK_CsLsEn_ApB foreign key (ManufacturerID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceBase
-   add constraint FK_CsLsEn_ApB2 foreign key (LocationID)
-      references YukonListEntry (EntryID)
 go
 
 
@@ -1621,15 +1632,15 @@ alter table CallReportBase
 go
 
 
-alter table LMProgramEvent
-   add constraint FK_CstAc_LMPrEv foreign key (AccountID)
-      references CustomerAccount (AccountID)
+alter table CallReportBase
+   add constraint FK_CstELs_ClRB foreign key (CallTypeID)
+      references YukonListEntry (EntryID)
 go
 
 
-alter table ServiceCompany
-   add constraint FK_CstAdd_SrC foreign key (AddressID)
-      references Address (AddressID)
+alter table CustomerAccount
+   add constraint FK_CUS_CSTA_CUS2 foreign key (AccountSiteID)
+      references AccountSite (AccountSiteID)
 go
 
 
@@ -1639,32 +1650,14 @@ alter table CustomerAccount
 go
 
 
-alter table ServiceCompany
-   add constraint FK_CstCnt_SrvC foreign key (PrimaryContactID)
-      references Contact (ContactID)
+alter table CustomerAccount
+   add constraint FK_CustAcc_Add foreign key (BillingAddressID)
+      references Address (AddressID)
 go
 
 
-alter table CallReportBase
-   add constraint FK_CstELs_ClRB foreign key (CallTypeID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table InventoryBase
-   add constraint FK_INV_REF__YUK foreign key (CategoryID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table LMHardwareBase
-   add constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceCategory
-   add constraint FK_CstLs_ApCt foreign key (CategoryID)
+alter table CustomerFAQ
+   add constraint FK_CsLsEn_CsF foreign key (SubjectID)
       references YukonListEntry (EntryID)
 go
 
@@ -1682,68 +1675,62 @@ go
 
 
 alter table CustomerResidence
-   add constraint FK_CstRes_YkLst10 foreign key (OwnershipTypeID)
+   add constraint FK_CstRes_YkLst10 foreign key (GeneralConditionID)
       references YukonListEntry (EntryID)
 go
 
 
 alter table CustomerResidence
-   add constraint FK_CstRes_YkLst11 foreign key (ResidenceTypeID)
+   add constraint FK_CstRes_YkLst11 foreign key (SquareFeetID)
       references YukonListEntry (EntryID)
 go
 
 
 alter table CustomerResidence
-   add constraint FK_CstRes_YkLst2 foreign key (DecadeBuiltID)
+   add constraint FK_CstRes_YkLst2 foreign key (NumberOfOccupantsID)
       references YukonListEntry (EntryID)
 go
 
 
 alter table CustomerResidence
-   add constraint FK_CstRes_YkLst3 foreign key (GeneralConditionID)
+   add constraint FK_CstRes_YkLst3 foreign key (InsulationDepthID)
       references YukonListEntry (EntryID)
 go
 
 
 alter table CustomerResidence
-   add constraint FK_CstRes_YkLst4 foreign key (InsulationDepthID)
+   add constraint FK_CstRes_YkLst4 foreign key (MainCoolingSystemID)
       references YukonListEntry (EntryID)
 go
 
 
 alter table CustomerResidence
-   add constraint FK_CUS_REF__YUK foreign key (NumberOfOccupantsID)
+   add constraint FK_CUSTOMER_REF_CSTRE_YUKONLIS foreign key (MainFuelTypeID)
       references YukonListEntry (EntryID)
 go
 
 
 alter table CustomerResidence
-   add constraint FK_CstRes_YkLst6 foreign key (MainHeatingSystemID)
+   add constraint FK_CstRes_YkLst6 foreign key (DecadeBuiltID)
       references YukonListEntry (EntryID)
 go
 
 
 alter table CustomerResidence
-   add constraint FK_CstRes_YkLst7 foreign key (SquareFeetID)
+   add constraint FK_CstRes_YkLst7 foreign key (OwnershipTypeID)
       references YukonListEntry (EntryID)
 go
 
 
 alter table CustomerResidence
-   add constraint FK_CstRes_YkLst8 foreign key (MainCoolingSystemID)
+   add constraint FK_CstRes_YkLst8 foreign key (ResidenceTypeID)
       references YukonListEntry (EntryID)
 go
 
 
 alter table CustomerResidence
-   add constraint FK_CstRes_YkLst9 foreign key (MainFuelTypeID)
+   add constraint FK_CstRes_YkLst9 foreign key (MainHeatingSystemID)
       references YukonListEntry (EntryID)
-go
-
-
-alter table InventoryBase
-   add constraint FK_Dev_InvB foreign key (DeviceID)
-      references DEVICE (DEVICEID)
 go
 
 
@@ -1755,6 +1742,18 @@ go
 
 alter table ECToAccountMapping
    add constraint FK_ECTAcc_Enc foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
+go
+
+
+alter table ECToCallReportMapping
+   add constraint FK_ECTSrv_Call foreign key (CallReportID)
+      references CallReportBase (CallID)
+go
+
+
+alter table ECToCallReportMapping
+   add constraint FK_ECTSrv_Enc foreign key (EnergyCompanyID)
       references EnergyCompany (EnergyCompanyID)
 go
 
@@ -1777,15 +1776,15 @@ alter table ECToInventoryMapping
 go
 
 
-alter table ECToCallReportMapping
-   add constraint FK_ECTSrv_Call foreign key (CallReportID)
-      references CallReportBase (CallID)
+alter table ECToLMCustomerEventMapping
+   add constraint FK_EnCm_ECLmCs foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
-alter table ECToCallReportMapping
-   add constraint FK_ECTSrv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+alter table ECToLMCustomerEventMapping
+   add constraint FK_LCsEv_ECLmCs foreign key (EventID)
+      references LMCustomerEventBase (EventID)
 go
 
 
@@ -1801,20 +1800,14 @@ alter table ECToWorkOrderMapping
 go
 
 
-alter table ECToLMCustomerEventMapping
-   add constraint FK_EnCm_ECLmCs foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
-go
-
-
 alter table InterviewQuestion
-   add constraint FK_IntQ_CsLsEn foreign key (QuestionType)
+   add constraint FK_IntQ_CsLsEn foreign key (AnswerType)
       references YukonListEntry (EntryID)
 go
 
 
 alter table InterviewQuestion
-   add constraint FK_IntQ_CsLsEn2 foreign key (AnswerType)
+   add constraint FK_IntQ_CsLsEn2 foreign key (QuestionType)
       references YukonListEntry (EntryID)
 go
 
@@ -1825,15 +1818,45 @@ alter table InterviewQuestion
 go
 
 
-alter table LMHardwareEvent
-   add constraint FK_IvB_LMHrEv foreign key (InventoryID)
-      references InventoryBase (InventoryID)
+alter table InventoryBase
+   add constraint FK_CUS_CSTA_CUS3 foreign key (AccountID)
+      references CustomerAccount (AccountID)
 go
 
 
-alter table ECToLMCustomerEventMapping
-   add constraint FK_LCsEv_ECLmCs foreign key (EventID)
-      references LMCustomerEventBase (EventID)
+alter table InventoryBase
+   add constraint FK_CUS_HRDI_HAR2 foreign key (InstallationCompanyID)
+      references ServiceCompany (CompanyID)
+go
+
+
+alter table InventoryBase
+   add constraint FK_INVENTOR_REF_CSTLS_YUKONLIS foreign key (CategoryID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table InventoryBase
+   add constraint FK_Dev_InvB foreign key (DeviceID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table InventoryBase
+   add constraint FK_InvB_YkLstEvlt foreign key (VoltageID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table LMConfigurationExpressCom
+   add constraint FK_LMCfgXcom_LMCfg foreign key (ConfigurationID)
+      references LMConfigurationBase (ConfigurationID)
+go
+
+
+alter table LMConfigurationSA205
+   add constraint FK_LmCf2_LmCBs foreign key (ConfigurationID)
+      references LMConfigurationBase (ConfigurationID)
 go
 
 
@@ -1849,9 +1872,21 @@ alter table LMConfigurationVersacom
 go
 
 
-alter table LMConfigurationExpressCom
-   add constraint FK_LMCfgXcom_LMCfg foreign key (ConfigurationID)
-      references LMConfigurationBase (ConfigurationID)
+alter table LMCustomerEventBase
+   add constraint FK_CsLsE_LCstE foreign key (EventTypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table LMCustomerEventBase
+   add constraint FK_CsLsE_LCstE_a foreign key (ActionID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table LMHardwareBase
+   add constraint FK_LMHARDWA_REF_CSTLS_YUKONLIS foreign key (LMHardwareTypeID)
+      references YukonListEntry (EntryID)
 go
 
 
@@ -1867,15 +1902,99 @@ alter table LMHardwareBase
 go
 
 
+alter table LMHardwareBase
+   add constraint FK_LMHARDWA_ISA_CSTHR_INVENTOR foreign key (InventoryID)
+      references InventoryBase (InventoryID)
+go
+
+
+alter table LMHardwareConfiguration
+   add constraint FK_LMH_CSTL_CUS2 foreign key (ApplianceID)
+      references ApplianceBase (ApplianceID)
+go
+
+
+alter table LMHardwareConfiguration
+   add constraint FK_LMHARDWA_LMHRD_LMH_LMHARDWA foreign key (InventoryID)
+      references LMHardwareBase (InventoryID)
+go
+
+
 alter table LMHardwareConfiguration
    add constraint FK_LMHrd_LMGr foreign key (AddressingGroupID)
       references LMGroup (DeviceID)
 go
 
 
+alter table LMHardwareEvent
+   add constraint FK_IvB_LMHrEv foreign key (InventoryID)
+      references InventoryBase (InventoryID)
+go
+
+
+alter table LMHardwareEvent
+   add constraint FK_LmHrEv_LmCsEv foreign key (EventID)
+      references LMCustomerEventBase (EventID)
+go
+
+
+alter table LMProgramEvent
+   add constraint FK_CstAc_LMPrEv foreign key (AccountID)
+      references CustomerAccount (AccountID)
+go
+
+
 alter table LMProgramEvent
    add constraint FK_LMPrEv_LMPrPub foreign key (ProgramID)
       references LMProgramWebPublishing (ProgramID)
+go
+
+
+alter table LMProgramEvent
+   add constraint FK_LmCsEv_LmPrEv foreign key (EventID)
+      references LMCustomerEventBase (EventID)
+go
+
+
+alter table LMProgramWebPublishing
+   add constraint FK_CsLEn_LPWbP foreign key (ChanceOfControlID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table LMProgramWebPublishing
+   add constraint FK_LMprApp_App foreign key (ApplianceCategoryID)
+      references ApplianceCategory (ApplianceCategoryID)
+go
+
+
+alter table LMProgramWebPublishing
+   add constraint FK_LMprApp_LMPrg foreign key (ProgramID)
+      references LMPROGRAM (DeviceID)
+go
+
+
+alter table LMProgramWebPublishing
+   add constraint FK_YkWC_LMPrWPb foreign key (WebsettingsID)
+      references YukonWebConfiguration (ConfigurationID)
+go
+
+
+alter table LMThermostatManualEvent
+   add constraint FK_CsLsE_LThMnO2 foreign key (FanOperationID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table LMThermostatManualEvent
+   add constraint FK_CsLsE_LThMnO1 foreign key (OperationStateID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table LMThermostatManualEvent
+   add constraint FK_LmThrS_LmCstEv foreign key (EventID)
+      references LMCustomerEventBase (EventID)
 go
 
 
@@ -1897,75 +2016,9 @@ alter table LMThermostatSchedule
 go
 
 
-alter table LMProgramWebPublishing
-   add constraint FK_LMprApp_App foreign key (ApplianceCategoryID)
-      references ApplianceCategory (ApplianceCategoryID)
-go
-
-
-alter table LMProgramWebPublishing
-   add constraint FK_LMprApp_LMPrg foreign key (DeviceID)
-      references LMPROGRAM (DeviceID)
-go
-
-
-alter table LMThermostatSeasonEntry
-   add constraint FK_LThSe_LThSEn foreign key (SeasonID)
-      references LMThermostatSeason (SeasonID)
-go
-
-
-alter table LMConfigurationSA205
-   add constraint FK_LmCf2_LmCBs foreign key (ConfigurationID)
-      references LMConfigurationBase (ConfigurationID)
-go
-
-
-alter table LMProgramEvent
-   add constraint FK_LmCsEv_LmPrEv foreign key (EventID)
-      references LMCustomerEventBase (EventID)
-go
-
-
-alter table LMHardwareEvent
-   add constraint FK_LmHrEv_LmCsEv foreign key (EventID)
-      references LMCustomerEventBase (EventID)
-go
-
-
-alter table LMThermostatManualEvent
-   add constraint FK_LmThrS_LmCstEv foreign key (EventID)
-      references LMCustomerEventBase (EventID)
-go
-
-
-alter table Substation
-   add constraint FK_Sub_Rt foreign key (RouteID)
-      references Route (RouteID)
-go
-
-
-alter table SiteInformation
-   add constraint FK_Sub_Si foreign key (SubstationID)
-      references Substation (SubstationID)
-go
-
-
 alter table LMThermostatSeason
    add constraint FK_ThSc_LThSs foreign key (ScheduleID)
       references LMThermostatSchedule (ScheduleID)
-go
-
-
-alter table ApplianceCategory
-   add constraint FK_YkWC_ApCt foreign key (WebConfigurationID)
-      references YukonWebConfiguration (ConfigurationID)
-go
-
-
-alter table LMProgramWebPublishing
-   add constraint FK_YkWC_LMPrWPb foreign key (WebsettingsID)
-      references YukonWebConfiguration (ConfigurationID)
 go
 
 
@@ -1975,15 +2028,57 @@ alter table LMThermostatSeason
 go
 
 
-alter table LMHardwareBase
-   add constraint FK_LMH_ISA__INV foreign key (InventoryID)
-      references InventoryBase (InventoryID)
+alter table LMThermostatSeasonEntry
+   add constraint FK_CsLsE_LThSE foreign key (EntryID)
+      references YukonListEntry (EntryID)
 go
 
 
-alter table ApplianceAirConditioner
-   add constraint FK_APP_ISA__APP foreign key (ApplianceID)
-      references ApplianceBase (ApplianceID)
+alter table LMThermostatSeasonEntry
+   add constraint FK_LThSe_LThSEn foreign key (SeasonID)
+      references LMThermostatSeason (SeasonID)
+go
+
+
+alter table ServiceCompany
+   add constraint FK_CstAdd_SrC foreign key (AddressID)
+      references Address (AddressID)
+go
+
+
+alter table ServiceCompany
+   add constraint FK_CstCnt_SrvC foreign key (PrimaryContactID)
+      references Contact (ContactID)
+go
+
+
+alter table SiteInformation
+   add constraint FK_Sub_Si foreign key (SubstationID)
+      references Substation (SubstationID)
+go
+
+
+alter table Substation
+   add constraint FK_Sub_Rt foreign key (RouteID)
+      references Route (RouteID)
+go
+
+
+alter table WorkOrderBase
+   add constraint FK_CsLsE_WkB_c foreign key (CurrentStateID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table WorkOrderBase
+   add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table WorkOrderBase
+   add constraint FK_WrkOr_SrvC foreign key (ServiceCompanyID)
+      references ServiceCompany (CompanyID)
 go
 
 
