@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2002/09/09 14:56:37 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2002/09/11 21:25:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1087,9 +1087,10 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     break;
                 }
             case TYPECBC6510:
+            case TYPE_DNPRTU:
                 {
-                    CtiDeviceCBC6510 *cbcdev = (CtiDeviceCBC6510 *)Device;
-                    CtiProtocolDNP   &dnp    = cbcdev->getProtocol();
+                    CtiDeviceDNP   *dnpdev = (CtiDeviceDNP *)Device;
+                    CtiProtocolDNP &dnp    = dnpdev->getProtocol();
 
                     dnp.recvOutbound(OutMessage);
 
@@ -1529,6 +1530,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     }
 
                 case TYPECBC6510:
+                case TYPE_DNPRTU:
                 case TYPE_SIXNET:
                 case TYPE_TAPTERM:
                 case TYPE_WCTP:
