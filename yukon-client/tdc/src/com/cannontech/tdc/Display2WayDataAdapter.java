@@ -564,9 +564,8 @@ private void createRowForEventViewer( Signal signal )
 public int createRowsForHistoricalView(java.util.Date date, int page) 
 {
    String rowCountQuery = "select min(s.logid), max(s.logid)" +
-                 " from systemlog s, YukonPAObject y, point p" +
-                 " where s.pointid=p.pointid and y.PAObjectID=p.PAObjectID" +
-                 " and s.datetime >= ?" +
+                 " from systemlog s" +
+                 " where s.datetime >= ?" +
                  " and s.datetime < ?";
 
 	String rowQuery = "select s.datetime, y.PAOName, p.pointname, s.description, s.action, " +
