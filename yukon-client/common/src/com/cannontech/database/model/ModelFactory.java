@@ -102,7 +102,7 @@ public final class ModelFactory
 		DeviceCheckBoxTreeModel.class,
 		TransmitterCheckBoxTreeModel.class,
 		CommChannelCheckBoxTreeModel.class,
-		CollectionGroupCheckBoxTreeModel.class
+		CollectionGroupCheckBoxTreeModel.class,
 		LMConstraintModel.class,
 		LMScenarioModel.class
 	};
