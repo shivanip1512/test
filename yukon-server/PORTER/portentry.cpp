@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2004/05/05 15:31:43 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2004/08/11 19:52:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -215,6 +215,11 @@ VOID ConnectionThread (VOID *Arg)
 
     /* make it clear who is the boss */
     CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 30, 0);
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " ConnectionThread started as TID:  " << CurrentTID() << endl;
+    }
 
     /* Now sit and wait for something to come in on this instance */
     for(; !PorterQuit ;)
