@@ -15,10 +15,18 @@ import com.cannontech.message.util.Message;
  */
 public class ServerResponseMsg extends Message {
 	//Possible values for status
-	public static final int STATUS_UNINIT = -1;
 	public static final int STATUS_OK = 0;
 	public static final int STATUS_ERROR = 1;
+	public static final int STATUS_UNINIT = 2;
 	
+	public static final String[] STATUS_STRS =
+	{
+		"Success",
+		"Error",
+		"Uninitialized"
+	};
+
+
 	private int _id;
 	private int _status;
 	private String _message;
@@ -50,6 +58,14 @@ public class ServerResponseMsg extends Message {
 	 */
 	public int getStatus() {
 		return _status;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getStatusStr() 
+	{	
+		return STATUS_STRS[getStatus()];
 	}
 
 	/**
