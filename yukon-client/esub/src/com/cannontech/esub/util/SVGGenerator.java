@@ -1,36 +1,27 @@
 package com.cannontech.esub.util;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Paint;
-import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.Writer;
 
-import javax.swing.text.Style;
-
 import com.cannontech.esub.editor.element.LinkedElement;
 import com.cannontech.esub.editor.element.StaticImage;
 import com.cannontech.esub.editor.element.StaticText;
+
 import com.loox.jloox.LxAbstractStyle;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
 import com.loox.jloox.LxRectangle;
-import com.loox.jloox.LxStyle;
 
 /**
  * @author alauinger
  *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * Generates an svg document given an LxGraph
  */
 public class SVGGenerator {
 	private static final String svgHeader = 
@@ -40,11 +31,22 @@ public class SVGGenerator {
 	private static final String svgFooter = 
 		"</svg>";
 		
+	/**
+	 * Writes an svg document to the given write based on the graph passed.
+	 * @param writer
+	 * @param graph
+	 * @throws IOException
+	 */
 	public void generate(Writer writer, LxGraph graph) throws IOException {
+		
+		int width = graph.getView(0).getWidth();
+		
 		LxComponent[] c	= graph.getComponents();
 		
 		writer.write(svgHeader);
-		writer.write("<svg width=\"" + graph.getView(0).getWidth() + ".0px\" height=\"" + graph.getView(0).getHeight() + ".0px\" >\n");
+		writer.write("<svg width=\"" + width + ".0px\" height=\"" + graph.getView(0).getHeight() + ".0px\" >\n");		
+		
+		// Force the background black, perhaps pick up the views background color in the future
 		writer.write("<rect width=\"100%\" height=\"100%\" color=\"#000000\" />\n");
 		
 		for( int i = 0; i < c.length; i++ ) {
@@ -82,14 +84,31 @@ public class SVGGenerator {
 		writer.flush();
 	}
 	
+	/**
+	 * Writes the opening tag for a hyperlink
+	 * @param writer
+	 * @param elem
+	 * @throws IOException
+	 */
 	private void generateStartLink(Writer writer, LinkedElement elem) throws IOException {		
 			writer.write("<a xlink:href=\"" + elem.getLinkTo() + "\">\n");
 	}
 	
+	/**
+	 * Writes an end link tag.
+	 * @param writer
+	 * @throws IOException
+	 */
 	private void generateEndLink(Writer writer) throws IOException {
 		writer.write("</a>\n");
 	}
 	
+	/**
+	 * Writes out an svg path given an LxLine
+	 * @param writer
+	 * @param line
+	 * @throws IOException
+	 */
 	private void generateLine(Writer writer, LxLine line) throws IOException {
 		Color c = line.getStyle().getLineColor();
 		Shape[] s = line.getShape();
@@ -101,6 +120,12 @@ public class SVGGenerator {
 		writer.write("<path id=\"" + line.getName() + "\" style=\"fill:none;opacity:" + opacity + ";stroke:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + "); stroke-width:" + width + ";\" d=\"" + pathStr + "\" />\n");
 	}
 	
+	/**
+	 * Writes a svg rect tag for the given LxRectangle
+	 * @param writer
+	 * @param rect
+	 * @throws IOException
+	 */
 	private void generateRect(Writer writer, LxRectangle rect) throws IOException {
 		LxAbstractStyle style = rect.getStyle();
 		Color strokeColor = style.getLineColor();
@@ -121,6 +146,13 @@ public class SVGGenerator {
 		writer.write("<rect id=\"" + rect.getName() + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\" style=\"fill:" + fillStr + ";stroke:rgb(" + strokeColor.getRed() + "," + strokeColor.getGreen() + "," + strokeColor.getBlue() + "); stroke-width:1.0\" />\n");
 	}
 	
+	/**
+	 * Writes a svg image tag for the given image.
+	 * The image is external and a relative url to the image name is written.
+	 * @param writer
+	 * @param img
+	 * @throws IOException
+	 */
 	private void generateImage(Writer writer, StaticImage img) throws IOException {
 		Rectangle2D r = img.getBounds2D();
 		int x = (int) r.getMinX();
@@ -131,6 +163,12 @@ public class SVGGenerator {
 		writer.write("<image id=\"" + img.getName() + "\" xlink:href=\"" + img.getImageName() + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\" />\n");
 	}
 	
+	/**
+	 * Writes a svg chunk for text
+	 * @param writer
+	 * @param text
+	 * @throws IOException
+	 */
 	private void generateStaticText(Writer writer, StaticText text) throws IOException {
 		//Ignore stroke color for now, always use fill color
 		//could become a problem, pay attention
@@ -157,6 +195,13 @@ public class SVGGenerator {
 		writer.write("<text id=\"" + text.getName() + "\" style=\"fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";\" transform=\"translate(" + x + "," + y + ")\" >" + text.getText() + "</text>\n");	
 	}
 	
+	/**
+	 * Builds up a svg path string given a shape and the center of the element.
+	 * @param s
+	 * @param cx
+	 * @param cy
+	 * @return String
+	 */
 	private String getPathString(Shape[] s, double cx, double cy) {
 		String pathStr = "";
 				
@@ -183,8 +228,6 @@ public class SVGGenerator {
 				pi.next();
 			}
 		}
-		return pathStr;	
-	
-	}
-		
+		return pathStr;		
+	}		
 }
