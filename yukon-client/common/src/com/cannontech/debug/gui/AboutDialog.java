@@ -4,6 +4,7 @@ import java.awt.Dialog;
 import java.util.Collection;
 import java.util.Vector;
 
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 
 /**
@@ -132,6 +133,7 @@ private void init() {
 		com.cannontech.database.db.version.CTIDatabase db = com.cannontech.common.version.VersionTools.getDatabaseVersion();
 		_listData.addElement("DB Version   : " + db.getVersion() + "  Build:  " + db.getBuild() );
 		_listData.addElement("DB Alias     : " + CtiUtilities.getDatabaseAlias() );
+		_listData.addElement("User         : " + ClientSession.getInstance().getUser().getUsername() );
 
 	}
 	catch(Throwable t)  // Catch ALL things and just print them out
