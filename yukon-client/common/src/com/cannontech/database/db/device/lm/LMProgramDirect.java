@@ -1,17 +1,19 @@
 package com.cannontech.database.db.device.lm;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * This type was created in VisualAge.
  */
 public class LMProgramDirect extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer deviceID = null;
-	private Integer notifyInterval = null;
-	private String heading = null;
-	private String messageHeader = null;
-	private String messageFooter = null;
-	private String canceledMsg = null;
-	private String stoppedEarlyMsg = null;
+	private Integer notifyInterval = new Integer(0);
+	private String heading = CtiUtilities.STRING_NONE;
+	private String messageHeader = CtiUtilities.STRING_NONE;
+	private String messageFooter = CtiUtilities.STRING_NONE;
+	private String canceledMsg = CtiUtilities.STRING_NONE;
+	private String stoppedEarlyMsg = CtiUtilities.STRING_NONE;
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
