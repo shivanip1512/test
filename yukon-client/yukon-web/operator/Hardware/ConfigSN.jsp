@@ -8,9 +8,16 @@
 
 <script language="Javascript">
 function sendConfig(form) {
-	if (!confirm("Are you sure you want to send out all scheduled configuration?"))
+	if (!confirm("Are you sure you want to send out all the scheduled configuration?"))
 		return;
 	form.action.value = "SendSwitchCommands";
+	form.submit();
+}
+
+function clearConfig(form) {
+	if (!confirm("Are you sure you want to clear all the scheduled configuration?"))
+		return;
+	form.action.value = "ClearSwitchCommands";
 	form.submit();
 }
 </script>
@@ -131,10 +138,13 @@ function sendConfig(form) {
                 <br>
                 <table width="64%" border="0" cellspacing="0" cellpadding="3" align="center" bgcolor="#FFFFFF">
                   <tr> 
-                    <td>
-                      <div align="center">
+                    <td> 
+                      <div align="center"> 
                         <input type="button" name="SendConfig" value="Send Scheduled Configuration" onclick="sendConfig(this.form)">
                       </div>
+                    </td>
+                    <td>
+                      <input type="button" name="ClearConfig" value="Clear Scheduled Configuration" onClick="clearConfig(this.form)">
                     </td>
                   </tr>
                 </table>
