@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     11/20/2002 10:07:29 AM                       */
+/* Created on:     11/22/2002 9:45:28 AM                        */
 /*==============================================================*/
 
 
@@ -773,7 +773,7 @@ go
 
 alter table AccountSite
    add constraint FK_AccS_CstAd foreign key (AddressID)
-      references  ()
+      references CustomerAddress ()
 go
 
 
@@ -785,7 +785,7 @@ go
 
 alter table ApplianceBase
    add constraint FK_AppBs_LMPr foreign key (DEVICEID)
-      references  ()
+      references LMPROGRAM ()
 go
 
 
@@ -803,7 +803,7 @@ go
 
 alter table CustomerAdditionalContact
    add constraint FK_CsCnt_CsAdCn foreign key (ContactID)
-      references  ()
+      references CustomerContact ()
 go
 
 
@@ -911,7 +911,7 @@ go
 
 alter table ServiceCompany
    add constraint FK_CstAdd_SrC foreign key (AddressID)
-      references  ()
+      references CustomerAddress ()
 go
 
 
@@ -935,13 +935,13 @@ go
 
 alter table CustomerBase
    add constraint FK_CstBs_CstCnt foreign key (ContactID)
-      references  ()
+      references CustomerContact ()
 go
 
 
 alter table ServiceCompany
    add constraint FK_CstCnt_SrvC foreign key (ContactID)
-      references  ()
+      references CustomerContact ()
 go
 
 
@@ -971,7 +971,7 @@ go
 
 alter table InventoryBase
    add constraint FK_Dev_InvB foreign key (DEVICEID)
-      references  ()
+      references DEVICE ()
 go
 
 
@@ -983,13 +983,13 @@ go
 
 alter table ECToAccountMapping
    add constraint FK_ECTAcc_Enc foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany ()
 go
 
 
 alter table ECToGenericMapping
    add constraint FK_ECTGn_Enc foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany ()
 go
 
 
@@ -1001,7 +1001,7 @@ go
 
 alter table ECToInventoryMapping
    add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany ()
 go
 
 
@@ -1013,13 +1013,13 @@ go
 
 alter table ECToCallReportMapping
    add constraint FK_ECTSrv_Enc foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany ()
 go
 
 
 alter table ECToWorkOrderMapping
    add constraint FK_ECTWrk_Enc2 foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany ()
 go
 
 
@@ -1031,7 +1031,7 @@ go
 
 alter table ECToLMCustomerEventMapping
    add constraint FK_EnCm_ECLmCs foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany ()
 go
 
 
@@ -1055,7 +1055,7 @@ go
 
 alter table LMHardwareConfiguration
    add constraint FK_LMHrd_LMGr foreign key (DeviceID)
-      references  ()
+      references LMGroup ()
 go
 
 
@@ -1067,7 +1067,7 @@ go
 
 alter table LMProgramEvent
    add constraint FK_LMPrg_LMPrEv foreign key (DEVICEID)
-      references  ()
+      references LMPROGRAM ()
 go
 
 
@@ -1079,7 +1079,7 @@ go
 
 alter table LMProgramWebPublishing
    add constraint FK_LMprApp_LMPrg foreign key (DeviceID)
-      references  ()
+      references LMPROGRAM ()
 go
 
 
