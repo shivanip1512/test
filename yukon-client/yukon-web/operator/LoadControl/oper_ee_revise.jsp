@@ -111,7 +111,7 @@
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
-               <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
+               <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -205,7 +205,7 @@
           </tr>
           <tr> 
             <td width="100" class="MainHeader" valign = "top"> 
-                        <p align=RIGHT><b>Date: </b> 
+                        <p align=RIGHT><b>Control Date: </b> 
                       </td>
             <td width="100" class="MainHeader" valign = "top"><span class = "TableCell"><%= datePart.format(offer.getOfferDate()) %></span></td>
             <td width="100" class="MainHeader" valign = "top"> 
