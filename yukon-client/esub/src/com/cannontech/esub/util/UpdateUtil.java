@@ -27,6 +27,8 @@ import com.cannontech.message.dispatch.message.Signal;
  */
 public class UpdateUtil {
 
+	private static final String UNKNOWN_CHAR = "?";
+	
 	public static String getDynamicTextString(int pointID, int displayAttrib) {
 		PointChangeCache pcc = PointChangeCache.getPointChangeCache();
 	
@@ -59,8 +61,12 @@ public class UpdateUtil {
 		if( (displayAttrib & PointAttributes.NAME) != 0 ) {
 			if( prev ) 
 				text += " ";
-		
-			text += PointFuncs.getPointName(pointID);
+					
+			String name = PointFuncs.getPointName(pointID);
+			if(name != null) 
+				text += name;
+			else 
+				text += UNKNOWN_CHAR;
 			prev = true;
 		}
 							
@@ -69,8 +75,10 @@ public class UpdateUtil {
 				text += " ";
 			//find the pao for this point
 			LitePoint lp = PointFuncs.getLitePoint(pointID);
-			text += PAOFuncs.getYukonPAOName(lp.getPaobjectID());
-			prev = true;
+			if(lp != null) {
+				text += PAOFuncs.getYukonPAOName(lp.getPaobjectID());
+				prev = true;
+			}
 		}
 									
 		if( (displayAttrib & PointAttributes.LAST_UPDATE) != 0 ) {
@@ -126,12 +134,8 @@ public class UpdateUtil {
 			
 			if( mult != null ) {
 				text += mult.toString();
+				prev = true;
 			}
-			else {
-				text += "-";
-			}
-			
-			prev = true;
 		}
 		
 		if( (displayAttrib & PointAttributes.DATA_OFFSET) != 0 ) {
@@ -139,11 +143,8 @@ public class UpdateUtil {
 			Integer offset = (Integer) offsetMap.get(new Integer(pointID));
 			if(offset != null) {
 				text += offset.toString();
+				prev = true;
 			}
-			else {
-				text += "-";
-			}
-			prev = true;			
 		}
 		
 		if( (displayAttrib & PointAttributes.ALARM_TEXT) != 0 ) {
@@ -185,7 +186,7 @@ public class UpdateUtil {
 		}	
 					
 		if( !prev )
-			text = "-";
+			text = "?";
 		
 		if(text.length() == 1) { //workaround for bugin adobe svg geturl function!
 					text = " " + text;
