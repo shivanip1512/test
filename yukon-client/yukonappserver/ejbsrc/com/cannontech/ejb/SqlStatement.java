@@ -16,7 +16,7 @@ import com.cannontech.yukon.ISQLStatement;
 
 /**
  * Remote interface for SqlStatement.
- * @xdoclet-generated at Nov 4, 2002 4:47:09 PM
+ * @xdoclet-generated at Nov 4, 2002 5:13:03 PM
  */
 public interface SqlStatement
    extends javax.ejb.EJBObject
@@ -27,8 +27,6 @@ public interface SqlStatement
    public java.lang.Object[] getRow( int row ) throws java.rmi.RemoteException;
 
    public int getRowCount(  ) throws java.rmi.RemoteException;
-
-   public void setDBConnection( java.sql.Connection conn_ ) throws java.rmi.RemoteException;
 
    public void setSQLString( java.lang.String sql_ ) throws java.rmi.RemoteException;
 

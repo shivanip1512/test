@@ -25,7 +25,7 @@ import java.util.Hashtable;
 
 /**
  * Utility class for DatabaseCache.
- * @xdoclet-generated at Nov 4, 2002 4:47:10 PM
+ * @xdoclet-generated at Nov 4, 2002 5:13:04 PM
  */
 public class DatabaseCacheUtil
 {

@@ -19,13 +19,14 @@ import com.cannontech.yukon.server.cache.ServerDatabaseCache;
 
 /**
  * Home interface for DatabaseCache. Lookup using {1}
- * @xdoclet-generated at Nov 4, 2002 4:47:08 PM
+ * @xdoclet-generated at Nov 4, 2002 5:13:03 PM
  */
 public interface DatabaseCacheHome
    extends javax.ejb.EJBHome
 {
    public static final String COMP_NAME="java:comp/env/ejb/DatabaseCache";
    public static final String JNDI_NAME="jndi/DatabaseCacheBean";
-
+   
 	public com.cannontech.ejb.DatabaseCache create() throws javax.ejb.CreateException, java.rmi.RemoteException;
+
 }

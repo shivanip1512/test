@@ -40,10 +40,7 @@ public class SqlStatementBean implements SessionBean, ISQLStatement
    	innerSql = new InnerSqlStatement(sql);   	
    }
    
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
+
    public void setDBConnection( Connection conn_ )
    {
    	dbConn = conn_;

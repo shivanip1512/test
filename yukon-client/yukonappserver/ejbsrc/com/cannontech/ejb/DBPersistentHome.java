@@ -16,7 +16,7 @@ import com.cannontech.database.TransactionException;
 
 /**
  * Home interface for DBPersistent. Lookup using {1}
- * @xdoclet-generated at Nov 4, 2002 4:47:08 PM
+ * @xdoclet-generated at Nov 4, 2002 5:13:03 PM
  */
 public interface DBPersistentHome
    extends javax.ejb.EJBHome
