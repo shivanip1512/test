@@ -771,12 +771,15 @@ public final static String getYukonBase()
 }
 
 /**
- * This method will return the java.awt.Frame associated with a component
- * If no parent frame is found null will be returned
+ * This method will return the name of this application.
+ * If no name is found, a dummy string is returned.
  */
 public final static String getApplicationName()
 {
-   return System.getProperty("cti.app.name");
+	if( System.getProperty("cti.app.name") == null )
+		return CtiUtilities.STRING_NONE;
+	else
+		return System.getProperty("cti.app.name");
 }
 
 /**
