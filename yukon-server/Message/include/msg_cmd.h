@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_cmd.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:25 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/05/23 22:12:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,6 +91,7 @@ public:
       CommStatus,                      // Vector contains token, deviceid, status (communication result in porter, 0 = NORMAL).
       AlternateScanRate,               // Vector contains token, deviceid, seconds since midnight start (may be negative - use receipt time for start), duration in seconds (may be zero)
       ControlAblement,                 // Vector contains token, idtype (0 = Device, 1 = Point), id, ablement bit (0 = dis, 1 = enable).
+      PointTagAdjust,                  // Vector contains token, pointid, tag(s) to set, tag(s) to reset.
       LastCommand
    };
 };
