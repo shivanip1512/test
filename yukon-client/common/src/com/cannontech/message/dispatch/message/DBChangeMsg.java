@@ -29,12 +29,11 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_GRAPH_DB						= 7;
 	public static final int CHANGE_HOLIDAY_SCHEDULE_DB			= 8;
 	public static final int CHANGE_ENERGY_COMPANY_DB			= 9;
-	public static final int CHANGE_STATE_IMAGE_DB				= 10;
-	public static final int CHANGE_YUKON_USER_DB					= 11;
-	public static final int CHANGE_CUSTOMER_DB					= 12;
-	public static final int CHANGE_CUSTOMER_ACCOUNT_DB			= 13;
-	public static final int CHANGE_YUKON_IMAGE					= 14;
-	public static final int CHANGE_BASELINE_DB						= 14;
+	public static final int CHANGE_YUKON_USER_DB				= 10;
+	public static final int CHANGE_CUSTOMER_DB					= 11;
+	public static final int CHANGE_CUSTOMER_ACCOUNT_DB			= 12;
+	public static final int CHANGE_YUKON_IMAGE					= 13;
+	public static final int CHANGE_BASELINE_DB					= 14;
 
 
 	

@@ -1353,8 +1353,8 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		retLBase = handleAlarmCategoryChange( dbType, id );
 	}
-   else if( database == DBChangeMsg.CHANGE_STATE_IMAGE_DB )
-   {
+   else if( database == DBChangeMsg.CHANGE_YUKON_IMAGE )
+   { 
       retLBase = handleYukonImageChange( dbType, id );
    }
 	else if( database == DBChangeMsg.CHANGE_NOTIFICATION_GROUP_DB )
