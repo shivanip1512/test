@@ -292,12 +292,29 @@ private javax.swing.JRadioButton getJRadioButtonType5() {
 	buttonGroup.add( getJRadioButtonType5() );
 	
 	Enumeration enum = buttonGroup.getElements();
+	boolean selectedStart = false;
 	
 	for( int i = 0; i < CustomerTypes.STRING_ALL_CUSTOMER_TYPES.length; i++ )
 		if( !CustomerTypes.STRING_ALL_CUSTOMER_TYPES[i].equalsIgnoreCase(
 					CustomerTypes.STRING_INVALID) )
-		{
+		{			
 			JRadioButton button = (JRadioButton)enum.nextElement(); 
+			
+			
+			//DO NOT SHOW RESIDENTIAL CUSTOMERS FOR NOW
+			if( CustomerTypes.STRING_ALL_CUSTOMER_TYPES[i].equals(
+					CustomerTypes.STRING_ALL_CUSTOMER_TYPES[CustomerTypes.CUSTOMER_RESIDENTIAL]) )
+			{
+				continue;
+			}
+			
+			//set the first visible button selected
+			if( !selectedStart )
+			{
+				button.setSelected( true );
+				selectedStart = true;
+			}
+						
 			button.setText( CustomerTypes.STRING_ALL_CUSTOMER_TYPES[i] );
 			button.setMnemonic( CustomerTypes.STRING_ALL_CUSTOMER_TYPES[i].charAt(0) );
 			button.setVisible( true );
@@ -305,6 +322,7 @@ private javax.swing.JRadioButton getJRadioButtonType5() {
 			//use this to store the customer id with this button
 			button.putClientProperty( "cti.customertype.id", new Integer(i) );
 		}
+
 
 
 	// user code end
