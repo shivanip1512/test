@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/05 17:42:02 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/06 19:54:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -116,6 +116,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
             {
             case ControlRequest:
                 {
+                    OutMessage->EventCode |= ENCODED;
                     /*
                      *  Get us aligned with the transmitter of choice.
                      */
@@ -160,7 +161,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                     OutMessage->Buffer.VSt.CommandType       = EXDATA;           // Extended VDATA CONTROL
                     if(parse.getFlags() & CMD_FLAG_TESTMODE)
                     {
-                        OutMessage->Buffer.VSt.CommandType       = VDATA;            // VDATA CONTROL
+                        OutMessage->Buffer.VSt.CommandType   = VDATA;            // VDATA CONTROL
                     }
 
                     OutMessage->Buffer.VSt.VData.DataType    = 0;
@@ -221,13 +222,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
 
-        vgList.insert(new CtiSignalMsg(SYS_PID_SYSTEM,
-                                       pReq->getSOE(),
-                                       desc,
-                                       actn,
-                                       LoadMgmtLogType,
-                                       SignalEvent,
-                                       pReq->getUser()));
+        vgList.insert(new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
 
