@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/06/11 22:14:16 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/06/21 15:42:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -242,6 +242,14 @@ VOID ConnectionThread (VOID *Arg)
                     dout << " at priority " << OutMessage->Priority << endl;
                 }
             }
+
+            if(outList.entries() > 2)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
         }
         else if((OutMessage = new OUTMESS) == NULL)     // Get a bit of memory for the next else if...
         {
@@ -259,21 +267,24 @@ VOID ConnectionThread (VOID *Arg)
             }
 
             // Clean out any residue
-            if( BytesRead > 0 )
+            if(BytesRead != sizeof(OUTMESS))
             {
-                MyNexus->CTINexusRead (&(((BYTE*)OutMessage)[BytesRead]), sizeof(*OutMessage) - BytesRead, &BytesRead, CTINEXUS_INFINITE_TIMEOUT);
-            }
-            else if(BytesRead < 0)
-            {
+                if( BytesRead > 0 )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    MyNexus->CTINexusRead (&(((BYTE*)OutMessage)[BytesRead]), sizeof(*OutMessage) - BytesRead, &BytesRead, CTINEXUS_INFINITE_TIMEOUT);
                 }
-            }
-            else
-            {
-                MyNexus->CTINexusClose();
-                break;   // The for and exit this thread
+                else if(BytesRead < 0)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+                else
+                {
+                    MyNexus->CTINexusClose();
+                    break;   // The for and exit this thread
+                }
             }
 
             if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD)
@@ -300,7 +311,6 @@ VOID ConnectionThread (VOID *Arg)
             SendError (OutMessage, MISPARAM);      // Message has been consumed!
             continue;            // The for loop
         }
-
 
         /*
          * Set the handle for the return message.

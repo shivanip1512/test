@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/06/11 22:14:16 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/06/21 15:42:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1566,7 +1566,17 @@ void LoadPorterGlobals(void)
 
         if( Temp == "true" || Temp == "yes")
         {
-            gIgnoreTCU5000QueFull = true;
+            gIgnoreTCU5X00QueFull = true;
+        }
+    }
+
+    if(!(Temp = gConfigParms.getValueAsString("PORTER_IGNORE_TCU_QUEUEBUSY")).isNull())
+    {
+        Temp.toLower();
+
+        if( Temp == "true" || Temp == "yes")
+        {
+            gIgnoreTCU5X00QueFull = true;
         }
     }
 
