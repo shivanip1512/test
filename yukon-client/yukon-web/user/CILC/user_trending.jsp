@@ -1,4 +1,6 @@
 <html>
+<!-- Java script needed for the Calender Function--->
+<SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
 <%@ include file="../user_header.jsp" %>
 <%@ include file="../../trending_functions.jsp" %>
 <head>
@@ -8,19 +10,16 @@
 <META NAME="robots" CONTENT="noindex, nofollow">
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<!-- Java script needed for the Calender Function--->
-<SCRIPT  LANGUAGE="JavaScript1.2" SRC="../../JavaScript/Calendar1-82.js"></SCRIPT>
-
-<script language="JavaScript">
 <!--
+<script language="JavaScript">
 function MM_reloadPage(init) {  //reloads the window if Nav4 resized
   if (init==true) with (navigator) {if ((appName=="Netscape")&&(parseInt(appVersion)==4)) {
     document.MM_pgW=innerWidth; document.MM_pgH=innerHeight; onresize=MM_reloadPage; }}
   else if (innerWidth!=document.MM_pgW || innerHeight!=document.MM_pgH) location.reload();
 }
 MM_reloadPage(true);
-// -->
 </script>
+// -->
 </head>
 <body class="Background" leftmargin="0" topmargin="0" onload = "init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
@@ -111,6 +110,6 @@ MM_reloadPage(true);
     </td>
 	</tr>
 </table>
-<script>Calendar.CreateCalendarLayer(10, 275, "");</script>
+<!--<script>Calendar.CreateCalendarLayer(10, 275, "");</script>-->
 </body>
 </html>

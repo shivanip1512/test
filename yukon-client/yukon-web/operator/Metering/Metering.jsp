@@ -1,12 +1,11 @@
 <html>
+<SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
 <%@ include file="metering_header.jsp" %>
 <%@ include file="../../trending_functions.jsp" %>
-
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <title>Metering</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<SCRIPT  LANGUAGE="JavaScript1.2" SRC="../../JavaScript/Calendar1-82.js"></SCRIPT>
 
 <body class="Background" text="#000000" leftmargin="0" topmargin="0" onload = "init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
@@ -88,7 +87,7 @@
 				}
 				else // "graph" is default
 				{%>
-					<img id = "theGraph" src="/servlet/GraphGenerator?" > 
+					<img id = "theGraph" src="<%=request.getContextPath()%>/servlet/GraphGenerator?" > 
 				<%}
 				%>
 				<br><font size="-1"><cti:getProperty propertyid="<%= CommercialMeteringRole.TRENDING_DISCLAIMER%>"/></font>
