@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/08/07 17:11:02 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/08/23 14:23:46 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,17 @@ using namespace std;
 
 CtiTelegyrControlCenter::CtiTelegyrControlCenter()
 {
+/*
+   RWCString name = "MEC";
+   RWCString oper = "LGS";
+   RWCString pass = "1234";
+
+   setChannelID(1);
+   setSysName( name );
+   setOperator( oper );
+   setPassword( pass );
+   setAccess( 1 );
+*/
 }
 
 //=================================================================================================================================
@@ -209,7 +220,6 @@ void CtiTelegyrControlCenter::addToGroupList( CtiTelegyrGroup aGroup )
    }
 */
 //...................... testing ......................
-
    _telegyrGroupList.push_back( aGroup );
 }
 
@@ -222,7 +232,6 @@ void CtiTelegyrControlCenter::deleteTelegyrGroupList( void )
    if( !_telegyrGroupList.empty() )
    {
        _telegyrGroupList.erase( _telegyrGroupList.begin(), _telegyrGroupList.end() );
-
    }
 }
 

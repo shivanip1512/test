@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/08/07 17:11:10 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/08/23 14:23:47 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,7 @@
 #include "telegyrgroup.h"
 #include "mutex.h"
 
-class IM_EX_FDRBASE  CtiTelegyrControlCenter
+class IM_EX_FDRTELEGYRAPI CtiTelegyrControlCenter
 {
 
    public:

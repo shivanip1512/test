@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/08/07 17:09:24 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/08/23 14:23:46 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,27 +63,30 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 /** local definitions **/
 #define FDR_TELEGYR_VERSION   "1.0"
-//#define PROGRAM_NAME          "FDRTelegyr"
-//#define VERSION               "v4_1"      //from the api manual
 #define PRIORITY              1         //only 1 is supported at this point
-
 
 /** global used to start the interface by c functions **/
 CtiFDRTelegyr * myInterface;
 
-const CHAR * CtiFDRTelegyr::TBLNAME_TELEGYR_GROUPS = "FDRTelegyrGroup";
-const CHAR * CtiFDRTelegyr::KEY_APPLICATION_NAME = "FDR_TELEGYR_APPLICATION_NAME";
-const CHAR * CtiFDRTelegyr::KEY_API_VERSION = "FDR_TELEGYR_API_VERSION";
-const CHAR * CtiFDRTelegyr::KEY_HI_REASONABILITY_FILTER = "FDR_TELEGYR_HI_REASONABILITY_FILTER";
-const CHAR * CtiFDRTelegyr::KEY_DB_RELOAD_RATE = "FDR_TELEGYR_DB_RELOAD_RATE";
-const CHAR * CtiFDRTelegyr::KEY_API_PATH = "FDR_TELEGYR_API_PATH";
-const CHAR * CtiFDRTelegyr::KEY_QUEUE_FLUSH_RATE = "FDR_TELEGYR_QUEUE_FLUSH_RATE";
-const CHAR * CtiFDRTelegyr::KEY_DEBUG_MODE = "FDR_TELEGYR_DEBUG_MODE";
-const CHAR * CtiFDRTelegyr::COLNAME_TELEGYR_GROUPID = "GroupID";
-const CHAR * CtiFDRTelegyr::COLNAME_TELEGYR_NAME = "GroupName";
-const CHAR * CtiFDRTelegyr::COLNAME_TELEGYR_INTERVAL = "CollectionInterval";
-const CHAR * CtiFDRTelegyr::COLNAME_TELEGYR_TYPE = "GroupType";
-//const CHAR * CtiFDRTelegyr::COLNAME_TELEGYR_TYPE = "GroupType";
+const CHAR * CtiFDRTelegyr::TBLNAME_TELEGYR_GROUPS       = "FDRTelegyrGroup";
+
+const CHAR * CtiFDRTelegyr::KEY_APPLICATION_NAME         = "FDR_TELEGYR_APPLICATION_NAME";
+const CHAR * CtiFDRTelegyr::KEY_API_VERSION              = "FDR_TELEGYR_API_VERSION";
+const CHAR * CtiFDRTelegyr::KEY_HI_REASONABILITY_FILTER  = "FDR_TELEGYR_HI_REASONABILITY_FILTER";
+const CHAR * CtiFDRTelegyr::KEY_DB_RELOAD_RATE           = "FDR_TELEGYR_DB_RELOAD_RATE";
+const CHAR * CtiFDRTelegyr::KEY_API_PATH                 = "FDR_TELEGYR_API_PATH";
+const CHAR * CtiFDRTelegyr::KEY_QUEUE_FLUSH_RATE         = "FDR_TELEGYR_QUEUE_FLUSH_RATE";
+const CHAR * CtiFDRTelegyr::KEY_DEBUG_MODE               = "FDR_TELEGYR_DEBUG_MODE";
+const CHAR * CtiFDRTelegyr::KEY_OPERATOR                 = "FDR_TELEGYR_OPERATOR";
+const CHAR * CtiFDRTelegyr::KEY_PASSWORD                 = "FDR_TELEGYR_PASSWORD";
+const CHAR * CtiFDRTelegyr::KEY_SYSTEM_NAME              = "FDR_TELEGYR_SYSTEM_NAME";
+const CHAR * CtiFDRTelegyr::KEY_CHANNEL_ID               = "FDR_TELEGYR_CHANNEL_ID";
+const CHAR * CtiFDRTelegyr::KEY_ACCESS                   = "FDR_TELEGYR_ACCESS";
+
+const CHAR * CtiFDRTelegyr::COLNAME_TELEGYR_GROUPID      = "GroupID";
+const CHAR * CtiFDRTelegyr::COLNAME_TELEGYR_NAME         = "GroupName";
+const CHAR * CtiFDRTelegyr::COLNAME_TELEGYR_INTERVAL     = "CollectionInterval";
+const CHAR * CtiFDRTelegyr::COLNAME_TELEGYR_TYPE         = "GroupType";
 
 
 
@@ -114,7 +117,6 @@ BOOL CtiFDRTelegyr::init( void )
    int         status;
 
    setConnected( false );
-//   groupCreated = false;
    _numberOfConnections = 0;
 
    // init the base class
@@ -141,35 +143,30 @@ BOOL CtiFDRTelegyr::init( void )
 //=================================================================================================================================
 //=================================================================================================================================
 
-bool CtiFDRTelegyr::contact( void )
+bool CtiFDRTelegyr::contact( int &status )
 {
    RWCString Description;
    RWCString Action;
 
    setConnected( false );
    int index = 0;
-   int status = 0;
+//   int status = 0; //08/02
+
    //in the future, we may have more than one control center, so we'd loop through them all
    //for( index; index < _controlCenterList.size(); index++ )
    {
       setConnected( connect( index, status ) );
-/*
-      if( !isConnected() )
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime::now() << " TelegyrAPI connect to Control Center " << index << " FAILED " << endl;
-// extra?
-         Description = " TelegyrAPI connect to Control Center FAILED ";
-         logEvent( Description, Action, true );
-
-      }
-*/
    }
 
    if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
    {
       CtiLockGuard< CtiLogger > doubt_guard( dout );
       dout << RWTime::now() << " Loading Telegyr translation list: loadTranslationList()" << endl;
+   }
+
+   if( isConnected() )
+   {
+      buildAndRegisterGroups();
    }
 
    return( isConnected() );
@@ -190,8 +187,6 @@ bool CtiFDRTelegyr::connect( int centerNumber, int &status )
    int         groupValid;
    int         sysType;
 
-//   _controlCenter.fillOutTheData( centerNumber );
-
    op = new char[_controlCenter.getOperator().length()+1];
    strcpy( op, _controlCenter.getOperator().data() );
 
@@ -210,12 +205,6 @@ bool CtiFDRTelegyr::connect( int centerNumber, int &status )
                          &groupValid,
                          &sysType );
 
-
-//...................... testing ......................
-//   status = API_NORMAL;
-//...................... testing ......................
-
-
    if( status != API_NORMAL )
    {
       delete op;
@@ -223,15 +212,9 @@ bool CtiFDRTelegyr::connect( int centerNumber, int &status )
       delete sn;
 
       setConnected( false );
-      /*
-      //not really sure this needs to be done....
-      _controlCenter.setGroupValid( groupValid );
-      _controlCenter.setSysType( sysType );
-        */
    }
    else
    {
-//      isConnected = true;
       setConnected( true );
       _numberOfConnections++;
    }
@@ -291,7 +274,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
       if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
       {
          CtiLockGuard<CtiLogger> doubt_guard( dout );
-         dout << RWTime::now() << " - Path To API: " << newPath << " " << " Version: " << apiVer << " - "<< endl;
+         dout << RWTime::now() << " - Path To API:" << newPath << ":" << " Version: " << apiVer << " - "<< endl;
       }
 
       //init the Telegyr API
@@ -315,7 +298,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
          CtiLockGuard<CtiLogger> doubt_guard( dout );
          dout << RWTime::now() <<" TelegyrAPI init successful " << endl;
 
-         contact();
+         contact( status );
       }
 
       for( ;; )
@@ -335,12 +318,6 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
 
             timer++;
 
-            if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
-            {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << RWTime::now() << " - Getting Data from TELEGYR Interface - " << endl;
-            }
-
             //peek at the input-queue and see if anybody wrote to us from home...
             returnCode = api_get_queued_data( 0,
                                               API_NO_TIMEOUT,
@@ -359,10 +336,20 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
             {
                foundList = false;
 
+               {
+                  CtiLockGuard<CtiLogger> doubt_guard( dout );
+                  dout << reason << " " << decipherReason(reason) << endl;
+               }
+
                switch( reason )
                {
                case API_DISC_NOTIFY:   //we've lost connection to the control center
                   {
+                     {
+                        CtiLockGuard<CtiLogger> doubt_guard( dout );
+                        dout << returnCode << " API_DISC_NOTIFY " << endl;
+                     }
+
                      //in the future, we may have more than one control center, so we'd loop through them all
                      //for( index; index < _controlCenterList.size(); index++ )
                      {
@@ -371,9 +358,6 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                         if( _controlCenter.getTelegyrGroupList().size() != 0 )
                         {
                            api_delete_all_groups( _controlCenter.getChannelID() );
-
-                           //we should, of course, be checking the return code from the call above....
-//                           groupCreated = false;
                         }
 
                         api_disconnect( _controlCenter.getChannelID(), API_VALID );
@@ -399,6 +383,11 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                      int x;
                      int arraySize = 0;
 
+                     {
+                        CtiLockGuard<CtiLogger> doubt_guard( dout );
+                        dout << returnCode << " API_CYC_DATA & API_SPO_DATA " << endl;
+                     }
+
                      //loop through the list comparing groupnumber (which we decided were groupIDs)
                      //when we find one, we get the size of the point list inside it and get an array
                      //big enough to hold the point data we've gotten back
@@ -408,7 +397,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                      {
                         if( _controlCenter.getTelegyrGroupList()[x].getGroupID() == group_num )
                         {
-                           int arraySize = _controlCenter.getTelegyrGroupList()[x].getPointList().size();
+                           arraySize = _controlCenter.getTelegyrGroupList()[x].getPointList().size();
                            break;
                         }
                      }
@@ -420,6 +409,11 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                      case API_GET_SPO_MEA:
                         {
                            int x;
+
+                           {
+                              CtiLockGuard<CtiLogger> doubt_guard( dout );
+                              dout << returnCode << " API_GET_CYC_MEA & API_GET_SPO_MEA " << endl;
+                           }
 
                            APICLI_GET_MEA *measurands;
                            measurands = new APICLI_GET_MEA[arraySize];
@@ -464,6 +458,11 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                         {
                            int x;
 
+                           {
+                              CtiLockGuard<CtiLogger> doubt_guard( dout );
+                              dout << returnCode << " API_GET_CYC_IND & API_GET_SPO_IND " << endl;
+                           }
+
                            APICLI_GET_IND *indications;
                            indications = new APICLI_GET_IND[arraySize];
 
@@ -503,6 +502,11 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                      case API_GET_SPO_CNT:
                         {
                            int x;
+
+                           {
+                              CtiLockGuard<CtiLogger> doubt_guard( dout );
+                              dout << returnCode << " API_GET_CYC_CNT & API_GET_SPO_CNT " << endl;
+                           }
 
                            APICLI_GET_CNT *counters;
                            counters = new APICLI_GET_CNT[arraySize];
@@ -546,7 +550,9 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                         CtiLockGuard<CtiLogger> doubt_guard( dout );
                         dout << RWTime::now() << " Unpack error occured: " << decipherError( status ) << endl;
                      }
+
                   }
+
                   break;
 
                case API_DELALL_RES:    //we've done a global delete group call
@@ -574,10 +580,20 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                      if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
                      {
                         CtiLockGuard<CtiLogger> doubt_guard( dout );
-                        dout << RWTime::now() << " Call to enable spontainious data executed" << endl;
+                        dout << RWTime::now() << " Call to enable spontaneous data executed" << endl;
                      }
                   }
                   break;
+
+               case API_CRE_RES:     //we've created a group
+               {
+                  if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+                  {
+                     CtiLockGuard<CtiLogger> doubt_guard( dout );
+                     dout << RWTime::now() << " Group Created!! " << endl;
+                  }
+               }
+               break;
 
                default:              //we don't know what the heck is going on....
                   {
@@ -611,7 +627,10 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
 
             if( waiter >= 15 )
             {
-               setConnected( connect( 0, status ) );
+//               setConnected( connect( 0, status ) );         //NOTE:we used this Aug '02 at MEC
+
+               contact( status );                                      //NOTE:used this as it calls build&Register()
+
                printCount++;           //we want to tell someone that we tried to reconnect every 60 secs (or so?)
                waiter = 0;
 
@@ -664,7 +683,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
 //we should only be here if we've gotten past the api_init() and api_connect() methods built into telegyr
 //=================================================================================================================================
 
-void CtiFDRTelegyr::buildAndRegisterGroups( void )
+bool CtiFDRTelegyr::buildAndRegisterGroups( void )
 {
    RWCString   Description;
    RWCString   Action;
@@ -680,11 +699,14 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
    char        **name_list;
    int         cycle_time;
    bool        cyclic = false;
+   bool        madeGroup = false;
 
    CtiLockGuard<CtiMutex> sendGuard( _controlCenter.getMutex() );
 
    for( index = 0; index < _controlCenter.getTelegyrGroupList().size(); index++ )
    {
+      cyclic = false;
+
       channel_id = _controlCenter.getChannelID();
 
       //if there's an interval, we have cyclic data
@@ -696,12 +718,39 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
             dout << RWTime::now() << " - Cyclic data group found: " << _controlCenter.getTelegyrGroupList()[index].getGroupName() << " - " << endl;
          }
 
-         if( _controlCenter.getTelegyrGroupList()[index].getGroupType() == DIGITAL_TYPE )
+         if( _controlCenter.getTelegyrGroupList()[index].getGroupType() == STATUS_TYPE )
+         {
             group_type = API_GET_CYC_IND;
-         if( _controlCenter.getTelegyrGroupList()[index].getGroupType() == ANALOG_TYPE )
+
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << returnCode << " group_type = API_GET_CYC_IND " << endl;
+            }
+         }
+         else if( _controlCenter.getTelegyrGroupList()[index].getGroupType() == ANALOG_TYPE )
+         {
             group_type = API_GET_CYC_MEA;
-         if( _controlCenter.getTelegyrGroupList()[index].getGroupType() == COUNTER_TYPE )
+
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << returnCode << " group_type = API_GET_CYC_MEA " << endl;
+            }
+         }
+         else if( _controlCenter.getTelegyrGroupList()[index].getGroupType() == COUNTER_TYPE )
+         {
             group_type = API_GET_CYC_CNT;
+
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << returnCode << " group_type = API_GET_CYC_CNT " << endl;
+            }
+         }
+         else
+         {
+
+            CtiLockGuard<CtiLogger> doubt_guard( dout );
+            dout << returnCode << "Unknown: " << _controlCenter.getTelegyrGroupList()[index].getGroupType() << endl;
+         }
 
          //this will always be in seconds
          cycle_time = _controlCenter.getTelegyrGroupList()[index].getInterval();
@@ -715,12 +764,32 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
             dout << RWTime::now() << " - Spontaneous data group found: " << _controlCenter.getTelegyrGroupList()[index].getGroupName() << " - " << endl;
          }
 
-         if( _controlCenter.getTelegyrGroupList()[index].getGroupType() == DIGITAL_TYPE )
+         if( _controlCenter.getTelegyrGroupList()[index].getGroupType() == STATUS_TYPE )
+         {
             group_type = API_GET_SPO_IND;
-         if( _controlCenter.getTelegyrGroupList()[index].getGroupType() == ANALOG_TYPE )
+
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << returnCode << " group_type = API_GET_SPO_IND " << endl;
+            }
+         }
+         else if( _controlCenter.getTelegyrGroupList()[index].getGroupType() == ANALOG_TYPE )
+         {
             group_type = API_GET_SPO_MEA;
-         if( _controlCenter.getTelegyrGroupList()[index].getGroupType() == COUNTER_TYPE )
+
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << returnCode << " group_type = API_GET_SPO_MEA " << endl;
+            }
+         }
+         else if( _controlCenter.getTelegyrGroupList()[index].getGroupType() == COUNTER_TYPE )
+         {
             group_type = API_GET_SPO_CNT;
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << returnCode << " group_type = API_GET_SPO_CNT " << endl;
+            }
+         }
       }
 
       group_number   = _controlCenter.getTelegyrGroupList()[index].getGroupID();
@@ -728,56 +797,58 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
       priority       = 1;                                               //telegyr only supports 1 at this point
       object_count   = _controlCenter.getTelegyrGroupList()[index].getPointList().size();
 
-      //make enough pointers for our pointnames
-      name_list = new char *[object_count];                    //Matt doesn't like this...... Eric is afraid
-
-      //I be doin' some poppin' an' ploppin' on deez pointnames
-      for( count = 0; count < object_count; count++ )
+      if( object_count != 0 )
       {
-         //makes some space to copy our pointnames
-         name_list[count] = new char[100];
+         //make enough pointers for our pointnames
+         name_list = new char *[object_count];                    //Matt doesn't like this...... Eric is afraid
 
-         strcpy( name_list[count], _controlCenter.getTelegyrGroupList()[index].getPointList()[count].getTranslateName( 0 ) );
-      }
-
-      //do the api-registration of the group...
-      if( isConnected() == true )
-      {
-         returnCode = api_create_group( channel_id, group_type, group_number, persistence, priority, object_count, name_list );
-
-         delete []name_list;
-
-         if( returnCode != API_NORMAL )
+         //I be doin' some poppin' an' ploppin' on deez pointnames
+         for( count = 0; count < object_count; count++ )
          {
-            //log the event and put in the status (code returned)
-            CtiLockGuard<CtiLogger> doubt_guard( dout );
-            dout << RWTime::now() << " TelegyrAPI create_group " << group_number << " failed: " << decipherError( returnCode ) << returnCode << endl;
-/*
-            Description = " TelegyrAPI create_group failed. Status returned " + decipherError( returnCode );
-            logEvent( Description, Action, false );
-*/
+            //makes some space to copy our pointnames
+            name_list[count] = new char[100];
+
+            strcpy( name_list[count], _controlCenter.getTelegyrGroupList()[index].getPointList()[count].getTranslateName( 0 ) );
          }
-         else
+
+         //do the api-registration of the group...
+         if( isConnected() == true )
          {
-//            groupCreated = true;
-/*
-            Description = " TelegyrAPI create_group succeeded ";
-            logEvent( Description, Action, false );
-*/
-            if( cyclic != false )
+            returnCode = api_create_group( channel_id, group_type, group_number, persistence, priority, object_count, name_list );
+
+            delete []name_list;
+
+            if( returnCode != API_NORMAL )
             {
-               //by specifying the NOALIG parameter, we are telling the telegyr system to go ahead and start sending
-               //data back to use immediately
-               api_enable_cyclic( channel_id, group_type, group_number, cycle_time, API_SECOND, API_ALIG_NOALIG );
-               cyclic = false;
+               //log the event and put in the status (code returned)
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << RWTime::now() << " TelegyrAPI create_group " << group_number << " failed: " << decipherError( returnCode ) << returnCode << endl;
             }
             else
             {
-               api_enable_spontaneous( channel_id, group_type, group_number );
+               madeGroup = true;
+
+               if( cyclic != false )
+               {
+                  //by specifying the NOALIG parameter, we are telling the telegyr system to go ahead and start sending
+                  //data back to use immediately
+                  api_enable_cyclic( channel_id, group_type, group_number, cycle_time, API_SECOND, API_ALIG_NOALIG );
+                  cyclic = false;
+               }
+               else
+               {
+                  api_enable_spontaneous( channel_id, group_type, group_number );
+               }
             }
          }
       }
+      else
+      {
+         CtiLockGuard<CtiLogger> doubt_guard( dout );
+         dout << RWTime::now() << " Empty Pointlist: Won't register...." << _controlCenter.getTelegyrGroupList()[index].getGroupName() << endl;
+      }
    }
+   return madeGroup;
 }
 
 //=================================================================================================================================
@@ -815,12 +886,9 @@ bool CtiFDRTelegyr::loadTranslationLists()
       {
          CtiLockGuard<CtiLogger> doubt_guard( dout );
          dout << RWTime::now() << " Group list reload for FDRTelegyr" << endl;
-/*
-         Description = " Group list loaded for FDRTelegyr";
-         logEvent( Description, Action, false );
-*/
       }
 
+      //note: these are our internal lists, Telegyr doesn't know about them yet
       retCode = loadLists( getReceiveFromList() );
 
       if( retCode != true )
@@ -829,14 +897,17 @@ bool CtiFDRTelegyr::loadTranslationLists()
          {
             CtiLockGuard<CtiLogger> doubt_guard( dout );
             dout << RWTime::now() << " Translation list load for FDRTelegyr failed " << endl;
-
-/*
-            Description = " Translation list load for FDRTelegyr failed, keeping original points ";
-            logEvent( Description, Action, false );
-*/
          }
       }
+
+      //if we're already connected, dispatch caused us to do the stuff we just did and we need
+      //to re-register our groups with Telegyr
+      if( isConnected() )
+      {
+         buildAndRegisterGroups();
+      }
    }
+
 
    return retCode;
 }
@@ -855,6 +926,12 @@ bool CtiFDRTelegyr::getGroupLists( void )
    RWCString      tempGroupType;
    int            tempInterval;
    RWDBStatus     retStatus;
+
+   if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+   {
+      CtiLockGuard< CtiLogger > doubt_guard( dout );
+      dout << " ***** We're getting the GROUPLISTS ***** " << endl;
+   }
 
    try
    {
@@ -881,8 +958,46 @@ bool CtiFDRTelegyr::getGroupLists( void )
 
       if( retStatus.errorCode() == RWDBStatus::ok )
       {
+         if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+         {
+            CtiLockGuard< CtiLogger > doubt_guard( dout );
+            dout << " retStatus.errorCode() == RWDBStatus::ok " << endl;
+         }
+
          // delete FDRpoint vectors, then delete the group list vector
-         _controlCenter.deleteTelegyrGroupList();
+         CtiLockGuard<CtiMutex> sendGuard( _controlCenter.getMutex() );
+
+         if( _controlCenter.getTelegyrGroupList().size() != 0 )
+         {
+            int status;
+
+            status = api_disable_all_cyclic( _controlCenter.getChannelID() );
+
+            if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+            {
+               CtiLockGuard< CtiLogger > doubt_guard( dout );
+               dout << " Disable all cyclic say: " << decipherError( status ) << endl;
+            }
+
+            status = api_disable_all_spontaneous( _controlCenter.getChannelID() );
+
+            if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+            {
+               CtiLockGuard< CtiLogger > doubt_guard( dout );
+               dout << " Disable all spontaneous say: " << decipherError( status ) << endl;
+            }
+
+            status = api_delete_all_groups( _controlCenter.getChannelID() );
+
+            if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+            {
+               CtiLockGuard< CtiLogger > doubt_guard( dout );
+               dout << " Delete all groups say: " << decipherError( status ) << endl;
+            }
+
+            _controlCenter.deleteTelegyrGroupList();
+
+         }
 
          RWDBReader  rdr = selector.reader( conn );
          CtiTelegyrGroup tempGroup;
@@ -899,7 +1014,13 @@ bool CtiFDRTelegyr::getGroupLists( void )
             tempGroup.setGroupID( tempGroupID );
             tempGroup.setGroupName( tempGroupName );
             tempGroup.setInterval( tempInterval );
-            tempGroup.setGroupType(tempGroupType );
+            tempGroup.setGroupType( tempGroupType );
+
+            if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+            {
+               CtiLockGuard< CtiLogger > doubt_guard( dout );
+               dout << " Going to addToGroupList() " << endl;
+            }
 
             //plunk the grouplist into the vector
             CtiLockGuard<CtiMutex> sendGuard( _controlCenter.getMutex() );
@@ -908,10 +1029,27 @@ bool CtiFDRTelegyr::getGroupLists( void )
             if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << endl;
+               dout << endl;
                dout << RWTime::now() << " - Group added with Groupname: " << tempGroupName << " Grouptype: " << tempGroupType << " - " << endl;
+               dout << "TempGroupID " << tempGroupID << endl;
+               dout << "TempGroupName " << tempGroupName << endl;
+               dout << "TempInterval " << tempInterval << endl;
+               dout << "TempGroupType " << tempGroupType << endl;
+               dout << endl;
+               dout << endl;
             }
          }
          gotList = true;
+      }
+      ///////////temp
+      else
+      {
+         if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+         {
+            CtiLockGuard< CtiLogger > doubt_guard( dout );
+            dout << " retStatus.errorCode() != RWDBStatus::ok " << endl;
+         }
       }
    }
 
@@ -924,10 +1062,6 @@ bool CtiFDRTelegyr::getGroupLists( void )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") loadPointList: unknown exception" << endl;
-/*
-         Description = " LoadPointList Exception ";
-         logEvent( Description, Action, false );
-*/
       }
    }
 
@@ -1006,7 +1140,10 @@ bool CtiFDRTelegyr::loadLists( CtiFDRPointList &aList )
                        nextTempToken( ":" );
 
                        //now we find the end of the string
-                       pointStr = nextTempToken(":");
+                       RWCString pointStr1 = nextTempToken(":");
+                       RWCString pointStr2=nextTempToken(":");
+
+                       pointStr = pointStr1 + RWCString(":") + pointStr2;
 
                        // now we have a pointid with a :
                        if( !pointStr.isNull() )
@@ -1125,35 +1262,36 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int index
    {
       value = aPoint.mea_value.mea4_value;
 
+      {
+         CtiLockGuard<CtiLogger> doubt_guard( dout );
+         dout << "Raw Analog Value: " << value << endl;
+      }
+
       //flip through our groups until the groupid matches the one this point came from
       //then snag the pointid out
       CtiLockGuard<CtiMutex> sendGuard( _controlCenter.getMutex() );
 
       for( x = 0; x < _controlCenter.getTelegyrGroupList().size(); x++ )
       {
-         //just a temp point
-//         point = _controlCenter.getTelegyrGroupList()[x].get
-
          if( _controlCenter.getTelegyrGroupList()[x].getGroupID() == groupid )
          {
             pointid = _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getPointID();
 
-            value += value * ( _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getMultiplier() );
-            value += value + ( _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getOffset() );
+            _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getPointType();
+
+            value = value * ( _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getMultiplier() );
+            value += ( _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getOffset() );
+
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << "Point with PointID " << pointid << "from Control Center "<< _controlCenter.getSysName() << endl;
+               dout << /*add some more crap here*/endl;
+            }
 
             //if the value is higher than it should be, we want to let the boss man know
             if( ( getHiReasonabilityFilter() > 0 ) && ( getHiReasonabilityFilter() > value ) )
             {
                nonUpdated = true;
-/*
-               if( getDebugLevel() & EXPECTED_ERR_FDR_DEBUGLEVEL )
-               {
-                   CtiLockGuard<CtiLogger> doubt_guard( dout );
-                   dout << "Telegyr ID: " << point->getDestinationList()[x].getTranslation();
-                   dout << " was above HiReasonabilityFilter: " << getHiReasonabilityFilter();
-                   dout << " Hi Value was: " << point.getValue() << endl;
-               }
-*/
             }
             break;
          }
@@ -1243,6 +1381,11 @@ bool CtiFDRTelegyr::processDigital( APICLI_GET_IND aPoint, int groupid, int inde
    if( aPoint.ind_valid == API_VALID )
    {
       value = aPoint.ind_value;
+
+      {
+         CtiLockGuard<CtiLogger> doubt_guard( dout );
+         dout << "My Raw Digital: " << value << endl;
+      }
 
       //flip through our groups until the groupid matches the one this point came from
       //then snag the pointid out
@@ -1999,25 +2142,14 @@ int CtiFDRTelegyr::readConfig( void )
    tempStr = getCparmValueAsString( KEY_DB_RELOAD_RATE );
 
    if( tempStr.length() > 0 )
-   {
       setReloadRate( atoi( tempStr ) );
-   }
    else
-   {
       setReloadRate( 3600 );
-   }
-
-   {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      dout << RWTime::now() << " Database will be reloaded " << getReloadRate() << " seconds" << endl;
-   }
 
    tempStr = getCparmValueAsString( KEY_HI_REASONABILITY_FILTER );
 
    if( tempStr.length() > 0 )
-   {
       setHiReasonabilityFilter( atof( tempStr ) );
-   }
 
    tempStr = getCparmValueAsString( KEY_DEBUG_MODE );
 
@@ -2026,34 +2158,87 @@ int CtiFDRTelegyr::readConfig( void )
    else
       setInterfaceDebugMode( false );
 
+   tempStr = getCparmValueAsString( KEY_API_PATH );
+
+   if( tempStr.length() > 0 )
+      setPath( tempStr );
+   else
+      setPath( "c:/yukon/telegyr/api/" );             //not sure what else would be appropriate
+
+   tempStr = getCparmValueAsString( KEY_APPLICATION_NAME );
+
+   if( tempStr.length() > 0 )
+      _appName = tempStr;
+   else
+      _appName = "dev_yukon";
+
+   tempStr = getCparmValueAsString( KEY_API_VERSION );
+
+   if( tempStr.length() > 0 )
+      _apiVersion = tempStr;
+   else
+      _apiVersion = "v4_1";
+
+
+
+   //defaults for the control center
+
+   tempStr = getCparmValueAsString( KEY_OPERATOR );
+
+   if( tempStr.length() > 0 )
+      _controlCenter.setOperator( tempStr );
+   else
+      _controlCenter.setOperator( "LGS" );
+
+
+   tempStr = getCparmValueAsString( KEY_PASSWORD );
+
+   if( tempStr.length() > 0 )
+      _controlCenter.setPassword( tempStr );
+   else
+      _controlCenter.setPassword( "1234" );
+
+
+   tempStr = getCparmValueAsString( KEY_SYSTEM_NAME );
+
+   if( tempStr.length() > 0 )
+      _controlCenter.setSysName( tempStr );
+   else
+      _controlCenter.setSysName( "MEC" );
+
+   tempStr = getCparmValueAsString( KEY_CHANNEL_ID );
+
+   if( tempStr.length() > 0 )
+      _controlCenter.setChannelID( atof( tempStr ) );
+   else
+      _controlCenter.setChannelID( 1 );
+
+   tempStr = getCparmValueAsString( KEY_ACCESS );
+
+   if( tempStr.length() > 0 )
+      _controlCenter.setAccess( atof( tempStr ) );
+   else
+      _controlCenter.setAccess( 1 );
+
    if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
    {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-
-      if( getHiReasonabilityFilter() > 0 )
-         dout << " Using Telegyr High Reasonability Filter: " << getHiReasonabilityFilter() << endl;
-      else
-         dout << " No Telegyr High Reasonability Filter is in use" << endl;
-   }
-
-   setPath( getCparmValueAsString( KEY_API_PATH ) );
-
-   _appName = getCparmValueAsString( KEY_APPLICATION_NAME );
-
-   _apiVersion = getCparmValueAsString( KEY_API_VERSION );
-
-//...................... testing ......................
-//   setPath( "d:/TelegyrInstall/" );
-//...................... testing ......................
-
-   if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
-   {
-      dout << "Our Name: " << getCparmValueAsString( KEY_APPLICATION_NAME ) << endl;
-      dout << "Reload Rate: " << getCparmValueAsString( KEY_DB_RELOAD_RATE ) << " secs" << endl;
-      dout << "Hi_Res: " << getCparmValueAsString( KEY_HI_REASONABILITY_FILTER ) << endl;
-      dout << "Debug Mode: " << getCparmValueAsString( KEY_DEBUG_MODE ) << endl;
-      dout << "Api path: " << getCparmValueAsString( KEY_API_PATH ) << endl;
-      dout << "Api Version: " << getCparmValueAsString( KEY_API_VERSION ) << endl;
+      dout << endl;
+      dout << endl;
+      dout << "-----------------------Configs---------------------------------" << endl;
+      dout << "Our Name    : " << getCparmValueAsString( KEY_APPLICATION_NAME ) << endl;
+      dout << "Reload Rate : " << getCparmValueAsString( KEY_DB_RELOAD_RATE ) << " secs" << endl;
+      dout << "Hi_Res      : " << getCparmValueAsString( KEY_HI_REASONABILITY_FILTER ) << endl;
+      dout << "Debug Mode  : " << getCparmValueAsString( KEY_DEBUG_MODE ) << endl;
+      dout << "Api path    : " << getCparmValueAsString( KEY_API_PATH ) << endl;
+      dout << "Api Version : " << getCparmValueAsString( KEY_API_VERSION ) << endl;
+      dout << "Operator    : " << getCparmValueAsString( KEY_OPERATOR ) << endl;
+      dout << "Password    : " << getCparmValueAsString( KEY_PASSWORD ) << endl;
+      dout << "Sysname     : " << getCparmValueAsString( KEY_SYSTEM_NAME ) << endl;
+      dout << "Channel Id  : " << getCparmValueAsString( KEY_CHANNEL_ID ) << endl;
+      dout << "Access      : " << getCparmValueAsString( KEY_ACCESS ) << endl;
+      dout << "-----------------------Configs---------------------------------" << endl;
+      dout << endl;
+      dout << endl;
    }
 
    return successful;

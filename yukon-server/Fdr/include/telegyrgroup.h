@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/07/12 18:31:29 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/08/23 14:23:47 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,7 +33,7 @@
 #include "fdrpoint.h"
 
 
-class IM_EX_FDRBASE CtiTelegyrGroup
+class IM_EX_FDRTELEGYRAPI CtiTelegyrGroup
 {
     public:
 

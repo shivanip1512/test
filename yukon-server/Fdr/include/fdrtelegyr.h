@@ -14,12 +14,15 @@
 *
 * PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2002/08/07 17:10:53 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2002/08/23 14:23:47 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: fdrtelegyr.h,v $
+      Revision 1.3  2002/08/23 14:23:47  eschmit
+      Added bunches of fixes after visiting MEC.
+
       Revision 1.2  2002/08/07 17:10:53  eschmit
       Took care of some memory leaks, added cparms for appname, some other small changes
 
@@ -48,7 +51,7 @@
 #include "telegyrcontrolcenter.h"
 #include "rtdb.h"                   //not too sure about needing this.................
 
-#define DIGITAL_TYPE    "digital"
+#define STATUS_TYPE     "digital"
 #define ANALOG_TYPE     "analog"
 #define COUNTER_TYPE    "counter"
 
@@ -61,7 +64,7 @@ typedef struct
    int  persistence;
    int  priority;
    int  object_count;
-   char *name_list[];              //correct syntax?
+   char *name_list[];
 } GROUPS_TO_GET;
 
 class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
@@ -76,12 +79,12 @@ public:
    virtual bool sendMessageToForeignSys( CtiMessage *aMessage );
    virtual int processMessageFromForeignSystem( CHAR *data );
    virtual bool connect( int controlCenterNumber, int &status );
-   virtual bool contact( void );
+   virtual bool contact( int &status );
    virtual BOOL init( void );
    virtual BOOL run( void );
    virtual BOOL stop( void );
 
-   void buildAndRegisterGroups( void );
+   bool buildAndRegisterGroups( void );
 
    double getHiReasonabilityFilter() const;
    CtiFDRTelegyr & setHiReasonabilityFilter( const double myValue );
@@ -95,8 +98,6 @@ public:
    RWCString getPath( void );
    CtiFDRTelegyr & setPath( RWCString inPath );
 
-//   bool        groupCreated;
-
    static const CHAR * TBLNAME_TELEGYR_GROUPS;
    static const CHAR * KEY_HI_REASONABILITY_FILTER;
    static const CHAR * KEY_APPLICATION_NAME;
@@ -105,6 +106,12 @@ public:
    static const CHAR * KEY_QUEUE_FLUSH_RATE;
    static const CHAR * KEY_DEBUG_MODE;
    static const CHAR * KEY_API_PATH;
+   static const CHAR * KEY_OPERATOR;
+   static const CHAR * KEY_PASSWORD;
+   static const CHAR * KEY_SYSTEM_NAME;
+   static const CHAR * KEY_CHANNEL_ID;
+   static const CHAR * KEY_ACCESS;
+
    static const CHAR * COLNAME_TELEGYR_GROUPID;
    static const CHAR * COLNAME_TELEGYR_NAME;
    static const CHAR * COLNAME_TELEGYR_INTERVAL;
@@ -124,8 +131,6 @@ protected:
    double                              _hiReasonabilityFilter;
    long                                _linkStatusID;
 
-
-//   ULONG calculateNextSendTime();
    void threadFunctionGetDataFromTelegyr( void );
    bool loadTranslationLists( void );
    bool loadLists( CtiFDRPointList &aList );
@@ -137,8 +142,6 @@ protected:
 
    RWCString decipherReason( int transmissionReason );
    RWCString decipherError( int status );
-
-/*       vector<CtiTelegyrControlCenter>   _controlCenterList;         for the future*/
 
 private:
 
