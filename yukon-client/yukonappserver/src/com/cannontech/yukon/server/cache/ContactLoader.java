@@ -1,5 +1,6 @@
 package com.cannontech.yukon.server.cache;
 
+import java.util.Map;
 import java.util.Vector;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -15,15 +16,19 @@ import com.cannontech.database.db.contact.ContactNotification;
  */
 public class ContactLoader implements Runnable 
 {
-	private java.util.ArrayList allContacts = null;
+    //Map<Integer(contactID), LiteContact>
+    private Map allContactsMap = null;
+
+    private java.util.ArrayList allContacts = null;
 	private String databaseAlias = null;
 	
 	/**
 	 * CustomerContactLoader constructor comment.
 	 */
-	public ContactLoader(java.util.ArrayList customerContactArray, String alias) {
+	public ContactLoader(java.util.ArrayList customerContactArray, Map contactMap, String alias) {
 		super();
 		this.allContacts = customerContactArray;
+        this.allContactsMap = contactMap;
 		this.databaseAlias = alias;
 	}
 	/**
@@ -68,6 +73,7 @@ public class ContactLoader implements Runnable
 								rset.getInt(5) );
 	
 				allContacts.add(lc);
+                allContactsMap.put( new Integer(lc.getContactID()), lc );
 			}
 
 			//load up our ContactNotification objects			

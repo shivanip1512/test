@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.cannontech.common.constants.YukonListEntryFuncs;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -38,16 +39,8 @@ public final class ContactFuncs
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized( cache )
 		{
-			List cstCnts = cache.getAllContacts();
-			
-			for( int j = 0; j < cstCnts.size(); j++ )
-			{
-				if( contactID_ == ((LiteContact)cstCnts.get(j)).getContactID() )
-					return (LiteContact)cstCnts.get(j);
-			}
+			return (LiteContact)cache.getAllContactsMap().get( new Integer(contactID_) );
 		}
-	
-		return null;
 	}
 	
 	/**
@@ -235,6 +228,35 @@ public final class ContactFuncs
 		return (String[])strList.toArray( emails );
 	}
 
+    /**
+     * Finds all notifcations that are of a phone type. Returns a zero length array
+     * when no phone numbers are found.
+     * 
+     * @param contact
+     * @return int
+     */
+    public static LiteContactNotification[] getAllPhonesNumbers( int contactID_ )
+    {
+        LiteContact contact = getContact( contactID_ );
+        ArrayList phoneList = new ArrayList(16);
+
+        //find all the phone numbers in the list ContactNotifications
+        for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
+        {   
+            LiteContactNotification ltCntNotif = 
+                    (LiteContactNotification)contact.getLiteContactNotifications().get(j);
+                
+            if( !ltCntNotif.isDisabled() &&
+                 YukonListEntryFuncs.isPhoneNumber(ltCntNotif.getNotificationCategoryID()) )
+            {
+                phoneList.add( ltCntNotif );
+            }
+        }
+
+        LiteContactNotification[] phones = new LiteContactNotification[ phoneList.size() ];
+        return (LiteContactNotification[])phoneList.toArray( phones );
+    }
+    
 	/**
 	 * Returns all contactNotifications.
 	 * @return List LiteContactNotifications
@@ -374,17 +396,12 @@ public final class ContactFuncs
 		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized(cache) 
 		{
-			Iterator iter = cache.getAllContacts().iterator();
-			while(iter.hasNext())
-			{
-				LiteContact contact = (LiteContact) iter.next();
-				if(contact.getContactID() == contactID_)
-				{
-					LiteYukonUser liteYukonUser = YukonUserFuncs.getLiteYukonUser(contact.getLoginID());
-					return liteYukonUser;
-				}
-			}		
+            LiteContact lc = getContact( contactID_ );
+            
+            if( lc != null )
+                return YukonUserFuncs.getLiteYukonUser(lc.getLoginID());            
 		}
+
 		return null;
 	}	
 }

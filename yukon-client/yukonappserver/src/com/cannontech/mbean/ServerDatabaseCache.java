@@ -106,7 +106,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private HashMap allPointIDOffsetHashMap = null;
 	private HashMap allPointsMap = null;
 	private HashMap allPAOsMap = null;
-	private HashMap allCustomersMap = null;
+	private HashMap allCustomersMap = null;    
+    private HashMap allContactsMap = null;
     
     //derived from allYukonUsers,allYukonRoles,allYukonGroups
     //see type info in IDatabaseCache
@@ -257,8 +258,9 @@ public synchronized java.util.List getAllContacts()
 		return allContacts;
 	else
 	{
-		allContacts = new ArrayList();
-		ContactLoader contactLoader = new ContactLoader(allContacts, databaseAlias);
+		allContacts = new ArrayList();        
+        allContactsMap = new HashMap();
+		ContactLoader contactLoader = new ContactLoader(allContacts, allContactsMap, databaseAlias);
 		contactLoader.run();
 		return allContacts;
 	}
@@ -420,7 +422,7 @@ public synchronized java.util.List getAllGraphTaggedPoints()
 		  }
 		  catch( java.sql.SQLException e )
 		  {
-			   com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			   CTILogger.error( e.getMessage(), e );
 		  }
 		  finally
 		  {
@@ -433,22 +435,19 @@ public synchronized java.util.List getAllGraphTaggedPoints()
 			   }
 			   catch( java.sql.SQLException e )
 			   {
-					com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+					CTILogger.error( e.getMessage(), e );
 			   }
-
-			   //temp code
-			   timerStop = new java.util.Date();
-			   com.cannontech.clientutils.CTILogger.info( 
-                               (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for getAllGraphTaggedPoints()" );
-			   //temp code
-
-
-			   //sort our points by pointoffset
-			   java.util.Collections.sort( allGraphTaggedPoints, com.cannontech.database.data.lite.LiteComparators.litePointPointOffsetComparator );
-
-			   return allGraphTaggedPoints;
 		  }
-
+          
+          //temp code
+          timerStop = new java.util.Date();
+          CTILogger.info( 
+                              (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for getAllGraphTaggedPoints()" );
+            
+          //sort our points by pointoffset
+          java.util.Collections.sort( allGraphTaggedPoints, com.cannontech.database.data.lite.LiteComparators.litePointPointOffsetComparator );
+          
+		  return allGraphTaggedPoints;
 	 }
 
 }
@@ -712,6 +711,25 @@ public synchronized java.util.Map getAllPAOsMap()
 		return allPAOsMap;
 	}
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (3/14/00 3:19:19 PM)
+ * @return java.util.Collection
+ */
+public synchronized java.util.Map getAllContactsMap()
+{
+    if( allContactsMap != null )
+        return allContactsMap;
+    else
+    {
+        releaseAllContacts();
+        getAllContacts();
+
+        return allContactsMap;
+    }
+}
+
 
 /**
  * Insert the method's description here.
@@ -992,14 +1010,14 @@ public synchronized java.util.List getAllUnusedCCDevices()
 
 	   //temp code
 	   java.util.Date timerStop = new java.util.Date();
-	   com.cannontech.clientutils.CTILogger.info( 
+	   CTILogger.info( 
                (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for getAllUnusedCCPaos()" );
 	   //temp code
 
 		}
 		catch( java.sql.SQLException e )
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally
 		{
@@ -1012,7 +1030,7 @@ public synchronized java.util.List getAllUnusedCCDevices()
 			}
 			catch( java.sql.SQLException e )
 			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 			}
 		}
 
@@ -1458,46 +1476,33 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
 				if( id == DBChangeMsg.CHANGE_INVALID_ID )
 					break;
 		
-				for(int i=0;i<allContacts.size();i++)
-				{
-					if( ((LiteContact)allContacts.get(i)).getLiteID() == id )
-					{
-						alreadyAdded = true;
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					LiteContact lc = new LiteContact(id);
-					lc.retrieve(databaseAlias);
-					allContacts.add(lc);
-					lBase = lc;
-				}
+                lBase = (LiteBase)allPAOsMap.get( new Integer(id) );                
+                if( lBase == null )
+                {
+                    LiteContact lc = new LiteContact(id);
+                    lc.retrieve(databaseAlias);
+                    allContacts.add(lc);
+                    allContactsMap.put( new Integer(lc.getContactID()), lc );
+        
+                    lBase = lc;
+                }
 				break;
 
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 
-				//if( id == DBChangeMsg.CHANGE_INVALID_ID )
-					//break;
-		
-				for(int i=0;i<allContacts.size();i++)
-				{
-					if( ((LiteContact)allContacts.get(i)).getLiteID() == id )
-					{
-						((LiteContact)allContacts.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allContacts.get(i);
-						break;
-					}
-				}
+                LiteContact lc = (LiteContact)allContactsMap.get( new Integer(id) );                
+                lc.retrieve( databaseAlias );                
+                lBase = lc;
 
 				if( lBase == null ) //we did not find the contact, just create a new one
 				{
-					LiteContact lc = new LiteContact(id);
-					lc.retrieve(databaseAlias);
-					allContacts.add(lc);
-					lBase = lc;
-				}
-				
+                    lc = new LiteContact(id);
+                    lc.retrieve(databaseAlias);
+                    allContacts.add(lc);
+                    allContactsMap.put( new Integer(lc.getContactID()), lc );
+        
+                    lBase = lc;
+				}                
 				break;
 
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
@@ -1512,6 +1517,7 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
 				{
 					if( ((LiteContact)allContacts.get(i)).getLiteID() == id )
 					{
+                        allContactsMap.remove( new Integer(id) );
 						lBase = (LiteBase)allContacts.remove(i);
 						break;
 					}
@@ -2734,7 +2740,9 @@ public synchronized void releaseAllCache()
     allPointsMap = null;
     allPAOsMap = null;
     allCustomersMap = null;
-    
+    allContactsMap = null;
+
+
     //derived from allYukonUsers,allYukonRoles,allYukonGroups
     //see type info in IDatabaseCache
     allYukonUserLookupRoleIDsMap = null;
@@ -2749,6 +2757,7 @@ public synchronized void releaseAllCache()
 public synchronized void releaseAllContacts()
 {
 	allContacts = null;
+    allContactsMap = null;
 }
 /**
  * Insert the method's description here.

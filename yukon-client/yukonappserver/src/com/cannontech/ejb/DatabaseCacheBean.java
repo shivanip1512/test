@@ -398,6 +398,14 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 		return getCache().getAllPAOsMap();
 	}
 
+    /**
+     * @ejb:interface-method
+     * tview-type="remote" 
+    **/
+    public synchronized java.util.Map getAllContactsMap()
+    {
+        return getCache().getAllContactsMap();
+    }
 
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupRoleMap()

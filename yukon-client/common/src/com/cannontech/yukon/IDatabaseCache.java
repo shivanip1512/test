@@ -112,7 +112,10 @@ public interface IDatabaseCache
 
 	//Map<Integer(paoID), LiteYukonPAObject>
 	public java.util.Map getAllPAOsMap();
-   
+
+    //Map<Integer(contactID), LiteContact>
+    public java.util.Map getAllContactsMap();
+    
    /**
     *  Returns the LiteBase object that was added,deleted or updated, 
     *    else null is returned.
