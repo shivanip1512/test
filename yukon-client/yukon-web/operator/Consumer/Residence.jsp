@@ -75,19 +75,13 @@ function copyAddress(form) {
                     <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                       <tr> 
                         <td width="112" class="TableCell"> 
-                          <div align="right">Account Site:</div>
-                        </td>
-                        <td width="184" valign="top"> 
-                          <select name="select">
-                          </select>
-                        </td>
-                      </tr>
-                      <tr> 
-                        <td width="112" class="TableCell"> 
                           <div align="right">Residence Type:</div>
                         </td>
                         <td width="184" valign="top"> 
                           <select name="select">
+                            <option>Home</option>
+                            <option>Duplex</option>
+                            <option>Apartment</option>
                           </select>
                         </td>
                       </tr>
@@ -97,6 +91,8 @@ function copyAddress(form) {
                         </td>
                         <td width="184"> 
                           <select name="select2">
+                            <option>Wood</option>
+                            <option>Brick</option>
                           </select>
                         </td>
                       </tr>
@@ -123,7 +119,15 @@ function copyAddress(form) {
                           <div align="right">Square Feet:</div>
                         </td>
                         <td width="184"> 
-                          <input type="text" name="FirstName" maxlength="10" size="10" value="">
+                          <select name="select8">
+                            <option>&lt;- 1000</option>
+                            <option>1000 - 1500</option>
+                            <option>1500 - 2000</option>
+                            <option>2000 - 2500</option>
+                            <option>2500 - 3000</option>
+                            <option>3500 - 4000</option>
+                            <option>4000+</option>
+                          </select>
                         </td>
                       </tr>
                       <tr> 
@@ -131,7 +135,11 @@ function copyAddress(form) {
                           <div align="right">Insulation Depth:</div>
                         </td>
                         <td width="184"> 
-                          <input type="text" name="FirstName2" maxlength="10" size="10" value="">
+                          <select name="select9">
+                            <option>1 - 2</option>
+                            <option>3 - 6</option>
+                            <option>6+</option>
+                          </select>
                         </td>
                       </tr>
                       <tr> 
@@ -139,10 +147,15 @@ function copyAddress(form) {
                           <div align="right">General Condition:</div>
                         </td>
                         <td width="184"> 
-                          <input type="text" name="FirstName3" maxlength="10" size="10" value="">
+                          <select name="select10">
+                            <option>Poor</option>
+                            <option>Fair</option>
+                            <option>Good</option>
+                            <option>Excelent</option>
+                          </select>
                         </td>
                       </tr>
-					  </table>
+                    </table>
                     </td>
                   <td width="300" valign="top" bgcolor="#FFFFFF">
 <hr>
@@ -170,7 +183,13 @@ function copyAddress(form) {
                           <div align="right"># of Occupants:</div>
                         </td>
                         <td width="184"> 
-                          <input type="text" name="FirstName4" maxlength="10" size="10" value="">
+                          <select name="select11">
+                            <option>1 - 2</option>
+                            <option>3 - 4</option>
+                            <option>5 - 6</option>
+                            <option>7 - 8</option>
+                            <option>9+</option>
+                          </select>
                         </td>
                       </tr>
                       <tr> 
@@ -179,6 +198,8 @@ function copyAddress(form) {
                         </td>
                         <td width="184"> 
                           <select name="select6">
+                            <option>Own</option>
+                            <option>Rent</option>
                           </select>
                         </td>
                       </tr>
@@ -196,7 +217,7 @@ function copyAddress(form) {
                           <div align="right">Notes:</div>
                         </td>
                         <td width="184"> 
-                          <textarea name="PropNotes" rows="5" wrap="soft" cols="24" class = "TableCell"><%= account.getPropertyNotes() %></textarea>
+                          <textarea name="PropNotes" rows="6" wrap="soft" cols="26" class = "TableCell"><%= account.getPropertyNotes() %></textarea>
                         </td>
                       </tr>
                     </table>
