@@ -6,6 +6,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
+
 /**
  * Insert the type's description here.
  * Creation date: (3/26/2001 9:40:33 AM)
@@ -26,11 +27,10 @@ private PointFuncs() {
  */
 public static LitePoint getLitePoint(int pointID) 
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		java.util.List points = cache.getAllPoints();
-		java.util.Collections.sort( points, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator );
 		
 		for( int j = 0; j < points.size(); j++ )
 		{
@@ -49,7 +49,7 @@ public static LitePoint getLitePoint(int pointID)
  */
 public static int getMaxPointID()
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		java.util.List points = cache.getAllPoints();
@@ -68,7 +68,7 @@ public static int getMaxPointID()
  */
 public static LitePoint[] getLitePointsByUOMID(int[] uomIDs) 
 {
-   com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+   DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
    java.util.ArrayList pointList = new java.util.ArrayList(20);
    
    synchronized( cache )

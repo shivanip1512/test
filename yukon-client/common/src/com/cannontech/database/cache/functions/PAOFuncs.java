@@ -5,7 +5,9 @@ package com.cannontech.database.cache.functions;
  * Creation date: (3/26/2001 9:40:33 AM)
  * @author: 
  */
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public final class PAOFuncs 
 {
@@ -19,14 +21,14 @@ private PAOFuncs() {
 /**
  * Insert the method's description here.
  * Creation date: (3/26/2001 9:41:59 AM)
- * @return com.cannontech.database.data.lite.LitePoint
+ * @return LitePoint
  * @param pointID int
  */
 /* This method returns a HashTable that has a LiteYukonPAObject as the key and */
 /*   an ArrayList of LitePoints as its values */
 public static java.util.Hashtable getAllLitePAOWithPoints()
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	java.util.Hashtable paoTable = null;
 
 	synchronized (cache)
@@ -35,20 +37,20 @@ public static java.util.Hashtable getAllLitePAOWithPoints()
 		java.util.List points = cache.getAllPoints();
 		java.util.Collections.sort(paos, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
 		java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-		com.cannontech.database.data.lite.LitePoint litePoint = null;
-		com.cannontech.database.data.lite.LiteYukonPAObject litePAO = null;
+		LitePoint litePoint = null;
+		LiteYukonPAObject litePAO = null;
 
 		paoTable = new java.util.Hashtable( paos.size() );
 		
 		for (int i = 0; i < paos.size(); i++)
 		{
-			litePAO = (com.cannontech.database.data.lite.LiteYukonPAObject) paos.get(i);
+			litePAO = (LiteYukonPAObject) paos.get(i);
 
 			java.util.ArrayList pointList = new java.util.ArrayList( points.size() );
 			
 			for (int j = 0; j < points.size(); j++)
 			{				
-				litePoint = (com.cannontech.database.data.lite.LitePoint) points.get(j);				
+				litePoint = (LitePoint) points.get(j);				
 				if (litePoint.getPaobjectID() == litePAO.getYukonID())
 					pointList.add( litePoint );
 			}
@@ -70,7 +72,7 @@ public static java.util.Hashtable getAllLitePAOWithPoints()
 //			int[X][1] == lite type
 public static int[][] getAllPointIDsAndTypesForPAObject( int deviceid )
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	
 	synchronized(cache)
 	{
@@ -82,10 +84,10 @@ public static int[][] getAllPointIDsAndTypesForPAObject( int deviceid )
 		int pointCount = 0;
 		for(int i=0;i<points.size();i++)
 		{
-			if( deviceid == ((com.cannontech.database.data.lite.LitePoint)points.get(i)).getPaobjectID() )
+			if( deviceid == ((LitePoint)points.get(i)).getPaobjectID() )
 			{
-				ids[pointCount][0] = ((com.cannontech.database.data.lite.LitePoint)points.get(i)).getPointID();
-				ids[pointCount][1] = ((com.cannontech.database.data.lite.LitePoint)points.get(i)).getPointType();
+				ids[pointCount][0] = ((LitePoint)points.get(i)).getPointID();
+				ids[pointCount][1] = ((LitePoint)points.get(i)).getPointType();
 				pointCount++;
 			}
 			
@@ -101,9 +103,9 @@ public static int[][] getAllPointIDsAndTypesForPAObject( int deviceid )
  * This method was created in VisualAge.
  * @return String
  */
-public static com.cannontech.database.data.lite.LitePoint[] getLitePointsForPAObject( int paoID )
+public static LitePoint[] getLitePointsForPAObject( int paoID )
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	
 	synchronized(cache)
 	{
@@ -133,21 +135,19 @@ public static com.cannontech.database.data.lite.LitePoint[] getLitePointsForPAOb
  * This method was created in VisualAge.
  * @return String
  */
-public static com.cannontech.database.data.lite.LiteYukonPAObject getLiteYukonPAO( int paoID )
+public static LiteYukonPAObject getLiteYukonPAO( int paoID )
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	
 	synchronized(cache)
 	{
 		java.util.List paos = cache.getAllYukonPAObjects();
-		java.util.Collections.sort(paos);
-		String name = null;
 		
 		for(int i = 0; i < paos.size(); i++)
 		{
-			if( paoID == ((com.cannontech.database.data.lite.LiteYukonPAObject)paos.get(i)).getYukonID() )
+			if( paoID == ((LiteYukonPAObject)paos.get(i)).getYukonID() )
 			{
-				return (com.cannontech.database.data.lite.LiteYukonPAObject)paos.get(i);
+				return (LiteYukonPAObject)paos.get(i);
 			}
 			
 		}
@@ -163,13 +163,13 @@ public static com.cannontech.database.data.lite.LiteYukonPAObject getLiteYukonPA
  */
 public static int getMaxPAOid()
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		java.util.List paobjects = cache.getAllYukonPAObjects();
 		java.util.Collections.sort( paobjects, com.cannontech.database.data.lite.LiteComparators.liteYukonPAObjectIDComparator );
 
-		return ((com.cannontech.database.data.lite.LiteYukonPAObject)paobjects.get(paobjects.size() - 1)).getYukonID();
+		return ((LiteYukonPAObject)paobjects.get(paobjects.size() - 1)).getYukonID();
 	}
 
 }
@@ -179,7 +179,7 @@ public static int getMaxPAOid()
  */
 public static String getYukonPAOName( int paoID )
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	
 	synchronized(cache)
 	{
@@ -189,9 +189,9 @@ public static String getYukonPAOName( int paoID )
 		
 		for(int i = 0; i < paos.size(); i++)
 		{
-			if( paoID == ((com.cannontech.database.data.lite.LiteYukonPAObject)paos.get(i)).getYukonID() )
+			if( paoID == ((LiteYukonPAObject)paos.get(i)).getYukonID() )
 			{
-				name = ((com.cannontech.database.data.lite.LiteYukonPAObject)paos.get(i)).getPaoName();
+				name = ((LiteYukonPAObject)paos.get(i)).getPaoName();
 				break;
 			}
 			
