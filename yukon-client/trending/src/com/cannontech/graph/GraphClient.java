@@ -238,6 +238,18 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		getGraph().setOptionsMaskHolder(TrendModelType.LOAD_DURATION_MASK, isMasked);
 		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 	}
+	else if( event.getSource() == getOptionsMenu().getNoneResMenuItem())
+	{
+		com.cannontech.graph.model.TrendProperties.setResolutionInMillis(1L);
+	}
+	else if( event.getSource() == getOptionsMenu().getSecondResMenuItem())
+	{
+		com.cannontech.graph.model.TrendProperties.setResolutionInMillis(1000L);	
+	}
+	else if( event.getSource() == getOptionsMenu().getMinuteResMenuItem())
+	{
+		com.cannontech.graph.model.TrendProperties.setResolutionInMillis(1000L * 60L);	
+	}
 	/*
 	else if ( event.getSource() == getViewMenu().getLoadDurationRadioButtonItem())
 	{
@@ -751,7 +763,6 @@ private String buildHTMLBuffer( HTMLBuffer htmlBuffer)
 {
 	StringBuffer returnBuffer = null;
 
-	int sliderValueSelected = 0;
 	try
 	{
 		returnBuffer = new StringBuffer("<HTML><CENTER>");
@@ -765,9 +776,8 @@ private String buildHTMLBuffer( HTMLBuffer htmlBuffer)
 				((TabularHtml) htmlBuffer).setTabularStartDate(tModel.getStartDate());
 				((TabularHtml) htmlBuffer).setTabularEndDate(tModel.getStopDate());
 
-				sliderValueSelected = formatDateRangeSlider(tModel, (TabularHtml)htmlBuffer);
+				formatDateRangeSlider(tModel, (TabularHtml)htmlBuffer);
 			}
-
 			htmlBuffer.getHtml( returnBuffer );
 		}
 	}
@@ -2051,73 +2061,70 @@ public void showPopupMessage(String message, int messageType )
  */
 public void stateChanged(javax.swing.event.ChangeEvent event) 
 {
-	if( event.getSource() == getTabbedPane())
+	java.awt.Cursor savedCursor = null;
+	try
 	{
-		java.awt.Cursor savedCursor = null;
-		try
+		// set the cursor to a waiting cursor
+		savedCursor = this.getCursor();
+		this.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
+
+		if( getTabbedPane().getSelectedComponent() == getGraphTabPanel())
 		{
-			// set the cursor to a waiting cursor
-			savedCursor = this.getCursor();
-			this.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
-	
-			if( getTabbedPane().getSelectedComponent() == getGraphTabPanel())
-			{
 //				com.cannontech.clientutils.CTILogger.info("GRAPH TAB");
-				getGraph().setViewType(savedViewType);
-				if( getTreeViewPanel().getSelectedNode().getParent() == null)	//has no parent, therefore is the root.
-				{
-					showPopupMessage("Please Select a Trend From the list", javax.swing.JOptionPane.WARNING_MESSAGE);
-				}
-				getGraph().update();
-			}
-				
-			else if( getTabbedPane().getSelectedComponent() == getTabularTabScrollPane())
+			getGraph().setViewType(savedViewType);
+			if( getTreeViewPanel().getSelectedNode().getParent() == null)	//has no parent, therefore is the root.
 			{
+				showPopupMessage("Please Select a Trend From the list", javax.swing.JOptionPane.WARNING_MESSAGE);
+			}
+			getGraph().update();
+		}
+			
+		else if( getTabbedPane().getSelectedComponent() == getTabularTabScrollPane())
+		{
 //				com.cannontech.clientutils.CTILogger.info("TABULAR TAB");
-				getGraph().setViewType(TrendModelType.TABULAR_VIEW);
-				if( getTreeViewPanel().getSelectedNode().getParent() == null)
-				{
-					getTabularEditorPane().setText("<CENTER>Please Select a Trend from the list");
-					getSliderPanel().setVisible(false);
-					return;
-				}
-				if (!getTabularSlider().getModel().getValueIsAdjusting())
-				{
-					getGraph().update();
-					StringBuffer buf = new StringBuffer();
-					buf.append( buildHTMLBuffer(new TabularHtml()));
-					getTabularEditorPane().setText( buf.toString() );
-					getTabularEditorPane().setCaretPosition(0);
-					getGraph().setHtmlString(buf);
-				}
-			}
-			else if( getTabbedPane().getSelectedComponent() == getSummaryTabScrollPane())
+			getGraph().setViewType(TrendModelType.TABULAR_VIEW);
+			if( getTreeViewPanel().getSelectedNode().getParent() == null)
 			{
-//				com.cannontech.clientutils.CTILogger.info("SUMMARY TAB");
-				getGraph().setViewType(TrendModelType.SUMMARY_VIEW);
-				
-				if( getTreeViewPanel().getSelectedNode().getParent() == null)
-					getSummaryEditorPane().setText("<CENTER>Please Select a Trend from the list");
-				else
-				{
-					StringBuffer buf = new StringBuffer();
-					getGraph().update();
-					buf.append( buildHTMLBuffer( new PeakHtml()));
-					buf.append( buildHTMLBuffer(new UsageHtml()));
-					getSummaryEditorPane().setText(buf.toString());
-					getSummaryEditorPane().setCaretPosition(0);
-					getGraph().setHtmlString(buf);
-				}
+				getTabularEditorPane().setText("<CENTER>Please Select a Trend from the list");
+				getSliderPanel().setVisible(false);
+				return;
+			}
+			if (!getTabularSlider().getModel().getValueIsAdjusting())
+			{
+				getGraph().update();
+				StringBuffer buf = new StringBuffer();
+				buf.append( buildHTMLBuffer(new TabularHtml()));
+				getTabularEditorPane().setText( buf.toString() );
+				getTabularEditorPane().setCaretPosition(0);
+				getGraph().setHtmlString(buf);
 			}
 		}
-		catch( Exception e)
+		else if( getTabbedPane().getSelectedComponent() == getSummaryTabScrollPane())
 		{
-			e.printStackTrace();
+//				com.cannontech.clientutils.CTILogger.info("SUMMARY TAB");
+			getGraph().setViewType(TrendModelType.SUMMARY_VIEW);
+			
+			if( getTreeViewPanel().getSelectedNode().getParent() == null)
+				getSummaryEditorPane().setText("<CENTER>Please Select a Trend from the list");
+			else
+			{
+				StringBuffer buf = new StringBuffer();
+				getGraph().update();
+				buf.append( buildHTMLBuffer( new PeakHtml()));
+				buf.append( buildHTMLBuffer(new UsageHtml()));
+				getSummaryEditorPane().setText(buf.toString());
+				getSummaryEditorPane().setCaretPosition(0);
+				getGraph().setHtmlString(buf);
+			}
 		}
-		finally
-		{
-			this.setCursor( savedCursor );
-		}	
+	}
+	catch( Exception e)
+	{
+		e.printStackTrace();
+	}
+	finally
+	{
+		this.setCursor( savedCursor );
 	}	
 }
 /**
