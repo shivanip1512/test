@@ -69,28 +69,26 @@ function changeProgram(radioBtn, index) {
 	setSignUpChanged();
 }
 
-function setNotEnrolled(userAction) {
-	if (userAction) {
-		var categories = document.getElementsByName("AppCat");
-		for (catIdx = 0; catIdx < categories.length; catIdx++) {
-			if (categories[catIdx].checked) {
-				categories[catIdx].checked = false;
-				changeCategory(categories[catIdx], catIdx);
-			}
+function setNotEnrolled() {
+	var categories = document.getElementsByName("AppCat");
+	for (catIdx = 0; catIdx < categories.length; catIdx++) {
+		if (categories[catIdx].checked) {
+			categories[catIdx].checked = false;
+			changeCategory(categories[catIdx], catIdx);
 		}
 	}
 	document.getElementById("NotEnrolled").checked = true;
 }
 
 function resendNotEnrolled(form) {
-	setNotEnrolled(true);
+	setNotEnrolled();
 	form.NotEnrolled.value = "Resend";
 	form.submit();
 }
 
 function confirmSubmit(form) {
 	if (form.NotEnrolled != null && form.NotEnrolled.checked)
-		form.NeedMoreInfo.value = "false";
+		form.elements["<%= ServletUtils.NEED_MORE_INFORMATION %>"].value = "false";
 <% if (request.getParameter("Wizard") == null) { %>
 	//if (!signUpChanged) return false;
 	return confirm('Are you sure you would like to modify these program options?');
@@ -309,7 +307,7 @@ function confirmCancel() {
                 <tr> 
                   <td width="15%">&nbsp;</td>
                   <td width="3%"> 
-                    <input type="checkbox" id="NotEnrolled" name="NotEnrolled" value="true" onclick="setNotEnrolled(true)"
+                    <input type="checkbox" id="NotEnrolled" name="NotEnrolled" value="true" onclick="setNotEnrolled()"
 								<% if (numEnrolledProg == 0) { %>checked<% } %>>
                   <td>
                     <table width="100%" border="0" cellspacing="0" cellpadding="1">

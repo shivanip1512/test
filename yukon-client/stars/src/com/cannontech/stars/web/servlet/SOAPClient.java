@@ -232,6 +232,9 @@ public class SOAPClient extends HttpServlet {
 		else if (action.equalsIgnoreCase("ProgramSignUp")) {
 			clientAction = new ProgramSignUpAction();
 			
+			String needMoreInfoStr = req.getParameter( ServletUtils.NEED_MORE_INFORMATION );
+			boolean needMoreInfo = needMoreInfoStr != null && needMoreInfoStr.equalsIgnoreCase("true");
+			
 			if (req.getParameter("Wizard") != null) {
 				SOAPMessage msg = clientAction.build( req, session );
 				if (msg == null) {
@@ -242,7 +245,7 @@ public class SOAPClient extends HttpServlet {
 				MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
 				actions.addAction( clientAction, msg );
 				
-				if (req.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null) {
+				if (needMoreInfo) {
 					resp.sendRedirect( req.getParameter(ServletUtils.ATT_REDIRECT2) + "?Wizard=true" );
 					return;
 				}
@@ -252,7 +255,7 @@ public class SOAPClient extends HttpServlet {
 					clientAction = actions;
 				}
 			}
-			else if (req.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null) {
+			else if (needMoreInfo) {
 				SOAPMessage msg = clientAction.build( req, session );
 				if (msg == null) {
 					resp.sendRedirect( errorURL );
@@ -336,7 +339,7 @@ public class SOAPClient extends HttpServlet {
 			MultiAction actions = new MultiAction();
 			actions.addAction( clientAction, msg );
         	
-			if (req.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null) {
+			if (req.getParameter(ServletUtils.NEED_MORE_INFORMATION) != null) {
 				session.setAttribute( ServletUtils.ATT_MULTI_ACTIONS, actions );
 				resp.sendRedirect( req.getParameter(ServletUtils.ATT_REDIRECT2) );
 				return;
