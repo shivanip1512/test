@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/05/08 14:28:06 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/05/17 18:47:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -176,6 +176,7 @@ using namespace std;
 
 ULONG TimeSyncRate;
 
+void PurgePortQueues();
 void DisplayTraceList( CtiPort *Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
 void LoadPorterGlobals(void);
 INT  RefreshPorterRTDB(void *ptr = NULL);
@@ -888,6 +889,14 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
                     break;
                 }
+            case 0x70:              // alt-p
+                {
+                    /* DUMP the queues */
+
+                    PurgePortQueues();
+
+                    break;
+                }
             case 0x71:              // alt-q
                 {
                     RWMutexLock::LockGuard  guard(coutMux);
@@ -898,8 +907,8 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                         RWRecursiveLock<RWMutexLock>::LockGuard  port_guard(PortManager.getMux());        // Protect our iteration!
                         RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
 
-                        CtiRTDB<CtiPort>::CtiRTDBIterator     itr_prt(PortManager.getMap());
-                        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(DeviceManager.getMap());
+                        CtiRTDB<CtiPort>::CtiRTDBIterator itr_prt(PortManager.getMap());
+                        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(DeviceManager.getMap());
 
                         for(; ++itr_prt ;)
                         {
@@ -914,7 +923,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << "Port: " << setw(2) << Port->getPortID() << " / " << Port->getName() << " Port Queue Entries:  " << QueEntCnt << endl;
+                                    dout << RWTime()<< "Port: " << setw(2) << Port->getPortID() << " / " << Port->getName() << " Port Queue Entries:  " << QueEntCnt << endl;
                                 }
 
                                 itr_dev.reset(DeviceManager.getMap());
@@ -1564,6 +1573,18 @@ void LoadPorterGlobals(void)
     }
 
 
+    if(!(Temp = gConfigParms.getValueAsString("PORTER_IGNORE_TCU5000_QUEUEBUSY")).isNull())
+    {
+        Temp.toLower();
+
+        if( Temp == "true" || Temp == "yes")
+        {
+            gIgnoreTCU5000QueFull = true;
+        }
+    }
+
+
+
     if(DebugLevel & 0x0001)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1609,3 +1630,30 @@ void DisplayTraceList( CtiPort *Port, RWTPtrSlist< CtiMessage > &traceList, bool
         traceList.clearAndDestroy();
     }
 }
+
+void PurgePortQueues()
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  port_guard(PortManager.getMux());        // Protect our iteration!
+
+    CtiRTDB<CtiPort>::CtiRTDBIterator     itr_prt(PortManager.getMap());
+    for(; ++itr_prt ;)
+    {
+        CtiPort *Port = itr_prt.value();
+
+        if(!Port->isInhibited())
+        {
+            ULONG QueEntCnt = 0L;
+            /* Print out the port queue information */
+            QueryQueue (*QueueHandle(Port->getPortID()), &QueEntCnt);
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Port: " << setw(2) << Port->getPortID() << " / " << Port->getName() << " PURGING " << QueEntCnt << " port queue entries" << endl;
+            }
+
+            PurgeQueue (*QueueHandle(Port->getPortID()));
+        }
+    }
+}
+
+
