@@ -128,6 +128,8 @@ public class YukonUser extends DBPersistent
 			while( rset.next() )
 			{
 				newID = rset.getInt("UserID") + 1;
+				if( newID < 1 )
+					newID = 1;
 				break;
 			}
 		}

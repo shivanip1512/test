@@ -62,6 +62,8 @@ public class YukonUserRole extends DBPersistent implements IDefinedYukonRole
 			while( rset.next() )
 			{
 				newID = rset.getInt("UserRoleID") + 1;
+				if( newID < 1 )
+					newID = 1;
 				break;
 			}
 		}

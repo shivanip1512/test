@@ -128,6 +128,8 @@ public class YukonGroup extends DBPersistent
 			while( rset.next() )
 			{
 				newID = rset.getInt("GroupID") + 1;
+				if( newID < 1 )
+					newID = 1;
 				break;
 			}
 		}

@@ -123,6 +123,8 @@ public class YukonGroupRole extends DBPersistent implements IDefinedYukonRole
 			while( rset.next() )
 			{
 				newID = rset.getInt("GroupRoleID") + 1;
+				if (newID < 1 )
+					newID = 1;
 				break;
 			}
 		}
