@@ -37,6 +37,8 @@ public void addPartial() throws java.sql.SQLException {
  */
 public void delete() throws java.sql.SQLException 
 {
+	delete("DynamicLMControlHistory", "PAObjectID", getDevice().getDeviceID());
+	
 	delete("DynamicLMGroup", "DeviceID", getDevice().getDeviceID());
 
 	delete(
