@@ -54,8 +54,9 @@ public class ServletUtil {
 	public static final String PREVFIVEDAYS = "Prev 5 Days";
 	public static final String PREVSEVENDAYS= "Prev 7 Days";
 	public static final String PREVONEWEEK= "Prev 1 Week";
+    public static final String PREVTHIRTYDAYS= "Prev 30 Days";
 
-	public static String[] validPeriods =
+	private static String[] validPeriods =
 	{
 		ONEDAY,
 		THREEDAYS,
@@ -69,7 +70,8 @@ public class ServletUtil {
 		PREVTHREEDAYS,
 		PREVFIVEDAYS,
 		PREVSEVENDAYS,
-		PREVONEWEEK
+		PREVONEWEEK,
+        PREVTHIRTYDAYS
 		
 	};
 /*
@@ -106,7 +108,7 @@ public class ServletUtil {
 		PREVTWODAYS,
 		PREVTHREEDAYS,
 		//PREVFIVEDAYS,
-		PREVSEVENDAYS,
+		PREVSEVENDAYS
 	};
 
 		
@@ -610,9 +612,10 @@ public static Date getEndingDateOfInterval(Date startingDate, String period) {
 		period.equalsIgnoreCase(PREVTHREEDAYS) 	||
 		period.equalsIgnoreCase(PREVFIVEDAYS) 	||
 		period.equalsIgnoreCase(PREVSEVENDAYS) 	||
-		period.equalsIgnoreCase(PREVONEWEEK) )		
+		period.equalsIgnoreCase(PREVONEWEEK)    ||
+        period.equalsIgnoreCase(PREVTHIRTYDAYS) )
 	{
-		numDays = 1;	
+		numDays = 1;
 	}
 	else
 	if( period.equalsIgnoreCase(YESTERDAY) )
@@ -730,9 +733,13 @@ public static int getIntValue(String stringValue)
 	else
 	if( stringValue.equalsIgnoreCase(PREVFIVEDAYS) )
 		return -4;
-	else 
-	if( stringValue.equalsIgnoreCase(PREVSEVENDAYS) )
+	else
+	if( stringValue.equalsIgnoreCase(PREVSEVENDAYS)
+        || stringValue.equalsIgnoreCase(PREVONEWEEK) )
 		return -6;
+    else
+    if( stringValue.equalsIgnoreCase(PREVTHIRTYDAYS) )
+        return -29;
 	else
 		return 1;	//default...for lack of better int values.
 }
@@ -752,6 +759,9 @@ public static String getPeriodFromDates(Date start, Date end) {
 	int numDays = (int) Math.round(((double) (endTime-startTime)) / (double) 86400000 );
 
 	//figure out the closest/most reasonable period we have to numDays
+    if( numDays <= -29 )
+        return PREVTHIRTYDAYS;
+    else
 	if( numDays <= -6 )
 		return PREVSEVENDAYS;
 	else
@@ -821,6 +831,11 @@ public static java.util.Date getStartingDateOfInterval(Date startingDate, String
 	{
 		numDays = -6;
 	}
+    else
+    if( period.equalsIgnoreCase(PREVTHIRTYDAYS) )
+    {
+        numDays = -29;
+    }
 
 	else	//Don't change the starting date
 		return startingDate;
