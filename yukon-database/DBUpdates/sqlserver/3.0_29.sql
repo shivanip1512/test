@@ -423,6 +423,9 @@ insert into YukonListEntry values (1814,1031,0,'Oil',0);
 insert into YukonListEntry values (2000,0,0,'Customer List Entry Base',0);
 go
 
+alter table YukonImage alter column ImageValue image null;
+go
+
 
 
 
