@@ -8,6 +8,8 @@ import java.util.GregorianCalendar;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * The junk drawer for servlets.
  * Creation date: (3/28/00 11:19:23 AM)
@@ -939,7 +941,23 @@ public static java.util.Date roundToMinute(java.util.Date toRound) {
 
 	return cal.getTime();
 }
-    
+
+	/**
+	 * Used to return NULL for a param if it is not found OR if it is not set
+	 * @param req_
+	 * @param name_
+	 * @return
+	 */
+	public synchronized static String getParm( HttpServletRequest req_, String name_ )
+	{
+		String s = req_.getParameter(name_);
+			
+		return 
+			( s == null 
+			? null : 
+				(s.length() <= 0 ? null : s) );		
+	}
+
     /**
      * Convert a string into the capitalized format.
      * @return String
