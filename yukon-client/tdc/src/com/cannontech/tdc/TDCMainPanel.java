@@ -6,6 +6,7 @@ package com.cannontech.tdc;
  * @author: 
  */
 import java.awt.Cursor;
+import java.util.Date;
 import java.util.Vector;
 
 import javax.swing.JPanel;
@@ -59,7 +60,7 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 	
 	
 	//Always add 1 milleseconds less than 1 day (86399999L) to see that days events
-	private java.util.Date previousDate = new java.util.Date();  // default today
+	private Date previousDate = new Date();  // default today
 	private boolean refreshPressed = false;
 	private boolean initOnce = true;
 	private javax.swing.JOptionPane closeBox = null;
@@ -706,7 +707,7 @@ public void executeDateChange( java.util.Date newDate )
 	//only accepet the change if we are looking at the event viewer
 	//  and there is at least a 1 minute difference between the new date and the old date
 	if( getTableDataModel().getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER 
-		 && (int)(newDate.getTime() / 600000) != (int)(previousDate.getTime() / 600000) )
+		 && (int)(newDate.getTime() / 600000) != (int)(getPreviousDate().getTime() / 600000) )
 	{
 		java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
 		Cursor original = owner.getCursor();
@@ -2306,8 +2307,8 @@ protected void initSystemDisplays()
 	{
 		// add in todays data
 		java.util.Date newDate = new java.util.Date();
-      if( previousDate != null )
-         newDate = previousDate;
+      if( getPreviousDate() != null )
+         newDate = getPreviousDate();
 
 		getReadOnlyDisplayData( newDate );
 	}
@@ -2895,14 +2896,14 @@ public void jRadioButtonPage_ActionPerformed(java.awt.event.ActionEvent actionEv
 			if( getCurrentDisplayNumber() == Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER 
 				 || getTableDataModel().getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
 				totalPages = getTableDataModel().createRowsForHistoricalView( 
-								new java.util.Date(previousDate.getTime() + 86399999),
+								new java.util.Date(getPreviousDate().getTime() + 86399999),
 								pageNumber );
 			else if( getCurrentDisplayNumber() == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER )
 				totalPages = getTableDataModel().createRowsForRawPointHistoryView( 
-								new java.util.Date(previousDate.getTime() + 86399999),
+								new java.util.Date(getPreviousDate().getTime() + 86399999),
 								pageNumber );
 			
-			setDisplayTitle(getCurrentDisplay().getName(), previousDate );
+			setDisplayTitle(getCurrentDisplay().getName(), getPreviousDate() );
 		}
 	}
 	catch( Exception e)
@@ -3622,7 +3623,7 @@ private void showCalendarDialog()
 	}
 	else
 	{
-		newDate = previousDate;
+		newDate = getPreviousDate();
 		refreshPressed = false;
 	}
 
@@ -3822,6 +3823,12 @@ public void writeAllDisplayColumnData()
 	}
 	
 }
+
+public Date getPreviousDate() {
+	return previousDate;
+}
+
+
 /**
  * 
  */

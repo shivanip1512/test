@@ -5,10 +5,15 @@ package com.cannontech.tdc;
  * @author: 
  */
 import com.cannontech.clientutils.tags.TagUtils;
+import com.cannontech.common.gui.panel.ManualChangeJPanel;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.tdc.spawn.SpawnTDCMainFrameEvent;
 import com.cannontech.tdc.bookmark.BookMarkBase;
 import javax.swing.UIManager;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+
 import com.cannontech.tdc.fonteditor.*;
 import com.cannontech.clientutils.CommonUtils;
 
@@ -20,11 +25,15 @@ import com.klg.jclass.page.awt.*;
 import com.klg.jclass.page.*;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.createdisplay.ColumnEditorDialog;
+import com.cannontech.tdc.utils.DateTimeUserQuery;
 import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Observer;
+import java.util.Vector;
+
 import com.cannontech.tdc.exportdata.ExportCreatedDisplay;
 import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.tdc.commandevents.ClearAlarm;
@@ -1703,8 +1712,6 @@ private javax.swing.JMenu getJMenuFile() {
 			// user code begin {1}
 			
 			
-			//removed since not implemented after 2 years!
-			ivjJMenuFile.remove( getJMenuItemPrint() );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -2140,7 +2147,7 @@ private javax.swing.JMenuItem getJMenuItemPrint() {
 			ivjJMenuItemPrint = new javax.swing.JMenuItem();
 			ivjJMenuItemPrint.setName("JMenuItemPrint");
 			ivjJMenuItemPrint.setMnemonic('i');
-			ivjJMenuItemPrint.setText("Print...");
+			ivjJMenuItemPrint.setText("Print Date Range...");
 			ivjJMenuItemPrint.setBackground(java.awt.SystemColor.control);
 			ivjJMenuItemPrint.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_I, java.awt.Event.CTRL_MASK));
 			ivjJMenuItemPrint.setForeground(java.awt.SystemColor.controlText);
@@ -3337,25 +3344,82 @@ public void jMenuItemMakeCopy_ActionPerformed(java.awt.event.ActionEvent actionE
  */
 public void jMenuItemPrint_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
+	//print the gui component?? Nah, dont change this now!!
+	//new JTablePrinter( getMainPanel().getDisplayTable() ).printIt();
 
-	closeBox.showMessageDialog(this, "This menu Option is not supported as of 2/18/2000, Use the Print Preview Menu Item",
-									"Message Box", closeBox.WARNING_MESSAGE);
-
-	return;
-	
-/*	if( getMainPanel().getJComboCurrentDisplay().getItemCount() <= 0 ||
+	if( getMainPanel().getJComboCurrentDisplay().getItemCount() <= 0 ||
 		getMainPanel().getDisplayTable().getColumnCount() <= 0 )
 		return;
 		
 	// printing does not work on JDK 1.2
-	if( System.getProperty("java.version").equalsIgnoreCase("1.2" ) || 
-		 System.getProperty("java.version").equalsIgnoreCase("1.2.0" ) )
+	if( System.getProperty("java.version").equalsIgnoreCase("1.2") || 
+		 System.getProperty("java.version").equalsIgnoreCase("1.2.0") ||
+		 System.getProperty("java.version").equalsIgnoreCase("1.2.1") )
+		 
 	{
 		closeBox.showMessageDialog(this, "Printing is not supported for JDK 1.2",
 										"Message Box", closeBox.WARNING_MESSAGE);
 		return;
-	}
+ 	}
+	 
+	 
 	
+	DateTimeUserQuery dq = new DateTimeUserQuery( 
+					this, 
+					this );
+				 
+	if( !dq.queryUser(getMainPanel().getPreviousDate(), getMainPanel().getPreviousDate()) )
+		return;
+
+
+
+	//copy all the valid row references into the temp vector 
+	final Vector rows = new Vector(10);
+	for( int i = 0; i < getMainPanel().getDisplayTable().getModel().getRowCount(); i++ ) {
+		Vector v = new Vector(10);
+
+		boolean validDate = false;
+		for( int j = 0; j < getMainPanel().getDisplayTable().getModel().getColumnCount(); j++ ) {
+			
+			Object val = getMainPanel().getDisplayTable().getModel().getValueAt( i ,j );
+			if( val instanceof Date
+				 && ((Date)val).before(dq.getStopDate())
+				 && ((Date)val).after(dq.getStartDate()) )
+			{
+				validDate = true;
+			}
+			
+			v.add( val );
+		}
+		
+		if( validDate )
+			rows.add( v );
+	}
+			
+
+
+	//did someone say "hack it"??!!
+	TableModel tempModel = new AbstractTableModel() {
+
+        public int getColumnCount() { 
+        		return getMainPanel().getDisplayTable().getModel().getColumnCount(); }
+        		
+        public int getRowCount() { 
+        		return rows.size(); 
+        }
+
+		  //special care here
+        public Object getValueAt(int row, int col) {
+        	
+        		Vector v = (Vector)rows.get( row );
+       		return v.get( col );
+		  }
+
+        public String getColumnName(int column) {
+         	return getMainPanel().getDisplayTable().getModel().getColumnName(column);}
+	};
+	
+
 	Cursor original = getCursor();
 	setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 	
@@ -3366,7 +3430,7 @@ public void jMenuItemPrint_ActionPerformed(java.awt.event.ActionEvent actionEven
 
 	try
 	{
-		printer = new JCAWTPrinter();
+		printer = new JCAWTPrinter(false);
 	}
 	catch (JCAWTPrinter.PrinterJobCancelledException e) 
 	{
@@ -3383,28 +3447,43 @@ public void jMenuItemPrint_ActionPerformed(java.awt.event.ActionEvent actionEven
 
 	table = new JCPageTable( document, columnCount );
 
-	JCPageTable table_header = table.createHeaders();		
+	JCPageTable table_header = table.createHeaders();
 	table.fitToFrame(flow.getCurrentFrame(),
 					 flow.getCurrentTextStyle());
-	
-	convertTable.populateTable( table, getMainPanel().getDisplayTable().getModel() );
 
-	JCTextStyle textStyle = new JCTextStyle("TextStyle");
+	table.setRowColumnDominance( JCPageTable.COLUMN_DOMINANCE );
 
-	flow.setCurrentTextStyle( textStyle );
-	
-	oldFont = textStyle.getFont();
+	convertTable.populateTable( 
+				table,
+				tempModel );
+
+
+
+
+	flow.setCurrentTextStyle( new JCTextStyle("TextStyle") );	
+	oldFont = flow.getCurrentTextStyle().getFont();
+
 		
-	textStyle.setFont( new java.awt.Font(oldFont.getName(), java.awt.Font.PLAIN, 21 ) );
+	flow.getCurrentTextStyle().setFont( new java.awt.Font(oldFont.getName(), java.awt.Font.PLAIN, 21 ) );
 	flow.print( getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString() );		
 	flow.newLine();
-	textStyle.setFont( oldFont );
-	flow.print( getMainPanel().getJLabelDate().getText() + " " +
+	flow.getCurrentTextStyle().setFont( oldFont );
+	flow.print( "Date Printed : " + getMainPanel().getJLabelDate().getText() + " " +
 					getMainPanel().getJLabelTime().getText());
 
-	textStyle.setFont( oldFont );
-	textStyle.setAlignment( JCTextStyle.ALIGNMENT_LEFT );	
+	//Print the range on the paper
 	flow.newLine();
+	flow.print( "Date Range : " + 
+		new ModifiedDate(dq.getStartDate().getTime()).toString() + "  -  " + 
+		new ModifiedDate(dq.getStopDate().getTime()).toString() );
+
+	
+	flow.getCurrentTextStyle().setFont( oldFont );
+	flow.getCurrentTextStyle().setAlignment( JCTextStyle.ALIGNMENT_LEFT );	
+	flow.newLine();
+
+
+	flow.getCurrentTextStyle().setFont( new java.awt.Font(oldFont.getName(), java.awt.Font.PLAIN, 12) );
 	flow.print( table );
 
 
@@ -3412,10 +3491,9 @@ public void jMenuItemPrint_ActionPerformed(java.awt.event.ActionEvent actionEven
 	setCursor( original );
 	
    
-   this.repaint();
+   repaint();
 
 	return;
-*/
 }
 
 
@@ -3442,16 +3520,15 @@ public void jMenuItemPrintPreview_ActionPerformed(java.awt.event.ActionEvent act
 		JCPrinter printer = new JCAWTScreenPrinter();
 		JCDocument document = new JCDocument(printer, JCDocument.BLANK_8p5X11);
 		JCFlow flow = new JCFlow(document); // instantiate a flow object on the document
-		JCTextStyle textStyle = new JCTextStyle("TextStyle");
-		flow.setCurrentTextStyle( textStyle );
+		flow.setCurrentTextStyle( new JCTextStyle("TextStyle") );
 
 		if( getMainPanel().isClientDisplay() )
 		{
-			printClientDisplay( textStyle, flow, document );			
+			printClientDisplay( flow, document );			
 		}
 		else
 		{
-			printDisplay( textStyle, flow, document );			
+			printDisplay( flow, document );
 		}
 
 		setCursor( original );
@@ -3858,6 +3935,10 @@ public void mainPanel_JComboCurrentDisplayAction_actionPerformed(java.util.Event
 		refreshTDCClient();
 	}
 		
+	//JMenuItems disabling needs to go here
+	getJMenuItemPrint().setEnabled(
+		(source.getTableDataModel().getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER) );
+		
 	return;
 }
 
@@ -3881,7 +3962,7 @@ public void otherTDCMainFrameActionPerformed(SpawnTDCMainFrameEvent e)
 }
 
 
-private void printClientDisplay( JCTextStyle textStyle, JCFlow flow, JCDocument document ) 
+private void printClientDisplay( JCFlow flow, JCDocument document ) 
 {
 	if( getMainPanel().getCurrentSpecailChild().getJTables().length <= 0 )
 		return;
@@ -3892,10 +3973,10 @@ private void printClientDisplay( JCTextStyle textStyle, JCFlow flow, JCDocument 
 		JCPageTableFromJTable convertTable = new JCPageTableFromJTable();
 		flow.print( getMainPanel().getCurrentSpecailChild().getJTables()[i].getName() );
 		convertTable.populateTable( table, getMainPanel().getCurrentSpecailChild().getJTables()[i].getModel() );
-		java.awt.Font oldFont = textStyle.getFont();
+		java.awt.Font oldFont = flow.getCurrentTextStyle().getFont();
 		
 		// Set the font
-		textStyle.setFont( new java.awt.Font(oldFont.getName(), java.awt.Font.PLAIN, 21 ) );
+		flow.getCurrentTextStyle().setFont( new java.awt.Font(oldFont.getName(), java.awt.Font.PLAIN, 21 ) );
 
 		table.fitToFrame(flow.getCurrentFrame(),
 						 flow.getCurrentTextStyle());
@@ -3904,12 +3985,12 @@ private void printClientDisplay( JCTextStyle textStyle, JCFlow flow, JCDocument 
 		
 			
 		flow.newLine();
-		textStyle.setFont( oldFont );
+		flow.getCurrentTextStyle().setFont( oldFont );
 		flow.print( getMainPanel().getJLabelDate().getText() + " " +
 					getMainPanel().getJLabelTime().getText());
 
-		textStyle.setFont( oldFont );
-		textStyle.setAlignment( JCTextStyle.ALIGNMENT_LEFT );	
+		flow.getCurrentTextStyle().setFont( oldFont );
+		flow.getCurrentTextStyle().setAlignment( JCTextStyle.ALIGNMENT_LEFT );	
 		flow.newLine();
 		flow.print( table );
 	}
@@ -3930,35 +4011,49 @@ private void printClientDisplay( JCTextStyle textStyle, JCFlow flow, JCDocument 
  */
 
 
-private void printDisplay( JCTextStyle textStyle, JCFlow flow, JCDocument document )
+private void printDisplay( JCFlow flow, JCDocument document )
 {
 	if( getMainPanel().getDisplayTable().getColumnCount() <= 0 )
 		return;
 
-	JCPageTable table = new JCPageTable( document, getMainPanel().getDisplayTable().getColumnCount() );
 	JCPageTableFromJTable convertTable = new JCPageTableFromJTable();
-	flow.print( getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString() );
-	convertTable.populateTable( table, getMainPanel().getDisplayTable().getModel() );
-	java.awt.Font oldFont = textStyle.getFont();
+	java.awt.Font oldFont = flow.getCurrentTextStyle().getFont();
+
+
+	JCPageTable table = new JCPageTable( 
+				document, 
+				getMainPanel().getDisplayTable().getColumnCount() );
+
+
 	
 	// Set the font
-	textStyle.setFont( new java.awt.Font(oldFont.getName(), java.awt.Font.PLAIN, 21 ) );
+	flow.getCurrentTextStyle().setFont( new java.awt.Font(oldFont.getName(), java.awt.Font.PLAIN, 21 ) );
+	flow.print( getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString() );
 
-	table.fitToFrame(flow.getCurrentFrame(),
-					 flow.getCurrentTextStyle());
+	convertTable.populateTable( 
+			table, 
+			getMainPanel().getDisplayTable().getModel() );
+	
+
+	table.fitToFrame(
+				flow.getCurrentFrame(),
+				flow.getCurrentTextStyle() );
+
 	table.setRowColumnDominance( JCPageTable.COLUMN_DOMINANCE );
 
 	
 		
 	flow.newLine();
-	textStyle.setFont( oldFont );
+	flow.getCurrentTextStyle().setFont( oldFont );
 	flow.print( getMainPanel().getJLabelDate().getText() + " " +
 				getMainPanel().getJLabelTime().getText());
 
-	textStyle.setFont( oldFont );
-	textStyle.setAlignment( JCTextStyle.ALIGNMENT_LEFT );	
+	flow.getCurrentTextStyle().setFont( oldFont );
+	flow.getCurrentTextStyle().setAlignment( JCTextStyle.ALIGNMENT_LEFT );	
 	flow.newLine();
+	
 	flow.print( table );
+
 
    JCAWTPreviewer previewer = new JCAWTPreviewer(
 							"Print Preview", 
@@ -3966,7 +4061,7 @@ private void printDisplay( JCTextStyle textStyle, JCFlow flow, JCDocument docume
 							document );
    		
 	previewer.setLocationRelativeTo( this );
-	previewer.setSize( (int)(this.getWidth() * .60), this.getHeight() );
+	previewer.setSize( (int)(this.getWidth() * .75), this.getHeight() );
 	previewer.setVisible(true);
 	
 }
