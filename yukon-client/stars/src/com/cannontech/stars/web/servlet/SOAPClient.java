@@ -24,7 +24,6 @@ import com.cannontech.stars.web.action.DeleteCustAccountAction;
 import com.cannontech.stars.web.action.DeleteLMHardwareAction;
 import com.cannontech.stars.web.action.GetCustAccountAction;
 import com.cannontech.stars.web.action.GetEnergyCompanySettingsAction;
-import com.cannontech.stars.web.action.GetInterviewQuestionsAction;
 import com.cannontech.stars.web.action.GetLMCtrlHistAction;
 import com.cannontech.stars.web.action.GetNextCallNumberAction;
 import com.cannontech.stars.web.action.GetNextOrderNumberAction;
@@ -50,7 +49,8 @@ import com.cannontech.stars.web.action.UpdateServiceRequestAction;
 import com.cannontech.stars.web.action.UpdateThermostatManualOptionAction;
 import com.cannontech.stars.web.action.UpdateThermostatScheduleAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
-import com.cannontech.stars.xml.serialize.StarsGetExitInterviewQuestionsResponse;
+import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
+import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.util.SOAPMessenger;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -191,7 +191,10 @@ public class SOAPClient extends HttpServlet {
         }
 		else if (action.equalsIgnoreCase("NewCustAccount")) {
 			clientAction = new NewCustAccountAction();
-			destURL = "/operator/Consumer/Update.jsp";
+			if (Boolean.valueOf( req.getParameter("Wizard") ).booleanValue())
+				destURL = "/operator/Consumer/Programs.jsp?Wizard=true";
+			else
+				destURL = "/operator/Consumer/Update.jsp";
 			errorURL = "/operator/Consumer/New.jsp";
 		}
 		else if (action.equalsIgnoreCase("ProgramSignUp")) {
@@ -202,7 +205,10 @@ public class SOAPClient extends HttpServlet {
 	            actions.addAction( new UpdateControlNotificationAction(), req, session );
 	            
 			clientAction = (ActionBase) actions;
-        	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
+			if (Boolean.valueOf( req.getParameter("Wizard") ).booleanValue())
+				destURL = "/operator/Consumer/CreateHardware.jsp?Wizard=true";
+			else
+	        	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
         	errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
 		}
         else if (action.equalsIgnoreCase("SearchCustAccount")) {
@@ -233,46 +239,36 @@ public class SOAPClient extends HttpServlet {
         else if (action.equalsIgnoreCase("OptOutProgram")) {
         	MultiAction actions = new MultiAction();
         	actions.addAction( new ProgramOptOutAction(), req, session );
-        	session.setAttribute( ServletUtils.ATT_OVER_PAGE_ACTION, actions );
-        	
-        	//clientAction = new ProgramOptOutAction();
             destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
             errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         	
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-            StarsGetExitInterviewQuestionsResponse questions = null;
-           	if (user != null)
-            	questions = (StarsGetExitInterviewQuestionsResponse) user.getAttribute( ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS );
+            StarsExitInterviewQuestions questions = null;
+           	if (user != null) {
+				StarsGetEnergyCompanySettingsResponse ecSettings = (StarsGetEnergyCompanySettingsResponse)
+						user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+				if (ecSettings != null)
+            		questions = ecSettings.getStarsExitInterviewQuestions();
+           	}
             	
-            if (questions != null) {
-            	if (questions.getStarsExitInterviewQuestionCount() == 0) {
-            		actions.addAction( new SendInterviewAnswersAction(), req, session );
-            		clientAction = actions;
-            		destURL = req.getParameter(ServletUtils.ATT_REDIRECT2);
-            	}
-            	else {
-	            	resp.sendRedirect( destURL );
-	            	return;
-            	}
+            if (questions != null && questions.getStarsExitInterviewQuestionCount() > 0) {
+	        	session.setAttribute( ServletUtils.ATT_OVER_PAGE_ACTION, actions );
+            	resp.sendRedirect( destURL );
+            	return;
             }
-            else {
-	        	clientAction = new GetInterviewQuestionsAction();
-	        	session.setAttribute( ServletUtils.ATT_REFERRER, errorURL );
-	        	session.setAttribute( ServletUtils.ATT_REDIRECT2, req.getParameter(ServletUtils.ATT_REDIRECT2) );
+            else {	// if no exit interview questions, then skip the next page and send out the command immediately
+	    		actions.addAction( new SendInterviewAnswersAction(), req, session );
+	    		clientAction = actions;
+	    		destURL = req.getParameter(ServletUtils.ATT_REDIRECT2);
             }
         }
         else if (action.equalsIgnoreCase("SendExitAnswers")) {
         	MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_OVER_PAGE_ACTION );
         	session.removeAttribute( ServletUtils.ATT_OVER_PAGE_ACTION );
         	actions.addAction( new SendInterviewAnswersAction(), req, session );
-        	clientAction = actions;
         	
+        	clientAction = actions;
             destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-            errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
-        }
-        else if (action.equalsIgnoreCase("GetExitQuestions")) {
-        	clientAction = new GetInterviewQuestionsAction();
-        	destURL = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
             errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         }
         else if (action.equalsIgnoreCase("ReenableProgram")) {
@@ -338,7 +334,10 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("CreateLMHardware")) {
         	clientAction = new CreateLMHardwareAction();
-        	destURL = "/operator/Consumer/Inventory.jsp";
+        	if (req.getParameter("Wizard") != null)
+        		destURL = "/operator/Consumer/Update.jsp";
+        	else
+	        	destURL = "/operator/Consumer/Inventory.jsp";
         	errorURL = "/operator/Consumer/CreateHardware.jsp";
         }
         else if (action.equalsIgnoreCase("UpdateLMHardware")) {

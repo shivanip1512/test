@@ -19,6 +19,7 @@ import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSendOddsForControl;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
@@ -43,13 +44,14 @@ public class SendOddsForControlAction implements ActionBase {
         	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         	if (user == null) return null;
 			
-			StarsEnrollmentPrograms categories = (StarsEnrollmentPrograms)
-					user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
-        	
+			StarsGetEnergyCompanySettingsResponse ecSettings = (StarsGetEnergyCompanySettingsResponse)
+					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+			StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
+			
         	String[] progIDs = req.getParameterValues( "ProgID" );
         	String[] controlOdds = req.getParameterValues( "ControlOdds" );
-        	
         	StarsSendOddsForControl sendCtrlOdds = new StarsSendOddsForControl();
+        	
         	if (progIDs != null) {
         		for (int i = 0; i < progIDs.length; i++) {
         			int progID = Integer.parseInt( progIDs[i] );

@@ -214,6 +214,39 @@ public class StarsEnrLMProgramDescriptor extends org.exolab.castor.xml.util.XMLC
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
+        //-- _addressingGroupList
+        desc = new XMLFieldDescriptorImpl(AddressingGroup.class, "_addressingGroupList", "AddressingGroup", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsEnrLMProgram target = (StarsEnrLMProgram) object;
+                return target.getAddressingGroup();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsEnrLMProgram target = (StarsEnrLMProgram) object;
+                    target.addAddressingGroup( (AddressingGroup) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new AddressingGroup();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(true);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _addressingGroupList
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(0);
+        desc.setValidator(fieldValidator);
+        
     } //-- com.cannontech.stars.xml.serialize.StarsEnrLMProgramDescriptor()
 
 

@@ -1036,10 +1036,6 @@ public class StarsLiteFactory {
 			StarsThermostatSettings starsThermSettings = new StarsThermostatSettings();
 			setStarsThermostatSettings( starsThermSettings, liteAcctInfo.getThermostatSettings(), energyCompanyID );
 			starsAcctInfo.setStarsThermostatSettings( starsThermSettings );
-			
-			StarsDefaultThermostatSettings starsDftThermSettings = new StarsDefaultThermostatSettings();
-			setStarsThermostatSettings( starsDftThermSettings, energyCompany.getDefaultThermostatSettings(), energyCompanyID );
-			starsAcctInfo.setStarsDefaultThermostatSettings( starsDftThermSettings );
 		}
 		
 		if (isOperator) {
@@ -1052,10 +1048,10 @@ public class StarsLiteFactory {
 				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(i);
 				StarsAppliance starsApp = (StarsAppliance) createStarsAppliance(liteApp, energyCompanyID);
 				
-				ArrayList list = (ArrayList) tmap.get( starsApp.getCategoryName() );
+				ArrayList list = (ArrayList) tmap.get( starsApp.getDescription() );
 				if (list == null) {
 					list = new ArrayList();
-					tmap.put( starsApp.getCategoryName(), list );
+					tmap.put( starsApp.getDescription(), list );
 				}
 				list.add( starsApp );
 			}
@@ -1427,6 +1423,14 @@ public class StarsLiteFactory {
 				starsProg.setStarsWebConfig( energyCompany.getStarsWebConfig(liteProg.getWebSettingsID()) );
 				starsProg.setChanceOfControlID( liteProg.getChanceOfControlID() );
 				
+				for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
+        			String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] );
+        			AddressingGroup group = new AddressingGroup();
+        			group.setEntryID( liteProg.getGroupIDs()[j] );
+        			group.setContent( groupName );
+        			starsProg.addAddressingGroup( group );
+				}
+				
 				starsAppCat.addStarsEnrLMProgram( starsProg );
 			}
 		}
@@ -1500,9 +1504,9 @@ public class StarsLiteFactory {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
         LiteApplianceCategory liteAppCat = energyCompany.getApplianceCategory( liteApp.getApplianceCategoryID() );
         if (liteAppCat != null)
-	        starsApp.setCategoryName( forceNotNull(liteAppCat.getDescription()) );
+	        starsApp.setDescription( forceNotNull(liteAppCat.getDescription()) );
 	    else
-	    	starsApp.setCategoryName( "(Unknown)" );
+	    	starsApp.setDescription( "(Unknown)" );
 	    
 	    if (liteApp instanceof LiteStarsAppAirConditioner) {
 	    	AirConditioner ac = new AirConditioner();

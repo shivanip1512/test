@@ -11,46 +11,37 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import org.exolab.castor.xml.*;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsControlNotification implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    private Email _email;
+public class AddressingGroup extends StarsCustListEntry 
+implements java.io.Serializable
+{
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsControlNotification() {
+    public AddressingGroup() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsControlNotification()
+    } //-- com.cannontech.stars.xml.serialize.AddressingGroup()
 
 
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-     * Returns the value of field 'email'.
-     * 
-     * @return the value of field 'email'.
-    **/
-    public Email getEmail()
-    {
-        return this._email;
-    } //-- Email getEmail() 
 
     /**
     **/
@@ -90,25 +81,15 @@ public class StarsControlNotification implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'email'.
-     * 
-     * @param email the value of field 'email'.
-    **/
-    public void setEmail(Email email)
-    {
-        this._email = email;
-    } //-- void setEmail(Email) 
-
-    /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsControlNotification unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.AddressingGroup unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsControlNotification) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsControlNotification.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsControlNotification unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.AddressingGroup) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.AddressingGroup.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.AddressingGroup unmarshal(java.io.Reader) 
 
     /**
     **/

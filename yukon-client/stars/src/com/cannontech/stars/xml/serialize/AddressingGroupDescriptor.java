@@ -11,16 +11,23 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import org.exolab.castor.mapping.AccessMode;
+import org.exolab.castor.mapping.ClassDescriptor;
+import org.exolab.castor.mapping.FieldDescriptor;
+import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.FieldValidator;
-import org.exolab.castor.xml.XMLFieldHandler;
+import org.exolab.castor.xml.TypeValidator;
+import org.exolab.castor.xml.XMLFieldDescriptor;
+import org.exolab.castor.xml.handlers.*;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
+import org.exolab.castor.xml.validators.*;
 
 /**
  * 
  * 
  * @version $Revision$ $Date$
 **/
-public class ChanceOfControlDescriptor extends StarsCustListEntryDescriptor {
+public class AddressingGroupDescriptor extends StarsCustListEntryDescriptor {
 
 
       //--------------------------/
@@ -40,10 +47,10 @@ public class ChanceOfControlDescriptor extends StarsCustListEntryDescriptor {
      //- Constructors -/
     //----------------/
 
-    public ChanceOfControlDescriptor() {
+    public AddressingGroupDescriptor() {
         super();
         setExtendsWithoutFlatten(new StarsCustListEntryDescriptor());
-        xmlName = "ChanceOfControl";
+        xmlName = "AddressingGroup";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -51,7 +58,7 @@ public class ChanceOfControlDescriptor extends StarsCustListEntryDescriptor {
         
         //-- initialize element descriptors
         
-    } //-- com.cannontech.stars.xml.serialize.ChanceOfControlDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.AddressingGroupDescriptor()
 
 
       //-----------/
@@ -85,7 +92,7 @@ public class ChanceOfControlDescriptor extends StarsCustListEntryDescriptor {
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.ChanceOfControl.class;
+        return com.cannontech.stars.xml.serialize.AddressingGroup.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

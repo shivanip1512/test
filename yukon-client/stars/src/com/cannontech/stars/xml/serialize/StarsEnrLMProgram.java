@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.Enumeration;
+import java.util.Vector;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -50,6 +52,8 @@ public class StarsEnrLMProgram implements java.io.Serializable {
 
     private StarsWebConfig _starsWebConfig;
 
+    private java.util.Vector _addressingGroupList;
+
 
       //----------------/
      //- Constructors -/
@@ -57,12 +61,36 @@ public class StarsEnrLMProgram implements java.io.Serializable {
 
     public StarsEnrLMProgram() {
         super();
+        _addressingGroupList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsEnrLMProgram()
 
 
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * 
+     * 
+     * @param vAddressingGroup
+    **/
+    public void addAddressingGroup(AddressingGroup vAddressingGroup)
+        throws java.lang.IndexOutOfBoundsException
+    {
+        _addressingGroupList.addElement(vAddressingGroup);
+    } //-- void addAddressingGroup(AddressingGroup) 
+
+    /**
+     * 
+     * 
+     * @param index
+     * @param vAddressingGroup
+    **/
+    public void addAddressingGroup(int index, AddressingGroup vAddressingGroup)
+        throws java.lang.IndexOutOfBoundsException
+    {
+        _addressingGroupList.insertElementAt(vAddressingGroup, index);
+    } //-- void addAddressingGroup(int, AddressingGroup) 
 
     /**
     **/
@@ -77,6 +105,48 @@ public class StarsEnrLMProgram implements java.io.Serializable {
     {
         this._has_programID= false;
     } //-- void deleteProgramID() 
+
+    /**
+    **/
+    public java.util.Enumeration enumerateAddressingGroup()
+    {
+        return _addressingGroupList.elements();
+    } //-- java.util.Enumeration enumerateAddressingGroup() 
+
+    /**
+     * 
+     * 
+     * @param index
+    **/
+    public AddressingGroup getAddressingGroup(int index)
+        throws java.lang.IndexOutOfBoundsException
+    {
+        //-- check bounds for index
+        if ((index < 0) || (index > _addressingGroupList.size())) {
+            throw new IndexOutOfBoundsException();
+        }
+        
+        return (AddressingGroup) _addressingGroupList.elementAt(index);
+    } //-- AddressingGroup getAddressingGroup(int) 
+
+    /**
+    **/
+    public AddressingGroup[] getAddressingGroup()
+    {
+        int size = _addressingGroupList.size();
+        AddressingGroup[] mArray = new AddressingGroup[size];
+        for (int index = 0; index < size; index++) {
+            mArray[index] = (AddressingGroup) _addressingGroupList.elementAt(index);
+        }
+        return mArray;
+    } //-- AddressingGroup[] getAddressingGroup() 
+
+    /**
+    **/
+    public int getAddressingGroupCount()
+    {
+        return _addressingGroupList.size();
+    } //-- int getAddressingGroupCount() 
 
     /**
      * Returns the value of field 'chanceOfControlID'.
@@ -168,6 +238,55 @@ public class StarsEnrLMProgram implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * 
+     * 
+     * @param index
+    **/
+    public AddressingGroup removeAddressingGroup(int index)
+    {
+        java.lang.Object obj = _addressingGroupList.elementAt(index);
+        _addressingGroupList.removeElementAt(index);
+        return (AddressingGroup) obj;
+    } //-- AddressingGroup removeAddressingGroup(int) 
+
+    /**
+    **/
+    public void removeAllAddressingGroup()
+    {
+        _addressingGroupList.removeAllElements();
+    } //-- void removeAllAddressingGroup() 
+
+    /**
+     * 
+     * 
+     * @param index
+     * @param vAddressingGroup
+    **/
+    public void setAddressingGroup(int index, AddressingGroup vAddressingGroup)
+        throws java.lang.IndexOutOfBoundsException
+    {
+        //-- check bounds for index
+        if ((index < 0) || (index > _addressingGroupList.size())) {
+            throw new IndexOutOfBoundsException();
+        }
+        _addressingGroupList.setElementAt(vAddressingGroup, index);
+    } //-- void setAddressingGroup(int, AddressingGroup) 
+
+    /**
+     * 
+     * 
+     * @param addressingGroupArray
+    **/
+    public void setAddressingGroup(AddressingGroup[] addressingGroupArray)
+    {
+        //-- copy array
+        _addressingGroupList.removeAllElements();
+        for (int i = 0; i < addressingGroupArray.length; i++) {
+            _addressingGroupList.addElement(addressingGroupArray[i]);
+        }
+    } //-- void setAddressingGroup(AddressingGroup) 
 
     /**
      * Sets the value of field 'chanceOfControlID'.

@@ -44,6 +44,10 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
 
     private StarsServiceCompanies _starsServiceCompanies;
 
+    private StarsExitInterviewQuestions _starsExitInterviewQuestions;
+
+    private StarsDefaultThermostatSettings _starsDefaultThermostatSettings;
+
 
       //----------------/
      //- Constructors -/
@@ -79,6 +83,16 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
     } //-- StarsCustomerSelectionLists getStarsCustomerSelectionLists() 
 
     /**
+     * Returns the value of field 'starsDefaultThermostatSettings'.
+     * 
+     * @return the value of field 'starsDefaultThermostatSettings'.
+    **/
+    public StarsDefaultThermostatSettings getStarsDefaultThermostatSettings()
+    {
+        return this._starsDefaultThermostatSettings;
+    } //-- StarsDefaultThermostatSettings getStarsDefaultThermostatSettings() 
+
+    /**
      * Returns the value of field 'starsEnergyCompany'.
      * 
      * @return the value of field 'starsEnergyCompany'.
@@ -97,6 +111,16 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
     {
         return this._starsEnrollmentPrograms;
     } //-- StarsEnrollmentPrograms getStarsEnrollmentPrograms() 
+
+    /**
+     * Returns the value of field 'starsExitInterviewQuestions'.
+     * 
+     * @return the value of field 'starsExitInterviewQuestions'.
+    **/
+    public StarsExitInterviewQuestions getStarsExitInterviewQuestions()
+    {
+        return this._starsExitInterviewQuestions;
+    } //-- StarsExitInterviewQuestions getStarsExitInterviewQuestions() 
 
     /**
      * Returns the value of field 'starsServiceCompanies'.
@@ -178,6 +202,17 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
     } //-- void setStarsCustomerSelectionLists(StarsCustomerSelectionLists) 
 
     /**
+     * Sets the value of field 'starsDefaultThermostatSettings'.
+     * 
+     * @param starsDefaultThermostatSettings the value of field
+     * 'starsDefaultThermostatSettings'.
+    **/
+    public void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings starsDefaultThermostatSettings)
+    {
+        this._starsDefaultThermostatSettings = starsDefaultThermostatSettings;
+    } //-- void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings) 
+
+    /**
      * Sets the value of field 'starsEnergyCompany'.
      * 
      * @param starsEnergyCompany the value of field
@@ -198,6 +233,17 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
     {
         this._starsEnrollmentPrograms = starsEnrollmentPrograms;
     } //-- void setStarsEnrollmentPrograms(StarsEnrollmentPrograms) 
+
+    /**
+     * Sets the value of field 'starsExitInterviewQuestions'.
+     * 
+     * @param starsExitInterviewQuestions the value of field
+     * 'starsExitInterviewQuestions'.
+    **/
+    public void setStarsExitInterviewQuestions(StarsExitInterviewQuestions starsExitInterviewQuestions)
+    {
+        this._starsExitInterviewQuestions = starsExitInterviewQuestions;
+    } //-- void setStarsExitInterviewQuestions(StarsExitInterviewQuestions) 
 
     /**
      * Sets the value of field 'starsServiceCompanies'.

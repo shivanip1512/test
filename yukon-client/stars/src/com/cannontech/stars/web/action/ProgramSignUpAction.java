@@ -374,10 +374,10 @@ public class ProgramSignUpAction implements ActionBase {
 						LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(i);
 						StarsAppliance starsApp = (StarsAppliance) StarsLiteFactory.createStarsAppliance(liteApp, energyCompanyID);
 						
-						ArrayList list = (ArrayList) tmap.get( starsApp.getCategoryName() );
+						ArrayList list = (ArrayList) tmap.get( starsApp.getDescription() );
 						if (list == null) {
 							list = new ArrayList();
-							tmap.put( starsApp.getCategoryName(), list );
+							tmap.put( starsApp.getDescription(), list );
 						}
 						list.add( starsApp );
 					}

@@ -27,7 +27,7 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsGetExitInterviewQuestionsResponse implements java.io.Serializable {
+public class StarsExitInterviewQuestions implements java.io.Serializable {
 
 
       //--------------------------/
@@ -41,10 +41,10 @@ public class StarsGetExitInterviewQuestionsResponse implements java.io.Serializa
      //- Constructors -/
     //----------------/
 
-    public StarsGetExitInterviewQuestionsResponse() {
+    public StarsExitInterviewQuestions() {
         super();
         _starsExitInterviewQuestionList = new Vector();
-    } //-- com.cannontech.stars.xml.serialize.StarsGetExitInterviewQuestionsResponse()
+    } //-- com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions()
 
 
       //-----------/
@@ -207,11 +207,11 @@ public class StarsGetExitInterviewQuestionsResponse implements java.io.Serializa
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsGetExitInterviewQuestionsResponse unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsGetExitInterviewQuestionsResponse) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsGetExitInterviewQuestionsResponse.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsGetExitInterviewQuestionsResponse unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions unmarshal(java.io.Reader) 
 
     /**
     **/

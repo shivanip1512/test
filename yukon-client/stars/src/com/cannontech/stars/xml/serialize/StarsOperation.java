@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.32 2003/04/01 00:37:46 zyao Exp $
+ * $Id: StarsOperation.java,v 1.33 2003/04/03 22:22:05 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.32 $ $Date: 2003/04/01 00:37:46 $
+ * @version $Revision: 1.33 $ $Date: 2003/04/03 22:22:05 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -157,10 +157,6 @@ public class StarsOperation implements java.io.Serializable {
     private StarsUpdateThermostatManualOption _starsUpdateThermostatManualOption;
 
     private StarsUpdateThermostatManualOptionResponse _starsUpdateThermostatManualOptionResponse;
-
-    private StarsGetExitInterviewQuestions _starsGetExitInterviewQuestions;
-
-    private StarsGetExitInterviewQuestionsResponse _starsGetExitInterviewQuestionsResponse;
 
     private StarsSendExitInterviewAnswers _starsSendExitInterviewAnswers;
 
@@ -408,28 +404,6 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsGetEnergyCompanySettingsResponse;
     } //-- StarsGetEnergyCompanySettingsResponse getStarsGetEnergyCompanySettingsResponse() 
-
-    /**
-     * Returns the value of field 'starsGetExitInterviewQuestions'.
-     * 
-     * @return the value of field 'starsGetExitInterviewQuestions'.
-    **/
-    public StarsGetExitInterviewQuestions getStarsGetExitInterviewQuestions()
-    {
-        return this._starsGetExitInterviewQuestions;
-    } //-- StarsGetExitInterviewQuestions getStarsGetExitInterviewQuestions() 
-
-    /**
-     * Returns the value of field
-     * 'starsGetExitInterviewQuestionsResponse'.
-     * 
-     * @return the value of field
-     * 'starsGetExitInterviewQuestionsResponse'.
-    **/
-    public StarsGetExitInterviewQuestionsResponse getStarsGetExitInterviewQuestionsResponse()
-    {
-        return this._starsGetExitInterviewQuestionsResponse;
-    } //-- StarsGetExitInterviewQuestionsResponse getStarsGetExitInterviewQuestionsResponse() 
 
     /**
      * Returns the value of field 'starsGetLMControlHistory'. The
@@ -1145,29 +1119,6 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsGetEnergyCompanySettingsResponse = starsGetEnergyCompanySettingsResponse;
     } //-- void setStarsGetEnergyCompanySettingsResponse(StarsGetEnergyCompanySettingsResponse) 
-
-    /**
-     * Sets the value of field 'starsGetExitInterviewQuestions'.
-     * 
-     * @param starsGetExitInterviewQuestions the value of field
-     * 'starsGetExitInterviewQuestions'.
-    **/
-    public void setStarsGetExitInterviewQuestions(StarsGetExitInterviewQuestions starsGetExitInterviewQuestions)
-    {
-        this._starsGetExitInterviewQuestions = starsGetExitInterviewQuestions;
-    } //-- void setStarsGetExitInterviewQuestions(StarsGetExitInterviewQuestions) 
-
-    /**
-     * Sets the value of field
-     * 'starsGetExitInterviewQuestionsResponse'.
-     * 
-     * @param starsGetExitInterviewQuestionsResponse the value of
-     * field 'starsGetExitInterviewQuestionsResponse'.
-    **/
-    public void setStarsGetExitInterviewQuestionsResponse(StarsGetExitInterviewQuestionsResponse starsGetExitInterviewQuestionsResponse)
-    {
-        this._starsGetExitInterviewQuestionsResponse = starsGetExitInterviewQuestionsResponse;
-    } //-- void setStarsGetExitInterviewQuestionsResponse(StarsGetExitInterviewQuestionsResponse) 
 
     /**
      * Sets the value of field 'starsGetLMControlHistory'. The

@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsGetExitInterviewQuestionsResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsExitInterviewQuestionsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class StarsGetExitInterviewQuestionsResponseDescriptor extends org.exolab
      //- Constructors -/
     //----------------/
 
-    public StarsGetExitInterviewQuestionsResponseDescriptor() {
+    public StarsExitInterviewQuestionsDescriptor() {
         super();
-        xmlName = "stars-GetExitInterviewQuestionsResponse";
+        xmlName = "stars-ExitInterviewQuestions";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -66,14 +66,14 @@ public class StarsGetExitInterviewQuestionsResponseDescriptor extends org.exolab
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsGetExitInterviewQuestionsResponse target = (StarsGetExitInterviewQuestionsResponse) object;
+                StarsExitInterviewQuestions target = (StarsExitInterviewQuestions) object;
                 return target.getStarsExitInterviewQuestion();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsGetExitInterviewQuestionsResponse target = (StarsGetExitInterviewQuestionsResponse) object;
+                    StarsExitInterviewQuestions target = (StarsExitInterviewQuestions) object;
                     target.addStarsExitInterviewQuestion( (StarsExitInterviewQuestion) value);
                 }
                 catch (Exception ex) {
@@ -93,7 +93,7 @@ public class StarsGetExitInterviewQuestionsResponseDescriptor extends org.exolab
         fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsGetExitInterviewQuestionsResponseDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsExitInterviewQuestionsDescriptor()
 
 
       //-----------/
@@ -125,7 +125,7 @@ public class StarsGetExitInterviewQuestionsResponseDescriptor extends org.exolab
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsGetExitInterviewQuestionsResponse.class;
+        return com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

@@ -70,22 +70,17 @@ public class ServletUtils {
 	
 	public static final String ATT_YUKON_USER = "YUKON_USER";
 	public static final String ATT_STARS_YUKON_USER = "STARS_YUKON_USER";
-	public static final String ATT_ENERGY_COMPANY = "ENERGY_COMPANY";
-	public static final String ATT_ENERGY_COMPANY_WEB_CONFIG = "ENERGY_COMPANY_WEB_CONFIG";
+	public static final String ATT_ENERGY_COMPANY_SETTINGS = "ENERGY_COMPANY_SETTINGS";
 	public static final String ATT_CUSTOMER_SELECTION_LISTS = "CUSTOMER_SELECTION_LISTS";
-	public static final String ATT_ENROLLMENT_PROGRAMS = "ENROLLMENT_PROGRAMS";
-	public static final String ATT_SERVICE_COMPANIES = "SERVICE_COMPANIES";
 	public static final String ATT_DEFAULT_THERMOSTAT_SETTINGS = "DEFAULT_THERMOSTAT_SETTINGS";
+	public static final String ATT_CUSTOMER_ACCOUNT_INFO = "CUSTOMER_ACCOUNT_INFORMATION";
+	
+	public static final String ATT_LM_PROGRAM_HISTORY = "LM_PROGRAM_HISTORY";
 	public static final String ATT_CHANGED_THERMOSTAT_SETTINGS = "CHANGED_THERMOSTAT_SETTINGS";
 	public static final String ATT_APPLY_TO_WEEKEND = "APPLY_TO_WEEKEND";
 	public static final String ATT_ACCOUNT_SEARCH_RESULTS = "ACCOUNT_SEARCH_RESULTS";
-	public static final String ATT_EXIT_INTERVIEW_QUESTIONS = "EXIT_INTERVIEW_QUESTIONS";
-	public static final String ATT_CUSTOMER_FAQS = "CUSTOMER_FAQS";
 	public static final String ATT_CALL_TRACKING_NUMBER = "CALL_TRACKING_NUMBER";
 	public static final String ATT_ORDER_TRACKING_NUMBER = "ORDER_TRACKING_NUMBER";
-	
-	public static final String ATT_CUSTOMER_ACCOUNT_INFO = "CUSTOMER_ACCOUNT_INFORMATION";
-	public static final String ATT_LM_PROGRAM_HISTORY = "LM_PROGRAM_HISTORY";
 	
 	public static final String IN_SERVICE = "In Service";
 	public static final String OUT_OF_SERVICE = "Out of Service";

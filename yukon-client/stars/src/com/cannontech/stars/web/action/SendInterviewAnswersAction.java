@@ -25,8 +25,9 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
+import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
 import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsGetExitInterviewQuestionsResponse;
+import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramOptOut;
 import com.cannontech.stars.xml.serialize.StarsSendExitInterviewAnswers;
@@ -52,8 +53,9 @@ public class SendInterviewAnswersAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) return null;
             
-			StarsGetExitInterviewQuestionsResponse questions = (StarsGetExitInterviewQuestionsResponse)
-					user.getAttribute( ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS );
+			StarsGetEnergyCompanySettingsResponse ecSettings = (StarsGetEnergyCompanySettingsResponse)
+					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+			StarsExitInterviewQuestions questions = ecSettings.getStarsExitInterviewQuestions();
 			StarsSendExitInterviewAnswers sendAnswers = new StarsSendExitInterviewAnswers();
             
             if (questions != null && questions.getStarsExitInterviewQuestionCount() > 0) {

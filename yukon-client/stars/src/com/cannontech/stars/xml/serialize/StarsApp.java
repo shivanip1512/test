@@ -60,7 +60,7 @@ public abstract class StarsApp implements java.io.Serializable {
     **/
     private boolean _has_lmProgramID;
 
-    private java.lang.String _categoryName;
+    private java.lang.String _description;
 
     private java.lang.String _yearManufactured;
 
@@ -177,14 +177,14 @@ public abstract class StarsApp implements java.io.Serializable {
     } //-- int getApplianceID() 
 
     /**
-     * Returns the value of field 'categoryName'.
+     * Returns the value of field 'description'.
      * 
-     * @return the value of field 'categoryName'.
+     * @return the value of field 'description'.
     **/
-    public java.lang.String getCategoryName()
+    public java.lang.String getDescription()
     {
-        return this._categoryName;
-    } //-- java.lang.String getCategoryName() 
+        return this._description;
+    } //-- java.lang.String getDescription() 
 
     /**
      * Returns the value of field 'dualFuel'.
@@ -461,14 +461,14 @@ public abstract class StarsApp implements java.io.Serializable {
     } //-- void setApplianceID(int) 
 
     /**
-     * Sets the value of field 'categoryName'.
+     * Sets the value of field 'description'.
      * 
-     * @param categoryName the value of field 'categoryName'.
+     * @param description the value of field 'description'.
     **/
-    public void setCategoryName(java.lang.String categoryName)
+    public void setDescription(java.lang.String description)
     {
-        this._categoryName = categoryName;
-    } //-- void setCategoryName(java.lang.String) 
+        this._description = description;
+    } //-- void setDescription(java.lang.String) 
 
     /**
      * Sets the value of field 'dualFuel'.

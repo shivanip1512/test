@@ -254,6 +254,70 @@ public class StarsGetEnergyCompanySettingsResponseDescriptor extends org.exolab.
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
+        //-- _starsExitInterviewQuestions
+        desc = new XMLFieldDescriptorImpl(StarsExitInterviewQuestions.class, "_starsExitInterviewQuestions", "stars-ExitInterviewQuestions", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsGetEnergyCompanySettingsResponse target = (StarsGetEnergyCompanySettingsResponse) object;
+                return target.getStarsExitInterviewQuestions();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsGetEnergyCompanySettingsResponse target = (StarsGetEnergyCompanySettingsResponse) object;
+                    target.setStarsExitInterviewQuestions( (StarsExitInterviewQuestions) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsExitInterviewQuestions();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsExitInterviewQuestions
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsDefaultThermostatSettings
+        desc = new XMLFieldDescriptorImpl(StarsDefaultThermostatSettings.class, "_starsDefaultThermostatSettings", "stars-DefaultThermostatSettings", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsGetEnergyCompanySettingsResponse target = (StarsGetEnergyCompanySettingsResponse) object;
+                return target.getStarsDefaultThermostatSettings();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsGetEnergyCompanySettingsResponse target = (StarsGetEnergyCompanySettingsResponse) object;
+                    target.setStarsDefaultThermostatSettings( (StarsDefaultThermostatSettings) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsDefaultThermostatSettings();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsDefaultThermostatSettings
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
     } //-- com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponseDescriptor()
 
 

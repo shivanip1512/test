@@ -320,38 +320,6 @@ public class StarsCustAccountInformationDescriptor extends org.exolab.castor.xml
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
-        //-- _starsDefaultThermostatSettings
-        desc = new XMLFieldDescriptorImpl(StarsDefaultThermostatSettings.class, "_starsDefaultThermostatSettings", "stars-DefaultThermostatSettings", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsCustAccountInformation target = (StarsCustAccountInformation) object;
-                return target.getStarsDefaultThermostatSettings();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsCustAccountInformation target = (StarsCustAccountInformation) object;
-                    target.setStarsDefaultThermostatSettings( (StarsDefaultThermostatSettings) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsDefaultThermostatSettings();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsDefaultThermostatSettings
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
         //-- _starsUser
         desc = new XMLFieldDescriptorImpl(StarsUser.class, "_starsUser", "stars-User", NodeType.Element);
         handler = (new XMLFieldHandler() {

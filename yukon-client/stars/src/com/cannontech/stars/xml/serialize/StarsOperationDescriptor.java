@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperationDescriptor.java,v 1.32 2003/04/01 00:37:53 zyao Exp $
+ * $Id: StarsOperationDescriptor.java,v 1.33 2003/04/03 22:22:08 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.32 $ $Date: 2003/04/01 00:37:53 $
+ * @version $Revision: 1.33 $ $Date: 2003/04/03 22:22:08 $
 **/
 public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -1878,70 +1878,6 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsUpdateThermostatManualOptionResponse
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsGetExitInterviewQuestions
-        desc = new XMLFieldDescriptorImpl(StarsGetExitInterviewQuestions.class, "_starsGetExitInterviewQuestions", "stars-GetExitInterviewQuestions", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsOperation target = (StarsOperation) object;
-                return target.getStarsGetExitInterviewQuestions();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsOperation target = (StarsOperation) object;
-                    target.setStarsGetExitInterviewQuestions( (StarsGetExitInterviewQuestions) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsGetExitInterviewQuestions();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsGetExitInterviewQuestions
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsGetExitInterviewQuestionsResponse
-        desc = new XMLFieldDescriptorImpl(StarsGetExitInterviewQuestionsResponse.class, "_starsGetExitInterviewQuestionsResponse", "stars-GetExitInterviewQuestionsResponse", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsOperation target = (StarsOperation) object;
-                return target.getStarsGetExitInterviewQuestionsResponse();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsOperation target = (StarsOperation) object;
-                    target.setStarsGetExitInterviewQuestionsResponse( (StarsGetExitInterviewQuestionsResponse) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsGetExitInterviewQuestionsResponse();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsGetExitInterviewQuestionsResponse
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

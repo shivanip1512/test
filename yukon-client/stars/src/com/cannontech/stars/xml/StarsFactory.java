@@ -87,7 +87,7 @@ public class StarsFactory {
 			
 			starsApp.setApplianceID( app.getApplianceID() );
 			starsApp.setApplianceCategoryID( app.getApplianceCategoryID() );
-			starsApp.setCategoryName( app.getCategoryName() );
+			starsApp.setDescription( app.getDescription() );
 			starsApp.setYearManufactured( app.getYearManufactured() );
 			starsApp.setManufacturer( app.getManufacturer() );
 			starsApp.setLocation( app.getLocation() );

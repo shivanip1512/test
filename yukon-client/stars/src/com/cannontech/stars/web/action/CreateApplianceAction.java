@@ -470,7 +470,7 @@ public class CreateApplianceAction implements ActionBase {
             int i = -1;
             for (i = starsApps.getStarsApplianceCount() - 1; i >= 0; i--) {
             	StarsAppliance starsApp = starsApps.getStarsAppliance(i);
-            	if (starsApp.getCategoryName().compareTo( app.getCategoryName() ) <= 0)
+            	if (starsApp.getDescription().compareTo( app.getDescription() ) <= 0)
             		break;
             }
 			starsApps.addStarsAppliance( i+1, app );
