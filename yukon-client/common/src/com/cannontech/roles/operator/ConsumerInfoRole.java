@@ -30,18 +30,26 @@ public interface ConsumerInfoRole {
 	public static final int NEW_ACCOUNT_WIZARD = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 31;
 	public static final int CUSTOMIZED_FAQ_LINK= OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 32;
 	
-	public static final int WEB_LINK_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 50;
-	public static final int WEB_TEXT_CONTROL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 51;
-	public static final int WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 52;
-	public static final int WEB_TEXT_CONTROL_HISTORY_TITLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 53;
-	public static final int WEB_TEXT_PROGRAM_CTRL_HIST_TITLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 54;
-	public static final int WEB_TEXT_PROGRAM_CTRL_SUM_TITLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 55;
-	public static final int WEB_TEXT_ENROLLMENT_TITLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 56;
-	public static final int WEB_TEXT_OPT_OUT_TITLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 57;
-	public static final int WEB_TEXT_CHANGE_LOGIN_TITLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 58;
-	public static final int WEB_TEXT_CONTROL_HISTORY_LABEL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 59;
-	public static final int WEB_TEXT_ENROLLMENT_LABEL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 60;
-	public static final int WEB_TEXT_OPT_OUT_LABEL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 61;
- 	public static final int WEB_TEXT_OPT_OUT_DESC = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 62;
+	public static final int WEB_LINK_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 40;
+	public static final int WEB_TEXT_CONTROL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 45;
+	public static final int WEB_TEXT_OPT_OUT_NOUN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 48;
+	public static final int WEB_TEXT_OPT_OUT_VERB = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 49;
+	public static final int WEB_TEXT_OPT_OUT_PAST = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 50;
+	public static final int WEB_TEXT_REENABLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 51;
+	public static final int WEB_TEXT_ODDS_FOR_CONTROL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 54;
+	public static final int WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 55;
+	public static final int WEB_LABEL_CONTROL_HISTORY = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 65;
+	public static final int WEB_LABEL_ENROLLMENT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 66;
+	public static final int WEB_LABEL_OPT_OUT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 67;
+	public static final int WEB_LABEL_THERM_SCHED = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 68;
+	public static final int WEB_LABEL_THERM_MANUAL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 69;
+	public static final int WEB_TITLE_CONTROL_HISTORY = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 75;
+	public static final int WEB_TITLE_PROGRAM_CTRL_HIST = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 76;
+	public static final int WEB_TITLE_PROGRAM_CTRL_SUM = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 77;
+	public static final int WEB_TITLE_ENROLLMENT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 78;
+	public static final int WEB_TITLE_OPT_OUT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 79;
+	public static final int WEB_TITLE_THERM_SCHED = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 80;
+	public static final int WEB_TITLE_THERM_MANUAL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 81;
+ 	public static final int WEB_DESC_OPT_OUT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 90;
 	
 }
