@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_season.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/09/22 23:18:58 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/06/28 20:13:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,37 +27,26 @@
 
 using namespace std;
 
-#define SEASON_SCHEDULE_SPRING         0
-#define SEASON_SCHEDULE_SUMMER         1
-#define SEASON_SCHEDULE_FALL           2
-#define SEASON_SCHEDULE_WINTER         3
-
 class IM_EX_SEASONDB CtiSeasonManager
 {
 public:
-    long getCurrentSeason(const RWDate& date = RWDate(), long season_sched_id=0);
-    long getCurrentSeason(long season_sched_id, const RWDate& date = RWDate());
+    bool isInSeason(const RWDate& date = RWDate(), long season_sched_id=0);
+    bool isInSeason(long season_sched_id, const RWDate& date = RWDate());
     void refresh();
 
     static CtiSeasonManager& getInstance();
 
 private:
 
-    struct seasonSchedule
+    struct date_of_season
     {
-        unsigned springstartmonth;
-        unsigned springstartday;
-        unsigned summerstartmonth;
-        unsigned summerstartday;
-        unsigned fallstartmonth;
-        unsigned fallstartday;
-        unsigned winterstartmonth;
-        unsigned winterstartday;
+	unsigned start_month;
+	unsigned start_day;
+	unsigned end_month;
+	unsigned end_day;
     };
 
-    typedef multimap<long,seasonSchedule,less<long> > sSchedMap;
-
-    sSchedMap _ssched_map;
+    multimap<long,date_of_season> _season_map;
 
     static CtiMutex _mux;
     static CtiSeasonManager* _instance;
@@ -65,7 +54,7 @@ private:
     CtiSeasonManager();
     ~CtiSeasonManager() { };
 
-    static const RWCString seasonsql;
+    static const string _season_sql;
 };
 #endif
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_season.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/09/22 23:18:58 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/06/28 20:13:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,13 +19,51 @@
 #include "mgr_season.h"
 #include "dbaccess.h"
 
-const RWCString CtiSeasonManager::seasonsql("select scheduleid, springmonth, springday, summermonth, summerday, fallmonth, fallday, wintermonth, winterday from seasonschedule");
+const string CtiSeasonManager::_season_sql = "select seasonscheduleid, seasonstartmonth, seasonstartday, seasonendmonth, seasonendday from dateofseason";
 
 CtiSeasonManager::CtiSeasonManager()
 {
     refresh();
 }
 
+/*
+  Returns true if the given date is inside any of the seasons in the given season schedule
+*/
+bool CtiSeasonManager::isInSeason(const RWDate& date, long season_sched_id)
+{
+    unsigned month_of_year = date.month();
+    unsigned day_of_month = date.dayOfMonth();
+    
+    multimap<long, date_of_season>::iterator iter = _season_map.find(season_sched_id);
+    multimap<long, date_of_season>::iterator last_elem = _season_map.upper_bound(season_sched_id);
+    
+    if(iter != _season_map.end())
+    {
+	do
+	{
+	    date_of_season cur_dos = iter->second;
+	    if( month_of_year >= cur_dos.start_month && day_of_month >= cur_dos.start_day &&
+		month_of_year <= cur_dos.end_month && day_of_month <= cur_dos.end_day )
+	    {
+		return true;
+	    }
+		
+	} while(iter++ != last_elem);
+    }
+
+    else
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " **Checkpoint** " <<  " Couldn't locate season schedule id: " << season_sched_id << __FILE__ << "(" << __LINE__ << ")" << endl;
+    }
+    return false;
+}
+
+bool CtiSeasonManager::isInSeason(long season_sched_id, const RWDate& date)
+{
+    return isInSeason(date, season_sched_id);
+}
+#ifdef _BUNG_
 long CtiSeasonManager::getCurrentSeason(const RWDate& date, long season_sched_id)
 {
     long returnSeason = SEASON_SCHEDULE_SUMMER;
@@ -141,43 +179,33 @@ long CtiSeasonManager::getCurrentSeason(const RWDate& date, long season_sched_id
 
     return returnSeason;
 }
-
-long CtiSeasonManager::getCurrentSeason(long season_sched_id, const RWDate& date)
-{
-    return getCurrentSeason(date, season_sched_id);
-}
+#endif
 
 void CtiSeasonManager::refresh()
 {
     long id;
-    struct seasonSchedule ss_temp;
+    struct date_of_season dos_temp;
 
     CtiLockGuard<CtiMutex> g(_mux);
 
     try
     {
-        _ssched_map.clear();
-
+	_season_map.clear();
         {
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
-            RWDBReader rdr = ExecuteQuery(conn, seasonsql);
+            RWDBReader rdr = ExecuteQuery(conn, _season_sql.data());
 
             while( rdr() )
             {
                 rdr["scheduleid"]      >> id;
-                rdr["springmonth"]     >> ss_temp.springstartmonth;
-                rdr["springday"]       >> ss_temp.springstartday;
-                rdr["summermonth"]     >> ss_temp.summerstartmonth;
-                rdr["summerday"]       >> ss_temp.summerstartday;
-                rdr["fallmonth"]       >> ss_temp.fallstartmonth;
-                rdr["fallday"]         >> ss_temp.fallstartday;
-                rdr["wintermonth"]     >> ss_temp.winterstartmonth;
-                rdr["winterday"]       >> ss_temp.winterstartday;
+		rdr["seasonstartmonth"] >> dos_temp.start_month;
+		rdr["seasonstartday"] >> dos_temp.start_day;
+		rdr["seasonendmonth"] >> dos_temp.end_month;
+		rdr["seasonendday"] >> dos_temp.end_day;
 
-                _ssched_map.insert( sSchedMap::value_type(id, ss_temp));
+		_season_map.insert( make_pair(id, dos_temp) );
             }
-
         }
     }
     catch(RWExternalErr e )
