@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/05/24 13:49:19 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/05/24 19:08:27 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.8  2004/05/24 19:08:27  cplender
+* Must have exclusions to queue work into self.
+*
 * Revision 1.7  2004/05/24 13:49:19  cplender
 * Changed destructor to use value_type, not reference.  Harder to destruct a reference...
 *
@@ -351,7 +354,7 @@ INT CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
     INT status = NORMAL;
 
-    if(!(MSGFLG_QUEUED_TO_DEVICE & OutMessage->MessageFlags))
+    if(hasExclusions() && !(MSGFLG_QUEUED_TO_DEVICE & OutMessage->MessageFlags))
     {
         _millis += messageDuration(OutMessage->Buffer.SASt._groupType);
 
