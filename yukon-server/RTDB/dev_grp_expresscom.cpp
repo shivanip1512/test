@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/04/09 22:46:26 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/05/09 16:06:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -366,7 +366,7 @@ bool CtiDeviceGroupExpresscom::checkForEmptyParseAddressing( CtiCommandParser &p
     if(status)
     {
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), issue, NORMAL, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
-        pRet->setExpectMore( TRUE );
+        pRet->setExpectMore( FALSE );
 
         retList.insert( pRet );
 
