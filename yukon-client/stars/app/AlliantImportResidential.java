@@ -55,7 +55,8 @@ public class AlliantImportResidential {
 				else if (columns[2].equalsIgnoreCase("Baraboo")
 					|| columns[2].equalsIgnoreCase("Sauk City")
 					|| columns[2].equalsIgnoreCase("West Baraboo")
-					|| columns[2].equalsIgnoreCase("Prairie Du Sac"))
+					|| columns[2].equalsIgnoreCase("Prairie Du Sac")
+					|| columns[2].equalsIgnoreCase("Oregon"))
 				{
 					groupName = "AE Residential Baraboo";
 				}
