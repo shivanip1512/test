@@ -549,6 +549,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 	{
 		DeviceBase device = ((DeviceBase) val);
 		int previousDeviceID = device.getDevice().getDeviceID().intValue();
+		com.cannontech.database.data.route.RouteBase newRoute = null;
 	
 		device.setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
 	
@@ -618,7 +619,6 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 			synchronized (cache)
 		{
 				java.util.List routes = cache.getAllRoutes();
-				com.cannontech.database.data.route.RouteBase newRoute = null;
 				DBPersistent oldRoute = null;
 				Integer routeID = null;
 				String type = null;
@@ -667,10 +667,11 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 					{
 						((com.cannontech.database.data.route.CCURoute) newRoute).setCarrierRoute(((com.cannontech.database.data.route.CCURoute) oldRoute).getCarrierRoute());
 						((com.cannontech.database.data.route.CCURoute) newRoute).getCarrierRoute().setRouteID(routeID);
+						((com.cannontech.database.data.route.CCURoute) newRoute).setDeviceID(device.getDevice().getDeviceID());
 					}
 	
-					//put the route in the beginning of our Vector
-					objectsToAdd.getDBPersistentVector().insertElementAt( newRoute, 0 );
+					/*//put the route as the second place in our Vector
+					objectsToAdd.getDBPersistentVector().insertElementAt( newRoute, 1 );*/
 				}
 			}
 	
@@ -735,6 +736,8 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 		
 		if (hasPoints || hasRoute || isCapBank)
 		{
+			if(hasRoute)
+				objectsToAdd.getDBPersistentVector().add(newRoute);
 			return objectsToAdd;
 		}
 		else
