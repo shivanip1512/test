@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/06 18:56:37 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/11/20 16:41:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,6 +40,8 @@
 #include "utility.h"
 
 extern VOID PortPipeCleanup (ULONG Reason);
+extern void freeUCTMemory(void);
+extern void cleanupDB();
 
 // Global Exports....
 IM_EX_CTIBASE CTINEXUS        PorterNexus;
@@ -101,7 +103,8 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
     case DLL_PROCESS_DETACH:
         {
             PortPipeCleanup(0);                                // Get that connection closed (if open)!
-            // releaseDatabase();
+            freeUCTMemory();
+            cleanupDB();
             break;
         }
     }

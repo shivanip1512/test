@@ -53,6 +53,21 @@ static RWRecursiveLock<RWMutexLock> DbMutex;
 static const int MAXDBINFO = 2;
 static DBInfo* db_info[MAXDBINFO] = { NULL, NULL};
 
+
+DLLEXPORT void cleanupDB()
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( DbMutex);
+
+    for(int i = 0; i < MAXDBINFO; i++)
+    {
+        if(db_info[i] != NULL)
+        {
+            delete db_info[i];
+            db_info[i] = NULL;
+        }
+    }
+}
+
 /**
  For a given dbID, set the necessary information to make a connection
  to a database.  After a call to setDatabaseParams with a given dbID

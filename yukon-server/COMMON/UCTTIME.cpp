@@ -77,6 +77,14 @@ int IM_EX_CTIBASE getUCTMemoryFlags (void);
 CHAR *HolidayPtr = NULL;
 CHAR *EndPtr = NULL;
 
+void IM_EX_CTIBASE freeUCTMemory(void)
+{
+    if(Flags)
+    {
+        free(Flags);
+        Flags = NULL;
+    }
+}
 
 /* this function loads and sets some global flags for our
    DSM/2 time system */
