@@ -29,6 +29,7 @@ public class DefaultDatabaseCache
 	private java.util.ArrayList allGraphDefinitions = null;
 	private java.util.ArrayList allHolidaySchedules = null;
 	private java.util.ArrayList allDeviceMeterGroups = null;
+	private java.util.ArrayList allPointsUnits = null;
 
 	//lists that are created by the joining/parsing of existing lists
 	private java.util.ArrayList allGraphTaggedPoints = null;
@@ -41,6 +42,9 @@ public class DefaultDatabaseCache
 	private java.util.ArrayList allLoadManagement = null;
 	private java.util.ArrayList allPorts = null;
 	private java.util.ArrayList allRoutes = null;
+	
+	
+	private java.util.HashMap allPointidMultiplierHashMap = null;
 /**
  * DefaultDatabaseCache constructor comment.
  */
@@ -440,6 +444,98 @@ public synchronized java.util.List getAllPoints(){
 	}
 }
 /**
+ * Insert the method's description here.
+ * Creation date: (3/14/00 3:19:19 PM)
+ * @return java.util.Collection
+ */
+public synchronized java.util.List getAllPointsUnits(){
+
+	if( allPointsUnits != null )
+		return allPointsUnits;
+	else
+	{
+		allPointsUnits = new java.util.ArrayList();
+		PointUnitLoader pointUnitLoader = new PointUnitLoader(allPointsUnits, databaseAlias);
+		pointUnitLoader.run();
+		return allPointsUnits;
+	}
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (3/14/00 3:19:19 PM)
+ * @return java.util.Collection
+ */
+public synchronized java.util.HashMap getAllPointidMultiplierHashMap(){
+
+	if( allPointidMultiplierHashMap != null )
+		return allPointidMultiplierHashMap;
+	else
+	{
+
+//	java.util.Vector returnMultipliers = new java.util.Vector();
+	allPointidMultiplierHashMap = new java.util.HashMap(50);	//guess of how many points there may be.
+	
+	String sql = new String("SELECT ACC.POINTID, ACC.MULTIPLIER FROM POINTACCUMULATOR ACC");
+
+	java.sql.Connection conn = null;
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+	try
+	{
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+
+		if( conn == null )
+		{
+			System.out.println(":  Error getting database connection.");
+			return null;
+		}
+		else
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+			rset = pstmt.executeQuery();
+
+			while( rset.next() )
+			{
+				Integer pointID = new Integer(rset.getInt(1));
+				Double multiplier = new Double(rset.getDouble(2));
+				allPointidMultiplierHashMap.put(pointID, multiplier);				
+			}
+			
+			sql = new String("SELECT ANA.POINTID, ANA.MULTIPLIER FROM POINTANALOG ANA");
+			pstmt = conn.prepareStatement(sql.toString());
+			rset = pstmt.executeQuery();
+			
+			while( rset.next())
+			{
+				Integer pointID = new Integer( rset.getInt(1));
+				Double multiplier = new Double( rset.getDouble(2));
+				allPointidMultiplierHashMap.put(pointID, multiplier);
+			}
+		}
+	}
+	catch( java.sql.SQLException e )
+	{
+		e.printStackTrace();
+	}
+	finally
+	{
+		try
+		{
+			if( pstmt != null ) pstmt.close();
+			if( conn != null ) conn.close();
+		} 
+		catch( java.sql.SQLException e2 )
+		{
+			e2.printStackTrace();//sometin is up
+			return null;
+		}	
+	}
+		return allPointidMultiplierHashMap;
+	}
+}
+
+/**
  * getAllPorts method comment.
  *
  */
@@ -823,6 +919,8 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 	if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_POINT_DB )
 	{
 		allGraphTaggedPoints = null;
+		allPointsUnits = null;
+		allPointidMultiplierHashMap = null;
 		retLBase = handlePointChange( dbType, id );
 	}
 	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_PAO_DB )
@@ -1405,7 +1503,6 @@ public synchronized void loadAllCache()
 	allHolidaySchedules = new java.util.ArrayList();
 	allYukonPAObjects = new java.util.ArrayList();
 	allDeviceMeterGroups = new java.util.ArrayList();
-
 	
 	//be sure all of our derived storage is cleard
 	allGraphTaggedPoints = null;
@@ -1432,7 +1529,7 @@ public synchronized void loadAllCache()
 		new AlarmCategoryLoader(allAlarmCategories, databaseAlias),
 		new CustomerContactLoader(allCustomerContacts, databaseAlias),
 		new HolidayScheduleLoader(allHolidaySchedules, databaseAlias),
-		new DeviceMeterGroupLoader(allDeviceMeterGroups, databaseAlias)
+		new DeviceMeterGroupLoader(allDeviceMeterGroups, databaseAlias),
 	};
 
 
