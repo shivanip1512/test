@@ -81,7 +81,7 @@ function showAll(form) {
               <% String header = "INVENTORY"; %>
               <%@ include file="include/SearchBar.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-              <form name="MForm" method="post" action="" onsubmit="setFilterValue(this)">
+              <form name="MForm" method="post" action="">
 			    <input type="hidden" name="page" value="1">
                 <table width="80%" border="0" cellspacing="0" cellpadding="0">
                   <tr>
