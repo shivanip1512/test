@@ -50,6 +50,8 @@ update ctidatabase set version = '3.0' where version = '3.00';
 insert into YukonRoleProperty values(-1018,-1,'export_file_directory','(none)','File location of all export operations');
 insert into YukonGroupRole values(-19,-1,-1,-1018,'(none)');
 
+insert into YukonRoleProperty values(-1306,-4,'auth_timeout','30','Number of seconds before the authentication process times out');
+insert into YukonGroupRole values(-91,-1,-4,-1306,'(none)');
 
 
 
