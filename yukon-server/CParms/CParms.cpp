@@ -199,14 +199,14 @@ int CtiConfigParameters::getValueAsInt(RWCString key, int defaultval)
     return ret;
 }
 
-ULONG CtiConfigParameters::getValueAsULong(RWCString key, ULONG defaultval)
+ULONG CtiConfigParameters::getValueAsULong(RWCString key, ULONG defaultval, int base)
 {
     char *ch;
     ULONG ret = defaultval;
 
     if(isOpt(key))
     {
-        ret = strtoul(getValueAsString(key).data(), &ch, 10);
+        ret = strtoul(getValueAsString(key).data(), &ch, base);
     }
 
     return ret;

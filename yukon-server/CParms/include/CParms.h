@@ -54,7 +54,7 @@ public:
    RWCString         getValueAsString(RWCString Key);
    int               getValueAsInt(RWCString key, int defaultval = 0);
    double            getValueAsDouble(RWCString key, double defaultval = 0.0);
-   ULONG             getValueAsULong(RWCString key, ULONG defaultval = 0L);
+   ULONG             getValueAsULong(RWCString key, ULONG defaultval = 0L, int base = 10);
 
 
 };
