@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/04/25 22:40:37 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/05/19 15:58:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -371,8 +371,11 @@ void CtiDeviceDNP::processInboundPoints(INMESS *InMessage, RWTime &TimeNow, RWTP
 
             tmpMsg->setString(resultString);
 
-            //  ACH:  maybe check for "update" someday...  but for now, who cares
-            vgMsg->PointData().append(tmpMsg->replicateMessage());
+            if( !useScanFlags() )  //  if we're not Scanner, send it to VG as well (scanner will do this on his own)
+            {
+                //  maybe (parse.isKeyValid("flag") && (parse.getFlags( ) & CMD_FLAG_UPDATE)) someday
+                vgMsg->PointData().append(tmpMsg->replicateMessage());
+            }
             retMsg->PointData().append(tmpMsg);
         }
         else
