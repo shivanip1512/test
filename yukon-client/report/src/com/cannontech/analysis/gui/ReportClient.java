@@ -47,7 +47,7 @@ import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.db.point.SystemLog;
-import com.cannontech.database.model.CheckBoxDBTreeModel;
+import com.cannontech.database.model.Checkable;
 import com.cannontech.database.model.CommChannelCheckBoxTreeModel;
 import com.cannontech.database.model.DeviceCheckBoxTreeModel;
 import com.cannontech.database.model.LiteBaseTreeModel;
@@ -345,6 +345,12 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 
 				((StatisticModel)model).setReportType(rptType);
 				report = new StatisticReport();
+			}
+			else if (model instanceof LMControlLogModel)
+			{
+				int[] paoIDs = getLiteIDsFromNodes();
+				model.setPaoIDs(paoIDs);
+				report = new SystemLogReport();
 			}
 			else if (model instanceof SystemLogModel)
 			{
@@ -672,8 +678,8 @@ private javax.swing.JButton getGenerateButton() {
 	{	
 		Vector nodes = new Vector();
 		//contains userObject(LiteBase) values
-		if ( getCheckBoxTreeViewPanel().getTree().getModel() instanceof CheckBoxDBTreeModel)
-			nodes = ((CheckBoxDBTreeModel)getCheckBoxTreeViewPanel().getTree().getModel()).getCheckedNodes();
+		if ( getCheckBoxTreeViewPanel().getTree().getModel() instanceof Checkable)
+			nodes = ((Checkable)getCheckBoxTreeViewPanel().getTree().getModel()).getCheckedNodes();
 
 		if( !nodes.isEmpty())
 		{
@@ -853,21 +859,24 @@ private javax.swing.JButton getGenerateButton() {
 	{	
 		//contains userObject(LiteBase) values
 		Vector nodes = new Vector();
-		if ( getCheckBoxTreeViewPanel().getTree().getModel() instanceof CheckBoxDBTreeModel)
-			nodes = ((CheckBoxDBTreeModel)getCheckBoxTreeViewPanel().getTree().getModel()).getCheckedNodes();
+		if ( getCheckBoxTreeViewPanel().getTree().getModel() instanceof Checkable)
+			nodes = ((Checkable)getCheckBoxTreeViewPanel().getTree().getModel()).getCheckedNodes();
 		
 		if( !nodes.isEmpty())
 		{
 			Vector strings = new Vector(nodes.size());			
 			for (int i = 0; i < nodes.size(); i++)
 			{
-				if( (nodes.get(i) instanceof String))
+				//Not sure that a check on String instances only is correct.  Trying without for a while I guess.
+//				if( (nodes.get(i) instanceof String))
 				{
-					String str  = (String) nodes.get(i);
+					String str  = (String) nodes.get(i).toString();
 					strings.addElement(str.toString());
 				}
 			}
-			return (String[])strings.toArray();
+			String [] strArray = new String[strings.size()];
+			strings.toArray(strArray);
+			return strArray;
 		}
 		return null;
 	}
