@@ -9,6 +9,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -419,7 +420,9 @@ public class NewCustAccountAction implements ActionBase {
 				ServerUtils.handleDBChange(liteContact, DBChangeMsg.CHANGE_TYPE_ADD);
 			}
         	
-			LiteCustomer liteCustomer = new LiteCustomer( customerDB.getCustomerID().intValue() );
+			LiteCustomer liteCustomer = (customer instanceof com.cannontech.database.data.customer.CICustomerBase)?
+				new LiteCICustomer( customerDB.getCustomerID().intValue() ) :
+				new LiteCustomer( customerDB.getCustomerID().intValue() );
 			ServerUtils.handleDBChange(liteCustomer, DBChangeMsg.CHANGE_TYPE_ADD);
 			
 			LiteStarsCustAccountInformation liteAcctInfo = energyCompany.addCustAccountInformation( account );

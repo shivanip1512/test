@@ -162,12 +162,21 @@ public class ServerUtils {
 				typeOfChange
 				);
 		}
-		else if (lite.getLiteType() == LiteTypes.CUSTOMER_CI) {
+		else if (lite.getLiteType() == LiteTypes.CUSTOMER) {
 			msg = new DBChangeMsg(
 				lite.getLiteID(),
 				DBChangeMsg.CHANGE_CUSTOMER_DB,
 				DBChangeMsg.CAT_CUSTOMER,
 				DBChangeMsg.CAT_CUSTOMER,
+				typeOfChange
+				);
+		}
+		else if (lite.getLiteType() == LiteTypes.CUSTOMER_CI) {
+			msg = new DBChangeMsg(
+				lite.getLiteID(),
+				DBChangeMsg.CHANGE_CUSTOMER_DB,
+				DBChangeMsg.CAT_CI_CUSTOMER,
+				DBChangeMsg.CAT_CI_CUSTOMER,
 				typeOfChange
 				);
 		}
