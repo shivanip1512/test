@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2003/03/26 20:31:42 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2003/05/23 22:10:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -250,11 +250,11 @@ void CtiConnection::InThread()
                 }
                 catch( ... )
                 {
+                    _bQuit = TRUE;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Terminating Connection with: " << who() << endl;
                     }
-                    _bQuit = TRUE;
                     continue;
                 }
 
@@ -475,12 +475,28 @@ void CtiConnection::OutThread()
                 }
                 catch( ... )
                 {
+                    if(!_bQuit)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  Attempting a connection reset" << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Attempting a connection reset with " << who() << endl;
+                        }
+                        ResetConnection();
                     }
-                    ResetConnection();
+                    else if(_bQuit)
+                    {
+                        size_t num = outQueue.entries();
+                        if(num)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << " OutThread terminating with " << num << " entries" << endl;
+                            }
+                            outQueue.clearAndDestroy();      // Get rid of the evidence... I'm going away!
+                        }
+                    }
+
                     continue;
                 }
             }
@@ -681,7 +697,7 @@ void CtiConnection::ShutdownConnection()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Waiting for outbound Queue to flush " << endl;
+                    dout << RWTime() << " Waiting for outbound Queue " << who() << " to flush " << outQueue.entries() << " entries" << endl;
                 }
 
                 Sleep(1000);
@@ -704,13 +720,13 @@ void CtiConnection::ShutdownConnection()
                 if( outthread_.requestCancellation(2000)  == RW_THR_TIMEOUT )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "OutThread refuses to cancel after 2 seconds." << who() << endl;
+                    dout << "OutThread refuses to cancel after 2 seconds. " << who() << endl;
                 }
                 if(outthread_.join(2000) == RW_THR_TIMEOUT)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "OutThread refuses to join   after 2 seconds." << who() << endl;
+                        dout << "OutThread refuses to join   after 2 seconds. " << who() << endl;
                     }
                     outthread_.terminate();
                 }
@@ -1198,8 +1214,8 @@ void CtiConnection::cleanExchange()
 
     if(Ex != NULL)
     {
+        _valid = FALSE;
         delete Ex;
         Ex = NULL;
-        _valid = FALSE;
     }
 }
