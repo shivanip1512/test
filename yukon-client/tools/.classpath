@@ -6,7 +6,6 @@
     <classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
     <classpathentry kind="lib" path="/third-party/acme.jar"/>
     <classpathentry kind="lib" path="/third-party/batik111.jar"/>
-    <classpathentry kind="lib" path="/third-party/classes12.zip"/>
     <classpathentry kind="lib" path="/third-party/j2ee.jar"/>
     <classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
     <classpathentry kind="lib" path="/third-party/jcchart401K.jar"/>
@@ -18,7 +17,6 @@
     <classpathentry kind="lib" path="/third-party/xerces.jar"/>
     <classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar"/>
     <classpathentry kind="lib" path="/third-party/castor-xml.jar"/>
-    <classpathentry kind="lib" path="/third-party/classes12.jar"/>
     <classpathentry kind="lib" path="/third-party/commons-logging.jar"/>
     <classpathentry kind="lib" path="/third-party/dom4j.jar"/>
     <classpathentry kind="lib" path="/third-party/jaxm-client.jar"/>
@@ -27,8 +25,6 @@
     <classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
     <classpathentry kind="lib" path="/third-party/junit.jar"/>
     <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
-    <classpathentry kind="src" path="/yukonappclient"/>
-    <classpathentry kind="src" path="/yukonappserver"/>
-    <classpathentry kind="src" path="/resource"/>
+    <classpathentry kind="lib" path="/third-party/classes12.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
