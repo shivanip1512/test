@@ -1484,6 +1484,61 @@ public class StarsLiteFactory {
 		starsDev.setDeviceName( PAOFuncs.getYukonPAOName(liteInv.getDeviceID()) );
 	}
 	
+	public static void setStarsEnergyCompany(StarsEnergyCompany starsCompany, LiteStarsEnergyCompany liteCompany) {
+		starsCompany.setEnergyCompanyID( liteCompany.getLiteID() );
+		starsCompany.setCompanyName( liteCompany.getName() );
+		starsCompany.setMainPhoneNumber( "" );
+		starsCompany.setMainFaxNumber( "" );
+		starsCompany.setEmail( "" );
+		starsCompany.setCompanyAddress( (CompanyAddress) StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
+		starsCompany.setTimeZone( liteCompany.getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE) );
+		
+		if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ID) {
+			LiteContact liteContact = ContactFuncs.getContact( liteCompany.getPrimaryContactID() );
+			
+			if (liteContact != null) {
+				LiteContactNotification liteNotifPhone = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_PHONE );
+				starsCompany.setMainPhoneNumber( ServerUtils.getNotification(liteNotifPhone) );
+				
+				LiteContactNotification liteNotifFax = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_FAX );
+				starsCompany.setMainFaxNumber( ServerUtils.getNotification(liteNotifFax) );
+				
+				LiteContactNotification liteNotifEmail = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+				starsCompany.setEmail( ServerUtils.getNotification(liteNotifEmail) );
+				
+				if (liteContact.getAddressID() != CtiUtilities.NONE_ID) {
+					LiteAddress liteAddr = liteCompany.getAddress( liteContact.getAddressID() );
+					CompanyAddress starsAddr = new CompanyAddress();
+					setStarsCustomerAddress( starsAddr, liteAddr );
+					starsCompany.setCompanyAddress( starsAddr );
+				}
+			}
+		}
+	}
+	
+	public static void setStarsServiceCompany(StarsServiceCompany starsCompany, LiteServiceCompany liteCompany, LiteStarsEnergyCompany energyCompany) {
+		starsCompany.setCompanyID( liteCompany.getCompanyID() );
+		starsCompany.setCompanyName( ServerUtils.forceNotNull(liteCompany.getCompanyName()) );
+		starsCompany.setMainPhoneNumber( ServerUtils.forceNotNone(liteCompany.getMainPhoneNumber()) );
+		starsCompany.setMainFaxNumber( ServerUtils.forceNotNone(liteCompany.getMainFaxNumber()) );
+		starsCompany.setCompanyAddress( (CompanyAddress) StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
+		starsCompany.setPrimaryContact( (PrimaryContact) StarsFactory.newStarsCustomerContact(PrimaryContact.class) );
+		
+		if (liteCompany.getAddressID() != CtiUtilities.NONE_ID) {
+			LiteAddress liteAddr = energyCompany.getAddress( liteCompany.getAddressID());
+			CompanyAddress companyAddr = new CompanyAddress();
+			setStarsCustomerAddress( companyAddr, liteAddr );
+			starsCompany.setCompanyAddress( companyAddr );
+		}
+		
+		if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ID) {
+			LiteContact liteContact = ContactFuncs.getContact( liteCompany.getPrimaryContactID() );
+			PrimaryContact primContact = new PrimaryContact();
+			setStarsCustomerContact( primContact, liteContact );
+			starsCompany.setPrimaryContact( primContact );
+		}
+	}
+	
 	
 	public static StarsCustAccountInformation createStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, boolean isOperator) {
 		StarsCustAccountInformation starsAcctInfo = new StarsCustAccountInformation();
@@ -1666,32 +1721,6 @@ public class StarsLiteFactory {
 		}
 		
 		return starsAppCat;
-	}
-	
-	public static StarsServiceCompany createStarsServiceCompany(LiteServiceCompany liteCompany, LiteStarsEnergyCompany energyCompany) {
-		StarsServiceCompany starsCompany = new StarsServiceCompany();
-		starsCompany.setCompanyID( liteCompany.getCompanyID() );
-		starsCompany.setCompanyName( ServerUtils.forceNotNull(liteCompany.getCompanyName()) );
-		starsCompany.setMainPhoneNumber( ServerUtils.forceNotNone(liteCompany.getMainPhoneNumber()) );
-		starsCompany.setMainFaxNumber( ServerUtils.forceNotNone(liteCompany.getMainFaxNumber()) );
-		starsCompany.setCompanyAddress( (CompanyAddress) StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
-		starsCompany.setPrimaryContact( (PrimaryContact) StarsFactory.newStarsCustomerContact(PrimaryContact.class) );
-		
-		if (liteCompany.getAddressID() != CtiUtilities.NONE_ID) {
-			LiteAddress liteAddr = energyCompany.getAddress( liteCompany.getAddressID());
-			CompanyAddress companyAddr = new CompanyAddress();
-			setStarsCustomerAddress( companyAddr, liteAddr );
-			starsCompany.setCompanyAddress( companyAddr );
-		}
-		
-		if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ID) {
-			LiteContact liteContact = energyCompany.getContact( liteCompany.getPrimaryContactID(), null );
-			PrimaryContact primContact = new PrimaryContact();
-			setStarsCustomerContact( primContact, liteContact );
-			starsCompany.setPrimaryContact( primContact );
-		}
-		
-		return starsCompany;
 	}
 	
 	public static StarsUser createStarsUser(com.cannontech.database.data.lite.LiteYukonUser liteUser) {
@@ -1967,41 +1996,6 @@ public class StarsLiteFactory {
 	    }
         
         return starsApp;
-	}
-	
-	public static StarsEnergyCompany createStarsEnergyCompany(LiteStarsEnergyCompany liteCompany) {
-		StarsEnergyCompany starsCompany = new StarsEnergyCompany();
-		starsCompany.setEnergyCompanyID( liteCompany.getLiteID() );
-		starsCompany.setCompanyName( liteCompany.getName() );
-		starsCompany.setMainPhoneNumber( "" );
-		starsCompany.setMainFaxNumber( "" );
-		starsCompany.setEmail( "" );
-		starsCompany.setCompanyAddress( (CompanyAddress) StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
-		starsCompany.setTimeZone( liteCompany.getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE) );
-		
-		if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ID) {
-			LiteContact liteContact = ContactFuncs.getContact( liteCompany.getPrimaryContactID() );
-			
-			if (liteContact != null) {
-				LiteContactNotification liteNotifPhone = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_PHONE );
-				starsCompany.setMainPhoneNumber( ServerUtils.getNotification(liteNotifPhone) );
-				
-				LiteContactNotification liteNotifFax = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_FAX );
-				starsCompany.setMainFaxNumber( ServerUtils.getNotification(liteNotifFax) );
-				
-				LiteContactNotification liteNotifEmail = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
-				starsCompany.setEmail( ServerUtils.getNotification(liteNotifEmail) );
-				
-				if (liteContact.getAddressID() != CtiUtilities.NONE_ID) {
-					LiteAddress liteAddr = liteCompany.getAddress( liteContact.getAddressID() );
-					CompanyAddress starsAddr = new CompanyAddress();
-					setStarsCustomerAddress( starsAddr, liteAddr );
-					starsCompany.setCompanyAddress( starsAddr );
-				}
-			}
-		}
-		
-		return starsCompany;
 	}
 	
 	public static StarsCustSelectionList createStarsCustSelectionList(YukonSelectionList yukonList) {

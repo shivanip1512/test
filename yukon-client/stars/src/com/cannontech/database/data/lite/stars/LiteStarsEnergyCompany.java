@@ -1671,6 +1671,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			StarsLiteFactory.setLiteCustomer( liteCustomer, account.getCustomer() );
 			liteAcctInfo.setCustomer( liteCustomer );
 		}
+		
+		Hashtable contactAcctInfoMap = getContactCustAccountInfoMap();
+		synchronized (contactAcctInfoMap) {
+			Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
+			for (int i = 0; i < contacts.size(); i++)
+				contactAcctInfoMap.put( new Integer(((LiteContact)contacts.get(i)).getContactID()), liteAcctInfo );
+		}
         
 		ArrayList appliances = new ArrayList();
 		for (int i = 0; i < account.getApplianceVector().size(); i++) {
@@ -1903,8 +1910,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	/* The following methods are only used when SOAPClient exists locally */
 	
 	public StarsEnergyCompany getStarsEnergyCompany() {
-		if (starsEnergyCompany == null)
-			starsEnergyCompany = StarsLiteFactory.createStarsEnergyCompany( this );
+		if (starsEnergyCompany == null) {
+			starsEnergyCompany = new StarsEnergyCompany();
+			StarsLiteFactory.setStarsEnergyCompany( starsEnergyCompany, this );
+		}
 		return starsEnergyCompany;
 	}
 	
@@ -2099,8 +2108,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			ArrayList servCompanies = getAllServiceCompanies();
 			for (int i = 0; i < servCompanies.size(); i++) {
 				LiteServiceCompany liteServCompany = (LiteServiceCompany) servCompanies.get(i);
-				starsServCompanies.addStarsServiceCompany(
-						StarsLiteFactory.createStarsServiceCompany(liteServCompany, this) );
+				
+				starsServCompany = new StarsServiceCompany();
+				StarsLiteFactory.setStarsServiceCompany(starsServCompany, liteServCompany, this);
+				starsServCompanies.addStarsServiceCompany( starsServCompany );
 			}
 		}
 		

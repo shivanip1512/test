@@ -10,11 +10,17 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMControlHistory;
+import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
@@ -29,7 +35,10 @@ import com.cannontech.stars.util.task.StarsTimerTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
+import com.cannontech.stars.xml.serialize.StarsMCT;
 import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
@@ -135,8 +144,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	}
 	
 	void initDispatchConnection() {
-//		CtiProperties properties = CtiProperties.getInstance();
-		//String host = properties.getProperty(CtiProperties.KEY_DISPATCH_MACHINE, "127.0.0.1");
 		String host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
 
 		int port = Integer.parseInt(
@@ -430,41 +437,67 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		CTILogger.debug(" ## DBChangeMsg ##\n" + msg);
 		
 		ArrayList companies = getAllEnergyCompanies();
-		LiteStarsEnergyCompany energyCompany = null;
 		
 		if (msg.getDatabase() == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB) {
-			LiteStarsCustAccountInformation liteAcctInfo = null;
-			
 			for (int i = 0; i < companies.size(); i++) {
-				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-				liteAcctInfo = company.getCustAccountInformation( msg.getId(), false );
+				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
+				
+				LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( msg.getId(), false );
 				if (liteAcctInfo != null) {
-					energyCompany = company;
+					handleCustomerAccountChange( msg, energyCompany, liteAcctInfo );
 					break;
 				}
 			}
-			
-			// If the customer account information is not loaded yet, do nothing
-			if (liteAcctInfo == null) return;
-			
-			handleCustomerAccountChange( msg, energyCompany, liteAcctInfo );
 		}
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_CONTACT_DB) {
-			LiteContact liteContact = null;
+			LiteContact liteContact = ContactFuncs.getContact( msg.getId() );
 			
 			for (int i = 0; i < companies.size(); i++) {
-				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-				liteContact = com.cannontech.database.cache.functions.ContactFuncs.getContact( msg.getId() );
-				if (liteContact != null) {
-					energyCompany = company;
+				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
+				LiteBase contOwner = null;
+				
+				if (energyCompany.getPrimaryContactID() == msg.getId()) {
+					contOwner = energyCompany;
+				}
+				else {
+					ArrayList servCompanies = energyCompany.getAllServiceCompanies();
+					for (int j = 0; j < servCompanies.size(); j++) {
+						LiteServiceCompany servCompany = (LiteServiceCompany) servCompanies.get(j);
+						if (servCompany.getPrimaryContactID() == msg.getId()) {
+							contOwner = servCompany;
+							break;
+						}
+					}
+					
+					if (contOwner == null)
+						contOwner = energyCompany.getCustAccountInfoByContact( msg.getId() );
+				}
+				
+				if (contOwner != null) {
+					handleContactChange( msg, energyCompany, contOwner, liteContact );
 					break;
 				}
 			}
+		}
+		else if (msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
+			LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( msg.getId() );
 			
-			// If customer contact is not loaded yet, do nothing
-			if (liteContact == null) return;
-			
-			handleCustomerContactChange( msg, energyCompany, liteContact );
+			// STARS only cares about MCT now
+			if (!DeviceTypesFuncs.isMCT( litePao.getLiteType() ))
+				return;
+				
+			for (int i = 0; i < companies.size(); i++) {
+				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
+				ArrayList inventory = energyCompany.getAllInventory();
+				
+				for (int j = 0; j < inventory.size(); j++) {
+					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(j);
+					if (liteInv.getDeviceID() == msg.getId()) {
+						handlePAOChange( msg, energyCompany, liteInv, litePao );
+						break;
+					}
+				}
+			}
 		}
 	}
 	
@@ -507,20 +540,43 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		}
 	}
 	
-	private void handleCustomerContactChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteContact liteContact) {
-		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInfoByContact( liteContact.getContactID() );
-		
+	private void handleContactChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteBase contOwner, LiteContact liteContact) {
 		switch (msg.getTypeOfChange()) {
 			case DBChangeMsg.CHANGE_TYPE_ADD :
-				// Don't need to do anything, since customer contact is load-on-demand
+				// Don't need to do anything
 				break;
 				
 			case DBChangeMsg.CHANGE_TYPE_UPDATE :
-				liteContact.retrieve( CtiUtilities.getDatabaseAlias() );
-				
-				if (liteAcctInfo != null) {
-					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );
+				if (contOwner instanceof LiteStarsEnergyCompany) {
+					StarsEnergyCompany starsEC = energyCompany.getStarsEnergyCompany();
+					StarsLiteFactory.setStarsEnergyCompany( starsEC, energyCompany );
+				}
+				else if (contOwner instanceof LiteServiceCompany) {
+					for (int i = 0; i < energyCompany.getStarsServiceCompanies().getStarsServiceCompanyCount(); i++) {
+						StarsServiceCompany starsSC = energyCompany.getStarsServiceCompanies().getStarsServiceCompany(i);
+						if (starsSC.getPrimaryContact().getContactID() == liteContact.getContactID()) {
+							StarsLiteFactory.setStarsCustomerContact( starsSC.getPrimaryContact(), liteContact );
+							return;
+						}
+					}
+				}
+				else {
+					LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) contOwner;
 					
+					if (liteAcctInfo.getCustomer().getPrimaryContactID() == liteContact.getContactID()) {
+						// Do nothing
+					}
+					else {
+						Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
+						for (int i = 0; i < contacts.size(); i++) {
+							if (((LiteContact)contacts.get(i)).getContactID() == liteContact.getContactID()) {
+								contacts.set(i, liteContact);
+								break;
+							}
+						}
+					}
+					
+					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 					if (starsAcctInfo != null) {
 						if (starsAcctInfo.getStarsCustomerAccount().getPrimaryContact().getContactID() == liteContact.getContactID()) {
 							StarsLiteFactory.setStarsCustomerContact(starsAcctInfo.getStarsCustomerAccount().getPrimaryContact(), liteContact);
@@ -541,11 +597,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			case DBChangeMsg.CHANGE_TYPE_DELETE :
 				energyCompany.deleteContact( liteContact.getContactID() );
 				
-				if (liteAcctInfo != null) {
-					if (liteAcctInfo.getCustomer().getPrimaryContactID() == liteContact.getContactID()) {
-						// This is bad! Somebody deleted the primary contact not through the web page
-						CTILogger.info("ERROR: Primary contact with id = " + liteContact.getContactID() + " deleted not through the web page!");
-					}
+				if (contOwner instanceof LiteStarsCustAccountInformation) {
+					LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) contOwner;
 					
 					Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
 					for (int i = 0; i < contacts.size(); i++) {
@@ -566,6 +619,34 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 					}
 				}
 				
+				break;
+		}
+	}
+	
+	private void handlePAOChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteInventoryBase liteInv, LiteYukonPAObject litePao) {
+		switch( msg.getTypeOfChange() )
+		{
+			case DBChangeMsg.CHANGE_TYPE_ADD:
+				// Don't need to do anything
+				break;
+				
+			case DBChangeMsg.CHANGE_TYPE_UPDATE :
+				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteInv.getAccountID() );
+				
+				if (starsAcctInfo != null) {
+					for (int i = 0; i < starsAcctInfo.getStarsInventories().getStarsMCTCount(); i++) {
+						StarsMCT mct = starsAcctInfo.getStarsInventories().getStarsMCT(i);
+						if (mct.getDeviceID() == litePao.getYukonID()) {
+							mct.setDeviceName( litePao.getPaoName() );
+							break;
+						}
+					}
+				}
+				
+				break;
+				
+			case DBChangeMsg.CHANGE_TYPE_DELETE :
+				// Don't need to do anything
 				break;
 		}
 	}
