@@ -96,7 +96,7 @@ void CtiIONApplicationLayer::setToOutput( const CtiIONSerializable &payload )
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << dataLength << " bytes in CtiIONApplicationLayer ctor;"
-                                                                 << "  proceeding with zero-length ION data payload, setting valid = FALSE" << endl;
+                                                                 << "  proceeding with zero-length ION data payload, setting valid = false" << endl;
         _appOut.header.length.byte1 = 0;
         _appOut.header.length.byte0 = 0;
         _ioState = Failed;
@@ -157,7 +157,16 @@ int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
         {
             retVal = nlStatus;
 
-            if( _networkLayer.isTransactionComplete() )
+            if( _networkLayer.errorCondition() )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                _ioState = Failed;
+            }
+            else if( _networkLayer.isTransactionComplete() )
             {
                 unsigned char *tmpData;
 
@@ -213,15 +222,6 @@ int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
                     _ioState = Failed;
                 }
             }
-            else if( _networkLayer.errorCondition() )
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                _ioState = Failed;
-            }
 
             break;
         }
@@ -230,11 +230,7 @@ int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
         {
             retVal = nlStatus;
 
-            if( _networkLayer.isTransactionComplete() )
-            {
-                _ioState = Complete;
-            }
-            else if( _networkLayer.errorCondition() )
+            if( _networkLayer.errorCondition() )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -242,6 +238,10 @@ int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
                 }
 
                 _ioState = Failed;
+            }
+            else if( _networkLayer.isTransactionComplete() )
+            {
+                _ioState = Complete;
             }
 
             break;
@@ -262,7 +262,7 @@ int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
 
 bool CtiIONApplicationLayer::isTransactionComplete( void )
 {
-    return _ioState == Complete || _ioState == Uninitialized;
+    return _ioState == Complete || _ioState == Uninitialized || _ioState == Failed;
 }
 
 

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/12/21 17:20:44 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/01/07 21:19:22 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -386,6 +386,11 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
         //  ACH:  retries...
         _ioState = Failed;
         retVal   = transportStatus;
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
     else if( _transport.isTransactionComplete() )
     {
@@ -427,6 +432,8 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+                _ioState = Failed;
             }
         }
     }

@@ -41,7 +41,7 @@ void CtiIONDatalinkLayer::setAddresses( unsigned short srcID, unsigned short dst
 
 bool CtiIONDatalinkLayer::isTransactionComplete( void )
 {
-    return _ioState == Complete;
+    return _ioState == Complete || _ioState == Failed;
 }
 
 
@@ -71,10 +71,13 @@ void CtiIONDatalinkLayer::setToOutput( CtiIONSerializable &payload )
     }
     else
     {
-        dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << _dataLength << " bytes in CtiIONDatalinkLayer ctor;"
-                                                                 << "  setting zero data length, _ioState = Failed" << endl;
         _dataLength = 0;
         _ioState    = Failed;
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 }
 
