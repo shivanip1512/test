@@ -1,5 +1,7 @@
 package com.cannontech.systray;
 
+import com.cannontech.common.util.CtiUtilities;
+
 import snoozesoft.systray4j.SysTrayMenuIcon;
 
 /**
@@ -18,19 +20,19 @@ public interface ISystrayDefines
 
 
 
-	/*
-		public static final String EXEC_TDC = "cmd /C java -jar tdc.jar";
-		public static final String EXEC_DBEDITOR = "cmd /C java -jar dbeditor.jar";
-		public static final String EXEC_COMMANDER = "cmd /C java -jar yc.jar";
-		public static final String EXEC_TRENDING = "cmd /C java -jar graph.jar";
-	*/
-
 	//command line execs for apps
+	public static final String EXEC_TDC = "cmd /C java -jar " + CtiUtilities.USER_DIR + "tdc.jar";
+	public static final String EXEC_DBEDITOR = "cmd /C java -jar " + CtiUtilities.USER_DIR + "dbeditor.jar";
+	public static final String EXEC_COMMANDER = "cmd /C java -jar " + CtiUtilities.USER_DIR + "yc.jar";
+	public static final String EXEC_TRENDING = "cmd /C java -jar " + CtiUtilities.USER_DIR + "graph.jar";
+
+/*
+	//used for testing
 	public static final String EXEC_TDC = "cmd /C java -jar d:/yukon/client/bin/tdc.jar";
 	public static final String EXEC_DBEDITOR = "cmd /C java -jar d:/yukon/client/bin/dbeditor.jar";
 	public static final String EXEC_COMMANDER = "cmd /C java -jar d:/yukon/client/bin/yc.jar";
 	public static final String EXEC_TRENDING = "cmd /C java -jar d:/yukon/client/bin/graph.jar";
-
+*/
 
 	//indexes to the icons array that have meaning
 	public static final int ICO_NO_ALRM = 0;
@@ -43,6 +45,7 @@ public interface ISystrayDefines
 	// the extension can be omitted for icons
 	public static final SysTrayMenuIcon[] ALL_ICONS = 
 	{
+		
 		//default state
 		new SysTrayMenuIcon( 
 			ClassLoader.getSystemResource("YukonNoAlarm" + SysTrayMenuIcon.getExtension()) ),

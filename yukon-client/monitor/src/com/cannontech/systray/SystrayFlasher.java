@@ -12,6 +12,8 @@ import com.cannontech.common.util.CtiUtilities;
  */
 public class SystrayFlasher implements Runnable
 {
+	private boolean muted = false;
+
 	private java.applet.AudioClip alarmSound = null;
 
 	public static final String ALARM_SOUND_FILE =
@@ -29,8 +31,6 @@ public class SystrayFlasher implements Runnable
 		yukonSysTray = sysTray_;
 	}
 
-
-
 	public void run()
 	{
 		try
@@ -41,7 +41,9 @@ public class SystrayFlasher implements Runnable
 				{
 					yukonSysTray.setIcon( ISystrayDefines.ALL_ICONS[i] );
 								
-					getAlarmSound().play();
+					//we cant be muted
+					if( !isMuted() )
+						getAlarmSound().play();
 								
 					Thread.currentThread().sleep(1300);
 				}
@@ -87,6 +89,22 @@ public class SystrayFlasher implements Runnable
 		}
 	
 		return alarmSound;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isMuted()
+	{
+		return muted;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setMuted(boolean b)
+	{
+		muted = b;
 	}
 
 }

@@ -24,6 +24,7 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 {	
 	private AlarmHandler alarmHandler = null;
 	private Thread iconCyclerThrd = null;
+	private SystrayFlasher flasher = null;
 
 	private SysTrayMenuItem menuItemExit = null;
 	private SysTrayMenuItem menuItemAbout = null;
@@ -56,13 +57,24 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		initComponents();
 	}
 	
+	private SystrayFlasher getSystrayFlasher()
+	{
+		if( flasher == null )
+		{
+			flasher = new SystrayFlasher( yukonSysTray );			
+					
+			getSystrayFlasher().setMuted( getMenuItemMute().getState() );
+		}
+					
+		return flasher;
+	}
+	
 	public synchronized void startCycleImages()
 	{
 		if( iconCyclerThrd == null 
 			 || iconCyclerThrd.isInterrupted() )
 		{
-			iconCyclerThrd = new Thread(
-					new SystrayFlasher(yukonSysTray), "IconCycler" );
+			iconCyclerThrd = new Thread( getSystrayFlasher(), "IconCycler" );
 			
 			iconCyclerThrd.start();
 		}
@@ -75,8 +87,12 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 			try
 			{
 				ParametersFile pf = new ParametersFile( CtiUtilities.OUTPUT_FILE_NAME );
-				getMenuItemMute().setState(
-					Boolean.valueOf(pf.getParameterValue("Mute", "false")).booleanValue() );
+				boolean isMuted = 
+					Boolean.valueOf(pf.getParameterValue("Mute", "false")).booleanValue();
+					
+				getMenuItemMute().setState( isMuted );
+					
+				getSystrayFlasher().setMuted( isMuted );
 			}
 			catch( ParameterNotFoundException ex)
 			{}			
@@ -203,6 +219,8 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		}
 		else if( e.getSource() == getMenuItemTDC() )
 		{
+System.out.println(" -- " + ISystrayDefines.EXEC_TDC );
+
 			try
 			{
 				Process p = Runtime.getRuntime().exec(
