@@ -277,31 +277,6 @@ public boolean isInputValid()
 	return true;
 }
 
-
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		CapBankControllerSettingsPanel aCapBankControllerSettingsPanel;
-		aCapBankControllerSettingsPanel = new CapBankControllerSettingsPanel();
-		frame.setContentPane(aCapBankControllerSettingsPanel);
-		frame.setSize(aCapBankControllerSettingsPanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		exception.printStackTrace(System.out);
-	}
-}
-
-
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object
