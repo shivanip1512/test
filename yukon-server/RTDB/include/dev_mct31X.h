@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct31X.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/06/27 21:09:07 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/07/07 19:56:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,7 +66,12 @@ public:
         MCT360_AlphaResetPos     = 0xb0,
         MCT360_AlphaResetLen     =    2,
         MCT360_LGS4ResetPos      = 0xc0,
-        MCT360_LGS4ResetLen      =    3
+        MCT360_LGS4ResetLen      =    3,
+
+        MCT360_LGS4_VoltsPhaseA_PointOffset = 41,
+        MCT360_LGS4_VoltsPhaseB_PointOffset = 42,
+        MCT360_LGS4_VoltsPhaseC_PointOffset = 43,
+        MCT360_LGS4_VoltsNeutralCurrent_PointOffset = 44
     };
 
     typedef CtiDeviceMCT310 Inherited;

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2003/06/27 21:09:06 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2003/07/07 19:56:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1085,7 +1085,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
 {
     INT status = NORMAL;
     INT pid, rateOffset;
-    RWCString resultString, name, ratename;
+    RWCString pointDescriptor, resultString, name, ratename;
 
     ULONG lValue;
 
@@ -1097,6 +1097,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
     DOUBLE demandValue, Value;
     RWTime timestamp;
     RWDate datestamp;
+
     CtiPointBase    *pPoint       = NULL;
     CtiPointBase    *pDemandPoint = NULL;
     CtiReturnMsg    *ReturnMsg    = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -1132,7 +1133,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
         if( i == 12 )
         {
             //  we never broke out of the loop - all bytes are equal, the buffer is busted
-            ReturnMsg->setResultString( "Device: " + getName() + "\nData buffer is bad, retry command" );
+            resultString += "Device: " + getName() + "\nData buffer is bad, retry command";
             status = ALPHABUFFERERROR;
         }
         else
@@ -1215,9 +1216,11 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                 {
                     Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
 
-                    resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                             ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
+                    pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
+                                        CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
+
                     if(pData != NULL)
                     {
                         ReturnMsg->PointData().insert(pData);
@@ -1226,8 +1229,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                 }
                 else
                 {
-                    resultString = getName() + " / IED KW  : " + CtiNumStr(Value) + " - point undefined in DB\n";
-                    ReturnMsg->setResultString( resultString );
+                    resultString += getName() + " / IED KW  : " + CtiNumStr(Value) + " - point undefined in DB\n";
                 }
 
 
@@ -1255,9 +1257,11 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                 {
                     Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
 
-                    resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                             ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
+                    pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
+                                        CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
+
                     if(pData != NULL)
                     {
                         ReturnMsg->PointData().insert(pData);
@@ -1272,9 +1276,11 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     {
                         Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
 
-                        resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                                 ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                        pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
+                        pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
+                                            CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+                        pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
+
                         if(pData != NULL)
                         {
                             ReturnMsg->PointData().insert(pData);
@@ -1286,9 +1292,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         //  maybe look for KVA?
                         pPoint = getDevicePointOffsetTypeEqual( pid + 20, AnalogPointType );
 
-                        resultString  = ReturnMsg->ResultString();
                         resultString += getName() + " / IED KVAR/KVA: " + CtiNumStr(Value) + " - point undefined in DB\n";
-                        ReturnMsg->setResultString( resultString );
                     }
                 }
 
@@ -1298,7 +1302,6 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     {
                         lValue  = BCDtoBase10( DSt->Message + 9, 2 );
 
-                        resultString  = ReturnMsg->ResultString();
                         resultString += getName() + " / IED Power Outage Count: " + CtiNumStr(lValue) + "\n";
 
                         lValue  = BCDtoBase10( DSt->Message + 11, 1 );
@@ -1316,34 +1319,116 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         if( lValue == 0xfffe )  lValue = 88888;
                         if( lValue == 0xfffd )  lValue = 65534;
                         Value = lValue * 0.01;
-                        resultString += "Phase A Volts: " + CtiNumStr(Value) + "\n";
+
+                        pPoint = getDevicePointOffsetTypeEqual(MCT360_LGS4_VoltsPhaseA_PointOffset, AnalogPointType);
+
+                        if( pPoint != NULL )
+                        {
+                            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+
+                            pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
+                                                CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
+
+                            if(pData != NULL)
+                            {
+                                ReturnMsg->PointData().insert(pData);
+                                pData = NULL;  // We just put it on the list...
+                            }
+                        }
+                        else
+                        {
+                            resultString += "Phase A Volts: " + CtiNumStr(Value) + "\n";
+                        }
 
                         lValue = MAKEUSHORT(DSt->Message[6], DSt->Message[7]);
                         if( lValue == 0xffff )  lValue = 99999;
                         if( lValue == 0xfffe )  lValue = 88888;
                         if( lValue == 0xfffd )  lValue = 65534;
                         Value = lValue * 0.01;
-                        resultString += "Phase B Volts: " + CtiNumStr(Value) + "\n";
+
+                        pPoint = getDevicePointOffsetTypeEqual(MCT360_LGS4_VoltsPhaseB_PointOffset, AnalogPointType);
+
+                        if( pPoint != NULL )
+                        {
+                            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+
+                            pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
+                                                CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
+
+                            if(pData != NULL)
+                            {
+                                ReturnMsg->PointData().insert(pData);
+                                pData = NULL;  // We just put it on the list...
+                            }
+                        }
+                        else
+                        {
+                            resultString += "Phase B Volts: " + CtiNumStr(Value) + "\n";
+                        }
 
                         lValue = MAKEUSHORT(DSt->Message[8], DSt->Message[9]);
                         if( lValue == 0xffff )  lValue = 99999;
                         if( lValue == 0xfffe )  lValue = 88888;
                         if( lValue == 0xfffd )  lValue = 65534;
                         Value = lValue * 0.01;
-                        resultString += "Phase C Volts: " + CtiNumStr(Value) + "\n";
+
+                        pPoint = getDevicePointOffsetTypeEqual(MCT360_LGS4_VoltsPhaseC_PointOffset, AnalogPointType);
+
+                        if( pPoint != NULL )
+                        {
+                            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+
+                            pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
+                                            CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
+
+                            if(pData != NULL)
+                            {
+                                ReturnMsg->PointData().insert(pData);
+                                pData = NULL;  // We just put it on the list...
+                            }
+                        }
+                        else
+                        {
+                            resultString += "Phase C Volts: " + CtiNumStr(Value) + "\n";
+                        }
 
                         lValue = MAKEUSHORT(DSt->Message[10], DSt->Message[11]);
                         if( lValue == 0xffff )  lValue = 99999;
                         if( lValue == 0xfffe )  lValue = 88888;
                         if( lValue == 0xfffd )  lValue = 65534;
                         Value = lValue * 0.01;
-                        resultString += "Neutral current: " + CtiNumStr(Value) + "\n";
+
+                        pPoint = getDevicePointOffsetTypeEqual(MCT360_LGS4_VoltsNeutralCurrent_PointOffset, AnalogPointType);
+
+                        if( pPoint != NULL )
+                        {
+                            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+
+                            pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
+                                                CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
+
+                            if(pData != NULL)
+                            {
+                                ReturnMsg->PointData().insert(pData);
+                                pData = NULL;  // We just put it on the list...
+                            }
+                        }
+                        else
+                        {
+                            resultString += "Neutral current: " + CtiNumStr(Value) + "\n";
+                        }
 
                         break;
                     }
                 }
-
-                ReturnMsg->setResultString( resultString );
             }
             else if( parse.getFlags() & CMD_FLAG_GV_RATET )
             {
@@ -1401,9 +1486,11 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                 {
                     Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
 
-                    resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                             ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
+                    pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
+                                        CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
+
                     if(pData != NULL)
                     {
                         ReturnMsg->PointData().insert(pData);
@@ -1412,8 +1499,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                 }
                 else
                 {
-                    resultString = getName() + " / total " + name + "h: " + CtiNumStr(Value) + " - point undefined in DB\n";
-                    ReturnMsg->setResultString( resultString );
+                    resultString += getName() + " / total " + name + "h: " + CtiNumStr(Value) + " - point undefined in DB\n";
                 }
             }
             else  //  ye olde typicale KWH reade
@@ -1446,9 +1532,11 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                 {
                     Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
 
-                    resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                             ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
+                    pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
+                                        CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
+
                     if(pData != NULL)
                     {
                         ReturnMsg->PointData().insert(pData);
@@ -1457,8 +1545,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                 }
                 else
                 {
-                    resultString = getName() + " / " + name + "h " + ratename + ": " + CtiNumStr(Value) + " - point undefined in DB\n";
-                    ReturnMsg->setResultString( resultString );
+                    resultString += getName() + " / " + name + "h " + ratename + ": " + CtiNumStr(Value) + " - point undefined in DB\n";
                 }
 
                 pPoint = getDevicePointOffsetTypeEqual( pid - 1, AnalogPointType );
@@ -1499,16 +1586,19 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                 {
                     Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
 
-                    resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                             ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                    pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
+                                        CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
                     if( datestamp.isValid() )
                     {
-                        resultString += " @ " + CtiNumStr(datestamp.month()).zpad(2)      + "/" +
-                                                CtiNumStr(datestamp.dayOfMonth()).zpad(2) + "/" +
-                                                CtiNumStr(datestamp.year()).zpad(2)       + " " +
-                                                CtiNumStr(timestamp.hour()).zpad(2)       + ":" +
-                                                CtiNumStr(timestamp.minute()).zpad(2);
-                        pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
+                        pointDescriptor += " @ " + CtiNumStr(datestamp.month()).zpad(2)      + "/" +
+                                                   CtiNumStr(datestamp.dayOfMonth()).zpad(2) + "/" +
+                                                   CtiNumStr(datestamp.year()).zpad(2)       + " " +
+                                                   CtiNumStr(timestamp.hour()).zpad(2)       + ":" +
+                                                   CtiNumStr(timestamp.minute()).zpad(2);
+
+                        pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
+
                         if(pData != NULL)
                         {
                             pData->setTime( timestamp.seconds() );
@@ -1520,17 +1610,13 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     else
                     {
                         //  don't send a pointdata msg, it's uninitialized and doesn't matter
-                        resultString += " @ 00/00/00 00:00";
-
-                        resultString  = ReturnMsg->ResultString() + resultString;
-
-                        ReturnMsg->setResultString(resultString);
+                        resultString += pointDescriptor + " @ 00/00/00 00:00 - data not sent, timestamp invalid\n";
                     }
                 }
                 else
                 {
-                    resultString  = ReturnMsg->ResultString();
                     resultString += getName() + " / " + name + " " + ratename + ": " + CtiNumStr(Value);
+
                     if( datestamp.isValid() )
                     {
                         resultString += " @ " + CtiNumStr(datestamp.month()).zpad(2)      + "/" +
@@ -1543,12 +1629,14 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     {
                         resultString += " @ 00/00/00 00:00";
                     }
-                    resultString += " -- point undefined in DB";
-                    ReturnMsg->setResultString( resultString );
+
+                    resultString += " -- point undefined in DB\n";
                 }
             }
         }
     }
+
+    ReturnMsg->setResultString( resultString );
 
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
