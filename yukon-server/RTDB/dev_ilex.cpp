@@ -10,8 +10,8 @@
 * Date:   2/15/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/12/19 20:29:34 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/12/23 21:28:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -961,7 +961,7 @@ INT CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                         OutMessage->Port        = getPortID();
                         OutMessage->Remote      = getAddress();
 
-                        EstablishOutMessagePriority( OutMessage, MAXPRIORITY );
+                        OverrideOutMessagePriority( OutMessage, MAXPRIORITY );
 
                         OutMessage->TimeOut     = 2;
                         OutMessage->InLength    = -1;

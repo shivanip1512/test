@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/12/03 17:55:54 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/12/23 21:28:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -885,6 +885,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
                         if(pData != NULL)
                         {
+                            pData->setTime( pData->getTime() - 1 );
                             ReturnMsg->PointData().insert(pData);
                             pData = NULL;  // We just put it on the list...
                         }
@@ -1849,7 +1850,7 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                         OutMessage->Port        = getPortID();
                         OutMessage->Remote      = getAddress();
 
-                        EstablishOutMessagePriority( OutMessage, MAXPRIORITY );
+                        OverrideOutMessagePriority( OutMessage, MAXPRIORITY );
 
                         OutMessage->TimeOut     = 2;
                         OutMessage->InLength    = -1;
