@@ -149,6 +149,14 @@ function checkPassword(form) {
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
+                          <div align="right">e-mail Address:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="Email" maxlength="50" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
                           <div align="right">Notes:</div>
                         </td>
                         <td width="210"> 
@@ -279,6 +287,14 @@ function checkPassword(form) {
                         </td>
                         <td width="210"> 
                           <input type="text" name="SCity" maxlength="30" size="24">
+                        </td>
+                      </tr>
+					  <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">County:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="SCounty" maxlength="30" size="24">
                         </td>
                       </tr>
 					  <tr> 

@@ -131,6 +131,14 @@ function copyAddress(form) {
                           <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>">
                         </td>
                       </tr>
+					   <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">e-mail Address:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="Email" maxlength="50" size="24" value="<%= primContact.getEmail() %>">
+                        </td>
+                      </tr>
 					  <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Notes:</div>
@@ -228,6 +236,14 @@ function copyAddress(form) {
                         </td>
                         <td width="210"> 
                           <input type="text" name="SCity" maxlength="30" size="24" value="<%= propAddr.getCity() %>">
+                        </td>
+                      </tr>
+					  <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">County:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="SCounty" maxlength="30" size="24" value="<%= propAddr.getCounty() %>">
                         </td>
                       </tr>
                       <tr> 
