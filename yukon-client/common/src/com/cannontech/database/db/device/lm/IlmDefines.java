@@ -94,11 +94,13 @@ public interface IlmDefines
 	// ---------------------------------------------------------------
 	public static final Integer NONE_ADDRESS_ID			= new Integer(0);
 	public static final String TYPE_SERVICE				= "SERVICE";
-	public static final String TYPE_GEO						= "GEO";
+	public static final String TYPE_GEO					= "GEO";
 	public static final String TYPE_SUBSTATION			= "SUBSTATION";
-	public static final String TYPE_FEEDER					= "FEEDER";
+	public static final String TYPE_FEEDER				= "FEEDER";
 	public static final String TYPE_PROGRAM				= "PROGRAM";
-	
+	public static final String TYPE_SPLINTER			= "SPLINTER";
+	public static final String TYPE_USER				= "USER";
+	public static final String TYPE_ZIP					= "ZIP";
 	
 	public static final String LEVEL_BRONZE				= "Bronze";
 	public static final String LEVEL_LEAD					= "Lead";

@@ -1,5 +1,6 @@
 package com.cannontech.database.db.device.lm;
 
+import com.cannontech.common.util.CtiUtilities;
 /**
  * This type was created in VisualAge.
  */
@@ -8,11 +9,11 @@ public class LMGroupExpressComAddress extends com.cannontech.database.db.DBPersi
 	private Integer addressID = null;
 	private String addressType = null;
 	private Integer address = new Integer(0);
-	private String addressName = com.cannontech.common.util.CtiUtilities.STRING_NONE; //default none
+	private String addressName = CtiUtilities.STRING_NONE; //default none
 	
 	//default value for all addresses
 	public static final LMGroupExpressComAddress NONE_ADDRESS = 
-			new LMGroupExpressComAddress( IlmDefines.NONE_ADDRESS_ID, com.cannontech.common.util.CtiUtilities.STRING_NONE );
+			new LMGroupExpressComAddress( IlmDefines.NONE_ADDRESS_ID, CtiUtilities.STRING_NONE );
 
 
 	public static final String SETTER_COLUMNS[] = 
@@ -205,8 +206,8 @@ public final static LMGroupExpressComAddress[] getAllExpressCommAddressWithNames
 						"AddressID,AddressType,Address,AddressName " +
 						"from " +
 						TABLE_NAME + 
-						" where AddressID > " + 
-						IlmDefines.NONE_ADDRESS_ID + " order by AddressName" );
+						" where AddressName != '" + 
+						CtiUtilities.STRING_NONE + "' order by AddressName" );
 
 			rset = pstmt.executeQuery();							
 

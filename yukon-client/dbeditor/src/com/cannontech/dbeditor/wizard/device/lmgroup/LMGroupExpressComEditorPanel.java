@@ -1102,9 +1102,12 @@ private com.cannontech.database.db.device.lm.LMGroupExpressComAddress createAddr
 		{
 			com.cannontech.database.db.device.lm.LMGroupExpressComAddress address = null;
 			
-			if( item instanceof com.cannontech.database.db.device.lm.LMGroupExpressComAddress )
+			if( item instanceof LMGroupExpressComAddress )
 			{
-				address = (com.cannontech.database.db.device.lm.LMGroupExpressComAddress)item;
+				if(((LMGroupExpressComAddress)item).getAddressName().compareTo(CtiUtilities.STRING_NONE) != 0)
+					address = (com.cannontech.database.db.device.lm.LMGroupExpressComAddress)item;
+				else
+					address = new com.cannontech.database.db.device.lm.LMGroupExpressComAddress(type);
 			}
 			else //new address is created
 			{
@@ -1124,6 +1127,7 @@ private com.cannontech.database.db.device.lm.LMGroupExpressComAddress createAddr
 							addressTemp = new com.cannontech.database.db.device.lm.LMGroupExpressComAddress(type);
 							
 					addressTemp.setAddress( new Integer(textField.getText()) );
+					addressTemp.setAddressType(CtiUtilities.STRING_NONE );
 					addressTemp.setAddressName( CtiUtilities.STRING_NONE ); 
 					
 					return addressTemp;
@@ -1956,9 +1960,10 @@ private javax.swing.JComboBox getJComboBoxGEO() {
 			ivjJComboBoxGEO = new javax.swing.JComboBox();
 			ivjJComboBoxGEO.setName("JComboBoxGEO");
 			ivjJComboBoxGEO.setFont(new java.awt.Font("dialog", 0, 10));
-			ivjJComboBoxGEO.setEditable(true);
 			// user code begin {1}
+			ivjJComboBoxGEO.setEditable(false);
 			ivjJComboBoxGEO.addItem( STRING_NEW );
+			ivjJComboBoxGEO.addItem( CtiUtilities.STRING_NONE );
 			ivjJComboBoxGEO.setSelectedItem( CtiUtilities.STRING_NONE );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1980,9 +1985,10 @@ private javax.swing.JComboBox getJComboBoxPROG() {
 			ivjJComboBoxPROG = new javax.swing.JComboBox();
 			ivjJComboBoxPROG.setName("JComboBoxPROG");
 			ivjJComboBoxPROG.setFont(new java.awt.Font("dialog", 0, 10));
-			ivjJComboBoxPROG.setEditable(true);
 			// user code begin {1}
+			ivjJComboBoxPROG.setEditable(false);
 			ivjJComboBoxPROG.addItem( STRING_NEW );
+			ivjJComboBoxPROG.addItem( CtiUtilities.STRING_NONE );
 			ivjJComboBoxPROG.setSelectedItem( CtiUtilities.STRING_NONE );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -2004,9 +2010,10 @@ private javax.swing.JComboBox getJComboBoxSPID() {
 			ivjJComboBoxSPID = new javax.swing.JComboBox();
 			ivjJComboBoxSPID.setName("JComboBoxSPID");
 			ivjJComboBoxSPID.setFont(new java.awt.Font("dialog", 0, 10));
-			ivjJComboBoxSPID.setEditable(true);
 			// user code begin {1}
+			ivjJComboBoxSPID.setEditable(false);
 			ivjJComboBoxSPID.addItem( STRING_NEW );
+			ivjJComboBoxSPID.addItem( CtiUtilities.STRING_NONE );
 			ivjJComboBoxSPID.setSelectedItem( CtiUtilities.STRING_NONE );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -2028,8 +2035,11 @@ private javax.swing.JComboBox getJComboBoxSPLINTER() {
 			ivjJComboBoxSPLINTER = new javax.swing.JComboBox();
 			ivjJComboBoxSPLINTER.setName("JComboBoxSPLINTER");
 			ivjJComboBoxSPLINTER.setFont(new java.awt.Font("dialog", 0, 10));
-			ivjJComboBoxSPLINTER.setEditable(true);
 			// user code begin {1}
+			ivjJComboBoxSPLINTER.setEditable(false);
+			ivjJComboBoxSPLINTER.addItem( STRING_NEW );
+			ivjJComboBoxSPLINTER.addItem( CtiUtilities.STRING_NONE );
+			ivjJComboBoxSPLINTER.setSelectedItem( CtiUtilities.STRING_NONE );
 			ivjJComboBoxSPLINTER.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -2051,9 +2061,10 @@ private javax.swing.JComboBox getJComboBoxSUB() {
 			ivjJComboBoxSUB = new javax.swing.JComboBox();
 			ivjJComboBoxSUB.setName("JComboBoxSUB");
 			ivjJComboBoxSUB.setFont(new java.awt.Font("dialog", 0, 10));
-			ivjJComboBoxSUB.setEditable(true);
 			// user code begin {1}
+			ivjJComboBoxSUB.setEditable(false);
 			ivjJComboBoxSUB.addItem( STRING_NEW );
+			ivjJComboBoxSUB.addItem( CtiUtilities.STRING_NONE );
 			ivjJComboBoxSUB.setSelectedItem( CtiUtilities.STRING_NONE );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -2075,8 +2086,11 @@ private javax.swing.JComboBox getJComboBoxUSER() {
 			ivjJComboBoxUSER = new javax.swing.JComboBox();
 			ivjJComboBoxUSER.setName("JComboBoxUSER");
 			ivjJComboBoxUSER.setFont(new java.awt.Font("dialog", 0, 10));
-			ivjJComboBoxUSER.setEditable(true);
 			// user code begin {1}
+			ivjJComboBoxUSER.setEditable(false);
+			ivjJComboBoxUSER.addItem( STRING_NEW );
+			ivjJComboBoxUSER.addItem( CtiUtilities.STRING_NONE );
+			ivjJComboBoxUSER.setSelectedItem( CtiUtilities.STRING_NONE );
 			ivjJComboBoxUSER.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -2098,8 +2112,11 @@ private javax.swing.JComboBox getJComboBoxZIP() {
 			ivjJComboBoxZIP = new javax.swing.JComboBox();
 			ivjJComboBoxZIP.setName("JComboBoxZIP");
 			ivjJComboBoxZIP.setFont(new java.awt.Font("dialog", 0, 10));
-			ivjJComboBoxZIP.setEditable(true);
 			// user code begin {1}
+			ivjJComboBoxZIP.setEditable(false);
+			ivjJComboBoxZIP.addItem( STRING_NEW );
+			ivjJComboBoxZIP.addItem( CtiUtilities.STRING_NONE );
+			ivjJComboBoxZIP.setSelectedItem( CtiUtilities.STRING_NONE );
 			ivjJComboBoxZIP.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -3403,16 +3420,24 @@ private void initAddressJComboBoxes()
 		com.cannontech.database.db.device.lm.LMGroupExpressComAddress.getAllExpressCommAddressWithNames();
 
 	for( int i = 0; i < addresses.length; i++ )
+	{
+		//if( addresses[i].getAddressName().equalsIgnoreCase(CtiUtilities.STRING_NONE) );		
 		if( addresses[i].getAddressType().equalsIgnoreCase(IlmDefines.TYPE_SERVICE) )
 			getJComboBoxSPID().addItem( addresses[i] );
 		else if( addresses[i].getAddressType().equalsIgnoreCase(IlmDefines.TYPE_GEO) )
 			getJComboBoxGEO().addItem( addresses[i] );
 		else if( addresses[i].getAddressType().equalsIgnoreCase(IlmDefines.TYPE_SUBSTATION) )
 			getJComboBoxSUB().addItem( addresses[i] );
-		/*else if( addresses[i].getAddressType().equalsIgnoreCase(IlmDefines.TYPE_FEEDER) )
-			getJComboBoxFEED().addItem( addresses[i] );*/
+		else if( addresses[i].getAddressType().equalsIgnoreCase(IlmDefines.TYPE_FEEDER) ) 
+			((LMGroupExpressComFeederAddressPanel)getFeederBitToggleDialog().getContentPane()).getFeederComboBox().addItem(addresses[i]); 
 		else if( addresses[i].getAddressType().equalsIgnoreCase(IlmDefines.TYPE_PROGRAM) )
 			getJComboBoxPROG().addItem( addresses[i] );
+		else if( addresses[i].getAddressType().equalsIgnoreCase(IlmDefines.TYPE_SPLINTER) )
+			getJComboBoxSPLINTER().addItem( addresses[i] );
+		else if( addresses[i].getAddressType().equalsIgnoreCase(IlmDefines.TYPE_USER) )
+			getJComboBoxUSER().addItem( addresses[i] );
+		else if( addresses[i].getAddressType().equalsIgnoreCase(IlmDefines.TYPE_ZIP) )
+			getJComboBoxZIP().addItem( addresses[i] );
 		else
 		{
 			com.cannontech.clientutils.CTILogger.info("********************************");
@@ -3422,7 +3447,7 @@ private void initAddressJComboBoxes()
 			
 			com.cannontech.clientutils.CTILogger.info("********************************");
 		}
-
+	}
 }
 /**
  * Initializes connections
@@ -3611,7 +3636,8 @@ public void jButtonFeedAddress_ActionPerformed(java.awt.event.ActionEvent action
 /**
  * Comment
  */
-public void jButtonGEOModify_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+public void jButtonGEOModify_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
 	if(getJButtonGEOModify().getText().compareTo(STRING_CREATE) == 0)
 	{
 		if(((String)getJComboBoxGEO().getSelectedItem()).compareTo(STRING_NEW) == 0
@@ -3638,7 +3664,7 @@ public void jButtonGEOModify_ActionPerformed(java.awt.event.ActionEvent actionEv
 		{
 			int confirm = javax.swing.JOptionPane.showConfirmDialog(
 						this,
-						"By clicking Modify, you are attempting to change the address value assigned to  \n" +
+						"By clicking Modify, you will be allowed to change the address value assigned to  \n" +
 						"this label name.  ALL OTHER LOAD GROUPS THAT USE THIS ADDRESS LABEL will receive \n" +
 						"this new value once you click Apply and save your changes to the database. \n" +
 						"Are you sure you want do this?",
@@ -3646,11 +3672,11 @@ public void jButtonGEOModify_ActionPerformed(java.awt.event.ActionEvent actionEv
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.WARNING_MESSAGE);
 			
-			if(confirm == JOptionPane.NO_OPTION)
+			if(confirm == JOptionPane.YES_OPTION)
+				getJTextFieldGeoAddress().setEnabled(true);
+			else
 			{
-				
-				getJComboBoxGEO().setSelectedItem(CtiUtilities.STRING_NONE);
-				getJTextFieldGeoAddress().setText("0");
+				getJTextFieldGeoAddress().setEnabled(false);
 			}
 		}
 	}
@@ -3659,37 +3685,295 @@ public void jButtonGEOModify_ActionPerformed(java.awt.event.ActionEvent actionEv
 /**
  * Comment
  */
-public void jButtonPROGModify_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+public void jButtonPROGModify_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	if(getJButtonPROGModify().getText().compareTo(STRING_CREATE) == 0)
+	{
+		if(((String)getJComboBoxPROG().getSelectedItem()).compareTo(STRING_NEW) == 0
+			|| !(((String)getJComboBoxPROG().getSelectedItem()).length() > 0)
+			|| ((String)getJComboBoxPROG().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) == 0)
+		{
+			javax.swing.JOptionPane.showMessageDialog(
+						this,
+						"You have not specified a label name.  Please type a name in the combo box \n" +
+						"and click Create again.",
+						"Label name not filled in.",
+						JOptionPane.WARNING_MESSAGE);	
+		}
+		else
+		{
+			getJButtonPROGModify().setText(STRING_MODIFY);
+			getJComboBoxPROG().setEditable(false);
+			getJComboBoxPROG().addItem(getJComboBoxPROG().getSelectedItem());
+		}
+	}		
+	else
+	{
+		if(getJComboBoxPROG().getSelectedItem() instanceof LMGroupExpressComAddress)
+		{
+			int confirm = javax.swing.JOptionPane.showConfirmDialog(
+						this,
+						"By clicking Modify, you are attempting to change the address value assigned to  \n" +
+						"this label name.  ALL OTHER LOAD GROUPS THAT USE THIS ADDRESS LABEL will receive \n" +
+						"this new value once you click Apply and save your changes to the database. \n" +
+						"Are you sure you want do this?",
+						"Change may effect other load groups!",
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.WARNING_MESSAGE);
+			
+			if(confirm == JOptionPane.YES_OPTION)
+				getJTextFieldProgAddress().setEnabled(true);
+			else
+			{
+				getJTextFieldProgAddress().setEnabled(false);
+			}
+		}
+	}
 	return;
 }
 /**
  * Comment
  */
-public void jButtonSPIDModify_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+public void jButtonSPIDModify_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	if(getJButtonSPIDModify().getText().compareTo(STRING_CREATE) == 0)
+	{
+		if(((String)getJComboBoxSPID().getSelectedItem()).compareTo(STRING_NEW) == 0
+			|| !(((String)getJComboBoxSPID().getSelectedItem()).length() > 0)
+			|| ((String)getJComboBoxSPID().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) == 0)
+		{
+			javax.swing.JOptionPane.showMessageDialog(
+						this,
+						"You have not specified a label name.  Please type a name in the combo box \n" +
+						"and click Create again.",
+						"Label name not filled in.",
+						JOptionPane.WARNING_MESSAGE);	
+		}
+		else
+		{
+			getJButtonSPIDModify().setText(STRING_MODIFY);
+			getJComboBoxSPID().setEditable(false);
+			getJComboBoxSPID().addItem(getJComboBoxSPID().getSelectedItem());
+		}
+	}		
+	else
+	{
+		if(getJComboBoxSPID().getSelectedItem() instanceof LMGroupExpressComAddress)
+		{
+			int confirm = javax.swing.JOptionPane.showConfirmDialog(
+						this,
+						"By clicking Modify, you are attempting to change the address value assigned to  \n" +
+						"this label name.  ALL OTHER LOAD GROUPS THAT USE THIS ADDRESS LABEL will receive \n" +
+						"this new value once you click Apply and save your changes to the database. \n" +
+						"Are you sure you want do this?",
+						"Change may effect other load groups!",
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.WARNING_MESSAGE);
+			
+			if(confirm == JOptionPane.YES_OPTION)
+				getJTextFieldSPIDAddress().setEnabled(true);
+			else
+			{
+				getJTextFieldSPIDAddress().setEnabled(false);
+			}
+		}
+	}
 	return;
 }
 /**
  * Comment
  */
-public void jButtonSplintModify_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+public void jButtonSplintModify_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	if(getJButtonSplintModify().getText().compareTo(STRING_CREATE) == 0)
+	{
+		if(((String)getJComboBoxSPLINTER().getSelectedItem()).compareTo(STRING_NEW) == 0
+			|| !(((String)getJComboBoxSPLINTER().getSelectedItem()).length() > 0)
+			|| ((String)getJComboBoxSPLINTER().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) == 0)
+		{
+			javax.swing.JOptionPane.showMessageDialog(
+						this,
+						"You have not specified a label name.  Please type a name in the combo box \n" +
+						"and click Create again.",
+						"Label name not filled in.",
+						JOptionPane.WARNING_MESSAGE);	
+		}
+		else
+		{
+			getJButtonSplintModify().setText(STRING_MODIFY);
+			getJComboBoxSPLINTER().setEditable(false);
+			getJComboBoxSPLINTER().addItem(getJComboBoxSPLINTER().getSelectedItem());
+		}
+	}		
+	else
+	{
+		if(getJComboBoxSPLINTER().getSelectedItem() instanceof LMGroupExpressComAddress)
+		{
+			int confirm = javax.swing.JOptionPane.showConfirmDialog(
+						this,
+						"By clicking Modify, you are attempting to change the address value assigned to  \n" +
+						"this label name.  ALL OTHER LOAD GROUPS THAT USE THIS ADDRESS LABEL will receive \n" +
+						"this new value once you click Apply and save your changes to the database. \n" +
+						"Are you sure you want do this?",
+						"Change may effect other load groups!",
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.WARNING_MESSAGE);
+			
+			if(confirm == JOptionPane.YES_OPTION)
+				getJTextFieldSplinterAddress().setEnabled(true);
+			else
+			{
+				getJTextFieldSplinterAddress().setEnabled(false);
+			}
+		}
+	}
 	return;
 }
 /**
  * Comment
  */
-public void jButtonSUBModify_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+public void jButtonSUBModify_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	if(getJButtonSUBModify().getText().compareTo(STRING_CREATE) == 0)
+	{
+		if(((String)getJComboBoxSUB().getSelectedItem()).compareTo(STRING_NEW) == 0
+			|| !(((String)getJComboBoxSUB().getSelectedItem()).length() > 0)
+			|| ((String)getJComboBoxSUB().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) == 0)
+		{
+			javax.swing.JOptionPane.showMessageDialog(
+						this,
+						"You have not specified a label name.  Please type a name in the combo box \n" +
+						"and click Create again.",
+						"Label name not filled in.",
+						JOptionPane.WARNING_MESSAGE);	
+		}
+		else
+		{
+			getJButtonSUBModify().setText(STRING_MODIFY);
+			getJComboBoxSUB().setEditable(false);
+			getJComboBoxSUB().addItem(getJComboBoxSUB().getSelectedItem());
+		}
+	}		
+	else
+	{
+		if(getJComboBoxSUB().getSelectedItem() instanceof LMGroupExpressComAddress)
+		{
+			int confirm = javax.swing.JOptionPane.showConfirmDialog(
+						this,
+						"By clicking Modify, you are attempting to change the address value assigned to  \n" +
+						"this label name.  ALL OTHER LOAD GROUPS THAT USE THIS ADDRESS LABEL will receive \n" +
+						"this new value once you click Apply and save your changes to the database. \n" +
+						"Are you sure you want do this?",
+						"Change may effect other load groups!",
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.WARNING_MESSAGE);
+			
+			if(confirm == JOptionPane.YES_OPTION)
+				getJTextFieldSubAddress().setEnabled(true);
+			else
+			{
+				getJTextFieldSubAddress().setEnabled(false);
+			}
+		}
+	}
 	return;
 }
 /**
  * Comment
  */
-public void jButtonUSERModify_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+public void jButtonUSERModify_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	if(getJButtonUSERModify().getText().compareTo(STRING_CREATE) == 0)
+	{
+		if(((String)getJComboBoxUSER().getSelectedItem()).compareTo(STRING_NEW) == 0
+			|| !(((String)getJComboBoxUSER().getSelectedItem()).length() > 0)
+			|| ((String)getJComboBoxUSER().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) == 0)
+		{
+			javax.swing.JOptionPane.showMessageDialog(
+						this,
+						"You have not specified a label name.  Please type a name in the combo box \n" +
+						"and click Create again.",
+						"Label name not filled in.",
+						JOptionPane.WARNING_MESSAGE);	
+		}
+		else
+		{
+			getJButtonUSERModify().setText(STRING_MODIFY);
+			getJComboBoxUSER().setEditable(false);
+			getJComboBoxUSER().addItem(getJComboBoxUSER().getSelectedItem());
+		}
+	}		
+	else
+	{
+		if(getJComboBoxUSER().getSelectedItem() instanceof LMGroupExpressComAddress)
+		{
+			int confirm = javax.swing.JOptionPane.showConfirmDialog(
+						this,
+						"By clicking Modify, you are attempting to change the address value assigned to  \n" +
+						"this label name.  ALL OTHER LOAD GROUPS THAT USE THIS ADDRESS LABEL will receive \n" +
+						"this new value once you click Apply and save your changes to the database. \n" +
+						"Are you sure you want do this?",
+						"Change may effect other load groups!",
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.WARNING_MESSAGE);
+			
+			if(confirm == JOptionPane.YES_OPTION)
+				getJTextFieldUserAddress().setEnabled(true);
+			else
+			{
+				getJTextFieldUserAddress().setEnabled(false);
+			}
+		}
+	}
 	return;
 }
 /**
  * Comment
  */
-public void jButtonZIPModify_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+public void jButtonZIPModify_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	if(getJButtonZIPModify().getText().compareTo(STRING_CREATE) == 0)
+	{
+		if(((String)getJComboBoxZIP().getSelectedItem()).compareTo(STRING_NEW) == 0
+			|| !(((String)getJComboBoxZIP().getSelectedItem()).length() > 0)
+			|| ((String)getJComboBoxZIP().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) == 0)
+		{
+			javax.swing.JOptionPane.showMessageDialog(
+						this,
+						"You have not specified a label name.  Please type a name in the combo box \n" +
+						"and click Create again.",
+						"Label name not filled in.",
+						JOptionPane.WARNING_MESSAGE);	
+		}
+		else
+		{
+			getJButtonZIPModify().setText(STRING_MODIFY);
+			getJComboBoxZIP().setEditable(false);
+			getJComboBoxZIP().addItem(getJComboBoxZIP().getSelectedItem());
+		}
+	}		
+	else
+	{
+		if(getJComboBoxZIP().getSelectedItem() instanceof LMGroupExpressComAddress)
+		{
+			int confirm = javax.swing.JOptionPane.showConfirmDialog(
+						this,
+						"By clicking Modify, you are attempting to change the address value assigned to  \n" +
+						"this label name.  ALL OTHER LOAD GROUPS THAT USE THIS ADDRESS LABEL will receive \n" +
+						"this new value once you click Apply and save your changes to the database. \n" +
+						"Are you sure you want do this?",
+						"Change may effect other load groups!",
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.WARNING_MESSAGE);
+			
+			if(confirm == JOptionPane.YES_OPTION)
+				getJTextFieldZipAddress().setEnabled(true);
+			else
+			{
+				getJTextFieldZipAddress().setEnabled(false);
+			}
+		}
+	}
 	return;
 }
 /**
@@ -3887,13 +4171,14 @@ public void jCheckBoxZIP_ActionPerformed(java.awt.event.ActionEvent actionEvent)
  */
 public void jComboBoxGEO_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-
 	if( getJComboBoxGEO().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressComAddress )
 	{
 		com.cannontech.database.db.device.lm.LMGroupExpressComAddress selected =
-				(com.cannontech.database.db.device.lm.LMGroupExpressComAddress)getJComboBoxGEO().getSelectedItem();
+			(com.cannontech.database.db.device.lm.LMGroupExpressComAddress)getJComboBoxGEO().getSelectedItem();
 
 		getJTextFieldGeoAddress().setText( selected.getAddress().toString() );
+		//make sure they don't change this label's assigned value until Modify is pressed
+		getJTextFieldGeoAddress().setEnabled(false);
 		
 		getJComboBoxGEO().setEditable(false);
 		getJButtonGEOModify().setText(STRING_MODIFY);
@@ -3905,11 +4190,13 @@ public void jComboBoxGEO_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 			getJButtonGEOModify().setText(STRING_CREATE);
 			getJComboBoxGEO().setEditable(true);
 			getJComboBoxGEO().getEditor().selectAll();
+			getJTextFieldGeoAddress().setEnabled(true);
 		}
 		else if(((String)getJComboBoxGEO().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) == 0)
 		{
 			getJButtonGEOModify().setText(STRING_MODIFY);
 			getJComboBoxGEO().setEditable(false);
+			getJTextFieldGeoAddress().setEnabled(true);
 		}
 	}
 	
@@ -3922,22 +4209,35 @@ public void jComboBoxGEO_ActionPerformed(java.awt.event.ActionEvent actionEvent)
  */
 public void jComboBoxPROG_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-
 	if( getJComboBoxPROG().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressComAddress )
 	{
 		com.cannontech.database.db.device.lm.LMGroupExpressComAddress selected =
 				(com.cannontech.database.db.device.lm.LMGroupExpressComAddress)getJComboBoxPROG().getSelectedItem();
 
 		getJTextFieldProgAddress().setText( selected.getAddress().toString() );
-
+		//make sure they don't change this label's assigned value until Modify is pressed
+		getJTextFieldProgAddress().setEnabled(false);
+		
 		getJComboBoxPROG().setEditable(false);
+		getJButtonPROGModify().setText(STRING_MODIFY);
 	}
-	else
+	else if(getJComboBoxPROG().getSelectedItem() instanceof String)
 	{
-		getJComboBoxPROG().setEditable(true);
-		getJComboBoxPROG().getEditor().selectAll();
+		if(((String)getJComboBoxPROG().getSelectedItem()).compareTo(STRING_NEW) == 0)
+		{
+			getJButtonPROGModify().setText(STRING_CREATE);
+			getJComboBoxPROG().setEditable(true);
+			getJComboBoxPROG().getEditor().selectAll();
+			getJTextFieldProgAddress().setEnabled(true);
+		}
+		else if(((String)getJComboBoxPROG().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) == 0)
+		{
+			getJButtonPROGModify().setText(STRING_MODIFY);
+			getJComboBoxPROG().setEditable(false);
+			getJTextFieldProgAddress().setEnabled(true);
+		}
 	}
-
+	
 	fireInputUpdate();
 
 	return;
@@ -3947,22 +4247,35 @@ public void jComboBoxPROG_ActionPerformed(java.awt.event.ActionEvent actionEvent
  */
 public void jComboBoxSPID_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-
 	if( getJComboBoxSPID().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressComAddress )
 	{
 		com.cannontech.database.db.device.lm.LMGroupExpressComAddress selected =
 				(com.cannontech.database.db.device.lm.LMGroupExpressComAddress)getJComboBoxSPID().getSelectedItem();
 
 		getJTextFieldSPIDAddress().setText( selected.getAddress().toString() );
+		//make sure they don't change this label's assigned value until Modify is pressed
+		getJTextFieldSPIDAddress().setEnabled(false);
 		
 		getJComboBoxSPID().setEditable(false);
+		getJButtonSPIDModify().setText(STRING_MODIFY);
 	}
-	else
+	else if(getJComboBoxSPID().getSelectedItem() instanceof String)
 	{
-		getJComboBoxSPID().setEditable(true);
-		getJComboBoxSPID().getEditor().selectAll();
+		if(((String)getJComboBoxSPID().getSelectedItem()).compareTo(STRING_NEW) == 0)
+		{
+			getJButtonSPIDModify().setText(STRING_CREATE);
+			getJComboBoxSPID().setEditable(true);
+			getJComboBoxSPID().getEditor().selectAll();
+			getJTextFieldSPIDAddress().setEnabled(true);
+		}
+		else if(((String)getJComboBoxSPID().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) == 0)
+		{
+			getJButtonSPIDModify().setText(STRING_MODIFY);
+			getJComboBoxSPID().setEditable(false);
+			getJTextFieldSPIDAddress().setEnabled(true);
+		}
 	}
-
+	
 	fireInputUpdate();
 
 	return;
@@ -3970,7 +4283,39 @@ public void jComboBoxSPID_ActionPerformed(java.awt.event.ActionEvent actionEvent
 /**
  * Comment
  */
-public void jComboBoxSPLINTER_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+public void jComboBoxSPLINTER_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	if( getJComboBoxSPLINTER().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressComAddress )
+	{
+		com.cannontech.database.db.device.lm.LMGroupExpressComAddress selected =
+				(com.cannontech.database.db.device.lm.LMGroupExpressComAddress)getJComboBoxSPLINTER().getSelectedItem();
+
+		getJTextFieldSplinterAddress().setText( selected.getAddress().toString() );
+		//make sure they don't change this label's assigned value until Modify is pressed
+		getJTextFieldSplinterAddress().setEnabled(false);
+		
+		getJComboBoxSPLINTER().setEditable(false);
+		getJButtonSplintModify().setText(STRING_MODIFY);
+	}
+	else if(getJComboBoxSPLINTER().getSelectedItem() instanceof String)
+	{
+		if(((String)getJComboBoxSPLINTER().getSelectedItem()).compareTo(STRING_NEW) == 0)
+		{
+			getJButtonSplintModify().setText(STRING_CREATE);
+			getJComboBoxSPLINTER().setEditable(true);
+			getJComboBoxSPLINTER().getEditor().selectAll();
+			getJTextFieldSplinterAddress().setEnabled(true);
+		}
+		else if(((String)getJComboBoxSPLINTER().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) == 0)
+		{
+			getJButtonSplintModify().setText(STRING_MODIFY);
+			getJComboBoxSPLINTER().setEditable(false);
+			getJTextFieldSplinterAddress().setEnabled(true);
+		}
+	}
+	
+	fireInputUpdate();
+
 	return;
 }
 /**
@@ -3978,22 +4323,35 @@ public void jComboBoxSPLINTER_ActionPerformed(java.awt.event.ActionEvent actionE
  */
 public void jComboBoxSUB_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-
 	if( getJComboBoxSUB().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressComAddress )
 	{
 		com.cannontech.database.db.device.lm.LMGroupExpressComAddress selected =
 				(com.cannontech.database.db.device.lm.LMGroupExpressComAddress)getJComboBoxSUB().getSelectedItem();
 
 		getJTextFieldSubAddress().setText( selected.getAddress().toString() );
-
+		//make sure they don't change this label's assigned value until Modify is pressed
+		getJTextFieldSubAddress().setEnabled(false);
+		
 		getJComboBoxSUB().setEditable(false);
+		getJButtonSUBModify().setText(STRING_MODIFY);
 	}
-	else
+	else if(getJComboBoxSUB().getSelectedItem() instanceof String)
 	{
-		getJComboBoxSUB().setEditable(true);
-		getJComboBoxSUB().getEditor().selectAll();
+		if(((String)getJComboBoxSUB().getSelectedItem()).compareTo(STRING_NEW) == 0)
+		{
+			getJButtonSUBModify().setText(STRING_CREATE);
+			getJComboBoxSUB().setEditable(true);
+			getJComboBoxSUB().getEditor().selectAll();
+			getJTextFieldSubAddress().setEnabled(true);
+		}
+		else if(((String)getJComboBoxSUB().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) == 0)
+		{
+			getJButtonSUBModify().setText(STRING_MODIFY);
+			getJComboBoxSUB().setEditable(false);
+			getJTextFieldSubAddress().setEnabled(true);
+		}
 	}
-
+	
 	fireInputUpdate();
 
 	return;
@@ -4001,13 +4359,77 @@ public void jComboBoxSUB_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 /**
  * Comment
  */
-public void jComboBoxUSER_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+public void jComboBoxUSER_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	if( getJComboBoxUSER().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressComAddress )
+	{
+		com.cannontech.database.db.device.lm.LMGroupExpressComAddress selected =
+				(com.cannontech.database.db.device.lm.LMGroupExpressComAddress)getJComboBoxUSER().getSelectedItem();
+
+		getJTextFieldUserAddress().setText( selected.getAddress().toString() );
+		//make sure they don't change this label's assigned value until Modify is pressed
+		getJTextFieldUserAddress().setEnabled(false);
+		
+		getJComboBoxUSER().setEditable(false);
+		getJButtonUSERModify().setText(STRING_MODIFY);
+	}
+	else if(getJComboBoxUSER().getSelectedItem() instanceof String)
+	{
+		if(((String)getJComboBoxUSER().getSelectedItem()).compareTo(STRING_NEW) == 0)
+		{
+			getJButtonUSERModify().setText(STRING_CREATE);
+			getJComboBoxUSER().setEditable(true);
+			getJComboBoxUSER().getEditor().selectAll();
+			getJTextFieldUserAddress().setEnabled(true);
+		}
+		else if(((String)getJComboBoxUSER().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) == 0)
+		{
+			getJButtonUSERModify().setText(STRING_MODIFY);
+			getJComboBoxUSER().setEditable(false);
+			getJTextFieldUserAddress().setEnabled(true);
+		}
+	}
+	
+	fireInputUpdate();
+
 	return;
 }
 /**
  * Comment
  */
-public void jComboBoxZIP_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+public void jComboBoxZIP_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	if( getJComboBoxZIP().getSelectedItem() instanceof com.cannontech.database.db.device.lm.LMGroupExpressComAddress )
+	{
+		com.cannontech.database.db.device.lm.LMGroupExpressComAddress selected =
+				(com.cannontech.database.db.device.lm.LMGroupExpressComAddress)getJComboBoxZIP().getSelectedItem();
+
+		getJTextFieldZipAddress().setText( selected.getAddress().toString() );
+		//make sure they don't change this label's assigned value until Modify is pressed
+		getJTextFieldZipAddress().setEnabled(false);
+		
+		getJComboBoxZIP().setEditable(false);
+		getJButtonZIPModify().setText(STRING_MODIFY);
+	}
+	else if(getJComboBoxZIP().getSelectedItem() instanceof String)
+	{
+		if(((String)getJComboBoxZIP().getSelectedItem()).compareTo(STRING_NEW) == 0)
+		{
+			getJButtonZIPModify().setText(STRING_CREATE);
+			getJComboBoxZIP().setEditable(true);
+			getJComboBoxZIP().getEditor().selectAll();
+			getJTextFieldZipAddress().setEnabled(true);
+		}
+		else if(((String)getJComboBoxZIP().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) == 0)
+		{
+			getJButtonZIPModify().setText(STRING_MODIFY);
+			getJComboBoxZIP().setEditable(false);
+			getJTextFieldZipAddress().setEnabled(true);
+		}
+	}
+	
+	fireInputUpdate();
+
 	return;
 }
 /**
@@ -4045,30 +4467,35 @@ public void setValue(Object o)
 		if(group.getServiceProviderAddress().getAddressName().compareTo(CtiUtilities.STRING_NONE) != 0)
 		{
 			getJComboBoxSPID().setSelectedItem( group.getServiceProviderAddress() );
+			getJTextFieldSPIDAddress().setEnabled(false);
 		}
 
 		getJTextFieldGeoAddress().setText( group.getGeoAddress().getAddress().toString() );
 		if(group.getGeoAddress().getAddressName().compareTo(CtiUtilities.STRING_NONE) != 0)
 		{
 			getJComboBoxGEO().setSelectedItem( group.getGeoAddress() );
+			getJTextFieldGeoAddress().setEnabled(false);
 		}
 
 		((LMGroupExpressComFeederAddressPanel)getFeederBitToggleDialog().getContentPane()).setFeederAddressBitMask(group.getFeederAddress().getAddress()); 
 		if(group.getFeederAddress().getAddressName().compareTo(CtiUtilities.STRING_NONE) != 0)
 		{
 			((LMGroupExpressComFeederAddressPanel)getFeederBitToggleDialog().getContentPane()).getFeederComboBox().setSelectedItem( group.getFeederAddress() ); 
+			((LMGroupExpressComFeederAddressPanel)getFeederBitToggleDialog().getContentPane()).getFeederAddress16BitTogglePanel().setEnabled(false);
 		}
 
 		getJTextFieldSubAddress().setText( group.getSubstationAddress().getAddress().toString() );
 		if(group.getSubstationAddress().getAddressName().compareTo(CtiUtilities.STRING_NONE) != 0)
 		{
 			getJComboBoxSUB().setSelectedItem( group.getSubstationAddress() );
+			getJTextFieldSubAddress().setEnabled(false);
 		}
 		
 		getJTextFieldProgAddress().setText( group.getProgramAddress().getAddress().toString() );
 		if(group.getProgramAddress().getAddressName().compareTo(CtiUtilities.STRING_NONE) != 0)
 		{
 			getJComboBoxPROG().setSelectedItem( group.getProgramAddress() );
+			getJTextFieldProgAddress().setEnabled(false);
 		}
 		
 		getJTextFieldZipAddress().setText( group.getLMGroupExpressComm().getZipCodeAddress().toString() );
