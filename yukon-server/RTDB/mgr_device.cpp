@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2005/02/17 23:11:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -396,8 +396,11 @@ _removeFunc(NULL)
 {
 }
 
+extern void cleanupDB();
+
 CtiDeviceManager::~CtiDeviceManager()
 {
+    cleanupDB();  // Deallocate all the DB stuff.
 }
 
 void CtiDeviceManager::deleteList(void)

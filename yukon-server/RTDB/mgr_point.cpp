@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/02/17 23:11:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -644,7 +644,13 @@ CtiPoint* CtiPointManager::getEqualByName(LONG pao, RWCString pname)
 
 
 CtiPointManager::CtiPointManager() {}
-CtiPointManager::~CtiPointManager() {}
+
+extern void cleanupDB();
+
+CtiPointManager::~CtiPointManager()
+{
+    cleanupDB();  // Deallocate all the DB stuff.
+}
 
 
 void CtiPointManager::DeleteList(void)

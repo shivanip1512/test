@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/02/17 23:11:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,7 +28,13 @@
 #include "dbaccess.h"
 
 CtiRouteManager::CtiRouteManager() {}
-CtiRouteManager::~CtiRouteManager() {}
+
+extern void cleanupDB();
+
+CtiRouteManager::~CtiRouteManager()
+{
+    cleanupDB();  // Deallocate all the DB stuff.
+}
 
 
 void CtiRouteManager::DeleteList(void)
