@@ -21,23 +21,27 @@ public class PortEditorPanel extends com.cannontech.common.editor.PropertyPanel 
 	private static final int[][]  EDITOR_TYPES =
 	{
 		{		//0 - PortSettingsEditorPanel
-			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO, PortTypes.LOCAL_DIALUP, 
-			PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED, PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP 
+			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO,
+			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED,
+			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK
 		},
 		{		//1	- PortTimingsEditorPanel
 			PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO, PortTypes.LOCAL_DIALUP, 
-			PortTypes.TSERVER_SHARED, PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP
+			PortTypes.TSERVER_SHARED, PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP,
+			PortTypes.LOCAL_DIALBACK
 		},
 		{		//2 - PortModemEditorPanel
-			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIALUP
+			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK
 		},
 		{		//3 - PortAlarmEditorPanel
-			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO, PortTypes.LOCAL_DIALUP, 
-			PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED, PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP
+			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO,
+			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED,
+			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK
 		},
 		{		//4 - PortSharingEditorPanel
-			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO, PortTypes.LOCAL_DIALUP, 
-			PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED, PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP
+			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO,
+			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED,
+			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK
 		}
 
 	};

@@ -90,7 +90,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 		if( getPortTypeQuestionPanelA().isLocalSerialPort() )
 		{
 	
-			if( getLocalPortTypeQuestionPanel().isDialup() )
+			if( getLocalPortTypeQuestionPanel().isDialup()
+				 || getLocalPortTypeQuestionPanel().isDialBack() )
 			{
 				return getSimpleDialupModemPanel();
 			}
@@ -166,16 +167,18 @@ protected TerminalServerTypeQuestionPanel getTerminalServerTypeQuestionPanel() {
  */
 protected boolean isLastInputPanel(DataInputPanel panel) {
 
-	return 	(
-						(panel == getSimpleDialupModemPanel())
-						|| (panel == getSimpleLocalPortSettingsPanel() &&
-								getPortTypeQuestionPanelA().isLocalSerialPort() &&
-								!getLocalPortTypeQuestionPanel().isDialup())
-						|| (panel == getSimpleTerminalServerSettingsPanel() &&
-								!getPortTypeQuestionPanelA().isLocalSerialPort() &&
-								!getTerminalServerTypeQuestionPanel().isDialup())
-					);	
+	return( (panel == getSimpleDialupModemPanel())
+				|| (panel == getSimpleLocalPortSettingsPanel() &&
+					 getPortTypeQuestionPanelA().isLocalSerialPort() &&
+					 !getLocalPortTypeQuestionPanel().isDialup() &&
+					 !getLocalPortTypeQuestionPanel().isDialBack() )
+					 
+				|| (panel == getSimpleTerminalServerSettingsPanel() &&
+					 !getPortTypeQuestionPanelA().isLocalSerialPort() &&
+					 !getTerminalServerTypeQuestionPanel().isDialup())
+			);	
 }
+
 /**
  * This method was created in VisualAge.
  * @param args java.lang.String[]

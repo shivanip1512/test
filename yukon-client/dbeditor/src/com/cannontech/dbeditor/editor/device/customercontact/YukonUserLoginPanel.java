@@ -373,8 +373,9 @@ public Object getValue(Object o)
 			//login.setLoginType( getLoginTypeString() );
 		}
 	}
+	
+	return o;
 */
-
 	return o;
 }
 

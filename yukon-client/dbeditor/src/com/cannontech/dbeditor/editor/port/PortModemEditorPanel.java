@@ -6,6 +6,8 @@ package com.cannontech.dbeditor.editor.port;
 
  import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.port.LocalDialupPort;
+import com.cannontech.database.data.port.LocalSharedPort;
+import com.cannontech.database.data.port.PortDialBack;
 import com.cannontech.database.data.port.TerminalServerDialupPort;
 import com.cannontech.database.db.port.PortDialupModem;
  
@@ -448,28 +450,43 @@ private javax.swing.JTextField getSuffixNumberTextField() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
-public Object getValue(Object val) {
-	PortDialupModem pdm;
-	
-	try
-	{
-		pdm = ((LocalDialupPort) val).getPortDialupModem();
-	}
-	catch( ClassCastException cce )
-	{
-		//let this one throw an exception - no try/catch
-		pdm = ((TerminalServerDialupPort) val).getPortDialupModem();
-	}
-
+public Object getValue(Object val) 
+{
 	String modemType = (String) getModemTypeComboBox().getSelectedItem();
 	String initString = getInitializationStringTextField().getText();
 	String prefixString = getPrefixNumberTextField().getText();
 	String suffixString = getSuffixNumberTextField().getText();
-
-	pdm.setModemType( modemType );
-	pdm.setInitializationString( initString );
-	pdm.setPrefixNumber( prefixString );
-	pdm.setSuffixNumber( suffixString );
+	
+	if( val instanceof PortDialupModem )
+	{
+		PortDialupModem pdm;
+	
+		try
+		{
+			pdm = ((LocalDialupPort) val).getPortDialupModem();
+		}
+		catch( ClassCastException cce )
+		{
+			//let this one throw an exception - no try/catch
+			pdm = ((TerminalServerDialupPort) val).getPortDialupModem();
+		}
+		
+		pdm.setModemType( modemType );
+		pdm.setInitializationString( initString );
+		pdm.setPrefixNumber( prefixString );
+		pdm.setSuffixNumber( suffixString );		
+	}
+	else if( val instanceof PortDialBack )
+	{		
+		PortDialBack pdb = (PortDialBack)val;
+		
+		pdb.getPortDialback().setModemType( modemType );
+		pdb.getPortDialback().setInitializationString( initString );
+	}
+	else  //the thing that should not be!
+		throw new Error("Unrecognized port type instance, unknown instance is = " 
+								+ val.getClass().getName() );
+								
 
 	return val;
 }
@@ -578,27 +595,45 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
-public void setValue(Object val) {
-
-	PortDialupModem pdm;
+public void setValue(Object val) 
+{
+	String modemType = null, initString = null;
+	PortDialupModem pdm = null;
 	
 	if( val instanceof LocalDialupPort )
-		pdm = ((LocalDialupPort) val).getPortDialupModem();	
-	else
-	if( val instanceof TerminalServerDialupPort )
-		pdm = ((TerminalServerDialupPort) val).getPortDialupModem();
-	else
-		return; //???
-		
-	String modemType = pdm.getModemType();
-	String initString = pdm.getInitializationString();
-	String prefixString = pdm.getPrefixNumber();
-	String suffixString = pdm.getSuffixNumber();
+	{
+		pdm = ((LocalDialupPort) val).getPortDialupModem();
+		getPrefixNumberTextField().setText( pdm.getPrefixNumber() );
 
-	CtiUtilities.setSelectedInComboBox( getModemTypeComboBox(), modemType );
-	
+		getSuffixNumberTextField().setText( pdm.getSuffixNumber() );
+						
+		modemType = pdm.getModemType();
+		initString = pdm.getInitializationString();		
+	}	
+	else if( val instanceof TerminalServerDialupPort )
+	{
+		pdm = ((TerminalServerDialupPort) val).getPortDialupModem();
+		getPrefixNumberTextField().setText( pdm.getPrefixNumber() );
+
+		getSuffixNumberTextField().setText( pdm.getSuffixNumber() );
+						
+		modemType = pdm.getModemType();
+		initString = pdm.getInitializationString();		
+	}	
+	else if( val instanceof PortDialBack )
+	{		
+		modemType = ((PortDialBack)val).getPortDialback().getModemType();
+		initString = ((PortDialBack)val).getPortDialback().getInitializationString();
+		
+		getDialingPropertiesPanel().setVisible( false );		
+	}
+	else  //the thing that should not be!
+		throw new Error("Unrecognized port type instance, unknown instance is = " 
+								+ val.getClass().getName() );
+		
+
+	CtiUtilities.setSelectedInComboBox( getModemTypeComboBox(), modemType );	
 	getInitializationStringTextField().setText( initString );
-	getPrefixNumberTextField().setText( prefixString );
-	getSuffixNumberTextField().setText( suffixString );
 }
+
 }

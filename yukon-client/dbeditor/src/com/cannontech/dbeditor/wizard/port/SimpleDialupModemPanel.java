@@ -5,6 +5,10 @@ package com.cannontech.dbeditor.wizard.port;
  */
  
 import java.awt.Dimension;
+
+import com.cannontech.database.data.port.LocalDialupPort;
+import com.cannontech.database.data.port.PortDialBack;
+import com.cannontech.database.data.port.TerminalServerDialupPort;
   
 public class SimpleDialupModemPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private javax.swing.JComboBox ivjModemTypeComboBox = null;
@@ -121,24 +125,24 @@ public Object getValue(Object val) {
 	//Its either a local dialup or a terminal server kind
 
 	String modemType = (String) getModemTypeComboBox().getSelectedItem();
-	try
+	
+	if( val instanceof com.cannontech.database.data.port.LocalDialupPort )
 	{
-		if ( ((com.cannontech.database.data.port.DirectPort)val).getPAOType().equalsIgnoreCase(com.cannontech.database.data.pao.PortTypes.STRING_LOCAL_DIALUP) )
-		{
-			((com.cannontech.database.data.port.LocalDialupPort) val).getPortDialupModem().setModemType( modemType );
-		}
-		else if ( ((com.cannontech.database.data.port.DirectPort)val).getPAOType().equalsIgnoreCase(com.cannontech.database.data.pao.PortTypes.STRING_TERM_SERVER_DIALUP) )
-		{
-			((com.cannontech.database.data.port.TerminalServerDialupPort) val).getPortDialupModem().setModemType( modemType );
-		}
+		((LocalDialupPort) val).getPortDialupModem().setModemType( modemType );
 	}
-	catch( ClassCastException cce )
+	else if( val instanceof com.cannontech.database.data.port.TerminalServerDialupPort )
 	{
-		//ok so it wasn't local - maybe it is the terminal server kind
-		((com.cannontech.database.data.port.TerminalServerDialupPort) val).getPortDialupModem().setModemType( modemType );
-		return val;
+		((TerminalServerDialupPort) val).getPortDialupModem().setModemType( modemType );
 	}
-
+	else if( val instanceof com.cannontech.database.data.port.PortDialBack )
+	{
+		((PortDialBack) val).getPortDialback().setModemType( modemType );
+	}
+	else
+		throw new Error("Unrecognized port type instance, unknown instance is = " 
+								+ val.getClass().getName() );
+	
+	
 	return val;
 
 }

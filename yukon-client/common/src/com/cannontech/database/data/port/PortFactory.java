@@ -22,7 +22,7 @@ public static DirectPort createPort( int typeOfPort ) throws java.sql.SQLExcepti
 		case PortTypes.LOCAL_DIRECT:
 			LocalDirectPort p = new LocalDirectPort();
 			p.setPortType( PortTypes.STRING_LOCAL_DIRECT );
-			port = (DirectPort) p;
+			port = p;
 			break;
 			
 		case PortTypes.LOCAL_SHARED:
@@ -35,7 +35,7 @@ public static DirectPort createPort( int typeOfPort ) throws java.sql.SQLExcepti
 			lsp.getPortTiming().setReceiveDataWait(new Integer(0));
 			lsp.getPortTiming().setExtraTimeOut(new Integer(0));
 			
-			port = (DirectPort) lsp;
+			port = lsp;
 			break;
 			
 		case PortTypes.LOCAL_RADIO:
@@ -68,14 +68,28 @@ public static DirectPort createPort( int typeOfPort ) throws java.sql.SQLExcepti
 			ldp.getPortTiming().setReceiveDataWait(new Integer(0));
 			ldp.getPortTiming().setExtraTimeOut(new Integer(0));
 			
-			port = (DirectPort) ldp;
+			port = ldp;
 			break;
+
+		case PortTypes.LOCAL_DIALBACK:
+			PortDialBack pdb = new PortDialBack();
+
+			pdb.setPortType( PortTypes.STRING_LOCAL_DIALBACK );
+			
+			pdb.getPortTiming().setPreTxWait(new Integer(25));
+			pdb.getPortTiming().setRtsToTxWait(new Integer(0));
+			pdb.getPortTiming().setPostTxWait(new Integer(0));
+			pdb.getPortTiming().setReceiveDataWait(new Integer(0));
+			pdb.getPortTiming().setExtraTimeOut(new Integer(0));
+			
+			port = pdb;
+			break;			
 			
 		case PortTypes.TSERVER_DIRECT:
 		    TerminalServerDirectPort tdp = new TerminalServerDirectPort();
 		    tdp.setPortType( PortTypes.STRING_TERM_SERVER_DIRECT );
 		    
-			port = (DirectPort) tdp;
+			port = tdp;
 			break;
 			
 		case PortTypes.TSERVER_SHARED:
@@ -87,7 +101,7 @@ public static DirectPort createPort( int typeOfPort ) throws java.sql.SQLExcepti
 			tsp.getPortTiming().setPostTxWait(new Integer(0));
 			tsp.getPortTiming().setReceiveDataWait(new Integer(0));
 			tsp.getPortTiming().setExtraTimeOut(new Integer(0));
-			port = (DirectPort) tsp;
+			port = tsp;
 			break;
 			
 		case PortTypes.TSERVER_RADIO:
@@ -106,7 +120,7 @@ public static DirectPort createPort( int typeOfPort ) throws java.sql.SQLExcepti
 			trp.getPortRadioSettings().setRadioMasterTail(new Integer(0));
 			trp.getPortRadioSettings().setReverseRTS(new Integer(0));
 			
-			port = (DirectPort) trp;
+			port = trp;
 			break;
 			
 		case PortTypes.TSERVER_DIALUP:
@@ -118,7 +132,7 @@ public static DirectPort createPort( int typeOfPort ) throws java.sql.SQLExcepti
 			tp.getPortTiming().setPostTxWait(new Integer(0));
 			tp.getPortTiming().setReceiveDataWait(new Integer(0));
 			tp.getPortTiming().setExtraTimeOut(new Integer(0));
-			port = (DirectPort) tp;
+			port = tp;
 			break;
 		default:
 			return null;

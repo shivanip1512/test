@@ -470,34 +470,50 @@ public final static int getPAOType( String category, String paoType )
  */
 public final static int getPortType(String typeString) 
 {
-	String compareString = typeString.toLowerCase().trim();
+	if( typeString == null )
+		return INVALID;
 
-	if( compareString.equals("local serial") ||
-		compareString.equals("local serial port") )
+
+	if( typeString.equalsIgnoreCase(PortTypes.STRING_LOCAL_SERIAL) ||
+		 typeString.equalsIgnoreCase("local serial") )
+	{
 		return LOCAL_SHARED;
-	else
-	if( compareString.equals("local radio") ||
-		compareString.equals("local radio port") )
+	}
+	else if( typeString.equalsIgnoreCase(PortTypes.STRING_LOCAL_DIALBACK) )
+	{
+		return LOCAL_DIALBACK;
+	}	
+	else if( typeString.equalsIgnoreCase(PortTypes.STRING_LOCAL_RADIO) ||
+				 typeString.equalsIgnoreCase("local radio port") )
+	{
 		return LOCAL_RADIO;
-	else
-	if( compareString.equals("local dialup") ||
-		compareString.equals("local dialup port") )
+	}
+	else	if( typeString.equalsIgnoreCase(PortTypes.STRING_LOCAL_DIALUP) ||
+				 typeString.equalsIgnoreCase("local dialup port") )
+	{
 		return LOCAL_DIALUP;
-	else
-	if( compareString.equals("terminal server") ||
-		compareString.equals("terminal server shared") )
+	}
+	else if( typeString.equalsIgnoreCase(PortTypes.STRING_TERM_SERVER) ||
+				 typeString.equalsIgnoreCase("terminal server shared") )
+	{
 		return TSERVER_SHARED;
-	else
-	if( compareString.equals("terminal server radio") ||
-		compareString.equals("terminal server radio port") )
+	}
+	else if( typeString.equalsIgnoreCase(PortTypes.STRING_TERM_SERVER_RADIO) ||
+				 typeString.equalsIgnoreCase("terminal server radio port") )
+	{
 		return TSERVER_RADIO;
-	else
-	if( compareString.equals("terminal server dialup") ||
-		compareString.equals("terminal server dialup port") )
+	}
+	else if( typeString.equalsIgnoreCase(PortTypes.STRING_TERM_SERVER_DIALUP) ||
+				 typeString.equalsIgnoreCase("terminal server dialup port") )
+	{
 		return TSERVER_DIALUP;
+	}
 	else
 		return INVALID;
+
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return int
@@ -572,6 +588,7 @@ public static final boolean isDialupPort(int type)
 	switch( type )
 	{
 		case LOCAL_DIALUP:
+		case LOCAL_DIALBACK:
 		case TSERVER_DIALUP:
 			return true;
 		default:
@@ -579,6 +596,7 @@ public static final boolean isDialupPort(int type)
 	}
 
 }
+
 /**
  * This method was created in VisualAge.
  * @return boolean
@@ -591,6 +609,7 @@ public static final boolean isDialupPort(String type)
 
 	return isDialupPort(intType);
 }
+
 /**
  * This method was created in VisualAge.
  * @return int
