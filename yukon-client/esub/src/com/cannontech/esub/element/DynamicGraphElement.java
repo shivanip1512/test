@@ -47,7 +47,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	private boolean dirty; //flag to determine if update is required
 	
 	//persistent fields	
-	private LiteGraphDefinition graphDefinition;
+	private int graphDefinitionID = -1;
 	private int viewType; // see com.cannontech.graph.model.TrendModelType;
 	private String displayPeriod; 
 	private transient Drawing drawing = null;
@@ -92,29 +92,27 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	 * @return LiteGraphDefinition
 	 */
 	public LiteGraphDefinition getGraphDefinition() {
-		return graphDefinition;
+		return GraphFuncs.getLiteGraphDefinition(getGraphDefinitionID());
 	}
 
 	public int getGraphDefinitionID() {
-		return getGraphDefinition().getLiteID();
+		return graphDefinitionID;
 	}
-	
 	
 	/**
 	 * Sets the graphDefinition.
 	 * @param graphDefinition The graphDefinition to set
 	 */
 	public void setGraphDefinition(LiteGraphDefinition graphDefinition) {
-		
-		if( this.graphDefinition == null ||
-		    !this.graphDefinition.equals(graphDefinition) ) {
-			this.graphDefinition = graphDefinition;
+		if(graphDefinitionID == -1 ||
+			graphDefinitionID != graphDefinition.getLiteID()) {		
+			setGraphDefinitionID(graphDefinition.getLiteID());	
 			setDirty(true);
 		}
 	}
 
 	public void setGraphDefinitionID(int id) {
-		setGraphDefinition(GraphFuncs.getLiteGraphDefinition(id));	
+		graphDefinitionID = id;
 	}
 
 	/**
