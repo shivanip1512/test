@@ -1,7 +1,25 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%
-	StarsNewCustomerAccount newAccount = (StarsNewCustomerAccount)
-			user.getAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT );
+	boolean inWizard = request.getParameter("Wizard") != null;
+	StarsNewCustomerAccount newAccount = null;
+	
+	if (inWizard) {
+		session.removeAttribute(ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT);
+		session.removeAttribute(InventoryManager.STARS_INVENTORY_TEMP);
+		
+		MultiAction actions = (MultiAction) session.getAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
+		if (actions != null) {
+			SOAPMessage reqMsg = actions.build(request, session);
+			if (reqMsg != null) {
+				StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation(reqMsg);
+				newAccount = reqOper.getStarsNewCustomerAccount();
+			}
+		}
+	}
+	else {
+		newAccount = (StarsNewCustomerAccount) user.getAttribute(ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT);
+	}
+	
 	if (newAccount != null)
 		account = newAccount.getStarsCustomerAccount();
 	else
@@ -140,11 +158,10 @@ function clearPage() {
             <% String header = "NEW SIGNUP"; %>
             <%@ include file="include/InfoSearchBar2.jsp" %>
             <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+			
             <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onSubmit="return validate(this)">
               <input type="hidden" name="action" value="NewCustAccount">
-<% if (request.getParameter("Wizard") != null) { %>
-			  <input type="hidden" name="Wizard" value="true">
-<% } %>
+			  <% if (inWizard) { %><input type="hidden" name="Wizard" value="true"><% } %>
               <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
                   <td width="300" valign="top"><span class="SubtitleHeader">CUSTOMER CONTACT</span> 
@@ -541,7 +558,7 @@ function clearPage() {
                 <tr> 
                   <td width="190"> 
                     <div align="right"> 
-<% if (request.getParameter("Wizard") == null) { %>
+<% if (!inWizard) { %>
                       <input type="submit" name="Save" value="Save">
 <% } else { %>
                       <input type="submit" name="Next" value="Next">

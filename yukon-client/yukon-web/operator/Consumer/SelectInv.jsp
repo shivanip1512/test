@@ -1,6 +1,19 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>
 <%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
+<%
+	boolean inWizard = ((String) session.getAttribute(ServletUtils.ATT_REFERRER)).indexOf("Wizard=true") >= 0;
+	if (!inWizard && accountInfo == null) {
+		response.sendRedirect("../Operations.jsp");
+		return;
+	}
+	
+	if (request.getParameter("SerialNo") != null) {
+		session.setAttribute(ServletUtils.ATT_REFERRER2, request.getHeader("referer"));
+		session.setAttribute(ServletUtils.ATT_REDIRECT, request.getParameter(ServletUtils.ATT_REDIRECT));
+	}
+	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER2);
+%>
 
 <jsp:useBean id="selectInvBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
@@ -8,14 +21,6 @@
 	<jsp:setProperty name="selectInvBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
 	<jsp:setProperty name="selectInvBean" property="htmlStyle" value="<%= InventoryBean.HTML_STYLE_SELECT_INVENTORY %>"/>
 </jsp:useBean>
-
-<%
-	if (request.getParameter("SerialNo") != null) {
-		session.setAttribute(ServletUtils.ATT_REFERRER2, request.getHeader("referer"));
-		session.setAttribute(ServletUtils.ATT_REDIRECT, request.getParameter(ServletUtils.ATT_REDIRECT));
-	}
-	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER2);
-%>
 	
 <% if (request.getParameter("page") == null) { %>
 	<%-- intialize bean properties --%>
@@ -89,7 +94,12 @@ function submitIt(filterBy) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "SELECT INVENTORY"; %>
+<% if (!inWizard) { %>
               <%@ include file="include/InfoSearchBar.jsp" %>
+<% } else { %>
+              <%@ include file="include/InfoSearchBar2.jsp" %>
+<% } %>
+
 			  <form name="MForm" method="post" action="" onsubmit="setFilterValue(this)">
 			    <input type="hidden" name="FilterBy" value="<%= selectInvBean.getFilterBy() %>">
 				<input type="hidden" name="Location" value="<%= InventoryBean.INV_LOCATION_WAREHOUSE %>">

@@ -1,16 +1,22 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
-<%@ page import="com.cannontech.database.data.lite.stars.LiteCustomerContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteInventoryBase" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
 <%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
-
 <%
 	LiteStarsEnergyCompany ec = com.cannontech.stars.web.servlet.SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 	LiteInventoryBase liteInv = (LiteInventoryBase) session.getAttribute(InventoryManager.INVENTORY_TO_CHECK);
+	
+	boolean inWizard = ((String) session.getAttribute(ServletUtils.ATT_REFERRER)).indexOf("Wizard=true") >= 0;
+	if (!inWizard && accountInfo == null) {
+		response.sendRedirect("../Operations.jsp");
+		return;
+	}
 %>
+
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -66,7 +72,12 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "CHECK INVENTORY"; %>
-			  <%@ include file="include/InfoSearchBar.jsp" %>
+<% if (!inWizard) { %>
+              <%@ include file="include/InfoSearchBar.jsp" %>
+<% } else { %>
+              <%@ include file="include/InfoSearchBar2.jsp" %>
+<% } %>
+
               <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 			    <input type="hidden" name="action" value="ConfirmCheck">
 <%
@@ -124,7 +135,7 @@
 <%	}
 	else if (liteInv.getAccountID() != account.getAccountID()) {
 		LiteStarsCustAccountInformation liteAcctInfo = ec.getBriefCustAccountInfo(liteInv.getAccountID(), true);
-		LiteCustomerContact liteContact = ec.getCustomerContact(liteAcctInfo.getCustomer().getPrimaryContactID());
+		LiteContact liteContact = ec.getContact(liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo);
 		LiteAddress liteAddr = ec.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
 		
 		if (liteInv instanceof LiteStarsLMHardware) {

@@ -1,5 +1,36 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
+<%
+	boolean inWizard = request.getParameter("Wizard") != null;
+	if (!inWizard && accountInfo == null) {
+		response.sendRedirect("../Operations.jsp");
+		return;
+	}
+	
+	if (inWizard) {
+		programs = new StarsLMPrograms();
+		
+		MultiAction actions = (MultiAction) session.getAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
+		if (actions != null) {
+			SOAPMessage reqMsg = actions.build(request, session);
+			if (reqMsg != null) {
+				StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation(reqMsg);
+				StarsProgramSignUp progSignUp = reqOper.getStarsProgramSignUp();
+				if (progSignUp != null) {
+					for (int i = 0; i < progSignUp.getStarsSULMPrograms().getSULMProgramCount(); i++) {
+						SULMProgram suProg = progSignUp.getStarsSULMPrograms().getSULMProgram(i);
+						StarsLMProgram program = new StarsLMProgram();
+						program.setProgramID( suProg.getProgramID() );
+						program.setApplianceCategoryID( suProg.getApplianceCategoryID() );
+						program.setStatus("Not Enrolled");
+						programs.addStarsLMProgram( program );
+					}
+				}
+			}
+		}
+	}
+	
+	if (programs == null) programs = new StarsLMPrograms();
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -196,16 +227,20 @@ function resendNotEnrolled(form) {
         </tr>
         <tr> 
           <td  valign="top" width="101">
-<% if (request.getParameter("Wizard") == null) { %>
+<% if (!inWizard) { %>
 		  <% String pageName = "Programs.jsp"; %>
           <%@ include file="include/Nav.jsp" %>
-<% } else out.write("&nbsp;"); %>
+<% } %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
               <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_ENROLLMENT, "PROGRAMS - ENROLLMENT"); %>
+<% if (!inWizard) { %>
               <%@ include file="include/InfoSearchBar.jsp" %>
+<% } else { %>
+              <%@ include file="include/InfoSearchBar2.jsp" %>
+<% } %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  
@@ -219,9 +254,7 @@ function resendNotEnrolled(form) {
                 <input type="hidden" name="SignUpChanged" value="false">
                 <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
                 <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
-<% if (request.getParameter("Wizard") != null) { %>
-				<input type="hidden" name="Wizard" value="true">
-<% } %>
+				<% if (inWizard) { %><input type="hidden" name="Wizard" value="true"><% } %>
                 <table border="1" cellspacing="0" cellpadding="2" width="366">
                   <tr> 
                     <td width="81" class="HeaderCell" align = "center">Description</td>

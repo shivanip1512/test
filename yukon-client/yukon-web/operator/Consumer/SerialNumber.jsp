@@ -1,5 +1,4 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	String action = request.getParameter("action");
 	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
@@ -64,6 +63,10 @@
 	}
 	
 	boolean inWizard = referer.indexOf("Wizard=true") >= 0;
+	if (!inWizard && accountInfo == null) {
+		response.sendRedirect("../Operations.jsp");
+		return;
+	}
 %>
 <html>
 <head>
@@ -142,17 +145,20 @@ function changeDeviceType() {
         </tr>
         <tr> 
           <td  valign="top" width="101">
-<%	if (inWizard) out.print("&nbsp;");
-	else { %>
+<% if (!inWizard) { %>
 		    <% String pageName = referer.substring(referer.lastIndexOf('/') + 1); %>
 			<%@ include file="include/Nav.jsp" %>
-<%	} %>
+<% } %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div class = "MainText" align="center">
               <% String header = "INVENTORY CHECKING"; %>
+<% if (!inWizard) { %>
               <%@ include file="include/InfoSearchBar.jsp" %>
+<% } else { %>
+              <%@ include file="include/InfoSearchBar2.jsp" %>
+<% } %>
 			  
 			  <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 			    <input type="hidden" name="action" value="CheckInventory">
