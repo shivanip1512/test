@@ -514,27 +514,34 @@ public class StarsFactory {
 		return null;
 	}
 
-	public static StarsLMHw newStarsLMHw(StarsLMHw hw, Class type) {
+	public static StarsInventory newStarsInventory(StarsInventory inv, Class type) {
 		try {
-			StarsLMHw starsHw = (StarsLMHw) type.newInstance();
+			StarsInventory starsInv = (StarsInventory) type.newInstance();
 			
-			starsHw.setInventoryID( hw.getInventoryID() );
-			starsHw.setCategory( hw.getCategory() );
-			starsHw.setDeviceLabel( hw.getDeviceLabel() );
-			starsHw.setInstallationCompany( hw.getInstallationCompany() );
-			starsHw.setReceiveDate( hw.getReceiveDate() );
-			starsHw.setInstallDate( hw.getInstallDate() );
-			starsHw.setRemoveDate( hw.getRemoveDate() );
-			starsHw.setAltTrackingNumber( hw.getAltTrackingNumber() );
-			starsHw.setVoltage( hw.getVoltage() );
-			starsHw.setNotes( hw.getNotes() );
-			starsHw.setInstallationNotes( hw.getInstallationNotes() );
-			starsHw.setManufactureSerialNumber( hw.getManufactureSerialNumber() );
-			starsHw.setLMDeviceType( hw.getLMDeviceType() );
-			starsHw.setDeviceStatus( hw.getDeviceStatus() );
-			starsHw.setStarsLMHardwareHistory( hw.getStarsLMHardwareHistory() );
+			starsInv.setInventoryID( inv.getInventoryID() );
+			starsInv.setDeviceID( inv.getDeviceID() );
+			starsInv.setCategory( inv.getCategory() );
+			starsInv.setDeviceLabel( inv.getDeviceLabel() );
+			starsInv.setInstallationCompany( inv.getInstallationCompany() );
+			starsInv.setReceiveDate( inv.getReceiveDate() );
+			starsInv.setInstallDate( inv.getInstallDate() );
+			starsInv.setRemoveDate( inv.getRemoveDate() );
+			starsInv.setAltTrackingNumber( inv.getAltTrackingNumber() );
+			starsInv.setVoltage( inv.getVoltage() );
+			starsInv.setNotes( inv.getNotes() );
+			starsInv.setInstallationNotes( inv.getInstallationNotes() );
+			starsInv.setDeviceStatus( inv.getDeviceStatus() );
+			starsInv.setStarsLMHardwareHistory( inv.getStarsLMHardwareHistory() );
 			
-			return starsHw;
+			if (starsInv instanceof StarsLMHw && inv instanceof StarsLMHw) {
+				((StarsLMHw)starsInv).setManufactureSerialNumber( ((StarsLMHw)inv).getManufactureSerialNumber() );
+				((StarsLMHw)starsInv).setLMDeviceType( ((StarsLMHw)inv).getLMDeviceType() );
+			}
+			else if (starsInv instanceof StarsDevice && inv instanceof StarsDevice) {
+				((StarsDevice)starsInv).setDeviceName( ((StarsDevice)inv).getDeviceName() );
+			}
+			
+			return starsInv;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
