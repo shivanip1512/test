@@ -3,7 +3,6 @@
 <%
 	String action = request.getParameter("action");
 	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
-	String redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
 	
 	String invNo = request.getParameter("InvNo");
 	if (invNo == null) invNo = "_NEW";
@@ -37,12 +36,8 @@
 			referer = request.getHeader("referer");
 		}
 		
-		redirect = referer;
-		if (redirect.indexOf("Consumer/Inventory.jsp") >= 0 && redirect.indexOf("Changed=true") < 0)
-			redirect += "&Changed=true";
-		
 		session.setAttribute(ServletUtils.ATT_REFERRER, referer);
-		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+		session.setAttribute(ServletUtils.ATT_REDIRECT, referer);
 	}
 	else {
 		// From SelectInv.jsp when cancel button is clicked
@@ -126,10 +121,11 @@ function confirmCancel() {
 <% } else { %>
               <%@ include file="include/InfoSearchBar2.jsp" %>
 <% } %>
+			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
 			  <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 			    <input type="hidden" name="action" value="CheckInventory">
-				<input type="hidden" name="REDIRECT" value="<%= redirect %>">
+				<input type="hidden" name="REDIRECT" value="<%= referer %>">
                 Please select a device from the current inventory (Select Inventory),<br>
 <% if (hasMCT) { %>
                 select a meter from the list of all MCTs (Select Meter),<br>

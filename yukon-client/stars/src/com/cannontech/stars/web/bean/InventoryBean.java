@@ -465,8 +465,10 @@ public class InventoryBean {
 			|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
 		{
 			htmlBuf.append("<form name='InventoryBeanForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append(LINE_SEPARATOR);
-			htmlBuf.append("<input type='hidden' name='action' value='SelectInventory'>").append(LINE_SEPARATOR);
-			htmlBuf.append("<input type='hidden' name='style' value='").append(getHtmlStyle()).append("'>").append(LINE_SEPARATOR);
+			if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0)
+				htmlBuf.append("<input type='hidden' name='action' value='SelectInventory'>").append(LINE_SEPARATOR);
+			else if ((getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
+				htmlBuf.append("<input type='hidden' name='action' value='SelectLMHardware'>").append(LINE_SEPARATOR);
 		}
 		
 		htmlBuf.append("<table width='80%' border='0' cellspacing='0' cellpadding='0'>").append(LINE_SEPARATOR);

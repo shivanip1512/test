@@ -520,7 +520,7 @@ public class CreateLMHardwareAction implements ActionBase {
 		}
 	}
 	
-	private void parseResponse(StarsCreateLMHardware createHw, StarsInventory starsInv, StarsCustAccountInformation starsAcctInfo, HttpSession session) {
+	public static void parseResponse(StarsCreateLMHardware createHw, StarsInventory starsInv, StarsCustAccountInformation starsAcctInfo, HttpSession session) {
 		StarsInventories starsInvs = starsAcctInfo.getStarsInventories();
 		
 		String invLabel = ServletUtils.getInventoryLabel( starsInv );
