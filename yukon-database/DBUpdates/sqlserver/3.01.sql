@@ -523,8 +523,7 @@ go
 alter table SeasonSchedule drop column SpringMonth;
 go
 
-delete from SeasonSchedule;
-insert into SeasonSchedule values( 0, 'Empty Schedule' );
+delete from SeasonSchedule where scheduleid > 0;
 
 
 
