@@ -1,5 +1,6 @@
 package com.comopt.windows;
 
+import java.io.File;
 /**
  * This class is an API for the Windows NT Services, here it is possible to
  * <ul>
@@ -85,8 +86,8 @@ public class JNTServices implements IServiceConstants
 
 		if (bLibraryLoaded == false)
 		{
-			System.loadLibrary( DLL_FILE );
-			//System.load(DLL_FILE);
+			//System.loadLibrary( new File(DLL_FILE).getAbsolutePath() );
+			System.load( new File(DLL_FILE).getAbsolutePath() );
 			bLibraryLoaded = true;
 		}
 
