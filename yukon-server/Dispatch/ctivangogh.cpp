@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.92 $
-* DATE         :  $Date: 2004/12/28 21:49:54 $
+* REVISION     :  $Revision: 1.93 $
+* DATE         :  $Date: 2004/12/31 14:07:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -554,6 +554,7 @@ void CtiVanGogh::VGMainThread()
 
         shutdown();                   // Shutdown the server object.
 
+        PointMgr.storeDirtyRecords();
         PointMgr.DeleteList();
 
         ConnThread_.join();            // Wait for the Conn thread to die.
@@ -589,6 +590,7 @@ void CtiVanGogh::VGMainThread()
         shutdown();
         bQuit = TRUE;
 
+        PointMgr.storeDirtyRecords();
         PointMgr.DeleteList();
 
         ConnThread_.join();            // Wait for the Conn thread to die.
@@ -1295,8 +1297,7 @@ int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
                 }
             }
 
-            _signalMsgQueue.putQueue( pSig );
-            pSig = 0;
+            queueSignalToSystemLog(pSig);
             loadRTDB(true, Msg.replicateMessage());
         }
         else
@@ -1521,7 +1522,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
 
             CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(SYS_PID_DISPATCH, 0, temp, "FAIL: Point Data Relay");
             pSig->setUser(aPD.getUser());
-            _signalMsgQueue.putQueue(pSig);
+            queueSignalToSystemLog(pSig);
 
             status = IDNF; // Error is ID not found!
         }
@@ -1573,7 +1574,7 @@ INT CtiVanGogh::archiveSignalMessage(const CtiSignalMsg& aSig)
 
         if(pSig != NULL)
         {
-            _signalMsgQueue.putQueue(pSig);
+            queueSignalToSystemLog(pSig);
         }
     }
     catch( ... )
@@ -2555,9 +2556,6 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
 
     try
     {
-        // 102004 CGP???
-        //if(_signalMsgQueue.entries() > 100 || (_signalMsgQueue.entries() && justdoit))
-        //if(_signalMsgQueue.entries() > 0)
         if(!(++dumpCounter % DUMP_RATE)
            || _signalMsgQueue.entries() > MAX_ARCHIVER_ENTRIES
            || justdoit == true )                                 // Only chase the queue once per DUMP_RATE seconds.
@@ -2577,24 +2575,12 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
 
                         if(sigMsg != NULL)
                         {
-                            CtiTableSignal sig(sigMsg->getId(), sigMsg->getMessageTime(), sigMsg->getSignalMillis(), sigMsg->getText(), sigMsg->getAdditionalInfo(), sigMsg->getSignalCategory(), sigMsg->getLogType(), sigMsg->getSOE(), sigMsg->getUser());
+                            CtiTableSignal sig(sigMsg->getId(), sigMsg->getMessageTime(), sigMsg->getSignalMillis(), sigMsg->getText(), sigMsg->getAdditionalInfo(), sigMsg->getSignalCategory(), sigMsg->getLogType(), sigMsg->getSOE(), sigMsg->getUser(), sigMsg->getLogID());
 
                             if(!sigMsg->getText().isNull() || !sigMsg->getAdditionalInfo().isNull())
                             {
                                 // No text, no point then is there now?
                                 sig.Insert(conn);
-
-                                sigMsg->setLogID(sig.getLogID());
-                                /*
-                                 *  Last thing we do is add this signal to the pending signal list iff it is an alarm
-                                 *  AND it is not an cleared alarm....  This second condition prevents ack/clear reports
-                                 *  from being kept on the pending list.
-                                 */
-
-                                if( sigMsg->getSignalCategory() > SignalEvent && !(sigMsg->getTags() & TAG_REPORT_MSG_TO_ALARM_CLIENTS) )
-                                {
-                                    _signalManager.addSignal(*sigMsg);
-                                }
                             }
 
                             if(!(sigMsg->getTags() & TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL))
@@ -2627,6 +2613,11 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                     dout << RWTime() << " SystemLog transaction complete. Inserted " << panicCounter << " signal messages.  " << _signalMsgQueue.entries() << " left on queue." << endl;
                 }
             }
+
+            if(!_signalManager.empty() && _signalManager.dirty())
+            {
+                _signalManager.writeDynamicSignalsToDB();
+            }
         }
 
         {
@@ -2644,11 +2635,6 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                     }
                 }
             }
-        }
-
-        if(!_signalManager.empty() && _signalManager.dirty())
-        {
-            _signalManager.writeDynamicSignalsToDB();
         }
     }
     catch(RWxmsg &msg)
@@ -6302,8 +6288,7 @@ void CtiVanGogh::acknowledgeAlarmCondition( CtiPointBase *&pPt, const CtiCommand
     {
         // Make sure that anyone who cared about the first one gets the CTIDBG_new state of the tag!
         postMessageToClients(pSigNew);
-        _signalMsgQueue.putQueue(pSigNew);
-        pSigNew = 0;
+        queueSignalToSystemLog(pSigNew);
     }
 }
 
@@ -7009,6 +6994,29 @@ bool CtiVanGogh::removePointDataFromPending( LONG pID )
 {
     _pendingOpThread.push( CTIDBG_new CtiPendable(pID, CtiPendable::CtiPendableAction_RemovePointData) );
     return true;
+}
+
+void CtiVanGogh::queueSignalToSystemLog( CtiSignalMsg *&pSig )
+{
+    // Set the logID so that the dynamicData can know it now!
+    pSig->setLogID(SystemLogIdGen());
+
+    /*
+     *  Last thing we do is add this signal to the pending signal list iff it is an alarm
+     *  AND it is not an cleared alarm....  This second condition prevents ack/clear reports
+     *  from being kept on the pending list.
+     */
+
+    if( pSig->getSignalCategory() > SignalEvent && !(pSig->getTags() & TAG_REPORT_MSG_TO_ALARM_CLIENTS) )
+    {
+        _signalManager.addSignal(*pSig);
+    }
+
+
+    _signalMsgQueue.putQueue(pSig); // Queue it for a write to the DB!
+    pSig = 0;
+
+    return;
 }
 
 
