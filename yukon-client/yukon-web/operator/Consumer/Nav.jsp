@@ -2,6 +2,7 @@
 	// Map of page name / link text
 	String linkMap[][] = {{"Update.jsp", "General"},
 						  {"Contacts.jsp", "Contacts"},
+						  {"Residence.jsp", "Residence"},
 						  {"Calls.jsp", "Call Tracking"},
 						  {"Metering.jsp", "Interval Data"},
 						  {"Usage.jsp", "Usage"},
@@ -80,6 +81,7 @@
       <div align="left"><span class="Header2">Account</span><br>
         <%= links.get("Update.jsp") %><br>
         <%= links.get("Contacts.jsp") %><br>
+		<%= links.get("Residence.jsp") %><br>
 		<%= links.get("Calls.jsp") %><br>
 		<%= links.get("CreateCalls.jsp") %></div>
     </td>
@@ -108,7 +110,8 @@
         <%= appLinks[i] %><br>
         <%
 		}
-%><%= links.get("CreateAppliances.jsp") %></div>
+%>
+        <%= links.get("CreateAppliances.jsp") %></div>
     </td>
   </tr>
   <tr> 
