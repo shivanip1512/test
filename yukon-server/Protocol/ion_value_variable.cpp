@@ -134,47 +134,42 @@ CtiIONValue *CtiIONValueVariable::restoreVariable( unsigned char ionClass, unsig
     //  zero it out to begin with
     CtiIONValue *newObject = NULL;
 
-    //  is this check necessary?  seems IONValue would take care of this...  but i suppose it needs to switch on all of
-    //    the fixed types, as well
-    if( ionClass == 0xf )
+    switch( classDescriptor )
     {
-        switch( classDescriptor )
+        //  these two cases don't use any more bytes, so pos doesn't need to be incremented
+        case ClassDescriptor_Variable_BooleanFalse: newObject = CTIDBG_new CtiIONBoolean(false);    break;
+        case ClassDescriptor_Variable_BooleanTrue:  newObject = CTIDBG_new CtiIONBoolean(true);     break;
+
+        case ClassDescriptor_Variable_Program:
         {
-            //  these two cases don't use any more bytes, so pos doesn't need to be incremented
-            case ClassDescriptor_BooleanFalse:   newObject = CTIDBG_new CtiIONBoolean(false);   break;
-            case ClassDescriptor_BooleanTrue:    newObject = CTIDBG_new CtiIONBoolean(true);    break;
+            //  by definition, this uses the rest of the bytes
+            newObject = CTIDBG_new CtiIONProgram((buf + pos), (len - pos));
 
-            case ClassDescriptor_Program:
-            {
-                //  by definition, this uses the rest of the bytes
-                newObject = CTIDBG_new CtiIONProgram((buf + pos), (len - pos));
+            pos = len;
 
-                pos = len;
+            break;
+        }
 
-                break;
-            }
+        case ClassDescriptor_Variable_FixedArray0:
+        case ClassDescriptor_Variable_FixedArray1:
+        case ClassDescriptor_Variable_FixedArray2:
+        case ClassDescriptor_Variable_FixedArray3:
+        case ClassDescriptor_Variable_FixedArray4:
+        {
+            newObject = FixedArray::restoreFixedArray(classDescriptor, (buf + pos), (len - pos), &itemLength);
 
-            case ClassDescriptor_FixedArray0:
-            case ClassDescriptor_FixedArray1:
-            case ClassDescriptor_FixedArray2:
-            case ClassDescriptor_FixedArray3:
-            case ClassDescriptor_FixedArray4:
-            {
-                newObject = FixedArray::restoreFixedArray(classDescriptor, (buf + pos), (len - pos), &itemLength);
+            pos += itemLength;
 
-                pos += itemLength;
+            break;
+        }
 
-                break;
-            }
+        case ClassDescriptor_Variable_StructEnd:        newObject = CTIDBG_new CtiIONStructEnd();       break;
+        case ClassDescriptor_Variable_StructArrayEnd:   newObject = CTIDBG_new CtiIONStructArrayEnd();  break;
 
-            case ClassDescriptor_StructEnd:          newObject = CTIDBG_new CtiIONStructEnd();       break;
-            case ClassDescriptor_StructArrayEnd:     newObject = CTIDBG_new CtiIONStructArrayEnd();  break;
-
-            default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+        default:
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 

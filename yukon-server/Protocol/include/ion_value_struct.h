@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/02/14 16:53:50 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/02/21 22:28:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,24 +32,24 @@ class CtiIONStruct : public CtiIONValue
 
 private:
 
-    vector< CtiIONValue * > _structElements;
-    typedef vector< CtiIONValue * >::const_iterator ionStructIterator_const;
+    typedef vector< CtiIONValue * > ion_value_vector;
+    ion_value_vector _structElements;
 
     StructTypes _structType;
 
     enum StructClassDescriptor
     {
-        StructClassDescriptor_LogRecord   = 0x0,
-        StructClassDescriptor_Alarm       = 0x1,
-        StructClassDescriptor_Event       = 0x2,
-        StructClassDescriptor_Range       = 0x4,
-        StructClassDescriptor_List        = 0x5,
-        StructClassDescriptor_Exception   = 0x7,
-        StructClassDescriptor_Waveform    = 0x8,
-        StructClassDescriptor_Date        = 0xa,
-        StructClassDescriptor_Calendar    = 0xb,
-        StructClassDescriptor_Profile     = 0xc,
-        StructClassDescriptor_StringArray = 0xf
+        ClassDescriptor_Struct_LogRecord    = 0x0,
+        ClassDescriptor_Struct_Alarm        = 0x1,
+        ClassDescriptor_Struct_Event        = 0x2,
+        ClassDescriptor_Struct_Range        = 0x4,
+        ClassDescriptor_Struct_List         = 0x5,
+        ClassDescriptor_Struct_Exception    = 0x7,
+        ClassDescriptor_Struct_Waveform     = 0x8,
+        ClassDescriptor_Struct_Date         = 0xa,
+        ClassDescriptor_Struct_Calendar     = 0xb,
+        ClassDescriptor_Struct_Profile      = 0xc,
+        ClassDescriptor_Struct_StringArray  = 0xf
     };
 
     enum StructIONClassTypes
@@ -61,14 +61,19 @@ protected:
 
     unsigned long  _numElements;
 
-    void init( vector< CtiIONValue * > &structValues );
+    void init( ion_value_vector &structValues );
 
     void putSerialized( unsigned char *buf ) const;
+    void putElements  ( unsigned char *buf ) const;
+
     unsigned int getSerializedLength( void ) const;
+    unsigned int getElementsLength  ( void ) const;
 
     unsigned char getStructClassDescriptor( void ) const;
 
     friend CtiIONValue *CtiIONValue::restoreObject( unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
+
+    friend class CtiIONStructArray;
 
     static CtiIONValue *restoreStruct( unsigned char ionClass, unsigned char classDescriptor,
                                        unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
@@ -79,7 +84,8 @@ public:
     CtiIONStruct( CtiIONStruct &aRef );
     ~CtiIONStruct( );
 
-    virtual CtiIONValue *operator[]( Elements index );
+    virtual CtiIONValue *at( int index );
+    virtual CtiIONValue *operator[]( int index );
 
     static bool isStructType ( CtiIONValue *toCheck, StructTypes structType );
     bool        isStructType ( StructTypes structType ) const;

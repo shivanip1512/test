@@ -15,6 +15,12 @@
 #include "ion_value_struct_types.h"
 
 
+CtiIONLogRecord::CtiIONLogRecord( ) :
+    CtiIONStruct(StructType_LogRecord, 0)
+{
+}
+
+
 CtiIONLogRecord::CtiIONLogRecord( vector< CtiIONValue * > structValues ) :
     CtiIONStruct(StructType_LogRecord, 3)
 {
@@ -49,6 +55,30 @@ CtiIONLogRecord::CtiIONLogRecord( CtiIONUnsignedInt *logPosition,
     init(values);
 }
 
+
+CtiIONUnsignedInt *CtiIONLogRecord::getLogPosition( void )
+{
+    return (CtiIONUnsignedInt *)(at(LogPosition));
+}
+
+
+CtiIONTime *CtiIONLogRecord::getTimestamp( void )
+{
+    return (CtiIONTime *)(at(Timestamp));
+}
+
+
+CtiIONStruct *CtiIONLogRecord::getLogValues( void )
+{
+    return (CtiIONStruct *)(at(LogValues));
+}
+
+
+
+CtiIONAlarm::CtiIONAlarm( ) :
+    CtiIONStruct(StructType_Alarm, 0)
+{
+}
 
 
 CtiIONAlarm::CtiIONAlarm( vector< CtiIONValue * > structValues ) :
@@ -85,6 +115,12 @@ CtiIONAlarm::CtiIONAlarm( CtiIONUnsignedInt *effectHandle,
     init(values);
 }
 
+
+
+CtiIONEvent::CtiIONEvent( ) :
+    CtiIONStruct(StructType_Event, 0)
+{
+}
 
 
 CtiIONEvent::CtiIONEvent( vector< CtiIONValue * > structValues ) :
@@ -128,6 +164,48 @@ CtiIONEvent::CtiIONEvent( CtiIONUnsignedInt *priority,
 }
 
 
+CtiIONUnsignedInt *CtiIONEvent::getPriority( void )
+{
+    return (CtiIONUnsignedInt *)at(Priority);
+}
+
+
+CtiIONUnsignedInt *CtiIONEvent::getEventState( void )
+{
+    return (CtiIONUnsignedInt *)at(EventState);
+}
+
+
+CtiIONUnsignedInt *CtiIONEvent::getCauseHandle( void )
+{
+    return (CtiIONUnsignedInt *)at(CauseHandle);
+}
+
+
+CtiIONValue *CtiIONEvent::getCauseValue( void )
+{
+    return at(CauseValue);
+}
+
+
+CtiIONUnsignedInt *CtiIONEvent::getEffectHandle( void )
+{
+    return (CtiIONUnsignedInt *)at(EffectHandle);
+}
+
+
+CtiIONValue *CtiIONEvent::getEffectValue( void )
+{
+    return at(EffectValue);
+}
+
+
+
+CtiIONRange::CtiIONRange( ) :
+    CtiIONStruct(StructType_Range, 0)
+{
+}
+
 
 CtiIONRange::CtiIONRange( vector< CtiIONValue * > structValues ) :
     CtiIONStruct(StructType_Range, 2)
@@ -161,6 +239,12 @@ CtiIONRange::CtiIONRange( CtiIONUnsignedInt *rangeStart,
 
 
 
+CtiIONList::CtiIONList( ) :
+    CtiIONStruct(StructType_List, 0)
+{
+}
+
+
 CtiIONList::CtiIONList( vector< CtiIONValue * > structValues ) :
     CtiIONStruct(StructType_List, 0)
 {
@@ -169,6 +253,12 @@ CtiIONList::CtiIONList( vector< CtiIONValue * > structValues ) :
     init(structValues);
 }
 
+
+
+CtiIONException::CtiIONException( ) :
+    CtiIONStruct(StructType_Exception, 0)
+{
+}
 
 
 CtiIONException::CtiIONException( vector< CtiIONValue * > structValues ) :
@@ -188,7 +278,7 @@ CtiIONException::CtiIONException( vector< CtiIONValue * > structValues ) :
     }
 }
 
-/*
+
 CtiIONException::CtiIONException( CtiIONUnsignedInt *exceptionCode,
                                   CtiIONValue       *exceptionValue,
                                   CtiIONCharArray   *reason ) :
@@ -202,7 +292,13 @@ CtiIONException::CtiIONException( CtiIONUnsignedInt *exceptionCode,
 
     init(values);
 }
-*/
+
+
+CtiIONWaveform::CtiIONWaveform( ) :
+    CtiIONStruct(StructType_Waveform, 0)
+{
+}
+
 
 CtiIONWaveform::CtiIONWaveform( vector< CtiIONValue * > structValues ) :
     CtiIONStruct(StructType_Waveform, 5)
@@ -222,6 +318,12 @@ CtiIONWaveform::CtiIONWaveform( vector< CtiIONValue * > structValues ) :
     {
         setValid(false);
     }
+}
+
+
+CtiIONDate::CtiIONDate( ) :
+    CtiIONStruct(StructType_Date, 0)
+{
 }
 
 
@@ -259,6 +361,12 @@ CtiIONDate::CtiIONDate( CtiIONUnsignedInt *year,
 
 
 
+CtiIONCalendar::CtiIONCalendar( ) :
+    CtiIONStruct(StructType_Calendar, 0)
+{
+}
+
+
 CtiIONCalendar::CtiIONCalendar( vector< CtiIONValue * > structValues ) :
     CtiIONStruct(StructType_Calendar, 2)
 {
@@ -290,6 +398,12 @@ CtiIONCalendar::CtiIONCalendar( CtiIONDate             *startDate,
 }
 
 
+CtiIONProfile::CtiIONProfile( ) :
+    CtiIONStruct(StructType_Profile, 0)
+{
+}
+
+
 CtiIONProfile::CtiIONProfile( vector< CtiIONValue * > structValues ) :
     CtiIONStruct(StructType_Profile, 2)
 {
@@ -318,6 +432,12 @@ CtiIONProfile::CtiIONProfile( CtiIONUnsignedIntArray *indexTable,
     values.push_back(activityList);
 
     init(values);
+}
+
+
+CtiIONStringArray::CtiIONStringArray( ) :
+    CtiIONStruct(StructType_StringArray, 0)
+{
 }
 
 

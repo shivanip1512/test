@@ -22,6 +22,8 @@ using namespace std;
 
 #include "ion_serializable.h"
 
+#include "numstr.h"
+
 
 class CtiIONValue : public CtiIONSerializable
 {
@@ -95,6 +97,8 @@ public:
 
     virtual bool   isNumeric( void ) const;
     virtual double getNumericValue( void ) const;
+
+    virtual const char *toString( void );
 
     static bool  isFixed( CtiIONValue *toCheck );
     bool         isFixed( void ) const;

@@ -74,7 +74,10 @@ unsigned int CtiIONSignedInt::getSerializedValueLength( void ) const
 
 void CtiIONSignedInt::putSerializedValue( unsigned char *buf ) const
 {
-    memcpy( buf, &_signedInt, getSerializedValueLength( ) );
+    buf[0] = ((unsigned char *)&_signedInt)[3];
+    buf[1] = ((unsigned char *)&_signedInt)[2];
+    buf[2] = ((unsigned char *)&_signedInt)[1];
+    buf[3] = ((unsigned char *)&_signedInt)[0];
 }
 
 
@@ -100,6 +103,15 @@ CtiIONSignedInt &CtiIONSignedInt::setValue( long value )
 long CtiIONSignedInt::getValue( void ) const
 {
     return _signedInt;
+}
+
+
+const char *CtiIONSignedInt::toString( void )
+{
+    _snprintf(_string, 15, "%ld", _signedInt);
+    _string[15] = 0;
+
+    return _string;
 }
 
 

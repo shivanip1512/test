@@ -27,9 +27,18 @@
 #include "ion_value_variable_fixedarray.h"
 
 
+template < class T >
+class CtiIONStructArrayTemplate;
+
+
 class CtiIONLogRecord : public CtiIONStruct
 {
 private:
+
+protected:
+
+    friend class CtiIONStructArrayTemplate<CtiIONLogRecord>;
+    CtiIONLogRecord();
 
 public:
 
@@ -37,6 +46,10 @@ public:
     CtiIONLogRecord( CtiIONUnsignedInt *logPosition,
                      CtiIONTime        *timestamp,
                      CtiIONStruct      *logValues );
+
+    CtiIONUnsignedInt *getLogPosition( void );
+    CtiIONTime        *getTimestamp( void );
+    CtiIONStruct      *getLogValues( void );
 
     enum Elements
     {
@@ -51,6 +64,11 @@ public:
 class CtiIONAlarm : public CtiIONStruct
 {
 private:
+
+protected:
+
+    friend class CtiIONStructArrayTemplate<CtiIONAlarm>;
+    CtiIONAlarm();
 
 public:
 
@@ -73,6 +91,11 @@ class CtiIONEvent : public CtiIONStruct
 {
 private:
 
+protected:
+
+    friend class CtiIONStructArrayTemplate<CtiIONEvent>;
+    CtiIONEvent();
+
 public:
 
     CtiIONEvent( vector< CtiIONValue * > structValues );
@@ -82,6 +105,13 @@ public:
                  CtiIONValue       *causeValue,
                  CtiIONUnsignedInt *effectHandle,
                  CtiIONValue       *effectValue );
+
+    CtiIONUnsignedInt *getPriority( void );
+    CtiIONUnsignedInt *getEventState( void );
+    CtiIONUnsignedInt *getCauseHandle( void );
+    CtiIONValue       *getCauseValue( void );
+    CtiIONUnsignedInt *getEffectHandle( void );
+    CtiIONValue       *getEffectValue( void );
 
     enum Elements
     {
@@ -99,6 +129,11 @@ public:
 class CtiIONRange : public CtiIONStruct
 {
 private:
+
+protected:
+
+    friend class CtiIONStructArrayTemplate<CtiIONRange>;
+    CtiIONRange();
 
 public:
 
@@ -119,6 +154,11 @@ class CtiIONList : public CtiIONStruct
 {
 private:
 
+protected:
+
+    friend class CtiIONStructArrayTemplate<CtiIONList>;
+    CtiIONList();
+
 public:
 
     CtiIONList( vector< CtiIONValue * > structValues );
@@ -131,6 +171,11 @@ public:
 class CtiIONException : public CtiIONStruct
 {
 private:
+
+protected:
+
+    friend class CtiIONStructArrayTemplate<CtiIONException>;
+    CtiIONException();
 
 public:
 
@@ -155,6 +200,11 @@ class CtiIONWaveform : public CtiIONStruct
 {
 private:
 
+protected:
+
+    friend class CtiIONStructArrayTemplate<CtiIONWaveform>;
+    CtiIONWaveform();
+
 public:
 
     CtiIONWaveform( vector< CtiIONValue * > structValues );
@@ -178,6 +228,11 @@ class CtiIONDate : public CtiIONStruct
 {
 private:
 
+protected:
+
+    friend class CtiIONStructArrayTemplate<CtiIONDate>;
+    CtiIONDate();
+
 public:
 
     CtiIONDate( vector< CtiIONValue * > structValues );
@@ -199,6 +254,11 @@ class CtiIONCalendar : public CtiIONStruct
 {
 private:
 
+protected:
+
+    friend class CtiIONStructArrayTemplate<CtiIONCalendar>;
+    CtiIONCalendar();
+
 public:
 
     CtiIONCalendar( vector< CtiIONValue * > structValues );
@@ -218,6 +278,11 @@ class CtiIONProfile : public CtiIONStruct
 {
 private:
 
+protected:
+
+    friend class CtiIONStructArrayTemplate<CtiIONProfile>;
+    CtiIONProfile();
+
 public:
 
     CtiIONProfile( vector< CtiIONValue * > structValues );
@@ -235,6 +300,11 @@ public:
 class CtiIONStringArray : public CtiIONStruct
 {
 private:
+
+protected:
+
+    friend class CtiIONStructArrayTemplate<CtiIONStringArray>;
+    CtiIONStringArray();
 
 public:
 

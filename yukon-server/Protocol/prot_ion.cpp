@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/02/14 16:53:49 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/02/21 22:28:23 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,8 @@
 #include "ion_value_variable_fixedarray.h"
 #include "ion_value_variable_boolean.h"
 #include "ion_value_struct_types.h"
+
+#include "numstr.h"
 
 
 CtiProtocolION::CtiProtocolION()
@@ -74,8 +76,13 @@ void CtiProtocolION::initializeSets( void )
 
     for( i = 0; i < 38; i++ )
     {
-        //  MAGIC NUMBER WARNING:
+        //  MAGIC NUMBER WARNING
         _digitalInValueRegisters.insert(make_pair(0x280 + i, 0x6001 + i));
+    }
+
+    for( i = 0; i < 128; i++ )
+    {
+        _externalPulseRegisters.insert(make_pair(1 + i, 0x68ae + i));
     }
 }
 
@@ -89,14 +96,16 @@ void CtiProtocolION::setAddresses( unsigned short srcID, unsigned short dstID )
 }
 
 
-void CtiProtocolION::setCommand( IONCommand command, ion_output_point *points, int numPoints )
+void CtiProtocolION::setCommand( IONCommand command )
 {
-    unsigned char *tmp;
-    int tmplen;
-
     _currentCommand.command = command;
+}
 
-    _ionState = State_Init;
+
+void CtiProtocolION::setCommand( IONCommand command, unsigned int unsigned_int_parameter )
+{
+    _currentCommand.command                 = command;
+    _currentCommand.unsigned_int_parameter  = unsigned_int_parameter;
 }
 
 
@@ -165,6 +174,13 @@ int CtiProtocolION::generate( CtiXfer &xfer )
                     break;
                 }
 
+                case Command_ExternalPulseTrigger:
+                {
+                    generateExternalPulseTrigger();
+
+                    break;
+                }
+
 //                case Command_ScanLoadProfile:
 
                 default:
@@ -229,6 +245,13 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
                 case Command_EventLogRead:
                 {
                     decodeEventLogRead();
+
+                    break;
+                }
+
+                case Command_ExternalPulseTrigger:
+                {
+                    decodeExternalPulseTrigger();
 
                     break;
                 }
@@ -671,7 +694,7 @@ void CtiProtocolION::generateExceptionScan( void )
 
             for( int i = 0; i < _digitalInModules.size(); i++ )
             {
-                IONValueRegisterMap::iterator itr;
+                ion_value_register_map::iterator itr;
 
                 if( (itr = _digitalInValueRegisters.find(_digitalInModules[i])) != _digitalInValueRegisters.end() )
                 {
@@ -815,7 +838,7 @@ void CtiProtocolION::generateIntegrityScan( void )
 
             for( int i = 0; i < _digitalInModules.size(); i++ )
             {
-                IONValueRegisterMap::iterator itr;
+                ion_value_register_map::iterator itr;
 
                 if( (itr = _digitalInValueRegisters.find(_digitalInModules[i])) != _digitalInValueRegisters.end() )
                 {
@@ -1298,11 +1321,85 @@ void CtiProtocolION::decodeEventLogRead( void )
                 RWTime Now;
 
                 _ionState = State_Complete;
-/*                if( _dsIn[0].isNumeric() )
-                {
-                    _eventLogDepth = _dsIn[0]->getNumericValue();
 
-                    _ionState = State_RequestEventLogDepth;
+                if( _dsIn[0]->isStructArray() )
+                {
+                    CtiIONStructArray *tmp = (CtiIONStructArray *)_dsIn[0];
+
+                    if( tmp->isStructArrayType(CtiIONStructArray::StructArray_LogArray) )
+                    {
+                        _eventLogs.push_back((CtiIONLogArray *)_dsIn[0]);
+
+                        _dsIn.erase(0);
+
+                        CtiIONLogRecord *record;
+                        CtiIONEvent     *event;
+                        CtiIONCharArray *tmpArray;
+                        const char      *tmpStr;
+
+                        CtiIONStructArray::const_iterator itr;
+
+                        //  output only for debug
+                        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                        {
+                            for( itr = tmp->begin(); itr != tmp->end(); itr++ )
+                            {
+                                record = (CtiIONLogRecord *)(*itr);
+
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << "Log Position: " << record->getLogPosition()->getValue() << endl;
+                                    dout << "Timestamp (seconds)     : " << record->getTimestamp()->getSeconds() << endl;
+                                    dout << "Timestamp (milliseconds): " << record->getTimestamp()->getMilliseconds() << endl;
+                                    dout << "Log Values:" << endl;
+
+                                    if( record->getLogValues()->isStructType(CtiIONStruct::StructType_Event) )
+                                    {
+                                        event = (CtiIONEvent *)(record->getLogValues());
+
+                                        dout << "Priority:" << event->getPriority()->getValue() << endl;
+                                        dout << "Event State:" << event->getEventState()->getValue() << endl;
+                                        dout << "Cause Handle:" << event->getCauseHandle()->getValue() << endl;
+
+                                        if( CtiIONFixedArray::isFixedArrayType( event->getCauseValue(), CtiIONFixedArray::FixedArray_Char ) )
+                                        {
+                                            tmpArray = (CtiIONCharArray *)(event->getCauseValue());
+
+                                            tmpStr = tmpArray->toString();
+
+                                            dout << "Cause Value:" << tmpStr << endl;
+                                        }
+                                        else
+                                        {
+                                            dout << "Cause Value is not a char array... ?" << endl;
+                                        }
+
+                                        dout << "Effect Handle:" << event->getEffectHandle()->getValue() << endl;
+
+                                        if( CtiIONFixedArray::isFixedArrayType( event->getEffectValue(), CtiIONFixedArray::FixedArray_Char ) )
+                                        {
+                                            tmpArray = (CtiIONCharArray *)(event->getEffectValue());
+
+                                            tmpStr = tmpArray->toString();
+
+                                            dout << "Effect Value:" << tmpStr << endl;
+                                        }
+                                        else
+                                        {
+                                            dout << "Effect Value is not a char array... ?" << endl;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        dout << "Not an event structure...  life is bad." << endl;
+                                    }
+
+                                    dout << endl;
+                                }
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -1314,7 +1411,7 @@ void CtiProtocolION::decodeEventLogRead( void )
 
                     _ionState = State_Abort;
                 }
-*/            }
+            }
             else
             {
                 {
@@ -1345,6 +1442,87 @@ void CtiProtocolION::decodeEventLogRead( void )
 }
 
 
+void CtiProtocolION::generateExternalPulseTrigger( void )
+{
+    CtiIONMethod    *tmpMethod;
+    CtiIONStatement *tmpStatement;
+    CtiIONProgram   *tmpProgram;
+
+    switch( _ionState )
+    {
+        case State_Init:
+        case State_SendExternalPulseTrigger:
+        {
+            _dsOut.clearAndDestroy();
+
+            tmpProgram   = CTIDBG_new CtiIONProgram();
+
+            ion_value_register_map::iterator itr;
+
+            if( (itr = _externalPulseRegisters.find(_currentCommand.unsigned_int_parameter)) != _externalPulseRegisters.end() )
+            {
+                tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::WriteValue);
+                tmpStatement = CTIDBG_new CtiIONStatement((*itr).second, tmpMethod);
+
+                _dsOut.push_back(tmpProgram);
+            }
+            else
+            {
+                _ionState = State_Abort;
+            }
+
+            _appLayer.setToOutput(_dsOut);
+
+            _dsOut.clearAndDestroy();
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "Unknown state " << _ionState << " in CtiProtocolION::generateExceptionScan" << endl;
+            }
+
+            _ionState = State_Abort;
+
+            break;
+        }
+    }
+}
+
+
+void CtiProtocolION::decodeExternalPulseTrigger( void )
+{
+    //  ACH:  ditto of decode()
+    switch( _ionState )
+    {
+        case State_Init:
+        case State_SendExternalPulseTrigger:
+        {
+            _ionState = State_Complete;
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "Unknown state " << _ionState << " in CtiProtocolION::decodeExceptionScan" << endl;
+            }
+
+            _ionState = State_Abort;
+
+            break;
+        }
+    }
+}
+
+
 bool CtiProtocolION::inputIsValid( CtiIONApplicationLayer &al, CtiIONDataStream &ds )
 {
     bool result;
@@ -1355,7 +1533,7 @@ bool CtiProtocolION::inputIsValid( CtiIONApplicationLayer &al, CtiIONDataStream 
 
     if( al.getPayloadLength() > 0 )
     {
-        buf = new unsigned char[al.getPayloadLength()];
+        buf = CTIDBG_new unsigned char[al.getPayloadLength()];
 
         if( buf != NULL )
         {
@@ -1436,28 +1614,54 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
 {
     int retVal = NoError;
 
-    int offset;
+    unsigned char *buf;
+    unsigned long len, offset;
 
-    ion_result_descriptor_struct header;
-    ion_pointdata_struct *tmpPoint;
-
-    offset = 0;
+    ion_result_descriptor_struct  header;
+    ion_pointdata_struct         *points;
+    CtiIONDataStream              tmpDS;
 
     _pointData.clear();
 
+    while( !_eventLogs.empty() )
+    {
+        delete _eventLogs.back();
+        _eventLogs.pop_back();
+    }
+
     if( InMessage != NULL )
     {
-        if( sizeof(header) <= InMessage->InLength )
+        buf = InMessage->Buffer.InMessage;
+        len = InMessage->InLength;
+        offset = 0;
+
+        if( sizeof(header) <= len )
         {
-            memcpy(&header, InMessage->Buffer.InMessage + offset, sizeof(header));
+            memcpy(&header, buf + offset, sizeof(header));
             offset += sizeof(header);
+
+            points = (ion_pointdata_struct *)(buf + offset);
 
             for( int i = 0; i < header.numPoints; i++ )
             {
-                //  NASTY CAST w00t!!!
-                tmpPoint = (ion_pointdata_struct *)(InMessage->Buffer.InMessage + offset + (i * sizeof(ion_pointdata_struct)));
+                _pointData.push_back(points[i]);
+                offset += sizeof(ion_pointdata_struct);
+            }
 
-                _pointData.push_back(*tmpPoint);
+            tmpDS.initialize(buf + offset, header.eventLogLength);
+
+            while( !tmpDS.empty() )
+            {
+                if( tmpDS.itemIsType(0, CtiIONStructArray::StructArray_LogArray) )
+                {
+                    _eventLogs.push_back((CtiIONLogArray *)tmpDS[0]);
+                }
+                else
+                {
+                    delete tmpDS[0];
+                }
+
+                tmpDS.erase(0);
             }
         }
     }
@@ -1470,28 +1674,95 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
 }
 
 
-bool CtiProtocolION::hasInboundPoints( void )
+bool CtiProtocolION::hasInboundData( void )
 {
-    return !_pointData.empty();
+    return !_pointData.empty() || !_eventLogs.empty();
 }
 
 
-void CtiProtocolION::getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList )
+void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList )
 {
-    PointDataIterator itr;
-    CtiPointDataMsg *pMsg;
+    vector< ion_pointdata_struct >::const_iterator p_itr;
+    vector< CtiIONLogArray * >::const_iterator       e_itr;
 
-    for( itr = _pointData.begin(); itr != _pointData.end(); itr++ )
+    unsigned long maxEventRecord = 0;
+
+    CtiPointDataMsg *pointdata;
+    CtiSignalMsg    *signal;
+
+    for( p_itr = _pointData.begin(); p_itr != _pointData.end(); p_itr++ )
     {
         //  NOTE:  offsets must be 1-based to work with Yukon
-        pMsg = new CtiPointDataMsg((*itr).offset, (*itr).value, NormalQuality, (*itr).type);
-        pMsg->setString((*itr).name);
-        pMsg->setTime(RWTime((*itr).time));
+        pointdata = CTIDBG_new CtiPointDataMsg((*p_itr).offset, (*p_itr).value, NormalQuality, (*p_itr).type);
+        pointdata->setString((*p_itr).name);
+        pointdata->setTime(RWTime((*p_itr).time));
 
-        pointList.append(pMsg);
+        pointList.append(pointdata);
     }
 
     _pointData.clear();
+
+    for( e_itr = _eventLogs.begin(); e_itr != _eventLogs.end(); e_itr++ )
+    {
+        CtiIONLogArray  *tmpArray;
+        CtiIONLogRecord *tmpRecord;
+        CtiIONEvent     *tmpEvent;
+        RWCString desc, action;
+
+        if( *e_itr != NULL )
+        {
+            tmpArray = *e_itr;
+
+            for( int i = 0; i < tmpArray->size(); i++ )
+            {
+                tmpRecord = tmpArray->at(i);
+
+                if( CtiIONStruct::isStructType(tmpRecord->getLogValues(), CtiIONStruct::StructType_Event) )
+                {
+                    tmpEvent = (CtiIONEvent *)tmpRecord->getLogValues();
+
+                    desc  = RWCString("pri=")      + tmpEvent->getPriority()->toString();
+                    desc += RWCString(", cause=")  + tmpEvent->getCauseValue()->toString();
+                    desc += RWCString(", effect=") + tmpEvent->getEffectValue()->toString();
+                    desc += RWCString(", nlog=")   + "EventLogCtl 1";
+
+                    action  = RWCString("c_h=")      + tmpEvent->getCauseHandle()->toString();
+                    action += RWCString(", e_h=")    + tmpEvent->getEffectHandle()->toString();
+                    action += RWCString(", state=")  + tmpEvent->getEventState()->toString();
+                    action += RWCString(", record=") + tmpRecord->getLogPosition()->toString();
+
+                    if( maxEventRecord < tmpRecord->getLogPosition()->getValue() )
+                    {
+                        maxEventRecord = tmpRecord->getLogPosition()->getValue();
+                    }
+
+                    signal = CTIDBG_new CtiSignalMsg(EventLogPointOffset, 0, desc, action, GeneralLogType);
+                    signal->setMessageTime(RWTime(tmpRecord->getTimestamp()->getSeconds() + rwEpoch));
+
+                    signalList.append(signal);
+                }
+            }
+
+            delete (*e_itr);
+        }
+    }
+
+    _eventLogs.clear();
+
+    //  create a new pointdata msg to update our current event log position, if appropriate
+    if( maxEventRecord > 0 )
+    {
+        if( maxEventRecord > _eventLogLastPosition )
+        {
+            _eventLogLastPosition = maxEventRecord;
+        }
+
+        RWCString msg("Event log position: " + CtiNumStr(maxEventRecord));
+
+        pointdata = new CtiPointDataMsg(EventLogPointOffset, maxEventRecord, NormalQuality, AnalogPointType, msg, TAG_POINT_MUST_ARCHIVE);
+
+        pointList.append(pointdata);
+    }
 }
 
 
@@ -1502,13 +1773,12 @@ int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
     int retVal = NoError;
     ion_outmess_struct tmpOM;
 
-    //  ACH:  hmm...  probably have to support putvalue requests someday...  that means
-    //          supporting variable length outmess requests (w/ values)
     memcpy(&tmpOM, OutMessage->Buffer.OutMessage, sizeof(tmpOM));
 
-    setCommand(tmpOM.cmd_struct.command);
+    _currentCommand         = tmpOM.cmd_struct;
+    _eventLogLastPosition   = tmpOM.event_log_last_position;
 
-    _eventLogLastPosition = tmpOM.event_log_last_position;
+    _ionState = State_Init;
 
     return retVal;
 }
@@ -1547,7 +1817,16 @@ unsigned long CtiProtocolION::resultSize( void )
     size  = 0;
     size += sizeof(ion_result_descriptor_struct);
     size += sizeof(ion_pointdata_struct) * _pointData.size();
-//    size += sizeof(ion_eventdata_struct) * _eventData.size();
+
+    vector< CtiIONLogArray * >::const_iterator itr;
+
+    for( itr = _eventLogs.begin(); itr != _eventLogs.end(); itr++ )
+    {
+        if( *itr != NULL )
+        {
+            size += (*itr)->getSerializedLength();
+        }
+    }
 
     return size;
 }
@@ -1555,22 +1834,43 @@ unsigned long CtiProtocolION::resultSize( void )
 
 void CtiProtocolION::putResult( unsigned char *buf )
 {
-    int offset;
+    int offset, eventlog_length;
     ion_result_descriptor_struct header;
-    PointDataIterator itr;
+    vector< ion_pointdata_struct >::const_iterator p_itr;
+    vector< CtiIONLogArray * >::const_iterator     e_itr;
 
     offset = 0;
 
-    header.numEvents = 0;  //  someday
-    header.numPoints = _pointData.size();
+    header.numPoints      = _pointData.size();
+
+    eventlog_length = 0;
+    for( e_itr = _eventLogs.begin(); e_itr != _eventLogs.end(); e_itr++ )
+    {
+        if( *e_itr != NULL )
+        {
+            eventlog_length += (*e_itr)->getSerializedLength();
+        }
+    }
+
+    header.eventLogLength = eventlog_length;
 
     memcpy(buf + offset, &header, sizeof(header));
     offset += sizeof(header);
 
-    for( itr = _pointData.begin(); itr != _pointData.end(); itr++ )
+    for( p_itr = _pointData.begin(); p_itr != _pointData.end(); p_itr++ )
     {
-        memcpy(buf + offset, &(*itr), sizeof(*itr));
-        offset += sizeof(*itr);
+        memcpy(buf + offset, &(*p_itr), sizeof(*p_itr));
+        offset += sizeof(*p_itr);
+    }
+
+    for( e_itr = _eventLogs.begin(); e_itr != _eventLogs.end(); e_itr++ )
+    {
+        if( *e_itr != NULL )
+        {
+            (*e_itr)->putSerialized(buf + offset);
+
+            offset += (*e_itr)->getSerializedLength();
+        }
     }
 }
 

@@ -24,6 +24,29 @@ CtiIONFixedArray::CtiIONFixedArray( ) :
 }
 
 
+CtiIONFixedArray::~CtiIONFixedArray( )
+{
+    clear( );
+}
+
+
+void CtiIONFixedArray::clear( void )
+{
+    while( !_array.empty() )
+    {
+        delete _array.back();
+
+        _array.pop_back();
+    }
+}
+
+
+int CtiIONFixedArray::size( void )
+{
+    return _array.size( );
+}
+
+
 void CtiIONFixedArray::setFixedArrayType( FixedArrayTypes type )
 {
     _arrayType = type;
@@ -103,34 +126,163 @@ bool CtiIONFixedArray::isNumericArray( CtiIONValue *toCheck )
 }
 
 
-void CtiIONFixedArray::putSerializedValue( unsigned char *buf ) const
-{
-    int i, bytesWritten;
-
-    bytesWritten = 0;
-    for( i = 0; i < _array.size(); i++ )
-    {
-        _array[i]->putElement(buf + bytesWritten);
-        bytesWritten += _array[i]->getElementLength();
-    }
-}
-
-
 unsigned int CtiIONFixedArray::getSerializedValueLength( void ) const
 {
-    int length;
+    unsigned int retVal = 0;
 
-    length = _array.size();
+    retVal += getArrayHeaderLength();
+    retVal += getArrayElementsLength();
 
-    //  to protect against accessing an invalid element
-    if( length > 0 )
-    {
-        length *= _array[0]->getElementLength();
-    }
-
-    return length;
+    return retVal;
 }
 
+
+void CtiIONFixedArray::putSerializedValue( unsigned char *buf ) const
+{
+    unsigned int offset = 0;
+
+    putArrayHeader(buf + offset);
+    offset += getArrayHeaderLength();
+
+    putArrayElements(buf + offset);
+    offset += getArrayElementsLength();
+}
+
+
+unsigned int CtiIONFixedArray::getArrayHeaderLength( void ) const
+{
+    unsigned int tmpHeaderLength;
+    unsigned long tmpLength = getArrayElementsLength( );
+    unsigned long tmpItems  = _array.size( );
+
+    tmpHeaderLength = 1;
+
+    if( tmpItems > 13 )
+    {
+        tmpHeaderLength++;
+    }
+    else if( tmpItems > 255 )
+    {
+        tmpHeaderLength += 4;
+    }
+
+    if( tmpLength > 13 )
+    {
+        tmpHeaderLength++;
+    }
+    else if( tmpLength > 255 )
+    {
+        tmpHeaderLength += 4;
+    }
+
+    return tmpHeaderLength;
+}
+
+
+void CtiIONFixedArray::putArrayHeader( unsigned char *buf ) const
+{
+    unsigned long tmpLength, pos;
+    unsigned long tmpItems;
+
+    unsigned char tmpbuf, tmp8b, tmp32b[4];
+
+    tmpLength = getArrayElementsLength( );
+    tmpItems  = _array.size( );
+
+    pos = 0;
+
+    //  notation following - (nibble 1, nibble 0)
+
+    memcpy( tmp32b, &tmpItems, 4 );
+
+    if( tmpItems <= 0xD )
+    {
+        tmp8b = (tmp32b[0] & 0x0F) << 4;   //  n1 = item count
+        //  note: tmp8b == ([item count],[0x0])
+    }
+    else if( tmpItems <= 255 )
+    {
+        tmp8b  = 0xE << 4;                 //  n1 = header key
+        tmp8b |= (tmp32b[0] & 0xF0) >> 4;  //  n0 = item count (bits 7-4)
+        buf[pos++] = tmp8b;          //  ------ (n1,n0) written
+
+        tmp8b  = (tmp32b[0] & 0x0F) << 4;  //  n1 = item count (bits 3-0)
+        //  note: tmp8b == ([item count bits 3-0],[0x0])
+    }
+    else
+    {
+        tmp8b  = 0xF << 4;                 //  n1 = header key
+        tmp8b |= (tmp32b[3] & 0xF0) >> 4;  //  n0 = item count (bits 31-28)
+        buf[pos++] = tmp8b;          //  ------ (n1,n0) written
+
+        tmp8b  = (tmp32b[3] & 0x0F) << 4;  //  n1 = item count (bits 27-24)
+        tmp8b |= (tmp32b[2] & 0xF0) >> 4;  //  n0 = item count (bits 23-20)
+        buf[pos++] = tmp8b;          //  ------ (n1,n0) written
+
+        tmp8b  = (tmp32b[2] & 0x0F) << 4;  //  n1 = item count (bits 19-16)
+        tmp8b |= (tmp32b[1] & 0xF0) >> 4;  //  n0 = item count (bits 15-12)
+        buf[pos++] = tmp8b;          //  ------ (n1,n0) written
+
+        tmp8b  = (tmp32b[1] & 0x0F) << 4;  //  n1 = item count (bits 11- 8)
+        tmp8b |= (tmp32b[0] & 0xF0) >> 4;  //  n0 = item count (bits  7- 4)
+        buf[pos++] = tmp8b;          //  ------ (n1,n0) written
+
+        tmp8b  = (tmp32b[0] & 0x0F) << 4;  //  n1 = item count (bits  3- 0)
+        //  note:  tmp8b == ([item count bits 3-0],[0x0])
+    }
+
+
+    memcpy( tmp32b, &tmpLength, 4 );
+
+    if( tmpLength <= 0xC )
+    {
+        tmp8b |= tmp32b[0] & 0x0F;  //  n0 = length
+        buf[pos++] = tmp8b;   //  ------ (n1,n0) written
+    }
+    else if( tmpLength <= 255 )
+    {
+        tmp8b |= 0x0D;              //  n0 = header key
+        buf[pos++] = tmp8b;   //  ------ (n1,n0) written
+
+        buf[pos++] = tmp32b[0];  //  byte 0 written
+    }
+    else
+    {
+        tmp8b |= 0x0E;              //  n0 = header key
+        buf[pos++] = tmp8b;   //  ------ (n1,n0) written
+
+        buf[pos++] = tmp32b[3];  //  byte 3 written
+        buf[pos++] = tmp32b[2];  //  byte 2 written
+        buf[pos++] = tmp32b[1];  //  byte 1 written
+        buf[pos++] = tmp32b[0];  //  byte 0 written
+    }
+}
+
+
+unsigned int CtiIONFixedArray::getArrayElementsLength( void ) const
+{
+    int retVal = 0;
+
+    //  to protect against accessing an invalid element
+    if( _array.size() > 0 )
+    {
+        retVal += _array.size() * _array[0]->getElementLength();
+    }
+
+    return retVal;
+}
+
+
+void CtiIONFixedArray::putArrayElements( unsigned char *buf ) const
+{
+    unsigned int pos = 0;
+
+    for( int i = 0; i < _array.size(); i++ )
+    {
+        _array[i]->putElement(buf + pos);
+        pos += _array[i]->getElementLength();
+    }
+}
 
 unsigned char CtiIONFixedArray::getVariableClassDescriptor( void ) const
 {
@@ -158,114 +310,6 @@ unsigned char CtiIONFixedArray::getVariableClassDescriptor( void ) const
     }
 
     return desc;
-}
-
-
-unsigned int CtiIONFixedArray::getSerializedHeaderLength( void ) const
-{
-    unsigned int tmpHeaderLength;
-    unsigned long tmpLength = getSerializedValueLength( );
-    unsigned long tmpItems  = _array.size( );
-
-    tmpHeaderLength = 1;
-
-    if( tmpItems > 13 )
-    {
-        tmpHeaderLength++;
-    }
-    else if( tmpItems > 255 )
-    {
-        tmpHeaderLength += 4;
-    }
-
-    if( tmpLength > 13 )
-    {
-        tmpHeaderLength++;
-    }
-    else if( tmpLength > 255 )
-    {
-        tmpHeaderLength += 4;
-    }
-
-    return tmpHeaderLength;
-}
-
-
-void CtiIONFixedArray::putSerializedHeader( unsigned char *buf ) const
-{
-    unsigned long tmpLength = getSerializedValueLength( ),
-                  streamPos;
-    unsigned long tmpItems  = _array.size( );
-
-    unsigned char tmpbuf, tmp8b, tmp32b[4];
-
-    streamPos = 0;
-
-    //  notation following - (nibble 1, nibble 0)
-
-    memcpy( tmp32b, &tmpItems, 4 );
-
-    if( tmpItems <= 0xD )
-    {
-        tmp8b = (tmp32b[0] & 0x0F) << 4;   //  n1 = item count
-        //  note: tmp8b == ([item count],[0x0])
-    }
-    else if( tmpItems <= 255 )
-    {
-        tmp8b  = 0xE << 4;                 //  n1 = header key
-        tmp8b |= (tmp32b[0] & 0xF0) >> 4;  //  n0 = item count (bits 7-4)
-        buf[streamPos++] = tmp8b;          //  ------ (n1,n0) written
-
-        tmp8b  = (tmp32b[0] & 0x0F) << 4;  //  n1 = item count (bits 3-0)
-        //  note: tmp8b == ([item count bits 3-0],[0x0])
-    }
-    else
-    {
-        tmp8b  = 0xF << 4;                 //  n1 = header key
-        tmp8b |= (tmp32b[3] & 0xF0) >> 4;  //  n0 = item count (bits 31-28)
-        buf[streamPos++] = tmp8b;          //  ------ (n1,n0) written
-
-        tmp8b  = (tmp32b[3] & 0x0F) << 4;  //  n1 = item count (bits 27-24)
-        tmp8b |= (tmp32b[2] & 0xF0) >> 4;  //  n0 = item count (bits 23-20)
-        buf[streamPos++] = tmp8b;          //  ------ (n1,n0) written
-
-        tmp8b  = (tmp32b[2] & 0x0F) << 4;  //  n1 = item count (bits 19-16)
-        tmp8b |= (tmp32b[1] & 0xF0) >> 4;  //  n0 = item count (bits 15-12)
-        buf[streamPos++] = tmp8b;          //  ------ (n1,n0) written
-
-        tmp8b  = (tmp32b[1] & 0x0F) << 4;  //  n1 = item count (bits 11- 8)
-        tmp8b |= (tmp32b[0] & 0xF0) >> 4;  //  n0 = item count (bits  7- 4)
-        buf[streamPos++] = tmp8b;          //  ------ (n1,n0) written
-
-        tmp8b  = (tmp32b[0] & 0x0F) << 4;  //  n1 = item count (bits  3- 0)
-        //  note:  tmp8b == ([item count bits 3-0],[0x0])
-    }
-
-
-    memcpy( tmp32b, &tmpLength, 4 );
-
-    if( tmpLength <= 0xC )
-    {
-        tmp8b |= tmp32b[0] & 0x0F;  //  n0 = length
-        buf[streamPos++] = tmp8b;   //  ------ (n1,n0) written
-    }
-    else if( tmpLength <= 255 )
-    {
-        tmp8b |= 0x0D;              //  n0 = header key
-        buf[streamPos++] = tmp8b;   //  ------ (n1,n0) written
-
-        buf[streamPos++] = tmp32b[0];  //  byte 0 written
-    }
-    else
-    {
-        tmp8b |= 0x0E;              //  n0 = header key
-        buf[streamPos++] = tmp8b;   //  ------ (n1,n0) written
-
-        buf[streamPos++] = tmp32b[3];  //  byte 3 written
-        buf[streamPos++] = tmp32b[2];  //  byte 2 written
-        buf[streamPos++] = tmp32b[1];  //  byte 1 written
-        buf[streamPos++] = tmp32b[0];  //  byte 0 written
-    }
 }
 
 

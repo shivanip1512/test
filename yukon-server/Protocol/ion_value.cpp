@@ -76,6 +76,12 @@ double CtiIONValue::getNumericValue( void ) const
 }
 
 
+const char *CtiIONValue::toString( void )
+{
+    return "(value)";
+}
+
+
 bool CtiIONValue::isFixed( void ) const
 {
     return getValueType() == ValueType_Fixed;

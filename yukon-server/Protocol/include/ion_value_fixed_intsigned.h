@@ -24,6 +24,7 @@ class CtiIONSignedInt : public CtiIONValueFixed, /*public CtiIONNumeric, */publi
 private:
 
     long _signedInt;
+    char _string[20];
 
 protected:
 
@@ -46,6 +47,8 @@ public:
 
     CtiIONSignedInt &setValue( long value );
     long             getValue( void ) const;
+
+    const char *toString( void );
 
     virtual bool isNumeric( void ) const  {  return true;  };
     double getNumericValue( void ) const;

@@ -77,7 +77,10 @@ unsigned int CtiIONUnsignedInt::getSerializedValueLength( void ) const
 
 void CtiIONUnsignedInt::putSerializedValue( unsigned char *buf ) const
 {
-    memcpy( buf, &_unsignedInt, getSerializedValueLength( ) );
+    buf[0] = ((unsigned char *)&_unsignedInt)[3];
+    buf[1] = ((unsigned char *)&_unsignedInt)[2];
+    buf[2] = ((unsigned char *)&_unsignedInt)[1];
+    buf[3] = ((unsigned char *)&_unsignedInt)[0];
 }
 
 
@@ -103,6 +106,15 @@ CtiIONUnsignedInt &CtiIONUnsignedInt::setValue( unsigned long value )
 unsigned long CtiIONUnsignedInt::getValue( void ) const
 {
     return _unsignedInt;
+}
+
+
+const char *CtiIONUnsignedInt::toString( void )
+{
+    _snprintf(_string, 15, "%lu", _unsignedInt);
+    _string[15] = 0;
+
+    return _string;
 }
 
 

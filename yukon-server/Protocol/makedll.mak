@@ -243,13 +243,14 @@ id_ctiprot.obj:	utility.h dsm2.h mutex.h dlldefs.h guard.h \
 		id_ctiprot.h id_build.h id_vinfo.h
 ion_datastream.obj:	ctidbgmem.h guard.h dlldefs.h logger.h thread.h \
 		mutex.h ion_datastream.h ion_value.h ion_serializable.h \
-		ion_value_fixed.h ion_value_variable.h \
-		ion_value_variable_fixedarray.h \
+		numstr.h ion_value_fixed.h ion_value_numeric.h ctitypes.h \
+		ion_value_variable.h ion_value_variable_fixedarray.h \
 		ion_value_variable_fixedarray_element.h \
 		ion_value_fixed_char.h ion_value_variable_boolean.h \
-		ion_value_numeric.h ctitypes.h ion_value_fixed_float.h \
-		ion_value_fixed_intsigned.h ion_value_fixed_intunsigned.h \
-		ion_value_struct.h ion_value_structarray.h
+		ion_value_fixed_float.h ion_value_fixed_intsigned.h \
+		ion_value_fixed_intunsigned.h ion_value_struct.h \
+		ion_value_structarray.h ion_value_struct_types.h \
+		ion_value_fixed_time.h
 ion_net_application.obj:	ctitypes.h guard.h dlldefs.h logger.h \
 		thread.h mutex.h ion_net_application.h xfer.h dsm2.h dialup.h \
 		yukon.h ctidbgmem.h dllbase.h os2_2w32.h types.h cticalls.h \
@@ -262,90 +263,100 @@ ion_net_network.obj:	ctitypes.h guard.h dlldefs.h logger.h thread.h \
 		mutex.h ion_net_network.h xfer.h dsm2.h dialup.h yukon.h \
 		ctidbgmem.h dllbase.h os2_2w32.h types.h cticalls.h \
 		ion_net_datalink.h ion_serializable.h
-ion_rootclasses.obj:	ctidbgmem.h guard.h dlldefs.h logger.h thread.h \
-		mutex.h
 ion_value.obj:	ctidbgmem.h guard.h dlldefs.h logger.h thread.h mutex.h \
-		ion_value.h ion_serializable.h ion_value_fixed.h \
-		ion_value_struct.h ion_value_structarray.h \
-		ion_value_variable.h
-ion_value_fixed.obj:	ctidbgmem.h guard.h dlldefs.h logger.h thread.h \
-		mutex.h ion_value_fixed.h ion_value.h ion_serializable.h \
-		ion_value_fixed_char.h \
+		ion_value.h ion_serializable.h numstr.h ion_value_fixed.h \
+		ion_value_numeric.h ctitypes.h ion_value_struct.h \
+		ion_value_structarray.h ion_value_struct_types.h \
+		ion_value_fixed_intunsigned.h \
 		ion_value_variable_fixedarray_element.h \
-		ion_value_fixed_float.h ion_value_numeric.h ctitypes.h \
-		ion_value_fixed_intsigned.h ion_value_fixed_intunsigned.h \
-		ion_value_fixed_time.h
-ion_value_fixed_char.obj:	ctidbgmem.h logger.h thread.h mutex.h \
-		dlldefs.h guard.h ion_value_fixed_char.h ion_value_fixed.h \
-		ion_value.h ion_serializable.h \
-		ion_value_variable_fixedarray_element.h
-ion_value_fixed_float.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
-		ion_value_fixed_float.h ion_value_fixed.h ion_value.h \
-		ion_serializable.h ion_value_numeric.h ctitypes.h \
-		ion_value_variable_fixedarray_element.h \
-		ion_value_fixed_char.h
-ion_value_fixed_intsigned.obj:	ctidbgmem.h logger.h thread.h mutex.h \
-		dlldefs.h guard.h ion_value_fixed_intsigned.h \
-		ion_value_fixed.h ion_value.h ion_serializable.h \
-		ion_value_numeric.h ctitypes.h \
-		ion_value_variable_fixedarray_element.h \
-		ion_value_fixed_char.h
-ion_value_fixed_intunsigned.obj:	ctidbgmem.h \
-		ion_value_fixed_intunsigned.h ion_value_fixed.h ion_value.h \
-		dlldefs.h ion_serializable.h ion_value_numeric.h ctitypes.h \
-		ion_value_variable_fixedarray_element.h \
-		ion_value_fixed_char.h logger.h thread.h mutex.h guard.h
-ion_value_fixed_time.obj:	ctidbgmem.h ion_value_fixed_time.h \
-		ion_value_fixed.h ion_value.h dlldefs.h ion_serializable.h \
-		logger.h thread.h mutex.h guard.h
-ion_value_struct.obj:	ctidbgmem.h logger.h thread.h mutex.h dlldefs.h \
-		guard.h ion_value_struct.h ion_value.h ion_serializable.h \
-		ion_value_struct_types.h ion_value_fixed_intunsigned.h \
-		ion_value_fixed.h ion_value_numeric.h ctitypes.h \
-		ion_value_variable_fixedarray_element.h \
-		ion_value_fixed_char.h ion_value_fixed_time.h \
-		ion_value_variable_fixedarray.h ion_value_variable.h \
+		ion_value_fixed_time.h ion_value_variable_fixedarray.h \
+		ion_value_variable.h ion_value_fixed_char.h \
 		ion_value_variable_boolean.h ion_value_fixed_float.h \
 		ion_value_fixed_intsigned.h
-ion_value_structarray.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
-		ion_value_structarray.h ion_value.h ion_serializable.h
-ion_value_struct_types.obj:	ion_value_struct_types.h \
-		ion_value_struct.h ion_value.h dlldefs.h ion_serializable.h \
+ion_value_fixed.obj:	ctidbgmem.h guard.h dlldefs.h logger.h thread.h \
+		mutex.h ion_value_fixed.h ion_value.h ion_serializable.h \
+		numstr.h ion_value_numeric.h ctitypes.h \
+		ion_value_fixed_char.h \
+		ion_value_variable_fixedarray_element.h \
+		ion_value_fixed_float.h ion_value_fixed_intsigned.h \
+		ion_value_fixed_intunsigned.h ion_value_fixed_time.h
+ion_value_fixed_char.obj:	ctidbgmem.h logger.h thread.h mutex.h \
+		dlldefs.h guard.h ion_value_fixed_char.h ion_value_fixed.h \
+		ion_value.h ion_serializable.h numstr.h ion_value_numeric.h \
+		ctitypes.h ion_value_variable_fixedarray_element.h
+ion_value_fixed_float.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
+		ion_value_fixed_float.h ion_value_fixed.h ion_value.h \
+		ion_serializable.h numstr.h ion_value_numeric.h ctitypes.h \
+		ion_value_variable_fixedarray_element.h
+ion_value_fixed_intsigned.obj:	ctidbgmem.h logger.h thread.h mutex.h \
+		dlldefs.h guard.h ion_value_fixed_intsigned.h \
+		ion_value_fixed.h ion_value.h ion_serializable.h numstr.h \
+		ion_value_numeric.h ctitypes.h \
+		ion_value_variable_fixedarray_element.h
+ion_value_fixed_intunsigned.obj:	ctidbgmem.h \
+		ion_value_fixed_intunsigned.h ion_value_fixed.h ion_value.h \
+		dlldefs.h ion_serializable.h numstr.h ion_value_numeric.h \
+		ctitypes.h ion_value_variable_fixedarray_element.h logger.h \
+		thread.h mutex.h guard.h
+ion_value_fixed_time.obj:	ctidbgmem.h ion_value_fixed_time.h \
+		ion_value_fixed.h ion_value.h dlldefs.h ion_serializable.h \
+		numstr.h ion_value_numeric.h ctitypes.h logger.h thread.h \
+		mutex.h guard.h
+ion_value_struct.obj:	ctidbgmem.h logger.h thread.h mutex.h dlldefs.h \
+		guard.h ion_value_struct.h ion_value.h ion_serializable.h \
+		numstr.h ion_value_struct_types.h \
 		ion_value_fixed_intunsigned.h ion_value_fixed.h \
 		ion_value_numeric.h ctitypes.h \
 		ion_value_variable_fixedarray_element.h \
-		ion_value_fixed_char.h ion_value_fixed_time.h \
-		ion_value_variable_fixedarray.h ion_value_variable.h \
+		ion_value_fixed_time.h ion_value_variable_fixedarray.h \
+		ion_value_variable.h ion_value_fixed_char.h \
+		ion_value_variable_boolean.h ion_value_fixed_float.h \
+		ion_value_fixed_intsigned.h
+ion_value_structarray.obj:	ctidbgmem.h logger.h thread.h mutex.h \
+		dlldefs.h guard.h ion_value_structarray.h ion_value.h \
+		ion_serializable.h numstr.h ion_value_struct_types.h \
+		ion_value_struct.h ion_value_fixed_intunsigned.h \
+		ion_value_fixed.h ion_value_numeric.h ctitypes.h \
+		ion_value_variable_fixedarray_element.h \
+		ion_value_fixed_time.h ion_value_variable_fixedarray.h \
+		ion_value_variable.h ion_value_fixed_char.h \
+		ion_value_variable_boolean.h ion_value_fixed_float.h \
+		ion_value_fixed_intsigned.h
+ion_value_struct_types.obj:	ion_value_struct_types.h \
+		ion_value_struct.h ion_value.h dlldefs.h ion_serializable.h \
+		numstr.h ion_value_fixed_intunsigned.h ion_value_fixed.h \
+		ion_value_numeric.h ctitypes.h \
+		ion_value_variable_fixedarray_element.h \
+		ion_value_fixed_time.h ion_value_variable_fixedarray.h \
+		ion_value_variable.h ion_value_fixed_char.h \
 		ion_value_variable_boolean.h ion_value_fixed_float.h \
 		ion_value_fixed_intsigned.h
 ion_value_variable.obj:	ctidbgmem.h guard.h dlldefs.h logger.h \
 		thread.h mutex.h ion_value_variable.h ion_value.h \
-		ion_serializable.h ion_value_variable_boolean.h \
-		ion_value_numeric.h ctitypes.h ion_value_fixed.h \
+		ion_serializable.h numstr.h ion_value_numeric.h ctitypes.h \
+		ion_value_variable_boolean.h \
 		ion_value_variable_fixedarray_element.h \
-		ion_value_fixed_char.h ion_value_variable_program.h \
-		ion_value_variable_fixedarray.h ion_value_fixed_float.h \
-		ion_value_fixed_intsigned.h ion_value_fixed_intunsigned.h
-ion_value_variable_boolean.obj:	ctidbgmem.h logger.h thread.h mutex.h \
-		dlldefs.h guard.h ion_value_variable_boolean.h \
-		ion_value_variable.h ion_value.h ion_serializable.h \
-		ion_value_numeric.h ctitypes.h ion_value_fixed.h \
-		ion_value_variable_fixedarray_element.h \
-		ion_value_fixed_char.h
-ion_value_variable_fixedarray.obj:	logger.h thread.h mutex.h dlldefs.h \
-		guard.h ctidbgmem.h ion_value_variable_fixedarray.h \
-		ion_value_variable.h ion_value.h ion_serializable.h \
-		ion_value_variable_fixedarray_element.h \
+		ion_value_variable_program.h ion_value_variable_fixedarray.h \
 		ion_value_fixed_char.h ion_value_fixed.h \
-		ion_value_variable_boolean.h ion_value_numeric.h ctitypes.h \
 		ion_value_fixed_float.h ion_value_fixed_intsigned.h \
 		ion_value_fixed_intunsigned.h
-ion_value_variable_fixedarray_types.obj:	ctidbgmem.h logger.h thread.h \
-		mutex.h dlldefs.h guard.h \
-		ion_value_variable_fixedarray_types.h
+ion_value_variable_boolean.obj:	ctidbgmem.h logger.h thread.h mutex.h \
+		dlldefs.h guard.h ion_value_variable_boolean.h \
+		ion_value_variable.h ion_value.h ion_serializable.h numstr.h \
+		ion_value_numeric.h ctitypes.h \
+		ion_value_variable_fixedarray_element.h
+ion_value_variable_fixedarray.obj:	logger.h thread.h mutex.h dlldefs.h \
+		guard.h ctidbgmem.h ion_value_variable_fixedarray.h \
+		ion_value_variable.h ion_value.h ion_serializable.h numstr.h \
+		ion_value_numeric.h ctitypes.h \
+		ion_value_variable_fixedarray_element.h \
+		ion_value_fixed_char.h ion_value_fixed.h \
+		ion_value_variable_boolean.h ion_value_fixed_float.h \
+		ion_value_fixed_intsigned.h ion_value_fixed_intunsigned.h
 ion_value_variable_program.obj:	ctidbgmem.h logger.h thread.h mutex.h \
 		dlldefs.h guard.h ion_value_variable_program.h \
-		ion_value_variable.h ion_value.h ion_serializable.h
+		ion_value_variable.h ion_value.h ion_serializable.h numstr.h \
+		ion_value_numeric.h ctitypes.h
 prot_711.obj:	cticalls.h os2_2w32.h dlldefs.h types.h prot_711.h \
 		porter.h dsm2.h mutex.h guard.h dsm2err.h devicetypes.h \
 		queues.h logger.h thread.h dllbase.h
@@ -386,17 +397,17 @@ prot_ion.obj:	logger.h thread.h mutex.h dlldefs.h guard.h utility.h \
 		prot_ion.h pointtypes.h prot_base.h msg_pdata.h pointdefs.h \
 		message.h ctidbgmem.h collectable.h msg_signal.h yukon.h \
 		dllbase.h os2_2w32.h cticalls.h xfer.h dialup.h \
-		ion_datastream.h ion_value.h ion_serializable.h \
-		ion_value_fixed.h ion_value_variable.h \
-		ion_value_variable_fixedarray.h \
+		ion_datastream.h ion_value.h ion_serializable.h numstr.h \
+		ion_value_fixed.h ion_value_numeric.h ctitypes.h \
+		ion_value_variable.h ion_value_variable_fixedarray.h \
 		ion_value_variable_fixedarray_element.h \
 		ion_value_fixed_char.h ion_value_variable_boolean.h \
-		ion_value_numeric.h ctitypes.h ion_value_fixed_float.h \
-		ion_value_fixed_intsigned.h ion_value_fixed_intunsigned.h \
-		ion_value_struct.h ion_value_structarray.h \
-		ion_net_application.h ion_net_network.h ion_net_datalink.h \
-		ion_value_variable_program.h ion_value_struct_types.h \
-		ion_value_fixed_time.h
+		ion_value_fixed_float.h ion_value_fixed_intsigned.h \
+		ion_value_fixed_intunsigned.h ion_value_struct.h \
+		ion_value_structarray.h ion_value_struct_types.h \
+		ion_value_fixed_time.h ion_net_application.h \
+		ion_net_network.h ion_net_datalink.h \
+		ion_value_variable_program.h
 prot_sixnet.obj:	guard.h dlldefs.h logger.h thread.h mutex.h \
 		prot_sixnet.h cmdparse.h parsevalue.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h

@@ -90,8 +90,13 @@ private:
 
     int _ioState;
 
-    int   _valid, _srcID, _dstID;
-    short _msgCount;
+    unsigned int   _valid, _srcID, _dstID;
+    unsigned short _msgCount;
+
+    enum
+    {
+        NetworkLayerLengthBytes = 2
+    };
 
 protected:
 

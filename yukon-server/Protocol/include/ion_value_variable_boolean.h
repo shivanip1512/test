@@ -24,6 +24,7 @@ class CtiIONBoolean : public CtiIONValueVariable, /*public CtiIONNumeric, */publ
 private:
 
     bool _bool;
+    char _string[10];
 
 protected:
 
@@ -48,6 +49,8 @@ public:
 
     CtiIONBoolean &setValue( bool value );
     bool           getValue( void ) const;
+
+    const char *toString( void );
 
     virtual bool isNumeric( void ) const  {  return true;  };
     double getNumericValue( void ) const;

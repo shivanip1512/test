@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/02/14 16:53:49 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/02/21 22:28:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,10 +34,10 @@ private:
 
     enum FixedClassDescriptor
     {
-        ClassDescriptor_LengthNibbleMax  = 0xc,
-        ClassDescriptor_LengthNextByte   = 0xd,
-        ClassDescriptor_LengthNext4Bytes = 0xe,
-        ClassDescriptor_Reserved         = 0xf
+        ClassDescriptor_Fixed_LengthNibbleMax  = 0xc,
+        ClassDescriptor_Fixed_LengthNextByte   = 0xd,
+        ClassDescriptor_Fixed_LengthNext4Bytes = 0xe,
+        ClassDescriptor_Fixed_Reserved         = 0xf
     };
 
     enum FixedIONClassTypes

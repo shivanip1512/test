@@ -67,9 +67,18 @@ CtiIONChar &CtiIONChar::setValue( unsigned char value )
 }
 
 
-unsigned char CtiIONChar::getValue( void )
+unsigned char CtiIONChar::getValue( void ) const
 {
     return _char;
+}
+
+
+const char *CtiIONChar::toString( void )
+{
+    _string[0] = _char;
+    _string[1] = '\0';
+
+    return _string;
 }
 
 

@@ -13,13 +13,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/02/12 01:14:54 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/02/21 22:28:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "ion_value.h"
+#include "ion_value_struct_types.h"
+
 
 class CtiIONStructArray : public CtiIONValue
 {
@@ -31,50 +33,155 @@ private:
 
     enum StructArrayClassDescriptor
     {
-        ClassDescriptor_LogRecordArray   = 0x0,
-        ClassDescriptor_AlarmArray       = 0x1,
-        ClassDescriptor_EventArray       = 0x2,
-        ClassDescriptor_RangeArray       = 0x4,
-        ClassDescriptor_ListArray        = 0x5,
-        ClassDescriptor_ExceptionArray   = 0x7,
-        ClassDescriptor_WaveformArray    = 0x8,
-        ClassDescriptor_DateArray        = 0xa,
-        ClassDescriptor_CalendarArray    = 0xb,
-        ClassDescriptor_ProfileArray     = 0xc,
-        ClassDescriptor_StringArrayArray = 0xf
+        ClassDescriptor_StructArray_LogRecord      = 0x0,
+        ClassDescriptor_StructArray_Alarm          = 0x1,
+        ClassDescriptor_StructArray_Event          = 0x2,
+        ClassDescriptor_StructArray_Range          = 0x4,
+        ClassDescriptor_StructArray_List           = 0x5,
+        ClassDescriptor_StructArray_Exception      = 0x7,
+        ClassDescriptor_StructArray_Waveform       = 0x8,
+        ClassDescriptor_StructArray_Date           = 0xa,
+        ClassDescriptor_StructArray_Calendar       = 0xb,
+        ClassDescriptor_StructArray_Profile        = 0xc,
+        ClassDescriptor_StructArray_StringArray    = 0xf
     };
 
     enum StructArrayIONClassTypes
     {
-        IONClass_StructArray = 0x07,
+        IONClass_StructArray = 0x08
+    };
+
+    enum
+    {
+        StructArrayEnd = 0xf9
     };
 
 protected:
 
-    unsigned char getStructArrayKey( void ) const;
+    CtiIONStructArray( );
+    ~CtiIONStructArray( );
 
+    typedef vector< CtiIONStruct * > ion_struct_vector;
+    ion_struct_vector _structArrayElements;
+
+    void setStructArrayType( StructArrayTypes structArrayType );
+
+    void putSerialized( unsigned char *buf ) const;
+    unsigned int getSerializedLength( void ) const;
+
+    unsigned char getStructArrayClassDescriptor( void ) const;
+
+    friend class CtiProtocolION;
     friend CtiIONValue *CtiIONValue::restoreObject( unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
+//    friend class CtiIONStructArrayTemplate;
 
     static CtiIONValue *restoreStructArray( unsigned char ionClass, unsigned char classDescriptor,
                                             unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
 
-public:
+    void init( ion_struct_vector structElements );
+    void push_back( CtiIONStruct *toAppend );
 
-    CtiIONStructArray( StructArrayTypes structArrayType );
-    ~CtiIONStructArray( );
+public:
 
     static bool      isStructArrayType ( CtiIONValue *toCheck, StructArrayTypes structArrayType );
     bool             isStructArrayType ( StructArrayTypes structArrayType ) const;
     StructArrayTypes getStructArrayType( void ) const;
 
+    typedef ion_struct_vector::const_iterator const_iterator;
+
+    void clear( void );
+    int  size( void );
+
+    const_iterator begin( void );
+    const_iterator end( void );
+
     enum StructArrayTypes
     {
-        LogArray,
-        AlarmArray,
-        StringArrayArray,
-        MultiArray  //  unknown - unspecified in document
+        StructArray_LogArray,
+        StructArray_AlarmArray,
+//        StructArray_MultiArray  //  eh?  no clear definition in the spec
+    };
+};
+
+
+
+//  ************************  NOTE  ************************
+//  The code for CtiIONStructArrayTemplate is included in the
+//    class definition in order to get around an MSVC bug
+//    that prevents template exporting.
+
+
+template < class T >
+class CtiIONStructArrayTemplate : public CtiIONStructArray
+{
+private:
+
+    bool assignStructArrayType( void )
+    {
+        T element;
+
+        bool retVal = true;
+
+        if(      Struct::isStructType(&element, Struct::StructType_Alarm) )         setStructArrayType(StructArray_AlarmArray);
+        else if( Struct::isStructType(&element, Struct::StructType_LogRecord) )     setStructArrayType(StructArray_LogArray);
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            retVal = false;
+        }
+
+        return retVal;
+    }
+
+protected:
+
+    friend CtiIONValue *restoreStructArray( unsigned char ionClass, unsigned char classDescriptor,
+                                            unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
+
+public:
+
+    CtiIONStructArrayTemplate( )
+    {
+        setValid(assignStructArrayType());
+    }
+
+    ~CtiIONStructArrayTemplate( )
+    {
+        clear( );
+    }
+
+    T *operator[]( unsigned long index )
+    {
+        return at(index);
     };
 
+    T *at( unsigned long index )
+    {
+        T *tmp = NULL;
+
+        if( index < _structArrayElements.size( ) )
+        {
+            tmp = (T *)_structArrayElements[index];
+        }
+
+        return tmp;
+    }
+
+    //  this is basically just a compile-time type-check for convenience
+    void push_back( T *toAppend )
+    {
+        //  this function is protected, so it won't be listed among the public members
+        CtiIONStructArray::push_back((CtiIONStruct *)toAppend);
+    }
 };
+
+
+typedef CtiIONStructArrayTemplate<CtiIONAlarm>          CtiIONAlarmArray;
+typedef CtiIONStructArrayTemplate<CtiIONLogRecord>      CtiIONLogArray;
+
 
 #endif // #ifndef __ION_VALUE_STRUCTARRAY_H__

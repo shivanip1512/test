@@ -182,6 +182,26 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
             break;
         }
 
+        case ControlRequest:
+        {
+            unsigned int offset;
+
+            if( parse.getFlags() & CMD_FLAG_OFFSET &&
+                parse.getFlags() & CMD_FLAG_CTL_CLOSE )
+            {
+                offset = parse.getiValue("offset");
+
+                if( offset > 0 )
+                {
+                    _ion.setCommand(CtiProtocolION::Command_ExternalPulseTrigger, offset);
+
+                    found = true;
+                }
+            }
+
+            break;
+        }
+
         /*
         case ControlRequest:
         {
@@ -368,29 +388,34 @@ INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, O
 int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
-    RWTPtrSlist<CtiPointDataMsg> ionPoints;
+    RWTPtrSlist<CtiPointDataMsg> pointData;
+    RWTPtrSlist<CtiSignalMsg>    eventData;
 
     _ion.recvCommResult(InMessage, outList);
 
     resetScanPending();
 
-    if( _ion.hasInboundPoints() )
+    if( _ion.hasInboundData() )
     {
-        _ion.getInboundPoints(ionPoints);
+        _ion.getInboundData(pointData, eventData);
 
-        processInboundPoints(InMessage, TimeNow, vgList, retList, outList, ionPoints);
+        processInboundData(InMessage, TimeNow, vgList, retList, outList, pointData, eventData);
     }
 
     return ErrReturn;
 }
 
 
-void CtiDeviceION::processInboundPoints( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &points )
+void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList,
+                                       RWTPtrSlist<CtiPointDataMsg> &points, RWTPtrSlist<CtiSignalMsg> &events )
 {
     CtiReturnMsg *retMsg, *vgMsg;
 
     retMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
     vgMsg  = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    retMsg->setUserMessageId(InMessage->Return.UserID);
+    vgMsg->setUserMessageId (InMessage->Return.UserID);
 
     while( !points.isEmpty() )
     {
@@ -434,6 +459,22 @@ void CtiDeviceION::processInboundPoints( INMESS *InMessage, RWTime &TimeNow, RWT
         {
             delete tmpMsg;
         }
+    }
+
+    while( !events.isEmpty() )
+    {
+        CtiSignalMsg *tmpSignal;
+        CtiPointBase *point;
+
+        tmpSignal = events.removeFirst();
+
+        if( (point = getDevicePointOffsetTypeEqual(tmpSignal->getId(), AnalogPointType)) != NULL )
+        {
+            tmpSignal->setId(point->getID());
+        }
+
+        vgList.append(tmpSignal->replicateMessage());
+        retList.append(tmpSignal);
     }
 
     retList.append(retMsg);

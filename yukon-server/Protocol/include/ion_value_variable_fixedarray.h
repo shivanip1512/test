@@ -25,6 +25,15 @@
 #include "ion_value_fixed_intunsigned.h"
 
 
+template < class T > class CtiIONFixedArrayTemplate;
+
+typedef CtiIONFixedArrayTemplate< CtiIONChar >            CtiIONCharArray;
+typedef CtiIONFixedArrayTemplate< CtiIONBoolean >         CtiIONBooleanArray;
+typedef CtiIONFixedArrayTemplate< CtiIONFloat >           CtiIONFloatArray;
+typedef CtiIONFixedArrayTemplate< CtiIONSignedInt >       CtiIONSignedIntArray;
+typedef CtiIONFixedArrayTemplate< CtiIONUnsignedInt >     CtiIONUnsignedIntArray;
+
+
 class CtiIONFixedArray : public CtiIONValueVariable
 {
     enum FixedArrayTypes;
@@ -62,15 +71,19 @@ private:
 */
 protected:
 
-    vector< CtiIONFixedArrayElement * > _array;
-
-    virtual unsigned int getSerializedValueLength( void ) const;
-    virtual void putSerializedValue( unsigned char *buf ) const;
+    typedef vector< CtiIONFixedArrayElement * > array_element_vector;
+    array_element_vector _array;
 
     unsigned char getVariableClassDescriptor( void ) const;
 
-    virtual unsigned int getSerializedHeaderLength( void ) const;
-    virtual void putSerializedHeader( unsigned char *buf ) const;
+    unsigned int getSerializedValueLength( void ) const;
+    void putSerializedValue( unsigned char *buf ) const;
+
+    unsigned int getArrayHeaderLength( void ) const;
+    void putArrayHeader( unsigned char *buf ) const;
+
+    unsigned int getArrayElementsLength( void ) const;
+    void putArrayElements( unsigned char *buf ) const;
 
     void setFixedArrayType( FixedArrayTypes type );
 
@@ -82,6 +95,7 @@ public:
 
     //  heh, all of the other functions here are const or static - who cares if they can instantiate an orphan copy of the class
     CtiIONFixedArray();
+    ~CtiIONFixedArray();
 
     FixedArrayTypes getFixedArrayType( void ) const;
     static bool     isFixedArrayType ( CtiIONValue *toCheck, FixedArrayTypes arrayType );
@@ -97,6 +111,11 @@ public:
         FixedArray_SignedInt,
         FixedArray_UnsignedInt
     };
+
+    void clear( void );
+    int  size( void );
+
+
 };
 
 
@@ -136,6 +155,8 @@ private:
         return retVal;
     }
 
+    char *_string;
+
 protected:
 
     friend CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDescriptor, unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
@@ -145,6 +166,8 @@ protected:
         CtiIONFixedArrayElement *tmpElement;
         T *tmpValue;
         unsigned long pos = 0;
+
+        _string = NULL;
 
         //  this, and the isValid check below, should ensure that type T is always of type FixedArrayElement
         setValid(assignArrayType());
@@ -183,7 +206,7 @@ protected:
 
     ~CtiIONFixedArrayTemplate( )
     {
-        clear( );
+        delete [] _string;
     }
 
 public:
@@ -216,28 +239,37 @@ public:
         _array.push_back( toAppend );
     }
 
-    void clear( void )
+    const char *toString( void )
     {
-        while( !_array.empty() )
-        {
-            delete _array.back();
+        int i;
 
-            _array.pop_back();
+        switch( getFixedArrayType() )
+        {
+            case FixedArray_Char:
+            {
+                delete [] _string;
+
+                _string = new char[size() + 1];
+
+                for( i = 0; i < _array.size(); i++ )
+                {
+                    _string[i] = ((CtiIONChar *)(_array.at(i)))->getValue();
+                }
+
+                _string[_array.size()] = '\0';
+
+                return _string;
+
+                break;
+            }
+
+            default:
+            {
+                return CtiIONValue::toString();
+            }
         }
     }
-
-    int size( void )
-    {
-        return _array.size( );
-    }
 };
-
-
-typedef CtiIONFixedArrayTemplate<CtiIONChar>            CtiIONCharArray;
-typedef CtiIONFixedArrayTemplate<CtiIONBoolean>         CtiIONBooleanArray;
-typedef CtiIONFixedArrayTemplate<CtiIONFloat>           CtiIONFloatArray;
-typedef CtiIONFixedArrayTemplate<CtiIONSignedInt>       CtiIONSignedIntArray;
-typedef CtiIONFixedArrayTemplate<CtiIONUnsignedInt>     CtiIONUnsignedIntArray;
 
 
 #endif  //  #ifndef __ION_VALUE_VARIABLE_FIXEDARRAY_H__

@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/02/14 16:53:50 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/02/21 22:28:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,17 +48,17 @@ protected:
 
     enum VariableClassDescriptor
     {
-        ClassDescriptor_BooleanFalse    = 0x01,
-        ClassDescriptor_BooleanTrue     = 0x02,
-        ClassDescriptor_StructEnd       = 0x03,
-        ClassDescriptor_Program         = 0x06,
-        ClassDescriptor_StructArrayEnd  = 0x09,
+        ClassDescriptor_Variable_BooleanFalse   = 0x01,
+        ClassDescriptor_Variable_BooleanTrue    = 0x02,
+        ClassDescriptor_Variable_StructEnd      = 0x03,
+        ClassDescriptor_Variable_Program        = 0x06,
+        ClassDescriptor_Variable_StructArrayEnd = 0x09,
 
-        ClassDescriptor_FixedArray0     = 0x0a,
-        ClassDescriptor_FixedArray1     = 0x0b,
-        ClassDescriptor_FixedArray2     = 0x0c,
-        ClassDescriptor_FixedArray3     = 0x0d,
-        ClassDescriptor_FixedArray4     = 0x0e
+        ClassDescriptor_Variable_FixedArray0    = 0x0a,
+        ClassDescriptor_Variable_FixedArray1    = 0x0b,
+        ClassDescriptor_Variable_FixedArray2    = 0x0c,
+        ClassDescriptor_Variable_FixedArray3    = 0x0d,
+        ClassDescriptor_Variable_FixedArray4    = 0x0e
     };
 
     virtual unsigned char getVariableClassDescriptor( void ) const = 0;
@@ -110,7 +110,7 @@ private:
 
 protected:
 
-    unsigned char getVariableClassDescriptor( void ) const  {  return ClassDescriptor_StructEnd;  };
+    unsigned char getVariableClassDescriptor( void ) const  {  return ClassDescriptor_Variable_StructEnd;  };
 
 public:
 
@@ -119,6 +119,7 @@ public:
     {
     }
 };
+
 
 class CtiIONStructArrayEnd : public CtiIONValueVariable
 {
@@ -131,7 +132,7 @@ private:
 
 protected:
 
-    unsigned char getVariableClassDescriptor( void ) const  {  return ClassDescriptor_StructArrayEnd;  };
+    unsigned char getVariableClassDescriptor( void ) const  {  return ClassDescriptor_Variable_StructArrayEnd;  };
 
 public:
 

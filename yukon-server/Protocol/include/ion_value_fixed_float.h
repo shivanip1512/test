@@ -24,6 +24,7 @@ class CtiIONFloat : public CtiIONValueFixed, /*public CtiIONNumeric, */public Ct
 private:
 
     float _float;
+    char  _string[20];
 
 protected:
 
@@ -46,6 +47,8 @@ public:
 
     CtiIONFloat &setValue( float value );
     float        getValue( void ) const;
+
+    const char *toString( void );
 
     virtual bool isNumeric( void ) const  {  return true;  };
     double getNumericValue( void ) const;

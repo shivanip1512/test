@@ -81,10 +81,10 @@ private:
 
     void initFrameReserved( ion_frame *frame );
 
-    initInputFrame( unsigned char *rawFrame, int rawFrameLength );
-    generateOutputFrame( ion_frame *targetFrame );
-    generateAck ( ion_frame *targetFrame );
-    generateNack( ion_frame *targetFrame );
+    void initInputFrame( unsigned char *rawFrame, int rawFrameLength );
+    void generateOutputFrame( ion_frame *targetFrame );
+    void generateAck( ion_frame *out_frame, const ion_frame *in_frame );
+    void generateNack( ion_frame *out_frame, const ion_frame *in_frame );
 
     bool crcIsValid( ion_frame *frame );
     void setCRC( ion_frame *frame );
@@ -99,7 +99,7 @@ private:
     ion_frame _outFrame, _inFrame;
     unsigned char _inBuffer[250];
 
-    vector< ion_frame * > _inputFrameVector;
+    vector< ion_frame > _inputFrameVector;
 
     unsigned char  *_data;
     int             _dataLength, _dataSent;

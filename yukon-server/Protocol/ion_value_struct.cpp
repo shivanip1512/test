@@ -92,17 +92,17 @@ unsigned char CtiIONStruct::getStructClassDescriptor( void ) const
 
     switch( getStructType() )
     {
-        case StructType_LogRecord:      retVal = StructClassDescriptor_LogRecord;   break;
-        case StructType_Alarm:          retVal = StructClassDescriptor_Alarm;       break;
-        case StructType_Event:          retVal = StructClassDescriptor_Event;       break;
-        case StructType_Range:          retVal = StructClassDescriptor_Range;       break;
-        case StructType_List:           retVal = StructClassDescriptor_List;        break;
-        case StructType_Exception:      retVal = StructClassDescriptor_Exception;   break;
-        case StructType_Waveform:       retVal = StructClassDescriptor_Waveform;    break;
-        case StructType_Date:           retVal = StructClassDescriptor_Date;        break;
-        case StructType_Calendar:       retVal = StructClassDescriptor_Calendar;    break;
-        case StructType_Profile:        retVal = StructClassDescriptor_Profile;     break;
-        case StructType_StringArray:    retVal = StructClassDescriptor_StringArray; break;
+        case StructType_LogRecord:      retVal = ClassDescriptor_Struct_LogRecord;      break;
+        case StructType_Alarm:          retVal = ClassDescriptor_Struct_Alarm;          break;
+        case StructType_Event:          retVal = ClassDescriptor_Struct_Event;          break;
+        case StructType_Range:          retVal = ClassDescriptor_Struct_Range;          break;
+        case StructType_List:           retVal = ClassDescriptor_Struct_List;           break;
+        case StructType_Exception:      retVal = ClassDescriptor_Struct_Exception;      break;
+        case StructType_Waveform:       retVal = ClassDescriptor_Struct_Waveform;       break;
+        case StructType_Date:           retVal = ClassDescriptor_Struct_Date;           break;
+        case StructType_Calendar:       retVal = ClassDescriptor_Struct_Calendar;       break;
+        case StructType_Profile:        retVal = ClassDescriptor_Struct_Profile;        break;
+        case StructType_StringArray:    retVal = ClassDescriptor_Struct_StringArray;    break;
 
         default:
         {
@@ -127,7 +127,18 @@ unsigned int CtiIONStruct::getSerializedLength( void ) const
 
     length++;  //  header byte
 
-    for( ionStructIterator_const itr = _structElements.begin(); itr != _structElements.end(); itr++ )
+    length += getElementsLength();
+
+    return length;
+}
+
+
+unsigned int CtiIONStruct::getElementsLength( void ) const
+{
+    unsigned int length = 0;
+    ion_value_vector::const_iterator itr;
+
+    for( itr = _structElements.begin(); itr != _structElements.end(); itr++ )
     {
         length += (*itr)->getSerializedLength();
     }
@@ -141,13 +152,23 @@ unsigned int CtiIONStruct::getSerializedLength( void ) const
 void CtiIONStruct::putSerialized( unsigned char *buf ) const
 {
     unsigned int pos = 0;
-    unsigned char tmp;
-
-    CtiIONStructEnd structEnd;
 
     buf[pos++] = make_byte(IONClass_Struct, getStructClassDescriptor());
 
-    for( ionStructIterator_const itr = _structElements.begin(); itr != _structElements.end(); itr++ )
+    putElements(buf + pos);
+
+    pos += getElementsLength();
+}
+
+
+void CtiIONStruct::putElements( unsigned char *buf ) const
+{
+    unsigned int pos = 0;
+    ion_value_vector::const_iterator itr;
+
+    CtiIONStructEnd structEnd;
+
+    for( itr = _structElements.begin(); itr != _structElements.end(); itr++ )
     {
         (*itr)->putSerialized(buf + pos);
 
@@ -160,7 +181,7 @@ void CtiIONStruct::putSerialized( unsigned char *buf ) const
 }
 
 
-CtiIONValue *CtiIONStruct::operator[]( Elements index )
+CtiIONValue *CtiIONStruct::at( int index )
 {
     CtiIONValue *retVal = NULL;
 
@@ -173,13 +194,19 @@ CtiIONValue *CtiIONStruct::operator[]( Elements index )
 }
 
 
+CtiIONValue *CtiIONStruct::operator[]( int index )
+{
+    return at(index);
+}
+
+
 CtiIONValue *CtiIONStruct::restoreStruct( unsigned char ionClass, unsigned char classDescriptor,
                                           unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
 {
     unsigned long pos, itemLength;
 
-    CtiIONValue  *newValue;
-    CtiIONStruct *newStruct;
+    CtiIONValue  *newValue  = NULL;
+    CtiIONStruct *newStruct = NULL;
 
     vector< CtiIONValue * > structValues;
 
@@ -206,19 +233,20 @@ CtiIONValue *CtiIONStruct::restoreStruct( unsigned char ionClass, unsigned char 
     }
 
     //  ACH: perhaps i shouldn't try to populate a structure on error... ?
+    //         although it will fail if the elements are incorrect...
     switch( classDescriptor )
     {
-        case StructClassDescriptor_LogRecord:      newStruct = CTIDBG_new CtiIONLogRecord( structValues );    break;
-        case StructClassDescriptor_Alarm:          newStruct = CTIDBG_new CtiIONAlarm( structValues );        break;
-        case StructClassDescriptor_Event:          newStruct = CTIDBG_new CtiIONEvent( structValues );        break;
-        case StructClassDescriptor_Range:          newStruct = CTIDBG_new CtiIONRange( structValues );        break;
-        case StructClassDescriptor_List:           newStruct = CTIDBG_new CtiIONList( structValues );         break;
-        case StructClassDescriptor_Exception:      newStruct = CTIDBG_new CtiIONException( structValues );    break;
-        case StructClassDescriptor_Waveform:       newStruct = CTIDBG_new CtiIONWaveform( structValues );     break;
-        case StructClassDescriptor_Date:           newStruct = CTIDBG_new CtiIONDate( structValues );         break;
-        case StructClassDescriptor_Calendar:       newStruct = CTIDBG_new CtiIONCalendar( structValues );     break;
-        case StructClassDescriptor_Profile:        newStruct = CTIDBG_new CtiIONProfile( structValues );      break;
-        case StructClassDescriptor_StringArray:    newStruct = CTIDBG_new CtiIONStringArray( structValues );  break;
+        case ClassDescriptor_Struct_LogRecord:      newStruct = CTIDBG_new CtiIONLogRecord  ( structValues );  break;
+        case ClassDescriptor_Struct_Alarm:          newStruct = CTIDBG_new CtiIONAlarm      ( structValues );  break;
+        case ClassDescriptor_Struct_Event:          newStruct = CTIDBG_new CtiIONEvent      ( structValues );  break;
+        case ClassDescriptor_Struct_Range:          newStruct = CTIDBG_new CtiIONRange      ( structValues );  break;
+        case ClassDescriptor_Struct_List:           newStruct = CTIDBG_new CtiIONList       ( structValues );  break;
+        case ClassDescriptor_Struct_Exception:      newStruct = CTIDBG_new CtiIONException  ( structValues );  break;
+        case ClassDescriptor_Struct_Waveform:       newStruct = CTIDBG_new CtiIONWaveform   ( structValues );  break;
+        case ClassDescriptor_Struct_Date:           newStruct = CTIDBG_new CtiIONDate       ( structValues );  break;
+        case ClassDescriptor_Struct_Calendar:       newStruct = CTIDBG_new CtiIONCalendar   ( structValues );  break;
+        case ClassDescriptor_Struct_Profile:        newStruct = CTIDBG_new CtiIONProfile    ( structValues );  break;
+        case ClassDescriptor_Struct_StringArray:    newStruct = CTIDBG_new CtiIONStringArray( structValues );  break;
 
         default:
         {

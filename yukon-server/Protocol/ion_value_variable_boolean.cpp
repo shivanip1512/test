@@ -58,11 +58,11 @@ unsigned char CtiIONBoolean::getVariableClassDescriptor( void ) const
 
     if( getValue() == true )
     {
-        retVal = ClassDescriptor_BooleanTrue;
+        retVal = ClassDescriptor_Variable_BooleanTrue;
     }
     else
     {
-        retVal = ClassDescriptor_BooleanFalse;
+        retVal = ClassDescriptor_Variable_BooleanFalse;
     }
 
     return retVal;
@@ -104,6 +104,21 @@ CtiIONBoolean &CtiIONBoolean::setValue( bool value )
 bool CtiIONBoolean::getValue( void ) const
 {
     return _bool;
+}
+
+
+const char *CtiIONBoolean::toString( void )
+{
+    if( _bool )
+    {
+        _snprintf(_string, 6, "true");
+    }
+    else
+    {
+        _snprintf(_string, 6, "false");
+    }
+
+    return _string;
 }
 
 

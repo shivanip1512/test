@@ -12,15 +12,16 @@
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
 
+#include "ctidbgmem.h" // defines CTIDBG_new
 #include "logger.h"
 
 #include "ion_value_structarray.h"
+#include "ion_value_struct.h"
 
 
 
-CtiIONStructArray::CtiIONStructArray( StructArrayTypes structArrayType ) :
-    CtiIONValue(ValueType_StructArray),
-    _structArrayType(structArrayType)
+CtiIONStructArray::CtiIONStructArray( ) :
+    CtiIONValue(ValueType_StructArray)
 {
 
 }
@@ -32,20 +33,53 @@ CtiIONStructArray::~CtiIONStructArray( )
 }
 
 
-unsigned char CtiIONStructArray::getStructArrayKey( void ) const
+void CtiIONStructArray::push_back( CtiIONStruct *toAppend )
 {
-    unsigned char key;
+    if( toAppend != NULL )
+    {
+        _structArrayElements.push_back(toAppend);
+    }
+}
 
-    key  = 0x90;
-    key |= getStructArrayType();
 
-    return key;
+void CtiIONStructArray::clear( void )
+{
+    while( !_structArrayElements.empty() )
+    {
+        delete _structArrayElements.back();
+
+        _structArrayElements.pop_back();
+    }
+}
+
+
+int CtiIONStructArray::size( void )
+{
+    return _structArrayElements.size();
+}
+
+
+CtiIONStructArray::const_iterator CtiIONStructArray::begin( void )
+{
+    return _structArrayElements.begin();
+}
+
+
+CtiIONStructArray::const_iterator CtiIONStructArray::end( void )
+{
+    return _structArrayElements.end();
 }
 
 
 CtiIONStructArray::StructArrayTypes CtiIONStructArray::getStructArrayType( void ) const
 {
     return _structArrayType;
+}
+
+
+void CtiIONStructArray::setStructArrayType( StructArrayTypes structArrayType )
+{
+    _structArrayType = structArrayType;
 }
 
 
@@ -71,6 +105,72 @@ bool CtiIONStructArray::isStructArrayType( CtiIONValue *toCheck, StructArrayType
 }
 
 
+unsigned char CtiIONStructArray::getStructArrayClassDescriptor( void ) const
+{
+    unsigned char retVal;
+
+    switch( getStructArrayType() )
+    {
+        case StructArray_AlarmArray:    retVal = ClassDescriptor_StructArray_Alarm;         break;
+        case StructArray_LogArray:      retVal = ClassDescriptor_StructArray_LogRecord;     break;
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            retVal = 0xff;
+
+            break;
+        }
+    }
+
+    return retVal;
+}
+
+
+unsigned int CtiIONStructArray::getSerializedLength( void ) const
+{
+    unsigned int length = 0;
+    ion_struct_vector::const_iterator itr;
+
+    length++;  //  header byte
+
+    for( itr = _structArrayElements.begin(); itr != _structArrayElements.end(); itr++ )
+    {
+        length += (*itr)->getElementsLength();
+    }
+
+    length++;  //  structarray end byte
+
+    return length;
+}
+
+
+void CtiIONStructArray::putSerialized( unsigned char *buf ) const
+{
+    unsigned int pos = 0;
+    ion_struct_vector::const_iterator itr;
+
+    CtiIONStructArrayEnd structArrayEnd;
+
+    buf[pos++] = make_byte(IONClass_StructArray, getStructArrayClassDescriptor());
+
+    for( itr = _structArrayElements.begin(); itr != _structArrayElements.end(); itr++ )
+    {
+        (*itr)->putElements(buf + pos);
+
+        pos += (*itr)->getElementsLength();
+    }
+
+    structArrayEnd.putSerialized(buf + pos);
+
+    pos += structArrayEnd.getSerializedLength();
+}
+
+
 CtiIONValue *CtiIONStructArray::restoreStructArray( unsigned char ionClass, unsigned char classDescriptor,
                                                     unsigned char *buf, unsigned long len, unsigned long *bytesUsed )
 {
@@ -79,17 +179,17 @@ CtiIONValue *CtiIONStructArray::restoreStructArray( unsigned char ionClass, unsi
     CtiIONValue       *newValue;
     CtiIONStructArray *newStructArray = NULL;
 
-    vector< CtiIONValue * > structValues;
+    vector< CtiIONStruct * > structArrayElements;
 
-/*
     pos = 0;
-    while( (buf[pos] != 0xF9) && (pos < len) )
-    {
-        newValue = Value::restoreObject((buf + pos), (len - pos), &itemLength);
 
-        if( newValue != NULL && newValue->isValid() && (((CtiIONStruct *)newValue)->getStructType( ) == classDescriptor) )
+    while( (buf[pos] != StructArrayEnd) && (pos < len) )
+    {
+        newValue = Struct::restoreStruct(Struct::IONClass_Struct, classDescriptor, (buf + pos), (len - pos), &itemLength);
+
+        if( Struct::isStructType(newValue, (Struct::StructTypes)classDescriptor) )
         {
-            structValues.push_back(newValue);
+            structArrayElements.push_back((CtiIONStruct *)newValue);
             pos += itemLength;
         }
         else
@@ -98,7 +198,7 @@ CtiIONValue *CtiIONStructArray::restoreStructArray( unsigned char ionClass, unsi
         }
     }
 
-    if( buf[pos] == 0xF9 )
+    if( pos < len && buf[pos] == StructArrayEnd )
     {
         pos++;
 
@@ -106,10 +206,8 @@ CtiIONValue *CtiIONStructArray::restoreStructArray( unsigned char ionClass, unsi
 
         switch( classDescriptor )
         {
-            case IONLogArray:           newStructArray = CTIDBG_new CtiIONLogArray( structValues );         break;
-            case IONAlarmArray:         newStructArray = CTIDBG_new CtiIONAlarmArray( structValues );       break;
-            case IONStringArrayArray:   newStructArray = CTIDBG_new CtiIONStringArrayArray( structValues ); break;
-            case IONMultiArray:         newStructArray = CTIDBG_new CtiIONMultiArray( structValues );       break;
+            case ClassDescriptor_StructArray_Alarm:     newStructArray = CTIDBG_new CtiIONAlarmArray(); break;
+            case ClassDescriptor_StructArray_LogRecord: newStructArray = CTIDBG_new CtiIONLogArray();   break;
 
             default:
             {
@@ -121,20 +219,40 @@ CtiIONValue *CtiIONStructArray::restoreStructArray( unsigned char ionClass, unsi
                 newStructArray = NULL;
             }
         }
+
+        if( newStructArray != NULL )
+        {
+            newStructArray->init(structArrayElements);
+        }
     }
-
-    //*bytesUsed = pos;
-*/
-
+    else
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        *bytesUsed = len;
+        while( !structArrayElements.empty() )
+        {
+            delete structArrayElements.back();
+
+            structArrayElements.pop_back();
+        }
     }
 
+    *bytesUsed = pos;
+
     return newStructArray;
+}
+
+
+void CtiIONStructArray::init( ion_struct_vector structElements )
+{
+    ion_struct_vector::const_iterator itr;
+
+    for( itr = structElements.begin(); itr != structElements.end(); itr++ )
+    {
+        push_back(*itr);
+    }
 }
 

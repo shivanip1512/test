@@ -39,9 +39,16 @@ public:
     ~CtiIONTime( );
 
     CtiIONTime    &setSeconds( unsigned long value );
-    unsigned long  getSeconds( void );
+    unsigned long  getSeconds( void ) const;
+
     CtiIONTime    &setFractionalSeconds( unsigned long value );
-    unsigned long  getFractionalSeconds( void );
+    unsigned long  getFractionalSeconds( void ) const;
+    unsigned long  getMilliseconds( void ) const;
+
+    enum
+    {
+        MillisecondsToFractionalMultiplier = 2147000
+    };
 };
 
 

@@ -24,6 +24,7 @@ class CtiIONChar : public CtiIONValueFixed, public CtiIONFixedArrayElement
 private:
 
     unsigned char _char;
+    char          _string[2];
 
 protected:
 
@@ -45,8 +46,9 @@ public:
     ~CtiIONChar( );
 
     CtiIONChar &setValue( unsigned char value );
-    unsigned char getValue( void );
+    unsigned char getValue( void ) const;
 
+    const char *toString( void );
 };
 
 

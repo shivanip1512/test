@@ -95,6 +95,7 @@ unsigned char CtiIONValueFixed::getFixedIONClassType( void ) const
     switch( getFixedType() )
     {
         case Fixed_Char:        retVal = IONClass_Char;         break;
+        case Fixed_Time:        retVal = IONClass_Time;         break;
         case Fixed_Float:       retVal = IONClass_Float;        break;
         case Fixed_SignedInt:   retVal = IONClass_SignedInt;    break;
         case Fixed_UnsignedInt: retVal = IONClass_UnsignedInt;  break;
@@ -154,13 +155,13 @@ void CtiIONValueFixed::putSerializedHeader( unsigned char *buf ) const
     }
     else if( tmpLength <= 255 )
     {
-        *buf++ = make_byte(getFixedIONClassType(), ClassDescriptor_LengthNextByte);
+        *buf++ = make_byte(getFixedIONClassType(), ClassDescriptor_Fixed_LengthNextByte);
 
         *buf++ = tmpLength & 0xFF;
     }
     else
     {
-        *buf++ = make_byte(getFixedIONClassType(), ClassDescriptor_LengthNext4Bytes);
+        *buf++ = make_byte(getFixedIONClassType(), ClassDescriptor_Fixed_LengthNext4Bytes);
 
         *buf++ = tmpLength & 0xFF;
 
@@ -210,15 +211,15 @@ CtiIONValue *CtiIONValueFixed::restoreFixed( unsigned char ionClass, unsigned ch
     CtiIONValue *newObject = NULL;
 
 
-    if( classDescriptor <= ClassDescriptor_LengthNibbleMax )
+    if( classDescriptor <= ClassDescriptor_Fixed_LengthNibbleMax )
     {
         itemLength = classDescriptor;
     }
-    else if( classDescriptor == ClassDescriptor_LengthNextByte )
+    else if( classDescriptor == ClassDescriptor_Fixed_LengthNextByte )
     {
         itemLength = buf[pos++];
     }
-    else  //  if( classDescriptor == ClassDescriptor_LengthNext4Bytes )
+    else  //  if( classDescriptor == ClassDescriptor_Fixed_LengthNext4Bytes )
     {
         itemLength  = buf[pos++] << 24;
         itemLength |= buf[pos++] << 16;

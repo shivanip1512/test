@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/10/21 21:36:31 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/02/21 22:28:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,61 +23,15 @@
 
 class IM_EX_CTIBASE CtiNumStr
 {
-public:
     enum Format;
 
-    explicit CtiNumStr( double dVal, int precision=DefaultPrecision );
-    explicit CtiNumStr( float fVal,  int precision=DefaultPrecision );
-    explicit CtiNumStr( char cVal );
-    explicit CtiNumStr( unsigned char ucVal );
-    explicit CtiNumStr( short sVal );
-    explicit CtiNumStr( unsigned short usVal );
-    explicit CtiNumStr( int iVal );
-    explicit CtiNumStr( unsigned int uiVal );
-    explicit CtiNumStr( long lVal );
-    explicit CtiNumStr( unsigned long ulVal );
-    CtiNumStr( void *vpVal );
+private:
 
-    CtiNumStr( const CtiNumStr &aRef );
-    ~CtiNumStr( );
-
-    CtiNumStr &operator=( const CtiNumStr &aRef );
-    operator char *( );
-
-    void init( void );
-
-    CtiNumStr &hex( void );
-    CtiNumStr &xhex( void );
-
-    CtiNumStr &exp( void );
-
-    CtiNumStr &spad( unsigned int pad );
-    CtiNumStr &zpad( unsigned int pad );
-
-    void buildIntString( void );
-    void buildFloatString( void );
-    void buildPointerString( void );
-
-    enum Limits
+    enum
     {
-        DefaultPrecision =  3,
-        MaxPrecision     = 15,
-        MaxZeroPadding   = 20,
-        MaxSpacePadding  = 20,
         DataStringLength = 40
     };
 
-    enum Format
-    {
-        Default,
-        Hex,
-        XHex,
-        Exponential
-    };
-
-protected:
-
-private:
     union _types
     {
         double d;
@@ -116,5 +70,57 @@ private:
         ULong,
         Pointer
     } _dataType;
+
+protected:
+
+    void buildIntString( void );
+    void buildFloatString( void );
+    void buildPointerString( void );
+
+public:
+
+    explicit CtiNumStr( double dVal, int precision=DefaultPrecision );
+    explicit CtiNumStr( float fVal,  int precision=DefaultPrecision );
+    explicit CtiNumStr( char cVal );
+    explicit CtiNumStr( unsigned char ucVal );
+    explicit CtiNumStr( short sVal );
+    explicit CtiNumStr( unsigned short usVal );
+    explicit CtiNumStr( int iVal );
+    explicit CtiNumStr( unsigned int uiVal );
+    explicit CtiNumStr( long lVal );
+    explicit CtiNumStr( unsigned long ulVal );
+    CtiNumStr( void *vpVal );
+
+    CtiNumStr( const CtiNumStr &aRef );
+    ~CtiNumStr( );
+
+    CtiNumStr &operator=( const CtiNumStr &aRef );
+    operator char *( );
+
+    void init( void );
+
+    CtiNumStr &hex( void );
+    CtiNumStr &xhex( void );
+
+    CtiNumStr &exp( void );
+
+    CtiNumStr &spad( unsigned int pad );
+    CtiNumStr &zpad( unsigned int pad );
+
+    enum Limits
+    {
+        DefaultPrecision =  3,
+        MaxPrecision     = 15,
+        MaxZeroPadding   = 20,
+        MaxSpacePadding  = 20
+    };
+
+    enum Format
+    {
+        Default,
+        Hex,
+        XHex,
+        Exponential
+    };
 };
 #endif // #ifndef __NUMSTR_H__

@@ -105,9 +105,6 @@ void CtiIONDatalinkLayer::freeMemory( void )
 
     while( !_inputFrameVector.empty() )
     {
-        //  delete all new'd instances
-        delete _inputFrameVector.back();
-
         _inputFrameVector.pop_back();
     }
 
@@ -129,9 +126,9 @@ void CtiIONDatalinkLayer::putPayload( unsigned char *buf )
 
     for( i = 0; i < _inputFrameVector.size(); i++ )
     {
-        dataLen = (_inputFrameVector[i])->header.len - EmptyPacketLength;
+        dataLen = _inputFrameVector[i].header.len - EmptyPacketLength;
 
-        memcpy((buf + offset), (_inputFrameVector[i])->data, dataLen);
+        memcpy((buf + offset), _inputFrameVector[i].data, dataLen);
 
         offset += dataLen;
     }
@@ -144,7 +141,7 @@ int CtiIONDatalinkLayer::getPayloadLength( void )
 
     for( i = 0; i < _inputFrameVector.size(); i++ )
     {
-        payloadLength += (_inputFrameVector[i])->header.len - EmptyPacketLength;
+        payloadLength += _inputFrameVector[i].header.len - EmptyPacketLength;
     }
 
     return payloadLength;
@@ -170,6 +167,7 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
             xfer.setInBuffer(_inBuffer);
             xfer.setInCountExpected(EmptyPacketLength + UncountedHeaderBytes - _inTotal);
             xfer.setInCountActual(&_inActual);
+
             break;
         }
 
@@ -182,12 +180,13 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
             xfer.setInBuffer(((unsigned char *)&_inFrame) + _inTotal);
             xfer.setInCountExpected(_inFrame.header.len + UncountedHeaderBytes - _inTotal);
             xfer.setInCountActual(&_inActual);
+
             break;
         }
 
         case InputSendAck:
         {
-            retVal = generateAck(&_outFrame);
+            generateAck(&_outFrame, &_inFrame);
 
             xfer.setOutBuffer((unsigned char *)&_outFrame);
             xfer.setOutCount(EmptyPacketLength + UncountedHeaderBytes);
@@ -196,12 +195,13 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
             xfer.setInBuffer((unsigned char *)&_inFrame);
             xfer.setInCountExpected(0);
             xfer.setInCountActual(&_inActual);
+
             break;
         }
 
         case InputSendNack:
         {
-            retVal = generateNack(&_outFrame);
+            generateNack(&_outFrame, &_inFrame);
 
             xfer.setOutBuffer((unsigned char *)&_outFrame);
             xfer.setOutCount(EmptyPacketLength + UncountedHeaderBytes);
@@ -210,12 +210,13 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
             xfer.setInBuffer((unsigned char *)&_inFrame);
             xfer.setInCountExpected(0);
             xfer.setInCountActual(&_inActual);
+
             break;
         }
 
         case Output:
         {
-            retVal = generateOutputFrame(&_outFrame);
+            generateOutputFrame(&_outFrame);
 
             xfer.setOutBuffer((unsigned char *)&_outFrame);
             xfer.setOutCount(_outFrame.header.len + UncountedHeaderBytes);
@@ -249,6 +250,7 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
             xfer.setInBuffer(((unsigned char *)&_inBuffer) + _inTotal);
             xfer.setInCountExpected(EmptyPacketLength + UncountedHeaderBytes - _inTotal);
             xfer.setInCountActual(&_inActual);
+
             break;
         }
 
@@ -258,6 +260,11 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
+
+            xfer.setOutBuffer(NULL);
+            xfer.setOutCount(0);
+            xfer.setInBuffer(NULL);
+            xfer.setInCountExpected(0);
 
             _ioState = Failed;
 
@@ -269,9 +276,8 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
 }
 
 
-int CtiIONDatalinkLayer::generateOutputFrame( ion_frame *frame )
+void CtiIONDatalinkLayer::generateOutputFrame( ion_frame *frame )
 {
-    int retVal = 0;
     int payloadLen;
 
     frame->header.reserved     = 0;
@@ -329,64 +335,57 @@ int CtiIONDatalinkLayer::generateOutputFrame( ion_frame *frame )
 
     //  set to 0 in anticipation of an ACK packet, if we expect one
     _inTotal = 0;
-
-    return retVal;
 }
 
 
-int CtiIONDatalinkLayer::generateAck( ion_frame *frame )
+void CtiIONDatalinkLayer::generateAck( ion_frame *out_frame, const ion_frame *in_frame )
 {
-    int retVal = 0;
+    out_frame->header.reserved     = 0;
+    out_frame->header.cntlreserved = 0;
+    out_frame->header.srcreserved  = 0;
+    out_frame->header.tranreserved = 0;
 
-    frame->header.reserved     = 0;
-    frame->header.cntlreserved = 0;
-    frame->header.srcreserved  = 0;
-    frame->header.tranreserved = 0;
+    out_frame->header.sync = 0x14;
+    out_frame->header.fmt  = 0xAC;
 
-    frame->header.sync = 0x14;
-    frame->header.fmt  = 0xAC;
+    out_frame->header.srcid = _src;
+    out_frame->header.dstid = _dst;
 
-    frame->header.srcid = _src;
-    frame->header.dstid = _dst;
+    out_frame->header.cntldirection = 0;
+    out_frame->header.cntlframetype = AcknakACK;
 
-    frame->header.cntldirection = 0;
-    frame->header.cntlframetype = AcknakACK;
+    out_frame->header.tranfirstframe = in_frame->header.tranfirstframe;
+    out_frame->header.trancounter    = in_frame->header.trancounter;
 
-    frame->header.trancounter = _inFrame.header.trancounter;
+    out_frame->header.len = EmptyPacketLength;
 
-    frame->header.len = EmptyPacketLength;
-
-    setCRC(frame);
-
-    return retVal;
+    setCRC(out_frame);
 }
 
 
-int CtiIONDatalinkLayer::generateNack( ion_frame *frame )
+void CtiIONDatalinkLayer::generateNack( ion_frame *out_frame, const ion_frame *in_frame )
 {
     int retVal = 0;
 
-    frame->header.reserved     = 0;
-    frame->header.cntlreserved = 0;
-    frame->header.srcreserved  = 0;
-    frame->header.tranreserved = 0;
+    out_frame->header.reserved     = 0;
+    out_frame->header.cntlreserved = 0;
+    out_frame->header.srcreserved  = 0;
+    out_frame->header.tranreserved = 0;
 
-    frame->header.sync = 0x14;
-    frame->header.fmt  = 0xAC;
+    out_frame->header.sync = 0x14;
+    out_frame->header.fmt  = 0xAC;
 
-    frame->header.srcid = _src;
-    frame->header.dstid = _dst;
+    out_frame->header.srcid = _src;
+    out_frame->header.dstid = _dst;
 
-    frame->header.cntldirection = 0;
-    frame->header.cntlframetype = AcknakNAK;
+    out_frame->header.cntldirection = 0;
+    out_frame->header.cntlframetype = AcknakNAK;
 
-    frame->header.trancounter = _inFrame.header.trancounter;
+    out_frame->header.trancounter = in_frame->header.trancounter;
 
-    frame->header.len = EmptyPacketLength;
+    out_frame->header.len = EmptyPacketLength;
 
-    setCRC(frame);
-
-    return retVal;
+    setCRC(out_frame);
 }
 
 
@@ -496,35 +495,26 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
 
                         if( _currentInputFrame == _inFrame.header.trancounter )
                         {
-                            saveFrame = new ion_frame;
+                            //  put the frame in the list
+                            _inputFrameVector.push_back(_inFrame);
 
-                            if( saveFrame != NULL )
+                            if( _inFrame.header.cntlframetype == DataAcknakEnbl )
                             {
-                                *saveFrame = _inFrame;
-
-                                //  put the frame in the list
-                                _inputFrameVector.push_back( saveFrame );
-
-                                if( _inFrame.header.cntlframetype == DataAcknakEnbl )
-                                {
-                                    //  we're ready to send an ACK
-                                    _ioState = InputSendAck;
-                                }
-                                else
-                                {
-                                    if( _currentInputFrame == 0 )
-                                    {
-                                        _ioState = Complete;
-                                    }
-                                    else
-                                    {
-                                        _ioState = InputHeader;
-                                    }
-                                }
+                                //  we're ready to send an ACK
+                                _ioState = InputSendAck;
                             }
                             else
                             {
-                                _ioState = Failed;
+                                if( _currentInputFrame == 0 )
+                                {
+                                    _ioState = Complete;
+                                }
+                                else
+                                {
+                                    _inTotal = 0;
+
+                                    _ioState = InputHeader;
+                                }
                             }
                         }
                         else
@@ -538,6 +528,8 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                             }
                             else
                             {
+                                _inTotal = 0;
+
                                 _ioState = InputHeader;
                             }
                         }
@@ -548,6 +540,8 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
 
                         //  i have no way to accurately tell if they said this was going to be an ACK-enabled packet,
                         //    what with the mangled data, so the best i can do is just try to read again
+                        _inTotal = 0;
+
                         _ioState = InputHeader;
                     }
                 }
@@ -564,6 +558,10 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                 }
                 else
                 {
+                    _currentInputFrame--;
+
+                    _inTotal = 0;
+
                     _ioState = InputHeader;
                 }
 

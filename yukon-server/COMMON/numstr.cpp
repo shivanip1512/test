@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/10/21 21:36:30 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/02/21 22:28:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,7 +48,9 @@ CtiNumStr::~CtiNumStr( )
 CtiNumStr &CtiNumStr::operator=( const CtiNumStr &aRef )
 {
     if( this != &aRef )
+    {
         this->_data = aRef._data;
+    }
 
     return *this;
 }
@@ -233,7 +235,6 @@ void CtiNumStr::buildIntString( void )
         _dataString[DataStringLength-1] = 0;
     }
 }
-
 
 void CtiNumStr::buildFloatString( void )
 {

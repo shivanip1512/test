@@ -29,6 +29,7 @@ protected:
     friend class CtiIONApplicationLayer;
     friend class CtiIONNetworkLayer;
     friend class CtiIONDatalinkLayer;
+    friend class CtiProtocolION;
 
     virtual void putSerialized( unsigned char *buf ) const = 0;
     virtual unsigned int getSerializedLength( void ) const = 0;

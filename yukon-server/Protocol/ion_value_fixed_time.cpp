@@ -18,27 +18,27 @@
 #include "logger.h"
 
 
-CtiIONTime::CtiIONTime( unsigned char *byteStream, unsigned long streamLength ) :
+CtiIONTime::CtiIONTime( unsigned char *buf, unsigned long len ) :
     CtiIONValueFixed(Fixed_Time)
 {
     //  all i know about is 8-byte times
-    if( streamLength == 8 )
+    if( len == 8 )
     {
         //  doggoned MSB ordering
-        ((unsigned char *)&_seconds)[0] = byteStream[7];
-        ((unsigned char *)&_seconds)[1] = byteStream[6];
-        ((unsigned char *)&_seconds)[2] = byteStream[5];
-        ((unsigned char *)&_seconds)[3] = byteStream[4];
 
-        ((unsigned char *)&_fractionalSeconds)[0] = byteStream[3];
-        ((unsigned char *)&_fractionalSeconds)[1] = byteStream[2];
-        ((unsigned char *)&_fractionalSeconds)[2] = byteStream[1];
-        ((unsigned char *)&_fractionalSeconds)[3] = byteStream[0];
-
+        //  _seconds is bits 62-31
+        ((unsigned char *)&_seconds)[3] = buf[0] & 0x7f;
+        ((unsigned char *)&_seconds)[2] = buf[1];
+        ((unsigned char *)&_seconds)[1] = buf[2];
+        ((unsigned char *)&_seconds)[0] = buf[3];
         _seconds <<= 1;
-        //  the high bit of _fractionalSeconds is actually the low bit of _seconds
-        _seconds |= (_fractionalSeconds & 0x80000000) >> 31;
-        _fractionalSeconds &= 0x7FFFFFFF;
+        _seconds |= (buf[4] & 0x80) >> 7;
+
+        //  _fractionalSeconds is bits 30-0
+        ((unsigned char *)&_fractionalSeconds)[3] = buf[4] & 0x7f;
+        ((unsigned char *)&_fractionalSeconds)[2] = buf[5];
+        ((unsigned char *)&_fractionalSeconds)[1] = buf[6];
+        ((unsigned char *)&_fractionalSeconds)[0] = buf[7];
 
         setValid(true);
     }
@@ -74,7 +74,7 @@ CtiIONTime &CtiIONTime::setSeconds( unsigned long value )
 }
 
 
-unsigned long CtiIONTime::getSeconds( void )
+unsigned long CtiIONTime::getSeconds( void ) const
 {
     return _seconds;
 }
@@ -88,9 +88,15 @@ CtiIONTime &CtiIONTime::setFractionalSeconds( unsigned long value )
 }
 
 
-unsigned long CtiIONTime::getFractionalSeconds( void )
+unsigned long CtiIONTime::getFractionalSeconds( void ) const
 {
     return _fractionalSeconds;
+}
+
+
+unsigned long CtiIONTime::getMilliseconds( void ) const
+{
+    return (_fractionalSeconds / MillisecondsToFractionalMultiplier);
 }
 
 
@@ -104,14 +110,16 @@ void CtiIONTime::putSerializedValue( unsigned char *buf ) const
 {
     unsigned long tmpSeconds;
 
-    tmpSeconds = _fractionalSeconds | ((_seconds & 0x01) << 31);
+    //  shift bits down, high bit (31) defaulted to 0
+    tmpSeconds = _seconds >> 1;
 
     buf[0] = ((unsigned char *)&tmpSeconds)[3];
     buf[1] = ((unsigned char *)&tmpSeconds)[2];
     buf[2] = ((unsigned char *)&tmpSeconds)[1];
     buf[3] = ((unsigned char *)&tmpSeconds)[0];
 
-    tmpSeconds = _seconds >> 1;  //  shift bits down, high bit (31) defaulted to 0
+    //  note that the low bit of _seconds (shifted into the aether above) is tacked on as the high bit of _fractionalSeconds
+    tmpSeconds = ((_seconds & 0x01) << 31) | (_fractionalSeconds & 0x7fffffff);
 
     buf[4] = ((unsigned char *)&tmpSeconds)[3];
     buf[5] = ((unsigned char *)&tmpSeconds)[2];

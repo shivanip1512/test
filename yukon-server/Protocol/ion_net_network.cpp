@@ -158,6 +158,8 @@ int CtiIONNetworkLayer::generate( CtiXfer &xfer )
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
+            _ioState = Failed;
+
             xfer.setOutBuffer(NULL);
             xfer.setOutCount(0);
             xfer.setInBuffer(NULL);
@@ -194,7 +196,7 @@ int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
 
                 freeInPacketMemory();
 
-                tmpData = new unsigned char[_datalinkLayer.getPayloadLength()];
+                tmpData = CTIDBG_new unsigned char[_datalinkLayer.getPayloadLength()];
 
                 if( tmpData != NULL )
                 {
@@ -204,7 +206,7 @@ int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
 
                     memcpy(&(_netIn.header), tmpData, headerLen);
 
-                    _netIn.data = new unsigned char[_datalinkLayer.getPayloadLength() - headerLen];
+                    _netIn.data = CTIDBG_new unsigned char[_datalinkLayer.getPayloadLength() - headerLen];
 
                     if( _netIn.data != NULL )
                     {

@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/02/12 01:14:55 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/02/21 22:28:25 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,7 +46,9 @@ private:
 
     struct ion_protocol_command_struct
     {
-        IONCommand    command;
+        IONCommand command;
+        unsigned int unsigned_int_parameter;
+        //  double double_parameter;
     } _currentCommand;
 
     struct ion_outmess_struct
@@ -68,10 +70,12 @@ private:
     vector< unsigned long >           _dataRecorderModules;
     vector< vector< unsigned long > > _dataRecorderSources;
 
-    typedef map< unsigned long, unsigned long > IONValueRegisterMap;
+    typedef map< unsigned long, unsigned long > ion_value_register_map;
 
     vector< unsigned long > _digitalInModules;
-    IONValueRegisterMap     _digitalInValueRegisters;
+    ion_value_register_map  _digitalInValueRegisters;
+
+    ion_value_register_map  _externalPulseRegisters;
 
     vector< unsigned long > _powerMeterModules;
 
@@ -84,23 +88,19 @@ private:
         char name[20];
     };
 
-
-//  ACH, yo
-/*
-    struct ionEventLog
-    {
-
-    };
-*/
-
     vector< ion_pointdata_struct > _pointData;
+    vector< CtiIONLogArray * >     _eventLogs;
 
-    typedef vector< ion_pointdata_struct >::iterator PointDataIterator;
+    //  DESCRIPTION- (format below)
+    //  ION_Pri=xxx, ION_Cause=xxxxxxxxx, ION_Effect=xxxxxxxxxx, Nlog=xxxxx
+    //
+    //  ACTION (Additional Info) - (format below)
+    //  C_H=xxx, E_H=xxx, State=x, Record=xxxxx
 
     struct ion_result_descriptor_struct
     {
         unsigned long numPoints;
-        unsigned long numEvents;
+        unsigned long eventLogLength;
     };
 
     void resetEventLogInfo( void );
@@ -111,16 +111,19 @@ private:
     void setConfigRead( bool read );
 
     void generateConfigRead( void );
-    void decodeConfigRead( void );
+    void decodeConfigRead  ( void );
 
     void generateExceptionScan( void );
-    void decodeExceptionScan( void );
+    void decodeExceptionScan  ( void );
 
     void generateIntegrityScan( void );
-    void decodeIntegrityScan( void );
+    void decodeIntegrityScan  ( void );
 
     void generateEventLogRead( void );
-    void decodeEventLogRead( void );
+    void decodeEventLogRead  ( void );
+
+    void generateExternalPulseTrigger( void );
+    void decodeExternalPulseTrigger  ( void );
 
     unsigned long resultSize( void );
     void putResult( unsigned char *buf );
@@ -228,6 +231,9 @@ protected:
         State_RequestEventLogRecords,
         State_ReceiveEventLogRecords,
 
+        //  sending trigger pulse
+        State_SendExternalPulseTrigger,
+
         State_Complete,
         State_Abort
     } _ionState;
@@ -305,7 +311,9 @@ public:
 
     void setAddresses( unsigned short masterAddress, unsigned short slaveAddress );
 
-    void setCommand( IONCommand command, ion_output_point *points = NULL, int numPoints = 0 );
+    void setCommand( IONCommand command );
+    void setCommand( IONCommand command, unsigned int unsigned_int_parameter );
+//    void setCommand( IONCommand command, ion_output_point *points = NULL, int numPoints = 0 );
     void setEventLogLastPosition( unsigned long lastRecord );
     unsigned long getEventLogLastPosition( void );
 
@@ -322,42 +330,8 @@ public:
     int recvCommRequest( OUTMESS *OutMessage );
     int sendCommResult ( INMESS  *InMessage  );
 
-    bool hasInboundPoints( void );
-    void getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList );
-
-    /*
-    enum IONOutputPointType
-    {
-        AnalogOutput,
-        DigitalOutput
-    };
-
-    struct ion_output_point
-    {
-        union
-        {
-            struct ion_ao_point
-            {
-                double value;
-            } aout;
-
-            struct ion_do_point
-            {
-                CtiIONBinaryOutputControl::ControlCode control;
-                CtiIONBinaryOutputControl::TripClose trip_close;
-                unsigned long on_time;
-                unsigned long off_time;
-                bool queue;
-                bool clear;
-                unsigned char count;
-            } dout;
-        };
-
-        unsigned long offset;
-
-        IONOutputPointType type;
-    };
-    */
+    bool hasInboundData( void );
+    void getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList );
 
     enum IONCommand
     {
@@ -367,6 +341,7 @@ public:
         Command_ScanLoadProfile,
         Command_SetAnalogOut,
         Command_SetDigitalOut,
+        Command_ExternalPulseTrigger,
         Command_EventLogRead
     };
 
@@ -374,7 +349,8 @@ public:
     {
         DefaultYukonIONMasterAddress =    5,
         DefaultSlaveAddress          =    1,
-        MaxAppLayerSize              = 2048
+        MaxAppLayerSize              = 2048,
+        EventLogPointOffset          = 2600
     };
 };
 

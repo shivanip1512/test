@@ -24,6 +24,7 @@ class CtiIONUnsignedInt : public CtiIONValueFixed, /*public CtiIONNumeric, */pub
 private:
 
     unsigned long _unsignedInt;
+    char _string[20];
 
 protected:
 
@@ -46,6 +47,8 @@ public:
 
     CtiIONUnsignedInt &setValue( unsigned long value );
     unsigned long      getValue( void ) const;
+
+    const char *toString( void );
 
     virtual bool isNumeric( void ) const  {  return true;  };
     double getNumericValue( void ) const;

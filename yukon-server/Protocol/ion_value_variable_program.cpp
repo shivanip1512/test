@@ -88,7 +88,7 @@ CtiIONProgram &CtiIONProgram::clearAndDestroy( void )
 
 unsigned char CtiIONProgram::getVariableClassDescriptor( void ) const
 {
-    return ClassDescriptor_Program;
+    return ClassDescriptor_Variable_Program;
 }
 
 
