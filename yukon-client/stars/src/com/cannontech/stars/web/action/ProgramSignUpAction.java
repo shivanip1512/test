@@ -370,9 +370,10 @@ public class ProgramSignUpAction implements ActionBase {
 								SULMProgram prog = new SULMProgram();
 								prog.setProgramID( program.getProgramID() );
 								prog.setApplianceCategoryID( program.getApplianceCategoryID() );
-								prog.setAddressingGroupID( program.getAddressingGroupID() );
 								prog.setInventoryID( liteApp.getInventoryID() );
 								prog.setLoadNumber( liteApp.getLoadNumber() );
+								if (program.hasAddressingGroupID())
+									prog.setAddressingGroupID( program.getAddressingGroupID() );
 								processedPrograms.addSULMProgram( prog );
 							}
 							
@@ -382,14 +383,25 @@ public class ProgramSignUpAction implements ActionBase {
 						}
 					}
         			
-					// If no hardware found above, then use the first hardware, if any
+					// If no hardware found above, then assign all hardwares
 					if (!program.hasInventoryID()) {
 						for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
 							int invID = ((Integer) liteAcctInfo.getInventories().get(j)).intValue();
-							LiteInventoryBase lInv = energyCompany.getInventory( invID, true );
-							if (lInv instanceof LiteStarsLMHardware) {
-								program.setInventoryID( invID );
-								break;
+							if (energyCompany.getInventory(invID, true) instanceof LiteStarsLMHardware) {
+								if (!program.hasInventoryID()) {
+									program.setInventoryID( invID );
+								}
+								else {
+									SULMProgram prog = new SULMProgram();
+									prog.setProgramID( program.getProgramID() );
+									prog.setApplianceCategoryID( program.getApplianceCategoryID() );
+									prog.setInventoryID( invID );
+									if (program.hasAddressingGroupID())
+										prog.setAddressingGroupID( program.getAddressingGroupID() );
+									if (program.hasLoadNumber())
+										prog.setLoadNumber( program.getLoadNumber() );
+									processedPrograms.addSULMProgram( prog );
+								}
 							}
 						}
 					}
