@@ -96,7 +96,7 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 				localBean.setSize(Integer.parseInt(param),Integer.parseInt(param2));
 			}
 		}
-		
+		localBean.getGraph().setUpdateTrend(true);
 		localBean.updateCurrentPane();
 		javax.servlet.ServletOutputStream out = null;
 		try
