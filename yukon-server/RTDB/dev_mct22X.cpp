@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct22X.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:35:56 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/05/20 18:13:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -183,12 +183,18 @@ INT CtiDeviceMCT22X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        curead = ((DSt->Message[3] & 0x3f) << 16) |
-                  (DSt->Message[4]         <<  8) |
-                   DSt->Message[5];
-        prevrd = ((DSt->Message[0] & 0x3f) << 16) |
-                  (DSt->Message[1]         <<  8) |
-                   DSt->Message[2];
+        curead = (DSt->Message[3] << 16) |
+                 (DSt->Message[4] <<  8) |
+                  DSt->Message[5];
+        prevrd = (DSt->Message[0] << 16) |
+                 (DSt->Message[1] <<  8) |
+                  DSt->Message[2];
+
+        if( curead < prevrd )
+        {
+            //  account for rollover
+            curead += 10000000;
+        }
 
         //  figure out the difference between current and previous readings
         Value  = curead - prevrd;
