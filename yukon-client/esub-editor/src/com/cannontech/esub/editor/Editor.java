@@ -39,6 +39,7 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.esub.*;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingElement;
@@ -92,7 +93,6 @@ public class Editor extends JPanel {
 				elementPlacer.setXPosition(evt.getX());
 				elementPlacer.setYPosition(evt.getY());
 				configureObject(elementPlacer);
-				
 			}
 		}
 	};
@@ -588,10 +588,7 @@ try {
 	 * Displays the about dialog
 	 */
 	public void showAboutDialog() {
-		
-		AboutEditor aboutDialog = new AboutEditor(CtiUtilities.getParentFrame(getDrawing().getLxView()));
-		aboutDialog.setModal(true);
-		aboutDialog.setValue(null);
+		AboutDialog aboutDialog = new AboutDialog(CtiUtilities.getParentFrame(getDrawing().getLxView()), "About Esubstation Editor", true);		
 		aboutDialog.setLocationRelativeTo(getDrawing().getLxView());
 		aboutDialog.setVisible(true);
 		aboutDialog.dispose();
