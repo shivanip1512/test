@@ -13,7 +13,7 @@
                             <input type="text" name="start" value="<%= datePart.format(graphBean.getStartDate()) %>" size="8">
                             <A HREF="javascript:show_calendar('MForm.start')"
                                 onMouseOver="window.status='Pop Calendar';return true;"
-                                onMouseOut="window.status='';return true;"><IMG SRC="/Images/Icons/StartCalendar.gif" WIDTH="20" HEIGHT="15" ALIGN="ABSMIDDLE" BORDER="0">
+                                onMouseOut="window.status='';return true;"><IMG SRC="<%=request.getContextPath()%>/Images/Icons/StartCalendar.gif" WIDTH="20" HEIGHT="15" ALIGN="ABSMIDDLE" BORDER="0">
                             </A>
                         </td>
                         <td width="154" valign="top"><font face="Arial, Helvetica, sans-serif" size="1">Time Period:</font>
@@ -30,7 +30,7 @@
                         </td>
                         <td width="75">
                             <div align="left">
-                                <input type="image" src="/GoButton.gif" name="image" border="0">
+                                <input type="image" src="<%=request.getContextPath()%>/Images/GoButton.gif" name="image" border="0">
                             </div>
                         </td>
                         </form>
@@ -50,7 +50,7 @@
 			</td>
             <td width="12%">
                 <div align="right">
-					<a href="JavaScript:" class="Link4" name="optionPopup" onClick="window.open('/options_popup.jsp','optionPopup','width=200,height=160,top=250,left=520');">Options</a>            	                            
+					<a href="JavaScript:" class="Link4" name="optionPopup" onClick="window.open('<%=request.getContextPath()%>/options_popup.jsp','optionPopup','width=200,height=160,top=250,left=520');">Options</a>            	                            
                 </div>
             </td>
 			
@@ -86,7 +86,7 @@
 				<div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('pdf')">&nbsp;&nbsp;&nbsp;Export .pdf</div>
 				<div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('jpeg')">&nbsp;&nbsp;&nbsp;Export .jpeg</div>
 			<%}%>								
-				<div id = "PRINTID" name = "print" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "location='/trending_print.jsp?';">&nbsp;&nbsp;&nbsp;Print</div>
+				<div id = "PRINTID" name = "print" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "location='<%=request.getContextPath()%>/trending_print.jsp?';">&nbsp;&nbsp;&nbsp;Print</div>
 			</div>
 	    </form>
 	</td>
