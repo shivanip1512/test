@@ -1,6 +1,7 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%
 	boolean inWizard = false;
+	boolean hasPrevStep = false;
 	boolean needMoreInfo = false;
 %>
 <html>
