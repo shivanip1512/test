@@ -427,7 +427,7 @@ public Object getValue(Object val)
 
 	ccSubBus.setName( getJTextFieldSubName().getText() );
 	ccSubBus.setGeoAreaName( getJTextFieldGeoName().getText() );
-	ccSubBus.getCapControlSubstationBus().setDaysOfWeek( new String("YYYYYNNN") );
+	ccSubBus.getCapControlSubstationBus().setDaysOfWeek( new String("NYYYYYNN") );
 
 
 	ccSubBus.setDisableFlag( 
