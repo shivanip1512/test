@@ -190,7 +190,6 @@ int main(int argc, char **argv)
                 keyre = RWCRExpr("TG");
             }
 
-
             if(reportTagsOnly || reportBranchesOnly) cout << endl;
             while( fgets(temp, 127, fp))
             {
@@ -217,6 +216,8 @@ int main(int argc, char **argv)
                         cout << "    " << str << endl;
                     }
 
+                    //cout <<  " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << token << endl;
+
                     if(!(str = token.match("[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9]_[0-9]+(_[0-9]+)?_[0-9][0-9][0-9][0-9]?")).isNull())
                     {
                         str = str.strip(RWCString::both, '_');
@@ -232,9 +233,10 @@ int main(int argc, char **argv)
                         minorRevision = minorRevision.strip(RWCString::both, '_');
                         buildRevision = buildRevision.strip(RWCString::both, '_');
 
+                        //cout <<  " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << majorRevision << "." << minorRevision << "." << buildRevision << endl;
                         if(gMajorRevision > 0)
                         {
-                            if(gMinorRevision > 0)
+                            if(gMinorRevision >= 0)
                             {
                                 // Looking for the largest build with these major and minor revisions.
                                 if( majorRevisionVal == atoi(majorRevision.data()) &&
@@ -242,6 +244,7 @@ int main(int argc, char **argv)
                                     buildRevisionVal < atoi(buildRevision.data()) )
                                 {
                                     buildRevisionVal = atoi(buildRevision.data());
+                                    //cout <<  " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << majorRevision << "." << minorRevision << "." << buildRevision << endl;
                                 }
                             }
                             else
@@ -252,12 +255,14 @@ int main(int argc, char **argv)
                                 {
                                     minorRevisionVal = atoi(minorRevision.data());
                                     buildRevisionVal = atoi(buildRevision.data());
+                                    //cout <<  " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << majorRevision << "." << minorRevision << "." << buildRevision << endl;
                                 }
                                 else if( majorRevisionVal == atoi(majorRevision.data()) &&
                                          minorRevisionVal == atoi(minorRevision.data()) &&
                                          buildRevisionVal < atoi(buildRevision.data()) )
                                 {
                                     buildRevisionVal = atoi(buildRevision.data());
+                                    //cout <<  " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << majorRevision << "." << minorRevision << "." << buildRevision << endl;
                                 }
                             }
                         }
@@ -298,9 +303,10 @@ int main(int argc, char **argv)
                         minorRevision = minorRevision.strip(RWCString::both, '_');
                         buildRevision = buildRevision.strip(RWCString::both, '_');
 
+                        //cout <<  " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << majorRevision << "." << minorRevision << "." << buildRevision << endl;
                         if(gMajorRevision > 0)
                         {
-                            if(gMinorRevision > 0)
+                            if(gMinorRevision >= 0)
                             {
                                 // Looking for the largest build with these major and minor revisions.
                                 if( majorRevisionVal == atoi(majorRevision.data()) &&
