@@ -38,7 +38,7 @@ class IM_EX_CTIBASE CtiLockGuard
 public:
     CtiLockGuard(T& resource) :  _res(resource)
     {
-        #ifdef _DEBUG
+        #if 0   // def _DEBUG
         while(!(_acquired = _res.acquire(900000)))
         {
             autopsy( __FILE__, __LINE__ );
