@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_alarm.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/05/19 14:51:17 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/05/20 22:37:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,6 +99,7 @@ protected:
 
    UINT        _alarmCategory[ ALARM_STATE_SIZE ];
    UINT        _excludeNotifyStates;
+   UINT        _autoAckStates;
 
    LONG        _recipientID;
 
@@ -111,8 +112,8 @@ private:
    RWCString statesAsString( );
    RWCString excludeAsString( );
 
-   static UINT resolveStates( UINT &states, RWCString &str );
-   static UINT resolveStates( RWCString &str );
+   static UINT resolveExcludeStates( RWCString &str );
+   static UINT resolveAutoAcknowledgeStates( RWCString &str );
 
 public:
 
@@ -126,6 +127,7 @@ public:
    LONG getRecipientID() const;
    UINT getAlarmCategory(const INT offset) const;
    UINT getExcludeNotifyStates() const;
+   UINT getAutoAckStates() const;
    BOOL getNotifyOnAcknowledge() const;
    BOOL getNotifyOnClear() const;
    UINT getNotificationGroupID() const;
@@ -136,6 +138,7 @@ public:
    CtiTablePointAlarming& setAlarmCategory( const INT offset, const UINT &aInt );
    CtiTablePointAlarming& setAlarmCategory( const RWCString str );
    CtiTablePointAlarming& setExcludeNotifyStates( const UINT &aInt );
+   CtiTablePointAlarming& setAutoAckStates( const UINT &aInt );
    CtiTablePointAlarming& setNotifyOnAcknowledge( const BOOL &aBool );
    CtiTablePointAlarming& setNotifyOnClear( const BOOL &aBool );
    CtiTablePointAlarming& setNotificationGroupID( const UINT &aInt );
@@ -152,7 +155,8 @@ public:
    virtual void DecodeDatabaseReader(RWDBReader& rdr);
 
 
-   bool isExcluded( int alarm) const;
+   bool isNotifyExcluded( int alarm) const;
+   bool isAutoAcked( int alarm) const;
    bool alarmOn( int alarm ) const;
    INT alarmPriority( int alarm ) const;
 

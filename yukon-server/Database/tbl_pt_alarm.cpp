@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_alarm.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/05/19 14:51:17 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/05/20 22:37:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,7 +49,7 @@ CtiTablePointAlarming& CtiTablePointAlarming::operator=(const CtiTablePointAlarm
     return *this;
 }
 
-UINT CtiTablePointAlarming::resolveStates( RWCString &str )
+UINT CtiTablePointAlarming::resolveExcludeStates( RWCString &str )
 {
     int i;
     UINT states = 0;
@@ -60,7 +60,28 @@ UINT CtiTablePointAlarming::resolveStates( RWCString &str )
 
         for(i = 0 ; i < str.length() - 1 && i < 32; i++ )
         {
-            if(str(i) == 'y')
+            if(str(i) == 'y' || str(i) == 'e' || str(i) == 'b')
+            {
+                states |= ( 0x00000001 << i );      // Put the bit in there
+            }
+        }
+    }
+
+    return states;
+}
+
+UINT CtiTablePointAlarming::resolveAutoAcknowledgeStates( RWCString &str )
+{
+    int i;
+    UINT states = 0;
+
+    if( !str.isNull() )
+    {
+        str.toLower();
+
+        for(i = 0 ; i < str.length() - 1 && i < 32; i++ )
+        {
+            if(str(i) == 'a' || str(i) == 'b')
             {
                 states |= ( 0x00000001 << i );      // Put the bit in there
             }
@@ -90,9 +111,24 @@ RWCString CtiTablePointAlarming::excludeAsString( )
 
     for(int i = 0; i < str.length() - 1 && i < ALARM_STATE_SIZE; i++)
     {
-        if( _excludeNotifyStates & (0x00000001 << i) )
+        bool excl = _excludeNotifyStates & (0x00000001 << i);
+        bool aack = _autoAckStates & (0x00000001 << i);
+
+        if( excl && aack )
         {
-            str(i) = 'Y';
+            str(i) = 'B';
+        }
+        else if(excl)
+        {
+            str(i) = 'E';
+        }
+        else if(aack)
+        {
+            str(i) = 'A';
+        }
+        else
+        {
+            str(i) = 'N';
         }
     }
 
@@ -117,6 +153,10 @@ UINT CtiTablePointAlarming::getAlarmCategory(const INT offset) const
 UINT CtiTablePointAlarming::getExcludeNotifyStates() const
 {
     return _excludeNotifyStates;
+}
+UINT CtiTablePointAlarming::getAutoAckStates() const
+{
+    return _autoAckStates;
 }
 UINT CtiTablePointAlarming::getNotificationGroupID() const
 {
@@ -167,6 +207,12 @@ CtiTablePointAlarming& CtiTablePointAlarming::setAlarmCategory( const RWCString 
 CtiTablePointAlarming& CtiTablePointAlarming::setExcludeNotifyStates( const UINT &aInt )
 {
     _excludeNotifyStates = aInt;
+    return *this;
+}
+
+CtiTablePointAlarming& CtiTablePointAlarming::setAutoAckStates( const UINT &aInt )
+{
+    _autoAckStates = aInt;
     return *this;
 }
 
@@ -304,7 +350,8 @@ void CtiTablePointAlarming::DecodeDatabaseReader(RWDBReader& rdr)
     setAlarmCategory( temp );
 
     rdr["excludenotifystates"]    >> temp;
-    setExcludeNotifyStates( resolveStates( temp ) );
+    setExcludeNotifyStates( resolveExcludeStates( temp ) );
+    setAutoAckStates( resolveAutoAcknowledgeStates( temp ) );
 
     rdr["notifyonacknowledge"]    >> temp;
     temp.toLower();
@@ -330,9 +377,14 @@ INT CtiTablePointAlarming::alarmPriority( int alarm ) const
     return _alarmCategory[alarm];
 }
 
-bool CtiTablePointAlarming::isExcluded( int alarm) const
+bool CtiTablePointAlarming::isNotifyExcluded( int alarm) const
 {
     return(_excludeNotifyStates & (0x00000001 << alarm));
+}
+
+bool CtiTablePointAlarming::isAutoAcked( int alarm) const
+{
+    return(_autoAckStates & (0x00000001 << alarm));
 }
 
 CtiTablePointAlarming::CtiTablePointAlarming( LONG pid) :
