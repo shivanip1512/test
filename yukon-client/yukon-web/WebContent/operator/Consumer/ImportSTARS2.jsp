@@ -38,11 +38,12 @@
               <table width="500" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
                   <td class="MainText"> 
-                    <div align="center">Click &quot;Assign&quot; to map values 
-                      appeared in the import files to selection list entries in 
-                      STARS.<br>
-                      A list name followed by a &quot;<font color="#FF0000">*</font>&quot; 
-                      means that values in the list is not completely mapped yet.</div>
+                    <div align="center">Click the &quot;Assign&quot; button to 
+                      map values appeared in the import files to selection list 
+                      entries.<br>
+                      A list name with a &quot;<font color="#FF0000">*</font>&quot; 
+                      means that values in that list have not been completely 
+                      mapped yet.</div>
                   </td>
                 </tr>
               </table>
