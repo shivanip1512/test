@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/03/05 04:02:39 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/03/12 21:52:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -96,6 +96,12 @@ void CtiProtocolION::setAddresses( unsigned short srcID, unsigned short dstID )
 }
 
 
+CtiProtocolION::IONCommand CtiProtocolION::getCommand( void )
+{
+    return _currentCommand.command;
+}
+
+
 void CtiProtocolION::setCommand( IONCommand command )
 {
     _currentCommand.command = command;
@@ -167,6 +173,7 @@ int CtiProtocolION::generate( CtiXfer &xfer )
                     break;
                 }
 
+                case Command_AccumulatorScan:
                 case Command_EventLogRead:
                 {
                     generateEventLogRead();
@@ -242,6 +249,7 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
                     break;
                 }
 
+                case Command_AccumulatorScan:
                 case Command_EventLogRead:
                 {
                     decodeEventLogRead();
@@ -1151,17 +1159,12 @@ void CtiProtocolION::generateEventLogRead( void )
             CtiIONRange       *tmpRange;
             CtiIONUnsignedInt *start, *end;
 
-            if( (_eventLogCurrentPosition - _eventLogLastPosition) >= _eventLogDepth )
-            {
-                _eventLogLastPosition = _eventLogCurrentPosition - _eventLogDepth;
-            }
-
             _dsOut.clearAndDestroy();
 
             tmpProgram   = CTIDBG_new CtiIONProgram();
 
-            start        = CTIDBG_new CtiIONUnsignedInt(_eventLogLastPosition);
-            end          = CTIDBG_new CtiIONUnsignedInt(_eventLogCurrentPosition);
+            start        = CTIDBG_new CtiIONUnsignedInt(_eventLogLastPosition + 1);
+            end          = CTIDBG_new CtiIONUnsignedInt(_eventLogCurrentPosition - 1);
 
             tmpRange     = CTIDBG_new CtiIONRange(start, end);
 
@@ -1233,7 +1236,19 @@ void CtiProtocolION::decodeEventLogRead( void )
                     }
                     else
                     {
-                        _ionState = State_RequestEventLogRecords;
+                        if( (_eventLogCurrentPosition - _eventLogLastPosition) >= _eventLogDepth )
+                        {
+                            _eventLogLastPosition = _eventLogCurrentPosition - _eventLogDepth;
+                        }
+
+                        if( (_eventLogLastPosition + 1) < _eventLogCurrentPosition )
+                        {
+                            _ionState = State_RequestEventLogRecords;
+                        }
+                        else
+                        {
+                            _ionState = State_Complete;
+                        }
                     }
                 }
                 else
@@ -1279,7 +1294,19 @@ void CtiProtocolION::decodeEventLogRead( void )
                 {
                     _eventLogDepth = _dsIn[0]->getNumericValue();
 
-                    _ionState = State_RequestEventLogRecords;
+                    if( (_eventLogCurrentPosition - _eventLogLastPosition) >= _eventLogDepth )
+                    {
+                        _eventLogLastPosition = _eventLogCurrentPosition - _eventLogDepth;
+                    }
+
+                    if( (_eventLogLastPosition + 1) < _eventLogCurrentPosition )
+                    {
+                        _ionState = State_RequestEventLogRecords;
+                    }
+                    else
+                    {
+                        _ionState = State_Complete;
+                    }
                 }
                 else
                 {
@@ -1650,6 +1677,8 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
                 offset += sizeof(ion_pointdata_struct);
             }
 
+            _eventLogsComplete = header.eventLogsComplete;
+
             tmpDS.initialize(buf + offset, header.eventLogLength);
 
             while( !tmpDS.empty() )
@@ -1768,6 +1797,12 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
 }
 
 
+bool CtiProtocolION::areEventLogsComplete( void )
+{
+    return _eventLogsComplete;
+}
+
+
 //  porter-side functions
 
 int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
@@ -1843,7 +1878,7 @@ void CtiProtocolION::putResult( unsigned char *buf )
 
     offset = 0;
 
-    header.numPoints      = _pointData.size();
+    header.numPoints = _pointData.size();
 
     eventlog_length = 0;
     for( e_itr = _eventLogs.begin(); e_itr != _eventLogs.end(); e_itr++ )
@@ -1855,6 +1890,14 @@ void CtiProtocolION::putResult( unsigned char *buf )
     }
 
     header.eventLogLength = eventlog_length;
+    if( _eventLogLastPosition >= (_eventLogCurrentPosition - 1) )
+    {
+        header.eventLogsComplete = true;
+    }
+    else
+    {
+        header.eventLogsComplete = false;
+    }
 
     memcpy(buf + offset, &header, sizeof(header));
     offset += sizeof(header);

@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/02/21 22:28:25 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/03/12 21:52:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,11 +101,13 @@ private:
     {
         unsigned long numPoints;
         unsigned long eventLogLength;
+        bool          eventLogsComplete;
     };
 
     void resetEventLogInfo( void );
 
     bool _configRead;
+    bool _eventLogsComplete;
 
     bool hasConfigBeenRead( void );
     void setConfigRead( bool read );
@@ -311,6 +313,7 @@ public:
 
     void setAddresses( unsigned short masterAddress, unsigned short slaveAddress );
 
+    IONCommand getCommand( void );
     void setCommand( IONCommand command );
     void setCommand( IONCommand command, unsigned int unsigned_int_parameter );
 //    void setCommand( IONCommand command, ion_output_point *points = NULL, int numPoints = 0 );
@@ -333,16 +336,19 @@ public:
     bool hasInboundData( void );
     void getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList );
 
+    bool areEventLogsComplete( void );
+
     enum IONCommand
     {
         Command_Invalid = 0,
         Command_ExceptionScan,
         Command_IntegrityScan,
-        Command_ScanLoadProfile,
+        Command_AccumulatorScan,
+        Command_EventLogRead,
+        Command_CollectLoadProfile,
         Command_SetAnalogOut,
         Command_SetDigitalOut,
-        Command_ExternalPulseTrigger,
-        Command_EventLogRead
+        Command_ExternalPulseTrigger
     };
 
     enum IONConstants

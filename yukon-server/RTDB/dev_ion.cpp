@@ -114,6 +114,17 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                 }
 
                 case ScanRateAccum:
+                {
+                    //  same as getstatus eventlog
+                    initEventLogPosition();
+
+                    _ion.setCommand(CtiProtocolION::Command_EventLogRead);
+
+                    found = true;
+
+                    break;
+                }
+
                 case ScanRateIntegrity:
                 default:
                 {
@@ -132,47 +143,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         {
             if( parse.isKeyValid("eventlog") )
             {
-                if( _ion.getEventLogLastPosition() == 0 )
-                {
-                    CtiPointAnalog *tmpPoint;
-                    unsigned long   lastRecordPosition;
-
-                    tmpPoint = (CtiPointAnalog *)getDevicePointOffsetTypeEqual(2600, AnalogPointType);
-
-                    if( tmpPoint != NULL )
-                    {
-                        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                        RWDBConnection conn = getConnection();
-
-                        RWCString sql       = RWCString("select value from rawpointhistory ") +
-                                              "where pointid=" + CtiNumStr(tmpPoint->getPointID()) + " " +
-                                                    "and timestamp = (select max(timestamp) from rawpointhistory where pointid=" + CtiNumStr(tmpPoint->getPointID()) + ")";
-                        RWDBResult results  = conn.executeSql( sql );
-                        RWDBTable  resTable = results.table();
-
-                        if(!results.isValid())
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** ERROR **** RWDB Error #" << results.status().errorCode() << " in query:" << endl;
-                            dout << sql << endl << endl;
-                        }
-
-                        RWDBReader rdr = resTable.reader();
-
-                        if(rdr() && rdr.isValid())
-                        {
-                            rdr >> lastRecordPosition;
-                            _ion.setEventLogLastPosition(lastRecordPosition);
-                        }
-                        else
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                        }
-                    }
-                }
+                initEventLogPosition();
 
                 _ion.setCommand(CtiProtocolION::Command_EventLogRead);
 
@@ -302,6 +273,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         OutMessage->DeviceID = getID();
         OutMessage->TargetID = getID();
         OutMessage->Retry    = IONRetries;
+        OutMessage->Sequence = _ion.getCommand();
         _ion.sendCommRequest( OutMessage, outList );
     }
     else
@@ -330,6 +302,54 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
     }
 
     return nRet;
+}
+
+
+
+void CtiDeviceION::initEventLogPosition( void )
+{
+    if( _ion.getEventLogLastPosition() == 0 )
+    {
+        CtiPointAnalog *tmpPoint;
+        unsigned long   lastRecordPosition;
+
+        tmpPoint = (CtiPointAnalog *)getDevicePointOffsetTypeEqual(2600, AnalogPointType);
+
+        if( tmpPoint != NULL )
+        {
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            RWDBConnection conn = getConnection();
+
+            RWCString sql       = RWCString("select value from rawpointhistory ") +
+                                  "where pointid=" + CtiNumStr(tmpPoint->getPointID()) + " " +
+                                        "and timestamp = (select max(timestamp) from rawpointhistory where pointid=" + CtiNumStr(tmpPoint->getPointID()) + ")";
+            RWDBResult results  = conn.executeSql( sql );
+            RWDBTable  resTable = results.table();
+
+            if(!results.isValid())
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** ERROR **** RWDB Error #" << results.status().errorCode() << " in query:" << endl;
+                dout << sql << endl << endl;
+            }
+
+            RWDBReader rdr = resTable.reader();
+
+            if(rdr() && rdr.isValid())
+            {
+                rdr >> lastRecordPosition;
+                _ion.setEventLogLastPosition(lastRecordPosition);
+            }
+            else
+            {
+                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
+    }
 }
 
 
@@ -401,6 +421,61 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
         processInboundData(InMessage, TimeNow, vgList, retList, outList, pointData, eventData);
     }
+
+    switch( _ion.getCommand() )
+    {
+        case CtiProtocolION::Command_ExternalPulseTrigger:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            CtiRequestMsg newReq(getID(),
+                                 "scan general",
+                                 InMessage->Return.UserID,
+                                 InMessage->Return.TrxID,
+                                 InMessage->Return.RouteID,
+                                 InMessage->Return.MacroOffset,
+                                 InMessage->Return.Attempt);
+
+            newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+
+            CtiCommandParser parse(newReq.CommandString());
+
+            CtiDeviceBase::ExecuteRequest(&newReq, parse, vgList, retList, outList);
+
+            break;
+        }
+
+        case CtiProtocolION::Command_EventLogRead:
+        {
+            if( !_ion.areEventLogsComplete() )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                CtiRequestMsg newReq(getID(),
+                                     "getstatus eventlogs",
+                                     InMessage->Return.UserID,
+                                     InMessage->Return.TrxID,
+                                     InMessage->Return.RouteID,
+                                     InMessage->Return.MacroOffset,
+                                     InMessage->Return.Attempt);
+
+                newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+
+                CtiCommandParser parse(newReq.CommandString());
+
+                CtiDeviceBase::ExecuteRequest(&newReq, parse, vgList, retList, outList);
+            }
+
+            break;
+        }
+    }
+
 
     return ErrReturn;
 }

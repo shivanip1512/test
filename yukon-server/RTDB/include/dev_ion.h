@@ -39,6 +39,8 @@ protected:
 
     CtiTableDeviceMeterGroup MeterGroup;
 
+    void initEventLogPosition(void);
+
     enum IONConstants
     {
         IONRetries = 2
