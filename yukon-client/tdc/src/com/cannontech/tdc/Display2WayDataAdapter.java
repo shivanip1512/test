@@ -2063,14 +2063,21 @@ private Vector setRowForEventViewer( Signal signal )
 		aRow.addElement( "" );  // put these into the vector just as dummy values
 
 	LitePoint lPoint = PointFuncs.getLitePoint( signal.getPointID() );
-	LiteYukonPAObject lDevice = PAOFuncs.getLiteYukonPAO( lPoint.getPaobjectID() );
+	LiteYukonPAObject lDevice = null;
 
-	//a little debug to help us
+	//we may not have a valid point
 	if( lPoint == null )
-		CTILogger.debug("Unable to find the lite point with pointID = " + signal.getPointID() );
-	else if( lDevice == null )
-		CTILogger.debug("Unable to find the lite device with deviceID = " + lPoint.getPaobjectID() );
-
+	{
+		lPoint = LitePoint.NONE_LITE_PT;		
+	}
+	else
+	{
+		lDevice = PAOFuncs.getLiteYukonPAO( lPoint.getPaobjectID() );
+		if( lDevice == null )
+		{
+			lDevice = LiteYukonPAObject.LITEPAOBJECT_NONE;
+		}
+	}
 
 
 	// set DeviceName
