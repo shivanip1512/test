@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -388,12 +389,34 @@ public class CreateLMHardwareAction implements ActionBase {
 		
 		eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
 		eventBaseDB.setActionID( new Integer(installActID) );
-		eventBaseDB.setEventDateTime( new Date() );
+		eventBaseDB.setEventDateTime( new Date(liteInv.getInstallDate()) );
 		eventBaseDB.setNotes( createHw.getInstallationNotes() );
 		eventDB.setInventoryID( invDB.getInventoryID() );
 		event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 		event.setDbConnection( conn );
 		event.add();
+		
+		// If device status is unavailable, add "Termination" event
+		if (createHw.getDeviceStatus() != null &&
+			energyCompany.getYukonListEntry(
+				YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, createHw.getDeviceStatus().getEntryID())
+				.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL)
+		{
+			int termActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION ).getEntryID();
+			
+			event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+			eventDB = event.getLMHardwareEvent();
+			eventBaseDB = event.getLMCustomerEventBase();
+			
+			eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
+			eventBaseDB.setActionID( new Integer(termActID) );
+			eventBaseDB.setEventDateTime( new Date() );
+			eventBaseDB.setNotes( "Event added to match the device status" );
+			eventDB.setInventoryID( invDB.getInventoryID() );
+			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+			event.setDbConnection( conn );
+			event.add();
+		}
 		
 		StarsLiteFactory.extendLiteInventoryBase( liteInv, energyCompany );
 		liteAcctInfo.getInventories().add( invDB.getInventoryID() );
