@@ -32,6 +32,21 @@ insert into YukonRoleProperty values(-70004,-700,'Hide One-Lines','false','Sets 
 
 insert into YukonListEntry values (1307,1051,0,'Alt Track #',2707);
 
+/* @error ignore */
+alter table LMProgramConstraints drop column AvailableSeasons;
+go
+
+update LMProgram set constraintid = 0 where constraintid in
+(select constraintid from lmprogramconstraints where
+AvailableWeekDays = 'YYYYYYYN' and MaxHoursDaily = 0 and
+MaxHoursMonthly = 0 and MaxHoursSeasonal = 0 and MaxHoursAnnually = 0 and
+MinActivateTime = 0 and MinRestartTime = 0 and MaxDailyOps = 0 and
+MaxActivateTime = 0 and HolidayScheduleID = 0 and SeasonScheduleID = 0);
+go
+
+delete from LMProgramConstraints where constraintid not in (select constraintid from LMProgram) and constraintid <> 0;
+go
+
 
 
 
