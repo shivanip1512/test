@@ -14,7 +14,7 @@
     <%-- intialize bean properties --%>
 </jsp:useBean>
 
-<SCRIPT  LANGUAGE="JavaScript1.2" SRC="Calendar1-82.js"></SCRIPT>
+<SCRIPT  LANGUAGE="JavaScript1.2" SRC="../../JavaScript/Calendar1-82.js"></SCRIPT>
 </head>
 
 <SCRIPT LANGUAGE = "JavaScript">
@@ -58,7 +58,7 @@ function update()
 						</tr>
 					</table>
 				</td>
-				<td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+				<td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
 			</tr>
 		</table>
 	</td>
@@ -122,7 +122,7 @@ function update()
 																<a href="javascript:show_calendar('MForm.end')"
 																	onMouseOver="window.status='Pop Calendar';return true;"
 																	onMouseOut="window.status='';return true;">
-																	<img src="StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0">
+																	<img src="../../Images/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0">
 																</a> 
 														</td>
 													</tr>

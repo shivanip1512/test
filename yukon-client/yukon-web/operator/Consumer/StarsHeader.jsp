@@ -21,9 +21,9 @@
 	}
 	
     java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
-    java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
+    java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm z");
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
-	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
+	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm z");
     java.text.SimpleDateFormat ampmTimeFormat = new java.text.SimpleDateFormat("hh:mm a");
 	
 	String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();

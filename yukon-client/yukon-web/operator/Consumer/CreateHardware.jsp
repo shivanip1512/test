@@ -30,10 +30,7 @@ function changeAppSelection(chkBox) {
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../Header.gif">&nbsp;</td>
-<script language="JavaScript">
-	document.getElementById("Header").background = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
-</script>
+                <td id="Header" colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -50,7 +47,7 @@ function changeAppSelection(chkBox) {
               </tr>
             </table>
           </td>
-          <td width="1" height="102" bgcolor="#000000"><img src="switch/VerticalRule.gif" width="1"></td>
+          <td width="1" height="102" bgcolor="#000000"><img src=""../Images/Icons/VerticalRule.gif"" width="1"></td>
         </tr>
       </table>
     </td>
@@ -70,7 +67,7 @@ function changeAppSelection(chkBox) {
 		    <% String pageName = "CreateHardware.jsp"; %><%@ include file="Nav.jsp" %>
 <% } else out.print("&nbsp;"); %>
 		  </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div class = "Main" align="center">
               <% String header = "CREATE NEW HARDWARE"; %>
@@ -80,7 +77,9 @@ function changeAppSelection(chkBox) {
               <form name="MForm" method="post" action="/servlet/SOAPClient">
 			    <input type="hidden" name="action" value="CreateLMHardware">
 				<input type="hidden" name="InvNo" value="<%= inventories.getStarsLMHardwareCount() %>">
-				<input type="hidden" name="Wizard" value="false">
+<% if (request.getParameter("Wizard") != null) { %>
+				<input type="hidden" name="Wizard" value="true">
+<% } %>
                 <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
                   <tr> 
                     <td width="300" valign="top" bgcolor="#FFFFFF"> 
@@ -258,7 +257,14 @@ function changeAppSelection(chkBox) {
                           <td width="40%" class="HeaderCell">Program</td>
                           <td width="50%" class="HeaderCell">Assigned Group</td>
                         </tr>
-                        <%
+<%
+	String checkStr = "";
+	String disableStr = "disabled=\"true\"";
+	if (request.getParameter("Wizard") != null) {
+		checkStr = "checked";
+		disableStr = "";
+	}
+	
 	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
 		StarsAppliance appliance = appliances.getStarsAppliance(i);
 		if (appliance.getInventoryID() == 0 && appliance.getLmProgramID() > 0) {
@@ -279,29 +285,29 @@ function changeAppSelection(chkBox) {
 %>
                         <tr> 
                           <td width="27" height="2"> 
-                            <input type="checkbox" name="AppID" value="<%= appliance.getApplianceID() %>" onclick="changeAppSelection(this)">
+                            <input type="checkbox" name="AppID" value="<%= appliance.getApplianceID() %>" onclick="changeAppSelection(this)" <%= checkStr %>>
                           </td>
                           <td width="73" class="TableCell" height="2"><%= program.getProgramName() %></td>
                           <td width="89" height="2"> 
-                            <select id="Group_App<%= appliance.getApplianceID() %>" name="GroupID" disabled="true">
-                              <%
+                            <select id="Group_App<%= appliance.getApplianceID() %>" name="GroupID" <%= disableStr %>>
+<%
 			if (program == null || program.getAddressingGroupCount() == 0) {
 %>
                               <option value="0">(none)</option>
-                              <%
+<%
 			} else {
 				for (int j = 0; j < program.getAddressingGroupCount(); j++) {
 					AddressingGroup group = program.getAddressingGroup(j);
 %>
                               <option value="<%= group.getEntryID() %>"><%= group.getContent() %></option>
-                              <%
+<%
 				}
 			}
 %>
                             </select>
                           </td>
                         </tr>
-                        <%
+<%
 		}
 	}
 %>
@@ -316,7 +322,7 @@ function changeAppSelection(chkBox) {
 <% if (request.getParameter("Wizard") == null) { %>
                     <input type="submit" name="Submit" value="Save">
 <% } else { %>
-                    <input type="submit" name="Done" value="Done" onclick="this.form.Wizard.value='true'">
+                    <input type="submit" name="Done" value="Done">
 <% } %>
                   </td>
                   <td> 
@@ -332,7 +338,7 @@ function changeAppSelection(chkBox) {
             </div>
           
            </td>
-          <td width="1" bgcolor="#000000"><img src="switch/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src=""../Images/Icons/VerticalRule.gif"" width="1"></td>
         </tr>
       </table>
     </td>

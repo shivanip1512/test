@@ -12,17 +12,18 @@
 </script>
 </cti:checkRole>
 </head>
+
 <body class="Background" text="#000000" leftmargin="0" topmargin="0" link="#000000" vlink="#000000" alink="#000000">
 <table width="658" border="0" cellspacing="0" height="102" cellpadding="0">
   <tr>
     <td width="657"valign="bottom">
       <table width="657" border="0" cellspacing="0" cellpadding="3" height="102">
         <tr> 
+<cti:checkNoRole roleid="<%= RoleTypes.OPERATOR_CONSUMER_INFO %>">
           <td id="Header" background="Header.gif" height="77" >&nbsp;</td>
+</cti:checkNoRole>
 <cti:checkRole roleid="<%= RoleTypes.OPERATOR_CONSUMER_INFO %>">
-<script language="JavaScript">
-	document.getElementById("Header").background = '<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
-</script>
+          <td id="Header" background="<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>" height="77" >&nbsp;</td>
 </cti:checkRole>
         </tr>
         <tr>
@@ -33,18 +34,18 @@
         </tr>
       </table>
     </td>
-    <td width="1" bgcolor="#000000"><img src="VerticalRule.gif"></td>
+    <td width="1" bgcolor="#000000"><img src="../Images/Icons/VerticalRule.gif"></td>
   </tr>
 </table>
 <table width="658" border="0" cellspacing="0" cellpadding="0" align="left">
   <tr> 
-    <td width="102" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
-    <td width="555" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
-    <td width="1" background="VerticalRule.gif" height="1"></td>
+    <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
+    <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
+    <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
 <cti:checkRole roleid="<%= RoleTypes.OPERATOR_CONSUMER_INFO %>">
   <tr> 
-    <td width="102" background="ConsumerImage.jpg" height="102">&nbsp;</td>
+    <td width="102" background="Consumer/ConsumerImage.jpg" height="102">&nbsp;</td>
     <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="ConsumerHeader.gif" width="229" height="15" border="0"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
@@ -57,9 +58,11 @@
         <tr> 
           <form name = "custSearchForm" method="POST" action="/servlet/SOAPClient">
             <input type="hidden" name="action" value="SearchCustAccount">
-            <td width="97" class = "Main" > 
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/New.jsp" class = "Link1" style = "text-decoration:none;">New 
-                Account</a></div>
+            <td width="97" class="Main">
+              <div align = "center" style = "border:solid 1px #666999;">
+                <a href = "Consumer/New.jsp<cti:checkRole roleid="<%= RoleTypes.NEW_ACCOUNT_WIZARD %>">?Wizard=true</cti:checkRole>" class = "Link1" style = "text-decoration:none;">New 
+                Account</a>
+              </div>
             </td>
             <td  class = "Main" width="109" >&nbsp;</td>
             <td  class = "Main" width="250" align = "right"> 
@@ -85,17 +88,17 @@
         </tr>
       </table>
     </td>
-    <td width="1" background="VerticalRule.gif" height="102"></td>
+    <td width="1" background="../Images/Icons/VerticalRule.gif" height="102"></td>
   </tr>
 </cti:checkRole>
 <cti:checkRole roleid="<%= RoleTypes.OPERATOR_COMMERCIAL_METERING %>">
   <tr> 
-    <td width="102" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
-    <td width="555" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
-    <td width="1" background="VerticalRule.gif" height="1"></td>
+    <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
+    <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
+    <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
   <tr> 
-    <td width="102" height="102" background="MeterImage.jpg">&nbsp;</td>
+    <td width="102" height="102" background="Metering/MeterImage.jpg">&nbsp;</td>
     <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="MeteringHeader.gif" width="161" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
@@ -122,17 +125,17 @@
         </tr>
       </table>
     </td>
-    <td width="1" background="VerticalRule.gif" height="102"></td>
+    <td width="1" background="../Images/Icons/VerticalRule.gif" height="102"></td>
   </tr>
 </cti:checkRole>
 <cti:checkRole roleid="<%= RoleTypes.OPERATOR_LOADCONTROL %>">
   <tr> 
-    <td width="102" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
-    <td width="555" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
-    <td width="1" background="VerticalRule.gif" height="1"></td>
+    <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
+    <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
+    <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
   <tr> 
-    <td width="102" height="102" background="LoadImage.jpg">&nbsp;</td>
+    <td width="102" height="102" background="LoadControl/LoadImage.jpg">&nbsp;</td>
     <td width="555" bgcolor="#FFFFFF" height="102" valign="top">
       <div align="left"><img src="LoadHeader.gif"><br>
       </div>
@@ -147,7 +150,7 @@
         <tr> 
           <form method="post" action="LoadControl/oper_direct.jsp">
             <td width="110" class = "Main">
-<cti:checkRole roleid="<%= RoleTypes.CICUSTOMER_DIRECT_CONTROL %>"> 
+<cti:checkRole roleid="<%= RoleTypes.OPERATOR_DIRECT_CONTROL %>"> 
               <div align = "center" style = "border:solid 1px #666999;">
 			    <a href = "LoadControl/oper_direct.jsp" class = "Link1" style = "text-decoration:none;">Direct</a>
               </div>
@@ -156,7 +159,7 @@
           </form>
           <form method="post" action="LoadControl/oper_mand.jsp">
             <td width="110" class = "Main"> 
-<cti:checkRole roleid="<%= RoleTypes.CICUSTOMER_CURTAILMENT %>"> 
+<cti:checkRole roleid="<%= RoleTypes.OPERATOR_CURTAILMENT %>"> 
               <div align = "center" style = "border:solid 1px #666999;">
 			    <a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:text roleid="<%= RoleTypes.CURTAILMENT_TEXT %>"/></a>
 			  </div>
@@ -165,7 +168,7 @@
           </form>
           <form method="post" action="LoadControl/oper_ee.jsp">
             <td width = "110" class = "Main"> 
-<cti:checkRole roleid="<%= RoleTypes.CICUSTOMER_ENERGY_EXCHANGE %>"> 
+<cti:checkRole roleid="<%= RoleTypes.OPERATOR_ENERGY_EXCHANGE %>"> 
               <div align = "center" style = "border:solid 1px #666999;">
 			    <a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_TEXT %>"/></a>
 			  </div>
@@ -190,17 +193,17 @@
         </tr>
       </table>
     </td>
-    <td width="1" background="VerticalRule.gif" height="102"></td>
+    <td width="1" background="../Images/Icons/VerticalRule.gif" height="102"></td>
   </tr>
 </cti:checkRole>
 <cti:checkRole roleid="<%= RoleTypes.OPERATOR_HARDWARE_INVENTORY %>">
   <tr> 
-    <td width="102" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
-    <td width="555" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
-    <td width="1" background="VerticalRule.gif" height="1"></td>
+    <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
+    <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
+    <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
   <tr> 
-    <td width="102" height="102" background="InventoryImage.jpg">&nbsp;</td>
+    <td width="102" height="102" background="Hardware/InventoryImage.jpg">&nbsp;</td>
     <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="InventoryHeader.gif" width="148" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
@@ -218,17 +221,17 @@
         </tr>
       </table>
     </td>
-    <td width="1" background="VerticalRule.gif" height="102"></td>
+    <td width="1" background="../Images/Icons/VerticalRule.gif" height="102"></td>
   </tr>
   <tr> 
-    <td width="102" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
-    <td width="555" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
-    <td width="1" background="VerticalRule.gif" height="1"></td>
+    <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
+    <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
+    <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
 </cti:checkRole>
 <cti:checkRole roleid="<%= RoleTypes.OPERATOR_WORK_ORDERS %>">
   <tr> 
-    <td width="102" height="102" background="WorkImage.jpg">&nbsp;</td>
+    <td width="102" height="102" background="WorkOrder/WorkImage.jpg">&nbsp;</td>
     <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="WorkHeader.gif" width="104" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
@@ -253,17 +256,17 @@
         </tr>
       </table>
     </td>
-    <td width="1" background="VerticalRule.gif" height="102"></td>
+    <td width="1" background="../Images/Icons/VerticalRule.gif" height="102"></td>
   </tr>
   <tr> 
-    <td width="102" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
-    <td width="555" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
-    <td width="1" background="VerticalRule.gif" height="1"></td>
+    <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
+    <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
+    <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
 </cti:checkRole>
 <cti:checkRole roleid="<%= RoleTypes.OPERATOR_ADMINISTRATION %>">
   <tr>
-    <td width="102" bgcolor="#000000" height="102" background="AdminImage.jpg">&nbsp;</td>
+    <td width="102" bgcolor="#000000" height="102" background="Admin/AdminImage.jpg">&nbsp;</td>
     <td bgcolor="#FFFFFF" height="102" valign="top"><img src="AdminHeader.gif" width="129" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
@@ -281,12 +284,12 @@
         </tr>
       </table>
     </td>
-    <td width="1" background="VerticalRule.gif" height="16"></td>
+    <td width="1" background="../Images/Icons/VerticalRule.gif" height="16"></td>
   </tr>
   <tr> 
-    <td width="102" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
-    <td width="555" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
-    <td width="1" background="VerticalRule.gif" height="1"></td>
+    <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
+    <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
+    <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
 </cti:checkRole>
   </table>

@@ -5,6 +5,7 @@
 	<projects>
 		<project>common</project>
 		<project>loadcontrol</project>
+		<project>resource</project>
 		<project>servlet</project>
 		<project>stars</project>
 		<project>trending</project>

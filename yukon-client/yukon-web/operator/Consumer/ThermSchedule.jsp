@@ -123,7 +123,7 @@ function setToDefault() {
 
 function confirmExit() {
 	if (schedChanged &&
-		confirm("If you leave the page, all the changes you have made will be lost. Do you want to submit the changes now?"))
+		confirm('You have made changes to the thermostat schedule. Click "Ok" to submit these changes before leaving the page, or click "Cancel" to discard them.'))
 	{
 		var form = document.form1;
 		prepareSubmit(form);
@@ -143,9 +143,9 @@ function MM_reloadPage(init) {  //reloads the window if Nav4 resized
 MM_reloadPage(true);
 // -->
 </script>
-<script language="JavaScript" src ="drag.js">
+<script language="JavaScript" src ="../../JavaScript/drag.js">
 </script>
-<script language="JavaScript" src ="thermostat.js">
+<script language="JavaScript" src ="../../JavaScript/thermostat.js">
 </script>
 </head>
 
@@ -159,10 +159,7 @@ MM_reloadPage(true);
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../Header.gif">&nbsp;</td>
-<script language="JavaScript">
-	document.getElementById("Header").background = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
-</script>
+                <td id="Header" colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
               </tr>
               <tr> 
 				  
@@ -179,7 +176,7 @@ MM_reloadPage(true);
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -198,7 +195,7 @@ MM_reloadPage(true);
 		  <% String pageName = "ThermSchedule.jsp"; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               
@@ -266,7 +263,7 @@ MM_reloadPage(true);
 		modeStrR = StarsThermoModeSettings.COOL.toString();
 	}
 %>
-                                  <a href="ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStrR %>"><img src="<%= imgStrR %>" width="40" height="39" border="0"></a> 
+                                  <a href="ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStrR %>"><img src="../../Images/ThermImages/<%= imgStrR %>" width="40" height="39" border="0"></a> 
                                 </td>
                                 <td align = "center" width="148" class="TableCell" valign="top">Click 
                                   icon to view <%= seasonStrR %> schedule </td>
@@ -307,15 +304,15 @@ MM_reloadPage(true);
                       </table>
                       <br>
                     
-                    <img src="TempBG.gif" style ="position:relative;">
+                    <img src="../../Images/ThermImages/TempBG.gif" style ="position:relative;">
                       <div id="MovingLayer1" style="position:absolute; width:25px; height:162px; left:309px; z-index:1; top: 355px"> 
                         <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
                           <td> 
                             <div id="div1" class="TableCell3" onchange="setScheduleChanged()"><%= schedule.getTemperature1() %>&deg</div>
-                            <img src="Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "setScheduleChanged();beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer2').style.left)-3,200,'showTimeWake()','horizontal', 'MovingLayer1')"> 
-                            <img id="arrow1" src="Arrow.gif" style = "position:relative; left:-11px; top:-100px" onMouseDown = "setScheduleChanged();beginDrag(event,-135,-35,0,0,'showTemp1()','vertical')"> 
+                            <img src="../../Images/ThermImages/Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "setScheduleChanged();beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer2').style.left)-3,200,'showTimeWake()','horizontal', 'MovingLayer1')"> 
+                            <img id="arrow1" src="../../Images/ThermImages/Arrow.gif" style = "position:relative; left:-11px; top:-100px" onMouseDown = "setScheduleChanged();beginDrag(event,-135,-35,0,0,'showTemp1()','vertical')"> 
                           </td>
                         </tr>
                       </table>
@@ -326,8 +323,8 @@ MM_reloadPage(true);
                           <td>&nbsp;</td>
                           <td> 
                             <div id="div2" class="TableCell3" onchange="setScheduleChanged()"><%= schedule.getTemperature2() %>&deg</div>
-                            <img src="Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "setScheduleChanged();beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer3').style.left)-3,parseInt(document.getElementById('MovingLayer1').style.left)+3,'showTimeLeave()','horizontal', 'MovingLayer2')"> 
-                            <img id="arrow2" src="Arrow.gif" style = "position:relative; left:-9px; top:-100px"  onMouseDown = "setScheduleChanged();beginDrag(event,-135,-35,0,0,'showTemp2()','vertical')"> 
+                            <img src="../../Images/ThermImages/Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "setScheduleChanged();beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer3').style.left)-3,parseInt(document.getElementById('MovingLayer1').style.left)+3,'showTimeLeave()','horizontal', 'MovingLayer2')"> 
+                            <img id="arrow2" src="../../Images/ThermImages/Arrow.gif" style = "position:relative; left:-9px; top:-100px"  onMouseDown = "setScheduleChanged();beginDrag(event,-135,-35,0,0,'showTemp2()','vertical')"> 
                           </td>
                         </tr>
                       </table>
@@ -338,8 +335,8 @@ MM_reloadPage(true);
                           <td>&nbsp;</td>
                           <td> 
                               <div id="div3" class="TableCell3" onchange="setScheduleChanged()"><%= schedule.getTemperature3() %>&deg</div>
-                            <img src="Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "setScheduleChanged();beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer4').style.left)-3,parseInt(document.getElementById('MovingLayer2').style.left)+3,'showTimeReturn()','horizontal', 'MovingLayer3')"> 
-                            <img id="arrow3" src="Arrow.gif" style = "position:relative; left:-9px; top:-100px"  onMouseDown = "setScheduleChanged();beginDrag(event,-135,-35,0,0,'showTemp3()','vertical')"> 
+                            <img src="../../Images/ThermImages/Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "setScheduleChanged();beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer4').style.left)-3,parseInt(document.getElementById('MovingLayer2').style.left)+3,'showTimeReturn()','horizontal', 'MovingLayer3')"> 
+                            <img id="arrow3" src="../../Images/ThermImages/Arrow.gif" style = "position:relative; left:-9px; top:-100px"  onMouseDown = "setScheduleChanged();beginDrag(event,-135,-35,0,0,'showTemp3()','vertical')"> 
                           </td>
                         </tr>
                       </table>
@@ -350,8 +347,8 @@ MM_reloadPage(true);
                           <td>&nbsp;</td>
                           <td> 
                             <div id="div4" class="TableCell3" onchange="setScheduleChanged()"><%= schedule.getTemperature4() %>&deg</div>
-                            <img src="Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "setScheduleChanged();beginDrag(event,0,0,629,parseInt(document.getElementById('MovingLayer3').style.left)+3,'showTimeSleep()','horizontal', 'MovingLayer4')"> 
-                            <img id="arrow4" src="Arrow.gif" style = "position:relative; left:-9px; top:-100px;"  onMouseDown = "setScheduleChanged();beginDrag(event,-135,-35,0,0,'showTemp4()','vertical')"> 
+                            <img src="../../Images/ThermImages/Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "setScheduleChanged();beginDrag(event,0,0,629,parseInt(document.getElementById('MovingLayer3').style.left)+3,'showTimeSleep()','horizontal', 'MovingLayer4')"> 
+                            <img id="arrow4" src="../../Images/ThermImages/Arrow.gif" style = "position:relative; left:-9px; top:-100px;"  onMouseDown = "setScheduleChanged();beginDrag(event,-135,-35,0,0,'showTemp4()','vertical')"> 
                           </td>
                         </tr>
                       </table>
@@ -393,9 +390,10 @@ updateLayout(
                     </table>
                       <table width="100%" border="0" class = "TableCell">
                         <tr> 
-                          <td>Notice: There is only one time schedule for cooling 
-                            and heating. Changing it on one side will cause it 
-                            changed on the other side.</td>
+                          <td><b>Note</b>: Time settings (Wake, Leave, Return, 
+                            and Sleep) must be the same for both Cooling and Heating. 
+                            Changing settings on one page causes automatic changes 
+                            on the other page as well.</td>
                         </tr>
                       </table>
                       <noscript><table width="100%" border="0" class = "TableCell">
@@ -427,10 +425,7 @@ updateLayout(
                       <input type="submit" name="Submit" value="Submit">
                   </td>
                     <td width="64%" align = "left" class = "TableCell"> 
-                      <input type="button" id="Default" value="Recommended Settings" onclick="setToDefault()">
-<script language="JavaScript">
-	document.getElementById("Default").value = '<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_REC_SET_BTN %>"/>';
-</script>
+                      <input type="button" id="Default" value="<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_REC_SET_BTN %>"/>" onclick="setToDefault()">
                   </td>
                 </tr>
               </table>
@@ -444,7 +439,7 @@ updateLayout(
           </td>
 		  
 		  
-        <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
 	  

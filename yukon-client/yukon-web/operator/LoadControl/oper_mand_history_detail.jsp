@@ -54,7 +54,7 @@
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -98,7 +98,7 @@
               </tr>
             </table>
           </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <p class="Main"><br>
@@ -159,7 +159,7 @@
               to History</b></a> <br>
               <br> 
           </td>
-        <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

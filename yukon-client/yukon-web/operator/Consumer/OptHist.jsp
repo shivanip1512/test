@@ -35,10 +35,7 @@ function confirmSubmit(form) { //v1.0
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../Header.gif">&nbsp;</td>
-<script language="JavaScript">
-	document.getElementById("Header").background = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
-</script>
+                <td id="Header" colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -55,7 +52,7 @@ function confirmSubmit(form) { //v1.0
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -74,7 +71,7 @@ function confirmSubmit(form) { //v1.0
 		  <% String pageName = "OptOut.jsp"; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "PROGRAMS - OPT OUT HISTORY"; %>
@@ -87,12 +84,7 @@ function confirmSubmit(form) { //v1.0
                     <td class="HeaderCell">Program</td>
                   </tr>
 <%
-	ServletUtils.ProgramHistory[] progHist = (ServletUtils.ProgramHistory[]) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_LM_PROGRAM_HISTORY);
-	if (progHist == null) {
-		progHist = ServletUtils.createProgramHistory( programs );
-		user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_LM_PROGRAM_HISTORY, progHist);
-	}
-	
+	ServletUtils.ProgramHistory[] progHist = ServletUtils.getProgramHistory( account.getAccountID(), programs );
 	for (int i = progHist.length - 1; i >= 0; i--) {
 %>
                   <tr> 
@@ -129,7 +121,7 @@ function confirmSubmit(form) { //v1.0
             </div>
             <p>&nbsp;</p>
           </td>
-        <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

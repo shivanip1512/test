@@ -55,10 +55,7 @@ function saveChanges() {
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../Header.gif">&nbsp;</td>
-<script language="JavaScript">
-	document.getElementById("Header").background = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
-</script>
+                <td id="Header" colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -75,7 +72,7 @@ function saveChanges() {
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -94,7 +91,7 @@ function saveChanges() {
 		  <% String pageName = "Contacts.jsp"; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center"><% String header = "ACCOUNT - CONTACTS"; %><%@ include file="InfoSearchBar.jsp" %> 
               
@@ -303,7 +300,7 @@ function saveChanges() {
             </form> </div>
             <p>&nbsp;</p>
           </td>
-        <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

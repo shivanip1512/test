@@ -39,7 +39,7 @@
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -83,7 +83,7 @@
               </tr>
             </table>
           </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
 <table width="657" border="0" cellspacing="0" cellpadding="0" align="left">
     <tr> 
@@ -217,7 +217,7 @@
   </form> 
               
           </td>
-        <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

@@ -21,7 +21,7 @@
 	document.getElementById("StyleSheet").href = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_STYLE_SHEET %>"/>';
 </script>
 
-<SCRIPT  LANGUAGE="JavaScript1.2" SRC="Calendar1-82.js"></SCRIPT>
+<SCRIPT  LANGUAGE="JavaScript1.2" SRC="../../JavaScript/Calendar1-82.js"></SCRIPT>
 <SCRIPT LANGUAGE="JAVASCRIPT" TYPE="TEXT/JAVASCRIPT">
   <!-- Hide the script from older browsers
   
@@ -69,10 +69,7 @@ function checkCallNo(form) {
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../Header.gif">&nbsp;</td>
-<script language="JavaScript">
-	document.getElementById("Header").background = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
-</script>
+                <td id="Header" colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -89,7 +86,7 @@ function checkCallNo(form) {
               </tr>
             </table>
           </td>
-          <td width="1" height="102" bgcolor="#000000"><img src="switch/VerticalRule.gif" width="1"></td>
+          <td width="1" height="102" bgcolor="#000000"><img src=""../Images/Icons/VerticalRule.gif"" width="1"></td>
         </tr>
       </table>
     </td>
@@ -105,7 +102,7 @@ function checkCallNo(form) {
         </tr>
         <tr> 
           <td  valign="top" width="101"><% String pageName = "CreateCalls.jsp"; %><%@ include file="Nav.jsp" %></td>
-          <td width="1" bgcolor="#000000"><img src="switch/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src=""../Images/Icons/VerticalRule.gif"" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div class = "Main" align="center"><% String header = "ACCOUNT - CREATE NEW CALL"; %><%@ include file="InfoSearchBar.jsp" %>
 			<% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
@@ -128,7 +125,7 @@ function checkCallNo(form) {
                             <input type="text" name="CallDate" size = "10" value="<%= datePart.format(Calendar.getInstance().getTime()) %>">
                             <a href="javascript:show_calendar('MForm.date')"
 						onMouseOver="window.status='Pop Calendar';return true;"
-						onMouseOut="window.status='';return true;"> <img src="StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
+						onMouseOut="window.status='';return true;"> <img src="../../Images/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
                           </td>
                         </tr>
                         <tr> 
@@ -184,7 +181,7 @@ function checkCallNo(form) {
             </div>
           
            </td>
-          <td width="1" bgcolor="#000000"><img src="switch/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src=""../Images/Icons/VerticalRule.gif"" width="1"></td>
         </tr>
       </table>
     </td>

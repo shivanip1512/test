@@ -14,15 +14,6 @@
 <script language="JavaScript">
 	document.getElementById("StyleSheet").href = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_STYLE_SHEET %>"/>';
 </script>
-
-<script language="JavaScript">
-<!--
-function confirmSubmit(form) { //v1.0
-  if (form.OptOutPeriod.value == 0) return false;
-  return confirm('Are you sure you would like to temporarily opt out of all programs?');
-}
-//-->
-</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -35,10 +26,7 @@ function confirmSubmit(form) { //v1.0
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../Header.gif">&nbsp;</td>
-<script language="JavaScript">
-	document.getElementById("Header").background = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
-</script>
+                <td id="Header" colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -55,7 +43,7 @@ function confirmSubmit(form) { //v1.0
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -74,16 +62,25 @@ function confirmSubmit(form) { //v1.0
 		  <% String pageName = "OptOut.jsp"; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "PROGRAMS - OPT OUT"; %>
               <%@ include file="InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-			  
-              <div align="center">
+              <table width="550" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td><div align="center">
                 <p class="Main"><cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_OPT_OUT_DESC %>"/></p>
               </div>
+              </td>
+                </tr>
+              </table>
+			<form name="form1" method="post" action="/servlet/SOAPClient">
+			  <input type="hidden" name="action" value="OptOutProgram">
+			  <input type="hidden" name="REDIRECT" value="/operator/Consumer/Programs.jsp">
+			  <input type="hidden" name="REDIRECT2" value="/operator/Consumer/OptForm.jsp">
+			  <input type="hidden" name="REFERRER" value="/operator/Consumer/OptOut.jsp">
               <table width="200" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" align="center">
                 <tr> 
                   <td> 
@@ -91,11 +88,6 @@ function confirmSubmit(form) { //v1.0
                       <p class="HeaderCell">Temporarily opt out of all programs 
                       </p>
                     </div>
-				  <form name="form1" method="post" action="/servlet/SOAPClient" onsubmit = "return confirmSubmit(this)">
-				  	<input type="hidden" name="action" value="OptOutProgram">
-					<input type="hidden" name="REDIRECT" value="/operator/Consumer/OptForm.jsp">
-					<input type="hidden" name="REDIRECT2" value="/operator/Consumer/Programs.jsp">
-					<input type="hidden" name="REFERRER" value="/operator/Consumer/OptOut.jsp">
                     <table width="180" border="0" cellspacing="0" cellpadding="0" align="center">
                       <tr> 
                         <td width="180" align="center"> 
@@ -136,31 +128,34 @@ function confirmSubmit(form) { //v1.0
                         </td>
                       </tr>
                     </table>
-				  </form>
                   </td>
                 </tr>
               </table>
+              <p align="center" class="MainHeader"><br>
+              <table width="150" border="0" cellspacing="0" cellpadding="3" align="center">
+                <tr> 
+                  <td align="center">
+                    <input type="submit" value="Re-enable" onclick="this.form.action.value='ReenableProgram'">
+                  </td>
+                </tr>
+              </table>
+			</form>
               <br>
               <form name="form2" method="post" action="OptHist.jsp">
                 <p align="center" class="MainHeader"><b>Program History </b> 
-                <table width="300" border="1" cellspacing="0" align="center" cellpadding="3">
+                <table width="366" border="1" cellspacing="0" align="center" cellpadding="3">
                   <tr> 
-                    <td class="HeaderCell">Date</td>
-                    <td class="HeaderCell">Type - Duration</td>
-                    <td class="HeaderCell">Program</td>
+                    <td class="HeaderCell" width="100">Date</td>
+                    <td class="HeaderCell" width="154">Type - Duration</td>
+                    <td class="HeaderCell" width="100">Program</td>
                   </tr>
                   <%
-	ServletUtils.ProgramHistory[] progHist = (ServletUtils.ProgramHistory[]) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_LM_PROGRAM_HISTORY);
-	if (progHist == null) {
-		progHist = ServletUtils.createProgramHistory( programs );
-		user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_LM_PROGRAM_HISTORY, progHist);
-	}
-	
+	ServletUtils.ProgramHistory[] progHist = ServletUtils.getProgramHistory( account.getAccountID(), programs );
 	for (int i = progHist.length - 1; i >= 0 && i >= progHist.length - 5; i--) {
 %>
                   <tr> 
                     <td class="TableCell" width="100" ><%= datePart.format(progHist[i].getDate()) %></td>
-                    <td class="TableCell" width="100" ><%= progHist[i].getAction() %> 
+                    <td class="TableCell" width="154" ><%= progHist[i].getAction() %> 
                       <% if (progHist[i].getDuration() != null) { %>
                       - <%= progHist[i].getDuration() %>
                       <% } %>
@@ -196,24 +191,11 @@ function confirmSubmit(form) { //v1.0
 	}
 %>
               </form>
-              <p align="center" class="MainHeader"><br>
-              <table width="150" border="0" cellspacing="0" cellpadding="3" align="center">
-                <tr> 
-                  <td align="center">
-				  <form method="POST" action="/servlet/SOAPClient">
-				    <input type="hidden" name="action" value="ReenableProgram"> 
-					<input type="hidden" name="REDIRECT" value="/operator/Consumer/Programs.jsp">
-					<input type="hidden" name="REFERRER" value="/operator/Consumer/OptOut.jsp">
-                    <input type="submit" name="Re-enable" value="Re-enable">
-				  </form>
-                  </td>
-                </tr>
-              </table>
               <br>
             </div>
             <p>&nbsp;</p>
           </td>
-        <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

@@ -31,18 +31,24 @@ function copyAddress(form) {
 	}
 }
 
-function checkPassword(form) {
-	if (form.Password.value != form.Password2.value) {
-		alert("Passwords don't match, please make sure you input the same password twice.");
-		return false;
-	}
-	return true;
-}
-
-function checkAccountNo(form) {
-	if (form.AcctNo.value.length == 0) {
+function validate(form) {
+	if (form.AcctNo.value == "") {
 		alert("Account # cannot be empty!");
 		return false;
+	}
+	if (form.Username != null && (form.Username.value != "" || form.Password.value != "")) {
+		if (form.Username.value == "") {
+			alert("Username cannot be empty!");
+			return false;
+		}
+		if (form.Password.value == "") {
+			alert("Password cannot be empty!");
+			return false;
+		}
+		if (form.Password.value != form.Password2.value) {
+			alert("Passwords don't match, please check the passwords.");
+			return false;
+		}
 	}
 	return true;
 }
@@ -62,12 +68,9 @@ function confirmCancel() {
         <tr> 
           <td width="102" height="102" background="ConsumerImage.jpg">&nbsp;</td>
           <td valign="bottom" height="102"> 
-            <table width="656" cellspacing="0"  cellpadding="0" border="0">
+            <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../Header.gif">&nbsp;</td>
-<script language="JavaScript">
-	document.getElementById("Header").background = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
-</script>
+                <td id="Header" colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -84,7 +87,7 @@ function confirmCancel() {
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -100,15 +103,17 @@ function confirmCancel() {
         </tr>
         <tr> 
           <td valign="top" width="101">&nbsp; </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" bgcolor="#FFFFFF" valign = "top" align = "center"> 
             <% String header = "NEW SIGNUP"; %>
-            <%@ include file="SearchBar.jsp" %>
+            <%@ include file="InfoSearchBar2.jsp" %>
             <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-            <form name="form1" method="POST" action="/servlet/SOAPClient" onSubmit="return checkAccountNo(this)">
+            <form name="form1" method="POST" action="/servlet/SOAPClient" onSubmit="return validate(this)">
               <input type="hidden" name="action" value="NewCustAccount">
-			  <input type="hidden" name="Wizard" value="false">
-              <table width="600" border="0" cellspacing="0" cellpadding="10" align="center">
+<% if (request.getParameter("Wizard") != null) { %>
+			  <input type="hidden" name="Wizard" value="true">
+<% } %>
+              <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
                   <td width="300" valign="top"><span class="MainHeader"><b>CUSTOMER 
                     CONTACT</b></span> 
@@ -470,16 +475,44 @@ function confirmCancel() {
                   </td>
                 </tr>
               </table>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ADMIN_CHANGE_LOGIN %>">
+              <table width="300" border="0" cellspacing="0" cellpadding="1">
+                <tr> 
+                  <td width="100" class="TableCell"> 
+                    <div align="right">User Name: </div>
+                  </td>
+                  <td width="200"> 
+                    <input type="text" name="Username" maxlength="20" size="20">
+                  </td>
+                </tr>
+                <tr> 
+                  <td width="100" class="TableCell"> 
+                    <div align="right">Password:</div>
+                  </td>
+                  <td width="200"> 
+                    <input type="text" name="Password" maxlength="20" size="20">
+                  </td>
+                </tr>
+                <tr> 
+                  <td width="100" class="TableCell"> 
+                    <div align="right">Confirm Password:</div>
+                  </td>
+                  <td width="200"> 
+                    <input type="text" name="Password2" maxlength="20" size="20">
+                  </td>
+                </tr>
+              </table>
+              <br>
+</cti:checkRole>
               <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">
                 <tr> 
                   <td width="190"> 
                     <div align="right"> 
-<cti:checkNoRole roleid="<%= RoleTypes.NEW_ACCOUNT_WIZARD %>">
+<% if (request.getParameter("Wizard") == null) { %>
                       <input type="submit" name="Save" value="Save">
-</cti:checkNoRole>
-<cti:checkRole roleid="<%= RoleTypes.NEW_ACCOUNT_WIZARD %>">
-                      <input type="submit" name="Next" value="Next" onclick="this.form.Wizard.value='true'">
-</cti:checkRole>
+<% } else { %>
+                      <input type="submit" name="Next" value="Next">
+<% } %>
                     </div>
                   </td>
                   <td width="190"> 
@@ -492,13 +525,7 @@ function confirmCancel() {
             </form>
             <p>&nbsp;</p>
           </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
-        </tr>
-        <tr>
-          <td valign="top" width="101">&nbsp;</td>
-          <td width="1" bgcolor="#000000">&nbsp;</td>
-          <td width="657" bgcolor="#FFFFFF" valign = "top" align = "center">&nbsp;</td>
-          <td width="1" bgcolor="#000000">&nbsp;</td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>

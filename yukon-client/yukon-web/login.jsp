@@ -8,6 +8,13 @@ String email = (String) com.cannontech.common.util.CtiProperties.getInstance().g
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="demostyle.css" type="text/css">
+
+<SCRIPT LANGUAGE="JavaScript">
+function popUp(url) {
+sealWin=window.open(url,"win",'toolbar=0,location=0,directories=0,status=1,menubar=1,scrollbars=1,resizable=1,width=500,height=450');
+self.name = "mainWin";
+}
+</SCRIPT>
 </head>
 
 <body class="Background" text="#000000" leftmargin="0" topmargin="0">
@@ -30,7 +37,7 @@ String email = (String) com.cannontech.common.util.CtiProperties.getInstance().g
     </td>
   </tr>
   <tr> 
-    <td width="407" valign = "top" class = "Main"> <br> 
+    <td valign = "top" class = "Main"> <br> 
 <%
 	String errorMsg = "";
 	if(request.getParameter("failed") != null) 
@@ -44,32 +51,46 @@ String email = (String) com.cannontech.common.util.CtiProperties.getInstance().g
             <div align="center"><b>SIGN IN</b><br>
               Please enter your username and password below.</div>
             <form name="form1" method="post" action="/servlet/LoginController">
-              <input type="hidden" name="ACTION" value="LOGIN">			
+              <input type="hidden" name="ACTION" value="LOGIN">
               <table width="250" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
-                  <td width="83" class = "Main"> <div align="right"> User Name</div></td>
-                  <td width="117" valign="bottom"> <input type="text" name="USERNAME"> 
+                  <td width="83" class = "Main"> 
+                    <div align="right"> User Name</div>
+                  </td>
+                  <td width="117" valign="bottom"> 
+                    <input type="text" name="USERNAME">
                   </td>
                 </tr>
                 <tr> 
-                  <td width="83" class = "Main"> <div align="right">Password:</div></td>
-                  <td width="117"> <input type="password" name="PASSWORD"> 
+                  <td width="83" class = "Main"> 
+                    <div align="right">Password:</div>
+                  </td>
+                  <td width="117"> 
+                    <input type="password" name="PASSWORD">
                   </td>
                 </tr>
                 <tr> 
                   <td width="83">&nbsp;</td>
-                  <td width="117"> <div align="left">
+                  <td width="117"> 
+                    <div align="left"> 
                       <input type="submit" name="Submit2" value="Submit">
-                      </div></td>
+                    </div>
+                  </td>
                 </tr>
               </table>
-            </form></td>
+              <div align="center"><br>
+                If you need help or have forgotten your password, click <a href="mailto:<%= email %>">here</a>. 
+                <br>
+                <br>
+                <a href="javascript:popUp('https://digitalid.verisign.com/as2/68fabe0200effc6cf9cd5459ba6a1736')"> 
+                <!--<img src="http://www.verisign.com/images/seals/Secure-White98x102.gif" width="98" height="102" border="0">--><img src="Verisign.gif" border="0"></a><br>
+              </div>
+            </form>
+</td>
         </tr>
         </table>
-      <div align="center"> If you need help or have forgotten your password, click 
-        <a href="mailto:<%= email %>">here</a>. <br>
-        <br>
-      </div></td>
+      <div align="center"> </div>
+    </td>
   </tr>
 </table>
 <br>

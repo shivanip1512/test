@@ -169,7 +169,7 @@ dropDownRouteIDArray[<%=ii%>] = <%=nameSerial[i][3]%>;
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -203,7 +203,7 @@ dropDownRouteIDArray[<%=ii%>] = <%=nameSerial[i][3]%>;
               </tr>
             </table>
           </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <p><br>
             <center>
@@ -544,7 +544,7 @@ dropDownRouteIDArray[<%=ii%>] = <%=nameSerial[i][3]%>;
               </div>            
             <p align="center">&nbsp;</p>
           </td>
-        <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
         <input name="serialNumber" type="hidden" value="0">

@@ -137,6 +137,7 @@ function confirmCancel() {
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
+<div id = "tool" class = "tooltip" style="width: 1003px; height: 20px"></div>
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -146,10 +147,7 @@ function confirmCancel() {
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../Header.gif">&nbsp;</td>
-<script language="JavaScript">
-	document.getElementById("Header").background = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
-</script>
+                <td id="Header" colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -166,7 +164,7 @@ function confirmCancel() {
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -187,7 +185,7 @@ function confirmCancel() {
           <%@ include file="Nav.jsp" %>
 <% } else out.write("&nbsp;"); %>
 		  </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
               <% String header = "PROGRAMS - ENROLLMENT"; %>
@@ -203,7 +201,9 @@ function confirmCancel() {
                 <input type="hidden" name="SignUpChanged" value="false">
                 <input type="hidden" name="REDIRECT" value="/operator/Consumer/Programs.jsp">
                 <input type="hidden" name="REFERRER" value="/operator/Consumer/Programs.jsp">
-                <input type="hidden" name="Wizard" value="false">
+<% if (request.getParameter("Wizard") != null) { %>
+				<input type="hidden" name="Wizard" value="true">
+<% } %>
                 <table border="1" cellspacing="0" cellpadding="3" width="366">
                   <tr> 
                     <td width="83" class="HeaderCell" align = "center">Description</td>
@@ -232,7 +232,7 @@ function confirmCancel() {
 		}
 %>
                   <tr> 
-                    <td width="83" align = "center"><img id="<%= i %>" src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" onClick = "toolTipAppear(event, 'tool', <%= i %>, 350, text)"><br>
+                    <td width="83" align = "center"><img id="<%= i %>" src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" onClick = "toolTipAppear(event, 'tool', <%= i %>, 350, text)"><br>
                       <span class = "TableCell">Click for description</span></td>
                     <td width="132" align = "center"> 
                       <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
@@ -287,20 +287,20 @@ function confirmCancel() {
                   <tr> 
                     <td width="186"> 
                       <div align="right"> 
-                        <% if (request.getParameter("Wizard") == null) { %>
+<% if (request.getParameter("Wizard") == null) { %>
                         <input type="submit" name="Submit" value="Submit" onClick="return confirm('Are you sure you would like to modify these program options?')">
-                        <% } else { %>
-                        <input type="submit" name="Next" value="Next" onClick="this.form.Wizard.value='true'">
-                        <% } %>
+<% } else { %>
+                        <input type="submit" name="Next" value="Next">
+<% } %>
                       </div>
                     </td>
                     <td width="194"> 
                       <div align="left"> 
-                        <% if (request.getParameter("Wizard") == null) { %>
+<% if (request.getParameter("Wizard") == null) { %>
                         <input type="reset" name="Cancel" value="Cancel">
-                        <% } else { %>
+<% } else { %>
                         <input type="button" name="Cancel2" value="Cancel" onClick="confirmCancel()">
-                        <% } %>
+<% } %>
                       </div>
                     </td>
                   </tr>
@@ -308,24 +308,19 @@ function confirmCancel() {
               </form>
 <% if (request.getParameter("Wizard") == null) { %>
               <p align="center" class="MainHeader"><b>Program History </b> 
-              <table width="300" border="1" cellspacing="0" align="center" cellpadding="3">
+              <table width="366" border="1" cellspacing="0" align="center" cellpadding="3">
                 <tr> 
                   <td class="HeaderCell" width="100" >Date</td>
-                  <td class="HeaderCell" width="100" >Type - Duration</td>
+                  <td class="HeaderCell" width="154" >Type - Duration</td>
                   <td class="HeaderCell" width="100" >Program</td>
                 </tr>
 <%
-	ServletUtils.ProgramHistory[] progHist = (ServletUtils.ProgramHistory[]) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_LM_PROGRAM_HISTORY);
-	if (progHist == null) {
-		progHist = ServletUtils.createProgramHistory( programs );
-		user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_LM_PROGRAM_HISTORY, progHist);
-	}
-	
+	ServletUtils.ProgramHistory[] progHist = ServletUtils.getProgramHistory( account.getAccountID(), programs );
 	for (int i = progHist.length - 1; i >= 0 && i >= progHist.length - 3; i--) {
 %>
                 <tr> 
                   <td class="TableCell" width="100" ><%= datePart.format(progHist[i].getDate()) %></td>
-                  <td class="TableCell" width="100" ><%= progHist[i].getAction() %> 
+                  <td class="TableCell" width="154" ><%= progHist[i].getAction() %> 
                     <% if (progHist[i].getDuration() != null) { %>
                     - <%= progHist[i].getDuration() %> 
                     <% } %>
@@ -349,7 +344,7 @@ function confirmCancel() {
               <br>
             </div>
           </td>
-        <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

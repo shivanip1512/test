@@ -9,7 +9,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT  LANGUAGE="JavaScript1.2" SRC="Calendar1-82.js"></SCRIPT>
+<SCRIPT  LANGUAGE="JavaScript1.2" SRC="../../JavaScript/Calendar1-82.js"></SCRIPT>
 <SCRIPT LANGUAGE = "JavaScript">
 function MakeArray()
 {
@@ -34,10 +34,8 @@ function jumpPage(form)
 				<td valign="bottom" height="102"> 
 				<table width="657" cellspacing="0"  cellpadding="0" border="0">
 				<tr> 
-					<td id="Header" colspan="4" height="74" background="../Header.gif">&nbsp;</td>
-<script language="JavaScript">
-	document.getElementById("Header").background = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
-	</script>				</tr>
+					<td id="Header" colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+				</tr>
 				<tr> 
 					<td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer Account Information&nbsp;&nbsp;</td>
 					<td width="253" valign="middle">&nbsp;</td>
@@ -50,7 +48,7 @@ function jumpPage(form)
 				</tr>
 				</table>
 				</td>
-				<td width="1" height="102" bgcolor="#000000"><img src="../Consumer/VerticalRule.gif" width="1"></td>
+				<td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
 			</tr>
 		</table>
 		</td>
@@ -100,7 +98,7 @@ function jumpPage(form)
 						<a href="javascript:show_calendar('MForm.start')"
 							onMouseOver="window.status='Pop Calendar';return true;"
 							onMouseOut="window.status='';return true;">
-						<img src="StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
+						<img src="../../Images/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
 					</td>
 					<td width="45%"><font face="Arial, Helvetica, sans-serif" size="1">Time Period: </font> 
 						<select name="period">

@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
 <title>Metering</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<SCRIPT  LANGUAGE="JavaScript1.2" SRC="../../Calendar1-82.js"></SCRIPT>
+<SCRIPT  LANGUAGE="JavaScript1.2" SRC="../../JavaScript/Calendar1-82.js"></SCRIPT>
 
 <!-- JavaScript needed for jump menu--->
 <SCRIPT LANGUAGE = "JavaScript">
@@ -48,7 +48,7 @@ function jumpPage(form)
 				</tr>
 				</table>
 			</td>
-			<td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+			<td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
 		</tr>
 		</table>
 		</td>
@@ -115,7 +115,7 @@ function jumpPage(form)
 						<a href="javascript:show_calendar('MForm.start')"
 							onMouseOver="window.status='Pop Calendar';return true;"
 							onMouseOut="window.status='';return true;">
-						<img src="StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
+						<img src="../../Images/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
 					</td>
 					<td width="45%"><font face="Arial, Helvetica, sans-serif" size="1">Time Period: </font> 
 						<select name="period">

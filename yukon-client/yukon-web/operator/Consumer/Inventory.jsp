@@ -88,10 +88,7 @@ function changeAppSelection(chkBox) {
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../Header.gif">&nbsp;</td>
-<script language="JavaScript">
-	document.getElementById("Header").background = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
-</script>
+                <td id="Header" colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -108,7 +105,7 @@ function changeAppSelection(chkBox) {
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -127,7 +124,7 @@ function changeAppSelection(chkBox) {
             <% String pageName = "Inventory.jsp?InvNo=" + invNo; %>
             <%@ include file="Nav.jsp" %>
           </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "HARDWARE"; %><%@ include file="InfoSearchBar.jsp" %>
@@ -321,7 +318,7 @@ function changeAppSelection(chkBox) {
                   </td>
                 </tr>
               </table>
-            <table width="610" border="0" cellspacing="0" cellpadding="10" align="center" height="66">
+            <table width="610" border="0" cellspacing="0" cellpadding="0" align="center" height="66">
               <tr> 
                   <td width="300" valign="top" bgcolor="#FFFFFF" height="65"> 
                     <span class="MainHeader">Select all programs controlled by this 
@@ -538,22 +535,6 @@ function changeAppSelection(chkBox) {
                   <td width="100" class="HeaderCell"> Status</td>
                   <td width="120" class="HeaderCell"> Enrolled Programs</td>
                 </tr>
-<!--
-                <tr bgcolor="#FFFFFF" valign="top"> 
-                  <td width="104" class="TableCell"> Water Heater</td>
-                  <td width="100" class="TableCell"> In Service</td>
-                  <td width="120"> 
-                    <div align="center"><img src="WaterHeater.gif" width="60" height="59"></div>
-                  </td>
-                </tr>
-                <tr bgcolor="#FFFFFF" valign="top"> 
-                  <td width="104" class="TableCell"> Air Conditioner</td>
-                  <td width="100" class="TableCell"> Out of Service</td>
-                  <td width="120"> 
-                    <div align="center"><img src="AC.gif" width="60" height="59"></div>
-                  </td>
-                </tr>
--->
 <%
 	for (int i = 0; i < starsApps.length; i++) {
 		StarsLMProgram program = null;
@@ -578,7 +559,7 @@ function changeAppSelection(chkBox) {
                   <td width="104" class="TableCell"> <%= starsApps[i].getDescription() %></td>
                   <td width="100" class="TableCell"><%= program.getStatus() %></td>
                   <td width="120"> 
-                    <div align="center"> <img src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
+                    <div align="center"> <img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
 					  <span class="TableCell"><%= program.getProgramName() %></span>
 					</div>
                   </td>
@@ -590,7 +571,7 @@ function changeAppSelection(chkBox) {
             </div>
             <p>&nbsp;</p>
           </td>
-        <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

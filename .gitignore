@@ -58,6 +58,7 @@ yukon-client/webgraph/.cvsignore
 yukon-client/webgraph/bin
 yukon-client/webgraph/build
 yukon-client/yukon-web/WEB-INF/classes
+yukon-client/yukon-web/_notes
 yukon-client/yukonappclient/bin
 yukon-client/yukonappserver/bin
 yukon-client/yukonappserver/build
