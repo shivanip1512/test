@@ -13,14 +13,20 @@ import com.cannontech.common.util.MessageEvent;
 
 public class MessagePanel extends JPanel implements com.cannontech.common.util.MessageEventListener {
 
-	class MessageCellRenderer implements javax.swing.ListCellRenderer{
+	class MessageCellRenderer implements javax.swing.ListCellRenderer
+	{
+		private JLabel tempLabel = new JLabel();
+
 		public Component getListCellRendererComponent(JList list,
 														Object value,
 														int index,
 														boolean isSelected,
 														boolean cellHasFocus)
 		{
-			JLabel tempLabel = new JLabel(value.toString());
+			/* Caused a MEMORY LEAK!!! */
+			//JLabel tempLabel = new JLabel(value.toString());
+			
+			tempLabel.setText( value.toString() );
 			if ( ((MessageEvent) value).getMessageType() == MessageEvent.ERROR_MESSAGE )
 				tempLabel.setForeground(java.awt.Color.red);
 			else if ( ((MessageEvent) value).getMessageType() == MessageEvent.INFORMATION_MESSAGE )
@@ -28,6 +34,7 @@ public class MessagePanel extends JPanel implements com.cannontech.common.util.M
 			return tempLabel;
 		}
 	}
+
 	private javax.swing.JScrollPane displayListScrollPane;
 	private javax.swing.JList displayList;
 	private javax.swing.JLabel systemStatusLabel;
