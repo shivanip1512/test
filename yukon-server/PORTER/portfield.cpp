@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2003/06/12 21:28:14 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2003/07/21 22:07:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,6 +75,8 @@ using namespace std;
 #include "dsm2.h"
 #include "dsm2err.h"
 #include "device.h"
+#include "dev_tap.h"
+#include "dev_wctp.h"
 #include "routes.h"
 #include "porter.h"
 #include "master.h"
@@ -294,21 +296,22 @@ VOID PortThread(void *pid)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Error Reading Port Queue" << endl;
+                    dout << RWTime() << " Error Reading Port Queue " << Port->getName() << endl;
                 }
             }
             continue;
         }
         else if(PorterDebugLevel & PORTER_DEBUG_PORTQUEREAD)
         {
-            CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID);
+            CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
 
             if(tempDev)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Port " << Port->getName() << " read an outmessage for " << tempDev->getName();
                 dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
-                dout << RWTime() << " Port has " << QueEntries << " pending OUTMESS requests " << endl;
+                if(strlen(OutMessage->Request.CommandStr) > 0) dout << RWTime() << " Command : " << OutMessage->Request.CommandStr << endl;
+                if(QueEntries > 50) dout << RWTime() << " Port has " << QueEntries << " pending OUTMESS requests " << endl;
             }
         }
 
@@ -867,6 +870,52 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
     bool portMayExecute;
     bool deviceMayExecute;
 
+    if( Device->getType() == TYPE_TAPTERM )
+    {
+        CtiDeviceTapPagingTerminal *pTap = (CtiDeviceTapPagingTerminal *)Device;
+        if(pTap->devicePacingExceeded())        // Check if the pacing rate has been exceeded.
+        {
+            // Put it back & slow it down!
+
+            if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                }
+
+                delete OutMessage;
+            }
+
+            OutMessage = 0;
+            Sleep(100L);
+
+            return RETRY_SUBMITTED;
+        }
+    }
+    else if( Device->getType() == TYPE_WCTP )
+    {
+        CtiDeviceWctpTerminal *pWctp = (CtiDeviceWctpTerminal *)Device;
+        if(pWctp->devicePacingExceeded())        // Check if the pacing rate has been exceeded.
+        {
+            // Put it back & slow it down!
+
+            if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                }
+
+                delete OutMessage;
+            }
+
+            OutMessage = 0;
+            Sleep(100);
+
+            return RETRY_SUBMITTED;
+        }
+    }
 
     // 030503 CGP Adding Exclusion logic in this location.
     /*
@@ -1391,7 +1440,11 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             }
                             else
                             {
-                                if( SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID) == 0 )
+                                if( ((CtiDeviceTapPagingTerminal*)IED)->blockedByPageRate() )
+                                {
+                                    IED->setLogOnNeeded(TRUE);      // We have zero queue entries!
+                                }
+                                else if( SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID) == 0 )
                                 {
                                     IED->setLogOnNeeded(TRUE);      // We have zero queue entries!
                                 }
@@ -3403,7 +3456,19 @@ VOID PortDialbackThread(void *pid)
                             {
                                 pAltRate->insert(-1);                       // token, not yet used.
                                 pAltRate->insert( pDevice->getID() );       // Device to poke.
-                                pAltRate->insert( -1 );                     // Seconds since midnight, or NOW if negative.
+
+                                int dbdelay = gConfigParms.getValueAsInt("PORTER_DIALBACK_DELAY", 0);
+
+                                if( dbdelay )
+                                {
+                                    RWTime now;
+                                    pAltRate->insert( (now.hour() * 3600) + (now.minute() * 60) + now.second() + dbdelay );  // Seconds since midnight, or NOW if negative.
+                                }
+                                else
+                                {
+                                    pAltRate->insert( -1 );                      // Seconds since midnight, or NOW if negative.
+                                }
+
                                 pAltRate->insert( 0 );                      // Duration of zero should cause 1 scan.
 
                                 VanGoghConnection.WriteConnQue(pAltRate);
