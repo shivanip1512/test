@@ -37,6 +37,7 @@
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ page import="com.cannontech.stars.util.ECUtils" %> 
+<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
 <cti:checklogin/>
  
 <%
@@ -79,6 +80,9 @@
 	java.text.SimpleDateFormat dateTimeFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm z");
 	java.text.SimpleDateFormat ampmTimeFormat = new java.text.SimpleDateFormat("hh:mm a");
+	
+	java.text.DecimalFormat format_nv3 = new java.text.DecimalFormat("#0.000");
+	java.text.DecimalFormat format_nsec = new java.text.DecimalFormat("#0 secs");
 	
 	String dbAlias = CtiUtilities.getDatabaseAlias();
 	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
@@ -215,4 +219,12 @@
 		session.setAttribute(ServletUtil.ATT_GRAPH_BEAN, new com.cannontech.graph.GraphBean());
 		graphBean = (com.cannontech.graph.GraphBean)session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
 	}
+	
+	com.cannontech.yc.bean.YCBean ycBean = (com.cannontech.yc.bean.YCBean) session.getAttribute(ServletUtil.ATT_YC_BEAN);
+	if(ycBean == null)
+	{
+		session.setAttribute(ServletUtil.ATT_YC_BEAN, new com.cannontech.yc.bean.YCBean());
+		ycBean = (com.cannontech.yc.bean.YCBean)session.getAttribute(ServletUtil.ATT_YC_BEAN);
+	}
+
 %>
