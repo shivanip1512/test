@@ -347,6 +347,9 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
     RWCRExpr   re_minmax("minmax");
     RWCRExpr   re_voltage("volt(age)?");
 
+    RWCRExpr   re_lp("lp +channel +[0-9]+( +[0-9]+[/-][0-9]+([/-][0-9]+)?)? +[0-9]+:[0-9]+");  //  matches date (optional) and time
+    RWCRExpr   re_outage("outage +[0-9]+");
+
 
     RWCRExpr   re_powerfail("power");
 
@@ -442,6 +445,39 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
             else
             {
                 offset = 0;
+            }
+        }
+        else if(CmdStr.contains(" lp "))
+        {
+            if(!(token = CmdStr.match(re_lp)).isNull())
+            {
+                RWCTokenizer cmdtok(token);
+                RWCString tmpstr;
+
+                cmdtok();  //  move past lp
+                cmdtok();  //  move past channel
+
+                _cmd["lp_channel"] = CtiParseValue(atoi(RWCString(cmdtok())));
+
+                tmpstr = cmdtok();
+
+                if( !tmpstr.contains(":") )
+                {
+                    _cmd["lp_date"] = CtiParseValue(tmpstr);
+                    tmpstr = cmdtok();
+                }
+
+                _cmd["lp_time"] = CtiParseValue(tmpstr);
+            }
+        }
+        else if(CmdStr.contains(" outage "))
+        {
+            if(!(token = CmdStr.match(re_outage)).isNull())
+            {
+                RWCTokenizer cmdtok(token);
+
+                cmdtok();  //  move past "outage"
+                _cmd["outage"] = CtiParseValue(atoi(RWCString(cmdtok())));
             }
         }
         else
