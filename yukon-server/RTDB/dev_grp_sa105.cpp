@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/05/24 13:49:46 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/06/23 18:36:56 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -157,17 +157,35 @@ INT CtiDeviceGroupSA105::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     parse.setValue("sa_opaddress", atoi(_loadGroup.getOperationalAddress().data()));
     parse.setValue("sa_function", _loadGroup.getFunction(control));
 
+    if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_SHED)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "FUNCTION = " << _loadGroup.getFunction(control) << endl;
+        int shed_seconds = parse.getiValue("shed",86400);
+        if(shed_seconds >= 0)
+        {
+            // Add these two items to the list for control accounting!
+            parse.setValue("control_interval", parse.getiValue("shed"));
+            parse.setValue("control_reduction", 100 );
+        }
+        else
+            status = BADPARAM;
+
     }
+    else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_CYCLE)
+    {
+        INT period     = parse.getiValue("cycle_period", 30);
+        INT repeat     = parse.getiValue("cycle_count", 8);
+
+        // Add these two items to the list for control accounting!
+        parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
+        parse.setValue("control_interval", 60 * period * repeat);
+    }
+
 
     if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
     {
         OutMessage->TargetID = getID();
         OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
-        OutMessage->Retry = 0;
+        OutMessage->Retry = gConfigParms.getValueAsInt("PORTER_SA_REPEATS", 1);
 
         //
         // OK, these are the items we are about to set out to perform..  Any additional signals will

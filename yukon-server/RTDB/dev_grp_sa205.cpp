@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/05/20 22:43:12 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/06/23 18:36:56 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -157,6 +157,29 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
     parse.setValue("sa_opaddress", atoi(_loadGroup.getOperationalAddress().data()));
     parse.setValue("sa_function", _loadGroup.getFunction(control));
+
+    if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_SHED)
+    {
+        int shed_seconds = parse.getiValue("shed",86400);
+        if(shed_seconds >= 0)
+        {
+            // Add these two items to the list for control accounting!
+            parse.setValue("control_interval", parse.getiValue("shed"));
+            parse.setValue("control_reduction", 100 );
+        }
+        else
+            status = BADPARAM;
+
+    }
+    else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_CYCLE)
+    {
+        INT period     = parse.getiValue("cycle_period", 30);
+        INT repeat     = parse.getiValue("cycle_count", 8);
+
+        // Add these two items to the list for control accounting!
+        parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
+        parse.setValue("control_interval", 60 * period * repeat);
+    }
 
     if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
     {

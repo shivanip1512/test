@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/05/24 13:49:46 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/06/23 18:36:56 $
 *
 * HISTORY      :
 * $Log: dev_grp_sa305.cpp,v $
+* Revision 1.4  2004/06/23 18:36:56  cplender
+* Added control_interval and control_reduction to the grp so the protocol doesn't need to set it.
+*
 * Revision 1.3  2004/05/24 13:49:46  cplender
 * Set retries to 0 for all but 205 commands.
 *
@@ -132,6 +135,30 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
      *   That method prepares an outmessage for submission to the internals..
      */
     parse.setValue("type", ProtocolSA305Type);
+
+    if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_SHED)
+    {
+        int shed_seconds = parse.getiValue("shed",86400);
+        if(shed_seconds >= 0)
+        {
+            // Add these two items to the list for control accounting!
+            parse.setValue("control_interval", parse.getiValue("shed"));
+            parse.setValue("control_reduction", 100 );
+        }
+        else
+            status = BADPARAM;
+
+    }
+    else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_CYCLE)
+    {
+        INT period     = parse.getiValue("cycle_period", 30);
+        INT repeat     = parse.getiValue("cycle_count", 8);
+
+        // Add these two items to the list for control accounting!
+        parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
+        parse.setValue("control_interval", 60 * period * repeat);
+    }
+
 
     int serial = 0;
     int group = 0;
