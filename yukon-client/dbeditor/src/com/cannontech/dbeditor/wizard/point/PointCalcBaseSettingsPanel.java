@@ -283,7 +283,8 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
-
+	getPeriodicRateLabel().setEnabled(false);
+	getPeriodicRateComboBox().setEnabled(false);
 	// user code end
 }
 /**
