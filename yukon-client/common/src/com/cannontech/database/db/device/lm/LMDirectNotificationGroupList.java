@@ -12,10 +12,10 @@ package com.cannontech.database.db.device.lm;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-/*TODO: Direct Programs use notification groups now, instead of customers.  Table name,
- * class name and field names should reflect this.
+/*TODO: Direct Programs use notification groups now, instead of customers.  Table name and 
+ * field names should reflect this.
  */
-public class LMDirectCustomerList extends com.cannontech.database.db.DBPersistent implements DeviceListItem
+public class LMDirectNotificationGroupList extends com.cannontech.database.db.DBPersistent implements DeviceListItem
 {
 	private Integer programID = null;
 	private Integer customerID = null;
@@ -32,7 +32,7 @@ public class LMDirectCustomerList extends com.cannontech.database.db.DBPersisten
 /**
  * LMGroupVersacomSerial constructor comment.
  */
-public LMDirectCustomerList() {
+public LMDirectNotificationGroupList() {
 	super();
 }
 /**
@@ -40,7 +40,7 @@ public LMDirectCustomerList() {
  */
 public void add() throws java.sql.SQLException 
 {
-	Object addValues[] = { getDeviceID(), getCustomerID() };
+	Object addValues[] = { getDeviceID(), getNotificationGroupID() };
 
 	add( TABLE_NAME, addValues );
 }
@@ -64,7 +64,7 @@ public Integer getDeviceID() {
  * Creation date: (3/12/2004 3:20:23 PM)
  * @return java.lang.Integer
  */
-public java.lang.Integer getCustomerID() {
+public java.lang.Integer getNotificationGroupID() {
 	return customerID;
 }
 /**
@@ -105,7 +105,7 @@ public void setCustomerID(java.lang.Integer newCustomerID) {
  */
 public void update() throws java.sql.SQLException 
 {
-	Object setValues[] = { getCustomerID() };
+	Object setValues[] = { getNotificationGroupID() };
 
 	Object constraintValues[] = { getDeviceID() };
 
