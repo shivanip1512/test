@@ -2166,22 +2166,19 @@ BOOL searchFuncForOutMessageUniqueID(void *pId, void* d)
 
 LONG ResetBreakAlloc()
 {
-    long allocReqNum;
-    char *my_pointer;
+    long allocReqNum = 0;
 
-    /*
-     * Allocate "my_pointer" for the first
-     * time and ensure that it gets allocated correctly
-     */
-    my_pointer = (char*)malloc(10);
-    _CrtIsMemoryBlock(my_pointer, 10, &allocReqNum, NULL, NULL);
+#ifdef _DEBUG
+    long *my_pointer = (long*)new long;
+    _CrtIsMemoryBlock(my_pointer, sizeof(long), &allocReqNum, NULL, NULL);
 
     /*
      * Set a breakpoint on the allocation request number for "my_pointer"
-     * this should keep us from breaking for at least 2^31 allocations.
+     * this should keep us from breaking for at least 2^31 more allocations.
      */
     _CrtSetBreakAlloc(allocReqNum);
-    free(my_pointer);
+    delete my_pointer;
+#endif
 
     return allocReqNum;
 }
