@@ -1,5 +1,7 @@
 package com.cannontech.yukon.server.cache;
 
+import java.math.BigDecimal;
+
 /**
  * Insert the type's description here.
  * Creation date: (3/15/00 3:57:58 PM)
@@ -32,9 +34,18 @@ java.util.Date timerStop = null;
 //temp code
 timerStart = new java.util.Date();
 //temp code
-	String sqlString = "SELECT PAObjectID, Category, PAOName, " +
+	String sqlString = 
+			"SELECT y.PAObjectID, y.Category, y.PAOName, " +
+			"y.Type, y.PAOClass, y.Description, d.PORTID " +
+			"FROM YukonPAObject y left outer join DEVICEDIRECTCOMMSETTINGS d " +
+			"on y.paobjectid = d.deviceid " +
+			"WHERE y.PAObjectID > 0 " +
+			"ORDER BY y.Category, y.PAOClass, y.PAOName";
+
+/*"SELECT PAObjectID, Category, PAOName, " +
 			"Type, PAOClass, Description " +
 			"FROM YukonPAObject WHERE PAObjectID > 0 ORDER BY Category, PAOClass, PAOName";
+*/
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
@@ -53,7 +64,10 @@ timerStart = new java.util.Date();
 			String paoType = rset.getString(4).trim();
 			String paoClass = rset.getString(5).trim();
 			String paoDescription = rset.getString(6).trim();
-
+			
+			//this column may be null!!
+			BigDecimal portID = (BigDecimal)rset.getObject(7);
+			
 			com.cannontech.database.data.lite.LiteYukonPAObject pao =
 				new com.cannontech.database.data.lite.LiteYukonPAObject(
 						paoID, 
@@ -63,28 +77,10 @@ timerStart = new java.util.Date();
 						com.cannontech.database.data.pao.PAOGroups.getPAOClass(paoCategory, paoClass),
 						paoDescription );
 
+			if( portID != null )
+				pao.setPortID( portID.intValue() );
+
 			allPAObjects.add( pao );
-		}
-
-		if( rset != null )
-			rset.close();
-
-		sqlString = "SELECT DEVICEID,PORTID FROM DEVICEDIRECTCOMMSETTINGS WHERE DEVICEID > 0 ORDER BY DEVICEID";
-		rset = stmt.executeQuery(sqlString);
-
-		while (rset.next())
-		{
-			int deviceID = rset.getInt(1);
-			int portID = rset.getInt(2);
-
-			for(int i = 0; i < allPAObjects.size(); i++)
-			{
-				if ( ((com.cannontech.database.data.lite.LiteYukonPAObject)allPAObjects.get(i)).getYukonID() == deviceID )
-				{
-					((com.cannontech.database.data.lite.LiteYukonPAObject)allPAObjects.get(i)).setPortID(portID);
-					break;
-				}
-			}
 		}
 
 	}
@@ -96,6 +92,8 @@ timerStart = new java.util.Date();
 	{
 		try
 		{
+			if( rset != null )
+				rset.close();
 			if( stmt != null )
 				stmt.close();
 			if( conn != null )
