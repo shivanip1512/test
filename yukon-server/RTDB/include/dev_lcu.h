@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/05/12 17:07:55 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/12/20 20:47:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,9 @@ using namespace std;
 #include "dsm2.h"
 #include "dev_idlc.h"
 #include "mgr_point.h"
+
+#define COMPLETE    1000
+#define MISSED      1001
 
 class IM_EX_DEVDB CtiDeviceLCU : public CtiDeviceIDLC
 {
@@ -186,5 +189,7 @@ public:
 
     virtual INT getProtocolWrap() const;
 
+    CtiPointDataMsg* getPointSet( int status );   //ecs 12/10/2004
+    CtiPointDataMsg* getPointClear( int status );   //ecs 12/20/2004
 };
 #endif // #ifndef __DEV_LCU_H__

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/11/05 19:35:24 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/12/20 20:47:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1795,7 +1795,6 @@ INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, Cti
             case MASTERLOCKOUTSET:
             case MASTERLOCKOUTRESET:
                 {
-
                     /* First off update the control lockout flag if neccessary */
                     verifyControlLockoutState( InMessage );
 
@@ -2257,3 +2256,56 @@ INT CtiDeviceLCU::getProtocolWrap() const
     return protocol;
 }
 
+//make up for the old way of doing mpcpointset and clear
+//ecs 12/10/2004
+CtiPointDataMsg* CtiDeviceLCU::getPointSet( int status )
+{
+    CtiPointBase    *pPoint = NULL;
+    CtiPointDataMsg *pData = NULL;
+                                         
+    //put some stuff here
+    pPoint = getDevicePointOffsetTypeEqual( status, StatusPointType );
+
+    if( pPoint )
+    {
+        pData = CTIDBG_new CtiPointDataMsg();
+        pData->setId( pPoint->getPointID() );
+        pData->setType( StatusPointType );
+        pData->setQuality( NormalQuality );
+        pData->setValue( 1 );
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Sending **** " << pPoint->getPointID() << endl;
+        }
+
+    }
+
+    return pData;
+}
+
+CtiPointDataMsg* CtiDeviceLCU::getPointClear( int status )
+{
+    CtiPointBase    *pPoint = NULL;
+    CtiPointDataMsg *pData = NULL;
+                                         
+    //put some stuff here
+    pPoint = getDevicePointOffsetTypeEqual( status, StatusPointType );
+
+    if( pPoint )
+    {
+        pData = CTIDBG_new CtiPointDataMsg();
+        pData->setId( pPoint->getPointID() );
+        pData->setType( StatusPointType );
+        pData->setQuality( NormalQuality );
+        pData->setValue( 0 );
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Sending **** " << pPoint->getPointID() << endl;
+        }
+
+    }
+
+    return pData;
+}
