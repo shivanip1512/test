@@ -62,7 +62,7 @@
     </tr>
     <tr> 
       <td width="350" valign="top"> 
-        <FORM METHOD="POST" ACTION="servlet/LoginController">
+        <FORM METHOD="POST" ACTION="/servlet/LoginController">
           <p align="center"> <input type="image" src="demos/CESCI.gif" width="235" height="24" border="0"></p>
           <table width="290" border="0" cellspacing="0" cellpadding="0" align="center">
             <tr valign="top"> 
@@ -85,9 +85,9 @@
         </form>
       </td>
       <td width="350" valign="top"> 
-        <FORM METHOD="POST" ACTION="/servlet/SOAPClient">
+        <FORM METHOD="POST" ACTION="/servlet/LoginController">
 		  <input type="hidden" name="action" value="OperatorLogin">
-          <p align="center"> <input type="image" src="demos/LMOC.gif" width="162" height="26" border="0"></p>
+          <p align="center"> <input type="image" src="demos/ESOC.gif" border="0"></p>
           <table width="290" border="0" cellspacing="0" cellpadding="0" align="center">
             <tr valign="top"> 
               <td width="130"> 
@@ -131,7 +131,14 @@
     <input name="SERVICE" type="hidden" value="ESUBSTATION">
   </form>
  
-  <p>&nbsp;</p>
+  <p><font face="Arial, Helvetica, sans-serif" size="1">Copyright &copy; 2002, 
+    Cannon Technologies, Inc. All rights reserved. All text, images, graphics, 
+    code, and other materials on this website are subject to the copyrights and 
+    other intellectual property rights of Cannon Technologies, Inc. Cannon Technologies, 
+    Inc. owns the copyrights in the selection, coordination, and arrangement of 
+    the materials on this website. These materials may not be copied for commercial 
+    use or distribution, nor may these materials be modified or reposted to other 
+    sites. </font></p>
   </CENTER>
 
 </BODY>
