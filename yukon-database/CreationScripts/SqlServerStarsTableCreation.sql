@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     2/24/2003 10:58:51 AM                        */
+/* Created on:     2/24/2003 12:31:52 PM                        */
 /*==============================================================*/
 
 
@@ -4067,6 +4067,66 @@ insert into YukonListEntry values( 2, 1, 0, 'Phone Number', 2 );
 insert into YukonListEntry values( 3, 1, 0, 'Pager Number', 2 );
 insert into YukonListEntry values( 4, 1, 0, 'Fax Number', 2 );
 
+
+insert into YukonListEntry values (1001,1001,0,'Program',1001);
+insert into YukonListEntry values (1002,1001,0,'Hardware',1002);
+insert into YukonListEntry values (1003,1002,0,'Signup',1101);
+insert into YukonListEntry values (1004,1002,0,'Activation Pending',1102);
+insert into YukonListEntry values (1005,1002,0,'Activation Completed',1103);
+insert into YukonListEntry values (1006,1002,0,'Termination',1104);
+insert into YukonListEntry values (1007,1002,0,'Temp Opt Out',1105);
+insert into YukonListEntry values (1008,1002,0,'Future Activation',1106);
+insert into YukonListEntry values (1009,1002,0,'Install',1107);
+insert into YukonListEntry values (1010,1002,0,'Configure',1108);
+insert into YukonListEntry values (1011,1003,0,'OneWayReceiver',1201);
+insert into YukonListEntry values (1012,1004,0,'120/120',0);
+insert into YukonListEntry values (1013,1005,0,'LCR-5000',0);
+insert into YukonListEntry values (1014,1005,0,'LCR-4000',0);
+insert into YukonListEntry values (1015,1005,0,'LCR-3000',0);
+insert into YukonListEntry values (1016,1005,0,'LCR-2000',0);
+insert into YukonListEntry values (1017,1005,0,'LCR-1000',0);
+insert into YukonListEntry values (1018,1005,0,'Thermostat',1301);
+insert into YukonListEntry values (1019,1007,0,'Air Conditioner',1401);
+insert into YukonListEntry values (1020,1007,0,'Water Heater',1402);
+insert into YukonListEntry values (1021,1007,0,'Heating System',1403);
+insert into YukonListEntry values (1022,1007,0,'Pool Pump',1404);
+insert into YukonListEntry values (1023,1007,0,'Hot Tub',1405);
+insert into YukonListEntry values (1024,1008,0,'General',0);
+insert into YukonListEntry values (1025,1008,0,'Credit',0);
+insert into YukonListEntry values (1026,1009,0,'Service Call',0);
+insert into YukonListEntry values (1027,1009,0,'Install',0);
+insert into YukonListEntry values (1028,1010,0,'Unscheduled',1501);
+insert into YukonListEntry values (1029,1010,0,'Scheduled',1502);
+insert into YukonListEntry values (1030,1010,0,'Completed',1503);
+insert into YukonListEntry values (1031,1011,0,'Acct #',1601);
+insert into YukonListEntry values (1032,1011,0,'Phone #',1602);
+insert into YukonListEntry values (1033,1011,0,'Last name',1603);
+insert into YukonListEntry values (1034,1011,0,'Serial #',1604);
+insert into YukonListEntry values (1035,1006,0,'Available',1701);
+insert into YukonListEntry values (1036,1006,0,'Temp Unavail',1702);
+insert into YukonListEntry values (1037,1006,0,'Unavailable',1703);
+insert into YukonListEntry values (1038,1012,0,'(Unknown);',1801);
+insert into YukonListEntry values (1039,1012,0,'Century',0);
+insert into YukonListEntry values (1040,1012,0,'Universal',0);
+insert into YukonListEntry values (1041,1013,0,'(Unknown);',1901);
+insert into YukonListEntry values (1042,1013,0,'Basement',0);
+insert into YukonListEntry values (1043,1013,0,'North Side',0);
+insert into YukonListEntry values (1044,1014,0,'Likely',2001);
+insert into YukonListEntry values (1045,1014,0,'Unlikely',2002);
+insert into YukonListEntry values (1046,1015,0,'Weekday',2101);
+insert into YukonListEntry values (1047,1015,0,'Weekend',2102);
+insert into YukonListEntry values (1048,1015,0,'Saturday',2103);
+insert into YukonListEntry values (1049,1015,0,'Sunday',2104);
+insert into YukonListEntry values (1050,1016,0,'Signup',2201);
+insert into YukonListEntry values (1051,1016,0,'Exit',2202);
+insert into YukonListEntry values (1052,1017,0,'Selection',2301);
+insert into YukonListEntry values (1053,1017,0,'Free Form',2302);
+insert into YukonListEntry values (1054,1018,0,'Cool',2401);
+insert into YukonListEntry values (1055,1018,0,'Heat',2402);
+insert into YukonListEntry values (1056,1018,0,'Off',2403);
+insert into YukonListEntry values (1057,1019,0,'Auto',2501);
+insert into YukonListEntry values (1058,1019,0,'On',2502);
+
 /*==============================================================*/
 /* Index: Indx_YkLstDefID                                       */
 /*==============================================================*/
@@ -4232,6 +4292,26 @@ go
 
 insert into YukonSelectionList values( 0, 'N', '(none)', '(none)', '(none)', 'N' );
 insert into YukonSelectionList values( 1, 'A', 'Contact', 'DBEditor contact type list', 'ContactType', 'N' );
+
+insert into YukonSelectionList values (1001,'A','','Not visible, list defines the event ids','LMCustomerEvent','N');
+insert into YukonSelectionList values (1002,'A','','Not visible, defines possible event actions','LMCustomerAction','N');
+insert into YukonSelectionList values (1003,'A','','Not visible, defines inventory device category','InventoryCategory','N');
+insert into YukonSelectionList values (1004,'A','','Device voltage selection','DeviceVoltage','N');
+insert into YukonSelectionList values (1005,'A','','Device type selection','DeviceType','N');
+insert into YukonSelectionList values (1006,'N','','Hardware status selection', 'DeviceStatus','N');
+insert into YukonSelectionList values (1007,'A','','Appliance category','ApplianceCategory','N');
+insert into YukonSelectionList values (1008,'A','','Call type selection','CallType','N');
+insert into YukonSelectionList values (1009,'A','','Service type selection', 'ServiceType','N');
+insert into YukonSelectionList values (1010,'N','','Service request status', 'ServiceStatus','N');
+insert into YukonSelectionList values (1011,'N','','Search by selection','SearchBy','N');
+insert into YukonSelectionList values (1012,'A','','Appliance manufacturer selection', 'Manufacturer','N');
+insert into YukonSelectionList values (1013,'A','','Appliance location selection', 'ApplianceLocation','N');
+insert into YukonSelectionList values (1014,'N','','Chance of control selection', 'ChanceOfControl','N');
+insert into YukonSelectionList values (1015,'N','','Thermostat settings time of week selection', 'TimeOfWeek','N');
+insert into YukonSelectionList values (1016,'N','','Question type selection', 'QuestionType','N');
+insert into YukonSelectionList values (1017,'N','','Answer type selection','AnswerType','N');
+insert into YukonSelectionList values (1018,'N','','Thermostat mode selection', 'ThermostatMode','N');
+insert into YukonSelectionList values (1019,'N','','Thermostat fan state selection', 'ThermostatFanState','N');
 
 
 /*==============================================================*/
