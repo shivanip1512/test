@@ -38,7 +38,6 @@ INCLPATHS+= \
 
 FDRINTERFACES=\
 
-
 FDRINTERFACEOBJS=\
 fdrdestination.obj  \
 fdrlodestarinfo.obj  \
@@ -72,10 +71,29 @@ $(COMPILEBASE)\lib\proclog.lib \
 $(COMPILEBASE)\lib\cmdline.lib \
 wininet.lib
 
-
-
 TESTINTERFACEDLLOBJS=\
 testinterface.obj \
+
+CTIFDRDLLS=\
+cti_fdr.dll \
+fdrtextexport.dll \
+fdrtextimport.dll \
+fdrdsm2import.dll \
+fdrdsm2filein.dll \
+fdrrdex.dll \
+fdrcygnet.dll \
+fdracs.dll \
+fdrvalmet.dll \
+fdrinet.dll \
+fdrstec.dll \
+fdrtristate.dll \
+fdrrccs.dll \
+fdrlodestarimport_enh.dll \
+fdrlodestarimport_std.dll \
+fdrtelegyr.dll
+
+ 
+
 #  commented out because of bigtime Microsoft compiler problems.  i'm compiling
 #    all of the code into one .obj, because it can't handle the code being contained
 #    in more than one file.  #include "fdrinterface.cpp" is ugly, but the only way
@@ -83,9 +101,9 @@ testinterface.obj \
 # $(FDRINTERFACEOBJS) \
 
 
-ALL:            cti_fdr.dll
+ALL:            $(CTIFDRDLLS) 
 
-cti_fdr.dll: $(FDRINTERFACEOBJS) Makedll.mak
+cti_fdr.dll: $(FDRINTERFACEOBJS) Makefile
                 @echo Building  ..\$@
                 @%cd $(OBJ)
                 $(CC) $(DLLFLAGS) $(FDRINTERFACEOBJS) $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) /Fe..\$@
@@ -95,11 +113,190 @@ cti_fdr.dll: $(FDRINTERFACEOBJS) Makedll.mak
                 -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
-copy:
-                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-                -if exist bin\cti_fdr.dll copy bin\cti_fdr.dll $(YUKONOUTPUT)
+fdrtextexport.dll: fdrtextexport.obj Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-                -if exist bin\cti_fdr.lib copy bin\*.lib $(COMPILEBASE)\lib
+                $(CC) $(DLLFLAGS) fdrtextexport.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)  
+
+fdrtextimport.dll: fdrtextimport.obj Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                $(CC) $(DLLFLAGS) fdrtextimport.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+		
+fdrdsm2import.dll: fdrdsm2import.obj Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                $(CC) $(DLLFLAGS) fdrdsm2import.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+		
+fdrdsm2filein.dll: fdrdsm2filein.obj Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                $(CC) $(DLLFLAGS) fdrdsm2filein.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib $(COMPILEBASE)\lib\cparms.lib /Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+
+fdrrdex.dll: fdrrdex.obj Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                $(CC) $(DLLFLAGS) fdrrdex.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+
+fdrcygnet.dll: fdrcygnet.obj Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\cygnet\dclnd.lib copy ..\cygnet\dclnd.lib $(COMPILEBASE)\lib
+                $(CC) $(DLLFLAGS) fdrcygnet.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib $(COMPILEBASE)\lib\dclnd.lib /Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+		
+fdracs.dll: fdracs.obj Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                $(CC) $(DLLFLAGS) fdracs.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+
+fdrvalmet.dll: fdrvalmet.obj Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                $(CC) $(DLLFLAGS) fdrvalmet.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+
+fdrinet.dll: fdrinet.obj Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                $(CC) $(DLLFLAGS) fdrinet.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+
+fdrstec.dll: fdrstec.obj Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                $(CC) $(DLLFLAGS) fdrstec.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+                     
+fdrtristate.dll: fdrtristate.obj Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                $(CC) $(DLLFLAGS) fdrtristate.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+		
+fdrrccs.dll: fdrrccs.obj Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                $(CC) $(DLLFLAGS) fdrrccs.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib $(COMPILEBASE)\lib\fdrinet.lib /Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+
+fdrlodestarimport_enh.dll: fdrlodestarimport_enh.obj Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                $(CC) $(DLLFLAGS) fdrlodestarimport_enh.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+
+
+fdrlodestarimport_std.dll: fdrlodestarimport_std.obj Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                $(CC) $(DLLFLAGS) fdrlodestarimport_std.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+
+
+fdrtelegyr.dll: $(FDRINTERFACEOBJS) Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\telegyr\lib\apiclilib.lib copy ..\telegyr\lib\apiclilib.lib $(COMPILEBASE)\lib
+                -if exist ..\telegyr\lib\pllib.lib copy ..\telegyr\lib\pllib.lib $(COMPILEBASE)\lib
+                -if exist ..\telegyr\lib\psapi.lib copy ..\telegyr\lib\psapi.lib $(COMPILEBASE)\lib
+                $(CC) $(DLLFLAGS) $(FDRINTERFACEOBJS) $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+
+
+apiclilib.lib:
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist telegyr\lib\apiclilib.lib copy telegyr\lib\apiclilib.lib $(COMPILEBASE)\lib
+                -if exist ..\telegyr\lib\pllib.lib copy ..\telegyr\lib\pllib.lib $(COMPILEBASE)\lib
+                -if exist ..\telegyr\lib\psapi.lib copy ..\telegyr\lib\psapi.lib $(COMPILEBASE)\lib
+
+
+copy:
+               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               -@if exist bin\*.dll copy bin\*.dll $(YUKONOUTPUT)
+               -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+               -if exist bin\*.lib copy bin\*.lib $(COMPILEBASE)\lib
 
 
 clean:
@@ -111,11 +308,96 @@ deps:
 
 
 
-.cpp.obj :
+#.cpp.obj :
+#                @echo:
+#                @echo Compiling: $< Output: ..\$@
+#                @echo:
+#                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRBASE -D_DLL_ENH_FDRLODESTARIMPORT -D_DLL_STD_FDRLODESTARIMPORT -D_DLL_FDRLODESTARIMPORT -D_DLL_FDRCYGNET -D_DLL_FDRACS -D_DLL_FDRVALMET -D_DLL_FDRINET -D_DLL_FDRRCCS -D_DLL_FDRTRISTATE -D_DLL_FDRSTEC -D_DLL_FDRRDEX -D_DLL_FDRDSM2IMPORT -D_DLL_FDRTELEGYRAPI -D_DLL_FDRTEXTIMPORT -D_DLL_FDRTEXTEXPORT -DWINDOWS -Fo$(OBJ)\ -c $<
+fdrtextexport.obj : fdrtextexport.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
                 @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRTEXTEXPORT -DWINDOWS -Fo$(OBJ)\ -c $<
+
+fdrtextimport.obj : fdrtextimport.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRTEXTIMPORT -DWINDOWS -Fo$(OBJ)\ -c $<
+fdrdsm2import.obj : fdrdsm2import.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRDSM2IMPORT -DWINDOWS -Fo$(OBJ)\ -c $<
+fdrdsm2filein.obj : fdrdsm2filein.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRDSM2FILEIN -DWINDOWS -Fo$(OBJ)\ -c $<
+fdrrdex.obj : fdrrdex.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRRDEX -DWINDOWS -Fo$(OBJ)\ -c $<
+fdrcygnet.obj : fdrcygnet.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRCYGNET -DWINDOWS -Fo$(OBJ)\ -c $<
+fdracs.obj : fdracs.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRACS -DWINDOWS -Fo$(OBJ)\ -c $<
+fdrvalmet.obj : fdrvalmet.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRVALMET -DWINDOWS -Fo$(OBJ)\ -c $<
+fdrinet.obj : fdrinet.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRINET -DWINDOWS -Fo$(OBJ)\ -c $<
+fdrstec.obj : fdrstec.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRSTEC -DWINDOWS -Fo$(OBJ)\ -c $<
+fdrtristate.obj : fdrtristate.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRTRISTATE -DWINDOWS -Fo$(OBJ)\ -c $<
+fdrrccs.obj : fdrrccs.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRRCCS -DWINDOWS -Fo$(OBJ)\ -c $<
+fdrlodestarimport_enh.obj : fdrlodestarimport_enh.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_ENH_FDRLODESTARIMPORT -DWINDOWS -Fo$(OBJ)\ -c $<
+fdrlodestarimport_std.obj : fdrlodestarimport_std.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_STD_FDRLODESTARIMPORT -DWINDOWS -Fo$(OBJ)\ -c $<
+fdrtelegyr.obj : fdrtelegyr.cpp
+		@echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRTELEGYRAPI -DWINDOWS -Fo$(OBJ)\ -c $<
+ 
+
+.cpp.obj :
+		@echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
                 $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRBASE -DWINDOWS -Fo$(OBJ)\ -c $<
+	      
+	        						
 
 
 #UPDATE#
@@ -382,4 +664,23 @@ textfileinterfaceparts.obj:	cparms.h dlldefs.h msg_multi.h \
 		msg_signal.h yukon.h dllbase.h os2_2w32.h types.h cticalls.h \
 		dsm2.h mutex.h guard.h logger.h thread.h \
 		TextFileInterfaceParts.h
+fdrlodestarimport_enh.obj:	cparms.h dlldefs.h msg_cmd.h message.h \
+		ctidbgmem.h collectable.h pointtypes.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
+		fdrtextfilebase.h fdrinterface.h connection.h exchange.h \
+		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
+		msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
+		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
+		fdrpointlist.h queues.h TextFileInterfaceParts.h \
+		fdrlodestarinfo.h fdrlodestarimport.h fdrlodestarimport_enh.h
+fdrlodestarimport_std.obj:	cparms.h dlldefs.h msg_cmd.h message.h \
+		ctidbgmem.h collectable.h pointtypes.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
+		fdrtextfilebase.h fdrinterface.h connection.h exchange.h \
+		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
+		msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
+		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
+		fdrpointlist.h queues.h TextFileInterfaceParts.h \
+		fdrlodestarinfo.h fdrlodestarimport.h fdrlodestarimport_std.h
+		
 #ENDUPDATE#
