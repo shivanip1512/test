@@ -5,6 +5,8 @@ package com.cannontech.common.gui.dnd;
  * Creation date: (3/7/00 2:09:37 PM)
  * @author: 
  */
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DragSourceListener;
@@ -28,7 +30,7 @@ public class DragAndDropJlist extends javax.swing.JList implements java.awt.dnd.
 	protected transient DragAndDropListener dndEventMulticaster = null;
 	
 /**
- * DragAndDropTree constructor comment.
+ * DragAndDropJlist constructor comment.
  */
 public DragAndDropJlist() 
 {
@@ -118,8 +120,29 @@ public void dragGestureRecognized(java.awt.dnd.DragGestureEvent dge)
  */
 public void dragOver(java.awt.dnd.DropTargetDragEvent dtde) 
 {
-	updateDragBorder( locationToIndex(dtde.getLocation()) );
+	int row = locationToIndex(dtde.getLocation());
+	updateDragBorder( row );
+	
+	int min = getFirstVisibleIndex();
+	int max = getLastVisibleIndex();	
+	int rowHeight = (int)getCellBounds(min, min).getHeight();
+
+//System.out.println("  min=" + min + ", max=" + max + ", row=" + row );
+//System.out.println("  	rowHeight=" + rowHeight );
+
+	if( row >= 0 && row <= (min+1) ) //allow for a wider tolerance to scroll
+	{
+		scrollRectToVisible( new Rectangle(
+			new Point(0, (int)dtde.getLocation().getY() - rowHeight) ) );
+	}
+	else if( row < getModel().getSize() && row >= (max-1) )
+	{
+		scrollRectToVisible( new Rectangle(
+			new Point(0, (int)dtde.getLocation().getY() + rowHeight) ) );
+	}
+	
 }
+
 /**
  * drop method comment.
  */
