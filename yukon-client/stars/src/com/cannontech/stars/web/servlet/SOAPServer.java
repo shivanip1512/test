@@ -19,9 +19,9 @@ import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.servlet.PILConnectionServlet;
-import com.cannontech.stars.util.timertask.DailyTimerTask;
-import com.cannontech.stars.util.timertask.LMControlHistoryTimerTask;
-import com.cannontech.stars.util.timertask.StarsTimerTask;
+import com.cannontech.stars.util.task.DailyTimerTask;
+import com.cannontech.stars.util.task.LMControlHistoryTimerTask;
+import com.cannontech.stars.util.task.StarsTimerTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsOperation;
@@ -161,7 +161,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			/* Run the first time after the initial delay,
 			 * then run periodically at a fixed rate, e.g. at every midnight
 			 */
-			long initRunTime = System.currentTimeMillis() + timerTask.getInitialDelay();
+/*			long initRunTime = System.currentTimeMillis() + timerTask.getInitialDelay();
 			long startTime = timerTask.getNextScheduledTime().getTime();
 			if (initRunTime < startTime) {
 				try {
@@ -171,7 +171,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				catch (Exception e) {
 					e.printStackTrace();
 				}
-			}
+			}*/
     		timer.scheduleAtFixedRate( timerTask, timerTask.getNextScheduledTime(), timerTask.getTimerPeriod() );
 		}
 		else if (timerTask.getTimerPeriod() == 0) {
