@@ -173,44 +173,50 @@ function confirmDelete() {
       <div align="left"></div>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
-          <td width="25%" >&nbsp;</td>
-          <td width="25%" >&nbsp;</td>
-          <td width="25%" >&nbsp;</td>
-          <td width="25%">&nbsp;</td>
+          <td width="20%" >&nbsp;</td>
+          <td width="20%" >&nbsp;</td>
+          <td width="20%" >&nbsp;</td>
+          <td width="20%">&nbsp;</td>
+          <td width="20%">&nbsp;</td>
           </tr>
         <tr> 
           <!-- Changed direct control pages to use the 3 tier display instead of the 1tier (LoadControl/oper_direct.jsp) display-->
-            <td width="25%" class = "MainText">
+            <td width="20%" class = "MainText">
 <cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>">
               <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_direct.jsp" class = "Link1" style = "text-decoration:none;">Direct</a></div>
-              <br>
-              <div align = "center" style = "border:solid 1px #666999;"> <a href = "../loadmgmt/controlareas.jsp" class = "Link1" style = "text-decoration:none;">3-Tier Direct</a></div>
 </cti:checkRole>
             </td>
 
-            <td width="25%" class = "MainText">
+            <td width="20%" class = "MainText">
+<cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>">
+              <div align = "center" style = "border:solid 1px #666999;"> <a href = "../loadmgmt/controlareas.jsp" class = "Link1" style = "text-decoration:none;">3-Tier Direct</a></div>			  
+</cti:checkRole>
+            </td>
+
+            <td width="20%" class = "MainText">
 <cti:checkRole roleid="<%= DirectCurtailmentRole.ROLEID %>"> 
               <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= DirectCurtailmentRole.CURTAILMENT_LABEL%>" defaultvalue="Notification"/></a></div>
 </cti:checkRole>
 			</td>
 
-            <td width="25%" class = "MainText">
+            <td width="20%" class = "MainText">
 <cti:checkRole roleid="<%= EnergyBuybackRole.ROLEID %>">
               <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/></a></div>
 </cti:checkRole>
 			</td>
 
-            <td width = "25%" class = "MainText">
+            <td width="20%" class = "MainText">
 <cti:checkRole roleid="<%= OddsForControlRole.ROLEID %>">
               <div align = "center" style = "border:solid 1px #666999;"> <a href = "Consumer/Odds.jsp" class = "Link1" style = "text-decoration:none;">Odds for Control</a></div>
 </cti:checkRole>
 			</td>
           </tr>
         <tr> 
-          <td width="25%" class = "MainText">&nbsp;</td>
-          <td width="25%" class = "MainText">&nbsp;</td>
-          <td width = "25%" class = "MainText">&nbsp;</td>
-          <td width="25%">&nbsp;</td>
+          <td width="20%" class = "MainText">&nbsp;</td>
+          <td width="20%" class = "MainText">&nbsp;</td>
+          <td width="20%" class = "MainText">&nbsp;</td>
+          <td width="20%">&nbsp;</td>
+          <td width="20%">&nbsp;</td>
         </tr>
       </table>
     </td>
