@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
+import com.cannontech.esub.util.Util;
 import com.loox.jloox.*;
 /**
  * Creation date: (1/22/2002 10:15:09 AM)
@@ -75,7 +76,7 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
  */
 public void setImageName(java.lang.String newImageName) {
 	imageName = newImageName;
-	setImage( com.cannontech.esub.util.ImageCache.getInstance().getImage(imageName));
+	setImage( Util.loadImage(imageName));
 }
 /**
  * Creation date: (1/22/2002 10:18:53 AM)

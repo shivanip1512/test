@@ -6,8 +6,8 @@ import java.io.IOException;
 
 import com.loox.jloox.*;
 
-import com.cannontech.esub.util.ImageCache;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.esub.util.Util;
 
 /**
  * 
@@ -88,7 +88,7 @@ public String[] getStates() {
  * Creation date: (1/8/2002 2:07:06 PM)
  */
 private void initialize() {
-	setImage(ImageCache.getInstance().getImage(INVALID_STATE_IMAGE_NAME));
+	setImage( Util.loadImage(INVALID_STATE_IMAGE_NAME));
 	point = new com.cannontech.database.data.lite.LitePoint(INVALID_POINT);
 }
 /**
@@ -191,8 +191,8 @@ public void setState(java.lang.String newState) {
 	// find the correct image for the new state
 	for( int i = 0; i < states.length; i++ ) {
 		if( states[i].equalsIgnoreCase(newState) ) {	
-			System.out.println("Looking for image: " + images[i]);	
-			setImage(ImageCache.getInstance().getImage(images[i]));			
+			System.out.println("Looking for image: " + images[i]);
+			setImage( Util.loadImage(images[i]));	
 			break;
 		}
 	}

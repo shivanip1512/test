@@ -80,6 +80,10 @@ public static String getRelativePath(java.io.File f1, java.io.File f2) throws ja
 
 public static Image loadImage(String imageName)
 {
+  if( !imageName.startsWith("/") ) {
+  	imageName = "/" + imageName;
+  }
+  
   URL imageURL = Util.class.getResource(imageName);
   return(Toolkit.getDefaultToolkit().getImage(imageURL));
  }

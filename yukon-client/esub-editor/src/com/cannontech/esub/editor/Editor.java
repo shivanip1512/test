@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.KeyEvent;
 
 import java.awt.Cursor;
+import java.awt.Frame;
 
 
 import javax.swing.*;
@@ -31,6 +32,7 @@ import com.loox.jloox.LxMouseEvent;
 
 import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.esub.util.SVGGenerator;
 
 /**
@@ -63,8 +65,7 @@ JMenuItem deletePopupItem = new JMenuItem("Delete");
 	};
 	// Handles double clicks on an LxElement in the LxView
  	final LxMouseListener editElementMouseListener = new LxMouseAdapter() {
-		public void mouseDoubleClicked(LxMouseEvent evt) {
-			System.out.println("double click");
+		public void mouseDoubleClicked(LxMouseEvent evt) {			System.out.println("double click");
 			editElement(evt.getLxComponent());
 		}
 	};
@@ -105,7 +106,7 @@ void configureObject(final ElementPlacer placer) {
 	        	LxElement elem = placer.getElement();
 		        elem.setCenter(placer.getXPosition(),placer.getYPosition());	   	
 		        lxGraph.add(elem);
-				editElement(elem);
+				editElement(elem);				
 	        } 
 	        catch(Exception e ) {
 		        e.printStackTrace();
@@ -275,13 +276,7 @@ public static void main(String[] args)
 				System.exit (0);
 			}
 		});
-	
-	com.cannontech.esub.util.ImageCache.getInstance().setImageHost("cti.esubstation.com");
-	com.cannontech.esub.util.ImageCache.getInstance().setImageDir("/images");
-	com.cannontech.esub.util.ImageCache.getInstance().setImagePort(80);
-	
-	
-		
+
 	Editor editor = new Editor();
 
 	JScrollPane scrollPane = new JScrollPane();
@@ -297,6 +292,7 @@ public static void main(String[] args)
 
 	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllDevices();
 	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPoints();
+	
 	if( args.length ==1 ) {
 		String file = args[0];
 
@@ -334,20 +330,15 @@ void saveFile(){
 
 	if(returnVal == JFileChooser.APPROVE_OPTION){
 		openFile = fileChooser.getSelectedFile().getPath();
-		lxGraph.save(openFile.concat(".jlx"));
+				
+		if( !openFile.endsWith("*.jlx") ) {
+			openFile = openFile.concat(".jlx");
+		}
+			
+		lxGraph.save(openFile);
 		
 		//svg
-		LxSVGGenerator gen = new LxSVGGenerator();
-		/*LxSVGExtraData extra = new LxSVGExtraData();
-		gen.setExtraData(extra);
-		LxComponent[] comps = lxGraph.getComponents();
-		for( int i = 0; i < comps.length; i++ ) {
-			//extra.setObjectChildElement(comps[i], "<a xlink:href=\"happy.svg\"/>");
-			//extra.setObjectLinkTarget(comps[i], "xlink:href=\"hell.svg\"");
-			gen.writeComponent(System.out, comps[i]);
-		}
-		
-		//extra.setObjectChildElement(lxView,"<rect width=\"100%\" height=\"100%\" style=\"fill: #000000;\"/>");*/
+		LxSVGGenerator gen = new LxSVGGenerator();		
 		gen.saveAsSVG(lxGraph, openFile.concat("j.svg"));
 		
 		try {
@@ -367,7 +358,9 @@ void saveFile(){
 			}
 			catch(IOException ioe) {
 				ioe.printStackTrace();
-			}			
+			}		
+		
+		setOpenFile(openFile);							
        }
 
 	// Just saved so graph is not modified.
@@ -413,6 +406,8 @@ void setBehavior(LxComponent elem) {
  * @param newOpenFile java.lang.String
  */
 void setOpenFile(java.lang.String newOpenFile) {
+	Frame f = CtiUtilities.getParentFrame(this);
+	f.setTitle(newOpenFile);
 	openFile = newOpenFile;
 }
 }

@@ -61,6 +61,7 @@ class EditorActions {
 				// Create blank graph by removing all.
 				editor.getLxGraph().removeAll();
 				editor.getLxGraph().setModified(false);
+				editor.setOpenFile(null);
 				//undoEdits.discardAllEdits();
 			}
 		}
@@ -110,10 +111,11 @@ class EditorActions {
 	private final LxAbstractAction saveDrawingAction = 
 		new LxAbstractAction(SAVE_DRAWING, "Save", "Save the current drawing", null, true) {
 		public void processAction(ActionEvent evt) {
-			if( editor.getOpenFile() == null )
+			String openFile = editor.getOpenFile();
+			if( openFile == null )
 				editor.saveFile();
 		 	else
-		 		editor.getLxGraph().save(editor.getOpenFile());
+		 		editor.getLxGraph().save(openFile);
 		}
 	};
 
@@ -246,7 +248,7 @@ class EditorActions {
 			 editor.elementPlacer.setIsPlacing(true);
     		 editor.getLxView().setCursor(new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR)); 
     	}
-	};
+	};	
     	
     private Editor editor;
     private HashMap actionMap;
@@ -279,7 +281,7 @@ class EditorActions {
 		LxView v = e.getLxView();
 		
 		LxAbstractAction action = (LxAbstractAction) v.getAction(LxView.CREATE_LINE_ACTION);					
-		action.setIcon(new ImageIcon( Util.loadImage("/LineIcon.gif")));
+		action.setIcon(new ImageIcon( Util.loadImage("LineIcon.gif")));
 	
 		actionMap.put(CREATE_LINE, action);
 
@@ -288,7 +290,7 @@ class EditorActions {
 //		actionMap.put(CREATE_LINK, action);
 		 
 		action = (LxAbstractAction) v.getAction(LxView.CREATE_RECTANGLE_ACTION); 
-		action.setIcon(new ImageIcon( Util.loadImage("/SquareIcon.gif")));	
+		action.setIcon(new ImageIcon( Util.loadImage("SquareIcon.gif")));	
 		actionMap.put(CREATE_RECTANGLE, action);
 //		actionMap.put(CREATE_IMAGE, v.getAction(LxView.CREATE_IMAGE_ACTION));
 

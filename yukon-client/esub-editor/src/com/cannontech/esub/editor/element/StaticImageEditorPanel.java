@@ -1,7 +1,9 @@
 package com.cannontech.esub.editor.element;
 
 import com.cannontech.common.gui.util.*;
+import com.cannontech.esub.util.Util;
 
+import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -210,8 +212,8 @@ private void initialize() {
                     java.io.File file = fc.getSelectedFile();
                     String img = file.getName();
 
-                    getImageNameLabel().setText(img);                    
-                    java.awt.Image i = com.cannontech.esub.util.ImageCache.getInstance().getImage(img);
+                    getImageNameLabel().setText(img); 
+                    Image i = Util.loadImage(img);                   
 					getImageNameLabel().setIcon(new javax.swing.ImageIcon(i));	
                 }                
 		}
@@ -253,7 +255,7 @@ public void setValue(Object o) {
 	getLinkToPanel().setLinkTo(staticImage.getLinkTo());
 	getImageNameLabel().setText(staticImage.getImageName());
 
-	java.awt.Image i = com.cannontech.esub.util.ImageCache.getInstance().getImage(staticImage.getImageName());
+	Image i = Util.loadImage(staticImage.getImageName());
 	getImageNameLabel().setIcon(new javax.swing.ImageIcon(i));	
 }
 }
