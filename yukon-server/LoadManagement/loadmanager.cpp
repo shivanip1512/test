@@ -1046,47 +1046,47 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                 {
                     currentTrigger->setLastPeakPointValueTimestamp(timestamp);
                     currentTrigger->setPeakPointValue(value);
+		}
+		
+		if( currentTrigger->getThresholdKickPercent() > 0 )
+		{
+		    DOUBLE oldThreshold = currentTrigger->getThreshold();
+		    LONG thresholdKickOffset = currentTrigger->getThresholdKickPercent();
+		    LONG amountOverKickValue = currentTrigger->getPeakPointValue() - currentTrigger->getThreshold() - thresholdKickOffset;
 
-                    if( currentTrigger->getThresholdKickPercent() > 0 )
-                    {
-                        DOUBLE oldThreshold = currentTrigger->getThreshold();
-                        LONG thresholdKickOffset = currentTrigger->getThresholdKickPercent();
-                        LONG amountOverKickValue = currentTrigger->getPeakPointValue() - currentTrigger->getThreshold() - thresholdKickOffset;
-
-                        if( amountOverKickValue > 0 )
-                        {
-                            currentTrigger->setThreshold( currentTrigger->getThreshold() + amountOverKickValue );
-                            CtiLMControlAreaStore::getInstance()->UpdateTriggerInDB(currentControlArea, currentTrigger);
-                            currentControlArea->setUpdatedFlag(TRUE);
-                        {
-                            char tempchar[80] = "";
-                            RWCString text = RWCString("Automatic Threshold Kick Up");
-                            RWCString additional = RWCString("Threshold for Trigger: ");
-                            _snprintf(tempchar,80,"%d",currentTrigger->getTriggerNumber());
-                            additional += tempchar;
-                            additional += " changed in LMControlArea: ";
-                            additional += currentControlArea->getPAOName();
-                            additional += " PAO ID: ";
-                            _snprintf(tempchar,80,"%d",currentControlArea->getPAOId());
-                            additional += tempchar;
-                            additional += " old threshold: ";
-                            _snprintf(tempchar,80,"%.*f",3,oldThreshold);
-                            additional += tempchar;
-                            additional += " new threshold: ";
-                            _snprintf(tempchar,80,"%.*f",3,currentTrigger->getThreshold());
-                            additional += tempchar;
-                            additional += " changed because peak point value: ";
-                            _snprintf(tempchar,80,"%.*f",1,currentTrigger->getPointValue());
-                            additional += tempchar;
-                            CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - " << text << ", " << additional << endl;
-                        }
-                        }
-                        }
-                    }
-                }
+		    if( amountOverKickValue > 0 )
+		    {
+			currentTrigger->setThreshold( currentTrigger->getThreshold() + amountOverKickValue );
+			CtiLMControlAreaStore::getInstance()->UpdateTriggerInDB(currentControlArea, currentTrigger);
+			currentControlArea->setUpdatedFlag(TRUE);
+		    {
+			char tempchar[80] = "";
+			RWCString text = RWCString("Automatic Threshold Kick Up");
+			RWCString additional = RWCString("Threshold for Trigger: ");
+			_snprintf(tempchar,80,"%d",currentTrigger->getTriggerNumber());
+			additional += tempchar;
+			additional += " changed in LMControlArea: ";
+			additional += currentControlArea->getPAOName();
+			additional += " PAO ID: ";
+			_snprintf(tempchar,80,"%d",currentControlArea->getPAOId());
+			additional += tempchar;
+			additional += " old threshold: ";
+			_snprintf(tempchar,80,"%.*f",3,oldThreshold);
+			additional += tempchar;
+			additional += " new threshold: ";
+			_snprintf(tempchar,80,"%.*f",3,currentTrigger->getThreshold());
+			additional += tempchar;
+			additional += " changed because peak point value: ";
+			_snprintf(tempchar,80,"%.*f",1,currentTrigger->getPointValue());
+			additional += tempchar;
+			CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
+		    {
+			CtiLockGuard<CtiLogger> logger_guard(dout);
+			dout << RWTime() << " - " << text << ", " << additional << endl;
+		    }
+		    }
+		    }
+		}
                 currentControlArea->setUpdatedFlag(TRUE);
             }
         }
