@@ -441,7 +441,7 @@ private javax.swing.JTextField getJTextFieldHolidayName() {
 			ivjJTextFieldHolidayName.setPreferredSize(new java.awt.Dimension(150, 21));
 			ivjJTextFieldHolidayName.setMinimumSize(new java.awt.Dimension(150, 21));
 			// user code begin {1}
-			ivjJTextFieldHolidayName.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_HOLIDAY_SCHEDULE_NAME_LENGTH));
+			ivjJTextFieldHolidayName.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_HOLIDAY_DAY_NAME_LENGTH));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

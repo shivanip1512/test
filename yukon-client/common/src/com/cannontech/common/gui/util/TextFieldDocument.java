@@ -30,6 +30,7 @@ public class TextFieldDocument extends javax.swing.text.PlainDocument
 	public static int MAX_CAP_GEO_NAME_LENGTH = 30;
 	public static int MAX_SEASON_SCHEDULE_NAME_LENGTH = 20;
 	public static int MAX_HOLIDAY_SCHEDULE_NAME_LENGTH = 40;
+	public static int MAX_HOLIDAY_DAY_NAME_LENGTH = 20;
 	public static int MAX_TOU_SCHEDULE_NAME_LENGTH = 30;
 	public static int MAX_BASELINE_NAME_LENGTH = 30;
 	public static int MAX_LOGIN_NAME_LENGTH = 50;
