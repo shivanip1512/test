@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-Main-Class: com.cannontech.graph.GraphClient
-Class-Path: ./ common.jar rwav.jar acme.jar jcfield401K.jar jcpagelayout450k.jar jcchart401k.jar batik111.jar jfreechart-0.9.0.jar SqlServer.jar classes12.zip ../config/ ../log/ ../export/
+Main-Class: com.cannontech.webgraph.WebGraph
+Class-Path: ./ graph.jar common.jar dbeditor.jar jfreechart-0.9.0.jar jcommon-0.6.2.jar rwav.jar acme.jar SqlServer.jar jcfield401k.jar classes12.zip ../config/ ../log/ ../export/
 
