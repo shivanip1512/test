@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2004/11/05 17:24:44 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2004/12/01 20:15:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -279,13 +279,8 @@ public:
 
     void checkForPendingLimitViolation(CtiPointDataMsg *pData, CtiPointNumeric &pointNumeric );
     bool addToPendingSet(CtiPendingPointOperations *&pendingOp, RWTime &updatetime = RWTime());
-    void insertControlHistoryRow( CtiPendingPointOperations &ppc);
-    //void postControlHistoryPoints( CtiPendingPointOperations &ppc);
-    //void postControlStopPoint( CtiPendingPointOperations &ppc, const RWTime &now);
-    // void dumpPendingOps(bool force = false);
     bool removePointDataFromPending(LONG pID);
     bool isPointInPendingControl(LONG pointid);
-    void updateControlHistory(  long pendid, int cause, const RWTime &thetime = RWTime(), RWTime &now = RWTime() );
 
 };
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.89 $
-* DATE         :  $Date: 2004/11/23 14:19:30 $
+* REVISION     :  $Revision: 1.90 $
+* DATE         :  $Date: 2004/12/01 20:15:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -145,6 +145,10 @@ void ApplyGroupControlStatusVerification(const CtiHashKey *key, CtiPoint *&pPoin
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Adjusting point tags for point id " << pStatus->getPointID() << endl;
                 }
 
@@ -270,10 +274,6 @@ void CtiVanGogh::VGMainThread()
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Done reloading dynamic control information.  Deep control history load beginning." << endl;
-            }
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             // loadPendingControls();      // Reload any controls written out at last shutdown.
         }
@@ -1470,8 +1470,6 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
         {
             CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)TempPoint->getDynamic();
 
-            bool isNew = isPointDataNewInformation( aPD );
-
             if(pDyn != NULL)
             {
                 if( aPD.getTime() >= pDyn->getTimeStamp() || (aPD.getTags() & TAG_POINT_FORCE_UPDATE) )
@@ -1502,7 +1500,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                 }
                 else if(pDyn->isArchivePending() ||
                         (TempPoint->getArchiveType() == ArchiveTypeOnUpdate) ||
-                        (TempPoint->getArchiveType() == ArchiveTypeOnChange && isNew))
+                        (TempPoint->getArchiveType() == ArchiveTypeOnChange && isPointDataNewInformation( aPD )))
                 {
                     _archiverQueue.putQueue( CTIDBG_new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis()));
                     TempPoint->setArchivePending(FALSE);
@@ -5220,24 +5218,44 @@ void CtiVanGogh::establishListener()
     {
         CtiLockGuard<CtiMutex> guard(_server_mux);
 
-        if(Listener != 0)
+        try
         {
-            _listenerAvailable = FALSE;
-            delete Listener;
+            if(Listener != 0)
+            {
+                _listenerAvailable = FALSE;
+                delete Listener;
 
-            Listener = 0;
+                Listener = 0;
+            }
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
 
-        NetPort  = RWInetPort(VANGOGHNEXUS);
-        NetAddr  = RWInetAddr(NetPort);           // This one for this server!
-
-        Listener = CTIDBG_new RWSocketListener(NetAddr);
-
-        if(!Listener)
+        try
         {
-            dout << "Could not open socket " << NetAddr << " for listening" << endl;
+            NetPort  = RWInetPort(VANGOGHNEXUS);
+            NetAddr  = RWInetAddr(NetPort);           // This one for this server!
 
-            exit(-1);
+            Listener = CTIDBG_new RWSocketListener(NetAddr);
+
+            if(!Listener)
+            {
+                dout << "Could not open socket " << NetAddr << " for listening" << endl;
+
+                exit(-1);
+            }
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
 
         _listenerAvailable = TRUE;                 // Release the connection handler
@@ -5247,6 +5265,11 @@ void CtiVanGogh::establishListener()
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Exception " << __FILE__ << " (" << __LINE__ << ") " << msg.why() << endl;
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Exception " << __FILE__ << " (" << __LINE__ << ") " << endl;
     }
 }
 
@@ -6551,6 +6574,10 @@ int CtiVanGogh::loadPendingControls()
                         ppc->setTime( dynControl.getStartTime() );
                         ppc->setControl(dynControl);
 
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
                         ppc->getControl().setPreviousLogTime(dynControl.getStartTime());
                         ppc->getControl().setPreviousStopReportTime(dynControl.getStartTime());
 
@@ -6575,7 +6602,6 @@ int CtiVanGogh::loadPendingControls()
                         {
                             ppc->getControl().incrementTimes( incTime, addnlseconds );
 
-                            insertControlHistoryRow(*ppc);
                             ppc->getControl().setActiveRestore(ppc->getControl().getDefaultActiveRestore());
                         }
 
@@ -6960,7 +6986,7 @@ void CtiVanGogh::checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMu
         {
             pDyn->getDispatch().resetTags( TAG_CONTROL_PENDING );               // We got to the desired state, no longer pending.. we are now controlling!
 
-            if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
+            if(0 && gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
             {
                 if(pDyn->getValue() == pData->getValue())                       // Not changing, must be a control refresh
                 {
@@ -6987,32 +7013,6 @@ bool CtiVanGogh::removePointDataFromPending( LONG pID )
 {
     _pendingOpThread.push( CTIDBG_new CtiPendable(pID, CtiPendable::CtiPendableAction_RemovePointData) );
     return true;
-}
-
-
-/*
- *  Should only be called by doPendingOperation() method!  Any other caller MAY be blocked by the DB etc!!!
- */
-void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &thetime, RWTime &now )
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-}
-
-void CtiVanGogh::insertControlHistoryRow( CtiPendingPointOperations &ppc )
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    #if 0
-    createOrUpdateICControl(ppc.getControl().getPAOID(), ppc.getControl());     // This keeps it current in mem.
-    _dynLMControlHistoryQueue.putQueue(CTIDBG_new CtiTableLMControlHistory(ppc.getControl()) );
-    _lmControlHistoryQueue.putQueue(CTIDBG_new CtiTableLMControlHistory(ppc.getControl()) );
-    #endif
-    return;
 }
 
 

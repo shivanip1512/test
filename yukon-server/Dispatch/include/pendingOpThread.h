@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/11/18 23:56:08 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/12/01 20:15:04 $
 * HISTORY      :
 * $Log: pendingOpThread.h,v $
+* Revision 1.5  2004/12/01 20:15:04  cplender
+* LMControlHistory.
+*
 * Revision 1.4  2004/11/18 23:56:08  cplender
 * Control History Getting closer.
 *
@@ -60,9 +63,9 @@ private:
 
     //  the input queue
     CtiQueue< CtiPendable, less< CtiPendable > > _input;
-    CtiPendingOpSet_t _pendingControls;
-    CtiPendingOpSet_t _pendingPointData;
-    CtiPendingOpSet_t _pendingPointLimit;
+    static CtiPendingOpSet_t _pendingControls;
+    static CtiPendingOpSet_t _pendingPointData;
+    static CtiPendingOpSet_t _pendingPointLimit;
 
 
     CtiQueue< CtiTableLMControlHistory, less<CtiTableLMControlHistory> > _lmControlHistoryQueue;
