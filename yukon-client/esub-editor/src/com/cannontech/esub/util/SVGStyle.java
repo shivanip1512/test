@@ -2,6 +2,7 @@ package com.cannontech.esub.util;
 
 import java.awt.Color;
 /**
+ * unused
  * @author alauinger
  */
 public class SVGStyle {
