@@ -67,7 +67,7 @@ public class Baseline implements Serializable
 		{
 			if(isSkipDay(nextBaselineCalcTime)) 
 			{
-				System.out.println("** DAY " + nextBaselineCalcTime.get(java.util.Calendar.DAY_OF_WEEK));
+				CTILogger.info("** DAY " + nextBaselineCalcTime.get(java.util.Calendar.DAY_OF_WEEK));
 				nextBaselineCalcTime.add(java.util.Calendar.DAY_OF_YEAR, 1);
 			}
 			else
@@ -228,12 +228,12 @@ public class Baseline implements Serializable
 		if( calcComponent != null)
 		{
 			lastUpdateTimestamp = CalcHistorical.getCalcHistoricalLastUpdateTimeStamp(calcBasePointID.intValue());
-			System.out.println("LastUpdateTimestamp = " + lastUpdateTimestamp.getTime() + " : " + calcBasePointID);				
+			CTILogger.info("LastUpdateTimestamp = " + lastUpdateTimestamp.getTime() + " : " + calcBasePointID);				
 			if( nextBaselineCalcTime.getTime().compareTo(lastUpdateTimestamp.getTime()) <= 0)
 			{
 				//The lastUpdate time is greater than our current calculation time.
 				//We already have this data!
-				System.out.println( " BREAK BASELINETIMESTAMP TO " + lastUpdateTimestamp.getTime());				
+				CTILogger.info( " BREAK BASELINETIMESTAMP TO " + lastUpdateTimestamp.getTime());				
 			}		
 			else
 			{	
@@ -370,7 +370,7 @@ public class Baseline implements Serializable
 		if( validTimestampsVector != null && validTimestampsVector.size() > 0)
 		{
 			for (int i = 0; i < validTimestampsVector.size(); i++)
-				System.out.println((java.util.Date)validTimestampsVector.get(i));
+				CTILogger.info((java.util.Date)validTimestampsVector.get(i));
 			
 			returnData = retrieveData(calcComponent.getComponentPointID(), validTimestampsVector);
 		}
