@@ -89,6 +89,8 @@ public interface RoleTypes {
 	public static final int ESUBEDIT = -201;
 	public static final int ESUBCONTROL = -202;
 
+	//Readmeter category
+	public static final int READMETER_MAIN_LOGO = -300;
 	// Used for testing
 	public static final int WEB_OPERATOR_SUPER = -1000;
 	public static final int NEW_ACCOUNT_WIZARD = -1001;
