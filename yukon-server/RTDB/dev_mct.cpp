@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2004/01/26 21:58:16 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2004/02/11 05:03:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -935,6 +935,8 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
 
         case CtiProtocolEmetcon::PutStatus_Reset:
         case CtiProtocolEmetcon::PutStatus_ResetOverride:
+        case CtiProtocolEmetcon::PutStatus_PeakOn:
+        case CtiProtocolEmetcon::PutStatus_PeakOff:
         {
             status = decodePutStatus(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -1302,12 +1304,7 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
 
     INT function;
 
-    if( parse.getFlags() & CMD_FLAG_FROZEN )  //  Read the frozen values...
-    {
-        function = CtiProtocolEmetcon::GetValue_Frozen;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-    }
-    else if( parse.getFlags() & CMD_FLAG_GV_IED )  //  This parse has the token IED in it!
+    if( parse.getFlags() & CMD_FLAG_GV_IED )  //  This parse has the token "IED" in it!
     {
         if( getType() == TYPEMCT360  ||  //  only these types can have an IED attached
             getType() == TYPEMCT370 )
@@ -1351,30 +1348,51 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         function = CtiProtocolEmetcon::GetValue_PFCount;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
-    else                                            // This parse hits the default (non-ied) registers.
+    else if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
     {
-        if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
-        {
-            function = CtiProtocolEmetcon::GetValue_Demand;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        function = CtiProtocolEmetcon::GetValue_Demand;
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
-            if( getType() == TYPEMCT318 || getType() == TYPEMCT318L ||
-                getType() == TYPEMCT360 || getType() == TYPEMCT370 )
+        if( getType() == TYPEMCT318 || getType() == TYPEMCT318L ||
+            getType() == TYPEMCT360 || getType() == TYPEMCT370 )
+        {
+            //  if pulse input 3 isn't defined
+            if( !getDevicePointOffsetTypeEqual(3, DemandAccumulatorPointType ) )
             {
-                //  if pulse input 3 isn't defined
-                if( !getDevicePointOffsetTypeEqual(3, DemandAccumulatorPointType ) )
+                OutMessage->Buffer.BSt.Length -= 3;
+
+                //  if pulse input 2 isn't defined
+                if( !getDevicePointOffsetTypeEqual(2, DemandAccumulatorPointType ) )
                 {
                     OutMessage->Buffer.BSt.Length -= 3;
-
-                    //  if pulse input 2 isn't defined
-                    if( !getDevicePointOffsetTypeEqual(2, DemandAccumulatorPointType ) )
-                    {
-                        OutMessage->Buffer.BSt.Length -= 3;
-                    }
                 }
             }
         }
-        else  //  if( parse.getFlags() & CMD_FLAG_GV_KWH )
+    }
+    else if( parse.getFlags() & CMD_FLAG_GV_PEAK ||
+             parse.getFlags() & CMD_FLAG_GV_MINMAX )
+    {
+        if( parse.getFlags() & CMD_FLAG_FROZEN )  //  Read the frozen values...
+        {
+            function = CtiProtocolEmetcon::GetValue_FrozenPeakDemand;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        }
+        else if( !parse.isKeyValid("update") ) //  the non-frozen peak values cannot be updated
+        {
+            function = CtiProtocolEmetcon::GetValue_PeakDemand;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        }
+
+        //  ACH:  minimize request length someday, like below
+    }
+    else  //  if( parse.getFlags() & CMD_FLAG_GV_KWH ) - default to a KWH read
+    {
+        if( parse.getFlags() & CMD_FLAG_FROZEN )  //  Read the frozen values...
+        {
+            function = CtiProtocolEmetcon::GetValue_Frozen;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        }
+        else
         {
             function = CtiProtocolEmetcon::GetValue_Default;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
@@ -1659,7 +1677,7 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
 
     INT function;
 
-    if(parse.getFlags() & CMD_FLAG_PS_RESET )
+    if( parse.getFlags() & CMD_FLAG_PS_RESET )
     {
         function = CtiProtocolEmetcon::PutStatus_Reset;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
@@ -1668,11 +1686,36 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
         OutMessage->Buffer.BSt.Message[1] = 0;
         OutMessage->Buffer.BSt.Message[2] = 0;
     }
-
-    if(parse.getFlags() & CMD_FLAG_PS_RESETOVERRIDE )
+    else if( parse.getFlags() & CMD_FLAG_PS_RESETOVERRIDE )
     {
         function = CtiProtocolEmetcon::PutStatus_ResetOverride;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+    }
+    else if( parse.isKeyValid("freeze") )
+    {
+        if( parse.getiValue("freeze") == 1 )
+        {
+            function = CtiProtocolEmetcon::PutStatus_FreezeOne;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        }
+        else if( parse.getiValue("freeze") == 2 )
+        {
+            function = CtiProtocolEmetcon::PutStatus_FreezeTwo;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        }
+    }
+    else if( parse.isKeyValid("peak") )
+    {
+        if( parse.getiValue("peak") == TRUE )
+        {
+            function = CtiProtocolEmetcon::PutStatus_PeakOn;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        }
+        else
+        {
+            function = CtiProtocolEmetcon::PutStatus_PeakOff;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        }
     }
 
 
@@ -1911,16 +1954,16 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
     RWDate NowDate(NowTime);  //  unlikely they'd be out of sync, but just to make sure...
 
     CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                            RWCString(OutMessage->Request.CommandStr),
-                                            RWCString(),
-                                            nRet,
-                                            OutMessage->Request.RouteID,
-                                            OutMessage->Request.MacroOffset,
-                                            OutMessage->Request.Attempt,
-                                            OutMessage->Request.TrxID,
-                                            OutMessage->Request.UserID,
-                                            OutMessage->Request.SOE,
-                                            RWOrdered( ));
+                                                   RWCString(OutMessage->Request.CommandStr),
+                                                   RWCString(),
+                                                   nRet,
+                                                   OutMessage->Request.RouteID,
+                                                   OutMessage->Request.MacroOffset,
+                                                   OutMessage->Request.Attempt,
+                                                   OutMessage->Request.TrxID,
+                                                   OutMessage->Request.UserID,
+                                                   OutMessage->Request.SOE,
+                                                   RWOrdered( ));
 
 
     if( parse.isKeyValid("install") )
@@ -1933,6 +1976,20 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
     {
         function = CtiProtocolEmetcon::PutConfig_ARMC;
         found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+    }
+    else if( parse.isKeyValid("onoffpeak") )
+    {
+        function = CtiProtocolEmetcon::PutConfig_OnOffPeak;
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        OutMessage->Buffer.BSt.Message[0] = 0xf8 & ~0x04;  //  make sure the 0x04 bit is not set
+    }
+    else if( parse.isKeyValid("minmax") )
+    {
+        function = CtiProtocolEmetcon::PutConfig_MinMax;
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        OutMessage->Buffer.BSt.Message[0] = 0xf8 |  0x04;  //  make sure the 0x04 bit is set
     }
     else if( parse.isKeyValid("groupaddress_enable") )
     {
