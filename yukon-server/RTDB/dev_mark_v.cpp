@@ -1,6 +1,3 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_mark_v
@@ -11,11 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/03/10 20:48:40 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "porter.h"
 #include "logger.h"
@@ -929,7 +927,7 @@ RWTime CtiDeviceMarkV::getMsgTime( int timeID, int dateID, vector<CtiTransdataDa
 //=====================================================================================================================
 //=====================================================================================================================
 
-CtiProtocolTransdata & CtiDeviceMarkV::getProtocol( void )
+CtiProtocolTransdata & CtiDeviceMarkV::getTransdataProtocol( void )
 {
    return _transdataProtocol;
 }
@@ -1108,7 +1106,7 @@ void CtiDeviceMarkV::DecodeDatabaseReader( RWDBReader &rdr )
 {
    Inherited::DecodeDatabaseReader( rdr );       // get the base class handled
 
-   getProtocol().injectData( getIED().getPassword() );
+   getTransdataProtocol().injectData( getIED().getPassword() );
 }
 
 //=====================================================================================================================
