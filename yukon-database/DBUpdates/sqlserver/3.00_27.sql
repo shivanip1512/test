@@ -7,8 +7,11 @@
 /* @error ignore-remaining */
 
 drop table TOUDeviceMapping;
+drop table TOUDayMapping;
 drop table TOURateOffset;
+drop table TOUDay;
 drop table TOUSchedule;
+go
 
 
 create table DynamicLMControlHistory (
@@ -39,7 +42,7 @@ go
 create table TOUSchedule (
 TOUScheduleID        numeric              not null,
 TOUScheduleName      varchar(32)          not null,
-TOUDefaultRate       varchar(8)           not null
+TOUDefaultRate       varchar(4)           not null
 );
 go
 alter table TOUSchedule
@@ -48,12 +51,30 @@ go
 
 create table TOUDay (
 TOUDayID             numeric              not null,
-SwitchRate           varchar(4)           not null,
-SwitchOffset         numeric              not null
+TOUDayName           varchar(32)          not null
 );
 go
 alter table TOUDay
    add constraint PK_TOUDAY primary key  (TOUDayID);
+go
+
+create table TOUDayRateSwitches (
+TOURateSwitchID	     numeric		  not null,
+SwitchRate           varchar(4)           not null,
+SwitchOffset         numeric              not null,
+TOUDayID             numeric              not null
+);
+go
+alter table TOUDayRateSwitches
+   add constraint PK_TOURATESWITCH primary key  (TOURateSwitchID);
+go
+alter table TOUDayRateSwitches
+   add constraint FK_TOUdRS_TOUd foreign key (TOUDayID)
+      references TOUDay (TOUDayID);
+go
+create unique index Indx_TOUSWITCHRATE_PK on TOUDayRateSwitches (
+TOUDayID, SwitchOffset
+);
 go
 
 create table TOUDayMapping (
@@ -62,8 +83,8 @@ TOUDayID             numeric              not null,
 TOUDayOffset         numeric              not null
 );
 go
-alter table TOUDayMapping
-   add constraint PK_TOUDAYMAPPING primary key  (TOUScheduleID, TOUDayID);
+alter table TOUDayRateSwitches
+   add constraint PK_TOUDAYMAPPING primary key  (TOUScheduleID, TOUDayOffset);
 go
 alter table TOUDayMapping
    add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
@@ -73,6 +94,7 @@ alter table TOUDayMapping
    add constraint FK_TOUm_TOUd foreign key (TOUDayID)
       references TOUDay (TOUDayID);
 go
+
 
 alter table MCTConfig add DisplayDigits numeric;
 go
@@ -127,5 +149,5 @@ go
 /******************************************************************************/
 /* VERSION INFO                                                               */
 /******************************************************************************/
-insert into CTIDatabase values('3.00', 'Ryan', '5-NOV-2004', 'Patch update to bring all other 3.00 up to date', 26 );
+insert into CTIDatabase values('3.00', 'Ryan', '5-NOV-2004', 'Patch update to bring all other 3.00 up to date', 27 );
 go

@@ -7,8 +7,11 @@
 /* @error ignore-remaining */
 
 drop table TOUDeviceMapping;
+drop table TOUDayMapping;
 drop table TOURateOffset;
+drop table TOUDay;
 drop table TOUSchedule;
+
 
 create table DynamicLMControlHistory  (
    PAObjectID           NUMBER                           not null,
@@ -35,36 +38,50 @@ alter table DynamicLMControlHistory
 create table TOUSchedule  (
    TOUScheduleID        NUMBER                           not null,
    TOUScheduleName      VARCHAR2(32)                     not null,
-   TOUDefaultRate       VARCHAR2(8)                      not null
+   TOUDefaultRate       VARCHAR2(4)                      not null
 );
 alter table TOUSchedule
    add constraint PK_TOUSCHEDULE primary key (TOUScheduleID);
 
 create table TOUDay  (
    TOUDayID             NUMBER                           not null,
-   SwitchRate           VARCHAR2(4)                      not null,
-   SwitchOffset         NUMBER                           not null
+   TOUDayName           VARCHAR2(32)                     not null
 );
 alter table TOUDay
    add constraint PK_TOUDAY primary key (TOUDayID);
 
+create table TOUDayRateSwitches (
+TOURateSwitchID	     NUMBER                           not null,
+SwitchRate           varchar2(4)                      not null,
+SwitchOffset         NUMBER                           not null,
+TOUDayID             NUMBER                           not null
+);
+alter table TOUDayRateSwitches
+   add constraint PK_TOURATESWITCH primary key  (TOURateSwitchID);
+alter table TOUDayRateSwitches
+   add constraint FK_TOUdRS_TOUd foreign key (TOUDayID)
+      references TOUDay (TOUDayID);
+create unique index Indx_TOUSWITCHRATE_PK on TOUDayRateSwitches (
+TOUDayID, SwitchOffset
+);
+
 create table TOUDayMapping  (
    TOUScheduleID        NUMBER                           not null,
-   DeviceID             NUMBER                           not null,
+   TOUDayID             NUMBER                           not null,
    TOUDayOffset         NUMBER                           not null
 );
 alter table TOUDayMapping
-   add constraint PK_TOUDAYMAPPING primary key (TOUScheduleID, DeviceID);
+   add constraint PK_TOUDAYMAPPING primary key (TOUScheduleID, TOUDayID);
 alter table TOUDayMapping
    add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
       references TOUSchedule (TOUScheduleID);
 alter table TOUDayMapping
-   add constraint FK_TOU_Dev foreign key (DeviceID)
-      references DEVICE (DEVICEID);
+   add constraint FK_TOUm_TOUd foreign key (TOUDayID)
+      references TOUDay (TOUDayID);
 
 alter table MCTConfig add DisplayDigits number;
 update MCTConfig set DisplayDigits = 0;
-alter table MCTConfig raphDataSeries modify DisplayDigits not null;
+alter table MCTConfig modify DisplayDigits not null;
 
 create table DeviceMCT400Series  (
    DeviceID             NUMBER                           not null,
@@ -101,4 +118,4 @@ alter table ctidatabase add constraint PK_CTIDATABASE primary key  (Version, Bui
 /******************************************************************************/
 /* VERSION INFO                                                               */
 /******************************************************************************/
-insert into CTIDatabase values('3.00', 'Ryan', '5-NOV-2004', 'Patch update to bring all other 3.00 up to date', 26 );
+insert into CTIDatabase values('3.00', 'Ryan', '5-NOV-2004', 'Patch update to bring all other 3.00 up to date', 27 );

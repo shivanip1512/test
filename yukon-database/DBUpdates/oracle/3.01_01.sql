@@ -911,7 +911,7 @@ create table Command  (
    CommandID            NUMBER                           not null,
    Command              VARCHAR2(256)                    not null,
    Label                VARCHAR2(256)                    not null,
-   Category             CHAR(32)                         not null
+   Category             VARCHAR2(32)                     not null
 );
 alter table Command
    add constraint PK_COMMAND primary key (CommandID);
@@ -921,7 +921,7 @@ create table DeviceTypeCommand  (
    CommandID            NUMBER                           not null,
    DeviceType           VARCHAR2(32)                     not null,
    DisplayOrder         NUMBER                           not null,
-   VisibleFlag          VARCHAR2(1)                      not null
+   VisibleFlag          CHAR(1)                          not null
 );
 alter table DeviceTypeCommand
    add constraint PK_DEVICETYPECOMMAND primary key (DeviceCommandID);
@@ -998,6 +998,113 @@ and ( x.SplinterID = sp.AddressID and ( sp.AddressType = 'SPLINTER' or sp.Addres
 and ( x.UserID = us.AddressID and ( us.AddressType = 'USER' or us.AddressID = 0 ) )
 and ( x.ZipID = z.AddressID and ( z.AddressType = 'ZIP' or z.AddressID = 0 ) );
 
+/*N/A*/
+insert into command values(-0, 'Not Available Yet', 'Not Available Yet', 'DEVICE');
+
+/*MCT-BASE*/
+insert into command values(-1, 'getvalue kWh', 'Read Energy', 'All MCTs');
+insert into command values(-2, 'getvalue demand', 'Read Current Demand', 'All MCTs');
+insert into command values(-3, 'getconfig model', 'Read Options', 'All MCTs');
+insert into command values(-4, 'putvalue kyz 1 reset', 'Clear kWh Reading', 'All MCTs');
+insert into command values(-5, 'getvalue powerfail', 'Read Powerfail', 'All MCTs');
+insert into command values(-6, 'getstatus internal', 'Read General Info', 'All MCTs'); 
+insert into command values(-7, 'getconfig mult kyz 1', 'Read MPKH ()', 'All MCTs');
+insert into command values(-8, 'putconfig emetcon multiplier kyz1 ?Multiplier(x.xxx)', 'Write MPKH ()', 'All MCTs');
+insert into command values(-9, 'getconfig interval ?LP/LI', 'Read Demand Interval (LP or LI)', 'All MCTs');
+insert into command values(-10, 'putconfig emetcon interval ?LP/LI', 'Write Demand Interval (LP or LI)', 'All MCTs');
+/*MCT-213, 310ID*/
+insert into command values(-11, 'getstatus disconnect', 'Read Disconnect Status', 'All Disconnect Meters');
+insert into command values(-12, 'control disconnect', 'Disconnect Meter', 'All Disconnect Meters');
+insert into command values(-13, 'control connect', 'Connect Meter', 'All Disconnect Meters');
+/*MCT-250, 318, 318L, 360, 370*/
+insert into command values(-14, 'getstatus external', 'Read Status Points', 'All Status Input');
+/*LS-BASE*/
+insert into command values(-15, 'getstatus LP', 'Read LS Info', 'All LP Meters');
+insert into command values(-16, 'Not Available Yet', 'Read LS Intervals 1 Thru 6', 'All LP Meters');
+insert into command values(-17, 'Not Available Yet', 'Read  6 LS Intervals Starting at ?', 'All LP Meters');
+insert into command values(-18, 'getconfig time', 'Read Date/Time', 'All LP Meters');
+insert into command values(-19, 'getconfig time sync', 'Read Last TimeSync', 'All LP Meters');
+/*IED-BASE*/
+insert into command values(-20, 'getvalue ied demand', 'Read IED Last Interval Demands', 'All IED Meters');
+insert into command values(-21, 'getvalue ied kwh', 'Read IED KWH/KW', 'All IED Meters');
+insert into command values(-22, 'getconfig ied time', 'Read IED Date/Time', 'All IED Meters');
+insert into command values(-23, 'Not Available', 'Read IED TOU Rate [A,B,C,or D]', 'All IED Meters');
+insert into command values(-24, 'Not Available', 'Read IED Reset Count', 'All IED Meters');
+insert into command values(-25, 'getconfig ied scan', 'Read IED Scan Info', 'All IED Meters');
+insert into command values(-26, 'putvalue ied reset', 'Reset IED Demand', 'All IED Meters');
+/*LoadGroup-BASE*/
+insert into command values(-27, 'control shed 5m', 'Shed Group', 'All Load Group');
+insert into command values(-28, 'control restore', 'Restore Group', 'All Load Group');
+/*Alpha-BASE*/
+insert into command values(-29, 'scan integrity', 'Force Scan', 'All Alpha Meters');
+/*CBC-BASE*/
+insert into command values(-30, 'control open', 'OPEN Cap Bank', 'All CBCs');
+insert into command values(-31, 'control close', 'CLOSE Cap Bank', 'All CBCs');
+insert into command values(-32, 'putstatus ovuv disable', 'Disable OVUV', 'All CBCs');
+insert into command values(-33, 'putstatus ovuv enable', 'Enable OVUV', 'All CBCs');
+/*CCU-BASE, RTU-BASE, LCU-BASE, TCU-BASE*/
+insert into command values(-34, 'ping', 'Ping', 'All Ping-able');
+insert into command values(-35, 'loop', '1 Loopback', 'All Ping-able');
+insert into command values(-36, 'loop 5', '5 Loopbacks', 'All Ping-able');
+/*CCU-711*/
+insert into command values(-37, 'putstatus reset', 'CCU Reset', 'CCU-711');
+/*Emetcon Group*/
+insert into command values(-38, 'control shed 7.m', 'Shed 7.5min', 'Emetcon Group');
+insert into command values(-39, 'control shed 15m', 'Shed 15-min', 'Emetcon Group');
+insert into command values(-40, 'control shed 30m', 'Shed 30-min', 'Emetcon Group');
+insert into command values(-41, 'control shed 60m', 'Shed 60-min', 'Emetcon Group');
+insert into command values(-42, 'control shed ?''NumMins''m', 'Shed x-min', 'Emetcon Group');
+insert into command values(-43, 'control restore', 'Restore', 'Emetcon Group');
+/*Versacom Group*/
+insert into command values(-44, 'control cycle 50 period 30 count 4', 'Cycle 50% / 30min', 'Versacom Group');
+insert into command values(-45, 'control cycle terminate', 'Terminate Cycle', 'Versacom Group');
+insert into command values(-46, 'putconfig service out', 'Set to Out-Of-Service', 'Versacom Group');
+insert into command values(-47, 'putconfig service in', 'Set to In-Service', 'Versacom Group');
+insert into command values(-48, 'putstatus reset r1 r2 r3 cl', 'Reset All Counters', 'Versacom Group');
+insert into command values(-49, 'putconfig led yyy', 'Configure LEDS (report, test, load)', 'Versacom Group');
+/*TCU-BASE*/
+/*insert into command values(-50, 'loop', '1 TCU Loop', 'All TCUs');*/
+/*insert into command values(-51, 'loop 5', '5 TCU Loops', 'All TCUs');*/
+/*Repeater-BASE*/
+insert into command values(-52, 'getconfig role 1', 'Read Roles', 'All Repeaters');
+insert into command values(-53, 'getconfig emetcon install', 'Download All Roles', 'All Repeaters');
+insert into command values(-54, 'loop locate', 'Locate Device', 'All Repeaters');
+/*ION-BASE*/
+insert into command values(-55, 'scan general', 'Scan Status Points', 'All ION Meters');
+insert into command values(-56, 'scan integrity', 'Scan Power Meter and Status', 'All ION Meters');
+insert into command values(-57, 'getstatus eventlog', 'Retrieve Event Log', 'All ION Meters');
+/*IEDAlpha-BASE*/
+insert into command values(-58, 'putconfig emetcon ied class 72 1', 'Set Current Period (Alpha)', 'DEVICE');
+insert into command values(-59, 'putconfig emetcon ied class 72 2', 'Set Previous Period (Alpha)', 'DEVICE');
+/*EDGEKV-BASE*/
+insert into command values(-60, 'getvalue ied demand', 'Read IED Volts', 'DEVICE');
+insert into command values(-61, 'putconfig emetcon ied class 0 0', 'Set Current Period (GEKV)', 'DEVICE');
+insert into command values(-62, 'putconfig emetcon ied class 0 1', 'Set Previous Period (GEKV)', 'DEVICE');
+/*ExpresscomSerial*/
+insert into command values(-63, 'putconfig xcom raw 0x30 0x00 0x02 0x58', 'Cold Load Pickup (load, time x 0.5sec)', 'ExpresscomSerial');
+insert into command values(-64, 'putstatus xcom prop inc', 'Increment Prop Counter', 'ExpresscomSerial');
+insert into command values(-65, 'putconfig xcom raw 0x05 0x00', 'Reset CopCount', 'ExpresscomSerial');
+insert into command values(-66, 'putconfig xcom main 0x01 0x40', 'Clear Prop Counter', 'ExpresscomSerial');
+insert into command values(-67, 'putconfig xcom main 0x01 0x80', 'Clear Comm Loss COunter', 'ExpresscomSerial');
+insert into command values(-68, 'putconfig xcom serv out temp 24', 'Temp Out-Of-Service (hours)', 'ExpresscomSerial');
+insert into command values(-69, 'putconfig xcom serv out temp', 'In Service', 'ExpresscomSerial');
+/*LCRSerial*/
+insert into command values(-70, 'control shed 5m relay 1', 'Shed 5-min Relay 1', 'LCRSerial');
+insert into command values(-71, 'control restore relay 1', 'Restore Relay 1', 'LCRSerial');
+insert into command values(-72, 'control cycle 50 period 30 relay 1', 'Cycle 50 Period-30 Relay 1', 'LCRSerial');
+insert into command values(-73, 'control cycle terminate relay 1', 'Terminate Cycle Relay 1', 'LCRSerial');
+insert into command values(-74, 'putconfig template ''?LoadGroup''', 'Install Versacom Addressing', 'LCRSerial');
+insert into command values(-75, 'putconfig cycle r1 50', 'Install Cycle Count', 'LCRSerial');
+insert into command values(-76, 'putconfig cold_load r1 10', 'Install Versacom Cold Load (relay, minutes)', 'LCRSerial');
+insert into command values(-77, 'putconfig raw 0x3a ff', 'Emetcon Cold Load (ON -ff / OFF -00', 'LCRSerial');
+insert into command values(-78, 'putconfig xcom raw 40 ?''Weighting (1-8)''', 'Store a TrueCycle Day', 'LCRSerial');
+insert into command values(-79, 'putconfig raw 36 1', 'Set Versacom Mode', 'LCRSerial');
+insert into command values(-80, 'putconfig raw 35 0', 'Set Emetcon Mode', 'LCRSerial');
+/* MCT410IL */
+insert into command values(-81, 'getvalue demand', 'Read KW Demand, Current Voltage, Blink Count', 'MCT-410IL');
+insert into command values(-82, 'getvalue voltage', 'Read Min / Max Voltage', 'MCT-410IL');
+insert into command values(-83, 'putconfig emetcon timesync', 'Write Time/Date to Meter', 'MCT-410IL');
+insert into command values(-84, 'getvalue peak', 'Read Current Peak', 'MCT-410IL');
 
 
 
