@@ -102,30 +102,35 @@
 		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
 %>
 					<div align="center" class="TableCell">Out of Service</div>
-<%
+                    <%
 		}
 		else {
 %>
                     <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
                       <tr> 
-                        <td width="220" class="TableCell"> Begin Date/Time </td>
-                        <td width="93" class="TableCell"> Duration </td>
+                        <td width="61" class="TableCell"> 
+                          <div align="left">Start</div>
+                        </td>
+                        <td width="61" class="TableCell">Stop</td>
+                        <td width="60" class="TableCell">Duration</td>
                       </tr>
-<%
+                      <%
 			StarsLMControlHistory ctrlHistToday = ServletUtils.getControlHistory( program.getStarsLMControlHistory(), StarsCtrlHistPeriod.PASTDAY, tz );
 			if (ctrlHistToday.getControlHistoryCount() == 0) {
 %>
                       <tr> 
-                        <td width="219" class="TableCell">No <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/></td>
-                        <td width="94" class="TableCell">---- </td>
+                        <td width="61" class="TableCell">No <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/></td>
+                        <td width="61" class="TableCell"></td>
+                        <td width="60" class="TableCell">----</td>
                       </tr>
                       <tr> 
-                        <td width="219" class="TableCell"> 
-                          <div align="right">Total: </div>
+                        <td width="61" class="TableCell"></td>
+                        <td width="61" class="TableCell"> 
+                          <div align="right">Total:</div>
                         </td>
-                        <td width="94" class="TableCell">---- </td>
+                        <td width="60" class="TableCell">----</td>
                       </tr>
-<%
+                      <%
 			}
 			else {
 				int totalSec = 0;
@@ -134,21 +139,26 @@
 					
 					int durationSec = hist.getControlDuration();
 					totalSec += durationSec;
+					Date stopTime = new Date(hist.getStartDateTime().getTime() + durationSec * 1000);
 %>
                       <tr> 
-                        <td width="220" class="TableCell"><%= histDateFormat.format(hist.getStartDateTime()) %></td>
-                        <td width="93" class="TableCell"><%= ServletUtils.getDurationString(durationSec) %></td>
+                        <td width="61" class="TableCell"><%= timePart.format(hist.getStartDateTime()) %></td>
+                        <td width="61" class="TableCell"><%= timePart.format(stopTime) %></td>
+                        <td width="60" class="TableCell"><%= ServletUtils.getDurationString(durationSec) %></td>
                       </tr>
-<%
+                      <%
 				}
 %>
                       <tr> 
-                        <td width="220" class="TableCell"> 
+                        <td width="61" class="TableCell"> 
+                          <div align="right"></div>
+                        </td>
+                        <td width="61" class="TableCell"> 
                           <div align="right">Total:</div>
                         </td>
-                        <td width="93" class="TableCell"><%= ServletUtils.getDurationString(totalSec) %></td>
+                        <td width="60" class="TableCell"><%= ServletUtils.getDurationString(totalSec) %></td>
                       </tr>
-<%
+                      <%
 			}
 %>
                     </table>
