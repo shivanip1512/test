@@ -250,9 +250,9 @@ function deleteHardware(form) {
                                     <select name="ServiceCompany">
 <%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
-		StarsServiceCompany company = companies.getStarsServiceCompany(i);
+		StarsServiceCompany servCompany = companies.getStarsServiceCompany(i);
 %>
-                              		  <option value="<%= company.getCompanyID() %>"><%= company.getCompanyName() %></option>
+                              		  <option value="<%= servCompany.getCompanyID() %>"><%= servCompany.getCompanyName() %></option>
 <%
 	}
 %>
