@@ -75,7 +75,7 @@ function editAddress(form) {
   <tr>
     <td>
       <%@ include file="include/HeaderBar.jsp" %>
-<% if (company.getCompanyID() < 0 && !address.equals("(none)")) %>
+<% if (company.getCompanyID() < 0 && !address.equals("(none)")) { %>
       <script language="JavaScript">setContentChanged(true);</script>
 <% } %>
     </td>
