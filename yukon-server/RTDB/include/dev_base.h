@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/09/03 14:33:51 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/10/09 19:45:46 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,6 +43,7 @@ class CtiRouteManager;
 class CtiPointBase;
 class CtiPointManager;
 class CtiTransmitterInfo;
+class CtiProtocolBase;
 
 #define COMM_FAIL_COUNT 10
 #define COMM_FAIL_OFFSET 2000
@@ -123,6 +124,8 @@ public:
     virtual LONG getRouteID() const;
 
     virtual LONG getDemandInterval() const;
+
+    virtual CtiProtocolBase *getProtocol() const;
 
 
     virtual ULONG getUniqueIdentifier() const;
@@ -228,10 +231,11 @@ inline LONG CtiDeviceBase::getMinConnectTime() const     { return 1L;}
 inline LONG CtiDeviceBase::getMaxConnectTime() const     { return 0L;}
 inline LONG CtiDeviceBase::getRouteID() const            { return -1;}
 inline LONG CtiDeviceBase::getDemandInterval() const     { return LONG_MAX;}
+inline CtiProtocolBase *CtiDeviceBase::getProtocol() const  { return NULL;}
 inline ULONG CtiDeviceBase::getUniqueIdentifier() const  { return getID();}
 inline void CtiDeviceBase::invalidateScanRates()         { return;}
 inline void CtiDeviceBase::deleteNonUpdatedScanRates()   { return;}
-inline RWCString CtiDeviceBase::getMeterGroupName() const    { return RWCString();}
+inline RWCString CtiDeviceBase::getMeterGroupName() const   { return RWCString();}
 inline RWCString CtiDeviceBase::getAlternateMeterGroupName() const    { return RWCString();}
 
 inline INT CtiDeviceBase::getCommFailCount() const       { LockGuard guard(monitor()); return _commFailCount;}
