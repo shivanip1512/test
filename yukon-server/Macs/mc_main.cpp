@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_main.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/02/25 17:37:55 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/09/05 18:46:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,7 +43,6 @@
 #include <algorithm>
 
 #include <crtdbg.h>
-#include <mc_interp_pool.h>
 
 int main(int argc, char* argv[] )
 {

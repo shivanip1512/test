@@ -2,8 +2,8 @@
 #                                                         #
 #       Makefile Template for CTI Apps                    #
 #                                                         #
-#       $Revision: 1.7 $                               #
-#       $Date: 2002/10/15 17:42:12 $                  #
+#       $Revision: 1.8 $                               #
+#       $Date: 2003/09/05 18:46:57 $                  #
 #                                                         #
 # Definitions                                             #
 ###########################################################
@@ -104,6 +104,7 @@ PROT            = $(COMPILEBASE)\protocol
 SERVICE         = $(COMPILEBASE)\service
 SIGNAL          = $(COMPILEBASE)\dbsignal
 RTDB            = $(COMPILEBASE)\rtdb
+INTERP          = $(COMPILEBASE)\interp
 TCLINC          = $(COMPILEBASE)\tcl\include
 XERCESINC       = $(COMPILEBASE)\xerces\include
 

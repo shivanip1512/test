@@ -4,15 +4,12 @@
 
 all:
         @$(MAKE) -nologo -f makedll.mak
-        @$(MAKE) -nologo -f makeexe.mak
 
 copy:
         @$(MAKE) -nologo -f makedll.mak $@
-        @$(MAKE) -nologo -f makeexe.mak $@
 
 deps:
         @$(MAKE) -nologo -f makedll.mak $@
-        @$(MAKE) -nologo -f makeexe.mak $@
 
 clean:
         -del \

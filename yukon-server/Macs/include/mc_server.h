@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_server.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/10/18 21:03:02 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/09/05 18:46:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,8 @@
 #include "guard.h"
 #include "message.h"
 #include "queue.h"
-#include "mc_interp.h"
+#include "interp.h"
+#include "interp_pool.h"
 #include "mgr_mcsched.h"
 #include "mc_dbthr.h"
 #include "rtdb.h"
@@ -55,7 +56,6 @@
 #include "clistener.h"
 #include "mc_msg.h"
 #include "mc_script.h"
-#include "mc_interp_pool.h"
 #include "mc_scheduler.h"
 #include "mc_fileint.h"
 
@@ -87,10 +87,10 @@ private:
     CtiQueue< CtiMessage, less<CtiMessage> > _main_queue;
 
     // Keeps track of running script type schedules
-    map< long, CtiMCInterpreter* > _running_scripts;
+    map< long, CtiInterpreter* > _running_scripts;
 
     // Keeps track of interpreters commands are executing on
-    deque< CtiMCInterpreter* > _executing_commands;
+    deque< CtiInterpreter* > _executing_commands;
 
     // Schedules the events
     CtiMCScheduler _scheduler;
@@ -107,7 +107,7 @@ private:
     CtiMCFileInterface _file_interface;
 
     // pool of interpreters to use
-    mutable CtiMCInterpreterPool _interp_pool;
+    mutable CtiInterpreterPool _interp_pool;
 
     CtiConfigParameters _cparms;
 

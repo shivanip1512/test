@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2003/07/16 21:08:00 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2003/09/05 18:46:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -209,9 +209,13 @@ void WriteOutput(const char* output)
 }
 
 /* Connects to the PIL and VanGogh*/
-int Mccmd_Connect()
+int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    RWASSERT( PILConnection == 0 && VanGoghConnection == 0 );
+    if(PILConnection != 0 && VanGoghConnection != 0)
+    {
+      return 0;
+    }
+    //RWASSERT( PILConnection == 0 && VanGoghConnection == 0 );
 
     //Set up the defaults
     INT pil_port = PORTERINTERFACENEXUS;
@@ -233,6 +237,7 @@ int Mccmd_Connect()
         //What are the keys?
         if( (*fpGetAsString)("PIL_MACHINE", temp, 64) )
         {
+            CtiLockGuard< CtiLogger > guard(dout);
             dout << RWTime()  << " - Using " << temp << " as the pil host" << endl;
             pil_host = temp;
         }
@@ -241,6 +246,7 @@ int Mccmd_Connect()
 
         if( (*fpGetAsString)("PIL_PORT", temp, 64) )
         {
+            CtiLockGuard< CtiLogger > guard(dout);
             dout << RWTime()  << " - Using " << temp << " as the pil port" << endl;
             pil_port = atoi(temp);
         }
@@ -250,6 +256,7 @@ int Mccmd_Connect()
 
         if( (*fpGetAsString)("DISPATCH_MACHINE", temp, 64) )
         {
+            CtiLockGuard< CtiLogger > guard(dout);
             dout << RWTime()  << " - Using " << temp << " as the vangogh host" << endl;
             vangogh_host = temp;
         }
@@ -258,6 +265,7 @@ int Mccmd_Connect()
 
         if( (*fpGetAsString)("DISPATCH_PORT", temp, 64) )
         {
+            CtiLockGuard< CtiLogger > guard(dout);
             dout << RWTime()  << " - Using " << temp << " as the vangogh port" << endl;
             vangogh_port = atoi(temp);
         }
@@ -267,12 +275,14 @@ int Mccmd_Connect()
         /* The next few are optional cparms for customs */
         if( (*fpGetAsString)("PAGING_CONFIG_ROUTE_ID", temp, 64) )
         {
+            CtiLockGuard< CtiLogger > guard(dout);
             gPagingConfigRouteID = atoi(temp);
             dout << RWTime()  << " PAGING_CONFIG_ROUTE_ID=" << gPagingConfigRouteID << endl;
         }
 
         if( (*fpGetAsString)("FM_CONFIG_ROUTE_ID", temp, 64) )
         {
+            CtiLockGuard< CtiLogger > guard(dout);
             gFMConfigRouteID = atoi(temp);
             dout << RWTime()  << " FM_CONFIG_ROUTE_ID=" << gFMConfigRouteID << endl;
         }
@@ -304,6 +314,7 @@ int Mccmd_Connect()
 
                     if( lowi != 0 && highi != 0 )
                     {
+  	                CtiLockGuard< CtiLogger > guard(dout);
                         dout << RWTime() << " FM_CONFIG_SERIAL_RANGE " << lowi << "-" << highi << endl;
                         gFMConfigSerialLow[index] = lowi;
                         gFMConfigSerialHigh[index] = highi;
@@ -354,8 +365,8 @@ int Mccmd_Connect()
 }
 
 /* Disconnects from the PIL */
-int Mccmd_Disconnect()
-{
+int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+{    
     if( MessageThr.isValid() )
         MessageThr.requestCancellation();
 
@@ -386,6 +397,15 @@ int Mccmd_Disconnect()
 int Mccmd_Init(Tcl_Interp* interp)
 {
     /* Register MACS commands with the interpreter */
+
+    Tcl_CreateCommand( interp, "PILStartup", Mccmd_Connect, NULL, NULL );
+    Tcl_CreateCommand( interp, "PILSTARTUP", Mccmd_Connect, NULL, NULL );
+    Tcl_CreateCommand( interp, "pilstartup", Mccmd_Connect, NULL, NULL );
+
+    Tcl_CreateCommand( interp, "PILShutdown", Mccmd_Disconnect, NULL, NULL );
+    Tcl_CreateCommand( interp, "PILSHUTDOWN", Mccmd_Disconnect, NULL, NULL );
+    Tcl_CreateCommand( interp, "pilshutdown", Mccmd_Disconnect, NULL, NULL );
+
     Tcl_CreateCommand( interp, "Command", Command, NULL, NULL );
     Tcl_CreateCommand( interp, "command", Command, NULL, NULL );
     Tcl_CreateCommand( interp, "COMMAND", Command, NULL, NULL );
@@ -487,7 +507,7 @@ int Mccmd_Init(Tcl_Interp* interp)
             init_script += temp;
         else
             init_script += "init.tcl";
-
+	
         if( (*fpGetAsString)(MCCMD_DEBUG_LEVEL, temp, 64) )
         {
             char *eptr;
@@ -522,9 +542,6 @@ int Mccmd_Init(Tcl_Interp* interp)
     "package require McCmd" can load McCmd automatically. */
     Tcl_PkgProvide(interp, "mccmd", "1.0");
 
-    if( PILConnection == 0 )
-        Mccmd_Connect();
-
     return TCL_OK;
 }
 
@@ -532,10 +549,10 @@ int Mccmd_Init(Tcl_Interp* interp)
 
 int Exit(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    Mccmd_Disconnect();
-
     //copied from default tcl exit handler
     int value;
+    
+    Tcl_Eval(interp, "pilshutdown");
 
     if( argc != 1 && argc != 2)
     {
@@ -1640,20 +1657,6 @@ void HandleReturnMessage(CtiReturnMsg* msg,
             }
         }
     }
-}
-
-int StoreQueue(void* queue, int threadid)
-{
-    /* queue had better be a CtiCountedPCPtrQueue<RWCollectable>* !!! */
-    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > counted_ptr = (CtiCountedPCPtrQueue<RWCollectable>*) queue;
-    OutQueueStore.insertKeyAndValue( threadid, counted_ptr );
-
-    return 1;
-}
-
-int ReleaseQueue(int threadid)
-{
-    return OutQueueStore.remove( threadid );
 }
 
 /* put the thread id into the high order and the messageid into the low*/

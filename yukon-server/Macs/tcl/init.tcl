@@ -14,6 +14,10 @@
 # System procedures below, do not edit
 
 #*******************************************************************************
+# Make sure we have a connection to the Porter service
+pilstartup
+
+#*******************************************************************************
 # Set up some global variables
 
 # Some possible return (error) codes from Port Control

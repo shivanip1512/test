@@ -96,6 +96,14 @@ all:
         @echo Building in $(COMPILEBASE)\scanner
         @echo:
         @$(MAKE) -nologo
+
+        @%cd $(COMPILEBASE)\interp
+        @echo:
+        @title Building in $(COMPILEBASE)\interp
+        @echo Building in $(COMPILEBASE)\interp
+        @echo:
+        @$(MAKE) -nologo
+
         @%cd $(COMPILEBASE)\mccmd
         @echo:
         @title Building in $(COMPILEBASE)\mccmd

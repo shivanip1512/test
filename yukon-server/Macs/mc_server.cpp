@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/06/30 17:05:33 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/09/05 18:46:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -200,7 +200,7 @@ void CtiMCServer::logEvent(const string& user, const string& text) const
     }
 
     // Acquire an interpreter and send out the command
-    CtiMCInterpreter* interp = _interp_pool.acquireInterpreter();
+    CtiInterpreter* interp = _interp_pool.acquireInterpreter();
     interp->evaluate( cmd_string, true ); //block
     _interp_pool.releaseInterpreter(interp);
 }
@@ -237,7 +237,7 @@ void CtiMCServer::executeCommand(const string& command, const string& target)
     }
 
     // Acquire an interpreter and send out the command
-    CtiMCInterpreter* interp = _interp_pool.acquireInterpreter();
+    CtiInterpreter* interp = _interp_pool.acquireInterpreter();
             
     // init default pil request priority        
     interp->evaluate("set MessagePriority 7");
@@ -303,9 +303,6 @@ bool CtiMCServer::init()
     RWTime now = stripSeconds(RWTime::now());
     _scheduler.initEvents(now);
 
-    /* Give mccmd.dll a chance to make connections */
-    Mccmd_Connect();
-
     _db_update_thread.start();
 
     /* start up the client listener */
@@ -315,6 +312,16 @@ bool CtiMCServer::init()
     /* start up the file interface */
     _file_interface.setQueue(&_main_queue);
     _file_interface.start();
+
+    /* load commands into the interpreter &
+        init connections */
+   _interp_pool.evalOnInit("load mccmd");
+
+   /* start up connections to other services */
+   CtiInterpreter* interp = _interp_pool.acquireInterpreter();
+   interp->evaluate("pilstartup", true ); 
+   _interp_pool.releaseInterpreter(interp);
+
     }
     catch(...)
     {
@@ -333,9 +340,11 @@ bool CtiMCServer::deinit()
     _client_listener.interrupt( CtiThread::SHUTDOWN );
     _client_listener.join();
 
-    _interp_pool.stopAndDestroyAllInterpreters();
+    CtiInterpreter* interp = _interp_pool.acquireInterpreter();
+    interp->evaluate("pilshutdown", true);
+    _interp_pool.releaseInterpreter(interp);
 
-    Mccmd_Disconnect();
+    _interp_pool.stopAndDestroyAllInterpreters();
 
     _db_update_thread.interrupt( CtiThread::SHUTDOWN );
     _db_update_thread.join();
@@ -370,7 +379,7 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
     if( script.readContents() )
     {
         //Acquire an interpreter to use
-        CtiMCInterpreter* interp = _interp_pool.acquireInterpreter();
+        CtiInterpreter* interp = _interp_pool.acquireInterpreter();
 
         // init the correct schedule id and holiday schedule id
         string init_id("set ScheduleID ");
@@ -396,7 +405,7 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
         interp->evaluate( script.getContents(), false );
 
         _running_scripts.insert(
-            map< long, CtiMCInterpreter* >::value_type(sched.getScheduleID(), interp ) );
+            map< long, CtiInterpreter* >::value_type(sched.getScheduleID(), interp ) );
     }
     else
     {
@@ -443,12 +452,12 @@ void CtiMCServer::stopScript(long sched_id)
 
 
     // find the entry for the schedule and the interpreter
-    map< long, CtiMCInterpreter* >::iterator iter =
+    map< long, CtiInterpreter* >::iterator iter =
             _running_scripts.find( sched_id );
 
     if( iter != _running_scripts.end() )
     {
-        CtiMCInterpreter* interp = iter->second;
+        CtiInterpreter* interp = iter->second;
 
         if( interp != NULL )
         {
@@ -478,10 +487,10 @@ void CtiMCServer::stopScript(long sched_id)
 */
 void CtiMCServer::releaseInterpreters() 
 {
-    deque< CtiMCInterpreter* >::iterator iter = _executing_commands.begin();
+    deque< CtiInterpreter* >::iterator iter = _executing_commands.begin();
     while( iter != _executing_commands.end() ) 
     {
-        CtiMCInterpreter* interp = *iter;
+        CtiInterpreter* interp = *iter;
         if( !interp->isEvaluating() )
         {
             interp->stopEval();
@@ -505,12 +514,12 @@ void CtiMCServer::checkRunningScripts()
 {
     RWTime now( stripSeconds(RWTime::now()) );
     
-    map< long, CtiMCInterpreter* >::iterator iter;
+    map< long, CtiInterpreter* >::iterator iter;
     for( iter = _running_scripts.begin();
          iter != _running_scripts.end();
          iter++ )
     {
-        CtiMCInterpreter* interp = iter->second;
+        CtiInterpreter* interp = iter->second;
 
         if( interp != NULL && !interp->isEvaluating() )
         {
@@ -1176,7 +1185,7 @@ void CtiMCServer::dumpRunningScripts()
 
     dout << RWTime() << " Running scripts:" << endl;
 
-    map< long, CtiMCInterpreter* >::iterator iter;
+    map< long, CtiInterpreter* >::iterator iter;
     for( iter = _running_scripts.begin();
          iter != _running_scripts.end();
          iter++ )

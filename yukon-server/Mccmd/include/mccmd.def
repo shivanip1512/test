@@ -1,8 +1,4 @@
 LIBRARY MCCMD
 DATA MULTIPLE NONSHARED
 EXPORTS
-        Mccmd_Connect
-        Mccmd_Disconnect
         Mccmd_Init
-        StoreQueue
-        ReleaseQueue
