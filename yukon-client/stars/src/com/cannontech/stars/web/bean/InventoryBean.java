@@ -336,7 +336,7 @@ public class InventoryBean {
 	        	htmlBuf.append("</td>").append("\r\n");
 	        }
             htmlBuf.append("          <td class='TableCell' width='17%'>");
-			htmlBuf.append("<a href='InventoryDetail.jsp?InvId=").append(liteInv.getInventoryID());
+			htmlBuf.append("<a href='../Hardware/InventoryDetail.jsp?InvId=").append(liteInv.getInventoryID());
 			if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY)
 				htmlBuf.append("&src=SelectInv");
 			else if (getHtmlStyle() == HTML_STYLE_LIST_INVENTORY)
