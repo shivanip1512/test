@@ -715,6 +715,7 @@ void CtiLMControlAreaTrigger::restore(RWDBReader& rdr)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     RWDBNullIndicator isNull;
+    _insertDynamicDataFlag = FALSE;
 
     rdr["deviceid"] >> _paoid;//will be paobjectid
     rdr["triggernumber"] >> _triggernumber;
