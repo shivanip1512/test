@@ -566,8 +566,15 @@ private void addOffsetText( JTextPane txtPage_, PointOffset ptOffset_ )
 {
 	String txt = txtPage_.getText();
 	
+	String label = null;
+	if( ptOffset_.getLabel() != null )
+		label = ptOffset_.getLabel();
+	else
+		label = PAOGroups.getPAOTypeString(ptOffset_.getPaoType());
+
+
 	txt +=
-		"________" + PAOGroups.getPAOTypeString(ptOffset_.getPaoType()) + 
+		"________" + label + 
 		"_______________________" + System.getProperty("line.separator");
 	
 	for( int i = 0; i < ptOffset_.getValues().length; i++ )
