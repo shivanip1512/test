@@ -142,7 +142,15 @@ function validate(form) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
               <% String header = "INVENTORY DETAIL"; %>
+<% if (!src.equalsIgnoreCase("SelectInv")) { %>
               <%@ include file="include/SearchBar.jsp" %>
+<% } else { %>
+              <table width="100%" border="0" cellspacing="0" cellpadding="5">
+                <tr>
+                  <td align="center" class="TitleHeader"><%= header %></td>
+                </tr>
+              </table>
+<% } %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
               <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="return validate(this)">
