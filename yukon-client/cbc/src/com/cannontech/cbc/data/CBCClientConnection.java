@@ -230,15 +230,25 @@ protected com.cannontech.message.util.ClientConnection getConnection()
  * Insert the method's description here.
  * Creation date: (3/21/00 2:26:52 PM)
  */
+//private void getExternalResources() 
+//{
+//	setHost( ClientSession.getInstance().getRolePropertyValue(
+//		SystemRole.CAP_CONTROL_MACHINE, "127.0.0.1" ) );
+//
+//	setPort( new Integer( ClientSession.getInstance().getRolePropertyValue(
+//		SystemRole.CAP_CONTROL_PORT, "1910") ).intValue() );
+//
+//}
 private void getExternalResources() 
 {
-	setHost( ClientSession.getInstance().getRolePropertyValue(
-		SystemRole.CAP_CONTROL_MACHINE, "127.0.0.1" ) );
+	setHost( com.cannontech.common.util.CtiProperties.getInstance().getProperty(
+		com.cannontech.common.util.CtiProperties.KEY_CAP_CONTROL_MACHINE, "127.0.0.1" ) );
 
-	setPort( new Integer( ClientSession.getInstance().getRolePropertyValue(
-		SystemRole.CAP_CONTROL_PORT, "1910") ).intValue() );
+	setPort( new Integer( com.cannontech.common.util.CtiProperties.getInstance().getProperty(
+		com.cannontech.common.util.CtiProperties.KEY_CAP_CONTROL_PORT, "1910") ).intValue() );
 
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (8/22/00 1:27:39 PM)
