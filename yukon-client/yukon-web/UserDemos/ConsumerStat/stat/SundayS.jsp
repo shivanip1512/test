@@ -45,90 +45,9 @@ MM_reloadPage(true);
 </script>
 <script language="JavaScript" src ="../drag.js">
 </script>
-<script langauge = "JavaScript">
-<!-- Begin hiding
-var browser = new Object();
-
-browser.isNetscape = false;
-browser.isMicrosoft = false;
-if (navigator.appName.indexOf("Netscape") != -1)
-	browser.isNetscape = true;
-else if (navigator.appName.indexOf("Microsoft") != -1)
-	browser.isMicrosoft = true;
-
-
-function showTimeWake(){
-  var s = document.getElementById('MovingLayer1');
-  var txt = document.getElementById('textfield1');
-  showTime(s,txt);
-}
-
-function showTimeLeave(){
-  var s = document.getElementById('MovingLayer2');
-  var txt = document.getElementById('textfield2');
-  showTime(s,txt);
-}
-function showTimeReturn(){
-  var s = document.getElementById('MovingLayer3');
-  var txt = document.getElementById('textfield3');
-  showTime(s,txt);
-}
-
-function showTimeSleep(){
-  var s = document.getElementById('MovingLayer4');
-  var txt = document.getElementById('textfield4');
-  showTime(s,txt);
-}
-
-
-
-function showTime(s, txt) {
-
-  var curPos = parseInt(s.style.left);
-  var hourStr = "0" + Math.floor(((curPos - 200)/3) * 10 / 60);
-  hourStr = hourStr.substr(hourStr.length-2, 2);
-  var minuteStr = "0" + Math.floor(((curPos - 200)/3)) * 10 % 60;
-  minuteStr = minuteStr.substr(minuteStr.length-2, 2);
-  txt.value= hourStr + ":" + minuteStr;
-}
-
-function showTemp1(){
-var a = document.getElementById('arrow1');
-var div = document.getElementById('div1');
- showTempIE(a, div);
-}
-function showTemp2(){
-var a = document.getElementById('arrow2');
-var div = document.getElementById('div2');
- showTempIE(a,div);
-}
-function showTemp3(){
-var a = document.getElementById('arrow3');
-var div = document.getElementById('div3');
- showTempIE(a,div);
-}
-function showTemp4(){
-var a = document.getElementById('arrow4');
-var div = document.getElementById('div4');
- showTempIE(a,div);
-}
-
-
-function showTempIE(a, div)
-{ 
-  var curPos = parseInt(a.style.top);
-  var temp = Math.floor((-curPos-35) / 100 * 43 + 45);
-  div.innerHTML = temp + '&deg;';
-}
-
-
-
-
-
-
-//end hiding -->
-
+<script language="JavaScript" src ="thermostat.js">
 </script>
+
 
 </head>
 
@@ -329,28 +248,42 @@ function showTempIE(a, div)
                       </tr>
                       <tr> 
                         <td width="25%" class = "TableCell"> Start At: 
-                          <input id = "textfield1" type="text"  size = "4" value = "06:00" name="text">
+                          <input id = "time1" type="text"  size = "4" value = "06:00" name="text" onchange="Javascript:setChanged();timeChange(this, 'MovingLayer1', 'time2', null);">
 
                         </td>
                         <td class = "TableCell" width="25%"> Start At: 
-                          <input id = "textfield2" type="text"  size = "4" value = "08:30" name="text2" >
+                          <input id = "time2" type="text"  size = "4" value = "08:30" name="text2" onchange="Javascript:setChanged();timeChange(this, 'MovingLayer2', 'time3', 'time1');">
                         </td>
                         <td class = "TableCell" width="25%"> <span class = "Main"> 
                           </span> Start At: 
-                          <input id = "textfield3" type="text"  size = "4" value = "17:00" name="text3">
+                          <input id = "time3" type="text"  size = "4" value = "17:00" name="text3" onchange="Javascript:setChanged();timeChange(this, 'MovingLayer3', 'time3', 'time4');">
                         </td>
                         <td width="25%" class = "TableCell"> Start At: 
-                          <input id = "textfield4" type="text"  size = "4" value = "21:00" name="text4">
+                          <input id = "time4" type="text"  size = "4" value = "21:00" name="text4" onchange="Javascript:setChanged();timeChange(this, 'MovingLayer4', null, 'time3');">
                         </td>
                       </tr>
-                    </table><table width="100%" border="0" style = "visibility:hidden">
+                    </table>
+					<noscript><table width="100%" border="0" class = "TableCell">
   <tr>
-                        <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
+                        <td>Temp: <input id="temp1" type="text" size = "3" name="temp1" onchange="setChanged()" value = "72"></td>
+                        <td>Temp: <input id="temp2" type="text" size = "3" name="temp2" onchange="setChanged()" value = "72"></td>
+                        <td>Temp: <input id="temp3" type="text" size = "3" name="temp3" onchange="setChanged()" value = "72"></td>
+                        <td>Temp: <input id="temp4" type="text" size = "3" name="temp4" onchange="setChanged()" value = "72"></td>
   </tr>
 </table>
+                    <div class = "TableCell" align = "left">
+                      <table width="100%" border="0">
+                        <tr>
+                          <td>
+                            <div class = "TableCell" align = "left">Currently 
+                              your browser's security settings are not set to 
+                              support scripting. Please enter all information 
+                              manually or change security settings.</div>
+                           </td>
+                        </tr>
+                      </table>
+                   </div> 
+				   </noscript>
                   </td>
                 </tr>
               </table><br>
