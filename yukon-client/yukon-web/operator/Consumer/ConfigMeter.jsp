@@ -30,13 +30,13 @@
   	//DeviceMeterGroup - meterNumber, collectionGroup
 	DeviceMeterGroup devMeterGroup = ((IDeviceMeterGroup)yukonPao).getDeviceMeterGroup();
 
-	int deviceRouteID = -1;	//Get the device's routeID
+	int routeID = -1;	//Get the device's routeID
 	int address = -1;		//Get the device's physical Address
 	
 	if( yukonPao instanceof CarrierBase)
 	{
 		// DeviceTypesFuncs.isCarrier(liteYukonPao.getType())
-		deviceRouteID = ((CarrierBase)yukonPao).getDeviceRoutes().getRouteID().intValue();
+		routeID = ((CarrierBase)yukonPao).getDeviceRoutes().getRouteID().intValue();
 		address = ((CarrierBase)yukonPao).getDeviceCarrierSettings().getAddress().intValue();
 	}
 	int [] validRouteTypes = new int[]{
@@ -50,11 +50,12 @@
 //Update the Device when submit button was pressed.
 if (request.getParameter("Submit") != null)
 {
+	//Error message when db value changed during page display!!
+	
 	//Meter Number Updated
 	boolean updateYukonPAO = false;
 	String updateMeterNumber = (String)request.getParameter("MeterNumber");
 	String prevMeterNumber = (String)request.getParameter("PrevMeterNumber");
-	//Verify prevMeterNumber from db is "still" the same as the currentMeterNumber from db
 	if( prevMeterNumber.equalsIgnoreCase(devMeterGroup.getMeterNumber()))
 	{
 		if(!updateMeterNumber.equalsIgnoreCase(devMeterGroup.getMeterNumber().toString()))
@@ -68,22 +69,38 @@ if (request.getParameter("Submit") != null)
 	}
 	
 	//CollectionGroup Updated
-	String collGroup = (String)request.getParameter("CollGroup");
-	if (!collGroup.equalsIgnoreCase(devMeterGroup.getCollectionGroup()))
+	String updateCollGroup = (String)request.getParameter("CollGroup");
+	if (!updateCollGroup.equalsIgnoreCase(devMeterGroup.getCollectionGroup()))
 	{
-		devMeterGroup.setCollectionGroup(collGroup.toString());
+		devMeterGroup.setCollectionGroup(updateCollGroup.toString());
 		updateYukonPAO = true;
 	}
 
 	//Physical Address Updated
-	int physAddr = Integer.valueOf((String)request.getParameter("Address")).intValue();
-	int prevPhysAddr = Integer.valueOf((String)request.getParameter("PrevAddress")).intValue();
-	if( prevPhysAddr == address)
+	int updateAddress = Integer.valueOf((String)request.getParameter("Address")).intValue();
+	int prevAddress = Integer.valueOf((String)request.getParameter("PrevAddress")).intValue();
+	if( prevAddress == address)
 	{
-		if( physAddr != address)
+		if( updateAddress != address)
 		{
-			((CarrierBase)yukonPao).getDeviceCarrierSettings().setAddress(new Integer(physAddr));
-			address = physAddr;
+			((CarrierBase)yukonPao).getDeviceCarrierSettings().setAddress(new Integer(updateAddress));
+			address = updateAddress;
+			updateYukonPAO = true;
+		}
+	}
+	else {
+		errorMsg = "Changes have been made to data by another user.  Please try again";
+	}
+
+	//Route Updated
+	int updateRouteID = Integer.valueOf((String)request.getParameter("RouteID")).intValue();
+	int prevRouteID = Integer.valueOf((String)request.getParameter("PrevRouteID")).intValue();
+	if( prevRouteID == routeID)
+	{
+		if ( updateRouteID != routeID)
+		{
+			((CarrierBase)yukonPao).getDeviceRoutes().setRouteID(new Integer(updateRouteID));
+			routeID = updateRouteID;
 			updateYukonPAO = true;
 		}
 	}
@@ -194,14 +211,15 @@ if (request.getParameter("Submit") != null)
                         <%
                       for (int i = 0; i < validRoutes.length; i++)
                       {
-                        if( ((LiteYukonPAObject)validRoutes[i]).getYukonID() == deviceRouteID)
-                          out.println("<OPTION SELECTED>"+((LiteYukonPAObject)validRoutes[i]).getPaoName());
+                        if( ((LiteYukonPAObject)validRoutes[i]).getYukonID() == routeID)
+                          out.println("<OPTION SELECTED VALUE=\"" + ((LiteYukonPAObject)validRoutes[i]).getYukonID() + "\">" + ((LiteYukonPAObject)validRoutes[i]).getPaoName());
                         else
-                          out.println("<OPTION>"+((LiteYukonPAObject)validRoutes[i]).getPaoName());
+                          out.println("<OPTION VALUE=\"" + ((LiteYukonPAObject)validRoutes[i]).getYukonID() + "\">"+((LiteYukonPAObject)validRoutes[i]).getPaoName());
                       }
                       
                       %>
                       </select>
+                      <input type="hidden" name="PrevRouteID" value="<%=routeID%>">
                     </td>
                   </tr>
                   <tr> 
