@@ -24,7 +24,7 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent
 	public static final String YESTERDAY_GRAPH_TYPE_STRING = "Yesterday";
 
 	
-	public static final int GRAPH_TYPE= 0x0001;	//will be 'graphed' in trending (INTERVAL)
+	public static final int GRAPH_TYPE= 0x0001;	//will be 'graphed' in trending (INTERVAL).  Use BASIC_GRAPH_TYPE as default.
 	public static final int PRIMARY_TYPE = 0x0002;	//the coincidental point (summary info) (only one gds can be this)
 	public static final int USAGE_TYPE = 0x0004;	//energy usage (summary info)
 	public static final int BASIC_TYPE = 0x0008;	//interval/normal point readings
@@ -461,23 +461,10 @@ public java.lang.Integer getPointID() {
  * Creation date: (1/30/2001 2:09:16 PM)
  * @return java.lang.String
  */
-//public java.lang.String getType() {
 public java.lang.Integer getType() {
 	return type;
 }
-/*
-public int getTypeInt()
-{
-	return getTypeInt(getType());
-}*/
-/**
- * Insert the method's description here.
- * Creation date: (10/6/00 2:49:54 PM)
- * @return java.lang.String
- */
-/*public java.lang.Integer getUoMId() {
-	return uomID;
-}
+
 /**
  * retrieve method comment.
  */
