@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2004/02/16 21:02:20 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2004/03/18 19:45:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -240,7 +240,9 @@ typedef enum
     OutboundSocketBad,
 
     // Non-zero return codes
-    RETRY_SUBMITTED,
+    RETRY_SUBMITTED,                    // The OutMessage in question has been requeued onto the portqueue.
+    QUEUED_TO_DEVICE,                   // The OutMessage in question has been enqueud onto a device queue.
+    CONTINUE_LOOP,                      // The propagate a continue to the looping construct above.
 
     SCAN_ERROR_DEVICE_INHIBITED,
     SCAN_ERROR_GLOBAL_ADDRESS,
