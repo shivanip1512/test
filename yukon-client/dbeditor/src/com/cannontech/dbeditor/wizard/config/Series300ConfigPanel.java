@@ -46,13 +46,17 @@ public class Series300ConfigPanel extends com.cannontech.common.gui.util.DataInp
 	private javax.swing.JPanel ivjMultiplierPanel3 = null;
 	private javax.swing.JLabel ivjTimesLabel2 = null;
 	private javax.swing.JLabel ivjTimesLabel3 = null;
+	javax.swing.ButtonGroup modeButtonGroup = new javax.swing.ButtonGroup();
+	javax.swing.ButtonGroup channel1ButtonGroup = new javax.swing.ButtonGroup();
+	javax.swing.ButtonGroup channel2ButtonGroup = new javax.swing.ButtonGroup();
+	javax.swing.ButtonGroup channel3ButtonGroup = new javax.swing.ButtonGroup();
 
 class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
 			fireInputUpdate();
 			if (e.getSource() == Series300ConfigPanel.this.getMinMaxModeButton()) 
 				connEtoC2(e);
-			if (e.getSource() == Series300ConfigPanel.this.getpeakModeButton()) 
+			if (e.getSource() == Series300ConfigPanel.this.getPeakModeButton()) 
 				connEtoC3(e);
 			if (e.getSource() == Series300ConfigPanel.this.getKY2WireButton()) 
 				connEtoC4(e);
@@ -1285,28 +1289,6 @@ private javax.swing.JTextField getNameTextField() {
  * @return javax.swing.JRadioButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getpeakModeButton() {
-	if (ivjpeakModeButton == null) {
-		try {
-			ivjpeakModeButton = new javax.swing.JRadioButton();
-			ivjpeakModeButton.setName("peakModeButton");
-			ivjpeakModeButton.setSelected(true);
-			ivjpeakModeButton.setText("On-Peak/Off-Peak Mode");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjpeakModeButton;
-}
-/**
- * Return the peakModeButton property value.
- * @return javax.swing.JRadioButton
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JRadioButton getPeakModeButton() {
 	if (ivjpeakModeButton == null) {
 		try {
@@ -1462,7 +1444,7 @@ private void initConnections() throws java.lang.Exception {
 	// user code end
 	getNameTextField().addCaretListener(ivjEventHandler);
 	getMinMaxModeButton().addActionListener(ivjEventHandler);
-	getpeakModeButton().addActionListener(ivjEventHandler);
+	getPeakModeButton().addActionListener(ivjEventHandler);
 	getKY2WireButton().addActionListener(ivjEventHandler);
 	getKYZ3WireButton().addActionListener(ivjEventHandler);
 	getKY2WireButton2().addActionListener(ivjEventHandler);
@@ -1503,7 +1485,7 @@ private void initialize() {
 		constraintspeakModeButton.gridx = 1; constraintspeakModeButton.gridy = 2;
 		constraintspeakModeButton.gridwidth = 2;
 		constraintspeakModeButton.insets = new java.awt.Insets(9, 21, 3, 7);
-		add(getpeakModeButton(), constraintspeakModeButton);
+		add(getPeakModeButton(), constraintspeakModeButton);
 
 		java.awt.GridBagConstraints constraintsMinMaxModeButton = new java.awt.GridBagConstraints();
 		constraintsMinMaxModeButton.gridx = 3; constraintsMinMaxModeButton.gridy = 2;
@@ -1542,7 +1524,14 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
-	
+	modeButtonGroup.add( getMinMaxModeButton());
+	modeButtonGroup.add( getPeakModeButton());
+	channel1ButtonGroup.add( getKY2WireButton());
+	channel1ButtonGroup.add( getKYZ3WireButton());
+	channel2ButtonGroup.add( getKY2WireButton2());
+	channel2ButtonGroup.add( getKYZ3WireButton2());
+	channel3ButtonGroup.add( getKY2WireButton3());
+	channel3ButtonGroup.add( getKYZ3WireButton3());
 	// user code end
 }
 /**

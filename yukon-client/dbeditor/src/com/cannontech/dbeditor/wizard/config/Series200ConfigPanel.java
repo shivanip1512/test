@@ -22,6 +22,7 @@ public class Series200ConfigPanel extends com.cannontech.common.gui.util.DataInp
 	private javax.swing.JTextField ivjKhTextField = null;
 	private javax.swing.JTextField ivjMpTextField = null;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
+	javax.swing.ButtonGroup channel1ButtonGroup = new javax.swing.ButtonGroup();
 
 class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -618,7 +619,8 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
-	
+	channel1ButtonGroup.add( getKY2WireButton());
+	channel1ButtonGroup.add( getKYZ3WireButton());
 	// user code end
 }
 /**
