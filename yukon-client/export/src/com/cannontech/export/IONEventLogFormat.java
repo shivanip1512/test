@@ -15,7 +15,7 @@ public class IONEventLogFormat extends ExportFormatBase
 	private final int VALID_PRIORITY = 51;
 	private final int VALID_POINTOFFSET = 2600;
 	private String fileName = "ioneventlog.csv";	//"c2000_control.csv";
-	private String DAT_FILENAME = "\\ionconf.dat";
+
 	public static final String LASTLOGID_FILENAME = "\\IONELID.DAT";	//ION Event Log ID (last read).dat
 	public static final String DIRECTORY = com.cannontech.common.util.CtiUtilities.getConfigDirPath();
 	private long runTimeIntervalInMillis = 1800000;	//30mins
