@@ -61,6 +61,7 @@ public void archiveTypeComboBox_ActionPerformed(java.awt.event.ActionEvent actio
 	{
 		getArchiveIntervalLabel().setEnabled(true);
 		getArchiveIntervalComboBox().setEnabled(true);
+		getArchiveIntervalComboBox().setSelectedItem("5 minute");
 	}
 
 	return;
@@ -536,6 +537,7 @@ private void initialize() {
 	getArchiveIntervalComboBox().addItem("6 hour");
 	getArchiveIntervalComboBox().addItem("12 hour");
 	getArchiveIntervalComboBox().addItem("1 day");
+	getArchiveIntervalComboBox().setSelectedItem("5 minute");
 	// user code end
 }
 /**

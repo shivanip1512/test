@@ -62,6 +62,7 @@ public void archiveTypeComboBox_ActionPerformed(java.awt.event.ActionEvent actio
 		
 	getArchiveIntervalComboBox().setEnabled(
 		"On Timer".equalsIgnoreCase(val) );
+	getArchiveIntervalComboBox().setSelectedItem("5 minute");
 
 	fireInputUpdate();
 
@@ -698,6 +699,7 @@ private void initialize() {
 	getArchiveIntervalComboBox().addItem("6 hour");
 	getArchiveIntervalComboBox().addItem("12 hour");
 	getArchiveIntervalComboBox().addItem("24 hour");
+	getArchiveIntervalComboBox().setSelectedItem("5 minute");
 
 	//Load the Update Type combo box with default possible values
 	getUpdateTypeComboBox().addItem("On First Change");
