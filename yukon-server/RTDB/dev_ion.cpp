@@ -561,6 +561,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     RWTPtrSlist<CtiPointDataMsg> pointData;
     RWTPtrSlist<CtiSignalMsg>    eventData;
+    RWCString returnInfo;
 
     RWCString commandStr(InMessage->Return.CommandStr);
 
@@ -570,10 +571,10 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
     {
         if( _ion.hasInboundData() )
         {
-            _ion.getInboundData(pointData, eventData);
+            _ion.getInboundData(pointData, eventData, returnInfo);
         }
 
-        processInboundData(InMessage, TimeNow, vgList, retList, outList, pointData, eventData);
+        processInboundData(InMessage, TimeNow, vgList, retList, outList, pointData, eventData, returnInfo);
 
         pointData.clear();
         eventData.clear();
@@ -711,21 +712,24 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                 {
                     CtiRequestMsg *newReq;
 
-                    newReq = CTIDBG_new CtiRequestMsg(getID(),
-                                                      "putconfig timesync",
-                                                      InMessage->Return.UserID,
-                                                      InMessage->Return.TrxID,
-                                                      InMessage->Return.RouteID,
-                                                      InMessage->Return.MacroOffset,
-                                                      InMessage->Return.Attempt);
+                    if( gConfigParms.getValueAsString("PORTER_ION_EVENTLOG_TIMESYNCS").compareTo("true", RWCString::ignoreCase) == 0 )
+                    {
+                        newReq = CTIDBG_new CtiRequestMsg(getID(),
+                                                          "putconfig timesync",
+                                                          InMessage->Return.UserID,
+                                                          InMessage->Return.TrxID,
+                                                          InMessage->Return.RouteID,
+                                                          InMessage->Return.MacroOffset,
+                                                          InMessage->Return.Attempt);
 
-                    newReq->setMessagePriority(15);
+                        newReq->setMessagePriority(15);
 
-                    newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+                        newReq->setConnectionHandle((void *)InMessage->Return.Connection);
 
-                    CtiDeviceBase::ExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
+                        CtiDeviceBase::ExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
 
-                    delete newReq;
+                        delete newReq;
+                    }
 
                     newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                       "scan general",
@@ -747,19 +751,36 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                 break;
             }
 
+            case CtiProtocolION::Command_IntegrityScan:
+            {
+                CtiRequestMsg *newReq;
+
+                newReq = CTIDBG_new CtiRequestMsg(getID(),
+                                                  "scan general",
+                                                  InMessage->Return.UserID,
+                                                  InMessage->Return.TrxID,
+                                                  InMessage->Return.RouteID,
+                                                  InMessage->Return.MacroOffset,
+                                                  InMessage->Return.Attempt);
+
+                newReq->setMessagePriority(15);
+
+                newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+
+                CtiDeviceBase::ExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
+
+                delete newReq;
+
+                break;
+            }
+
     /*        case CtiProtocolION::Command_ExceptionScan:
             {
                 setIONScanPending(ScanRateGeneral, false);
 
                 break;
-            }
-
-            case CtiProtocolION::Command_IntegrityScan:
-            {
-                setIONScanPending(ScanRateIntegrity, false);
-
-                break;
             }*/
+
         }
 
         _ion.clearInboundData();
@@ -784,7 +805,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
 
 void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList,
-                                       RWTPtrSlist<CtiPointDataMsg> &points, RWTPtrSlist<CtiSignalMsg> &events )
+                                       RWTPtrSlist<CtiPointDataMsg> &points, RWTPtrSlist<CtiSignalMsg> &events, RWCString &returnInfo )
 {
     CtiReturnMsg *retMsg, *vgMsg;
     RWTPtrSlist<CtiPointDataMsg>::iterator pt_iter;
@@ -858,6 +879,8 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
         }
     }
 
+    retMsg->setResultString(returnInfo);
+
     //  not too kosher, but gets the job done
     if( parse.getCommandStr().contains("eventlog", RWCString::ignoreCase) )
     {
@@ -867,7 +890,7 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
         }
         else
         {
-            retMsg->setResultString("Event log collection complete.");
+            retMsg->setResultString(retMsg->ResultString() + "\nEvent log collection complete.");
         }
     }
 
