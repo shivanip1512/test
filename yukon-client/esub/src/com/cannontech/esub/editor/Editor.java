@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.Timer;
 
 import javax.swing.ImageIcon;
@@ -28,10 +29,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingElement;
@@ -356,6 +359,8 @@ public class Editor extends JPanel {
 	 */
 	public static void main(String[] args) {
 		
+		haveFun();
+		
 		CtiUtilities.setLaF();
 		JFrame frame = new JFrame();
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -416,7 +421,8 @@ public class Editor extends JPanel {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			String selectedFile = fileChooser.getSelectedFile().getPath();
 			
-			getDrawing().save(selectedFile);
+			saveDrawing();
+			//getDrawing().save(selectedFile);
 			setFrameTitle(getDrawing().getFileName());
 
 			try {
@@ -443,8 +449,16 @@ public class Editor extends JPanel {
 
 	} 
 	
-	public void saveDrawing() {		
-		getDrawing().save();
+	public void saveDrawing() {	
+		try {			
+			getDrawing().save();
+			throw new RuntimeException("");
+		}
+		catch(Exception e) {
+			CTILogger.error("Error saving drawing", e);
+			JOptionPane.showMessageDialog(com.cannontech.common.util.CtiUtilities.getParentFrame(
+			getDrawing().getLxView()), "An error occured saving the drawing", "Saving Error", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	/**
@@ -641,4 +655,8 @@ public class Editor extends JPanel {
 		return undoManager;
 	}
 
+	public static void haveFun() {
+		Connection conn = PoolManager.getInstance().getConnection("yukon");
+	
+	}
 }
