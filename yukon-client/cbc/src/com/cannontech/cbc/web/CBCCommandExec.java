@@ -101,7 +101,7 @@ public class CBCCommandExec
 			pt.setTime( new java.util.Date() );
 			pt.setTimeStamp( new java.util.Date() );
 			pt.setType( PointTypes.STATUS_POINT );
-			pt.setUserName( cbcCache.getUserName() );
+			pt.setUserName( cbcCache.getYukonUser().getUsername() );
 
 			//the actual new value for the selected state 
 			pt.setValue( (double)manChange_.intValue() );
@@ -169,7 +169,7 @@ public class CBCCommandExec
 		CBCCommand cmd = new CBCCommand();
 		cmd.setDeviceID( paoID_ );
 		cmd.setCommand( cmdOperation_ );
-		cmd.setUserName( cbcCache.getUserName() );
+		cmd.setUserName( cbcCache.getYukonUser().getUsername() );
 		
 		cbcCache.getConnection().sendCommand( cmd );
 	}

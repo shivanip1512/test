@@ -6,8 +6,6 @@
  */
 package com.cannontech.cbc.web;
 
-import com.cannontech.cbc.gui.SubBusTableModel;
-
 /**
  * @author rneuharth
  *

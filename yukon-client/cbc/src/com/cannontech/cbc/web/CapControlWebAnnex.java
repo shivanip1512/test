@@ -17,6 +17,7 @@ import com.cannontech.cbc.messages.CBCCommand;
 import com.cannontech.cbc.messages.CBCSubstationBuses;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.WeakObserver;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.state.State;
 import com.cannontech.util.ServletUtil;
 
@@ -26,13 +27,13 @@ public class CapControlWebAnnex implements java.util.Observer
 	public static final String REF_SECONDS_PEND = "5";
 
 
-	public static final String CMD_SUB			= "SUB_CNTRL";
-	public static final String CMD_FEEDER		= "FEEDER_CNTRL";
-	public static final String CMD_CAPBANK		= "CAPBANK_CNTRL";
+	public static final String CMD_SUB = "SUB_CNTRL";
+	public static final String CMD_FEEDER = "FEEDER_CNTRL";
+	public static final String CMD_CAPBANK = "CAPBANK_CNTRL";
 
 
 	//the user this object was created for
-	private String userName = null;
+	private LiteYukonUser yukonUser = null;
 
 	private SubBusTableModel subBusTableModel = null;
 	private FeederTableModel feederTableModel = null;
@@ -54,7 +55,7 @@ public class CapControlWebAnnex implements java.util.Observer
 	/**
 	 * CapControlWebAnnex constructor comment.
 	 */
-	public CapControlWebAnnex() 
+	public CapControlWebAnnex()
 	{
 		super();
 	}
@@ -97,7 +98,7 @@ public class CapControlWebAnnex implements java.util.Observer
 	public synchronized SubBusTableModel getSubTableModel()
 	{
 		if( subBusTableModel == null )
-			subBusTableModel = new SubBusTableModel();
+			subBusTableModel = new SubBusTableModel( getYukonUser() );
 
 		return subBusTableModel;
 	}
@@ -209,24 +210,6 @@ public class CapControlWebAnnex implements java.util.Observer
 	/**
 	 * @return
 	 */
-	protected String getUserName()
-	{
-		return userName;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setUserName(String string)
-	{
-		userName = string;
-	}
-
-
-
-	/**
-	 * @return
-	 */
 	public String getRefreshRate()
 	{
 		return refreshRate;
@@ -239,4 +222,20 @@ public class CapControlWebAnnex implements java.util.Observer
 	{
 		refreshRate = string;
 	}
+
+    /**
+     * @return Returns the yukonUser.
+     */
+    public LiteYukonUser getYukonUser()
+    {
+        return yukonUser;
+    }
+
+    /**
+     * @param yukonUser The yukonUser to set.
+     */
+    public void setYukonUser(LiteYukonUser yukonUser)
+    {
+        this.yukonUser = yukonUser;
+    }
 }
