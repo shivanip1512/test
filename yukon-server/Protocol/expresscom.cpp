@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/06/10 21:03:32 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/06/12 15:07:30 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1299,8 +1299,8 @@ INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
     RWCString splinterStr   = parse.getsValue("xca_splinter");
     RWCString tStr;
 
-    BYTE prog       = (BYTE)0; // parse.getiValue("xca_program", 0);
-    BYTE splinter   = (BYTE)0; // parse.getiValue("xca_splinter", 0);
+    int prog       = -1; // parse.getiValue("xca_program", 0);
+    int splinter   = -1; // parse.getiValue("xca_splinter", 0);
     BYTE loadmask   = ((BYTE)parse.getiValue("xca_loadmask", 0) & 0x0f);
     BYTE load;
 
@@ -1315,17 +1315,17 @@ INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
             splinter    = ( !(tStr = rtok(",")).isNull() ? atoi(tStr.data()) : splinter);
 
             length = 1;
-            raw[0] = (prog ? 0x20 : 0x00) | (splinter ? 0x10 : 0x00) | (load+1);
+            raw[0] = (prog >= 0 ? 0x20 : 0x00) | (splinter >= 0 ? 0x10 : 0x00) | (load+1);
 
-            if(raw[0] != 0)
+            if((raw[0] & 0x30) != 0)
             {
-                if(prog)
+                if(prog >= 0)
                 {
-                    raw[length++] = prog;
+                    raw[length++] = (BYTE)prog;
                 }
-                if(splinter)
+                if(splinter >= 0)
                 {
-                    raw[length++] = splinter;
+                    raw[length++] = (BYTE)splinter;
                 }
                 status = configuration( 0x07, length, raw );
             }
