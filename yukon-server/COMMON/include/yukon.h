@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2004/06/07 22:22:41 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2004/06/30 19:09:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -406,8 +406,13 @@ typedef enum
     ChangeCustomerDb,
     ChangeCustomerAccountDb,
     ChangeYukonImageDb,
-    ChangeBaselineDb
-
+    ChangeBaselineDb,
+    ChangeConfigDb,
+    ChangeTagDb,
+    ChangeCICustomerDb,
+    ChangeLMConstraintDb,
+    Number19IsntCurrentlyUsed,
+    ChangeSeasonScheduleDb
 } CtiDBChanged_t;
 
 typedef enum
