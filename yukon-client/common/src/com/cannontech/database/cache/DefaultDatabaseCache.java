@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -334,6 +335,26 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	public synchronized java.util.Map getAllPAOsMap()
 	{
 		return getDBCache().getAllPAOsMap();
+	}
+	
+	/**
+	 * @ejb:interface-method
+	 * tview-type:"remote"
+	 */
+	public synchronized java.util.List getAllCustomers() {
+		return getDBCache().getAllCustomers();
+	}
+	
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	 */
+	public synchronized LiteCustomer getCustomer(int customerID) {
+		return getDBCache().getCustomer( customerID );
+	}
+	
+	public synchronized void deleteCustomer(int customerID) {
+		getDBCache().deleteCustomer( customerID );
 	}
 
 

@@ -2,6 +2,7 @@ package com.cannontech.yukon;
 
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteCustomer;
 
 import com.cannontech.database.cache.DBChangeListener;
 
@@ -99,6 +100,11 @@ public interface IDatabaseCache
 
 	//Map<Integer(paoID), LiteYukonPAObject>
 	public java.util.Map getAllPAOsMap();
+	
+	// List of residential customers, load-on-demand!!!
+	public java.util.List getAllCustomers();
+	public LiteCustomer getCustomer(int customerID);
+	public void deleteCustomer(int customerID);
    
 //   public IDatabaseCache getInstance();
 
