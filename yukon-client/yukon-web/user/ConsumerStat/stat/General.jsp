@@ -33,16 +33,14 @@
             <div align="center"><br>
               <table width="235" border="1" cellspacing="0" cellpadding="3" align="center">
               </table>
-              <table width="600" border="0" cellspacing="0" cellpadding="0">
+              <table width="600" border="0" cellspacing="0" cellpadding="5">
                 <tr> 
                   <td width="429" valign="top" align="center"> 
                     <table width="400" border="0" cellspacing="3" cellpadding="0">
                       <tr> 
                         <td valign="bottom" class="GeneralHeader">
-                          <div align="center"><br>
+                          <div align="center">
                             <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TITLE_GENERAL %>"/><br>
-                            <br>
-                            <br>
                           </div>
                         </td>
                       </tr>
@@ -53,9 +51,12 @@
                             <tr> 
                               <td valign="top">
 								<p class="MainText"><cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_DESC_GENERAL %>"/></p></td>
-                              <td valign="top"> 
-                                <div align="center" class="SubtitleHeader">Your Enrolled Programs</div>
-                                <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
+                            </tr>
+							<tr>
+							  <td valign="top"><br> 
+                                <div align="left" class="SubtitleHeader">Your 
+                                  Enrolled Programs</div>
+                                <table width="400" border="0" cellspacing="0" cellpadding="3" align="center">
                                   <tr> 
                                     <td colspan="3" background="../../../Images/Icons/dot.gif" height="8"></td>
                                   </tr>
@@ -83,20 +84,24 @@
 			}
 		}
 %>
-                                  <tr> 
+                                  <tr valign="top"> 
                                     <td width="64"> 
                                       <div align="center">
 <% if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
                                         <img src="../../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
 <% } %>
-                                        <span class="TableCell"><%= program.getProgramName() %></span><br> 
-                                      </div>
+                                        </div>
                                     </td>
-                                    <td width="8" background="../../../Images/Icons/dot.gif"> </td>
-                                    <td width="128" class="MainText"> 
-                                      <table width="128" border="0" cellspacing="0" cellpadding="0" class="TableCell" height="80">
-                                        <tr height="50"> 
-                                          <td> <div align="center"><b>
+                                    <td width="8" background="../../../Images/Icons/dot.gif"> 
+                                    </td>
+                                    <td width="328" class="MainText"> 
+                                      <table width="328" border="0" cellspacing="0" cellpadding="3" class="TableCell">
+                                        <tr>
+										  <td><span class="TableCell"><b><%= program.getProgramName() %></b></span><br>
+                                          </td>
+										</tr>  
+										<tr> 
+                                          <td> 
 <%
 		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
 			String untilStr = "";
@@ -114,31 +119,29 @@
 					
 					if (belongsToProgram) {
 						if (event.getYukonDefID() == com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION)
-							untilStr = "until " + histDateFormat.format(event.getEventDateTime());
+							untilStr = " until " + histDateFormat.format(event.getEventDateTime());
 						break;
 					}
 				}
 			}
 %>
-                                              Out of Service<br>
-                                              <%= untilStr %>
+                                            <div align="left">Out of service<%= untilStr %>. 
 <%		} else if (todayCtrlHist.getBeingControlled()) { %>
-                                              Currently<br>
-                                              <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROLLING %>"/> 
+                                              Currently <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROLLING %>"/>. 
 <%		} else if (todayCtrlHist.getControlHistoryCount() > 0) { %>
-                                              You have<br>
-                                              been <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_CONTROLLED %>"/> today
+                                              You have been <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_CONTROLLED %>"/> 
+                                              today. 
 <%		} else { %>
-                                              You have not<br>
-                                              been <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_CONTROLLED %>"/> today
+                                              You have not been <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_CONTROLLED %>"/> 
+                                              today. 
 <%		} %>
-                                            </b></div>
+                                            </div>
                                           </td>
                                         </tr>
 <%		if (ctrlOdds != null) { %>
-                                        <tr height="30"> 
+                                        <tr> 
                                           <td>
-                                            <div align="center"><cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_ODDS_FOR_CONTROL %>" format="capital"/>:<br>
+                                            <div><cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_ODDS_FOR_CONTROL %>" format="capital"/>:
                                               <b><i><%= ctrlOdds %></i></b> </div>
                                           </td>
                                         </tr>
@@ -187,7 +190,7 @@
                       <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/General.jsp">
                       <table width="328" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
                         <tr> 
-                          <td height="58"> 
+                          <td> 
                             <p align="center"> 
                               <input type="checkbox" name="NotifyControl" value="true"
 							   <% if (primContact.getEmail().getEnabled()) out.print("checked"); %>>
@@ -212,7 +215,12 @@
 					<%= ServletUtils.getFormattedAddress(propAddr) %><br>
                     <%= primContact.getHomePhone() %></span><br>
                     <br>
-                    <img src="../../../WebConfig/<cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_IMG_GENERAL %>"/>"> 
+<%
+	String genlImgName = ServerUtils.forceNotNone(AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_IMG_GENERAL));
+	if (genlImgName.length() > 0) {
+%>
+                    <img src="../../../WebConfig/<%= genlImgName %>"> 
+<%	} %>
                   </td>
                 </tr>
               </table>

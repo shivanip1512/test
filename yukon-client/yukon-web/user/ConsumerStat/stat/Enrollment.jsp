@@ -137,8 +137,11 @@ function confirmSubmit(form) {
 		}
 		
 		String categoryName = category.getStarsWebConfig().getAlternateDisplayName();
-		if (category.getStarsEnrLMProgramCount() == 1)	// Use the program display name instead of the category name
+		String categoryDesc = category.getStarsWebConfig().getDescription();
+		if (category.getStarsEnrLMProgramCount() == 1) {	// Use the program display name and description instead
 			categoryName = ServletUtils.getProgramDisplayNames(category.getStarsEnrLMProgram(0))[0];
+			categoryDesc = category.getStarsEnrLMProgram(0).getStarsWebConfig().getDescription();
+		}
 		
 		String checkBoxDisabled = "";
 		String radioBtnDisabled = "";
@@ -154,21 +157,19 @@ function confirmSubmit(form) {
                               <td width="10%" valign="top"> <img src="../../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"
 								<% if (category.getStarsWebConfig().getLogoLocation().equals("")) { %>style="display:none"<% } %>> 
                               </td>
-                              <td width="85%"> 
+                              <td width="3%" valign="top"> 
+                                <input type="checkbox" name="AppCat" value="<%= category.getApplianceCategoryID() %>" <%= checkBoxDisabled %>
+									  onClick="changeCategory(this, <%= idx %>)" <% if (program != null) { %>checked<% } %>>
+                              <td width="87%" valign="top"> 
                                 <table width="100%" border="0" cellspacing="0" cellpadding="1">
                                   <input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>">
                                   <input type="hidden" name="ProgID" value="<% if (program != null) out.print(program.getProgramID()); %>">
                                   <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrLMProgram(0).getProgramID() %>">
-                                  <tr valign="top"> 
-                                    <td width="5%"> 
-                                      <input type="checkbox" name="AppCat" value="<%= category.getApplianceCategoryID() %>" <%= checkBoxDisabled %>
-									  onclick="changeCategory(this, <%= idx %>)" <% if (program != null) { %>checked<% } %>>
-                                    </td>
-                                    <td width="95%"><span class="SubtitleHeader"><%= categoryName %></span></td>
+                                  <tr> 
+                                    <td width="95%" class="SubtitleHeader"><%= categoryName %></td>
                                   </tr>
                                   <tr> 
-                                    <td width="5%">&nbsp;</td>
-                                    <td width="95%"><span class="TableCell"><%= category.getStarsWebConfig().getDescription() %></span></td>
+                                    <td width="95%" class="TableCell"><%= categoryDesc %></td>
                                   </tr>
                                 </table>
                                 <table width="100%" border="0" cellspacing="0" cellpadding="1">
@@ -176,11 +177,10 @@ function confirmSubmit(form) {
 		if (category.getStarsEnrLMProgramCount() == 1) {
 			/* If only one program under this category, only show the description button */
 %>
-                                  <tr valign="top"> 
-                                    <td width="9%">&nbsp;</td>
-                                    <td class="TableCell" width="49%">&nbsp;</td>
-                                    <td class="TableCell" width="22%">&nbsp;</td>
-                                    <td class="TableCell" width="20%" align="right"> 
+                                  <tr> 
+                                    <td width="3%">&nbsp;</td>
+                                    <td class="TableCell" colspan="2">&nbsp;</td>
+                                    <td class="TableCell" width="17%" align="right" valign="top"> 
                                       <input type="button" name="Details" value="Details" onclick="location.href='ProgramDetails.jsp?Cat=<%= i %>'">
                                     </td>
                                   </tr>
@@ -200,32 +200,40 @@ function confirmSubmit(form) {
                                   <tr> 
                                     <td colspan="4" background="../../../Images/Icons/dot.gif" height="8"></td>
                                   </tr>
-                                  <tr valign="top"> 
-                                    <td width="9%" align="right"> 
+                                  <tr> 
+                                    <td width="3%" valign="top"> 
                                       <input type="radio" name="Program<%= idx %>" value="<%= prog.getProgramID() %>" <%= radioBtnDisabled %>
-									  onclick="changeProgram(this, <%= idx %>)" <%= checked %>>
+									  onClick="changeProgram(this, <%= idx %>)" <%= checked %>>
                                     </td>
-                                    <td class="TableCell" width="49%"><%= ServletUtils.getProgramDisplayNames(prog)[1] %> 
-                                    </td>
-                                    <td class="TableCell" width="22%" align="right"> 
-<% if (!progIcons[0].equals("")) {
+                                    <td colspan="2"> 
+                                      <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                                        <tr> 
+                                          <td width="70%" class="SubtitleHeader"><%= ServletUtils.getProgramDisplayNames(prog)[1] %></td>
+                                          <td width="30%"> 
+                                            <% if (!progIcons[0].equals("")) {
 	savingsIconExists = true;
 %>
-                                      <img src="../../../Images/Icons/<%= progIcons[0] %>"> 
-<% } %>
-<% if (!progIcons[1].equals("")) {
+                                            <img src="../../../Images/Icons/<%= progIcons[0] %>"> 
+                                            <% } %>
+                                            <% if (!progIcons[1].equals("")) {
 	controlIconExists = true;
 %>
-                                      <img src="../../../Images/Icons/<%= progIcons[1] %>"> 
-<% } %>
-<% if (!progIcons[2].equals("")) {
+                                            <img src="../../../Images/Icons/<%= progIcons[1] %>"> 
+                                            <% } %>
+                                            <% if (!progIcons[2].equals("")) {
 	envrnmtIconExists = true;
 %>
-                                      <img src="../../../Images/Icons/<%= progIcons[2] %>"> 
-<% } %>
+                                            <img src="../../../Images/Icons/<%= progIcons[2] %>"> 
+                                            <% } %>
+                                          </td>
+                                        </tr>
+                                        <tr> 
+                                          <td colspan="2"><%= prog.getStarsWebConfig().getDescription() %></td>
+                                        </tr>
+                                      </table>
                                     </td>
-                                    <td class="TableCell" width="20%" align="right"> 
-                                      <input type="button" name="Details" value="Details" onclick="location.href='ProgramDetails.jsp?Cat=<%= i %>&Prog=<%= j %>'">
+                                    <td class="TableCell" width="17%" align="right" valign="top"> 
+                                      <input type="button" name="Details" value="Details" onClick="location.href='ProgramDetails.jsp?Cat=<%= i %>&Prog=<%= j %>'">
                                     </td>
                                   </tr>
                                   <%
