@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/01/16 22:44:29 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/02/09 16:50:17 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -74,8 +74,8 @@ class IM_EX_PROT CtiProtocolTransdata
       enum Sizes
       {
          Billing_size      = 1200,
-         Storage_size      = 30000,
-         Loadprofile_size  = 30000
+         Storage_size      = 50000,
+         Loadprofile_size  = 50000
       };
 
       enum Errors
