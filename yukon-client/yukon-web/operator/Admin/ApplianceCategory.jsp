@@ -115,17 +115,17 @@ var yukonDescription = new Array();
 	yukonProgName[0] = "(none)";
 	yukonDescription[0] = "";
 <%
-	for (int i = 0; i < availPrograms.size(); i++) {
+	for (int i = 1; i <= availPrograms.size(); i++) {
 		LMProgramDirect program = (LMProgramDirect) availPrograms.get(i);
 %>
-	yukonProgID[<%= i+1 %>] = -1;
-	yukonDeviceID[<%= i+1 %>] = <%= program.getYukonID() %>;
-	yukonProgName[<%= i+1 %>] = "<%= program.getYukonName() %>";
-	yukonDescription[<%= i+1 %>] = "<%= ServerUtils.forceNotNone(program.getYukonDescription()).replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"');
+	yukonProgID[<%= i %>] = -1;
+	yukonDeviceID[<%= i %>] = <%= program.getYukonID() %>;
+	yukonProgName[<%= i %>] = "<%= program.getYukonName() %>";
+	yukonDescription[<%= i %>] = "<%= ServerUtils.forceNotNone(program.getYukonDescription()).replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"');
 <%	} %>
 
 var nextProgIdx = <%= category.getStarsEnrLMProgramCount() %>;
-var nextYukonIdx = <%= availPrograms.size() %>;
+var nextYukonIdx = <%= availPrograms.size() + 1 %>;
 var curProgIdx = -1;
 
 function newProgramEntry(yukonIdx) {
@@ -160,24 +160,27 @@ function addProgram(form) {
 	var progList = document.getElementById("Program");
 	
 	if (availProgList.selectedIndex >= 0) {
+		var idx = newProgramEntry(availProgList.value);
+		
 		if (availProgList.value > 0)
 			availProgList.remove(availProgList.selectedIndex);
 		
-		var idx = newProgramEntry(availProgList.value);
-		
 		var oOption = document.createElement("OPTION");
 		assgnProgList.add(oOption);
-		oOption.innerText = progName[idx];
-		if (deviceID[idx] == 0) oOption.innerText = "*" + dispName[idx];
+		if (deviceID[idx] > 0)
+			oOption.innerText = progName[idx];
+		else
+			oOption.innerText = "*" + dispName[idx];
 		oOption.value = idx;
 		
 		oOption = document.createElement("OPTION");
 		progList.add(oOption);
-		oOption.innerText = progName[idx];
-		if (deviceID[idx] == 0) oOption.innerText = "*" + dispName[idx];
+		if (deviceID[idx] > 0)
+			oOption.innerText = progName[idx];
+		else
+			oOption.innerText = "*" + dispName[idx];
 		oOption.value = idx;
 		
-		assgnProgList.selectedIndex = assgnProgList.length - 1;
 		progList.selectedIndex = progList.length - 1;
 		showProgramConfig(form);
 	}
@@ -210,9 +213,9 @@ function removeProgram(form) {
 		if (deviceID[assgnProgList.value] > 0) {
 			var idx = newYukonEntry(assgnProgList.value);
 			var oOption = document.createElement("OPTION");
+			availProgList.add(oOption);
 			oOption.innerText = yukonProgName[idx];
 			oOption.value = idx;
-			availProgList.options.add(oOption);
 		}
 		
 		assgnProgList.remove(assgnProgList.selectedIndex);
