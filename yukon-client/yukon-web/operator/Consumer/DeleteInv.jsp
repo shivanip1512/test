@@ -70,8 +70,8 @@
 	if (liteInv instanceof LiteStarsLMHardware) {
 		String serialNo = ((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber();
 %>
-                  The hardware &quot;#<%= serialNo %>&quot; will be removed from 
-                  the account. 
+                  The hardware with serial no. <%= serialNo %> will be removed 
+                  from the account. 
                   <%
 	} else {
 		String deviceName = PAOFuncs.getYukonPAOName(liteInv.getDeviceID());
