@@ -59,27 +59,30 @@ public void figureNextBaselineCalcTime()
 	}
 
 	GregorianCalendar tempCal = nextBaselineCalcTime;	
-	if ( nextBaselineCalcTime.get(java.util.Calendar.DAY_OF_YEAR )  == 365)
+	int calcTimeYear = nextBaselineCalcTime.get(java.util.Calendar.YEAR);
+	int calcTimeDayOfYear = nextBaselineCalcTime.get(java.util.Calendar.DAY_OF_YEAR);
+	
+	if (calcTimeDayOfYear  == 365)
 	{
 		//Check for leap year.
-		if ( nextBaselineCalcTime.isLeapYear(nextBaselineCalcTime.get(java.util.Calendar.YEAR)))
+		if ( nextBaselineCalcTime.isLeapYear(calcTimeYear))
 		{	//just increment the day for leap year, need 366 days!
-			tempCal.set( java.util.Calendar.DAY_OF_YEAR, nextBaselineCalcTime.get(java.util.Calendar.DAY_OF_YEAR) + 1) ;
+			tempCal.set( java.util.Calendar.DAY_OF_YEAR, calcTimeDayOfYear+1) ;
 		}
 		else
 		{	// must set to begining of next year
 			tempCal.set( java.util.Calendar.DAY_OF_YEAR, 1) ;
-			tempCal.set( java.util.Calendar.YEAR, 1);
+			tempCal.set( java.util.Calendar.YEAR, calcTimeYear+1);
 		}
 	}
-	else if ( nextBaselineCalcTime.get( java.util.Calendar.DAY_OF_YEAR) == 366)
+	else if ( calcTimeDayOfYear == 366)
 	{	// must set to begining of next year
 		tempCal.set( java.util.Calendar.DAY_OF_YEAR, 1) ;
-		tempCal.set( java.util.Calendar.YEAR, 1);
+		tempCal.set( java.util.Calendar.YEAR, calcTimeYear+1);
 	}
 	else
 	{
-		tempCal.set( java.util.Calendar.DAY_OF_YEAR, nextBaselineCalcTime.get(java.util.Calendar.DAY_OF_YEAR) + 1) ;
+		tempCal.set( java.util.Calendar.DAY_OF_YEAR, calcTimeDayOfYear+1) ;
 	}
 
 	while ( tempCal.get(java.util.Calendar.DAY_OF_WEEK) == java.util.Calendar.SUNDAY || 
@@ -145,30 +148,33 @@ public Vector getBaselinePointDataMsgVector(CalcComponent calcComponent)
 	PointData pointDataMsg = null;
 	Vector returnVector = new Vector();
 
-	for (int i = 0; i < dailyValuesArray.length; i++)
+	if( getDailyValuesArray() != null)
 	{
-		// Must enter the baseline value into RPH twice in order for Graph to be able to draw it.
-		// Begining Timestamp 00:00:01
-		pointDataMsg = new com.cannontech.message.dispatch.message.PointData();
-		pointDataMsg.setId(calcComponent.getPointID().intValue());
-
-		pointDataMsg.setValue( dailyValuesArray[i].doubleValue());
-
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.setTime(getNextBaselineCalcTime().getTime());
-
-		cal.set(GregorianCalendar.HOUR_OF_DAY, dailyHoursArray[i].intValue() + 1);
-		cal.set(GregorianCalendar.MINUTE, 0);
-		cal.set(GregorianCalendar.SECOND, 0);
-		
-		pointDataMsg.setTimeStamp(cal.getTime());
-		pointDataMsg.setTime(cal.getTime());
-		
-		pointDataMsg.setQuality(PointQualities.NON_UPDATED_QUALITY);
-		pointDataMsg.setType(com.cannontech.database.data.point.PointTypes.CALCULATED_POINT);
-		pointDataMsg.setTags(0x00008000); //load profile tag setting
-		pointDataMsg.setStr("Baseline Calc Historical");
-		returnVector.addElement(pointDataMsg);
+		for (int i = 0; i < dailyValuesArray.length; i++)
+		{
+			// Must enter the baseline value into RPH twice in order for Graph to be able to draw it.
+			// Begining Timestamp 00:00:01
+			pointDataMsg = new com.cannontech.message.dispatch.message.PointData();
+			pointDataMsg.setId(calcComponent.getPointID().intValue());
+	
+			pointDataMsg.setValue( dailyValuesArray[i].doubleValue());
+	
+			GregorianCalendar cal = new GregorianCalendar();
+			cal.setTime(getNextBaselineCalcTime().getTime());
+	
+			cal.set(GregorianCalendar.HOUR_OF_DAY, dailyHoursArray[i].intValue() + 1);
+			cal.set(GregorianCalendar.MINUTE, 0);
+			cal.set(GregorianCalendar.SECOND, 0);
+			
+			pointDataMsg.setTimeStamp(cal.getTime());
+			pointDataMsg.setTime(cal.getTime());
+			
+			pointDataMsg.setQuality(PointQualities.NON_UPDATED_QUALITY);
+			pointDataMsg.setType(com.cannontech.database.data.point.PointTypes.CALCULATED_POINT);
+			pointDataMsg.setTags(0x00008000); //load profile tag setting
+			pointDataMsg.setStr("Baseline Calc Historical");
+			returnVector.addElement(pointDataMsg);
+		}
 	}
 	return returnVector;
 }
@@ -369,7 +375,6 @@ public Vector main()
 			}
 			tempCal.set( java.util.Calendar.DAY_OF_YEAR, dayofyear);
 		}
-
 		if( daysUsedToCalcBaseline > 0)
 		{
 
@@ -486,25 +491,26 @@ public int retrieveDailyBaselineData(CalcComponent calcComponent, Vector validTi
 			if (rowCount > 0)
 			{
 				setValuesAndTimestamps(vals, ts);
+				
+				
+				java.util.Set keySet = getBaselineTreeMap().keySet();
+				dailyHoursArray = new Integer [keySet.size()];
+				keySet.toArray(dailyHoursArray);
+	
+				java.util.Collection keyVals = getBaselineTreeMap().values();
+				Object [] tempArray = new Double[keyVals.size()];
+				dailyValuesArray = new Double[keyVals.size()];
+				tempArray = keyVals.toArray();
+	
+				for (int i = 0; i < keyVals.size(); i++)
+				{
+					Double[] v = (Double[])tempArray[i];
+	
+					double counter = v[0].doubleValue();
+					double totalVal = v[1].doubleValue();
+					dailyValuesArray[i] = new Double(totalVal/counter);
+				}
 			}
-			java.util.Set keySet = baselineTreeMap.keySet();
-			dailyHoursArray = new Integer [keySet.size()];
-			keySet.toArray(dailyHoursArray);
-
-			java.util.Collection keyVals = baselineTreeMap.values();
-			Object [] tempArray = new Double[keyVals.size()];
-			dailyValuesArray = new Double[keyVals.size()];
-			tempArray = keyVals.toArray();
-
-			for (int i = 0; i < keyVals.size(); i++)
-			{
-				Double[] v = (Double[])tempArray[i];
-
-				double counter = v[0].doubleValue();
-				double totalVal = v[1].doubleValue();
-				dailyValuesArray[i] = new Double(totalVal/counter);
-			}				
-
 		}
 	}
 	catch (java.sql.SQLException e)
@@ -674,4 +680,22 @@ public void setValuesAndTimestamps(Double[] values, Integer[] timestamps)
 	setBaselineTreeMap( tree );
 
 }
+	/**
+	 * Returns the dailyValuesArray.
+	 * @return Double[]
+	 */
+	public Double[] getDailyValuesArray()
+	{
+		return dailyValuesArray;
+	}
+
+	/**
+	 * Sets the dailyValuesArray.
+	 * @param dailyValuesArray The dailyValuesArray to set
+	 */
+	public void setDailyValuesArray(Double[] dailyValuesArray)
+	{
+		this.dailyValuesArray = dailyValuesArray;
+	}
+
 }
