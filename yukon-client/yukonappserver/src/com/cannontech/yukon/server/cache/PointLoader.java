@@ -1,5 +1,7 @@
 package com.cannontech.yukon.server.cache;
 
+import com.cannontech.database.data.point.PointTypes;
+
 /**
  * Insert the type's description here.
  * Creation date: (3/15/00 3:57:58 PM)
@@ -22,7 +24,7 @@ private void executeNonSQL92Query()
    
    String sqlString = 
       "SELECT POINTID,POINTNAME,POINTTYPE,PAOBJECTID, " +
-      "POINTOFFSET,STATEGROUPID FROM POINT WHERE POINTID > 0 " + 
+      "POINTOFFSET,STATEGROUPID FROM POINT WHERE POINTID > " + PointTypes.SYS_PID_SYSTEM + " " + 
       "ORDER BY PAObjectID, POINTOFFSET";
 
    java.sql.Connection conn = null;
@@ -94,7 +96,8 @@ timerStart = new java.util.Date();
 	String sqlString = "SELECT P.POINTID, POINTNAME, POINTTYPE, PAOBJECTID, POINTOFFSET, STATEGROUPID, FORMULA"+
 						" FROM ( POINT P LEFT OUTER JOIN POINTUNIT PU "+
 						" ON P.POINTID = PU.POINTID )  LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID "+
-						" WHERE P.POINTID > 0 ORDER BY PAObjectID, POINTOFFSET ";
+						" WHERE P.POINTID > " + PointTypes.SYS_PID_SYSTEM +
+						" ORDER BY PAObjectID, POINTOFFSET ";
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
 	java.sql.ResultSet rset = null;
