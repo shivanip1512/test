@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2004/05/10 21:35:50 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2004/05/11 18:32:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -806,7 +806,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
                         if(DebugLevel & 0x00020000)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for DNP/ION Devices" << endl;
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for DNP/ION/LMI Devices" << endl;
                         }
                         CtiDeviceDNP().getSQL( db, keyTable, selector );
                         if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
@@ -820,14 +820,14 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
                         if(DebugLevel & 0x00020000)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for DNP/ION Devices" << endl;
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for DNP/ION/LMI Devices" << endl;
                         }
                     }
                     stop = stop.now();
                     if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  DNP/ION Devices" << endl;
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  DNP/ION/LMI Devices" << endl;
                     }
 
                     start = start.now();
