@@ -9,8 +9,6 @@ import com.cannontech.message.util.Message;
  */
 public interface IMACSConnection extends IServerConnection 
 {
-	public IConnectionBase getMACSConnBase();
-	
 	public Schedule[] getCategories( String category );
 
 	public java.util.Hashtable getCategoryNames(); 

@@ -1,10 +1,12 @@
 package com.cannontech.yukon.connections;
 
 import com.cannontech.yukon.IMACSConnection;
-import com.cannontech.yukon.IConnectionBase;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.message.macs.message.DeleteSchedule;
+import com.cannontech.message.macs.message.Info;
 import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.message.macs.message.Schedule;
+import com.cannontech.message.macs.message.ScriptFile;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
@@ -14,7 +16,7 @@ import com.roguewave.vsj.DefineCollectable;
 import com.cannontech.message.macs.message.MACSCategoryChange;
 import com.cannontech.roles.yukon.SystemRole;
 
-public class ServerMACSConnection extends ClientConnection implements IMACSConnection, MessageListener
+public class ServerMACSConnection extends ClientConnection implements IMACSConnection//, MessageListener
 {
 	private java.util.Vector schedules = null;
 
@@ -80,7 +82,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	   setAutoReconnect(true);
 	   setTimeToReconnect(5);
 	   
-	   addMessageListener( this );
+	   //addMessageListener( this );
 	
 	   try
 	   {
@@ -165,19 +167,13 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	 */
 	public Schedule[] getCategories( String category )
 	{
-		synchronized( getSchedules() )
-		{
-			synchronized( getCategoryNames() )
-			{
-				java.util.ArrayList list = (java.util.ArrayList)getCategoryNames().get(category);
-				Schedule[] sched = new Schedule[list.size()];
-				list.toArray( sched );
-	
-				return sched;
-			}
-		}
-		
+		java.util.ArrayList list = (java.util.ArrayList)getCategoryNames().get(category);
+		Schedule[] sched = new Schedule[list.size()];
+		list.toArray( sched );
+
+		return sched;
 	}
+	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (2/23/2001 10:03:31 AM)
@@ -210,24 +206,17 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	 */
 	private void handleDeleteSchedule(com.cannontech.message.macs.message.DeleteSchedule deleted) 
 	{
-		synchronized ( getSchedules() ) 
+		for( int j = 0; j < getSchedules().size(); j++ )
 		{
-			for( int j = 0; j < getSchedules().size(); j++ )
+			if( ((Schedule)getSchedules().get(j)).getId() == deleted.getScheduleId() )
 			{
-				if( ((Schedule)getSchedules().get(j)).getId() == deleted.getScheduleId() )
-				{
-					removeCategory( (Schedule)getSchedules().get(j) );
-					getSchedules().remove( j );
-					break;
-				}
+				removeCategory( (Schedule)getSchedules().get(j) );
+				getSchedules().remove( j );
+				break;
 			}
-	
 		}
-		
-		// tell all listeners that we need to delete a schedule
-		setChanged();
-		notifyObservers( deleted );
 	}
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (2/21/2001 6:03:46 PM)
@@ -235,11 +224,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	 */
 	private void handleInfo(com.cannontech.message.macs.message.Info info) 
 	{
-		com.cannontech.clientutils.CTILogger.info("Received an Info msg : " + info.getInfo()  );
-		
-		// tell all listeners that we received an Info message
-		setChanged();
-		notifyObservers( info );
+		com.cannontech.clientutils.CTILogger.info("Received an Info msg : " + info.getInfo()  );		
 	}
 
 	/**
@@ -251,36 +236,29 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	{
 		com.cannontech.clientutils.CTILogger.info("Received a schedule named " + sched.getScheduleName() + "/" + sched.getCategoryName() );
 	
-		synchronized ( getSchedules() ) 
+		boolean found = false;
+		for( int j = 0; j < getSchedules().size(); j++ )
 		{
-			boolean found = false;
-			for( int j = 0; j < getSchedules().size(); j++ )
+			if( ((Schedule)getSchedules().get(j)).equals(sched) )
 			{
-				if( ((Schedule)getSchedules().get(j)).equals(sched) )
-				{
-					// remove the previous category entry for the old version of the schedule
-					// if the category name has changed
-					if( !((Schedule)getSchedules().get(j)).getCategoryName().equals(sched.getCategoryName()) )
-						removeCategory( (Schedule)getSchedules().get(j) );
-					
-					// the schedule already exists, so just assign it to the new value				
-					getSchedules().set( j, sched );
-					found = true;
-					break;
-				}
-			}
-	
-			addCategory( sched );
+				// remove the previous category entry for the old version of the schedule
+				// if the category name has changed
+				if( !((Schedule)getSchedules().get(j)).getCategoryName().equals(sched.getCategoryName()) )
+					removeCategory( (Schedule)getSchedules().get(j) );
 				
-			if( !found )
-				getSchedules().add( sched );
+				// the schedule already exists, so just assign it to the new value				
+				getSchedules().set( j, sched );
+				found = true;
+				break;
+			}
 		}
-	
-		// tell all listeners that we received a schedule
-		setChanged();
-		notifyObservers( sched );
-	
+
+		addCategory( sched );
+			
+		if( !found )
+			getSchedules().add( sched );
 	}
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (2/21/2001 6:03:46 PM)
@@ -290,31 +268,23 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	{
 		com.cannontech.clientutils.CTILogger.info("Received a ScriptFile " + file.getFileName()  );
 	
-		synchronized ( getSchedules() ) 
+		boolean found = false;
+		for( int j = 0; j < getSchedules().size(); j++ )
 		{
-			boolean found = false;
-			for( int j = 0; j < getSchedules().size(); j++ )
+			if( ((Schedule)getSchedules().get(j)).getScriptFileName().equalsIgnoreCase(file.getFileName()) )
 			{
-				if( ((Schedule)getSchedules().get(j)).getScriptFileName().equalsIgnoreCase(file.getFileName()) )
-				{
-					// if this schedule uses the newly received script file name, update its values
-					((Schedule)getSchedules().get(j)).getNonPersistantData().setScript( file );
-				}
+				// if this schedule uses the newly received script file name, update its values
+				((Schedule)getSchedules().get(j)).getNonPersistantData().setScript( file );
 			}
-	
 		}
-	
 		
-		// tell all listeners that we received a Info message
-		setChanged();
-		notifyObservers( file );
 	}
 
 	/**
 	 * This method was created in VisualAge.
 	 * @param streamer CollectableStreamer
 	 */
-	public void registerMappings(CollectableStreamer streamer ) {
+	protected void registerMappings(CollectableStreamer streamer ) {
 		super.registerMappings( streamer );
 	
 		for( int i = 0; i < MACS_DC_MAPPINGS.length; i++ )
@@ -370,12 +340,9 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	{	
 		try
 		{
-			synchronized( getSchedules() )
-			{
-				Schedule[] scheds = new Schedule[ getSchedules().size() ];
-				getSchedules().toArray( scheds );
-				return scheds;
-			}
+			Schedule[] scheds = new Schedule[ getSchedules().size() ];
+			getSchedules().toArray( scheds );
+			return scheds;
 		}
 		catch( ArrayStoreException e )
 		{
@@ -576,41 +543,39 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 		write( modifiedSchedule );	
 	}
 
-	public IConnectionBase getMACSConnBase() 
-	{
-		return this;
-	}
-
 	public void writeMsg( Message msg ) throws java.io.IOException
 	{
 		write( msg );
 	}
 
-	public synchronized void messageReceived( MessageEvent e )
+	/**
+	 * Send a MessageEvent to all of this connections MessageListeners
+	 * @param msg
+	 */
+//	public void messageReceived( MessageEvent e )
+	protected void fireMessageEvent(Message msg) 
 	{
-		Object obj = e.getMessage();
-		
-		if( obj instanceof Schedule )
+		if( msg instanceof Schedule )
 		{
-			handleSchedule( (Schedule)obj );
+			handleSchedule( (Schedule)msg );
 		}
-		else if( obj instanceof com.cannontech.message.macs.message.DeleteSchedule )
+		else if( msg instanceof DeleteSchedule )
 		{
-			handleDeleteSchedule( (com.cannontech.message.macs.message.DeleteSchedule)obj );
+			handleDeleteSchedule( (DeleteSchedule)msg );
 		}
-		else if( obj instanceof com.cannontech.message.macs.message.Info )
+		else if( msg instanceof Info )
 		{
-			handleInfo( (com.cannontech.message.macs.message.Info)obj );
+			handleInfo( (Info)msg );
 		}
-		else if( obj instanceof com.cannontech.message.macs.message.ScriptFile )
+		else if( msg instanceof ScriptFile )
 		{
-			handleScriptFile( (com.cannontech.message.macs.message.ScriptFile)obj );
+			handleScriptFile( (ScriptFile)msg );
 		}
 		else
-			throw new RuntimeException("Recieved a message of type " + obj.getClass() );
+			throw new RuntimeException("Recieved a message of an unknown type: " + msg.getClass() );
 		
-		return;
 		
+		super.fireMessageEvent( msg );
 	}
 
 }

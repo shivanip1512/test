@@ -6,13 +6,15 @@ package com.cannontech.macs.gui;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.List;
-import java.util.Observable;
 import java.util.Vector;
 
+import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.macs.message.DeleteSchedule;
 import com.cannontech.message.macs.message.Schedule;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageListener;
 
-public class ScheduleTableModel extends javax.swing.table.AbstractTableModel implements java.util.Observer, com.cannontech.common.gui.util.SortableTableModel 
+public class ScheduleTableModel extends javax.swing.table.AbstractTableModel implements MessageListener, com.cannontech.common.gui.util.SortableTableModel 
 {
 	private java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("MM-dd-yyyy E HH:mm");
 	private Font modelFont = new Font("dialog", Font.PLAIN, 12);
@@ -420,21 +422,22 @@ private int findScheduleIndx( Schedule s )
 
 /**
  * This method was created in VisualAge.
- * @param source Observable
- * @param obj java.lang.Object
+ * 
  */
-public synchronized void update(Observable source, Object obj ) 
+//public synchronized void update(Observable source, Object obj )
+public void messageReceived( MessageEvent e ) 
 {
+	Message in = e.getMessage();
 
-	if( obj instanceof Schedule
-	    || obj instanceof DeleteSchedule )
+	if( in instanceof Schedule
+	    || in instanceof DeleteSchedule )
 	{		
 		int oldRowCount = getRowCount();		
 		boolean changeSize = false;
 		
-		if( obj instanceof Schedule )
+		if( in instanceof Schedule )
 		{		
-			Schedule sched = (Schedule)obj;
+			Schedule sched = (Schedule)in;
 				
 			boolean found = false;
 	
@@ -474,9 +477,9 @@ public synchronized void update(Observable source, Object obj )
 			}
 	
 		}
-		else if( obj instanceof DeleteSchedule )
+		else if( in instanceof DeleteSchedule )
 		{
-			DeleteSchedule dSched = (DeleteSchedule)obj;
+			DeleteSchedule dSched = (DeleteSchedule)in;
 
 			for( int j = 0 ; j < getAllSchedules().size(); j++ )
 			{

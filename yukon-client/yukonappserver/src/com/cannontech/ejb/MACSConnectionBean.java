@@ -7,7 +7,7 @@ import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
 import com.cannontech.yukon.IMACSConnection;
-import com.cannontech.yukon.IConnectionBase;
+import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.Message;
 import com.cannontech.yukon.connections.ServerMACSConnection;
 import com.cannontech.message.macs.message.Schedule;
@@ -19,7 +19,7 @@ import com.cannontech.message.macs.message.Schedule;
  *	jndi-name="jndi/MACSConnectionBean"
  *	type="Stateful" 
 **/
-public class MACSConnectionBean /*extends ClientConnection*/ implements SessionBean, IMACSConnection
+public class MACSConnectionBean extends ClientConnection implements SessionBean, IMACSConnection
 {
 	private static ServerMACSConnection macsConn = null;
 
@@ -48,15 +48,6 @@ public class MACSConnectionBean /*extends ClientConnection*/ implements SessionB
 		getMACSConnection().writeMsg( msg );
 	}
 	
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-	public IConnectionBase getMACSConnBase()
-	{
-		return getMACSConnection();
-	}
-
    /**
     * @ejb:interface-method
     * tview-type="remote" 

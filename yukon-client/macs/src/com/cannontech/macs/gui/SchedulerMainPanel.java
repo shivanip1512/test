@@ -24,12 +24,17 @@ import com.cannontech.common.wizard.WizardPanelEvent;
 import com.cannontech.macs.debug.ScheduleDebugViewer;
 import com.cannontech.macs.gui.popup.SchedulerPopUpMenu;
 import com.cannontech.macs.schedule.editor.ScheduleEditorPanel;
+import com.cannontech.message.macs.message.Info;
 import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.message.macs.message.Schedule;
+import com.cannontech.message.macs.message.ScriptFile;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.concrete.ResourceFactory;
 
-public class SchedulerMainPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener, javax.swing.event.ListSelectionListener, javax.swing.event.TableModelListener, java.util.Observer, com.cannontech.common.wizard.WizardPanelListener, com.cannontech.common.editor.PropertyPanelListener, javax.swing.event.PopupMenuListener, com.cannontech.clientutils.popup.PopUpEventListener
+public class SchedulerMainPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener, javax.swing.event.ListSelectionListener, javax.swing.event.TableModelListener, java.util.Observer, com.cannontech.common.wizard.WizardPanelListener, com.cannontech.common.editor.PropertyPanelListener, javax.swing.event.PopupMenuListener, com.cannontech.clientutils.popup.PopUpEventListener, MessageListener
 {
 	private static final int PRE_CREATED_FRAMES = 3;
 	private com.cannontech.macs.gui.popup.SchedulerPopUpMenu schedulePopupMenu = null;
@@ -357,14 +362,14 @@ private IMACSConnection getIMACSConnection()
 public String getConnectionState() 
 {
 	StringBuffer title = new StringBuffer("MACS Scheduler");
-	boolean validConn = getIMACSConnection().getMACSConnBase().isValid();
+	boolean validConn = getIMACSConnection().isValid();
 
 	if( validConn && !lastConnectionStatus )
 	{
 		// connected and change
 		title.append("   [Connected to MacsServer@" + 
-				getIMACSConnection().getMACSConnBase().getHost() + 
-				":" + getIMACSConnection().getMACSConnBase().getPort() + "]");
+				getIMACSConnection().getHost() + 
+				":" + getIMACSConnection().getPort() + "]");
 
 		getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "Connection to MACS server established", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
 		
@@ -387,8 +392,8 @@ public String getConnectionState()
 	}
 	else if( lastConnectionStatus )  // still connected
 		title.append("   [Connected to MacsServer@" + 
-					getIMACSConnection().getMACSConnBase().getHost() + 
-					":" + getIMACSConnection().getMACSConnBase().getPort() + "]");
+					getIMACSConnection().getHost() + 
+					":" + getIMACSConnection().getPort() + "]");
 					
 	else // still disconnected
 	{		
@@ -627,7 +632,7 @@ public ScheduleTableModel getScheduleTableModel()
 		scheduleTableModel = new ScheduleTableModel();
 		//scheduleTableModel.setConnection( getConnection() );
 		
-		getIMACSConnection().getMACSConnBase().addObserver(scheduleTableModel);
+		getIMACSConnection().addMessageListener( scheduleTableModel );
 		
 		
 		//Listen for TableModelEvent
@@ -748,8 +753,8 @@ private void initConnections()
 	getScheduleTableModel().addTableModelListener( this );
 
 	//Observer connection state changes
-	getIMACSConnection().getMACSConnBase().addObserver(this);
-	//update( getConnection(), getConnection() );
+	getIMACSConnection().addObserver( this );
+	getIMACSConnection().addMessageListener( this );
 }
 /**
  * This method was created in VisualAge.
@@ -1190,6 +1195,39 @@ public void tableChanged(TableModelEvent event )
 
 	getScheduleTable().repaint();
 }
+
+public void messageReceived( MessageEvent e ) 
+{
+	Message in = e.getMessage();
+
+	if( in instanceof Info )
+	{
+		getMessagePanel().messageEvent(
+				new com.cannontech.common.util.MessageEvent(
+					this, ((Info)in).getInfo(), com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
+	}
+	else if( in instanceof ScriptFile )
+	{
+		for( int i = 0; i < getFrames().size(); i++ )
+		{
+			javax.swing.JFrame f = (javax.swing.JFrame)getFrames().get(i);
+
+			if( f.isVisible() 
+				 && f.getContentPane() instanceof ScheduleEditorPanel )
+			{
+				ScheduleEditorPanel pane = (ScheduleEditorPanel)f.getContentPane();
+
+				pane.updateScriptText( 
+					(ScriptFile)in );
+			}
+
+		}
+		
+	}
+
+
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/20/00 11:36:12 AM)
@@ -1217,27 +1255,6 @@ public void update(java.util.Observable obs, Object val)
 				
 		});			
 					
-	}
-	else if( val instanceof com.cannontech.message.macs.message.Info )
-	{
-		getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, ((com.cannontech.message.macs.message.Info)val).getInfo(), com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
-	}
-	else if( val instanceof com.cannontech.message.macs.message.ScriptFile )
-	{
-		for( int i = 0; i < getFrames().size(); i++ )
-		{
-			javax.swing.JFrame f = (javax.swing.JFrame)getFrames().get(i);
-
-			if( f.isVisible() 
-			    && f.getContentPane() instanceof ScheduleEditorPanel )
-			{
-				ScheduleEditorPanel pane = (ScheduleEditorPanel)f.getContentPane();
-
-				pane.updateScriptText( (com.cannontech.message.macs.message.ScriptFile)val );
-			}
-
-		}
-		
 	}
 	
 }

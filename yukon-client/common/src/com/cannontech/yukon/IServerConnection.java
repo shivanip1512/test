@@ -1,5 +1,7 @@
 package com.cannontech.yukon;
 
+import java.util.Observer;
+
 import com.cannontech.message.util.MessageListener;
 
 /**
@@ -8,7 +10,6 @@ import com.cannontech.message.util.MessageListener;
  */
 public interface IServerConnection 
 {
-/*	
 	boolean getAutoReconnect();
 	String getHost();
 	int getNumOutMessages();
@@ -17,10 +18,10 @@ public interface IServerConnection
 	int getTimeToReconnect();
 	boolean isMonitorThreadAlive(); 
 	boolean isValid();
-	Object read();
-	Object read(long millis);
 
-	Object readInQueue();
+//	Object read();
+//	Object read(long millis);
+//	Object readInQueue();
 
 	void setAutoReconnect(boolean val);
 
@@ -30,5 +31,11 @@ public interface IServerConnection
 
 	boolean isQueueMessages();
 	void setQueueMessages(boolean b);
-*/
+
+
+
+	//not sure if these will stay or go?
+	public void addObserver(Observer obs);
+	public void deleteObserver(Observer obs);
+
 }

@@ -65,7 +65,7 @@ public synchronized void addActionListenerToJComponent( javax.swing.JComponent c
 		comboBox = (javax.swing.JComboBox)component;
 		getComboBox().addActionListener( getScheduleActionListener() );
 
-		getIMACSConnection().getMACSConnBase().addObserver( this );
+		getIMACSConnection().addObserver( this );
 	}
 	
 }
@@ -83,9 +83,10 @@ public void destroy()
 {
 	//remove all the observers from the connection
 	if( mainPanel != null ) {	
-		getIMACSConnection().getMACSConnBase().deleteObserver( mainPanel );
+		getIMACSConnection().deleteObserver( mainPanel );
+		getIMACSConnection().removeMessageListener( mainPanel );
 
-		getIMACSConnection().getMACSConnBase().deleteObserver( mainPanel.getScheduleTableModel() );
+		getIMACSConnection().removeMessageListener( mainPanel.getScheduleTableModel() );
 	}
 	
 
@@ -423,7 +424,7 @@ public void removeActionListenerFromJComponent( javax.swing.JComponent component
 		//((javax.swing.JComboBox)component).removeActionListener( getCapBankActionListener() );
 		getComboBox().removeActionListener( getScheduleActionListener() );
 		
-		getIMACSConnection().getMACSConnBase().deleteObserver( this );
+		getIMACSConnection().deleteObserver( this );
 		
 		comboBox = null;
 	}
