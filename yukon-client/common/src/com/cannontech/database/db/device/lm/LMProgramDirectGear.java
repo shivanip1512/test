@@ -214,7 +214,13 @@ public abstract class LMProgramDirectGear
 
 		//get all the gears that have the passed DeviceID
 		String sql = "select " + CONSTRAINT_COLUMNS[0]
-					+ ", " + SETTER_COLUMNS[3] 
+					+ ", " + SETTER_COLUMNS[1] + ", " + SETTER_COLUMNS[2] + ", " + SETTER_COLUMNS[3] 
+					+ ", " + SETTER_COLUMNS[4] + ", " + SETTER_COLUMNS[5] + ", " + SETTER_COLUMNS[6]
+					+ ", " + SETTER_COLUMNS[7] + ", " + SETTER_COLUMNS[8] + ", " + SETTER_COLUMNS[9]
+					+ ", " + SETTER_COLUMNS[10] + ", " + SETTER_COLUMNS[11] + ", " + SETTER_COLUMNS[12]
+					+ ", " + SETTER_COLUMNS[13] + ", " + SETTER_COLUMNS[14] + ", " + SETTER_COLUMNS[15]
+					+ ", " + SETTER_COLUMNS[16] + ", " + SETTER_COLUMNS[17] + ", " + SETTER_COLUMNS[18]
+					+ ", " + SETTER_COLUMNS[19] + ", " + SETTER_COLUMNS[20] + ", " + SETTER_COLUMNS[21]
 					+ " from " + TABLE_NAME +
 				" where deviceid=? order by GearNumber";
 		try
@@ -231,16 +237,35 @@ public abstract class LMProgramDirectGear
 			{
 
 				Integer gID = new Integer(rset.getInt(1)); //"GearID"));
-
+				String name = new String(rset.getString(2));
+				Integer gearNum = new Integer(rset.getInt(3));
 				LMProgramDirectGear gear =
-					LMProgramDirectGear.createGearFactory(rset.getString(2));
-				//"ControlMethod") );
-
+					LMProgramDirectGear.createGearFactory(rset.getString(4));
 				gear.setDeviceID(deviceID);
 				gear.setGearID(gID);
-				
 				gear.setDbConnection(conn);
-				gear.retrieve();
+				gear.setGearName(name);
+				gear.setGearNumber(gearNum);
+				
+				gear.setMethodRate(new Integer(rset.getInt(5)));
+				gear.setMethodPeriod(new Integer(rset.getInt(6)));
+				gear.setMethodRateCount(new Integer(rset.getInt(7)));
+				gear.setCycleRefreshRate(new Integer(rset.getInt(8)));
+				gear.setMethodStopType(rset.getString(9));
+				gear.setChangeCondition(rset.getString(10));
+				gear.setChangeDuration(new Integer(rset.getInt(11)));
+				gear.setChangePriority(new Integer(rset.getInt(12)));
+				gear.setChangeTriggerNumber(new Integer(rset.getInt(13)));
+				gear.setChangeTriggerOffset(new Double(rset.getFloat(14)));
+				gear.setPercentReduction(new Integer(rset.getInt(15)));
+				gear.setGroupSelectionMethod(rset.getString(16));
+				gear.setMethodOptionType(rset.getString(17));
+				gear.setMethodOptionMax(new Integer(rset.getInt(18)));
+				gear.setRampInInterval(new Integer(rset.getInt(19)));
+				gear.setRampInPercent(new Integer(rset.getInt(20)));
+				gear.setRampOutInterval(new Integer(rset.getInt(21)));
+				gear.setRampOutPercent(new Integer(rset.getInt(22)));
+				
 				gearList.add(gear);
 			}
 
