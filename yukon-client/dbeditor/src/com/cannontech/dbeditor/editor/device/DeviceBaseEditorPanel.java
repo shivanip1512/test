@@ -19,6 +19,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceDialupSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
+import com.cannontech.database.db.device.DeviceIDLCRemote;
 
 public class DeviceBaseEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener, com.klg.jclass.util.value.JCValueListener
 {
@@ -1543,14 +1544,22 @@ public boolean isInputValid()
 	if( getPhysicalAddressTextField().isVisible() )
 		address = Integer.parseInt( getPhysicalAddressTextField().getText() );
 
-   if( !com.cannontech.dbeditor.range.DeviceAddressRange.isValidRange( getDeviceType(), address ) )
-   {
-      setErrorString( com.cannontech.dbeditor.range.DeviceAddressRange.getRangeMessage( getDeviceType() ) );
-      return false;
-   }
+   	if( !com.cannontech.dbeditor.range.DeviceAddressRange.isValidRange( getDeviceType(), address ) )
+   	{
+      	setErrorString( com.cannontech.dbeditor.range.DeviceAddressRange.getRangeMessage( getDeviceType() ) );
+      	return false;
+   	}
 
-   if( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(getDeviceType()) )
-      return checkMCTAddresses( address );
+   	if( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(getDeviceType()) )
+      	return checkMCTAddresses( address );
+      
+	//verify that there are no duplicate physical address for CCUs or RTUs on a dedicated channel
+	com.cannontech.database.data.lite.LiteYukonPAObject port = ((com.cannontech.database.data.lite.LiteYukonPAObject)getPortComboBox().getSelectedItem());
+	if((! PAOGroups.isDialupPort(port.getType())) && (com.cannontech.database.data.device.DeviceTypesFuncs.isCCU(getDeviceType()) || com.cannontech.database.data.device.DeviceTypesFuncs.isRTU(getDeviceType()) ))
+	{
+		address = Integer.parseInt( getPhysicalAddressTextField().getText() );
+		return checkForDuplicateAddresses(address, port.getLiteID() );   	
+	}
 	
 	return true;
 }
@@ -1950,6 +1959,43 @@ public void setValue(Object val)
 	}
 
 }
+
+//verify that there are no duplicate addresses for any CCUs or RTUs on a dedicated Comm Channel
+private boolean checkForDuplicateAddresses( int address, int portID )
+{
+	try
+	{
+		String[] devices = DeviceIDLCRemote.isAddressUnique( address, new Integer(paoID), portID );
+
+		if( devices != null )
+		{
+			String devStr = new String();
+			for( int i = 0; i < devices.length; i++ )
+				devStr += "          " + devices[i] + "\n";
+			 	  
+			javax.swing.JOptionPane.showMessageDialog(
+				this, 
+				"The address '" + address + "' is already in use by the following CCUs or RTUs: \n" + devStr + 
+				"\nCCUs and/or RTUs cannot have duplicate addresses on a dedicated comm channel.",
+				"Address Already Used",
+				javax.swing.JOptionPane.WARNING_MESSAGE );
+
+			setErrorString(null);
+			return false;
+		}
+		
+	}
+	
+	catch( java.sql.SQLException sq )
+	{
+		com.cannontech.clientutils.CTILogger.error( sq.getMessage(), sq );
+		return false;
+	}
+
+	return true;
+}
+
+
 /**
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
