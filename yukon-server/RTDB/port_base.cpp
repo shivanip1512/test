@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2004/11/18 23:45:35 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2004/11/24 17:15:38 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.45  2004/11/24 17:15:38  cplender
+* Changed queue gripe from ten to fifty.
+*
 * Revision 1.44  2004/11/18 23:45:35  mfisher
 * changed shouldProcessQueuedDevices to disregard waiting port entries...
 * will definitely need to be tuned, but this allows at least some processing
@@ -283,7 +286,7 @@ INT CtiPort::logBytes(BYTE *Message, ULONG Length) const
 
 INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority, HANDLE hQuit)
 {
-#define DEFAULT_QUEUE_GRIPE_POINT 10
+#define DEFAULT_QUEUE_GRIPE_POINT 50
     int status = NORMAL;
     ULONG QueEntries;
     static ULONG QueueGripe = DEFAULT_QUEUE_GRIPE_POINT;
