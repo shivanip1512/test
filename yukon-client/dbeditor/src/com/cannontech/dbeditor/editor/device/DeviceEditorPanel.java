@@ -30,7 +30,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.MCTBROADCAST, PAOGroups.MCT310CT, PAOGroups.MCT310IM, PAOGroups.MCT310IDL,
 			PAOGroups.TRANSDATA_MARKV, PAOGroups.SERIES_5_LMI, 
 			PAOGroups.RTC, PAOGroups.KV, PAOGroups.KVII, PAOGroups.RTM, PAOGroups.MCT410IL,
-			PAOGroups.SENTINEL, PAOGroups.ALPHA_A3
+			PAOGroups.MCT470, PAOGroups.SENTINEL, PAOGroups.ALPHA_A3
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
 			PAOGroups.ALPHA_A1, PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, PAOGroups.QUANTUM, 
@@ -40,7 +40,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.DCT_501, PAOGroups.MCT310CT, PAOGroups.MCT310IM, PAOGroups.ION_7330,
 			PAOGroups.ION_7700, PAOGroups.ION_8300, PAOGroups.MCT310IDL, 
 			PAOGroups.TRANSDATA_MARKV, PAOGroups.KV, PAOGroups.KVII, PAOGroups.MCT410IL,
-			PAOGroups.SENTINEL, PAOGroups.ALPHA_A3
+			PAOGroups.MCT470, PAOGroups.SENTINEL, PAOGroups.ALPHA_A3
 		},
       	{   //2 - CapBankController
          PAOGroups.CAPBANKCONTROLLER, PAOGroups.CBC_FP_2800, PAOGroups.DNP_CBC_6510, PAOGroups.CBC_EXPRESSCOM
@@ -62,7 +62,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
          	PAOGroups.ION_7700, PAOGroups.ION_7330, PAOGroups.ION_8300, PAOGroups.RTU_DART,
          	PAOGroups.MCT310IDL, PAOGroups.TRANSDATA_MARKV, PAOGroups.SERIES_5_LMI,
          	PAOGroups.RTC,  PAOGroups.KV, PAOGroups.KVII, PAOGroups.RTM, PAOGroups.MCT410IL,
-         	PAOGroups.SENTINEL, PAOGroups.ALPHA_A3
+			PAOGroups.MCT470, PAOGroups.SENTINEL, PAOGroups.ALPHA_A3
 		},
 
 		{   //5 - TapTerminalPanel

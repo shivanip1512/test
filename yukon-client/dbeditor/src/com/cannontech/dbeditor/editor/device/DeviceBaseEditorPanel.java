@@ -2017,7 +2017,7 @@ private void setNonRemBaseValue( Object base )
    {
 	   getConfigComboBox().setVisible(true);
 	   getConfigLabel().setVisible(true);
-	   if(base instanceof MCT410IL)
+	   if(base instanceof MCT400SeriesBase)
 	   {
 	   		getTOUComboBox().setVisible(true);
 	   		getTOULabel().setVisible(true);		
@@ -2062,7 +2062,7 @@ private void setNonRemBaseValue( Object base )
 					base instanceof MCT250)
 						mctSeriesType = ConfigTwoWay.SERIES_200_TYPE;
 						
-				if(base instanceof MCT410_KWH_Only || base instanceof MCT410IL)
+				if(base instanceof MCT400SeriesBase)
 						mctSeriesType = ConfigTwoWay.SERIES_400_TYPE;
 				
 				if(mctSeriesType.compareTo(((com.cannontech.database.data.lite.LiteConfig)configs.get(j)).getConfigType()) == 0)
@@ -2080,7 +2080,7 @@ private void setNonRemBaseValue( Object base )
 				getConfigComboBox().setSelectedItem(CtiUtilities.STRING_NONE);
 			}
 			
-			if(base instanceof MCT410IL)
+			if(base instanceof MCT400SeriesBase)
 			{
 				/*for(int x = 0; x < tous.size(); x++)
 				{

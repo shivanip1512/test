@@ -98,9 +98,11 @@ public interface DeviceTypes extends TypeBase
 	public final static int SENTINEL				= DEVICE_OFFSET + 78;
 	public final static int ALPHA_A3					= DEVICE_OFFSET + 79;
 	
+	public final static int MCT470					= DEVICE_OFFSET + 80;
+	
 
 	//***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 79;
+	public final static int DEVICE_TYPES_COUNT = 80;
 	
 
 	//all the possible text representation of each device type.
@@ -128,10 +130,11 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_MCT_310ID = {"MCT-310ID", "MCT310ID"};
 	public static final String[] STRING_MCT_310IDL = {"MCT-310IDL", "MCT310IDL"};
 	public static final String[] STRING_MCT_310IL = {"MCT-310IL", "MCT310IL"};   
-   public static final String[] STRING_MCT_310CT = {"MCT-310CT", "MCT310CT"};
-   public static final String[] STRING_MCT_310IM = {"MCT-310IM", "MCT310IM"};   
+   	public static final String[] STRING_MCT_310CT = {"MCT-310CT", "MCT310CT"};
+   	public static final String[] STRING_MCT_310IM = {"MCT-310IM", "MCT310IM"};   
 	public static final String[] STRING_MCT_310 = {"MCT-310", "MCT310"};
-	public static final String[] STRING_MCT_410IL = {"MCT-410IL", "MCT410IL", "MCT-410iLE", "MCT-410 kWh Only"};  
+	public static final String[] STRING_MCT_410IL = {"MCT-410IL", "MCT410IL", "MCT-410iLE", "MCT-410 kWh Only"};
+	public static final String[] STRING_MCT_470 = {"MCT-470", "MCT470"};
 	public static final String[] STRING_MCT_318 = {"MCT-318", "MCT318"};
 	public static final String[] STRING_MCT_360 = {"MCT-360", "MCT360"};
 	public static final String[] STRING_MCT_370 = {"MCT-370", "MCT370"};
@@ -143,8 +146,8 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_MCT_BROADCAST = {"MCT Broadcast", "MCT-Broadcast", "MCT_Broadcast", "MCT_Broadcast"};
 	public static final String[] STRING_REPEATER = {"REPEATER", "REPEATER 900"};   
 	public static final String[] STRING_RTU_ILEX = {"RTU-ILEX", "RTUILEX"};
-   public static final String[] STRING_RTU_DNP = {"RTU-DNP", "RTUDNP"};
-   public static final String[] STRING_RTU_DART = {"RTU-DART", "RTUDART"};
+   	public static final String[] STRING_RTU_DNP = {"RTU-DNP", "RTUDNP"};
+   	public static final String[] STRING_RTU_DART = {"RTU-DART", "RTUDART"};
 	public static final String[] STRING_RTU_WELCO = {"RTU-WELCO", "RTUWELCO"};
 	public static final String[] STRING_TAP_TERMINAL = {"TAP TERMINAL", "TAPTERMINAL", "PAGING TAP TERMINAL"};
 	public static final String[] STRING_WCTP_TERMINAL = {"WCTP TERMINAL"};
@@ -170,10 +173,10 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_REPEATER_800 = {"REPEATER 800"};
 	public static final String[] STRING_LM_ENERGY_EXCHANGE_PROGRAM = {"LM ENERGY EXCHANGE", "ENERGY EXCHANGE" };
 	public static final String[] STRING_SIXNET = {"SIXNET"};
-   public static final String[] STRING_DNP_CBC_6510 = {"CBC 6510", "CBC-6510" };
-   public static final String[] STRING_ION_7700 = {"ION-7700", "ION 7700" };
-   public static final String[] STRING_ION_8300 = {"ION-8300", "ION 8300" };
-   public static final String[] STRING_ION_7330 = {"ION-7330", "ION 7330" };
+   	public static final String[] STRING_DNP_CBC_6510 = {"CBC 6510", "CBC-6510" };
+   	public static final String[] STRING_ION_7700 = {"ION-7700", "ION 7700" };
+   	public static final String[] STRING_ION_8300 = {"ION-8300", "ION 8300" };
+   	public static final String[] STRING_ION_7330 = {"ION-7330", "ION 7330" };
 	public static final String[] STRING_MCT_GROUP = {"MCT GROUP", "MCT-GROUP"};
 	public static final String[] STRING_SA305_GROUP = {"SA-305 Group"};
 	public static final String[] STRING_SA205_GROUP = {"SA-205 Group"};

@@ -8,28 +8,28 @@ package com.cannontech.database.data.pao;
 public final class PAOGroups implements RouteTypes, PortTypes, DeviceTypes, CapControlTypes
 {
 	public final static int INVALID = -1;
-   public final static int CAT_DEVICE = 0;
-   public final static int CAT_ROUTE = 1;
-   public final static int CAT_PORT = 2;
-   public final static int CAT_CUSTOMER = 3;
-   public final static int CAT_CAPCONTROL = 4;
-   public final static int CAT_LOADCONTROL = 5;
+   	public final static int CAT_DEVICE = 0;
+   	public final static int CAT_ROUTE = 1;
+   	public final static int CAT_PORT = 2;
+   	public final static int CAT_CUSTOMER = 3;
+   	public final static int CAT_CAPCONTROL = 4;
+   	public final static int CAT_LOADCONTROL = 5;
 	  
-   public static final String STRING_CAT_DEVICE = "DEVICE";
-   public static final String STRING_CAT_ROUTE = "ROUTE";
-   public static final String STRING_CAT_PORT = "PORT";
-   public static final String STRING_CAT_CUSTOMER = "CUSTOMER";
-   public static final String STRING_CAT_CAPCONTROL = "CAPCONTROL";
-   public static final String STRING_CAT_LOADMANAGEMENT = "LOADMANAGEMENT";
-   public static final String STRING_INVALID = "(invalid)";
+   	public static final String STRING_CAT_DEVICE = "DEVICE";
+   	public static final String STRING_CAT_ROUTE = "ROUTE";
+   	public static final String STRING_CAT_PORT = "PORT";
+   	public static final String STRING_CAT_CUSTOMER = "CUSTOMER";
+   	public static final String STRING_CAT_CAPCONTROL = "CAPCONTROL";
+   	public static final String STRING_CAT_LOADMANAGEMENT = "LOADMANAGEMENT";
+   	public static final String STRING_INVALID = "(invalid)";
 
 
-   //PAOCategorys that have the same PAOClass as the category
-   public static final int CLASS_ROUTE = CAT_ROUTE;
-   public static final int CLASS_PORT = CAT_PORT;
-   public static final int CLASS_CUSTOMER = CAT_CUSTOMER;
-   public static final int CLASS_CAPCONTROL = CAT_CAPCONTROL;
-   public static final int CLASS_LOADMANAGEMENT = CAT_LOADCONTROL;
+   	//PAOCategorys that have the same PAOClass as the category
+   	public static final int CLASS_ROUTE = CAT_ROUTE;
+   	public static final int CLASS_PORT = CAT_PORT;
+   	public static final int CLASS_CUSTOMER = CAT_CUSTOMER;
+   	public static final int CLASS_CAPCONTROL = CAT_CAPCONTROL;
+   	public static final int CLASS_LOADMANAGEMENT = CAT_LOADCONTROL;
 
 /**
  * This method was created in VisualAge.
@@ -168,6 +168,8 @@ public final static int getDeviceType(String typeString)
 	  return MCT310; 
    else if (isStringDevice(compareString, STRING_MCT_410IL))
 	  return MCT410IL;
+   else if (isStringDevice(compareString, STRING_MCT_470))
+      return MCT470;
    else if (isStringDevice(compareString, STRING_MCT_318))
 	  return MCT318;
    else if (isStringDevice(compareString, STRING_MCT_360))
@@ -330,177 +332,179 @@ public final static String getPAOTypeString(int type)
 			return STRING_DIALOUT_POOL;
 
 
-	  //devices
-	  case CCU710A:
-		  return STRING_CCU_710[0];
-	  case CCU711:
-		  return STRING_CCU_711[0];
-	  case TCU5000:
-		  return STRING_TCU_5000[0];
-	  case TCU5500:
-		  return STRING_TCU_5500[0];
-	  case SERIES_5_LMI:
-	  	  return STRING_SERIES_5_LMI[0];
-	  case RTC:
-	  	  return STRING_RTC[0];
-	  case LCU415:
-		  return STRING_LCU_415[0];
-	  case LCULG:
-		  return STRING_LCU_LG[0];
-	  case LCU_ER:
-		  return STRING_LCU_ER[0];
-	  case LCU_T3026:
-		  return STRING_LCU_T3026[0];
-	  case ALPHA_PPLUS:
-		  return STRING_ALPHA_POWERPLUS[0];
-	  case ALPHA_A1:
-		  return STRING_ALPHA_A1[0];
-	  case FULCRUM:
-		  return STRING_FULCRUM[0];
-	  case VECTRON:
-		  return STRING_VECTRON[0];
-	  case LANDISGYRS4:
-		  return STRING_LANDISGYR_RS4[0];
-	  case QUANTUM:
-		  return STRING_QUANTUM[0];
-	  case DAVISWEATHER:
-		  return STRING_DAVIS_WEATHER[0];
-	  case MCT213:
-		  return STRING_MCT_213[0];
-	  case MCT318L:
-		  return STRING_MCT_318L[0];
-	  case TRANSDATA_MARKV:
-	  	  return STRING_TRANSDATA_MARKV[0];
+	  	//devices
+	  	case CCU710A:
+			return STRING_CCU_710[0];
+	  	case CCU711:
+		  	return STRING_CCU_711[0];
+	  	case TCU5000:
+			return STRING_TCU_5000[0];
+	  	case TCU5500:
+		  	return STRING_TCU_5500[0];
+	  	case SERIES_5_LMI:
+	  	  	return STRING_SERIES_5_LMI[0];
+	  	case RTC:
+	  	  	return STRING_RTC[0];
+	  	case LCU415:
+		  	return STRING_LCU_415[0];
+	  	case LCULG:
+		  	return STRING_LCU_LG[0];
+	  	case LCU_ER:
+		  	return STRING_LCU_ER[0];
+	  	case LCU_T3026:
+		  	return STRING_LCU_T3026[0];
+	  	case ALPHA_PPLUS:
+		  	return STRING_ALPHA_POWERPLUS[0];
+	  	case ALPHA_A1:
+		  	return STRING_ALPHA_A1[0];
+	  	case FULCRUM:
+		  	return STRING_FULCRUM[0];
+	  	case VECTRON:
+		  	return STRING_VECTRON[0];
+	  	case LANDISGYRS4:
+		  	return STRING_LANDISGYR_RS4[0];
+	  	case QUANTUM:
+		  	return STRING_QUANTUM[0];
+	  	case DAVISWEATHER:
+		  	return STRING_DAVIS_WEATHER[0];
+	  	case MCT213:
+		  	return STRING_MCT_213[0];
+	  	case MCT318L:
+		  	return STRING_MCT_318L[0];
+	  	case TRANSDATA_MARKV:
+	  	  	return STRING_TRANSDATA_MARKV[0];
 
-	  case MCT310IL:
-		  return STRING_MCT_310IL[0];
-     case MCT310CT:
-        return STRING_MCT_310CT[0];
-     case MCT310IM:
-        return STRING_MCT_310IM[0];
-	  case MCT310ID:
-		  return STRING_MCT_310ID[0];
-	  case MCT310IDL:
-		  return STRING_MCT_310IDL[0];
-	  case MCT310:
-		  return STRING_MCT_310[0];
-	  case MCT318:
-		  return STRING_MCT_318[0];
-	  case MCT360:
-		  return STRING_MCT_360[0];
-	  case MCT370:
-		  return STRING_MCT_370[0];
-	  case MCT240:
-		  return STRING_MCT_240[0];
+	  	case MCT310IL:
+		  	return STRING_MCT_310IL[0];
+     	case MCT310CT:
+        	return STRING_MCT_310CT[0];
+     	case MCT310IM:
+        	return STRING_MCT_310IM[0];
+	  	case MCT310ID:
+		  	return STRING_MCT_310ID[0];
+	  	case MCT310IDL:
+		  	return STRING_MCT_310IDL[0];
+	  	case MCT310:
+		  	return STRING_MCT_310[0];
+	  	case MCT318:
+		  	return STRING_MCT_318[0];
+	  	case MCT360:
+		  	return STRING_MCT_360[0];
+	  	case MCT370:
+		  	return STRING_MCT_370[0];
+	  	case MCT240:
+		  	return STRING_MCT_240[0];
 		  
-	  case MCT248:
-		  return STRING_MCT_248[0];
-	  case MCT250:
-		  return STRING_MCT_250[0];
-	  case MCT210:
-		  return STRING_MCT_210[0];
+	  	case MCT248:
+		  	return STRING_MCT_248[0];
+	  	case MCT250:
+		  	return STRING_MCT_250[0];
+	  	case MCT210:
+		  	return STRING_MCT_210[0];
 		  
-	  case MCT410IL:
+	  	case MCT410IL:
 			return STRING_MCT_410IL[0];
-		  
-	  case REPEATER:
-		  return STRING_REPEATER[0];
-     case RTU_DNP:
-        return STRING_RTU_DNP[0];
-     case RTU_DART:
-        return STRING_RTU_DART[0];
-     case ION_7700:
-        return STRING_ION_7700[0];
-     case ION_7330:
-        return STRING_ION_7330[0];
-     case ION_8300:
-        return STRING_ION_8300[0];
-	  case RTUILEX:
-		  return STRING_RTU_ILEX[0];
-	  case RTUWELCO:
-		  return STRING_RTU_WELCO[0];
-	  case RTM:
-	  	  return STRING_RTM[0];
-	  case TAPTERMINAL:
-		  return STRING_TAP_TERMINAL[0];
-	  case WCTP_TERMINAL:
-		  return STRING_WCTP_TERMINAL[0];
+		case MCT470:
+			return STRING_MCT_470[0];
+		
+		case REPEATER:
+			return STRING_REPEATER[0];
+     	case RTU_DNP:
+        	return STRING_RTU_DNP[0];
+     	case RTU_DART:
+        	return STRING_RTU_DART[0];
+     	case ION_7700:
+        	return STRING_ION_7700[0];
+     	case ION_7330:
+        	return STRING_ION_7330[0];
+     	case ION_8300:
+        	return STRING_ION_8300[0];
+	  	case RTUILEX:
+		  	return STRING_RTU_ILEX[0];
+	  	case RTUWELCO:
+		  	return STRING_RTU_WELCO[0];
+	  	case RTM:
+	  	  	return STRING_RTM[0];
+	  	case TAPTERMINAL:
+		  	return STRING_TAP_TERMINAL[0];
+	  	case WCTP_TERMINAL:
+		  	return STRING_WCTP_TERMINAL[0];
 
-	  case LM_GROUP_EMETCON:
-		  return STRING_EMETCON_GROUP[0];
-	  case LM_GROUP_VERSACOM:
-		  return STRING_VERSACOM_GROUP[0];
-	  case LM_GROUP_EXPRESSCOMM:
-		  return STRING_EXPRESSCOMM_GROUP[0];
-	  case LM_GROUP_SA305:
-	  	  return STRING_SA305_GROUP[0];
-	  case LM_GROUP_SA205:
-		  return STRING_SA205_GROUP[0];
-	  case LM_GROUP_SADIGITAL:
-		  return STRING_SADIGITAL_GROUP[0];
-	  case LM_GROUP_GOLAY:
-		  return STRING_GOLAY_GROUP[0];	  
-	  case LM_GROUP_POINT:
-		  return STRING_POINT_GROUP[0];
-	  case MACRO_GROUP:
-		  return STRING_MACRO_GROUP[0];
-	  case LM_GROUP_RIPPLE:
-		  return STRING_RIPPLE_GROUP[0];
+	  	case LM_GROUP_EMETCON:
+		  	return STRING_EMETCON_GROUP[0];
+	  	case LM_GROUP_VERSACOM:
+		  	return STRING_VERSACOM_GROUP[0];
+	  	case LM_GROUP_EXPRESSCOMM:
+		  	return STRING_EXPRESSCOMM_GROUP[0];
+	  	case LM_GROUP_SA305:
+	  	  	return STRING_SA305_GROUP[0];
+	  	case LM_GROUP_SA205:
+		  	return STRING_SA205_GROUP[0];
+	  	case LM_GROUP_SADIGITAL:
+		  	return STRING_SADIGITAL_GROUP[0];
+	  	case LM_GROUP_GOLAY:
+		  	return STRING_GOLAY_GROUP[0];	  
+	  	case LM_GROUP_POINT:
+		  	return STRING_POINT_GROUP[0];
+	  	case MACRO_GROUP:
+		  	return STRING_MACRO_GROUP[0];
+	  	case LM_GROUP_RIPPLE:
+		  	return STRING_RIPPLE_GROUP[0];
 		case LM_GROUP_MCT:
 			return STRING_MCT_GROUP[0];
 
-	  case MCTBROADCAST:
-		  return STRING_MCT_BROADCAST[0];
+	  	case MCTBROADCAST:
+		  	return STRING_MCT_BROADCAST[0];
 		  
-	  case CAPBANK:
-		  return STRING_CAP_BANK[0];
-	  case CAPBANKCONTROLLER:
-		  return STRING_CAP_BANK_CONTROLLER[0];
-	  case SYSTEM:
-		  return STRING_SYSTEM[0];
+	  	case CAPBANK:
+		  	return STRING_CAP_BANK[0];
+	  	case CAPBANKCONTROLLER:
+		  	return STRING_CAP_BANK_CONTROLLER[0];
+	  	case SYSTEM:
+		  	return STRING_SYSTEM[0];
 
-	  case VIRTUAL_SYSTEM:
-		  return STRING_VIRTUAL_SYSTEM[0];
-	  case LM_DIRECT_PROGRAM:
-		  return STRING_LM_DIRECT_PROGRAM[0];
-	  case LM_CURTAIL_PROGRAM:
-		  return STRING_LM_CURTAIL_PROGRAM[0];
-	  case LM_ENERGY_EXCHANGE_PROGRAM:
-		  return STRING_LM_ENERGY_EXCHANGE_PROGRAM[0];
-	  case LM_CONTROL_AREA:
-		  return STRING_LM_CONTROL_AREA[0];
-	  case EDITABLEVERSACOMSERIAL:
-		  return STRING_VERSACOM_SERIAL_NUMBER[0];
-	  case DR_87:
-		  return STRING_DR_87[0];
+	  	case VIRTUAL_SYSTEM:
+		  	return STRING_VIRTUAL_SYSTEM[0];
+	  	case LM_DIRECT_PROGRAM:
+		  	return STRING_LM_DIRECT_PROGRAM[0];
+	  	case LM_CURTAIL_PROGRAM:
+		  	return STRING_LM_CURTAIL_PROGRAM[0];
+	  	case LM_ENERGY_EXCHANGE_PROGRAM:
+		  	return STRING_LM_ENERGY_EXCHANGE_PROGRAM[0];
+	  	case LM_CONTROL_AREA:
+		  	return STRING_LM_CONTROL_AREA[0];
+	  	case EDITABLEVERSACOMSERIAL:
+		  	return STRING_VERSACOM_SERIAL_NUMBER[0];
+	  	case DR_87:
+		  	return STRING_DR_87[0];
 
-	  case LMT_2:
-		  return STRING_LMT_2[0];
-	  case DCT_501:
-		  return STRING_DCT_501[0];
-	  case CBC_FP_2800:
-		  return STRING_CBC_FP_2800[0];
-     case DNP_CBC_6510:
-        return STRING_DNP_CBC_6510[0];
-	  case REPEATER_800:
-		  return STRING_REPEATER_800[0];
-	  case SIXNET:
-		  return STRING_SIXNET[0];
+	  	case LMT_2:
+		  	return STRING_LMT_2[0];
+	  	case DCT_501:
+		  	return STRING_DCT_501[0];
+	  	case CBC_FP_2800:
+		  	return STRING_CBC_FP_2800[0];
+     	case DNP_CBC_6510:
+        	return STRING_DNP_CBC_6510[0];
+	  	case REPEATER_800:
+		  	return STRING_REPEATER_800[0];
+	  	case SIXNET:
+		  	return STRING_SIXNET[0];
 		  
-	  case KV:
-	  	  return STRING_KV[0];
-	  case KVII:
-	  	  return STRING_KVII[0];
-	  case SENTINEL:
-	  	  return STRING_SENTINEL[0];
-	  case ALPHA_A3:
-	  	  return STRING_ALPHA_A3[0];
+	  	case KV:
+	  	  	return STRING_KV[0];
+	  	case KVII:
+	  	  	return STRING_KVII[0];
+	  	case SENTINEL:
+	  	  	return STRING_SENTINEL[0];
+	  	case ALPHA_A3:
+	  	  	return STRING_ALPHA_A3[0];
 	  	  
-	case CBC_EXPRESSCOM:
-		return STRING_CBC_EXPRESSCOM[0];
+		case CBC_EXPRESSCOM:
+			return STRING_CBC_EXPRESSCOM[0];
  	  
- 	  default:
-		  return STRING_INVALID;
+ 	  	default:
+		  	return STRING_INVALID;
 	}
 
 	

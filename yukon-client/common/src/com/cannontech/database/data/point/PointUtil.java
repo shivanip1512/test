@@ -12,7 +12,9 @@ import com.cannontech.database.data.device.MCT310ID;
 import com.cannontech.database.data.device.MCT310IDL;
 import com.cannontech.database.data.device.MCT310IL;
 import com.cannontech.database.data.device.MCT410IL;
+import com.cannontech.database.data.device.MCT470;
 import com.cannontech.database.data.device.MCT410_KWH_Only;
+import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -31,6 +33,7 @@ public class PointUtil {
 			 || val instanceof MCT310ID
 			 || val instanceof MCT310IDL
 			 || val instanceof MCT410IL
+			 || val instanceof MCT470
 			 || val instanceof MCT410_KWH_Only )
 		{
 			com.cannontech.database.data.multi.MultiDBPersistent newVal = new com.cannontech.database.data.multi.MultiDBPersistent();
@@ -45,7 +48,7 @@ public class PointUtil {
 
 			double multiplier = 0.01;
 			//multiplier is 0.1 for 410LE, 0.01 for all older MCTs
-			if(val instanceof MCT410_KWH_Only || val instanceof MCT410IL )
+			if(val instanceof MCT410_KWH_Only || val instanceof MCT400SeriesBase)
 				multiplier = 0.1;
 			
 			//always create the PulseAccum point
