@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2002/11/15 14:07:54 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/02/21 20:34:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -673,11 +673,11 @@ void CtiConnection::ShutdownConnection()
             {
                 if( outthread_.requestCancellation(2000)  == RW_THR_TIMEOUT )
                 {
-                    dout << "OutThread refuses to cancel after 2 seconds." << endl;
+                    dout << "OutThread refuses to cancel after 2 seconds." << who() << endl;
                 }
                 if(outthread_.join(2000) == RW_THR_TIMEOUT)
                 {
-                    dout << "OutThread refuses to join   after 2 seconds." << endl;
+                    dout << "OutThread refuses to join   after 2 seconds." << who() << endl;
                     outthread_.terminate();
                 }
             }
@@ -691,11 +691,11 @@ void CtiConnection::ShutdownConnection()
             {
                 if( inthread_.requestCancellation(2000)  == RW_THR_TIMEOUT )
                 {
-                    dout << "InThread refuses to close after 2 seconds." << endl;
+                    dout << "InThread refuses to close after 2 seconds. " << who() << endl;
                 }
                 if(inthread_.join(2000) == RW_THR_TIMEOUT)
                 {
-                    dout << "InThread refuses to join  after 2 seconds." << endl;
+                    dout << "InThread refuses to join  after 2 seconds. " << who() << endl;
                     inthread_.terminate();
                 }
             }
