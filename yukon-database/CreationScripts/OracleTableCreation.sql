@@ -1581,7 +1581,7 @@ insert into CTIDatabase values('2.36', 'Ryan', '9-SEP-2002', 'Changed loadprofil
 
 insert into CTIDatabase values('2.37', 'Ryan', '24-OCT-2002', 'Added ExpressCom views');
 
-insert into CTIDatabase values('2.38', 'Ryan', '2002-NOV-6', 'Added a column to DynamicLMGroup and a Windows Service row to display');
+insert into CTIDatabase values('2.38', 'Ryan', '6-NOV-2002', 'Added a column to DynamicLMGroup and a Windows Service row to display');
 
 /*==============================================================*/
 /* Table : YukonImage                                           */
