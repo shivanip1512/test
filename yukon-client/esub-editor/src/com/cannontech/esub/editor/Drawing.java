@@ -29,7 +29,7 @@ public class Drawing implements Serializable {
 	// The jloox graph and view to use
 	private LxGraph lxGraph;
 	private LxView lxView;
-
+	
 	public synchronized void clear() {
 		fileName = null;
 		getLxGraph().removeAll();
@@ -38,9 +38,6 @@ public class Drawing implements Serializable {
 	
 	public synchronized void load(String file) {
 		clear();
-		
-		// the saved drawing willhave its own meta element, remove the default
-	//	getLxGraph().remove(getMetaElement());
 		
 		getLxGraph().read(file);
 		fileName = file;

@@ -10,6 +10,8 @@ import com.cannontech.esub.editor.Drawing;
  */
 public interface DrawingElement {
 	
+	public boolean isCopyable();
+	
 	public Drawing getDrawing();
 	public void setDrawing(Drawing d);
 	

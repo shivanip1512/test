@@ -76,7 +76,7 @@ public class Editor extends JPanel {
 	};
 	
 	// Handles double clicks on an LxElement in the LxView
-	final LxMouseListener editElementMouseListener = new LxMouseAdapter() {
+	private final LxMouseListener editElementMouseListener = new LxMouseAdapter() {
 		public void mouseDoubleClicked(LxMouseEvent evt) {
 			synchronized(getDrawing()) {				
 				editElement(evt.getLxComponent());
@@ -135,7 +135,8 @@ public class Editor extends JPanel {
 	 * @param elem com.loox.jloox.LxElement
 	 */
 	void editElement(final LxComponent elem) {
-
+		boolean retVal = false;
+		
 		//no more updates for a bit
 		drawingUpdateTimer.cancel();
 		
@@ -160,9 +161,9 @@ public class Editor extends JPanel {
 			editor.addPropertyPanelListener(new PropertyPanelListener() {
 				public void selectionPerformed(PropertyPanelEvent e) {
 					if (e.getID() == PropertyPanelEvent.CANCEL_SELECTION) {
-	
+						
 					} else if (e.getID() == PropertyPanelEvent.OK_SELECTION) {
-						editor.getValue(elem);
+						editor.getValue(elem);						
 					}
 					propertyDialog.setVisible(false);								
 				}
@@ -174,7 +175,7 @@ public class Editor extends JPanel {
 			propertyDialog.pack();
 			propertyDialog.setLocationRelativeTo(CtiUtilities.getParentFrame(getDrawing().getLxView()));
 			propertyDialog.show();
-			
+
 			// start the updates again
 			drawingUpdater = new DrawingUpdater();	
 			drawingUpdater.setDrawing( getDrawing() );
@@ -228,7 +229,7 @@ public class Editor extends JPanel {
 		p.add(toolBar, java.awt.BorderLayout.WEST);
 //		p.setPreferredSize(new Dimension(prefs.getDefaultDrawingWidth(),prefs.getDefaultDrawingHeight()));
 		lxView.addMouseListener(viewMouseListener);		
-					
+						
 		drawingUpdater = new DrawingUpdater();	
 		drawingUpdater.setDrawing( getDrawing() );
 		drawingUpdateTimer = new Timer();
@@ -275,6 +276,7 @@ public class Editor extends JPanel {
 	}
 	public void newDrawing() {
 		getDrawing().clear();	
+		setFrameTitle("Untitled");
 	}
 
 	/**
@@ -315,12 +317,12 @@ public class Editor extends JPanel {
 
 		frame.getContentPane().add(editor);
 		frame.setSize(defaultSize);
-		
+		frame.setTitle("Untitled");		
         frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("esubEditorIcon.png"));
 
 		frame.pack();
 		frame.show();
-
+		
 		com
 			.cannontech
 			.database
@@ -422,12 +424,14 @@ public class Editor extends JPanel {
 			|| elem instanceof com.cannontech.esub.editor.element.StaticText ) {				
 			elem.setUserResizable(false);
 			elem.removeDefaultDoubleClickBehavior();
+			elem.removeMouseListener(editElementMouseListener);
 			elem.addMouseListener(editElementMouseListener);
 		}
 		
 		if( elem instanceof DynamicGraphElement ||
 			elem instanceof CurrentAlarmsTable) {
 			elem.removeDefaultDoubleClickBehavior();
+			elem.removeMouseListener(editElementMouseListener);	
 			elem.addMouseListener(editElementMouseListener);	
 		}
 		
@@ -491,4 +495,30 @@ public class Editor extends JPanel {
 		editElement(getDrawing().getMetaElement());				
 		updateSize();
 	}
+	
+	public void cutSelection() { 
+		getDrawing().getLxGraph().cutSelection();
+	}
+	
+	public void copySelection() { 
+		getDrawing().getLxGraph().copySelection();
+	}
+	
+	public void pasteSelection() {
+		getDrawing().getLxGraph().pasteFromClipboard();
+		
+		// add behavior back to all these elements
+		// would be nice to find a way to get at all the elemnts
+		// just created!
+		// visit here if paste gets slow!!!
+		Object[] all = getDrawing().getLxGraph().getComponents();
+		for(int i = 0; i < all.length; i++) {					
+			if (all[i] instanceof DrawingElement) {
+				((DrawingElement) all[i]).setDrawing(getDrawing());
+			}
+			if (all[i] instanceof LxComponent) {
+				setBehavior((LxComponent) all[i]);
+			}			
+		}		
+	}	
 }

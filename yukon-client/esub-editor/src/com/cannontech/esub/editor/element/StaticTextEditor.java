@@ -92,9 +92,9 @@ private void initialize() {
 		// user code begin {1}
 		// user code end
 		setName("StaticImageEditor");
-		setPreferredSize(new java.awt.Dimension(360, 240));
+		setPreferredSize(new java.awt.Dimension(360, 290));
 		setSize(371, 186);
-		setMinimumSize(new java.awt.Dimension(360, 240));
+		setMinimumSize(new java.awt.Dimension(360, 290));
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}

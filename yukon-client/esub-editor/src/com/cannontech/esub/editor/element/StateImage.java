@@ -197,4 +197,7 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
 		this.linkTo = linkTo;
 	}
 
+	public boolean isCopyable() {
+		return false;
+	}
 }

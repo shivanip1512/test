@@ -244,7 +244,7 @@ class EditorActions {
 			true) {
 		public void processAction(ActionEvent e) {
 			System.out.println("cut");
-			editor.getDrawing().getLxGraph().cutSelection();
+			editor.cutSelection();
 		}
 	};
 	
@@ -256,8 +256,7 @@ class EditorActions {
 			null,
 			true) {
 		public void processAction(ActionEvent e) {
-			System.out.println("copy");
-			editor.getDrawing().getLxGraph().copySelection();
+			editor.copySelection();
 		}
 	};
 	
@@ -269,8 +268,7 @@ class EditorActions {
 			null,
 			true) {
 		public void processAction(ActionEvent e) {
-			System.out.println("paste");
-			editor.getDrawing().getLxGraph().pasteFromClipboard();
+			editor.pasteSelection();
 		}
 	}; 
 			

@@ -68,7 +68,7 @@ public class HTMLFilter implements Filter {
 			//Check if this user has access to this drawing!	
 			SessionInfo	info = (SessionInfo) hreq.getSession(false).getAttribute(SessionInfo.SESSION_KEY);	
 			LiteYukonUser user = info.getUser();
-			if( AuthFuncs.checkRole(user, d.getMetaElement().getViewRoleID()) != null) {
+			if( AuthFuncs.checkRole(user, d.getMetaElement().getRoleID()) != null) {
 				chain.doFilter(req,resp);				
 			}
 		}

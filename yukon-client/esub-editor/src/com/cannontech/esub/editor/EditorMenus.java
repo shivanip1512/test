@@ -68,13 +68,16 @@ private void initialize(EditorActions actions) {
 
 	action = actions.getAction(EditorActions.NEW_DRAWING);
 	JMenuItem newItem = createMenuItem(action.getLabel(), action);
-
+	newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
+	
 	action = actions.getAction(EditorActions.OPEN_DRAWING);
 	JMenuItem openItem = createMenuItem(action.getLabel(), action);
+	openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
 
 	action = actions.getAction(EditorActions.SAVE_DRAWING);
 	JMenuItem saveItem = createMenuItem(action.getLabel(), action);
-
+	saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
+	
 	action = actions.getAction(EditorActions.SAVE_AS_DRAWING);
 	JMenuItem saveAsItem = createMenuItem(action.getLabel(), action);
 

@@ -441,6 +441,10 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	public void setLinkTo(String linkTo) {
 		this.linkTo = linkTo;
 	}
+	
+	public boolean isCopyable() {
+		return false;
+	}
 
 }
  

@@ -5,6 +5,8 @@ import javax.swing.event.TreeSelectionListener;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.esub.util.Util;
 
 /**
  * Creation date: (1/14/2002 3:37:58 PM)
@@ -108,7 +110,8 @@ private LinkToPanel getLinkToPanel() {
 private PointSelectionPanel getPointSelectionPanel() {
 	if (ivjPointSelectionPanel == null) {
 		try {
-			ivjPointSelectionPanel = new com.cannontech.esub.editor.element.PointSelectionPanel();
+			//ivjPointSelectionPanel = new com.cannontech.esub.editor.element.PointSelectionPanel();
+			ivjPointSelectionPanel = Util.getPointSelectionPanel();		
 			ivjPointSelectionPanel.setName("PointSelectionPanel");
 			// user code begin {1}
 			// user code end
@@ -170,7 +173,8 @@ private void initialize() {
  * @return boolean
  */
 public boolean isInputValid() {
-	return (getPointSelectionPanel().getSelectedPoint() != null);
+	LitePoint pt = getPointSelectionPanel().getSelectedPoint();
+	return (pt != null && pt.getPointType() == PointTypes.STATUS_POINT);
 }
 /**
  * main entrypoint - starts the part when it is run as an application

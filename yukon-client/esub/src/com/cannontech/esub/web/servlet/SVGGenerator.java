@@ -1,20 +1,19 @@
 package com.cannontech.esub.web.servlet;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Writer;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.esub.EsubRoles;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.DrawingMetaElement;
 import com.cannontech.esub.web.SessionInfo;
@@ -42,9 +41,7 @@ public class SVGGenerator extends HttpServlet {
 		
 		//Assume this ends with .svg
 		jlxPath = jlxPath.substring(0, jlxPath.length()-4) + ".jlx";
-		
-		
-		BufferedReader rdr;
+				
 		Writer w = resp.getWriter();
 		
 		try {
@@ -56,26 +53,22 @@ public class SVGGenerator extends HttpServlet {
 			SessionInfo	info = (SessionInfo) req.getSession(false).getAttribute(SessionInfo.SESSION_KEY);	
 			LiteYukonUser user = info.getUser();
 			DrawingMetaElement metaElem = d.getMetaElement();
-			if( AuthFuncs.checkRole(user, metaElem.getViewRoleID()) != null) {
-				Pair editPair = AuthFuncs.checkRole(user, metaElem.getEditRoleID());
+			
+			// User requires the role specific to access this drawing
+			// and also the Esub VIEW role to see it
+			if( AuthFuncs.checkRole(user, metaElem.getRoleID()) != null &&				
+				AuthFuncs.checkRole(user, EsubRoles.VIEW_ROLE) != null  ) {				
+				
+				// enable edit functions?
+				Pair editPair = AuthFuncs.checkRole(user, EsubRoles.EDIT_ROLE);			
 				boolean canEdit = (editPair != null);
 
 				com.cannontech.esub.util.SVGGenerator gen = new com.cannontech.esub.util.SVGGenerator();				
 				gen.generate(w, d, canEdit, false);	
-			
-				//req.getRequestDispatcher(uri).forward(req,resp);
 			}
 		}
 		catch(Exception e ) {
-			e.printStackTrace(new PrintWriter(w));
+			CTILogger.error("Error generating svg", e);
 		}
-}
-	
-	/**
-	 * @see javax.servlet.Servlet#init(ServletConfig)
-	 */
-	public void init(ServletConfig arg0) throws ServletException {
-		super.init(arg0);
-		log("loaded...");
 	}
 }

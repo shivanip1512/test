@@ -19,7 +19,7 @@ public class StaticText extends LxAbstractText implements DrawingElement {
 	static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
 	static final Color DEFAULT_COLOR = java.awt.Color.white;
 	
-	private Drawing drawing;
+	private transient Drawing drawing;
 	private String linkTo;
 	private Properties props = new Properties();
 /**
@@ -141,6 +141,10 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
 	 */
 	public void setLinkTo(String linkTo) {
 		this.linkTo = linkTo;
+	}
+	
+	public boolean isCopyable() {
+		return true;
 	}
 
 }

@@ -22,14 +22,12 @@ import com.loox.jloox.LxSaveUtils;
  */
 public class DrawingMetaElement extends LxAbstractText implements DrawingElement {
 
-	private static final int DEFAULT_ROLE_ID = 200;
+	private static final int DEFAULT_ROLE_ID = Integer.MIN_VALUE;
 	
 	private int version = 1;
 	private int drawingWidth;
 	private int drawingHeight;
-	private int viewRoleID = DEFAULT_ROLE_ID;
-	private int editRoleID = DEFAULT_ROLE_ID;
-	private int controlRoleID = Integer.MAX_VALUE;	
+	private int roleID = DEFAULT_ROLE_ID;
 		
 	private transient Drawing drawing = null;
 	private String linkTo = null;
@@ -50,9 +48,7 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 		setVersion(LxSaveUtils.readInt(in));
 		setDrawingWidth(LxSaveUtils.readInt(in));
 		setDrawingHeight(LxSaveUtils.readInt(in));
-		setViewRoleID(LxSaveUtils.readInt(in));
-		setEditRoleID(LxSaveUtils.readInt(in));
-		setControlRoleID(LxSaveUtils.readInt(in));
+		setRoleID(LxSaveUtils.readInt(in));
 		LxSaveUtils.readEndOfPart(in);
 	}
 
@@ -65,9 +61,7 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 		LxSaveUtils.writeInt(out, getVersion());
 		LxSaveUtils.writeInt(out, getDrawingWidth());
 		LxSaveUtils.writeInt(out, getDrawingHeight());
-		LxSaveUtils.writeInt(out, getViewRoleID());
-		LxSaveUtils.writeInt(out, getEditRoleID());
-		LxSaveUtils.writeInt(out, getControlRoleID());
+		LxSaveUtils.writeInt(out, getRoleID());
 		LxSaveUtils.writeEndOfPart(out);
 	}
 
@@ -166,51 +160,23 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	}
 
 	/**
-	 * Returns the controlRoleID.
+	 * Returns the roleID.
 	 * @return int
 	 */
-	public int getControlRoleID() {
-		return controlRoleID;
+	public int getRoleID() {
+		return roleID;
 	}
 
 	/**
-	 * Returns the editRoleID.
-	 * @return int
+	 * Sets the roleID.
+	 * @param roleID The roleID to set
 	 */
-	public int getEditRoleID() {
-		return editRoleID;
+	public void setRoleID(int roleID) {
+		this.roleID = roleID;
 	}
-
-	/**
-	 * Returns the viewRoleID.
-	 * @return int
-	 */
-	public int getViewRoleID() {
-		return viewRoleID;
-	}
-
-	/**
-	 * Sets the controlRoleID.
-	 * @param controlRoleID The controlRoleID to set
-	 */
-	public void setControlRoleID(int controlRoleID) {
-		this.controlRoleID = controlRoleID;
-	}
-
-	/**
-	 * Sets the editRoleID.
-	 * @param editRoleID The editRoleID to set
-	 */
-	public void setEditRoleID(int editRoleID) {
-		this.editRoleID = editRoleID;
-	}
-
-	/**
-	 * Sets the viewRoleID.
-	 * @param viewRoleID The viewRoleID to set
-	 */
-	public void setViewRoleID(int viewRoleID) {
-		this.viewRoleID = viewRoleID;
+	
+	public boolean isCopyable() {
+		return false;
 	}
 
 }

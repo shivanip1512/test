@@ -256,5 +256,9 @@ public void saveAsJLX(OutputStream out) throws IOException
 	public void setLinkTo(String linkTo) {
 		this.linkTo = linkTo;
 	}
+	
+	public boolean isCopyable() {
+		return true;
+	}
 
 }

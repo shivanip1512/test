@@ -18,6 +18,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.util.FileFilter;
 import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.editor.element.PointSelectionPanel;
 import com.cannontech.message.dispatch.ClientConnection;
 
 import com.loox.jloox.LxGraph;
@@ -225,6 +226,8 @@ public class Util {
 			9,
 			0,
 			59 };
+
+	private static PointSelectionPanel pointSelectionPanel = null;
 	private static javax.swing.JColorChooser colorChooser = null;
 	private static javax.swing.JFileChooser drawingFileChooser = null;
 	private static ClientConnection dispatchConnection = null;
@@ -253,6 +256,14 @@ public class Util {
 		return colorChooser;
 	}
 
+	public static synchronized PointSelectionPanel getPointSelectionPanel() {
+		if(pointSelectionPanel == null) {
+			pointSelectionPanel = new PointSelectionPanel();
+		}
+		
+		return pointSelectionPanel;
+	}
+	
 	/**
 	 * Generates an absolute path from the drawings location
 	 * and the relative path given.
@@ -452,4 +463,6 @@ public class Util {
 		}
 		return pathStr;		
 	}
+	
+
 }

@@ -253,12 +253,9 @@ public class SVGGenerator {
 			
 		Element retElement = null;
 		
-		//graph.updateGraph();
 		SVGGraphics2D svgGenerator = new SVGGraphics2D(doc);
-		//graph.getCTIGraph().getFreeChart().draw(svgGenerator, new Rectangle(width,height));
 		retElement = svgGenerator.getRoot();
 
-		//java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:dd:ss");
 		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM/dd/yy");
 			
 		retElement.setAttributeNS(null, "x", Integer.toString(x));
@@ -267,13 +264,11 @@ public class SVGGenerator {
 		retElement.setAttributeNS(null, "height", Integer.toString(height));			
 		retElement.setAttributeNS(null, "object", "graph");
 		retElement.setAttributeNS(null, "gdefid", Integer.toString(graph.getGraphDefinitionID()));
-//		retElement.setAttributeNS(null, "model",  Integer.toString(graph.getTrendType()));
 		retElement.setAttributeNS(null, "view", Integer.toString(graph.getTrendType()));
 		retElement.setAttributeNS(null, "format", "svg");
 		retElement.setAttributeNS(null, "db", CtiUtilities.getDatabaseAlias());
 		retElement.setAttributeNS(null, "loadfactor", "false");
 		retElement.setAttributeNS(null, "start", dateFormat.format(graph.getCurrentStartDate()));
-//		retElement.setAttributeNS(null, "end", dateFormat.format(graph.getCurrentEndDate()));
 		retElement.setAttributeNS(null, "period", graph.getDisplayPeriod());
 		retElement.setAttributeNS(null, "onclick", "updateGraphChange(evt)");
 		
@@ -288,17 +283,16 @@ public class SVGGenerator {
 		int width = (int) r.getMaxX() - x;
 		int height = (int) r.getMaxY() - y;		
 		String relImage = img.getYukonImage().getImageName();	
-		
+		 
 		Element imgElem = doc.createElementNS(svgNS, "image");
 		imgElem.setAttributeNS(null, "id", img.getName());
 		imgElem.setAttributeNS(null, "xlink:href", relImage);
-		//imgElem.setAttributeNS(null, "x", Integer.toString(x));
-		//imgElem.setAttributeNS(null, "y", Integer.toString(y));
-		//imgElem.setAttributeNS(null, "width", Integer.toString(width));
-		//imgElem.setAttributeNS(null, "height", Integer.toString(height));
+		imgElem.setAttributeNS(null, "x", Integer.toString(x));
+		imgElem.setAttributeNS(null, "y", Integer.toString(y));
+		imgElem.setAttributeNS(null, "width", Integer.toString(width));
+		imgElem.setAttributeNS(null, "height", Integer.toString(height));
 		return imgElem; 	 		
 	}
-
 
 	private Element createStateImage(SVGDocument doc, StateImage img) {
 		Rectangle2D r = img.getBounds2D();
@@ -312,10 +306,10 @@ public class SVGGenerator {
 		Element imgElem = doc.createElementNS(svgNS, "image");
 		imgElem.setAttributeNS(null, "id", Integer.toString(img.getPoint().getPointID()));
 		imgElem.setAttributeNS(null, "xlink:href", imgName);
-/*		imgElem.setAttributeNS(null, "x", Integer.toString(x));
+		imgElem.setAttributeNS(null, "x", Integer.toString(x));
 		imgElem.setAttributeNS(null, "y", Integer.toString(y));
 		imgElem.setAttributeNS(null, "width", Integer.toString(width));
-		imgElem.setAttributeNS(null, "height", Integer.toString(height));*/
+		imgElem.setAttributeNS(null, "height", Integer.toString(height));
 		return imgElem;		
 	}	
 	

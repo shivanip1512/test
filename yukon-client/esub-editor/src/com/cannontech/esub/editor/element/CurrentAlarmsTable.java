@@ -20,7 +20,7 @@ import com.loox.jloox.LxSaveUtils;
 public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingElement {	
 	private static final String TABLE_TITLE = "Current Alarms";
 	private static final int DEFAULT_WIDTH = 1000;
-	private static final int DEFAULT_HEIGHT = 600;
+	private static final int DEFAULT_HEIGHT = 300;
 
 	private transient Drawing drawing = null;
 	private String linkTo = null;
@@ -153,4 +153,8 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
 		this.linkTo = linkTo;
 	}
 
+	public boolean isCopyable() {
+		return false;
+	}
+		
 }
