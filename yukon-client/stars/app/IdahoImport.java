@@ -19,30 +19,51 @@ import com.cannontech.stars.util.ServerUtils;
 public class IdahoImport {
 	
 	public static void main(String[] args) {
-		if (args.length < 1) {
-			System.out.println( "Usage: java " + IdahoImport.class.getName() + " input_file [output_file]" );
+		if (args.length < 2) {
+			System.out.println( "Usage: java " + IdahoImport.class.getName() + " cust_file hw_file [cust_file_out]" );
 			return;
 		}
 		
-		File inputFile = new File( args[0] );
-		String[] lines = ServerUtils.readFile( inputFile, false );
-		if (lines == null) {
-			System.out.println( "Failed to read input file '" + args[0] + "'" );
+		File custFile = new File( args[0] );
+		String[] custLines = ServerUtils.readFile( custFile, false );
+		if (custLines == null) {
+			System.out.println( "Failed to read customer file '" + args[0] + "'" );
 			return;
 		}
 		
-		File outputFile = (args.length > 1)? new File(args[1]) : inputFile;
-		String[] output = new String[ lines.length ];
+		File hwFile = new File( args[1] );
+		String[] hwLines = ServerUtils.readFile( hwFile, false );
+		if (hwLines == null) {
+			System.out.println( "Failed to read hardware file '" + args[1] + "'" );
+			return;
+		}
+		
+		File outputFile = (args.length > 2)? new File(args[2]) : custFile;
+		String[] output = new String[ custLines.length ];
 		
 		try {
-			// Lowercase the passwords
-			for (int i = 0; i < lines.length; i++) {
-				String[] columns = ServerUtils.splitString( lines[i], "," );
+			// username = serial #, password = lowercase(first letter of first name + last name)
+			String[][] hwCols = new String[hwLines.length][];
+			for (int i = 0; i < hwLines.length; i++)
+				hwCols[i] = ServerUtils.splitString( hwLines[i], "," );
+			
+			for (int i = 0; i < custLines.length; i++) {
+				String[] custCols = ServerUtils.splitString( custLines[i], "," );
 				
 				output[i] = "";
-				for (int j = 0; j < columns.length - 1; j++)
-					output[i] += columns[j] + ",";
-				output[i] += columns[columns.length - 1].toLowerCase();
+				for (int j = 0; j < custCols.length - 2; j++)
+					output[i] += custCols[j] + ",";
+				
+				// Username = Serial #
+				for (int j = 0; j < hwCols.length; j++) {
+					if (hwCols[j][0].equals( custCols[0] )) {
+						output[i] += hwCols[j][3];
+						break;
+					}
+				}
+				
+				// Password = Lowercase(first letter of first name + last name)
+				output[i] += "," + custCols[3].substring(0, 1).toLowerCase() + custCols[2].toLowerCase();
 			}
 			
 			ServerUtils.writeFile( outputFile, output );
