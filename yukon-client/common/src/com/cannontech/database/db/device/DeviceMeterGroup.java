@@ -9,9 +9,13 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 	public static final int COLLECTION_GROUP = 0;
 	public static final int TEST_COLLECTION_GROUP = 1;
 	public static final int BILLING_GROUP = 2;
+	
+	public static final String COLLECTIONGROUP_DISPLAY_STRING = "Collection Group";
+	public static final String ALTGROUP_DISPLAY_STRING = "Alternate Group";
+	public static final String BILLINGGROUP_DISPLAY_STRING = "Billing Group";
 	// The index values are relied upon greatly.  They CANNOT be changed without being in sync with the above id's.
 	public static final String[] validBillGroupTypeDisplayStrings = 
-		{"Collection Group", "Alternate Group", "Billing Group"};
+		{COLLECTIONGROUP_DISPLAY_STRING, ALTGROUP_DISPLAY_STRING, BILLINGGROUP_DISPLAY_STRING};
 	public static final String[] validBillGroupTypeStrings = 
 		{"COLLECTIONGROUP", "TESTCOLLECTIONGROUP", "BILLINGGROUP"};
 	public static final int[] validBillGroupTypeIDs = 
