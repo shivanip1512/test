@@ -1,4 +1,4 @@
-package com.comopt.windows;
+package com.cannontech.tdc.windows;
 
 /**
  * Insert the type's description here.

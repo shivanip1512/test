@@ -66,10 +66,10 @@ gcc -shared JNTServices.o -Wl,--add-stdcall-alias  -o JNTServices.dll
 
  */
 
-/* Header for class com_comopt_windows_JNTServices */
+/* Header for class com_cannontech_tdc_windows_JNTServices */
 
-#ifndef _Included_com_comopt_windows_JNTServices
-#define _Included_com_comopt_windows_JNTServices
+#ifndef _Included_com_cannontech_tdc_windows_JNTServices
+#define _Included_com_cannontech_tdc_windows_JNTServices
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -78,7 +78,7 @@ extern "C" {
  * Method:    start
  * Signature: (Ljava/lang/String;I[Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_com_comopt_windows_JNTServices_start
+JNIEXPORT jint JNICALL Java_com_cannontech_tdc_windows_JNTServices_start
 (JNIEnv *env, jobject jobj, jstring jsServiceShortName, jint jiNumberOfArgs, jobjectArray aArgs, jstring jsMachineName)
 {
    SC_HANDLE myService, scm;
@@ -157,7 +157,7 @@ JNIEXPORT jint JNICALL Java_com_comopt_windows_JNTServices_start
  * Method:    stop
  * Signature: (Ljava/lang/String;II)I
  */
-JNIEXPORT jint JNICALL Java_com_comopt_windows_JNTServices_stop
+JNIEXPORT jint JNICALL Java_com_cannontech_tdc_windows_JNTServices_stop
 (JNIEnv *env, jobject jobj, jstring jsServiceShortName, jint iNumberOfRetries, jint iTimeoutInms, jstring jsMachineName )
 {
 	SC_HANDLE myService, scm;
@@ -267,7 +267,7 @@ JNIEXPORT jint JNICALL Java_com_comopt_windows_JNTServices_stop
  * Method:    install
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_com_comopt_windows_JNTServices_install
+JNIEXPORT jint JNICALL Java_com_cannontech_tdc_windows_JNTServices_install
 (JNIEnv *env, jobject jobj, jstring jsServiceShortName, jstring jsServiceFullName, jstring jsEXEPath, jint iStartType, jstring jsMachineName )
 {
 	SC_HANDLE myService, scm;
@@ -346,7 +346,7 @@ JNIEXPORT jint JNICALL Java_com_comopt_windows_JNTServices_install
  * Method:    uninstall
  * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_com_comopt_windows_JNTServices_uninstall
+JNIEXPORT jint JNICALL Java_com_cannontech_tdc_windows_JNTServices_uninstall
 (JNIEnv *env, jobject jobj, jstring jsServiceShortName, jstring jsMachineName)
 {
 	
@@ -435,7 +435,7 @@ JNIEXPORT jint JNICALL Java_com_comopt_windows_JNTServices_uninstall
  * Method:    getStatus
  * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_com_comopt_windows_JNTServices_getStatus
+JNIEXPORT jint JNICALL Java_com_cannontech_tdc_windows_JNTServices_getStatus
 (JNIEnv *env, jobject jobj, jstring jsServiceShortName, jstring jsMachineName )
 {
    SC_HANDLE myService, scm;
@@ -511,7 +511,7 @@ JNIEXPORT jint JNICALL Java_com_comopt_windows_JNTServices_getStatus
  * Method:    getAllServices
  * Signature: (Ljava/lang/String;I[Ljava/lang/String;)I
  */
-JNIEXPORT jobjectArray JNICALL Java_com_comopt_windows_JNTServices_getAllServices
+JNIEXPORT jobjectArray JNICALL Java_com_cannontech_tdc_windows_JNTServices_getAllServices
 (JNIEnv *env, jobject jobj, jstring jsMachineName ){
  
 	jobjectArray ret;

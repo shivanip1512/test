@@ -1,4 +1,4 @@
-package com.comopt.windows;
+package com.cannontech.tdc.windows;
 
 import com.cannontech.tdc.alarms.gui.AlarmTableModel;
 import com.cannontech.common.gui.util.Colors;

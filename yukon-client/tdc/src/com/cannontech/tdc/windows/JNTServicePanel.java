@@ -1,4 +1,4 @@
-package com.comopt.windows;
+package com.cannontech.tdc.windows;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.*;
