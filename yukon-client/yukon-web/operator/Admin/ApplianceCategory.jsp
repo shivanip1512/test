@@ -138,12 +138,6 @@ function sameAsDispName(form, checked) {
 	form.ProgShortName.disabled = checked;
 }
 
-function useDescFile(form, checked) {
-	form.UseDescFile.checked = checked;
-	form.ProgDescFile.disabled = !checked;
-	form.ProgDescription.disabled = checked;
-}
-
 function init() {
 	sameAsName(document.form1, <%= category.getStarsWebConfig().getAlternateDisplayName().equals(category.getDescription()) %>);
 	changeIcon(document.form1);
@@ -168,14 +162,14 @@ var idx = 0;
 	for (int i = 0; i < category.getStarsEnrLMProgramCount(); i++) {
 		StarsEnrLMProgram program = category.getStarsEnrLMProgram(i);
 		StarsWebConfig cfg = program.getStarsWebConfig();
-		String[] dispNames = cfg.getAlternateDisplayName().split(",");
+		String[] dispNames = ServerUtils.splitString(cfg.getAlternateDisplayName(), ",");
 		String[] imgNames = ServletUtils.getImageNames( cfg.getLogoLocation() );
 %>
 	progID[idx] = <%= program.getProgramID() %>;
 	progName[idx] = "<%= program.getProgramName() %>";
-	dispName[idx] = "<%= (dispNames.length > 0)? dispNames[0] : "" %>";
-	shortName[idx] = "<%= (dispNames.length > 1)? dispNames[1] : "" %>";
-	description[idx] = "<%= cfg.getDescription().replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"').replace(/<br>/g, '\r\n');
+	dispName[idx] = "<%= (dispNames.length > 0)? dispNames[0].replaceAll("\"", "&quot;") : "" %>".replace(/&quot;/g, '"').replace(/&/g, '&amp;');
+	shortName[idx] = "<%= (dispNames.length > 1)? dispNames[1].replaceAll("\"", "&quot;") : "" %>".replace(/&quot;/g, '"').replace(/&/g, '&amp;');
+	description[idx] = "<%= cfg.getDescription().replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"').replace(/&/g, '&amp;').replace(/<br>/g, '\r\n');
 	descFile[idx] = "<%= cfg.getURL() %>";
 	ctrlOdds[idx] = <%= (program.getChanceOfControl() == null) ? 0 : program.getChanceOfControl().getEntryID() %>;
 	iconNameSavings[idx] = "<%= imgNames[0] %>";
@@ -217,15 +211,8 @@ function saveProgramConfig(form) {
 		else
 			shortName[idx] = form.ProgShortName.value;
 		
-		if (form.UseDescFile.checked) {
-			description[idx] = "";
-			descFile[idx] = form.ProgDescFile.value;
-		}
-		else {
-			description[idx] = form.ProgDescription.value;
-			descFile[idx] = "";
-		}
-		
+		description[idx] = form.ProgDescription.value;
+		descFile[idx] = form.ProgDescFile.value;
 		ctrlOdds[idx] = form.ProgCtrlOdds.value;
 		iconNameSavings[idx] = form.IconNameSavings.value;
 		iconNameControl[idx] = form.IconNameControl.value;
@@ -237,7 +224,6 @@ function clearProgramConfig(form) {
 	document.getElementById("ProgName").innerText = "";
 	sameAsProgName(form, false);
 	sameAsDispName(form, false);
-	useDescFile(form, false);
 	
 	form.ProgDispName.value = "";
 	form.ProgShortName.value = "";
@@ -270,7 +256,6 @@ function showProgramConfig(form) {
 			sameAsDispName(form, shortName[idx] == "");
 			form.ProgDescription.value = description[idx];
 			form.ProgDescFile.value = descFile[idx];
-			useDescFile(form, descFile[idx] != "");
 			form.ProgCtrlOdds.value = ctrlOdds[idx];
 			form.IconNameSavings.value = iconNameSavings[idx];
 			form.IconNameControl.value = iconNameControl[idx];
@@ -298,11 +283,11 @@ function prepareSubmit(form) {
 			
 			for (idx = 0; idx < progID.length; idx++)
 				if (progID[idx] == programID) break;
-			html = '<input type="hidden" name="ProgDispNames" value="' + dispName[idx] + '">';
+			html = '<input type="hidden" name="ProgDispNames" value="' + dispName[idx].replace(/"/g, '&amp;quot;') + '">';
 			form.insertAdjacentHTML("beforeEnd", html);
-			html = '<input type="hidden" name="ProgShortNames" value="' + shortName[idx] + '">';
+			html = '<input type="hidden" name="ProgShortNames" value="' + shortName[idx].replace(/"/g, '&amp;quot;') + '">';
 			form.insertAdjacentHTML("beforeEnd", html);
-			html = '<input type="hidden" name="ProgDescriptions" value="' + description[idx].replace(/"/g, "&quot;") + '">';
+			html = '<input type="hidden" name="ProgDescriptions" value="' + description[idx].replace(/"/g, '&amp;quot;') + '">';
 			form.insertAdjacentHTML("beforeEnd", html);
 			html = '<input type="hidden" name="ProgDescFiles" value="' + descFile[idx] + '">';
 			form.insertAdjacentHTML("beforeEnd", html);
@@ -480,10 +465,13 @@ function prepareSubmit(form) {
                             <tr> 
                               <td width="16%">Description:</td>
                               <td width="84%"> 
-                                <input type="text" name="ProgDescFile" size="40">
-                                <input type="checkbox" name="UseDescFile" value="true" onclick="useDescFile(this.form, this.checked)">
-                                Use a description file<br>
                                 <textarea name="ProgDescription" rows="4" wrap="soft" cols="40"></textarea>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td width="16%">Description File:</td>
+                              <td width="84%">
+                                <input type="text" name="ProgDescFile" size="40">
                               </td>
                             </tr>
                             <tr> 
@@ -510,9 +498,9 @@ function prepareSubmit(form) {
                             </tr>
                             <tr> 
                               <td width="16%">Program Description Icons:</td>
-                              <td width="84%">
+                              <td width="84%"> 
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                  <tr>
+                                  <tr> 
                                     <td width="60%"> 
                                       <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                                         <tr> 
@@ -535,7 +523,7 @@ function prepareSubmit(form) {
                                           </td>
                                         </tr>
                                       </table>
-									</td>
+                                    </td>
                                     <td width="20%"> 
                                       <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                                         <tr> 
