@@ -12,20 +12,19 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.XYPlot;
 
+import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.GraphFuncs;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
-import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.graph.GraphDataSeries;
+import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.database.model.GraphDefinitionTreeModel;
 import com.cannontech.graph.buffer.html.HTMLBuffer;
 import com.cannontech.graph.buffer.html.PeakHtml;
@@ -38,12 +37,10 @@ import com.cannontech.graph.menu.OptionsMenu;
 import com.cannontech.graph.menu.TrendMenu;
 import com.cannontech.graph.menu.ViewMenu;
 import com.cannontech.graph.model.TrendModel;
-import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.graph.model.TrendProperties;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.common.gui.util.JEditorPanePrintable;
 public class GraphClient extends javax.swing.JPanel implements com.cannontech.database.cache.DBChangeListener, GraphDefines, java.awt.event.ActionListener, java.awt.event.WindowListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener {
 
 	private class TrendDataAutoUpdater extends Thread
@@ -63,7 +60,7 @@ public class GraphClient extends javax.swing.JPanel implements com.cannontech.da
 					return;
 				}
 				
-				if( GraphClient.this.getClientConnection().isValid() )
+//				if( GraphClient.this.getClientConnection().isValid() )
 				{
 					synchronized (com.cannontech.graph.GraphClient.class)
 					{
@@ -106,7 +103,7 @@ public class GraphClient extends javax.swing.JPanel implements com.cannontech.da
 		}
 	}
 	//This is a somewhat temporary field user
-	private int savedViewType = TrendModelType.LINE_VIEW;
+	private int savedViewType = GraphRenderers.LINE;
 	private static Graph graphClass = null;
 	private static javax.swing.JFrame graphClientFrame = null;
 	private String directory = null;
@@ -204,7 +201,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		getGraph().setUpdateTrend(true);	
 		
 		com.cannontech.clientutils.CTILogger.info(" don't change model");
-		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
+		refresh();
 	}
 	else if (event.getSource() == getStartDateComboBox())
 	{
@@ -218,46 +215,79 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 
 			setStartDate(getStartDateComboBox().getSelectedDate());
 //			setStartDate(cal.getTime());
-			actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
+			refresh();
 		}
 	}
 	else if( event.getSource() == getViewMenu().getLineGraphRadioButtonItem() )
-	{
-		actionPerformed_GetRefreshButton(TrendModelType.LINE_VIEW);
+	{	
+		getGraph().setViewType( GraphRenderers.LINE);
+		savedViewType = getGraph().getViewType();
+		refresh();
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 	else if( event.getSource() == getViewMenu().getStepGraphRadioButtonItem() )
 	{
-		actionPerformed_GetRefreshButton(TrendModelType.STEP_VIEW);
+		getGraph().setViewType( GraphRenderers.STEP);
+		savedViewType = getGraph().getViewType();
+		refresh();
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 	else if( event.getSource() == getViewMenu().getShapeLineGraphRadioButtonItem() )
 	{
-		actionPerformed_GetRefreshButton(TrendModelType.SHAPES_LINE_VIEW);
+		getGraph().setViewType( GraphRenderers.SHAPES_LINE);
+		savedViewType = getGraph().getViewType();
+		refresh();
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 	else if( event.getSource() == getViewMenu().getBarGraphRadioButtonItem())
 	{
-		actionPerformed_GetRefreshButton(TrendModelType.BAR_VIEW);
+		getGraph().setViewType( GraphRenderers.BAR);
+		savedViewType = getGraph().getViewType();
+		refresh();
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
 		getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 	else if ( event.getSource() == getViewMenu().getBarGraph3DRadioButtonItem())
 	{
-		actionPerformed_GetRefreshButton(TrendModelType.BAR_3D_VIEW);
+		getGraph().setViewType( GraphRenderers.BAR_3D);
+		savedViewType = getGraph().getViewType();
+		refresh();
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
 		getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}	
+	else if( event.getSource() == getOptionsMenu().getResetPeaksAllPointsMenuItem())
+	{
+		ResetPeaksPanel peaksPanel = new ResetPeaksPanel();
+		boolean hasChanged = peaksPanel.showResetDialog(getGraphParentFrame());
+		getGraph().setUpdateTrend(hasChanged);
+	}
+	else if( event.getSource() == getOptionsMenu().getResetPeakSelectedTrendMenuItem())
+	{
+		/*TODO Need to update the selected GDEF correctly to cause a reload.*/
+		Object selected = getTreeViewPanel().getSelectedItem();
+
+		if (selected == null)
+			showPopupMessage("Please select a Trend to Edit from the List", javax.swing.JOptionPane.WARNING_MESSAGE);
+		else
+		{
+			if (selected instanceof LiteGraphDefinition)
+			{
+				ResetPeaksPanel peaksPanel = new ResetPeaksPanel(GraphDataSeries.getAllGraphDataSeries(new Integer(((LiteGraphDefinition)selected).getGraphDefinitionID())));
+				boolean hasChanged = peaksPanel.showResetDialog(getGraphParentFrame());
+				getGraph().setUpdateTrend(hasChanged);
+			}
+		}
+	}
 	else if( event.getSource() == getOptionsMenu().getLoadDurationMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getLoadDurationMenuItem().isSelected();
-		getTrendProperties().updateOptionsMaskSettings(TrendModelType.LOAD_DURATION_MASK, isMasked);
-		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
+		getTrendProperties().updateOptionsMaskSettings(GraphRenderers.LOAD_DURATION_MASK, isMasked);
+		refresh();
 	}
 	else if( event.getSource() == getOptionsMenu().getNoneResMenuItem())
 	{
@@ -291,7 +321,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		com.cannontech.clientutils.CTILogger.info("yesterday change");
 		boolean isMasked = getOptionsMenu().getPlotYesterdayMenuItem().isSelected();
 		getGraph().setUpdateTrend(true);
-		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
+		refresh();
 	}
 	/*
 	else if( event.getSource() == getOptionsMenu().getSetupMultipleDaysMenuItem())
@@ -304,34 +334,34 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	else if( event.getSource() == getOptionsMenu().getMultiplierMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getMultiplierMenuItem().isSelected();
-		getTrendProperties().updateOptionsMaskSettings(TrendModelType.GRAPH_MULTIPLIER_MASK, isMasked);
-		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
+		getTrendProperties().updateOptionsMaskSettings(GraphRenderers.GRAPH_MULTIPLIER_MASK, isMasked);
+		refresh();
 	}
 	/*
 	else if( event.getSource() == getOptionsMenu().getDwellMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getDwellMenuItem().isSelected();
-		getGraph().setOptionsMaskHolder(TrendModelType.DWELL_LABELS_MASK, isMasked);
+		getGraph().setOptionsMaskHolder(GraphRenderers.DWELL_LABELS_MASK, isMasked);
 	}
 	*/
 	else if( event.getSource() == getOptionsMenu().getPlotMinMaxValuesMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getPlotMinMaxValuesMenuItem().isSelected();
-		getTrendProperties().updateOptionsMaskSettings(TrendModelType.PLOT_MIN_MAX_MASK, isMasked);
-		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
+		getTrendProperties().updateOptionsMaskSettings(GraphRenderers.PLOT_MIN_MAX_MASK, isMasked);
+		refresh();
 	}
 
 	else if( event.getSource() == getOptionsMenu().getShowLoadFactorMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getShowLoadFactorMenuItem().isSelected();
-		getTrendProperties().updateOptionsMaskSettings(TrendModelType.LEGEND_LOAD_FACTOR_MASK, isMasked);
-		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
+		getTrendProperties().updateOptionsMaskSettings(GraphRenderers.LEGEND_LOAD_FACTOR_MASK, isMasked);
+		refresh();
 	}
 	else if( event.getSource() == getOptionsMenu().getShowMinMaxMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getShowMinMaxMenuItem().isSelected();
-		getTrendProperties().updateOptionsMaskSettings(TrendModelType.LEGEND_MIN_MAX_MASK, isMasked);
-		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
+		getTrendProperties().updateOptionsMaskSettings(GraphRenderers.LEGEND_MIN_MAX_MASK, isMasked);
+		refresh();
 	}
 
 	else if( event.getSource() == getOptionsMenu().getAdvancedOptionsMenuItem())
@@ -347,33 +377,33 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	
 	else if( event.getSource() == getTimePeriodComboBox())
 	{
-		actionPerformed_GetTimePeriodComboBox( );
-		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
+		updateTimePeriod( );
+		refresh();
 	}
 	else if( event.getSource() == getTrendMenu().getCreateMenuItem())
 	{		
-		actionPerformed_CreateMenuItem( );
+		create( );
 	}
 	else if( event.getSource() == getTrendMenu().getEditMenuItem())
 	{
-		actionPerformed_EditMenuItem( );
+		edit( );
 	}
 	else if( event.getSource() == getCurrentRadioButton()
 			|| event.getSource() == getHistoricalRadioButton())
 	{
-		actionPerformed_GetToggleButton();
+		toggleTimePeriod();
 	}
 	else if( event.getSource() == getFileMenu().getExportMenuitem())
 	{
-		actionPerformed_ExportMenuItem( );
+		export( );
 	}
 	else if( event.getSource() == getFileMenu().getPrintMenuItem())
 	{
-		actionPerformed_PrintMenuItem( );
+		print( );
 	}
 	else if( event.getSource() == getTrendMenu().getDeleteMenuItem())
 	{
-		actionPerformed_DeleteMenuItem( );
+		delete( );
 	}
 	else if( event.getSource() == getHelpMenu().getHelpTopicsMenuItem())
 	{
@@ -382,7 +412,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 
 	else if(event.getSource() == getHelpMenu().getAboutMenuItem())
 	{
-		actionPerformed_AboutMenuItem( );
+		about( );
 	}
 	//else if( event.getSource() == graphOptionsMenu.showPointLabelsItem )
 	//{
@@ -402,7 +432,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		java.util.List trendPaobjects = GraphFuncs.getLiteYukonPaobjects(getGraph().getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue());
 		getGraph().getDataNow(trendPaobjects);
 	}
-/*	else if( event.getSource() == getOptionsMenu().getStatCarrierCommReportMenuItem())
+	/*else if( event.getSource() == getOptionsMenu().getStatCarrierCommReportMenuItem())
 	{
 		com.cannontech.analysis.data.statistic.StatisticCarrierCommData data = new com.cannontech.analysis.data.statistic.StatisticCarrierCommData("DEVICE", "CARRIER", "Monthly");
 		runReport(data);
@@ -427,25 +457,25 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		com.cannontech.clientutils.CTILogger.info(" other action");
 	}
 }
-/*public void runReport(com.cannontech.analysis.data.statistic.StatisticReportDataBase reportData)
+public void runReport(StatisticModel reportData)
 {
 	com.cannontech.analysis.report.StatisticReport report = new com.cannontech.analysis.report.StatisticReport();
 	try
 	{
-		report.showPreviewDialog(reportData);
+		report.showPreviewFrame(reportData);
 	}
 	catch (Exception e)
 	{
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-}*/
+}
 /**
  * Insert the method's description here.
  * Creation date: (6/22/00 2:07:26 PM)
  * @param event java.awt.event.ActionEvent
  */
-public void actionPerformed_AboutMenuItem( ) 
+public void about( ) 
 {
 	AboutTrending aboutDialog = new AboutTrending(getGraphParentFrame(), "About Trending", true );
 
@@ -458,33 +488,16 @@ public void actionPerformed_AboutMenuItem( )
  * Creation date: (6/22/00 2:07:26 PM)
  * @param event java.awt.event.ActionEvent
  */
-public void actionPerformed_CreateMenuItem( )
+public void create( )
 {
 	createPanel =  new CreateGraphPanel();
 	GraphDefinition gDef = createPanel.showCreateGraphPanelDialog( getGraphParentFrame());
-	
-	if( gDef != null )
-	{
-		try
-		{
-			Transaction t = Transaction.createTransaction(Transaction.INSERT, gDef);
-			gDef = (GraphDefinition)t.execute();
 
-			//write the DBChangeMessage out to Dispatch since it was a Successfull ADD
-			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)gDef, DBChangeMsg.CHANGE_TYPE_ADD);
-			
-			for( int i = 0; i < dbChange.length; i++)
-			{
-				DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
-				getGraph().getClientConnection().write(dbChange[i]);
-			}
-			getTreeViewPanel().refresh();
-			getTreeViewPanel().selectObject(gDef);
-		}
-		catch( com.cannontech.database.TransactionException e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
+	if( gDef != null)
+	{
+		getGraph().create(gDef);
+		getTreeViewPanel().refresh();
+		getTreeViewPanel().selectObject(gDef);
 	}
 	createPanel = null;
 }
@@ -493,7 +506,7 @@ public void actionPerformed_CreateMenuItem( )
  * Creation date: (6/22/00 2:07:26 PM)
  * @param event java.awt.event.ActionEvent
  */
-public void actionPerformed_DeleteMenuItem( )
+public void delete( )
 {
 	Object selected = getTreeViewPanel().getSelectedItem();
 
@@ -505,36 +518,8 @@ public void actionPerformed_DeleteMenuItem( )
 		if (option == javax.swing.JOptionPane.YES_OPTION)
 		{
 			DBPersistent dbPersistent = LiteFactory.createDBPersistent((LiteBase)selected);
-			try
-			{
-				Transaction t = Transaction.createTransaction( Transaction.DELETE, dbPersistent);
-				dbPersistent = t.execute();
-		
-				//write the DBChangeMessage out to Dispatch since it was a Successfull DELETE
-				DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)dbPersistent, DBChangeMsg.CHANGE_TYPE_DELETE);
-				
-				for( int i = 0; i < dbChange.length; i++)
-				{
-					DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
-					getGraph().getClientConnection().write(dbChange[i]);
-				}
-					
-				getTreeViewPanel().refresh();
-				if( getFreeChart().getPlot() instanceof org.jfree.chart.plot.CategoryPlot)
-				{
-					((CategoryPlot)getFreeChart().getPlot()).setDataset(null);
-					((CategoryPlot)getFreeChart().getPlot()).setSecondaryDataset(0, null);
-				}
-				else if( getFreeChart().getPlot() instanceof org.jfree.chart.plot.XYPlot)
-				{
-					((XYPlot)getFreeChart().getPlot()).setDataset(null);
-					((XYPlot)getFreeChart().getPlot()).setSecondaryDataset(0, null);
-				}
-			}
-			catch( com.cannontech.database.TransactionException e )
-			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			}
+			getGraph().delete(dbPersistent);
+			getTreeViewPanel().refresh();
 		}
 	}
 }
@@ -543,7 +528,7 @@ public void actionPerformed_DeleteMenuItem( )
  * Creation date: (6/22/00 2:07:26 PM)
  * @param event java.awt.event.ActionEvent
  */
-public void actionPerformed_EditMenuItem( )
+public void edit( )
 {
 	java.awt.Cursor savedCursor = null;
 	createPanel =  new CreateGraphPanel();
@@ -569,33 +554,11 @@ public void actionPerformed_EditMenuItem( )
 			
 			if (gDef != null)	// 'OK' out of dialog to continue on.
 			{
-				try
-				{
-					t = Transaction.createTransaction( Transaction.UPDATE, gDef);
-					gDef = (GraphDefinition)t.execute();
-			
-					//write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
-					DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)gDef, DBChangeMsg.CHANGE_TYPE_UPDATE);
-					
-					for( int i = 0; i < dbChange.length; i++)
-					{
-						DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
-						getGraph().getClientConnection().write(dbChange[i]);
-					}
-					getTreeViewPanel().refresh();
-					getTreeViewPanel().selectObject(gDef);	//inits a valueChanged event.			
-				}
-				catch( com.cannontech.database.TransactionException e )
-				{
-					com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-				}
-
-				//force an update on the GDEF update
-				getGraph().setUpdateTrend(true);
-				
+				getGraph().update(gDef);
+				getTreeViewPanel().refresh();
+				getTreeViewPanel().selectObject(gDef);	//inits a valueChanged event.			
 				updateCurrentPane();
 			}
-			//else (gDef == null)	//'CANCEL' out of dialog.
 		}
 	}
 	catch (Exception e)
@@ -611,50 +574,22 @@ public void actionPerformed_EditMenuItem( )
 }
 /**
  * Insert the method's description here.
- * Creation date: (9/25/2001 11:12:24 AM)
- */
-public void actionPerformed_ExitMenuItem()
-{
-	try
-	{
-		if ( getClientConnection()!= null && getClientConnection().isValid() )  // free up Dispatchs resources
-		{
-			com.cannontech.message.dispatch.message.Command command = new com.cannontech.message.dispatch.message.Command();
-			command.setPriority(15);
-			
-			command.setOperation( com.cannontech.message.dispatch.message.Command.CLIENT_APP_SHUTDOWN );
-
-			getClientConnection().write( command );
-
-			getClientConnection().disconnect();
-		}
-	}
-	catch ( java.io.IOException e )
-	{
-		e.printStackTrace();
-	}
-
-	System.exit(0);
-
-}
-/**
- * Insert the method's description here.
  * Creation date: (6/22/00 2:07:26 PM)
  * @param event java.awt.event.ActionEvent
  */
-public void actionPerformed_ExportMenuItem()
+public void export()
 {
 	SaveAsJFileChooser chooser = null;
 	
 	switch( getTrendProperties().getViewType() )
 	{
-		case TrendModelType.TABULAR_VIEW:
+		case GraphRenderers.TABULAR:
 			chooser = new SaveAsJFileChooser(
 				CtiUtilities.getExportDirPath(), getTrendProperties().getViewType(), 
 				getGraph().getHtmlString(), getTrendModel().getChartName().toString(), getTrendModel());
 				break;
 				
-		case TrendModelType.SUMMARY_VIEW:
+		case GraphRenderers.SUMMARY:
 			chooser = new SaveAsJFileChooser(
 				CtiUtilities.getExportDirPath(), getTrendProperties().getViewType(), 
 				getGraph().getHtmlString(), getTrendModel().getChartName().toString());
@@ -673,14 +608,8 @@ public void actionPerformed_ExportMenuItem()
  * Creation date: (6/22/00 2:07:26 PM)
  * @param event java.awt.event.ActionEvent
  */
-public void actionPerformed_GetRefreshButton( int refreshModelType )
+public void refresh( )
 {
-	if( refreshModelType >= 0 )
-	{
-		getGraph().setViewType( refreshModelType );
-		savedViewType = refreshModelType;
-	}
-	
 	java.awt.Cursor savedCursor = null;
 
 	try
@@ -717,7 +646,7 @@ public void actionPerformed_GetRefreshButton( int refreshModelType )
  * Creation date: (6/22/00 2:07:26 PM)
  * @param event java.awt.event.ActionEvent
  */
-public void actionPerformed_GetTimePeriodComboBox( )
+public void updateTimePeriod( )
 {
 	getGraph().setPeriod( getTimePeriodComboBox().getSelectedItem().toString() );
 	if (getCurrentRadioButton().isSelected()
@@ -733,7 +662,7 @@ public void actionPerformed_GetTimePeriodComboBox( )
 	{
 		getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
-//		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_YESTERDAY_MASK, false);
+//		getGraph().setOptionsMaskHolder(GraphRenderers.PLOT_YESTERDAY_MASK, false);
 	}
 	else
 	{
@@ -746,7 +675,7 @@ public void actionPerformed_GetTimePeriodComboBox( )
  * Creation date: (6/22/00 2:07:26 PM)
  * @param event java.awt.event.ActionEvent
  */
-public void actionPerformed_GetToggleButton( )
+public void toggleTimePeriod( )
 {
 	
 	//ADD CODE FOR WHEN CURRENT/HISTORICAL IS SELECTED 2 TIMES IN A ROW!!!
@@ -798,7 +727,7 @@ public void actionPerformed_GetToggleButton( )
 	// -- Put the action listener back on the timePeriodComboBox	
 	getTimePeriodComboBox().addActionListener(this);
 	getStartDateComboBox().addActionListener(this);
-	actionPerformed_GetTimePeriodComboBox();
+	updateTimePeriod();
 	
 }
 /**
@@ -806,7 +735,7 @@ public void actionPerformed_GetToggleButton( )
  * Creation date: (6/22/00 2:07:26 PM)
  * @param event java.awt.event.ActionEvent
  */
-public void actionPerformed_PrintMenuItem( )
+public void print( )
 {
 	java.awt.print.PrinterJob pj = java.awt.print.PrinterJob.getPrinterJob();
 	if (pj.printDialog())
@@ -918,7 +847,7 @@ public void exit()
 	getTrendProperties().writeDefaultsFile();
 	try
 	{
-		if ( getClientConnection() != null && getClientConnection().isValid() )  // free up Dispatchs resources
+		if ( getClientConnection() != null && getClientConnection().isValid() )  // free up Dispatches resources
 		{
 			com.cannontech.message.dispatch.message.Command command = new com.cannontech.message.dispatch.message.Command();
 			command.setPriority(15);
@@ -956,7 +885,7 @@ private int formatDateRangeSlider(TrendModel model, TabularHtml htmlData)
 
 	if( timePeriod.equalsIgnoreCase( ServletUtil.ONEDAY) ||
 		timePeriod.equalsIgnoreCase(ServletUtil.TODAY) || 
-		(getTrendProperties().getOptionsMaskSettings() & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)  //1 day
+		(getTrendProperties().getOptionsMaskSettings() & GraphRenderers.LOAD_DURATION_MASK) == GraphRenderers.LOAD_DURATION_MASK)  //1 day
 	{
 		//With load duration, we show all values at the same time.
 		getSliderPanel().setVisible(false);
@@ -1539,11 +1468,16 @@ private javax.swing.JTabbedPane getTabbedPane() {
 			ivjTabbedPane.insertTab("Graph", null, getGraphTabPanel(), null, 0);
 			ivjTabbedPane.insertTab("Tabular", null, getTabularTabScrollPane(), null, 1);
 			ivjTabbedPane.insertTab("Summary", null, getSummaryTabScrollPane(), null, 2);
+			
+			/*StatisticModel data = new StatisticModel("Monthly", StatisticData.DEVICE_COMM_DATA);
+			com.cannontech.analysis.report.StatisticReport report = new com.cannontech.analysis.report.StatisticReport();
+			ivjTabbedPane.insertTab("Reports", null, report.getPreviewFrame(data), null, 2);
+			*/
 			// user code begin {1}
 			
-			if( getTrendProperties().getViewType() == TrendModelType.TABULAR_VIEW)
+			if( getTrendProperties().getViewType() == GraphRenderers.TABULAR)
 				ivjTabbedPane.setSelectedIndex(1);
-			else if( getTrendProperties().getViewType() == TrendModelType.SUMMARY_VIEW)
+			else if( getTrendProperties().getViewType() == GraphRenderers.SUMMARY)
 				ivjTabbedPane.setSelectedIndex(2);
 			else
 				ivjTabbedPane.setSelectedIndex(0);
@@ -2050,7 +1984,7 @@ private void initializeSwingComponents()
 		{
 			if( event.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER )
 			{
-				actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
+				refresh();
 			}
 		}
 	});
@@ -2092,9 +2026,6 @@ private void initializeSwingComponents()
 //	while(enum.hasMoreElements())
 //		System.out.println(enum.nextElement());
 
-	//Force the connection to init
-	getGraph().getClientConnection();
-
 	trendDataAutoUpdater = new TrendDataAutoUpdater();
 	trendDataAutoUpdater.start();
 
@@ -2102,12 +2033,12 @@ private void initializeSwingComponents()
 
 	getDirectory();	//setup the directory for the exports
 	
-	if( getTrendProperties().getViewType() != TrendModelType.TABULAR_VIEW &&
-		getTrendProperties().getViewType() != TrendModelType.SUMMARY_VIEW )	//not tabular or summary
+	if( getTrendProperties().getViewType() != GraphRenderers.TABULAR &&
+		getTrendProperties().getViewType() != GraphRenderers.SUMMARY )	//not tabular or summary
 		savedViewType = getTrendProperties().getViewType();
 	
 	if(found)	//found a gdefName to start with and display data
-		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
+		refresh();
 }
 /**
  * Insert the method's description here.
@@ -2405,7 +2336,7 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 			else if( getTabbedPane().getSelectedComponent() == getTabularTabScrollPane())
 			{
 	//				com.cannontech.clientutils.CTILogger.info("TABULAR TAB");
-				getGraph().setViewType(TrendModelType.TABULAR_VIEW);
+				getGraph().setViewType(GraphRenderers.TABULAR);
 				if( getTreeViewPanel().getSelectedNode().getParent() == null)
 				{
 					getTabularEditorPane().setText("<CENTER>Please Select a Trend from the list");
@@ -2425,7 +2356,7 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 			else if( getTabbedPane().getSelectedComponent() == getSummaryTabScrollPane())
 			{
 	//				com.cannontech.clientutils.CTILogger.info("SUMMARY TAB");
-				getGraph().setViewType(TrendModelType.SUMMARY_VIEW);
+				getGraph().setViewType(GraphRenderers.SUMMARY);
 				
 				if( getTreeViewPanel().getSelectedNode().getParent() == null)
 					getSummaryEditorPane().setText("<CENTER>Please Select a Trend from the list");
@@ -2473,7 +2404,7 @@ public void updateCurrentPane()
 		}
 		else if( getTabbedPane().getSelectedComponent() == getTabularTabScrollPane())
 		{
-			getGraph().setViewType(TrendModelType.TABULAR_VIEW);
+			getGraph().setViewType(GraphRenderers.TABULAR);
 			getGraph().update();
 			StringBuffer buf =  new StringBuffer();
 			buf.append(buildHTMLBuffer(new TabularHtml()));
@@ -2487,7 +2418,7 @@ public void updateCurrentPane()
 		{
 			StringBuffer buf = new StringBuffer();
 
-			getGraph().setViewType(TrendModelType.SUMMARY_VIEW);
+			getGraph().setViewType(GraphRenderers.SUMMARY);
 			getGraph().update();
 			buf.append(buildHTMLBuffer(new PeakHtml()));
 			buf.append(buildHTMLBuffer(new UsageHtml()));
@@ -2525,7 +2456,7 @@ public void valueChanged(javax.swing.event.TreeSelectionEvent event)
 		//Current cursor set to waiting during the update.
 		savedCursor = this.getCursor();
 		this.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
-
+		
 		//Find the selected graph definition and display it
 		Object item = getTreeViewPanel().getSelectedItem();
 		if( item == null || !( item instanceof LiteBase) )
