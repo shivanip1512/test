@@ -85,7 +85,7 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				break;
 			case LiteTypes.CONTACT:
 				returnObject = new com.cannontech.database.data.customer.Contact();
-				((com.cannontech.database.data.customer.Contact)returnObject).getContact().setContactID( new Integer(((LiteContact)liteObject).getContactID()) );
+				((com.cannontech.database.data.customer.Contact)returnObject).setContactID( new Integer(((LiteContact)liteObject).getContactID()) );
 				((com.cannontech.database.data.customer.Contact)returnObject).getContact().setContFirstName( ((LiteContact)liteObject).getContFirstName() );
 				((com.cannontech.database.data.customer.Contact)returnObject).getContact().setContLastName( ((LiteContact)liteObject).getContLastName() );
 				((com.cannontech.database.data.customer.Contact)returnObject).getContact().setLogInID( new Integer( ((LiteContact)liteObject).getLoginID() ) );

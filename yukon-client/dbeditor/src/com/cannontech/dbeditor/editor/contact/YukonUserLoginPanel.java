@@ -13,6 +13,7 @@ import com.cannontech.database.db.user.YukonUser;
 import com.cannontech.database.db.customer.CustomerLogin;
 */
 
+/*------ NOT USED AS OF 2-11-2003  ------*/
 public class YukonUserLoginPanel extends com.cannontech.common.gui.util.DataInputPanel
 {
 	private javax.swing.JPanel ivjJPanelLoginPanel = null;

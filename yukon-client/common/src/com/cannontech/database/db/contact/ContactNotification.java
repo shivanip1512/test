@@ -72,7 +72,7 @@ public class ContactNotification extends com.cannontech.database.db.DBPersistent
 	{
 		if( getContactNotifID() == null )
 			setContactNotifID( getNextContactNotifID(getDbConnection()) );
-		
+
 		Object setValues[] = 
 		{ 
 			getContactNotifID(), getContactID(), getNotificationCatID(), 
@@ -261,6 +261,35 @@ public class ContactNotification extends com.cannontech.database.db.DBPersistent
 		tmpList.toArray( retVal );
 		
 		return retVal;
+	}
+
+
+	/**
+	 * This method was created in VisualAge.
+	 * @return com.cannontech.database.db.point.State[]
+	 * @param stateGroup java.lang.Integer
+	 */
+	public static final void deleteAllContactNotifications( java.sql.Connection conn, int contactID_ ) throws java.sql.SQLException 
+	{
+		String sql = 
+			"DELETE FROM " + TABLE_NAME + " " + 
+			"WHERE ContactID = " + contactID_; 
+	
+		try
+		{		
+			if( conn == null )
+			{
+				throw new IllegalStateException("Error getting database connection.");
+			}
+			else
+			{
+				conn.prepareStatement(sql.toString()).executeUpdate();
+			}		
+		}
+		catch( java.sql.SQLException e )
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}	
 	}
 	
 	/**

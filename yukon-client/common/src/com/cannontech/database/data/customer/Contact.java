@@ -44,6 +44,9 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 			setContactID( 
 				com.cannontech.database.db.contact.Contact.getNextContactID(getDbConnection()) ); 
 
+		//be sure all or our objects share the same contactID 
+		setContactID( getContact().getContactID() ); 
+		
 		getContact().add();
 		
 		for( int i = 0; i < getContactNotifVect().size(); i++ )
@@ -58,11 +61,9 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	 */
 	public void delete() throws java.sql.SQLException 
 	{
-
-		for( int i = 0; i < getContactNotifVect().size(); i++ )
-		{
-			((DBPersistent)getContactNotifVect().get(i)).delete();
-		}
+		ContactNotification.deleteAllContactNotifications(
+				getDbConnection(),		 
+				getContact().getContactID().intValue() );
 	
 		getContact().delete();
 	
@@ -189,16 +190,19 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	 */
 	public void update() throws java.sql.SQLException 
 	{	
+
+		//be sure all or our objects share the same contactID 
+		setContactID( getContact().getContactID() ); 
+
 		getContact().update();
 		
 
-//		ContactNotification.deleteAllContactNotification( 
-//				getContact().getContactID().intValue(),
-//				getDbConnection() );
+		ContactNotification.deleteAllContactNotifications(
+				getDbConnection(),		 
+				getContact().getContactID().intValue() );
 
 		for( int i = 0; i < getContactNotifVect().size(); i++ )
 		{
-			((DBPersistent)getContactNotifVect().get(i)).delete();
 			((DBPersistent)getContactNotifVect().get(i)).add();
 		}
 

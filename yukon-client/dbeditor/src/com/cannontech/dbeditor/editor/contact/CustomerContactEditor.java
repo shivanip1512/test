@@ -40,11 +40,12 @@ public Object[] createNewPanel(int panelIndex)
 			objs[1] = "General";
 			break;
 
+/*
 		case 1:
 			objs[0] = new YukonUserLoginPanel();
 			objs[1] = "LogIn";
 			break;
-
+*/
 	}
 		
 	return objs;
@@ -141,7 +142,7 @@ public void setValue(Object val)
 	java.util.Vector panels = new java.util.Vector();
 	java.util.Vector tabs = new java.util.Vector();
 	DataInputPanel tempPanel;
-	final int PANEL_COUNT = 2;
+	final int PANEL_COUNT = 1;
 
  	for( int i = 0; i < PANEL_COUNT; i++ )
  	{

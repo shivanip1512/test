@@ -133,6 +133,35 @@ public class LiteContact extends LiteBase
 			setContLastName( (String) stmt.getRow(0)[1] );
 			setLoginID( ((java.math.BigDecimal) stmt.getRow(0)[2]).intValue() );
 			setAddressID( ((java.math.BigDecimal) stmt.getRow(0)[3]).intValue() );
+	 
+
+			//load up our ContactNotification objects			
+		 	stmt =
+		 		new com.cannontech.database.SqlStatement(
+					"SELECT cn.ContactNotifID, cn.ContactID, cn.NotificationCategoryID, " + 
+					"cn.DisableFlag, cn.Notification " + 
+					"FROM " + ContactNotification.TABLE_NAME + " cn " +
+					"where cn.ContactID = " + getContactID() + " " +
+					"order by cn.Notification",
+					databaseAlias );
+			
+			//refresh our notification list
+			getLiteContactNotifications().removeAllElements();
+			
+			stmt.execute();
+
+			for( int i = 0; i < stmt.getRowCount(); i++ )
+			{
+				LiteContactNotification ln = new LiteContactNotification(
+					((java.math.BigDecimal) stmt.getRow(i)[0]).intValue(),
+					((java.math.BigDecimal) stmt.getRow(i)[1]).intValue(),
+					((java.math.BigDecimal) stmt.getRow(i)[2]).intValue(),
+					(String) stmt.getRow(i)[3],
+					(String) stmt.getRow(i)[4] );
+
+				getLiteContactNotifications().add( ln );
+			}
+	 
 	 	}
 	 	catch( Exception e )
 	 	{

@@ -802,8 +802,15 @@ private ContactNotificationTableModel getTableModel()
  */
 public Object getValue(Object val) 
 {
-	Contact cnt = new Contact();
-
+	Contact cnt = null;
+	
+	if( val == null )
+		cnt = new Contact();
+	else
+		cnt = (Contact)val;
+		
+		
+		
 	//HAVE THE ADD() METHOD GET THE NEW CONTACT_ID!!!!		
 	//cn.getContact().setContactID( recID );
 	cnt.getContact().setContFirstName( getJTextFieldFirstName().getText() );
@@ -816,18 +823,11 @@ public Object getValue(Object val)
 			new Integer( ((LiteYukonUser)selLg).getLiteID()) );
 	}
 
+	//clear out our old notifications
+	cnt.getContactNotifVect().removeAllElements();
 	for( int i = 0; i < getTableModel().getRowCount(); i++ )
 	{
-		ContactNotification cntNotif = new ContactNotification();
-
-		//set the notification data next	
-		cntNotif.setNotification( getTableModel().getContactNotificationRow(i).getNotification() );
-
-		//for now, only email is supported here
-		cntNotif.setNotificationCatID( 
-				new Integer(YukonListEntryTypes.YUK_DEF_ID_EMAIL) );
-		
-		cnt.getContactNotifVect().add( cntNotif );
+		cnt.getContactNotifVect().add( getTableModel().getContactNotificationRow(i) );
 	}	
 
 
@@ -990,15 +990,26 @@ public boolean isInputValid()
  */
 public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	ContactNotification cn = new ContactNotification();
-	cn.setNotification( getJTextFieldAddress().getText() );
-	cn.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_DEF_ID_EMAIL) );
-	//cn.setContactID( ContactNotification.DUMMY_CONTACTID );
+	Object o = getJComboBoxNotifyType().getSelectedItem();
 	
-	getTableModel().addRowValue( cn );
+	if( o != null && (o instanceof YukonListEntry) )
+	{	
+		YukonListEntry entry = (YukonListEntry)o;
+		
+		ContactNotification cn = new ContactNotification();
+		cn.setNotification( getJTextFieldAddress().getText() );
+		cn.setNotificationCatID( new Integer(entry.getEntryID()) );
+		cn.setDisableFlag( 
+				getJCheckBoxDisable().isSelected() ? "Y" : "N"  );
 
-	getTableModel().fireTableDataChanged();
-	fireInputUpdate();
+		//cn.setContactID( ContactNotification.DUMMY_CONTACTID );
+		
+		getTableModel().addRowValue( cn );
+	
+		getTableModel().fireTableDataChanged();
+		fireInputUpdate();
+	}
+	
 	return;
 }
 

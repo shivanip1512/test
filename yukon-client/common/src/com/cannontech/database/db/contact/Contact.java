@@ -366,28 +366,16 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	 */
 	public void update() throws java.sql.SQLException 
 	{
-		//*********************************************************************
-		//*********************************************************************
-		//*********************************************************************
-		//*********************************************************************
-		//*****CHANGE ME THIS IS NOT GOOD IN THE DB, PUT ME IN THE DATA *******
-		//*********************************************************************
-		if( getContactID() != null 
-			 && CustomerFuncs.contactExists(getContactID().intValue()) )
-		{
-			Object setValues[] =
-			{ 
-				getContFirstName(), getContLastName(),
-				getLogInID(), getAddressID()
-			};
-	
-			Object constraintValues[] = { getContactID() };
-	
-			update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
-		}
-		else
-			add();  //didnt find the contact in CACHE, so just add it
-	
+		Object setValues[] =
+		{ 
+			getContFirstName(), getContLastName(),
+			getLogInID(), getAddressID()
+		};
+
+		Object constraintValues[] = { getContactID() };
+
+		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+
 	}
 
 	/**
