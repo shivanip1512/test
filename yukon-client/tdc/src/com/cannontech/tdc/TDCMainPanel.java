@@ -11,6 +11,9 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -19,15 +22,19 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.table.TableColumn;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.parametersfile.ParametersFile;
+import com.cannontech.clientutils.popup.PopUpMenuShower;
 import com.cannontech.clientutils.tags.AlarmUtils;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.panel.CompositeJSplitPane;
@@ -115,7 +122,10 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 	private javax.swing.JMenu jMenuAbleDis = null;
 	private javax.swing.JMenuItem ivjJMenuItemPageBack = null;
 	private javax.swing.JMenuItem ivjJMenuItemPageForward = null;
-	private javax.swing.JPopupMenu ivjJPopupMenuPage = null;
+    
+    private BasicComboPopup comboPopup = null;
+    private JComboBox jComboBoxPopUp = null;
+    
 	private javax.swing.JPopupMenu ivjJPopupMenuManual = null;
 	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonPage1 = null;
 	private javax.swing.ButtonGroup buttonGroupPage = null;
@@ -158,16 +168,6 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC8(e);
 	if (e.getSource() == getJMenuItemPopUpManualControl()) 
 		connEtoC11(e);
-//	if (e.getSource() == getJMenuItemControlDev()) 
-//		jRadioButtonMenuItemInhibitDev_ActionPerformed(e);
-//	if (e.getSource() == getJRadioButtonMenuItemAllowPt()) 
-//		jRadioButtonMenuItemAllowPt_ActionPerformed(e);
-//	if (e.getSource() == getJRadioButtonMenuItemInhibitPt()) 
-//		jRadioButtonMenuItemInhibitPt_ActionPerformed(e);
-//	if (e.getSource() == getJRadioButtonMenuItemAllowDev()) 
-//		jRadioButtonMenuItemAllowDev_ActionPerformed(e);
-	// user code begin {2}
-
 	if( e.getSource() == getJMenuItemGraph() ) 
 		jMenuItemGraph_ActionPerformed( e );
 
@@ -180,8 +180,8 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	if( e.getSource() == getJMenuItemCreateTag() ) 
 		jMenuItemCreateTag_ActionPerformed( e );
 
-	if( e.getSource() instanceof javax.swing.JRadioButtonMenuItem ) 
-		jRadioButtonPage_ActionPerformed(e);
+	if( e.getSource() == getJComboPopup() ) 
+		jComboPopupPage_ActionPerformed();
 	
 	// user code end
 }
@@ -1442,28 +1442,27 @@ private javax.swing.JPopupMenu getJPopupMenuManual() {
 	}
 	return ivjJPopupMenuManual;
 }
-/**
- * Return the JPopupMenuPage property value.
- * @return javax.swing.JPopupMenu
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JPopupMenu getJPopupMenuPage() {
-	if (ivjJPopupMenuPage == null) {
-		try {
-			ivjJPopupMenuPage = new javax.swing.JPopupMenu();
-			ivjJPopupMenuPage.setName("JPopupMenuPage");
-			ivjJPopupMenuPage.add(getJMenuItemPageForward());
-			ivjJPopupMenuPage.add(getJMenuItemPageBack());
-			ivjJPopupMenuPage.add(getJRadioButtonPage1());
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJPopupMenuPage;
+
+private JComboBox getJComboPopup()
+{
+    if( jComboBoxPopUp == null )
+    {
+        jComboBoxPopUp = new JComboBox();        
+        jComboBoxPopUp.setBackground( getBackground() );
+    }
+        
+    return jComboBoxPopUp;
+}
+
+private BasicComboPopup getComboPopUp() 
+{
+    if( comboPopup == null )
+    {
+        comboPopup = new BasicComboPopup( getJComboPopup() );
+        comboPopup.setPopupSize( 100, 300 );
+    }
+    
+    return comboPopup;
 }
 
 /**
@@ -1672,22 +1671,26 @@ private void getHistoryDisplayData( Date date )
 		//see if we need to add paging capability here
 		if( Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) )
 		{
-			getJRadioButtonPage1().setSelected( true );			
-
 			//add all the page number JRadioButtons
-			for( int i = 2; i <= totalPages; i++ )
+			for( int i = 1; i <= totalPages; i++ )
 			{
-				javax.swing.JRadioButtonMenuItem jRadioButton = new javax.swing.JRadioButtonMenuItem();
-				jRadioButton.setName("JRadioButtonPage" + i);
-				jRadioButton.setSelected(false);
-				jRadioButton.setText( String.valueOf(i) );
-				jRadioButton.setActionCommand( String.valueOf(i) );
-				jRadioButton.addActionListener( this );
-				getButtonGroupPage().add( jRadioButton );
-				getJPopupMenuPage().add( jRadioButton );
+				//javax.swing.JRadioButtonMenuItem jRadioButton = new javax.swing.JRadioButtonMenuItem();
+                JLabel pgeLabel = new JLabel()
+                {
+                    public String toString()
+                    {
+                        return getText();
+                    }
+                };
+                
+                pgeLabel.setName("JRadioButtonPage" + i);
+                pgeLabel.setText( "Page " + i );
+                pgeLabel.putClientProperty( "TDCPage", new Integer(i) );
+
+				getJComboPopup().addItem( pgeLabel );
 			}
-		}		
-		
+		}
+
 	}
 	finally
 	{
@@ -1976,12 +1979,20 @@ private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 
 	getJRadioButtonPage1().addActionListener( this );
-	java.awt.event.MouseListener listener = new com.cannontech.clientutils.popup.PopUpMenuShower( getJPopupMenuManual() );
+	MouseListener listener = new PopUpMenuShower( getJPopupMenuManual() );
 	getDisplayTable().addMouseListener( listener );
 
 
-	java.awt.event.MouseListener listener2 = new com.cannontech.clientutils.popup.PopUpMenuShower( getJPopupMenuPage() );
-	getJLabelDisplayTitle().addMouseListener( listener2 );
+	getJLabelDisplayTitle().addMouseListener(new MouseAdapter()
+    {
+        public void mouseReleased(MouseEvent e)
+        {
+            //if( e.isPopupTrigger() )
+            getComboPopUp().show( getJLabelDisplayTitle(), e.getX(), e.getY());
+        }
+    });
+    
+    getJComboPopup().addActionListener( this );
 
 	setTableHeaderListener();
 	
@@ -3110,19 +3121,24 @@ public void jRadioButtonMenuItemInhibitPt_ActionPerformed(java.awt.event.ActionE
  * COMMENT
  *
  **/
-public void jRadioButtonPage_ActionPerformed(java.awt.event.ActionEvent actionEvent)
+public void jComboPopupPage_ActionPerformed()
 {
-	java.awt.Frame owner = CtiUtilities.getParentFrame(this);		
-	Cursor savedCursor = owner.getCursor();
-	owner.setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
+    java.awt.Frame owner = CtiUtilities.getParentFrame(this);       
+    Cursor savedCursor = owner.getCursor();
 
 	try
 	{
+        if( !(getJComboPopup().getSelectedItem() instanceof JLabel)
+            || ((JLabel)getJComboPopup().getSelectedItem()).getClientProperty("TDCPage") == null )
+            return;
+            
+        owner.setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
+        
 		if( Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) )
 		{
 			getTableDataModel().clearSystemViewerDisplay( false );
 
-			pageNumber = Integer.parseInt( ((javax.swing.JRadioButtonMenuItem)actionEvent.getSource()).getActionCommand() );
+			pageNumber = ((Integer)((JLabel)getJComboPopup().getSelectedItem()).getClientProperty("TDCPage")).intValue();
 			
 			if( pageNumber <= 1 )
 				pageNumber = totalPages + 1;
@@ -3175,12 +3191,13 @@ public void jRadioButtonPage_ActionPerformed(java.awt.event.ActionEvent actionEv
 	}
 	catch( Exception e)
 	{
-		CTILogger.info("*** Exception caught in : jRadioButtonPage_ActionPerformed(ActionEvent) in class : " + this.getClass().getName() );
+		CTILogger.info("*** Exception caught in : jComboPopupPage_ActionPerformed(ActionEvent) in class : " + this.getClass().getName() );
       CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
 		owner.setCursor( savedCursor );
+        getComboPopUp().hide();
 	}
 
 	return;
@@ -3482,22 +3499,9 @@ private void resetPagingProperties()
 	totalPages = 1;
 	pageNumber = 1;
 	
-	//remove all the page number JRadioButtons
-	for( int i = (getJPopupMenuPage().getComponentCount()-1); i >= 0; i-- )
-	{
-		java.awt.Component c = getJPopupMenuPage().getComponent(i);
-		if( c instanceof javax.swing.JRadioButtonMenuItem )
-		{
-			if( !( ((javax.swing.JRadioButtonMenuItem)c).getActionCommand().equalsIgnoreCase("1")) )
-			{
-				getButtonGroupPage().remove( (javax.swing.JRadioButtonMenuItem)c );
-				((javax.swing.JRadioButtonMenuItem)c).removeActionListener( this );
-				getJPopupMenuPage().remove( c );
-			}
-		}
-	}
-
+    getJComboPopup().removeAllItems();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (1/21/00 11:46:00 AM)
