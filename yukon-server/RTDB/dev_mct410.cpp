@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/04/22 15:08:38 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/04/22 21:35:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -818,7 +818,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         }
         else
         {
-            resultString = getName() + " / Blink Counter = " + CtiNumStr(Value) + "  --  POINT UNDEFINED IN DB";
+            resultString = getName() + " / Blink Counter = " + CtiNumStr(Value);
             ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + resultString);
         }
 
@@ -888,7 +888,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
         Value *= DOUBLE(3600 / getDemandInterval());
 
         // look for first defined DEMAND accumulator
-        pPoint = getDevicePointOffsetTypeEqual( 1 + PeakOffset, DemandAccumulatorPointType );
+        pPoint = getDevicePointOffsetTypeEqual( 1 + MCT_PeakOffset, DemandAccumulatorPointType );
 
         if( pPoint != NULL)
         {
