@@ -249,7 +249,7 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
             xfer.setOutCount(0);
             xfer.setCRCFlag(0);
 
-            xfer.setInBuffer(((unsigned char *)&_inBuffer) + _inTotal);
+            xfer.setInBuffer((unsigned char *)&_inBuffer);
             xfer.setInCountExpected(EmptyPacketLength + UncountedHeaderBytes - _inTotal);
             xfer.setInCountActual(&_inActual);
 
@@ -269,6 +269,7 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
             xfer.setInCountExpected(0);
 
             _ioState = Failed;
+            retVal   = BADRANGE;
 
             break;
         }
@@ -395,7 +396,7 @@ void CtiIONDatalinkLayer::generateOutputNack( ion_output_frame *out_frame, const
 
 int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
 {
-    int retVal = NoError;
+    int retVal = NoError, possibleError = NoError;
     int offset;
 
     if( status != NORMAL )
@@ -470,6 +471,8 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                     {
                         //  we didn't read the sync byte this try
                         ++_framingErrorCount;
+
+                        possibleError = FRAMEERR;
                     }
                 }
                 else
@@ -536,6 +539,8 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                                 //  they sent the wrong packet
                                 ++_packetErrorCount;
 
+                                possibleError = ADDRESSERROR;  //  ...  not quite, but close
+
                                 if( _inFrame.header.cntlframetype == DataAcknakEnbl )
                                 {
                                     //  send a NACK
@@ -556,12 +561,16 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
 
                             _inTotal = 0;
                             _ioState = InputHeader;
+
+                            possibleError = WRONGADDRESS;
                         }
                     }
                     else
                     {
                         //  bad CRC - this read failed
-                        _ioState = Failed;
+                        //    it's impossible to recover from this, so kick us out
+                        _packetErrorCount = PacketRetries + 1;
+                        possibleError = BADCRC;
                     }
                 }
 
@@ -596,8 +605,6 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
 
             case OutputRecvAckNack:
             {
-                //  ACH:  do SRC and DST need checking?
-
                 //  ACH:  someday, make a unified packet-reading function or something - this is ugly
                 if( _inTotal == 0 )
                 {
@@ -619,6 +626,8 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                     {
                         //  we didn't read the sync byte
                         ++_framingErrorCount;
+
+                        possibleError = FRAMEERR;
                     }
                 }
                 else
@@ -631,6 +640,11 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
 
                 if( _inTotal >= (EmptyPacketLength + UncountedHeaderBytes) )
                 {
+                    if( crcIsValid(&_inFrame) )
+                    {
+                        //  make sure it was addressed to us
+                        if( _inFrame.header.dstid == _masterAddress && _inFrame.header.srcid == _slaveAddress )
+                        {
                     if( _inFrame.header.cntlframetype == AcknakACK &&   //  make sure it's an ACK frame
                         _inFrame.header.trancounter == _currentOutputFrame )  //  make sure they're ACKing the frame we just sent
                     {
@@ -646,11 +660,39 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                             _ioState = Output;
                         }
                     }
+                            else if( _inFrame.header.cntlframetype == AcknakNAK )
+                            {
+                        //  we were NACK'd, so fail to the upper levels - maybe regenerating the packet will help
+                                _packetErrorCount = PacketRetries + 1;
+                                possibleError     = NACK1;  //  not quite what it originally meant, but close enough...
+                            }
+                        }
                     else
                     {
-                        //  we were NACK'd, so fail to the upper levels - maybe regenerating the packet will help
+                            //  they sent the wrong packet
                         ++_packetErrorCount;
-                        _ioState = Failed;
+
+                            possibleError = ADDRESSERROR;  //  ...  not quite, but close
+
+                            if( _inFrame.header.cntlframetype == DataAcknakEnbl )
+                            {
+                                //  send a NACK
+                                _ioState = InputSendNack;
+                            }
+                            else
+                            {
+                                //  try reading again
+                                _inTotal = 0;
+                                _ioState = InputHeader;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //  bad CRC - this read failed
+                        //    it's impossible to recover from this, so kick us out and fully regenerate
+                        _packetErrorCount = PacketRetries + 1;
+                        possibleError = BADCRC;
                     }
                 }
 
@@ -665,6 +707,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                 }
 
                 _ioState = Failed;
+                retVal   = BADRANGE;
 
                 break;
             }
@@ -674,6 +717,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
             _framingErrorCount > FramingRetries )
         {
             _ioState = Failed;
+            retVal   = possibleError;  //  this will've been assigned above, if we hit any error-incrementing states
         }
     }
 

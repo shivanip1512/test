@@ -127,7 +127,7 @@ void CtiIONApplicationLayer::setToInput( void )
 
 int CtiIONApplicationLayer::generate( CtiXfer &xfer )
 {
-    int retVal = -1;
+    int retVal = NoError;
 
     switch( _ioState )
     {
@@ -147,6 +147,7 @@ int CtiIONApplicationLayer::generate( CtiXfer &xfer )
             }
 
             _ioState = Failed;
+            retVal = BADRANGE;
 
             xfer.setOutBuffer(NULL);
             xfer.setOutCount(0);

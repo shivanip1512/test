@@ -154,7 +154,7 @@ void CtiIONNetworkLayer::setToInput( void )
 
 int CtiIONNetworkLayer::generate( CtiXfer &xfer )
 {
-    int retVal = -1;
+    int retVal = NoError;
 
     switch( _ioState )
     {
@@ -174,6 +174,7 @@ int CtiIONNetworkLayer::generate( CtiXfer &xfer )
             }
 
             _ioState = Failed;
+            retVal = BADRANGE;
 
             xfer.setOutBuffer(NULL);
             xfer.setOutCount(0);
