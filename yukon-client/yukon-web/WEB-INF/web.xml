@@ -155,6 +155,20 @@
     <servlet-class>
     com.cannontech.stars.web.servlet.InventoryManager</servlet-class>
   </servlet>
+  
+
+  <!-- CapControl specific configs -->
+  <servlet>
+    <servlet-name>CBCConnServlet</servlet-name>
+    <display-name>CBCConnServlet</display-name>
+    <description>Maintains a connection with the CapControl server.</description>
+    <servlet-class>
+    com.cannontech.servlet.CBCConnServlet</servlet-class>
+    <load-on-startup>5</load-on-startup>
+  </servlet>
+  <!-- End CapControl specific configs -->
+
+
   <!-- esub specific servlets -->
   <servlet>
     <servlet-name>svgGenerator</servlet-name>
@@ -232,5 +246,5 @@
   <welcome-file-list>
     <welcome-file>login.jsp</welcome-file>
   </welcome-file-list>
-  
+
 </web-app>
