@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/06/10 22:29:23 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/06/14 21:11:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1060,15 +1060,6 @@ void CtiVanGogh::clientShutdown(CtiConnectionManager *&CM)
         // Make sure no queue entries point at this connection!
         MainQueue_.apply(ApplyBlankDeletedConnection, (void*)CM);
         PointMgr.RemoveConnectionManager(CM);
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    try
-    {
         Inherited::clientShutdown(CM);
     }
     catch(...)
@@ -2921,64 +2912,32 @@ INT CtiVanGogh::checkDataStateQuality(CtiMessage *pMsg, CtiMultiWrapper &aWrap)
     case MSG_PCRETURN:
     case MSG_MULTI:
         {
-            try
-            {
-                status = checkMultiDataStateQuality((CtiMultiMsg*)pMsg, aWrap);
-            }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            status = checkMultiDataStateQuality((CtiMultiMsg*)pMsg, aWrap);
             break;
         }
     case MSG_POINTDATA:
         {
-            try
-            {
-                status = checkPointDataStateQuality((CtiPointDataMsg*)pMsg, aWrap);
-            }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            status = checkPointDataStateQuality((CtiPointDataMsg*)pMsg, aWrap);
             break;
         }
     case MSG_COMMAND:
         {
             CtiCommandMsg *pCmd = (CtiCommandMsg*)pMsg;
 
-            try
+            if(pCmd->getOperation() == CtiCommandMsg::UpdateFailed)
             {
-                if(pCmd->getOperation() == CtiCommandMsg::UpdateFailed)
-                {
-                    status = checkCommandDataStateQuality(pCmd, aWrap);
-                }
-                else
-                {
-                    // Make sure nobody is doing something odd.  CGP 3/18/2002
-                    commandMsgHandler(pCmd);
-                }
+                status = checkCommandDataStateQuality(pCmd, aWrap);
             }
-            catch(...)
+            else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                // Make sure nobody is doing something odd.  CGP 3/18/2002
+                commandMsgHandler(pCmd);
             }
             break;
         }
     case MSG_SIGNAL:
         {
-            try
-            {
-                status = checkSignalStateQuality((CtiSignalMsg*)pMsg, aWrap);
-            }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            status = checkSignalStateQuality((CtiSignalMsg*)pMsg, aWrap);
             break;
         }
     default:
@@ -3529,7 +3488,7 @@ INT CtiVanGogh::analyzeForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper 
 
         if(pDyn != NULL)     // We must know about the point!
         {
-            CtiSignalMsg    *pSig;
+            CtiSignalMsg    *pSig = NULL;
             UINT            tags            = pDyn->getDispatch().getTags();
 
             // We check if the point has been sent in as a Manual Update.  If so, we ALWAYS log this occurence.
@@ -3544,68 +3503,64 @@ INT CtiVanGogh::analyzeForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper 
                 {
                     pSig->setUser(pData->getUser());
                     aWrap.getMulti()->insert( pSig );
+                    pSig = NULL;
                 }
             }
 
             /*
              *  Check if this pData puts us back into nominal range iff we have _ANY_ pending limit violation going on.
              */
-            analyzeLimitViolationReset( pData, aWrap, *pNumeric, pDyn, pSig );
-
-            for( alarm = 0; alarm < CtiTablePointAlarming::invalidnumericstate; alarm++ )
+            if( NORMAL != (alarm = analyzeNumericReasonability( pData, aWrap, *pNumeric, pDyn, pSig ))  )
             {
-                pSig = NULL;
+                tagSignalAsAlarm(pData, pSig, alarm, aWrap, point);
+            }
+            else
+            {
+                /*
+                 *  Check if this pData puts us back into nominal range iff we have _ANY_ pending limit violation going on.
+                 */
+                analyzeLimitViolationReset( pData, aWrap, *pNumeric, pDyn, pSig );
 
-
-                switch(alarm)
+                for( alarm = 0; alarm < CtiTablePointAlarming::invalidnumericstate; alarm++ )
                 {
-                case (CtiTablePointAlarming::highReasonability):
-                case (CtiTablePointAlarming::lowReasonability):
-                    {
-                        analyzeNumericReasonability( alarm, pData, aWrap, *pNumeric, pDyn, pSig );
-                        break;
-                    }
-                case (CtiTablePointAlarming::rateOfChange):
-                    {
-                        analyzeNumericRateOfChange( alarm, pData, aWrap, *pNumeric, pDyn, pSig );
-                        break;
-                    }
-                case (CtiTablePointAlarming::limit0):
-                case (CtiTablePointAlarming::limit1):
-                case (CtiTablePointAlarming::limit2):
-                case (CtiTablePointAlarming::limit3):
-                case (CtiTablePointAlarming::limit4):
-                case (CtiTablePointAlarming::limit5):
-                case (CtiTablePointAlarming::limit6):
-                case (CtiTablePointAlarming::limit7):
-                case (CtiTablePointAlarming::limit8):
-                case (CtiTablePointAlarming::limit9):
-                    {
-                        analyzeNumericLimits( alarm, pData, aWrap, *pNumeric, pDyn, pSig );
-                        break;
-                    }
-                case (CtiTablePointAlarming::nonUpdatedNumeric):  // alarm generated by checkCommandDataStateQuality.
-                default:
-                    {
-                        break;
-                    }
-                }
+                    pSig = NULL;
 
-                // If pSig is non-NULL, this "alarm" condition occurred and we need to decide if the point goes into alarm over it.
-                if(pSig != NULL)
-                {
-                    // We now need to check if this "alarm" is a real alarm ( > SignalEvent level )
-                    if(point.getAlarming().getAlarmStates(alarm) > SignalEvent)
+
+                    switch(alarm)
                     {
-                        pSig->setTags(TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM);
+                    case (CtiTablePointAlarming::highReasonability):
+                    case (CtiTablePointAlarming::lowReasonability):
+                        {
+                            // These conditions must be evaluated prior to the for loop.  The may modify pData.
+                            break;
+                        }
+                    case (CtiTablePointAlarming::rateOfChange):
+                        {
+                            analyzeNumericRateOfChange( alarm, pData, aWrap, *pNumeric, pDyn, pSig );
+                            break;
+                        }
+                    case (CtiTablePointAlarming::limit0):
+                    case (CtiTablePointAlarming::limit1):
+                    case (CtiTablePointAlarming::limit2):
+                    case (CtiTablePointAlarming::limit3):
+                    case (CtiTablePointAlarming::limit4):
+                    case (CtiTablePointAlarming::limit5):
+                    case (CtiTablePointAlarming::limit6):
+                    case (CtiTablePointAlarming::limit7):
+                    case (CtiTablePointAlarming::limit8):
+                    case (CtiTablePointAlarming::limit9):
+                        {
+                            analyzeNumericLimits( alarm, pData, aWrap, *pNumeric, pDyn, pSig );
+                            break;
+                        }
+                    case (CtiTablePointAlarming::nonUpdatedNumeric):  // alarm generated by checkCommandDataStateQuality.
+                    default:
+                        {
+                            break;
+                        }
                     }
 
-                    if(pData->getQuality() == ManualQuality)    // If is "pushed" into the alarm condition, let's label it that way.
-                    {
-                        pSig->setAdditionalInfo("Manual Update: " + pSig->getAdditionalInfo());
-                    }
-
-                    aWrap.getMulti()->insert( pSig );
+                    tagSignalAsAlarm(pData, pSig, alarm, aWrap, point);
                 }
             }
         }
@@ -4111,55 +4066,39 @@ void CtiVanGogh::doPendingOperations()
                     }
                     else if(ppo.getType() == CtiPendingPointOperations::pendingPointData)
                     {
-                        try
+                        if(now >= ppo.getTime())
                         {
-                            if(now >= ppo.getTime())
+                            CtiPointDataMsg *pOrig = ppo.getPointData();
+                            CtiPointDataMsg *pData = 0;
+
+                            if(pOrig)
                             {
-                                CtiPointDataMsg *pOrig = ppo.getPointData();
-                                CtiPointDataMsg *pData = 0;
+                                pData = (CtiPointDataMsg*)(pOrig->replicateMessage());
+                                pData->setMessageTime( pOrig->getTime() );
+                                pData->setMessagePriority( MAXPRIORITY - 1 );
+                                pData->resetTags( TAG_POINT_DELAYED_UPDATE );
 
-                                if(pOrig)
-                                {
-                                    pData = (CtiPointDataMsg*)(pOrig->replicateMessage());
-                                    pData->setMessageTime( pOrig->getTime() );
-                                    pData->setMessagePriority( MAXPRIORITY - 1 );
-                                    pData->resetTags( TAG_POINT_DELAYED_UPDATE );
+                                updateControlHistory( pData->getId(), CtiPendingPointOperations::delayeddatamessage, pData->getTime() );
 
-                                    updateControlHistory( pData->getId(), CtiPendingPointOperations::delayeddatamessage, pData->getTime() );
-
-                                    MainQueue_.putQueue( pData );    // Plop it out there for processing.
-                                }
-                                else
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << now << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
-
-                                it = _pendingPointInfo.erase(it);
-                                dumpPendingOps();
-
-                                continue;   // iterator has been repositioned!
+                                MainQueue_.putQueue( pData );    // Plop it out there for processing.
                             }
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << now << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << now << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+
+                            it = _pendingPointInfo.erase(it);
+                            dumpPendingOps();
+
+                            continue;   // iterator has been repositioned!
                         }
                     }
                     else
                     {
-                        try
-                        {
-                            it = _pendingPointInfo.erase(it);
-                            dumpPendingOps();
-                            continue;   // iterator has been repositioned!
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << now << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        it = _pendingPointInfo.erase(it);
+                        dumpPendingOps();
+                        continue;   // iterator has been repositioned!
                     }
 
                     it++;
@@ -5990,29 +5929,27 @@ RWCString CtiVanGogh::resolveEmailMsgDescription( const CtiEmailMsg &aMail )
     return rstr;
 }
 
-
-
-
-void CtiVanGogh::analyzeNumericReasonability(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig )
+int CtiVanGogh::analyzeNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig )
 {
-    if( pDyn->getLastSignal() != alarm ) // This prohibits re-alarming on the same problem!
-    {
-        RWCString text;
+    int alarm = NORMAL;
+    RWCString text;
 
-        if(alarm == CtiTablePointAlarming::highReasonability)
+    try {
+        if(pointNumeric.getPointUnits().getHighReasonabilityLimit() != pointNumeric.getPointUnits().getLowReasonabilityLimit())       // They must be different.
         {
-            if(pointNumeric.getPointUnits().getHighReasonabilityLimit() != pointNumeric.getPointUnits().getLowReasonabilityLimit())       // They must be different.
+            // Evaluate High Limit
+            if(pointNumeric.getPointUnits().getHighReasonabilityLimit() < MAX_HIGH_REASONABILITY)  // Is the reasonability reasonable?
             {
-                if(pointNumeric.getPointUnits().getHighReasonabilityLimit() < MAX_HIGH_REASONABILITY)  // Is the reasonability reasonable?
+                double val = pData->getValue();
+
+                if(val > pointNumeric.getPointUnits().getHighReasonabilityLimit())
                 {
-                    double val = pData->getValue();
+                    alarm = CtiTablePointAlarming::highReasonability;
+                    pData->setValue( pDyn->getValue() );          // Value of the CtiPointDataMsg must be be modified.
+                    pData->setQuality( UnreasonableQuality );
 
-                    if(val > pointNumeric.getPointUnits().getHighReasonabilityLimit())
+                    if(pDyn->getLastSignal() != CtiTablePointAlarming::highReasonability)
                     {
-                        pData->setValue( pointNumeric.getPointUnits().getHighReasonabilityLimit() );          // Value of the CtiPointDataMsg must be be modified.
-                        pData->setQuality( UnreasonableQuality );
-                        pDyn->setLastSignal(alarm);
-
                         {
                             char tstr[120];
                             _snprintf(tstr, sizeof(tstr), "Reasonability Limit Exceeded High. %.3f > %.3f", val, pointNumeric.getPointUnits().getHighReasonabilityLimit());
@@ -6025,33 +5962,33 @@ void CtiVanGogh::analyzeNumericReasonability(int alarm, CtiPointDataMsg *pData, 
                             dout << RWTime() << " **** HIGH REASONABILITY Violation ****  Point: " << pointNumeric.getName() << " " << text << endl;
                         }
 
-                        pSig = new CtiSignalMsg(pointNumeric.getID(), pData->getSOE(), text, getAlarmStateName( pointNumeric.getAlarming().getAlarmStates(alarm) ), GeneralLogType, pointNumeric.getAlarming().getAlarmStates(alarm), pData->getUser());
+                        pSig = new CtiSignalMsg(pointNumeric.getID(), pData->getSOE(), text, getAlarmStateName( pointNumeric.getAlarming().getAlarmStates(CtiTablePointAlarming::highReasonability) ), GeneralLogType, pointNumeric.getAlarming().getAlarmStates(CtiTablePointAlarming::highReasonability), pData->getUser());
+                    }
 
-                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
-                        if(pointNumeric.getAlarming().getAlarmStates(alarm) > SignalEvent)
-                        {
-                            pData->setTags( TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM );
-                            // Need this here in case the signal gets put on the pending list
-                            pSig->setTags(TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM);
-                        }
+                    pDyn->setLastSignal(CtiTablePointAlarming::highReasonability);
+
+                    // This is an alarm if the alarm state indicates anything other than SignalEvent.
+                    if(pointNumeric.getAlarming().getAlarmStates(CtiTablePointAlarming::highReasonability) > SignalEvent)
+                    {
+                        pData->setTags( TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM );
+                        // Need this here in case the signal gets put on the pending list
+                        if(pSig) pSig->setTags(TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM);
                     }
                 }
             }
-        }
-        else
-        {
-            if(pointNumeric.getPointUnits().getHighReasonabilityLimit() != pointNumeric.getPointUnits().getLowReasonabilityLimit())       // They must be different.
+
+            if(pointNumeric.getPointUnits().getLowReasonabilityLimit() > MIN_LOW_REASONABILITY)  // Is the reasonability reasonable?
             {
-                if(pointNumeric.getPointUnits().getLowReasonabilityLimit() > MIN_LOW_REASONABILITY)  // Is the reasonability reasonable?
+                double val = pData->getValue();
+
+                if(val < pointNumeric.getPointUnits().getLowReasonabilityLimit())
                 {
-                    double val = pData->getValue();
+                    alarm = CtiTablePointAlarming::lowReasonability;
+                    pData->setValue( pDyn->getValue() );          // Value of the CtiPointDataMsg must be be modified.
+                    pData->setQuality( UnreasonableQuality );
 
-                    if(val < pointNumeric.getPointUnits().getLowReasonabilityLimit())
+                    if(pDyn->getLastSignal() != CtiTablePointAlarming::lowReasonability)
                     {
-                        pData->setValue( pointNumeric.getPointUnits().getLowReasonabilityLimit() );          // Value of the CtiPointDataMsg must be be modified.
-                        pData->setQuality( UnreasonableQuality );
-                        pDyn->setLastSignal(alarm);
-
                         {
                             char tstr[120];
                             _snprintf(tstr, sizeof(tstr), "Reasonability Limit Exceeded Low. %.3f < %.3f", val, pointNumeric.getPointUnits().getLowReasonabilityLimit());
@@ -6064,20 +6001,30 @@ void CtiVanGogh::analyzeNumericReasonability(int alarm, CtiPointDataMsg *pData, 
                             dout << RWTime() << " **** LOW REASONABILITY Violation ****  Point: " << pointNumeric.getName() << " " << text << endl;
                         }
 
-                        pSig = new CtiSignalMsg(pointNumeric.getID(), pData->getSOE(), text, getAlarmStateName( pointNumeric.getAlarming().getAlarmStates(alarm) ), GeneralLogType, pointNumeric.getAlarming().getAlarmStates(alarm), pData->getUser());
+                        pSig = new CtiSignalMsg(pointNumeric.getID(), pData->getSOE(), text, getAlarmStateName( pointNumeric.getAlarming().getAlarmStates(CtiTablePointAlarming::lowReasonability) ), GeneralLogType, pointNumeric.getAlarming().getAlarmStates(CtiTablePointAlarming::lowReasonability), pData->getUser());
+                    }
 
-                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
-                        if(pointNumeric.getAlarming().getAlarmStates(alarm) > SignalEvent)
-                        {
-                            pData->setTags( TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM );
-                            // Need this here in case the signal gets put on the pending list
-                            pSig->setTags(TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM);
-                        }
+                    pDyn->setLastSignal(CtiTablePointAlarming::lowReasonability);
+
+                    // This is an alarm if the alarm state indicates anything other than SignalEvent.
+                    if(pointNumeric.getAlarming().getAlarmStates(CtiTablePointAlarming::lowReasonability) > SignalEvent)
+                    {
+                        pData->setTags( TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM );
+                        // Need this here in case the signal gets put on the pending list
+                        if(pSig) pSig->setTags(TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM);
                     }
                 }
             }
         }
     }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+
+    return alarm;
 }
 
 void CtiVanGogh::analyzeNumericRateOfChange(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig )
@@ -6190,7 +6137,7 @@ void CtiVanGogh::analyzeNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMult
 
     try
     {
-        if( lastpointsignal != alarm && pDyn->getQuality() != pData->getQuality() )          // This prohibits re-alarming on the same problem!
+        if( lastpointsignal != alarm ) //  || pDyn->getQuality() != pData->getQuality() )          // This prohibits re-alarming on the same problem!
         {
             if(CtiTablePointAlarming::limit0 <= lastpointsignal  && lastpointsignal < alarm)
             {
@@ -6285,7 +6232,7 @@ void CtiVanGogh::analyzeNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMult
                         else
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** LIMIT Violation ****  Point: " << pointNumeric.getName() << " delayed violation. Limit " << statelimit+1 << " pending alarm." << endl;
+                            dout << RWTime() << " **** LIMIT Violation ****  Point: " << pointNumeric.getName() << " delayed (" << duration << ") violation. Limit " << statelimit+1 << " pending alarm." << endl;
                         }
                     }
                 }
@@ -6425,3 +6372,25 @@ void CtiVanGogh::analyzeStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiW
     }
 }
 
+void CtiVanGogh::tagSignalAsAlarm( CtiPointDataMsg *pData, CtiSignalMsg *&pSig, int alarm, CtiMultiWrapper &aWrap, CtiPointBase &point )
+{
+    // If pSig is non-NULL, this "alarm" condition occurred and we need to decide if the point goes into alarm over it.
+    if(pSig != NULL)
+    {
+        pSig->setUser(pData->getUser());
+
+        // We now need to check if this "alarm" is a real alarm ( > SignalEvent level )
+        if(point.getAlarming().getAlarmStates(alarm) > SignalEvent)
+        {
+            pSig->setTags(TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM);
+        }
+
+        if(pData->getQuality() == ManualQuality)    // If is "pushed" into the alarm condition, let's label it that way.
+        {
+            pSig->setAdditionalInfo("Manual Update: " + pSig->getAdditionalInfo());
+        }
+
+        aWrap.getMulti()->insert( pSig );
+        pSig = NULL;
+    }
+}
