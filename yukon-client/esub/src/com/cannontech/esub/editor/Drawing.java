@@ -33,6 +33,7 @@ public class Drawing implements Serializable {
 	public synchronized void clear() {
 		fileName = null;
 		getLxGraph().removeAll();
+		addMetaElement();
 		setModified(false);
 	}
 	public synchronized void load(String file) {
@@ -120,10 +121,7 @@ public class Drawing implements Serializable {
 		if (lxGraph == null) {
 			lxGraph = new LxGraph();			
 			lxGraph.setDefaultLineColor(java.awt.Color.white);
-			
-			//Add meta information
-			DrawingMetaElement metaInfo = new DrawingMetaElement();
-			lxGraph.add(metaInfo);
+			addMetaElement();
 		}
 
 		return lxGraph;
@@ -209,4 +207,10 @@ public class Drawing implements Serializable {
 		return null;									
 	}
 
+	private void addMetaElement() {
+		if( getMetaElement() == null ) {
+			DrawingMetaElement metaInfo = new DrawingMetaElement();
+			getLxGraph().add(metaInfo);
+		}
+	}
 }

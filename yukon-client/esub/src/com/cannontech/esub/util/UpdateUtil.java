@@ -9,6 +9,7 @@ import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.cache.functions.UnitMeasureFuncs;
 import com.cannontech.database.cache.functions.YukonImageFuncs;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.lite.LiteYukonImage;
@@ -42,8 +43,10 @@ public class UpdateUtil {
 				text += " ";
 				
 			LiteUnitMeasure lum = UnitMeasureFuncs.getLiteUnitMeasureByPointID(pointID);
-			text += lum.getUnitMeasureName();
-			prev = true;
+			if( lum != null ) {
+				text += lum.getUnitMeasureName();
+				prev = true;
+			}
 		}
 							
 		if( (displayAttrib & DynamicText.NAME) != 0 ) {
@@ -72,6 +75,52 @@ public class UpdateUtil {
  			prev = true;
 		}	
 		
+		if( (displayAttrib & DynamicText.LOW_LIMIT) != 0 ) {
+			LitePointLimit lpl = PointFuncs.getPointLimit(pointID);
+			if( lpl != null ) {
+				text += Integer.toString(lpl.getLowLimit());
+				prev = true;
+			}
+		}
+		
+		if( (displayAttrib & DynamicText.HIGH_LIMIT) != 0 ) {
+			LitePointLimit lpl = PointFuncs.getPointLimit(pointID);
+			if( lpl != null ) {
+				text += Integer.toString(lpl.getHighLimit());
+				prev = true;
+			}
+		}
+		
+		if( (displayAttrib & DynamicText.LIMIT_DURATION) != 0 ) {		
+			LitePointLimit lpl = PointFuncs.getPointLimit(pointID);
+			if( lpl != null ) {
+				text += Integer.toString(lpl.getLimitDuration());		
+				prev = true;	
+			}
+		}
+		
+		if( (displayAttrib & DynamicText.ALARM_TEXT) != 0 ) {
+			LitePoint lp = PointFuncs.getLitePoint(pointID);
+			PointData pData = pcc.getValue(pointID);
+		
+			LiteState ls = StateFuncs.getLiteState(lp.getStateGroupID(), (int) pData.getValue());
+			text += ls.getStateText();
+			prev = true;
+		}
+		
+		if( (displayAttrib & DynamicText.STATE_TEXT) != 0 ) {
+			LitePoint lp = PointFuncs.getLitePoint(pointID);			
+			PointData pData = pcc.getValue(pointID);
+	
+			if (pData != null) {
+				LiteState ls = StateFuncs.getLiteState((int) lp.getStateGroupID(), (int) pData.getValue());	
+				if( ls != null ) {			
+					text += ls.getStateText();
+					prev = true;
+				}
+			}
+		}	
+					
 		if( !prev )
 			text = "-";
 			
