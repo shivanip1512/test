@@ -170,7 +170,7 @@ var idx = 0;
 	progName[idx] = "<%= program.getProgramName() %>";
 	dispName[idx] = "<%= (dispNames.length > 0)? dispNames[0] : "" %>";
 	shortName[idx] = "<%= (dispNames.length > 1)? dispNames[1] : "" %>";
-	description[idx] = "<%= cfg.getDescription().replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"').replace(/<br>/g, '<%= System.getProperty("line.separator") %>');
+	description[idx] = "<%= cfg.getDescription().replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"').replace(/<br>/g, '\r\n');
 	ctrlOdds[idx] = <%= (program.getChanceOfControl() == null) ? 0 : program.getChanceOfControl().getEntryID() %>;
 	iconNameSmall[idx] = "<%= imgNames[1] %>";
 	iconNameSavings[idx] = "<%= imgNames[2] %>";
