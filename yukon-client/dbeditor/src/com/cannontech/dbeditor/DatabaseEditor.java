@@ -953,10 +953,10 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
 	{
 		//a DBPersistent must be created from the Lite object so you can copy it
 		com.cannontech.database.db.DBPersistent toCopy = com.cannontech.database.data.lite.LiteFactory.createDBPersistent((com.cannontech.database.data.lite.LiteBase)node.getUserObject());
-		if( toCopy instanceof com.cannontech.database.data.device.DeviceBase )
-		{
+		if(toCopy instanceof com.cannontech.database.data.device.DeviceBase && !(toCopy instanceof com.cannontech.database.data.device.lm.LMGroup))
 			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.device.DeviceCopyWizardPanel((com.cannontech.database.data.device.DeviceBase)toCopy) );
-		}
+		else if(toCopy instanceof com.cannontech.database.data.device.lm.LMProgramDirect)
+			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMProgramCopyWizardPanel((com.cannontech.database.data.device.lm.LMProgramBase)toCopy) );
 		else if( toCopy instanceof com.cannontech.database.data.point.PointBase )
 		{
 			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.point.PointCopyWizardPanel((com.cannontech.database.data.point.PointBase)toCopy) );
