@@ -1,12 +1,17 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import com.cannontech.common.gui.util.SingleLine16BitTogglePanel;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JComboBox;
+import com.cannontech.common.util.CtiUtilities;
 /**
  * Insert the type's description here.
  * Creation date: (1/21/2002 4:44:37 PM)
  * @author: 
  */
 public class LMGroupExpressComFeederAddressPanel extends javax.swing.JPanel implements java.awt.event.ActionListener {
+	public static final String STRING_NEW = "(new)";
 	public static final int PRESSED_OK = 0;
 	public static final int PRESSED_CANCEL = 1;
 	private int response = PRESSED_CANCEL;
@@ -168,6 +173,21 @@ public Integer getFeederAddressBitMask()
 	
 	return address ;
 }
+
+public JTextField getFeederAddressTextField()
+{
+	JTextField unnecessary = new JTextField();
+	unnecessary.setText(getFeederAddressBitMask().toString());
+	return unnecessary;
+}
+
+public String getFeederAddressName()
+{
+	String addressName = (String)getJComboBoxFeeder().getSelectedItem();
+	return addressName;
+}
+
+
 /**
  * Return the FeederAddress16BitTogglePanel property value.
  * @return com.cannontech.common.gui.util.SingleLine16BitTogglePanel
@@ -298,6 +318,8 @@ private javax.swing.JComboBox getJComboBoxFeeder() {
 			ivjJComboBoxFeeder.setFont(new java.awt.Font("dialog", 0, 10));
 			ivjJComboBoxFeeder.setEditable(true);
 			// user code begin {1}
+			ivjJComboBoxFeeder.addItem( STRING_NEW );
+			ivjJComboBoxFeeder.setSelectedItem( CtiUtilities.STRING_NONE );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -306,6 +328,10 @@ private javax.swing.JComboBox getJComboBoxFeeder() {
 		}
 	}
 	return ivjJComboBoxFeeder;
+}
+
+public javax.swing.JComboBox getFeederComboBox() {
+	return getJComboBoxFeeder();
 }
 /**
  * Return the JPanelHold property value.
@@ -474,7 +500,7 @@ public static void main(java.lang.String[] args) {
  */
 public void resetValues() 
 {
-	getFeederAddress16BitTogglePanel().initialize();
+	getFeederAddress16BitTogglePanel().setValue(0);
 }
 /**
  * Insert the method's description here.
@@ -484,5 +510,10 @@ public void resetValues()
 public void setFeederAddressBitMask( Integer address )
 {
 	getFeederAddress16BitTogglePanel().setValue(address.intValue());
+}
+
+public void setFeederAddressName( String name )
+{
+	getJComboBoxFeeder().setSelectedItem(name);
 }
 }
