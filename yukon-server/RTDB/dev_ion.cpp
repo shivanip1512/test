@@ -262,6 +262,8 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                         pData->setUser(pReq->getUser());
                         vgList.insert(pData);
                     }
+
+                    OutMessage->ExpirationTime = RWTime().seconds() + point->getControlExpirationTime();
                 }
 
                 _ion.setCommand(CtiProtocolION::Command_ExternalPulseTrigger, offset);
