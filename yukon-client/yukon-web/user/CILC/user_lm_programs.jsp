@@ -1,5 +1,4 @@
-<%@ include file="user_header.jsp" %>
-<%@ include file="user_trendingheader.jsp" %>
+<%@ include file="../user_header.jsp" %>
 <html>
 <head>
 <title>Consumer Energy Services</title>

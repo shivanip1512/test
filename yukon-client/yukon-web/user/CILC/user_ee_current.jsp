@@ -165,7 +165,7 @@
 
 			for (int j = 0; j < customers.length; j++)
 			{
-				if ( customers[j].getCustomerId() == user.getCustomerId() )
+				if ( customers[j].getCustomerId() == customerID )
 				{
 					replies = customers[j].getEnergyExchangeCustomerReplies();
 					foundReplies = true;

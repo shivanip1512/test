@@ -52,7 +52,7 @@
 
 		for (int i = 0; i < customerHistories.length; i++)
 		{
-			if (customerHistories[i].getCustomerId() == user.getCustomerId()) {                
+			if (customerHistories[i].getCustomerId() == customerID) {                
 				replyHistory = customerHistories[i].getEnergyExchangeCustomerReply(offerId, revisionNumber);
 				break;
 			}
@@ -88,7 +88,7 @@
         cal.setTime(offerDate);
         cal.set(java.util.Calendar.DAY_OF_YEAR, cal.get(java.util.Calendar.DAY_OF_YEAR) + 1 );
         
-        double[] baseLineValues = cache.getCustomerBaseLine(customerID, offerDate, cal.getTime() );
+        double[] baseLineValues = cache.getCustomerBaseLine( customerID, offerDate, cal.getTime() );
 
 %>
 <body class="Background" leftmargin="0" topmargin="0">

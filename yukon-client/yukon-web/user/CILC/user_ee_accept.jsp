@@ -20,11 +20,11 @@ function decline_form()
 </head>
 <%
   //Look up the customer curtailable amount, use this as the default amount
-  Object[][] gData2 = com.cannontech.util.ServletUtil.executeSQL( session, "select curtailamount from cicustomerbase where deviceid=" + customerID );  
+  Object[][] gData2 = com.cannontech.util.ServletUtil.executeSQL( session, "select curtailamount from cicustomerbase where deviceid=" +  customerID);  
   String curtailAmount = gData2[0][0].toString();
 
   // Grab the 24 customers baseline values
-  double[] baseLineValues = cache.getCustomerBaseLine(customerID);
+  double[] baseLineValues = cache.getCustomerBaseLine( customerID);
 
   // If we couldn't find a baseline create an empty
   // array so below doesn't bomb

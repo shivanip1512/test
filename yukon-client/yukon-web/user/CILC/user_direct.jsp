@@ -5,8 +5,7 @@
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
 </head>
 
-<%@ include file="user_header.jsp" %>
-<%@ include file="user_trendingheader.jsp" %>
+<%@ include file="../user_header.jsp" %>
 <%@ page import="com.cannontech.message.macs.messages.Schedule" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="java.util.ArrayList" %>

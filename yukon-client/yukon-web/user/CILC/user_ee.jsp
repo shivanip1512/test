@@ -9,14 +9,18 @@
 <%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeCustomerReply" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeHourlyCustomer" %>
+<%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
+<%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 
-<%@ include file="user_header.jsp" %>
-<%@ include file="user_trendingheader.jsp" %>
+<%@ include file="../user_header.jsp" %>
 
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
 <jsp:useBean id="checker" scope="session" class="com.cannontech.validate.PageBean"/>
 <%    
-	tab = request.getParameter("tab");
+    LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
+    LoadcontrolCache cache = cs.getCache();
+    
+	String tab = request.getParameter("tab");
 	if (tab == null)
 		tab = "";
 
@@ -46,7 +50,7 @@
 	String[] newAmountStrs = new String[24];
     
 	// Check for any offers to be displayed
-	LMProgramEnergyExchange[] programs = cache.getCustomerEnergyExchangePrograms(customerID);        
+	LMProgramEnergyExchange[] programs = cache.getCustomerEnergyExchangePrograms(customerID);
  
  
 	for( int i = 0; i < programs.length; i++ )  //iterate through all the programs for this customer
@@ -269,12 +273,12 @@ System.out.println("&&&&&&&&&&&&&&&& sending decline message");
 					com.cannontech.loadcontrol.messages.LMEnergyExchangeAcceptMsg msg =
 						new com.cannontech.loadcontrol.messages.LMEnergyExchangeAcceptMsg();
 
-					msg.setYukonID( new Integer((int)customerID) );
+					msg.setYukonID( new Integer((int) customerID ));
 					msg.setOfferID( new Integer(checker.get("offer")) );
 					msg.setRevisionNumber( new Integer(checker.get("rev")) );
 					msg.setAcceptStatus(com.cannontech.loadcontrol.messages.LMEnergyExchangeAcceptMsg.DECLINED_ACCEPT_STATUS);
 					msg.setIpAddressOfCustomer( request.getRemoteAddr() );
-					msg.setUserIDName( user.getUsername() );
+					msg.setUserIDName( liteYukonUser.getUsername());
 					msg.setNameOfAcceptPerson( checker.get("initials") );
 					msg.setEnergyExchangeNotes(checker.get("comments") );
 					conn.write(msg);
@@ -297,7 +301,7 @@ System.out.println("&&&&&&&&&&&&&&&& sending confirm message");
 			msg.setRevisionNumber( new Integer(request.getParameter("rev")) );
 			msg.setAcceptStatus(com.cannontech.loadcontrol.messages.LMEnergyExchangeAcceptMsg.ACCEPTED_ACCEPT_STATUS);
 			msg.setIpAddressOfCustomer( request.getRemoteAddr() );
-			msg.setUserIDName( user.getUsername() );
+			msg.setUserIDName( liteYukonUser.getUsername());
 			msg.setNameOfAcceptPerson( request.getParameter("initials") );
 			msg.setEnergyExchangeNotes(checker.get("comments") );
 

@@ -5,8 +5,7 @@
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
 </head>
 <%@ page import="com.cannontech.util.ServletUtil" %>
-<%@ include file="user_header.jsp" %>
-<%@ include file="user_trendingheader.jsp" %>
+<%@ include file="../user_header.jsp" %>
 <%
     // From the ViewLMCurtailCustomerActivity view grab the 
     // Mandatory Curtailment notice, if there is one
@@ -38,7 +37,7 @@
     {
       Class[] types2 = { java.util.Date.class, java.util.Date.class, Integer.class, String.class, java.util.Date.class };
 	  curtailData = ServletUtil.executeSQL( session, 
-                                            "SELECT CURTAILMENTSTARTTIME, CURTAILMENTSTOPTIME, CURTAILREFERENCEID, ACKNOWLEDGESTATUS FROM LMCURTAILCUSTOMERACTIVITY_VIEW WHERE CUSTOMERID = " + user.getCustomerId() + " AND CURTAILMENTSTOPTIME > '" + sqlNowString + "' ORDER BY CURTAILMENTSTOPTIME", types2);
+                                            "SELECT CURTAILMENTSTARTTIME, CURTAILMENTSTOPTIME, CURTAILREFERENCEID, ACKNOWLEDGESTATUS FROM LMCURTAILCUSTOMERACTIVITY_VIEW WHERE CUSTOMERID = " +  customerID + " AND CURTAILMENTSTOPTIME > '" + sqlNowString + "' ORDER BY CURTAILMENTSTOPTIME", types2);
 
       //let them ack the last one, (should only be 1 actually)     
       if( curtailData != null && curtailData[curtailData.length-1] != null && curtailData[curtailData.length-1][0] != null )
@@ -69,8 +68,8 @@
     try
     {
       Class[] types2 = { java.util.Date.class, java.util.Date.class, String.class, java.util.Date.class, String.class, String.class };
-	  //curtailHistory = ServletUtil.executeSQL( session, "SELECT CURTAILMENTSTARTTIME, CURTAILMENTSTOPTIME, ACKNOWLEDGESTATUS, ACKDATETIME, ACKLATEFLAG, NAMEOFACKPERSON FROM LMCURTAILCUSTOMERACTIVITY_VIEW WHERE CUSTOMERID = " + user.getCustomerId() + " AND CURTAILMENTSTOPTIME < '" + sqlNowString + "' ORDER BY CURTAILMENTSTARTTIME DESC");
-      curtailHistory = ServletUtil.executeSQL( session, "select curtailmentstarttime,curtailmentstoptime,acknowledgestatus,ackdatetime,acklateflag,nameofackperson from lmcurtailcustomeractivity_view where CustomerID=" + user.getCustomerId() + " order by curtailmentstarttime desc", types2);     
+	  //curtailHistory = ServletUtil.executeSQL( session, "SELECT CURTAILMENTSTARTTIME, CURTAILMENTSTOPTIME, ACKNOWLEDGESTATUS, ACKDATETIME, ACKLATEFLAG, NAMEOFACKPERSON FROM LMCURTAILCUSTOMERACTIVITY_VIEW WHERE CUSTOMERID = " +  customerID + " AND CURTAILMENTSTOPTIME < '" + sqlNowString + "' ORDER BY CURTAILMENTSTARTTIME DESC");
+      curtailHistory = ServletUtil.executeSQL( session, "select curtailmentstarttime,curtailmentstoptime,acknowledgestatus,ackdatetime,acklateflag,nameofackperson from lmcurtailcustomeractivity_view where CustomerID=" +  customerID + " order by curtailmentstarttime desc", types2);     
     }
     catch( Exception e )
     {
@@ -155,7 +154,7 @@
 			{
 %>
               <form method="post" action="/servlet/CurtailmentServlet">
-                <input type="hidden" name="CUSTOMERID" value="<%= user.getCustomerId() %>">
+                <input type="hidden" name="CUSTOMERID" value="<%= customerID %>">
                 <input type="hidden" name="CURTAILID" value="<%= curtailID %>">
                 <input type="hidden" name="ACKTIME" value="<%= System.currentTimeMillis() %>">
                 <input type="hidden" name="redirect" value="/user/CILC/user_curtail.jsp">

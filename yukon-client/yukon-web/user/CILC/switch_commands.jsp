@@ -1,7 +1,6 @@
 <html>
 <head>
-<%@ include file="user_header.jsp" %>
-<%@ include file="user_trendingheader.jsp" %>
+<%@ include file="../user_header.jsp" %>
 <!-- Find all the versacom serial groups associated with this operator -->
 <!-- a serial address of 0 indicates that we should NOT display the serial number text field -->
 
@@ -9,7 +8,7 @@
     boolean showSerialNumberTextField = false;
     int textFieldGroupID = -1;
 
-    String sql = "select GENERICMACRO.CHILDID from CUSTOMERLOGINSERIALGROUP,GENERICMACRO WHERE GENERICMACRO.OWNERID=CUSTOMERLOGINSERIALGROUP.LMGROUPID AND CUSTOMERLOGINSERIALGROUP.LOGINID=" + user.getId()  + " ORDER BY GENERICMACRO.CHILDORDER";
+    String sql = "select GENERICMACRO.CHILDID from CUSTOMERLOGINSERIALGROUP,GENERICMACRO WHERE GENERICMACRO.OWNERID=CUSTOMERLOGINSERIALGROUP.LMGROUPID AND CUSTOMERLOGINSERIALGROUP.LOGINID=" + liteYukonUserID  + " ORDER BY GENERICMACRO.CHILDORDER";
    
     Object[][] serialGroupIDs = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class[] { Integer.class } );
     Object[][] nameSerial = null;

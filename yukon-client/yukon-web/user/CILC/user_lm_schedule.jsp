@@ -1,5 +1,4 @@
-<%@ include file="user_header.jsp" %>
-<%@ include file="user_trendingheader.jsp" %>
+<%@ include file="../user_header.jsp" %>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -8,7 +7,7 @@
 <!-- Java script needed for the Calender Function--->
 <script language="JavaScript" src ="drag.js">
 </script>
-<SCRIPT  LANGUAGE="JavaScript1.2" SRC="Calendar1-82.js"></SCRIPT>
+<SCRIPT  LANGUAGE="JavaScript1.2" SRC="..\..\Calendar1-82.js"></SCRIPT>
 <SCRIPT Language="Javascript">
 <!--
 
@@ -333,7 +332,7 @@ function MM_findObj(n, d) { //v4.0
                                     <div align="right">Date: </div>
                                   </td>
                                   <td width="179"> 
-                                    <input type="text" name="date" value="<%= datePart.format(saveStart) %>" size="8">
+                                    <input type="text" name="date" value="<%= datePart.format(graphBean.getStartDate()) %>" size="8">
                                     <a href="javascript:show_calendar('rooftop.date')"
 						onMouseOver="window.status='Pop Calendar';return true;"
 						onMouseOut="window.status='';return true;"> <img src="StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a></td>
@@ -393,7 +392,7 @@ function MM_findObj(n, d) { //v4.0
                                     <div align="right" class="TableCell">Date: </div>
                                   </td>
                                   <td width="170"> 
-                                    <input type="text" name="date2" value="<%= datePart.format(saveStart) %>" size="8">
+                                    <input type="text" name="date2" value="<%= datePart.format(graphBean.getStartDate()) %>" size="8">
                                     <a href="javascript:show_calendar('rooftop.date2')"
 						onMouseOver="window.status='Pop Calendar';return true;"
 						onMouseOut="window.status='';return true;"> <img src="StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a></td>
