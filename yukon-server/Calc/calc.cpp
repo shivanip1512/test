@@ -264,7 +264,7 @@ BOOL CtiCalc::ready( void )
             switch( _updateType )
             {
             case periodic:
-                if(RWTime().seconds() > getNextInterval())
+                if(RWTime::now().seconds() > getNextInterval())
                 {
                     isReady = TRUE;
                 }
@@ -290,7 +290,7 @@ BOOL CtiCalc::ready( void )
                 break;
             case periodicPlusUpdate:
                 {
-                    if(RWTime().seconds() >= getNextInterval())
+                    if(RWTime::now().seconds() >= getNextInterval())
                     {
                         for( ; iter( ); )
                             isReady &= ((CtiCalcComponent *)(iter.key( )))->isUpdated( _updateType, RWTime(getNextInterval()) );

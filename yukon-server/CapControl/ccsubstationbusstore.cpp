@@ -1723,7 +1723,10 @@ void CtiCCSubstationBusStore::doResetThr()
     {
         rwRunnable().serviceCancellation();
 
-        if( RWDBDateTime().seconds() >= lastPeriodicDatabaseRefresh.seconds()+refreshrate )
+        RWDBDateTime currentTime;
+        currentTime.now();
+
+        if( currentTime.seconds() >= lastPeriodicDatabaseRefresh.seconds()+refreshrate )
         {
             //if( _CC_DEBUG )
             {
@@ -1868,7 +1871,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
             }
             setDatabaseParams(1,dbDll,dbName,dbUser,dbPassword);
 
-            time_t start = time(NULL);
+            time_t start = ::std::time(NULL);
 
             RWDBDateTime currenttime = RWDBDateTime();
             ULONG tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+(2*refreshrate);

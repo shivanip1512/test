@@ -12,6 +12,7 @@ INCLPATHS+= \
 -I$(SERVICE)\include \
 -I$(CPARMS)\include \
 -I$(RW) \
+-I$(BOOST) \
 
 
 .PATH.cpp = .;$(R_DISPATCH)
@@ -106,7 +107,7 @@ calc_logic.exe:  $(CALCOBJS) makeexe.mak
         @echo Compiling ..\$@
         @%cd $(OBJ)
         $(RWCPPINVOKE) /Fm $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-                $(CALCOBJS) -link $(RWLIBS) $(CALCLIBS)
+                $(CALCOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(CALCLIBS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
@@ -117,7 +118,7 @@ lurk.exe:       $(LURKOBJS) makeexe.mak
         @echo Compiling ..\$@
         @%cd $(OBJ)
         $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(LURKOBJS) -link $(RWLIBS) $(TESTLIBS)
+$(LURKOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
@@ -127,7 +128,7 @@ log.exe:        $(LOGOBJS) makeexe.mak
         @echo Compiling ..\$@
         @%cd $(OBJ)
         $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(LOGOBJS) -link $(RWLIBS) $(TESTLIBS)
+$(LOGOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
@@ -137,7 +138,7 @@ newval.exe:     $(NEWVALOBJS) makeexe.mak
         @echo Compiling ..\$@
         @%cd $(OBJ)
         $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(NEWVALOBJS) -link $(RWLIBS) $(TESTLIBS)
+$(NEWVALOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
@@ -147,7 +148,7 @@ newvalrng.exe:     $(NEWVALRNGOBJS) makeexe.mak
         @echo Compiling ..\$@
         @%cd $(OBJ)
         $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(NEWVALRNGOBJS) -link $(RWLIBS) $(TESTLIBS)
+$(NEWVALRNGOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)

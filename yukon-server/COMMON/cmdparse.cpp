@@ -683,7 +683,7 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
                 }
 
 
-                iValue = (RWTime(hh, mm).seconds() - RWTime().seconds());
+                iValue = RWTime(hh, mm).seconds() - RWTime::now().seconds();
 
                 if(iValue > 0)
                 {

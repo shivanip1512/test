@@ -295,8 +295,8 @@ void CtiCalculateThread::onUpdateLoop( void )
                                  << " New Demand Avg Value: " << recalcValue
                                  << " Point Calc Window End Time: " << calcPoint->getPointCalcWindowEndTime() << endl;
                         }*/
-                        if( RWTime().seconds() >= calcPoint->getPointCalcWindowEndTime().seconds() &&
-                            RWTime().seconds() < calcPoint->getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime() )
+                        if( RWTime::now().seconds() >= calcPoint->getPointCalcWindowEndTime().seconds() &&
+                            RWTime::now().seconds() < calcPoint->getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime() )
                         {
                             if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
                             {
