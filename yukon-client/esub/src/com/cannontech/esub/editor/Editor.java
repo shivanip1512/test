@@ -319,7 +319,7 @@ public class Editor extends JPanel {
 	}
 	public void newDrawing() {
 		getDrawing().clear();	
-		getUndoManager().discardAllEdits();
+		//getUndoManager().discardAllEdits();  
 		setFrameTitle("Untitled");
 	}
 
