@@ -34,6 +34,8 @@ public interface IPointOffsets
    public static final int PT_OFFSET_SEASONAL_HISTORY		= 2502;
    public static final int PT_OFFSET_ANNUAL_HISTORY		= 2503;
    
+   public static final int PT_OFFSET_CONTROL_COUNTDOWN		= 2505;
+   
    
 
    public static final int PT_OFFSET_BILLING_BASELINE		= 6000;	//Billing Point, curtailment settlement (CSVBilling)
