@@ -47,6 +47,8 @@ Function #  Comment in the file, will get moved to the exported file if needed
 ****************************
 */
 
+bool validateAndDecodeLine( RWCString & line, int aProtocolFlag, RWCollectableString* programming, RWCString aFileName);
+
 int decodeTextCommandFile(const RWCString& fileName, 
                                 int aCommandsToPerform,
                                 int aProtocolFlag, 
@@ -118,7 +120,7 @@ int decodeTextCommandFile(const RWCString& fileName,
                     */
                     RWCollectableString* decodedCommand = new RWCollectableString();
 
-                    if( true == validateAndDecodeLine( commandVector[lineCnt], aProtocolFlag, decodedCommand ))
+                    if( true == validateAndDecodeLine( commandVector[lineCnt], aProtocolFlag, decodedCommand, fileName ))
                     {
                         totalCommands++;
                         {
@@ -214,14 +216,14 @@ bool outputLogFile (vector<RWCString> &aLog)
             int     totalLines = aLog.size();
             int     lineCnt=0;
             int     retCode=0;
-            char    workString[50];
+            char    workString[500];
 
             while (lineCnt < totalLines)
             {
                 // move to end of file and write
                 retCode=SetFilePointer(logFileHandle,0,NULL,FILE_END);
                 retCode=SetEndOfFile (logFileHandle);
-                memset (workString, '\0',50);
+                memset (workString, '\0',500);
                 strcpy (workString,aLog[lineCnt].data());
                 workString[aLog[lineCnt].length()-1] = '\r';
                 workString[aLog[lineCnt].length()] = '\n';
@@ -340,7 +342,7 @@ bool outputCommandFile (const RWCString &aFileName, int aLineCnt, vector<RWCStri
 
 
 
-bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableString* programming)
+bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableString* programming, RWCString aFileName)
 {
 	RWCString serialNum;
 	bool retCode = true;
@@ -633,6 +635,262 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                         }
                         break;
                     }
+                case 4:
+                    {
+                        /****************************
+                        * line is a configuration command specifing section,class,division
+                        * format:  4,serial #,Spid #, Geo #, Sub #, Feeder #, Zip #, User #, Prog #, Splinter #, Load #
+                        *
+                        * function is only valid for expresscom so it works with only
+                        * expresscom or no protocol specified flags
+                        *
+                        * the function, the serial number and at least one address is needed
+                        * everything else is optional.  NOTE:  If you use program and splinter
+                        * then a load number must be included
+                        *****************************
+                        */
+                        RWCString currentCmd;
+                        USHORT feeder=0, splinterCnt=0, programCnt=0, loadCnt=0;
+
+                        if ((aProtocolFlag == TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL) ||
+                            (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_EXPRESSCOM))
+                        {
+                            currentCmd = RWCString("PutConfig xcom assign serial ");
+                            bool haveSomething=false;
+                            bool haveFeeder=false;
+                            bool haveLoad=false;
+                            bool haveProgram=false;
+                            bool haveSplinter=false;
+                            RWCString load,program,splinter,serialNum;
+                            CHAR buffer[20];
+                            int lastLoad=0;
+
+                            memset (&buffer, '\0', 20);
+                            
+                            if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                            {
+                                currentCmd += tempString1;
+                                serialNum = tempString1;
+    
+                                if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                                {
+                                    bool continueFlag = true;
+                                    while (continueFlag)
+                                    {
+                                        tempString1 = tempString1.strip(RWCString::both,' ');
+
+                                        if (tempString1.contains("spid"))
+                                        {
+                                            haveSomething = true;
+                                            tempString1 = tempString1.remove (0,4);
+                                            currentCmd += " s" + tempString1;
+                                        }
+                                        else if (tempString1.contains("geo"))
+                                        {
+                                            haveSomething = true;
+                                            tempString1 = tempString1.remove (0,3);
+                                            currentCmd += " g" + tempString1;
+                                        }
+                                        else if (tempString1.contains("sub"))
+                                        {
+                                            haveSomething = true;
+                                            tempString1 = tempString1.remove (0,3);
+                                            currentCmd += " b" + tempString1;
+                                        }
+                                        else if (tempString1.contains("feeder"))
+                                        {
+                                            haveSomething = true;
+                                            haveFeeder = true;
+                                            tempString1 = tempString1.remove (0,6);
+                                            if (atoi (tempString1.data()) != 0);
+                                            {
+                                                feeder |= (0x0001 << ((atoi (tempString1.data())-1)));
+                                            }
+                                            //feeder |= setExpresscomFeederBit (atoi (tempString1.data()));
+                                        }
+                                        else if (tempString1.contains("zip"))
+                                        {
+                                            haveSomething = true;
+                                            tempString1 = tempString1.remove (0,3);
+                                            currentCmd += " z" + tempString1;
+                                        }
+                                        else if (tempString1.contains("user"))
+                                        {
+                                            haveSomething = true;
+                                            tempString1 = tempString1.remove (0,4);
+                                            currentCmd += " u" + tempString1;
+                                        }
+                                        else if (tempString1.contains("load"))
+                                        {
+                                            haveSomething = true;
+                                            RWCString workString;
+                                            RWCTokenizer subCmd(tempString1);
+
+                                            while(!(workString = subCmd(" ")).isNull())
+                                            {
+                                                if (workString.contains("load"))
+                                                {
+                                                    loadCnt++;
+                                                    if (!haveLoad)
+                                                    {
+                                                        haveLoad = true;
+                                                        load = " load ";
+                                                    }
+                                                    else
+                                                    {
+                                                        load += ",";
+                                                    }
+
+                                                    if (!(workString = subCmd(" ")).isNull())
+                                                    {
+                                                        if (lastLoad < atoi(workString.data()))
+                                                        {
+                                                            load += workString;
+                                                            lastLoad = atoi(workString.data());
+
+                                                        }
+                                                        else
+                                                        {
+                                                            {
+                                                                CtiLockGuard< CtiLogger > guard(dout);
+                                                                dout << RWTime() << " ERROR:  Invalid configuration line in " << aFileName <<  " for serial number " << serialNum << endl;
+                                                                dout << " --- Loads must be addressed in numerical order " << endl;
+                                                                dout << " --- " << input << endl;
+                                                                loadCnt--;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                else if (workString.contains("p"))
+                                                {
+                                                    programCnt++;
+                                                    if (!haveProgram)
+                                                    {
+                                                        haveProgram = true;
+                                                        program = " p ";
+                                                    }
+                                                    else
+                                                    {
+                                                        program += ",";
+                                                    }
+
+                                                    if (workString.length() < 2)
+                                                    {
+                                                        if (!(workString = subCmd(" ")).isNull())
+                                                            program += workString;
+                                                    }
+                                                    else
+                                                    {
+                                                        if (workString.length() > 1)
+                                                        {
+                                                            memcpy (&buffer, &workString.data()[1],workString.length()-1);
+                                                            program += RWCString(buffer);
+                                                        }
+                                                        else
+                                                        {
+                                                            // we've got a problem here of some sort
+                                                            haveProgram = false;
+                                                        }
+                                                    }
+                                                }
+                                                else if (workString.contains("s"))
+                                                {
+                                                    splinterCnt++;
+                                                    if (!haveSplinter)
+                                                    {
+                                                        haveSplinter = true;
+                                                        splinter = " r ";
+                                                    }
+                                                    else
+                                                    {
+                                                        splinter += ",";
+                                                    }
+
+                                                    if (workString.length() < 2)
+                                                    {
+                                                        if (!(workString = subCmd(" ")).isNull())
+                                                            splinter+=workString;
+                                                    }
+                                                    else
+                                                    {
+                                                        if (workString.length() > 1)
+                                                        {
+                                                            memcpy (&buffer, &workString.data()[1],workString.length()-1);
+                                                            splinter += RWCString(buffer);
+                                                        }
+                                                        else
+                                                        {
+                                                            // we've got a problem here of some sort
+                                                            haveSplinter = false;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if ((tempString1 = cmdLine(",\r\n")).isNull())
+                                            continueFlag = false;
+                                    }
+
+                                    if (haveFeeder)
+                                    {
+                                        currentCmd += " f ";
+                                        currentCmd += RWCString (ltoa(feeder,buffer,10));
+                                    }
+                                    if (haveLoad)
+                                    {
+                                        if (haveProgram)
+                                        {
+                                            currentCmd += program;
+                                        }
+                                        if (haveSplinter)
+                                        {
+                                            currentCmd += splinter;
+                                        }
+                                        currentCmd += load;
+                                    }
+
+                                    // make sure we found something
+                                    if (haveSomething)
+                                    {
+                                        if ((loadCnt == splinterCnt) && (loadCnt == programCnt))
+                                        {
+                                            *programming = currentCmd;
+                                        }
+                                        else
+                                        {
+                                            {
+                                                CtiLockGuard< CtiLogger > guard(dout);
+                                                dout << RWTime() << " ERROR:  Invalid configuration line in " << aFileName <<  " for serial number " << serialNum << endl;
+                                                dout << " --- Number of addressed loads/splinters/programs must be equal " << endl;
+                                                dout << " --- " << input << endl;
+                                            }
+
+                                            retCode = false;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        retCode = false;
+                                    }
+                                }
+                                else
+                                {
+                                    retCode = false;
+                                }
+                            }
+                            else
+                            {
+                                retCode = false;
+                            }
+                        }
+                        else
+                        {
+                            retCode = false;
+                        }
+                        break;
+                    }
+
                 default:
                     {
                         retCode = false;
@@ -705,7 +963,7 @@ bool decodeDsm2Lines( RWCString &aFunction,
 
                 if ((!route.isNull()) && (route.data()[0] != ' '))
                 {
-                    *programming += RWCString (" select route name '");
+                    *programming += RWCString (" select routename '");
                     *programming += route;
                     *programming += RWCString ("'");
                 }

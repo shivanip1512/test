@@ -39,7 +39,6 @@ using namespace std;
 
 int decodeTextCommandFile(const RWCString& fileName, int aCommandLimit, int aProtocolFlag, RWOrdered* commandList);
 int decodeDSM2VconfigFile(const RWCString& fileName,RWOrdered* commandList);
-static bool validateAndDecodeLine( RWCString & line, int aProtocolFlag, RWCollectableString* programming);
 static bool getToken (char** InBuffer, RWCString &OutBuffer);
 static bool outputLogFile (vector<RWCString> &aLog);
 static bool outputCommandFile (const RWCString &aFileName, int aLineCnt, vector<RWCString> &aCmdVector);
