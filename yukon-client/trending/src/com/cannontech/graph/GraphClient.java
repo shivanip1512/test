@@ -91,11 +91,8 @@ private class TrendDataAutoUpdater extends Thread
 	private final java.lang.String DB_ALIAS = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 	private String directory = null;
 	private static boolean isGraphDefinitionEditable = true;
-//	public static final String TREE_PARENT_LABEL = "Trends";
+
 	public static double scalePercent = 0;
-//	private static final int GRAPH_PANE = 0;
-//	private static final int TABULAR_PANE = 1;
-//	private static final int SUMMARY_PANE = 2;
 
 	private static final int NO_WEEK = 0;	// one week or less
 	private static final int FIRST_WEEK = 1;//exactly the first week
@@ -112,9 +109,6 @@ private class TrendDataAutoUpdater extends Thread
 	private int histWeek = 0;
 	private int currentWeek = NO_WEEK;	//used when more than one week is selected.
 	private boolean timeToUpdate = true;	//true, update button was pushed, initial is ture also
-//	private Object currentGraphPeak = null;	//flag to only update once something new has changed
-	//private final javax.swing.JFileChooser pdfFileChooser = new javax.swing.JFileChooser();
-	//public static boolean showDateRangeSlider = false;
 	private java.util.Date[] sliderValuesArray = null;
 	private CreateGraphPanel createPanel =  null;
 	private javax.swing.ButtonGroup dataViewButtonGroup;
@@ -125,7 +119,6 @@ private class TrendDataAutoUpdater extends Thread
 	private ViewMenu viewMenu = null;
 	private OptionsMenu optionsMenu = null;
 	private HelpMenu helpMenu = null;
-	//private static boolean removeMultiplier = false;
 	private static boolean showPointLabels = true;
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	private TrendDataAutoUpdater trendDataAutoUpdater;
@@ -191,7 +184,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		getGraph().setUpdateTrend(true);	
 		
 		com.cannontech.clientutils.CTILogger.info(" don't change model");
-		actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);		
+		actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);		
 	}
 	else if (event.getSource() == getStartDateComboBox())
 	{
@@ -199,47 +192,51 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		if( currentStartDate.compareTo((Object)ivjStartDateComboBox.getSelectedDate()) != 0 )
 		{
 			com.cannontech.clientutils.CTILogger.info("Changing Date!");
-			actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);
+			actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
 			currentStartDate = ivjStartDateComboBox.getSelectedDate();
 		}
 	}
 	else if( event.getSource() == getViewMenu().getLineGraphRadioButtonItem() )
 	{
-		actionPerformed_GetRefreshButton(LINE_MODEL);
+		actionPerformed_GetRefreshButton(LINE_VIEW);
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 	else if( event.getSource() == getViewMenu().getStepGraphRadioButtonItem() )
 	{
-		actionPerformed_GetRefreshButton(STEP_MODEL);
+		actionPerformed_GetRefreshButton(STEP_VIEW);
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 	else if( event.getSource() == getViewMenu().getShapeLineGraphRadioButtonItem() )
 	{
-		actionPerformed_GetRefreshButton(SHAPES_LINE_MODEL);
+		actionPerformed_GetRefreshButton(SHAPES_LINE_VIEW);
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 	else if( event.getSource() == getViewMenu().getBarGraphRadioButtonItem())
 	{
-//		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_YESTERDAY_MASK, false);		
-		actionPerformed_GetRefreshButton(BAR_MODEL);
+		actionPerformed_GetRefreshButton(BAR_VIEW);
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
 		getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 	else if ( event.getSource() == getViewMenu().getBarGraph3DRadioButtonItem())
 	{
-//		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_YESTERDAY_MASK, false);
-		actionPerformed_GetRefreshButton(BAR_3D_MODEL);
+		actionPerformed_GetRefreshButton(BAR_3D_VIEW);
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
 		getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}	
+	else if( event.getSource() == getOptionsMenu().getLoadDurationMenuItem())
+	{
+		boolean isMasked = getOptionsMenu().getLoadDurationMenuItem().isSelected();
+		getGraph().setOptionsMaskHolder(TrendModelType.LOAD_DURATION_MASK, isMasked);
+		actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
+	}
+	/*
 	else if ( event.getSource() == getViewMenu().getLoadDurationRadioButtonItem())
 	{
-//		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_YESTERDAY_MASK, false);		
 		actionPerformed_GetRefreshButton(LOAD_DURATION_LINE_MODEL);
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
 		getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
@@ -247,20 +244,17 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	}
 	else if( event.getSource() == getViewMenu().getLoadDuration3DRadioButtonItem() )
 	{
-//		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_YESTERDAY_MASK, false);
 		actionPerformed_GetRefreshButton(LOAD_DURATION_STEP_MODEL);
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
-
+*/
 	else if( event.getSource() == getOptionsMenu().getPlotYesterdayMenuItem())
 	{
 		com.cannontech.clientutils.CTILogger.info("yesterday change");
 		boolean isMasked = getOptionsMenu().getPlotYesterdayMenuItem().isSelected();
-//		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_YESTERDAY_MASK, isMasked);
-//		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_MULTIPLE_DAY_MASK, isMasked);
 		getGraph().setUpdateTrend(true);
-		actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);
+		actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
 	}
 	/*
 	else if( event.getSource() == getOptionsMenu().getSetupMultipleDaysMenuItem())
@@ -270,12 +264,11 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		setupPanel.showAdvancedOptions( getGraphParentFrame() );
 	}
 */
-
 	else if( event.getSource() == getOptionsMenu().getMultiplierMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getMultiplierMenuItem().isSelected();
 		getGraph().setOptionsMaskHolder(TrendModelType.GRAPH_MULTIPLIER, isMasked);
-		actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);		
+		actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
 	}
 	/*
 	else if( event.getSource() == getOptionsMenu().getDwellMenuItem())
@@ -288,27 +281,27 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	{
 		boolean isMasked = getOptionsMenu().getPlotMinMaxValuesMenuItem().isSelected();
 		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_MIN_MAX_MASK, isMasked);
-		actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);
+		actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
 	}
 
 	else if( event.getSource() == getOptionsMenu().getShowLoadFactorMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getShowLoadFactorMenuItem().isSelected();
 		getGraph().setOptionsMaskHolder(TrendModelType.LEGEND_LOAD_FACTOR_MASK, isMasked);
-		actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);
+		actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
 	}
 	else if( event.getSource() == getOptionsMenu().getShowMinMaxMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getShowMinMaxMenuItem().isSelected();
 		getGraph().setOptionsMaskHolder(TrendModelType.LEGEND_MIN_MAX_MASK, isMasked);
-		actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);
+		actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
 	}
 
 	
 	else if( event.getSource() == getTimePeriodComboBox())
 	{
 		actionPerformed_GetTimePeriodComboBox( );
-		actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);
+		actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
 	}
 	else if( event.getSource() == getTrendMenu().getCreateMenuItem())
 	{		
@@ -530,7 +523,7 @@ public void actionPerformed_ExportMenuItem()
 public void actionPerformed_GetRefreshButton( int refreshModelType )
 {
 	if( refreshModelType >= 0 )
-		getGraph().setModelType( refreshModelType );
+		getGraph().setViewType( refreshModelType );
 	
 	java.awt.Cursor savedCursor = null;
 
@@ -784,36 +777,17 @@ public void addMenuItemActionListeners(javax.swing.JMenu menu)
 	}
 }
 /**
- * Update the Summary pane.
- *  Calls the peaks html code and the usage code
+ * Update the pane.
+ *  Calls the html code and the usage code
  * Creation date: (11/15/00 4:11:14 PM)
  */
-private String buildHTMLBuffer( String seriesType)
+private String buildHTMLBuffer( HTMLBuffer htmlBuffer)
 {
-	HTMLBuffer htmlBuffer = null;
 	StringBuffer returnBuffer = null;
 
 	int sliderValueSelected = 0;
 	try
 	{
-		if ( seriesType.equalsIgnoreCase( com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES) )
-		{
-			htmlBuffer = new TabularHtml();
-			getTabularSlider().getModel().setValueIsAdjusting(true);
-		}
-		else if ( seriesType.equalsIgnoreCase( com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES) )
-		{
-			htmlBuffer = new PeakHtml();
-		}
-		else if (seriesType.equalsIgnoreCase( com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES) )
-		{
-			htmlBuffer = new UsageHtml();
-		}
-		else
-		{
-			htmlBuffer = new TabularHtml();	//default on error(?) to graph_series
-		}
-	
 		returnBuffer = new StringBuffer("<HTML><CENTER>");
 
 		TrendModel tModel = getGraph().getTrendModel();
@@ -825,11 +799,9 @@ private String buildHTMLBuffer( String seriesType)
 				((TabularHtml) htmlBuffer).setTabularStartDate(tModel.getStartDate());
 				((TabularHtml) htmlBuffer).setTabularEndDate(tModel.getStopDate());
 
-				//if( showDateRangeSlider )
-				//{
-					sliderValueSelected = formatDateRangeSlider(tModel, (TabularHtml)htmlBuffer);
-				//}
+				sliderValueSelected = formatDateRangeSlider(tModel, (TabularHtml)htmlBuffer);
 			}
+
 			htmlBuffer.getHtml( returnBuffer );
 		}
 	}
@@ -1845,7 +1817,7 @@ private void initializeSwingComponents()
 		{
 			if( event.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER )
 			{
-				actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);
+				actionPerformed_GetRefreshButton(DONT_CHANGE_VIEW);
 			}
 		}
 	});
@@ -2072,10 +2044,6 @@ private int setLabelData(int minIndex, int maxIndex, int value)
 	return value;
 
 }
-private void setSeriesType(String newSeriesType)
-{
-	getGraph().setSeriesType(newSeriesType);
-}
 /**
  * Insert the method's description here.
  * Creation date: (6/29/2001 11:24:02 AM)
@@ -2234,7 +2202,6 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 			{
 				showPopupMessage("Please Select a Trend From the list", javax.swing.JOptionPane.WARNING_MESSAGE);
 			}
-			getGraph().setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
 			getGraph().update();
 		}
 			
@@ -2248,10 +2215,9 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 			}
 			if (!getTabularSlider().getModel().getValueIsAdjusting())
 			{
-				getGraph().setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
 				getGraph().update();
 				StringBuffer buf = new StringBuffer();
-				buf.append (buildHTMLBuffer( com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES ));
+				buf.append( buildHTMLBuffer(new TabularHtml()));
 				buf.append("</CENTER></HTML>");
 				getTabularEditorPane().setText( buf.toString() );
 				getTabularEditorPane().setCaretPosition(0);
@@ -2265,14 +2231,10 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 				getSummaryTabEditorPane().setText("<CENTER>Please Select a Trend from the list");
 			else
 			{
-				getGraph().setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES);			
-				getGraph().update();
 				StringBuffer buf = new StringBuffer();
-				buf.append( buildHTMLBuffer( com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES) );
-
-				getGraph().setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES);
 				getGraph().update();
-				buf.append( buildHTMLBuffer(com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES) );
+				buf.append( buildHTMLBuffer( new PeakHtml()));
+				buf.append( buildHTMLBuffer(new UsageHtml()));
 	
 				buf.append("</CENTER></HTML>");
 				getSummaryTabEditorPane().setText(buf.toString());
@@ -2307,17 +2269,15 @@ public void updateCurrentPane()
 	{
 		if( getTrendingTabbedPane().getSelectedIndex()  == GRAPH_PANE )
 		{
-			setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);					
 			getGraph().update();
 			getFreeChartPanel().setChart(getFreeChart());
 		}
 		
 		else if( getTrendingTabbedPane().getSelectedIndex()  == TABULAR_PANE )
 		{
-			setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);							
 			getGraph().update();
 			StringBuffer buf =  new StringBuffer();
-			buf.append(buildHTMLBuffer(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES));
+			buf.append(buildHTMLBuffer(new TabularHtml()));
 
 			buf.append("</CENTER></HTML>");
 			getTabularEditorPane().setText( buf.toString() );
@@ -2329,18 +2289,12 @@ public void updateCurrentPane()
 		else if( getTrendingTabbedPane().getSelectedIndex()  == SUMMARY_PANE )
 		{
 			StringBuffer buf = new StringBuffer();
-			if( getGraph().getHasPeakSeries() )
-			{
-				setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES);			
-				getGraph().update();
-				buf.append( buildHTMLBuffer(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES) );
-			}
 
-			setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES);
-//			getGraph().update();
-			buf.append( buildHTMLBuffer(com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES) );
-			
+			getGraph().update();
+			buf.append(buildHTMLBuffer(new PeakHtml()));
+			buf.append(buildHTMLBuffer(new UsageHtml()));
 			buf.append("</CENTER></HTML>");
+			
 			getSummaryTabEditorPane().setText(buf.toString());
 			getGraph().setHtmlString(buf);
 			getSummaryTabEditorPane().setCaretPosition(0);
@@ -2440,11 +2394,11 @@ public void valueChanged(javax.swing.event.TreeSelectionEvent event)
 		{
 			com.cannontech.database.db.graph.GraphDataSeries gds = (com.cannontech.database.db.graph.GraphDataSeries) getGraph().getCurrentGraphDefinition().getGraphDataSeries().get(i);
 
-			if ( getGraph().isPeakSeries( gds.getType()) )
-			{
-				getGraph().setHasPeakSeries( true );
-				break;
-			}
+//			if ( getGraph().isPeakSeries( gds.getType()) )
+//			{
+//				getGraph().setHasPeakSeries( true );
+//				break;
+//			}
 		}
 		// set the start and end date...null's let them be computed in the method too.
 		setGraphDefinitionDates ( null, null );	

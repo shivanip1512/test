@@ -36,20 +36,12 @@ public void chartChanged(com.jrefinery.chart.event.ChartChangeEvent event)
 	private java.lang.String DB_ALIAS = "yukon";
 	private java.lang.String databaseAlias = DB_ALIAS;	//defaults set to yukon! 5/24/01
 	
-	private int modelType = LINE_MODEL;
+	private int viewType = LINE_VIEW;
 
 	// This is the type of data series the graph will load
 	// !HACK!HACK! AL- a value of null will cause all types to be loaded!
 	
-	private String currentSeriesType = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;
 	private int seriesMask = 0x00;
-	
-//	private static final int GRAPH_MASK = 0x01;
-//	private static final int PEAK_MASK = 0x02;
-//	private static final int USAGE_MASK = 0x04;
-	
-	// Signals that a peak series exists and it peaks will be displayed on summary tab.
-	private boolean hasPeakSeries = false;
 	
 	private static final int DEFAULT_GIF_WIDTH = 556;
 	private static final int DEFAULT_GIF_HEIGHT = 433;
@@ -66,22 +58,13 @@ public void chartChanged(com.jrefinery.chart.event.ChartChangeEvent event)
 	private com.cannontech.database.data.graph.GraphDefinition currentGraphDefinition = null;
 	private int currentTimePeriod = ServletUtil.getIntValue( ServletUtil.ONEDAY );  //default to first period in drop down periodComboBox
 
-//	private GraphColors graphColors = new CGraphColors();
-	// JFrame to use to encode gif's, this is never displayed
-	// only access through static getter...it is instantiated
-	// and it's peer is created lazily
-//	private javax.swing.JFrame encodeFrame = null;
-	
 	private java.lang.String title = null;
 		
 	private static final int DEFAULT_INTERVAL_RATE = 300;  //rate is in seconds
 	private int minIntervalRate = DEFAULT_INTERVAL_RATE;
 
 	private int options_mask_holder = 0x00;
-//	private int tab_mask_holder = 0x00;
-
 	private boolean updateTrend = true;
-	
 	private StringBuffer htmlString = null;
 /**
  * Graph constructor comment.
@@ -144,8 +127,6 @@ public void encodeJpeg(java.io.OutputStream out) throws java.io.IOException
 {
 	synchronized(Graph.class)
 	{
-		
-//		update();
 		com.jrefinery.chart.ChartUtilities cu = new com.jrefinery.chart.ChartUtilities();
 		cu.writeChartAsJPEG(out, getFreeChart(), getWidth(), getHeight());
 	}
@@ -154,7 +135,6 @@ public void encodePng(java.io.OutputStream out) throws java.io.IOException
 {
 	synchronized(Graph.class)
 	{
-//		update();
 		com.jrefinery.chart.ChartUtilities cu = new com.jrefinery.chart.ChartUtilities();
 		cu.writeChartAsPNG(out, getFreeChart(), getWidth() , getHeight());
 	}
@@ -199,7 +179,6 @@ public void encodePeakHTML(java.io.OutputStream out) throws java.io.IOException
 
 	tabHtml.setModel( getTrendModel() );
 	tabHtml.getHtml(buf);
-//	setHtmlString(buf);
 
 	out.write(buf.toString().getBytes());	
 }
@@ -242,15 +221,24 @@ public void encodePDF(java.io.OutputStream out) throws java.io.IOException
  * @param out java.io.OutputStream
  */
 public void encodeTabularHTML(java.io.OutputStream out) throws java.io.IOException 
+//public void encodeTabularHTML(java.io.PrintWriter out) throws java.io.IOException 
 {
 	StringBuffer buf = new StringBuffer();
 	TabularHtml tabHtml = new TabularHtml();
 		
 	tabHtml.setModel( getTrendModel());
 	tabHtml.getHtml(buf);
-//	setHtmlString(buf)		;
 	out.write(buf.toString().getBytes());
+//	out.write(buf.toString().toCharArray());
 }
+
+public void getTabularHTML(StringBuffer buffer) throws java.io.IOException 
+{
+	TabularHtml tabHtml = new TabularHtml();
+	tabHtml.setModel( getTrendModel());
+	tabHtml.getHtml(buffer);
+}
+
 /**
  * Encodes a tabular representation on the given output stream.
  * Creation date: (11/17/00 11:14:55 AM)
@@ -263,7 +251,6 @@ public void encodeUsageHTML(java.io.OutputStream out) throws java.io.IOException
 
 	usageHtml.setModel( getTrendModel());
 	usageHtml.getHtml(buf);
-//	setHtmlString(buf);
 	out.write(buf.toString().getBytes());	
 }
 
@@ -294,43 +281,11 @@ public int getCurrentTimePeriod()
 {
 	return currentTimePeriod;
 }
-/**
- * Insert the method's description here.
- * Creation date: (1/31/2001 5:06:03 PM)
- * @param seriesType java.lang.String
- */
 public String getDatabaseAlias() 
 {
 	return databaseAlias;
 }
-/**
- * Not currently used, caused resource leaks.  
- * Intention was to use a static instance of
- * a JFrame for encoding gif's to avoid creating a new one for
- * each request.  
- * Creation date: (12/15/99 10:35:06 AM)
- * @return javax.swing.JFrame
- */
-/*
-private synchronized javax.swing.JFrame getEncodeFrame() {
 
-	if( encodeFrame == null )
-	{  
-		encodeFrame = new javax.swing.JFrame();
-
-		getEncodeFrame().setSize(width,height );
-
-//		getChart().setSize(width,height);
-//		getEncodeFrame().getContentPane().add( getChart(), "Center");
-		getEncodeFrame().getContentPane().add( getFreeChart(), "Center");
-		
-		//make sure to create its peer
-		encodeFrame.addNotify();		
-	}
-
-	return encodeFrame;
-}
-*/
 /**
  * Insert the method's description here.
  * Creation date: (6/20/2002 9:32:40 AM)
@@ -346,14 +301,6 @@ public synchronized com.jrefinery.chart.JFreeChart getFreeChart()
 	return freeChart;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (9/24/2001 2:26:44 PM)
- * @return boolean
- */
-public boolean getHasPeakSeries() {
-	return hasPeakSeries;
-}
 public StringBuffer getHTMLString()
 {
 	return htmlString;
@@ -372,9 +319,9 @@ public int getMinIntervalRate(	)
  * Creation date: (7/5/2001 3:54:09 PM)
  * @return int
  */
-public int getModelType()
+public int getViewType()
 {
-	return modelType;
+	return viewType;
 }
 public int getOptionsMaskHolder()
 {
@@ -385,15 +332,6 @@ public int getSeriesMask()
 	return seriesMask;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (1/31/2001 5:06:03 PM)
- * @param seriesType java.lang.String
- */
-public String getSeriesType() 
-{
-	return currentSeriesType;
-}
 /**
  * Insert the method's description here.
  * Creation date: (9/13/2001 3:05:18 PM)
@@ -411,17 +349,6 @@ public boolean getShowLoadFactor() {
 public java.lang.String getTitle() {
 	return title;
 }  
-
-/**
- * Insert the method's description here.
- * Creation date: (9/24/2001 2:29:14 PM)
- * @return boolean
- * @param seriesType java.lang.String
- */
-public static boolean isPeakSeries(String seriesType)
-{
-	return seriesType.equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES);
-}
 
 public boolean isUpdateTrend()
 {
@@ -561,15 +488,6 @@ public void setDatabaseAlias(String dbAlias)
 	databaseAlias = dbAlias;
 } 
 
-/**
- * Insert the method's description here.
- * Creation date: (9/24/2001 2:23:09 PM)
- * @param value boolean
- */
-public void setHasPeakSeries(boolean value)
-{
-	hasPeakSeries = value;
-}
 public void setHtmlString(StringBuffer newHtmlString)
 {
 	htmlString = newHtmlString;
@@ -589,10 +507,10 @@ public void setMinIntervalRate( int newRate)
  * Creation date: (7/5/2001 3:53:34 PM)
  * @param newModelType int
  */
-public void setModelType(int newModelType)
+public void setViewType(int newViewType)
 {
 //	setUpdateTrend(true);
-	modelType = newModelType;
+	viewType = newViewType;
 }
 public void setOptionsMaskHolder(int newMask, boolean setMasked)
 {
@@ -626,15 +544,6 @@ public void setSeriesMask(int newMask, boolean setMasked)
 			seriesMask ^= newMask;
 		}
 	}
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/31/2001 5:06:03 PM)
- * @param seriesType java.lang.String
- */
-public void setSeriesType(String newSeriesType)
-{
-	currentSeriesType = newSeriesType;
 }
 /**
  * Insert the method's description here.
@@ -729,7 +638,7 @@ public void update()
 		setTrendModel( newModel );
 		updateTrend = false;		
 	}
-	freeChart = getTrendModel().refresh(getModelType());
+	freeChart = getTrendModel().refresh(getViewType());
 }
 
 }
