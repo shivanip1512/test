@@ -37,7 +37,7 @@ abstract class PointCreate
 
 			if( args[i].toLowerCase().startsWith("analog"))
 			{
-				if( args.length <= 3)	//must have 'analog devid count' args specified.
+				if( args.length < 3)	//must have 'analog devid count' args specified.
 					break;
 				oneDeviceAnalogPointCreate = true;
 				devID = Integer.parseInt(args[++i]);
