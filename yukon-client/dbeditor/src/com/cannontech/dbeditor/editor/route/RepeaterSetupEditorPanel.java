@@ -59,13 +59,10 @@ public void addButtonAction_actionPerformed(java.util.EventObject newEvent) {
  */
 public void advancedSetupButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 
-  
-
    java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
    
    //This makes sure that the user applies their changes before bringing up the advanced setup dialogue
-   
-   StringBuffer message = new StringBuffer("Advanced Setup may not accurately reflect current status \n" + 
+      StringBuffer message = new StringBuffer("Advanced Setup may not accurately reflect current status \n" + 
    											"unless your latest changes are applied.  Do you want to \n" + 
    											"permanently apply your changes now?");
    if(addOrRemoveHasBeenDone && !changeUpdated)
@@ -89,14 +86,13 @@ public void advancedSetupButton_ActionPerformed(java.awt.event.ActionEvent actio
 			fireInputDataPanelEvent( new PropertyPanelEvent(
 						this, 
 						PropertyPanelEvent.EVENT_FORCE_APPLY));
-        }
+       }
        else {
        	dbRegenerate = false;
-       }
-           	       	
-   	}
-   
-   	
+   		}
+         	       	
+   }
+      	
    getValue(this.objectToEdit);
    getAdvancedRepeaterSetupEditorPanel().setValue(this.objectToEdit);
    	
@@ -110,9 +106,33 @@ public void advancedSetupButton_ActionPerformed(java.awt.event.ActionEvent actio
 
    if ( b.getValue() )
    {
-      getAdvancedRepeaterSetupEditorPanel().getValue(this.objectToEdit);
-      fireInputUpdate();
-      setValue(this.objectToEdit);
+   		if(getAdvancedRepeaterSetupEditorPanel().isDataCorrect(this.objectToEdit))
+   		{
+   			getAdvancedRepeaterSetupEditorPanel().getValue(this.objectToEdit);
+			message = new StringBuffer("Would you like the apply the changes you made in Advanced Setup?");
+			int optional = javax.swing.JOptionPane.showConfirmDialog(
+							this, 
+							message,
+						 "Apply new changes?",
+						 JOptionPane.YES_NO_OPTION,
+						 JOptionPane.QUESTION_MESSAGE);
+			if(optional == JOptionPane.YES_OPTION)
+				fireInputDataPanelEvent( new PropertyPanelEvent(
+							this, 
+							PropertyPanelEvent.EVENT_FORCE_APPLY));
+			fireInputUpdate();
+			setValue(this.objectToEdit);
+   		}
+      	else
+   		{
+			message = new StringBuffer("Advanced Setup has detected duplicate variable bits.  Duplicate variable bits are not permitted\n" +
+										" on the same route.  Setup has been forced to return to your previous variable bit values. \n" + 
+										"Please re-edit Advanced Setup appropriately and avoid duplication of variable bits.");
+			JOptionPane.showMessageDialog(getAdvancedRepeaterSetupEditorPanel(), message, "CONFLICTING BIT VALUES", JOptionPane.ERROR_MESSAGE); 
+			getAdvancedSetupButton().doClick(); 
+   		}
+      	
+
    }
    
 }

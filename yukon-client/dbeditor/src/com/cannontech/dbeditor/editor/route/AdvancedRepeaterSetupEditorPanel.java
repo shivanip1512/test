@@ -31,6 +31,7 @@ public class AdvancedRepeaterSetupEditorPanel extends com.cannontech.common.gui.
 	private javax.swing.JCheckBox ivjJCheckBoxResetRptSettings = null;
 	private javax.swing.JCheckBox ivjJCheckBoxUserLocked = null;
 	private javax.swing.JPanel ivjJPanelAdvanced = null;
+	
 /**
  * Constructor
  */
@@ -724,8 +725,7 @@ public Object getValue(Object val)
 {
 
 	com.cannontech.database.data.route.CCURoute ccuRoute = (com.cannontech.database.data.route.CCURoute) val;
-
-
+	
 	if( getJCheckBoxResetRptSettings().isSelected() )
 		ccuRoute.getCarrierRoute().setResetRptSettings( "Y" );
 	else
@@ -735,7 +735,6 @@ public Object getValue(Object val)
 		ccuRoute.getCarrierRoute().setUserLocked( "Y" );
 	else
 		ccuRoute.getCarrierRoute().setUserLocked( "N" );
-
 	
 	Object ccuFixedSpinVal = getCCUFixedBitsField().getValue();
 	if( ccuFixedSpinVal instanceof Long )
@@ -914,8 +913,46 @@ private void initialize() {
 /**
  * isDataComplete method comment.
  */
-public boolean isDataComplete() {
-	return false;
+public boolean isDataCorrect(Object aRoute) 
+{
+	
+	com.cannontech.database.data.route.CCURoute ccuRoute = (com.cannontech.database.data.route.CCURoute) aRoute;
+	int finalUsedBitField = ccuRoute.getRepeaterVector().size();
+	
+	com.klg.jclass.field.JCSpinField bitFields[] =
+	{
+		getCCUVariableBitsField(),
+		getRepeaterVariableBits1(),
+		getRepeaterVariableBits2(),
+		getRepeaterVariableBits3(),
+		getRepeaterVariableBits4(),
+		getRepeaterVariableBits5(),
+		getRepeaterVariableBits6(),
+		getRepeaterVariableBits7()
+	};
+	
+	//verify that the last used bit field has a value of 7
+	if(((Number)bitFields[finalUsedBitField].getValue()).intValue() != 7)
+	{
+		bitFields[finalUsedBitField].setValue(new Integer(7));
+		StringBuffer message = new StringBuffer("The last variable bit is required to be a 7. \n" + 
+												 "Advanced Setup is changing variable bit " + finalUsedBitField + " to contain a value of 7.");
+		javax.swing.JOptionPane.showMessageDialog(this, message, "IMPROPER FINAL BIT VALUE", javax.swing.JOptionPane.ERROR_MESSAGE); 
+	}
+	
+	//Verify there are no duplicate bit field values
+	//behold the crapsort algorithm, tremble in its presence
+	for(int j = 0; j <= finalUsedBitField; j++)
+	{
+		for(int x = finalUsedBitField; x > j; x-- )
+		{
+			if(((Number)bitFields[j].getValue()).intValue() == (((Number)bitFields[x].getValue()).intValue())) 
+			{
+				return false;
+			}
+		}
+	}
+	return true;
 }
 /**
  * main entrypoint - starts the part when it is run as an application
