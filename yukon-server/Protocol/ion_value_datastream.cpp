@@ -35,8 +35,7 @@ CtiIONDataStream::CtiIONDataStream( )
 
 CtiIONDataStream::~CtiIONDataStream( )
 {
-    for( int i = 0; i < _streamValues.size( ); i++ )
-        delete _streamValues[i];
+    clearAndDestroy();
 }
 
 
@@ -49,7 +48,7 @@ void CtiIONDataStream::parseByteStream( unsigned char *buf, unsigned long len )
 
     while( pos < len )
     {
-        tmpValue = CtiIONValue::restoreObject(buf, len, &itemLength);
+        tmpValue = CtiIONValue::restoreObject(buf + pos, len, &itemLength);
 
         if( tmpValue != NULL && tmpValue->isValid() )
         {
@@ -67,7 +66,7 @@ void CtiIONDataStream::parseByteStream( unsigned char *buf, unsigned long len )
 
 CtiIONDataStream &CtiIONDataStream::initialize( unsigned char *buf, unsigned long len )
 {
-    clear();
+    clearAndDestroy();
 
     parseByteStream(buf, len);
 
@@ -89,44 +88,48 @@ bool CtiIONDataStream::isValid( void )
 }
 
 
-void CtiIONDataStream::clear( void )
+void CtiIONDataStream::clearAndDestroy( void )
 {
-    CtiIONValue *tmp;
-
-    while( !_streamValues.empty() )
+    while( !_streamValues.empty( ) )
     {
-        tmp = _streamValues.back();
-
-        if( tmp != NULL )
-        {
-            delete tmp;
-        }
+        delete _streamValues.back();
 
         _streamValues.pop_back();
     }
 }
 
 
-CtiIONValue *CtiIONDataStream::getItem( int index ) const
+CtiIONValue *CtiIONDataStream::at( int index ) const
 {
-    return _streamValues[index];
+    CtiIONValue *retVal;
+
+    if( index < _streamValues.size() )
+    {
+        retVal = _streamValues.at(index);
+    }
+    else
+    {
+        retVal = NULL;
+    }
+
+    return retVal;
 }
 
 
 CtiIONValue *CtiIONDataStream::operator[]( int index ) const
 {
-    return getItem(index);
+    return at(index);
 }
 
 
-CtiIONDataStream &CtiIONDataStream::appendItem( CtiIONValue *toInsert )
+CtiIONDataStream &CtiIONDataStream::push_back( CtiIONValue *toInsert )
 {
     _streamValues.push_back(toInsert);
     return *this;
 }
 
 
-CtiIONDataStream &CtiIONDataStream::removeItem( int index )
+CtiIONDataStream &CtiIONDataStream::erase( int index )
 {
     if( index >= 0 && index < _streamValues.size() )
     {
@@ -141,7 +144,7 @@ CtiIONDataStream &CtiIONDataStream::removeItem( int index )
     return *this;
 }
 
-int CtiIONDataStream::getItemCount( void ) const
+int CtiIONDataStream::size( void ) const
 {
     return _streamValues.size();
 }
@@ -153,53 +156,11 @@ bool CtiIONDataStream::empty( void ) const
 }
 
 
-bool CtiIONDataStream::contains( CtiIONValue::IONValueTypes type )
-{
-    bool result = false;
-    DSIterator itr;
-
-    for( itr = _streamValues.begin(); (itr != _streamValues.end()) && !result; itr++ )
-    {
-        result = itemIs(*itr, type);
-    }
-
-    return result;
-}
-
-
-bool CtiIONDataStream::contains( CtiIONArray::IONArrayTypes type )
-{
-    bool result = false;
-    DSIterator itr;
-
-    for( itr = _streamValues.begin(); (itr != _streamValues.end()) && !result; itr++ )
-    {
-        result = itemIs(*itr, type);
-    }
-
-    return result;
-}
-
-
-bool CtiIONDataStream::contains( CtiIONStruct::IONStructTypes type )
-{
-    bool result = false;
-    DSIterator itr;
-
-    for( itr = _streamValues.begin(); (itr != _streamValues.end()) && !result; itr++ )
-    {
-        result = itemIs(*itr, type);
-    }
-
-    return result;
-}
-
-
-bool CtiIONDataStream::itemIs( CtiIONValue *toCheck, CtiIONValue::IONValueTypes type )
+bool CtiIONDataStream::itemIs( int index, CtiIONValue::IONValueTypes type )
 {
     bool result = false;
 
-    if( toCheck->getType() == type )
+    if( _streamValues[index]->getType() == type )
     {
         result = true;
     }
@@ -208,16 +169,13 @@ bool CtiIONDataStream::itemIs( CtiIONValue *toCheck, CtiIONValue::IONValueTypes 
 }
 
 
-bool CtiIONDataStream::itemIs( CtiIONValue *toCheck, CtiIONArray::IONArrayTypes type )
+bool CtiIONDataStream::itemIs( int index, CtiIONArray::IONArrayTypes type )
 {
-    bool result;
-    CtiIONArray *tmpArray;
+    bool result = false;
 
-    if( itemIs(toCheck, CtiIONValue::IONArray) )
+    if( itemIs(index, CtiIONValue::IONArray) )
     {
-        tmpArray = (CtiIONArray *)toCheck;
-
-        if( tmpArray->getArrayType() == type )
+        if( ((CtiIONArray *)_streamValues[index])->getArrayType() == type )
         {
             result = true;
         }
@@ -227,19 +185,17 @@ bool CtiIONDataStream::itemIs( CtiIONValue *toCheck, CtiIONArray::IONArrayTypes 
 }
 
 
-bool CtiIONDataStream::itemIs( CtiIONValue *toCheck, CtiIONStruct::IONStructTypes type )
+bool CtiIONDataStream::itemIs( int index, CtiIONStruct::IONStructTypes type )
 {
     bool result = false;
 
     CtiIONStruct *tmpStruct;
 
-    if( itemIs(toCheck, CtiIONValue::IONArray) )
+    if( itemIs(index, CtiIONValue::IONArray) )
     {
-        if( itemIs(toCheck, CtiIONArray::IONStruct) )
+        if( itemIs(index, CtiIONArray::IONStruct) )
         {
-            tmpStruct = (CtiIONStruct *)toCheck;
-
-            if( tmpStruct->getStructType() == type )
+            if( ((CtiIONStruct *)_streamValues[index])->getStructType() == type )
             {
                 result = true;
             }
@@ -250,36 +206,75 @@ bool CtiIONDataStream::itemIs( CtiIONValue *toCheck, CtiIONStruct::IONStructType
 }
 
 
+bool CtiIONDataStream::itemsAre( CtiIONValue::IONValueTypes type )
+{
+    bool result = true;
+
+    for( int i = 0; (i < _streamValues.size()) && result; i++ )
+    {
+        result &= itemIs(i, type);
+    }
+
+    return result;
+}
+
+
+bool CtiIONDataStream::itemsAre( CtiIONArray::IONArrayTypes type )
+{
+    bool result = true;
+
+    for( int i = 0; (i < _streamValues.size()) && result; i++ )
+    {
+        result &= itemIs(i, type);
+    }
+
+    return result;
+}
+
+
+bool CtiIONDataStream::itemsAre( CtiIONStruct::IONStructTypes type )
+{
+    bool result = true;
+
+    for( int i = 0; (i < _streamValues.size()) && result; i++ )
+    {
+        result &= itemIs(i, type);
+    }
+
+    return result;
+}
+
+
 void CtiIONDataStream::putSerialized( unsigned char *buf ) const
 {
-    int            itemNum,
-                   dataOffset;
-    unsigned char *retData;
-    CtiIONValue   *tmpItem;
+    int offset;
 
-    dataOffset = 0;
+    DSConstIterator itr;
+
+    offset = 0;
 
     //  concatenate all items into the buffer
-    for( itemNum = 0; itemNum < getItemCount(); itemNum++ )
+    for( itr = _streamValues.begin(); itr != _streamValues.end(); itr++ )
     {
-        getItem(itemNum)->putSerialized(buf + dataOffset);
+        (*itr)->putSerialized(buf + offset);
 
-        dataOffset += getItem(itemNum)->getSerializedLength();
+        offset += (*itr)->getSerializedLength();
     }
 }
 
 
 unsigned int CtiIONDataStream::getSerializedLength( void ) const
 {
-    int itemNum;
-    unsigned int totalDataLength = 0;
+    unsigned int length = 0;
+
+    DSConstIterator itr;
 
     //  sum all of the data sizes
-    for( itemNum = 0; itemNum < getItemCount(); itemNum++ )
+    for( itr = _streamValues.begin(); itr != _streamValues.end(); itr++ )
     {
-        totalDataLength += getItem(itemNum)->getSerializedLength();
+        length += (*itr)->getSerializedLength();
     }
 
-    return totalDataLength;
+    return length;
 }
 

@@ -28,7 +28,8 @@ private:
     void parseByteStream( unsigned char *buf, unsigned long len );
 
     typedef vector<CtiIONValue *> DSVector;
-    typedef DSVector::iterator DSIterator;
+    typedef DSVector::iterator       DSIterator;
+    typedef DSVector::const_iterator DSConstIterator;
 
     DSVector _streamValues;
 
@@ -39,22 +40,29 @@ public:
     ~CtiIONDataStream( );
 
     CtiIONDataStream &initialize( unsigned char *buf, unsigned long len );
-    void clear( void );
 
-    CtiIONDataStream  &appendItem( CtiIONValue *toInsert );
-    CtiIONDataStream  &removeItem( int index );
-    CtiIONValue *getItem( int index ) const;
+    CtiIONDataStream  &push_back( CtiIONValue *toInsert );
+
+    //  note that this function call does not delete the pointed-to object
+    //    before it removes it from the vector - this is so you can grab things out of the list
+    CtiIONDataStream  &erase( int index );
+
+    //  this function, however, does delete all of the entries
+    void clearAndDestroy( void );
+
+    CtiIONValue *at( int index ) const;
     CtiIONValue *operator[]( int index ) const;
-    int  getItemCount( void ) const;
+
+    int  size( void ) const;
     bool empty( void ) const;
 
-    bool contains( CtiIONValue::IONValueTypes type );
-    bool contains( CtiIONArray::IONArrayTypes type );
-    bool contains( CtiIONStruct::IONStructTypes type );
+    bool itemIs( int index, CtiIONValue::IONValueTypes type );
+    bool itemIs( int index, CtiIONArray::IONArrayTypes type );
+    bool itemIs( int index, CtiIONStruct::IONStructTypes type );
 
-    static bool itemIs( CtiIONValue *toCheck, CtiIONValue::IONValueTypes type );
-    static bool itemIs( CtiIONValue *toCheck, CtiIONArray::IONArrayTypes type );
-    static bool itemIs( CtiIONValue *toCheck, CtiIONStruct::IONStructTypes type );
+    bool itemsAre( CtiIONValue::IONValueTypes type );
+    bool itemsAre( CtiIONArray::IONArrayTypes type );
+    bool itemsAre( CtiIONStruct::IONStructTypes type );
 
     bool isValid( void );
 
