@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/06/02 18:17:18 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/09/30 18:49:25 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,19 +30,7 @@
 
 class CtiDNPApplication
 {
-protected:
-    CtiDNPTransport _transport;
-
-    enum
-    {
-        ReqHeaderSize = 2,
-        RspHeaderSize = 4,
-        CommRetries   = 3
-    };
-
 private:
-    void reset( void );
-
     struct _dnp_app_control
     {
         unsigned char seq         : 4;
@@ -89,6 +77,12 @@ private:
         unsigned char buf[DNP_APP_BUF_SIZE/* - sizeof(_dnp_app_control) - 1 - sizeof(_dnp_app_indications)*/];
     } _appRsp;
 
+    struct appAck
+    {
+        _dnp_app_control ctrl;
+        unsigned char func_code;
+    } _appAck;
+
 #pragma pack( pop )
 
     int _seqno, _replyExpected;
@@ -100,6 +94,7 @@ private:
         Uninitialized = 0,
         Output,
         Input,
+        OutputAck,
         Complete,
         Failed
     } _ioState, _retryState;
@@ -108,6 +103,20 @@ private:
 
     vector< CtiDNPObjectBlock * > _outObjectBlocks;
     vector< CtiDNPObjectBlock * > _inObjectBlocks;
+
+    void reset( void );
+    void generateAck( appAck *app_packet, unsigned char seq);
+
+protected:
+    CtiDNPTransport _transport;
+
+    enum
+    {
+        ReqHeaderSize = 2,
+        RspHeaderSize = 4,
+        CommRetries   = 3
+    };
+
 
 public:
     enum AppFuncCode;
@@ -158,8 +167,6 @@ public:
     void eraseInboundObjectBlocks( void );
     bool hasInboundPoints( void );
     void getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList );
-
-    bool hasOutput( void );
 
     enum AppFuncCode
     {
