@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/11/07 22:53:08 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/11/13 21:02:09 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -554,6 +554,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
 
     resetScanFreezePending( );
     resetScanFreezeFailed( );
+    resetScanPending();
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
