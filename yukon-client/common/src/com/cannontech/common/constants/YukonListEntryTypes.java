@@ -57,8 +57,8 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_SEARCH_TYPE_LAST_NAME		= 1603;
 	public static final int YUK_DEF_ID_SEARCH_TYPE_SERIAL_NO		= 1604;
 	public static final int YUK_DEF_ID_DEV_STAT_AVAIL				= 1701;
-	public static final int YUK_DEF_ID_DEV_STAT_UNAVAIL				= 1702;
-	public static final int YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL		= 1703;
+	public static final int YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL		= 1702;
+	public static final int YUK_DEF_ID_DEV_STAT_UNAVAIL				= 1703;
 	public static final int YUK_DEF_ID_MANU_UNKNOWN					= 1801;
 	public static final int YUK_DEF_ID_LOC_UNKNOW					= 1901;
 	public static final int YUK_DEF_ID_TOW_WEEKDAY					= 2101;
