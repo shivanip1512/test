@@ -94,7 +94,7 @@ public boolean retrieveBillingData(String dbAlias)
 		else
 		{
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime()));
+			pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEarliestStartDate().getTime()));
 			rset = pstmt.executeQuery();
 			com.cannontech.clientutils.CTILogger.info(" *Start looping through return resultset");
 
@@ -102,31 +102,33 @@ public boolean retrieveBillingData(String dbAlias)
 			int lastPointID = 0;
 			while (rset.next())
 			{
-				currentPointID = rset.getInt(4);
-				
-				double multiplier = 1;
-				if( getBillingDefaults().getRemoveMultiplier())
+				java.sql.Timestamp ts = rset.getTimestamp(3);
+				java.util.Date tsDate = new java.util.Date(ts.getTime());
+				if( tsDate.compareTo( (Object)getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, CONTINUE ON!
 				{
-					multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(currentPointID))).doubleValue();
-				}
-				
-				inValidTimestamp:
-				if( currentPointID != lastPointID )	//just getting max time for each point
-				{
-					lastPointID = currentPointID;
-
-					String name = rset.getString(1);
-					double reading = rset.getDouble(2) / multiplier;
-					java.sql.Timestamp ts = rset.getTimestamp(3);
-					java.util.Date tsDate = new java.util.Date(ts.getTime());
-					String ptName = rset.getString(5);
-
-					if( tsDate.compareTo((Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
-						break inValidTimestamp;
-						
-					com.cannontech.billing.record.OPURecord opuRec=
-						new com.cannontech.billing.record.OPURecord(name, ptName, reading, ts, "N");
-					getRecordVector().addElement(opuRec);
+					currentPointID = rset.getInt(4);
+					double multiplier = 1;
+					if( getBillingDefaults().getRemoveMultiplier())
+					{
+						multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(currentPointID))).doubleValue();
+					}
+					
+					inValidTimestamp:
+					if( currentPointID != lastPointID )	//just getting max time for each point
+					{
+						lastPointID = currentPointID;
+	
+						String name = rset.getString(1);
+						double reading = rset.getDouble(2) / multiplier;
+						String ptName = rset.getString(5);
+	
+						if( tsDate.compareTo((Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							break inValidTimestamp;
+							
+						com.cannontech.billing.record.OPURecord opuRec=
+							new com.cannontech.billing.record.OPURecord(name, ptName, reading, ts, "N");
+						getRecordVector().addElement(opuRec);
+					}
 				}
 			}
 		}

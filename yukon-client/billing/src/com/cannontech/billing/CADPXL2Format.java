@@ -113,7 +113,7 @@ public boolean retrieveBillingData(String dbAlias)
 		else
 		{
 			pstmt = conn.prepareStatement(sql.toString());
-			pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime()));
+			pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEarliestStartDate().getTime()));
 			rset = pstmt.executeQuery();
 			
 			int deviceID = -1;
@@ -126,172 +126,172 @@ public boolean retrieveBillingData(String dbAlias)
 			int registerNumCount = 1;
 		
 			double value = 0;
-			
 			int pointID = 0;
 			int ptOffset = 0;
 			int lastPointID = 0;
 			int recCount = 0;
 
-			int rsetCount = 0;
 			com.cannontech.clientutils.CTILogger.info(" Start looping through return resultset");
 
 			while (rset.next())
 			{
-				rsetCount++;
-				pointID = rset.getInt(2);
-				
-				double multiplier = 1;
-				if( getBillingDefaults().getRemoveMultiplier())
+				java.sql.Timestamp ts = rset.getTimestamp(4);
+				Date tsDate = new Date(ts.getTime());
+				if( tsDate.compareTo( (Object)getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, CONTINUE ON!
 				{
-					multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(pointID))).doubleValue();
-				}
 				
-				if( pointID != lastPointID )	//just getting max time for each point
-				{
-					lastPointID = pointID;
-					meterNumber = rset.getString(1);
-					ptOffset = rset.getInt(3);
-					java.sql.Timestamp ts = rset.getTimestamp(4);
-					value = rset.getDouble(5) / multiplier;
+					pointID = rset.getInt(2);
 					
-					deviceID = rset.getInt(6);
-					paoName = rset.getString(7);
-					Date tsDate = new Date(ts.getTime());
-					
-					java.util.Vector registerNumberVector = new java.util.Vector();
-					java.util.Vector kwValueVector = new java.util.Vector();
-					java.util.Vector kwhValueVector = new java.util.Vector();
-					java.util.Vector kvarValueVector = new java.util.Vector();
-
-					// Our break label so we can exit the if-else checks
-					inValidTimestamp:
-					if( deviceID == lastDeviceID)
+					double multiplier = 1;
+					if( getBillingDefaults().getRemoveMultiplier())
 					{
-						if ( ptOffset == 1 || isKWH(ptOffset) )
-						{
-							if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
-								break inValidTimestamp;
-	
-							//** Get the last record and add to it the other pointOffsets' values. **//								
-							com.cannontech.billing.record.CADPXL2Record lastRecord =
-							(com.cannontech.billing.record.CADPXL2Record)getRecordVector().get(recCount -1);
-
-							lastRecord.getKwhReadingVector().add( new Double(value));
-						}
-						else if ( isKW(ptOffset) )
-						{
-							if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
-								break inValidTimestamp;
-								
-							//** Get the last record and add to it the other pointOffsets' values. **//
-							com.cannontech.billing.record.CADPXL2Record lastRecord =
-								(com.cannontech.billing.record.CADPXL2Record)getRecordVector().get(recCount -1);
-							lastRecord.getKwReadingVector().add (new Double(value));
-							
-							/* registerNumCount needs to be incremented with every register loop through.
-							   Since the ptOffsets are sorted in ascending order, this will be the first
-								   type of ptOffset to get added for each register, assuming they all exist.*/
-							if (ptOffset > 2)
-								lastRecord.getRegisterNumberVector().add(new Integer(++registerNumCount));
-						}
-						else if ( isKVAR(ptOffset) )
-						{
-							if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
-								break inValidTimestamp;
-								
-							//** Get the last record and add to it the other pointOffsets' values. **//
-							com.cannontech.billing.record.CADPXL2Record lastRecord =
-								(com.cannontech.billing.record.CADPXL2Record)getRecordVector().get(recCount -1);
-						
-							lastRecord.getKvarReadingVector().add(new Double(value));
-						}
+						multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(pointID))).doubleValue();
 					}
 					
-					else	//**  HAVE NEW POINT AND METERNUMBER **//
+					if( pointID != lastPointID )	//just getting max time for each point
 					{
-						registerNumCount = 1;
-
-						//*****************************************************************************************
-						/* Add the value to the correct unitOfMeasure Vector according to the point offset 
-						*/
-						if (ptOffset == 1 || isKWH(ptOffset))
+						lastPointID = pointID;
+						meterNumber = rset.getString(1);
+						ptOffset = rset.getInt(3);
+						value = rset.getDouble(5) / multiplier;
+						
+						deviceID = rset.getInt(6);
+						paoName = rset.getString(7);
+						
+						java.util.Vector registerNumberVector = new java.util.Vector();
+						java.util.Vector kwValueVector = new java.util.Vector();
+						java.util.Vector kwhValueVector = new java.util.Vector();
+						java.util.Vector kvarValueVector = new java.util.Vector();
+	
+						// Our break label so we can exit the if-else checks
+						inValidTimestamp:
+						if( deviceID == lastDeviceID)
 						{
-							if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
-								break inValidTimestamp;
+							if ( ptOffset == 1 || isKWH(ptOffset) )
+							{
+								if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+									break inValidTimestamp;
+		
+								//** Get the last record and add to it the other pointOffsets' values. **//								
+								com.cannontech.billing.record.CADPXL2Record lastRecord =
+								(com.cannontech.billing.record.CADPXL2Record)getRecordVector().get(recCount -1);
+	
+								lastRecord.getKwhReadingVector().add( new Double(value));
+							}
+							else if ( isKW(ptOffset) )
+							{
+								if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+									break inValidTimestamp;
+									
+								//** Get the last record and add to it the other pointOffsets' values. **//
+								com.cannontech.billing.record.CADPXL2Record lastRecord =
+									(com.cannontech.billing.record.CADPXL2Record)getRecordVector().get(recCount -1);
+								lastRecord.getKwReadingVector().add (new Double(value));
 								
-							kwhValueVector.add(new Double(value));
-						}
-						else if (isKW(ptOffset))
-						{
-							if (tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
-								break inValidTimestamp;
-
-							kwValueVector.add (new Double(value));
-						}
-
-						else if (isKVAR(ptOffset))
-						{
-							if (tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
-								break inValidTimestamp;
-
-							kvarValueVector.add(new Double(value));
-						}
-						
-						//*****************************************************************************************
-						/* Get the accountNumber from the hash table for the current meterNumber.
-						   If the accountNumber is NOT found in the hash table then the paoName  is
-						   		used as the accountNumber also
-						*/
-						Object tempActNum = null;
-						
-						if( accountNumbersHashTable != null)
-							tempActNum = accountNumbersHashTable.get(meterNumber);
+								/* registerNumCount needs to be incremented with every register loop through.
+								   Since the ptOffsets are sorted in ascending order, this will be the first
+									   type of ptOffset to get added for each register, assuming they all exist.*/
+								if (ptOffset > 2)
+									lastRecord.getRegisterNumberVector().add(new Integer(++registerNumCount));
+							}
+							else if ( isKVAR(ptOffset) )
+							{
+								if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+									break inValidTimestamp;
+									
+								//** Get the last record and add to it the other pointOffsets' values. **//
+								com.cannontech.billing.record.CADPXL2Record lastRecord =
+									(com.cannontech.billing.record.CADPXL2Record)getRecordVector().get(recCount -1);
 							
-						if( tempActNum != null)
-							accountNumber = (String)tempActNum;
-						else
-							accountNumber = (String)paoName;
-
-
-						//*****************************************************************************************
-						/*  countMetersPerAccount is a vector of accountnumbers(keys) and the count(values)
-								of meters that have been associated with the account number.
-							If an account number is NOT found in the vector then it is added with a count = 1
-							Else if the account number is found, the value is retrieved, incremented, and re-put
-								into the vector.	
-						*/
-						if( countMetersPerAccount.get(accountNumber) == null)
-						{
-							meterPositionNumber = new Integer(1);
-							countMetersPerAccount.put(accountNumber, meterPositionNumber);
+								lastRecord.getKvarReadingVector().add(new Double(value));
+							}
 						}
-						else
-						{
-							meterPositionNumber = new Integer(meterPositionNumber.intValue() + 1);
-							countMetersPerAccount.put(accountNumber, new Integer(meterPositionNumber.intValue() + 1));
-						}
-						//*****************************************************************************************
-
 						
-						registerNumberVector.add(new Integer(registerNumCount));
-														
-						com.cannontech.billing.record.CADPXL2Record cadpxl2Rec =
-							new com.cannontech.billing.record.CADPXL2Record(accountNumber, 
-																	meterNumber, 
-																	meterPositionNumber,
-																	ts,
-																	registerNumberVector,
-																	kwhValueVector, 
-																	kwValueVector, 
-																	kvarValueVector);
-						getRecordVector().addElement(cadpxl2Rec);
-
-						lastDeviceID = deviceID;
-						recCount++;
+						else	//**  HAVE NEW POINT AND METERNUMBER **//
+						{
+							registerNumCount = 1;
+	
+							//*****************************************************************************************
+							/* Add the value to the correct unitOfMeasure Vector according to the point offset 
+							*/
+							if (ptOffset == 1 || isKWH(ptOffset))
+							{
+								if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+									break inValidTimestamp;
+									
+								kwhValueVector.add(new Double(value));
+							}
+							else if (isKW(ptOffset))
+							{
+								if (tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+									break inValidTimestamp;
+	
+								kwValueVector.add (new Double(value));
+							}
+	
+							else if (isKVAR(ptOffset))
+							{
+								if (tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+									break inValidTimestamp;
+	
+								kvarValueVector.add(new Double(value));
+							}
+							
+							//*****************************************************************************************
+							/* Get the accountNumber from the hash table for the current meterNumber.
+							   If the accountNumber is NOT found in the hash table then the paoName  is
+							   		used as the accountNumber also
+							*/
+							Object tempActNum = null;
+							
+							if( accountNumbersHashTable != null)
+								tempActNum = accountNumbersHashTable.get(meterNumber);
+								
+							if( tempActNum != null)
+								accountNumber = (String)tempActNum;
+							else
+								accountNumber = (String)paoName;
+	
+	
+							//*****************************************************************************************
+							/*  countMetersPerAccount is a vector of accountnumbers(keys) and the count(values)
+									of meters that have been associated with the account number.
+								If an account number is NOT found in the vector then it is added with a count = 1
+								Else if the account number is found, the value is retrieved, incremented, and re-put
+									into the vector.	
+							*/
+							if( countMetersPerAccount.get(accountNumber) == null)
+							{
+								meterPositionNumber = new Integer(1);
+								countMetersPerAccount.put(accountNumber, meterPositionNumber);
+							}
+							else
+							{
+								meterPositionNumber = new Integer(meterPositionNumber.intValue() + 1);
+								countMetersPerAccount.put(accountNumber, new Integer(meterPositionNumber.intValue() + 1));
+							}
+							//*****************************************************************************************
+	
+							
+							registerNumberVector.add(new Integer(registerNumCount));
+															
+							com.cannontech.billing.record.CADPXL2Record cadpxl2Rec =
+								new com.cannontech.billing.record.CADPXL2Record(accountNumber, 
+																		meterNumber, 
+																		meterPositionNumber,
+																		ts,
+																		registerNumberVector,
+																		kwhValueVector, 
+																		kwValueVector, 
+																		kvarValueVector);
+							getRecordVector().addElement(cadpxl2Rec);
+	
+							lastDeviceID = deviceID;
+							recCount++;
+						}
 					}
 				}
 			}//end while
-			com.cannontech.clientutils.CTILogger.info(" Records counted = " +recCount + " ||  ResultSet Size = " + rsetCount);
 		}//end else
 	}//end try 
 	catch( java.sql.SQLException e )

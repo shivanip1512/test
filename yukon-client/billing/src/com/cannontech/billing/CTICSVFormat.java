@@ -105,7 +105,7 @@ public boolean retrieveBillingData(String dbAlias)
 		else
 		{
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setTimestamp(1,new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime()));
+			pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEarliestStartDate().getTime()));
 			rset = pstmt.executeQuery();
 
 			com.cannontech.clientutils.CTILogger.info(" *Start looping through return resultset");
@@ -114,43 +114,45 @@ public boolean retrieveBillingData(String dbAlias)
 			int lastPointID = 0;
 			while (rset.next())
 			{
-				currentPointID = rset.getInt(4);
-				
-				double multiplier = 1;
-				if( getBillingDefaults().getRemoveMultiplier())
+				java.sql.Timestamp ts = rset.getTimestamp(3);
+				Date tsDate = new Date(ts.getTime());
+				if( tsDate.compareTo( (Object)getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, CONTINUE ON!
 				{
-					multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(currentPointID))).doubleValue();
-				}
-
-				// Our break label so we can exit the if-else checks
-				inValidTimestamp:
-				if( currentPointID != lastPointID )	//just getting max time for each point
-				{
-					java.sql.Timestamp ts = rset.getTimestamp(3);
-					int ptOffset = rset.getInt(6);
-					Date tsDate = new Date(ts.getTime());
+					currentPointID = rset.getInt(4);
+					double multiplier = 1;
+					if( getBillingDefaults().getRemoveMultiplier())
+					{
+						multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(currentPointID))).doubleValue();
+					}
+	
+					// Our break label so we can exit the if-else checks
+					inValidTimestamp:
+					if( currentPointID != lastPointID )	//just getting max time for each point
+					{
+						int ptOffset = rset.getInt(6);
 										
-					if( isKWH(ptOffset) || ptOffset == 1) 
-					{
-						if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
-							break inValidTimestamp;
+						if( isKWH(ptOffset) || ptOffset == 1) 
+						{
+							if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+								break inValidTimestamp;
+						}
+						else if( isKW(ptOffset) || isKVAR(ptOffset))
+						{
+							if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+								break inValidTimestamp;
+						}
+						
+						lastPointID = currentPointID;
+	
+						String paoName = rset.getString(1);
+						double reading = rset.getDouble(2) / multiplier;
+						String unitMeasure = rset.getString(5);
+						
+						com.cannontech.billing.record.CTICSVRecord csvRec = 
+							new com.cannontech.billing.record.CTICSVRecord(paoName, reading, unitMeasure, ts);
+						getRecordVector().addElement(csvRec);
+	
 					}
-					else if( isKW(ptOffset) || isKVAR(ptOffset))
-					{
-						if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
-							break inValidTimestamp;
-					}
-					
-					lastPointID = currentPointID;
-
-					String paoName = rset.getString(1);
-					double reading = rset.getDouble(2) / multiplier;
-					String unitMeasure = rset.getString(5);
-					
-					com.cannontech.billing.record.CTICSVRecord csvRec = 
-						new com.cannontech.billing.record.CTICSVRecord(paoName, reading, unitMeasure, ts);
-					getRecordVector().addElement(csvRec);
-
 				}
 			}
 		}

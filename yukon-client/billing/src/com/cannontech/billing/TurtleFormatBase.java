@@ -97,7 +97,8 @@ public class TurtleFormatBase extends FileFormatBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime()));
+				
+				pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEarliestStartDate().getTime()));
 				rset = pstmt.executeQuery();
 	
 				com.cannontech.clientutils.CTILogger.info(" * Start looping through return resultset");
@@ -110,7 +111,6 @@ public class TurtleFormatBase extends FileFormatBase
 					recCount ++;
 				}
 	
-				
 				int currentPointID = 0;
 				int lastPointID = 0;
 				int lastDeviceID = 0;
@@ -118,79 +118,80 @@ public class TurtleFormatBase extends FileFormatBase
 					
 				while (rset.next())
 				{
-					currentPointID = rset.getInt(2);
-	
-					double multiplier = 1;
-					if( getBillingDefaults().getRemoveMultiplier())
+					java.sql.Timestamp ts = rset.getTimestamp(3);
+					Date tsDate = new Date(ts.getTime());
+					if( tsDate.compareTo( (Object)getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, pass!
 					{
-						multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(currentPointID))).doubleValue();
-					}
-					
-					if( currentPointID != lastPointID )	//just getting max time for each point
-					{
-						lastPointID = currentPointID;
-	
-						String meterNumber = rset.getString(1);
-						java.sql.Timestamp ts = rset.getTimestamp(3);
-						double reading = rset.getDouble(4)	/ multiplier;
-						currentDeviceID = rset.getInt(5);
-						int ptOffset = rset.getInt(6);
-						Date tsDate = new Date(ts.getTime());
-						
-						inValidTimestamp:
-						if( currentDeviceID == lastDeviceID)
+						currentPointID = rset.getInt(2);
+						double multiplier = 1;
+						if( getBillingDefaults().getRemoveMultiplier())
 						{
-							if (ptOffset == 1 || isKWH(ptOffset))
-							{
-								if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
-									break inValidTimestamp;
-									
-								//** Get the last record and add to it the other pointOffsets' values. **//
-								com.cannontech.billing.record.TurtleRecordBase lastRecord = getRecord(recCount -1);
-	
-								lastRecord.setReadingKWH(reading);
-								lastRecord.setTime(ts);
-								lastRecord.setDate(ts);
-							}
-							else if (isKW(ptOffset))
-							{
-								if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
-									break inValidTimestamp;
-									
-								//** Get the last record and add to it the other pointOffsets' values. **//
-								com.cannontech.billing.record.TurtleRecordBase lastRecord = getRecord(recCount -1);
-	
-								lastRecord.setReadingKW(reading);
-								lastRecord.setTimeKW(ts);
-								lastRecord.setDateKW(ts);
-							}												
+							multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(currentPointID))).doubleValue();
 						}
-						else
+						
+						if( currentPointID != lastPointID )	//just getting max time for each point
 						{
-							com.cannontech.billing.record.TurtleRecordBase record = createRecord(meterNumber);
-								
-							if (ptOffset == 1 || isKWH(ptOffset))
-							{
-								if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
-									break inValidTimestamp;
-								
-								record.setReadingKWH(reading);
-								record.setTime(ts);
-								record.setDate(ts);
+							lastPointID = currentPointID;
+							String meterNumber = rset.getString(1);
+							double reading = rset.getDouble(4)	/ multiplier;
+							currentDeviceID = rset.getInt(5);
+							int ptOffset = rset.getInt(6);
 	
-							}
-							else if (isKW(ptOffset))
+							inValidTimestamp:
+							if( currentDeviceID == lastDeviceID)
 							{
-								if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
-									break inValidTimestamp;
-	
-								record.setReadingKW(reading);
-								record.setTimeKW(ts);
-								record.setDateKW(ts);
+								if (ptOffset == 1 || isKWH(ptOffset))
+								{
+									if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+										break inValidTimestamp;
+										
+									//** Get the last record and add to it the other pointOffsets' values. **//
+									com.cannontech.billing.record.TurtleRecordBase lastRecord = getRecord(recCount -1);
+		
+									lastRecord.setReadingKWH(reading);
+									lastRecord.setTime(ts);
+									lastRecord.setDate(ts);
+								}
+								else if (isKW(ptOffset))
+								{
+									if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+										break inValidTimestamp;
+										
+									//** Get the last record and add to it the other pointOffsets' values. **//
+									com.cannontech.billing.record.TurtleRecordBase lastRecord = getRecord(recCount -1);
+		
+									lastRecord.setReadingKW(reading);
+									lastRecord.setTimeKW(ts);
+									lastRecord.setDateKW(ts);
+								}												
 							}
-							lastDeviceID = currentDeviceID;
-							getRecordVector().addElement(record);
-							recCount++;
+							else
+							{
+								com.cannontech.billing.record.TurtleRecordBase record = createRecord(meterNumber);
+									
+								if (ptOffset == 1 || isKWH(ptOffset))
+								{
+									if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+										break inValidTimestamp;
+									
+									record.setReadingKWH(reading);
+									record.setTime(ts);
+									record.setDate(ts);
+		
+								}
+								else if (isKW(ptOffset))
+								{
+									if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+										break inValidTimestamp;
+		
+									record.setReadingKW(reading);
+									record.setTimeKW(ts);
+									record.setDateKW(ts);
+								}
+								lastDeviceID = currentDeviceID;
+								getRecordVector().addElement(record);
+								recCount++;
+							}
 						}
 					}
 				}
