@@ -9,6 +9,43 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<script language="JavaScript">
+function changeCategory(checkBox, index) {
+	var programs, catIDs, progIDs, defProgIDs;
+	
+	if (checkBox.checked) {
+		programs = document.getElementsByName("Program" + index);
+		if (programs.length > 0)
+			programs[0].checked = true;
+		catIDs = document.getElementsByName("CatID");
+		progIDs = document.getElementsByName("ProgID");
+		defProgIDs = document.getElementsByName("DefProgID");
+		catIDs[index].value = checkBox.value;
+		progIDs[index].value = defProgIDs[index].value;
+	}
+	else {
+		programs = document.getElementsByName("Program" + index);
+		for (i = 0; i < programs.length; i++)
+			programs[i].checked = false;
+		catIDs = document.getElementsByName("CatID");
+		progIDs = document.getElementsByName("ProgID");
+		catIDs[index].value = "";
+		progIDs[index].value = "";
+	}
+}
+
+function changeProgram(radioBtn, index) {
+	var categories = document.getElementsByName("AppCat");
+	var catIDs = document.getElementsByName("CatID");
+	var progIDs = document.getElementsByName("ProgID");
+	
+	if (progIDs[index].value == radioBtn.value) return;	// Nothing is changed
+	
+	categories[index].checked = true;
+	catIDs[index].value = categories[index].value;
+	progIDs[index].value = radioBtn.value;
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
