@@ -204,7 +204,7 @@ private javax.swing.JLabel getJLabelControlPoint() {
 		try {
 			ivjJLabelControlPoint = new javax.swing.JLabel();
 			ivjJLabelControlPoint.setName("JLabelControlPoint");
-			ivjJLabelControlPoint.setText("Conrtrol Point:");
+			ivjJLabelControlPoint.setText("Control Point:");
 			ivjJLabelControlPoint.setEnabled(true);
 			// user code begin {1}
 			// user code end
