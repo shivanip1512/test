@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/05/09 15:42:03 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/10/28 16:02:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,6 +70,7 @@ IM_EX_CTIBASE INT           ModemConnectionTimeout = 60;     // Modem Connection
 IM_EX_CTIBASE int           gMaxDBConnectionCount = 5;       // Maximum number of DB connections to allow to remain open.
 IM_EX_CTIBASE bool          gIDLCEchoSuppression  = false;   // Eat up IDLC echoes on the comm channel (usually from satellite, etc)
 IM_EX_CTIBASE bool          gDNPVerbose = false;
+IM_EX_CTIBASE UINT          gDNPInternalRetries = 2;
 IM_EX_CTIBASE int           gDefaultCommFailCount = 10;
 IM_EX_CTIBASE int           gDefaultPortCommFailCount = 5;
 /*
@@ -205,6 +206,17 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         gDNPVerbose = true;
     }
     if(DebugLevel & 0x0001) cout << "DNP output is " << ( gLogPorts ? "verbose" : "quiet") << endl;
+
+    if( !(str = gConfigParms.getValueAsString("YUKON_DNP_INTERNAL_RETRIES")).isNull() )
+    {
+        gDNPInternalRetries = abs(atoi(str.data()));
+        if(DebugLevel & 0x0001) cout << "DNP Internal Retries set to " << str << endl;
+    }
+    else
+    {
+        gDNPInternalRetries = 2;
+        if(DebugLevel & 0x0001) cout << "DNP Internal Retries set to 2" << endl;
+    }
 
     if( !(str = gConfigParms.getValueAsString("OPTIMIZE_VERSACOM_CONFIGURATION")).isNull() && (!stricmp("TRUE", str.data())))
     {

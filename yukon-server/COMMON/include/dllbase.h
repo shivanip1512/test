@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/05/15 22:33:20 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/10/28 16:02:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,6 +76,7 @@ IM_EX_CTIBASE extern int            gMaxDBConnectionCount;        // Maximum num
 IM_EX_CTIBASE extern int            ModemConnectionTimeout;      // Modem Connection Timeout in seconds (60 def.)
 IM_EX_CTIBASE extern bool           gIDLCEchoSuppression;
 IM_EX_CTIBASE extern bool           gDNPVerbose;
+IM_EX_CTIBASE extern UINT           gDNPInternalRetries;
 IM_EX_CTIBASE extern int            gDefaultCommFailCount;
 IM_EX_CTIBASE extern int            gDefaultPortCommFailCount;
 
