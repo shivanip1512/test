@@ -80,9 +80,9 @@
           </tr>
           <tr>
             <td>
-              <table width="450" border="0" cellspacing="0" cellpadding="0" align="center">
+              <table width="500" border="0" cellspacing="0" cellpadding="0" align="center">
                 <tr>
-                  <td width="50%"> 
+                  <td width="33%"> 
 				  <FORM METHOD="POST" ACTION="<%= request.getContextPath() %>/servlet/LoginController">
                     <div align="center"><input type="image" src="Therm.gif" width="125" height="137"></div>
 					<input name="USERNAME" value="thermostat" type="hidden">
@@ -90,14 +90,20 @@
           			<input name="ACTION" value="LOGIN" type="hidden">
         		  </form>
                   </td>
-                  <td width="50%">
+                  <td width="33%">
 				  <FORM METHOD="POST" ACTION="<%= request.getContextPath() %>/servlet/LoginController"> 
                     <div align="center"><input type="image" src="Switch.gif" width="125" height="137"></div>
                   	<input name="USERNAME" value="switch" type="hidden">
           			<input name="PASSWORD" value="test" type="hidden">
           			<input name="ACTION" value="LOGIN" type="hidden">
                     </form>
-				  </td>
+		</td>
+                  <td width="33%">
+				  <FORM METHOD="POST" ACTION="<%= request.getContextPath() %>/servlet/LoginController"> 
+			<div align="center"><a href="http://www.expressgate.net"><img src="EG.gif" width="125" height="138" border="0"></a></div>
+                                 
+                    </form>
+		</td>
                 </tr>
               </table>
             </td>
@@ -112,11 +118,9 @@
 				  <form method="POST" action="http://demo.esubstation.com/servlet/LoginController">
                       <div align="center"><br>
                         <input type="image" src="ESGraphic.gif" width="155" height="124" border="0" name="image3">
-                        <input name="USERNAME" value="esubstation" type="hidden">
-                        <input name="PASSWORD" value="esubdemo" type="hidden">
+                        <input name="USERNAME" value="cti" type="hidden">
+                        <input name="PASSWORD" value="cannon" type="hidden">
                         <input name="ACTION" type="hidden" value = "LOGIN">
-                        <input name="DATABASEALIAS" type="hidden" value="yukon">
-                        <input name="SERVICE" type="hidden" value="ESUBSTATION">
                       </div>
                     </form></td>
                   <td width="168">&nbsp;</td>
