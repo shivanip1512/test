@@ -8,7 +8,7 @@ public class LiteLMProgScenario extends LiteBase
 {
 	private int programID = CtiUtilities.NONE_ID;
 	private int scenarioID = CtiUtilities.NONE_ID;
-	private int startDelay = 0;
+	private int startOffset = 0;
 	private int stopOffset = 0;
 	private int startGear = 0;
 
@@ -40,9 +40,9 @@ public void setProgramID(int newValue)
 	/**
 	 * @return
 	 */
-	public int getStartDelay()
+	public int getStartOffset()
 	{
-		return startDelay;
+		return startOffset;
 	}
 
 	/**
@@ -64,9 +64,9 @@ public void setProgramID(int newValue)
 	/**
 	 * @param i
 	 */
-	public void setStartDelay(int i)
+	public void setStartOffset(int i)
 	{
-		startDelay = i;
+		startOffset = i;
 	}
 
 	/**

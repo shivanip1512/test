@@ -225,7 +225,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 				{
 					MultiSelectProg selProg = new MultiSelectProg( lmProg );
 					selProg.setGearNum( new Integer(p.getStartGear()) );
-					selProg.setStartDelay( new Integer(p.getStartDelay()) );
+					selProg.setStartDelay( new Integer(p.getStartOffset()) );
 					selProg.setStopOffset( new Integer(p.getStopOffset()) );
 
 					selPrgs.add( selProg );

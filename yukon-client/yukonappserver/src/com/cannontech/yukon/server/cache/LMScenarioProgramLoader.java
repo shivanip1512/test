@@ -37,7 +37,7 @@ public void run()
 	timerStart = new java.util.Date();
 	//temp code
 	String sqlString = 
-			"select ScenarioID, ProgramID, StartDelay, StopOffset, StartGear " +
+			"select ScenarioID, ProgramID, StartOffset, StopOffset, StartGear " +
 			"from " + LMControlScenarioProgram.TABLE_NAME + 
 			" order by ScenarioID";
 
@@ -54,7 +54,7 @@ public void run()
 		{
 			LiteLMProgScenario liteProg = new LiteLMProgScenario( rset.getInt(2) );
 			liteProg.setScenarioID( rset.getInt(1) );
-			liteProg.setStartDelay( rset.getInt(3) );
+			liteProg.setStartOffset( rset.getInt(3) );
 			liteProg.setStopOffset( rset.getInt(4) );
 			liteProg.setStartGear( rset.getInt(5) );
 			
