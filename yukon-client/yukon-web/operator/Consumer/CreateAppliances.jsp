@@ -549,52 +549,70 @@ function showAdditionalAppInfo(index)
 		else if (category.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP) {
 %>
                 <div id="Category<%= category.getEntryID() %>" style="display:none">
-                <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
-                  <tr> 
-                    <td width="100" class="TableCell"> 
-                      <div align="right">Pump Type:</div>
-                    </td>
-                    <td width="200"> 
-                      <select name="HP_PumpType">
-<%
+                  <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
+                    <tr> 
+                      <td width="100" class="TableCell"> 
+                        <div align="right">Pump Type:</div>
+                      </td>
+                      <td width="200"> 
+                        <select name="HP_PumpType">
+                          <%
 		StarsCustSelectionList pumpTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_TYPE );
 		for (int i = 0; i < pumpTypeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = pumpTypeList.getStarsSelectionListEntry(i);
 %>
-                        <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-<%
+                          <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                          <%
 		}
 %>
-                      </select>
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td width="100" class="TableCell"> 
-                      <div align="right">Stand-by Source:</div>
-                    </td>
-                    <td width="200"> 
-                      <select name="HP_StandbySrc">
-<%
+                        </select>
+                      </td>
+                    </tr>
+                    <tr> 
+                      <td width="100" class="TableCell"> 
+                        <div align="right">Pump Size:</div>
+                      </td>
+                      <td width="200"> 
+                        <select name="HP_PumpSize">
+                          <%
+		StarsCustSelectionList pumpSizeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_SIZE );
+		for (int i = 0; i < pumpSizeList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = pumpSizeList.getStarsSelectionListEntry(i);
+%>
+                          <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                          <%
+		}
+%>
+                        </select>
+                      </td>
+                    </tr>
+                    <tr> 
+                      <td width="100" class="TableCell"> 
+                        <div align="right">Stand-by Source:</div>
+                      </td>
+                      <td width="200"> 
+                        <select name="HP_StandbySrc">
+                          <%
 		StarsCustSelectionList standbySrcList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_HP_STANDBY_SOURCE );
 		for (int i = 0; i < standbySrcList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = standbySrcList.getStarsSelectionListEntry(i);
 %>
-                        <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-<%
+                          <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                          <%
 		}
 %>
-                      </select>
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td width="100" class="TableCell"> 
-                      <div align="right">Restart Delay (sec):</div>
-                    </td>
-                    <td width="200"> 
-                      <input type="text" name="HP_RestartDelaySec" maxlength="14" size="14" value="">
-                    </td>
-                  </tr>
-                </table>
+                        </select>
+                      </td>
+                    </tr>
+                    <tr> 
+                      <td width="100" class="TableCell"> 
+                        <div align="right">Restart Delay (sec):</div>
+                      </td>
+                      <td width="200"> 
+                        <input type="text" name="HP_RestartDelaySec" maxlength="14" size="14" value="">
+                      </td>
+                    </tr>
+                  </table>
 				</div>
 <%
 		}
