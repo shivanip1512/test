@@ -100,6 +100,7 @@
 		siteInfo = account.getStarsSiteInformation();
 		billAddr = account.getBillingAddress();
 		primContact = account.getPrimaryContact();
+		userLogin = accountInfo.getStarsUser();
 		
 		programs = accountInfo.getStarsLMPrograms();
 		programHistory = programs.getStarsLMProgramHistory();
@@ -113,14 +114,6 @@
 		}
 		
 		thermSchedules = accountInfo.getStarsSavedThermostatSchedules();
-		
-		userLogin = accountInfo.getStarsUser();
-		if (userLogin == null) {
-			userLogin = new StarsUser();
-			userLogin.setUsername( "" );
-			userLogin.setPassword( "" );
-			userLogin.setStatus(StarsLoginStatus.DISABLED);
-		}
 	}
 	
 	TimeZone tz = TimeZone.getDefault(); 

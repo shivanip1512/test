@@ -1,5 +1,14 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
+<%
+	StarsUser login = userLogin;
+	if (login == null) {
+		login = new StarsUser();
+		login.setUsername("");
+		login.setPassword("");
+		login.setStatus(StarsLoginStatus.DISABLED);
+	}
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -41,6 +50,15 @@ function generatePassword(form) {
 		form.Password2.value = passwd;
 		form.submit();
 	}
+}
+
+function deleteLogin(form) {
+	if (!confirm("Are you sure you want to delete the user login?"))
+		return;
+	form.Username.value = "";
+	form.Password.value = "";
+	form.Password2.value = "";
+	form.submit();
 }
 </script>
 </head>
@@ -85,18 +103,22 @@ function generatePassword(form) {
                     </td>
                     <td width="200"> 
                       <select name="CustomerGroup">
-                        <%	if (userLogin.getUsername().length() > 0) {
-		String groupID = userLogin.hasGroupID()? String.valueOf(userLogin.getGroupID()) : "";
-		String groupName = userLogin.hasGroupID()? AuthFuncs.getGroup(userLogin.getGroupID()).getGroupName() : "(none)";
+<%
+	if (login.getUsername().length() > 0) {
+		String groupID = login.hasGroupID()? String.valueOf(login.getGroupID()) : "";
+		String groupName = login.hasGroupID()? AuthFuncs.getGroup(login.getGroupID()).getGroupName() : "(none)";
 %>
                         <option value="<%= groupID %>"><%= groupName %></option>
-                        <%	} else {
+<%
+	}
+	else {
 		LiteStarsEnergyCompany liteEnergyCompany = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 		com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEnergyCompany.getResidentialCustomerGroups();
 		for (int i = 0; i < custGroups.length; i++) {
 %>
                         <option value="<%= custGroups[i].getGroupID() %>"><%= custGroups[i].getGroupName() %></option>
-                        <%		}
+<%
+		}
 	}
 %>
                       </select>
@@ -107,7 +129,7 @@ function generatePassword(form) {
                       <div align="right"></div>
                     </td>
                     <td width="200" class="TableCell"> 
-                      <input type="checkbox" name="Status" value="<%= StarsLoginStatus.ENABLED.toString() %>" <% if (userLogin.getStatus().getType() == StarsLoginStatus.ENABLED_TYPE) { %>checked<% } %>>
+                      <input type="checkbox" name="Status" value="<%= StarsLoginStatus.ENABLED.toString() %>" <% if (login.getStatus().getType() == StarsLoginStatus.ENABLED_TYPE) { %>checked<% } %>>
                       Login Enabled </td>
                   </tr>
                   <tr> 
@@ -115,7 +137,7 @@ function generatePassword(form) {
                       <div align="right">New User Name: </div>
                     </td>
                     <td width="200"> 
-                      <input type="text" name="Username" maxlength="20" size="20" value="<%= userLogin.getUsername() %>">
+                      <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>">
                     </td>
                   </tr>
                   <tr> 
@@ -142,20 +164,19 @@ function generatePassword(form) {
                   </tr>
                 </table>
               <br>
-              <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
-                <tr>
-                  <td width="186"> 
-                      <div align="right"> 
-                        <input type="submit" name="Submit" value="Save">
-                      </div>
-                  </td>
-                  <td width="194"> 
-                      <div align="left"> 
-                        <input type="reset" name="Reset" value="Reset">
-                      </div>
-                  </td>
-                </tr>
-              </table>
+                <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
+                  <tr> 
+                    <td width="40%" align="right"> 
+                      <input type="submit" name="Submit" value="Save">
+                    </td>
+                    <td width="20%" align="center"> 
+                      <input type="reset" name="Reset" value="Reset">
+                    </td>
+                    <td width="40%">
+                      <input type="button" name="Delete" value="Delete" onclick="deleteLogin(this.form)" <% if (userLogin == null) { %>disabled<% } %>>
+                    </td>
+                  </tr>
+                </table>
 			</form>
               <p>&nbsp;</p>
               </div>

@@ -29,14 +29,14 @@
 	else
 		account = StarsFactory.newStarsCustomerAccount();
 	
-	userLogin = new StarsUser();
+	StarsUser login = new StarsUser();
 	if (newAccount != null && newAccount.getStarsUpdateLogin() != null) {
-		userLogin.setUsername( newAccount.getStarsUpdateLogin().getUsername() );
-		userLogin.setPassword( newAccount.getStarsUpdateLogin().getPassword() );
+		login.setUsername( newAccount.getStarsUpdateLogin().getUsername() );
+		login.setPassword( newAccount.getStarsUpdateLogin().getPassword() );
 	}
 	else {
-		userLogin.setUsername( "" );
-		userLogin.setPassword( "" );
+		login.setUsername( "" );
+		login.setPassword( "" );
 	}
 	
 	AdditionalContact[] contacts = new AdditionalContact[3];
@@ -514,6 +514,11 @@ function confirmCancel() {
                 </tr>
               </table>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN %>">
+<%
+	LiteStarsEnergyCompany liteEnergyCompany = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
+	com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEnergyCompany.getResidentialCustomerGroups();
+	if (custGroups != null && custGroups.length > 0) {
+%>
               <table width="300" border="0" cellspacing="0" cellpadding="1">
                 <tr> 
                   <td width="100" class="TableCell">
@@ -521,15 +526,9 @@ function confirmCancel() {
                   </td>
                   <td width="200">
                     <select name="CustomerGroup">
-<%
-		LiteStarsEnergyCompany liteEnergyCompany = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
-		com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEnergyCompany.getResidentialCustomerGroups();
-		for (int i = 0; i < custGroups.length; i++) {
-%>
+<%		for (int i = 0; i < custGroups.length; i++) { %>
                       <option value="<%= custGroups[i].getGroupID() %>"><%= custGroups[i].getGroupName() %></option>
-<%
-		}
-%>
+<%		} %>
                     </select>
                   </td>
                 </tr>
@@ -538,7 +537,7 @@ function confirmCancel() {
                     <div align="right">User Name: </div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="Username" maxlength="20" size="20" value="<%= userLogin.getUsername() %>">
+                    <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>">
                   </td>
                 </tr>
                 <tr> 
@@ -546,7 +545,7 @@ function confirmCancel() {
                     <div align="right">Password:</div>
                   </td>
                   <td width="200"> 
-                    <input type="password" name="Password" maxlength="20" size="20" value="<%= userLogin.getPassword() %>">
+                    <input type="password" name="Password" maxlength="20" size="20">
                   </td>
                 </tr>
                 <tr> 
@@ -559,6 +558,9 @@ function confirmCancel() {
                 </tr>
               </table>
               <br>
+<%
+	}
+%>
 </cti:checkProperty>
 <% if (inWizard) { %>
               <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">

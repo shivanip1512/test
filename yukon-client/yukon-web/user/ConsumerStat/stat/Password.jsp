@@ -1,4 +1,13 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%
+	StarsUser login = userLogin;
+	if (login == null) {
+		login = new StarsUser();
+		login.setUsername( "" );
+		login.setPassword( "" );
+		login.setStatus(StarsLoginStatus.DISABLED);
+	}
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -62,7 +71,7 @@ function validate(form) {
 			
             <form method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="return validate(this)">
 			  <input type="hidden" name="action" value="UpdateLogin">
-			  <input type="hidden" name="Status" value="<%= userLogin.getStatus().toString() %>">
+			  <input type="hidden" name="Status" value="<%= login.getStatus().toString() %>">
 			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Password.jsp">
 			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Password.jsp">
                 <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
@@ -71,7 +80,7 @@ function validate(form) {
                       <div align="right">New User Name:</div>
                     </td>
                     <td width="200"> 
-                      <input type="text" name="Username" maxlength="20" size="20" value="<%= userLogin.getUsername() %>">
+                      <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>">
                     </td>
                   </tr>
                   <tr> 

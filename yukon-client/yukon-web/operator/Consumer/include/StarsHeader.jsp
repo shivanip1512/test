@@ -134,14 +134,7 @@
 			callHist = accountInfo.getStarsCallReportHistory();
 			serviceHist = accountInfo.getStarsServiceRequestHistory();
 			thermSchedules = accountInfo.getStarsSavedThermostatSchedules();
-			
 			userLogin = accountInfo.getStarsUser();
-			if (userLogin == null) {
-				userLogin = new StarsUser();
-				userLogin.setUsername("");
-				userLogin.setPassword("");
-				userLogin.setStatus(StarsLoginStatus.DISABLED);
-			}
 		}
 	}
 	
