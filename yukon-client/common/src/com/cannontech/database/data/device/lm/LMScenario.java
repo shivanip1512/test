@@ -105,22 +105,6 @@ public class LMScenario extends YukonPAObject implements com.cannontech.database
 			
 	}
 	
-	public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
-	{
-		com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
-		{
-			new com.cannontech.message.dispatch.message.DBChangeMsg(
-				getScenarioID().intValue(),
-				com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_LMSCENARIO_DB,
-				com.cannontech.message.dispatch.message.DBChangeMsg.CAT_LMSCENARIO,
-				com.cannontech.message.dispatch.message.DBChangeMsg.CAT_LMSCENARIO,
-				typeOfChange)
-		};
-
-
-		return msgs;
-	}
-	
 	public void initialize()
 	{
 	}
