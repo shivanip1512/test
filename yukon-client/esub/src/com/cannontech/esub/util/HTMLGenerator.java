@@ -12,7 +12,7 @@ import com.cannontech.esub.editor.Drawing;
  */
 public class HTMLGenerator {
 	private static final String header = 
-	"<html>\n<head><script language=\"JavaScript\" src=\"svgcheck.js\"></script><script language=\"VBScript\" src=\"svgcheck.vbs\"></script></head><script language=\"JavaScript\"><!-- checkAndGetSVGViewer(); // --></script>\n<BODY BGCOLOR=\"#000000\" LINK=\"#000000\" ALINK=\"#000000\" VLINK=\"#000000\">\n";
+	"<html>\n  <BODY BGCOLOR=\"#000000\" LINK=\"#000000\" ALINK=\"#000000\" VLINK=\"#000000\">\n";
 	
 	private static final String footer = 
 	"</html>\n";
@@ -28,7 +28,7 @@ public class HTMLGenerator {
 		String height = Integer.toString(d.getMetaElement().getDrawingHeight());
 		
 		w.write(header);
-		w.write("<embed src=\"" + svgFile + "\" name=\"SVGEmbed\" width=\"" + width + "\" height=\"" + height + "\" type=\"image/svg-xml\" pluginspage=\"http://www.adobe.com/svg/viewer/install\" wmode=\"transparent\" />");
+		w.write("<embed src=\"" + svgFile + "\" name=\"SVGEmbed\" width=\"100%\" height=\"100%\" type=\"image/svg-xml\" pluginspage=\"http://www.adobe.com/svg/viewer/install\" wmode=\"transparent\" />");
 		w.write(footer);
 	}
 
