@@ -375,10 +375,13 @@ public class UpdateApplianceAction implements ActionBase {
 		throws WebClientException, CommandExecutionException
 	{
 		LiteStarsAppliance liteApp = null;
+		int appIdx = 0;
+		
 		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
 			LiteStarsAppliance lApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
 			if (lApp.getApplianceID() == updateApp.getApplianceID()) {
 				liteApp = lApp;
+				appIdx = i;
 				break;
 			}
 		}
@@ -390,6 +393,8 @@ public class UpdateApplianceAction implements ActionBase {
 				(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
 		com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
     	
+    	if (updateApp.hasApplianceCategoryID())
+    		appDB.setApplianceCategoryID( new Integer(updateApp.getApplianceCategoryID()) );
 		appDB.setManufacturerID( new Integer(updateApp.getManufacturer().getEntryID()) );
 		appDB.setLocationID( new Integer(updateApp.getLocation().getEntryID()) );
 		appDB.setNotes( updateApp.getNotes() );
@@ -411,7 +416,15 @@ public class UpdateApplianceAction implements ActionBase {
 		Transaction.createTransaction(Transaction.UPDATE, appDB).execute();
 		StarsLiteFactory.setLiteStarsAppliance( liteApp, app );
 		
-		if (updateApp.getAirConditioner() != null && liteApp instanceof LiteStarsAppAirConditioner) {
+		if (updateApp.getAirConditioner() != null) {
+			if (!(liteApp instanceof LiteStarsAppAirConditioner)) {
+				unextendAppliance( liteApp );
+				LiteStarsAppliance liteApp2 = new LiteStarsAppAirConditioner();
+				copyLiteStarsAppliance( liteApp2, liteApp );
+				liteAcctInfo.getAppliances().set( appIdx, liteApp2 );
+				liteApp = liteApp2;
+			}
+			
 			ApplianceAirConditioner appAC = new ApplianceAirConditioner();
 			StarsLiteFactory.setApplianceAirConditioner( appAC, (LiteStarsAppAirConditioner) liteApp );
 			appAC.setTonnageID( new Integer(updateApp.getAirConditioner().getTonnage().getEntryID()) );
@@ -423,7 +436,15 @@ public class UpdateApplianceAction implements ActionBase {
 				appAC = (ApplianceAirConditioner) Transaction.createTransaction(Transaction.INSERT, appAC).execute();
 			StarsLiteFactory.setLiteAppAirConditioner( (LiteStarsAppAirConditioner) liteApp, appAC );
 		}
-		else if (updateApp.getWaterHeater() != null && liteApp instanceof LiteStarsAppWaterHeater) {
+		else if (updateApp.getWaterHeater() != null) {
+			if (!(liteApp instanceof LiteStarsAppWaterHeater)) {
+				unextendAppliance( liteApp );
+				LiteStarsAppliance liteApp2 = new LiteStarsAppWaterHeater();
+				copyLiteStarsAppliance( liteApp2, liteApp );
+				liteAcctInfo.getAppliances().set( appIdx, liteApp2 );
+				liteApp = liteApp2;
+			}
+			
 			ApplianceWaterHeater appWH = new ApplianceWaterHeater();
 			StarsLiteFactory.setApplianceWaterHeater( appWH, (LiteStarsAppWaterHeater) liteApp );
 			appWH.setNumberOfGallonsID( new Integer(updateApp.getWaterHeater().getNumberOfGallons().getEntryID()) );
@@ -439,7 +460,15 @@ public class UpdateApplianceAction implements ActionBase {
 				appWH = (ApplianceWaterHeater) Transaction.createTransaction(Transaction.INSERT, appWH).execute();
 			StarsLiteFactory.setLiteAppWaterHeater( (LiteStarsAppWaterHeater) liteApp, appWH );
 		}
-		else if (updateApp.getDualFuel() != null && liteApp instanceof LiteStarsAppDualFuel) {
+		else if (updateApp.getDualFuel() != null) {
+			if (!(liteApp instanceof LiteStarsAppDualFuel)) {
+				unextendAppliance( liteApp );
+				LiteStarsAppliance liteApp2 = new LiteStarsAppDualFuel();
+				copyLiteStarsAppliance( liteApp2, liteApp );
+				liteAcctInfo.getAppliances().set( appIdx, liteApp2 );
+				liteApp = liteApp2;
+			}
+			
 			ApplianceDualFuel appDF = new ApplianceDualFuel();
 			StarsLiteFactory.setApplianceDualFuel( appDF, (LiteStarsAppDualFuel) liteApp );
 			appDF.setSwitchOverTypeID( new Integer(updateApp.getDualFuel().getSwitchOverType().getEntryID()) );
@@ -455,7 +484,15 @@ public class UpdateApplianceAction implements ActionBase {
 				appDF = (ApplianceDualFuel) Transaction.createTransaction(Transaction.INSERT, appDF).execute();
 			StarsLiteFactory.setLiteAppDualFuel( (LiteStarsAppDualFuel) liteApp, appDF );
 		}
-		else if (updateApp.getGenerator() != null && liteApp instanceof LiteStarsAppGenerator) {
+		else if (updateApp.getGenerator() != null) {
+			if (!(liteApp instanceof LiteStarsAppGenerator)) {
+				unextendAppliance( liteApp );
+				LiteStarsAppliance liteApp2 = new LiteStarsAppGenerator();
+				copyLiteStarsAppliance( liteApp2, liteApp );
+				liteAcctInfo.getAppliances().set( appIdx, liteApp2 );
+				liteApp = liteApp2;
+			}
+			
 			ApplianceGenerator appGen = new ApplianceGenerator();
 			StarsLiteFactory.setApplianceGenerator( appGen, (LiteStarsAppGenerator) liteApp );
 			appGen.setTransferSwitchTypeID( new Integer(updateApp.getGenerator().getTransferSwitchType().getEntryID()) );
@@ -479,7 +516,15 @@ public class UpdateApplianceAction implements ActionBase {
 				appGen = (ApplianceGenerator) Transaction.createTransaction(Transaction.INSERT, appGen).execute();
 			StarsLiteFactory.setLiteAppGenerator( (LiteStarsAppGenerator) liteApp, appGen );
 		}
-		else if (updateApp.getGrainDryer() != null && liteApp instanceof LiteStarsAppGrainDryer) {
+		else if (updateApp.getGrainDryer() != null) {
+			if (!(liteApp instanceof LiteStarsAppGrainDryer)) {
+				unextendAppliance( liteApp );
+				LiteStarsAppliance liteApp2 = new LiteStarsAppGrainDryer();
+				copyLiteStarsAppliance( liteApp2, liteApp );
+				liteAcctInfo.getAppliances().set( appIdx, liteApp2 );
+				liteApp = liteApp2;
+			}
+			
 			ApplianceGrainDryer appGD = new ApplianceGrainDryer();
 			StarsLiteFactory.setApplianceGrainDryer( appGD, (LiteStarsAppGrainDryer) liteApp );
 			appGD.setDryerTypeID( new Integer(updateApp.getGrainDryer().getDryerType().getEntryID()) );
@@ -494,7 +539,15 @@ public class UpdateApplianceAction implements ActionBase {
 				appGD = (ApplianceGrainDryer) Transaction.createTransaction(Transaction.INSERT, appGD).execute();
 			StarsLiteFactory.setLiteAppGrainDryer( (LiteStarsAppGrainDryer) liteApp, appGD );
 		}
-		else if (updateApp.getStorageHeat() != null && liteApp instanceof LiteStarsAppStorageHeat) {
+		else if (updateApp.getStorageHeat() != null) {
+			if (!(liteApp instanceof LiteStarsAppStorageHeat)) {
+				unextendAppliance( liteApp );
+				LiteStarsAppliance liteApp2 = new LiteStarsAppStorageHeat();
+				copyLiteStarsAppliance( liteApp2, liteApp );
+				liteAcctInfo.getAppliances().set( appIdx, liteApp2 );
+				liteApp = liteApp2;
+			}
+			
 			ApplianceStorageHeat appSH = new ApplianceStorageHeat();
 			StarsLiteFactory.setApplianceStorageHeat( appSH, (LiteStarsAppStorageHeat) liteApp );
 			appSH.setStorageTypeID( new Integer(updateApp.getStorageHeat().getStorageType().getEntryID()) );
@@ -513,7 +566,15 @@ public class UpdateApplianceAction implements ActionBase {
 				appSH = (ApplianceStorageHeat) Transaction.createTransaction(Transaction.INSERT, appSH).execute();
 			StarsLiteFactory.setLiteAppStorageHeat( (LiteStarsAppStorageHeat) liteApp, appSH );
 		}
-		else if (updateApp.getHeatPump() != null && liteApp instanceof LiteStarsAppHeatPump) {
+		else if (updateApp.getHeatPump() != null) {
+			if (!(liteApp instanceof LiteStarsAppHeatPump)) {
+				unextendAppliance( liteApp );
+				LiteStarsAppliance liteApp2 = new LiteStarsAppHeatPump();
+				copyLiteStarsAppliance( liteApp2, liteApp );
+				liteAcctInfo.getAppliances().set( appIdx, liteApp2 );
+				liteApp = liteApp2;
+			}
+			
 			ApplianceHeatPump appHP = new ApplianceHeatPump();
 			StarsLiteFactory.setApplianceHeatPump( appHP, (LiteStarsAppHeatPump) liteApp );
 			appHP.setPumpTypeID( new Integer(updateApp.getHeatPump().getPumpType().getEntryID()) );
@@ -530,7 +591,15 @@ public class UpdateApplianceAction implements ActionBase {
 				appHP = (ApplianceHeatPump) Transaction.createTransaction(Transaction.INSERT, appHP).execute();
 			StarsLiteFactory.setLiteAppHeatPump( (LiteStarsAppHeatPump) liteApp, appHP );
 		}
-		else if (updateApp.getIrrigation() != null && liteApp instanceof LiteStarsAppIrrigation) {
+		else if (updateApp.getIrrigation() != null) {
+			if (!(liteApp instanceof LiteStarsAppIrrigation)) {
+				unextendAppliance( liteApp );
+				LiteStarsAppliance liteApp2 = new LiteStarsAppIrrigation();
+				copyLiteStarsAppliance( liteApp2, liteApp );
+				liteAcctInfo.getAppliances().set( appIdx, liteApp2 );
+				liteApp = liteApp2;
+			}
+			
 			ApplianceIrrigation appIrr = new ApplianceIrrigation();
 			StarsLiteFactory.setApplianceIrrigation( appIrr, (LiteStarsAppIrrigation) liteApp );
 			appIrr.setIrrigationTypeID( new Integer(updateApp.getIrrigation().getIrrigationType().getEntryID()) );
@@ -546,6 +615,65 @@ public class UpdateApplianceAction implements ActionBase {
 				appIrr = (ApplianceIrrigation) Transaction.createTransaction(Transaction.INSERT, appIrr).execute();
 			StarsLiteFactory.setLiteAppIrrigation( (LiteStarsAppIrrigation) liteApp, appIrr );
 		}
+	}
+	
+	private static void unextendAppliance(LiteStarsAppliance liteApp) throws CommandExecutionException {
+		if (liteApp instanceof LiteStarsAppAirConditioner) {
+			ApplianceAirConditioner appAC = new ApplianceAirConditioner();
+			appAC.setApplianceID( new Integer(liteApp.getApplianceID()) );
+			Transaction.createTransaction(Transaction.DELETE, appAC).execute();
+		}
+		else if (liteApp instanceof LiteStarsAppWaterHeater) {
+			ApplianceWaterHeater appWH = new ApplianceWaterHeater();
+			appWH.setApplianceID( new Integer(liteApp.getApplianceID()) );
+			Transaction.createTransaction(Transaction.DELETE, appWH).execute();
+		}
+		else if (liteApp instanceof LiteStarsAppDualFuel) {
+			ApplianceDualFuel appDF = new ApplianceDualFuel();
+			appDF.setApplianceID( new Integer(liteApp.getApplianceID()) );
+			Transaction.createTransaction(Transaction.DELETE, appDF).execute();
+		}
+		else if (liteApp instanceof LiteStarsAppGenerator) {
+			ApplianceGenerator appGen = new ApplianceGenerator();
+			appGen.setApplianceID( new Integer(liteApp.getApplianceID()) );
+			Transaction.createTransaction(Transaction.DELETE, appGen).execute();
+		}
+		else if (liteApp instanceof LiteStarsAppGrainDryer) {
+			ApplianceGrainDryer appGD = new ApplianceGrainDryer();
+			appGD.setApplianceID( new Integer(liteApp.getApplianceID()) );
+			Transaction.createTransaction(Transaction.DELETE, appGD).execute();
+		}
+		else if (liteApp instanceof LiteStarsAppStorageHeat) {
+			ApplianceStorageHeat appSH = new ApplianceStorageHeat();
+			appSH.setApplianceID( new Integer(liteApp.getApplianceID()) );
+			Transaction.createTransaction(Transaction.DELETE, appSH).execute();
+		}
+		else if (liteApp instanceof LiteStarsAppHeatPump) {
+			ApplianceHeatPump appHP = new ApplianceHeatPump();
+			appHP.setApplianceID( new Integer(liteApp.getApplianceID()) );
+			Transaction.createTransaction(Transaction.DELETE, appHP).execute();
+		}
+		else if (liteApp instanceof LiteStarsAppIrrigation) {
+			ApplianceIrrigation appIrr = new ApplianceIrrigation();
+			appIrr.setApplianceID( new Integer(liteApp.getApplianceID()) );
+			Transaction.createTransaction(Transaction.DELETE, appIrr).execute();
+		}
+	}
+	
+	private static void copyLiteStarsAppliance(LiteStarsAppliance liteAppNew, LiteStarsAppliance liteAppOld) {
+		liteAppNew.setApplianceID( liteAppOld.getApplianceID() );
+		liteAppNew.setAccountID( liteAppOld.getAccountID() );
+		liteAppNew.setApplianceCategoryID( liteAppOld.getApplianceCategoryID() );
+		liteAppNew.setLmProgramID( liteAppOld.getLmProgramID() );
+		liteAppNew.setYearManufactured( liteAppOld.getYearManufactured() );
+		liteAppNew.setManufacturerID( liteAppOld.getManufacturerID() );
+		liteAppNew.setLocationID( liteAppOld.getLocationID() );
+		liteAppNew.setNotes( liteAppOld.getNotes() );
+		liteAppNew.setModelNumber( liteAppOld.getModelNumber() );
+		liteAppNew.setKWCapacity( liteAppOld.getKWCapacity() );
+		liteAppNew.setEfficiencyRating( liteAppOld.getEfficiencyRating() );
+		liteAppNew.setInventoryID( liteAppOld.getInventoryID() );
+		liteAppNew.setAddressingGroupID( liteAppOld.getAddressingGroupID() );
 	}
 
 }
