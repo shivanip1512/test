@@ -66,7 +66,7 @@ import com.cannontech.util.ServletUtil;
 
 public class ReportClient extends javax.swing.JPanel implements java.awt.event.ActionListener {
 	
-	public static final URL ANALYSIS_GIF = ReportClient.class.getResource("/AnalysisIcon.gif");
+	public static final URL ANALYSIS_GIF = ReportClient.class.getResource("/ReportingIcon.gif");
 	private String HELP_FILE = CtiUtilities.getHelpDirPath() + "Yukon Reporting Help.chm";
 		
 	private javax.swing.JSplitPane ivjLeftRightSplitPane = null;
