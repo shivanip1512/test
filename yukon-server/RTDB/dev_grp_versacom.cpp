@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/15 14:08:12 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/02/04 17:24:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -227,7 +227,7 @@ RWCString CtiDeviceGroupVersacom::getPutConfigAssignment(UINT level)
 {
     char assign[128];
 
-    sprintf(assign, "assign u%d s%d c0x%x d0x%x",
+    sprintf(assign, "versacom assign u%d s%d c0x%x d0x%x",
             VersacomGroup.getUtilityID(),
             VersacomGroup.getSection(),
             convertHumanFormAddressToVersacom(VersacomGroup.getClass()),
