@@ -1,3 +1,7 @@
+#pragma warning( disable : 4786)
+#ifndef __ANSI_BILLING_TABLE_H__
+#define __ANSI_BILLING_TABLE_H__
+
 /*---------------------------------------------------------------------------------*
 *
 * File:   ansi_billing_table
@@ -8,21 +12,23 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/03/13 19:35:44 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_billing_table..h-arc  $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/04/25 15:13:45 $
+*    History: 
+      $Log: ansi_billing_table.h,v $
+      Revision 1.3  2003/04/25 15:13:45  dsutton
+      Update of the base protocol pieces taking into account the manufacturer
+      tables, etc.  New starting point
+
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
-#ifndef __ANSI_BILLING_TABLE_H__
-#define __ANSI_BILLING_TABLE_H__
-#pragma warning( disable : 4786)
-
-
 #include "dlldefs.h"
 #include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
+#include "std_ansi_tbl_base.h"
 
 #define BCD unsigned char
 
@@ -41,6 +47,17 @@
       int      nbr_coincidents;
       int      nbr_occurances;
 
+      int      nbr_tiers;
+      bool     demand_reset_flag;
+      bool     time_data_flag;
+      bool     cum_demand_flag;
+      bool     cont_cum_demand_flag;
+/*
+      //from tbl 12
+      int      id_code;
+      int      time_base;
+      int      multiplier;
+*/
       //from tbl 11
       int      nbr_uom_entries;
       int      nbr_demand_ctrl_entries;
@@ -55,23 +72,48 @@
       int      ni_format2;
    };
 
-
 #pragma pack( pop )
 
-class IM_EX_PROT CtiAnsiBillingTable
+class IM_EX_PROT CtiAnsiBillingTable : public CtiAnsiTableBase
 {
 protected:
 
-   BILLING_TABLE    *_ansiBillingTable;
+   BILLING_TABLE    _billingTable;
 
 private:
 
 public:
 
+   int copyDataOut( BYTE *dest );
    int getTableSize( void );
 
+   int getDemandSelectSize( void );
+   int getTotDataBlockSize( void );
+   int getNumSummations( void );
+   int getNumDemands( void );
+   int getNumCoins( void );
+   int getNumOccurs( void );
+   int getNumUOMEntries( void );
+   int getNumDemandCntlEntries( void );
+   int getDataCntlLength( void );
+   int getNumDataCntlEntries( void );
+   int getConstantEntries( void );
+   int getTmFormat( void );
+   int getIntFormat( void );
+   int getNiFormat1( void );
+   int getNiFormat2( void );
+   int getNumTiers( void );
+
+   bool getDemandResetFlag( void );
+   bool getTimeDateFlag( void );
+   bool getCumDemandFlag( void );
+   bool getContCumDemandFlag( void );
+
    CtiAnsiBillingTable( int demSelSize, int totDataBlkSize, int numSums, int numDemds, int numCoins, int numOccurs, int uom, int demandCntl,
-                        int dataCntlLen, int dataCntl, int constants, int tFormat, int iFormat, int ni1Format, int ni2Format );
+                        int dataCntlLen, int dataCntl, int constants, int tFormat, int iFormat, int ni1Format, int ni2Format, int nbrtiers,
+                        bool dreset, bool timedata, bool cumdemand, bool contcumdemand );
+
+   CtiAnsiBillingTable( BYTE *blob );
 
    virtual ~CtiAnsiBillingTable();
 
@@ -79,3 +121,5 @@ public:
 };
 
 #endif // #ifndef __ANSI_BILLING_TABLE_H__
+
+
