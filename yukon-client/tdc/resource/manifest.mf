@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.tdc.TDCMainFrame
-Class-Path: ./ common.jar cbc.jar loadcontrol.jar macs.jar rwav.jar jcfield401k.jar jcpagelayout450k.jar classes12.zip SqlServer.jar ../config/ ../log/ ../export/
+Class-Path: ./ common.jar cbc.jar loadcontrol.jar log4j-1.2.4.jar macs.jar rwav.jar jcfield401k.jar jcpagelayout450k.jar classes12.zip SqlServer.jar ../config/ ../log/ ../export/
