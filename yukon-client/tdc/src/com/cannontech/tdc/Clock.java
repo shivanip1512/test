@@ -13,14 +13,14 @@ public class Clock implements Runnable
 ;
 	
 /**
- * Another w00t constructor comment.
+ * yet another constructor comment.
  */
 public Clock( TDCMainPanel origin ) {
 	super();
 
 	caller = origin;
 	
-	timer = new Thread( this ); //, "TDCClock" );
+	timer = new Thread( this, "TDCClock" );
 	timer.setDaemon( true );
 	timer.start();
 }
