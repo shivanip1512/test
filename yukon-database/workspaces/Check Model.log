@@ -46,8 +46,6 @@ Checking index of table
 -	Index code maximum length
 -	Existence of index column
 -	Index inclusion
-	Warning	The following index includes another one:
-		-> Indx_DISPLAY2WAYDATA_PK
 Checking key of table
 -	Key name uniqueness
 -	Key code uniqueness
@@ -72,5 +70,5 @@ Checking domain ...
 Checking user ...
 Checking procedure ...
 
-0 error(s),  14 warning(s).
+0 error(s),  13 warning(s).
 The Physical Data Model is correct, no errors were found.

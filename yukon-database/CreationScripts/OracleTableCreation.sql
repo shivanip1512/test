@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     9/12/2003 10:04:26 AM                        */
+/* Created on:     9/17/2003 1:55:24 PM                         */
 /*==============================================================*/
 
 
@@ -1621,15 +1621,6 @@ alter table DISPLAY2WAYDATA
 
 
 /*==============================================================*/
-/* Index: Index_DisNum                                          */
-/*==============================================================*/
-create index Index_DisNum on DISPLAY2WAYDATA (
-   DISPLAYNUM ASC
-)
-/
-
-
-/*==============================================================*/
 /* Table : DISPLAYCOLUMNS                                       */
 /*==============================================================*/
 
@@ -2220,10 +2211,12 @@ create table DynamicTags  (
    InstanceID           NUMBER                           not null,
    PointID              NUMBER                           not null,
    TagID                NUMBER                           not null,
+   UserName             VARCHAR2(60)                     not null,
+   Action               VARCHAR2(20)                     not null,
    Description          VARCHAR2(120)                    not null,
    TagTime              DATE                             not null,
-   RefStr               VARCHAR2(60),
-   ForStr               VARCHAR2(60)
+   RefStr               VARCHAR2(60)                     not null,
+   ForStr               VARCHAR2(60)                     not null
 )
 /
 
@@ -4318,6 +4311,8 @@ create table TagLog  (
    LogID                NUMBER                           not null,
    PointID              NUMBER                           not null,
    TagID                NUMBER                           not null,
+   UserName             VARCHAR2(60)                     not null,
+   Action               VARCHAR2(20)                     not null,
    Description          VARCHAR2(120)                    not null,
    TagTime              DATE                             not null,
    RefStr               VARCHAR2(60)                     not null,
@@ -4342,9 +4337,7 @@ create table Tags  (
    TagLevel             NUMBER                           not null,
    Inhibit              CHAR(1)                          not null,
    ColorID              NUMBER                           not null,
-   ImageID              NUMBER                           not null,
-   RefStr               VARCHAR2(60)                     not null,
-   ForStr               VARCHAR2(60)                     not null
+   ImageID              NUMBER                           not null
 )
 /
 
@@ -4616,10 +4609,9 @@ insert into yukongrouprole values (526,-300,-400,-40006,'true');
 insert into yukongrouprole values (527,-300,-400,-40007,'true');
 insert into yukongrouprole values (528,-300,-400,-40008,'true');
 insert into yukongrouprole values (529,-300,-400,-40009,'true');
+insert into yukongrouprole values (530,-300,-400,-40010,'true');
 insert into yukongrouprole values (550,-300,-400,-40050,'false');
 insert into yukongrouprole values (551,-300,-400,-40051,'false');
-insert into yukongrouprole values (552,-300,-400,-40052,'false');
-insert into yukongrouprole values (553,-300,-400,-40053,'false');
 insert into yukongrouprole values (554,-300,-400,-40054,'false');
 insert into yukongrouprole values (600,-300,-400,-40100,'(none)');
 insert into yukongrouprole values (601,-300,-400,-40101,'(none)');
@@ -4674,6 +4666,7 @@ insert into yukongrouprole values (733,-301,-201,-20113,'true');
 insert into yukongrouprole values (734,-301,-201,-20114,'true');
 insert into yukongrouprole values (735,-301,-201,-20115,'true');
 insert into yukongrouprole values (736,-301,-201,-20116,'true');
+insert into yukongrouprole values (737,-301,-201,-20117,'true');
 insert into yukongrouprole values (750,-301,-201,-20150,'true');
 insert into yukongrouprole values (751,-301,-201,-20151,'true');
 insert into yukongrouprole values (752,-301,-201,-20152,'false');
@@ -4847,6 +4840,9 @@ insert into YukonRole values(-205,'Energy Buyback','Operator','Operator access t
 insert into YukonRole values(-206,'Esubstation Drawings','Operator','Operator access to esubstation drawings');
 insert into YukonRole values(-207,'Odds For Control','Operator','Operator access to odds for control');
 
+/* Inventory Role */
+insert into YukonRole values (-209,'Inventory','Operator','Operator Access to hardware inventory');
+
 /* CI customer roles */
 insert into YukonRole values(-300,'Direct Loadcontrol','CICustomer','Customer access to commercial/industrial customer direct loadcontrol');
 insert into YukonRole values(-301,'Curtailment','CICustomer','Customer access to commercial/industrial customer direct curtailment');
@@ -4962,7 +4958,7 @@ insert into YukonRoleProperty values(-10800,-108,'home_url','/default.jsp','The 
 insert into YukonRoleProperty values(-10801,-108,'client_log_level','INFO','Sets the logging level for the application.  Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
 insert into yukonroleproperty values (-10802, -108,'style_sheet','CannonStyle.css','The web client cascading style sheet.');
 insert into yukonroleproperty values (-10803, -108,'nav_bullet_selected','Bullet.gif','The bullet used when an item in the nav is selected.');
-insert into yukonroleproperty values (-10804,-108,'nav_bullet','Bullet2.gif','The bullet used when an item in the nav is NOT selected.');
+insert into YukonRoleProperty values (-10804,-108,'nav_bullet_expand','BulletExpand.gif','The bullet used when an item in the nav can be expanded to show submenu.');
 insert into yukonroleproperty values (-10805,-108,'header_logo','DemoHeader.gif','The main header logo');
 insert into YukonRoleProperty values(-10806,-108,'log_off_url','(none)','The url to take the user after logging off the Yukon web application');
 
@@ -4984,26 +4980,12 @@ insert into YukonRoleProperty values(-20113,-201,'Hardwares Thermostat','true','
 insert into YukonRoleProperty values(-20114,-201,'Work Orders','false','Controls whether to enable the service request feature');
 insert into YukonRoleProperty values(-20115,-201,'Admin Change Login','true','Controls whether to enable the changing customer login feature');
 insert into YukonRoleProperty values(-20116,-201,'Admin FAQ','false','Controls whether to show customer FAQs');
-
-insert into YukonRoleProperty values(-20130,-201,'Super Operator','false','Used for some testing functions (not recommended)');
-insert into YukonRoleProperty values(-20131,-201,'New Account Wizard','true','Controls whether to enable the new account wizard');
-insert into YukonRoleProperty values(-20132,-201,'Customized FAQ Link','false','Controls whether the FAQ link links to a customized location provided by the energy company');
+insert into YukonRoleProperty values(-20117,-201,'Thermostats All','false','Controls whether to allow programming multiple thermostats at one time');
 
 /* Operator Consumer Info Role Properties */
 insert into YukonRoleProperty values(-20150,-201,'Super Operator','false','Used for some testing functions (not recommended)');
 insert into YukonRoleProperty values(-20151,-201,'New Account Wizard','true','Controls whether to enable the new account wizard');
-insert into YukonRoleProperty values(-20152,-201,'Customized FAQ Link','false','Controls whether the FAQ link links to a customized location provided by the energy company');
-
-insert into YukonRoleProperty values(-20153,-201,'Programs Control History Title','PROGRAMS - CONTROL SUMMARY','Title of the programs control summary page');
-insert into YukonRoleProperty values(-20154,-201,'Program Control History Title','PROGRAM - CONTROL HISTORY','Title of the control history page of a particular program');
-insert into YukonRoleProperty values(-20155,-201,'Program Control Summary Title','PROGRAM - CONTROL SUMMARY','Title of the control summary page of a particular program');
-insert into YukonRoleProperty values(-20156,-201,'Programs Enrollment Title','PROGRAMS - ENROLLMENT','Title of the programs enrollment page');
-insert into YukonRoleProperty values(-20157,-201,'Programs Opt Out Title','PROGRAMS - OPT OUT','Title of the programs opt out page');
-insert into YukonRoleProperty values(-20158,-201,'Change Login Title','ADMINISTRATION - CHANGE LOGIN','Title of the change login page');
-insert into YukonRoleProperty values(-20159,-201,'Programs Control History Label','Control History','Text of the programs control history link');
-insert into YukonRoleProperty values(-20160,-201,'Programs Enrollment Label','Enrollment','Text of the programs enrollment link');
-insert into YukonRoleProperty values(-20161,-201,'Programs Opt Out Label','Opt Out','Text of the programs opt out link');
-insert into YukonRoleProperty values(-20162,-201,'Opt Out Description','If you would like to temporarily opt out of all programs, select the time frame from the drop-down box below, then select Submit.','Description on the programs opt out page');
+insert into YukonRoleProperty values(-20152,-201,'Import Customer Account','false','Controls whether to enable the customer account importing feature');
 
 /* Operator Administrator Role Properties */
 insert into YukonRoleProperty values(-20000,-200,'Config Energy Company','false','Controls whether to allow configuring the energy company');
@@ -5031,7 +5013,7 @@ insert into YukonRoleProperty values(-20602,-206,'Control','false','Controls con
 /* Odds For Control Role Properties */
 insert into YukonRoleProperty values(-20700,-207,'Odds For Control Label','Odds for Control','The operator specific name for odds for control');
 
-/* Operator Hardware Inventory Role Properties */
+/* Operator Consumer Info Role Properties Part II */
 insert into YukonRoleProperty values(-20800,-201,'Link FAQ','FAQ.jsp','The customized FAQ link');
 insert into YukonRoleProperty values(-20810,-201,'Text Control','control','Term for control');
 insert into YukonRoleProperty values(-20813,-201,'Text Opt Out Noun','opt out','Noun form of the term for opt out');
@@ -5054,7 +5036,11 @@ insert into YukonRoleProperty values(-20855,-201,'Title Thermostat Schedule','Sc
 insert into YukonRoleProperty values(-20856,-201,'Title Thermostat Manual','Manual','Title of the thermostat manual page');
 insert into YukonRoleProperty values(-20870,-201,'Description Opt Out','If you would like to temporarily opt out of all programs, select the time frame from the drop-down box below, then select Submit.','Description on the programs opt out page');
 
-
+/* Operator Hardware Inventory Role Properties */
+insert into YukonRoleProperty values(-20900,-209,'Show All Inventory','true','Controls whether to allow showing all inventory');
+insert into YukonRoleProperty values(-20901,-209,'Add SN Range','true','Controls whether to allow adding hardwares by serial number range');
+insert into YukonRoleProperty values(-20902,-209,'Update SN Range','true','Controls whether to allow updating hardwares by serial number range');
+insert into YukonRoleProperty values(-20903,-209,'Config SN Range','true','Controls whether to allow configuring hardwares by serial number range');
 
 /* CICustomer Direct Loadcontrol Role Properties */
 insert into YukonRoleProperty values(-30000,-300,'Direct Loadcontrol Label','Direct Control','The customer specific name for direct loadcontrol');
@@ -5091,29 +5077,12 @@ insert into YukonRoleProperty values(-40006,-400,'Hardwares Thermostat','true','
 insert into YukonRoleProperty values(-40007,-400,'Questions Utility','true','Controls whether to show the contact information of the energy company');
 insert into YukonRoleProperty values(-40008,-400,'Questions FAQ','true','Controls whether to show customer FAQs');
 insert into YukonRoleProperty values(-40009,-400,'Admin Change Login','true','Controls whether to allow customers to change their own login');
-insert into YukonRoleProperty values(-40030,-400,'Notification on General Page','false','Controls whether to show the notification email box on the general page (useful only when the programs enrollment feature is not selected)');
-insert into YukonRoleProperty values(-40031,-400,'Hide Opt Out Box','true','Controls whether to show the opt out box on the programs opt out page');
-insert into YukonRoleProperty values(-40032,-400,'Customized FAQ Link','false','Controls whether the FAQ link links to a customized location provided by the energy company');
-insert into YukonRoleProperty values(-40033,-400,'Customized Utility Email Link','false','Controls whether the utility email links to a customized location provided by the energy company');
+insert into YukonRoleProperty values(-40010,-400,'Thermostats All','false','Controls whether to allow programming multiple thermostats at one time');
 insert into YukonRoleProperty values(-40050,-400,'Notification on General Page','false','Controls whether to show the notification email box on the general page (useful only when the programs enrollment feature is not selected)');
 insert into YukonRoleProperty values(-40051,-400,'Hide Opt Out Box','false','Controls whether to show the opt out box on the programs opt out page');
-insert into YukonRoleProperty values(-40052,-400,'Customized FAQ Link','false','Controls whether the FAQ link links to a customized location provided by the energy company');
-insert into YukonRoleProperty values(-40053,-400,'Customized Utility Email Link','false','Controls whether the utility email links to a customized location provided by the energy company');
+
 insert into YukonRoleProperty values(-40054,-400,'Disable Program Signup','false','Controls whether to prevent the customers from enrolling in or out of the programs');
-insert into YukonRoleProperty values(-40055,-400,'Recommended Settings Button','Recommended Settings','The energy company specific term for Recommended Settings button on the thermostat schedule page');
-insert into YukonRoleProperty values(-40056,-400,'General Title','WELCOME TO ENERGY COMPANY SERVICES!','Title of the general page');
-insert into YukonRoleProperty values(-40057,-400,'Programs Control History Title','PROGRAMS - CONTROL SUMMARY','Title of the programs control summary page');
-insert into YukonRoleProperty values(-40058,-400,'Program Control History Title','PROGRAM - CONTROL HISTORY','Title of the control history page of a particular program');
-insert into YukonRoleProperty values(-40059,-400,'Program Control Summary Title','PROGRAM - CONTROL SUMMARY','Title of the control summary page of a particular program');
-insert into YukonRoleProperty values(-40060,-400,'Programs Enrollment Title','PROGRAMS - ENROLLMENT','Title of the programs enrollment page');
-insert into YukonRoleProperty values(-40061,-400,'Programs Opt Out Title','PROGRAMS - OPT OUT','Title of the programs opt out page');
-insert into YukonRoleProperty values(-40062,-400,'Utility Title','QUESTIONS - UTILITY','Title of the utility page');
-insert into YukonRoleProperty values(-40063,-400,'Change Login Title','ADMINISTRATION - CHANGE LOGIN','Title of the change login page');
-insert into YukonRoleProperty values(-40064,-400,'Programs Control History Label','Control History','Text of the programs control history link');
-insert into YukonRoleProperty values(-40065,-400,'Programs Enrollment Label','Enrollment','Text of the programs enrollment link');
-insert into YukonRoleProperty values(-40066,-400,'Programs Opt Out Label','Opt Out','Text of the programs opt out link');
-insert into YukonRoleProperty values(-40067,-400,'General Description','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','Description on the general page');
-insert into YukonRoleProperty values(-40068,-400,'Opt Out Description','If you would like to temporarily opt out of all programs, select the time frame from the drop-down box below, then select Submit.','Description on the programs opt out page');
+
 insert into YukonRoleProperty values(-40100,-400,'Link FAQ','FAQ.jsp','The customized FAQ link');
 insert into YukonRoleProperty values(-40101,-400,'Link Utility Email','FAQ.jsp','The customized utility email');
 insert into YukonRoleProperty values(-40110,-400,'Text Control','control','Term for control');
