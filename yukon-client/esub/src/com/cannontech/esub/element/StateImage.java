@@ -21,7 +21,7 @@ import com.loox.jloox.LxAbstractImage;
  * Creation date: (1/8/2002 1:47:20 PM)
  * @author: Aaron Lauinger
  */
-public class StateImage extends LxAbstractImage implements DrawingElement {
+public class StateImage extends LxAbstractImage implements DrawingElement, YukonImageElement  {
 		
 	private static final String ELEMENT_ID = "stateImage";
 	private static final int CURRENT_VERSION = 1;
@@ -98,18 +98,23 @@ public void setPointID(int pointID) {
 	}
 	
 	public String getImageName() {
-		String imageName = Util.DEFAULT_IMAGE_NAME;
+		LiteYukonImage lyi = getYukonImage();
+		if(lyi != null) {
+			return lyi.getImageName();
+		}
+		else {
+			return Util.DEFAULT_IMAGE_NAME;
+		}
+	}
 		
+	public LiteYukonImage getYukonImage() {
 		LiteState state = getCurrentState();
 		if(state != null) {
 			int imageID = state.getImageID();
-			LiteYukonImage lyi = YukonImageFuncs.getLiteYukonImage(imageID);
-			if(lyi != null) {
-				imageName = lyi.getImageName();
-			}
+			return YukonImageFuncs.getLiteYukonImage(imageID);
 		}
-			return imageName;		
-		}
+		return null;
+	}
 	/**
 	 * Updates the elements actual image with the currentStates
 	 * Displays the default image if there is no current state

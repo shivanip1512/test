@@ -21,6 +21,8 @@ import com.cannontech.common.util.FileFilter;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.PointSelectionPanel;
 import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxRotatable;
@@ -382,14 +384,14 @@ public class Util {
 			dispatchConnection.setPort(port);
 			dispatchConnection.setAutoReconnect(true);
 			dispatchConnection.setRegistrationMsg(reg);
-
+			
 			try {
 				dispatchConnection.connectWithoutWait();
 			} catch (Exception e) {
 				com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
 			}
 		}
-
+		
 		return dispatchConnection;
 	}
 
@@ -434,5 +436,37 @@ public class Util {
 		return pathStr;		
 	}
 	
-
+	/**
+	 * Utility program to export jlx files to their html, svg, and image components for static viewing.
+	 * @param inDir
+	 * @param outDir
+	 * @throws IOException
+	 */
+	public static void doExport(File inDir, File outDir) throws IOException {
+		doExport(new Drawing(), inDir, outDir);
+	}	
+		
+	private static void doExport(Drawing drawing, File inDir, File outDir) throws IOException {
+		File[] files = inDir.listFiles();
+		for(int i = 0; i < files.length; i++) {
+			File f = files[i];
+			if(f.isDirectory()) {				
+				File d = new File(outDir.getCanonicalPath() + File.separatorChar + f.getName());
+				d.mkdir();
+				doExport(f, d);
+			}
+			else {
+				if(f.getName().endsWith(".jlx")) {
+					long start = System.currentTimeMillis();
+					//Drawing drawing = new Drawing();
+					CTILogger.info(f.getCanonicalPath() + " -> " + outDir.getCanonicalPath());
+					drawing.load(f.getCanonicalPath());
+					DrawingUpdater updater = new DrawingUpdater(drawing);
+					updater.updateDrawing();
+					drawing.exportAs(outDir.getCanonicalPath() + File.separatorChar + f.getName());
+				}
+			}
+	}
+		
+	}
 }

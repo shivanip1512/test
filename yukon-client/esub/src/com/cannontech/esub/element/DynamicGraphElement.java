@@ -222,7 +222,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 		
 		if( getGraphDefinitionID() == INVALID_GRAPH_DEFINITION ) 
 			return;
-			
+		
 		com.cannontech.database.data.graph.GraphDefinition gDef = new com.cannontech.database.data.graph.GraphDefinition();
 		gDef.getGraphDefinition().setGraphDefinitionID(new Integer(getGraphDefinitionID()));
 		
@@ -248,8 +248,8 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 			resetDisplayRange();
 			Date start = ServletUtil.getStartingDateOfInterval(getCurrentStartDate(),getDisplayPeriod());
 			Date end = ServletUtil.getEndingDateOfInterval(getCurrentStartDate(),getDisplayPeriod()); 
-			System.out.println(start);
-			System.out.println(end);
+			//System.out.println(start);
+			//System.out.println(end);
 					
 			//gDef.getGraphDefinition().setStartDate(start);
 			//gDef.getGraphDefinition().setStopDate(end);

@@ -1,13 +1,16 @@
 package com.cannontech.esub.editor;
 
 import java.awt.Dimension;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.util.HTMLGenerator;
+import com.cannontech.esub.util.ImageExporter;
 import com.cannontech.esub.util.SVGGenerator;
 
 import com.loox.jloox.LxComponent;
@@ -59,53 +62,93 @@ public class Drawing implements Serializable {
 		getLxView().setSize( getMetaElement().getDrawingWidth(), getMetaElement().getDrawingHeight());
 	}
 
-	public synchronized void save(String fileName) {		
+	public synchronized void save(String fileName) {				
+		setFileName(writeJLX(fileName));
+        writeSVG(fileName);        
+        writeHTML(fileName);
+	}
+
+	
+	public synchronized void exportAs(String fileName) {
+		// Workaround for a bug that doesn't appear often
+		// Outof bounds excpetion is popped from an internal sun font cache occaisionally
+		// a retry seems to alleviate things
+		boolean retry = false;
+		do {
+		
+		try {
+		
+		writeSVG(fileName);
+		writeHTML(fileName);
+		writeImages(new File(fileName).getParent());
+		retry = false;
+		}
+		catch(Exception e) {
+			retry = true;
+			CTILogger.debug(e.getMessage());
+		}
+		} while(retry);
+	}
+	
+	private String writeHTML(String fileName) {
+		String htmlFileName = fileName;
+		
+		if (htmlFileName.endsWith(".jlx")) {
+		        htmlFileName = htmlFileName.substring(0, htmlFileName.length() - 4);
+		}
+		
+		htmlFileName = htmlFileName.concat(".html");
+		
+		try { 
+		        HTMLGenerator gen3 = new HTMLGenerator();
+		        FileWriter fw = new FileWriter(htmlFileName);
+		        
+		        gen3.generate(fw, this);
+		        fw.close();
+		} catch (IOException e) {
+		        e.printStackTrace();
+		}    
+		
+		return htmlFileName;    
+	}
+
+	private String writeSVG(String fileName) {
+		String svgFileName = fileName;
+		if (svgFileName.endsWith(".jlx")) {
+			svgFileName = svgFileName.substring(0, svgFileName.length() - 4);
+		}
+		
+		svgFileName = svgFileName.concat(".svg");
+		
+		try {
+		        SVGGenerator gen2 = new SVGGenerator();
+		        FileWriter fw = new FileWriter(svgFileName);
+		
+		        gen2.generate(fw, this);
+		        fw.close();
+
+		} catch (IOException e) {
+		        e.printStackTrace();
+		}
+		return svgFileName;
+	}
+
+	private String writeJLX(String fileName) {
 		String jlxFileName = fileName;
+		
+		if (!jlxFileName.endsWith(".jlx")) {
+			jlxFileName = jlxFileName.concat(".jlx");
+		}
+		
 
-        if (!jlxFileName.endsWith(".jlx")) {
-        	jlxFileName = jlxFileName.concat(".jlx");
-        }
+		        
+		getLxGraph().save(jlxFileName);
+		return jlxFileName;
+	}
 
-        setFileName(jlxFileName);
-                
-        getLxGraph().save(jlxFileName);
-
-        String svgFileName = fileName;
-        if (svgFileName.endsWith(".jlx")) {
-        	svgFileName = svgFileName.substring(0, svgFileName.length() - 4);
-        }
-
-        svgFileName = svgFileName.concat(".svg");
-
-        try {
-                SVGGenerator gen2 = new SVGGenerator();
-                FileWriter fw = new FileWriter(svgFileName);
-
-                gen2.generate(fw, this);
-                fw.close();
-        } catch (IOException e) {
-                e.printStackTrace();
-        }
-        
-        String htmlFileName = fileName;
-        
-        if (htmlFileName.endsWith(".jlx")) {
-                htmlFileName = htmlFileName.substring(0, htmlFileName.length() - 4);
-        }
-
-        htmlFileName = htmlFileName.concat(".html");
-
-        try { 
-                HTMLGenerator gen3 = new HTMLGenerator();
-                FileWriter fw = new FileWriter(htmlFileName);
-                
-                gen3.generate(fw, this);
-                fw.close();
-        } catch (IOException e) {
-                e.printStackTrace();
-        }
-        
-
+	private void writeImages(String dir) {
+		ImageExporter ie = new ImageExporter(this);
+		ie.exportImages(dir);
 	}
 
 	public synchronized void save() {
@@ -210,4 +253,6 @@ public class Drawing implements Serializable {
 		getLxGraph().add(metaInfo);
 		return metaInfo;							
 	}
+	
+	
 }

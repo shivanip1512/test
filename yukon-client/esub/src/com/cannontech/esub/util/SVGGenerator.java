@@ -2,6 +2,7 @@ package com.cannontech.esub.util;
 
 import java.awt.Color;
 import java.awt.Paint;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
@@ -327,8 +328,9 @@ public class SVGGenerator {
 		Element retElement = null;
 		
 		SVGGraphics2D svgGenerator = new SVGGraphics2D(doc);
+		graph.getCTIGraph().getFreeChart().draw(svgGenerator, new Rectangle(width, height));
 		retElement = svgGenerator.getRoot();
-
+		
 		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM/dd/yy");
 			
 		retElement.setAttributeNS(null, "x", Integer.toString(x));
