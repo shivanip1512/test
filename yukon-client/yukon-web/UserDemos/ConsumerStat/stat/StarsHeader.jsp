@@ -5,7 +5,7 @@
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 
 <%
-    java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yy");	  
+    java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yy");
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
@@ -20,6 +20,11 @@
 	}
 	
     String dbAlias = user.getDatabaseAlias();	
+	
+	TimeZone tz = ServletUtils.getTimeZone( user.getStarsCustomerBase().getTimeZone() );
+	datePart.setTimeZone(tz);
+	dateFormat.setTimeZone(tz);
+	histDateFormat.setTimeZone(tz);
 	
 	StarsCustAccountInformation accountInfo = null;
 	StarsCustomerAccount account = null;
