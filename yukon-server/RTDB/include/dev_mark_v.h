@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/12/18 15:57:18 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/12/31 21:04:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -37,6 +37,11 @@
 class IM_EX_DEVDB CtiDeviceMarkV : public CtiDeviceMeter
 {                                        
 private:
+
+  enum
+  {
+     Type_II         = 50
+  };
 
   enum
   {
@@ -130,6 +135,8 @@ public:
 
    void processDispatchReturnMessage( CtiConnection &conn );
    int sendCommResult( INMESS *InMessage );
+   int checkQuality( int yyMap, int lpValue );
+   int correctValue( CtiTransdataTracker::lpRecord rec );
 
    CtiProtocolTransdata & getProtocol( void );
    RWTime getMsgTime( int timeID, int dateID, vector<CtiTransdataData *> transVector );

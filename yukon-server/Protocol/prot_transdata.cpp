@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/12/30 19:29:31 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/12/31 21:04:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,7 +84,6 @@ bool CtiProtocolTransdata::decode( CtiXfer &xfer, int status )
             {
                processBillingData( _storage );
 
-//               if( _application.doLoadProfile() )
                if( _application.getCommand() == CtiTransdataApplication::LoadProfile )
                {
                   _command = CtiTransdataApplication::LoadProfile;             ////just temp until I get smart
@@ -125,6 +124,7 @@ void CtiProtocolTransdata::processLPData( BYTE *data )
 
    memcpy( _lpBytes, data, _numLoadProfile );
    
+   _reallyDidProcessLP = true;
    _lpDone = true;
 }
 
@@ -223,6 +223,7 @@ void CtiProtocolTransdata::reinitalize( void )
    _finished = false;
    _billingDone = false;
    _lpDone = false;
+   _reallyDidProcessLP = false;
 
    _storage = new BYTE[Storage_size];
    _lpBytes = new BYTE[Loadprofile_size];
@@ -309,4 +310,14 @@ void CtiProtocolTransdata::setError( int err )
 int CtiProtocolTransdata::getError( void )
 {
    return( _error );
+}
+
+//=====================================================================================================================
+//we want to let the device know that we did some actual work on LP so he doesn't bother to try to stick a multi
+//into dispatch if there isn't anything there 
+//=====================================================================================================================
+
+bool CtiProtocolTransdata::getDidProcess( void )
+{
+   return( _reallyDidProcessLP );
 }

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/12/30 19:29:31 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/12/31 21:04:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -30,13 +30,18 @@
 class IM_EX_PROT CtiTransdataTracker
 {
    public:
-      
+      /*
       typedef union
       {
          BYTE     rec[2];
          USHORT   value;
       }lpRecord;
-        
+      */
+      struct lpRecord
+      {
+         BYTE     rec[2];
+      };
+
       struct mark_v_lp
       {
          bool     enabledChannels[8];

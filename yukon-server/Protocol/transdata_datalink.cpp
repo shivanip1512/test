@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/12/29 21:00:40 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/12/31 21:04:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,12 +54,6 @@ void CtiTransdataDatalink::destroy( void )
 
 void CtiTransdataDatalink::reinitalize( void )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " link reinit" << endl;
-   }
-   
    _failCount           = 0;
    _error               = 0;
    _bytesExpected       = 0;

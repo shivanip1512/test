@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/12/30 19:29:31 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/12/31 21:04:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -180,12 +180,6 @@ void CtiTransdataApplication::destroy( void )
 
 void CtiTransdataApplication::reinitalize( void )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " app reinit" << endl;
-   }
-   
    _tracker.reinitalize();
 
    _lastState     = DoLogOn;

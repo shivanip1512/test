@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/12/29 21:00:40 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/12/31 21:04:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -119,12 +119,6 @@ void CtiTransdataTracker::destroy( void )
 
 void CtiTransdataTracker::reinitalize( void )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " track reinit" << endl;
-   }
-   
    _ymodem.reinitalize();
    _datalink.reinitalize();
       
@@ -139,7 +133,7 @@ void CtiTransdataTracker::reinitalize( void )
    _moveAlong        = false;
    _goodCRC          = false;
    _ymodemsTurn      = false;
-   _dataIsExpected   = false;;
+   _dataIsExpected   = false;
    _hold             = false;
    _didRecordCheck   = false;
    _didLoadProfile   = false;
@@ -158,9 +152,6 @@ void CtiTransdataTracker::reinitalize( void )
 
 bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
 {    
-   if( _error == Failed )
-      reset();
-       
    switch( _lastState )
    {
    case doPassword:
@@ -208,15 +199,9 @@ bool CtiTransdataTracker::decodeYModem( CtiXfer &xfer, int status )
 
       if( _goodCRC )
       {
-//         _ymodem.retreiveData( _meterData, &_meterBytes );
-//         processData( _meterData, _meterBytes );
          _ymodem.retreiveData( _meterData, &bytes );
          processData( _meterData, bytes );
       }
-   }
-   else
-   {
-//      setError();     //we can get rid of failcounts below
    }
    
    if( _ymodem.getAcks() >= _neededAcks )
@@ -334,7 +319,7 @@ bool CtiTransdataTracker::processData( BYTE *data, int bytes )
       //do billing stuff
       _didBilling = true;
       _haveData = true;
-      _meterBytes += bytes;///////////////
+      _meterBytes += bytes;
    }
 
    return( true );
@@ -647,6 +632,8 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
    }
 
    RWTime t( RWDate( timeBits[3], timeBits[4], timeBits[5] + 2000 ), timeBits[2], timeBits[1], timeBits[0] );
+   
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << RWTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ meterTime " << t << endl;
@@ -706,6 +693,7 @@ int CtiTransdataTracker::calcLPRecs( void )
 
    numberLPRecs = (( _lp->meterTime - _lastLPTime ) / ( _lp->lpFormat[0] * 60 )) * channels;
 
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << RWTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ numberLPRecs " << numberLPRecs << endl;
@@ -780,7 +768,7 @@ int CtiTransdataTracker::retreiveData( BYTE *data )
 
 void CtiTransdataTracker::reset( void )
 {
-//   _failCount = 0;
+   _failCount = 0;
    _waiting = false;
    _ymodemsTurn = false;
    _bytesReceived = 0;
@@ -810,7 +798,7 @@ void CtiTransdataTracker::injectData( RWCString str )
 
 void CtiTransdataTracker::setError( void )
 {
-   if( ++_failCount > 100 )
+   if( ++_failCount > 10 )
    {
       _error = Failed;
       _finished = true;
@@ -907,75 +895,3 @@ bool CtiTransdataTracker::gotRetry( const BYTE *data, int length )
 
    return( success );
 }
-
-/*
-bool CtiTransdataTracker::processData( BYTE *data, int bytes )
-{
-   if( _didBilling )
-   {
-      if( _didRecordCheck )
-      {
-         //do loadprofile
-         if( bytes != 0 )
-         {
-            memcpy( _lp->lpData + _meterBytes, data, bytes );
-            memcpy( _meterData, _lp, sizeof( *_lp ) );   
-            _meterBytes = sizeof( *_lp );
-            _haveData = true;
-         }
-         else
-         {
-
-         }
-      }
-      else
-      {
-         //do record check
-         int returningRecs = atoi( ( const char *)data );
-
-         if( returningRecs < _lp->numLpRecs )
-         {
-            _lastState = doRecordDump;
-         }
-         _didRecordCheck = true;
-      }
-   }
-   else
-   {
-      //do billing stuff
-      _didBilling = true;
-      _haveData = true;
-   }
-
-   return( true );
-}
-*/
-
-
-/*
-bool CtiTransdataTracker::processData( BYTE *data, int bytes )
-{
-   bool result = false;
-
-   if( _lastState == doProt1 )
-   {
-      int returningRecs = atoi( ( const char *)data + 3 );
-
-      if( returningRecs < _lp->numLpRecs )
-      {
-         _lastState = doRecordDump;
-      }
-   }
-
-   if( _lastState == doProt2 )
-   {
-      memset( _meterData, '\0', Meter_size );
-      memcpy( _lp->lpData, data + 3, bytes );
-      memcpy( _meterData, _lp, sizeof( *_lp ) );   
-      _meterBytes = sizeof( *_lp );
-      result = true;
-   }
-
-   return( result );
-}
-*/

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/12/02 15:48:11 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/12/31 21:04:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,12 +45,6 @@ CtiTransdataData::~CtiTransdataData()
 
 void CtiTransdataData::init( void )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " data init" << endl;
-   }
-
    _year       = 0;
    _month      = 0;
    _day        = 0;

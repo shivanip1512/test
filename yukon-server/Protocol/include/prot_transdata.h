@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/12/29 21:00:40 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/12/31 21:04:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -63,7 +63,8 @@ class IM_EX_PROT CtiProtocolTransdata
       int retreiveData( BYTE *data );
       void setError( int err );
       int getError( void );
-      
+      bool getDidProcess( void );
+
       vector<CtiTransdataData *> resultDecode( INMESS *InMessage );
 
    protected:
@@ -87,6 +88,7 @@ class IM_EX_PROT CtiProtocolTransdata
       bool                       _collectLP;
       bool                       _billingDone;
       bool                       _lpDone;
+      bool                       _reallyDidProcessLP;
 
       BYTE                       *_storage;
       BYTE                       *_billingBytes;

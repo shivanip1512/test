@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/12/30 19:29:31 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/12/31 21:04:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -96,6 +96,7 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
 
       outList.insert( OutMessage );
       
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << RWTime() << " ----Execution In Progress----" << endl;
@@ -227,6 +228,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
                                                        InMessage->Return.TrxID,
                                                        InMessage->Return.UserID);
 
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << RWTime() << " ----Scanner Message Process----" << endl;
@@ -784,6 +786,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
 
       retList.insert( pPIL );
       
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << RWTime() << " ----Scanner Message Inserted----" << endl;
@@ -877,172 +880,186 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
    int                              numEnabledChannels = 0;
    bool                             firstLoop = true;
 
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << RWTime() << " ----Process Dispatch Message In Progress----" << endl;
    }
 
-   _storage = new BYTE[30000];
-   _transdataProtocol.retreiveData( _storage );
-
-   lp = ( CtiTransdataTracker::mark_v_lp *)_storage;
-   _llp.lastLP = lp->meterTime;
-   RWTime mTime( lp->meterTime );
-   
+   if( _transdataProtocol.getDidProcess() )
    {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " --------" << mTime << "*****" << lp->meterTime << endl;
-   }
-   
-   for( index = 0; index < lp->numLpRecs; )
-   {
-      if( lp->enabledChannels[0] == true )
+      _storage = new BYTE[30000];
+      _transdataProtocol.retreiveData( _storage );
+
+      lp = ( CtiTransdataTracker::mark_v_lp *)_storage;
+      _llp.lastLP = lp->meterTime;
+      RWTime mTime( lp->meterTime );
+
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
       {
-         pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + LOAD_PROFILE, AnalogPointType );
-
-         if( pPoint != NULL )
-         {
-            pData = new CtiPointDataMsg();
-            pData->setId( pPoint->getID() );
-            pData->setValue( lp->lpData[index].value );
-            pData->setQuality( NormalQuality );             //just for now
-            pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
-            pData->setMessageTime( mTime );
-            pData->setType( pPoint->getType() );
-
-            msgMulti->getData().insert( pData );
-
-            if( firstLoop )
-            {
-               //stick this pData into something for scanner
-               pData = new CtiPointDataMsg();
-               pData->setId( pPoint->getID() );
-               pData->setValue( lp->lpData[index].value );
-               pData->setQuality( NormalQuality );             //just for now
-               pData->setMessageTime( mTime );
-               pData->setType( pPoint->getType() );
-               
-               msgMulti->getData().insert( pData );
-            }
-
-            index += 2;
-         }
-      }
-   
-      if( lp->enabledChannels[1] == true )
-      {
-         pPoint = getDevicePointOffsetTypeEqual( CH2_OFFSET + LOAD_PROFILE, AnalogPointType );
-
-         if( pPoint != NULL )
-         {
-            pData = new CtiPointDataMsg();
-            pData->setId( pPoint->getID() );
-            pData->setValue( lp->lpData[index].value );
-            pData->setQuality( NormalQuality );             //just for now
-            pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
-            pData->setMessageTime( mTime );
-            pData->setType( pPoint->getType() );
-
-            msgMulti->getData().insert( pData );
-            
-            if( firstLoop )
-            {
-               //stick this pData into something for scanner
-               pData = new CtiPointDataMsg();
-               pData->setId( pPoint->getID() );
-               pData->setValue( lp->lpData[index].value );
-               pData->setQuality( NormalQuality );             //just for now
-               pData->setMessageTime( mTime );
-               pData->setType( pPoint->getType() );
-               
-               msgMulti->getData().insert( pData );
-            }
-            
-            index += 2;
-         }
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " --------Dispatch will see this time ->" << mTime << endl;
       }
 
-      if( lp->enabledChannels[2] == true )
+      for( index = 0; index < lp->numLpRecs; )
       {
-         pPoint = getDevicePointOffsetTypeEqual( CH3_OFFSET + LOAD_PROFILE, AnalogPointType );
-
-         if( pPoint != NULL )
+         if( lp->enabledChannels[0] == true )
          {
-            pData = new CtiPointDataMsg();
-            pData->setId( pPoint->getID() );
-            pData->setValue( lp->lpData[index].value );
-            pData->setQuality( NormalQuality );             //just for now
-            pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
-            pData->setMessageTime( mTime );
-            pData->setType( pPoint->getType() );
+            pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + LOAD_PROFILE, AnalogPointType );
 
-            msgMulti->getData().insert( pData );
-
-            if( firstLoop )
+            if( pPoint != NULL )
             {
-               //stick this pData into something for scanner
                pData = new CtiPointDataMsg();
                pData->setId( pPoint->getID() );
-               pData->setValue( lp->lpData[index].value );
-               pData->setQuality( NormalQuality );             //just for now
+               pData->setValue( correctValue( lp->lpData[index] ) );
+               pData->setQuality( checkQuality( lp->lpFormat[1], correctValue( lp->lpData[index] ) ));             //just for now
+               pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
                pData->setMessageTime( mTime );
                pData->setType( pPoint->getType() );
-               
+
                msgMulti->getData().insert( pData );
+
+               if( firstLoop )
+               {
+                  //stick this pData into something for scanner
+                  pData = new CtiPointDataMsg();
+                  pData->setId( pPoint->getID() );
+                  pData->setValue( correctValue( lp->lpData[index] ) );
+                  pData->setQuality( checkQuality( lp->lpFormat[1], correctValue( lp->lpData[index] ) ));             //just for now
+                  pData->setMessageTime( mTime );
+                  pData->setType( pPoint->getType() );
+
+                  msgMulti->getData().insert( pData );
+               }
+
+               index += 2;
             }
-
-            index += 2;
          }
-      }
-
-      if( lp->enabledChannels[3] == true )
-      {
-         pPoint = getDevicePointOffsetTypeEqual( CH4_OFFSET + LOAD_PROFILE, AnalogPointType );
-
-         if( pPoint != NULL )
+         
+         if( lp->enabledChannels[1] == true )
          {
-            pData = new CtiPointDataMsg();
-            pData->setId( pPoint->getID() );
-            pData->setValue( lp->lpData[index].value );
-            pData->setQuality( NormalQuality );             //just for now
-            pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
-            pData->setMessageTime( mTime );
-            pData->setType( pPoint->getType() );
+            pPoint = getDevicePointOffsetTypeEqual( CH2_OFFSET + LOAD_PROFILE, AnalogPointType );
 
-            msgMulti->getData().insert( pData );
-            
-            if( firstLoop )
+            if( pPoint != NULL )
             {
-               //stick this pData into something for scanner
                pData = new CtiPointDataMsg();
                pData->setId( pPoint->getID() );
-               pData->setValue( lp->lpData[index].value );
-               pData->setQuality( NormalQuality );             //just for now
+               pData->setValue( correctValue( lp->lpData[index] ) );
+               pData->setQuality( checkQuality( lp->lpFormat[1], correctValue( lp->lpData[index] ) ));             //just for now
+               pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
                pData->setMessageTime( mTime );
                pData->setType( pPoint->getType() );
-               
+
                msgMulti->getData().insert( pData );
+
+               if( firstLoop )
+               {
+                  //stick this pData into something for scanner
+                  pData = new CtiPointDataMsg();
+                  pData->setId( pPoint->getID() );
+                  pData->setValue( correctValue( lp->lpData[index] ) );
+                  pData->setQuality( checkQuality( lp->lpFormat[1], correctValue( lp->lpData[index] ) ));             //just for now
+                  pData->setMessageTime( mTime );
+                  pData->setType( pPoint->getType() );
+
+                  msgMulti->getData().insert( pData );
+               }
+
+               index += 2;
             }
-            
-            index += 2;
          }
+
+         if( lp->enabledChannels[2] == true )
+         {
+            pPoint = getDevicePointOffsetTypeEqual( CH3_OFFSET + LOAD_PROFILE, AnalogPointType );
+
+            if( pPoint != NULL )
+            {
+               pData = new CtiPointDataMsg();
+               pData->setId( pPoint->getID() );
+               pData->setValue( correctValue( lp->lpData[index] ) );
+               pData->setQuality( checkQuality( lp->lpFormat[1], correctValue( lp->lpData[index] ) ));             //just for now
+               pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
+               pData->setMessageTime( mTime );
+               pData->setType( pPoint->getType() );
+
+               msgMulti->getData().insert( pData );
+
+               if( firstLoop )
+               {
+                  //stick this pData into something for scanner
+                  pData = new CtiPointDataMsg();
+                  pData->setId( pPoint->getID() );
+                  pData->setValue( correctValue( lp->lpData[index] ) );
+                  pData->setQuality( checkQuality( lp->lpFormat[1], correctValue( lp->lpData[index] ) ));             //just for now
+                  pData->setMessageTime( mTime );
+                  pData->setType( pPoint->getType() );
+
+                  msgMulti->getData().insert( pData );
+               }
+
+               index += 2;
+            }
+         }
+
+         if( lp->enabledChannels[3] == true )
+         {
+            pPoint = getDevicePointOffsetTypeEqual( CH4_OFFSET + LOAD_PROFILE, AnalogPointType );
+
+            if( pPoint != NULL )
+            {
+               pData = new CtiPointDataMsg();
+               pData->setId( pPoint->getID() );
+               pData->setValue( correctValue( lp->lpData[index] ) );
+               pData->setQuality( checkQuality( lp->lpFormat[1], correctValue( lp->lpData[index] ) ));             //just for now
+               pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
+               pData->setMessageTime( mTime );
+               pData->setType( pPoint->getType() );
+
+               msgMulti->getData().insert( pData );
+
+               if( firstLoop )
+               {
+                  //stick this pData into something for scanner
+                  pData = new CtiPointDataMsg();
+                  pData->setId( pPoint->getID() );
+                  pData->setValue( correctValue( lp->lpData[index] ) );
+                  pData->setQuality( checkQuality( lp->lpFormat[1], correctValue( lp->lpData[index] ) ));             //just for now
+                  pData->setMessageTime( mTime );
+                  pData->setType( pPoint->getType() );
+
+                  msgMulti->getData().insert( pData );
+               }
+
+               index += 2;
+            }
+         }
+         
+         if( firstLoop )
+         {
+            firstLoop = false;
+         }
+
+         //decrement the time to the interval previous to the current one...
+         mTime -= lp->lpFormat[0] * 60; 
       }
+
+      conn.WriteConnQue( msgMulti );
       
-      if( firstLoop )
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
       {
-         firstLoop = false;
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " ----Dispatch Message Inserted----" << endl;
       }
-      
-      //decrement the time to the interval previous to the current one...
-      mTime -= lp->lpFormat[0] * 60; 
    }
-
-   conn.WriteConnQue( msgMulti );
+   else
    {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ----Dispatch Message Inserted----" << endl;
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " ----No Data For Dispatch Message----" << endl;
+      }
    }
-
 }
 
 //=====================================================================================================================
@@ -1068,7 +1085,7 @@ void CtiDeviceMarkV::DecodeDatabaseReader( RWDBReader &rdr )
 {
    Inherited::DecodeDatabaseReader( rdr );       // get the base class handled
 
-   if( getDebugLevel() & 0x0800 )
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
    {
        CtiLockGuard<CtiLogger> doubt_guard(dout);
        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1077,4 +1094,74 @@ void CtiDeviceMarkV::DecodeDatabaseReader( RWDBReader &rdr )
    getProtocol().injectData( getIED().getPassword() );
 }
 
+//=====================================================================================================================
+//flip our bytes into the correct order to get a value
+//=====================================================================================================================
+
+int CtiDeviceMarkV::correctValue( CtiTransdataTracker::lpRecord rec )
+{
+   BYTEUSHORT temp;
+   
+   temp.ch[0] = rec.rec[1];
+   temp.ch[1] = rec.rec[0];
+
+   return( temp.sh );
+}
+
+//=====================================================================================================================
+//transdata qualities
+// 0 = end of interval
+// 6 = end of interval with power outage
+// 8 = entire interval occured during outage
+// a = end of interval during demand deferral
+// 2 = interval time correction
+// e = end of interval with diagnostics alarm
+// c = loss of potential alarm
+// 4 = harmonic distortion alarm
+//=====================================================================================================================
+
+int CtiDeviceMarkV::checkQuality( int yyMap, int lpValue )
+{
+   int quality = NormalQuality;
+
+   if( yyMap == Type_II )
+   {
+      //the top 3 bits tell us what the quality is
+      quality = ( lpValue & 0xe000 );
+
+      switch( quality )
+      {
+      case 0x0:
+         quality = NormalQuality;
+         break;
+
+      case 0x6:
+         quality = PowerfailQuality;
+         break;
+
+      case 0x8:
+         quality = PowerfailQuality;
+         break;
+
+      case 0xa:
+         quality = AbnormalQuality;
+         break;
+
+      case 0x2:
+         quality = PartialIntervalQuality;
+         break;
+
+      case 0xe:
+      case 0xc:
+      case 0x4:
+         quality = QuestionableQuality;
+
+      default:
+         quality = AbnormalQuality;
+         break;
+      }
+   }
+
+   return( quality );
+}
 
