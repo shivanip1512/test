@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/10/22 22:18:14 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/10/24 17:25:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -876,6 +876,10 @@ int CtiDNPObjectBlock::restoreObject( unsigned char *buf, int len, CtiDNPObject 
 
         case CtiDNPTime::Group:
             obj = CTIDBG_new CtiDNPTime(_variation);
+            break;
+
+        case CtiDNPTimeCTO::Group:
+            obj = CTIDBG_new CtiDNPTimeCTO(_variation);
             break;
 
         default:
