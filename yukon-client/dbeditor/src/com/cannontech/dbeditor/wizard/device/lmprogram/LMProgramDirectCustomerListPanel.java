@@ -78,8 +78,8 @@ private com.cannontech.common.gui.util.AddRemovePanel getAddRemovePanel() {
 			ivjAddRemovePanel.setName("AddRemovePanel");
 			// user code begin {1}
 
-			ivjAddRemovePanel.leftListLabelSetText("Available Customers");
-			ivjAddRemovePanel.rightListLabelSetText("Assigned Customers");
+			ivjAddRemovePanel.leftListLabelSetText("Available");
+			ivjAddRemovePanel.rightListLabelSetText("Assigned");
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
