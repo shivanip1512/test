@@ -22,6 +22,7 @@
 ULONG _CC_DEBUG;
 //Boolean if we ignore non normal qualities
 BOOL _IGNORE_NOT_NORMAL_FLAG;
+ULONG _SEND_RETRIES;
 
 //Use this to indicate globally when ctrl-c was pressed
 //Kinda ugly... The Run() member function watches this
@@ -131,6 +132,8 @@ void CtiCCService::Init()
         dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
+    dout.setOutputFile("capcontrol");
+
     strcpy(var, "CAP_CONTROL_LOG_FILE");
     if( !(str = gConfigParms.getValueAsString(var)).isNull() )
     {
@@ -147,11 +150,31 @@ void CtiCCService::Init()
         dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
+    _IGNORE_NOT_NORMAL_FLAG = FALSE;
+    
     strcpy(var, "CAP_CONTROL_IGNORE_NOT_NORMAL");
     if( !(str = gConfigParms.getValueAsString(var)).isNull() )
     {
         str.toLower();
         _IGNORE_NOT_NORMAL_FLAG = (str=="true"?TRUE:FALSE);
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    _SEND_RETRIES = 0;
+
+    strcpy(var, "CAP_CONTROL_SEND_RETRIES");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+        _SEND_RETRIES = atoi(str.data());
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
