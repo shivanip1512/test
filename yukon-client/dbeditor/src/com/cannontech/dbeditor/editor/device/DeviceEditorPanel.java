@@ -97,6 +97,9 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.REPEATER, PAOGroups.REPEATER_800, PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL,
 			PAOGroups.SERIES_5_LMI
 			
+		},
+		{	//9 - LMIExclusionEditorPanel
+			PAOGroups.SERIES_5_LMI
 		}
 
 };
@@ -185,6 +188,20 @@ public Object[] createNewPanel(int panelIndex)
 			else
 				objs = null;
 			
+			break;
+			
+		case 10:
+			String showItToo = 
+				ClientSession.getInstance().getRolePropertyValue(
+					DBEditorRole.TRANS_EXCLUSION, "false");
+	
+			if( "TRUE".equalsIgnoreCase(showItToo) )
+			{
+				objs[0] = new com.cannontech.dbeditor.editor.device.LMIExclusionEditorPanel();
+				objs[1] = "Exclusion Settings";
+			}
+			else
+				objs = null;
 			break;
 
 	}
