@@ -313,7 +313,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 									if (liteProg.getGroupIDs()[l] == groupID) {
 										progID = liteProg.getProgramID();
 										appCatID = liteAppCat.getApplianceCategoryID();
-										progIDs[j] = progID;
+										progIDs[i] = progID;
 										break;
 									}
 								}
