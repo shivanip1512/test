@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/08/07 15:42:17 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/08/12 13:03:59 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -485,14 +485,33 @@ void CtiDeviceGateway::run()
                 }
 
                 /* Wait for the rest of the bytes, or clean out the mess! */
-                rc = recv (_msgsock, ((char *)&GatewayRX) + 2, (bytesavail < Length ? bytesavail : Length) ,0);
+                char *cp = ((char *)&GatewayRX) + 2;
+                int getlen = (bytesavail < Length ? bytesavail : Length);
+                int gotlen = 0;
 
-                if(rc != Length)
+                do
+                {
+                    rc = recv (_msgsock, cp + gotlen, getlen ,0);
+
+                    if(rc != SOCKET_ERROR)
+                    {
+                        gotlen += rc;
+                        getlen -= rc;
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+                while( rc != SOCKET_ERROR && getlen > 0 );
+
+                if(gotlen != Length)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  Only read " << rc << endl;
+                        dout << "  Only read " << rc << " Length " << Length << " bytes available " << bytesavail << endl;
                     }
 
                     continue;

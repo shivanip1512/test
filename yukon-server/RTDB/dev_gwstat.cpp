@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/08/07 15:42:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/08/12 13:03:59 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2473,8 +2473,19 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
             {
                 setLastControlSent(OutMessage);
 
+                USHORT duration = shedminutes;
+
+                if(shedminutes > 255)
+                {
+                    if(shedminutes < 65535)
+                    {
+                        shedminutes = 1;
+                        duration = 65535;
+                    }
+                }
+
                 // We have a shed.  Create a DLC message here!
-                controlmatch = sendSetDLC( msgsock, (BYTE)shedminutes, (BYTE)shedminutes, (BYTE)shedminutes, overridedisable );
+                controlmatch = sendSetDLC( msgsock, (BYTE)shedminutes, (BYTE)shedminutes, (USHORT)shedminutes, overridedisable );
                 processed++;
 
                 operation = TYPE_SETDLC;
@@ -4011,57 +4022,57 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
             switch(_utilSetpoint._utilUserOverride)
             {
             case 0:
-                astr += (RWCString("No Override,"));
+                astr += (RWCString("NO OVERRIDE,"));
                 break;
 
             case 1:
-                astr += (RWCString("User Override Active,"));
+                astr += (RWCString("USER OVERRIDE ACTIVE,"));
                 break;
 
             case 255:
-                astr += (RWCString("User Override Unknown,"));
+                astr += (RWCString("USER OVERRIDE UNKNOWN,"));
                 break;
 
             default:
-                astr += (RWCString("User Override Invalid,"));
+                astr += (RWCString("USER OVERRIDE INVALID,"));
                 break;
             }
 
             switch(_utilSetpoint._utilUserOverrideDisable)
             {
             case 0:
-                astr += (RWCString("Prohibited,"));
+                astr += (RWCString("PROHIBITED,"));
                 break;
 
             case 1:
-                astr += (RWCString("Available,"));
+                astr += (RWCString("AVAILABLE,"));
                 break;
 
             case 255:
-                astr += (RWCString("Unknown,"));
+                astr += (RWCString("UNKNOWN,"));
                 break;
 
             default:
-                astr += (RWCString("Invalid,"));
+                astr += (RWCString("INVALID,"));
                 break;
             }
 
             switch(_utilSetpoint._utilAIRDisable)
             {
             case 0:
-                astr += (RWCString("Enabled"));
+                astr += (RWCString("ENABLED"));
                 break;
 
             case 1:
-                astr += (RWCString("Disabled"));
+                astr += (RWCString("DISABLED"));
                 break;
 
             case 255:
-                astr += (RWCString("Unknown"));
+                astr += (RWCString("UNKNOWN"));
                 break;
 
             default:
-                astr += (RWCString("Invalid"));
+                astr += (RWCString("INVALID"));
                 break;
             }
 
