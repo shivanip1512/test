@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctprt.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/15 14:08:24 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/12/11 23:35:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,7 @@
 #include <rw/db/db.h>
 
 #include "port_dialout.h"
+#include "port_dialin.h"
 #include "port_direct.h"
 #include "port_tcpip.h"
 
@@ -53,6 +54,11 @@ DLLEXPORT CtiPort* PortFactory(RWDBReader &rdr)
          pPort = (CtiPort*) CTIDBG_new CtiPortDirect( CTIDBG_new CtiPortDialout );
          break;
       }
+   case PortTypeLocalDialBack:
+      {
+         pPort = (CtiPort*) CTIDBG_new CtiPortDirect( CTIDBG_new CtiPortDialin );
+         break;
+      }
    case PortTypeTServerDirect:
       {
          pPort = (CtiPort*) CTIDBG_new CtiPortTCPIPDirect;
@@ -61,6 +67,11 @@ DLLEXPORT CtiPort* PortFactory(RWDBReader &rdr)
    case PortTypeTServerDialup:
       {
          pPort = (CtiPort*) CTIDBG_new CtiPortTCPIPDirect( CTIDBG_new CtiPortDialout );
+         break;
+      }
+   case PortTypeTServerDialBack:
+      {
+         pPort = (CtiPort*) CTIDBG_new CtiPortTCPIPDirect( CTIDBG_new CtiPortDialin );
          break;
       }
    default:
