@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2005/02/21 21:47:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,7 +31,7 @@ set< CtiDLCCommandStore > CtiDeviceMCT31X::_commandStore;
 
 CtiDeviceMCT31X::CtiDeviceMCT31X( )
 {
-    for( int i = 0; i < MCT31X_LPChannels; i++ )
+    for( int i = 0; i < MCT31X_ChannelCount; i++ )
     {
         _lastLPTime[i] = RWTime(0UL);
     }
@@ -287,7 +287,7 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
             lpMaxBlocks = 8;
         }
 
-        for( int i = 0; i < MCT31X_LPChannels; i++ )
+        for( int i = 0; i < MCT31X_ChannelCount; i++ )
         {
             CtiPointBase *pPoint = getDevicePointOffsetTypeEqual((i+1) + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType);
 
@@ -421,7 +421,7 @@ INT CtiDeviceMCT31X::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
         else
             lpMaxBlocks = 8;
 
-        for( int i = 0; i < MCT31X_LPChannels; i++ )
+        for( int i = 0; i < MCT31X_ChannelCount; i++ )
         {
             if( useScanFlags() )
             {

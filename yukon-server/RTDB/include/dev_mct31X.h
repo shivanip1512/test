@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct31X.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/12/07 18:55:44 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/02/21 21:47:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,16 +24,18 @@
 
 class IM_EX_DEVDB CtiDeviceMCT31X : public CtiDeviceMCT310
 {
+public:
+
     enum
     {
-        MCT31X_LPChannels = 3
+        MCT31X_ChannelCount = 3
     };
 
 private:
 
-    RWTime _lastLPTime[MCT31X_LPChannels],
-           _nextLPTime[MCT31X_LPChannels],
-           _lastLPRequest[MCT31X_LPChannels];
+    RWTime _lastLPTime[MCT31X_ChannelCount],
+           _nextLPTime[MCT31X_ChannelCount],
+           _lastLPRequest[MCT31X_ChannelCount];
 
     CtiTableDeviceMCTIEDPort _iedPort;
 
