@@ -316,11 +316,13 @@ public class ProgramSignUpAction implements ActionBase {
 					eventBase.setEventDateTime( now );
 					Transaction.createTransaction(Transaction.INSERT, event).execute();
 					
+	    			liteApp.setInventoryID( 0 );
 	    			liteApp.setLmProgramID( 0 );
 	    			liteApp.setAddressingGroupID( 0 );
 					com.cannontech.database.data.stars.appliance.ApplianceBase app =
 							(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
 					Transaction.createTransaction(Transaction.UPDATE, app).execute();
+					com.cannontech.database.data.stars.hardware.LMHardwareConfiguration.deleteLMHardwareConfiguration( app.getApplianceBase().getApplianceID() );
     			}
     			
     			newAppList.add( liteApp );

@@ -60,7 +60,7 @@ public class CreateLMHardwareAction implements ActionBase {
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
 			session.removeAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
-        	if (req.getParameter("Wizard") != null)
+        	if (req.getParameter("Wizard") != null && Boolean.valueOf(req.getParameter("Wizard")).booleanValue())
 				session.setAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD, req.getParameter("Wizard") );
 				
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );

@@ -145,7 +145,7 @@ public class SOAPClient extends HttpServlet {
         HttpSession session = req.getSession(false);
         
 		if (action.equalsIgnoreCase("RefreshCache")) {
-			ServletUtils.clearECProperties();
+			ServletUtils.clear();
 			if (isServerLocal()) SOAPServer.refreshCache();
         	if (session != null) session.invalidate();
 			resp.sendRedirect( loginURL ); return;
@@ -195,11 +195,11 @@ public class SOAPClient extends HttpServlet {
 		else if (action.equalsIgnoreCase("NewCustAccount")) {
 			MultiAction actions = new MultiAction();
 			actions.addAction( new NewCustAccountAction(), req, session );
-			if (req.getParameter("Username") != null)
+			if (req.getParameter("Username") != null && req.getParameter("Username").length() > 0)
 				actions.addAction( new UpdateLoginAction(), req, session );
 				
 			clientAction = (ActionBase) actions;
-			if (Boolean.valueOf( req.getParameter("Wizard") ).booleanValue())
+			if (req.getParameter("Wizard") != null)
 				destURL = "/operator/Consumer/Programs.jsp?Wizard=true";
 			else
 				destURL = "/operator/Consumer/Update.jsp";
@@ -213,7 +213,7 @@ public class SOAPClient extends HttpServlet {
 	            actions.addAction( new UpdateControlNotificationAction(), req, session );
 	            
 			clientAction = (ActionBase) actions;
-			if (Boolean.valueOf( req.getParameter("Wizard") ).booleanValue()) {
+			if (req.getParameter("Wizard") != null) {
 				destURL = "/operator/Consumer/CreateHardware.jsp?Wizard=true";
 				errorURL = "/operator/Consumer/Programs.jsp?Wizard=true";
 			}
@@ -264,13 +264,12 @@ public class SOAPClient extends HttpServlet {
             	
             if (questions != null && questions.getStarsExitInterviewQuestionCount() > 0) {
 	        	session.setAttribute( ServletUtils.ATT_OVER_PAGE_ACTION, actions );
-            	resp.sendRedirect( destURL );
+            	resp.sendRedirect( req.getParameter(ServletUtils.ATT_REDIRECT2) );
             	return;
             }
             else {	// if no exit interview questions, then skip the next page and send out the command immediately
 	    		actions.addAction( new SendInterviewAnswersAction(), req, session );
 	    		clientAction = actions;
-	    		destURL = req.getParameter(ServletUtils.ATT_REDIRECT2);
             }
         }
         else if (action.equalsIgnoreCase("SendExitAnswers")) {

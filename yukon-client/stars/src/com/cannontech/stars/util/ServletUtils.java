@@ -126,7 +126,6 @@ public class ServletUtils {
     private static final String TEXT_FORMAT_LOWER = "lower";
     private static final String TEXT_FORMAT_CAPITALIZED = "capitalized";
 
-    
     private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
     
     /* Table of energy company properties
@@ -135,9 +134,20 @@ public class ServletUtils {
      */
     private static Hashtable ecPropTable = null;
     
+    /* Table of program history
+     * key: Integer (account ID)
+     * value: ProgramHistory[]
+     */
+    private static Hashtable progHistTable = null;
+    
 
     public ServletUtils() {
     }
+	
+	public static void clear() {
+		ecPropTable = null;
+		progHistTable = null;
+	}
 
     public static String getDurationString(int sec) {
         String durationStr = null;
@@ -163,9 +173,12 @@ public class ServletUtils {
     	return durStr;
     }
     
-    public static ProgramHistory[] createProgramHistory(StarsLMPrograms programs) {
-    	TreeMap progHistMap = new TreeMap();
+    public static ProgramHistory[] getProgramHistory(int accountID, StarsLMPrograms programs) {
+    	if (progHistTable == null) progHistTable = new Hashtable();
+    	ProgramHistory[] progHists = (ProgramHistory[]) progHistTable.get( new Integer(accountID) );
+    	if (progHists != null) return progHists;
     	
+    	TreeMap progHistMap = new TreeMap();
     	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
     		StarsLMProgram program = programs.getStarsLMProgram(i);
     		StarsLMProgramHistory starsProgHist = program.getStarsLMProgramHistory();
@@ -218,9 +231,15 @@ public class ServletUtils {
     		}
     	}
     	
-    	ProgramHistory[] progHists = new ProgramHistory[ progHistMap.size() ];
+    	progHists = new ProgramHistory[ progHistMap.size() ];
     	progHistMap.values().toArray( progHists );
+    	progHistTable.put( new Integer(accountID), progHists );
     	return progHists;
+    }
+    
+    public static void removeProgramHistory(int accountID) {
+    	if (progHistTable != null)
+    		progHistTable.remove( new Integer(accountID) );
     }
     
     public static String formatDate(Date date, java.text.SimpleDateFormat format) {
@@ -426,10 +445,6 @@ public class ServletUtils {
 		}
 		
 		return props;
-	}
-	
-	public static void clearECProperties() {
-		ecPropTable = null;
 	}
 	
 	public static String getECProperty(String propFile, String propName) {

@@ -1,6 +1,7 @@
 package com.cannontech.database.data.lite.stars;
 
 import java.io.InputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -22,6 +23,7 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.stars.appliance.*;
+import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -73,6 +75,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private Object[][] thermModeSettings = null;	// Map between webConfigurationID(Integer) and StarsThermoModeSettings
 	private int nextCallNo = 0;
 	private int nextOrderNo = 0;
+	
+	private OptOutEventQueue optOutEventQueue = null;
 	
 	
 	// Cached XML messages
@@ -175,6 +179,22 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public void setPrimaryContactID(int primaryContactID) {
 		this.primaryContactID = primaryContactID;
 	}
+
+	/**
+	 * Returns the optOutEventQueue.
+	 * @return OptOutEventQueue
+	 */
+	public OptOutEventQueue getOptOutEventQueue() {
+		if (optOutEventQueue == null)
+			try {
+				optOutEventQueue = new OptOutEventQueue( getEnergyCompanySetting(ServerUtils.OPTOUT_COMMAND_FILE) );
+				optOutEventQueue.syncFromFile();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		return optOutEventQueue;
+	}
 	
 	
 	public void init() {
@@ -209,6 +229,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		energyCompanySettings = null;
 		nextCallNo = 0;
 		nextOrderNo = 0;
+		optOutEventQueue = null;
 		
 		starsEnergyCompany = null;
 		starsEnrPrograms = null;
@@ -1645,6 +1666,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		if (starsCustAcctInfos == null)
 			starsCustAcctInfos = new Hashtable();
 		return starsCustAcctInfos;
+	}
+	
+	public StarsCustAccountInformation getStarsCustAccountInformation(int accountID) {
+		return (StarsCustAccountInformation)getStarsCustAcctInfos().get( new Integer(accountID) );
 	}
 	
 	public StarsCustAccountInformation getStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo) {

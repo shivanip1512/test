@@ -8,6 +8,7 @@ import javax.xml.messaging.ReqRespListener;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteCustomerContact;
@@ -199,8 +200,11 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		getAllWebConfigurations();
     	LiteStarsEnergyCompany[] companies = getAllEnergyCompanies();
     	if (companies != null) {
-	    	for (int i = 0; i < companies.length; i++)
-	    		companies[i].init();
+	    	for (int i = 0; i < companies.length; i++) {
+	    		if (companies[i].getLiteID() == DEFAULT_ENERGY_COMPANY_ID
+	    			|| companies[i].getWebConfigID() != CtiUtilities.NONE_ID)
+		    		companies[i].init();
+	    	}
     	}
     	
     	connToPIL = (com.cannontech.servlet.PILConnectionServlet)

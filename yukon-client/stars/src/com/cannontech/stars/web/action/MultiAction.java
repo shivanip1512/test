@@ -8,6 +8,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -65,11 +66,11 @@ public class MultiAction implements ActionBase {
 				ActionBase action = (ActionBase) actionList.get(i);
 				SOAPMessage msg = action.process(reqMsg, session);
 				
-				StarsOperation resOper = SOAPUtil.parseSOAPMsgForOperation( msg );
-				if (resOper.getStarsFailure() != null) {
+				StarsOperation oper = SOAPUtil.parseSOAPMsgForOperation( msg );
+				if (oper.getStarsFailure() != null) {
 					// If one operation failed, then the whole operation failed
 					StarsOperation respOper = new StarsOperation();
-					respOper.setStarsFailure( resOper.getStarsFailure() );
+					respOper.setStarsFailure( oper.getStarsFailure() );
 					return SOAPUtil.buildSOAPMessage( respOper );
 				}
 				

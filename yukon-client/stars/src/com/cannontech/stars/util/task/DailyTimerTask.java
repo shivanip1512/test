@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -15,8 +16,13 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.web.action.ProgramOptOutAction;
+import com.cannontech.stars.web.action.ProgramReenableAction;
 import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.xml.serialize.StarsProgramOptOut;
+import com.cannontech.stars.xml.serialize.StarsProgramReenable;
 
 /**
  * @author yao
@@ -53,150 +59,65 @@ public class DailyTimerTask extends StarsTimerTask {
 	public void run() {
 		CTILogger.info( "*** Daily timer task start ***" );
 		
-		try {
-			/* Check for opted out programs that should be reactivated */
-			LiteStarsEnergyCompany[] companies = SOAPServer.getAllEnergyCompanies();
-			if (companies == null) return;
-			
-			Date now = new Date();
-			Calendar timeLimit = Calendar.getInstance();
-			timeLimit.add(Calendar.MINUTE, 30);	// Give the time limit a 30 minutes margin
-			
-			for (int i = 0; i < companies.length; i++) {
-				if (companies[i].getEnergyCompanyID().intValue() < 0) continue;
-				String routeStr = " select route id " + String.valueOf(companies[i].getRouteID());
-				
-				int reenableActionID = companies[i].getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION ).getEntryID();
-				int completeActionID = companies[i].getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED ).getEntryID();
-				int programEventID = companies[i].getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM ).getEntryID();
-				int hardwareEventID = companies[i].getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE ).getEntryID();
-				
-				com.cannontech.database.db.stars.event.LMCustomerEventBase[] hwEvents =
-						com.cannontech.database.db.stars.event.LMCustomerEventBase.getAllCustomerEvents( hardwareEventID, reenableActionID );
-				com.cannontech.database.db.stars.event.LMCustomerEventBase[] progEvents =
-						com.cannontech.database.db.stars.event.LMCustomerEventBase.getAllCustomerEvents( programEventID, reenableActionID );
+		/* Check for opted out programs that should be reactivated */
+		LiteStarsEnergyCompany[] companies = SOAPServer.getAllEnergyCompanies();
+		if (companies == null) return;
+		
+		Date now = new Date();
+		Calendar timeLimit = Calendar.getInstance();
+		timeLimit.add(Calendar.MINUTE, 30);	// Give the time limit a 30 minutes margin
+		
+		for (int i = 0; i < companies.length; i++) {
+			ArrayList dueEvents = companies[i].getOptOutEventQueue().consumeEvents( timeLimit.getTime().getTime() );
+			for (int j = 0; j < dueEvents.size(); j++) {
+				OptOutEventQueue.OptOutEvent event = (OptOutEventQueue.OptOutEvent) dueEvents.get(j);
+
+				try {
+					// Execute "opt out" and "reenable" commands
+					StringTokenizer st = new StringTokenizer( event.getCommand(), "," );
+					while (st.hasMoreTokens())
+						ServerUtils.sendCommand( st.nextToken() );
+					
+					// Update the lite and stars objects
+					LiteStarsCustAccountInformation liteAcctInfo = companies[i].getCustAccountInformation( event.getAccountID(), false );
+					if (liteAcctInfo == null) break;
+					if (event.getPeriod() == -1) {	// This is a "reenable" event
+						StarsProgramReenable reEnable = new StarsProgramReenable();
+						ProgramReenableAction.updateCustAccountInfo( liteAcctInfo, companies[i], reEnable );
+					}
+					else {	// This is a "opt out" event
+						StarsProgramOptOut optOut = new StarsProgramOptOut();
+						optOut.setStartDateTime( new Date(event.getStartDateTime()) );
+						optOut.setPeriod( event.getPeriod() );
+						ProgramOptOutAction.updateCustAccountInfo( liteAcctInfo, companies[i], optOut );
 						
-				for (int j = 0; j < hwEvents.length; j++) {
-					if (hwEvents[j].getEventDateTime().before( timeLimit.getTime() )) {
-						// Send yukon switch command to enable the LM hardware
-						com.cannontech.database.db.stars.event.LMHardwareEvent hwEvent = new com.cannontech.database.db.stars.event.LMHardwareEvent();
-						hwEvent.setEventID( hwEvents[j].getEventID() );
-						hwEvent = (com.cannontech.database.db.stars.event.LMHardwareEvent)
-								Transaction.createTransaction( Transaction.RETRIEVE, hwEvent ).execute();
-								
-						com.cannontech.database.db.stars.hardware.LMHardwareBase hw = new com.cannontech.database.db.stars.hardware.LMHardwareBase();
-						hw.setInventoryID( hwEvent.getInventoryID() );
-						hw = (com.cannontech.database.db.stars.hardware.LMHardwareBase)
-								Transaction.createTransaction( Transaction.RETRIEVE, hw ).execute();
-								
-						String cmd = "putconfig xcom service in temp serial " + hw.getManufacturerSerialNumber() + routeStr;
-						ServerUtils.sendCommand( cmd );
-						
-						CTILogger.debug( "*** Send service in temp command to serial " + hw.getManufacturerSerialNumber() );
-						
-						// Remove "Future Activation", and add "Activation Completed" to hardware events
-						com.cannontech.database.data.stars.event.LMHardwareEvent event1 = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-						event1.setEventID( hwEvents[j].getEventID() );
-						Transaction.createTransaction( Transaction.DELETE, event1 ).execute();
-						
-						hwEvents[j].setActionID( new Integer(completeActionID) );
-						hwEvents[j].setEventDateTime( new Date() );
-						
-						com.cannontech.database.data.stars.event.LMHardwareEvent event2 = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-						event2.setLMCustomerEventBase( hwEvents[j] );
-						event2.setLmHardwareEvent( hwEvent );
-						event2.setEventID( null );
-						event2.setEnergyCompanyID( companies[i].getEnergyCompanyID() );
-						event2 = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-								Transaction.createTransaction( Transaction.INSERT, event2 ).execute();
-						
-						// Update the lite object
-						LiteLMHardwareBase liteHw = companies[i].getLMHardware( hw.getInventoryID().intValue(), false );
-						if (liteHw != null) {
-							ServerUtils.removeLMCustomEvents(
-									liteHw.getLmHardwareHistory(),
-									companies[i].getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION).getEntryID() );
-							liteHw.getLmHardwareHistory().add( StarsLiteFactory.createLite(event2) );
-							liteHw.setDeviceStatus( YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL );
-						}
+						// Insert a corresponding "reenable" event back into the queue
+						OptOutEventQueue.OptOutEvent e = new OptOutEventQueue.OptOutEvent();
+						Calendar cal = Calendar.getInstance();
+						cal.setTime( new Date(event.getStartDateTime()) );
+						cal.add( Calendar.DATE, event.getPeriod() );
+						e.setStartDateTime( cal.getTime().getTime() );
+						e.setPeriod( -1 );	// "Reenable" event
+						e.setAccountID( event.getAccountID() );
+		            	
+						String[] commands = ProgramReenableAction.getReenableCommands( liteAcctInfo, companies[i] );
+		            	StringBuffer cmd = new StringBuffer();
+		            	if (commands.length > 0) {
+		            		cmd.append( commands[0] );
+		            		for (int k = 1; k < commands.length; k++)
+		            			cmd.append( "," ).append( commands[k] );
+		            	}
+		            	e.setCommand( cmd.toString() );
+		            	companies[i].getOptOutEventQueue().addEvent( e, false );
 					}
 				}
-						
-				for (int j = 0; j < progEvents.length; j++) {
-					if (progEvents[j].getEventDateTime().before( timeLimit.getTime() )) {
-						progEvents[j].setActionID( new Integer(completeActionID) );
-						progEvents[j].setEventDateTime( now );
-						progEvents[j] = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
-								Transaction.createTransaction( Transaction.UPDATE, progEvents[j] ).execute();
-						
-						// Update the lite object
-						com.cannontech.database.db.stars.event.LMProgramEvent progEvent = new com.cannontech.database.db.stars.event.LMProgramEvent();
-						progEvent.setEventID( progEvents[j].getEventID() );
-						progEvent = (com.cannontech.database.db.stars.event.LMProgramEvent)
-								Transaction.createTransaction( Transaction.RETRIEVE, progEvent ).execute();
-								
-						ArrayList liteAcctInfoList = companies[i].getAllCustAccountInformation();
-						for (int k = 0; k < liteAcctInfoList.size(); k++) {
-							LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) liteAcctInfoList.get(k);
-							if (liteAcctInfo.getCustomerAccount().getAccountID() != progEvent.getAccountID().intValue()) continue;
-							
-							ArrayList programs = liteAcctInfo.getLmPrograms();
-							if (programs == null) break;
-							
-							for (int l = 0; l < programs.size(); l++) {
-								LiteStarsLMProgram liteProg = (LiteStarsLMProgram) programs.get(l);
-								if (liteProg.getLmProgram().getProgramID() != progEvent.getLMProgramID().intValue()) continue;
-								
-								ArrayList progHist = liteProg.getProgramHistory();
-								if (progHist == null) break;
-								
-								for (int m = progHist.size() - 1; m >= 0; m--) {
-									LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) progHist.get(m);
-									if (liteEvent.getEventID() == progEvent.getEventID().intValue()) {
-										StarsLiteFactory.setLiteLMCustomerEvent( liteEvent, progEvents[j] );
-										break;
-									}
-								}
-								liteProg.setInService( true );
-								break;
-							}
-							break;
-						}
-					}
+				catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 			
-			/* Send out opt out commands stored in batch file */
-			for (int i = 0; i < companies.length; i++) {
-				String batchCmdFile = companies[i].getEnergyCompanySetting( ServerUtils.OPTOUT_COMMAND_FILE );
-				if (batchCmdFile != null) {
-					File f = new File( batchCmdFile );
-					if (f.exists()) {
-						BufferedReader br = null;
-						try {
-							br = new BufferedReader( new FileReader(f) );
-							String line = null;
-							while ((line = br.readLine()) != null)
-								ServerUtils.sendCommand( line );
-						}
-						finally {
-							if (br != null) br.close();
-						}
-						
-						// Clear the file content
-						FileWriter fw = null;
-						try {
-							fw = new FileWriter( f );
-						}
-						finally {
-							if (fw != null) fw.close();
-						}
-					}
-				}
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
+			// Synchronize the event queue to disk file
+			companies[i].getOptOutEventQueue().addEvent( null, true );
 		}
 		
 		CTILogger.info( "*** Daily timer task stop ***" );

@@ -147,7 +147,12 @@ public class YukonSwitchCommandAction implements ActionBase {
         		
         		if (liteHw == null) {
 	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the LM hardware to be disabled") );
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the hardware to be disabled") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+        		}
+        		if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The manufacturer serial # of the hardware cannot be empty") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
         		}
 
@@ -190,7 +195,12 @@ public class YukonSwitchCommandAction implements ActionBase {
         		
         		if (liteHw == null) {
 	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the LM hardware to be enabled") );
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the hardware to be enabled") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+        		}
+        		if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The manufacturer serial # of the hardware cannot be empty") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
         		}
 
@@ -233,7 +243,12 @@ public class YukonSwitchCommandAction implements ActionBase {
         		
         		if (liteHw == null) {
 	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the LM hardware to be enabled") );
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the hardware to be enabled") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+        		}
+        		if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The manufacturer serial # of the hardware cannot be empty") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
         		}
         		

@@ -660,7 +660,7 @@ public class StarsLiteFactory {
 		app.getApplianceBase().setKWCapacity( new Integer(liteApp.getKWCapacity()) );
 		app.getApplianceBase().setEfficiencyRating( new Integer(liteApp.getEfficiencyRating()) );
 		
-		if (liteApp.getInventoryID() != com.cannontech.database.db.stars.hardware.InventoryBase.NONE_INT) {
+		if (liteApp.getInventoryID() != CtiUtilities.NONE_ID) {
 			app.getLMHardwareConfig().setApplianceID( app.getApplianceBase().getApplianceID() );
 			app.getLMHardwareConfig().setInventoryID( new Integer(liteApp.getInventoryID()) );
 			app.getLMHardwareConfig().setAddressingGroupID( new Integer(liteApp.getAddressingGroupID()) );
