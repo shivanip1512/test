@@ -73,7 +73,18 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	        StarsDefaultThermostatSettings dftThermSettings = ecSettings.getStarsDefaultThermostatSettings();
             
             StarsUpdateThermostatSchedule updateSched = new StarsUpdateThermostatSchedule();
-            updateSched.setInventoryID( Integer.parseInt(req.getParameter("invID")) );
+            
+            String[] invIDStrs = req.getParameterValues("InvIDs");
+            if (invIDStrs == null || invIDStrs.length == 0) {
+            	updateSched.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
+            }
+            else {
+            	StringBuffer invIDStr = new StringBuffer( invIDStrs[0] );
+        		for (int i = 1; i < invIDStrs.length; i++)
+        			invIDStr.append(",").append(invIDStrs[i]);
+            	
+            	updateSched.setInventoryIDs( invIDStr.toString() );
+            }
 	        
 	        StarsThermoModeSettings mode = StarsThermoModeSettings.valueOf( req.getParameter("mode") );
 	        StarsThermoDaySettings day = StarsThermoDaySettings.valueOf( req.getParameter("day") );
@@ -139,40 +150,21 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	        	schedule.setTime4( new org.exolab.castor.types.Time(0) );
 	        	schedule.setTemperature4( -1 );
 	        }
-	        
-			StarsLMHardware hardware = null;
-	        StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-	        		user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-	        if (accountInfo != null) {
-				for (int i = 0; i < accountInfo.getStarsInventories().getStarsLMHardwareCount(); i++) {
-					StarsLMHardware hw = accountInfo.getStarsInventories().getStarsLMHardware(i);
-					if (hw.getInventoryID() == updateSched.getInventoryID()) {
-						hardware = hw;
-						break;
-					}
-				}
-	        }
 
-			if (updateSched.getInventoryID() < 0 || hardware.getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
+			if (req.getParameter("isTwoWay") == null) {
 				// This is a one-way thermostat or the default thermostat
 				if (ServletUtils.isWeekday( day )) {
-					String applyToWeekendStr = req.getParameter( "ApplyToWeekend" );
-					if (applyToWeekendStr != null) {	// Checkbox "ApplyToWeekend" is checked
+					if (req.getParameter("ApplyToWeekend") != null)
 						schedule.setDay( StarsThermoDaySettings.ALL );
-						//user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND, "checked" );
-					}
-					else {
-						//user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND, "" );
-					}
 				}
 			}
 			else {
 				// This is a two-way thermostat
 				String applyToWeekdaysStr = req.getParameter( "ApplyToWeekdays" );
 				String applyToWeekendStr = req.getParameter( "ApplyToWeekend" );
+				
 				if (applyToWeekdaysStr != null && applyToWeekendStr != null) {
 					schedule.setDay( StarsThermoDaySettings.ALL );
-					//user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKDAYS, "checked" );
 				}
 				else if (applyToWeekdaysStr != null) {
 					if (ServletUtils.isWeekday( day )) {
@@ -193,9 +185,6 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 						schedule2.setDay( StarsThermoDaySettings.WEEKEND );
 						season.addStarsThermostatSchedule( schedule2 );
 					}
-				}
-				else {
-					//user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKDAYS, "" );
 				}
 			}
             
@@ -237,214 +226,276 @@ public class UpdateThermostatScheduleAction implements ActionBase {
                 
 			int energyCompanyID = user.getEnergyCompanyID();
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+	    	
+			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
+			boolean hasTwoWay = false;
 			
 			StarsUpdateThermostatSchedule updateSched = reqOper.getStarsUpdateThermostatSchedule();
+			StarsUpdateThermostatScheduleResponse resp = null;
     		
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( updateSched.getInventoryID(), true );
-			
-    		if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
-    			if (ServerUtils.isOperator( user ))
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The thermostat is currently out of service, schedule is not sent") );
-    			else
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Your thermostat is currently out of service, schedule is not sent.<br>Please go to the \"Contact Us\" page if you want to contact our CSRs for further information.") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
+    		int[] invIDs = null;
+    		if (updateSched.getInventoryIDs() == null) {
+    			// Setup for a single thermostat
+    			invIDs = new int[] {updateSched.getInventoryID()};
+    		}
+    		else {
+    			// Setup for multiple thermostats
+    			String[] invIDStrs = updateSched.getInventoryIDs().split(",");
+    			invIDs = new int[ invIDStrs.length ];
+    			for (int i = 0; i < invIDs.length; i++)
+    				invIDs[i] = Integer.parseInt( invIDStrs[i] );
     		}
     		
-    		if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
-    			if (ServerUtils.isOperator( user ))
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The manufacturer serial # of the hardware cannot be empty") );
-	            else
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Not able to send out the schedule to your thermostat.<br>Please go to the \"Contact Us\" page if you want to contact our CSRs for further information.") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-    		}
-    		
-    		StarsUpdateThermostatScheduleResponse resp = updateThermostatSchedule( updateSched, liteHw, energyCompany );
-			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
-			
-			LiteStarsThermostatSettings dftSettings = energyCompany.getDefaultThermostatSettings();
-			LiteStarsThermostatSettings liteSettings = liteHw.getThermostatSettings();
-			
-			// Send out commands to program the thermostat
-			for (int i = 0; i < updateSched.getStarsThermostatSeasonCount(); i++) {
-				StarsThermostatSeason starsSeason = updateSched.getStarsThermostatSeason(i);
+    		for (int i = 0; i < invIDs.length; i++) {
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invIDs[i], true );
 				
-				for (int j = 0; j < starsSeason.getStarsThermostatScheduleCount(); j++) {
-					StarsThermostatSchedule starsSched = starsSeason.getStarsThermostatSchedule(j);
-					int towID = ECUtils.getThermSeasonEntryTOWID( starsSched.getDay(), energyCompany );
-					int weekdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY ).getEntryID();
+				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
+					String errorMsg = (invIDs.length == 1)?
+							"The thermostat is currently out of service, schedule is not sent." :
+							"The thermostat \"" + liteHw.getDeviceLabel() + "\" is currently out of service, schedule is not sent.";
 					
-					ArrayList oldSched = new ArrayList();
-					for (int k = 0; k < liteSettings.getThermostatSeasons().size(); k++) {
-						LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSettings.getThermostatSeasons().get(k);
-						if (liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_COOL  && starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE ||
-							liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_HEAT  && starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE)
-						{
-							for (int l = 0; l < liteSeason.getSeasonEntries().size(); l++) {
-								LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(l);
-								if (liteEntry.getTimeOfWeekID() == towID)
-									oldSched.add( liteEntry );
-							}
-							break;
-						}
-					}
-					
-					ArrayList dftOtherSched = new ArrayList();
-					for (int k = 0; k < dftSettings.getThermostatSeasons().size(); k++) {
-						LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) dftSettings.getThermostatSeasons().get(k);
-						if (liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_COOL  && starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE ||
-							liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_HEAT  && starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE)
-						{
-							for (int l = 0; l < liteSeason.getSeasonEntries().size(); l++) {
-								LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(l);
-								if (liteEntry.getTimeOfWeekID() == towID ||
-									ServletUtils.isWeekday(starsSched.getDay()) && liteEntry.getTimeOfWeekID() == weekdayID)
-									dftOtherSched.add( liteEntry );
-							}
-							break;
-						}
-					}
-					
-					String dayStr = null;
-					if (starsSched.getDay().getType() == StarsThermoDaySettings.ALL_TYPE)
-						dayStr = "all";
-					else if (starsSched.getDay().getType() == StarsThermoDaySettings.WEEKDAY_TYPE)
-						dayStr = "weekday";
-					else if (starsSched.getDay().getType() == StarsThermoDaySettings.WEEKEND_TYPE)
-						dayStr = "weekend";
-					else if (starsSched.getDay().getType() == StarsThermoDaySettings.MONDAY_TYPE)
-						dayStr = "mon";
-					else if (starsSched.getDay().getType() == StarsThermoDaySettings.TUESDAY_TYPE)
-						dayStr = "tue";
-					else if (starsSched.getDay().getType() == StarsThermoDaySettings.WEDNESDAY_TYPE)
-						dayStr = "wed";
-					else if (starsSched.getDay().getType() == StarsThermoDaySettings.THURSDAY_TYPE)
-						dayStr = "thu";
-					else if (starsSched.getDay().getType() == StarsThermoDaySettings.FRIDAY_TYPE)
-						dayStr = "fri";
-					else if (starsSched.getDay().getType() == StarsThermoDaySettings.SATURDAY_TYPE)
-						dayStr = "sat";
-					else if (starsSched.getDay().getType() == StarsThermoDaySettings.SUNDAY_TYPE)
-						dayStr = "sun";
-					else
-						throw new Exception( "Invalid thermostat schedule attribute: day = " + starsSched.getDay().toString() );
-					
-					boolean isCool = (starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE);
-					boolean skip1 = (starsSched.getTemperature1() == -1);
-					boolean skip2 = (starsSched.getTemperature2() == -1);
-					boolean skip3 = (starsSched.getTemperature3() == -1);
-					boolean skip4 = (starsSched.getTemperature4() == -1);
-					
-					boolean oldSkip1 = false, oldSkip2 = false, oldSkip3 = false, oldSkip4 = false;
-					if (oldSched.size() == 4) {
-						oldSkip1 = ((LiteLMThermostatSeasonEntry) oldSched.get(0)).getTemperature() == -1;
-						oldSkip2 = ((LiteLMThermostatSeasonEntry) oldSched.get(1)).getTemperature() == -1;
-						oldSkip3 = ((LiteLMThermostatSeasonEntry) oldSched.get(2)).getTemperature() == -1;
-						oldSkip4 = ((LiteLMThermostatSeasonEntry) oldSched.get(3)).getTemperature() == -1;
-					}
-					
-					String time1 = (skip1)? "HH:MM" : starsSched.getTime1().toString().substring(0, 5);
-					String time2 = (skip2)? "HH:MM" : starsSched.getTime2().toString().substring(0, 5);
-					String time3 = (skip3)? "HH:MM" : starsSched.getTime3().toString().substring(0, 5);
-					String time4 = (skip4)? "HH:MM" : starsSched.getTime4().toString().substring(0, 5);
-					
-					String temp1C = "ff", temp2C = "ff", temp3C = "ff", temp4C = "ff";
-					String temp1H = "ff", temp2H = "ff", temp3H = "ff", temp4H = "ff";
-					if (isCool) {
-						if (!skip1) {
-							temp1C = String.valueOf( starsSched.getTemperature1() );
-							if (oldSkip1) temp1H = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(0)).getTemperature() );
-						}
-						if (!skip2) {
-							temp2C = String.valueOf( starsSched.getTemperature2() );
-							if (oldSkip2) temp2H = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(1)).getTemperature() );
-						}
-						if (!skip3) {
-							temp3C = String.valueOf( starsSched.getTemperature3() );
-							if (oldSkip3) temp3H = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(2)).getTemperature() );
-						}
-						if (!skip4) {
-							temp4C = String.valueOf( starsSched.getTemperature4() );
-							if (oldSkip4) temp4H = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(3)).getTemperature() );
-						}
+					if (ServerUtils.isOperator( user )) {
+						respOper.setStarsFailure( StarsFactory.newStarsFailure(
+								StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg) );
 					}
 					else {
-						if (!skip1) {
-							temp1H = String.valueOf( starsSched.getTemperature1() );
-							if (oldSkip1) temp1C = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(0)).getTemperature() );
-						}
-						if (!skip2) {
-							temp2H = String.valueOf( starsSched.getTemperature2() );
-							if (oldSkip2) temp2C = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(1)).getTemperature() );
-						}
-						if (!skip3) {
-							temp3H = String.valueOf( starsSched.getTemperature3() );
-							if (oldSkip3) temp3C = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(2)).getTemperature() );
-						}
-						if (!skip4) {
-							temp4H = String.valueOf( starsSched.getTemperature4() );
-							if (oldSkip4) temp4C = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(3)).getTemperature() );
-						}
+						respOper.setStarsFailure( StarsFactory.newStarsFailure(
+								StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg + " Please refer to the \"Contact us\" page if you want to get more information.") );
 					}
 					
-/*					String temp1C = (isCool && !skip1)? String.valueOf(starsSched.getTemperature1()) : "ff";
-					String temp2C = (isCool && !skip2)? String.valueOf(starsSched.getTemperature2()) : "ff";
-					String temp3C = (isCool && !skip3)? String.valueOf(starsSched.getTemperature3()) : "ff";
-					String temp4C = (isCool && !skip4)? String.valueOf(starsSched.getTemperature4()) : "ff";
-					String temp1H = (!isCool && !skip1)? String.valueOf(starsSched.getTemperature1()) : "ff";
-					String temp2H = (!isCool && !skip2)? String.valueOf(starsSched.getTemperature2()) : "ff";
-					String temp3H = (!isCool && !skip3)? String.valueOf(starsSched.getTemperature3()) : "ff";
-					String temp4H = (!isCool && !skip4)? String.valueOf(starsSched.getTemperature4()) : "ff";
-*/					
-					StringBuffer cmd = new StringBuffer();
-					if (liteHw.isTwoWayThermostat())
-						cmd.append("putconfig epro schedule ");
-					else
-						cmd.append("putconfig xcom schedule ");
-					cmd.append(dayStr).append(" ")
-						.append(time1).append(",").append(temp1H).append(",").append(temp1C).append(", ")
-						.append(time2).append(",").append(temp2H).append(",").append(temp2C).append(", ")
-						.append(time3).append(",").append(temp3H).append(",").append(temp3C).append(", ")
-						.append(time4).append(",").append(temp4H).append(",").append(temp4C)
-						.append(" serial ").append(liteHw.getManufactureSerialNumber())
-						.append(routeStr);
-					ServerUtils.sendCommand( cmd.toString() );
+					return SOAPUtil.buildSOAPMessage( respOper );
 				}
-			}
+    			
+				if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
+					if (ServerUtils.isOperator( user )) {
+						String errorMsg = (invIDs.length == 1)?
+								"The serial # of the thermostat cannot be empty, schedule is not sent." :
+								"The serial # of thermostat \"" + liteHw.getDeviceLabel() + "\" is empty, schedule is not sent.";
+						
+						respOper.setStarsFailure( StarsFactory.newStarsFailure(
+								StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg) );
+					}
+					else {
+						respOper.setStarsFailure( StarsFactory.newStarsFailure(
+								StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot send schedule to the thermostat. Please refer to the \"Contact us\" page if you want to get more information.") );
+					}
+					
+					return SOAPUtil.buildSOAPMessage( respOper );
+				}
+	    		
+	    		// Try to set a two-way schedule as the response message
+	    		if (!hasTwoWay) {
+					resp = updateThermostatSchedule( updateSched, liteHw, energyCompany );
+					if (liteHw.isTwoWayThermostat()) hasTwoWay = true;
+	    		}
+				
+				LiteStarsThermostatSettings dftSettings = energyCompany.getDefaultThermostatSettings();
+				LiteStarsThermostatSettings liteSettings = liteHw.getThermostatSettings();
+				
+				int mondayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_MONDAY ).getEntryID();
+				int weekdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY ).getEntryID();
+				
+				// Send out commands to program the thermostat
+				for (int j = 0; j < updateSched.getStarsThermostatSeasonCount(); j++) {
+					StarsThermostatSeason starsSeason = updateSched.getStarsThermostatSeason(j);
+					
+					for (int k = 0; k < starsSeason.getStarsThermostatScheduleCount(); k++) {
+						StarsThermostatSchedule starsSched = starsSeason.getStarsThermostatSchedule(k);
+						
+						int towID = ECUtils.getThermSeasonEntryTOWID( starsSched.getDay(), energyCompany );
+						if (towID == 0)
+							throw new Exception( "Invalid thermostat schedule attribute: day = " + starsSched.getDay().toString() );
+						
+						if (liteHw.isOneWayThermostat() && towID != weekdayID && ServletUtils.isWeekday(starsSched.getDay())) {
+							// If this is a one-way thermostat, and the current schedule is for a weekday
+							// (monday - friday). Treat monday as "weekday" type, and ignore other days.
+							if (towID == mondayID)
+								towID = weekdayID;
+							else
+								continue;
+						}
+						
+						ArrayList oldSched = new ArrayList();
+						for (int l = 0; l < liteSettings.getThermostatSeasons().size(); l++) {
+							LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSettings.getThermostatSeasons().get(l);
+							if (liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_COOL  && starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE ||
+								liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_HEAT  && starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE)
+							{
+								for (int m = 0; m < liteSeason.getSeasonEntries().size(); m++) {
+									LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(m);
+									if (liteEntry.getTimeOfWeekID() == towID)
+										oldSched.add( liteEntry );
+								}
+								break;
+							}
+						}
+						
+						ArrayList dftOtherSched = new ArrayList();
+						for (int l = 0; l < dftSettings.getThermostatSeasons().size(); l++) {
+							LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) dftSettings.getThermostatSeasons().get(l);
+							if (liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_COOL  && starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE ||
+								liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_HEAT  && starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE)
+							{
+								for (int m = 0; m < liteSeason.getSeasonEntries().size(); m++) {
+									LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(m);
+									if (liteEntry.getTimeOfWeekID() == towID)
+										dftOtherSched.add( liteEntry );
+								}
+								break;
+							}
+						}
+						
+						String dayStr = null;
+						if (starsSched.getDay().getType() == StarsThermoDaySettings.ALL_TYPE)
+							dayStr = "all";
+						else if (starsSched.getDay().getType() == StarsThermoDaySettings.WEEKDAY_TYPE)
+							dayStr = "weekday";
+						else if (starsSched.getDay().getType() == StarsThermoDaySettings.WEEKEND_TYPE)
+							dayStr = "weekend";
+						else if (starsSched.getDay().getType() == StarsThermoDaySettings.SATURDAY_TYPE)
+							dayStr = "sat";
+						else if (starsSched.getDay().getType() == StarsThermoDaySettings.SUNDAY_TYPE)
+							dayStr = "sun";
+						else if (starsSched.getDay().getType() == StarsThermoDaySettings.MONDAY_TYPE)
+							dayStr = liteHw.isTwoWayThermostat()? "mon" : "weekday";
+						else if (starsSched.getDay().getType() == StarsThermoDaySettings.TUESDAY_TYPE)
+							dayStr = "tue";
+						else if (starsSched.getDay().getType() == StarsThermoDaySettings.WEDNESDAY_TYPE)
+							dayStr = "wed";
+						else if (starsSched.getDay().getType() == StarsThermoDaySettings.THURSDAY_TYPE)
+							dayStr = "thu";
+						else if (starsSched.getDay().getType() == StarsThermoDaySettings.FRIDAY_TYPE)
+							dayStr = "fri";
+						else
+							throw new Exception( "Invalid thermostat schedule attribute: day = " + starsSched.getDay().toString() );
+						
+						if (dayStr == null) continue;
+						
+						boolean isCool = (starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE);
+						boolean skip1 = (starsSched.getTemperature1() == -1);
+						boolean skip2 = (starsSched.getTemperature2() == -1);
+						boolean skip3 = (starsSched.getTemperature3() == -1);
+						boolean skip4 = (starsSched.getTemperature4() == -1);
+						
+						boolean oldSkip1 = false, oldSkip2 = false, oldSkip3 = false, oldSkip4 = false;
+						if (oldSched.size() == 4) {
+							oldSkip1 = ((LiteLMThermostatSeasonEntry) oldSched.get(0)).getTemperature() == -1;
+							oldSkip2 = ((LiteLMThermostatSeasonEntry) oldSched.get(1)).getTemperature() == -1;
+							oldSkip3 = ((LiteLMThermostatSeasonEntry) oldSched.get(2)).getTemperature() == -1;
+							oldSkip4 = ((LiteLMThermostatSeasonEntry) oldSched.get(3)).getTemperature() == -1;
+						}
+						
+						String time1 = (skip1)? "HH:MM" : starsSched.getTime1().toString().substring(0, 5);
+						String time2 = (skip2)? "HH:MM" : starsSched.getTime2().toString().substring(0, 5);
+						String time3 = (skip3)? "HH:MM" : starsSched.getTime3().toString().substring(0, 5);
+						String time4 = (skip4)? "HH:MM" : starsSched.getTime4().toString().substring(0, 5);
+						if (skip1) {
+							time1 = liteHw.isTwoWayThermostat()? "HH:MM" :
+									new org.exolab.castor.types.Time(((LiteLMThermostatSeasonEntry) oldSched.get(0)).getStartTime() * 1000).toString().substring(0, 5);
+						}
+						if (skip2) {
+							time2 = liteHw.isTwoWayThermostat()? "HH:MM" :
+									new org.exolab.castor.types.Time(((LiteLMThermostatSeasonEntry) oldSched.get(1)).getStartTime() * 1000).toString().substring(0, 5);
+						}
+						if (skip3) {
+							time3 = liteHw.isTwoWayThermostat()? "HH:MM" :
+									new org.exolab.castor.types.Time(((LiteLMThermostatSeasonEntry) oldSched.get(2)).getStartTime() * 1000).toString().substring(0, 5);
+						}
+						if (skip4) {
+							time4 = liteHw.isTwoWayThermostat()? "HH:MM" :
+									new org.exolab.castor.types.Time(((LiteLMThermostatSeasonEntry) oldSched.get(3)).getStartTime() * 1000).toString().substring(0, 5);
+						}
+						
+						String temp1C = "ff", temp2C = "ff", temp3C = "ff", temp4C = "ff";
+						String temp1H = "ff", temp2H = "ff", temp3H = "ff", temp4H = "ff";
+						if (isCool) {
+							if (!skip1) {
+								temp1C = String.valueOf( starsSched.getTemperature1() );
+								if (oldSkip1) temp1H = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(0)).getTemperature() );
+							}
+							if (!skip2) {
+								temp2C = String.valueOf( starsSched.getTemperature2() );
+								if (oldSkip2) temp2H = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(1)).getTemperature() );
+							}
+							if (!skip3) {
+								temp3C = String.valueOf( starsSched.getTemperature3() );
+								if (oldSkip3) temp3H = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(2)).getTemperature() );
+							}
+							if (!skip4) {
+								temp4C = String.valueOf( starsSched.getTemperature4() );
+								if (oldSkip4) temp4H = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(3)).getTemperature() );
+							}
+						}
+						else {
+							if (!skip1) {
+								temp1H = String.valueOf( starsSched.getTemperature1() );
+								if (oldSkip1) temp1C = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(0)).getTemperature() );
+							}
+							if (!skip2) {
+								temp2H = String.valueOf( starsSched.getTemperature2() );
+								if (oldSkip2) temp2C = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(1)).getTemperature() );
+							}
+							if (!skip3) {
+								temp3H = String.valueOf( starsSched.getTemperature3() );
+								if (oldSkip3) temp3C = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(2)).getTemperature() );
+							}
+							if (!skip4) {
+								temp4H = String.valueOf( starsSched.getTemperature4() );
+								if (oldSkip4) temp4C = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(3)).getTemperature() );
+							}
+						}
+						
+						StringBuffer cmd = new StringBuffer();
+						if (liteHw.isTwoWayThermostat())
+							cmd.append("putconfig epro schedule ");
+						else
+							cmd.append("putconfig xcom schedule ");
+						cmd.append(dayStr).append(" ")
+							.append(time1).append(",").append(temp1H).append(",").append(temp1C).append(", ")
+							.append(time2).append(",").append(temp2H).append(",").append(temp2C).append(", ")
+							.append(time3).append(",").append(temp3H).append(",").append(temp3C).append(", ")
+							.append(time4).append(",").append(temp4H).append(",").append(temp4C)
+							.append(" serial ").append(liteHw.getManufactureSerialNumber())
+							.append(routeStr);
+						
+						ServerUtils.sendCommand( cmd.toString() );
+					}
+				}
+				
+				// Add "programming" to the hardware events
+				com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+				com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+				com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+    			
+				eventDB.setInventoryID( new Integer(invIDs[i]) );
+				eventBase.setEventTypeID( new Integer(
+						energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID()) );
+				eventBase.setActionID( new Integer(
+						energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_PROGRAMMING).getEntryID()) );
+				eventBase.setEventDateTime( new Date() );
+    			
+				event.setEnergyCompanyID( new Integer(energyCompanyID) );
+				event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+						Transaction.createTransaction( Transaction.INSERT, event ).execute();
+    			
+				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+				liteHw.getInventoryHistory().add( liteEvent );
+    			
+    			// The StarsLMHardwareEvent element of the response message only need to be set once
+    			if (resp.getStarsLMHardwareEvent() == null) {
+					StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
+					StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
+					resp.setStarsLMHardwareEvent( starsEvent );
+    			}
+    		}
 			
-			// Add "programming" to the hardware events
-    		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-    		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-    		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
-    		
-    		eventDB.setInventoryID( new Integer(updateSched.getInventoryID()) );
-    		eventBase.setEventTypeID( new Integer(
-    				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID()) );
-    		eventBase.setActionID( new Integer(
-    				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_PROGRAMMING).getEntryID()) );
-    		eventBase.setEventDateTime( new Date() );
-    		
-    		event.setEnergyCompanyID( new Integer(energyCompanyID) );
-    		event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-    				Transaction.createTransaction( Transaction.INSERT, event ).execute();
-    				
-    		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-    		liteHw.getInventoryHistory().add( liteEvent );
-    		
-    		StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
-    		StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
-    		resp.setStarsLMHardwareEvent( starsEvent );
-			respOper.setStarsUpdateThermostatScheduleResponse( resp );
-			
-			if (liteHw.isTwoWayThermostat()) {
+			if (hasTwoWay) {
 				Thread.sleep(3 * 1000);		// Wait a while
 				energyCompany.updateThermostatSettings( liteAcctInfo );
-	            Thread.sleep(2 * 1000);		// Wait a while for the update to finish
+				Thread.sleep(2 * 1000);		// Wait a while for the update to finish
 			}
 			
+			respOper.setStarsUpdateThermostatScheduleResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -469,39 +520,53 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
-
+            
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
 				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
 				return failure.getStatusCode();
 			}
-
+			
 			StarsUpdateThermostatScheduleResponse resp = operation.getStarsUpdateThermostatScheduleResponse();
             if (resp == null)
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-            	
+            
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
             		user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             
-            String confirmMsg = "Thermostat settings has been sent.";
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+			StarsUpdateThermostatSchedule updateSched = reqOper.getStarsUpdateThermostatSchedule();
+			
+            int[] invIDs = null;
+			if (updateSched.getInventoryIDs() == null) {
+				invIDs = new int[] {updateSched.getInventoryID()};
+			}
+			else {
+				String[] invIDStrs = updateSched.getInventoryIDs().split(",");
+				invIDs = new int[ invIDStrs.length ];
+				for (int i = 0; i < invIDs.length; i++)
+					invIDs[i] = Integer.parseInt( invIDStrs[i] );
+			}
+			
+			for (int i = 0; i < invIDs.length; i++) {
+				for (int j = 0; j < accountInfo.getStarsInventories().getStarsLMHardwareCount(); j++) {
+					StarsLMHardware hardware = accountInfo.getStarsInventories().getStarsLMHardware(j);
+					if (hardware.getInventoryID() == invIDs[i]) {
+						if (resp.getStarsLMHardwareEvent() != null)
+							hardware.getStarsLMHardwareHistory().addStarsLMHardwareEvent( resp.getStarsLMHardwareEvent() );
+	            		
+						StarsThermostatSettings settings = hardware.getStarsThermostatSettings();
+						if (settings.getStarsThermostatDynamicData() == null)
+							parseResponse( resp, settings );
+						
+						break;
+					}
+				}
+			}
             
-            for (int i = 0; i < accountInfo.getStarsInventories().getStarsLMHardwareCount(); i++) {
-            	StarsLMHardware hardware = accountInfo.getStarsInventories().getStarsLMHardware(i);
-            	if (hardware.getInventoryID() == resp.getInventoryID()) {
-            		if (resp.getStarsLMHardwareEvent() != null)
-	            		hardware.getStarsLMHardwareHistory().addStarsLMHardwareEvent( resp.getStarsLMHardwareEvent() );
-	            	
-	            	StarsThermostatSettings settings = hardware.getStarsThermostatSettings();
-		            if (settings.getStarsThermostatDynamicData() == null)
-		            	parseResponse( resp, settings );
-		            else
-		            	confirmMsg += " It may take a few minutes before the thermostat gets it.";
-		            break;
-            	}
-            }
-            
-            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, confirmMsg);
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE,
+					"The new schedule has been sent. It may take a few minutes before the thermostat gets it.");
             return 0;
         }
         catch (Exception e) {
@@ -516,7 +581,6 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			throws Exception
 	{
 		StarsUpdateThermostatScheduleResponse resp = new StarsUpdateThermostatScheduleResponse();
-		resp.setInventoryID( liteHw.getInventoryID() );
 		
 		LiteStarsThermostatSettings liteDftSettings = energyCompany.getDefaultThermostatSettings();
 		LiteStarsThermostatSettings liteSettings = liteHw.getThermostatSettings();
@@ -531,7 +595,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			for (int i = 0; i < updateSched.getStarsThermostatSeasonCount(); i++) {
 				StarsThermostatSeason starsSeason = updateSched.getStarsThermostatSeason(i);
 				int webConfigID = (starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE) ?
-				ECUtils.YUK_WEB_CONFIG_ID_COOL : ECUtils.YUK_WEB_CONFIG_ID_HEAT;
+						ECUtils.YUK_WEB_CONFIG_ID_COOL : ECUtils.YUK_WEB_CONFIG_ID_HEAT;
 				
 				LiteLMThermostatSeason liteSeason = null;
 				LiteLMThermostatSeason liteSeason2 = null;
@@ -766,7 +830,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	}
 	
 	public static void parseResponse(StarsUpdateThermostatScheduleResponse resp, StarsThermoSettings settings) {
-        // Update thermostat schedules
+        boolean isTwoWay = settings.getStarsThermostatDynamicData() != null;
+        
         for (int i = 0; i < resp.getStarsThermostatSeasonCount(); i++) {
         	StarsThermostatSeason newSeason = resp.getStarsThermostatSeason(i);
         	
@@ -780,25 +845,57 @@ public class UpdateThermostatScheduleAction implements ActionBase {
         	}
         	
         	if (oldSeason == null) {
-        		settings.addStarsThermostatSeason( newSeason );
+        		oldSeason = new StarsThermostatSeason();
+        		oldSeason.setMode( newSeason.getMode() );
+        		oldSeason.setStartDate( newSeason.getStartDate() );
+        		settings.addStarsThermostatSeason( oldSeason );
         	}
-        	else {
-        		for (int j = 0; j < newSeason.getStarsThermostatScheduleCount(); j++) {
-        			StarsThermostatSchedule newSched = newSeason.getStarsThermostatSchedule(j);
-        			
-        			boolean foundSched = false;
-        			for (int k = 0; k < oldSeason.getStarsThermostatScheduleCount(); k++) {
-        				StarsThermostatSchedule sched = oldSeason.getStarsThermostatSchedule(k);
-        				if (sched.getDay().getType() == newSched.getDay().getType()) {
-        					oldSeason.setStarsThermostatSchedule(k, newSched);
-        					foundSched = true;
-        					break;
-        				}
-        			}
-        			if (!foundSched)
-        				oldSeason.addStarsThermostatSchedule( newSched );
-        		}
-        	}
+        	
+    		for (int j = 0; j < newSeason.getStarsThermostatScheduleCount(); j++) {
+    			StarsThermostatSchedule newSched = newSeason.getStarsThermostatSchedule(j);
+    			StarsThermoDaySettings daySetting = newSched.getDay();
+    			
+    			if (!isTwoWay && daySetting.getType() != StarsThermoDaySettings.WEEKDAY_TYPE &&
+    				ServletUtils.isWeekday( daySetting ))
+    			{
+    				if (daySetting.getType() == StarsThermoDaySettings.MONDAY_TYPE)
+    					daySetting = StarsThermoDaySettings.WEEKDAY;
+    				else
+    					continue;
+    			}
+    			
+    			StarsThermostatSchedule oldSched = null;
+    			for (int k = 0; k < oldSeason.getStarsThermostatScheduleCount(); k++) {
+    				StarsThermostatSchedule sched = oldSeason.getStarsThermostatSchedule(k);
+    				if (sched.getDay().getType() == daySetting.getType()) {
+    					oldSched = sched;
+    					break;
+    				}
+    			}
+    			
+				if (oldSched == null) {
+					oldSched = new StarsThermostatSchedule();
+					oldSched.setDay( daySetting );
+					oldSeason.addStarsThermostatSchedule( oldSched );
+				}
+				
+				if (isTwoWay || newSched.getTemperature1() > 0) {
+					oldSched.setTime1( newSched.getTime1() );
+					oldSched.setTemperature1( newSched.getTemperature1() );
+				}
+				if (isTwoWay || newSched.getTemperature2() > 0) {
+					oldSched.setTime2( newSched.getTime2() );
+					oldSched.setTemperature2( newSched.getTemperature2() );
+				}
+				if (isTwoWay || newSched.getTemperature3() > 0) {
+					oldSched.setTime3( newSched.getTime3() );
+					oldSched.setTemperature3( newSched.getTemperature3() );
+				}
+				if (isTwoWay || newSched.getTemperature4() > 0) {
+					oldSched.setTime4( newSched.getTime4() );
+					oldSched.setTemperature4( newSched.getTemperature4() );
+				}
+    		}
         }
 	}
 	

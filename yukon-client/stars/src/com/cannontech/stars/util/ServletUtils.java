@@ -93,14 +93,13 @@ public class ServletUtils {
 	public static final String ATT_LAST_SEARCH_OPTION = "LAST_SEARCH_OPTION";
 	
 	public static final String ATT_OMIT_GATEWAY_TIMEOUT = "OMIT_GATEWAY_TIMEOUT";
+	public static final String ATT_THERMOSTAT_INVENTORY_IDS = "THERMOSTAT_INVENTORY_IDS";
 	
 	public static final String IN_SERVICE = "In Service";
 	public static final String OUT_OF_SERVICE = "Out of Service";
 	
 	public static final int MAX_NUM_IMAGES = 5;
 	public static final int GATEWAY_TIMEOUT_HOURS = 24;
-	
-	public static final String OMIT_GATEWAY_TIMEOUT = "OMIT_GATEWAY_TIMEOUT";
 	
 	public static final String UTIL_COMPANY_ADDRESS = "<<COMPANY_ADDRESS>>";
 	public static final String UTIL_PHONE_NUMBER = "<<PHONE_NUMBER>>";

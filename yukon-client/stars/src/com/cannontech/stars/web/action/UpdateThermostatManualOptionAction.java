@@ -53,6 +53,19 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             if (accountInfo == null) return null;
             
             StarsUpdateThermostatManualOption option = new StarsUpdateThermostatManualOption();
+            
+			String[] invIDStrs = req.getParameterValues("InvIDs");
+			if (invIDStrs == null || invIDStrs.length == 0) {
+				option.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
+			}
+			else {
+				StringBuffer invIDStr = new StringBuffer( invIDStrs[0] );
+				for (int i = 1; i < invIDStrs.length; i++)
+					invIDStr.append(",").append(invIDStrs[i]);
+            	
+				option.setInventoryIDs( invIDStr.toString() );
+			}
+			
             if (Boolean.valueOf( req.getParameter("RunProgram") ).booleanValue())
             	option.setTemperature( -1 );	// "Run Program" button is clicked
             else
@@ -62,7 +75,6 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 	            option.setMode( StarsThermoModeSettings.valueOf(req.getParameter("mode")) );
 	        if (req.getParameter("fan").length() > 0)
 	            option.setFan( StarsThermoFanSettings.valueOf(req.getParameter("fan")) );
-            option.setInventoryID( Integer.parseInt(req.getParameter("invID")) );
             
             StarsOperation operation = new StarsOperation();
             operation.setStarsUpdateThermostatManualOption( option );
@@ -102,88 +114,121 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
                 
 			int energyCompanyID = user.getEnergyCompanyID();
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+    		
+			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID()) + " load 1";
+			boolean hasTwoWay = false;
 			
 			StarsUpdateThermostatManualOption starsOption = reqOper.getStarsUpdateThermostatManualOption();
 			StarsUpdateThermostatManualOptionResponse resp = new StarsUpdateThermostatManualOptionResponse();
-			resp.setInventoryID( starsOption.getInventoryID() );
-			
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( starsOption.getInventoryID(), true );
-			
-    		if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
-    			if (ServerUtils.isOperator( user ))
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The thermostat is currently out of service, settings are not sent") );
-    			else
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Your thermostat is currently out of service, settings are not sent.<br>Please go to the \"Contact Us\" page if you want to contact our CSRs for further information.") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-    		}
     		
-    		if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
-    			if (ServerUtils.isOperator( user ))
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The manufacturer serial # of the hardware cannot be empty") );
-	            else
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Not able to send out the settings to your thermostat.<br>Please go to the \"Contact Us\" page if you want to contact our CSRs for further information.") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-    		}
-    		
-			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID()) + " load 1";
-			
-			StringBuffer cmd = new StringBuffer();
-			if (liteHw.isTwoWayThermostat())
-				cmd.append("putconfig epro setstate");
-			else
-				cmd.append("putconfig xcom setstate");
-			if (starsOption.getMode() != null)
-				cmd.append(" system ").append(starsOption.getMode().toString().toLowerCase());
-			if (starsOption.getTemperature() == -1) {
-				// Run scheduled program
-				cmd.append(" run");
+			int[] invIDs = null;
+			if (starsOption.getInventoryIDs() == null) {
+				// Setup for a single thermostat
+				invIDs = new int[] {starsOption.getInventoryID()};
 			}
 			else {
-				cmd.append(" temp ").append(starsOption.getTemperature());
-				if (starsOption.getFan() != null)
-					cmd.append(" fan ").append(starsOption.getFan().toString().toLowerCase());
-				if (starsOption.getHold())
-					cmd.append(" hold");
+				// Setup for multiple thermostats
+				String[] invIDStrs = starsOption.getInventoryIDs().split(",");
+				invIDs = new int[ invIDStrs.length ];
+				for (int i = 0; i < invIDs.length; i++)
+					invIDs[i] = Integer.parseInt( invIDStrs[i] );
 			}
-			cmd.append(" serial ").append(liteHw.getManufactureSerialNumber()).append(routeStr);
 			
-			ServerUtils.sendCommand( cmd.toString() );
-
-			com.cannontech.database.data.stars.event.LMThermostatManualEvent event =
-					new com.cannontech.database.data.stars.event.LMThermostatManualEvent();
-			event.getLMCustomerEventBase().setEventTypeID( new Integer(
-					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMTHERMOSTAT_MANUAL).getEntryID()) );
-			event.getLMCustomerEventBase().setActionID( new Integer(
-					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_MANUAL_OPTION).getEntryID()) );
-			event.getLMCustomerEventBase().setEventDateTime( new Date() );
-			
-			event.getLmThermostatManualEvent().setInventoryID( new Integer(liteHw.getInventoryID()) );
-			event.getLmThermostatManualEvent().setPreviousTemperature( new Integer(starsOption.getTemperature()) );
-			event.getLmThermostatManualEvent().setHoldTemperature( starsOption.getHold() ? "Y" : "N" );
-			event.getLmThermostatManualEvent().setOperationStateID( new Integer(ECUtils.getThermOptionOpStateID(starsOption.getMode(), energyCompany)) );
-			event.getLmThermostatManualEvent().setFanOperationID( ECUtils.getThermOptionFanOpID(starsOption.getFan(), energyCompany) );
-			
-			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-			event = (com.cannontech.database.data.stars.event.LMThermostatManualEvent)
-					Transaction.createTransaction(Transaction.INSERT, event).execute();
-			
-			LiteLMThermostatManualEvent liteEvent = (LiteLMThermostatManualEvent) StarsLiteFactory.createLite( event );
-			liteHw.getThermostatSettings().getThermostatManualEvents().add( liteEvent );
-			
-			StarsThermostatManualEvent starsEvent = StarsLiteFactory.createStarsThermostatManualEvent( liteEvent );
-			resp.setStarsThermostatManualEvent( starsEvent );
-			respOper.setStarsUpdateThermostatManualOptionResponse( resp );
+			for (int i = 0; i < invIDs.length; i++) {
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invIDs[i], true );
+				
+				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
+					String errorMsg = (invIDs.length == 1)?
+							"The thermostat is currently out of service, manual option is not sent." :
+							"The thermostat \"" + liteHw.getDeviceLabel() + "\" is currently out of service, manual option is not sent.";
+					
+					if (ServerUtils.isOperator( user )) {
+						respOper.setStarsFailure( StarsFactory.newStarsFailure(
+								StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg) );
+					}
+					else {
+						respOper.setStarsFailure( StarsFactory.newStarsFailure(
+								StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg + " Please refer to the \"Contact us\" page if you want to get more information.") );
+					}
+					
+					return SOAPUtil.buildSOAPMessage( respOper );
+				}
+    			
+				if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
+					if (ServerUtils.isOperator( user )) {
+						String errorMsg = (invIDs.length == 1)?
+								"The serial # of the thermostat cannot be empty, manual option is not sent." :
+								"The serial # of thermostat \"" + liteHw.getDeviceLabel() + "\" is empty, manual option is not sent.";
+						
+						respOper.setStarsFailure( StarsFactory.newStarsFailure(
+								StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg) );
+					}
+					else {
+						respOper.setStarsFailure( StarsFactory.newStarsFailure(
+								StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot send manual option to the thermostat. Please refer to the \"Contact us\" page if you want to get more information.") );
+					}
+					
+					return SOAPUtil.buildSOAPMessage( respOper );
+				}
+				
+				StringBuffer cmd = new StringBuffer();
+				if (liteHw.isTwoWayThermostat())
+					cmd.append("putconfig epro setstate");
+				else
+					cmd.append("putconfig xcom setstate");
+				if (starsOption.getMode() != null)
+					cmd.append(" system ").append(starsOption.getMode().toString().toLowerCase());
+				if (starsOption.getTemperature() == -1) {
+					// Run scheduled program
+					cmd.append(" run");
+				}
+				else {
+					cmd.append(" temp ").append(starsOption.getTemperature());
+					if (starsOption.getFan() != null)
+						cmd.append(" fan ").append(starsOption.getFan().toString().toLowerCase());
+					if (starsOption.getHold())
+						cmd.append(" hold");
+				}
+				cmd.append(" serial ").append(liteHw.getManufactureSerialNumber()).append(routeStr);
+				
+				ServerUtils.sendCommand( cmd.toString() );
+				
+				// Add to the thermostat manual events
+				com.cannontech.database.data.stars.event.LMThermostatManualEvent event =
+						new com.cannontech.database.data.stars.event.LMThermostatManualEvent();
+				event.getLMCustomerEventBase().setEventTypeID( new Integer(
+						energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMTHERMOSTAT_MANUAL).getEntryID()) );
+				event.getLMCustomerEventBase().setActionID( new Integer(
+						energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_MANUAL_OPTION).getEntryID()) );
+				event.getLMCustomerEventBase().setEventDateTime( new Date() );
+				
+				event.getLmThermostatManualEvent().setInventoryID( new Integer(invIDs[i]) );
+				event.getLmThermostatManualEvent().setPreviousTemperature( new Integer(starsOption.getTemperature()) );
+				event.getLmThermostatManualEvent().setHoldTemperature( starsOption.getHold() ? "Y" : "N" );
+				event.getLmThermostatManualEvent().setOperationStateID( new Integer(ECUtils.getThermOptionOpStateID(starsOption.getMode(), energyCompany)) );
+				event.getLmThermostatManualEvent().setFanOperationID( ECUtils.getThermOptionFanOpID(starsOption.getFan(), energyCompany) );
+				
+				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+				event = (com.cannontech.database.data.stars.event.LMThermostatManualEvent)
+						Transaction.createTransaction(Transaction.INSERT, event).execute();
+				
+				LiteLMThermostatManualEvent liteEvent = (LiteLMThermostatManualEvent) StarsLiteFactory.createLite( event );
+				liteHw.getThermostatSettings().getThermostatManualEvents().add( liteEvent );
+				
+				// The StarsThermostatManualEvent element of the response message only need to be set once
+				if (resp.getStarsThermostatManualEvent() == null) {
+					StarsThermostatManualEvent starsEvent = StarsLiteFactory.createStarsThermostatManualEvent( liteEvent );
+					resp.setStarsThermostatManualEvent( starsEvent );
+				}
+			}
             
-            if (liteHw.isTwoWayThermostat()) {
+            if (hasTwoWay) {
 				Thread.sleep(3 * 1000);		// Wait a while
 				energyCompany.updateThermostatSettings( liteAcctInfo );
 	            Thread.sleep(2 * 1000);		// Wait a while for the update to finish
             }
 			
+			respOper.setStarsUpdateThermostatManualOptionResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -218,32 +263,47 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 			StarsUpdateThermostatManualOptionResponse resp = operation.getStarsUpdateThermostatManualOptionResponse();
             if (resp == null)
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-
-			StarsThermostatManualEvent event = resp.getStarsThermostatManualEvent();
+			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
             		user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+			StarsUpdateThermostatManualOption option = reqOper.getStarsUpdateThermostatManualOption();
+			
+			int[] invIDs = null;
+			if (option.getInventoryIDs() == null) {
+				invIDs = new int[] {option.getInventoryID()};
+			}
+			else {
+				String[] invIDStrs = option.getInventoryIDs().split(",");
+				invIDs = new int[ invIDStrs.length ];
+				for (int i = 0; i < invIDs.length; i++)
+					invIDs[i] = Integer.parseInt( invIDStrs[i] );
+			}
+            
+			StarsThermostatManualEvent event = resp.getStarsThermostatManualEvent();
             String confirmMsg = "Thermostat settings has been sent.";
             
-            for (int i = 0; i < accountInfo.getStarsInventories().getStarsLMHardwareCount(); i++) {
-            	StarsLMHardware hardware = accountInfo.getStarsInventories().getStarsLMHardware(i);
-            	if (hardware.getInventoryID() == resp.getInventoryID()) {
-            		hardware.getStarsThermostatSettings().addStarsThermostatManualEvent( event );
-            		
-		            if (hardware.getStarsThermostatSettings().getStarsThermostatDynamicData() != null)
-		            	confirmMsg += " It may take a few minutes before the thermostat gets it.";
-            		break;
-            	}
+            for (int i = 0; i < invIDs.length; i++) {
+				for (int j = 0; j < accountInfo.getStarsInventories().getStarsLMHardwareCount(); j++) {
+					StarsLMHardware hardware = accountInfo.getStarsInventories().getStarsLMHardware(j);
+					
+					if (hardware.getInventoryID() == invIDs[i]) {
+						hardware.getStarsThermostatSettings().addStarsThermostatManualEvent( resp.getStarsThermostatManualEvent() );
+						break;
+					}
+				}
             }
             
-            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, confirmMsg);
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE,
+					"The manual option has been sent. It may take a few minutes before the thermostat gets it.");
             return 0;
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-
+        
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 
