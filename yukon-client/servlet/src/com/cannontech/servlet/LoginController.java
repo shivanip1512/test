@@ -12,13 +12,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.common.cache.PointChangeCache;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.db.point.SystemLog;
-import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.database.db.activity.ActivityLog;
 import com.cannontech.roles.application.WebClientRole;
 
 public class LoginController extends javax.servlet.http.HttpServlet {
@@ -45,10 +44,14 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 		
 	private static final String LOGIN_URL_COOKIE = com.cannontech.common.constants.LoginController.LOGIN_URL_COOKIE;
 	
+	private static final String LOGIN_WEB_ACTIVITY_ACTION = com.cannontech.common.constants.LoginController.LOGIN_WEB_ACTIVITY_ACTION;
+	private static final String LOGIN_CLIENT_ACTIVITY_ACTION = com.cannontech.common.constants.LoginController.LOGIN_CLIENT_ACTIVITY_ACTION;
+	private static final String LOGOUT_ACTIVITY_LOG = com.cannontech.common.constants.LoginController.LOGOUT_ACTIVITY_LOG;
+	private static final String LOGIN_FAILED_ACTIVITY_LOG = com.cannontech.common.constants.LoginController.LOGIN_FAILED_ACTIVITY_LOG;
+	
 /**
  * Handles login authentication, logout.
- * TODO: add change of password
- * Creation date: (5/5/00 10:48:46 AM)
+  * Creation date: (5/5/00 10:48:46 AM)
  * @param req javax.servlet.http.HttpServletRequest
  * @param resp javax.servlet.http.HttpServletResponse
  * @exception javax.servlet.ServletException The exception description.
@@ -71,7 +74,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			HttpSession session = req.getSession(true); 
 			try {						
 				initSession(user, session);
-				logEvent(user.getUsername(), "User Login (Web)", "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + req.getRemoteAddr());
+				logEvent(user.getUserID(), LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + req.getRemoteAddr());
 				
 				//stash a cookie that might tell us later where they log in at								
 				String loginUrl = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_IN_URL, LOGIN_URI);
@@ -99,7 +102,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 					redirectURI = req.getContextPath() + INVALID_URI;
 				}
 			}
-			logEvent("User Login Failed", "Login attempt as " + username + " failed from " + req.getRemoteAddr());
+			logEvent(LOGIN_FAILED_ACTIVITY_LOG, "Login attempt as " + username + " failed from " + req.getRemoteAddr());
 			resp.sendRedirect(redirectURI);
 		}			
 	}
@@ -116,7 +119,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 				session.setAttribute(SAVED_YUKON_USER, savedUser);
 			}
 			if(user != null) {
-				logEvent(user.getUsername(),"User Logout", "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged out from " + req.getRemoteAddr());
+				logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged out from " + req.getRemoteAddr());
 			}
 		}
 
@@ -147,7 +150,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			HttpSession session = req.getSession(true);
 			try {						
 				initSession(user, session);
-				logEvent(user.getUsername(), "User Login (Client)", "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + req.getRemoteAddr());
+				logEvent(user.getUserID(), LOGIN_CLIENT_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + req.getRemoteAddr());
 			} catch(TransactionException e) {
 				session.invalidate();
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -163,24 +166,26 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	}	
 }
 
-
 private void initSession(LiteYukonUser user, HttpSession session) throws TransactionException  {
 	session.setAttribute(com.cannontech.common.constants.LoginController.YUKON_USER, user);
-	
 }
 
 private void logEvent(String action, String description) {
-	logEvent(null, action, description);
+	logEvent(Integer.MIN_VALUE, action, description);
 }
-private void logEvent(String username, String action, String description) {
-	Signal msg = new Signal();
-	if(username != null)
-		msg.setUserName(username);
-	msg.setPointID(PointTypes.SYS_PID_SYSTEM);
-	msg.setLogType(SystemLog.TYPE_USER);
-	msg.setAction(action);
-	msg.setDescription(description);
-	PointChangeCache.getPointChangeCache().getDispatchConnection().write(msg);	
+
+private void logEvent(int userID, String action, String description) {	
+	try {		
+		ActivityLog al = new ActivityLog();
+		if(userID != Integer.MIN_VALUE)
+			al.setUserID(userID);
+		al.setAction(action);
+		al.setDescription(description);
+		Transaction t = Transaction.createTransaction(Transaction.INSERT, al);
+		t.execute(); 
+	} catch(com.cannontech.database.TransactionException te) {
+		CTILogger.error(getClass() + " couldn't log to activtity log table", te);
+	}		
 }
 
 }
