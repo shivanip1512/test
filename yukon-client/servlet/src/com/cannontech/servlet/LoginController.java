@@ -2,14 +2,12 @@ package com.cannontech.servlet;
 
 /**
  * LoginController authenticates and redirects a user based on the follong parameters
- * These four are required
+ * Required parameters:
  * USERNAME -
  * PASSWORD -
- * DATABASEALIAS - corresponds to a pool in the db.properties file.
- * SERVICE - which service are we logging into?
- *
- * alternate - the encoded url of where the user wants to be redirected
- *  		   Used only for a successful change of password request.
+*
+* TODO: Pull out contstant strings HOME_URL and YUKON_USER 
+* 
  * Creation date: (12/7/99 9:46:12 AM)
  * @author:	Aaron Lauinger 
  */
@@ -39,7 +37,8 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 	private static final String PASSWORD = "PASSWORD";
 		
 /**
- * Handles login authentication, logout, change of password.
+ * Handles login authentication, logout.
+ * TODO: add change of password
  * Creation date: (5/5/00 10:48:46 AM)
  * @param req javax.servlet.http.HttpServletRequest
  * @param resp javax.servlet.http.HttpServletResponse
