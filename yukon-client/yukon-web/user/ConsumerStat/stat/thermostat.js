@@ -35,11 +35,7 @@ function showTimeSleep(){
 
 function showTime(s, txt) {
   var curPos = parseInt(s.style.left, 10);
-  var hourStr = "0" + Math.floor(((curPos - 200)/3) * 10 / 60);
-  hourStr = hourStr.substr(hourStr.length-2, 2);
-  var minuteStr = "0" + Math.floor(((curPos - 200)/3)) * 10 % 60;
-  minuteStr = minuteStr.substr(minuteStr.length-2, 2);
-  txt.value= hourStr + ":" + minuteStr;
+  txt.value = timeValToStr( Math.floor((curPos - 200)/3) * 10 );
 }
 
 function showTemp1(){
@@ -89,111 +85,94 @@ layer.style.left = lgMove + smMove;
 }
 
 
-function timeChange(t,divId, nextTxtBox, prevTxtBox) {
-var pattern
-var time = t.value.split(":");
-var hour;
-var minute;
-var nextTime;
-var nextHr = null;
-var nextMin = null;
-var prevTime;
-var prevHr = null;
-var prevMin = null;
- 
-
-
-if(nextTxtBox != null) {
-nextTime = document.getElementById(nextTxtBox).value.split(":");
-nextHr = parseInt(nextTime[0], 10);
-nextMin = parseInt(nextTime[1], 10);
-
+function timeChange(t, divId, nextTxtBox, prevTxtBox) {
+  var val = timeStrToVal( t.value );
+  if (prevTxtBox != null) {
+    var prevVal = timeStrToVal( document.getElementById(prevTxtBox).value );
+    if (val < prevVal) val = prevVal;
+  }
+  if (nextTxtBox != null) {
+    var nextVal = timeStrToVal( document.getElementById(nextTxtBox).value );
+    if (val > nextVal) val = nextVal;
+  }
+  t.value = timeValToStr( val );
+  
+  var hour = Math.floor(val / 60);
+  var minute = val % 60;
+  moveLayer(divId, hour, minute);
 }
 
 
-if(prevTxtBox != null) {
-prevTime = document.getElementById(prevTxtBox).value.split(":");
-prevHr = parseInt(prevTime[0], 10);
-prevMin = parseInt(prevTime[1], 10);
-
+function timeValToStr(val)
+{
+  if (val < 0) val = 0;
+  if (val >= 24 * 60) val = 24 * 60 - 1;
+  val = Math.floor(val / 10) * 10;	// Align minute to the multiple of 10
+  
+  var hour = Math.floor(val / 60);
+  var minute = val % 60;
+  var ampmStr = "AM";
+  if (hour >= 12)
+  {
+    ampmStr = "PM";
+    if (hour > 12) hour = hour - 12;
+  }
+  var hourStr = "0" + hour;
+  hourStr = hourStr.substr(hourStr.length-2, 2);
+  var minuteStr = "0" + minute;
+  minuteStr = minuteStr.substr(minuteStr.length-2, 2);
+  
+  return hourStr + ":" + minuteStr + " " + ampmStr;
 }
 
-
-if (time.length == 2) {
-	if (time[0])
-	hour = parseInt(time[0], 10);
-	else 
-	hour = 0;
-	if (time[1])
-	minute = parseInt(time[1], 10);
-	else 
-	minute = 0;
-}
-else if (time.length == 1){
-	hour = parseInt(time[0], 10);
-	minute = 0;}
-else{
-	hour = 0;
-	minute = 0;}
-	
-if (hour > 23){   
-	hour = 23;
-	minute = 50;}
-else 
-if (hour < 0)
-	hour = 0;
-
-if (hour == 23 && minute > 50)
-	minute = 50;
-
-if (minute < 0 || minute > 59) 
-	minute = 0;
-
-if (nextHr != null) {
- if(hour > nextHr) {
- 		hour = nextHr;
-		minute = nextMin;
-	}
-}
-if (nextMin != null) {
-	if (hour == nextHr) {
-	if (minute >= nextMin) 
-			if (minute == 0) {
-				hour = hour -1;
-				minute = 50;
-				}
-			else
-			minute = nextMin - 10;
-	
-	}
-}
-if (prevHr != null) {
- if(hour < prevHr) {
- 		hour = prevHr;
-		minute = prevMin;
-	}
-}
-if (prevMin != null) {
-	if (hour == prevHr) {
-	if (minute <= prevMin) 
-			if (minute == 50) {
-				hour = hour + 1;
-				minute = 0;
-			}
-			else
-			minute = prevMin + 10;
-	
-	}
+function timeStrMilitaryToVal(str)
+{
+  var time = str.split(":");
+  var hour = 0;
+  var minute = 0;
+  if (time[0]) hour = parseInt(time[0], 10);
+  if (time[1]) minute = parseInt(time[1], 10);
+  
+  if (hour < 0)
+  {
+    hour = 0;
+    minute = 0;
+  }
+  else if (hour > 23)
+  {
+    hour = 23;
+    minute = 59;
+  }
+  else
+  {
+    if (minute < 0) minute = 0;
+    if (minute > 59) minute = 59;
+  }
+  
+  minute = Math.floor(minute / 10) * 10;	// Align minute to the multiple of 10
+  return hour * 60 + minute;
 }
 
-
-moveLayer(divId, hour, minute);
-hour = "0" + hour;
-minute = "0" + Math.floor(minute/10) * 10;
-minute = minute.substr(minute.length-2, 2);
-hour = hour.substr(hour.length-2, 2);
-t.value = hour + ":" + minute;
+function timeStrToVal(str)
+{
+  var val = 0;
+  
+  var ampmStr = str.substr(str.length-2, 2).toUpperCase();
+  if (ampmStr == "AM" || ampmStr == "PM")
+  {
+    val = timeStrMilitaryToVal( str.substr(0, str.length-2) );
+    if (ampmStr == "AM")
+    {
+      if (val >= 12 * 60) val = 12 * 60 - 10;	// AM time cannot exceed 11:50
+    }
+    else	// ampmStr == "PM"
+    {
+      if (val >= 13 * 60) val = 12 * 60 - 10;	// PM time cannot exceed 12:50
+      if (val < 12 * 60) val += 12 * 60;	// Add 12 hours to PM time unless it's 12:XX PM
+    }
+  }
+  else
+    val = timeStrMilitaryToVal( str );
+  
+  return val;
 }
-
-
-
