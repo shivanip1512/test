@@ -12,6 +12,8 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.XYPlot;
 
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
@@ -20,12 +22,16 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.GraphFuncs;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.db.CTIDbChange;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.model.GraphDefinitionTreeModel;
 import com.cannontech.graph.buffer.html.HTMLBuffer;
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
+import com.cannontech.graph.exportdata.SaveAsJFileChooser;
 import com.cannontech.graph.menu.FileMenu;
 import com.cannontech.graph.menu.HelpMenu;
 import com.cannontech.graph.menu.OptionsMenu;
@@ -33,9 +39,11 @@ import com.cannontech.graph.menu.TrendMenu;
 import com.cannontech.graph.menu.ViewMenu;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendModelType;
+import com.cannontech.graph.model.TrendProperties;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.common.gui.util.JEditorPanePrintable;
 public class GraphClient extends javax.swing.JPanel implements com.cannontech.database.cache.DBChangeListener, GraphDefines, java.awt.event.ActionListener, java.awt.event.WindowListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener {
 
 	private class TrendDataAutoUpdater extends Thread
@@ -140,7 +148,7 @@ public class GraphClient extends javax.swing.JPanel implements com.cannontech.da
 	private javax.swing.JLabel ivjStartDateLabel = null;
 	private javax.swing.JComboBox ivjTimePeriodComboBox = null;
 	private javax.swing.JLabel ivjTimePeriodLabel = null;
-	private javax.swing.JEditorPane ivjTabularEditorPane = null;
+	private com.cannontech.common.gui.util.JEditorPanePrintable ivjTabularEditorPane = null;
 	private javax.swing.JSlider ivjTabularSlider = null;
 	private javax.swing.JPanel ivjTabularTabPanel = null;
 	private javax.swing.JPanel ivjSliderPanel = null;
@@ -149,7 +157,7 @@ public class GraphClient extends javax.swing.JPanel implements com.cannontech.da
 	private javax.swing.JTabbedPane ivjTabbedPane = null;
 	private javax.swing.JPanel ivjTrendDisplayPanel = null;
 	private javax.swing.JPanel ivjTrendSetupPanel = null;
-	private javax.swing.JEditorPane ivjSummaryEditorPane = null;
+	private com.cannontech.common.gui.util.JEditorPanePrintable ivjSummaryEditorPane = null;
 	private javax.swing.JScrollPane ivjSummaryTabScrollPane = null;
 	private javax.swing.JSlider ivjStartTimeJSlider = null;
 	private javax.swing.JTextField ivjStartTimeTestField = null;
@@ -328,7 +336,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 
 	else if( event.getSource() == getOptionsMenu().getAdvancedOptionsMenuItem())
 	{
-		com.cannontech.graph.model.TrendProperties props = getAdvOptsPanel().showAdvancedOptions(getGraphParentFrame());
+		TrendProperties props = getAdvOptsPanel().showAdvancedOptions(getGraphParentFrame());
 		if (props != null)
 		{
 //			getCommandLogPanel().setVisible( defaults.getShowMessageLog() );			
@@ -394,12 +402,44 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		java.util.List trendPaobjects = GraphFuncs.getLiteYukonPaobjects(getGraph().getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue());
 		getGraph().getDataNow(trendPaobjects);
 	}
+/*	else if( event.getSource() == getOptionsMenu().getStatCarrierCommReportMenuItem())
+	{
+		com.cannontech.analysis.data.statistic.StatisticCarrierCommData data = new com.cannontech.analysis.data.statistic.StatisticCarrierCommData("DEVICE", "CARRIER", "Monthly");
+		runReport(data);
+	}
+	else if( event.getSource() == getOptionsMenu().getStatCommChannelReportMenuItem())
+	{
+		com.cannontech.analysis.data.statistic.StatisticCommChannelData data = new com.cannontech.analysis.data.statistic.StatisticCommChannelData("PORT", "PORT", "Monthly");
+		runReport(data);
+	}
+	else if( event.getSource() == getOptionsMenu().getStatDeviceCommReportMenuItem())
+	{
+		com.cannontech.analysis.data.statistic.StatisticDeviceCommData data = new com.cannontech.analysis.data.statistic.StatisticDeviceCommData("DEVICE", "Monthly");
+		runReport(data);
+	}
+	else if( event.getSource() == getOptionsMenu().getStatTransmitterCommReportMenuItem())
+	{
+		com.cannontech.analysis.data.statistic.StatisticTransmitterCommData data = new com.cannontech.analysis.data.statistic.StatisticTransmitterCommData("DEVICE", "TRANSMITTER", "Monthly");
+		runReport(data);
+	}*/
 	else
 	{
 		com.cannontech.clientutils.CTILogger.info(" other action");
 	}
 }
-
+/*public void runReport(com.cannontech.analysis.data.statistic.StatisticReportDataBase reportData)
+{
+	com.cannontech.analysis.report.StatisticReport report = new com.cannontech.analysis.report.StatisticReport();
+	try
+	{
+		report.showPreviewDialog(reportData);
+	}
+	catch (Exception e)
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}*/
 /**
  * Insert the method's description here.
  * Creation date: (6/22/00 2:07:26 PM)
@@ -460,11 +500,11 @@ public void actionPerformed_DeleteMenuItem( )
 	if (selected != null && selected instanceof LiteBase)
 	{
 		int option = javax.swing.JOptionPane.showConfirmDialog( getGraphParentFrame(),
-	        		"Are you sure you want to permanently delete '" + ((com.cannontech.database.data.lite.LiteGraphDefinition)selected).getName() + "'?",
+	        		"Are you sure you want to permanently delete '" + ((LiteGraphDefinition)selected).getName() + "'?",
 	        		"Confirm Delete", javax.swing.JOptionPane.YES_NO_OPTION);
 		if (option == javax.swing.JOptionPane.YES_OPTION)
 		{
-			com.cannontech.database.db.DBPersistent dbPersistent = com.cannontech.database.data.lite.LiteFactory.createDBPersistent((LiteBase)selected);
+			DBPersistent dbPersistent = LiteFactory.createDBPersistent((LiteBase)selected);
 			try
 			{
 				Transaction t = Transaction.createTransaction( Transaction.DELETE, dbPersistent);
@@ -482,13 +522,13 @@ public void actionPerformed_DeleteMenuItem( )
 				getTreeViewPanel().refresh();
 				if( getFreeChart().getPlot() instanceof org.jfree.chart.plot.CategoryPlot)
 				{
-					((org.jfree.chart.plot.CategoryPlot)getFreeChart().getPlot()).setDataset(null);
-					((org.jfree.chart.plot.CategoryPlot)getFreeChart().getPlot()).setSecondaryDataset(0, null);
+					((CategoryPlot)getFreeChart().getPlot()).setDataset(null);
+					((CategoryPlot)getFreeChart().getPlot()).setSecondaryDataset(0, null);
 				}
 				else if( getFreeChart().getPlot() instanceof org.jfree.chart.plot.XYPlot)
 				{
-					((org.jfree.chart.plot.XYPlot)getFreeChart().getPlot()).setDataset(null);
-					((org.jfree.chart.plot.XYPlot)getFreeChart().getPlot()).setSecondaryDataset(0, null);
+					((XYPlot)getFreeChart().getPlot()).setDataset(null);
+					((XYPlot)getFreeChart().getPlot()).setSecondaryDataset(0, null);
 				}
 			}
 			catch( com.cannontech.database.TransactionException e )
@@ -520,7 +560,7 @@ public void actionPerformed_EditMenuItem( )
 		
 		if (selected instanceof LiteBase)
 		{
-			GraphDefinition gDef = (GraphDefinition)com.cannontech.database.data.lite.LiteFactory.createDBPersistent((LiteBase)selected);
+			GraphDefinition gDef = (GraphDefinition)LiteFactory.createDBPersistent((LiteBase)selected);
 			Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, gDef);
 			gDef = (GraphDefinition)t.execute();			
 
@@ -602,24 +642,24 @@ public void actionPerformed_ExitMenuItem()
  */
 public void actionPerformed_ExportMenuItem()
 {
-	com.cannontech.graph.exportdata.SaveAsJFileChooser chooser = null;
+	SaveAsJFileChooser chooser = null;
 	
 	switch( getTrendProperties().getViewType() )
 	{
 		case TrendModelType.TABULAR_VIEW:
-			chooser = new com.cannontech.graph.exportdata.SaveAsJFileChooser(
+			chooser = new SaveAsJFileChooser(
 				CtiUtilities.getExportDirPath(), getTrendProperties().getViewType(), 
 				getGraph().getHtmlString(), getTrendModel().getChartName().toString(), getTrendModel());
 				break;
 				
 		case TrendModelType.SUMMARY_VIEW:
-			chooser = new com.cannontech.graph.exportdata.SaveAsJFileChooser(
+			chooser = new SaveAsJFileChooser(
 				CtiUtilities.getExportDirPath(), getTrendProperties().getViewType(), 
 				getGraph().getHtmlString(), getTrendModel().getChartName().toString());
 				break;
 
 		default:
-			chooser = new com.cannontech.graph.exportdata.SaveAsJFileChooser(
+			chooser = new SaveAsJFileChooser(
 				CtiUtilities.getExportDirPath(), getTrendProperties().getViewType(), 
 				getFreeChart(),	getTrendModel().getChartName().toString(), getTrendModel());
 				break;
@@ -741,7 +781,7 @@ public void actionPerformed_GetToggleButton( )
 
 		// -- Fill combo box with historical time periods
 		for (int i = 0; i < ServletUtil.historicalPeriods.length; i++)
-			getTimePeriodComboBox().addItem(ServletUtil.historicalPeriods[i]);
+			getTimePeriodComboBox().addItem(com.cannontech.util.ServletUtil.historicalPeriods[i]);
 
 		getTimePeriodComboBox().setSelectedIndex(histIndex); //set to saved histPeriod
 		if( histDate != null)
@@ -770,30 +810,36 @@ public void actionPerformed_PrintMenuItem( )
 	if (pj.printDialog())
 	{
 		java.awt.print.PageFormat pf = new java.awt.print.PageFormat();
-
+		
 		try
 		{
-			// set the orientation to landscape
-			pf.setOrientation(java.awt.print.PageFormat.LANDSCAPE);
+			java.awt.print.Paper paper = new java.awt.print.Paper();
+			if( getTabbedPane().getSelectedComponent() == getGraphTabPanel())
+			{
+				pf.setOrientation(java.awt.print.PageFormat.LANDSCAPE);
+				paper.setImageableArea(30, 40, 552, 712);
+				pf.setPaper(paper);
+				pj.setPrintable(getFreeChartPanel(), pf);
+			}
+			else if( getTabbedPane().getSelectedComponent() == getTabularTabScrollPane())
+			{
+				pf.setOrientation(java.awt.print.PageFormat.PORTRAIT);
+				paper.setImageableArea(72, 36, 468, 720);
+				pf.setPaper(paper);
+				pj.setPrintable(getTabularEditorPane(), pf);
+			}
+			else if( getTabbedPane().getSelectedComponent() == getSummaryTabScrollPane())
+			{
+				pf.setOrientation(java.awt.print.PageFormat.PORTRAIT);
+				paper.setImageableArea(40, 40, 542, 712);
+				pf.setPaper(paper);
+				pj.setPrintable(getSummaryEditorPane(), pf);
+			}
+			pj.print();
 		}
 		catch (IllegalArgumentException ex)
 		{
 			ex.printStackTrace(System.out);
-		}
-
-		try
-		{
-			// get the actual width and height of the tabbed pane in order to print all
-			// Calculate what percent the actual size is vs the standard page size
-			// Use the smaller percentage to make sure scaled values fit on one page
-			if ((pf.getImageableWidth() / getTabbedPane().getSelectedComponent().getWidth()) < (pf.getImageableHeight() / getTabbedPane().getSelectedComponent().getHeight()))
-				scalePercent = pf.getImageableWidth() / getTabbedPane().getSelectedComponent().getWidth();
-			else
-				scalePercent = pf.getImageableHeight() / getTabbedPane().getSelectedComponent().getHeight();
-
-			pj.setPrintable(getFreeChartPanel(), pf);
-//			pj.setPrintable((PrintableChart) getChart(), pf);
-			pj.print();
 		}
 		catch (java.awt.print.PrinterException ex)
 		{
@@ -1439,10 +1485,10 @@ private javax.swing.JTextField getStartTimeTestField() {
  * @return javax.swing.JEditorPane
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JEditorPane getSummaryEditorPane() {
+private com.cannontech.common.gui.util.JEditorPanePrintable getSummaryEditorPane() {
 	if (ivjSummaryEditorPane == null) {
 		try {
-			ivjSummaryEditorPane = new javax.swing.JEditorPane();
+			ivjSummaryEditorPane = new com.cannontech.common.gui.util.JEditorPanePrintable();
 			ivjSummaryEditorPane.setName("SummaryEditorPane");
 			ivjSummaryEditorPane.setBounds(0, 0, 861, 677);
 			ivjSummaryEditorPane.setContentType("text/html");
@@ -1515,10 +1561,10 @@ private javax.swing.JTabbedPane getTabbedPane() {
  * @return javax.swing.JEditorPane
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JEditorPane getTabularEditorPane() {
+private com.cannontech.common.gui.util.JEditorPanePrintable getTabularEditorPane() {
 	if (ivjTabularEditorPane == null) {
 		try {
-			ivjTabularEditorPane = new javax.swing.JEditorPane();
+			ivjTabularEditorPane = new com.cannontech.common.gui.util.JEditorPanePrintable();
 			ivjTabularEditorPane.setName("TabularEditorPane");
 			ivjTabularEditorPane.setEditable(false);
 			ivjTabularEditorPane.setContentType("text/html");
@@ -2093,6 +2139,7 @@ public static void main(String[] args)
         java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         mainFrame.setSize((int) (d.width * .85), (int) (d.height * .85));
         mainFrame.setLocation((int) (d.width * .05), (int) (d.height * .05));
+//		mainFrame.setSize(800, 600); //force smallest screen size; used in testing
 
         GraphClient gc = new GraphClient(mainFrame);
         mainFrame.setContentPane(gc);
