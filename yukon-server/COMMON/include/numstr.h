@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:28 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/10/21 21:36:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,8 @@ public:
 
     explicit CtiNumStr( double dVal, int precision=DefaultPrecision );
     explicit CtiNumStr( float fVal,  int precision=DefaultPrecision );
+    explicit CtiNumStr( char cVal );
+    explicit CtiNumStr( unsigned char ucVal );
     explicit CtiNumStr( short sVal );
     explicit CtiNumStr( unsigned short usVal );
     explicit CtiNumStr( int iVal );
@@ -80,6 +82,10 @@ private:
     {
         double d;
         float f;
+
+        int c;
+        unsigned int uc;
+
         short s;
         unsigned short us;
         int i;
@@ -100,6 +106,8 @@ private:
     {
         Double,
         Float,
+        Char,
+        UChar,
         Short,
         UShort,
         Int,
