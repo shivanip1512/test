@@ -1,8 +1,6 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
-	String referrer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
-	
 	int progNo = 0;
 	String progNoStr = request.getParameter("prog");
 	if (progNoStr != null) progNo = Integer.parseInt( progNoStr );
@@ -134,18 +132,7 @@
               </tr>
             </table>
             <div align="center"> 
-<%
-	if (referrer == null) {
-%>
               <input type="button" name="Back" value="Back" onclick="history.back()">
-<%
-	}
-	else {
-%>
-			  <input type="button" name="Back" value="Back" onclick="location.href='<%= referrer %>'">
-<%
-	}
-%>
             </div>
             <p>&nbsp;</p>
           </td>
