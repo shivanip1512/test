@@ -23,7 +23,12 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, RWTime &n
 
     CtiPointStore* pointStore = CtiPointStore::getInstance();
     CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
-    if( newTime > pointPtr->getPointTime() )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " - Point Data ID: " << changedID << " Val: " << newValue << " Time: " << newTime << " Quality: " << newQuality << endl;
+    }
+
+    if( newTime > pointPtr->getPointTime() || pointPtr->getPointQuality() == NonUpdatedQuality || pointPtr->getPointTags() & (TAG_DISABLE_DEVICE_BY_DEVICE | TAG_DISABLE_POINT_BY_POINT) )
     {
         pointPtr->setPointValue( newValue, newTime, newQuality, newTags );
         dependentIterator = pointPtr->getDependents( );
@@ -47,6 +52,10 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, RWTime &n
         }
 
         delete dependentIterator;
+    }
+    else if( pointPtr->getNumUpdates() == 0 )
+    {
+        pointPtr->firstPointValue( newValue, newTime, newQuality, newTags );
     }
 }
 
@@ -153,7 +162,7 @@ void CtiCalculateThread::periodicLoop( void )
     }
 }
 
-void CtiCalculateThread::allUpdateLoop( void )
+void CtiCalculateThread::onUpdateLoop( void )
 {
     long pointIDChanged, recalcPointID;
     double recalcValue;
@@ -194,7 +203,7 @@ void CtiCalculateThread::allUpdateLoop( void )
             {
                 recalcPointID = _auAffectedPoints.removeFirst( );
                 CtiHashKey recalcKey(recalcPointID);
-                calcPoint = (CtiCalc *)(_allUpdatePoints[&recalcKey]);
+                calcPoint = (CtiCalc *)(_onUpdatePoints[&recalcKey]);
                 
                 //  if not ready
                 if( !calcPoint->ready( ) )
@@ -212,10 +221,10 @@ void CtiCalculateThread::allUpdateLoop( void )
 
                     if( RWTime() >= calcPoint->getPointCalcWindowEndTime() )
                     {
-                        {
+                        /*{
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << __FILE__ << " (" << __LINE__ << ") RWTime() >= calcPoint->getPointCalcWindowEndTime()" << endl;
-                        }
+                        }*/
                         pData = new CtiPointDataMsg(recalcPointID, pointPtr->getPointValue(), NormalQuality, CalculatedPointType, pointDescription);
                         pData->setTime(calcPoint->getPointCalcWindowEndTime());
                     }
@@ -236,7 +245,7 @@ void CtiCalculateThread::allUpdateLoop( void )
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " allUpdateLoop setting Calc Point ID: " << recalcPointID << " to New Value: " << recalcValue << endl;
+                    dout << RWTime() << " onUpdateLoop setting Calc Point ID: " << recalcPointID << " to New Value: " << recalcValue << endl;
                 }
 
             }
@@ -253,7 +262,7 @@ void CtiCalculateThread::allUpdateLoop( void )
             //    earlier earned me a touch of the deadlock.
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " - allUpdateLoop posting a message" << endl;
+                dout << RWTime( ) << " - onUpdateLoop posting a message" << endl;
             }
         }
         else
@@ -264,7 +273,7 @@ void CtiCalculateThread::allUpdateLoop( void )
     
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime( ) << " - Calc allUpdateLoop interrupted" << endl;
+        dout << RWTime( ) << " - Calc onUpdateLoop interrupted" << endl;
     }
 }
 
@@ -274,9 +283,9 @@ void CtiCalculateThread::calcLoop( void )
     RWRunnableSelf _self = rwRunnable( );
 
     RWThreadFunction periodicThreadFunc = rwMakeThreadFunction( (*this), &CtiCalculateThread::periodicLoop );
-    RWThreadFunction allUpdateThreadFunc = rwMakeThreadFunction( (*this), &CtiCalculateThread::allUpdateLoop );
+    RWThreadFunction onUpdateThreadFunc = rwMakeThreadFunction( (*this), &CtiCalculateThread::onUpdateLoop );
     periodicThreadFunc.start( );
-    allUpdateThreadFunc.start( );
+    onUpdateThreadFunc.start( );
 
     //  while nobody's bothering me...
     while( !_self.serviceInterrupt( ) )
@@ -288,10 +297,10 @@ void CtiCalculateThread::calcLoop( void )
     //  scream at the other threads, tell them it's time for dinner
     periodicThreadFunc.requestInterrupt( );
     periodicThreadFunc.releaseInterrupt( );
-    allUpdateThreadFunc.requestInterrupt( );
-    allUpdateThreadFunc.releaseInterrupt( );
+    onUpdateThreadFunc.requestInterrupt( );
+    onUpdateThreadFunc.releaseInterrupt( );
     periodicThreadFunc.join( );
-    allUpdateThreadFunc.join( );
+    onUpdateThreadFunc.join( );
 }
 
 void CtiCalculateThread::appendCalcPoint( long pointID )
@@ -312,7 +321,8 @@ void CtiCalculateThread::appendPoint( long pointid, RWCString &updatetype, int u
             _periodicPoints.insert( new CtiHashKey(pointid), newPoint );
             break;
         case allUpdate:
-            _allUpdatePoints.insert( new CtiHashKey(pointid), newPoint );
+        case anyUpdate:
+            _onUpdatePoints.insert( new CtiHashKey(pointid), newPoint );
             break;
         default:
             {
@@ -339,10 +349,10 @@ void CtiCalculateThread::appendPointComponent( long pointID, RWCString &componen
         targetCalcPoint  = _periodicPoints[&pointHashKey];
         updateType = periodic;
     }
-    else if( _allUpdatePoints.contains( &pointHashKey ) )
+    else if( _onUpdatePoints.contains( &pointHashKey ) )
     {
-        targetCalcPoint  = _allUpdatePoints[&pointHashKey];
-        updateType = allUpdate;
+        targetCalcPoint  = _onUpdatePoints[&pointHashKey];
+        updateType = targetCalcPoint->getUpdateType();
     }
     else
     {
@@ -385,7 +395,7 @@ BOOL CtiCalculateThread::isACalcPointID(const long aPointID)
     if (foundPoint == FALSE)
     {
         // ID was not found yet look here...
-        foundPoint = isAUpdateAllCalcPointID(aPointID);
+        foundPoint = isAnOnUpdateCalcPointID(aPointID);
     }
 
     return foundPoint;
@@ -411,7 +421,7 @@ BOOL CtiCalculateThread::isAPeriodicCalcPointID(const long aPointID)
 }
 
 
-BOOL CtiCalculateThread::isAUpdateAllCalcPointID(const long aPointID)
+BOOL CtiCalculateThread::isAnOnUpdateCalcPointID(const long aPointID)
 {
     
     CtiCalc *calcPoint;
@@ -420,7 +430,7 @@ BOOL CtiCalculateThread::isAUpdateAllCalcPointID(const long aPointID)
 
     CtiHashKey recalcKey(aPointID);
     
-    calcPoint = (CtiCalc *)(_allUpdatePoints[&recalcKey]);
+    calcPoint = (CtiCalc *)(_onUpdatePoints[&recalcKey]);
 
     if (calcPoint != 0)
     {

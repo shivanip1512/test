@@ -19,13 +19,13 @@ using namespace std;
 class CtiCalculateThread
 {
 private:
-    RWTPtrHashMap<CtiHashKey, CtiCalc, my_hash<CtiHashKey> , equal_to<CtiHashKey> > _periodicPoints, _allUpdatePoints;
+    RWTPtrHashMap<CtiHashKey, CtiCalc, my_hash<CtiHashKey> , equal_to<CtiHashKey> > _periodicPoints, _onUpdatePoints;
     RWTValDeque<long> _auAffectedPoints;
     RWTPtrDeque<CtiMultiMsg> _outbox;
     RWMutexLock _pointDataMutex;
 
     void periodicLoop( void );
-    void allUpdateLoop( void );
+    void onUpdateLoop( void );
 
     mutable RWRecursiveLock<RWMutexLock> _mutex;
 
@@ -45,7 +45,7 @@ public:
 
     BOOL isACalcPointID(const long aPointID);
     BOOL isAPeriodicCalcPointID(const long aPointID);
-    BOOL isAUpdateAllCalcPointID(const long aPointID);
+    BOOL isAnOnUpdateCalcPointID(const long aPointID);
 
     RWTPtrDeque<CtiMultiMsg>::size_type outboxEntries( void )   {   return _outbox.entries( ); };
     CtiMultiMsg *getOutboxEntry( void )                         {   return _outbox.popFront( ); };

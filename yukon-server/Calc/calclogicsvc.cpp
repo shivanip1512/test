@@ -30,7 +30,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "calclogicsvc.h"
 
 #define CALCVERSION         "1.40"
-#define CHECK_RATE_SECONDS  300     // five minutes check for db change
+#define CHECK_RATE_SECONDS  60     // one minute check for db change
 
 BOOL UserQuit = FALSE;
 
@@ -235,6 +235,10 @@ void CtiCalcLogicService::Run( )
             msgPtReg = new CtiPointRegistrationMsg(0);
             for( ; (*depIter)( ); )
             {
+                /*{
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " - Registered for point id: " << ((CtiPointStoreElement *)depIter->value( ))->getPointNum() << endl;
+                }*/
                 msgPtReg->insert( ((CtiPointStoreElement *)depIter->value( ))->getPointNum( ) );
             }
             delete depIter;
@@ -397,10 +401,10 @@ void CtiCalcLogicService::_inputThread( void )
         //  dump out if we're being called
         if( !interrupted )
         {
-            {
+            /*{
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime( ) << " - message received - " << endl;
-            }
+            }*/
 
             //time_start = clock( );
 
@@ -505,11 +509,6 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
         case MSG_POINTDATA:
             {
                 pData = (CtiPointDataMsg *)message;
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " - Processing Point Change with ID: " << pData->getId( ) << " Value: " << pData->getValue( ) << endl;
-                }
-
                 calcThread->pointChange( pData->getId(), pData->getValue(), pData->getTime(), pData->getQuality(), pData->getTags() );
             }
             break;
@@ -530,10 +529,18 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
             }
             break;
 
+        case MSG_SIGNAL:
+            // not an error
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime( ) << " - Signal Message received for point id: " << ((CtiSignalMsg*)message)->getId() << endl;
+            }
+            break;
+
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " - " << __FILE__ << " (" << __LINE__ << ") I don't know how to handle messages of type \"" << message->stringID( ) << "\";  skipping" << endl;
+                dout << RWTime( ) << " - " << __FILE__ << " (" << __LINE__ << ") Calc_Logic does not know how to handle messages of type \"" << message->stringID( ) << "\";  skipping" << endl;
             }
     }
 

@@ -19,7 +19,8 @@ enum PointUpdateType
     undefined,
     periodic,
     allUpdate,
-    historical,
+    anyUpdate,
+    historical
 };
 
 using namespace std;
@@ -28,7 +29,7 @@ struct depStore
 {
     long dependentID;
 //  currently, this isn't important.  the only point type that has dependencies is
-//    the allupdate point type, but this was constructed with expandability in mind.
+//    the allupdate (and now the anyUpdate type: added by J Wolberg 5/15/2002) point type, but this was constructed with expandability in mind.
 //    PointUpdateType updateType;
     int operator<( const depStore &other ) const    { return (dependentID <  other.dependentID); };
     int operator==( const depStore &other ) const   { return (dependentID == other.dependentID); };
@@ -78,6 +79,14 @@ protected:
         _pointQuality = newQuality;
         _pointTags = newTags;
         _numUpdates++;
+    };
+
+    void firstPointValue( double newValue, RWTime &newTime, unsigned newQuality, unsigned newTags )
+    {
+        _pointTime = newTime;
+        _pointValue = newValue;
+        _pointQuality = newQuality;
+        _pointTags = newTags;
     };
 
     void appendDependent( long dependentID, PointUpdateType updateType )

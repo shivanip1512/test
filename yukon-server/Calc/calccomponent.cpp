@@ -22,22 +22,31 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
 
     if( componentPointId == 0 && !componentType.compareTo("operation", RWCString::ignoreCase) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "ERROR creating CtiCalcComponent - operation with ComponentPointID of 0 - setting invalid flag" << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "ERROR creating CtiCalcComponent - operation with ComponentPointID of 0 - setting invalid flag" << endl;
+        }
         _valid = FALSE;
     }
     else if( !componentType.compareTo("operation", RWCString::ignoreCase) )
     {
         _componentType = operation;
         _componentPointId = componentPointId;
-        _lastUseUpdateNum = -1;
+        _lastUseUpdateNum = 0;
 
         if( operationType == "+" )          _operationType = addition;
         else if( operationType == "-" )     _operationType = subtraction;
         else if( operationType == "*" )     _operationType = multiplication;
         else if( operationType == "/" )     _operationType = division;
         else if( operationType == "push" )  _operationType = push;
-        else                                _valid = FALSE;
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Invalid Operation Type: " << operationType << " ComponentPointID = " << componentPointId << endl;
+            }
+            _valid = FALSE;
+        }
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -51,28 +60,39 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
         if( constantValue != 0.0 )
             _constantValue = constantValue;
         else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Why is there a constant with value 0.0 in the equation, ComponentPointID = " << componentPointId << endl;
+            }
             _valid = FALSE;
+        }
 
         if( operationType == "+" )          _operationType = addition;
         else if( operationType == "-" )     _operationType = subtraction;
         else if( operationType == "*" )     _operationType = multiplication;
         else if( operationType == "/" )     _operationType = division;
         else if( operationType == "push" )  _operationType = push;
-        else                                _valid = FALSE;
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Invalid Operation Type: " << operationType << " ComponentPointID = " << componentPointId << endl;
+            }
+            _valid = FALSE;
+        }
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Adding CtiCalcComponent - Constant ComponentPointID = " << componentPointId << " Const: " << _constantValue << endl;
         }
-
-
     }
     else if( !componentType.compareTo("function", RWCString::ignoreCase) )
     {
         _componentType = function;
         _functionName = functionName;
         _componentPointId = componentPointId;
-        _lastUseUpdateNum = -1;
+        _lastUseUpdateNum = 0;
     }
     else
     {
@@ -80,9 +100,8 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Invalid CtiCalcComponent - ComponentPointID = " << componentPointId << endl;
+            dout << "Invalid CtiCalcComponent - ComponentPointID = " << componentPointId << " ComponentType: " << componentType << endl;
         }
-
     }
 }
 
@@ -173,6 +192,10 @@ double CtiCalcComponent::calculate( double input )
         CtiPointStore* pointStore = CtiPointStore::getInstance();
         CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
 
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << " component point id: " << _componentPointId << " lastUseUpdateNum: " << _lastUseUpdateNum << " componentPointPtr->getNumUpdates()" << componentPointPtr->getNumUpdates() << endl;
+        }*/
         _lastUseUpdateNum = componentPointPtr->getNumUpdates( );
 
         switch( _operationType )
@@ -305,10 +328,10 @@ double CtiCalcComponent::_figureDemandAvg(long secondsInAvg)
         RWTime currenttime = RWTime();
         ULONG tempsum = (currenttime.seconds()-(currenttime.seconds()%secondsInAvg))+secondsInAvg;
         _parent->setPointCalcWindowEndTime(RWTime(tempsum));
-        {
+        /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << __FILE__ << " (" << __LINE__ << ")  setting PointCalcWindowEndTime: " << _parent->getPointCalcWindowEndTime().asString() << endl;
-        }
+        }*/
     }
 
     CtiPointStore* pointStore = CtiPointStore::getInstance();
@@ -328,17 +351,24 @@ double CtiCalcComponent::_figureDemandAvg(long secondsInAvg)
         _updatesInCurrentAvg++;
         retVal = (currentTotal + componentPointValue) / _updatesInCurrentAvg;
 
-        {
+        /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "current Calc Point Value: " << currentCalcPointValue << endl;
             dout << "current Total: " << currentTotal << endl;
             dout << "updates In Current Avg: " << _updatesInCurrentAvg << endl;
             dout << "component Point Value: " << componentPointValue << endl;
             dout << "(currentTotal + componentPointValue) / _updatesInCurrentAvg: " << retVal << endl;
-        }
+            dout << "Will Send point change at: " << _parent->getPointCalcWindowEndTime() << endl;
+        }*/
     }
     else
     {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - Calc Point Id: " << _parent->getPointId()
+                 << " New Demand Avg Value: " << parentPointPtr->getPointValue()
+                 << " updates In Current Avg: " << _updatesInCurrentAvg << endl;
+        }
         retVal = componentPointPtr->getPointValue();
         _updatesInCurrentAvg = 1;
     }
