@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/08/29 16:32:06 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/09/04 13:12:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,6 +53,7 @@
 #include "dev_mct310.h"
 #include "dev_mct31X.h"
 #include "dev_mct_lmt2.h"
+#include "dev_kv2.h"
 #include "dev_repeater800.h"
 #include "dev_repeater.h"
 #include "dev_sixnet.h"
@@ -225,9 +226,7 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
         }
     case TYPE_KV2:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " " << __FILE__ << " (" << __LINE__ << ") KV2 device class needs to be here! " << endl;
-//            Device = (CtiDeviceBase*) new CtiDeviceKV2;
+            Device = (CtiDeviceBase*) new CtiDeviceKV2;
             break;
         }
 

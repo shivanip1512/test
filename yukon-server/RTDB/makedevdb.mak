@@ -89,7 +89,7 @@ dev_fulcrum.obj \
 dev_quantum.obj \
 dev_schlum.obj \
 dev_vectron.obj \
-
+dev_kv2.obj \
 
 
 
