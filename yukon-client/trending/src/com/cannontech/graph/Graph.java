@@ -278,7 +278,7 @@ public void encodeUsageHTML(java.io.OutputStream out) throws java.io.IOException
  *  GraphDefinition to the current cache retrieval using DBPersistentFuncs.
  * @return graphDefinition com.cannontech.database.data.graph.GraphDefinition
  */
-private GraphDefinition getGraphDefinition()
+public GraphDefinition getGraphDefinition()
 {
 	return graphDefinition;
 }
@@ -537,7 +537,11 @@ private int retrieveIntervalRate()
  */
 public void setPeriod(String newPeriod) 
 {
-	period = newPeriod;
+	if(!period.equalsIgnoreCase(newPeriod))
+	{
+		period = newPeriod;
+		setUpdateTrend(true);
+	}	
 }  
 /**
  * Insert the method's description here.
