@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/10/29 19:58:24 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/11/09 14:17:29 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -55,7 +55,7 @@ private:
 
     receiver_map _receiver_work;
 
-    priority_queue< CtiVerificationWork *, pending_queue, CtiVerificationWork::earlier > _work_queue;
+    priority_queue< CtiVerificationWork *, pending_queue, CtiVerificationWork::later > _work_queue;
 
     static const string _table_name;
 
@@ -89,6 +89,8 @@ public:
     void push(queue< CtiVerificationBase * > &entries);   //
 
     void run();
+
+    void report();
 };
 
 #endif // #ifndef __PORTVERIFY_H__
