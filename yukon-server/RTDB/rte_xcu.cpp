@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/10 13:15:14 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/21 21:26:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -177,6 +177,15 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
 
             switch(Device->getType())
             {
+            case TYPE_WCTP:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    // FALL THROUGH???? ...... ?????
+                }
             case TYPE_TAPTERM:
                 {
                     CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)Device;
@@ -417,6 +426,15 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
 
             switch(Device->getType())
             {
+            case TYPE_WCTP:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    // FALL THROUGH ???? Probably true....
+                }
             case TYPE_TAPTERM:
                 {
                     CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)Device;

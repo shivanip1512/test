@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:20 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/21 21:26:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -220,6 +220,18 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
     case TYPE_TAPTERM:
         {
             Device = (CtiDeviceBase*) new CtiDeviceTapPagingTerminal;
+            break;
+        }
+    case TYPE_WCTP:
+        {
+            // Device = (CtiDeviceBase*) new CtiDeviceTapPagingTerminal;
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  Yao, you need to add code here" << endl;
+            }
+
             break;
         }
     case TYPE_LMGROUP_EMETCON:

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:12 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/21 21:25:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -371,6 +371,10 @@ RWCString desolveDeviceType( INT aType )
    else if(aType == TYPE_TAPTERM)
    {
       Ret = "tap terminal";
+   }
+   else if(aType == TYPE_WCTP)
+   {
+      Ret = "wctp terminal";
    }
    else if(aType == TYPE_LMPROGRAM_DIRECT)
    {

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:26 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/21 21:23:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -104,6 +104,7 @@
 #define TYPE_TAPTERM                         1900
 #define TYPE_TAPTERM_TESCOM                  1901
 #define TYPE_TAPTERM_EMAIL                   1902
+#define TYPE_WCTP                            1905
 
 
 #define TYPE_LMGROUP_EMETCON                 2000  // Group type devices...
