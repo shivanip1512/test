@@ -1,9 +1,9 @@
 package com.cannontech.tdc;
 
 /**
- * Insert the type's description here.
+ * Insert the type's description here
  * Creation date: (1/20/00 2:25:13 PM)
- * @author: Ryan
+ * @author: Ryan (THIS IS A TEST)
  */
 public class Clock implements Runnable 
 {
