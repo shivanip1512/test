@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/03/14 00:51:21 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/05/09 15:39:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,6 +42,9 @@ IM_EX_CTIBASE RWCString& traceBuffer(RWCString &str, BYTE *Message, ULONG Length
 IM_EX_CTIBASE RWTime nextScheduledTimeAlignedOnRate( const RWTime &origin, LONG rate );
 IM_EX_CTIBASE void autopsy(char *calleefile, int calleeline);       // Usage is: autopsy( __FILE__, __LINE__);
 
+IM_EX_CTIBASE BOOL searchFuncForOutMessageDevID(void *pId, void* d);
+IM_EX_CTIBASE BOOL searchFuncForOutMessageRteID(void *pId, void* d);
+IM_EX_CTIBASE BOOL searchFuncForOutMessageUniqueID(void *pId, void* d);
 
 
 // SendMail defines /////////////////////////////////////////////
