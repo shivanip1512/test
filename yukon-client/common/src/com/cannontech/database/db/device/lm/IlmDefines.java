@@ -100,4 +100,13 @@ public interface IlmDefines
 	public static final String LEVEL_BRONZE				= "Bronze";
 	public static final String LEVEL_LEAD					= "Lead";
 	public static final String LEVEL_MCT					= "MCT Address";
+
+	public static final String SA_LOAD_1 = "Load 1";
+	public static final String SA_LOAD_2 = "Load 2";
+	public static final String SA_LOAD_3 = "Load 3";
+	public static final String SA_LOAD_4 = "Load 4";
+	public static final String SA_LOAD_12 = "Load 1,2";
+	public static final String SA_LOAD_123 = "Load 1,2,3";
+	public static final String SA_LOAD_1234 = "Load 1,2,3,4";
+	public static final String SA_LOAD_TEST = "Test";
 }

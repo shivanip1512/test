@@ -1,6 +1,8 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.lm.LMGroupSA205;
+import com.cannontech.database.db.device.lm.IlmDefines;
 /**
  * Insert the type's description here.
  * Creation date: (2/24/2004 5:55:33 PM)
@@ -200,15 +202,15 @@ private javax.swing.JComboBox getRelayCombosJComboBox() {
 			ivjRelayCombosJComboBox = new javax.swing.JComboBox();
 			ivjRelayCombosJComboBox.setName("RelayCombosJComboBox");
 			// user code begin {1}
-			ivjRelayCombosJComboBox.addItem("(none)");
-			ivjRelayCombosJComboBox.addItem("Load 1");
-			ivjRelayCombosJComboBox.addItem("Load 2");
-			ivjRelayCombosJComboBox.addItem("Load 3");
-			ivjRelayCombosJComboBox.addItem("Load 4");
-			ivjRelayCombosJComboBox.addItem("Load 1,2");
-			ivjRelayCombosJComboBox.addItem("Load 1,2,3");
-			ivjRelayCombosJComboBox.addItem("Load 1,2,3,4");
-			ivjRelayCombosJComboBox.addItem("Test");
+			ivjRelayCombosJComboBox.addItem( CtiUtilities.STRING_NONE );
+			ivjRelayCombosJComboBox.addItem( IlmDefines.SA_LOAD_1 );
+			ivjRelayCombosJComboBox.addItem( IlmDefines.SA_LOAD_2 );
+			ivjRelayCombosJComboBox.addItem( IlmDefines.SA_LOAD_3 );
+			ivjRelayCombosJComboBox.addItem( IlmDefines.SA_LOAD_4 );
+			ivjRelayCombosJComboBox.addItem( IlmDefines.SA_LOAD_12 );
+			ivjRelayCombosJComboBox.addItem( IlmDefines.SA_LOAD_123 );
+			ivjRelayCombosJComboBox.addItem( IlmDefines.SA_LOAD_1234 );
+			ivjRelayCombosJComboBox.addItem( IlmDefines.SA_LOAD_TEST );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
