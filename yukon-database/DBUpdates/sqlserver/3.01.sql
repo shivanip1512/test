@@ -366,14 +366,22 @@ insert into yukongrouprole values (-888,-301,-201,-20888,'(none)');
 insert into yukongrouprole values (-889,-301,-201,-20889,'(none)');
 
 
-/* RADIUS (safeword) Role/Properties */
-insert into YukonRole values(-4,'Radius Login','Yukon','Settings for using RADIUS server to login instead of standard yukon login.');
+/* Authentication (safeword) Role/Properties */
+insert into YukonRole values(-4,'Authentication','Yukon','Settings for using an authentication server to login instead of standard yukon login.');
 
-insert into YukonRoleProperty values(-1300,-4,'radius_server_address','(none)','Radius server machine address');
-insert into YukonRoleProperty values(-1301,-4,'radius_auth_port','1812','Radius authentication port.');
-insert into YukonRoleProperty values(-1302,-4,'radius_acct_port','1813','Radius accounting port.');
-insert into YukonRoleProperty values(-1303,-4,'radius_secret_key','(none)','Radius clients secret key value, defined by the radius server.');
-insert into YukonRoleProperty values(-1304,-4,'radius_auth_method','PAP','Radius authentication method. Possible values are PAP, [chap, others to follow soon]');
+insert into YukonRoleProperty values(-1300,-4,'server_address','127.0.0.1','Authentication server machine address');
+insert into YukonRoleProperty values(-1301,-4,'auth_port','1812','Authentication port.');
+insert into YukonRoleProperty values(-1302,-4,'acct_port','1813','Accounting port.');
+insert into YukonRoleProperty values(-1303,-4,'secret_key','cti','Client machine secret key value, defined by the server.'); 
+insert into YukonRoleProperty values(-1304,-4,'auth_method','(none)','Authentication method. Possible values are (none) | PAP, [chap, others to follow soon]');
+insert into YukonRoleProperty values(-1305,-4,'authentication_mode','Yukon','Authentication mode to use.  Valid values are:   Yukon | Radius');
+
+insert into YukonGroupRole values(-85,-1,-4,-1300,'(none)');
+insert into YukonGroupRole values(-86,-1,-4,-1301,'(none)');
+insert into YukonGroupRole values(-87,-1,-4,-1302,'(none)');
+insert into YukonGroupRole values(-88,-1,-4,-1303,'(none)');
+insert into YukonGroupRole values(-89,-1,-4,-1304,'(none)');
+insert into YukonGroupRole values(-90,-1,-4,-1305,'(none)');
 
 alter table DynamicLMProgramDirect add DailyOps numeric;
 go
