@@ -8,8 +8,6 @@ package com.cannontech.cbc.web;
  * @author: Ryan
  */
 import java.awt.Color;
-
-import com.cannontech.cbc.CBCDisplay;
 import com.cannontech.cbc.gui.CapBankTableModel;
 import com.cannontech.cbc.gui.FeederTableModel;
 import com.cannontech.cbc.gui.SubBusTableModel;
@@ -40,10 +38,6 @@ public class CapControlWebAnnex implements java.util.Observer
 	private FeederTableModel feederTableModel = null;
 	private CapBankTableModel capBankTableModel = null;
     
-    //object to render table data
-    private CBCDisplay cbcDisplay = new CBCDisplay();
-
-
 	//what our current refresh rate is
 	private String refreshRate = CapControlWebAnnex.REF_SECONDS_DEF;
 
@@ -69,11 +63,6 @@ public class CapControlWebAnnex implements java.util.Observer
 		return getConnection().isValid();
 	}
     
-    public CBCDisplay getCBCDisplay()
-    {
-        return cbcDisplay;
-    }
-
 	public CBCClientConnection getConnection()
 	{
 		if( _conn == null )
@@ -153,9 +142,6 @@ public class CapControlWebAnnex implements java.util.Observer
 	 */
 	private void initialize() 
 	{
-		//add the table listener to the connection		
-		getSubTableModel().setConnection( getConnection() );
-		
 		//let us observe the connection
 		getConnection().addObserver( thisWeakObsrvr );
 
@@ -247,11 +233,5 @@ public class CapControlWebAnnex implements java.util.Observer
     {
         this.yukonUser = yukonUser;
     }
-
-	public void setCBCDisplay( CBCDisplay displayCbc )
-	{
-		if( displayCbc != null )
-			cbcDisplay = displayCbc;
-	}
 
 }

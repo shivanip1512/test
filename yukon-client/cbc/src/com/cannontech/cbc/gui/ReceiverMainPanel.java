@@ -1118,7 +1118,6 @@ public SubBusTableModel getSubBusTableModel()
 	{
 		// Set up the subbus table
 		subBusTableModel = new SubBusTableModel();
-		subBusTableModel.setConnection( getConnectionWrapper() );
 		getConnectionWrapper().addMessageListener( subBusTableModel );		
 	}
 

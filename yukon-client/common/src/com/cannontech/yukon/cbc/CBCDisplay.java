@@ -1,18 +1,16 @@
-package com.cannontech.cbc;
+package com.cannontech.yukon.cbc;
 
-import com.cannontech.cbc.gui.CapBankTableModel;
-import com.cannontech.cbc.gui.FeederTableModel;
-import com.cannontech.cbc.gui.SubBusTableModel;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.StateFuncs;
+import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.roles.application.TDCRole;
-import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.CapControlConst;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.SubBus;
 
 /**
  * @author rneuharth
@@ -21,9 +19,40 @@ import com.cannontech.yukon.cbc.SubBus;
 public class CBCDisplay
 {
     public static final String STR_NA = "  NA";
-    public static final String DASH_LINE = "  ----";
-    
+    public static final String DASH_LINE = "  ----"; 
+	public static final String STR_UNKNOWN = "Unknown";   
     public short dateTimeFormat = ModifiedDate.FRMT_DEFAULT;
+    
+    
+	//Column numbers for the CabBank display
+	public static final int CB_NAME_COLUMN = 0;
+	public static final int CB_BANK_ADDRESS_COLUMN = 1;
+	public static final int CB_BANK_SIZE_COLUMN = 2;
+	public static final int CB_STATUS_COLUMN = 3;
+	public static final int CB_TIME_STAMP_COLUMN = 4;
+	public static final int CB_OP_COUNT_COLUMN = 5;
+	    
+	//Column numbers for the Feeder display	
+	public static final int FDR_NAME_COLUMN = 0;
+	public static final int FDR_CURRENT_STATE_COLUMN = 1;
+	public static final int FDR_TARGET_COLUMN = 2;
+	public static final int FDR_VAR_LOAD_COLUMN = 3;
+	public static final int FDR_WATTS_COLUMN = 4;
+	public static final int FDR_POWER_FACTOR_COLUMN = 5;
+	public static final int FDR_TIME_STAMP_COLUMN = 6;
+	public static final int FDR_DAILY_OPERATIONS_COLUMN = 7;
+	
+	//Column numbers for the SubBus display	
+	public static final int SUB_AREA_NAME_COLUMN  = 0;
+	public static final int SUB_NAME_COLUMN = 1;
+	public static final int SUB_CURRENT_STATE_COLUMN = 2;
+	public static final int SUB_TARGET_COLUMN = 3;
+	public static final int SUB_VAR_LOAD_COLUMN = 4;
+	public static final int SUB_WATTS_COLUMN = 5;
+	public static final int SUB_POWER_FACTOR_COLUMN = 6;
+	public static final int SUB_TIME_STAMP_COLUMN = 7;
+	public static final int SUB_DAILY_OPERATIONS_COLUMN = 8;
+	
 
     public CBCDisplay()
     {
@@ -35,59 +64,70 @@ public class CBCDisplay
     	super();
     	dateTimeFormat = formatInt;
     }
+    
+	/**
+	 * The text of capbanks states. This can change since is based on a state group
+	 * 
+	 */
+	public static LiteState[] getCBCStateNames()
+	{
+		return StateFuncs.getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );		
+	}
+	
     /**
      * getValueAt method for CapBanks.
      * 
      */
-    public Object getCapBankValueAt( CapBankDevice capBank, int col) 
+    public synchronized Object getCapBankValueAt( CapBankDevice capBank, int col) 
     {
         if( capBank == null )
             return "";
 
         switch( col )
         {
-            case CapBankTableModel.CB_NAME_COLUMN :
+            case CB_NAME_COLUMN :
             {
                 return capBank.getCcName() + " (" + capBank.getControlOrder() + ")";
             }
 
-            case CapBankTableModel.BANK_ADDRESS_COLUMN :
+            case CB_BANK_ADDRESS_COLUMN :
             {
                 return capBank.getCcArea();
             }
     
-            case CapBankTableModel.STATUS_COLUMN:
+            case CB_STATUS_COLUMN:
             {
                 if( capBank.getControlStatus().intValue() < 0 ||
-                        capBank.getControlStatus().intValue() >= CapBankTableModel.getStateNames().length )
+                        capBank.getControlStatus().intValue() >= getCBCStateNames().length )
                 {
-                    com.cannontech.clientutils.CTILogger.info("*** A CapBank state was found that has no corresponding status.");
-                    return CapBankTableModel.UNKNOWN_STATE + " (" + capBank.getControlStatus().intValue() +")" ;
+                    CTILogger.info("*** A CapBank state was found that has no corresponding status.");
+                    return STR_UNKNOWN + " (" + capBank.getControlStatus().intValue() +")" ;
                 }
                 else
                 {
                     if( capBank.getCcDisableFlag().booleanValue() == true )
-                        return "DISABLED : " + (capBank.getOperationalState().equalsIgnoreCase(com.cannontech.database.data.capcontrol.CapBank.FIXED_OPSTATE) 
-                                                        ? com.cannontech.database.data.capcontrol.CapBank.FIXED_OPSTATE 
-                                                        : CapBankTableModel.getStateNames()[capBank.getControlStatus().intValue()]);
+                        return "DISABLED : " + 
+                        	(capBank.getOperationalState().equalsIgnoreCase(CapBank.FIXED_OPSTATE) 
+                                ? CapBank.FIXED_OPSTATE 
+                                : getCBCStateNames()[capBank.getControlStatus().intValue()].getStateText());
                     else
-                        return (capBank.getOperationalState().equalsIgnoreCase(com.cannontech.database.data.capcontrol.CapBank.FIXED_OPSTATE) 
-                                    ? com.cannontech.database.data.capcontrol.CapBank.FIXED_OPSTATE + " : " 
-                                    : "") + CapBankTableModel.getStateNames()[capBank.getControlStatus().intValue()];
+                        return (capBank.getOperationalState().equalsIgnoreCase(CapBank.FIXED_OPSTATE) 
+                                    ? CapBank.FIXED_OPSTATE + " : " 
+                                    : "") + getCBCStateNames()[capBank.getControlStatus().intValue()].getStateText();
                 }
             }
                     
-            case CapBankTableModel.OP_COUNT_COLUMN :
+            case CB_OP_COUNT_COLUMN :
             {
                 return capBank.getCurrentDailyOperations();
             }
                 
-            case CapBankTableModel.BANK_SIZE_COLUMN :
+            case CB_BANK_SIZE_COLUMN :
             {
                 return capBank.getBankSize();
             }
 
-            case CapBankTableModel.TIME_STAMP_COLUMN:
+            case CB_TIME_STAMP_COLUMN:
             {
                 if( capBank.getLastStatusChangeTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime() )
                     return "  ----";
@@ -105,24 +145,24 @@ public class CBCDisplay
      * getValueAt method for SubBuses
      * 
      */
-    public Object getSubBusValueAt(SubBus subBus, int col) 
+    public synchronized Object getSubBusValueAt(SubBus subBus, int col) 
     {
         if( subBus == null )
             return "";
 
         switch( col )
         {
-            case SubBusTableModel.SUB_NAME_COLUMN:
+            case SUB_NAME_COLUMN:
             {
                 return subBus.getCcName();
             }
 
-            case SubBusTableModel.AREA_NAME_COLUMN:
+            case SUB_AREA_NAME_COLUMN:
             {
                 return subBus.getCcArea();
             }
 
-            case SubBusTableModel.CURRENT_STATE_COLUMN:
+            case SUB_CURRENT_STATE_COLUMN:
             {
                 String state = null;
                 
@@ -152,7 +192,7 @@ public class CBCDisplay
 
             }
 
-            case SubBusTableModel.TARGET_COLUMN:
+            case SUB_TARGET_COLUMN:
             {
                 // decide which set Point we are to use
                 if( subBus.isPowerFactorControlled() )
@@ -182,7 +222,7 @@ public class CBCDisplay
                 }
             }
                 
-            case SubBusTableModel.DAILY_OPERATIONS_COLUMN:
+            case SUB_DAILY_OPERATIONS_COLUMN:
             {
                 return new String(subBus.getCurrentDailyOperations() + " / " + 
                         (subBus.getMaxDailyOperation().intValue() <= 0 
@@ -190,7 +230,7 @@ public class CBCDisplay
                             : subBus.getMaxDailyOperation().toString()) );
             }
 
-            case SubBusTableModel.VAR_LOAD_COLUMN:
+            case SUB_VAR_LOAD_COLUMN:
             {
                 String retVal = DASH_LINE; //default just in case
 
@@ -223,14 +263,14 @@ public class CBCDisplay
                 return retVal;
             }
           
-            case SubBusTableModel.POWER_FACTOR_COLUMN:
+            case SUB_POWER_FACTOR_COLUMN:
             {
                 return getPowerFactorText( subBus.getPowerFactorValue().doubleValue(), true )
                     + " / " +
                     getPowerFactorText( subBus.getEstimatedPFValue().doubleValue(), true );
             }
 
-            case SubBusTableModel.WATTS_COLUMN:
+            case SUB_WATTS_COLUMN:
             {
                 if( subBus.getCurrentWattLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
                     return DASH_LINE;
@@ -244,7 +284,7 @@ public class CBCDisplay
                  }
             }
             
-            case SubBusTableModel.TIME_STAMP_COLUMN:
+            case SUB_TIME_STAMP_COLUMN:
             {
                 if( subBus.getLastCurrentVarPointUpdateTime().getTime() <= 
                     com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
@@ -280,10 +320,10 @@ public class CBCDisplay
                 CapBankDevice capBank = ((CapBankDevice)feeder.getCcCapBanks().elementAt(j));
                 
                 if( capBank.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING )
-                    return CapBankTableModel.getStateNames()[CapControlConst.BANK_CLOSE_PENDING];
+                    return getCBCStateNames()[CapControlConst.BANK_CLOSE_PENDING].getStateText();
                     
                 if( capBank.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING )
-                    return CapBankTableModel.getStateNames()[CapControlConst.BANK_OPEN_PENDING];
+                    return getCBCStateNames()[CapControlConst.BANK_OPEN_PENDING].getStateText();
             }
 
         }
@@ -304,10 +344,10 @@ public class CBCDisplay
             CapBankDevice capBank = ((CapBankDevice)feeder.getCcCapBanks().elementAt(j));
             
             if( capBank.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING )
-                return CapBankTableModel.getStateNames()[CapControlConst.BANK_CLOSE_PENDING];
+                return getCBCStateNames()[CapControlConst.BANK_CLOSE_PENDING].getStateText();
                 
             if( capBank.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING )
-                return CapBankTableModel.getStateNames()[CapControlConst.BANK_OPEN_PENDING];
+                return getCBCStateNames()[CapControlConst.BANK_OPEN_PENDING].getStateText();
         }
 
         // we are not pending
@@ -318,7 +358,7 @@ public class CBCDisplay
      * getValueAt method for Feeders
      * 
      */
-    public Object getFeederValueAt( Feeder feeder, int col, SubBus parentSub ) 
+    public synchronized Object getFeederValueAt( Feeder feeder, int col, SubBus parentSub ) 
     {
         if( feeder == null || parentSub == null )
             return "";
@@ -330,12 +370,12 @@ public class CBCDisplay
 //                return feeder.getCcArea();
 //            }
 
-            case FeederTableModel.NAME_COLUMN:
+            case FDR_NAME_COLUMN:
             {
                 return feeder.getCcName();
             }
 
-            case FeederTableModel.CURRENT_STATE_COLUMN:
+            case FDR_CURRENT_STATE_COLUMN:
             {
                 String state = null;
                 
@@ -363,7 +403,7 @@ public class CBCDisplay
                 return state;
             }
 
-            case FeederTableModel.TARGET_COLUMN:
+            case FDR_TARGET_COLUMN:
             {
                 // decide which set Point we are to use
                 if( parentSub.isPowerFactorControlled() )
@@ -393,19 +433,19 @@ public class CBCDisplay
                 }
             }
 
-            case FeederTableModel.POWER_FACTOR_COLUMN:
+            case FDR_POWER_FACTOR_COLUMN:
             {
                 return getPowerFactorText( feeder.getPowerFactorValue().doubleValue(), true )
                         + " / " +
                         getPowerFactorText( feeder.getEstimatedPFValue().doubleValue(), true );
             }
          
-            case FeederTableModel.DAILY_OPERATIONS_COLUMN:
+            case FDR_DAILY_OPERATIONS_COLUMN:
             {
                 return feeder.getCurrentDailyOperations();                
             }
                 
-            case FeederTableModel.VAR_LOAD_COLUMN:
+            case FDR_VAR_LOAD_COLUMN:
             {
                 String retVal = DASH_LINE; //default just in case
                 
@@ -426,7 +466,7 @@ public class CBCDisplay
                 return retVal;
             }
 
-            case FeederTableModel.WATTS_COLUMN:
+            case FDR_WATTS_COLUMN:
             {
                 if( feeder.getCurrentWattLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
                     return DASH_LINE;
@@ -440,7 +480,7 @@ public class CBCDisplay
                   }
             }
 
-            case FeederTableModel.TIME_STAMP_COLUMN:
+            case FDR_TIME_STAMP_COLUMN:
             {
                 if( feeder.getLastCurrentVarPointUpdateTime().getTime() <= 
                         com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )

@@ -1,5 +1,7 @@
 package com.cannontech.cbc.gui;
 
+import com.cannontech.yukon.cbc.CBCDisplay;
+
 /**
  * This type was created in VisualAge.
  */
@@ -104,8 +106,8 @@ private void handleCapBankTableModel(CapBankTableModel model, int row, int colum
 {
 	// we have to check the actual ColumnIndexToModel mapping in order to find out which
 	// columns are the BankSize and OpCount, because the user could have moved it.
-	if( table.convertColumnIndexToModel(column) == CapBankTableModel.OP_COUNT_COLUMN  ||
-		 table.convertColumnIndexToModel(column) == CapBankTableModel.BANK_SIZE_COLUMN )
+	if( table.convertColumnIndexToModel(column) == CBCDisplay.CB_OP_COUNT_COLUMN  ||
+		 table.convertColumnIndexToModel(column) == CBCDisplay.CB_BANK_SIZE_COLUMN )
 	{
 		this.setHorizontalAlignment( javax.swing.SwingConstants.CENTER );
 	}
@@ -125,9 +127,9 @@ private void handleFeederTableModel(FeederTableModel model, int row, int column,
 {
 	// we have to check the actual ColumnIndexToModel mapping in order to find out which
 	// columns are the BankSize and OpCount, because the user could have moved it.
-	if( table.convertColumnIndexToModel(column) == FeederTableModel.VAR_LOAD_COLUMN||
-		 table.convertColumnIndexToModel(column) == FeederTableModel.DAILY_OPERATIONS_COLUMN ||
-       table.convertColumnIndexToModel(column) == FeederTableModel.POWER_FACTOR_COLUMN )
+	if( table.convertColumnIndexToModel(column) == CBCDisplay.FDR_VAR_LOAD_COLUMN||
+		 table.convertColumnIndexToModel(column) == CBCDisplay.FDR_DAILY_OPERATIONS_COLUMN ||
+       table.convertColumnIndexToModel(column) == CBCDisplay.FDR_POWER_FACTOR_COLUMN )
    {
 		this.setHorizontalAlignment( javax.swing.SwingConstants.CENTER );
    }
@@ -147,10 +149,10 @@ private void handleSubBusTableModel(SubBusTableModel model, int row, int column,
 {
 	// we have to check the actual ColumnIndexToModel mapping in order to find out which
 	// columns are the BankSize and OpCount, because the user could have moved it.
-	if( table.convertColumnIndexToModel(column) == SubBusTableModel.VAR_LOAD_COLUMN||
-       table.convertColumnIndexToModel(column) == SubBusTableModel.DAILY_OPERATIONS_COLUMN ||
-		 table.convertColumnIndexToModel(column) == SubBusTableModel.POWER_FACTOR_COLUMN ||
-       table.convertColumnIndexToModel(column) == SubBusTableModel.WATTS_COLUMN )
+	if( table.convertColumnIndexToModel(column) == CBCDisplay.SUB_VAR_LOAD_COLUMN||
+       table.convertColumnIndexToModel(column) == CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN ||
+		 table.convertColumnIndexToModel(column) == CBCDisplay.SUB_POWER_FACTOR_COLUMN ||
+       table.convertColumnIndexToModel(column) == CBCDisplay.SUB_WATTS_COLUMN )
    {
 		this.setHorizontalAlignment( javax.swing.SwingConstants.CENTER );
    }

@@ -5,20 +5,18 @@ package com.cannontech.cbc.gui;
  */
 import java.awt.Color;
 
-import com.cannontech.cbc.CBCDisplay;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
-import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.db.state.State;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
 import com.cannontech.tdc.alarms.gui.RowBlinker;
+import com.cannontech.yukon.cbc.CBCDisplay;
 import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.CapControlConst;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 
@@ -29,32 +27,19 @@ public class CapBankTableModel extends javax.swing.table.AbstractTableModel impl
 	private java.util.Vector rows = null;
 	private int[] currentRowBGColors = null;
 	private AlarmingRowVector alarmingRowVector = null;
-	/* END --- ROW SPECIFIC DATA */
+	/* END ROW SPECIFIC DATA */
 	
 	private int subBusRowSelected = -1;
 	private int feederRowSelected = -1;
 	
 	private RowBlinker currentBlinkingAlarms = null;
-	
-	private boolean muted = false;
-	
-	private boolean showingAlarms = true;
-    private CBCDisplay cbcDisplay = new CBCDisplay();
-	
+	private boolean muted = false;	
+	private boolean showingAlarms = true;	
 	private String fontName = "dialog";
 	private int fontSize = 12;
 
-	public static final String UNKNOWN_STATE = "Unknown";
 	public static final Color MOVED_BANK_BG_COLOR = new Color( 30, 50, 110);
 
-	//The columns and their column index
-	public static final int CB_NAME_COLUMN = 0;
-	public static final int BANK_ADDRESS_COLUMN = 1;
- 	public static final int BANK_SIZE_COLUMN = 2;
-	public static final int STATUS_COLUMN = 3;
-  	public static final int TIME_STAMP_COLUMN = 4;
- 	public static final int OP_COUNT_COLUMN = 5;
-  		
 	//The column names based on their column index
 	private static final String[] COLUMN_NAMES =
 	{
@@ -64,37 +49,6 @@ public class CapBankTableModel extends javax.swing.table.AbstractTableModel impl
 		"Status",
 		"Date/Time",
 		"Op Count",
-	};
-
-	//The string states of the cap bank
-	public static String[] stateNames =
-	{
-		"Open",
-		"Close",
-		"Open Questionable",
-		"Close Questionable",
-		"Open Fail",
-		"Close Fail",
-		"Open Pending",
-		"Close Pending"
-	};
-	
-		
-	//The color schemes - based on the capbanks stateNames
-	// colors are [fg][bg]
-	private static Color[][] stateColors =
-	{
-		{Colors.getColor(Colors.GREEN_ID), Colors.getColor(Colors.BLACK_ID)}, // Open
-		{Colors.getColor(Colors.GREEN_ID), Colors.getColor(Colors.BLACK_ID)}, // Close
-
-		{Colors.getColor(Colors.YELLOW_ID), Colors.getColor(Colors.BLACK_ID)}, // OpenQuestionable
-		{Colors.getColor(Colors.YELLOW_ID), Colors.getColor(Colors.BLACK_ID)}, // CloseQuestionable
-		
-		{Colors.getColor(Colors.RED_ID), Colors.getColor(Colors.BLACK_ID)}, // OpenFail
-		{Colors.getColor(Colors.RED_ID), Colors.getColor(Colors.BLACK_ID)}, // CloseFail
-
-		{Colors.getColor(Colors.CYAN_ID), Colors.getColor(Colors.BLACK_ID)}, // OpenPending
-		{Colors.getColor(Colors.CYAN_ID), Colors.getColor(Colors.BLACK_ID)}  // ClosePending
 	};
 
 
@@ -209,11 +163,11 @@ public java.awt.Color getCellColor( CapBankDevice capBank )
 {
     int status = capBank.getControlStatus().intValue();
 
-    synchronized( stateNames )
+    synchronized( CBCDisplay.getCBCStateNames() )
     {
-        if( status >= 0 && status < getStateNames().length )
+        if( status >= 0 && status < CBCDisplay.getCBCStateNames().length )
         {
-            return getStateColors()[status][0];
+            return Colors.getColor( CBCDisplay.getCBCStateNames()[status].getFgColor() );
         }
     }
 
@@ -264,8 +218,8 @@ private int getCurrentRowBGColors( int rowNumber )
 							int status = getRowAt(i).getControlStatus().intValue();
 
 							//make sure our status is a valid array index into StateColors
-							if( status >= 0 && status < getStateColors().length )
-								currentRowBGColors[i] = Colors.getColorID(getStateColors()[status][1]);
+							if( status >= 0 && status < CBCDisplay.getCBCStateNames().length )
+								currentRowBGColors[i] = CBCDisplay.getCBCStateNames()[status].getBgColor();
 							else
 								currentRowBGColors[i] = Colors.getColorID( CapControlTableModel.DEFUALT_BGCOLOR );
 						}
@@ -281,7 +235,7 @@ private int getCurrentRowBGColors( int rowNumber )
 	}
 	catch( ArrayIndexOutOfBoundsException e )
 	{
-		com.cannontech.clientutils.CTILogger.info("***** " + this.getClass() + " : getCurrentRowBGColors(int), using DEFAULT_BGCOLOR for row number " + rowNumber + " : " + e.getMessage()	);
+		CTILogger.info("***** " + this.getClass() + " : getCurrentRowBGColors(int), using DEFAULT_BGCOLOR for row number " + rowNumber + " : " + e.getMessage()	);
 		return Colors.getColorID( CapControlTableModel.DEFUALT_BGCOLOR );
 	}  // dont do really anything, just return the DEFAULT_BGCOLOR
 		
@@ -296,26 +250,6 @@ public int getFeederRowSelected() {
 	return feederRowSelected;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (1/2/2001 2:01:14 PM)
- */
-public String getPendingState() 
-{
-	for( int i = 0; i < getRowCount(); i++ )
-	{
-		CapBankDevice rowValue = getRowAt(i);
-		
-		if( rowValue.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING )
-			return getStateNames()[CapControlConst.BANK_CLOSE_PENDING];
-			
-		if( rowValue.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING )
-			return getStateNames()[CapControlConst.BANK_OPEN_PENDING];
-	}
-
-	// we are not pending
-	return null;
-}
 /**
  * This method returns the value of a row in the form of a CapBankDevice object.
  * @param rowIndex int
@@ -365,22 +299,6 @@ public java.util.Vector getRows()
 }
 /**
  * Insert the method's description here.
- * Creation date: (1/12/2001 3:15:35 PM)
- * @return java.awt.Color[][]
- */
-public static java.awt.Color[][] getStateColors() {
-	return stateColors;
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/11/2001 4:01:26 PM)
- * @return java.lang.String[]
- */
-public static java.lang.String[] getStateNames() {
-	return stateNames;
-}
-/**
- * Insert the method's description here.
  * Creation date: (10/31/00 3:39:45 PM)
  * @return int
  */
@@ -395,9 +313,8 @@ public Object getValueAt(int row, int col)
 {
 	if( row < getRowCount() && row >= 0 )
 	{
-		CapBankDevice rowValue = getRowAt(row);
-        
-        return cbcDisplay.getCapBankValueAt( rowValue, col );
+		CapBankDevice capBank = getRowAt(row);        
+        return CapBankDevice.CBC_DISPLAY.getCapBankValueAt( capBank, col );
 	}
 	else
 		return null;
@@ -416,25 +333,6 @@ private void handleAlarms(CapBankDevice capBankDevice, int rowNumber )
 	}
 	else   //if the row was alarming, set it unAlarmed
 		setRowUnAlarmed( new Integer(rowNumber) );
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/2/2001 1:57:19 PM)
- */
-public boolean isAnyCapBankInPendingState() 
-{
-	for( int i = 0; i < getRowCount(); i++ )
-	{
-		CapBankDevice rowValue = getRowAt(i);
-		
-		if( rowValue.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING 
-			 || rowValue.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING )
-		{
-			return true;
-		}
-	}
-
-	return false;
 }
 /**
  * This method was created in VisualAge.
@@ -645,7 +543,7 @@ private void setCurrentRowBGColors( int rowNumber, int color )
 	}
 	catch( ArrayIndexOutOfBoundsException e )
 	{
-		com.cannontech.clientutils.CTILogger.info("***** " + this.getClass() + " : setCurrentRowBGColor() " + e.getMessage() );
+		CTILogger.info("***** " + this.getClass() + " : setCurrentRowBGColor() " + e.getMessage() );
 	}  // dont do really anything
 		
 }
@@ -753,16 +651,6 @@ public void setRowUnAlarmed( Integer rowNumber )
 	}
 	
 }
-/**
- * Insert the method's description here.
- * Creation date: (1/11/2001 3:52:13 PM)
- * @param newCellColors java.awt.Color[][]
- */
-public static synchronized void setStates(Color[][] newStateColors, String[] newStateNames ) 
-{
-	stateColors = newStateColors;
-	stateNames = newStateNames;
-}
 
 /**
  * Insert the method's description here.
@@ -797,22 +685,6 @@ public void tableChanged(javax.swing.event.TableModelEvent event )
 		//get the selected SubBus from the SubBusTableModel and add the needed CapBanks
 		tableChanged_HandleSubBus( ((SubBusTableModel)event.getSource()).getRowAt(getSubBusRowSelected()) );
 
-		if( event instanceof StateTableModelEvent )
-		{
-			State[] states = ((StateTableModelEvent)event).getStates();
-			Color[][] colors = new Color[states.length][2];
-			String[] stateNames = new String[states.length];
-			
-			for( int i = 0; i < states.length; i++ )
-			{
-				stateNames[i] = states[i].getText();
-				colors[i][0] = com.cannontech.common.gui.util.Colors.getColor( states[i].getForegroundColor().intValue() );
-				colors[i][1] = com.cannontech.common.gui.util.Colors.getColor( states[i].getBackgroundColor().intValue() );
-			}
-
-			setStates( colors, stateNames );
-		}
-		
 		//fireTableDataChanged();
 		fireTableRowsUpdated( 0, getRowCount()-1 );
 	}
@@ -891,11 +763,5 @@ public void setMuted( boolean muted_ )
 {
 	muted = muted_;
 }
-
-	public void setCBCDisplay( CBCDisplay displayCbc )
-	{
-		if( displayCbc != null )
-			cbcDisplay = displayCbc;
-	}
 
 }

@@ -45,17 +45,17 @@ public class CapControlCache implements MessageListener, ActionListener
 	private static final int NORMAL_REF_RATE = 60 * 5 * 1000; //5 minutes
 	private Timer refreshTimer = new Timer(STARTUP_REF_RATE, this );
 	
-	// Map<suBusID(Integer), SubBus>
+	// Map<suBusID(Integer), sub(SubBus)>
 	private Hashtable subBusMap = new Hashtable();
-	// Map<feederID(Integer), Feeder>
+	// Map<feederID(Integer), feeder(Feeder)>
 	private Hashtable feederMap = new Hashtable();
-	// Map<capBankID(Integer), CapBankDevice>
+	// Map<capBankID(Integer), capBank(CapBankDevice)>
 	private Hashtable capBankMap = new Hashtable();
 
 	// Map<subBusID(Integer), capBankIDs(int[])>
 	private HashMap subToBankMap = new HashMap();
 	// Map<areaName(String), subIDs(NativeIntVector)>
-	private HashMap subToAreaMap = new HashMap();
+	private HashMap subIDToAreaMap = new HashMap();
 
 
 	// Vector:String
@@ -72,6 +72,8 @@ public CapControlCache()
 	ConnPool.getInstance().getDefCapControlConn().addMessageListener( this );	
 	refreshTimer.setRepeats(true);
 	refreshTimer.start();
+	
+	System.out.println("  ---Creating new CBC cache");
 }
 
 /**
@@ -157,7 +159,7 @@ public synchronized CapBankDevice[] getCapBanksBySub(Integer subBusID)
  */
 public synchronized SubBus[] getSubsByArea(String area)
 {
-	NativeIntVector subIDs = (NativeIntVector)subToAreaMap.get( area );
+	NativeIntVector subIDs = (NativeIntVector)subIDToAreaMap.get( area );
 	SubBus[] retVal = new SubBus[ subIDs.size() ];
 	
 	for( int i = 0; i < subIDs.size(); i++ )
@@ -289,13 +291,12 @@ private void handleDeletedSubs( CBCSubstationBuses msg )
 		subToBankMap.remove( msg.getSubBusAt(i).getCcId() );
 
 
-		//remove mapping of subs to areas
+		//remove mapping of subs to areas by subId
 		NativeIntVector subIDs =
-			(NativeIntVector)subToAreaMap.get( msg.getSubBusAt(i).getCcArea() );
-
+			(NativeIntVector)subIDToAreaMap.get( msg.getSubBusAt(i).getCcArea() );
 		subIDs.removeElement( msg.getSubBusAt(i).getCcId().intValue() );
 		if( subIDs.isEmpty() )
-			subToAreaMap.remove( msg.getSubBusAt(i).getCcArea() );
+			subIDToAreaMap.remove( msg.getSubBusAt(i).getCcArea() );
 			
 	}
 
@@ -357,18 +358,32 @@ private synchronized void handleSubBus( SubBus subBus )
 	//map all capbanks to their parent SubBus
 	subToBankMap.put( subBus.getCcId(), capBankIDs.toArray() );
 
+	addSubIDToAreaMap( subBus );
+//	addSubToAreaMap( subBus );
+}
 
-	//map all SubBuses to their parent Area
+/**
+ * Adds or replaces and element inside a hashmap
+ * @param subBus
+ */
+private void addSubIDToAreaMap( final SubBus subBus )
+{
+	//map all SubBuses to their parent Area by subID
 	NativeIntVector subIDs = null;
-	if( (subIDs = (NativeIntVector)subToAreaMap.get(subBus.getCcArea())) != null )
-		subIDs.add( subBus.getCcId().intValue() );
+	if( (subIDs = (NativeIntVector)subIDToAreaMap.get(subBus.getCcArea())) != null )		
+	{
+		int indx = subIDs.indexOf( subBus.getCcId().intValue() );
+		if( indx >= 0 )
+			subIDs.setElementAt(subBus.getCcId().intValue(), indx);
+		else
+			subIDs.add( subBus.getCcId().intValue() );
+	}		
 	else
 	{
 		subIDs = new NativeIntVector(32);
 		subIDs.add( subBus.getCcId().intValue() );
-		subToAreaMap.put( subBus.getCcArea(), subIDs );
+		subIDToAreaMap.put( subBus.getCcArea(), subIDs );
 	}
-
 }
 
 /**

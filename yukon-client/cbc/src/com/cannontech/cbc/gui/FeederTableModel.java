@@ -5,7 +5,6 @@ package com.cannontech.cbc.gui;
  */
 import java.awt.Color;
 
-import com.cannontech.cbc.CBCDisplay;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
@@ -17,25 +16,11 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 	private int fontSize = 12;
 	private SubBus currentSubBus = null;
 	private int subBusRowSelected = -1;
-    
-    private CBCDisplay cbcDisplay = new CBCDisplay();
 
 	/* ROW SPECIFIC DATA */
 	private java.util.Vector rows = null;
 	//private com.cannontech.cbc.capbankeditor.ObservableCapBankRow observableRow = null;
 	/* END --- ROW SPECIFIC DATA */
-
-	//The columns and their column index	
-	public static final int NAME_COLUMN				= 0;
-	public static final int CURRENT_STATE_COLUMN		= 1;
-  	public static final int TARGET_COLUMN				= 2;
-  	public static final int VAR_LOAD_COLUMN			= 3;
-  	public static final int WATTS_COLUMN				= 4;
-  	public static final int POWER_FACTOR_COLUMN		= 5;
-  	public static final int TIME_STAMP_COLUMN			= 6;
-  	public static final int DAILY_OPERATIONS_COLUMN	= 7;
-
-
 
 	//The column names based on their column index
 	private static final String[] COLUMN_NAMES =
@@ -241,7 +226,7 @@ public Object getValueAt(int row, int col)
 	if( row < getRowCount() )
 	{
         Feeder feeder = getRowAt(row);
-        return cbcDisplay.getFeederValueAt( feeder, col, getCurrentSubBus() );
+        return Feeder.CBC_DISPLAY.getFeederValueAt( feeder, col, getCurrentSubBus() );
 	}
 	else
 		return null; /// MAYBE NOT A GOOD IDEA!!	
@@ -257,15 +242,7 @@ public Object getValueAt(int row, int col)
 public boolean isCellEditable(int row, int column) {
 	return false;
 }
-/**
- * Insert the method's description here.
- * Creation date: (1/8/2001 4:54:40 PM)
- * @return boolean
- */
-public static boolean isFeederPending(Feeder feeder) 
-{
-	return feeder.getRecentlyControlledFlag().booleanValue();
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (10/31/00 2:06:22 PM)
@@ -418,11 +395,5 @@ public void toggleAlarms( boolean toggle )
 {
 	//do nothing since we dont alarm on this table yet
 }
-
-	public void setCBCDisplay( CBCDisplay displayCbc )
-	{
-		if( displayCbc != null )
-			cbcDisplay = displayCbc;
-	}
 
 }

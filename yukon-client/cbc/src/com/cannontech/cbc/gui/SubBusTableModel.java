@@ -8,15 +8,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 
-import com.cannontech.cbc.CBCDisplay;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
-import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.yukon.cbc.CBCClientConnection;
-import com.cannontech.yukon.cbc.CBCStates;
 import com.cannontech.yukon.cbc.CBCSubAreaNames;
 import com.cannontech.yukon.cbc.CBCSubstationBuses;
 import com.cannontech.yukon.cbc.CBCUtils;
@@ -27,36 +23,19 @@ import com.cannontech.common.login.ClientSession;
 
 public class SubBusTableModel extends javax.swing.table.AbstractTableModel implements MessageListener, com.cannontech.tdc.alarms.gui.AlarmTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
-	private CBCClientConnection connection = null;
-
 	/* ROW DATA */
 	private java.util.Vector allSubBuses = null;
 	private java.util.List currentSubBuses = null;	
-	/* END - ROW DATA */
+	/* END ROW DATA */
 
     private final Vector areaNames = new Vector(32);
     
-    private CBCDisplay cbcDisplay = new CBCDisplay();
-
 	// the holder for the current filter, default to all
-    private String filter = null; //ALL_FILTER;
-
-	//The columns and their column index	
-	public static final int AREA_NAME_COLUMN  = 0;
-	public static final int SUB_NAME_COLUMN = 1;
-	public static final int CURRENT_STATE_COLUMN  = 2;
-  	public static final int TARGET_COLUMN  = 3;
-  	public static final int VAR_LOAD_COLUMN  = 4;
-  	public static final int WATTS_COLUMN  = 5;
-	public static final int POWER_FACTOR_COLUMN = 6;
-  	public static final int TIME_STAMP_COLUMN  = 7;
-  	public static final int DAILY_OPERATIONS_COLUMN  = 8;
-
+    private String filter = null;
 
     //which LiteYukonUser owns this data
     private LiteYukonUser ownerUser = null;
 
-    
 	//The column names based on their column index
 	private static final String[] COLUMN_NAMES =
 	{
@@ -251,13 +230,6 @@ public String getColumnName(int index) {
 }
 /**
  * Insert the method's description here.
- * Creation date: (8/8/00 1:56:41 PM)
- */
-private CBCClientConnection getConnection() {
-	return connection;
-}
-/**
- * Insert the method's description here.
  * Creation date: (4/11/2002 1:25:18 PM)
  * @return java.util.List
  */
@@ -318,7 +290,7 @@ public int getRowCount()
 public Object getValueAt(int row, int col) 
 {
 	SubBus sub = getRowAt(row);
-    return cbcDisplay.getSubBusValueAt( sub, col );
+    return SubBus.CBC_DISPLAY.getSubBusValueAt( sub, col );
 }
 
 
@@ -384,13 +356,6 @@ public boolean setBGRowColor(int rowNumber, int color)
 {
 	//This TableModel does not alarm directly, for now....
 	return false;
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/8/00 1:56:41 PM)
- */
-public void setConnection(CBCClientConnection newConnection) {
-	connection = newConnection;
 }
 /**
  * Insert the method's description here.
@@ -504,37 +469,7 @@ public void messageReceived( com.cannontech.message.util.MessageEvent e )
 	int oldRowCount = getRowCount();
 
 
-	if( in instanceof CBCStates )
-	{			
-		CBCStates cbcStates = (CBCStates)in;
-		CTILogger.info( new ModifiedDate(new java.util.Date().getTime()).toString()
-				+ " : Got a CapBank State Message with " + cbcStates.getNumberOfStates()
-				+ " states" );
-
-		
-		com.cannontech.database.db.state.State[] states =
-				new com.cannontech.database.db.state.State[cbcStates.getNumberOfStates()];
-		
-		synchronized ( states ) 
-		{		
-			for( int i = 0; i < cbcStates.getNumberOfStates(); i++ )
-			{
-				cbcStates.getState(i).setRawState( new Integer(i) ); // set the rawstate value
-				states[i] = cbcStates.getState(i);
-			}		
-		}
-		
-
-		StateTableModelEvent stMe =
-			new StateTableModelEvent(SubBusTableModel.this, 0, getRowCount()-1,
-					javax.swing.event.TableModelEvent.ALL_COLUMNS, 
-					javax.swing.event.TableModelEvent.UPDATE);
-		
-		stMe.setStates( states );
-
-		fireTableChanged( stMe );
-	}
-	else if( in instanceof CBCSubstationBuses )
+	if( in instanceof CBCSubstationBuses )
 	{
 		CBCSubstationBuses busesMsg = (CBCSubstationBuses)in;
         
@@ -639,11 +574,5 @@ private synchronized void updateSubBuses(SubBus[] newBuses)
 	}
 
 }
-
-	public void setCBCDisplay( CBCDisplay displayCbc )
-	{
-		if( displayCbc != null )
-			cbcDisplay = displayCbc;
-	}
 
 }

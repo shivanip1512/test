@@ -35,6 +35,7 @@ public class CBCClientConnection extends ClientConnection
 		com.roguewave.vsj.streamer.CollectableMappings.CollectableString,
 		
 		//Messages
+		new DefineCollectableCBCStateGroupMessage(),
 		new com.cannontech.message.dispatch.message.DefineCollectableMulti(),
 		new DefineCollectableCBCCommand(),
 		new DefineCollectableCBCSubAreaName(),
@@ -42,7 +43,6 @@ public class CBCClientConnection extends ClientConnection
 		new DefineCollectableCBCMessage(), // not used except as a superclass
 		new com.cannontech.message.dispatch.message.DefineCollectablePointData(),
 		new com.cannontech.message.dispatch.message.DefineCollectableCommand(),
-		new DefineCollectableCBCStateGroupMessage(),
 		new DefineCollectableCBCTempMoveCapBank()
 	};
 	
@@ -158,30 +158,6 @@ public class CBCClientConnection extends ClientConnection
 	{	
 		setAutoReconnect( true );
 	}
-	
-    /**
-     * Override the parents implentation so we can filter out the
-     * subs we do not have access to.
-     * 
-     */
-//    public void fireMessageEvent(Message msg)
-//    {
-//        if( msg instanceof CBCSubstationBuses )
-//        {
-//            //remove any Subs the user should not see
-//            CBCSubstationBuses busesMsg = (CBCSubstationBuses)msg;
-//            for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- )
-//            {
-//                //if the user can not see this sub, let us remove it
-//                if( !AuthFuncs.userHasAccessPAO( ClientSession.getInstance().getUser(), busesMsg.getSubBusAt(i).getCcId().intValue() ) )
-//                    busesMsg.removeSubBusAt( i );
-//            }
-//        }
-//        
-//        //let the parent tell everyone its story
-//        super.fireMessageEvent( msg );
-//    }
-//
     
 	/**
 	 * 
