@@ -1053,6 +1053,29 @@ void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& curre
 }
 
 /*---------------------------------------------------------------------------
+    createControlStatusPointUpdates
+
+    Create new point data messages that track the state (controlling or not)
+    of the control area.
+---------------------------------------------------------------------------*/
+void CtiLMProgramBase::createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg)
+{
+    if( getProgramStatusPointId() > 0 )
+    {
+        if( getProgramState() == CtiLMProgramBase::ActiveState ||
+            getProgramState() == CtiLMProgramBase::FullyActiveState ||
+            getProgramState() == CtiLMProgramBase::ManualActiveState )
+        {//controlling
+            multiDispatchMsg->insert(new CtiPointDataMsg(getProgramStatusPointId(),STATEONE,NormalQuality,StatusPointType));
+        }
+        else
+        {//not controlling
+            multiDispatchMsg->insert(new CtiPointDataMsg(getProgramStatusPointId(),STATEZERO,NormalQuality,StatusPointType));
+        }
+    }
+}
+
+/*---------------------------------------------------------------------------
     restore
 
     Restores given a RWDBReader
@@ -1118,6 +1141,23 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
 
         _insertDynamicDataFlag = TRUE;
     }
+
+    setProgramStatusPointId(0);
+    rdr["pointid"] >> isNull;
+    if( !isNull )
+    {
+        LONG tempPointId = 0;
+        LONG tempPointOffset = 0;
+        RWCString tempPointType = "(none)";
+        rdr["pointid"] >> tempPointId;
+        rdr["pointoffset"] >> tempPointOffset;
+        rdr["pointtype"] >> tempPointType;
+        if( resolvePointType(tempPointType) == StatusPointType &&
+            tempPointOffset == 1 )
+        {
+            setProgramStatusPointId(tempPointId);
+        }
+    }
 }
 
 // Static Members
@@ -1131,4 +1171,5 @@ int CtiLMProgramBase::ScheduledState = STATETHREE;
 int CtiLMProgramBase::NotifiedState = STATEFOUR;
 int CtiLMProgramBase::FullyActiveState = STATEFIVE;
 int CtiLMProgramBase::StoppingState = STATESIX;
+int CtiLMProgramBase::AttemptingControlState = STATESEVEN;
 

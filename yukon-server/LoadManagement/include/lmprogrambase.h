@@ -101,6 +101,7 @@ public:
     BOOL isWithinValidControlWindow(LONG secondsFromBeginningOfDay);
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    void createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg);
 
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
     virtual CtiLMProgramBase* replicate() const = 0;
@@ -132,6 +133,7 @@ public:
     static int NotifiedState;
     static int FullyActiveState;
     static int StoppingState;
+    static int AttemptingControlState;
 
 protected:
 

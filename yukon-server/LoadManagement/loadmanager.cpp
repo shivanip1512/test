@@ -311,6 +311,7 @@ void CtiLoadManager::controlLoop()
                         {
                             if( currentControlArea->getUpdatedFlag() )
                             {
+                                currentControlArea->createControlStatusPointUpdates(multiDispatchMsg);
                                 controlAreaChanges.insert(currentControlArea);
                                 currentControlArea->setUpdatedFlag(FALSE);
                             }

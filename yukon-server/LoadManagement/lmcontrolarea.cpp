@@ -1455,6 +1455,37 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
     }
 }
 
+
+/*---------------------------------------------------------------------------
+    createControlStatusPointUpdates
+
+    Create new point data messages that track the state (controlling or not)
+    of the control area.
+---------------------------------------------------------------------------*/
+void CtiLMControlArea::createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg)
+{
+    if( getControlAreaStatusPointId() > 0 )
+    {
+        if( getControlAreaState() == CtiLMControlArea::ActiveState ||
+            getControlAreaState() == CtiLMControlArea::FullyActiveState ||
+            getControlAreaState() == CtiLMControlArea::ManualActiveState )
+        {//controlling
+            multiDispatchMsg->insert(new CtiPointDataMsg(getControlAreaStatusPointId(),STATEONE,NormalQuality,StatusPointType));
+        }
+        else
+        {//not controlling
+            multiDispatchMsg->insert(new CtiPointDataMsg(getControlAreaStatusPointId(),STATEZERO,NormalQuality,StatusPointType));
+        }
+    }
+
+    for(long i=0;i<_lmprograms.entries();i++)
+    {
+        CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)_lmprograms[i];
+        currentLMProgramBase->createControlStatusPointUpdates(multiDispatchMsg);
+    }
+}
+
+
 /*---------------------------------------------------------------------------
     dumpDynamicData
 
@@ -1719,6 +1750,21 @@ void CtiLMControlArea::restore(RWDBReader& rdr)
     setRequireAllTriggersActiveFlag(tempBoolString=="y"?TRUE:FALSE);
 
     setControlAreaStatusPointId(0);
+    rdr["pointid"] >> isNull;
+    if( !isNull )
+    {
+        LONG tempPointId = 0;
+        LONG tempPointOffset = 0;
+        RWCString tempPointType = "(none)";
+        rdr["pointid"] >> tempPointId;
+        rdr["pointoffset"] >> tempPointOffset;
+        rdr["pointtype"] >> tempPointType;
+        if( resolvePointType(tempPointType) == StatusPointType &&
+            tempPointOffset == 1 )
+        {
+            setControlAreaStatusPointId(tempPointId);
+        }
+    }
 
     rdr["nextchecktime"] >> isNull;
     if( !isNull )
@@ -1826,4 +1872,5 @@ int CtiLMControlArea::ActiveState = STATEONE;
 int CtiLMControlArea::ManualActiveState = STATETWO;
 int CtiLMControlArea::ScheduledState = STATETHREE;
 int CtiLMControlArea::FullyActiveState = STATEFOUR;
+int CtiLMControlArea::AttemptingControlState = STATEFIVE;
 

@@ -499,6 +499,7 @@ void CtiLMControlAreaStore::reset()
                     {//loading direct programs start
                         RWDBTable lmProgramDirectTable = db.table("lmprogramdirect");
                         RWDBTable dynamicLMProgramDirectTable = db.table("dynamiclmprogramdirect");
+                        RWDBTable pointTable = db.table("point");
 
                         RWDBSelector selector = db.selector();
                         selector << yukonPAObjectTable["paobjectid"]
@@ -527,18 +528,23 @@ void CtiLMControlAreaStore::reset()
                                  << dynamicLMProgramDirectTable["currentgearnumber"]
                                  << dynamicLMProgramDirectTable["lastgroupcontrolled"]
                                  << dynamicLMProgramDirectTable["starttime"]
-                                 << dynamicLMProgramDirectTable["stoptime"];
+                                 << dynamicLMProgramDirectTable["stoptime"]
+                                 << pointTable["pointid"]
+                                 << pointTable["pointoffset"]
+                                 << pointTable["pointtype"];
     
                         selector.from(yukonPAObjectTable);
                         selector.from(lmProgramTable);
                         selector.from(lmProgramDirectTable);
                         selector.from(dynamicLMProgramTable);
                         selector.from(dynamicLMProgramDirectTable);
+                        selector.from(pointTable);
     
                         selector.where( yukonPAObjectTable["paobjectid"]==lmProgramDirectTable["deviceid"] &&
                                         lmProgramDirectTable["deviceid"]==lmProgramTable["deviceid"] &&
                                         lmProgramTable["deviceid"].leftOuterJoin(dynamicLMProgramTable["deviceid"]) &&
-                                        lmProgramTable["deviceid"].leftOuterJoin(dynamicLMProgramDirectTable["deviceid"]) );
+                                        lmProgramTable["deviceid"].leftOuterJoin(dynamicLMProgramDirectTable["deviceid"]) &&
+                                        lmProgramTable["deviceid"].leftOuterJoin(pointTable["paobjectid"]) );
 
                         selector.orderBy(yukonPAObjectTable["paobjectid"]);
 
@@ -548,19 +554,45 @@ void CtiLMControlAreaStore::reset()
                             dout << RWTime() << " - " << selector.asString().data() << endl;
                         }
 
+                        CtiLMProgramDirect* currentLMProgramDirect = NULL;
                         RWDBReader rdr = selector.reader(conn);
+                        RWDBNullIndicator isNull;
                         while( rdr() )
                         {
-                            CtiLMProgramDirect* newDirProg = new CtiLMProgramDirect(rdr);
-                            RWOrdered& directGroups = newDirProg->getLMProgramDirectGroups();
-                            //Inserting this program's groups
-                            while( allGroupList.entries() > 0 && newDirProg->getPAOId() == ((CtiLMGroupBase*)allGroupList[0])->getLMProgramId() )
+                            LONG tempProgramId = 0;
+                            rdr["paobjectid"] >> tempProgramId;
+
+                            if( currentLMProgramDirect == NULL ||
+                                tempProgramId != currentLMProgramDirect->getPAOId() )
                             {
-                                directGroups.insert(allGroupList.removeAt(0));
+                                currentLMProgramDirect = new CtiLMProgramDirect(rdr);
+                                RWOrdered& directGroups = currentLMProgramDirect->getLMProgramDirectGroups();
+                                //Inserting this program's groups
+                                while( allGroupList.entries() > 0 && currentLMProgramDirect->getPAOId() == ((CtiLMGroupBase*)allGroupList[0])->getLMProgramId() )
+                                {
+                                    directGroups.insert(allGroupList.removeAt(0));
+                                }
+
+                                //Inserting this direct program into hash map
+                                directProgramHashMap.insert( currentLMProgramDirect->getPAOId(), currentLMProgramDirect );
                             }
 
-                            //Inserting this direct program into hash map
-                            directProgramHashMap.insert( newDirProg->getPAOId(), newDirProg );
+                            rdr["pointid"] >> isNull;
+                            if( !isNull )
+                            {
+                                LONG tempPointId = 0;
+                                LONG tempPointOffset = 0;
+                                RWCString tempPointType = "(none)";
+                                rdr["pointid"] >> tempPointId;
+                                rdr["pointoffset"] >> tempPointOffset;
+                                rdr["pointtype"] >> tempPointType;
+                                if( currentLMProgramDirect->getProgramStatusPointId() <= 0 &&
+                                    resolvePointType(tempPointType) == StatusPointType &&
+                                    tempPointOffset == 1 )
+                                {
+                                    currentLMProgramDirect->setProgramStatusPointId(tempPointId);
+                                }
+                            }
                         }
                     }//loading direct programs end
                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
@@ -663,6 +695,7 @@ void CtiLMControlAreaStore::reset()
                     curtailProgsTimer.start();
                     {//loading curtailment programs start
                         RWDBTable lmProgramCurtailmentTable = db.table("lmprogramcurtailment");
+                        RWDBTable pointTable = db.table("point");
 
                         RWDBSelector selector = db.selector();
                         selector << yukonPAObjectTable["paobjectid"]
@@ -695,16 +728,21 @@ void CtiLMControlAreaStore::reset()
                                  << dynamicLMProgramTable["startedcontrolling"]
                                  << dynamicLMProgramTable["lastcontrolsent"]
                                  << dynamicLMProgramTable["manualcontrolreceivedflag"]
-                                 << dynamicLMProgramTable["timestamp"];
+                                 << dynamicLMProgramTable["timestamp"]
+                                 << pointTable["pointid"]
+                                 << pointTable["pointoffset"]
+                                 << pointTable["pointtype"];
 
                         selector.from(yukonPAObjectTable);
                         selector.from(lmProgramTable);
                         selector.from(lmProgramCurtailmentTable);
                         selector.from(dynamicLMProgramTable);
+                        selector.from(pointTable);
 
                         selector.where( yukonPAObjectTable["paobjectid"]==lmProgramCurtailmentTable["deviceid"] &&
                                         lmProgramCurtailmentTable["deviceid"]==lmProgramTable["deviceid"] &&
-                                        lmProgramTable["deviceid"].leftOuterJoin(dynamicLMProgramTable["deviceid"]) );
+                                        lmProgramTable["deviceid"].leftOuterJoin(dynamicLMProgramTable["deviceid"]) &&
+                                        lmProgramTable["deviceid"].leftOuterJoin(pointTable["paobjectid"]) );
 
                         selector.orderBy(yukonPAObjectTable["paobjectid"]);
 
@@ -714,16 +752,42 @@ void CtiLMControlAreaStore::reset()
                             dout << RWTime() << " - " << selector.asString().data() << endl;
                         }
 
+                        CtiLMProgramCurtailment* currentLMProgramCurtailment = NULL;
                         RWDBReader rdr = selector.reader(conn);
+                        RWDBNullIndicator isNull;
                         while( rdr() )
                         {
-                            CtiLMProgramCurtailment* newCurtProg = new CtiLMProgramCurtailment(rdr);
-                            if( newCurtProg->getManualControlReceivedFlag() )
+                            LONG tempProgramId = 0;
+                            rdr["paobjectid"] >> tempProgramId;
+
+                            if( currentLMProgramCurtailment == NULL ||
+                                tempProgramId != currentLMProgramCurtailment->getPAOId() )
                             {
-                                newCurtProg->restoreDynamicData(rdr);
+                                currentLMProgramCurtailment = new CtiLMProgramCurtailment(rdr);
+                                if( currentLMProgramCurtailment->getManualControlReceivedFlag() )
+                                {
+                                    currentLMProgramCurtailment->restoreDynamicData(rdr);
+                                }
+                                //Inserting this curtailment program into hash map
+                                curtailmentProgramHashMap.insert( currentLMProgramCurtailment->getPAOId(), currentLMProgramCurtailment );
                             }
-                            //Inserting this curtailment program into hash map
-                            curtailmentProgramHashMap.insert( newCurtProg->getPAOId(), newCurtProg );
+
+                            rdr["pointid"] >> isNull;
+                            if( !isNull )
+                            {
+                                LONG tempPointId = 0;
+                                LONG tempPointOffset = 0;
+                                RWCString tempPointType = "(none)";
+                                rdr["pointid"] >> tempPointId;
+                                rdr["pointoffset"] >> tempPointOffset;
+                                rdr["pointtype"] >> tempPointType;
+                                if( currentLMProgramCurtailment->getProgramStatusPointId() <= 0 &&
+                                    resolvePointType(tempPointType) == StatusPointType &&
+                                    tempPointOffset == 1 )
+                                {
+                                    currentLMProgramCurtailment->setProgramStatusPointId(tempPointId);
+                                }
+                            }
                         }
 
                         RWTValHashMapIterator<LONG,CtiLMProgramBase*,id_hash,equal_to<LONG> > itr(curtailmentProgramHashMap);
@@ -792,6 +856,7 @@ void CtiLMControlAreaStore::reset()
                     eeProgsTimer.start();
                     {//loading energy exchange programs start
                         RWDBTable lmProgramEnergyExchangeTable = db.table("lmprogramenergyexchange");
+                        RWDBTable pointTable = db.table("point");
 
                         RWDBSelector selector = db.selector();
                         selector << yukonPAObjectTable["paobjectid"]
@@ -823,16 +888,21 @@ void CtiLMControlAreaStore::reset()
                                  << dynamicLMProgramTable["startedcontrolling"]
                                  << dynamicLMProgramTable["lastcontrolsent"]
                                  << dynamicLMProgramTable["manualcontrolreceivedflag"]
-                                 << dynamicLMProgramTable["timestamp"];
+                                 << dynamicLMProgramTable["timestamp"]
+                                 << pointTable["pointid"]
+                                 << pointTable["pointoffset"]
+                                 << pointTable["pointtype"];
 
                         selector.from(yukonPAObjectTable);
                         selector.from(lmProgramTable);
                         selector.from(lmProgramEnergyExchangeTable);
                         selector.from(dynamicLMProgramTable);
+                        selector.from(pointTable);
 
                         selector.where( yukonPAObjectTable["paobjectid"]==lmProgramEnergyExchangeTable["deviceid"] &&
                                         lmProgramEnergyExchangeTable["deviceid"]==lmProgramTable["deviceid"] &&
-                                        lmProgramTable["deviceid"].leftOuterJoin(dynamicLMProgramTable["deviceid"]) );
+                                        lmProgramTable["deviceid"].leftOuterJoin(dynamicLMProgramTable["deviceid"]) &&
+                                        lmProgramTable["deviceid"].leftOuterJoin(pointTable["paobjectid"]) );
 
                         selector.orderBy(yukonPAObjectTable["paobjectid"]);
 
@@ -842,12 +912,38 @@ void CtiLMControlAreaStore::reset()
                             dout << RWTime() << " - " << selector.asString().data() << endl;
                         }
 
+                        CtiLMProgramBase* currentLMProgramEnergyExchange = NULL;
                         RWDBReader rdr = selector.reader(conn);
+                        RWDBNullIndicator isNull;
                         while( rdr() )
                         {
-                            CtiLMProgramEnergyExchange* newEEProg = new CtiLMProgramEnergyExchange(rdr);
-                            //Inserting this curtailment program into hash map
-                            energyExchangeProgramHashMap.insert( newEEProg->getPAOId(), newEEProg );
+                            LONG tempProgramId = 0;
+                            rdr["paobjectid"] >> tempProgramId;
+
+                            if( currentLMProgramEnergyExchange == NULL ||
+                                tempProgramId != currentLMProgramEnergyExchange->getPAOId() )
+                            {
+                                currentLMProgramEnergyExchange = new CtiLMProgramEnergyExchange(rdr);
+                                //Inserting this curtailment program into hash map
+                                energyExchangeProgramHashMap.insert( currentLMProgramEnergyExchange->getPAOId(), currentLMProgramEnergyExchange );
+                            }
+
+                            rdr["pointid"] >> isNull;
+                            if( !isNull )
+                            {
+                                LONG tempPointId = 0;
+                                LONG tempPointOffset = 0;
+                                RWCString tempPointType = "(none)";
+                                rdr["pointid"] >> tempPointId;
+                                rdr["pointoffset"] >> tempPointOffset;
+                                rdr["pointtype"] >> tempPointType;
+                                if( currentLMProgramEnergyExchange->getProgramStatusPointId() <= 0 &&
+                                    resolvePointType(tempPointType) == StatusPointType &&
+                                    tempPointOffset == 1 )
+                                {
+                                    currentLMProgramEnergyExchange->setProgramStatusPointId(tempPointId);
+                                }
+                            }
                         }
 
                         RWTValHashMapIterator<LONG,CtiLMProgramBase*,id_hash,equal_to<LONG> > itr(energyExchangeProgramHashMap);
@@ -1147,6 +1243,7 @@ void CtiLMControlAreaStore::reset()
                         RWDBTable lmControlAreaTable = db.table("lmcontrolarea");
                         RWDBTable lmControlAreaProgramTable = db.table("lmcontrolareaprogram");
                         RWDBTable dynamicLMControlAreaTable = db.table("dynamiclmcontrolarea");
+                        RWDBTable pointTable = db.table("point");
 
                         RWDBSelector selector = db.selector();
                         selector << yukonPAObjectTable["paobjectid"]
@@ -1173,16 +1270,22 @@ void CtiLMControlAreaStore::reset()
                                  << dynamicLMControlAreaTable["currentpriority"]
                                  << dynamicLMControlAreaTable["currentdailystarttime"]
                                  << dynamicLMControlAreaTable["currentdailystoptime"]
-                                 << dynamicLMControlAreaTable["timestamp"];
+                                 << dynamicLMControlAreaTable["timestamp"]
+                                 << pointTable["pointid"]
+                                 << pointTable["pointoffset"]
+                                 << pointTable["pointtype"];
 
                         selector.from(yukonPAObjectTable);
                         selector.from(lmControlAreaTable);
                         selector.from(lmControlAreaProgramTable);
                         selector.from(dynamicLMControlAreaTable);
+                        selector.from(pointTable);
 
+                        //fixThis;
                         selector.where( yukonPAObjectTable["paobjectid"]==lmControlAreaTable["deviceid"] &&
                                         lmControlAreaTable["deviceid"].leftOuterJoin(lmControlAreaProgramTable["deviceid"]) &&
-                                        lmControlAreaTable["deviceid"].leftOuterJoin(dynamicLMControlAreaTable["deviceid"]) );
+                                        lmControlAreaTable["deviceid"].leftOuterJoin(dynamicLMControlAreaTable["deviceid"]) &&
+                                        lmControlAreaTable["deviceid"].leftOuterJoin(pointTable["paobjectid"]) );
 
                         selector.orderBy(yukonPAObjectTable["paobjectid"]);
                         selector.orderBy(lmControlAreaProgramTable["defaultpriority"]);
@@ -1198,6 +1301,7 @@ void CtiLMControlAreaStore::reset()
                         RWDBReader rdr = selector.reader(conn);
 
                         CtiLMControlArea* currentLMControlArea = NULL;
+                        CtiLMProgramBase* currentLMProgramBase = NULL;
                         RWDBNullIndicator isNull;
                         while( rdr() )
                         {
@@ -1209,6 +1313,7 @@ void CtiLMControlAreaStore::reset()
                                 currentLMControlArea = new CtiLMControlArea(rdr);
                                 _controlAreas->insert(currentLMControlArea);
                             }
+
                             rdr["lmprogramdeviceid"] >> isNull;
                             if( !isNull )
                             {
@@ -1221,38 +1326,59 @@ void CtiLMControlAreaStore::reset()
                                 rdr["stoporder"] >> tempStopOrder;
                                 rdr["defaultpriority"] >> tempDefaultPriority;
 
-                                RWOrdered& lmControlAreaProgramList = currentLMControlArea->getLMPrograms();
+                                if( currentLMProgramBase == NULL ||
+                                    ( currentLMProgramBase != NULL &&
+                                      currentLMProgramBase->getPAOId() != tempProgramId ) )
+                                {
+                                    RWOrdered& lmControlAreaProgramList = currentLMControlArea->getLMPrograms();
 
-                                CtiLMProgramBase* programToPutInControlArea = NULL;
-                                if( directProgramHashMap.findValue(tempProgramId,programToPutInControlArea) )
-                                {
-                                    programToPutInControlArea->setUserOrder(tempUserOrder);
-                                    programToPutInControlArea->setStopOrder(tempStopOrder);
-                                    programToPutInControlArea->setDefaultPriority(tempDefaultPriority);
-                                    lmControlAreaProgramList.insert(programToPutInControlArea);
-                                    directProgramHashMap.remove(tempProgramId);
+                                    if( directProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
+                                    {
+                                        currentLMProgramBase->setUserOrder(tempUserOrder);
+                                        currentLMProgramBase->setStopOrder(tempStopOrder);
+                                        currentLMProgramBase->setDefaultPriority(tempDefaultPriority);
+                                        lmControlAreaProgramList.insert(currentLMProgramBase);
+                                        directProgramHashMap.remove(tempProgramId);
+                                    }
+                                    else if( curtailmentProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
+                                    {
+                                        currentLMProgramBase->setUserOrder(tempUserOrder);
+                                        currentLMProgramBase->setStopOrder(tempStopOrder);
+                                        currentLMProgramBase->setDefaultPriority(tempDefaultPriority);
+                                        lmControlAreaProgramList.insert(currentLMProgramBase);
+                                        curtailmentProgramHashMap.remove(tempProgramId);
+                                    }
+                                    else if( energyExchangeProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
+                                    {
+                                        currentLMProgramBase->setUserOrder(tempUserOrder);
+                                        currentLMProgramBase->setStopOrder(tempStopOrder);
+                                        currentLMProgramBase->setDefaultPriority(tempDefaultPriority);
+                                        lmControlAreaProgramList.insert(currentLMProgramBase);
+                                        energyExchangeProgramHashMap.remove(tempProgramId);
+                                    }
+                                    else
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << "Cannot find LM Program with Id: " << tempProgramId << " to insert into Control Area: " << currentLMControlArea->getPAOName() << ", in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                        dout << "The LM Program may be in more than one Control Area which is not allowed, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                    }
                                 }
-                                else if( curtailmentProgramHashMap.findValue(tempProgramId,programToPutInControlArea) )
+                            }
+
+                            rdr["pointid"] >> isNull;
+                            if( !isNull )
+                            {
+                                LONG tempPointId = 0;
+                                LONG tempPointOffset = 0;
+                                RWCString tempPointType = "(none)";
+                                rdr["pointid"] >> tempPointId;
+                                rdr["pointoffset"] >> tempPointOffset;
+                                rdr["pointtype"] >> tempPointType;
+                                if( currentLMControlArea->getControlAreaStatusPointId() <= 0 &&
+                                    resolvePointType(tempPointType) == StatusPointType &&
+                                    tempPointOffset == 1 )
                                 {
-                                    programToPutInControlArea->setUserOrder(tempUserOrder);
-                                    programToPutInControlArea->setStopOrder(tempStopOrder);
-                                    programToPutInControlArea->setDefaultPriority(tempDefaultPriority);
-                                    lmControlAreaProgramList.insert(programToPutInControlArea);
-                                    curtailmentProgramHashMap.remove(tempProgramId);
-                                }
-                                else if( energyExchangeProgramHashMap.findValue(tempProgramId,programToPutInControlArea) )
-                                {
-                                    programToPutInControlArea->setUserOrder(tempUserOrder);
-                                    programToPutInControlArea->setStopOrder(tempStopOrder);
-                                    programToPutInControlArea->setDefaultPriority(tempDefaultPriority);
-                                    lmControlAreaProgramList.insert(programToPutInControlArea);
-                                    energyExchangeProgramHashMap.remove(tempProgramId);
-                                }
-                                else
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << "Cannot find LM Program with Id: " << tempProgramId << " to insert into Control Area: " << currentLMControlArea->getPAOName() << ", in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                    dout << "The LM Program may be in more than one Control Area which is not allowed, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                    currentLMControlArea->setControlAreaStatusPointId(tempPointId);
                                 }
                             }
                         }

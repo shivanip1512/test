@@ -101,6 +101,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     BOOL maintainCurrentControl(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     BOOL stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901);
     void handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    void createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg);
 
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
@@ -127,6 +128,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     static int ManualActiveState;
     static int ScheduledState;
     static int FullyActiveState;
+    static int AttemptingControlState;
 
 private:
     
