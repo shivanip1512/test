@@ -21,6 +21,7 @@ package com.cannontech.servlet;
  * @author: Aaron Lauinger
  */
 import com.cannontech.common.util.LogWriter;
+import com.cannontech.database.data.web.User;
 
 public class PeakDataGenerator extends javax.servlet.http.HttpServlet {
 
@@ -63,7 +64,7 @@ public void doGet(javax.servlet.http.HttpServletRequest req, javax.servlet.http.
 		java.util.Date start = dateFormat.parse( (String) req.getAttribute("start"));		
 		java.util.Date end = dateFormat.parse( (String) req.getAttribute("end"));	
 		String dbAlias = req.getAttribute("db").toString();
-		int modelType = com.cannontech.graph.model.GraphModelType.DATA_VIEW_MODEL;
+		int modelType = com.cannontech.graph.model.TrendModelType.LINE_MODEL;
 
 		String modelTypeStr = req.getParameter("model");
 		if( modelTypeStr != null )
@@ -71,7 +72,7 @@ public void doGet(javax.servlet.http.HttpServletRequest req, javax.servlet.http.
 			
 		// Create the graph def with the given id and retrieve it from the db	
 		com.cannontech.database.data.graph.GraphDefinition gDef = new com.cannontech.database.data.graph.GraphDefinition();
-		gDef.getGraphDefinition().setGraphDefinitionID(new Long(gDefId));		
+		gDef.getGraphDefinition().setGraphDefinitionID(new Integer(gDefId));		
 	
 		if (gDef != null)
 		{			

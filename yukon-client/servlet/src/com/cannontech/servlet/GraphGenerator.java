@@ -23,6 +23,7 @@ package com.cannontech.servlet;
  */
 
 import com.cannontech.common.util.LogWriter;
+import com.cannontech.database.data.web.User;
 
 public class GraphGenerator extends javax.servlet.http.HttpServlet {
 
@@ -63,10 +64,11 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 		
 		int width = Integer.parseInt( req.getParameter("width") );
 		int height = Integer.parseInt( req.getParameter("height") );
+
 		String format = req.getParameter("format");
 		String dbAlias = req.getParameter("db");
 		String loadFactor = req.getParameter("loadfactor");		
-		int modelType = com.cannontech.graph.model.GraphModelType.DATA_VIEW_MODEL;
+		int modelType = com.cannontech.graph.model.TrendModelType.LINE_MODEL;
 		
 		boolean showLoadFactor = true;
 		
@@ -86,7 +88,7 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 			
 		
 		com.cannontech.database.data.graph.GraphDefinition gDef = new com.cannontech.database.data.graph.GraphDefinition();
-		gDef.getGraphDefinition().setGraphDefinitionID(new Long(gDefId));
+		gDef.getGraphDefinition().setGraphDefinitionID(new Integer(gDefId));
 	
 		if (gDef != null)
 		{		
@@ -142,8 +144,9 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 		    	out = resp.getOutputStream();		   		
 				if( format.equalsIgnoreCase("gif") )								
 					graph.encodeGif(out);
-				else
-				if( format.equalsIgnoreCase("jpg") )
+				else if( format.equalsIgnoreCase("png") )
+					graph.encodePng(out);
+				else if( format.equalsIgnoreCase("jpg") )
 					;//graph.encodeJPG(out);
 				else
 				if( format.equalsIgnoreCase("svg") )

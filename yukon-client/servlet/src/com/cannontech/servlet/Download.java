@@ -83,13 +83,21 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		resp.setHeader("Pragma", "no-cache"); //HTTP 1.0
 		resp.setDateHeader("Expires", 0); //prevents caching at the proxy server
 
+		int width = 556;
+		int height = 433;
 		//Grab the parameters
+		if( req.getParameter("width") != null)
+			width = Integer.parseInt( req.getParameter("width") );
+		if( req.getParameter("height") != null)
+			height = Integer.parseInt( req.getParameter("height") );
+		
 		String extension = req.getParameter("ext");
 		int gDefId = Integer.parseInt(req.getParameter("gdefid"));
 		java.util.Date start = dateFormat.parse(req.getParameter("start"));
 		java.util.Date end = start; //just as an init!
 		String dbAlias = req.getParameter("db").toString();
-		int modelType = com.cannontech.graph.model.GraphModelType.DATA_VIEW_MODEL;
+		int selectedPane = com.cannontech.graph.GraphDefines.GRAPH_PANE;
+		int modelType = com.cannontech.graph.model.TrendModelType.LINE_MODEL;
 		String period = req.getParameter("period");
 		System.out.println("PERIOD ====== " + period);
 		String modelTypeStr = req.getParameter("model");
@@ -102,7 +110,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 
 		// Create the graph def with the given id and retrieve it from the db	
 		com.cannontech.database.data.graph.GraphDefinition gDef = new com.cannontech.database.data.graph.GraphDefinition();
-		gDef.getGraphDefinition().setGraphDefinitionID(new Long(gDefId));
+		gDef.getGraphDefinition().setGraphDefinitionID(new Integer(gDefId));
 
 		if (gDef != null)
 		{
@@ -140,12 +148,11 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 				start = com.cannontech.util.ServletUtil.getStartingDateOfInterval( start, period );
 
 				gDef.getGraphDefinition().setStartDate(start);
-		System.out.println("START ====== " + start);				
+				System.out.println("START ====== " + start);				
 				gDef.getGraphDefinition().setStopDate(end);
-		System.out.println("STOP ====== " + end);
+				System.out.println("STOP ====== " + end);
 
-
-				
+			
 				//java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 				//cal.setTime(start);
 
@@ -168,6 +175,8 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 			graph.setCurrentGraphDefinition(gDef);
 			graph.setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
 			graph.setModelType(modelType);
+			if( width > 0 && height > 0)
+				graph.setSize(width, height);
 
 			// Define the peak series....
 			for (int i = 0; i < gDef.getGraphDataSeries().size(); i++)
@@ -190,79 +199,46 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 			{
 				System.out.println(" *** SERVLET, RESP.GETOUTPUTSTREAM!!!");
 				out = resp.getOutputStream();
-				graph.setExportArray();
-				String[] data = null;
-				char [] pdfData = null;
+
 				if (extension.equalsIgnoreCase("csv"))
 				{
 					resp.setContentType("text/comma-separated-values");
 
-					int rowcount = 2;
-					com.cannontech.graph.model.GraphModel[][] currentModels = graph.getCurrentModels();
-					for (int i = 0; currentModels != null && i < currentModels.length; i++)
-						for (int j = 0; currentModels[i] != null && j < currentModels[i].length; j++)
-						{
-							rowcount = rowcount + currentModels[i][j].getNumSeries();
-						}
+					com.cannontech.graph.model.TrendModel tModel = graph.getTrendModel();
 
-					data = com.cannontech.graph.exportdata.CommaDeleimitedFormat.createLines(graph.getExportArray(), rowcount); //add 2 for timestamp and date
+					com.cannontech.graph.exportdata.ExportDataFile eDataFile = new com.cannontech.graph.exportdata.ExportDataFile
+					(selectedPane, graph.getFreeChart(), graph.getTrendModel().getChartName(), graph.getTrendModel());
+
+					eDataFile.setExtension(extension);
+					String[] data = eDataFile.createCSVFormat();
+					if( data != null)
+						for (int i = 0; i < data.length; i++)
+							out.write(data[i].getBytes());
 				}
 				else if (extension.equalsIgnoreCase("pdf"))
 				{
 					resp.setContentType("application/pdf");
-
-					int rowcount = 2;
-					com.cannontech.graph.model.GraphModel[][] currentModels = graph.getCurrentModels();
-					for (int i = 0; currentModels != null && i < currentModels.length; i++)
-						for (int j = 0; currentModels[i] != null && j < currentModels[i].length; j++)
-						{
-							rowcount = rowcount + currentModels[i][j].getNumSeries();
-						}
-
-					graph.updateChart();
-					com.klg.jclass.util.swing.encode.page.PDFEncoder encoder = new com.klg.jclass.util.swing.encode.page.PDFEncoder();
-					if ( graph.getChart() == null)
-						System.out.println(" *** graph.getChart() == null");
-					if (graph.getChart().snapshot() == null)
-						System.out.println(" *** graph.getChart().snapshot() == null");
-					if (out == null)
-						System.out.println(" *** out == null");
-					//encoder.createOutput(out);
-					
-					encoder.encode(graph.getChart(), out);
-					//Acme.JPM.Encoders.GifEncoder encoder = new Acme.JPM.Encoders.GifEncoder(graph.getChart().snapshot(), out);
-					//encoder.encode();
-					//data = com.cannontech.graph.exportdata.PDFformat.createPDFFormat(graph.getChart());
+					graph.encodePDF(out);
 				}
-				else
+				else if (extension.equalsIgnoreCase("jpeg"))
 				{
+					resp.setContentType("image/jpeg");
+					graph.encodeJpeg(out);
 				}
-
-				if (data != null)
+				else if (extension.equalsIgnoreCase("png"))
 				{
-					//grab the stream and encode the html into it
-					for (int i = 0; i < data.length; i++)
-						out.write(data[i].getBytes());
-
-					out.flush();
-					System.out.println(" *** SERVLET, OUT FLUSH()!!!");
+					resp.setContentType("image/x-png");
+					graph.encodePng(out);
 				}
-				else if (pdfData != null)
+				else if (extension.equalsIgnoreCase(""))
 				{
-					//grab the stream and encode the html into it
-					for (int i = 0; i < pdfData.length; i++)
-						out.write(pdfData[i]);
-
-					out.flush();
-					System.out.println(" *** PDFDATA, OUT FLUSH()!!!");
+					resp.setContentType("image/x-png");
+					graph.encodePng(out);
 				}
 
-				else
-				{
-					//out.flush();
-					System.out.println("*** Just tried to flush the PDF out!");
-				}
-					System.out.println(" *** YOUR DOWNLOAD IS EMPTY BECAUSE THERE IS NO DATA!!! ");
+
+				out.flush();
+				System.out.println("*** Just tried to flush the out!");
 			}
 			catch (java.io.IOException ioe)
 			{
