@@ -294,10 +294,10 @@ INT CtiPort::queueInit(HANDLE hQuit)
 {
     INT status = NORMAL;
 
-    LockGuard gd(monitor());
-
     if(_portQueue == NULL)
     {
+        LockGuard gd(monitor());
+
         /* create the queue for this port */
         if( (status = CreateQueue (&_portQueue, QUE_PRIORITY, hQuit)) != NORMAL )
         {
@@ -318,7 +318,8 @@ INT CtiPort::queueDeInit()
 {
     INT status = NORMAL;
 
-    RWMutexLock::LockGuard( getMux() );
+    // RWMutexLock::LockGuard( getMux() );      // 072503 CGP - What the !@$$@#??
+    LockGuard gd(monitor());
 
     /* create the queue for this port */
     CloseQueue( _portQueue );
