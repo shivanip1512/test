@@ -50,9 +50,9 @@
             <td  class = "Main" width="114" >&nbsp;</td>
             <td  class = "Main" width="233" align = "right"> 
               <select name="SearchBy">
-                <option value="AccountNumber">Acct #</option>
-                <option value="PhoneNumber">Phone #</option>
-                <option value="Name">Name</option>
+                <option value="22">Acct #</option>
+                <option value="23">Phone #</option>
+                <option value="24">Name</option>
               </select>
               &nbsp; 
               <input type="text" name="SearchValue">
