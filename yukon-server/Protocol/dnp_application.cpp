@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/10/12 01:16:06 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/10/22 22:19:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,10 +33,10 @@ CtiDNPApplication::CtiDNPApplication(const CtiDNPApplication &aRef)
 
 CtiDNPApplication::~CtiDNPApplication()
 {
-    if( !_outObjectBlocks.empty() )
+/*    if( !_outObjectBlocks.empty() )
     {
         eraseOutboundObjectBlocks();
-    }
+    }*/
 
     if( !_inObjectBlocks.empty() )
     {
@@ -101,10 +101,13 @@ void CtiDNPApplication::addObjectBlock( const CtiDNPObjectBlock &objBlock )
     //  ACH:  complain if generated+existing size > sizeof(OUTMESS.Buffer)
     //          Actually, move all this to Porter-side;  slim down the OutMess requests like the ION.
     //          Moving all this back and forth is pointless.
+
+    //  Also, I wonder if it would be desirable to add pointers to the outboundObjectBlocks structure,
+    //    and only do the serialization when the transport layer gets initialized.
     objBlockLen = objBlock.getSerializedLen();
 
     if( (objBlockLen > 0) &&
-        (objBlockLen < (DNP_APP_BUF_SIZE - _appReqBytesUsed)) )
+        (objBlockLen < (ApplicationBufferSize - _appReqBytesUsed)) )
     {
         objBlock.serialize(_appReq.buf + _appReqBytesUsed);
 
@@ -232,7 +235,7 @@ void CtiDNPApplication::eraseInboundObjectBlocks( void )
     }
 }
 
-
+/*
 void CtiDNPApplication::eraseOutboundObjectBlocks( void )
 {
     while( !_outObjectBlocks.empty() )
@@ -245,7 +248,7 @@ void CtiDNPApplication::eraseOutboundObjectBlocks( void )
         _outObjectBlocks.pop_back();
     }
 }
-
+*/
 
 bool CtiDNPApplication::hasInboundPoints( void )
 {
@@ -262,8 +265,12 @@ bool CtiDNPApplication::hasInboundPoints( void )
 
 void CtiDNPApplication::getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList )
 {
+    //CtiDNPTimeCTO *cto;
+
     for( int i = 0; i < _inObjectBlocks.size(); i++ )
     {
+        //if( _inObjectBlocks[i]->
+
         if( _inObjectBlocks[i]->hasPoints() )
         {
             _inObjectBlocks[i]->getPoints(pointList);
@@ -271,6 +278,9 @@ void CtiDNPApplication::getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointL
     }
 }
 
+
+//  these set of functions assume that the control output (and corresponding input) is
+//    the ONLY (or first, at least) thing in the application layer.
 
 bool CtiDNPApplication::isControlResult( void ) const
 {
@@ -308,6 +318,36 @@ long CtiDNPApplication::getControlResultOffset( void ) const
     }
 
     return result;
+}
+
+
+//  These two functions need to be rewritten to get around the whole object block construct...
+//    it's clunky and unnecessary, and just serves to seperate the application layer from the
+//    individual
+
+bool CtiDNPApplication::hasTimeResult( void ) const
+{
+    bool hasTimeResult = false;
+
+    if( _inObjectBlocks.size() && _inObjectBlocks[0]->isTime() )
+    {
+        hasTimeResult = true;
+    }
+
+    return hasTimeResult;
+}
+
+
+unsigned long CtiDNPApplication::getTimeResult( void ) const
+{
+    int retVal = -1;
+
+    if( hasTimeResult() )
+    {
+        retVal = _inObjectBlocks[0]->getTimeSeconds();
+    }
+
+    return retVal;
 }
 
 

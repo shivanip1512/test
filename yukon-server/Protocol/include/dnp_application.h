@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/10/12 01:16:06 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/10/22 22:19:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,10 +27,16 @@
 #include "dnp_transport.h"
 
 
-#define DNP_APP_BUF_SIZE 2048
+//#define DNP_APP_BUF_SIZE 2048
 
 class CtiDNPApplication
 {
+public:
+    enum
+    {
+        ApplicationBufferSize = 2048
+    };
+
 private:
     struct _dnp_app_control
     {
@@ -67,7 +73,7 @@ private:
     {
         _dnp_app_control ctrl;
         unsigned char func_code;
-        unsigned char buf[DNP_APP_BUF_SIZE/* - sizeof(_dnp_app_control) - 1*/];
+        unsigned char buf[ApplicationBufferSize/* - sizeof(_dnp_app_control) - 1*/];
     } _appReq;
 
     struct appRsp
@@ -75,7 +81,7 @@ private:
         _dnp_app_control ctrl;
         unsigned char func_code;
         _dnp_app_indications ind;
-        unsigned char buf[DNP_APP_BUF_SIZE/* - sizeof(_dnp_app_control) - 1 - sizeof(_dnp_app_indications)*/];
+        unsigned char buf[ApplicationBufferSize/* - sizeof(_dnp_app_control) - 1 - sizeof(_dnp_app_indications)*/];
     } _appRsp;
 
     struct appAck
@@ -102,7 +108,7 @@ private:
 
     int _comm_errors;
 
-    vector< CtiDNPObjectBlock * > _outObjectBlocks;
+    /*vector< CtiDNPObjectBlock * > _outObjectBlocks;*/
     vector< CtiDNPObjectBlock * > _inObjectBlocks;
 
     void reset( void );
@@ -169,9 +175,12 @@ public:
     bool hasInboundPoints( void );
     void getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList );
 
-    bool isControlResult( void ) const;
+    bool isControlResult( void )        const;
     int  getControlResultStatus( void ) const;
     long getControlResultOffset( void ) const;
+
+    bool          hasTimeResult( void ) const;
+    unsigned long getTimeResult( void ) const;
 
 
     enum AppFuncCode
