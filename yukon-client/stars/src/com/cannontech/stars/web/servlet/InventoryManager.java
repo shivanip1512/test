@@ -29,6 +29,7 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
@@ -96,6 +97,12 @@ public class InventoryManager extends HttpServlet {
 		
 		action = req.getParameter( "action" );
 		if (action == null) action = "";
+		
+		if (user.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Operation not allowed because you are currently checking information of a member. To make any changes, you must first log into the member energy company through \"Member Management\"." );
+			resp.sendRedirect( referer );
+			return;
+		}
 		
 		if (action.equalsIgnoreCase( "SelectInventory" ))
 			selectInventory( user, req, session );
@@ -353,8 +360,8 @@ public class InventoryManager extends HttpServlet {
 			else
 				redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp";
 		}
-		catch (ServletException se) {
-			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, se.getMessage() );
+		catch (WebClientException e) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
 			redirect = referer;
 		}
 	}
@@ -992,75 +999,62 @@ public class InventoryManager extends HttpServlet {
 			return;
 		}
 		
-		int[] inventoryIDs = null; 
+		boolean searchMembers = energyCompany.getChildren().size() > 0;
+		LiteInventoryBase[] hardwares = null; 
 		
 		if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO) {
-			com.cannontech.database.db.stars.hardware.LMHardwareBase[] hardwares =
-					com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber(searchValue, user.getEnergyCompanyID());
-			inventoryIDs = new int[ hardwares.length ];
-			for (int i = 0 ; i < hardwares.length; i++)
-				inventoryIDs[i] = hardwares[i].getInventoryID().intValue();
+			hardwares = energyCompany.searchInventoryBySerialNo( searchValue, searchMembers );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO) {
-			int[] acctIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber(energyCompany.getEnergyCompanyID(), searchValue);
-			if (acctIDs != null && acctIDs.length > 0)
-				inventoryIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAccountID( acctIDs[0] ); 
+			hardwares = energyCompany.searchInventoryByAccountNo( searchValue, searchMembers );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO) {
-			int[] acctIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByPhoneNumber( energyCompany.getEnergyCompanyID(), searchValue );
-			if (acctIDs != null && acctIDs.length > 0) {
-				ArrayList invIDList = new ArrayList();
-				for (int i = 0; i < acctIDs.length; i++) {
-					int[] invIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAccountID( acctIDs[i] );
-					for (int j = 0; j < invIDs.length; j++)
-						invIDList.add( new Integer(invIDs[j]) );
-				}
-				
-				inventoryIDs = new int[ invIDList.size() ];
-				for (int i = 0; i< invIDList.size(); i++)
-					inventoryIDs[i] = ((Integer) invIDList.get(i)).intValue();
+			try {
+				String phoneNo = ServletUtils.formatPhoneNumber( searchValue );
+				hardwares = energyCompany.searchInventoryByPhoneNo( phoneNo, searchMembers );
+			}
+			catch (WebClientException e) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
+				return;
 			}
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_LAST_NAME) {
-			int[] acctIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByLastName(energyCompany.getEnergyCompanyID(), searchValue);
-			if (acctIDs != null && acctIDs.length > 0) {
-				ArrayList invIDList = new ArrayList();
-				for (int i = 0; i < acctIDs.length; i++) {
-					int[] invIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAccountID( acctIDs[i] );
-					for (int j = 0; j < invIDs.length; j++)
-						invIDList.add( new Integer(invIDs[j]) );
-				}
-				
-				inventoryIDs = new int[ invIDList.size() ];
-				for (int i = 0; i< invIDList.size(); i++)
-					inventoryIDs[i] = ((Integer) invIDList.get(i)).intValue();
-			}
+			hardwares = energyCompany.searchInventoryByLastName( searchValue, searchMembers );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ORDER_NO) {
 			// TODO: The WorkOrderBase table doesn't have InventoryID column, maybe should be added
+			if (AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN ))
+				searchValue = ServerUtils.AUTO_GEN_NUM_PREC + searchValue;
+			hardwares = energyCompany.searchInventoryByOrderNo( searchValue, searchMembers );
 		}
 		
-		if (inventoryIDs == null || inventoryIDs.length == 0) {
+		if (hardwares == null || hardwares.length == 0) {
 			session.setAttribute(INVENTORY_SET_DESC, "<div class='ErrorMsg' align='center'>No hardwares found matching the search criteria.</div>");
 		}
-		else if (inventoryIDs.length == 1) {
-			redirect = req.getContextPath() + "/operator/Hardware/InventoryDetail.jsp?InvId=" + inventoryIDs[0] + "&src=Search";
-		}
 		else {
-			ArrayList invList = new ArrayList();
-			for (int i = 0; i < inventoryIDs.length; i++)
-				invList.add( energyCompany.getInventoryBrief(inventoryIDs[i], true) );
+			LiteInventoryBase liteInv = null;
+			if (hardwares.length == 1)
+				liteInv = energyCompany.getInventoryBrief( hardwares[0].getInventoryID(), false );
 			
-			session.setAttribute(INVENTORY_SET, invList);
-			session.setAttribute(INVENTORY_SET_DESC, "Click on a serial # (device name) to view the hardware details, or click on an account # (if available) to view the account information.");
-			session.setAttribute(ServletUtils.ATT_REFERRER, referer);
+			if (liteInv != null) {
+				redirect = req.getContextPath() + "/operator/Hardware/InventoryDetail.jsp?InvId=" + liteInv.getInventoryID() + "&src=Search";
+			}
+			else {
+				ArrayList invList = new ArrayList();
+				for (int i = 0; i < hardwares.length; i++)
+					invList.add( hardwares[i] );
+				
+				session.setAttribute(INVENTORY_SET, invList);
+				session.setAttribute(INVENTORY_SET_DESC, "Click on a serial # (device name) to view the hardware details, or click on an account # (if available) to view the account information.");
+				session.setAttribute(ServletUtils.ATT_REFERRER, referer);
+			}
 		}
 	}
 	
 	/**
 	 * Store hardware information entered by user into a StarsLMHw object 
 	 */
-	public static void setStarsInv(StarsInv starsInv, HttpServletRequest req, TimeZone tz) throws ServletException {
+	public static void setStarsInv(StarsInv starsInv, HttpServletRequest req, TimeZone tz) throws WebClientException {
 		if (req.getParameter("InvID") != null)
 			starsInv.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
 		if (req.getParameter("DeviceID") != null)
@@ -1078,7 +1072,7 @@ public class InventoryManager extends HttpServlet {
 		if (recvDateStr != null && recvDateStr.length() > 0) {
 			Date recvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(recvDateStr, tz);
 			if (recvDate == null)
-				throw new ServletException("Invalid date format '" + recvDateStr + "'");
+				throw new WebClientException("Invalid date format '" + recvDateStr + "'");
 			starsInv.setReceiveDate( recvDate );
 		}
 		
@@ -1086,7 +1080,7 @@ public class InventoryManager extends HttpServlet {
 		if (instDateStr != null && instDateStr.length() > 0) {
 			Date instDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(instDateStr, tz);
 			if (instDate == null)
-				throw new ServletException("Invalid date format '" + instDateStr + "'");
+				throw new WebClientException("Invalid date format '" + instDateStr + "'");
 			starsInv.setInstallDate( instDate );
 		}
 		
@@ -1094,7 +1088,7 @@ public class InventoryManager extends HttpServlet {
 		if (remvDateStr != null && remvDateStr.length() > 0) {
 			Date remvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(remvDateStr, tz);
 			if (remvDate == null)
-				throw new ServletException("Invalid date format '" + remvDateStr + "'");
+				throw new WebClientException("Invalid date format '" + remvDateStr + "'");
 			starsInv.setRemoveDate( remvDate );
 		}
 		
@@ -1136,7 +1130,7 @@ public class InventoryManager extends HttpServlet {
 		synchronized (cache) {
 			if (ECUtils.isMCT( categoryID ))
 				allDevices = cache.getAllMCTs();
-		
+			
 			if (deviceName == null || deviceName.length() == 0) {
 				devList.addAll( allDevices );
 			}
