@@ -160,7 +160,9 @@ public synchronized void readFromJLX(InputStream in, String version) throws IOEx
 	}	
 
 	//restore state
-	setState(LxSaveUtils.readString(in));
+	
+	//setState(LxSaveUtils.readString(in));
+	LxSaveUtils.readString(in);
 		
 	//restore link
 	setLinkTo(LxSaveUtils.readString(in));	

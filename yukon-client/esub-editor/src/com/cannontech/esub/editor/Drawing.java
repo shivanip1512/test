@@ -64,9 +64,12 @@ public class Drawing {
 				for( int j = 0; j < states.length; j++ ) {
 					String absPath = Util.getAbsolutePath(this, si.getRelativeImagePath(states[j]));
 					si.setAbsoluteImagePath(states[j], absPath);
-				}
-			}
+					
+					si.setState(si.getStates()[0]);
+					
 			
+				}
+			}			
 		}
 	}
 
