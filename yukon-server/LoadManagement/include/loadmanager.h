@@ -56,6 +56,7 @@ public:
     void stop();
 
     void sendMessageToDispatch(CtiMessage* message);
+    void sendMessageToPIL(CtiMessage* message);
     
 private:
     
