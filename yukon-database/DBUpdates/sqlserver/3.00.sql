@@ -1525,5 +1525,5 @@ update yukonpaobject set type = 'MCT-410iLE' where type = 'MCT-410 kWh Only';
 /******************************************************************************/
 /* VERSION INFO                                                               */
 /******************************************************************************/
-insert into CTIDatabase values('3.00', 'Ryan', '17-JAN-2004', 'Many changes to a major version jump');
+insert into CTIDatabase values('3.00', 'Ryan', '22-APR-2004', 'Many changes to a major version jump');
 go
