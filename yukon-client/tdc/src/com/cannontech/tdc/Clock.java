@@ -15,9 +15,12 @@ public class Clock implements Runnable
 {
 	private Thread timer = null;
 	private TDCMainFrame mainFrame = null;
-	private GregorianCalendar gc = new GregorianCalendar();
 
-;
+	private GregorianCalendar gc = new GregorianCalendar();
+	private GregorianCalendar tempCG = new GregorianCalendar();
+	
+	
+	private int lastDay = -1;
 	
 /**
  * yet another constructor comment.
@@ -60,21 +63,27 @@ public void run()
 			{
 				Date date = new Date();
 				gc.setTime( date );
-
 				
+				tempCG.setTime(
+					mainFrame.getMainPanel().getTableDataModel().getCurrentDate() );
+				tempCG.set(
+					GregorianCalendar.DAY_OF_MONTH,
+					tempCG.get(GregorianCalendar.DAY_OF_MONTH) + 1);
+
 				mainFrame.getMainPanel().getJLabelDate().setText(dateformatter.format(date));
 				mainFrame.getMainPanel().getJLabelTime().setText(timeformatter.format(date));
 				
 				//if we are looking at todays date AND we are about to flip 
-				if( gc.get(GregorianCalendar.HOUR_OF_DAY) == 23
-				    && gc.get(GregorianCalendar.MINUTE) == 59
-				    && gc.get(GregorianCalendar.SECOND) == 59
-					 && Display.isTodaysDate(
-					 	mainFrame.getMainPanel().getTableDataModel().getCurrentDate()) )
+				if( lastDay >= 0
+					 && gc.get(GregorianCalendar.DAY_OF_MONTH) != lastDay
+					 && Display.isTodaysDate(tempCG.getTime()) )
 				{
-					if( mainFrame.getAlarmToolBar().setSelectedDate(new Date()) )
+					if( mainFrame.getAlarmToolBar().setSelectedDate(date) )
 						CTILogger.info("AUTO-CHANGED: Changed current display to the rolled over new date: " + date );
 				}
+				
+				
+				lastDay = gc.get(GregorianCalendar.DAY_OF_MONTH);
 			}
 			
 		});
