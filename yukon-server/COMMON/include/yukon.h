@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/05/19 22:02:56 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/07/21 20:41:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -408,7 +408,8 @@ typedef enum
     ProtocolSA205Type,
     ProtocolSA305Type,
     ProtocolEmetconType,
-    ProtocolExpresscomType
+    ProtocolExpresscomType,
+    ProtocolEnergyProType
 
 } CtiProtocol_t;
 
@@ -416,7 +417,8 @@ typedef enum
 typedef enum
 {
     MSGFLG_APPLY_EXCLUSION_LOGIC = 0x00000001,
-    MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL = 0x00000002
+    MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL = 0x00000002,
+    MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD = 0x00000004
 
 } CtiOutMessageFlags_t;
 
