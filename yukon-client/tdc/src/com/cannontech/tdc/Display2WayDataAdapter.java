@@ -606,7 +606,7 @@ public int createRowsForHistoricalView(java.util.Date date, int page)
    objs[1] = upperCal.getTime();
    objs[2] = new Integer(qMin);
    objs[3] = ( qRowCnt <= TDCDefines.MAX_ROWS
-               ? new Integer(qRowCnt)
+               ? new Integer(qMax)
                : new Integer(qMin + TDCDefines.MAX_ROWS) );
 
    //get the actual data
