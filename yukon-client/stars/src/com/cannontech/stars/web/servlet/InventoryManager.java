@@ -1001,7 +1001,7 @@ public class InventoryManager extends HttpServlet {
 					invList.add( energyCompany.getInventoryBrief(inventoryIDs[i], true) );
 				
 				session.setAttribute(INVENTORY_SET, invList);
-				session.setAttribute(INVENTORY_SET_DESC, "Click on a serial # to view the hardware details, or click on an account # (if available) to view the account information.");
+				session.setAttribute(INVENTORY_SET_DESC, "Click on a serial # (device name) to view the hardware details, or click on an account # (if available) to view the account information.");
 				session.setAttribute(ServletUtils.ATT_REFERRER, referer);
 			}
 		}
