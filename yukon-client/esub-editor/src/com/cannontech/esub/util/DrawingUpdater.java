@@ -39,7 +39,7 @@ public class DrawingUpdater implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {		
-		assert( drawing != null );
+		//assert( drawing != null );
 		
 		PointChangeCache pcc = PointChangeCache.getPointChangeCache();
 		
