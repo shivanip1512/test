@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2003/09/12 02:39:56 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2003/09/25 16:17:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -732,6 +732,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                                 RWCString devicename= resolveDeviceName(*pPoint);
                                 CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), Cmd->getUser());
+                                pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_UNACKNOWLEDGED_ALARM);
 
                                 pendingControlRequest.setSignal( pFailSig );
 
@@ -1154,7 +1155,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                         // This one cannot go unless manual tag is set.
                         if(aPD.getQuality() == ManualQuality)
                         {
-                            pDyn->setPoint(aPD.getTime(), aPD.getValue(), aPD.getQuality(), aPD.getTags());
+                            pDyn->setPoint(aPD.getTime(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~MASK_ANY_ALARM) | _signalManager.getAlarmMask(aPD.getId()) );
                         }
                     }
                     else
@@ -1162,7 +1163,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                         // Set the point in memory to the current value.  Archive if an archive is pending.
                         // Do not update with an older time!
                         // Unless we are in the forced condition
-                        pDyn->setPoint(aPD.getTime(), aPD.getValue(), aPD.getQuality(), aPD.getTags());
+                        pDyn->setPoint(aPD.getTime(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~MASK_ANY_ALARM) | _signalManager.getAlarmMask(aPD.getId()));
                     }
                 }
 
@@ -1698,7 +1699,9 @@ INT CtiVanGogh::assembleMultiFromPointDataForConnection(const CtiVanGoghConnecti
                             {
                                 CtiPointDataMsg *pNewData = (CtiPointDataMsg *)pDat->replicateMessage();
 
+                                pNewData->resetTags();
                                 pNewData->setTags( pDyn->getDispatch().getTags() );       // Report any set tags out to the clients.
+
                                 Ord.insert(pNewData);
                             }
                         }
@@ -1937,6 +1940,8 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 pendingControlLMMsg.getControl().setSoeTag( CtiTableLMControlHistory::getNextSOE() );
 
                 CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Control " + ResolveStateName(pPoint->getStateGroupID(), pMsg->getRawState()) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), pMsg->getUser());
+
+                pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_UNACKNOWLEDGED_ALARM);
 
                 pendingControlLMMsg.setSignal( pFailSig );
 
@@ -3753,6 +3758,7 @@ void CtiVanGogh::doPendingOperations()
                                 pCmd->insert(TAG_CONTROL_PENDING);  // Tags to reset.
                                 MainQueue_.putQueue( pCmd );
                                 MainQueue_.putQueue( pSig );
+
                                 pCmd = 0;
                                 pSig = 0;
                             }
@@ -6465,6 +6471,13 @@ void CtiVanGogh::acknowledgeAlarmCondition( CtiPointBase *&pPt, const CtiCommand
                     // Adjust the point tags to reflect the potentially new state of the alarm tags.
                     pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
                     pDyn->getDispatch().setTags( amask );
+
+                    CtiPointDataMsg *pTagDat = CTIDBG_new CtiPointDataMsg(pPt->getID(), pDyn->getValue(), pDyn->getQuality(), pPt->getType(), "Tags Updated", pDyn->getDispatch().getTags());
+
+                    pTagDat->setTime(pDyn->getTimeStamp());
+                    pTagDat->setMessagePriority(15);
+
+                    MainQueue_.putQueue( pTagDat );
                 }
 
                 if(DebugLevel & DEBUGLEVEL_LUDICROUS)
