@@ -171,7 +171,21 @@ private void connEtoC6(java.awt.event.ActionEvent arg1) {
 public void equalsJButton1_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 	Double mpValue = new Double(getMpTextField().getText());
 	Double khValue = new Double(getKhTextField().getText());
-	getKeTextField().setText(new Double(mpValue.doubleValue() * khValue.doubleValue()).toString());
+	String result = new Double(mpValue.doubleValue() * khValue.doubleValue()).toString();
+	
+	if(result.substring(result.indexOf(".") + 1).length() > 2)
+	{
+		Integer temp = new Integer(result.substring(result.indexOf(".") + 3, result.indexOf(".") + 4));
+		Integer use = new Integer(result.substring(result.indexOf(".") + 1, result.indexOf(".") + 3));
+		if(temp.intValue() >= 5)
+		{
+			use = new Integer(use.intValue() + 1);
+			getKeTextField().setText(result.substring(0, result.indexOf(".") + 1) + use.toString());
+		}
+		else
+			getKeTextField().setText(result.substring(0, result.indexOf(".") + 1) + use.toString());
+	} 
+	
 	getMpTextField().setVisible(false);
 	getMpLabel().setVisible(false);
 	getKhLabel().setVisible(false);
@@ -280,7 +294,7 @@ private javax.swing.JTextField getKeTextField() {
 			ivjKeTextField = new javax.swing.JTextField();
 			ivjKeTextField.setName("KeTextField");
 			// user code begin {1}
-			ivjKeTextField.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
+			ivjKeTextField.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.00, 10.00, 2)  );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -323,7 +337,7 @@ private javax.swing.JTextField getKhTextField() {
 			ivjKhTextField.setName("KhTextField");
 			ivjKhTextField.setText("");
 			// user code begin {1}
-			ivjKhTextField.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
+			ivjKhTextField.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.00, 10.00, 2)  );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -418,7 +432,7 @@ private javax.swing.JTextField getMpTextField() {
 			ivjMpTextField.setName("MpTextField");
 			ivjMpTextField.setText("");
 			// user code begin {1}
-			ivjMpTextField.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
+			ivjMpTextField.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.00, 10.00, 2)  );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
