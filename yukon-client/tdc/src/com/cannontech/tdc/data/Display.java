@@ -57,6 +57,14 @@ public boolean equals(Object o)
 			   ( ((Display)o).getDisplayNumber() == getDisplayNumber() ) );
 }
 
+public static synchronized boolean isLogDisplay( long displayNum ) 
+{
+	return 
+		displayNum == Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER 
+		|| displayNum == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER
+		|| displayNum == SOE_LOG_DISPLAY_NUMBER
+		|| displayNum == TAG_LOG_DISPLAY_NUMBER;
+}
 
 public static synchronized boolean isHistoryDisplay( long displayNum ) 
 {
