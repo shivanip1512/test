@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2004/07/14 19:27:27 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2004/08/18 21:46:01 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.h,v $
+      Revision 1.7  2004/08/18 21:46:01  jrichter
+      1.  Added try{} catch(..) blocks to threadReadFromFile function to try and pinpoint where thread was killed.
+      2.  Cleared out fileInfoList to get a fresh list of files upon each loadTranslationList call (so files aren't read once the point they reference is deleted from database).
+      3.  Added path/filename to translationName, so points located in duplicate files (with different names) are not reprocessed and sent multiple times.
+
       Revision 1.6  2004/07/14 19:27:27  jrichter
       modified lodestar files to work when fdr is run on systems where yukon is not on c drive.
 
@@ -74,7 +79,7 @@ public:
     virtual long       getlodeStarSecsPerInterval(void) = 0;
     virtual long       getlodeStarPointId(void) = 0;
     virtual void       reinitialize(void) = 0;
-    virtual bool decodeFirstHeaderRecord(RWCString& aLine) = 0;
+    virtual bool decodeFirstHeaderRecord(RWCString& aLine, int fileIndex) = 0;
     virtual bool decodeSecondHeaderRecord(RWCString& aLine) = 0;
     virtual bool decodeThirdHeaderRecord(RWCString& aLine) = 0;
     virtual bool decodeFourthHeaderRecord(RWCString& aLine) = 0;

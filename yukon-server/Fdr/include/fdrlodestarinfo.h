@@ -33,18 +33,22 @@
 class IM_EX_FDRBASE CtiFDR_LodeStarInfoTable 
 {
 public:
-    CtiFDR_LodeStarInfoTable(RWCString &aDrivePath, RWCString &aFileName);
+    CtiFDR_LodeStarInfoTable(RWCString &aDrivePath, RWCString &aFileName,RWCString &aFolderName);
     ~CtiFDR_LodeStarInfoTable();
     CtiFDR_LodeStarInfoTable& operator=( const CtiFDR_LodeStarInfoTable &other );
     RWCString & getLodeStarDrivePath(void);
     RWCString getLodeStarDrivePath(void) const;
     RWCString & getLodeStarFileName(void);
     RWCString getLodeStarFileName(void) const;
+    RWCString & getLodeStarFolderName(void);
+    RWCString getLodeStarFolderName(void) const;
     CtiFDR_LodeStarInfoTable& setLodeStarDrivePath(RWCString aDrivePath);
     CtiFDR_LodeStarInfoTable& setLodeStarFileName(RWCString aFileName);
+    CtiFDR_LodeStarInfoTable& setLodeStarFolderName(RWCString aFolderName);
 private:
     RWCString _lodeStarDrivePath;
     RWCString _lodeStarFileName;
+    RWCString _lodeStarFolderName;
 
 };
 

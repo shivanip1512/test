@@ -22,9 +22,11 @@
 /** include files **/
 #include "fdrlodestarinfo.h"
 
-CtiFDR_LodeStarInfoTable::CtiFDR_LodeStarInfoTable(RWCString &aDrivePath, RWCString &aFileName)
+CtiFDR_LodeStarInfoTable::CtiFDR_LodeStarInfoTable(RWCString &aDrivePath, RWCString &aFileName,
+                                                   RWCString &aFolderName)
 : _lodeStarDrivePath(aDrivePath),
-  _lodeStarFileName(aFileName)
+  _lodeStarFileName(aFileName),
+  _lodeStarFolderName(aFolderName)
 {
 } 
     
@@ -68,6 +70,22 @@ RWCString CtiFDR_LodeStarInfoTable::getLodeStarFileName(void) const
 CtiFDR_LodeStarInfoTable& CtiFDR_LodeStarInfoTable::setLodeStarFileName(RWCString aFileName)
 {
     _lodeStarFileName = aFileName; 
+    return *this;
+
+}
+
+RWCString & CtiFDR_LodeStarInfoTable::getLodeStarFolderName(void)
+{
+    return _lodeStarFolderName;
+}
+RWCString CtiFDR_LodeStarInfoTable::getLodeStarFolderName(void) const
+{
+    return _lodeStarFolderName;
+}
+    
+CtiFDR_LodeStarInfoTable& CtiFDR_LodeStarInfoTable::setLodeStarFolderName(RWCString aFolderName)
+{
+    _lodeStarFolderName = aFolderName; 
     return *this;
 
 }

@@ -8,8 +8,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2004/07/14 19:27:27 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2004/08/18 21:46:01 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -21,6 +21,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_std.cpp,v $
+      Revision 1.5  2004/08/18 21:46:01  jrichter
+      1.  Added try{} catch(..) blocks to threadReadFromFile function to try and pinpoint where thread was killed.
+      2.  Cleared out fileInfoList to get a fresh list of files upon each loadTranslationList call (so files aren't read once the point they reference is deleted from database).
+      3.  Added path/filename to translationName, so points located in duplicate files (with different names) are not reprocessed and sent multiple times.
+
       Revision 1.4  2004/07/14 19:27:27  jrichter
       modified lodestar files to work when fdr is run on systems where yukon is not on c drive.
 
@@ -308,7 +313,7 @@ RWTime CtiFDR_StandardLodeStar::ForeignToYukonTime (RWCString aTime, CHAR aDstFl
     return retVal;
 }
 
-bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(RWCString& aLine)
+bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(RWCString& aLine, int fileIndex)
 {
 	bool                retCode = false;
     bool                isFirstHeaderFlag = true;
@@ -381,7 +386,7 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(RWCString& aLine)
                             }
                         }
                         CHAR keyString[80];
-                        _snprintf(keyString,80,"%s %d",tokenStr,_stdLsChannel);
+                        _snprintf(keyString,80,"%s %d %s %s",tokenStr,_stdLsChannel, getFileInfoList()[fileIndex].getLodeStarFolderName(), getFileInfoList()[fileIndex].getLodeStarFileName());
                         //_snprintf(keyString,80,"%s %d %s %s",tokenStrPartCID,_stdLsChannel,getDriveAndPath(),getFileName());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
@@ -403,7 +408,7 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(RWCString& aLine)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " Translation for Customer Id: " << _stdLsCustomerIdentifier << 
-                                    " and Channel: " << _stdLsChannel << " from file " << getFileName() << 
+                                    " and Channel: " << _stdLsChannel << " from file " << getFileInfoList()[fileIndex].getLodeStarFileName() << 
                                     " was not found" << endl;
                             }
                             CHAR tempIdStr[80];
