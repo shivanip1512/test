@@ -29,7 +29,6 @@ import javax.swing.JSplitPane;
 
 import org.jfree.chart.JFreeChart;
 
-import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 import com.cannontech.common.gui.util.SplashWindow;
@@ -492,19 +491,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		com.cannontech.clientutils.CTILogger.info(" other action");
 	}
 }
-public void runReport(StatisticModel reportData)
-{
-	com.cannontech.analysis.report.StatisticReport report = new com.cannontech.analysis.report.StatisticReport();
-	try
-	{
-		report.showPreviewFrame(reportData);
-	}
-	catch (Exception e)
-	{
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-}
+
 /**
  * Display the dialog with about information.
  */
