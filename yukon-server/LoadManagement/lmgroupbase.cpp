@@ -329,6 +329,17 @@ LONG CtiLMGroupBase::getControlStatusPointId() const
     return _controlstatuspointid;
 }
 
+/*---------------------------------------------------------------------------
+    getLastControlString
+
+    Returns the last control string of the substation
+---------------------------------------------------------------------------*/
+const RWCString& CtiLMGroupBase::getLastControlString() const
+{
+
+    return _lastcontrolstring;
+}
+
 
 /*---------------------------------------------------------------------------
     setPAOId
@@ -639,6 +650,18 @@ CtiLMGroupBase& CtiLMGroupBase::setControlStatusPointId(LONG cntid)
     return *this;
 }
 
+/*---------------------------------------------------------------------------
+    setLastControlString
+
+    Sets the last control string of the substation
+---------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::setLastControlString(const RWCString& controlstr)
+{
+
+    _lastcontrolstring = controlstr;
+    return *this;
+}
+
 
 /*-------------------------------------------------------------------------
     createLatchingRequestMsg
@@ -812,6 +835,7 @@ CtiLMGroupBase& CtiLMGroupBase::operator=(const CtiLMGroupBase& right)
         _hoursannuallypointid = right._hoursannuallypointid;
         _lmprogramid = right._lmprogramid;
         _controlstatuspointid = right._controlstatuspointid;
+        _lastcontrolstring = right._lastcontrolstring;
     }
 
     return *this;
@@ -961,6 +985,7 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
     setHoursMonthlyPointId(0);
     setHoursSeasonalPointId(0);
     setHoursAnnuallyPointId(0);
+    setLastControlString("");
 
     rdr["pointid"] >> isNull;
     if( !isNull )

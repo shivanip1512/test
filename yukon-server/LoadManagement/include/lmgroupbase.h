@@ -62,6 +62,7 @@ public:
     LONG getHoursAnnuallyPointId() const;
     LONG getLMProgramId() const;
     LONG getControlStatusPointId() const;
+    const RWCString& getLastControlString() const;
 
     CtiLMGroupBase& setPAOId(LONG id);
     CtiLMGroupBase& setPAOCategory(const RWCString& category);
@@ -89,6 +90,7 @@ public:
     CtiLMGroupBase& setHoursAnnuallyPointId(LONG annuallyid);
     CtiLMGroupBase& setLMProgramId(LONG progid);
     CtiLMGroupBase& setControlStatusPointId(LONG cntid);
+    CtiLMGroupBase& setLastControlString(const RWCString& controlstr);
 
     virtual void dumpDynamicData();
     virtual void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
@@ -164,6 +166,7 @@ private:
     //don't stream
     LONG _lmprogramid;
     LONG _controlstatuspointid;
+    RWCString _lastcontrolstring;
     BOOL _insertDynamicDataFlag;
 };
 #endif
