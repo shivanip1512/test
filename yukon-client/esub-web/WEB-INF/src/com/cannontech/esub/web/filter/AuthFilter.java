@@ -12,6 +12,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.esub.web.Authenticator;
 import com.cannontech.esub.web.SessionInfo;
 
@@ -29,7 +30,6 @@ public class AuthFilter implements Filter {
 	private static String LOGIN_ERROR_URL = "login.jsp?failed=true";
 	// Keys to store things
 	private static final String LOGGED_IN		 = "LOGGED_IN";
-	private static final String SESSION_INFO   = "SESSIONINFO";
 	private static final String ORIGINAL_URL   = "ORIGINALURL";
 
 	private static final String FORM_LOGIN    = "LOGIN";	
@@ -117,12 +117,14 @@ public class AuthFilter implements Filter {
 			//login looks get, set up the session and redirect them 
 			//where they wanted to go
 			hreq.getSession().setAttribute(LOGGED_IN, Boolean.TRUE);
-			hreq.getSession().setAttribute(SESSION_INFO,info);			
-            String targetURL = (String)hreq.getSession().getAttribute(ORIGINAL_URL);
+			hreq.getSession().setAttribute(SessionInfo.SESSION_KEY,info);			
+            //String targetURL = (String)hreq.getSession().getAttribute(ORIGINAL_URL);
             
-            if( targetURL == null ) {
-             	targetURL = hreq.getRequestURL().toString();
-            }
+            //if( targetURL == null ) {
+            // 	targetURL = hreq.getRequestURL().toString();             	
+            //}
+            
+            String targetURL = AuthFuncs.getRoleValue(info.getUser(),"HOME_URL");
             
 			Logger.global.info("redirecting authenticated user to: " + targetURL);
             hres.sendRedirect(targetURL);

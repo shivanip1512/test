@@ -7,6 +7,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * @author alauinger
  */
 public class SessionInfo {
+	public static final String SESSION_KEY = "SESSIONINFO";
+	
 	private LiteYukonUser user;
 
 	/**

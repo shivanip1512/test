@@ -13,8 +13,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.util.DrawingUpdater;
+import com.cannontech.esub.web.SessionInfo;
 
 
 /**
@@ -50,11 +53,16 @@ public class SVGGenerator extends HttpServlet {
 
 			Drawing d = new Drawing();
 			d.load(jlxPath);
-			
-			DrawingUpdater du = new DrawingUpdater(d);
-			du.run();
-			com.cannontech.esub.util.SVGGenerator gen = new com.cannontech.esub.util.SVGGenerator();
-			gen.generate(w, d);	
+		 
+			//Check if this user has access to this drawing!	
+			SessionInfo	info = (SessionInfo) req.getSession(false).getAttribute(SessionInfo.SESSION_KEY);	
+			LiteYukonUser user = info.getUser();
+	//		if( AuthFuncs.checkRole(user, d.getMetaElement().getRoleName()) != null) {
+				DrawingUpdater du = new DrawingUpdater(d);
+				du.run();
+				com.cannontech.esub.util.SVGGenerator gen = new com.cannontech.esub.util.SVGGenerator();
+				gen.generate(w, d);	
+	//		}
 		}
 		catch(Exception e ) {
 			e.printStackTrace(new PrintWriter(w));
