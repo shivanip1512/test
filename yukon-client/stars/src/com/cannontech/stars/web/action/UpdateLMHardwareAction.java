@@ -109,7 +109,7 @@ public class UpdateLMHardwareAction implements ActionBase {
             StarsDeleteLMHardware deleteHw = reqOper.getStarsDeleteLMHardware();
             
             LiteInventoryBase liteInv = null;
-            int origInvID = 0;
+            int origInvID = -1;
             
             if (deleteHw != null) {
             	// Build up request message for adding new hardware and preserving old hardware configuration
@@ -133,6 +133,7 @@ public class UpdateLMHardwareAction implements ActionBase {
             }
             else {
 				liteInv = energyCompany.getInventory( updateHw.getInventoryID(), true );
+				origInvID = updateHw.getInventoryID();
 				
 				if (liteInv.getAccountID() == 0) {
 					respOper.setStarsFailure( StarsFactory.newStarsFailure(
