@@ -122,6 +122,11 @@
   	<servlet-class>com.cannontech.esub.web.servlet.AlarmTextStyleServlet</servlet-class>
   </servlet>
   
+  <servlet>
+  	<servlet-name>ControlServlet</servlet-name>
+  	<servlet-class>com.cannontech.esub.web.servlet.ControlServlet</servlet-class>
+  </servlet>
+  
 <!-- deprecated servlets-->
   <servlet>
   	<servlet-name>StatusImage</servlet-name>
