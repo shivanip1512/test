@@ -358,6 +358,9 @@ public class CreateLMHardwareAction implements ActionBase {
 				
 				DeleteLMHardwareAction.removeInventory(deleteHw, litePrevAccount, energyCompany, conn);
 				
+				// The liteInv object is changed in the method above, so we need to retrieve it again
+				liteInv = energyCompany.getInventoryBrief( invID, true );
+				
 				StarsCustAccountInformation starsPrevAccount = energyCompany.getStarsCustAccountInformation( litePrevAccount.getAccountID() );
 				if (starsPrevAccount != null)
 					DeleteLMHardwareAction.parseResponse( invID, starsPrevAccount );
@@ -469,6 +472,9 @@ public class CreateLMHardwareAction implements ActionBase {
 				event.setDbConnection( conn );
 				event.add();
 			}
+			
+			// The DB changes must be commited to prevent deadlock in the event table
+			conn.commit();
 			
 			StarsLiteFactory.extendLiteInventoryBase( liteInv, energyCompany );
 			liteAcctInfo.getInventories().add( invDB.getInventoryID() );

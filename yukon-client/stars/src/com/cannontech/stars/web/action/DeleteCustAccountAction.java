@@ -155,6 +155,9 @@ public class DeleteCustAccountAction implements ActionBase {
 				contact.setDbConnection( conn );
 				contact.delete();
 			}
+			
+			// DB changes must be submitted to make sure there is no deadlock
+			conn.commit();
     		
 			// Delete login
 			int userID = primContact.getLoginID();
