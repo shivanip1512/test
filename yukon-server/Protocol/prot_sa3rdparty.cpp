@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/02/10 23:23:57 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/02/17 23:36:32 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.21  2005/02/17 23:36:32  cplender
+* Prevent failure on a 105 or 205 restore.
+*
 * Revision 1.20  2005/02/10 23:23:57  alauinger
 * Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 *
@@ -364,10 +367,18 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse, CtiOutMessag
     }
     else if(CtlReq == CMD_FLAG_CTL_RESTORE)
     {
+        // Add these two items to the list for control accounting!
+        parse.setValue("control_reduction", 0);
+        parse.setValue("control_interval", 0);
+        if(_sa._groupType != SA205 && _sa._groupType != SA105)
         {
+            status = NoMethod;
+            {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** ACH ??CONTROL RESTORE?? Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** CONTROL RESTORE? **** Cannot restore this type of group." << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
+
     }
     else if(CtlReq == CMD_FLAG_CTL_TERMINATE)
     {
