@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2002/12/03 17:55:05 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2002/12/04 22:45:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -953,6 +953,9 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         }
 
         case CtiProtocolEmetcon::PutConfig_Install:
+        case CtiProtocolEmetcon::PutConfig_Multiplier:
+        case CtiProtocolEmetcon::PutConfig_Multiplier2:
+        case CtiProtocolEmetcon::PutConfig_Multiplier3:
         case CtiProtocolEmetcon::PutConfig_GroupAddrEnable:
         case CtiProtocolEmetcon::PutConfig_GroupAddrInhibit:
         case CtiProtocolEmetcon::PutConfig_Raw:
