@@ -44,6 +44,9 @@ public class SQLStringBuilder
 
 	public static final String DMG_DEVICEID = "DEVICEMETERGROUP.DEVICEID";
 	public static final String DMG_METERNUMBER = "DEVICEMETERGROUP.METERNUMBER";
+	
+//	public static final String DSR_INTERVALRATE = "DEVICESCANRATE.INTERVALRATE";
+
 	// COLUMNS THAT MAY BE USED AS BILLING GROUPINGS.
 	//public static final String DMG_COLLECTIONGROUP = "DEVICEMETERGROUP.COLLECTIONGROUP";
 	//public static final String DMG_TESTCOLLECTIONGROUP = "DEVICEMETERGROUP.TESTCOLLECTIONGROUP";
@@ -52,178 +55,187 @@ public class SQLStringBuilder
 
 	// true when table is used in sql string.
 	boolean deviceMeterGroup_from = false;
+//	boolean deviceScanRate_from = false;
 	boolean yukonPAObjectTable_from = false;
 	boolean rawPointHistoryTable_from = false;
 	boolean point_from = false;
 	boolean device_from = false;
 	boolean pointUnit_from = false;
 	boolean unitMeasure_from = false;
-public SQLStringBuilder()
-{
-}
-private String buildFromClause( String [] tables )
-{
-	String fromString = " FROM " + tables[0];
-	for ( int i = 1; i < tables.length; i++)
+	
+	public SQLStringBuilder()
 	{
-		fromString += ", " + tables[i];
 	}
-
-
-	// set the boolean values of the tables that exist.	
-	for ( int i = 0; i < tables.length; i++)
+	private String buildFromClause( String [] tables )
 	{
-		//setBooleanTables(tables[i]);
-		if( tables[i].equalsIgnoreCase(com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME))
+		String fromString = " FROM " + tables[0];
+		for ( int i = 1; i < tables.length; i++)
 		{
-			yukonPAObjectTable_from = true;
+			fromString += ", " + tables[i];
 		}
-		else if( tables[i].equalsIgnoreCase(com.cannontech.database.db.device.DeviceMeterGroup.TABLE_NAME))
+	
+		// set the boolean values of the tables that exist.	
+		for ( int i = 0; i < tables.length; i++)
 		{
-			deviceMeterGroup_from = true;
+			//setBooleanTables(tables[i]);
+			if( tables[i].equalsIgnoreCase(com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME))
+			{
+				yukonPAObjectTable_from = true;
+			}
+			else if( tables[i].equalsIgnoreCase(com.cannontech.database.db.device.DeviceMeterGroup.TABLE_NAME))
+			{
+				deviceMeterGroup_from = true;
+			}
+			else if( tables[i].equalsIgnoreCase(com.cannontech.database.db.point.Point.TABLE_NAME))
+			{
+				point_from = true;
+			}
+			else if (tables[i].equalsIgnoreCase(com.cannontech.database.db.point.RawPointHistory.TABLE_NAME))
+			{
+				rawPointHistoryTable_from = true;
+			}
+			else if( tables[i].equalsIgnoreCase(com.cannontech.database.db.point.PointUnit.TABLE_NAME))
+			{
+				pointUnit_from = true;
+			}
+			else if( tables[i].equalsIgnoreCase(com.cannontech.database.db.point.UnitMeasure.TABLE_NAME))
+			{
+				unitMeasure_from = true;
+			}
+//			else if( tables[i].equalsIgnoreCase(com.cannontech.database.db.device.DeviceScanRate.TABLE_NAME))
+//			{
+//				deviceScanRate_from = true;
+//			}
 		}
-		else if( tables[i].equalsIgnoreCase(com.cannontech.database.db.point.Point.TABLE_NAME))
-		{
-			point_from = true;
-		}
-		else if (tables[i].equalsIgnoreCase(com.cannontech.database.db.point.RawPointHistory.TABLE_NAME))
-		{
-			rawPointHistoryTable_from = true;
-		}
-		else if( tables[i].equalsIgnoreCase(com.cannontech.database.db.point.PointUnit.TABLE_NAME))
-		{
-			pointUnit_from = true;
-		}
-		else if( tables[i].equalsIgnoreCase(com.cannontech.database.db.point.UnitMeasure.TABLE_NAME))
-		{
-			unitMeasure_from = true;
-		}
+		return fromString;
 	}
-	return fromString;
-}
-private String buildSelectClause( String [] columns)
-{
-	String selectString = "SELECT " + columns[0];
-	for ( int i = 1; i < columns.length; i++)
+	private String buildSelectClause( String [] columns)
 	{
-		selectString += ", " + columns[i];
+		String selectString = "SELECT " + columns[0];
+		for ( int i = 1; i < columns.length; i++)
+		{
+			selectString += ", " + columns[i];
+		}
+		
+		return selectString;
 	}
 	
-	return selectString;
-}
-
-private String buildWhereClause(java.util.Vector groupVector, String groupingColumn, int [] analogOffsets, int [] pulseAccOffsets, int []demandAccOffsets)
-{
-	java.util.Vector whereClauses = new java.util.Vector();
-	
-	//String whereString = " WHERE ";
-	if( yukonPAObjectTable_from && deviceMeterGroup_from)
+	private String buildWhereClause(java.util.Vector groupVector, String groupingColumn, int [] analogOffsets, int [] pulseAccOffsets, int []demandAccOffsets)
 	{
-		whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = DEVICEMETERGROUP.DEVICEID "));
-	}
-	if ( yukonPAObjectTable_from && point_from)
-	{
-		whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = POINT.PAOBJECTID "));
-	}
-	if( rawPointHistoryTable_from)
-	{
-		whereClauses.add(new String(" RAWPOINTHISTORY.TIMESTAMP <= ? "));	//END BILLING DATE
-	}
-
-	if( rawPointHistoryTable_from && point_from)
-	{
-		whereClauses.add(new String(" RAWPOINTHISTORY.POINTID = POINT.POINTID "));
-	}
-	
-	if( deviceMeterGroup_from)
-	{
-		String inCollectionGroup = new String(groupingColumn + " IN ('" + groupVector.get(0) + "'");
-		for (int i = 1; i < groupVector.size(); i++)
+		java.util.Vector whereClauses = new java.util.Vector();
+		
+		//String whereString = " WHERE ";
+		if( yukonPAObjectTable_from && deviceMeterGroup_from)
 		{
-			inCollectionGroup += ", '" + groupVector.get(i) + "'";
+			whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = DEVICEMETERGROUP.DEVICEID "));
 		}
-		inCollectionGroup += ")";
-			
-		whereClauses.add(inCollectionGroup);
-	}
-	if( point_from )
-	{
-		if( pointUnit_from && unitMeasure_from)
+//		if ( yukonPAObjectTable_from && deviceScanRate_from)
+//		{
+//			whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = DEVICESCANRATE.DEVICEID"));
+//		}
+		if ( yukonPAObjectTable_from && point_from)
 		{
-			whereClauses.add(new String(" POINT.POINTID = POINTUNIT.POINTID "));
-			whereClauses.add(new String(" POINTUNIT.UOMID = UNITMEASURE.UOMID"));
+			whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = POINT.PAOBJECTID "));
+		}
+		if( rawPointHistoryTable_from)
+		{
+			whereClauses.add(new String(" RAWPOINTHISTORY.TIMESTAMP > ? "));	//START BILLING DATE
+		}
+	
+		if( rawPointHistoryTable_from && point_from)
+		{
+			whereClauses.add(new String(" RAWPOINTHISTORY.POINTID = POINT.POINTID "));
 		}
 		
 		if( deviceMeterGroup_from)
 		{
-			whereClauses.add(new String(" POINT.PAOBJECTID = DEVICEMETERGROUP.DEVICEID"));
+			String inCollectionGroup = new String(groupingColumn + " IN ('" + groupVector.get(0) + "'");
+			for (int i = 1; i < groupVector.size(); i++)
+			{
+				inCollectionGroup += ", '" + groupVector.get(i) + "'";
+			}
+			inCollectionGroup += ")";
+				
+			whereClauses.add(inCollectionGroup);
 		}
-		
-		
-		
-		// select valid pointtypes with appropriate pointoffsets.
-		if( analogOffsets != null || pulseAccOffsets != null || demandAccOffsets != null)
+		if( point_from )
 		{
-			String pointTypeString = new String("(");
-			if( analogOffsets != null )
+			if( pointUnit_from && unitMeasure_from)
 			{
-				if( pointTypeString.length() > 1)	// need to use OR, other stmts already added. (N/A here though, it's the first one.)
-			 		pointTypeString += " OR ";
-			 		
-			 	pointTypeString += " (POINTTYPE = 'Analog' AND POINTOFFSET IN (" + analogOffsets[0];
-				for (int i = 1; i < analogOffsets.length; i++)
-				{
-					pointTypeString += ", " + analogOffsets[i];
-				}
-				
-				pointTypeString += " ))";
-			}
-			if( pulseAccOffsets != null )
-			{
-				if( pointTypeString.length() > 1)	// need to use OR, other stmts already added. (N/A here though, it's the first one.)
-			 		pointTypeString += " OR ";
-			 		
-			 	pointTypeString += " (POINTTYPE = 'PulseAccumulator' AND POINTOFFSET IN (" + pulseAccOffsets[0];
-				for (int i = 1; i < pulseAccOffsets.length; i++)
-				{
-					pointTypeString += ", " + pulseAccOffsets[i];
-				}
-
-				pointTypeString += " ))";
-			}
-			if( demandAccOffsets != null )
-			{
-				if( pointTypeString.length() > 1)	// need to use OR, other stmts already added. (N/A here though, it's the first one.)
-			 		pointTypeString += " OR ";
-			 		
-			 	pointTypeString += " (POINTTYPE = 'DemandAccumulator' AND POINTOFFSET IN (" + demandAccOffsets[0];
-				for (int i = 1; i < demandAccOffsets.length; i++)
-				{
-					pointTypeString += ", " + demandAccOffsets[i];
-				}
-				
-				pointTypeString += " ))";
+				whereClauses.add(new String(" POINT.POINTID = POINTUNIT.POINTID "));
+				whereClauses.add(new String(" POINTUNIT.UOMID = UNITMEASURE.UOMID"));
 			}
 			
-			pointTypeString += " )";
-			whereClauses.add(pointTypeString);
+			if( deviceMeterGroup_from)
+			{
+				whereClauses.add(new String(" POINT.PAOBJECTID = DEVICEMETERGROUP.DEVICEID"));
+			}
+			
+			
+			
+			// select valid pointtypes with appropriate pointoffsets.
+			if( analogOffsets != null || pulseAccOffsets != null || demandAccOffsets != null)
+			{
+				String pointTypeString = new String("(");
+				if( analogOffsets != null )
+				{
+					if( pointTypeString.length() > 1)	// need to use OR, other stmts already added. (N/A here though, it's the first one.)
+				 		pointTypeString += " OR ";
+				 		
+				 	pointTypeString += " (POINTTYPE = 'Analog' AND POINTOFFSET IN (" + analogOffsets[0];
+					for (int i = 1; i < analogOffsets.length; i++)
+					{
+						pointTypeString += ", " + analogOffsets[i];
+					}
+					
+					pointTypeString += " ))";
+				}
+				if( pulseAccOffsets != null )
+				{
+					if( pointTypeString.length() > 1)	// need to use OR, other stmts already added. (N/A here though, it's the first one.)
+				 		pointTypeString += " OR ";
+				 		
+				 	pointTypeString += " (POINTTYPE = 'PulseAccumulator' AND POINTOFFSET IN (" + pulseAccOffsets[0];
+					for (int i = 1; i < pulseAccOffsets.length; i++)
+					{
+						pointTypeString += ", " + pulseAccOffsets[i];
+					}
+	
+					pointTypeString += " ))";
+				}
+				if( demandAccOffsets != null )
+				{
+					if( pointTypeString.length() > 1)	// need to use OR, other stmts already added. (N/A here though, it's the first one.)
+				 		pointTypeString += " OR ";
+				 		
+				 	pointTypeString += " (POINTTYPE = 'DemandAccumulator' AND POINTOFFSET IN (" + demandAccOffsets[0];
+					for (int i = 1; i < demandAccOffsets.length; i++)
+					{
+						pointTypeString += ", " + demandAccOffsets[i];
+					}
+					
+					pointTypeString += " ))";
+				}
+				
+				pointTypeString += " )";
+				whereClauses.add(pointTypeString);
+			}
+			
 		}
-		
-	}
-
-
-	if( !whereClauses.isEmpty())
-	{
-		String whereString = new String(" WHERE " + whereClauses.get(0));
-		for (int i = 1; i < whereClauses.size(); i++)
+	
+	
+		if( !whereClauses.isEmpty())
 		{
-			whereString += " AND " + whereClauses.get(i);
+			String whereString = new String(" WHERE " + whereClauses.get(0));
+			for (int i = 1; i < whereClauses.size(); i++)
+			{
+				whereString += " AND " + whereClauses.get(i);
+			}
+			return whereString;
 		}
-		return whereString;
+		else
+		{
+			return null;
+		}
 	}
-	else
-	{
-		return null;
-	}
-}
 }
