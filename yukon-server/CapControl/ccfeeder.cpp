@@ -1131,8 +1131,8 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
     {
         if( !controlUnits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
         {
-            if( (getCurrentVarLoadPointValue() < (setpoint - getUpperBandwidth())) ||
-                (getCurrentVarLoadPointValue() > (setpoint + getLowerBandwidth())) )
+            if( (getCurrentVarLoadPointValue() > (getUpperBandwidth() + setpoint)) ||
+                (getCurrentVarLoadPointValue() < (setpoint - (getLowerBandwidth()))) )
             {
                 try
                 {
