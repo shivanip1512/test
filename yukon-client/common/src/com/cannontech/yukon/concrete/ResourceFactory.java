@@ -31,7 +31,7 @@ public class ResourceFactory
       }
       catch( Exception e )
       {
-         CTILogger.getStandardLog().error( e.getMessage(), e );
+         CTILogger.error( e.getMessage(), e );
       }
       
       if( o != null && (o instanceof IYukon) )

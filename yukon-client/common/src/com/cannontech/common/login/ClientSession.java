@@ -145,11 +145,11 @@ public class ClientSession {
 		
 		boolean success = false;
 		if(dbProps != null && !dbProps.isEmpty()) {
-			CTILogger.getStandardLog().info("Attempting local load of database properties...");
+			CTILogger.info("Attempting local load of database properties...");
 			localLogin = (success = doLocalLogin(parent, dbProps));
 		}
 		else {
-			CTILogger.getStandardLog().info("Attempting remote load of database properties...");
+			CTILogger.info("Attempting remote load of database properties...");
 			localLogin = !(success = doRemoteLogin(parent));
 		}			
 		
@@ -241,7 +241,7 @@ public class ClientSession {
 		}
 		catch( Exception ex ) //did not work for whatever reason, force them to login again
 		{
-			CTILogger.getStandardLog().error("Unable to use old credentials, forcing login process");
+			CTILogger.error("Unable to use old credentials, forcing login process");
 		}
 		
 		
@@ -281,6 +281,11 @@ public class ClientSession {
 					displayMessage(p, "Server returned valid session ID but user id: " + userID + " couldn't be found in the local cache.  This is either a bug or a configuration problem.", "Error");					
 				}
 			}
+			//sometimes inside the IDE this returns no properties
+			// make the programmer aware
+			else
+				displayMessage(p, "Successful login returned ZERO database properties.  This is either a bug or DBProps servlet is not responding.", "Error");
+				
 		}
 		return false;		 
 	}

@@ -4,16 +4,12 @@ package com.cannontech.tools.email;
  * Creation date: (11/8/2001 11:03:50 PM)
  * @author: 
  */
-import java.util.Vector;
-
 import javax.mail.*;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.InternetAddress;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
-import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.message.porter.message.Request;
@@ -140,7 +136,7 @@ public void executeCheck()
 			//first check our connection to dispatch
 			if( !executeCheckDispatchConnection())
 			{
-				com.cannontech.clientutils.CTILogger.getStandardLog().info("No connection to " + PROGRAM_NAME );
+				CTILogger.info("No connection to " + PROGRAM_NAME );
 				if( !isEmailSent() )
 				{
 					sendMailMessage( PROGRAM_NAME + " is NOT responding!!", 
@@ -152,7 +148,7 @@ public void executeCheck()
 			else
 			if(!executeCheckPorterConnection()) {
 
-				com.cannontech.clientutils.CTILogger.getStandardLog().info("No connection to porter");
+				CTILogger.info("No connection to porter");
 				if( !isEmailSent() )
 				{
 					sendMailMessage( "porter is NOT responding!!","porter is NOT responding to a control!!  You better check it out." );
@@ -182,11 +178,11 @@ public void executeCheck()
 							"Porter and dispatch all green!" );
 				}
             
-//            com.cannontech.clientutils.CTILogger.getStandardLog().info(
+//            CTILogger.info(
                /*"***************************************************************");
-				com.cannontech.clientutils.CTILogger.getStandardLog().info(
+				CTILogger.info(
                   "\t" + PROGRAM_NAME + " was found!" );
-            com.cannontech.clientutils.CTILogger.getStandardLog().info(
+            CTILogger.info(
                "***************************************************************");*/
 			}
 			
@@ -221,7 +217,7 @@ private boolean executeCheckDispatchConnection()
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay( 60 );  // 1 minutes
 		
-		com.cannontech.clientutils.CTILogger.getStandardLog().info("Trying to connect to:  " + getYukonHost() + " " + DISPATCH_PORT );
+		CTILogger.info("Trying to connect to:  " + getYukonHost() + " " + DISPATCH_PORT );
 		com.cannontech.message.dispatch.ClientConnection connection = 
 					new com.cannontech.message.dispatch.ClientConnection();
 
@@ -248,7 +244,7 @@ private boolean executeCheckDispatchConnection()
 		Object ret = null;	
 		if( connection.isValid() )
 		{	
-			com.cannontech.clientutils.CTILogger.getStandardLog().info("Connection & Registration to Server Established.");
+			CTILogger.info("Connection & Registration to Server Established.");
 			com.cannontech.message.dispatch.message.Command cmd = 
 					new com.cannontech.message.dispatch.message.Command();
 
@@ -258,7 +254,7 @@ private boolean executeCheckDispatchConnection()
 
 			//wait 60 seconds at most for a response then stop
 			ret = connection.read( 60000 );
-			com.cannontech.clientutils.CTILogger.getStandardLog().info("Loopback returned = " + ret.toString() );
+			CTILogger.info("Loopback returned = " + ret.toString() );
 
 
 			com.cannontech.message.dispatch.message.Command cmd1 = 
@@ -291,7 +287,7 @@ private boolean executeCheckPorterConnection()
 	
 	try
 	{
-		com.cannontech.clientutils.CTILogger.getStandardLog().info("Trying to connect to:  " + getYukonHost() + " " + DISPATCH_PORT );
+		CTILogger.info("Trying to connect to:  " + getYukonHost() + " " + DISPATCH_PORT );
 		ClientConnection connection = new ClientConnection();
 
 		connection.setHost(getYukonHost());
@@ -318,7 +314,7 @@ private boolean executeCheckPorterConnection()
 		
 		if( connection.isValid() )
 		{	
-			com.cannontech.clientutils.CTILogger.getStandardLog().info("Connection & Registration to Server Established.");
+			CTILogger.info("Connection & Registration to Server Established.");
 			Request req = new Request();
 			req.setDeviceID(0);
 			req.setCommandString("control open select pointid -4");
@@ -329,11 +325,11 @@ private boolean executeCheckPorterConnection()
 			ret = connection.read( 60000 );
 			if(ret != null) 
 			{
-				com.cannontech.clientutils.CTILogger.getStandardLog().info("Control returned = " + ret.toString() );
+				CTILogger.info("Control returned = " + ret.toString() );
 			}
 			else 
 			{
-				com.cannontech.clientutils.CTILogger.getStandardLog().info("No message returned!");	
+				CTILogger.info("No message returned!");	
 			}
 
 			connection.disconnect();
@@ -471,7 +467,7 @@ public java.lang.String getUserName() {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	com.cannontech.clientutils.CTILogger.error("--------- UNCAUGHT EXCEPTION ---------", exception);
+	CTILogger.error("--------- UNCAUGHT EXCEPTION ---------", exception);
 }
 
 
@@ -492,14 +488,13 @@ public boolean isEmailSent() {
  */
 public static void main(String[] args) 
 {
-	CTILogger.setAlwaysUseStandardLogger(true);
 	try
 	{
 		String[] values = null;
 		
 		if( args.length < 3 )  // the user tried to enter some params
 		{
-			com.cannontech.clientutils.CTILogger.getStandardLog().info("Command Syntax : " + Rat.class.getName() +
+			CTILogger.info("Command Syntax : " + Rat.class.getName() +
 				" yukonhost=?\r\n" +
 				" mailhost=? toaddress=?;?;? fromaddress=? [Optional MailUserName=?] [Optional MailPassword=?] [ Optional type=[javamail|qmail] ] [Optional test=y]\r\n" +
 				" Parameters:\r\n" +
@@ -741,7 +736,7 @@ public void tryQSMTP( String host, String fromAddress, String toAddress, String 
 {
 	try
 	{
-		com.cannontech.clientutils.CTILogger.getStandardLog().info("Started QSMTP..");
+		CTILogger.info("Started QSMTP..");
 
 		//"65.165.200.66") );  //CTI address
 		//Qsmtp q = new Qsmtp( java.net.InetAddress.getByName("10.100.10.1") );
@@ -754,7 +749,7 @@ public void tryQSMTP( String host, String fromAddress, String toAddress, String 
 			message );
 		
 		q.close();
-		com.cannontech.clientutils.CTILogger.getStandardLog().info("Closed QSMTP");
+		CTILogger.info("Closed QSMTP");
 	}
 	catch( java.io.IOException ie )
 	{

@@ -9,6 +9,7 @@ import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.clientutils.AlarmFileWatchDog;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.util.Message;
@@ -4079,8 +4080,8 @@ public static void main(final java.lang.String[] args)
 			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
 		
 		
-		com.cannontech.clientutils.CTILogger.getStandardLog().info("Syntax for optional parameters is as follows:");
-		com.cannontech.clientutils.CTILogger.getStandardLog().info("   TDCMainFrame view=<value> display=<value>");
+		CTILogger.info("Syntax for optional parameters is as follows:");
+		CTILogger.info("   TDCMainFrame view=<value> display=<value>");
 
       
 		ClientSession session = ClientSession.getInstance(); 

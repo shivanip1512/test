@@ -652,6 +652,15 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 		return getCache().getYukonUserRoleIDLookupMap();
 	}
 	
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	 */
+	public boolean hasLoadedGlobals()
+	{
+		return getCache().hasLoadedGlobals();		
+	}
+	
     /**
 	 * @ejb:interface-method
 	 * tview-type="remote"

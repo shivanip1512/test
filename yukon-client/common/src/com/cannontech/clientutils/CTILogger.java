@@ -10,6 +10,7 @@ import org.apache.log4j.PatternLayout;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.YukonFileAppender;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
@@ -34,7 +35,6 @@ import com.cannontech.roles.yukon.LoggingRole;
  * */
 public class CTILogger
 {
-	private static boolean alwaysUseStandardLogger = false;
 	private static boolean isCreated = false;
 
 	private static final Layout DEF_LAYOUT = 
@@ -103,14 +103,10 @@ public class CTILogger
          //Init our logger object for the first time
          createLogger( STANDARD_LOGGER );
         
-        // Don't create all the fancy loggers if we just want to use the standard one. 
-			if(!alwaysUseStandardLogger)
-			{
-			
-				//create the extra loggers to keep our web folks sane
-				for( int i = 0; i < ALL_NAMES.length; i++ )
-					createLogger( ALL_NAMES[i][0].toString() );				
-			}
+			//create the extra loggers to keep our web folks sane
+			for( int i = 0; i < ALL_NAMES.length; i++ )
+				createLogger( ALL_NAMES[i][0].toString() );				
+
 			isCreated = true;
 			
 			//initLoggers();
@@ -119,8 +115,9 @@ public class CTILogger
 	  //by default, use the standard logger
       Logger log = LogManager.getLogger( STANDARD_LOGGER );
 
-	  // Check if we should even look for a fancy logger
-	  if(!alwaysUseStandardLogger)
+	  // If we are told to use the standard logger and if we
+	  // have loaded the global properties
+	  if( DefaultDatabaseCache.getInstance().hasLoadedGlobals() )
 	  {
 			t.fillInStackTrace();
 			
@@ -150,7 +147,7 @@ public class CTILogger
 	private static String getLoggerLevel( Logger logger_ )
 	{	
 		String level = null;	
-		if(alwaysUseStandardLogger) 
+		if( !DefaultDatabaseCache.getInstance().hasLoadedGlobals() ) 
 		{
 			return "ALL";	
 		}
@@ -190,12 +187,12 @@ public class CTILogger
     */
    private static final void updateLogSettings()
    {
-   		if(alwaysUseStandardLogger) 
-   		{
-   			return;
-   		}
+		if( !DefaultDatabaseCache.getInstance().hasLoadedGlobals() )
+		{
+			return;
+		}
    		
-   		Logger log = getLogger();
+  		Logger log = getLogger();
 		setLogLevel( getLoggerLevel(log) );
 
 		LiteYukonRoleProperty lToFile =
@@ -233,7 +230,7 @@ public class CTILogger
 			}
 			catch( Exception e )
 			{
-				getStandardLog().error( 
+				error( 
 					"Unable to initialize RollingFileAppender", e );
 			}
 		}
@@ -261,7 +258,7 @@ public class CTILogger
 	 * set to once the roles & properties are loaded. This is occurs in the
 	 * updateLogSettings() method.
 	 */
-	public static Logger getStandardLog()
+	private static Logger getStandardLog()
 	{      
 		return getLogger().getLogger( STANDARD_LOGGER );
 	}
@@ -330,21 +327,5 @@ public class CTILogger
 		updateLogSettings();
 		getLogger().warn(msg,t);
    }
-
-	/**
-	 * Return whether or not to always use the standard logger
-	 * @return
-	 */
-	public static boolean isAlwaysUseStandardLogger() {
-		return alwaysUseStandardLogger;
-	}
-
-	/**
-	 * If set to true the standard logger will always be used
-	 * @param b
-	 */
-	public static void setAlwaysUseStandardLogger(boolean b) {
-		alwaysUseStandardLogger = b;
-	}
 
 }

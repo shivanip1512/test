@@ -42,7 +42,16 @@ public class DefaultDatabaseCache implements IDatabaseCache
    {
       return ResourceFactory.getIYukon().getDBCache();
    }
-   
+
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	 */
+	public boolean hasLoadedGlobals()
+	{
+		return getDBCache().hasLoadedGlobals();		
+	}
+
    /**
     * @ejb:interface-method
     * tview-type="remote" 

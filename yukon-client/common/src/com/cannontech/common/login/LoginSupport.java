@@ -41,7 +41,7 @@ class LoginSupport {
 			in = conn.getInputStream();
 			
 			String cookie = conn.getHeaderField("Set-Cookie");
-			CTILogger.getStandardLog().debug("LoginController returned 'Set-Cookie' = " + cookie);
+			CTILogger.debug("LoginController returned 'Set-Cookie' = " + cookie);
 			return cookie;
 		}
 		catch(IOException e) {
@@ -68,11 +68,11 @@ class LoginSupport {
 	 	HttpURLConnection conn = null;
 
 	 	try {
-	 		conn = (HttpURLConnection) url.openConnection();
+	 		conn = (HttpURLConnection) url.openConnection();	 		
 	 		conn.setRequestProperty("Cookie", sessionID);
-	 		InputStream in = conn.getInputStream();
+	 		InputStream in = conn.getInputStream();			
 	 		Properties dbProps = new Properties();
-			dbProps.load(in);
+			dbProps.load(in);			
 			return dbProps;
 	 	}
 	 	catch(IOException e) {

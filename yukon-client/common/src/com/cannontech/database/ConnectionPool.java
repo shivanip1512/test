@@ -8,7 +8,6 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.RoleFuncs;
 
 
 public class ConnectionPool
@@ -38,8 +37,8 @@ public class ConnectionPool
 	  this.initConns = initConns;
 	  
 	  String lf = System.getProperty("line.separator");
-	  info("Creating new DB connection pool...");
-	  debug(lf +
+	  CTILogger.info("Creating new DB connection pool...");
+	  CTILogger.debug(lf +
 					" url=" + URL + lf +
 					" user=" + user + lf +
 					" initconns=" + initConns + lf +
@@ -50,7 +49,7 @@ public class ConnectionPool
 	  initPool();
 
 
-	  debug( getStats() );
+	  CTILogger.debug( getStats() );
    }
 
    public void freeConnection(Connection conn)
@@ -66,8 +65,8 @@ public class ConnectionPool
 			 checkedOut--;
 			 notifyAll();
 	  
-			 debug("Returned/Added connection to pool");
-			 debug( getStats() );
+			 CTILogger.debug("Returned/Added connection to pool");
+			 CTILogger.debug( getStats() );
 		}
 	}
    }
@@ -80,7 +79,7 @@ public class ConnectionPool
 		 Connection conn = getConnection(timeOut * 1000);
 		 ConnectionWrapper cw = new ConnectionWrapper(conn, this);
 
-	 	 debug( "Request for a DB connection granted" );
+		 CTILogger.debug( "Request for a DB connection granted" );
 
 
 	  
@@ -92,7 +91,7 @@ public class ConnectionPool
 	  }
 	  catch (SQLException e)
 	  {
-		 error("Exception getting connection", e );
+		 CTILogger.error("Exception getting connection", e );
 		 throw e;
 	  }
    }                        
@@ -113,7 +112,7 @@ public class ConnectionPool
 			{
 			   try
 			   {
-				  debug("Waiting for connection. Timeout=" + remaining + " millis");
+					CTILogger.debug("Waiting for connection. Timeout=" + remaining + " millis");
 	
 				  wait(remaining);
 			   }
@@ -124,7 +123,7 @@ public class ConnectionPool
 			   if (remaining <= 0)
 			   {
 				  // Timeout has expired
-				  debug("Time-out while waiting for connection" );
+				  CTILogger.debug("Time-out while waiting for connection" );
 	
 				  throw new SQLException("getConnection() timed-out");
 			   }
@@ -139,15 +138,15 @@ public class ConnectionPool
 			   freeConnections.addElement( newConnection() );
 		  	
 			   // It was bad. Try again with the remaining timeout
-			   debug("Removed bad connection from pool" );
+				CTILogger.debug("Removed bad connection from pool" );
 	
 			   return getConnection(remaining);
 			}
 			else
 			{
 				checkedOut++;
-				debug( "Delivered connection from pool" );
-				debug( getStats() );
+				CTILogger.debug( "Delivered connection from pool" );
+				CTILogger.debug( getStats() );
 			  
 			
 				// Great we have a good conn, Be sure we have our fair share of DB conns
@@ -170,11 +169,11 @@ public class ConnectionPool
 		try
 		{
 			conn.close();
-			debug( "Closed connection" );
+			CTILogger.debug( "Closed connection" );
 		}
 		catch (SQLException e)
 		{
-			error( "Couldn't close connection", e );
+			CTILogger.error( "Couldn't close connection", e );
 		}
 	}
 
@@ -246,10 +245,10 @@ public class ConnectionPool
 	  }
 	  catch (Exception e)
 	  {
-		 info( "Pooled Connection was NOT okay" );
-		 error( "Pooled Connection was NOT okay", e );
+			CTILogger.info( "Pooled Connection was NOT okay" );
+			CTILogger.error( "Pooled Connection was NOT okay", e );
 
-		 return false;
+			return false;
 	  }
 
 	  return true;
@@ -270,9 +269,9 @@ public class ConnectionPool
 	  
 	  try
 	  {
-	  	  conn = DriverManager.getConnection(URL, p);  	  
+			conn = DriverManager.getConnection(URL, p);  	  
 
-	  	  debug("Opened a new connection" );
+			CTILogger.debug("Opened a new connection" );
 	  }
 	  catch( Exception e )
 	  {
@@ -296,11 +295,11 @@ public class ConnectionPool
 			   try
 			   {
 				  con.close();
-				  debug( "Closed connection" );
+				  CTILogger.debug( "Closed connection" );
 			   }
 			   catch (SQLException e)
 			   {
-				  error( "Couldn't close connection", e );
+					CTILogger.error( "Couldn't close connection", e );
 			   }
 			}
 			freeConnections.removeAllElements();
@@ -308,30 +307,6 @@ public class ConnectionPool
 	}
    }
 
-
-	private void debug( String msg )
-	{
-		if( RoleFuncs.hasLoadedGlobals() )
-			CTILogger.debug( msg );
-		else
-			CTILogger.getStandardLog().debug( msg );
-	}
-
-	private void error( String msg, Throwable t )
-	{
-		if( RoleFuncs.hasLoadedGlobals() )
-			CTILogger.error( msg, t );
-		else
-			CTILogger.getStandardLog().error( msg, t );
-	}
-
-	private void info( String msg )
-	{
-		if( RoleFuncs.hasLoadedGlobals() )
-			CTILogger.info( msg );
-		else
-			CTILogger.getStandardLog().info( msg );
-	}
 	
 	/**
 	 * Insert the method's description here.

@@ -108,8 +108,8 @@ public interface IDatabaseCache
 	public LiteCustomer getCustomer(int customerID);
 	public void deleteCustomer(int customerID);
    
-//   public IDatabaseCache getInstance();
-
+	public boolean hasLoadedGlobals();
+	
    /**
     *  Returns the LiteBase object that was added,deleted or updated, 
     *    else null is returned.
