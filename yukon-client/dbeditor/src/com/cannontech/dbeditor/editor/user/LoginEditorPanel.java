@@ -72,12 +72,12 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 			int rolePanelIndx = getUserRolePanelIndx();
 
 			//show the optional panel here
-			if( rolePanelIndx >= 0 )
+			/*if( rolePanelIndx >= 0 )
 			{
 				getTabbedPane().setEnabledAt(
 					rolePanelIndx,
 					((UserGroupRoleEditorPanel)event.getSource()).isShowingUserRoles() );
-			}
+			}*/
 
 		}
 		
@@ -168,13 +168,15 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 			//unless the property is checked.
 			boolean allowRoles = ClientSession.getInstance().getRolePropertyValue(
 			DBEditorRole.ALLOW_USER_ROLES, "FALSE").trim().equalsIgnoreCase("TRUE");
-			if(((YukonUser)val).getUserID().intValue() != UserUtils.USER_ADMIN_ID && tempPanel instanceof UserGroupRoleEditorPanel)
+			if(allowRoles)
+			{}
+			else if(((YukonUser)val).getUserID().intValue() != UserUtils.USER_ADMIN_ID && tempPanel instanceof UserGroupRoleEditorPanel)
 			{
 				i++;
 			}
 
 			//make sure that the superuser doesn't get a role group editor panel
-			else if(((YukonUser)val).getUserID().intValue() == UserUtils.USER_ADMIN_ID && tempPanel instanceof UserLoginBasePanel)
+			if(((YukonUser)val).getUserID().intValue() == UserUtils.USER_ADMIN_ID && tempPanel instanceof UserLoginBasePanel)
 				i++;
 
 			
@@ -198,13 +200,14 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 		if(((YukonUser)val).getUserID().intValue() == UserUtils.USER_ADMIN_ID)
 			rolePanelIndx = UserUtils.USER_ADMIN_ID;
 		
-				
+		//this isn't necessary right now
+		/*		
 		if( rolePanelIndx >= 0 )
 		{
 			getTabbedPane().setEnabledAt(
 				rolePanelIndx,
 				false );
-		}
+		}*/
 
 	}
 
