@@ -707,6 +707,21 @@ alter table lmcontrolareaprogram rename column UserOrder to StartPriority;
 alter table lmcontrolareaprogram rename column StopOrder to StopPriority;
 alter table lmcontrolareaprogram drop column defaultpriority;
 
+
+delete from YukonGroupRole where roleid = -3;
+delete from YukonUserRole where roleid = -3;
+delete from YukonRoleProperty where roleid = -3;
+delete from YukonRole where roleid = -3;
+
+
+
+
+
+
+
+
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

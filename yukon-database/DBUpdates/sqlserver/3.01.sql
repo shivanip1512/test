@@ -816,6 +816,19 @@ go
 alter table LMControlAreaProgram drop column DefaultPriority;
 go
 
+delete from YukonGroupRole where roleid = -3;
+delete from YukonUserRole where roleid = -3;
+delete from YukonRoleProperty where roleid = -3;
+delete from YukonRole where roleid = -3;
+
+
+
+
+
+
+
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
