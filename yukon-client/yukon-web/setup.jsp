@@ -143,8 +143,8 @@ function dispStatusMsg(msgStr) { //v1.0
                   </td>
 				</tr>
 				<tr>
-                  <td width="200" class = "MainText" align="right" onMouseOver="dispStatusMsg('Oracle service name');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">
-				  DB Service Name(Oracle only):</td>
+                  <td width="200" class = "MainText" align="right" onMouseOver="dispStatusMsg('Database service name');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">
+				  Service Name(Optional):</td>
                   <td width="435" valign="bottom" class="MainText"> 
                     <input type="text" name="db_service" value="<%= PoolManager.getInstance().getProperty(PoolManager.SERVICE) %>">
                     </td>

@@ -99,13 +99,17 @@ public class PoolManager
 
 	/**
 	 * Sets the derived properties for easy access and usage
+	 * 
 	 * @param url_
 	 * @param poolName_
 	 */
 	private void setUrlProps( String url_, String poolName_ )
 	{
 		//jdbc:microsoft:sqlserver://dbserver:1433;SelectMethod=cursor;
-		//jdbc:oracle:thin:@10.100.1.76:1521:preprod
+		//jdbc:microsoft:sqlserver://dbserver/bunk:1433;SelectMethod=cursor;
+		//jdbc:jtds:sqlserver://dbserver:1433;APPNAME=yukon-client;TDS=8.0
+		//jdbc:jtds:sqlserver://dbserver:1433;APPNAME=yukon-client;TDS=8.0;INSTANCE=bunk
+		//jdbc:oracle:thin:@dbserver:1521:preprod
 
 		try
 		{
@@ -125,8 +129,33 @@ public class PoolManager
 				s = tok.nextToken();
 				dbProps.put( poolName_ + SERVICE, s );
 			}
-			else if( url_.indexOf(DRV_SQLSERVER) >= 0
-						 || url_.indexOf(DRV_JTDS) >= 0 )
+			else if( url_.indexOf(DRV_SQLSERVER) >= 0 )
+			{
+				StringTokenizer tok = new StringTokenizer(
+					url_.substring( url_.indexOf("//"), url_.length()),
+					":");
+
+				String s = tok.nextToken();
+				String hostStr = s.substring(2, s.length());
+				
+				if( hostStr.indexOf("/") > 0 )
+				{
+					dbProps.put( poolName_ + HOST,
+							hostStr.substring(0, hostStr.indexOf("/")) );
+
+					dbProps.put( poolName_ + SERVICE,
+							hostStr.substring( hostStr.indexOf("/")+1, hostStr.length()) );
+				}
+				else
+				{
+					dbProps.put( poolName_ + HOST, hostStr );					
+					dbProps.put( poolName_ + SERVICE, "" );
+				}
+
+				s = tok.nextToken();
+				dbProps.put( poolName_ + PORT, s.substring(0, s.indexOf(";")) );
+			}
+			else if( url_.indexOf(DRV_JTDS) >= 0 )
 			{
 				StringTokenizer tok = new StringTokenizer(
 					url_.substring( url_.indexOf("//"), url_.length()),
@@ -140,6 +169,18 @@ public class PoolManager
 				dbProps.put( poolName_ + PORT, tempTok.nextToken() );
 				
 				dbProps.put( poolName_ + SERVICE, "" );
+				if( tempTok.hasMoreTokens() )
+				{
+					while( tempTok.hasMoreTokens() )
+					{
+						s = tempTok.nextToken();
+						if( s.startsWith("INSTANCE=") )
+							dbProps.put(
+								poolName_ + SERVICE,
+								s.substring("INSTANCE=".length()) );
+					}
+				}
+
 			}
 			else
 				throw new Error("Unrecognized database URL, URL = " + url_ );

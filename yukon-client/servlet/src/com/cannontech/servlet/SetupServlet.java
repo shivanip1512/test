@@ -283,12 +283,16 @@ public class SetupServlet extends HttpServlet
 		if( driver.equalsIgnoreCase("sql") )
 		{				
 			url = PoolManager.DRV_SQLSERVER + "//" 
-					+ url + ":" + port + ";SelectMethod=cursor;";
+					+ url + (service != null ? "/" + service : "") +
+					":" + port + ";SelectMethod=cursor;";			
 		}
 		else if( driver.equalsIgnoreCase("jtds") )
 		{				
 			url = PoolManager.DRV_JTDS + "//" 
 					+ url + ":" + port + ";APPNAME=yukon-client;TDS=8.0";
+
+			if( service != null )
+				url += ";INSTANCE=" + service;
 		}
 		else if( driver.equalsIgnoreCase("oracle") )
 		{
