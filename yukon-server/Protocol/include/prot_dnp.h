@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/05/30 15:11:35 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/06/11 21:19:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,11 +49,19 @@ public:
 
     void setCommand( DNPCommand command, XferPoint *points = NULL, int numPoints = 0 );
 
+    int generate( CtiXfer &xfer );
+    int decode  ( CtiXfer &xfer, int status );
+/*
     void initForOutput( void );
     void initForInput ( void );
+*/
+    bool isTransactionComplete( void );
 
-    int commOut( OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &outList );
-    int commIn ( INMESS *InMessage, RWTPtrSlist< OUTMESS > &outList );
+    int sendAppReqLayer( OUTMESS *OutMessage );
+    int recvAppReqLayer( OUTMESS *OutMessage );
+
+    int sendAppRspLayer( INMESS *InMessage );
+    int recvAppRspLayer( INMESS *InMessage );
 
     bool hasPoints( void );
     void sendPoints( RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList );
@@ -77,7 +85,8 @@ public:
 
     enum
     {
-        MaxAppLayerSize = 2048
+        YukonDNPMasterAddress =    5,
+        MaxAppLayerSize       = 2048
     };
 };
 
