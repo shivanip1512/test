@@ -1,7 +1,8 @@
 package com.cannontech.esub.editor.element;
 
+import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.gui.util.DataInputPanelEvent;
+
 /**
  * Creation date: (12/18/2001 12:54:28 PM)
  * @author: 
@@ -116,9 +117,9 @@ private void initialize() {
 }
 /**
  * Creation date: (12/18/2001 4:05:26 PM)
- * @param evt com.cannontech.common.gui.util.DataInputPanelEvent
+ * @param evt PropertyPanelEvent
  */
-public void inputUpdate(DataInputPanelEvent evt) {
+public void inputUpdate(PropertyPanelEvent evt) {
 	checkValidity();
 }
 /**

@@ -109,6 +109,24 @@ public class ClientCache implements IDatabaseCache
          
    }
    
+   
+   /**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
+   public synchronized java.util.List getAllContactNotificationGroups()
+   {
+      try
+      {
+         return getCache().getAllContactNotificationGroups();
+      }
+      catch( java.rmi.RemoteException e )
+      {
+         com.cannontech.clientutils.CTILogger.info( e );
+         return new java.util.ArrayList();
+      }
+   }
+   
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -165,11 +183,11 @@ public class ClientCache implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized java.util.List getAllCustomerContacts()
+   public synchronized java.util.List getAllContacts()
    {
       try
       {
-         return getCache().getAllCustomerContacts();
+         return getCache().getAllContacts();
       }
       catch( java.rmi.RemoteException e )
       {
@@ -182,11 +200,11 @@ public class ClientCache implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized java.util.List getAllCustomers() 
+   public synchronized java.util.List getAllCICustomers() 
    {
       try
       {
-         return getCache().getAllCustomers();
+         return getCache().getAllCICustomers();
       }
       catch( java.rmi.RemoteException e )
       {
@@ -300,39 +318,6 @@ public class ClientCache implements IDatabaseCache
       }
    }
 
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-   public synchronized java.util.List getAllNotificationGroups()
-   {
-      try
-      {
-         return getCache().getAllNotificationGroups();
-      }
-      catch( java.rmi.RemoteException e )
-      {
-         com.cannontech.clientutils.CTILogger.info( e );
-         return new java.util.ArrayList();
-      }
-   }
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-   public synchronized java.util.List getAllNotificationRecipients()
-   {
-      try
-      {
-         return getCache().getAllNotificationRecipients();
-      }
-      catch( java.rmi.RemoteException e )
-      {
-         com.cannontech.clientutils.CTILogger.info( e );
-         return new java.util.ArrayList();
-      }
-   }
 
    /**
     * @ejb:interface-method
@@ -840,7 +825,7 @@ public class ClientCache implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized void releaseAllNotificationRecipients()
+   public synchronized void releaseAllContactNotifications()
    {   
       try
       {

@@ -1,39 +1,37 @@
 package com.cannontech.database.db.customer;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * This type was created in VisualAge.
  */
 
-public class CustomerAddress extends com.cannontech.database.db.DBPersistent 
+public class Address extends com.cannontech.database.db.DBPersistent 
 {
-	public static final int NONE_INT = 0;
-	
 	private Integer addressID = null;
-	private String locationAddress1 = com.cannontech.common.util.CtiUtilities.STRING_NONE;
-	private String locationAddress2 = com.cannontech.common.util.CtiUtilities.STRING_NONE;
-	private String cityName = com.cannontech.common.util.CtiUtilities.STRING_NONE;
-	private String stateCode = com.cannontech.common.util.CtiUtilities.STRING_NONE;
-	private String zipCode = com.cannontech.common.util.CtiUtilities.STRING_NONE;
+	private String locationAddress1 = CtiUtilities.STRING_NONE;
+	private String locationAddress2 = CtiUtilities.STRING_NONE;
+	private String cityName = CtiUtilities.STRING_NONE;
+	private String stateCode = CtiUtilities.STRING_NONE;
+	private String zipCode = CtiUtilities.STRING_NONE;
+	private String county = CtiUtilities.STRING_NONE;
 
 
 	
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"LocationAddress1", "LocationAddress2", "CityName", 
-		"StateCode", "ZipCode"
+		"StateCode", "ZipCode", "County"
 	};
 
-	public static final String CONSTRAINT_COLUMNS[] = { "addressID" };
+	public static final String CONSTRAINT_COLUMNS[] = { "AddressID" };
 
-	public static final String TABLE_NAME = "CustomerAddress";
+	public static final String TABLE_NAME = "Address";
 	
-	private static final String GET_NEXT_ADDRESS_ID_SQL =
-			"SELECT MAX(AddressID) FROM " + TABLE_NAME;
-
 /**
- * LMGroupVersacomSerial constructor comment.
+ * Address constructor comment.
  */
-public CustomerAddress() {
+public Address() {
 	super();
 }
 /**
@@ -44,8 +42,11 @@ public void add() throws java.sql.SQLException
 	if( getAddressID() == null )
 		setAddressID( getNextAddressID( getDbConnection() ) );
 
-	Object addValues[] = { getAddressID(), getLocationAddress1(), getLocationAddress2(),
-					getCityName(), getStateCode(), getZipCode() };
+	Object addValues[] =
+	{ 
+		getAddressID(), getLocationAddress1(), getLocationAddress2(),
+		getCityName(), getStateCode(), getZipCode(), getCounty()
+	};
 
 	add( TABLE_NAME, addValues );
 }
@@ -90,6 +91,7 @@ public java.lang.String getLocationAddress1() {
 public java.lang.String getLocationAddress2() {
 	return locationAddress2;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (12/14/99 10:31:33 AM)
@@ -97,64 +99,40 @@ public java.lang.String getLocationAddress2() {
  */
 public static synchronized Integer getNextAddressID( java.sql.Connection conn )
 {
-	com.cannontech.database.SqlStatement stmt =
- 		new com.cannontech.database.SqlStatement(
-            "SELECT AddressID FROM CustomerAddress order by AddressID",
- 				conn );
+	if( conn == null )
+		throw new IllegalStateException("Database connection should not be null.");
 
-	Integer returnVal = null;
-	int value = 0;
-														
-	try
-	{
-		stmt.execute();
-		
-		for( int i = 0; i < stmt.getRowCount(); i++ )
-		{
-			if( value == ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue() )
-				value++;
-			else
-				break;
-		}	
-
+	
+	java.sql.Statement stmt = null;
+	java.sql.ResultSet rset = null;
+	
+	try 
+	{		
+	    stmt = conn.createStatement();
+		 rset = stmt.executeQuery( "SELECT Max(AddressID)+1 FROM " + TABLE_NAME );	
+			
+		 //get the first returned result
+		 rset.next();
+	    return new Integer( rset.getInt(1) );
 	}
-	catch( Exception e )
+	catch (java.sql.SQLException e) 
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	    e.printStackTrace();
 	}
-
-	return new Integer(value);
-}
-
-/**
- * Created by yao, get the next address ID as the maximum existing ID + 1
- */
-public final Integer getNextAddressID2() {
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-
-        int nextAddressID = 1;
-
-        try {
-            pstmt = getDbConnection().prepareStatement( GET_NEXT_ADDRESS_ID_SQL );
-            rset = pstmt.executeQuery();
-
-            if (rset.next())
-                nextAddressID = rset.getInt(1) + 1;
-        }
-        catch (java.sql.SQLException e) {
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                if (pstmt != null) pstmt.close();
-            }
-            catch (java.sql.SQLException e2) {
-                e2.printStackTrace();
-            }
-        }
-
-        return new Integer( nextAddressID );
+	finally 
+	{
+	    try 
+	    {
+			if ( stmt != null) stmt.close();
+	    }
+	    catch (java.sql.SQLException e2) 
+	    {
+			e2.printStackTrace();
+	    }
+	}
+	
+	//strange, should not get here
+	return new Integer(CtiUtilities.NONE_ID);
 }
 
 /**
@@ -188,6 +166,7 @@ public void retrieve() throws java.sql.SQLException
 		setCityName( (String) results[2] );
 		setStateCode( (String) results[3] );
 		setZipCode( (String) results[4] );
+		setCounty( (String) results[5] );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -246,11 +225,32 @@ public void setZipCode(java.lang.String newZipCode) {
  */
 public void update() throws java.sql.SQLException 
 {
-	Object setValues[] = { getLocationAddress1(), getLocationAddress2(),
-					getCityName(), getStateCode(), getZipCode() };
+	Object setValues[] = 
+	{ 
+		getLocationAddress1(), getLocationAddress2(),
+		getCityName(), getStateCode(), getZipCode(), getCounty()
+	};
 
 	Object constraintValues[] = { getAddressID() };
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
+
+
+	/**
+	 * Returns the county.
+	 * @return String
+	 */
+	public String getCounty() {
+		return county;
+	}
+
+	/**
+	 * Sets the county.
+	 * @param county The county to set
+	 */
+	public void setCounty(String county) {
+		this.county = county;
+	}
+
 }

@@ -4,8 +4,8 @@ package com.cannontech.esub.editor.element;
  * Creation date: (9/25/2002 11:57:12 AM)
  * @author: 
  */
+import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.gui.util.DataInputPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanelListener;
 
 public class DynamicGraphElementEditor extends com.cannontech.common.editor.PropertyPanel implements DataInputPanelListener {
@@ -130,9 +130,10 @@ public void setValue(Object o) {
 
 /**
  * Creation date: (12/18/2001 4:05:26 PM)
- * @param evt com.cannontech.common.gui.util.DataInputPanelEvent
+ * @param evt PropertyPanelEvent
  */
-public void inputUpdate(DataInputPanelEvent evt) {
+public void inputUpdate(PropertyPanelEvent evt) 
+{
 	checkValidity();
 }
 

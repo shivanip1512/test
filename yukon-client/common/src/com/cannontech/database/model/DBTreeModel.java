@@ -107,9 +107,9 @@ java.util.Date s = new java.util.Date();
 
 	DBTreeNode node = findLiteObject( null, lb );
 	
-com.cannontech.clientutils.CTILogger.info("** Took " + 
+com.cannontech.clientutils.CTILogger.info("*** REMOVE Took " + 
 	(new java.util.Date().getTime() - s.getTime()) * .001 + 
-	" seconds to find node in DBtreeModel using REMOVE, node = " + node );
+	" seconds to find node in DBtreeModel, node = " + node );
 
 	if( node != null )
 	{
@@ -175,17 +175,22 @@ public boolean updateTreeObject(LiteBase lb)
 java.util.Date s = new java.util.Date();
 	DBTreeNode node = findLiteObject( null, lb );
 
-com.cannontech.clientutils.CTILogger.info("** Took " + 
+com.cannontech.clientutils.CTILogger.info("*** UPDATE Took " + 
 	(new java.util.Date().getTime() - s.getTime()) * .001 + 
-	" seconds to find node in DBtreeModel using UPDATE, node = " + node);
+	" seconds to find node in DBtreeModel, node = " + node);
 
 
 	if( node != null )
 	{
-		nodeChanged( node );
-		return true;
+//		nodeChanged( node );
+//		return true;
+
+		node.setWillHaveChildren( true );
+		treePathWillExpand( new TreePath(node) );
+		nodeStructureChanged( node );
 	}
 
 	return false;
 }
+
 }

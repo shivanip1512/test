@@ -8,6 +8,7 @@ package com.cannontech.graph;
  */
 import java.util.Vector;
 
+import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.graph.gds.tablemodel.GDSTableModel;
 public class CreateGraphPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener {
@@ -465,7 +466,6 @@ private javax.swing.JTable getGraphGDSTable() {
 			ivjGraphGDSTable = new javax.swing.JTable();
 			ivjGraphGDSTable.setName("GraphGDSTable");
 			getGraphGDSScrollPane().setColumnHeaderView(ivjGraphGDSTable.getTableHeader());
-			getGraphGDSScrollPane().getViewport().setBackingStoreEnabled(true);
 			ivjGraphGDSTable.setModel(new com.cannontech.graph.gds.tablemodel.GDSTableModel());
 			ivjGraphGDSTable.setCellSelectionEnabled(false);
 			ivjGraphGDSTable.setDoubleBuffered(false);
@@ -1140,9 +1140,9 @@ private void initialize() {
 /**
  * Insert the method's description here.
  * Creation date: (10/27/00 11:46:27 AM)
- * @param event com.cannontech.common.gui.util.DataInputPanelEvent
+ * @param event PropertyPanelEvent
  */
-public void inputUpdate(com.cannontech.common.gui.util.DataInputPanelEvent event) 
+public void inputUpdate(PropertyPanelEvent event) 
 {
 	ivjOkButton.setEnabled(isInputValid());
 }

@@ -5,8 +5,8 @@ package com.cannontech.common.wizard;
  */
 import java.util.Vector;
 
+import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.gui.util.DataInputPanelEvent;
 
 public abstract class WizardPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener {
 	//10 should be good enough...?
@@ -233,9 +233,9 @@ private void initialize() {
 }
 /**
  * This method was created in VisualAge.
- * @param event DataInputPanelEvent
+ * @param event PropertyPanelEvent
  */
-public void inputUpdate(DataInputPanelEvent event) {
+public void inputUpdate(PropertyPanelEvent event) {
 
 	if( currentPanel == -1 )
 		return;
@@ -281,8 +281,15 @@ public void inputUpdate(DataInputPanelEvent event) {
 		setBackEnabled(true);
 	}
 
+
 	revalidate();
 	repaint();
+	
+	fireWizardPanelEvent(
+			new WizardPanelEvent( 
+					event.getSource(), 
+					event.getID(), 
+					event.getDataChanged() )  );
 }
 /**
  * This method was created in VisualAge.

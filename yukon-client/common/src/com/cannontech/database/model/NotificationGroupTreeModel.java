@@ -38,7 +38,7 @@ public void update() {
 
 	synchronized(cache)
 	{
-		java.util.List notifGroups = cache.getAllNotificationGroups();
+		java.util.List notifGroups = cache.getAllContactNotificationGroups();
 
 		java.util.Collections.sort( notifGroups, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
 

@@ -1,5 +1,7 @@
 package com.cannontech.common.gui.util;
 
+import com.cannontech.common.editor.PropertyPanelEvent;
+
 /**
  * Insert the type's description here.
  * Creation date: (2/6/2002 11:16:48 AM)
@@ -300,9 +302,10 @@ private void initialize() {
 /**
  * This method was created in VisualAge.
  */
-public void inputUpdate(DataInputPanelEvent event)
+public void inputUpdate(PropertyPanelEvent event)
 {
-	getJButtonOk().setEnabled( ((DataInputPanel)getJPanelSlot()).isInputValid() );
+	getJButtonOk().setEnabled( 
+		((DataInputPanel)getJPanelSlot()).isInputValid() );
 }
 /**
  * Comment

@@ -96,7 +96,7 @@ public class DisconnectPointCreate extends PointCreate
 			statusPoint.getPointAlarming().setExcludeNotifyStates( statusPoint.getPointAlarming().DEFAULT_EXCLUDE_NOTIFY );
 			statusPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
 			statusPoint.getPointAlarming().setNotificationGroupID(  new Integer(statusPoint.getPointAlarming().NONE_NOTIFICATIONID) );
-			statusPoint.getPointAlarming().setRecipientID(new Integer(statusPoint.getPointAlarming().NONE_LOCATIONID));
+			statusPoint.getPointAlarming().setRecipientID(new Integer(statusPoint.getPointAlarming().NONE_NOTIFICATIONID));
 	
 			// set default settings for point POINTSTATUS
 			statusPoint.getPointStatus().setPointID(new Integer(pointID));

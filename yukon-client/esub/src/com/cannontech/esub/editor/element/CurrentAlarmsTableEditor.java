@@ -1,8 +1,8 @@
 package com.cannontech.esub.editor.element;
 
 import com.cannontech.common.editor.PropertyPanel;
+import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.gui.util.DataInputPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanelListener;
 
 /**
@@ -50,7 +50,7 @@ public class CurrentAlarmsTableEditor
 	getPropertyButtonPanel().getOkJButton().setEnabled(isInputValid());
 	}
 	
-	public void inputUpdate(DataInputPanelEvent evt) {
+	public void inputUpdate(PropertyPanelEvent evt) {
 		checkValidity();
 	}
 	/**

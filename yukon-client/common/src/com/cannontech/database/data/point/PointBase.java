@@ -5,6 +5,7 @@ package com.cannontech.database.data.point;
  */
 import java.util.Vector;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.point.DynamicAccumulator;
 import com.cannontech.database.db.point.DynamicPointDispatch;
@@ -94,7 +95,7 @@ public final static PointBase createNewPoint( Integer pointID, int pointType, St
 			com.cannontech.database.db.point.PointAlarming.DEFAULT_EXCLUDE_NOTIFY,
 			"N",
 			new Integer(com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID),
-			new Integer(com.cannontech.database.db.point.PointAlarming.NONE_LOCATIONID)));
+			new Integer(CtiUtilities.NONE_ID)) );
 
 	return newPoint;
 }

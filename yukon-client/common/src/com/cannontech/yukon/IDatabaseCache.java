@@ -10,16 +10,20 @@ import com.cannontech.database.cache.DBChangeListener;
  *
  * @author alauinger
  */
-public interface IDatabaseCache {
-
+public interface IDatabaseCache 
+{
    public void addDBChangeListener(DBChangeListener listener);
    public DBChangeMsg[] createDBChangeMessages( com.cannontech.database.db.CTIDbChange newItem, int changeType );
    public java.util.List getAllAlarmCategories();
    public java.util.List getAllYukonImages();
    public java.util.List getAllCapControlFeeders();
    public java.util.List getAllCapControlSubBuses();
-   public java.util.List getAllCustomerContacts();
-   public java.util.List getAllCustomers();
+
+   public java.util.List getAllContactNotificationGroups();
+   public java.util.List getAllContacts();
+
+	public java.util.List getAllCICustomers();
+	   
    public java.util.List getAllDeviceMeterGroups();
    public java.util.List getAllDevices();
    public java.util.List getAllGraphDefinitions();
@@ -30,8 +34,8 @@ public interface IDatabaseCache {
    public java.util.List getAllHolidaySchedules();
    public java.util.List getAllLMPrograms();
    public java.util.List getAllLoadManagement();
-   public java.util.List getAllNotificationGroups();
-   public java.util.List getAllNotificationRecipients();
+   //public java.util.List getAllNotificationGroups();
+
    public java.util.List getAllPoints();
    public java.util.List getAllPointsUnits();
    public java.util.List getAllPointLimits();
@@ -90,7 +94,7 @@ public interface IDatabaseCache {
    public void releaseAllGraphDefinitions();
    public void releaseAllHolidaySchedules();
    public void releaseAllNotificationGroups();
-   public void releaseAllNotificationRecipients();
+   public void releaseAllContactNotifications();
    public void releaseAllPoints();
    public void releaseAllStateGroups();
    public void releaseAllUnitMeasures();

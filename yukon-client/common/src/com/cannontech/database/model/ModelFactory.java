@@ -58,7 +58,7 @@ public final class ModelFactory
 		CapBankControllerModel.class,
 		CapControlSubBusModel.class,
 /*15*/NotificationGroupTreeModel.class,
-		NotificationRecipientTreeModel.class,
+		ContactNotificationTreeModel.class,
 		AlarmCategoriesTreeModel.class,
 		LMProgramModel.class,
 		EditableVersacomSerialModel.class,

@@ -5,26 +5,27 @@ package com.cannontech.database.data.lite;
  */
 public final class LiteTypes 
 {
-	public final static int POINT = 2;
-	public final static int STATEGROUP = 5;
-	public final static int STATE = 6;
-	public final static int UNITMEASURE = 7;
-	public final static int GRAPHDEFINITION = 8;
-	//public final static int CAPCONTROLSUBBUS = 9;
-	public final static int ALARM_CATEGORIES = 10;
-	public final static int NOTIFICATION_GROUP = 11;
-	public final static int GROUP_RECIPIENT = 12;
-	public final static int HOLIDAY_SCHEDULE = 13;
-	public final static int CUSTOMER_CONTACT = 14;
-	public final static int DEVICE_METERNUMBER = 15;
-	public final static int YUKON_PAOBJECT= 16;
-	public final static int POINT_UNIT = 17;
-	public final static int POINT_LIMIT = 18;
-    public final static int STATE_IMAGE = 19;
-    public final static int YUKON_USER = 20;
-    public final static int YUKON_ROLE = 21;
-    public final static int YUKON_GROUP = 22;
-    public final static int ENERGY_COMPANY = 23;
+	public final static int POINT						= 1;
+	public final static int STATEGROUP				= 2;
+	public final static int STATE						= 3;
+	public final static int UNITMEASURE				= 4;
+	public final static int GRAPHDEFINITION		= 5;
+	public final static int ALARM_CATEGORIES		= 6;
+	public final static int NOTIFICATION_GROUP	= 7;
+	public final static int HOLIDAY_SCHEDULE		= 8;
+	public final static int CONTACT					= 9;
+	public final static int DEVICE_METERNUMBER	= 10;
+	public final static int YUKON_PAOBJECT			= 11;
+	public final static int POINT_UNIT				= 12;
+	public final static int POINT_LIMIT				= 13;
+   public final static int STATE_IMAGE				= 14;
+   public final static int YUKON_USER				= 15;
+   public final static int YUKON_ROLE				= 16;
+   public final static int YUKON_GROUP				= 17;
+   public final static int ENERGY_COMPANY			= 18;
+   public final static int CUSTOMER_CI				= 19;
+   public final static int CONTACT_NOTIFICATION	= 20;
+
 	
 	// Stars lite types
 	public final static int STARS_CUSTOMER_CONTACT = 101;

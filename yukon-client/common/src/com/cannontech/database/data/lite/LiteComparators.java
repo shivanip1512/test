@@ -51,8 +51,8 @@ public final class LiteComparators
 	{
 		public int compare(Object o1, Object o2)
 		{
-			int thisVal = ((com.cannontech.database.data.lite.LiteYukonPAObject)o1).getPortID();
-			int anotherVal = ((com.cannontech.database.data.lite.LiteYukonPAObject)o2).getPortID();
+			int thisVal = ((LiteYukonPAObject)o1).getPortID();
+			int anotherVal = ((LiteYukonPAObject)o2).getPortID();
 			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 		}
 		public boolean equals(Object obj)
@@ -66,8 +66,8 @@ public final class LiteComparators
 	{
 		public int compare(Object o1, Object o2)
 		{
-			int thisVal = ((com.cannontech.database.data.lite.LiteYukonPAObject)o1).getYukonID();
-			int anotherVal = ((com.cannontech.database.data.lite.LiteYukonPAObject)o2).getYukonID();
+			int thisVal = ((LiteYukonPAObject)o1).getYukonID();
+			int anotherVal = ((LiteYukonPAObject)o2).getYukonID();
 			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 		}
 		public boolean equals(Object obj)
@@ -113,15 +113,20 @@ public final class LiteComparators
 		{
 			String thisVal = null, anotherVal = null;
 			
-			if(o1 instanceof com.cannontech.database.data.lite.LiteYukonPAObject && o2 instanceof com.cannontech.database.data.lite.LiteYukonPAObject)
+			if(o1 instanceof LiteYukonPAObject && o2 instanceof LiteYukonPAObject)
 			{
-				thisVal = ((com.cannontech.database.data.lite.LiteYukonPAObject)o1).getPaoName();
-				anotherVal = ((com.cannontech.database.data.lite.LiteYukonPAObject)o2).getPaoName();
+				thisVal = ((LiteYukonPAObject)o1).getPaoName();
+				anotherVal = ((LiteYukonPAObject)o2).getPaoName();
 			}
 			else if(o1 instanceof LiteStateGroup && o2 instanceof LiteStateGroup)
 			{
 				thisVal = ((LiteStateGroup)o1).getStateGroupName();
 				anotherVal = ((LiteStateGroup)o2).getStateGroupName();
+			}
+			else if(o1 instanceof LiteCICustomer && o2 instanceof LiteCICustomer)
+			{
+				thisVal = ((LiteCICustomer)o1).getCompanyName();
+				anotherVal = ((LiteCICustomer)o2).getCompanyName();
 			}
 			else if(o1 instanceof LiteYukonPAObject && o2 instanceof LiteYukonPAObject)
 			{
@@ -138,20 +143,15 @@ public final class LiteComparators
 				thisVal = ((LiteNotificationGroup)o1).getNotificationGroupName();
 				anotherVal = ((LiteNotificationGroup)o2).getNotificationGroupName();
 			}
-			else if(o1 instanceof LiteNotificationRecipient && o2 instanceof LiteNotificationRecipient)
-			{
-				thisVal = ((LiteNotificationRecipient)o1).getRecipientName();
-				anotherVal = ((LiteNotificationRecipient)o2).getRecipientName();
-			}
 			else if(o1 instanceof LiteAlarmCategory && o2 instanceof LiteAlarmCategory)
 			{
 				thisVal = ((LiteAlarmCategory)o1).getCategoryName();
 				anotherVal = ((LiteAlarmCategory)o2).getCategoryName();
 			}
-			else if(o1 instanceof LiteCustomerContact && o2 instanceof LiteCustomerContact)
+			else if(o1 instanceof LiteContact && o2 instanceof LiteContact)
 			{
-				thisVal = ((LiteCustomerContact)o1).getContLastName();
-				anotherVal = ((LiteCustomerContact)o2).getContLastName();
+				thisVal = ((LiteContact)o1).getContLastName();
+				anotherVal = ((LiteContact)o2).getContLastName();
 			}
 			else if(o1 instanceof LiteDeviceMeterNumber && o2 instanceof LiteDeviceMeterNumber )
 			{
@@ -168,6 +168,11 @@ public final class LiteComparators
 				thisVal = ((LiteGraphDefinition)o1).getName();
 				anotherVal = ((LiteGraphDefinition)o2).getName();
 			}
+			else if(o1 instanceof LiteContactNotification && o2 instanceof LiteContactNotification)
+			{
+				thisVal = ((LiteContactNotification)o1).getNotification();
+				anotherVal = ((LiteContactNotification)o2).getNotification();
+			}			
 			else
 			{	// unknown lite type
 				throw new IllegalArgumentException("Unhandled lite types or the 2 objects being compared are not the same object types in comparator of : " + this.getClass().toString() );

@@ -1,16 +1,20 @@
 package com.cannontech.database.model;
 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.LiteTypes;
+
 /**
  * This type was created in VisualAge.
  */
-public class NotificationRecipientTreeModel extends DBTreeModel 
+public class ContactNotificationTreeModel extends DBTreeModel 
 {
 /**
  * MeterTreeModel constructor comment.
  * @param root javax.swing.tree.TreeNode
  */
-public NotificationRecipientTreeModel() {
-	super( new DBTreeNode("Notification Locations") );
+public ContactNotificationTreeModel() {
+	super( new DBTreeNode("Contact Notifications") );
 }
 /**
  * Insert the method's description here.
@@ -19,41 +23,43 @@ public NotificationRecipientTreeModel() {
  */
 public boolean isLiteTypeSupported( int liteType )
 {
-	return ( liteType == com.cannontech.database.data.lite.LiteTypes.GROUP_RECIPIENT );
+	return ( liteType == LiteTypes.CONTACT_NOTIFICATION );
 }
 /**
  * This method was created in VisualAge.
  * @return java.lang.String
  */
 public String toString() {
-	return "Notification Recipients";
+	return "Contact Notifications";
 }
 /**
  * This method was created in VisualAge.
  */
-public void update() {
-
+public void update() 
+{
+/*
 	com.cannontech.database.cache.DefaultDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)
 	{
-		java.util.List notifLocations = cache.getAllNotificationRecipients();
+		java.util.List cntNotifs = cache.getAllContactNotifications();
 
-		java.util.Collections.sort( notifLocations, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+		java.util.Collections.sort( cntNotifs, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
 
 		DBTreeNode rootNode = (DBTreeNode) getRoot();
 		rootNode.removeAllChildren();
 		
-		for( int i = 0; i < notifLocations.size(); i++ )
+		for( int i = 0; i < cntNotifs.size(); i++ )
 		{
-			DBTreeNode notifGroupNode = new DBTreeNode( notifLocations.get(i));
+			DBTreeNode notifGroupNode = new DBTreeNode( cntNotifs.get(i));
 
-			if( ((com.cannontech.database.data.lite.LiteNotificationRecipient)notifLocations.get(i)).getRecipientID() != com.cannontech.database.db.point.PointAlarming.NONE_LOCATIONID )
+			if( ((LiteContactNotification)cntNotifs.get(i)).getContactID() != CtiUtilities.NONE_ID )
 				rootNode.add( notifGroupNode );
 		}
 	}
 
 	reload();
+*/
 }
 }

@@ -54,13 +54,7 @@ public ModifiedDate(int year, int month, int date, int hrs, int min, int sec) {
 public ModifiedDate(long date) {
 	super(date);
 }
-/**
- * ModifiedDate constructor comment.
- * @param s java.lang.String
- */
-public ModifiedDate(String s) {
-	super(s);
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (6/14/00 11:08:21 AM)

@@ -5,6 +5,8 @@ package com.cannontech.common.gui.util;
  */
 import java.util.Vector;
 
+import com.cannontech.common.editor.PropertyPanelEvent;
+
 public abstract class DataInputPanel extends javax.swing.JPanel 
 {
 	private Vector listeners = new Vector();
@@ -37,11 +39,12 @@ public void fireInputUpdate() {
 
 	for( int i = this.listeners.size()-1; i >= 0; i-- )
 	{
-		((DataInputPanelListener) this.listeners.elementAt(i)).inputUpdate(new DataInputPanelEvent(this));
+		((DataInputPanelListener) this.listeners.elementAt(i)).inputUpdate(
+				new PropertyPanelEvent(this));
 	}
 }
 
-public void fireInputDataPanelEvent(DataInputPanelEvent ev)
+public void fireInputDataPanelEvent(PropertyPanelEvent ev)
 
 {
 	for( int i = this.listeners.size()-1; i >= 0; i-- )

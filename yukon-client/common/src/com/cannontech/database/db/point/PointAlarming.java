@@ -1,12 +1,14 @@
 package com.cannontech.database.db.point;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * This type was created in VisualAge.
  */
 public class PointAlarming extends com.cannontech.database.db.DBPersistent 
 {
 	public static final int NONE_NOTIFICATIONID = 1;
-	public static final int NONE_LOCATIONID = 0;
+//	public static final int NONE_LOCATIONID = 0;
 	public static final String NONE_VALUE_STRING = "None";
 	public static final String DEFAULT_EXCLUDE_NOTIFY = "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN";
 	private static String tmp = new String();
@@ -28,7 +30,7 @@ public class PointAlarming extends com.cannontech.database.db.DBPersistent
 	private String excludeNotifyStates = DEFAULT_EXCLUDE_NOTIFY;
 	private String notifyOnAcknowledge = "N";
 	private Integer notificationGroupID = new Integer(PointAlarming.NONE_NOTIFICATIONID);
-	private Integer recipientID = new Integer(PointAlarming.NONE_LOCATIONID);
+	private Integer recipientID = new Integer(CtiUtilities.NONE_ID);
 
 		
 	public static final String CONSTRAINT_COLUMNS[] = { "POINTID" };

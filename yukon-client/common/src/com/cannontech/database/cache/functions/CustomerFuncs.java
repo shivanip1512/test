@@ -1,8 +1,11 @@
 package com.cannontech.database.cache.functions;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
-import com.cannontech.database.data.lite.LiteCustomerContact;
+import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 /**
@@ -12,7 +15,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
  */
 public final class CustomerFuncs {
 /**
- * PointFuncs constructor comment.
+ * CustomerFuncs constructor comment.
  */
 private CustomerFuncs() {
 	super();
@@ -20,53 +23,24 @@ private CustomerFuncs() {
 /**
  * Insert the method's description here.
  * Creation date: (3/26/2001 9:41:59 AM)
- * @return com.cannontech.database.data.lite.LitePoint
- * @param pointID int
+ * @return boolean
+ * @param contactID int
  */
 public static boolean contactExists(int contactID) 
 {
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
-		java.util.List contacts = cache.getAllCustomerContacts();
+		java.util.List contacts = cache.getAllContacts();
 		java.util.Collections.sort( contacts, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
 		
 		for( int j = 0; j < contacts.size(); j++ )
 		{
-			if( contactID == ((com.cannontech.database.data.lite.LiteCustomerContact)contacts.get(j)).getContactID() )
+			if( contactID == ((LiteContact)contacts.get(j)).getContactID() )
 				return true;
 		}
 
 		return false;
-	}
-
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/26/2001 9:41:59 AM)
- * @return com.cannontech.database.data.lite.LitePoint
- * @param pointID int
- */
-public static java.util.List getAllCustomers()
-{
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized( cache )
-	{
-		java.util.List paos = cache.getAllYukonPAObjects();
-		java.util.ArrayList customers = new java.util.ArrayList(paos.size() / 2 );
-		
-		for( int i = 0; i < paos.size(); i++ )
-		{
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)paos.get(i)).getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE
-				 && ((com.cannontech.database.data.lite.LiteYukonPAObject)paos.get(i)).getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.METER
-				 && com.cannontech.database.data.device.DeviceTypesFuncs.isMeter(((com.cannontech.database.data.lite.LiteYukonPAObject)paos.get(i)).getType()) )
-			{
-				customers.add( paos.get(i) );
-			}
-			
-		}
-		
-		return customers;
 	}
 
 }
@@ -76,28 +50,104 @@ public static java.util.List getAllCustomers()
  * @param userID
  * @return LiteCustomerContact
  */
-public static LiteCustomerContact getCustomerContact(int userID) {
+public static LiteContact getCustomerContact(int userID) 
+{
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized(cache) {
-		Iterator iter = cache.getAllCustomerContacts().iterator();
+	synchronized(cache) 
+	{
+		Iterator iter = cache.getAllContacts().iterator();
 		while(iter.hasNext()) {
-			LiteCustomerContact contact = (LiteCustomerContact) iter.next();
-			if(contact.getUserID() == userID) {
+			LiteContact contact = (LiteContact) iter.next();
+			if(contact.getLoginID() == userID) {
 				return contact;
 			}
 		}		
-	}	
+	}
+	
 	return null;
 }
 
 /**
- * Finds a lite pao object representing the customer that
- * that this user id belongs to
-S * @param userID
- * @return LiteYukonPAObject
+ * Finds a LiteCICustomer representing the contacts owner CICustomer.
+ * @param contactID_
+ * @return LiteCICustomer
+ * 
+ * MAY Replace the return type with LiteCustomer when LiteCustomer exists!!
  */
-public static LiteYukonPAObject getCustomer(int userID) {
-	LiteCustomerContact lcc = getCustomerContact(userID);
-	return PAOFuncs.getLiteYukonPAO(lcc.getCustomerID());
+public static LiteCICustomer getOwnerCICustomer( int contactID_ ) 
+{
+	com.cannontech.database.cache.DefaultDatabaseCache cache = 
+			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+
+	synchronized(cache)	 
+	{
+		Iterator iter = cache.getAllCICustomers().iterator();
+		while( iter.hasNext() ) 
+		{
+			LiteCICustomer cst = (LiteCICustomer) iter.next();
+			
+			for( int i = 0; i < cst.getAdditionalContacts().size(); i++ )
+			{
+				if( ((LiteContact)cst.getAdditionalContacts().get(i)).getContactID() 
+					 == contactID_ )
+				{
+					return cst;
+				}
+			}
+		}		
+	}
+		
+	//no owner CICustomer...strange
+	return null;
 }
+
+
+/**
+ * Finds all LiteContact instances not used by a CICustomer
+ * @return LiteContact
+ * 
+ *
+public static LiteContact[] getUnusedContacts( )
+{
+	com.cannontech.database.cache.DefaultDatabaseCache cache = 
+			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+
+	ArrayList retValues = new ArrayList(50);
+	
+	synchronized(cache)	 
+	{
+		List customers = cache.getAllCICustomers();
+		List contacts = cache.getAllContacts();
+		
+		for( int i = 0; i < contacts.size(); i++ ) 
+		{
+			LiteContact cnt = (LiteContact)contacts.get(i);
+			boolean found = false;
+					
+			for( int j = 0; j < customers.size(); j++ )
+			{				
+				if( !((LiteCICustomer)customers.get(j)).getAdditionalContacts().contains(cnt) ) 
+					continue;
+				else
+				{
+					found = true;
+					break;
+				}
+			}
+			
+			if( !found )
+				retValues.add( cnt );
+
+		}		
+	}
+
+	//sort the contacts
+	java.util.Collections.sort( 
+				retValues, 
+				com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+		
+	LiteContact[] cnts = new LiteContact[ retValues.size() ];
+	return (LiteContact[])retValues.toArray( cnts );
+}
+*/
 }

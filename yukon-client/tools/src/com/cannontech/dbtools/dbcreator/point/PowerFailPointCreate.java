@@ -4,6 +4,7 @@ package com.cannontech.dbtools.dbcreator.point;
  * Creation date: (1/10/2001 11:18:45 PM)
  * @author: 
  */
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
 public class PowerFailPointCreate extends PointCreate
@@ -95,7 +96,7 @@ public class PowerFailPointCreate extends PointCreate
 			accumPoint.getPointAlarming().setExcludeNotifyStates( accumPoint.getPointAlarming().DEFAULT_EXCLUDE_NOTIFY );
 			accumPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
 			accumPoint.getPointAlarming().setNotificationGroupID(  new Integer(accumPoint.getPointAlarming().NONE_NOTIFICATIONID) );
-			accumPoint.getPointAlarming().setRecipientID(new Integer(accumPoint.getPointAlarming().NONE_LOCATIONID));
+			accumPoint.getPointAlarming().setRecipientID( new Integer(CtiUtilities.NONE_ID) );
 	
 			// set default settings for point POINTUNIT
 			accumPoint.getPointUnit().setPointID(new Integer(pointID));

@@ -148,18 +148,9 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized java.util.List getAllCustomerContacts()
+   public synchronized java.util.List getAllContacts()
    {
-      return getCache().getAllCustomerContacts();
-   }
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-   public synchronized java.util.List getAllCustomers() 
-   {
-      return getCache().getAllCustomers();
+      return getCache().getAllContacts();
    }
 
    /**
@@ -202,6 +193,15 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
+	public synchronized java.util.List getAllCICustomers()
+	{
+		return getCache().getAllCICustomers();
+	}
+	
+   /**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
    public synchronized java.util.List getAllLMPrograms()
    {
       return getCache().getAllLMPrograms();
@@ -220,18 +220,9 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized java.util.List getAllNotificationGroups()
+   public synchronized java.util.List getAllContactNotificationGroups()
    {
-      return getCache().getAllNotificationGroups();
-   }
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-   public synchronized java.util.List getAllNotificationRecipients()
-   {
-      return getCache().getAllNotificationRecipients();
+      return getCache().getAllContactNotificationGroups();
    }
 
    /**
@@ -508,9 +499,9 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized void releaseAllNotificationRecipients()
+   public synchronized void releaseAllContactNotifications()
    {   
-      getCache().releaseAllNotificationRecipients();
+      getCache().releaseAllContactNotifications();
    }
 
    /**

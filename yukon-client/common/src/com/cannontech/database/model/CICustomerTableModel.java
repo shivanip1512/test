@@ -3,23 +3,28 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
+import javax.swing.tree.TreePath;
+
+import com.cannontech.database.cache.functions.CustomerFuncs;
+import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.pao.CustomerTypes;
+import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.lite.LiteContact;
 
 
-/* This model is terrible and reloads the entire thing from cache
-  when ever there is any change(Update,delete,add).
-  It was left this way because it is so specialized.
-  It is very scottish for CRRRRAAAAAAPPPP!
+/* *******
+ * This model is good now, it was slow.
+ * 
+ * 
 */
 public class CICustomerTableModel extends DBTreeModel 
 {
 /**
- * MCTTreeModel constructor comment.
+ * CICustomerTableModel constructor comment.
  * @param root javax.swing.tree.TreeNode
  */
 public CICustomerTableModel() {
-	super( new DBTreeNode("Customers") );
+	super( new DBTreeNode("CI Customers") );
 }
 /**
  * Insert the method's description here.
@@ -28,21 +33,56 @@ public CICustomerTableModel() {
  */
 public boolean insertTreeObject( LiteBase lb ) 
 {
-	update();
+	if( lb == null || !isLiteTypeSupported(lb.getLiteType()) )
+		return false;
+
+	DBTreeNode rootNode = (DBTreeNode) getRoot();
+		
+	if( lb instanceof LiteContact )
+	{
+		int cntID = ((LiteContact)lb).getContactID();
+
+		LiteCICustomer ownerCst = CustomerFuncs.getOwnerCICustomer( cntID );
+
+		rootNode = findLiteObject( null, ownerCst );
+
+		if( rootNode != null )
+		{
+
+			//this will force us to reload ALL the Contacts for this CICustomer
+			rootNode.setWillHaveChildren(true);
+			TreePath rootPath = new TreePath( rootNode );
+			treePathWillExpand( rootPath );
+
+			updateTreeNodeStructure( rootNode );
+
+			return true;
+		}
+
+	}
+	else if ( lb instanceof LiteCICustomer )
+	{
+		LiteCICustomer liteCst = (LiteCICustomer)lb;
+
+		DBTreeNode node = new DBTreeNode(lb);
+
+		//add all new tree nodes to the top, for now
+		int[] ind = { 0 };
+		
+		rootNode.insert( node, ind[0] );
+		
+		nodesWereInserted(
+			rootNode,
+			ind );
+
+		node.setWillHaveChildren(true);
+
+		return true;
+	}
 
 	return false;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/22/2002 4:11:23 PM)
- * @param deviceType int
- */
-public boolean isDeviceValid( int category_, int class_, int type_ )
-{
-	return( class_ == com.cannontech.database.data.pao.PAOGroups.CLASS_CUSTOMER
-			  && type_ == CustomerTypes.CI_CUSTOMER
-			  && category_ == com.cannontech.database.data.pao.PAOGroups.CAT_CUSTOMER );
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/22/2002 2:05:03 PM)
@@ -50,26 +90,67 @@ public boolean isDeviceValid( int category_, int class_, int type_ )
  */
 public boolean isLiteTypeSupported( int liteType )
 {
-	return ( liteType == com.cannontech.database.data.lite.LiteTypes.YUKON_PAOBJECT
-		  		|| liteType == com.cannontech.database.data.lite.LiteTypes.CUSTOMER_CONTACT );
+	return ( liteType == com.cannontech.database.data.lite.LiteTypes.CUSTOMER_CI
+		  		 || liteType == com.cannontech.database.data.lite.LiteTypes.CONTACT );
 }
-/**
+
+
+public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
+{
+	//Watch out, this reloads the contacts every TIME!!!
+	DBTreeNode node = (DBTreeNode)path.getLastPathComponent();
+
+	if( node.willHaveChildren() &&
+		 node.getUserObject() instanceof LiteCICustomer )
+	{
+		LiteCICustomer ciCust = (LiteCICustomer)node.getUserObject();
+		
+		node.removeAllChildren();
+		for( int i = 0; i < ciCust.getAdditionalContacts().size(); i++ )
+			node.add( new DBTreeNode(ciCust.getAdditionalContacts().get(i)) );
+	}
+
+	node.setWillHaveChildren(false);
+}
+
+/*
  * Insert the method's description here.
  * Creation date: (4/17/2002 1:58:45 PM)
  * @param lite com.cannontech.database.data.lite.LiteBase
- */
-public boolean removeTreeObject(LiteBase lb) 
+ *
+public boolean updateTreeObject(LiteBase lb) 
 {
-	update();
+	if( lb == null || !isLiteTypeSupported(lb.getLiteType()) )
+		return false;
+
+java.util.Date s = new java.util.Date();
+	DBTreeNode node = findLiteObject( null, lb );
+
+com.cannontech.clientutils.CTILogger.info("*** !!! UPDATE Took " + 
+	(new java.util.Date().getTime() - s.getTime()) * .001 + 
+	" seconds to find node in DBtreeModel, node = " + node);
+
+
+	if( node != null )
+	{
+		node.setWillHaveChildren( true );
+		treePathWillExpand( new TreePath(node) );
+		nodeStructureChanged( node );
+		
+		
+		return true;
+	}
 
 	return false;
 }
+*/
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.String
  */
 public String toString() {
-	return "Customer";
+	return "CI Customers";
 }
 /**
  * This method was created in VisualAge.
@@ -81,54 +162,24 @@ public void update()
 
 	synchronized(cache)
 	{
-		java.util.List customers = cache.getAllCustomers();
-		java.util.Collections.sort( customers, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+		java.util.List ciCustomers = cache.getAllCICustomers();
+		java.util.Collections.sort( ciCustomers, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
 		
-		java.util.List customerContacts = cache.getAllCustomerContacts();
-		java.util.Collections.sort( customerContacts, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
-
 		DBTreeNode rootNode = (DBTreeNode) getRoot();
 		rootNode.removeAllChildren();
 		
-		int custID, custClass;
-		int custType, custCat;
-		
-		for( int i = 0; i < customers.size(); i++ )
+		for( int i = 0; i < ciCustomers.size(); i++ )
 		{
-			custClass = ((com.cannontech.database.data.lite.LiteYukonPAObject)customers.get(i)).getPaoClass();
-			custType = ((com.cannontech.database.data.lite.LiteYukonPAObject)customers.get(i)).getType();
-			custCat = ((com.cannontech.database.data.lite.LiteYukonPAObject)customers.get(i)).getCategory();
+			DBTreeNode custNode = new DBTreeNode( ciCustomers.get(i) );
+			rootNode.add( custNode );
 
-			if( isDeviceValid(custCat, custClass, custType)  )
-			{
-				DBTreeNode custNode = new DBTreeNode( customers.get(i));
-				rootNode.add( custNode );
+			LiteCICustomer ltCust = (LiteCICustomer)ciCustomers.get(i);
 
-				custID = ((com.cannontech.database.data.lite.LiteYukonPAObject)customers.get(i)).getYukonID();
-
-				for( int j = 0; j < customerContacts.size(); j++ )
-				{
-					if( ((com.cannontech.database.data.lite.LiteCustomerContact)customerContacts.get(j)).getDeviceID() == custID )
-					{
-						custNode.add( new DBTreeNode( customerContacts.get(j)) );
-					}
-				}
-
-			}
+			custNode.setWillHaveChildren(true);
 		}
 	}
 
 	reload();
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/17/2002 1:58:45 PM)
- * @param lite com.cannontech.database.data.lite.LiteBase
- */
-public boolean updateTreeObject(LiteBase lb) 
-{
-	update();
 
-	return false;
-}
 }

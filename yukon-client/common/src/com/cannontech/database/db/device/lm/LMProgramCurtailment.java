@@ -59,78 +59,7 @@ public void delete() throws java.sql.SQLException
 public java.lang.Integer getAckTimeLimit() {
 	return ackTimeLimit;
 }
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.database.db.point.State[]
- * @param stateGroup java.lang.Integer
- */
-public static final com.cannontech.database.data.customer.CustomerBase[] getAllAvailableCustomers(String databaseAlias) throws java.sql.SQLException
-{
-	java.util.ArrayList tmpList = new java.util.ArrayList(30);
-	java.sql.Connection conn = null;
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
 
-	
-
-	//get all the unused customers for Curtailment	
-	String sql = "select c.deviceid, y.paoname " +
-					 "from cicustomerbase c, yukonpaobject y " +
-					 "where c.deviceid=y.paobjectid " +
-					 "and c.deviceid " +
-					 "not in " +
-					 "(select lmcustomerdeviceid from lmprogramcurtailcustomerlist)";
-
-	try
-	{		
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(databaseAlias);
-
-		if( conn == null )
-		{
-			throw new IllegalStateException("Error getting database connection.");
-		}
-		else
-		{
-			pstmt = conn.prepareStatement(sql.toString());
-			
-			rset = pstmt.executeQuery();							
-	
-			while( rset.next() )
-			{
-				com.cannontech.database.data.customer.CICustomerBase customer = new com.cannontech.database.data.customer.CICustomerBase();
-				
-				customer.setCustomerID( new Integer(rset.getInt("deviceid")) );
-				customer.setCustomerName( rset.getString("paoname") );
-				//customer.set( rset.getString("type") );
-
-				tmpList.add( customer );
-			}
-					
-		}		
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
-	}
-
-
-	com.cannontech.database.data.customer.CustomerBase retVal[] = new com.cannontech.database.data.customer.CustomerBase[ tmpList.size() ];
-	tmpList.toArray( retVal );
-	
-	return retVal;
-}
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.database.db.point.State[]

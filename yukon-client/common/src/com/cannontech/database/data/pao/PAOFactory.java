@@ -55,12 +55,6 @@ public static YukonPAObject createPAObject( com.cannontech.database.data.lite.Li
 		((com.cannontech.database.data.route.RouteBase)returnObject).setRouteID( new Integer( litePAObject.getYukonID() ) );
 		((com.cannontech.database.data.route.RouteBase)returnObject).setRouteName( litePAObject.getPaoName() );
 	}
-	else if( liteCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_CUSTOMER) )
-	{
-		returnObject = com.cannontech.database.data.customer.CustomerFactory.createCustomer( litePAObject.getType() );
-		((com.cannontech.database.data.customer.CustomerBase)returnObject).setCustomerID( new Integer( litePAObject.getYukonID() ) );
-		((com.cannontech.database.data.customer.CustomerBase)returnObject).setCustomerName( litePAObject.getPaoName() );
-	}
 	else if( liteCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_CAPCONTROL) )
 	{
 		returnObject = com.cannontech.database.data.capcontrol.CCYukonPAOFactory.createCapControlPAO( litePAObject.getType() );

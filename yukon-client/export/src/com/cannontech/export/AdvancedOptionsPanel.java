@@ -42,9 +42,7 @@ public AdvancedOptionsPanel() {
  */
 public AdvancedOptionsPanel(int format)
 {
-	super();
-	//setFormatType(ExportFormatTypes.getFormatTypeName(format) );
-	initialize();
+	this();
 	setPanelsEnabled( format );
 }
 /**
@@ -548,14 +546,16 @@ public javax.swing.JComboBox getNotificationGroupComboBox() {
 			ivjNotificationGroupComboBox.setName("NotificationGroupComboBox");
 			ivjNotificationGroupComboBox.setEnabled(false);
 			// user code begin {1}
+			
 			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
-				java.util.List notifGroups = cache.getAllNotificationGroups();
+				java.util.List notifGroups = cache.getAllContactNotificationGroups();
 
 				for( int i = 0; i < notifGroups.size(); i++ )
 					ivjNotificationGroupComboBox.addItem( notifGroups.get(i) );
-			}			
+			}
+						
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

@@ -21,11 +21,13 @@ public interface DatabaseCache
 
    public java.util.List getAllCapControlFeeders(  ) throws java.rmi.RemoteException;
 
+   public java.util.List getAllContactNotificationGroups(  ) throws java.rmi.RemoteException;
+
    public java.util.List getAllCapControlSubBuses(  ) throws java.rmi.RemoteException;
 
-   public java.util.List getAllCustomerContacts(  ) throws java.rmi.RemoteException;
+   public java.util.List getAllContacts(  ) throws java.rmi.RemoteException;
 
-   public java.util.List getAllCustomers(  ) throws java.rmi.RemoteException;
+   public java.util.List getAllCICustomers(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllDeviceMeterGroups(  ) throws java.rmi.RemoteException;
 
@@ -38,8 +40,6 @@ public interface DatabaseCache
    public java.util.List getAllLMPrograms(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllLoadManagement(  ) throws java.rmi.RemoteException;
-
-   public java.util.List getAllNotificationGroups(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllNotificationRecipients(  ) throws java.rmi.RemoteException;
 

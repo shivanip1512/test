@@ -91,6 +91,15 @@ public class DefaultDatabaseCache implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
+   public synchronized java.util.List getAllContactNotificationGroups() 
+   {
+      return getDBCache().getAllContactNotificationGroups();
+   }
+
+   /**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
    public synchronized java.util.List getAllCapControlSubBuses() 
    {
       return getDBCache().getAllCapControlSubBuses();
@@ -100,18 +109,18 @@ public class DefaultDatabaseCache implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized java.util.List getAllCustomerContacts()
+   public synchronized java.util.List getAllContacts()
    {
-      return getDBCache().getAllCustomerContacts();
+      return getDBCache().getAllContacts();
    }
 
    /**
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized java.util.List getAllCustomers() 
+   public synchronized java.util.List getAllCICustomers() 
    {
-      return getDBCache().getAllCustomers();
+      return getDBCache().getAllCICustomers();
    }
 
    /**
@@ -177,24 +186,6 @@ public class DefaultDatabaseCache implements IDatabaseCache
    public synchronized java.util.List getAllLoadManagement() 
    {
       return getDBCache().getAllLoadManagement();
-   }
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-   public synchronized java.util.List getAllNotificationGroups()
-   {
-      return getDBCache().getAllNotificationGroups();
-   }
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-   public synchronized java.util.List getAllNotificationRecipients()
-   {
-      return getDBCache().getAllNotificationRecipients();
    }
 
    /**
@@ -393,9 +384,9 @@ public class DefaultDatabaseCache implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized void releaseAllNotificationRecipients()
+   public synchronized void releaseAllContactNotifications()
    {   
-      getDBCache().releaseAllNotificationRecipients();
+      getDBCache().releaseAllContactNotifications();
    }
 
    /**

@@ -1,9 +1,11 @@
 package com.cannontech.database.data.pao;
 
+//import com.cannontech.database.data.customer.*;
+
 /**
  * This type was created in VisualAge.
  */
-public final class PAOGroups implements RouteTypes, PortTypes, DeviceTypes, CustomerTypes, CapControlTypes
+public final class PAOGroups implements RouteTypes, PortTypes, DeviceTypes, CapControlTypes
 {
 	public final static int INVALID = -1;
    public final static int CAT_DEVICE = 0;
@@ -98,35 +100,7 @@ public final static int getCategory( String strCategory )
 	else
 		return INVALID;
 }
-/**
- * This method was created in VisualAge.
- * @return int
- * @param typeString java.lang.String
- */
-public final static int getCustomerType(String typeString)
-{
-	if( typeString.equalsIgnoreCase( STRING_CI_CUSTOMER ) )
-		return CI_CUSTOMER;
-	else
-		return INVALID;
-}
-/**
- * This method was created in VisualAge.
- * @return int
- * @param typeString java.lang.String
- */
-public final static String getCustomerTypeString(int type)
-{
-	switch( type )
-	{
-		case CI_CUSTOMER:
-			return STRING_CI_CUSTOMER;
 
-		default:
-			return STRING_INVALID;
-	}
-
-}
 /**
  * This method was created in VisualAge.
  * @return int
@@ -453,10 +427,6 @@ public final static int getPAOType( String category, String paoType )
 	else if( category.equalsIgnoreCase(STRING_CAT_ROUTE) )
 	{
 		return getRouteType( paoType );
-	}
-	else if( category.equalsIgnoreCase(STRING_CAT_CUSTOMER) )
-	{
-		return getCustomerType( paoType );
 	}
 	else if( category.equalsIgnoreCase(STRING_CAT_DEVICE)
 		  		|| category.equalsIgnoreCase(STRING_CAT_LOADMANAGEMENT) )

@@ -12,7 +12,7 @@ public class NotificationDestination extends com.cannontech.database.db.DBPersis
 	private final String CONSTRAINT_COLUMNS[] = { "NOTIFICATIONGROUPID" };
 	private final String SELECT_COLUMNS[] = { "DESTINATIONORDER", "RecipientID" };
 
-	private static final String tableName = "NotificationDestination";
+	public static final String TABLE_NAME = "NotificationDestination";
 	
 /**
  * State constructor comment.
@@ -44,7 +44,7 @@ public void add() throws java.sql.SQLException
 {
 	Object setValues[] = { getDestinationOrder(), getNotificationGroupID(), getRecipientID() };
 
-	add( tableName, setValues );
+	add( TABLE_NAME, setValues );
 }
 /**
  * delete method comment.
@@ -53,7 +53,7 @@ public void delete() throws java.sql.SQLException
 {
 	Object constraintValues[] = { getNotificationGroupID(), getDestinationOrder() };
 
-	delete( tableName, CONSTRAINT_COLUMNS, constraintValues );
+	delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
 
 /**
@@ -196,7 +196,7 @@ public void retrieve() throws java.sql.SQLException
 {
 	Object constraintValues[] = { getNotificationGroupID() };
 
-	Object results[] = retrieve( SELECT_COLUMNS, tableName, CONSTRAINT_COLUMNS, constraintValues );
+	Object results[] = retrieve( SELECT_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
 	if( results.length == SELECT_COLUMNS.length )
 	{
@@ -247,6 +247,6 @@ public void update() throws java.sql.SQLException
 	
 	Object setValues[] = { getDestinationOrder(), getNotificationGroupID(),  getRecipientID() };
 	
-	update( tableName, SELECT_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+	update( TABLE_NAME, SELECT_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 }

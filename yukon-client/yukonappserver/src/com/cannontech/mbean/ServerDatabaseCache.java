@@ -9,6 +9,9 @@ import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -40,16 +43,19 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private java.util.ArrayList allStateGroups = null;
 	private java.util.ArrayList allUnitMeasures = null;
 	private java.util.ArrayList allNotificationGroups = null;
-	private java.util.ArrayList allUsedNotificationRecipients = null;
-	private java.util.ArrayList allNotificationRecipients = null;
+	
+	//private java.util.ArrayList allUsedContactNotifications = null;
+	private java.util.ArrayList allContactNotifications = null;
+	
 	private java.util.ArrayList allAlarmCategories = null;
-	private java.util.ArrayList allCustomerContacts = null;
+	private java.util.ArrayList allContacts = null;
 	private java.util.ArrayList allGraphDefinitions = null;
 	private java.util.ArrayList allHolidaySchedules = null;
 	private java.util.ArrayList allDeviceMeterGroups = null;
 	private java.util.ArrayList allPointsUnits = null;
 	private java.util.ArrayList allPointLimits = null;
-    private java.util.ArrayList allYukonImages = null;
+   private java.util.ArrayList allYukonImages = null;
+	private java.util.ArrayList allCICustomers = null;
 
 	private java.util.ArrayList allYukonUsers = null;
 	private java.util.ArrayList allYukonRoles = null;
@@ -73,7 +79,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private java.util.ArrayList allUnusedCCDevices = null; //PAO
 	private java.util.ArrayList allCapControlFeeders = null; //PAO
 	private java.util.ArrayList allCapControlSubBuses = null; //PAO	
-	private java.util.ArrayList allCustomers = null; //PAO
 	private java.util.ArrayList allDevices = null; //PAO
 	private java.util.ArrayList allLMPrograms = null; //PAO
 	private java.util.ArrayList allLoadManagement = null; //PAO
@@ -133,6 +138,26 @@ public synchronized java.util.List getAllAlarmCategories(){
 
 }
 
+/**
+ * Insert the method's description here.
+ * Creation date: (3/14/00 3:19:19 PM)
+ */
+/*
+public synchronized java.util.List getAllContactNotifications()
+{
+	if( allContactNotifications != null )
+		return allContactNotifications;
+	else
+	{
+		// FIXFIX ---should not return the NotifGroups!!!!!
+		allContactNotifications = new java.util.ArrayList();
+		ContactNotificationGroupLoader alarmStateLoader = new ContactNotificationGroupLoader(allContactNotifications, databaseAlias);
+		alarmStateLoader.run();
+		return allContactNotifications;
+	}
+
+}
+*/
 /**
  * Returns a list of all
  * com.cannontech.database.data.lite.LiteYukonImage
@@ -198,37 +223,32 @@ public synchronized java.util.List getAllCapControlSubBuses()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
-public synchronized java.util.List getAllCustomerContacts()
+public synchronized java.util.List getAllContacts()
 {
-	if( allCustomerContacts != null )
-		return allCustomerContacts;
+	if( allContacts != null )
+		return allContacts;
 	else
 	{
-		allCustomerContacts = new java.util.ArrayList();
-		CustomerContactLoader customerContactLoader = new CustomerContactLoader(allCustomerContacts, databaseAlias);
+		allContacts = new java.util.ArrayList();
+		ContactLoader customerContactLoader = new ContactLoader(allContacts, databaseAlias);
 		customerContactLoader.run();
-		return allCustomerContacts;
+		return allContacts;
 	}
 }
+
 /**
  *
  */
-public synchronized java.util.List getAllCustomers() 
+public synchronized java.util.List getAllCICustomers() 
 {
-	if( allCustomers == null )
+	if( allCICustomers == null )
 	{
-		allCustomers = new java.util.ArrayList( getAllYukonPAObjects().size() );
-
-		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
-		{
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_CUSTOMER )
-				allCustomers.add( getAllYukonPAObjects().get(i) );
-		}
-
-		allCustomers.trimToSize();
+		allCICustomers = new java.util.ArrayList();
+		CICustomerLoader ciCstLoader = new CICustomerLoader(allCICustomers, databaseAlias);
+		ciCstLoader.run();
 	}
 
-	return allCustomers;
+	return allCICustomers;
 }
 /**
  * Insert the method's description here.
@@ -456,35 +476,21 @@ public synchronized java.util.List getAllLoadManagement()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
-public synchronized java.util.List getAllNotificationGroups()
+public synchronized java.util.List getAllContactNotificationGroups()
 {
 	if( allNotificationGroups != null )
 		return allNotificationGroups;
 	else
 	{
 		allNotificationGroups = new java.util.ArrayList();
-		NotificationGroupLoader notifLoader = new NotificationGroupLoader(allNotificationGroups, databaseAlias);
+		ContactNotificationGroupLoader notifLoader = new ContactNotificationGroupLoader(allNotificationGroups, databaseAlias);
 		notifLoader.run();
-		allUsedNotificationRecipients = notifLoader.getAllUsedNotificationRecipients();
+		
+		//allUsedContactNotifications = notifLoader.getAllUsedContactNotifications();
 		return allNotificationGroups;
 	}
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/14/00 3:19:19 PM)
- */
-public synchronized java.util.List getAllNotificationRecipients()
-{
-	if( allNotificationRecipients != null )
-		return allNotificationRecipients;
-	else
-	{
-		allNotificationRecipients = new java.util.ArrayList();
-		NotificationRecipientLoader notifLoader = new NotificationRecipientLoader(allNotificationRecipients, databaseAlias);
-		notifLoader.run();
-		return allNotificationRecipients;
-	}
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
@@ -1128,19 +1134,19 @@ private synchronized LiteBase handleCustomerContactChange( int changeType, int i
 	LiteBase lBase = null;
 	
 	// if the storage is not already loaded, we must not care about it
-	if( allCustomerContacts == null )
+	if( allContacts == null )
 		return lBase;;
 
 	switch(changeType)
 	{
-/*		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
 		
 				if( id == DBChangeMsg.CHANGE_INVALID_ID )
 					break;
 		
-				for(int i=0;i<allCustomerContacts.size();i++)
+				for(int i=0;i<allContacts.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteCustomerContact)allCustomerContacts.get(i)).getLiteID() == id )
+					if( ((LiteContact)allContacts.get(i)).getLiteID() == id )
 					{
 						alreadyAdded = true;
 						break;
@@ -1148,9 +1154,9 @@ private synchronized LiteBase handleCustomerContactChange( int changeType, int i
 				}
 				if( !alreadyAdded )
 				{
-					com.cannontech.database.data.lite.LiteCustomerContact lc = new com.cannontech.database.data.lite.LiteCustomerContact(id);
+					LiteContact lc = new LiteContact(id);
 					lc.retrieve(databaseAlias);
-					allCustomerContacts.add(lc);
+					allContacts.add(lc);
 					lBase = lc;
 				}
 				break;
@@ -1160,21 +1166,21 @@ private synchronized LiteBase handleCustomerContactChange( int changeType, int i
 				//if( id == DBChangeMsg.CHANGE_INVALID_ID )
 					//break;
 		
-				for(int i=0;i<allCustomerContacts.size();i++)
+				for(int i=0;i<allContacts.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteCustomerContact)allCustomerContacts.get(i)).getLiteID() == id )
+					if( ((LiteContact)allContacts.get(i)).getLiteID() == id )
 					{
-						((com.cannontech.database.data.lite.LiteCustomerContact)allCustomerContacts.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allCustomerContacts.get(i);
+						((LiteContact)allContacts.get(i)).retrieve(databaseAlias);
+						lBase = (LiteBase)allContacts.get(i);
 						break;
 					}
 				}
 
 				if( lBase == null ) //we did not find the contact, just create a new one
 				{
-					com.cannontech.database.data.lite.LiteCustomerContact lc = new com.cannontech.database.data.lite.LiteCustomerContact(id);
+					LiteContact lc = new LiteContact(id);
 					lc.retrieve(databaseAlias);
-					allCustomerContacts.add(lc);
+					allContacts.add(lc);
 					lBase = lc;
 				}
 				
@@ -1188,16 +1194,16 @@ private synchronized LiteBase handleCustomerContactChange( int changeType, int i
 					break;
 				}		
 				
-				for(int i=0;i<allCustomerContacts.size();i++)
+				for(int i=0;i<allContacts.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteCustomerContact)allCustomerContacts.get(i)).getLiteID() == id )
+					if( ((LiteContact)allContacts.get(i)).getLiteID() == id )
 					{
-						lBase = (LiteBase)allCustomerContacts.remove(i);
+						lBase = (LiteBase)allContacts.remove(i);
 						break;
 					}
 				}
 				break;
-*/
+
 		default:
 				releaseAllCustomerContacts();
 				break;
@@ -1253,10 +1259,6 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 			allLoadManagement = null;
 			allLMPrograms = null;
 		}
-		else if( dbCategory.equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CAT_CUSTOMER) )
-		{
-			allCustomers = null;
-		}	
 		else if( dbCategory.equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CAT_CAPCONTROL) )
 		{
 			allCapControlFeeders = null;
@@ -1290,11 +1292,11 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 	}
 	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_NOTIFICATION_RECIPIENT_DB )
 	{
-		retLBase = handleNotificationRecipientChange( dbType, id );
+		retLBase = handleContactNotificationChange( dbType, id );
 	}
 	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_CUSTOMER_CONTACT_DB )
 	{
-		retLBase = handleCustomerContactChange( dbType, id );
+		retLBase = handleCustomerContactChange( dbType, id );		
 	}
 	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_GRAPH_DB )
 	{
@@ -1304,6 +1306,11 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 	{
 		retLBase = handleHolidayScheduleChange( dbType, id );
 	}
+	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_CUSTOMER_DB )
+	{
+		//allCICustomers= null;
+		retLBase = handleCICustomerChange( dbType, id );
+	}	
 	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_YUKON_USER_DB ) 
 	{
 		// This seems heavy handed!
@@ -1574,58 +1581,58 @@ private synchronized LiteBase handleNotificationGroupChange( int changeType, int
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleNotificationRecipientChange( int changeType, int id )
+private synchronized LiteBase handleContactNotificationChange( int changeType, int id )
 {
 	boolean alreadyAdded = false;
 	LiteBase lBase = null;
 
 	// if the storage is not already loaded, we must not care about it
-	if( allNotificationRecipients == null )
+	if( allContactNotifications == null )
 		return lBase;
 
 	switch(changeType)
 	{
 		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
-				for(int i=0;i<allNotificationRecipients.size();i++)
+				for(int i=0;i<allContactNotifications.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteNotificationRecipient)allNotificationRecipients.get(i)).getRecipientID() == id )
+					if( ((LiteContactNotification)allContactNotifications.get(i)).getContactID() == id )
 					{
 						alreadyAdded = true;
-						lBase = (LiteBase)allNotificationRecipients.get(i);
+						lBase = (LiteBase)allContactNotifications.get(i);
 						break;
 					}
 				}
 				if( !alreadyAdded )
 				{
-					com.cannontech.database.data.lite.LiteNotificationRecipient lg = new com.cannontech.database.data.lite.LiteNotificationRecipient(id);
+					LiteContactNotification lg = new LiteContactNotification(id);
 					lg.retrieve(databaseAlias);
-					allNotificationRecipients.add(lg);
+					allContactNotifications.add(lg);
 					lBase = lg;
 				}
 				break;
 		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
-				for(int i=0;i<allNotificationRecipients.size();i++)
+				for(int i=0;i<allContactNotifications.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteNotificationRecipient)allNotificationRecipients.get(i)).getRecipientID() == id )
+					if( ((LiteContactNotification)allContactNotifications.get(i)).getContactID() == id )
 					{
-						((com.cannontech.database.data.lite.LiteNotificationRecipient)allNotificationRecipients.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allNotificationRecipients.get(i);
+						((LiteContactNotification)allContactNotifications.get(i)).retrieve(databaseAlias);
+						lBase = (LiteBase)allContactNotifications.get(i);
 						break;
 					}
 				}
 				break;
 		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
-				for(int i=0;i<allNotificationRecipients.size();i++)
+				for(int i=0;i<allContactNotifications.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteNotificationRecipient)allNotificationRecipients.get(i)).getRecipientID() == id )
+					if( ((LiteContactNotification)allContactNotifications.get(i)).getContactID() == id )
 					{
-						lBase = (LiteBase)allNotificationRecipients.remove(i);
+						lBase = (LiteBase)allContactNotifications.remove(i);
 						break;
 					}
 				}
 				break;
 		default:
-				releaseAllNotificationRecipients();
+				releaseAllContactNotifications();
 				break;
 	}
 
@@ -1753,6 +1760,72 @@ private synchronized LiteBase handleStateGroupChange( int changeType, int id )
 
 	return lBase;
 }
+
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (12/7/00 12:34:05 PM)
+ */
+private synchronized LiteBase handleCICustomerChange( int changeType, int id )
+{
+	boolean alreadyAdded = false;
+	LiteBase lBase = null;
+
+	// if the storage is not already loaded, we must not care about it
+	if( allCICustomers == null )
+		return lBase;
+
+	switch(changeType)
+	{
+		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+				for(int i=0;i<allCICustomers.size();i++)
+				{
+					if( ((LiteCICustomer)allCICustomers.get(i)).getCustomerID() == id )
+					{
+						alreadyAdded = true;
+						lBase = (LiteBase)allCICustomers.get(i);
+						break;
+					}
+				}
+				if( !alreadyAdded )
+				{
+					LiteCICustomer lcst = new LiteCICustomer(id);
+					lcst.retrieve(databaseAlias);
+					allCICustomers.add(lcst);
+					lBase = lcst;
+				}
+				break;
+		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
+				for(int i=0;i<allCICustomers.size();i++)
+				{
+					if( ((LiteCICustomer)allCICustomers.get(i)).getCustomerID() == id )
+					{
+						((LiteCICustomer)allCICustomers.get(i)).retrieve(databaseAlias);
+						lBase = (LiteBase)allCICustomers.get(i);
+						break;
+					}
+				}
+				break;
+		case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
+				for(int i=0;i<allCICustomers.size();i++)
+				{
+					if( ((LiteCICustomer)allCICustomers.get(i)).getCustomerID() == id )
+					{
+						lBase = (LiteBase)allCICustomers.remove(i);
+						break;
+					}
+				}
+				break;
+		default:
+				releaseAllCICustomers();
+				break;
+	}
+
+	return lBase;
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
@@ -1824,23 +1897,25 @@ public synchronized void loadAllCache()
 	allStateGroups = new java.util.ArrayList();
 	allUnitMeasures = new java.util.ArrayList();
 	allNotificationGroups = new java.util.ArrayList();
-	allUsedNotificationRecipients = new java.util.ArrayList();
-	allNotificationRecipients = new java.util.ArrayList();
+	
+	//allUsedContactNotifications = new java.util.ArrayList();
+	allContactNotifications = new java.util.ArrayList();
+	
 	allAlarmCategories = new java.util.ArrayList();
-	allCustomerContacts = new java.util.ArrayList();
+	allContacts = new java.util.ArrayList();
 	allGraphDefinitions = new java.util.ArrayList();
 	allHolidaySchedules = new java.util.ArrayList();
 	allYukonPAObjects = new java.util.ArrayList();
 	allDeviceMeterGroups = new java.util.ArrayList();
-        allYukonImages = new java.util.ArrayList();
+   allYukonImages = new java.util.ArrayList();
+	allCICustomers = new java.util.ArrayList();
 	
 	
-        //be sure all of our derived storage is cleard
+   //be sure all of our derived storage is cleard
 	allGraphTaggedPoints = null;
 	allUnusedCCDevices = null;
 	allCapControlFeeders = null;
 	allCapControlSubBuses = null;	
-	allCustomers = null;
 	allDevices = null;
 	allLMPrograms = null;
 	allLoadManagement = null;
@@ -1854,14 +1929,20 @@ public synchronized void loadAllCache()
 		new PointLoader(allPoints, databaseAlias),
 		new StateGroupLoader(allStateGroups, databaseAlias),
 		new UnitMeasureLoader(allUnitMeasures, databaseAlias),
-		new GraphDefinitionLoader(allGraphDefinitions, databaseAlias),
-		new NotificationGroupLoader(allNotificationGroups, databaseAlias),
-		new NotificationRecipientLoader(allNotificationRecipients, databaseAlias),
+		new GraphDefinitionLoader(allGraphDefinitions, databaseAlias),		
+		new ContactNotificationGroupLoader(allNotificationGroups, databaseAlias),
+
+
+// 	MAY NEED TO CHANGE HACK/CRACK		
+//		new NotificationRecipientLoader(allNotificationRecipients, databaseAlias),
+
+
 		new AlarmCategoryLoader(allAlarmCategories, databaseAlias),
-		new CustomerContactLoader(allCustomerContacts, databaseAlias),
+		new ContactLoader(allContacts, databaseAlias),
 		new HolidayScheduleLoader(allHolidaySchedules, databaseAlias),
 		new DeviceMeterGroupLoader(allDeviceMeterGroups, databaseAlias),
-                new YukonImageLoader(allYukonImages, databaseAlias)
+      new YukonImageLoader(allYukonImages, databaseAlias),
+      new CICustomerLoader(allCICustomers, databaseAlias)
 	};
 
 
@@ -1905,21 +1986,22 @@ public synchronized void releaseAllCache()
 	allPoints = null;
 	allStateGroups = null;
 	allNotificationGroups = null;
-	allUsedNotificationRecipients = null;
-	allNotificationRecipients = null;
+	allContactNotifications = null;
 	allAlarmCategories = null;
-	allCustomerContacts = null;
+	allContacts = null;
 	allGraphDefinitions = null;
 	allYukonPAObjects = null;
 	allDeviceMeterGroups = null;
    allYukonImages = null;
-
+	allCICustomers = null;
+	
+	
 	//be sure all of our derived storage is cleard
+	//allUsedContactNotifications = null;
 	allGraphTaggedPoints = null;
 	allUnusedCCDevices = null;
 	allCapControlFeeders = null;
 	allCapControlSubBuses = null;	
-	allCustomers = null;
 	allDevices = null;
 	allLMPrograms = null;
 	allLoadManagement = null;
@@ -1932,7 +2014,7 @@ public synchronized void releaseAllCache()
  */
 public synchronized void releaseAllCustomerContacts()
 {
-	allCustomerContacts = null;
+	allContacts = null;
 }
 /**
  * Insert the method's description here.
@@ -1978,10 +2060,16 @@ public synchronized void releaseAllNotificationGroups()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
  */
-public synchronized void releaseAllNotificationRecipients(){
-
-	allNotificationRecipients = null;
+public synchronized void releaseAllContactNotifications()
+{
+	allContactNotifications = null;
 }
+
+public synchronized void releaseAllCICustomers()
+{
+	allCICustomers = null;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)

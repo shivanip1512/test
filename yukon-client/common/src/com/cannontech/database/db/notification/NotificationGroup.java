@@ -1,12 +1,12 @@
 package com.cannontech.database.db.notification;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * This type was created in VisualAge.
  */
 public class NotificationGroup extends com.cannontech.database.db.DBPersistent
 {
-	private static final String TABLENAME = "NotificationGroup";
-	
 	private Integer notificationGroupID = null;
 	private String groupName = null;
 	private String emailSubject = null;
@@ -16,12 +16,16 @@ public class NotificationGroup extends com.cannontech.database.db.DBPersistent
 	private String disableFlag = null;
 
 	public static final int NONE_NOTIFICATIONGROUP_ID = 1;
+	
 	public final static String CONSTRAINT_COLUMNS[] = { "NOTIFICATIONGROUPID" };
 	public final static String SELECTED_COLUMNS[] = 
 	{ 
 		"GROUPNAME", "EMAILSUBJECT", "EMAILFROMADDRESS", 
 		"EMAILMESSAGE", "NUMERICPAGERMESSAGE", "DISABLEFLAG" 
 	};
+
+	public static final String TABLE_NAME = "NotificationGroup";
+
 
 /**
  * StateGroup constructor comment.
@@ -49,17 +53,21 @@ public NotificationGroup(Integer stateGroupID, String name ) {
  */
 public void add() throws java.sql.SQLException 
 {
+	if( getNotificationGroupID() == null )
+		setNotificationGroupID( getNextNotificationGroupID(getDbConnection()) );
+
+		
 	Object setValues[] = { getNotificationGroupID(), getGroupName(), getEmailSubject(), getEmailFromAddress(),
 						getEmailMessage(), getNumericalPagerMessage(), getDisableFlag() };
 
-	add( TABLENAME, setValues );
+	add( TABLE_NAME, setValues );
 }
 /**
  * delete method comment.
  */
 public void delete() throws java.sql.SQLException 
 {
-	delete( TABLENAME, "NOTIFICATIONGROUPID", getNotificationGroupID() );
+	delete( TABLE_NAME, "NOTIFICATIONGROUPID", getNotificationGroupID() );
 }
 /**
  * Insert the method's description here.
@@ -101,17 +109,15 @@ public java.lang.String getEmailSubject() {
 public java.lang.String getGroupName() {
 	return groupName;
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer
- */
+
+/*
 public final static Integer getNextNotificationGroupID() 
 {
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)
 	{
-		java.util.List notificationGroups = cache.getAllNotificationGroups();
+		java.util.List notificationGroups = cache.getAllContactNotificationGroups();
 		java.util.Collections.sort(notificationGroups);
 
 		int counter = 1;
@@ -130,6 +136,53 @@ public final static Integer getNextNotificationGroupID()
 		return new Integer( counter );
 	}
 }
+*/
+
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (12/14/99 10:31:33 AM)
+	 * @return java.lang.Integer
+	 */
+	public static synchronized Integer getNextNotificationGroupID( java.sql.Connection conn )
+	{
+		if( conn == null )
+			throw new IllegalStateException("Database connection should not be null.");
+	
+		
+		java.sql.Statement stmt = null;
+		java.sql.ResultSet rset = null;
+		
+		try 
+		{		
+		    stmt = conn.createStatement();
+			 rset = stmt.executeQuery(
+					"SELECT Max(NotificationGroupID)+1 FROM " + TABLE_NAME );	
+				
+			 //get the first returned result
+			 rset.next();
+		    return new Integer( rset.getInt(1) );
+		}
+		catch (java.sql.SQLException e) 
+		{
+		    e.printStackTrace();
+		}
+		finally 
+		{
+		    try 
+		    {
+				if ( stmt != null) stmt.close();
+		    }
+		    catch (java.sql.SQLException e2) 
+		    {
+				e2.printStackTrace();
+		    }
+		}
+		
+		//strange, should not get here
+		return new Integer(CtiUtilities.NONE_ID);
+	}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/16/00 1:07:32 PM)
@@ -157,7 +210,7 @@ public static final NotificationGroup[] getNotificationGroups(String databaseAli
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 	
-	String sql = "SELECT NOTIFICATIONGROUPID, GROUPNAME FROM " + TABLENAME;
+	String sql = "SELECT NOTIFICATIONGROUPID, GROUPNAME FROM " + TABLE_NAME;
 
 	try
 	{		
@@ -234,7 +287,7 @@ public void retrieve() throws java.sql.SQLException {
 
 	Object constraintValues[] = { getNotificationGroupID() };
 
-	Object results[] = retrieve( SELECTED_COLUMNS, TABLENAME, CONSTRAINT_COLUMNS, constraintValues );
+	Object results[] = retrieve( SELECTED_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
 	if( results.length == SELECTED_COLUMNS.length )
 	{
@@ -322,6 +375,6 @@ public void update() throws java.sql.SQLException
 	Object setValues[] = { getGroupName(), getEmailSubject(), getEmailFromAddress(),
 						getEmailMessage(), getNumericalPagerMessage(), getDisableFlag() };
 
-	update( TABLENAME, SELECTED_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+	update( TABLE_NAME, SELECTED_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 }
