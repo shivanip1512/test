@@ -385,7 +385,6 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						liteAcctInfo = (LiteStarsCustAccountInformation) obj;
 					}
 					else if (obj instanceof Integer) {
-						// This is loaded from file customer.map
 						liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
 						if (liteAcctInfo != null)
 							acctIDMap.put(acctID, liteAcctInfo);
@@ -393,24 +392,21 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				}
 				
 				if (liteAcctInfo == null)
-					throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
+					throw new WebClientException("Cannot find customer account with id = " + acctID);
 				
 				Integer invID = Integer.valueOf( fields[ImportManager.IDX_INV_ID] );
 				int relayNum = Integer.parseInt( fields[ImportManager.IDX_RELAY_NUM] );
+				int appID = 0;
 				
 				if (relayNum > 0) {
-					int appID = 0;
 					int[] appIDs = (int[]) appIDMap.get( invID );
 					if (appIDs != null) appID = appIDs[relayNum - 1];
-					
-					if (appID == 0)
-						throw new WebClientException("Cannot find appliance with InventoryID = " + invID + " and RelayNum = " + relayNum);
-					
+				}
+				
+				if (appID > 0)
 					ImportManager.updateAppliance( fields, appID, liteAcctInfo, energyCompany );
-				}
-				else {
+				else
 					ImportManager.newAppliance( fields, liteAcctInfo, energyCompany );
-				}
 				
 				numAppImported++;
 				it.remove();

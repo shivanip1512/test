@@ -1986,13 +1986,17 @@ public class ImportManager extends HttpServlet {
 			}
 		}
 		
+		boolean isLMHardware = false;
 		if (fields[IDX_DEVICE_TYPE].length() > 0) {
 			DeviceType devType = new DeviceType();
 			devType.setEntryID( Integer.parseInt(fields[IDX_DEVICE_TYPE]) );
 			inv.setDeviceType( devType );
+			
+			int categoryID = ECUtils.getInventoryCategoryID(devType.getEntryID(), energyCompany);
+			isLMHardware = ECUtils.isLMHardware(categoryID);
 		}
 		
-		if (fields[IDX_DEVICE_NAME].equals("")) {
+		if (isLMHardware) {
 			LMHardware hw = new LMHardware();
 			hw.setManufacturerSerialNumber( fields[IDX_SERIAL_NO] );
 			inv.setLMHardware( hw );
@@ -2370,11 +2374,24 @@ public class ImportManager extends HttpServlet {
 	public static void updateAppliance(String[] fields, int appID, LiteStarsCustAccountInformation liteAcctInfo,
 		LiteStarsEnergyCompany energyCompany) throws Exception
 	{
-		StarsUpdateAppliance updateApp = new StarsUpdateAppliance();
-		updateApp.setApplianceID( appID );
-		setStarsAppliance( updateApp, fields, energyCompany );
+		LiteStarsAppliance liteApp = null;
+		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
+			LiteStarsAppliance lApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+			if (lApp.getApplianceID() == appID) {
+				liteApp = lApp;
+				break;
+			}
+		}
 		
-		UpdateApplianceAction.updateAppliance( updateApp, liteAcctInfo );
+		if (liteApp != null) {
+			StarsUpdateAppliance updateApp = new StarsUpdateAppliance();
+			updateApp.setApplianceID( appID );
+			setStarsAppliance( updateApp, fields, energyCompany );
+			
+			UpdateApplianceAction.updateAppliance( updateApp, liteAcctInfo );
+		}
+		else
+			newAppliance( fields, liteAcctInfo, energyCompany );
 	}
 
 	private static String formatTimeString(String str) {
@@ -2765,7 +2782,7 @@ public class ImportManager extends HttpServlet {
 			}
 			else {
 				if (preprocessedData.get("CustomerAccountMap") == null)
-					throw new WebClientException("No customer information found. If you have already imported the customer file, enter the path of the generated 'customer.map' file in the 'Customer File' field");
+					throw new WebClientException("No customer information found. If you have already imported the customer file, select the generated 'customer.map' file in the 'Customer File' field");
 			}
 			
 			if (servInfoLines != null) {
@@ -2790,6 +2807,26 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (invLines != null) {
+				ImportFileParser parser = (ImportFileParser) parsers.get("STARS Inventory");
+				
+				for (int i = 0; i < invLines.size(); i++) {
+					String[] fields = parser.populateFields( (String)invLines.get(i) );
+					if (fields[IDX_DEVICE_TYPE].equals("") || fields[IDX_DEVICE_TYPE].equals("-1"))
+						continue;
+					
+					invFieldsList.add( fields );
+					invIDFields.put( fields[IDX_INV_ID], fields );
+					
+					for (int j = 0; j < INV_LIST_FIELDS.length; j++) {
+						int listIdx = INV_LIST_FIELDS[j][0];
+						int fieldIdx = INV_LIST_FIELDS[j][1];
+						if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
+							valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+					}
+				}
+			}
+			
+			if (recvrLines != null) {
 				if (invFile.getName().equals("hwconfig.map")) {
 					// hwconfig.map file format: import_inv_id,relay1_db_app_id,relay2_db_app_id,relay3_db_app_id
 					// Notice: the parsed lines have line# inserted at the beginning
@@ -2811,51 +2848,28 @@ public class ImportManager extends HttpServlet {
 					preprocessedData.put("HwConfigAppMap", appIDMap);
 				}
 				else {
-					ImportFileParser parser = (ImportFileParser) parsers.get("STARS Inventory");
+					ImportFileParser parser = (ImportFileParser) parsers.get("STARS Receiver");
 					
-					for (int i = 0; i < invLines.size(); i++) {
-						String[] fields = parser.populateFields( (String)invLines.get(i) );
-						if (fields[IDX_DEVICE_TYPE].equals("") || fields[IDX_DEVICE_TYPE].equals("-1"))
-							continue;
+					for (int i = 0; i < recvrLines.size(); i++) {
+						String[] fields = parser.populateFields( (String)recvrLines.get(i) );
+						String[] invFields = (String[]) invIDFields.get( fields[IDX_INV_ID] );
 						
-						invFieldsList.add( fields );
-						invIDFields.put( fields[IDX_INV_ID], fields );
-						
-						for (int j = 0; j < INV_LIST_FIELDS.length; j++) {
-							int listIdx = INV_LIST_FIELDS[j][0];
-							int fieldIdx = INV_LIST_FIELDS[j][1];
-							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
-								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
-						}
-					}
-				}
-			}
-			
-			if (recvrLines != null) {
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS Receiver");
-				
-				for (int i = 0; i < recvrLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)recvrLines.get(i) );
-					String[] invFields = (String[]) invIDFields.get( fields[IDX_INV_ID] );
-					
-					if (invFields != null) {
-						// Make sure the device name field is empty (which will be used to decide the device type later)
-						invFields[IDX_DEVICE_NAME] = "";
-						
-						for (int j = 0; j < invFields.length; j++) {
-							if (fields[j].length() > 0) {
-								if (j == IDX_INV_NOTES && invFields[j].length() > 0)
-									invFields[j] += fields[j];
-								else
-									invFields[j] = fields[j];
+						if (invFields != null) {
+							for (int j = 0; j < invFields.length; j++) {
+								if (fields[j].length() > 0) {
+									if (j == IDX_INV_NOTES && invFields[j].length() > 0)
+										invFields[j] += fields[j];
+									else
+										invFields[j] = fields[j];
+								}
 							}
-						}
-						
-						for (int j = 0; j < RECV_LIST_FIELDS.length; j++) {
-							int listIdx = RECV_LIST_FIELDS[j][0];
-							int fieldIdx = RECV_LIST_FIELDS[j][1];
-							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
-								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+							
+							for (int j = 0; j < RECV_LIST_FIELDS.length; j++) {
+								int listIdx = RECV_LIST_FIELDS[j][0];
+								int fieldIdx = RECV_LIST_FIELDS[j][1];
+								if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
+									valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+							}
 						}
 					}
 				}
@@ -2882,8 +2896,8 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (loadInfoLines != null) {
-				if (invLines == null && preprocessedData.get("HwConfigAppMap") == null)
-					throw new WebClientException("No hardware config information found. If you have already imported the inventory file, enter the path of the generated 'hwconfig.map' file in the 'Inventory File' field");
+				if (recvrLines == null && preprocessedData.get("HwConfigAppMap") == null)
+					throw new WebClientException("No hardware config information found. If you have already imported the receiver file, select the generated 'hwconfig.map' file in the 'Receiver File' field.");
 				
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS LoadInfo");
 				
