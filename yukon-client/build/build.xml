@@ -92,6 +92,8 @@
         <ant dir="${yukonappserver}" target="${dotarget}"/>
         <ant dir="${cttp}" target="${dotarget}"/>
         <ant dir="${yukon-web}" target="${dotarget}"/> 
+    	
+    	<ant dir="${yukon-db}" target="${dotarget}"/>
     </target>
 
 	
@@ -191,5 +193,6 @@
 				<include name="*.jar"/>
 			</fileset>
 		</signjar>
-	</target>    
+	</target>
+
 </project>
