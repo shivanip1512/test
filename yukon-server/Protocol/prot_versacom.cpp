@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/12/12 01:03:21 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/01/22 19:48:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,6 +22,7 @@
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include "ctidbgmem.h" // defines CTIDBG_new
+#include "cparms.h"
 #include "cmdparse.h"
 #include "prot_versacom.h"
 #include "master.h"
@@ -161,6 +162,32 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
             }
             break;
         }
+    case VFULLADDRESS:
+        {
+            setNibble ( 0, VFULLADDRESS);
+
+            /* Now load the bytes up to the service byte.  i represents the number of nibbles in this message!*/
+            for(i = 0; i < 15; i++)
+            {
+                if((i & 0x0001))
+                {
+                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->VData.Data[i / 2]);
+                }
+                else
+                {
+                    #if 0
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << hex << setw(2) << (int)_vst[_last]->VData.Data[i / 2] << endl;
+                    }
+                    #endif
+                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->VData.Data[i / 2] >> 4);
+                }
+            }
+
+            break;
+        }
     case VCOUNTRESET:
         setNibble ( 0, VCOUNTRESET);
 
@@ -176,7 +203,6 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
 
     case VPROPOGATION:
         setNibble ( 0, VPROPOGATION);
-
         setNibble ( _vst[_last]->Nibbles++, _vst[_last]->PropDIT);
         break;
 
@@ -706,47 +732,22 @@ CtiProtocolVersacom& CtiProtocolVersacom::VersacomTransmitter(INT type)
  * Group addressing is COMPLETELY ignored if Serial Number (Serial) is non
  * zero!
  *-------------------------------------------------------------------------*/
-INT CtiProtocolVersacom::VersacomAddress(ULONG   Serial,
-                                         UINT    Uid,
-                                         UINT    Section,
-                                         UINT    Class,
-                                         UINT    Division)
+INT CtiProtocolVersacom::adjustVersacomAddress(VSTRUCT &vTemp, ULONG Serial, UINT Uid, UINT Section, UINT Class, UINT Division)
 {
     INT status = NORMAL;
 
     if(!(Serial))
     {
         /* Check if we are to use utility addressing */
-        if(Uid)
-        {
-            _vst[_last]->UtilityID = Uid;
-            _addressMode |= 0x0008;
-        }
-
-        if(Section)
-        {
-            _vst[_last]->Section = Section;
-            _addressMode |= 0x0004;
-        }
-
-        if(Class)
-        {
-            _vst[_last]->Class = Class;
-            _addressMode |= 0x0002;
-        }
-
-        if(Division)
-        {
-            _vst[_last]->Division = Division;
-            _addressMode |= 0x0001;
-        }
+        if(Uid)         vTemp.UtilityID = Uid;
+        if(Section)     vTemp.Section = Section;
+        if(Class)       vTemp.Class = Class;
+        if(Division)    vTemp.Division = Division;
     }
     else
     {
-        _vst[_last]->Address = Serial;
+        vTemp.Address = Serial;
     }
-
-    setNibble ( 1, _addressMode);
 
     return status;
 }
@@ -1308,25 +1309,32 @@ INT CtiProtocolVersacom::VersacomCountResetCommand(UINT resetmask)
     return updateVersacomMessage();
 }
 
-INT CtiProtocolVersacom::primeVStruct(const VSTRUCT &VstTemplate)
+INT CtiProtocolVersacom::primeAndAppend(const VSTRUCT &vTemp)
 {
-    INT      status = NORMAL;
+    INT status = NORMAL;
+    VSTRUCT *newvst = CTIDBG_new VSTRUCT;
 
-    VSTRUCT  *Vst = CTIDBG_new VSTRUCT;
-
-    if(Vst != NULL)
+    if(newvst)
     {
-        memcpy((void*)Vst, &VstTemplate, sizeof(VSTRUCT));
-
-        _vst.insert( Vst );
-        _last = _vst.entries() - 1;      // Which one are we working on?
+        *newvst = vTemp;
+        _vst.insert(newvst);
+        _last = _vst.entries() - 1;      // This is the one we are working on?
     }
     else
-    {
         status = MEMORY;
-    }
 
     return status;
+}
+
+void CtiProtocolVersacom::removeLastVStruct()
+{
+    if(_vst.entries())
+    {
+        VSTRUCT *vst = _vst.removeLast();
+        delete vst;
+    }
+
+    return;
 }
 
 INT CtiProtocolVersacom::parseRequest(CtiCommandParser  &parse, const VSTRUCT &aVst)
@@ -1388,250 +1396,160 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
 {
     INT   i, IAddress, iNum;
     INT   status = NORMAL;
-    BOOL  firstOneDone = FALSE;
     BYTE  config[6];
-
     bool isGroupConfig = false;
 
-
-    LONG sn  = parse.getiValue("serial");
-    LONG uid = parse.getiValue("utility");
-    LONG aux = parse.getiValue("aux");
-    LONG sec = parse.getiValue("section");
-    LONG cls = parse.getiValue("class");
-    LONG div = parse.getiValue("division");
-
-    LONG fuid = parse.getiValue("fromutility");
-    LONG fsec = parse.getiValue("fromsection");
-    LONG fcls = parse.getiValue("fromclass");
-    LONG fdiv = parse.getiValue("fromdivision");
-
-    // Use these ONLY for group addressing!
-    fuid = (fuid == INT_MIN ? 0 : fuid);
-    fsec = (fsec == INT_MIN ? 0 : fsec);
-    fcls = (fcls == INT_MIN ? 0 : fcls);
-    fdiv = (fdiv == INT_MIN ? 0 : fdiv);
+    LONG sn  = parse.getiValue("serial",0);
 
     // Use these ONLY for the _CONFIGURATION_ of addressing!
-    uid = (uid == INT_MIN ? 0 : uid);
-    aux = (aux == INT_MIN ? 0 : aux);
-    sec = (sec == INT_MIN ? 0 : sec);
-    cls = (cls == INT_MIN ? 0 : cls);
-    div = (div == INT_MIN ? 0 : div);
+    LONG uid = parse.getiValue("utility",0);
+    LONG aux = parse.getiValue("aux",0);
+    LONG sec = parse.getiValue("section",0);
+    LONG cls = parse.getiValue("class",0);
+    LONG div = parse.getiValue("division",0);
 
+    // Use these ONLY for group addressing (targeting already configured switches)!
+    LONG fuid = parse.getiValue("fromutility",0);
+    LONG fsec = parse.getiValue("fromsection",0);
+    LONG fcls = parse.getiValue("fromclass",0);
+    LONG fdiv = parse.getiValue("fromdivision",0);
 
     /*
-     *  This bit indicates how we are getting there..  If the serial number was specified, we
-     *  will assume that any other addressing is to be set in the device!  Otherwise,
+     *  This code decides how we are getting sent.  If the serial number or FROM addresses are specified, we
+     *  will assume that any other addressing is to be _set_ in the device!  Otherwise,
      *  we assume that the device is being group configured
      */
-    if( sn == INT_MIN )
-    {
-        sn = 0;
-    }
-
     if(sn != 0 || fuid != 0)
     {
         isGroupConfig = true;
     }
 
-    primeVStruct(aVst);  // Get a CTIDBG_new one in the system
-    VersacomAddress(sn, fuid, fsec, fcls, fdiv);
-
     /*
-     * This should be the original with only the addressing copied into it,
-     * we will use this for all others...
+     * This is the original.  IT will have its addressing block stomped on per the specified sn and from addressing.
      */
-    VSTRUCT     VStTemplate = getVStruct(_last);
-
-    /*
-     *  The first
-     */
-    if((iNum = parse.getiValue("service")) != INT_MIN)
-    {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-
-        if(!VersacomServiceCommand(iNum & VC_SERVICE_MASK))
-            firstOneDone = TRUE;
-    }
+    VSTRUCT VStTemplate = aVst;
+    adjustVersacomAddress(VStTemplate, sn, fuid, fsec, fcls, fdiv);
 
     if((iNum = parse.getiValue("led")) != INT_MIN)
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-        if(!VersacomConfigLEDCommand( iNum ))
-            firstOneDone = TRUE;
+        if(VersacomConfigLEDCommand( iNum ))
+            removeLastVStruct();
     }
 
     if((iNum = parse.getiValue("coldload_r1")) != INT_MIN)
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-        if(!VersacomConfigColdLoadCommand( 1, iNum ))
-            firstOneDone = TRUE;
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        if(VersacomConfigColdLoadCommand( 1, iNum ))
+            removeLastVStruct();
     }
 
     if((iNum = parse.getiValue("coldload_r2")) != INT_MIN)
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-        if(!VersacomConfigColdLoadCommand( 2, iNum ))
-            firstOneDone = TRUE;
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        if(VersacomConfigColdLoadCommand( 2, iNum ))
+            removeLastVStruct();
     }
 
     if((iNum = parse.getiValue("coldload_r3")) != INT_MIN)
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-        if(!VersacomConfigColdLoadCommand( 3, iNum ))
-            firstOneDone = TRUE;
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        if(VersacomConfigColdLoadCommand( 3, iNum ))
+            removeLastVStruct();
     }
 
     if((iNum = parse.getiValue("scram_r1")) != INT_MIN)
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-        if(!VersacomConfigScramTimeCommand( 1, iNum ))
-            firstOneDone = TRUE;
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        if(VersacomConfigScramTimeCommand( 1, iNum ))
+            removeLastVStruct();
     }
     if((iNum = parse.getiValue("scram_r2")) != INT_MIN)
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-        if(!VersacomConfigScramTimeCommand( 2, iNum ))
-            firstOneDone = TRUE;
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        if(VersacomConfigScramTimeCommand( 2, iNum ))
+            removeLastVStruct();
     }
     if((iNum = parse.getiValue("scram_r3")) != INT_MIN)
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-        if(!VersacomConfigScramTimeCommand( 3, iNum ))
-            firstOneDone = TRUE;
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        if(VersacomConfigScramTimeCommand( 3, iNum ))
+            removeLastVStruct();
     }
 
     if((iNum = parse.getiValue("cycle_r1")) != INT_MIN)
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-        if(!VersacomConfigCycleRepeatsCommand( 1, iNum ))
-            firstOneDone = TRUE;
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        if(VersacomConfigCycleRepeatsCommand( 1, iNum ))
+            removeLastVStruct();
     }
     if((iNum = parse.getiValue("cycle_r2")) != INT_MIN)
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-        if(!VersacomConfigCycleRepeatsCommand( 2, iNum ))
-            firstOneDone = TRUE;
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        if(VersacomConfigCycleRepeatsCommand( 2, iNum ))
+            removeLastVStruct();
     }
     if((iNum = parse.getiValue("cycle_r3")) != INT_MIN)
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-        if(!VersacomConfigCycleRepeatsCommand( 3, iNum ))
-            firstOneDone = TRUE;
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        if(VersacomConfigCycleRepeatsCommand( 3, iNum ))
+            removeLastVStruct();
     }
 
 
     if((iNum = parse.getiValue("proptime")) != INT_MIN)
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-        if(!VersacomConfigPropagationTimeCommand( iNum ))
-            firstOneDone = TRUE;
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        if(VersacomConfigPropagationTimeCommand( iNum ))
+            removeLastVStruct();
     }
 
     if((iNum = parse.getiValue("reset")) != INT_MIN)
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-        if(!VersacomCountResetCommand( iNum ))
-            firstOneDone = TRUE;
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        if(VersacomCountResetCommand( iNum ))
+            removeLastVStruct();
     }
 
     if( parse.isKeyValid("vdata") )
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-        if(!VersacomDataCommand( (BYTE *)parse.getsValue("raw").data() ), parse.getsValue("raw").length())
-            firstOneDone = TRUE;
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        if(VersacomDataCommand( (BYTE *)parse.getsValue("raw").data() ), parse.getsValue("raw").length())
+            removeLastVStruct();
     }
 
     if( parse.isKeyValid("raw") )
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-        if(!VersacomRawConfigCommand( (const BYTE*)parse.getsValue("raw").data() ))
-            firstOneDone = TRUE;
+
+        if(VersacomRawConfigCommand( (const BYTE*)parse.getsValue("raw").data() ))
+            removeLastVStruct();
     }
 
-    if( isGroupConfig && ((iNum = parse.getiValue("utility")) != INT_MIN) )
-    {  // We have a utility id to configure
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-
-        memset(config, 0, 6);      // Blank the bytes
-        config[0] = (BYTE)iNum;
-        if(!VersacomConfigCommand( VCONFIG_UTILID, config ))
-            firstOneDone = TRUE;
-    }
-
-    if( isGroupConfig && ((iNum = parse.getiValue("aux")) != INT_MIN) )
-    {  // We have a utility id to configure
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-
-        memset(config, 0, 6);      // Blank the bytes
-        config[0] = (BYTE)iNum;
-        if(!VersacomConfigCommand( VCONFIG_AUXID, config ))
-            firstOneDone = TRUE;
-    }
-
-    if( isConfigOptimized() &&
-        (parse.getiValue("section") != INT_MIN) &&
-        (parse.getiValue("class") != INT_MIN) &&
-        (parse.getiValue("division") != INT_MIN))
+    if( parse.isKeyValid("vcassign") && isConfigFullAddressValid(sn) && (uid || aux || sec || cls || div) )
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        if(VersacomFullAddressCommand(uid, aux, sec, cls, div, parse.getiValue("assignedservice", 0x00)))
+            removeLastVStruct();
+    }
+    else if( isConfig63Valid(sn) && (sec || cls || div) )
+    {
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
         memset(config, 0, 6);      // Blank the bytes
 
@@ -1646,30 +1564,52 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         config[3] = (BYTE)( (IAddress >> 8) & 0x00FF );
         config[4] = (BYTE)( (IAddress) & 0x00FF );
 
-        if(!VersacomConfigCommand( VCONFIG_SCD, config ))
-            firstOneDone = TRUE;
+        if(VersacomConfigCommand( VCONFIG_SCD, config ))
+            removeLastVStruct();
     }
     else
     {
+        if((iNum = parse.getiValue("service")) != INT_MIN)
+        {
+            primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+            if(VersacomServiceCommand(iNum & VC_SERVICE_MASK))
+                removeLastVStruct();
+        }
+
+        if( isGroupConfig && uid )
+        {  // We have a utility id to configure
+            primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+            memset(config, 0, 6);      // Blank the bytes
+            config[0] = (BYTE)uid;
+            if(VersacomConfigCommand( VCONFIG_UTILID, config ))
+                removeLastVStruct();
+        }
+
+        if( isGroupConfig && aux )
+        {  // We have a utility id to configure
+            primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+            memset(config, 0, 6);      // Blank the bytes
+            config[0] = (BYTE)aux;
+            if(VersacomConfigCommand( VCONFIG_AUXID, config ))
+                removeLastVStruct();
+        }
+
         if( isGroupConfig && ((iNum = parse.getiValue("section")) != INT_MIN) )
         {  // We have a utility id to configure
-            if(firstOneDone)
-            {
-                advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-            }
+            primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
             memset(config, 0, 6);      // Blank the bytes
             config[0] = (BYTE)iNum;
-            if(!VersacomConfigCommand( VCONFIG_SECTION, config ))
-                firstOneDone = TRUE;
+            if(VersacomConfigCommand( VCONFIG_SECTION, config ))
+                removeLastVStruct();
         }
 
         if( isGroupConfig && ((iNum = parse.getiValue("class")) != INT_MIN) )
         {  // We have a utility id to configure
-            if(firstOneDone)
-            {
-                advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-            }
+            primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
             memset(config, 0, 6);      // Blank the bytes
 
@@ -1678,16 +1618,13 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
             config[0] = HIBYTE (IAddress);
             config[1] = LOBYTE (IAddress);
 
-            if(!VersacomConfigCommand( VCONFIG_CLASS, config ))
-                firstOneDone = TRUE;
+            if(VersacomConfigCommand( VCONFIG_CLASS, config ))
+                removeLastVStruct();
         }
 
         if( isGroupConfig && ((iNum = parse.getiValue("division")) != INT_MIN) )
         {  // We have a utility id to configure
-            if(firstOneDone)
-            {
-                advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-            }
+            primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
             memset(config, 0, 6);      // Blank the bytes
             IAddress = convertHumanFormAddressToVersacom(iNum);              /* Invert The Address */
@@ -1695,30 +1632,12 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
             config[0] = HIBYTE (IAddress);
             config[1] = LOBYTE (IAddress);
 
-            if(!VersacomConfigCommand( VCONFIG_DIVISION, config ))
-                firstOneDone = TRUE;
+            if(VersacomConfigCommand( VCONFIG_DIVISION, config ))
+                removeLastVStruct();
         }
     }
 
-
-    if(!firstOneDone)
-    {
-        // Oh my, this one failed.... we should get rid of the 'prime' VSTRUCT since it was never
-        // modified
-        _vst.clearAndDestroy();
-    }
-
     return status;
-}
-
-void CtiProtocolVersacom::advanceAndPrime(const VSTRUCT &vTemp)
-{
-    VSTRUCT *newvst = CTIDBG_new VSTRUCT;
-    *newvst = vTemp;
-    _vst.insert(newvst);
-    _last = _vst.entries() - 1;
-
-    return;
 }
 
 INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT &aVst)
@@ -1726,14 +1645,12 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
     INT  i;
     INT  status = NORMAL;
     UINT CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
-    INT  relay  = parse.getiValue("relaymask");
+    INT  relay  = parse.getiValue("relaymask", 0);
 
     if(CtlReq == CMD_FLAG_CTL_SHED)
     {
         UINT hasrand  = parse.isKeyValid("shed_rand");
         UINT hasdelay = parse.isKeyValid("delaytime_sec");
-
-        relay = (relay  == INT_MIN) ? 0  : relay ;     // If zero it means all of them!
 
         // Add these two items to the list for control accounting!
         parse.Map()["control_interval"]  = CtiParseValue( parse.getiValue("shed") );
@@ -1743,17 +1660,14 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
         {
             // Control time is in the parsers iValue!
             // Assume the VSTRUCT RelayMask is set, otherwise use default relay 0
-            primeVStruct(aVst);  // Get a CTIDBG_new one in the system
+            primeAndAppend(aVst);  // Get a new one in the system
             VersacomShedCommand(parse.getiValue("shed"));
         }
         else
         {
-            INT rand  = parse.getiValue("shed_rand");
-            INT delay = parse.getiValue("delaytime_sec");
-
             // If not specified, uses the last sent data.  Acts as a modification.
-            rand   = (rand == INT_MIN) ? 120  : rand;       // If not specified, it will continue the command in progress, modifying the other parameters
-            delay  = (delay  == INT_MIN) ? 0  : delay ;     // If not specified, it will continue the command in progress, modifying the other parameters
+            INT rand  = parse.getiValue("shed_rand", 120);      // If not specified, it will continue the command in progress, modifying the other parameters
+            INT delay = parse.getiValue("delaytime_sec", 0);    // If not specified, it will continue the command in progress, modifying the other parameters
 
             if(relay != 0)
             {
@@ -1761,7 +1675,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
                 {
                     if( relay & (0x01 << i) )
                     {
-                        primeVStruct(aVst);  // Get a CTIDBG_new one in the system
+                        primeAndAppend(aVst);  // Get a new one in the system
                         VersacomShedCommandEx(parse.getiValue("shed"), (i+1), rand, delay);
                     }
                 }
@@ -1774,7 +1688,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
                 {
                     if( relay & (0x01 << i) )
                     {
-                        primeVStruct(aVst);  // Get a CTIDBG_new one in the system
+                        primeAndAppend(aVst);  // Get a new one in the system
                         VersacomShedCommandEx(parse.getiValue("shed"), (i+1), rand, delay);
                     }
                 }
@@ -1792,20 +1706,14 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
         {
             parse.Map()["control_interval"]  = CtiParseValue( 60 * 30 * 8 );    // Assume a bit here!
 
-            primeVStruct(aVst);  // Get a CTIDBG_new one in the system
+            primeAndAppend(aVst);  // Get a new one in the system
             VersacomCycleCommand(parse.getiValue("cycle"));
         }
         else
         {
-            INT period     = parse.getiValue("cycle_period");
-            INT repeat     = parse.getiValue("cycle_count");
-            INT delay      = parse.getiValue("cycle_delay");
-
-            // If not specified, uses the last sent data.  Acts as a modification.
-            relay  = (relay  == INT_MIN) ? 0  : relay ;     // If zero it means all of them!
-            period = (period == INT_MIN) ? 30 : period;     // If not specified, it will continue the command in progress, modifying the other parameters
-            repeat = (repeat == INT_MIN) ? 8  : repeat;     // If not specified, it will continue the command in progress, modifying the other parameters
-            delay  = (delay  == INT_MIN) ? 0  : delay ;     // If not specified, it will continue the command in progress, modifying the other parameters
+            INT period     = parse.getiValue("cycle_period", 30);
+            INT repeat     = parse.getiValue("cycle_count", 8);
+            INT delay      = parse.getiValue("cycle_delay", 0);
 
             parse.Map()["control_interval"]  = CtiParseValue( 60 * period * repeat );
 
@@ -1815,7 +1723,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
                 {
                     if( relay & (0x01 << i) )
                     {
-                        primeVStruct(aVst);  // Get a CTIDBG_new one in the system
+                        primeAndAppend(aVst);  // Get a new one in the system
                         VersacomCycleCommandEx(parse.getiValue("cycle"), (i+1), period, repeat, delay);
                     }
                 }
@@ -1828,7 +1736,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
                 {
                     if( relay & (0x01 << i) )
                     {
-                        primeVStruct(aVst);  // Get a CTIDBG_new one in the system
+                        primeAndAppend(aVst);  // Get a new one in the system
                         VersacomCycleCommandEx(parse.getiValue("cycle"), (i+1), period, repeat, delay);
                     }
                 }
@@ -1837,24 +1745,24 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
     }
     else if(CtlReq == CMD_FLAG_CTL_RESTORE)
     {
-        primeVStruct(aVst);  // Get a CTIDBG_new one in the system
+        primeAndAppend(aVst);  // Get a new one in the system
         VersacomRestoreCommand();
     }
     else if(CtlReq == CMD_FLAG_CTL_TERMINATE)
     {
-        primeVStruct(aVst);  // Get a CTIDBG_new one in the system
+        primeAndAppend(aVst);  // Get a new one in the system
         VersacomTerminateCommand();
     }
     else if(CtlReq == CMD_FLAG_CTL_OPEN)
     {
         parse.Map()["control_reduction"] = CtiParseValue( 100 );
 
-        primeVStruct(aVst);  // Get a CTIDBG_new one in the system
+        primeAndAppend(aVst);  // Get a new one in the system
         VersacomCapacitorControlCommand(TRUE);
     }
     else if(CtlReq == CMD_FLAG_CTL_CLOSE)
     {
-        primeVStruct(aVst);  // Get a CTIDBG_new one in the system
+        primeAndAppend(aVst);  // Get a new one in the system
         VersacomCapacitorControlCommand(FALSE);
     }
     else
@@ -1870,69 +1778,36 @@ INT CtiProtocolVersacom::assemblePutStatus(CtiCommandParser  &parse, const VSTRU
 {
     INT   i, iNum;
     INT   status = NORMAL;
-    BOOL  firstOneDone = FALSE;
     BYTE  config[6];
 
 
-    LONG sn  = parse.getiValue("serial");
-    LONG uid = parse.getiValue("utility");
-    LONG aux = parse.getiValue("aux");
-    LONG sec = parse.getiValue("section");
-    LONG cls = parse.getiValue("class");
-    LONG div = parse.getiValue("division");
+    LONG sn  = parse.getiValue("serial", 0);
 
     // Use these ONLY for the addressing!
-    uid = (uid == INT_MIN ? 0 : uid);
-    aux = (aux == INT_MIN ? 0 : aux);
-    sec = (sec == INT_MIN ? 0 : sec);
-    cls = (cls == INT_MIN ? 0 : cls);
-    div = (div == INT_MIN ? 0 : div);
-
-
-    /*
-     *  This bit indicates how we are getting there..  If the serial number was specified, we
-     *  will assume that any other addressing is to be set in the device!  Otherwise,
-     *  we assume that the device is being group configured
-     */
-    if( sn == INT_MIN )
-    {
-        sn = 0;
-    }
-
-    primeVStruct(aVst);  // Get a CTIDBG_new one in the system
-    VersacomAddress(sn, uid, sec, cls, div);
+    LONG uid = parse.getiValue("utility", 0);
+    LONG aux = parse.getiValue("aux", 0);
+    LONG sec = parse.getiValue("section", 0);
+    LONG cls = parse.getiValue("class", 0);
+    LONG div = parse.getiValue("division", 0);
 
     /*
-     * This should be the original with only the addressing copied into it,
-     * we will use this for all others...
+     * This is the original.  IT will have its addressing block stomped on per the specified sn and from addressing.
      */
-    VSTRUCT     VStTemplate = getVStruct(_last);
+    VSTRUCT VStTemplate = aVst;
+    adjustVersacomAddress(VStTemplate, sn, uid, sec, cls, div);
 
     if((iNum = parse.getiValue("proptest")) != INT_MIN)
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-        VersacomPropagationCommand(iNum & 0x07);
-        firstOneDone = TRUE;
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        if(VersacomPropagationCommand(iNum & 0x07))
+            removeLastVStruct();
     }
 
     if((iNum = parse.getiValue("ovuv")) != INT_MIN)
     {
-        if(firstOneDone)
-        {
-            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
-        }
-        VersacomVoltageControlCommand((BOOL)iNum);
-        firstOneDone = TRUE;
-    }
-
-    if(!firstOneDone)
-    {
-        // Oh my, this one failed.... we should get rid of the 'prime' VSTRUCT since it was never
-        // modified
-        _vst.clearAndDestroy();
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        if(VersacomVoltageControlCommand((BOOL)iNum))
+            removeLastVStruct();
     }
 
     return status;
@@ -1999,13 +1874,80 @@ INT    CtiProtocolVersacom::VersacomConfigCycleRepeatsCommand(INT relay, USHORT 
     return updateVersacomMessage();
 }
 
-bool CtiProtocolVersacom::isConfigOptimized() const
+bool CtiProtocolVersacom::isConfig63Valid(LONG sn) const
 {
-    return _configOptimized;
+    bool bstatus = false;
+
+
+    if(sn > gConfigParms.getValueAsULong("VERSACOM_CONFIG63_BASE", 0))
+    {
+        bstatus = true;
+    }
+
+    return bstatus;
 }
-CtiProtocolVersacom& CtiProtocolVersacom::setConfigOptimized(const bool opt)
+
+bool CtiProtocolVersacom::isConfigFullAddressValid(LONG sn) const
 {
-    _configOptimized = opt;
-    return *this;
+    bool bstatus = false;
+
+
+    if(sn > gConfigParms.getValueAsULong("VERSACOM_FULL_ADDRESS_SERIAL_BASE", 0))
+    {
+        bstatus = true;
+    }
+
+    return bstatus;
 }
+
+INT CtiProtocolVersacom::VersacomFullAddressCommand(BYTE uid, BYTE aux, BYTE sec, USHORT clsmask, USHORT divmask, BYTE svc)
+{
+    int i = 0;
+    int pos = 0;
+    USHORT mask = 0;
+
+    _vst[_last]->CommandType  = VFULLADDRESS;
+
+    _vst[_last]->VData.Data[i++] = uid;
+    _vst[_last]->VData.Data[i++] = aux;
+    _vst[_last]->VData.Data[i++] = sec;
+
+    /*
+     *  Nice.  The bits must be end-for-ended to match the parsed class and division!.
+     *  Parser MSBit = Class 16, LSBit = Class 1.  FullAddressCommand Message MSBit = Class 1, LSBit = Class 16.
+     */
+    for(pos = 0; pos < 16; pos++)
+    {
+        if(clsmask & (0x0001 << pos))
+        {
+            mask |= (0x8000 >> pos);
+        }
+    }
+
+    _vst[_last]->VData.Data[i++] = HIBYTE( mask );
+    _vst[_last]->VData.Data[i++] = LOBYTE( mask );
+
+
+    /*
+     *  Nice.  The bits must be end-for-ended to match the parsed class and division!.
+     *  Parser MSBit = Division 16, LSBit = Division 1.  FullAddressCommand Message MSBit = Division 1, LSBit = Division 16.
+     */
+
+    mask = 0;
+    for(pos = 0; pos < 16; pos++)
+    {
+        if(divmask & (0x0001 << pos))
+        {
+            mask |= (0x8000 >> pos);
+        }
+    }
+
+    _vst[_last]->VData.Data[i++] = HIBYTE( mask );
+    _vst[_last]->VData.Data[i++] = LOBYTE( mask );
+
+    _vst[_last]->VData.Data[i++] = (svc << 4);   // Put it in the hinibble so the unwind can be general...  This is only a bit awkward.
+
+    return updateVersacomMessage();
+}
+
 

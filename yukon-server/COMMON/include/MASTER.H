@@ -69,6 +69,7 @@ class DEVICE;
 #define VCONFIG         6
 #define VCOUNTRESET     8
 #define VSERVICE        9
+#define VFULLADDRESS    0x0a
 #define VFILLER         11
 #define VPROPOGATION    12
 #define VDATA           13

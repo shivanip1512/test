@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/11/15 14:08:23 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/01/22 19:48:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -282,7 +282,7 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
     {
         // Someone else did all the parsing and is just needs building
         // Prime the Protocol device with the vstruct, and call the update routine
-        if((status = Versacom.primeVStruct(OutMessage->Buffer.VSt)) == NORMAL)
+        if((status = Versacom.primeAndAppend(OutMessage->Buffer.VSt)) == NORMAL)
         {
             status = Versacom.updateVersacomMessage();
         }

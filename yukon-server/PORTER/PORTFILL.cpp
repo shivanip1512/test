@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/15 14:08:01 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/01/22 19:48:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -212,7 +212,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 
                         // Someone else did all the parsing and is just needs building
                         // Prime the Protocol device with the vstruct, and call the update routine
-                        if((status = Versacom.primeVStruct(OutMessage.Buffer.VSt)) == NORMAL)
+                        if((status = Versacom.primeAndAppend(OutMessage.Buffer.VSt)) == NORMAL)
                         {
                             status = Versacom.updateVersacomMessage();
                         }

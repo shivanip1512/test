@@ -1916,13 +1916,10 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
         if(!(token = CmdStr.match("assign")).isNull())
         {
             if(!(token = CmdStr.match("assign"\
-                                      "( +[uascd][ =]*(0x)?[0-9a-f]+)" \
-                                      "( +[uascd][ =]*(0x)?[0-9a-f]+)?" \
-                                      "( +[uascd][ =]*(0x)?[0-9a-f]+)?" \
-                                      "( +[uascd][ =]*(0x)?[0-9a-f]+)?" \
-                                      "( +[uascd][ =]*(0x)?[0-9a-f]+)?")).isNull())
+                                      "((( +[uascd][ =]*(0x)?[0-9a-f]+)|( cin)|( cout)|( tin)|( tout))*)+")).isNull())
             {
                 // dout << token << endl;
+                _cmd["vcassign"] = CtiParseValue( TRUE );
 
                 if(!(strnum = token.match(" u[ =]*(0x)?[0-9a-f]+")).isNull())
                 {
@@ -2008,6 +2005,43 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).data());
                     _actionItems.insert(tbuf);
 
+                }
+
+                INT serviceflag = 0;
+
+                /*
+                 *  serviceflag == VC_SERVICE_T_OUT == 1 is Temporary OUT of service
+                 *  serviceflag == VC_SERVICE_T_IN  == 2 is Temporary IN service
+                 *  serviceflag == VC_SERVICE_C_OUT == 4 is Contractual OUT of service
+                 *  serviceflag == VC_SERVICE_C_IN  == 8 is Contractual IN service
+                 *  serviceflag == VC_SERVICE_MASK  == 0x0f is a mask
+                 *-------------------------------------------------------------------------*/
+
+                if(token.contains(" cin"))
+                {
+                    serviceflag |= (0x08 | 0x02); // (VC_SERVICE_C_IN | VC_SERVICE_T_IN);
+                    _actionItems.insert("SERVICE ENABLE");
+                }
+                else if( token.contains(" cout"))
+                {
+                    serviceflag |= 0x04;
+                    _actionItems.insert("SERVICE DISABLE");
+                }
+
+                if(token.contains(" tin"))
+                {
+                    serviceflag |= 0x02;
+                    _actionItems.insert("SERVICE ENABLE TEMPORARY");
+                }
+                else if(token.contains(" tout"))
+                {
+                    serviceflag |= 0x01;
+                    _actionItems.insert("SERVICE DISABLE TEMPORARY");
+                }
+
+                if(serviceflag)
+                {
+                    _cmd["assignedservice"] = CtiParseValue( serviceflag );
                 }
             }
         }
@@ -3342,10 +3376,6 @@ void  CtiCommandParser::doParsePutStatusExpresscom(const RWCString &CmdStr)
             _cmd["xcproptest"] = CtiParseValue( op );
 
             _snprintf(tbuf, sizeof(tbuf), "PROP TEST: %01x = %s", op, op_name);
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << tbuf << endl;
-            }
             _actionItems.insert(tbuf);
         }
     }

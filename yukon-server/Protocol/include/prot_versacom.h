@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/15 14:08:08 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/01/22 19:48:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -130,14 +130,26 @@ protected:
    INT      _addressMode;           // Bookkeeping info used to build a full message
    INT      _last;
 
-   bool     _configOptimized;
-
    RWTPtrSlist< VSTRUCT >  _vst;
 
 private:
 
    UINT VersacomControlDuration(UINT type, UINT controltime);
    UINT VersacomControlDurationEx(UINT type, UINT controltime);
+
+   /*-------------------------------------------------------------------------*
+    * This method MUST be called prior to any command building method.  It
+    * establishes the addressing mode of the message and initializes the
+    * addressing variables in the VSTRUCT based upon the arguments passed in.
+    *
+    * Group addressing is COMPLETELY ignored if Serial Number (Serial) is non
+    * zero!
+    *-------------------------------------------------------------------------*/
+   INT adjustVersacomAddress(VSTRUCT &vTemp, ULONG Serial, UINT Uid, UINT Section, UINT Class, UINT Division);
+   void removeLastVStruct();
+
+
+
 
 
    INT setNibble (INT iNibble, INT iValue);
@@ -151,8 +163,7 @@ public:
    CtiProtocolVersacom(INT tt, bool opt = OptimizeVersacomConfiguration()) :
       _last(0),
       _transmitterType(tt),
-      _addressMode(0),
-      _configOptimized(opt)
+      _addressMode(0)
    { }
 
    CtiProtocolVersacom(const CtiProtocolVersacom& aRef)
@@ -186,17 +197,15 @@ public:
 
          _transmitterType  = aRef.getTransmitterType();
          _addressMode      = aRef.getAddressMode();
-         _configOptimized  = aRef.isConfigOptimized();
       }
       return *this;
    }
 
-   bool                    isConfigOptimized() const;
-   CtiProtocolVersacom&    setConfigOptimized(const bool opt = true);
-
+   bool                    isConfig63Valid(LONG sn) const;
+   bool                    isConfigFullAddressValid(LONG sn) const;
    INT                     getAddressMode() const     { return _addressMode; }
 
-   void                    advanceAndPrime(const VSTRUCT &vTemp);
+   INT                     primeAndAppend(const VSTRUCT &vTemp);
 
    /*-------------------------------------------------------------------------*
     * This method will seldom if ever be called by the user directly.  Its
@@ -206,7 +215,6 @@ public:
     * buffer this method is required.
     *-------------------------------------------------------------------------*/
    INT                     updateVersacomMessage();
-   INT                     primeVStruct(const VSTRUCT &VstTemplate);
 
 
    /*-------------------------------------------------------------------------*
@@ -227,22 +235,6 @@ public:
    INT                     getTransmitterType() const;
    CtiProtocolVersacom&    setTransmitterType(INT type);
    CtiProtocolVersacom&    VersacomTransmitter(INT type);
-
-   /*-------------------------------------------------------------------------*
-    * This method MUST be called prior to any command building method.  It
-    * establishes the addressing mode of the message and initializes the
-    * addressing variables in the VSTRUCT based upon the arguments passed in.
-    *
-    * Group addressing is COMPLETELY ignored if Serial Number (Serial) is non
-    * zero!
-    *-------------------------------------------------------------------------*/
-   INT    VersacomAddress(ULONG   Serial,
-                                           UINT    Uid      = 0,
-                                           UINT    Section  = 0,
-                                           UINT    Class    = 0,
-                                           UINT    Division = 0);
-
-
 
    /*-------------------------------------------------------------------------*
     * This method implements a shed type VCONTROL (command 4) versacom command.
@@ -400,5 +392,8 @@ public:
    INT                     assembleControl(CtiCommandParser  &parse, const VSTRUCT &aVst);
 
    INT VersacomFillerCommand(BYTE uid);
+
+   INT VersacomFullAddressCommand(BYTE uid, BYTE aux, BYTE sec, USHORT clsmask, USHORT divmask, BYTE svc);
+
 };
 #endif // #ifndef __PROT_VERSACOM_H__
