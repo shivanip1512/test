@@ -60,7 +60,7 @@ public class RadiusLogin
 				while(i.hasNext()) {
 					LiteYukonUser u = (LiteYukonUser) i.next();
 					if( CtiUtilities.isEnabled(u.getStatus()) &&
-						u.getUsername().equals(username) ) {
+						u.getUsername().equalsIgnoreCase(username) ) {
 						return u;  //success!
 					   }
 				}
