@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:17 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 19:53:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -219,7 +219,7 @@ INT resolvePAOType(RWCString category, RWCString rwsTemp)
 
 INT resolvePAOCategory(RWCString category)
 {
-    INT result = 0;
+    INT result = -1;
 
     category.toLower();
     category = category.strip(RWCString::both);
