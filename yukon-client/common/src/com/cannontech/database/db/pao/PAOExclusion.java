@@ -94,7 +94,37 @@ public class PAOExclusion extends NestedDBPersistent
 		setFuncName( funcName_ );
 		setFuncParams( funcParams_);
 	}
+
+	/**
+	 * 
+	 * @author rneuharth
+	 * 
+	 * Creates a timing exclusion object.
+	 *
+	 * Format:
+	 * CycleTime:#,Offset:#,TransmitTime:#,MaxTime:#
+	 * 
+	 */	
+	public static synchronized PAOExclusion createExclusTiming( Integer paoID, 
+		Integer cycleTimeMinutes, Integer offSet, Integer trxTimeSeconds )
+	{
+		StringBuffer exclusionTiming = new StringBuffer();
+		exclusionTiming.append("CycleTime:");
+		Integer cycleTime = new Integer(cycleTimeMinutes.intValue() * 60);  //make seconds
+		exclusionTiming.append(cycleTime);
+		exclusionTiming.append(",Offset:" + offSet);
+		exclusionTiming.append(",TransmitTime:" + trxTimeSeconds);
 	
+		PAOExclusion paoExcl = new PAOExclusion(
+			paoID,
+			CtiUtilities.EXCLUSION_TIMING_FUNC_ID,
+			CtiUtilities.EXCLUSION_TIME_INFO,
+			exclusionTiming.toString() );
+		
+		return paoExcl;
+	}
+
+
 	/**
 	 * add method comment.
 	 */
