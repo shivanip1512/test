@@ -3,8 +3,6 @@ package com.cannontech.macs.gui;
 /**
  * This type was created in VisualAge.
  */
-
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 
@@ -15,7 +13,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableModelEvent;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
@@ -200,6 +197,7 @@ private void executeDeleteButton_ActionPerformed( ActionEvent event )
 	try
 	{
 		getIMACSConnection().sendDeleteSchedule( selected.getId() );
+		getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "Deleted schedule '" + selected.getScheduleName() + "' successfully sent", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));		
 	}
 	catch( java.io.IOException e )
 	{
@@ -240,6 +238,9 @@ private void executeEnableDisableButton_ActionPerformed( ActionEvent event )
 			
 		// send out the message
 		getIMACSConnection().sendEnableDisableSchedule(selected);
+		getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, 
+			enableDisableButton.getText().toLowerCase() + " schedule command successfully sent for '" +
+			selected.getScheduleName() + "'", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
 	}
 	catch( java.io.IOException e )
 	{
@@ -744,8 +745,6 @@ private void initConnections()
 
 	getSchedulePopupMenu().addPopUpEventListener( this );
 
-	getIMACSConnection().addMessageEventListener( getMessagePanel() );
-
 	getScheduleTableModel().addTableModelListener( this );
 
 	//Observer connection state changes
@@ -787,7 +786,7 @@ private void initialize( boolean initPanelOnly )
 	if( toolBarPanel != null )
 		add( toolBarPanel, "North" );
 		
-	add( messagePanel, "South" );	
+	add( getMessagePanel(), "South" );	
 }
 /**
  * This method was created in VisualAge.
