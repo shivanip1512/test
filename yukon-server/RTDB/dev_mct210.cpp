@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct210.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/14 15:36:56 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/28 18:18:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -221,7 +221,7 @@ INT CtiDeviceMCT210::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
     resetScanFreezePending();
     resetScanFreezeFailed();
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
         INT disc;

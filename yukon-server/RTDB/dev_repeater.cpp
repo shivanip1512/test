@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/05/20 15:10:16 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/05/28 18:18:24 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -611,7 +611,7 @@ INT CtiDeviceRepeater900::decodeLoopback(INMESS *InMessage, RWTime &TimeNow, RWT
 
    resetScanPending();
 
-   if(!decodeCheckErrorReturn(InMessage, retList))
+   if(!decodeCheckErrorReturn(InMessage, retList, outList))
    {
       // No error occured, we must do a real decode!
 
@@ -647,7 +647,7 @@ INT CtiDeviceRepeater900::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNo
    CtiCommandParser parse(InMessage->Return.CommandStr);
 
 
-   if(!decodeCheckErrorReturn(InMessage, retList))
+   if(!decodeCheckErrorReturn(InMessage, retList, outList))
    {
       // No error occured, we must do a real decode!
 
@@ -694,7 +694,7 @@ INT CtiDeviceRepeater900::decodeGetConfigRole(INMESS *InMessage, RWTime &TimeNow
    CtiCommandParser parse(InMessage->Return.CommandStr);
 
 
-   if(!decodeCheckErrorReturn(InMessage, retList))
+   if(!decodeCheckErrorReturn(InMessage, retList, outList))
    {
       // No error occured, we must do a real decode!
 
@@ -748,7 +748,7 @@ INT CtiDeviceRepeater900::decodePutConfigRole(INMESS *InMessage, RWTime &TimeNow
    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
 
-   if(!decodeCheckErrorReturn(InMessage, retList))
+   if(!decodeCheckErrorReturn(InMessage, retList, outList))
    {
       INT   j;
       ULONG pfCount = 0;

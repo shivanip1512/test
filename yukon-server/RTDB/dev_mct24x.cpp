@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:04 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/28 18:18:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -441,7 +441,7 @@ INT CtiDeviceMCT24X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     resetScanFreezePending( );
     resetScanFreezeFailed( );
 
-    if( !decodeCheckErrorReturn( InMessage, retList ) )
+    if( !decodeCheckErrorReturn( InMessage, retList, outList ) )
     {
         // No error occured, we must do a real decode!
 
@@ -554,7 +554,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
     resetScanFreezePending( );
     resetScanFreezeFailed( );
 
-    if( !decodeCheckErrorReturn( InMessage, retList ) )
+    if( !decodeCheckErrorReturn( InMessage, retList, outList ) )
     {
         // No error occured, we must do a real decode!
 
@@ -690,7 +690,7 @@ INT CtiDeviceMCT24X::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -779,7 +779,7 @@ INT CtiDeviceMCT24X::decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &Time
     resetScanFreezePending();
     resetScanFreezeFailed();
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -820,7 +820,7 @@ INT CtiDeviceMCT24X::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
    resetScanFreezePending();
    resetScanFreezeFailed();
 
-   if(!decodeCheckErrorReturn(InMessage, retList))
+   if(!decodeCheckErrorReturn(InMessage, retList, outList))
    {
       // No error occured, we must do a real decode!
 

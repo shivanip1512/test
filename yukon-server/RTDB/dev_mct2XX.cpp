@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:05 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/28 18:18:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -222,7 +222,7 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
         dout << RWTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
         INT    j;
@@ -297,7 +297,7 @@ INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
     resetScanPending();
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
         INT    j;
@@ -387,7 +387,7 @@ INT CtiDeviceMCT2XX::decodeGetStatusInternal( INMESS *InMessage, RWTime &TimeNow
     resetScanFreezePending();
     resetScanFreezeFailed();
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -491,7 +491,7 @@ INT CtiDeviceMCT2XX::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
    resetScanFreezePending();
    resetScanFreezeFailed();
 
-   if(!decodeCheckErrorReturn(InMessage, retList))
+   if(!decodeCheckErrorReturn(InMessage, retList, outList))
    {
       // No error occured, we must do a real decode!
 
@@ -580,7 +580,7 @@ INT CtiDeviceMCT2XX::decodeGetConfigOptions(INMESS *InMessage, RWTime &TimeNow, 
     INT ErrReturn         = InMessage->EventCode & 0x3fff;
     unsigned char *optBuf = InMessage->Buffer.DSt.Message;
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 

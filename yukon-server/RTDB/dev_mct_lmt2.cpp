@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:06 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/28 18:18:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -107,7 +107,7 @@ INT CtiDeviceMCT_LMT2::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, 
    resetScanFreezePending();
    resetScanFreezeFailed();
 
-   if(!decodeCheckErrorReturn(InMessage, retList))
+   if(!decodeCheckErrorReturn(InMessage, retList, outList))
    {
       // No error occured, we must do a real decode!
 

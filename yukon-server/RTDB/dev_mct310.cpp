@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/20 21:37:13 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/05/28 18:18:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -530,7 +530,7 @@ INT CtiDeviceMCT310::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
     resetScanFreezeFailed();
 
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -614,7 +614,7 @@ INT CtiDeviceMCT310::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
     resetScanPending();
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -697,7 +697,7 @@ INT CtiDeviceMCT310::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     resetScanFreezePending( );
     resetScanFreezeFailed( );
 
-    if( !decodeCheckErrorReturn( InMessage, retList ) )
+    if( !decodeCheckErrorReturn( InMessage, retList, outList ) )
     {
         // No error occured, we must do a real decode!
 
@@ -819,7 +819,7 @@ INT CtiDeviceMCT310::decodeGetStatusInternal( INMESS *InMessage, RWTime &TimeNow
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -877,7 +877,7 @@ INT CtiDeviceMCT310::decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &Time
     resetScanFreezeFailed();
 
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -935,7 +935,7 @@ INT CtiDeviceMCT310::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
     resetScanFreezePending();
     resetScanFreezeFailed();
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -1050,7 +1050,7 @@ INT CtiDeviceMCT310::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -1156,7 +1156,7 @@ INT CtiDeviceMCT310::decodeGetConfigOptions(INMESS *InMessage, RWTime &TimeNow, 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     unsigned char *optBuf  = InMessage->Buffer.DSt.Message;
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 

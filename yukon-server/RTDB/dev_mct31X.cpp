@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/05/28 17:30:29 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/05/28 18:18:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -232,6 +232,11 @@ bool CtiDeviceMCT31X::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 
 ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
 {
+
+    #define LPINTERVAL31X 300       // 300
+
+
+
     RWTime        Now, blockStart, plannedLPTime, panicLPTime;
     unsigned long channelTime, nextTime, midnightOffset;
     int           lpBlockSize, lpDemandRate;
@@ -245,10 +250,10 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
     if( !_lpIntervalSent )
     {
         //  send load profile interval on the next 5 minute boundary
-        nextTime = Now.seconds() + 300;
-        if( nextTime % 300 )
+        nextTime = Now.seconds() + LPINTERVAL31X;
+        if( nextTime % LPINTERVAL31X )
         {
-            nextTime -= nextTime % 300;
+            nextTime -= nextTime % LPINTERVAL31X;
         }
     }
     else
@@ -334,7 +339,7 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
             //    after one block (6 intervals) has passed
             plannedLPTime  = blockStart + lpBlockSize;
             //  also make sure we allow time for it to move out of the memory we're requesting
-            plannedLPTime += 300;
+            plannedLPTime += LPINTERVAL31X;
 
             //  we start to worry if 30 minutes have passed and we haven't heard back
             panicLPTime    = plannedLPTime + 30 * 60;
@@ -355,6 +360,10 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
             //  we're overdue
             else
             {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
                 //  try again on the next 'loadprofileinterval' minutes boundary
                 channelTime  = Now.seconds() + lpDemandRate;
                 if( channelTime % lpDemandRate )
@@ -368,6 +377,11 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
             if( channelTime < nextTime )
                 nextTime = channelTime;
         }
+    }
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " " << getName() << "'s next Load Profile request at " << RWTime(nextTime) << endl;
     }
 
     return (_nextLPScanTime = nextTime);
@@ -609,7 +623,7 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
     resetScanPending();
 
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -713,7 +727,7 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
         dout << RWTime() << " **** IED GetStatus Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -894,7 +908,7 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
         dout << RWTime() << " **** IED GetConfig Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -1038,7 +1052,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
         dout << RWTime() << " **** IED GetValue Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -1510,7 +1524,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
         dout << RWTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -1602,7 +1616,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
     resetScanPending();
 
-    if(!decodeCheckErrorReturn(InMessage, retList))
+    if(!decodeCheckErrorReturn(InMessage, retList, outList))
     {
         // No error occured, we must do a real decode!
 
@@ -1734,7 +1748,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     resetScanFreezePending( );
     resetScanFreezeFailed( );
 
-    if( !decodeCheckErrorReturn( InMessage, retList ) )
+    if( !decodeCheckErrorReturn( InMessage, retList, outList ) )
     {
         // No error occured, we must do a real decode!
 

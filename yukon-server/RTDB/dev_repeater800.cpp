@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:07 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/28 18:18:24 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -131,7 +131,7 @@ INT CtiDeviceRepeater800::decodeGetValuePFCount(INMESS *InMessage, RWTime &TimeN
    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
 
-   if(!decodeCheckErrorReturn(InMessage, retList))
+   if(!decodeCheckErrorReturn(InMessage, retList, outList))
    {
       // No error occured, we must do a real decode!
 
