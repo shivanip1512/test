@@ -347,7 +347,7 @@ public final class YukonListFuncs implements YukonListEntryTypes
 		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY)
 			return YukonSelectionListDefs.YUK_LIST_NAME_TIME_OF_WEEK;
 		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_LOC_UNKNOWN)
-			return YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_LOCATION;
+			return YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION;
 		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_MANU_UNKNOWN)
 			return YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER;
 		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL)
