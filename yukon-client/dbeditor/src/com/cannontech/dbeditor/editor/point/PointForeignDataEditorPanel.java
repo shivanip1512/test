@@ -1273,7 +1273,11 @@ public void jTableFDR_MouseClicked(java.awt.event.MouseEvent mouseEvent)
 			String token = tokenizer.nextElement().toString();
 			String value = token.substring( token.indexOf(":")+1, token.length() );
 
-			((javax.swing.JComboBox)getDataOptions()[i++][1]).setSelectedItem( value );
+			if(((javax.swing.JComboBox)getDataOptions()[i][1]).getSelectedIndex() == -1)
+				((javax.swing.JComboBox)getDataOptions()[i][1]).addItem( value );
+			else
+				((javax.swing.JComboBox)getDataOptions()[i][1]).setSelectedItem( value );
+			i++;
 		}
 
 	}
