@@ -144,7 +144,7 @@ private javax.swing.JLabel getBankAddressLabel() {
 			ivjBankAddressLabel = new javax.swing.JLabel();
 			ivjBankAddressLabel.setName("BankAddressLabel");
 			ivjBankAddressLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjBankAddressLabel.setText("Bank Address:");
+			ivjBankAddressLabel.setText("Street Location:");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
