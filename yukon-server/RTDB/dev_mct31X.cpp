@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/05/19 16:33:49 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2003/06/12 18:23:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1786,12 +1786,13 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     RWCString valReport, resultString;
     int       intervalOffset,
               lpDemandRate,
-              pointOffset,
-              charOffset,
+              lpChannel,
               badData;
     double    Value;
     unsigned long timeStamp, pulses;
     PointQuality_t pointQuality;
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
 
     CtiPointNumeric *pPoint    = NULL;
     CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
@@ -1820,19 +1821,18 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        charOffset  = strlen(InMessage->Return.CommandStr) - 1;  //  point to the last character in the string
-        pointOffset = InMessage->Return.CommandStr[charOffset] - '0';  //  convert to numeric from ASCII
-
+        if( lpChannel = parse.getiValue("scan_loadprofile_channel", 0) )
+        {
         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "channel " << pointOffset << endl;
-        }
+                dout << "channel " << lpChannel << endl;
+            }
 
         lpDemandRate = getLoadProfile().getLoadProfileDemandRate();
 
-        pPoint = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( 1 + pointOffset + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
+            pPoint = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( lpChannel + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
 
         if( pPoint != NULL )
         {
@@ -1871,7 +1871,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                                             TAG_POINT_LOAD_PROFILE_DATA );
 
                 //  this is where the block started...
-                timeStamp  = _lastLPRequestBlockStart[pointOffset].seconds() + (lpDemandRate * intervalOffset);
+                        timeStamp  = _lastLPRequestBlockStart[lpChannel-1].seconds() + (lpDemandRate * intervalOffset);
 
                 //  but we want interval *ending* times, so add on one more interval
                 timeStamp += lpDemandRate;
@@ -1880,7 +1880,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "_lastLPRequestBlockStart[" << pointOffset << "] = " << RWTime(_lastLPRequestBlockStart[pointOffset]) << endl;
+                            dout << "_lastLPRequestBlockStart[" << (lpChannel - 1) << "] = " << RWTime(_lastLPRequestBlockStart[lpChannel-1]) << endl;
                     dout << "Value = " << Value << endl;
                     dout << "intervalOffset = " << intervalOffset << endl;
                     dout << "timeStamp = " << RWTime(timeStamp) << endl;
@@ -1902,12 +1902,27 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
             pData->setTime( timeStamp );
             ReturnMsg->insert( pData );
 
-            _lastLPTime[pointOffset] = timeStamp;
+                _lastLPTime[lpChannel-1] = timeStamp;
         }
         else
         {
-            resultString = "No load profile point defined for '" + getName() + "' demand accumulator " + CtiNumStr( pointOffset + 1 );
-            ReturnMsg->setResultString( resultString );
+                resultString = "No load profile point defined for '" + getName() + "' demand accumulator " + CtiNumStr(lpChannel);
+                ReturnMsg->setResultString(resultString);
+            }
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "No scan_loadprofile_channel token in command string \"" << InMessage->Return.CommandStr << "\" - cannot proceed with decode, aborting" << endl;
+            }
+
+            resultString  = "No scan_loadprofile_channel token in command string \"";
+            resultString += InMessage->Return.CommandStr;
+            resultString += "\" - cannot proceed with decode, aborting";
+
+            ReturnMsg->setResultString(resultString);
         }
     }
 
