@@ -96,8 +96,10 @@ public class Drawing implements Serializable {
 		
 
 		
-		LxSVGGenerator lxGen = new LxSVGGenerator();
+	/*
+	 * 	LxSVGGenerator lxGen = new LxSVGGenerator();
 		lxGen.saveAsSVG(lxGraph, svgFileName + ".svg");		
+	*/
 	}
 
 	public synchronized void save() {

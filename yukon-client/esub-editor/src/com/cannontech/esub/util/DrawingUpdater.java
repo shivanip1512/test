@@ -71,63 +71,20 @@ public class DrawingUpdater extends TimerTask {
 
 						if (comp[i] instanceof DynamicText) {
 							DynamicText dt = (DynamicText) comp[i];
-							String text = "";
-							int att = dt.getDisplayAttribs();
-							if( (att & DynamicText.VALUE) != 0 ) {
-								PointData pData = pcc.getValue(dt.getPointID());
+							String text = UpdateUtil.getDynamicTextString(dt.getPointID(), dt.getDisplayAttribs());
 	
-								if (pData != null) {
-									DecimalFormat f = new DecimalFormat();
-									f.setMaximumFractionDigits(2);
-									text = f.format(pData.getValue());
-									change = true;
-
-								}
-							}
-							
-							if( (att & DynamicText.UOFM) != 0 ) {
-								if( change ) 
-									text += " ";
-								LiteUnitMeasure lum = UnitMeasureFuncs.getLiteUnitMeasureByPointID(dt.getPointID());
-								text += lum.getUnitMeasureName();
-								change = true;
-							}
-							
-							if( (att & DynamicText.NAME) != 0 ) {
-								if( change ) 
-									text += " ";
-								text += dt.getPoint().getPointName();								
-								change = true;
-							}
-							
-							if( (att & DynamicText.PAO) != 0 ) {
-								if( change ) 
-									text += " ";
-								//find the pao for this point
-								text += PAOFuncs.getYukonPAOName(dt.getPoint().getPaobjectID());
-								change = true;
-							}
-							
-							if( (att & DynamicText.LAST_UPDATE) != 0 ) {
-								PointData pData = pcc.getValue(dt.getPointID());
-								if( change ) 
-									text += " ";
-								text += pData.getPointDataTimeStamp();
-								change = true;
-							}
-							
 							// only update if there is something to update
-							if( change ) {
+							if( !text.equals(dt.getText()) ) {
 								if( !text.equals(dt.getText()) ) {
 									dt.setText(text);
 								}
 							}
 						}
 
-						if (comp[i] instanceof StateImage) {
-							StateImage si = (StateImage) comp[i];
+						if (comp[i] instanceof StateImage) {							
+							StateImage si = (StateImage) comp[i];							
 							LitePoint lp = si.getPoint();
-							
+			
 							if( lp != null ) {
 								PointData pData = pcc.getValue(lp.getPointID());
 								if( pData != null ) {

@@ -24,8 +24,9 @@ import com.loox.jloox.LxSaveUtils;
  * @author alauinger
  */
 public class DynamicGraphElement extends LxAbstractRectangle implements DrawingElement {
+private Graph theGraph= null;
 
-	private static final int INVALID_GRAPH_DEFINITION = -1;
+	private static final int INVALID_GRAPH_DEFINITION = 611;
 	
 	private LiteGraphDefinition graphDefinition;
 	private transient Drawing drawing = null;
@@ -39,9 +40,15 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 		return drawing;
 	}
 	
+	public DynamicGraphElement() {
+		super();
+		initialize();
+	}
 	private void initialize() {
 		graphDefinition = new LiteGraphDefinition(INVALID_GRAPH_DEFINITION);
-		setSize(640,400);
+		setSize(640,480);
+		setPaint(Color.white);
+		setLineThickness(1);
 		setLineColor(Color.white);
 	}
 
@@ -180,12 +187,14 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	protected void paintElement(Graphics2D g) {
 		System.out.println("paintElement");
 		super.paintElement(g);
-		g.setColor(Color.WHITE);
+		/*g.setColor(Color.WHITE);
 		g.drawLine(0,0, 20, 20);
-		
+		*/
 		//here
+		
+		if( theGraph == null ) {
 		com.cannontech.database.data.graph.GraphDefinition gDef = new com.cannontech.database.data.graph.GraphDefinition();
-		gDef.getGraphDefinition().setGraphDefinitionID(new Integer(601));
+		gDef.getGraphDefinition().setGraphDefinitionID(new Integer(611));
 		
 		java.sql.Connection conn = null;
 			try
@@ -212,7 +221,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 						
 			Graph graph = new com.cannontech.graph.Graph();
 			graph.setDatabaseAlias(CtiUtilities.getDatabaseAlias());
-			graph.setSize(640, 400);
+			graph.setSize(640, 480);
 			graph.setCurrentGraphDefinition(gDef);
 			graph.setSeriesType( com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
 
@@ -230,9 +239,15 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 				}
 			}
 			
-			graph.update();			
-
-			graph.getFreeChart().draw(g, new Rectangle(640,480));
+			graph.update();	
+			theGraph = graph;		
+		}
+		
+			double w = getWidth();
+			double h = getHeight();
+			System.out.println((getWidth()/2)*-1);
+			g.translate( (getWidth()/2.0)*-1, (getHeight()/2.0)*-1.0);
+			theGraph.getFreeChart().draw(g, new Rectangle((int) getWidth(),(int)getHeight()));//(int) (getWidth()/2)*-1,(int) (getHeight()/2)*-1));
 
 	}
 
