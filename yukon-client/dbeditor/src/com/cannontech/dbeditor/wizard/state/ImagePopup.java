@@ -74,24 +74,10 @@ class ImagePopup extends JPopupMenu implements java.awt.event.ActionListener
          return;
       }
       
-      //try to delete the image
-      try
-      {         
-         //insert the new image
-         com.cannontech.database.Transaction.createTransaction(
-            com.cannontech.database.Transaction.DELETE, 
-            com.cannontech.database.data.lite.LiteFactory.createDBPersistent(getSelectedLiteImage())).execute();
-      }
-      catch( Exception e )
-      {
-         com.cannontech.clientutils.CTILogger.error("Unable to delete the image named '" + 
-               getSelectedLiteImage().getImageName() + "'.", e );
-      }
-   
       //tell our call back action to execute   
       caller.ctiCallBackAction( new java.beans.PropertyChangeEvent(
             this,
-            "GenericChange",
+            "DeleteChange",
             getSelectedLiteImage(),
             getSelectedLiteImage()) );      
    }

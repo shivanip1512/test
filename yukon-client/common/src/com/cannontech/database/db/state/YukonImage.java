@@ -10,7 +10,7 @@ import com.cannontech.database.db.DBPersistent;
  * 
  * A undefined generated comment
  */
-public class YukonImage extends DBPersistent
+public class YukonImage extends DBPersistent implements com.cannontech.database.db.CTIDbChange
 {
    private Integer imageID = null;
    private String imageCategory = com.cannontech.common.util.CtiUtilities.STRING_NONE;   
@@ -228,6 +228,14 @@ public class YukonImage extends DBPersistent
 		this.imageID = imageID;
 	}
 
+	public String toString()
+	{
+		if( getImageName() != null )
+			return getImageName();
+		else
+			return super.toString();
+	}
+	
 	/**
 	 * Returns the imageCategory.
 	 * @return String
@@ -264,4 +272,25 @@ public class YukonImage extends DBPersistent
 		this.imageValue = imageValue;
 	}
 
+
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (12/19/2001 1:45:25 PM)
+	 * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
+	 */
+	public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+	{
+		com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
+		{
+			new com.cannontech.message.dispatch.message.DBChangeMsg(
+						getImageID().intValue(),
+						com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_YUKON_IMAGE,
+						com.cannontech.message.dispatch.message.DBChangeMsg.CAT_STATEGROUP,
+						com.cannontech.message.dispatch.message.DBChangeMsg.CAT_STATEGROUP,
+						typeOfChange)
+		};
+
+
+		return msgs;
+	}
 }

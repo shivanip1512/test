@@ -1122,7 +1122,7 @@ private synchronized LiteBase handleYukonImageChange( int changeType, int id )
    LiteBase lBase = null;
 
    // if the storage is not already loaded, we must not care about it
-   if( allAlarmCategories == null )
+   if( allYukonImages == null )
       return lBase;
 
    switch(changeType)

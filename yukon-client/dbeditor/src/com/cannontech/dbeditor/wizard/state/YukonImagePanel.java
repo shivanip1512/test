@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.state;
+import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.image.ImageChooser;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonImage;
 
 /**
@@ -175,13 +177,32 @@ private void connEtoC5(javax.swing.event.ListSelectionEvent arg1) {
 public void ctiCallBackAction( java.beans.PropertyChangeEvent pEvent )
 {
    if( pEvent.getSource() == getImagePopupMenu() )
-   {
-      setUpImages(null);
-      
-      if( "RefreshPanelWithLite".equalsIgnoreCase(pEvent.getPropertyName()) )
+   {   	
+
+		if( "DeleteChange".equalsIgnoreCase(pEvent.getPropertyName()) )
+		{
+			fireInputDataPanelEvent( 
+				new PropertyPanelEvent(
+						this,
+						PropertyPanelEvent.EVENT_DB_DELETE,
+						LiteFactory.createDBPersistent( (LiteYukonImage)pEvent.getNewValue()) ) );	
+
+			setUpImages(null);
+			//setSelectedLiteYukonImage( null );
+			unselectLabel( selectedLabel );
+		}
+      else if( "RefreshPanelWithLite".equalsIgnoreCase(pEvent.getPropertyName()) )
       {         
+			fireInputDataPanelEvent( 
+				new PropertyPanelEvent(
+						this,
+						PropertyPanelEvent.EVENT_DB_UPDATE,
+						LiteFactory.createDBPersistent( (LiteYukonImage)pEvent.getNewValue()) ) );
+
+			setUpImages(null);      
          setSelectedLiteYukonImage( (LiteYukonImage)pEvent.getNewValue() );
       }
+      
    }
 
 }
@@ -719,8 +740,15 @@ public void jButtonAddImages_ActionPerformed(java.awt.event.ActionEvent actionEv
                               com.cannontech.common.util.CtiUtilities.getDatabaseAlias()))) );
 
                //insert the new image
-               com.cannontech.database.Transaction.createTransaction(
-                  com.cannontech.database.Transaction.INSERT, dbImg ).execute();
+//               com.cannontech.database.Transaction.createTransaction(
+//                  com.cannontech.database.Transaction.INSERT, dbImg ).execute();
+                  
+
+					fireInputDataPanelEvent( 
+						new PropertyPanelEvent(
+									this,
+									PropertyPanelEvent.EVENT_DB_INSERT,
+									dbImg) );                  
             }
             catch( Exception e )
             {
@@ -910,9 +938,6 @@ protected void setUpImages( LiteYukonImage[] images )
        
       synchronized( cache )
       {
-         //just in case we have added some images to our list
-         cache.releaseAllYukonImages();
-         
          java.util.List imgList = cache.getAllYukonImages();
          images = new LiteYukonImage[ imgList.size() ];
    

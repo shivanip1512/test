@@ -3,10 +3,13 @@ package com.cannontech.dbeditor.editor.state;
  * This type was created in VisualAge.
  */
 
+import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.klg.jclass.util.value.JCValueEvent;
 
-public class GroupStateEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener {
+public class GroupStateEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener, DataInputPanelListener 
+{
 	// this must be changed whenever the number or states are changed
 	public static final int STATE_COUNT = 10;
 	private javax.swing.JLabel[] rawStateLabels = null;
@@ -3067,7 +3070,9 @@ public void jButtonImage_ActionPerformed(java.awt.event.ActionEvent actionEvent)
          d.setVisible(false);
       }
    };
-
+  
+	yPanel.addDataInputPanelListener( this );
+	
 
    //get our selected image id with the JButton
    LiteYukonImage liteImg = (LiteYukonImage)button.getClientProperty("LiteYukonImage");
@@ -3092,6 +3097,20 @@ public void jButtonImage_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 
 	fireInputUpdate();
 	return;
+}
+
+
+public void inputUpdate( PropertyPanelEvent event )
+{
+	//if( event.getSource() instanceof com.cannontech.dbeditor.wizard.state.YukonImagePanel )
+	if( event.getID() == PropertyPanelEvent.EVENT_DB_INSERT 
+		 || event.getID() == PropertyPanelEvent.EVENT_DB_UPDATE
+		 || event.getID() == PropertyPanelEvent.EVENT_DB_DELETE )
+	{
+		fireInputDataPanelEvent( event );	
+	}
+	else
+		fireInputUpdate();
 }
 
 

@@ -939,13 +939,38 @@ public void executeDefaultButton_ActionPerformed(ActionEvent event) {
 
 		DefaultRoutes.updateRouteDefaults(routes);
 		for (int i=0; i<routes.size(); i++) {
-			updateObject((DBPersistent) routes.get(i));
+			updateDBPersistent((DBPersistent) routes.get(i));
 		}
 	} 
 
 	f.setCursor(savedCursor);	
 }
 
+
+private void deleteDBPersistent( DBPersistent deletable )
+{
+	try
+	{
+		Transaction t = Transaction.createTransaction(Transaction.DELETE, deletable);
+		
+		deletable = t.execute();
+	
+		//fire DBChange messages out to Dispatch
+		generateDBChangeMsg( deletable, DBChangeMsg.CHANGE_TYPE_DELETE );
+	
+		fireMessage(new MessageEvent(this, deletable + " deleted successfully from the database."));
+	}
+	catch (com.cannontech.database.TransactionException e)
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		fireMessage(
+			new MessageEvent(
+				this,
+				"Error deleting " + deletable + " from the database.  Error received:  " + e.getMessage(),
+				MessageEvent.ERROR_MESSAGE));
+	}
+
+}
 
 /**
  * Insert the method's description here.
@@ -974,25 +999,10 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 					current.fireCancelButtonPressed();
 			}		
 
-			Transaction t = Transaction.createTransaction(Transaction.DELETE, deletables[i]);
-	
+
 			try
 			{
-				deletables[i] = t.execute();
-	
-				//fire DBChange messages out to Dispatch
-				generateDBChangeMsg( deletables[i], DBChangeMsg.CHANGE_TYPE_DELETE );
-	
-				fireMessage(new MessageEvent(this, deletables[i] + " deleted successfully from the database."));
-			}
-			catch (com.cannontech.database.TransactionException e)
-			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-				fireMessage(
-					new MessageEvent(
-						this,
-						"Error deleting " + deletables[i] + " from the database.  Error received:  " + e.getMessage(),
-						MessageEvent.ERROR_MESSAGE));
+				deleteDBPersistent( deletables[i] );
 			}
 			finally
 			{
@@ -1161,7 +1171,7 @@ public void executeRegenerateButton_ActionPerformed(ActionEvent event) {
 		Vector routesChanged = RegenerateRoute.resetRptSettings(carrierRoutes,all,null,false);
 		RegenerateRoute.updateRouteRoles(routesChanged);
 		for (int i=0; i<routesChanged.size(); i++) {
-			updateObject((com.cannontech.database.db.DBPersistent) routesChanged.get(i));
+			updateDBPersistent((com.cannontech.database.db.DBPersistent) routesChanged.get(i));
 		}
 	} 
 
@@ -2312,16 +2322,26 @@ public void selectionPerformed( PropertyPanelEvent event)
 	{
 		
 		
-	//this event tells us the user inserted a DB object before clicking the OK/APPLY button
+	//these events tells us the user modified a DB object before clicking the OK/APPLY button
 	if( event.getID() == PropertyPanelEvent.EVENT_DB_INSERT )
 	{
 		DBPersistent dbPersist = (DBPersistent)event.getDataChanged();
-
 		insertDBPersistent( dbPersist );
-
 		return;		
 	}
-	
+	else if( event.getID() == PropertyPanelEvent.EVENT_DB_DELETE )
+	{
+		DBPersistent dbPersist = (DBPersistent)event.getDataChanged();
+		deleteDBPersistent( dbPersist );
+		return;		
+	}
+	else if( event.getID() == PropertyPanelEvent.EVENT_DB_UPDATE )
+	{
+		DBPersistent dbPersist = (DBPersistent)event.getDataChanged();
+		updateDBPersistent( dbPersist );
+		return;		
+	}
+
 
 	if( !( event.getSource() instanceof PropertyPanel) )
 		return;
@@ -2354,7 +2374,7 @@ public void selectionPerformed( PropertyPanelEvent event)
 		if( panel.hasChanged() )
 		{
 			panel.setChanged(false);
-			updateResult = updateObject(object);
+			updateResult = updateDBPersistent(object);
 
 			if( updateResult )
 			{					
@@ -2448,16 +2468,26 @@ public void selectionPerformed(WizardPanelEvent event)
 {
 
 
-	//this event tells us the user inserted a DB object before clicking the finish button
+	//these event tells us the user modified a DB object before clicking the finish button
 	if( event.getID() == PropertyPanelEvent.EVENT_DB_INSERT )
 	{
 		DBPersistent dbPersist = (DBPersistent)event.getDataChanged();
-
 		insertDBPersistent( dbPersist );
-
 		return;
 	}
-
+	else if( event.getID() == PropertyPanelEvent.EVENT_DB_DELETE )
+	{
+		DBPersistent dbPersist = (DBPersistent)event.getDataChanged();
+		deleteDBPersistent( dbPersist );
+		return;		
+	}
+	else if( event.getID() == PropertyPanelEvent.EVENT_DB_UPDATE )
+	{
+		DBPersistent dbPersist = (DBPersistent)event.getDataChanged();
+		updateDBPersistent( dbPersist );
+		return;		
+	}
+	
 
 	if( !( event.getSource() instanceof WizardPanel) )
 		return;
@@ -2791,7 +2821,7 @@ public void update(java.util.Observable o, Object arg)
  * @param object DBPersistent
  */
  /* Returns of the DB transaction executed successfully, else returns false. */
-private boolean updateObject(com.cannontech.database.db.DBPersistent object) 
+private boolean updateDBPersistent(com.cannontech.database.db.DBPersistent object) 
 {
 
 	try
