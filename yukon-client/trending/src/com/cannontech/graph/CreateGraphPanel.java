@@ -12,7 +12,8 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.graph.gds.tablemodel.GDSTableModel;
-public class CreateGraphPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener{
+public class CreateGraphPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener
+{
 	public static final int OK = 1;
 	public static final int CANCEL = 2;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
@@ -43,6 +44,7 @@ public class CreateGraphPanel extends com.cannontech.common.gui.util.DataInputPa
 	private javax.swing.JComboBox ivjPrimaryPointComboBox = null;
 	private javax.swing.JLabel ivjPrimaryPointLabel = null;
 
+private javax.swing.JComboBox typeComboBox = null;
 
 	class IvjEventHandler implements javax.swing.event.CaretListener
 	{		
@@ -96,6 +98,26 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		}
 	
 	}
+	else if( event.getSource() == getTypeComboBox())
+	{
+		if( getTypeComboBox().getModel().getSelectedItem() instanceof String)
+		{
+			String item = (String)getTypeComboBox().getModel().getSelectedItem();
+			if(com.cannontech.util.ServletUtil.parseDateStringLiberally(item) != null)
+			{
+				//If item not already in ComboBox Model, add it to the model.
+				if( ((javax.swing.DefaultComboBoxModel)getTypeComboBox().getModel()).getIndexOf(item) < 0)
+					((javax.swing.DefaultComboBoxModel)getTypeComboBox().getModel()).addElement(item);
+			}
+
+			if( getTypeComboBox().getSelectedItem().equals("mm/dd/yy") ||
+				(com.cannontech.util.ServletUtil.parseDateStringLiberally((String)getTypeComboBox().getSelectedItem())!= null))
+				getTypeComboBox().setEditable(true);	//Date types are editable comboBox text field
+			else
+				getTypeComboBox().setEditable(false);
+		}
+	}
+	
 }
 /**
  * Comment
@@ -571,17 +593,8 @@ private javax.swing.JTable getGraphGDSTable() {
 			javax.swing.JComboBox axisComboBox = new javax.swing.JComboBox( new String[] { "Left", "Right" } );
 			javax.swing.DefaultCellEditor axisEditor = new javax.swing.DefaultCellEditor(axisComboBox);
 			colModel.getColumn(GDSTableModel.AXIS_NAME_COLUMN).setCellEditor(axisEditor);
-			
-			String [] typeStrings = new String [] {
-				GraphDataSeries.BASIC_GRAPH_TYPE_STRING,
-				GraphDataSeries.USAGE_TYPE_STRING,
-				GraphDataSeries.YESTERDAY_GRAPH_TYPE_STRING,
-				GraphDataSeries.PEAK_GRAPH_TYPE_STRING,
-				GraphDataSeries.USAGE_GRAPH_TYPE_STRING
-				//				,GraphDataSeries.THRESHOLD_TYPE_STRING	//not selectable!
-			};
-			javax.swing.JComboBox typeComboBox = new javax.swing.JComboBox(typeStrings);
-			javax.swing.DefaultCellEditor typeEditor = new javax.swing.DefaultCellEditor(typeComboBox);
+
+			javax.swing.DefaultCellEditor typeEditor = new javax.swing.DefaultCellEditor(getTypeComboBox());
 			colModel.getColumn(GDSTableModel.TYPE_NAME_COLUMN).setCellEditor(typeEditor);
 
 			//A checkBox is used here instead of a button, but you are REALLY putting a button in here.
@@ -589,7 +602,7 @@ private javax.swing.JTable getGraphGDSTable() {
 			com.cannontech.graph.gds.tablemodel.GDSTableButtonEditor setupEditor = new com.cannontech.graph.gds.tablemodel.GDSTableButtonEditor(new javax.swing.JCheckBox());
 			colModel.getColumn(GDSTableModel.SETUP_NAME_COLUMN).setCellRenderer(new com.cannontech.common.gui.util.ButtonRenderer());
 			colModel.getColumn(GDSTableModel.SETUP_NAME_COLUMN).setCellEditor(setupEditor);
-*/
+			*/
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -598,6 +611,24 @@ private javax.swing.JTable getGraphGDSTable() {
 		}
 	}
 	return ivjGraphGDSTable;
+}
+private javax.swing.JComboBox getTypeComboBox()
+{
+	if( typeComboBox == null)
+	{
+		String [] typeStrings = new String [] {
+		GraphDataSeries.BASIC_GRAPH_TYPE_STRING,
+		GraphDataSeries.USAGE_TYPE_STRING,
+		GraphDataSeries.YESTERDAY_GRAPH_TYPE_STRING,
+		GraphDataSeries.PEAK_GRAPH_TYPE_STRING,
+		GraphDataSeries.USAGE_GRAPH_TYPE_STRING,
+		GraphDataSeries.DATE_TYPE_STRING
+		//				,GraphDataSeries.THRESHOLD_TYPE_STRING	//not selectable!
+		};
+		typeComboBox = new javax.swing.JComboBox(typeStrings);
+		typeComboBox.addActionListener(this);
+	}
+	return typeComboBox;
 }
 private com.cannontech.database.model.DeviceTree_CustomPointsModel getGraphPointsModel()
 {
@@ -1440,5 +1471,4 @@ public com.cannontech.database.data.graph.GraphDefinition showCreateGraphPanelDi
 		message, "Yukon Trending", messageType);
 		return;
 	}
-	
 }
