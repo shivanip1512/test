@@ -1,5 +1,5 @@
 
-<%@ include file="Functions.js" %>
+<%@ include file="js/cbc_funcs.js" %>
 <%@ include file="cbc_header.jsp" %>
 
 <%
@@ -51,7 +51,7 @@
 		{
 			//reset our filter to the default
 			cbcSession.setLastArea( SubBusTableModel.ALL_FILTER );
-			response.sendRedirect( "AllSubs.jsp" );
+			response.sendRedirect( "subs.jsp" );
 		}
 		
 		return;
@@ -92,7 +92,7 @@
                 
                   
                 <td width="58" valign="middle"> 
-                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../operator/Operations.jsp" class="Link3">Home</a></span></div>
                 </td>
                 <td width="57" valign="middle"> 
                   <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
@@ -152,7 +152,7 @@
                         <td width="80">Reports</td>
                       </tr>
                       <tr valign="top"> 
-                        <td width="100" class="TableCell"><a href= "Feeders.jsp?subRowID=<%= rowID.intValue() %>" class="Link1">
+                        <td width="100" class="TableCell"><a href= "feeders.jsp?subRowID=<%= rowID.intValue() %>" class="Link1">
                           <div name = "subPopup" align = "left" cursor:default;" >
                              <%= subBusMdl.getValueAt(rowID.intValue(), SubBusTableModel.SUB_NAME_COLUMN) %> 
                           </div></a>
