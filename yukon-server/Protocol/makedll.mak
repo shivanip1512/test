@@ -416,7 +416,7 @@ prot_dnp.obj:	logger.h thread.h mutex.h dlldefs.h guard.h utility.h \
 		dnp_application.h dnp_objects.h dnp_transport.h \
 		dnp_datalink.h dnp_datalink_packet.h \
 		dnp_object_binaryoutput.h dnp_object_class.h \
-		dnp_object_analogoutput.h
+		dnp_object_analogoutput.h dnp_object_time.h
 prot_emetcon.obj:	cmdparse.h dlldefs.h parsevalue.h devicetypes.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h porter.h dsm2err.h queues.h prot_emetcon.h \
@@ -447,8 +447,8 @@ prot_sixnet.obj:	guard.h dlldefs.h logger.h thread.h mutex.h \
 prot_transdata.obj:	guard.h dlldefs.h logger.h thread.h mutex.h \
 		prot_transdata.h transdata_application.h xfer.h dsm2.h \
 		dialup.h yukon.h ctidbgmem.h dllbase.h os2_2w32.h types.h \
-		cticalls.h utility.h transdata_tracker.h transdata_datalink.h \
-		prot_ymodem.h transdata_data.h
+		cticalls.h utility.h transdata_tracker.h numstr.h \
+		transdata_datalink.h prot_ymodem.h transdata_data.h
 prot_versacom.obj:	ctidbgmem.h cparms.h dlldefs.h cmdparse.h \
 		parsevalue.h prot_versacom.h dsm2.h mutex.h guard.h dllbase.h \
 		os2_2w32.h types.h cticalls.h master.h msg_pcrequest.h \
@@ -491,19 +491,19 @@ std_ansi_tbl_zero_one.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
 std_ansi_tbl_zero_zero.obj:	std_ansi_tbl_zero_zero.h dlldefs.h dsm2.h \
 		mutex.h guard.h ctitypes.h types.h std_ansi_tbl_base.h \
 		logger.h thread.h
-transdata_application.obj:	transdata_application.h xfer.h dsm2.h \
-		mutex.h dlldefs.h guard.h dialup.h yukon.h ctidbgmem.h \
-		dllbase.h os2_2w32.h types.h cticalls.h utility.h \
-		transdata_tracker.h transdata_datalink.h prot_ymodem.h \
-		transdata_data.h
-transdata_data.obj:	transdata_data.h xfer.h dsm2.h mutex.h dlldefs.h \
-		guard.h dialup.h yukon.h ctidbgmem.h dllbase.h os2_2w32.h \
-		types.h cticalls.h
+transdata_application.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
+		transdata_application.h xfer.h dsm2.h dialup.h yukon.h \
+		ctidbgmem.h dllbase.h os2_2w32.h types.h cticalls.h utility.h \
+		transdata_tracker.h numstr.h transdata_datalink.h \
+		prot_ymodem.h transdata_data.h
+transdata_data.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
+		transdata_data.h xfer.h dsm2.h dialup.h yukon.h ctidbgmem.h \
+		dllbase.h os2_2w32.h types.h cticalls.h
 transdata_datalink.obj:	guard.h dlldefs.h logger.h thread.h mutex.h \
 		transdata_datalink.h xfer.h dsm2.h dialup.h yukon.h \
 		ctidbgmem.h dllbase.h os2_2w32.h types.h cticalls.h
 transdata_tracker.obj:	transdata_tracker.h xfer.h dsm2.h mutex.h \
 		dlldefs.h guard.h dialup.h yukon.h ctidbgmem.h dllbase.h \
-		os2_2w32.h types.h cticalls.h transdata_datalink.h \
+		os2_2w32.h types.h cticalls.h numstr.h transdata_datalink.h \
 		prot_ymodem.h logger.h thread.h
 #ENDUPDATE#

@@ -188,6 +188,15 @@ fdrinterface.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h os2_2w32.h \
 		fdr.h fdrdebuglevel.h fdrpointlist.h queues.h
 fdrio.obj:	fdrio.h
 fdriosocket.obj:	fdriosocket.h fdrio.h
+fdrlodestarimport.obj:	cparms.h dlldefs.h msg_cmd.h message.h \
+		ctidbgmem.h collectable.h pointtypes.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
+		fdrtextfilebase.h fdrinterface.h connection.h exchange.h \
+		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
+		msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
+		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
+		fdrpointlist.h queues.h TextFileInterfaceParts.h \
+		fdrlodestarimport.h
 fdrpoint.obj:	fdrpoint.h dlldefs.h pointtypes.h fdrdestination.h fdr.h \
 		pointdefs.h types.h logger.h thread.h mutex.h guard.h
 fdrpointidmap.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
@@ -338,7 +347,7 @@ mgr_fdrpoint.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		resolvers.h pointtypes.h yukon.h ctidbgmem.h \
 		db_entry_defines.h fdr.h pointdefs.h fdrdebuglevel.h \
 		mgr_fdrpoint.h rtdb.h fdrpoint.h fdrdestination.h logger.h \
-		thread.h
+		thread.h utility.h
 socketinterface.obj:	socketinterface.h dlldefs.h fdrinterface.h \
 		message.h ctidbgmem.h collectable.h connection.h exchange.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \

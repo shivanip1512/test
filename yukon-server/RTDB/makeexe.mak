@@ -170,10 +170,9 @@ device.obj:	dev_carrier.h dev_dlcbase.h dev_single.h dsm2.h mutex.h \
 		msg_pdata.h pointdefs.h msg_signal.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h tbl_route.h tbl_carrier.h mgr_route.h \
 		repeaterrole.h rtdb.h hashkey.h slctdev.h smartmap.h \
-		prot_emetcon.h msg_cmd.h tbl_metergrp.h vcomdefs.h \
-		tbl_loadprofile.h tbl_dv_mctiedport.h dev_remote.h \
-		tbl_dialup.h tbl_direct.h dev_meter.h dev_ied.h ctitypes.h \
-		tbl_dv_ied.h xfer.h dialup.h
+		prot_emetcon.h tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
+		tbl_dv_mctiedport.h dev_remote.h tbl_dialup.h tbl_direct.h \
+		dev_meter.h dev_ied.h ctitypes.h tbl_dv_ied.h xfer.h dialup.h
 devtest.obj:	hashkey.h mgr_device.h dlldefs.h rtdb.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h \
 		dev_base.h cmdparse.h parsevalue.h rte_base.h dbmemobject.h \
@@ -278,8 +277,8 @@ dev_carrier.obj:	dev_carrier.h dev_dlcbase.h dev_single.h dsm2.h \
 		msg_pdata.h pointdefs.h msg_signal.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h tbl_route.h tbl_carrier.h mgr_route.h \
 		repeaterrole.h rtdb.h hashkey.h slctdev.h smartmap.h \
-		prot_emetcon.h msg_cmd.h tbl_metergrp.h vcomdefs.h \
-		tbl_loadprofile.h tbl_dv_mctiedport.h
+		prot_emetcon.h tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
+		tbl_dv_mctiedport.h
 dev_cbc.obj:	dsm2.h mutex.h dlldefs.h guard.h porter.h dsm2err.h \
 		devicetypes.h queues.h types.h pt_base.h dbmemobject.h \
 		resolvers.h pointtypes.h yukon.h ctidbgmem.h dllbase.h \
@@ -359,37 +358,39 @@ dev_dct501.obj:	device.h devicetypes.h dlldefs.h dev_dct501.h \
 		msg_pdata.h pointdefs.h msg_signal.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h tbl_route.h tbl_carrier.h mgr_route.h \
 		repeaterrole.h rtdb.h hashkey.h slctdev.h smartmap.h \
-		prot_emetcon.h msg_cmd.h tbl_metergrp.h vcomdefs.h \
-		tbl_loadprofile.h tbl_dv_mctiedport.h pt_numeric.h pt_base.h \
-		pt_dyn_base.h tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h \
-		tbl_pt_limit.h mgr_point.h slctpnt.h porter.h dsm2err.h \
-		numstr.h
-dev_dlcbase.obj:	cparms.h dlldefs.h devicetypes.h dev_dlcbase.h \
-		dev_single.h dsm2.h mutex.h guard.h dev_base.h cmdparse.h \
-		parsevalue.h rte_base.h dbmemobject.h ctibase.h ctinexus.h \
-		dllbase.h os2_2w32.h types.h cticalls.h message.h ctidbgmem.h \
-		collectable.h tbl_pao.h tbl_rtcomm.h dbaccess.h sema.h \
-		resolvers.h pointtypes.h yukon.h db_entry_defines.h \
-		desolvers.h logger.h thread.h tbl_base.h tbl_2way.h \
-		tbl_stats.h tbl_scanrate.h tbl_paoexclusion.h queues.h \
-		utility.h msg_pcrequest.h msg_pcreturn.h msg_multi.h \
-		msg_pdata.h pointdefs.h msg_signal.h tbl_dv_scandata.h \
-		tbl_dv_wnd.h tbl_route.h tbl_carrier.h mgr_route.h \
-		repeaterrole.h rtdb.h hashkey.h slctdev.h smartmap.h \
-		prot_emetcon.h msg_cmd.h pt_base.h pt_dyn_base.h \
-		tbl_pt_base.h
+		prot_emetcon.h tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
+		tbl_dv_mctiedport.h pt_numeric.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
+		mgr_point.h slctpnt.h porter.h dsm2err.h numstr.h
+dev_dlcbase.obj:	dev_dlcbase.h dev_single.h dsm2.h mutex.h dlldefs.h \
+		guard.h dev_base.h cmdparse.h parsevalue.h rte_base.h \
+		dbmemobject.h ctibase.h ctinexus.h dllbase.h os2_2w32.h \
+		types.h cticalls.h message.h ctidbgmem.h collectable.h \
+		tbl_pao.h tbl_rtcomm.h dbaccess.h sema.h resolvers.h \
+		pointtypes.h yukon.h db_entry_defines.h desolvers.h logger.h \
+		thread.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
+		tbl_paoexclusion.h queues.h utility.h msg_pcrequest.h \
+		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h tbl_dv_scandata.h tbl_dv_wnd.h tbl_route.h \
+		tbl_carrier.h mgr_route.h repeaterrole.h rtdb.h hashkey.h \
+		slctdev.h smartmap.h prot_emetcon.h dev_mct.h dev_carrier.h \
+		tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
+		tbl_dv_mctiedport.h pt_numeric.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
+		cparms.h devicetypes.h msg_cmd.h porter.h dsm2err.h numstr.h
 dev_dnp.obj:	dsm2.h mutex.h dlldefs.h guard.h porter.h dsm2err.h \
 		devicetypes.h queues.h types.h pt_base.h dbmemobject.h \
 		resolvers.h pointtypes.h yukon.h ctidbgmem.h dllbase.h \
 		os2_2w32.h cticalls.h db_entry_defines.h pointdefs.h \
 		pt_dyn_base.h tbl_pt_base.h dbaccess.h sema.h desolvers.h \
 		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
-		pt_status.h tbl_pt_status.h master.h dllyukon.h mgr_route.h \
-		repeaterrole.h rte_base.h cmdparse.h parsevalue.h ctibase.h \
-		ctinexus.h message.h collectable.h tbl_pao.h tbl_rtcomm.h \
-		logger.h thread.h rtdb.h hashkey.h slctdev.h dev_base.h \
-		tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
-		tbl_paoexclusion.h utility.h smartmap.h mgr_point.h slctpnt.h \
+		pt_status.h tbl_pt_status.h pt_accum.h logger.h thread.h \
+		tbl_pt_accum.h tbl_pt_accumhistory.h master.h dllyukon.h \
+		mgr_route.h repeaterrole.h rte_base.h cmdparse.h parsevalue.h \
+		ctibase.h ctinexus.h message.h collectable.h tbl_pao.h \
+		tbl_rtcomm.h rtdb.h hashkey.h slctdev.h dev_base.h tbl_base.h \
+		tbl_2way.h tbl_stats.h tbl_scanrate.h tbl_paoexclusion.h \
+		utility.h smartmap.h mgr_point.h slctpnt.h msg_cmd.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
 		msg_signal.h msg_lmcontrolhistory.h dev_dnp.h dev_remote.h \
 		dev_single.h tbl_dv_scandata.h tbl_dv_wnd.h tbl_dialup.h \
@@ -660,19 +661,21 @@ dev_macro.obj:	dsm2.h mutex.h dlldefs.h guard.h devicetypes.h \
 dev_mark_v.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h porter.h dsm2err.h \
 		devicetypes.h queues.h logger.h thread.h dev_mark_v.h \
-		dev_meter.h tbl_metergrp.h vcomdefs.h dbmemobject.h \
-		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h \
-		dev_ied.h ctitypes.h dev_remote.h dev_single.h dev_base.h \
-		cmdparse.h parsevalue.h rte_base.h ctibase.h ctinexus.h \
-		message.h collectable.h tbl_pao.h tbl_rtcomm.h desolvers.h \
-		tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
-		tbl_paoexclusion.h utility.h msg_pcrequest.h msg_pcreturn.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h \
-		tbl_dv_scandata.h tbl_dv_wnd.h tbl_dialup.h tbl_direct.h \
-		tbl_dv_ied.h xfer.h dialup.h prot_transdata.h \
-		transdata_application.h transdata_datalink.h prot_ymodem.h \
-		mgr_point.h rtdb.h hashkey.h pt_base.h pt_dyn_base.h \
-		tbl_pt_base.h slctpnt.h device.h
+		prot_transdata.h transdata_application.h xfer.h dialup.h \
+		utility.h transdata_tracker.h numstr.h transdata_datalink.h \
+		prot_ymodem.h transdata_data.h dev_meter.h tbl_metergrp.h \
+		vcomdefs.h dbmemobject.h dbaccess.h sema.h resolvers.h \
+		pointtypes.h db_entry_defines.h dev_ied.h ctitypes.h \
+		dev_remote.h dev_single.h dev_base.h cmdparse.h parsevalue.h \
+		rte_base.h ctibase.h ctinexus.h message.h collectable.h \
+		tbl_pao.h tbl_rtcomm.h desolvers.h tbl_base.h tbl_2way.h \
+		tbl_stats.h tbl_scanrate.h tbl_paoexclusion.h msg_pcrequest.h \
+		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h tbl_dv_scandata.h tbl_dv_wnd.h tbl_dialup.h \
+		tbl_direct.h tbl_dv_ied.h mgr_point.h rtdb.h hashkey.h \
+		pt_base.h pt_dyn_base.h tbl_pt_base.h slctpnt.h device.h \
+		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
+		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h
 dev_mct.obj:	numstr.h dlldefs.h devicetypes.h device.h dev_mct.h \
 		dev_carrier.h dev_dlcbase.h dev_single.h dsm2.h mutex.h \
 		guard.h dev_base.h cmdparse.h parsevalue.h rte_base.h \
@@ -685,13 +688,13 @@ dev_mct.obj:	numstr.h dlldefs.h devicetypes.h device.h dev_mct.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
 		msg_signal.h tbl_dv_scandata.h tbl_dv_wnd.h tbl_route.h \
 		tbl_carrier.h mgr_route.h repeaterrole.h rtdb.h hashkey.h \
-		slctdev.h smartmap.h prot_emetcon.h msg_cmd.h tbl_metergrp.h \
-		vcomdefs.h tbl_loadprofile.h tbl_dv_mctiedport.h pt_numeric.h \
-		pt_base.h pt_dyn_base.h tbl_pt_base.h tbl_pt_unit.h \
-		tbl_unitmeasure.h tbl_pt_limit.h dev_mct31x.h dev_mct310.h \
-		dev_mct_lmt2.h dev_mct22x.h dev_mct2xx.h mgr_point.h \
-		slctpnt.h pt_accum.h tbl_pt_accum.h tbl_pt_accumhistory.h \
-		porter.h dsm2err.h
+		slctdev.h smartmap.h prot_emetcon.h tbl_metergrp.h vcomdefs.h \
+		tbl_loadprofile.h tbl_dv_mctiedport.h pt_numeric.h pt_base.h \
+		pt_dyn_base.h tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h \
+		tbl_pt_limit.h dev_mct31x.h dev_mct310.h dev_mct_lmt2.h \
+		dev_mct22x.h dev_mct2xx.h mgr_point.h slctpnt.h msg_cmd.h \
+		pt_accum.h tbl_pt_accum.h tbl_pt_accumhistory.h porter.h \
+		dsm2err.h
 dev_mct210.obj:	device.h devicetypes.h dlldefs.h dev_mct210.h \
 		dev_mct2xx.h dev_mct.h dev_carrier.h dev_dlcbase.h \
 		dev_single.h dsm2.h mutex.h guard.h dev_base.h cmdparse.h \
@@ -705,11 +708,10 @@ dev_mct210.obj:	device.h devicetypes.h dlldefs.h dev_mct210.h \
 		msg_pdata.h pointdefs.h msg_signal.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h tbl_route.h tbl_carrier.h mgr_route.h \
 		repeaterrole.h rtdb.h hashkey.h slctdev.h smartmap.h \
-		prot_emetcon.h msg_cmd.h tbl_metergrp.h vcomdefs.h \
-		tbl_loadprofile.h tbl_dv_mctiedport.h pt_numeric.h pt_base.h \
-		pt_dyn_base.h tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h \
-		tbl_pt_limit.h mgr_point.h slctpnt.h numstr.h porter.h \
-		dsm2err.h
+		prot_emetcon.h tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
+		tbl_dv_mctiedport.h pt_numeric.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
+		mgr_point.h slctpnt.h numstr.h porter.h dsm2err.h
 dev_mct22x.obj:	devicetypes.h dev_mct22X.h dev_mct2xx.h dev_mct.h \
 		dev_carrier.h dev_dlcbase.h dev_single.h dsm2.h mutex.h \
 		dlldefs.h guard.h dev_base.h cmdparse.h parsevalue.h \
@@ -723,11 +725,10 @@ dev_mct22x.obj:	devicetypes.h dev_mct22X.h dev_mct2xx.h dev_mct.h \
 		msg_pdata.h pointdefs.h msg_signal.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h tbl_route.h tbl_carrier.h mgr_route.h \
 		repeaterrole.h rtdb.h hashkey.h slctdev.h smartmap.h \
-		prot_emetcon.h msg_cmd.h tbl_metergrp.h vcomdefs.h \
-		tbl_loadprofile.h tbl_dv_mctiedport.h pt_numeric.h pt_base.h \
-		pt_dyn_base.h tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h \
-		tbl_pt_limit.h mgr_point.h slctpnt.h porter.h dsm2err.h \
-		numstr.h
+		prot_emetcon.h tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
+		tbl_dv_mctiedport.h pt_numeric.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
+		mgr_point.h slctpnt.h porter.h dsm2err.h numstr.h
 dev_mct24x.obj:	device.h devicetypes.h dlldefs.h dev_mct24X.h \
 		dev_mct2xx.h dev_mct.h dev_carrier.h dev_dlcbase.h \
 		dev_single.h dsm2.h mutex.h guard.h dev_base.h cmdparse.h \
@@ -741,11 +742,10 @@ dev_mct24x.obj:	device.h devicetypes.h dlldefs.h dev_mct24X.h \
 		msg_pdata.h pointdefs.h msg_signal.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h tbl_route.h tbl_carrier.h mgr_route.h \
 		repeaterrole.h rtdb.h hashkey.h slctdev.h smartmap.h \
-		prot_emetcon.h msg_cmd.h tbl_metergrp.h vcomdefs.h \
-		tbl_loadprofile.h tbl_dv_mctiedport.h pt_numeric.h pt_base.h \
-		pt_dyn_base.h tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h \
-		tbl_pt_limit.h mgr_point.h slctpnt.h porter.h dsm2err.h \
-		numstr.h dllyukon.h
+		prot_emetcon.h tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
+		tbl_dv_mctiedport.h pt_numeric.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
+		mgr_point.h slctpnt.h porter.h dsm2err.h numstr.h dllyukon.h
 dev_mct2xx.obj:	device.h devicetypes.h dlldefs.h dev_mct2XX.h \
 		dev_mct.h dev_carrier.h dev_dlcbase.h dev_single.h dsm2.h \
 		mutex.h guard.h dev_base.h cmdparse.h parsevalue.h rte_base.h \
@@ -758,11 +758,11 @@ dev_mct2xx.obj:	device.h devicetypes.h dlldefs.h dev_mct2XX.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
 		msg_signal.h tbl_dv_scandata.h tbl_dv_wnd.h tbl_route.h \
 		tbl_carrier.h mgr_route.h repeaterrole.h rtdb.h hashkey.h \
-		slctdev.h smartmap.h prot_emetcon.h msg_cmd.h tbl_metergrp.h \
-		vcomdefs.h tbl_loadprofile.h tbl_dv_mctiedport.h pt_numeric.h \
-		pt_base.h pt_dyn_base.h tbl_pt_base.h tbl_pt_unit.h \
-		tbl_unitmeasure.h tbl_pt_limit.h mgr_point.h slctpnt.h \
-		porter.h dsm2err.h numstr.h
+		slctdev.h smartmap.h prot_emetcon.h tbl_metergrp.h vcomdefs.h \
+		tbl_loadprofile.h tbl_dv_mctiedport.h pt_numeric.h pt_base.h \
+		pt_dyn_base.h tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h \
+		tbl_pt_limit.h mgr_point.h slctpnt.h porter.h dsm2err.h \
+		numstr.h
 dev_mct310.obj:	device.h devicetypes.h dlldefs.h dev_mct310.h \
 		dev_mct.h dev_carrier.h dev_dlcbase.h dev_single.h dsm2.h \
 		mutex.h guard.h dev_base.h cmdparse.h parsevalue.h rte_base.h \
@@ -775,11 +775,11 @@ dev_mct310.obj:	device.h devicetypes.h dlldefs.h dev_mct310.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
 		msg_signal.h tbl_dv_scandata.h tbl_dv_wnd.h tbl_route.h \
 		tbl_carrier.h mgr_route.h repeaterrole.h rtdb.h hashkey.h \
-		slctdev.h smartmap.h prot_emetcon.h msg_cmd.h tbl_metergrp.h \
-		vcomdefs.h tbl_loadprofile.h tbl_dv_mctiedport.h pt_numeric.h \
-		pt_base.h pt_dyn_base.h tbl_pt_base.h tbl_pt_unit.h \
-		tbl_unitmeasure.h tbl_pt_limit.h mgr_point.h slctpnt.h \
-		numstr.h porter.h dsm2err.h
+		slctdev.h smartmap.h prot_emetcon.h tbl_metergrp.h vcomdefs.h \
+		tbl_loadprofile.h tbl_dv_mctiedport.h pt_numeric.h pt_base.h \
+		pt_dyn_base.h tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h \
+		tbl_pt_limit.h mgr_point.h slctpnt.h pt_status.h \
+		tbl_pt_status.h numstr.h porter.h dsm2err.h dllyukon.h
 dev_mct31x.obj:	devicetypes.h dev_mct31X.h dev_mct310.h dev_mct.h \
 		dev_carrier.h dev_dlcbase.h dev_single.h dsm2.h mutex.h \
 		dlldefs.h guard.h dev_base.h cmdparse.h parsevalue.h \
@@ -793,10 +793,27 @@ dev_mct31x.obj:	devicetypes.h dev_mct31X.h dev_mct310.h dev_mct.h \
 		msg_pdata.h pointdefs.h msg_signal.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h tbl_route.h tbl_carrier.h mgr_route.h \
 		repeaterrole.h rtdb.h hashkey.h slctdev.h smartmap.h \
-		prot_emetcon.h msg_cmd.h tbl_metergrp.h vcomdefs.h \
+		prot_emetcon.h tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
+		tbl_dv_mctiedport.h pt_numeric.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
+		mgr_point.h slctpnt.h numstr.h dllyukon.h
+dev_mct410.obj:	device.h devicetypes.h dlldefs.h dev_mct410.h \
+		dev_mct.h dev_carrier.h dev_dlcbase.h dev_single.h dsm2.h \
+		mutex.h guard.h dev_base.h cmdparse.h parsevalue.h rte_base.h \
+		dbmemobject.h ctibase.h ctinexus.h dllbase.h os2_2w32.h \
+		types.h cticalls.h message.h ctidbgmem.h collectable.h \
+		tbl_pao.h tbl_rtcomm.h dbaccess.h sema.h resolvers.h \
+		pointtypes.h yukon.h db_entry_defines.h desolvers.h logger.h \
+		thread.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
+		tbl_paoexclusion.h queues.h utility.h msg_pcrequest.h \
+		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h tbl_dv_scandata.h tbl_dv_wnd.h tbl_route.h \
+		tbl_carrier.h mgr_route.h repeaterrole.h rtdb.h hashkey.h \
+		slctdev.h smartmap.h prot_emetcon.h tbl_metergrp.h vcomdefs.h \
 		tbl_loadprofile.h tbl_dv_mctiedport.h pt_numeric.h pt_base.h \
 		pt_dyn_base.h tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h \
-		tbl_pt_limit.h mgr_point.h slctpnt.h numstr.h dllyukon.h
+		tbl_pt_limit.h mgr_point.h slctpnt.h numstr.h porter.h \
+		dsm2err.h
 dev_mct_broadcast.obj:	dev_mct_broadcast.h dev_dlcbase.h dev_single.h \
 		dsm2.h mutex.h dlldefs.h guard.h dev_base.h cmdparse.h \
 		parsevalue.h rte_base.h dbmemobject.h ctibase.h ctinexus.h \
@@ -809,9 +826,9 @@ dev_mct_broadcast.obj:	dev_mct_broadcast.h dev_dlcbase.h dev_single.h \
 		msg_pdata.h pointdefs.h msg_signal.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h tbl_route.h tbl_carrier.h mgr_route.h \
 		repeaterrole.h rtdb.h hashkey.h slctdev.h smartmap.h \
-		prot_emetcon.h msg_cmd.h numstr.h porter.h dsm2err.h \
-		devicetypes.h dev_mct31x.h dev_mct310.h dev_mct.h \
-		dev_carrier.h tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
+		prot_emetcon.h numstr.h porter.h dsm2err.h devicetypes.h \
+		dev_mct31x.h dev_mct310.h dev_mct.h dev_carrier.h \
+		tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
 		tbl_dv_mctiedport.h pt_numeric.h pt_base.h pt_dyn_base.h \
 		tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h
 dev_mct_lmt2.obj:	devicetypes.h dev_mct_lmt2.h dev_mct22x.h \
@@ -827,10 +844,10 @@ dev_mct_lmt2.obj:	devicetypes.h dev_mct_lmt2.h dev_mct22x.h \
 		msg_pdata.h pointdefs.h msg_signal.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h tbl_route.h tbl_carrier.h mgr_route.h \
 		repeaterrole.h rtdb.h hashkey.h slctdev.h smartmap.h \
-		prot_emetcon.h msg_cmd.h tbl_metergrp.h vcomdefs.h \
-		tbl_loadprofile.h tbl_dv_mctiedport.h pt_numeric.h pt_base.h \
-		pt_dyn_base.h tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h \
-		tbl_pt_limit.h mgr_point.h slctpnt.h numstr.h
+		prot_emetcon.h tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
+		tbl_dv_mctiedport.h pt_numeric.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
+		mgr_point.h slctpnt.h numstr.h
 dev_meter.obj:	dev_meter.h tbl_metergrp.h yukon.h ctidbgmem.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h vcomdefs.h dbmemobject.h dbaccess.h sema.h \
@@ -873,7 +890,7 @@ dev_repeater.obj:	device.h devicetypes.h dlldefs.h dev_repeater.h \
 		msg_pdata.h pointdefs.h msg_signal.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h tbl_route.h tbl_carrier.h mgr_route.h \
 		repeaterrole.h rtdb.h hashkey.h slctdev.h smartmap.h \
-		prot_emetcon.h msg_cmd.h mgr_point.h pt_base.h pt_dyn_base.h \
+		prot_emetcon.h mgr_point.h pt_base.h pt_dyn_base.h \
 		tbl_pt_base.h slctpnt.h porter.h dsm2err.h numstr.h
 dev_repeater800.obj:	device.h devicetypes.h dlldefs.h \
 		dev_repeater800.h dev_repeater.h dev_dlcbase.h dev_single.h \
@@ -888,7 +905,7 @@ dev_repeater800.obj:	device.h devicetypes.h dlldefs.h \
 		msg_pdata.h pointdefs.h msg_signal.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h tbl_route.h tbl_carrier.h mgr_route.h \
 		repeaterrole.h rtdb.h hashkey.h slctdev.h smartmap.h \
-		prot_emetcon.h msg_cmd.h mgr_point.h pt_base.h pt_dyn_base.h \
+		prot_emetcon.h mgr_point.h pt_base.h pt_dyn_base.h \
 		tbl_pt_base.h slctpnt.h porter.h dsm2err.h numstr.h
 dev_schlum.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h porter.h dsm2err.h \
@@ -1045,12 +1062,11 @@ dlldev.obj:	mgr_device.h dlldefs.h rtdb.h hashkey.h dllbase.h \
 		rte_xcu.h rte_macro.h tbl_rtmacro.h dev_dlcbase.h \
 		dev_single.h msg_pcreturn.h msg_multi.h msg_pdata.h \
 		pointdefs.h msg_signal.h tbl_dv_scandata.h tbl_dv_wnd.h \
-		tbl_route.h tbl_carrier.h prot_emetcon.h msg_cmd.h \
-		dev_grp_emetcon.h dev_grp.h msg_lmcontrolhistory.h \
-		pt_status.h pt_base.h pt_dyn_base.h tbl_pt_base.h \
-		tbl_pt_status.h pt_analog.h pt_numeric.h tbl_pt_unit.h \
-		tbl_unitmeasure.h tbl_pt_limit.h tbl_pt_analog.h \
-		tbl_dv_emetcon.h
+		tbl_route.h tbl_carrier.h prot_emetcon.h dev_grp_emetcon.h \
+		dev_grp.h msg_lmcontrolhistory.h pt_status.h pt_base.h \
+		pt_dyn_base.h tbl_pt_base.h tbl_pt_status.h pt_analog.h \
+		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
+		tbl_pt_analog.h tbl_dv_emetcon.h
 id_devdll.obj:	id_devdll.h utility.h dsm2.h mutex.h dlldefs.h guard.h \
 		id_build.h id_vinfo.h
 id_pntdll.obj:	id_pntdll.h utility.h dsm2.h mutex.h dlldefs.h guard.h \
@@ -1094,7 +1110,7 @@ mgr_device.obj:	rtdb.h dlldefs.h hashkey.h dllbase.h os2_2w32.h \
 		tbl_dv_idlcremote.h trx_info.h porter.h dsm2err.h \
 		devicetypes.h trx_711.h dev_carrier.h dev_dlcbase.h \
 		tbl_route.h tbl_carrier.h mgr_route.h repeaterrole.h \
-		smartmap.h prot_emetcon.h msg_cmd.h tbl_loadprofile.h \
+		smartmap.h prot_emetcon.h tbl_loadprofile.h \
 		tbl_dv_mctiedport.h dev_repeater.h dev_tap.h \
 		tbl_dv_tappaging.h dev_grp_emetcon.h tbl_dv_emetcon.h \
 		dev_grp_energypro.h tbl_dv_expresscom.h dev_grp_expresscom.h \
@@ -1378,15 +1394,15 @@ slctdev.obj:	dev_710.h dev_idlc.h ctitypes.h types.h os2_2w32.h \
 		ion_net_network.h ion_net_datalink.h dev_lcu.h dev_quantum.h \
 		dev_vectron.h dev_carrier.h dev_dlcbase.h tbl_route.h \
 		tbl_carrier.h mgr_route.h repeaterrole.h slctdev.h smartmap.h \
-		prot_emetcon.h msg_cmd.h tbl_loadprofile.h \
-		tbl_dv_mctiedport.h dev_tap.h tbl_dv_tappaging.h dev_wctp.h \
-		dev_grp_emetcon.h tbl_dv_emetcon.h dev_grp_expresscom.h \
-		tbl_dv_expresscom.h dev_grp_energypro.h dev_grp_mct.h \
-		tbl_dv_lmgmct.h dev_grp_ripple.h tbl_dv_lmg_ripple.h \
-		dev_grp_versacom.h tbl_dv_versacom.h dev_davis.h dev_system.h \
-		dev_aplus.h device.h dev_alpha.h dev_a1.h dev_lgs4.h \
-		dev_dr87.h dev_dct501.h dev_mct24x.h dev_mct2xx.h dev_mct.h \
-		dev_mct210.h dev_mct22X.h dev_mct310.h dev_mct31X.h \
+		prot_emetcon.h tbl_loadprofile.h tbl_dv_mctiedport.h \
+		dev_tap.h tbl_dv_tappaging.h dev_wctp.h dev_grp_emetcon.h \
+		tbl_dv_emetcon.h dev_grp_expresscom.h tbl_dv_expresscom.h \
+		dev_grp_energypro.h dev_grp_mct.h tbl_dv_lmgmct.h \
+		dev_grp_ripple.h tbl_dv_lmg_ripple.h dev_grp_versacom.h \
+		tbl_dv_versacom.h dev_davis.h dev_system.h dev_aplus.h \
+		device.h dev_alpha.h dev_a1.h dev_lgs4.h dev_dr87.h \
+		dev_dct501.h dev_mct24x.h dev_mct2xx.h dev_mct.h dev_mct210.h \
+		dev_mct22X.h dev_mct310.h dev_mct31X.h dev_mct410.h \
 		dev_mct_lmt2.h dev_mct_broadcast.h dev_kv2.h prot_ansi_kv2.h \
 		prot_ansi.h ansi_application.h ansi_datalink.h \
 		ansi_billing_table.h std_ansi_tbl_base.h \
@@ -1397,10 +1413,13 @@ slctdev.obj:	dev_710.h dev_idlc.h ctitypes.h types.h os2_2w32.h \
 		std_ansi_tbl_one_six.h std_ansi_tbl_two_one.h \
 		std_ansi_tbl_two_two.h std_ansi_tbl_two_three.h \
 		std_ansi_tbl_five_two.h ansi_kv2_mtable_zero.h \
-		ansi_kv2_mtable_seventy.h dev_repeater800.h dev_repeater.h \
-		dev_sixnet.h prot_sixnet.h rte_macro.h tbl_rtmacro.h \
-		rte_ccu.h rte_xcu.h tbl_rtcarrier.h tbl_rtrepeater.h \
-		rte_versacom.h tbl_rtversacom.h master.h
+		ansi_kv2_mtable_seventy.h dev_mark_v.h prot_transdata.h \
+		transdata_application.h transdata_tracker.h \
+		transdata_datalink.h prot_ymodem.h transdata_data.h \
+		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
+		dev_repeater800.h dev_repeater.h dev_sixnet.h prot_sixnet.h \
+		rte_macro.h tbl_rtmacro.h rte_ccu.h rte_xcu.h tbl_rtcarrier.h \
+		tbl_rtrepeater.h rte_versacom.h tbl_rtversacom.h master.h
 slctpnt.obj:	rtdb.h dlldefs.h hashkey.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h dbaccess.h sema.h \
 		resolvers.h pointtypes.h yukon.h ctidbgmem.h \

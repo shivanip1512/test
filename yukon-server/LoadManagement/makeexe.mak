@@ -198,11 +198,12 @@ lmcontrolareastore.obj:	lmcontrolareastore.h observe.h types.h \
 		lmprogramdirect.h lmprogramdirectgear.h \
 		lmprogramthermostatgear.h lmprogramenergyexchange.h \
 		lmgroupversacom.h lmgroupemetcon.h lmgroupexpresscom.h \
-		lmgroupripple.h lmgrouppoint.h lmprogramcontrolwindow.h \
-		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
-		devicetypes.h dbaccess.h sema.h ctibase.h ctinexus.h \
-		configparms.h cparms.h msg_dbchg.h loadmanager.h executor.h \
-		lmmessage.h ctdpcptrq.h
+		lmgroupmct.h lmgroupripple.h lmgrouppoint.h \
+		lmprogramcontrolwindow.h resolvers.h pointtypes.h \
+		db_entry_defines.h desolvers.h devicetypes.h dbaccess.h \
+		sema.h ctibase.h ctinexus.h configparms.h cparms.h \
+		msg_dbchg.h loadmanager.h executor.h lmmessage.h ctdpcptrq.h \
+		utility.h
 lmcontrolareatrigger.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		lmcontrolareatrigger.h observe.h lmid.h lmprogrambase.h \
@@ -309,6 +310,16 @@ lmgroupemetcon.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 lmgroupexpresscom.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		lmgroupexpresscom.h lmgroupbase.h observe.h msg_pcrequest.h \
+		message.h ctidbgmem.h collectable.h msg_cmd.h lmid.h logger.h \
+		thread.h loadmanager.h connection.h exchange.h msg_multi.h \
+		msg_pdata.h pointdefs.h msg_signal.h yukon.h msg_ptreg.h \
+		msg_reg.h queue.h pointtypes.h configparms.h cparms.h \
+		lmcontrolareastore.h lmcontrolarea.h lmprogrambase.h \
+		lmcontrolareatrigger.h executor.h lmmessage.h ctdpcptrq.h \
+		ctibase.h ctinexus.h
+lmgroupmct.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h sema.h lmgroupmct.h \
+		lmgroupemetcon.h lmgroupbase.h observe.h msg_pcrequest.h \
 		message.h ctidbgmem.h collectable.h msg_cmd.h lmid.h logger.h \
 		thread.h loadmanager.h connection.h exchange.h msg_multi.h \
 		msg_pdata.h pointdefs.h msg_signal.h yukon.h msg_ptreg.h \

@@ -43,6 +43,7 @@ tbl_contact_notification.obj \
 tbl_dialup.obj \
 tbl_direct.obj \
 tbl_dyn_ptalarming.obj \
+tbl_dyn_pttag.obj \
 tbl_dv_cbc.obj \
 tbl_dv_dnp.obj \
 tbl_dv_emetcon.obj \
@@ -91,6 +92,8 @@ tbl_scanrate.obj \
 tbl_state.obj \
 tbl_state_grp.obj \
 tbl_stats.obj \
+tbl_tag.obj \
+tbl_taglog.obj \
 tbl_unitmeasure.obj \
 
 
@@ -238,6 +241,9 @@ tbl_dv_expresscom.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
 		dllbase.h os2_2w32.h cticalls.h dsm2.h db_entry_defines.h \
 		tbl_dv_expresscom.h vcomdefs.h dbmemobject.h dbaccess.h \
 		sema.h
+tbl_dv_filler.obj:	tbl_dv_filler.h yukon.h ctidbgmem.h dlldefs.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h utility.h
 tbl_dv_idlcremote.obj:	tbl_dv_idlcremote.h types.h logger.h thread.h \
 		mutex.h dlldefs.h guard.h dllbase.h os2_2w32.h cticalls.h \
 		dsm2.h dbmemobject.h dbaccess.h sema.h resolvers.h \
@@ -281,6 +287,10 @@ tbl_dyn_ptalarming.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h logger.h \
 		thread.h numstr.h tbl_dyn_ptalarming.h ctibase.h ctinexus.h \
 		dbmemobject.h pointdefs.h yukon.h ctidbgmem.h
+tbl_dyn_pttag.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h sema.h logger.h thread.h \
+		numstr.h tbl_dyn_pttag.h ctibase.h ctinexus.h dbmemobject.h \
+		pointdefs.h yukon.h ctidbgmem.h
 tbl_gateway_end_device.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h numstr.h \
 		tbl_gateway_end_device.h resolvers.h pointtypes.h yukon.h \
@@ -421,6 +431,14 @@ tbl_stats.obj:	tbl_stats.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h dbmemobject.h dbaccess.h \
 		sema.h resolvers.h pointtypes.h yukon.h ctidbgmem.h \
 		db_entry_defines.h desolvers.h logger.h thread.h
+tbl_tag.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h sema.h logger.h thread.h \
+		numstr.h tbl_tag.h ctibase.h ctinexus.h dbmemobject.h yukon.h \
+		ctidbgmem.h
+tbl_taglog.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h sema.h logger.h thread.h \
+		numstr.h tbl_taglog.h ctibase.h ctinexus.h dbmemobject.h \
+		pointdefs.h yukon.h ctidbgmem.h
 tbl_unitmeasure.obj:	tbl_unitmeasure.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h dbmemobject.h \
 		dbaccess.h sema.h resolvers.h pointtypes.h yukon.h \

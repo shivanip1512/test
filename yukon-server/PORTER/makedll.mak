@@ -254,9 +254,13 @@ portfield.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cti_asmc.h \
 		std_ansi_tbl_one_five.h std_ansi_tbl_one_six.h \
 		std_ansi_tbl_two_one.h std_ansi_tbl_two_two.h \
 		std_ansi_tbl_two_three.h std_ansi_tbl_five_two.h \
-		ansi_kv2_mtable_zero.h ansi_kv2_mtable_seventy.h msg_trace.h \
-		msg_cmd.h pilserver.h server_b.h con_mgr.h cmdopts.h \
-		mgr_route.h repeaterrole.h prot_711.h trx_info.h trx_711.h
+		ansi_kv2_mtable_zero.h ansi_kv2_mtable_seventy.h dev_mark_v.h \
+		prot_transdata.h transdata_application.h transdata_tracker.h \
+		numstr.h transdata_datalink.h prot_ymodem.h transdata_data.h \
+		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
+		msg_trace.h msg_cmd.h pilserver.h server_b.h con_mgr.h \
+		cmdopts.h mgr_route.h repeaterrole.h prot_711.h trx_info.h \
+		trx_711.h
 portfill.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cparms.h \
 		queues.h dsm2.h mutex.h guard.h dsm2err.h device.h \
 		devicetypes.h routes.h porter.h portdecl.h rte_base.h \
@@ -286,7 +290,7 @@ portgui.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		porter.h master.h ilex.h perform.h portglob.h tcpsup.h \
 		ctinexus.h logger.h thread.h statistics.h counter.h yukon.h \
 		ctidbgmem.h dllbase.h color.h portgui.h
-portgw.obj:	dlldefs.h dllyukon.h dllbase.h os2_2w32.h types.h \
+portgw.obj:	cparms.h dlldefs.h dllyukon.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h mgr_device.h rtdb.h \
 		hashkey.h dev_base.h cmdparse.h parsevalue.h rte_base.h \
 		dbmemobject.h ctibase.h ctinexus.h message.h ctidbgmem.h \
@@ -381,7 +385,11 @@ portque.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		tbl_port_base.h xfer.h dialup.h tbl_port_statistics.h \
 		c_port_interface.h group.h alarmlog.h mgr_device.h rtdb.h \
 		hashkey.h slctdev.h mgr_port.h smartmap.h slctprt.h pt_base.h \
-		pointdefs.h pt_dyn_base.h tbl_pt_base.h trx_711.h trx_info.h
+		pointdefs.h pt_dyn_base.h tbl_pt_base.h trx_711.h trx_info.h \
+		dev_ccu.h ctitypes.h dev_idlc.h dev_remote.h dev_single.h \
+		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
+		msg_signal.h tbl_dv_scandata.h tbl_dv_wnd.h tbl_dialup.h \
+		tbl_direct.h tbl_dv_idlcremote.h mgr_point.h slctpnt.h
 portsvc.obj:	dlldefs.h portsvc.h cservice.h ctibase.h ctinexus.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h portglob.h tcpsup.h porter.h dsm2err.h devicetypes.h \

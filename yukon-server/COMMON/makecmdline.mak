@@ -132,6 +132,8 @@ master.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cti_asmc.h \
 mutex.obj:	mutex.h dlldefs.h
 numstr.obj:	numstr.h dlldefs.h
 observe.obj:	observe.h types.h dlldefs.h
+pending_stat_operation.obj:	ctidbgmem.h logger.h thread.h mutex.h \
+		dlldefs.h guard.h pending_stat_operation.h ctitypes.h dsm2.h
 perform.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		mutex.h guard.h dsm2err.h device.h devicetypes.h routes.h \
 		drp.h elogger.h alarmlog.h porter.h perform.h
@@ -173,8 +175,8 @@ ucttime.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h elogger.h logger.h thread.h
 utility.obj:	ctinexus.h dlldefs.h dbaccess.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h porter.h \
-		dsm2err.h devicetypes.h queues.h utility.h logger.h thread.h \
-		numstr.h yukon.h ctidbgmem.h
+		dsm2err.h devicetypes.h queues.h logger.h thread.h numstr.h \
+		pointdefs.h utility.h yukon.h ctidbgmem.h
 wordbuilder.obj:	wordbuilder.h
 words.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cti_asmc.h queues.h \
 		dsm2.h mutex.h guard.h dsm2err.h device.h devicetypes.h \

@@ -180,7 +180,10 @@ msg_reg.obj:	collectable.h logger.h thread.h mutex.h dlldefs.h guard.h \
 		cticalls.h dsm2.h
 msg_signal.obj:	collectable.h logger.h thread.h mutex.h dlldefs.h \
 		guard.h msg_signal.h message.h ctidbgmem.h yukon.h dllbase.h \
-		os2_2w32.h types.h cticalls.h dsm2.h
+		os2_2w32.h types.h cticalls.h dsm2.h utility.h
+msg_tag.obj:	collectable.h logger.h thread.h mutex.h dlldefs.h guard.h \
+		msg_tag.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		message.h ctidbgmem.h yukon.h
 msg_trace.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		dsm2.h mutex.h guard.h collectable.h logger.h thread.h \
 		msg_trace.h message.h ctidbgmem.h
