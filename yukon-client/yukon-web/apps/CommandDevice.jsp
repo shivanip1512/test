@@ -9,6 +9,11 @@
 <%@ page import="com.cannontech.database.db.point.RawPointHistory"%>
 
 <%
+	boolean manual = false;
+	if( request.getParameter("manual") != null)
+	{	//Force going to the Commander page instead of a page based on the DeviceType
+		manual = true;
+	}
 	int deviceID = 0;
 	if( request.getParameter("deviceID") != null)
 	{
@@ -71,6 +76,7 @@
           <td  valign="top" width="101"> 
           	<%--"redirect" is required by Commander.jsp and for the sake of this wrapper being able to know the deviceID--%>
             <% String redirect = request.getRequestURI()+ "?deviceID=" + deviceID;%>
+            <%if( manual) redirect = redirect + "&manual";%>
             <% String referrer = request.getRequestURI()+ "?deviceID=" + deviceID;%>            
             <% String pageName = "CommandDevice.jsp?deviceID=" + deviceID;%>
 			<table width="101" border="0" cellspacing="0" cellpadding="5">
@@ -99,7 +105,7 @@
           </td>
           <td width="1" bgcolor="#000000"><img src="../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
 <%
-			if (liteYukonPao.getType() == com.cannontech.database.data.pao.DeviceTypes.MCT410IL)
+			if (liteYukonPao.getType() == com.cannontech.database.data.pao.DeviceTypes.MCT410IL && !manual)
 			{
 				%>
 				<%@ include file="Commander410.jsp"%>
