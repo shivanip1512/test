@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     3/7/2003 11:43:49 AM                         */
+/* Created on:     3/10/2003 11:45:47 AM                        */
 /*==============================================================*/
 
 
@@ -4340,14 +4340,17 @@ go
 /* Table : YukonWebConfiguration                                */
 /*==============================================================*/
 create table YukonWebConfiguration (
-ConfigurationID      NUMBER               not null,
-LogoLocation         VARCHAR2(100)        null,
-Description          VARCHAR2(500)        null,
-AlternateDisplayName VARCHAR2(50)         null,
-URL                  VARCHAR2(100)        null,
+ConfigurationID      numeric              not null,
+LogoLocation         varchar(100)         null,
+Description          varchar(500)         null,
+AlternateDisplayName varchar(50)          null,
+URL                  varchar(100)         null,
 constraint PK_YUKONWEBCONFIGURATION primary key  (ConfigurationID)
 )
 go
+
+
+insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 
 
 /*==============================================================*/

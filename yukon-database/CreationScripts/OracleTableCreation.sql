@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     3/7/2003 11:44:23 AM                         */
+/* Created on:     3/10/2003 11:44:59 AM                        */
 /*==============================================================*/
 
 
@@ -117,15 +117,15 @@ drop table MACROROUTE cascade constraints
 /
 
 
-drop table POINTANALOG cascade constraints
-/
-
-
 drop table DEVICEIDLCREMOTE cascade constraints
 /
 
 
 drop table ContactNotification cascade constraints
+/
+
+
+drop table POINTANALOG cascade constraints
 /
 
 
@@ -517,19 +517,11 @@ drop table TEMPLATECOLUMNS cascade constraints
 /
 
 
-drop table YukonWebConfiguration cascade constraints
-/
-
-
 drop table FDRTelegyrGroup cascade constraints
 /
 
 
 drop table BillingFileFormats cascade constraints
-/
-
-
-drop table GenericMacro cascade constraints
 /
 
 
@@ -541,7 +533,15 @@ drop table LOGIC cascade constraints
 /
 
 
+drop table YukonWebConfiguration cascade constraints
+/
+
+
 drop table YukonSelectionList cascade constraints
+/
+
+
+drop table GenericMacro cascade constraints
 /
 
 
@@ -1590,6 +1590,21 @@ insert into yukongrouprole values(-212,-141,'(none)');
 insert into yukongrouprole values(-212,-142,'(none)');
 
 /*==============================================================*/
+/* Table : GenericMacro                                         */
+/*==============================================================*/
+
+
+create table GenericMacro  (
+   OwnerID              NUMBER                           not null,
+   ChildID              NUMBER                           not null,
+   ChildOrder           NUMBER                           not null,
+   MacroType            VARCHAR2(20)                     not null,
+   constraint PK_GENERICMACRO primary key (OwnerID, ChildOrder, MacroType)
+)
+/
+
+
+/*==============================================================*/
 /* Table : YukonSelectionList                                   */
 /*==============================================================*/
 
@@ -1628,6 +1643,25 @@ insert into YukonSelectionList values (1016,'N','(none)','Question type selectio
 insert into YukonSelectionList values (1017,'N','(none)','Answer type selection','AnswerType','N');
 insert into YukonSelectionList values (1018,'N','(none)','Thermostat mode selection', 'ThermostatMode','N');
 insert into YukonSelectionList values (1019,'N','(none)','Thermostat fan state selection', 'ThermostatFanState','N');
+
+
+/*==============================================================*/
+/* Table : YukonWebConfiguration                                */
+/*==============================================================*/
+
+
+create table YukonWebConfiguration  (
+   ConfigurationID      NUMBER                           not null,
+   LogoLocation         VARCHAR2(100),
+   Description          VARCHAR2(500),
+   AlternateDisplayName VARCHAR2(50),
+   URL                  VARCHAR2(100),
+   constraint PK_YUKONWEBCONFIGURATION primary key (ConfigurationID)
+)
+/
+
+
+insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 
 
 /*==============================================================*/
@@ -1694,21 +1728,6 @@ insert into CTIDatabase values('2.40', 'Ryan', '2-FEB-2003', 'Merged STARS custo
 
 
 /*==============================================================*/
-/* Table : GenericMacro                                         */
-/*==============================================================*/
-
-
-create table GenericMacro  (
-   OwnerID              NUMBER                           not null,
-   ChildID              NUMBER                           not null,
-   ChildOrder           NUMBER                           not null,
-   MacroType            VARCHAR2(20)                     not null,
-   constraint PK_GENERICMACRO primary key (OwnerID, ChildOrder, MacroType)
-)
-/
-
-
-/*==============================================================*/
 /* Table : BillingFileFormats                                   */
 /*==============================================================*/
 
@@ -1743,22 +1762,6 @@ create table FDRTelegyrGroup  (
    CollectionInterval   NUMBER                           not null,
    GroupType            VARCHAR2(20)                     not null,
    constraint PK_FDRTELEGYRGROUP primary key (GroupID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : YukonWebConfiguration                                */
-/*==============================================================*/
-
-
-create table YukonWebConfiguration  (
-   ConfigurationID      NUMBER                           not null,
-   LogoLocation         VARCHAR2(100),
-   Description          VARCHAR2(500),
-   AlternateDisplayName VARCHAR2(50),
-   URL                  VARCHAR2(100),
-   constraint PK_YUKONWEBCONFIGURATION primary key (ConfigurationID)
 )
 /
 
@@ -3985,6 +3988,24 @@ create table POINTACCUMULATOR  (
 
 
 /*==============================================================*/
+/* Table : POINTANALOG                                          */
+/*==============================================================*/
+
+
+create table POINTANALOG  (
+   POINTID              NUMBER                           not null,
+   DEADBAND             FLOAT                            not null,
+   TRANSDUCERTYPE       VARCHAR2(14)                     not null,
+   MULTIPLIER           FLOAT                            not null,
+   DATAOFFSET           FLOAT                            not null,
+   constraint PK_POINTANALOG primary key (POINTID),
+   constraint SYS_C0013300 foreign key (POINTID)
+         references POINT (POINTID)
+)
+/
+
+
+/*==============================================================*/
 /* Table : ContactNotification                                  */
 /*==============================================================*/
 
@@ -4020,24 +4041,6 @@ create table DEVICEIDLCREMOTE  (
    constraint PK_DEVICEIDLCREMOTE primary key (DEVICEID),
    constraint SYS_C0013241 foreign key (DEVICEID)
          references DEVICE (DEVICEID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : POINTANALOG                                          */
-/*==============================================================*/
-
-
-create table POINTANALOG  (
-   POINTID              NUMBER                           not null,
-   DEADBAND             FLOAT                            not null,
-   TRANSDUCERTYPE       VARCHAR2(14)                     not null,
-   MULTIPLIER           FLOAT                            not null,
-   DATAOFFSET           FLOAT                            not null,
-   constraint PK_POINTANALOG primary key (POINTID),
-   constraint SYS_C0013300 foreign key (POINTID)
-         references POINT (POINTID)
 )
 /
 
