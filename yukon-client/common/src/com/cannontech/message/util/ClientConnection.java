@@ -34,7 +34,7 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
 	
 	private boolean isValid = false;
 	private boolean autoReconnect = false;
-	private boolean queueMessages = true;
+	private boolean queueMessages = false; //if true, be sure you are reading from the inQueue!!
 	private boolean serverSocket = false;
 
 
