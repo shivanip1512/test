@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/12/28 18:54:15 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/12/29 21:00:40 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *
@@ -69,21 +69,20 @@ void CtiProtocolYmodem::reinitalize( void )
 
    _finished      = false;
    _start         = true;
-   _flip          = false;
 
    _storage       = new BYTE[Storage_size];
 }
 
 //=====================================================================================================================
-//FIXME: the ymodem should send 'C' to begin a transaction and 'ACK' for each subsequent chunk of data returned
+//
 //=====================================================================================================================
 
-//bool CtiProtocolYmodem::generate( CtiXfer &xfer, int bytesWanted, int timeToWait )
 bool CtiProtocolYmodem::generate( CtiXfer &xfer, int reqAcks )
 {
+   _bytesExpected = Packet_size;
+   
    if( _start )
    {
-      _bytesExpected = 1029;
       setXfer( xfer, Crcnak, _bytesExpected, false, 5 );
       setAcks( reqAcks );     //when we start the protocol, set how many times we think we'll need to ack
       _acks = 0;
@@ -91,20 +90,8 @@ bool CtiProtocolYmodem::generate( CtiXfer &xfer, int reqAcks )
    }
    else
    {
-//      if( _flip )
-      {
-         _bytesExpected = 1029;
-         setXfer( xfer, Ack, _bytesExpected, false, 5 );
-         _acks++; //////////
-      }
-  /*    else
-      {
-         _bytesExpected = 0;
-         setXfer( xfer, Ack, _bytesExpected, false, 0 );
-         _acks++;
-      }*/
-
-      _flip = !_flip;
+      setXfer( xfer, Ack, _bytesExpected, false, 5 );
+      _acks++; 
    }
    
    return( false );
@@ -149,15 +136,14 @@ void CtiProtocolYmodem::retreiveData( BYTE *data, int *bytes )
    if( _storage != NULL )
    {
 
-      ///do the 'front shaving' here instead of in tracker....
-      memcpy( data, _storage + 3, _bytesReceived - 3 );
-      *bytes = _bytesReceived;
+      //do the 'front & end shaving' here instead of in tracker....
+      memcpy( data, _storage + 3, _bytesReceived - 5 );
+      *bytes = _bytesReceived - 5;
 
       memset( _storage, '\0', Storage_size );
 
       _bytesReceived = 0;
       _finished = false;
-//      _start = true;
    }
 }
 
@@ -253,12 +239,6 @@ void CtiProtocolYmodem::setError( void )
       _error = Failed;
    else
       _error = Working;
-
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ymodem error " << _failCount << endl;
-   }
-
 }
 
 //=====================================================================================================================

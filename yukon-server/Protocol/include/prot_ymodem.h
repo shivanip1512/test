@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/12/28 18:54:15 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/12/29 21:00:40 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -87,11 +87,11 @@ class IM_EX_PROT CtiProtocolYmodem
 
       enum
       {
+         Packet_size    = 1029,
          Storage_size   = 4500
       };
 
       bool        _finished;
-      bool        _flip;
       bool        _start;
 
       int         _failCount;

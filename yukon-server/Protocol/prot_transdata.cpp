@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/12/28 18:54:15 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/12/29 21:00:40 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,12 +44,6 @@ CtiProtocolTransdata::~CtiProtocolTransdata()
 
 bool CtiProtocolTransdata::generate( CtiXfer &xfer )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " prot gen" << endl;
-   }
-
    _application.generate( xfer );
 
    return( false );
@@ -60,12 +54,6 @@ bool CtiProtocolTransdata::generate( CtiXfer &xfer )
 
 bool CtiProtocolTransdata::decode( CtiXfer &xfer, int status )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " prot decode" << endl;
-   }
-
    _application.decode( xfer, status );
 
    if( _application.isTransactionComplete() )
@@ -94,7 +82,8 @@ bool CtiProtocolTransdata::decode( CtiXfer &xfer, int status )
             {
                processBillingData( _storage );
 
-               if( _application.doLoadProfile() )
+//               if( _application.doLoadProfile() )
+               if( _collectLP )
                {
                   _command = CtiTransdataApplication::LoadProfile;             ////just temp until I get smart
                }
@@ -116,7 +105,10 @@ bool CtiProtocolTransdata::decode( CtiXfer &xfer, int status )
 
 void CtiProtocolTransdata::processBillingData( BYTE *data )
 {
-   memcpy( _billingBytes, _storage, _numBytes );
+   _numBilling = _numBytes;
+
+   memcpy( _billingBytes, _storage, _numBilling );
+   
    _billingDone = true;
 }
 
@@ -127,7 +119,10 @@ void CtiProtocolTransdata::processBillingData( BYTE *data )
 
 void CtiProtocolTransdata::processLPData( BYTE *data )
 {
-   memcpy( _lpBytes, _storage, _numBytes );
+   _numLoadProfile = _numBytes;
+
+   memcpy( _lpBytes, data, _numLoadProfile );
+   
    _lpDone = true;
 }
 
@@ -152,8 +147,10 @@ int CtiProtocolTransdata::recvOutbound( OUTMESS *OutMessage )
 
 int CtiProtocolTransdata::sendCommResult( INMESS *InMessage )
 {
-   memcpy( InMessage->Buffer.InMessage + sizeof( llp ), _billingBytes, _numBytes );
-   InMessage->InLength = _numBytes;
+   int length = _numBilling + sizeof( llp );
+
+   memcpy( InMessage->Buffer.InMessage + sizeof( llp ), _billingBytes, length );
+   InMessage->InLength = length;
    
    _numBytes = 0;
 
@@ -213,18 +210,14 @@ void CtiProtocolTransdata::injectData( RWCString str )
 
 void CtiProtocolTransdata::reinitalize( void )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " prot reinit" << endl;
-   }
-
    _command = 0;
    _error = Working;
+   _numBilling = 0;
+   _numLoadProfile = 0;
 
    _application.reinitalize();
    
-   _collectLP = false;
+//   _collectLP = false;
    _finished = false;
    _billingDone = false;
    _lpDone = false;

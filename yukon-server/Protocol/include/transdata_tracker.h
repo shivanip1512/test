@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/12/28 18:54:15 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/12/29 21:00:41 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -34,7 +34,7 @@ class IM_EX_PROT CtiTransdataTracker
       typedef union
       {
          BYTE     rec[2];
-         UINT     value;
+         USHORT   value;
       }lpRecord;
         
       struct mark_v_lp
@@ -43,7 +43,8 @@ class IM_EX_PROT CtiTransdataTracker
          int      lpFormat[3];
          int      numLpRecs;
          ULONG    meterTime;
-         lpRecord lpData[1000];
+//         lpRecord lpData[1000];
+         lpRecord lpData[9999];
       };
 
 
@@ -74,7 +75,7 @@ class IM_EX_PROT CtiTransdataTracker
       int retreiveData( BYTE *data );
       int getError( void );
       void setError( void );
-      bool goodCRC( void );
+      bool haveData( void );
       void reinitalize( void );
       void destroy( void );
       int calcLPRecs( void );
@@ -119,7 +120,7 @@ class IM_EX_PROT CtiTransdataTracker
          Command_size   = 30,
          Recs_Fitable   = 512,
          Storage_size   = 4500,
-         Meter_size     = 4500,
+         Meter_size     = 30000,
          Max_lp_recs    = 9999
       };
 
@@ -191,6 +192,7 @@ class IM_EX_PROT CtiTransdataTracker
       int                  _failCount;
       int                  _error;
       int                  _neededAcks;
+      int                  _dataBytes;
 
       BYTE                 *_storage;
       BYTE                 *_meterData;

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/12/28 18:54:15 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/12/29 21:00:40 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -92,24 +92,18 @@ bool CtiTransdataApplication::generate( CtiXfer &xfer )
 
 bool CtiTransdataApplication::decode( CtiXfer &xfer, int status )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " app decode" << endl;
-   }
-
    _tracker.decode( xfer, status );
 
    if( _tracker.isTransactionComplete() )
-   {  /*
+   {  
       if( _tracker.getError() == Failed )
       {
          setError( Failed );
          _finished = true;
       }
-      else */
+      else 
       {
-         if( _tracker.goodCRC() )   //fixme; this is a poor name for what it checks
+         if( _tracker.haveData() )   
          {
             if( _storage )
             {

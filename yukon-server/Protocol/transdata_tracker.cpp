@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/12/28 18:54:15 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/12/29 21:00:40 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -132,6 +132,8 @@ void CtiTransdataTracker::reinitalize( void )
    _error            = Working;
    _meterBytes       = 0;
    _neededAcks       = 1;  //smarter, later
+   _failCount        = 0;
+   _dataBytes        = 0;
 
    _finished         = true;
    _moveAlong        = false;
@@ -196,6 +198,8 @@ bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
 
 bool CtiTransdataTracker::decodeYModem( CtiXfer &xfer, int status )
 {
+   int bytes;
+
    _ymodem.decode( xfer, status );
 
    if( _ymodem.isTransactionComplete() )
@@ -204,20 +208,16 @@ bool CtiTransdataTracker::decodeYModem( CtiXfer &xfer, int status )
 
       if( _goodCRC )
       {
-         _ymodem.retreiveData( _meterData, &_meterBytes );
-         processData( _meterData, _meterBytes );
+//         _ymodem.retreiveData( _meterData, &_meterBytes );
+//         processData( _meterData, _meterBytes );
+         _ymodem.retreiveData( _meterData, &bytes );
+         processData( _meterData, bytes );
       }
    }
    else
    {
 //      setError();     //we can get rid of failcounts below
    }
-   
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ================================ getAcks() " << _ymodem.getAcks() << " chunks" << endl;
-   }
-
    
    if( _ymodem.getAcks() >= _neededAcks )
    {
@@ -247,7 +247,7 @@ bool CtiTransdataTracker::decodeLink( CtiXfer &xfer, int status )
    }
    else
    {
-//      setError(); //we can get rid of failcounts below
+      setError(); //we can get rid of failcounts below
    }
    
    return( false );
@@ -304,8 +304,15 @@ bool CtiTransdataTracker::processData( BYTE *data, int bytes )
          //do loadprofile
          if( bytes != 0 )
          {
-            memcpy( _lp->lpData, data, bytes );
+            //copy the packet data we just got 
+            memcpy( _lp->lpData + _dataBytes, data, bytes );
+            _dataBytes += bytes;
+
+            //
+            //copy over any previous data
+            //
             memcpy( _meterData, _lp, sizeof( *_lp ) );   
+
             _meterBytes = sizeof( *_lp );
             _haveData = true;
          }
@@ -327,6 +334,7 @@ bool CtiTransdataTracker::processData( BYTE *data, int bytes )
       //do billing stuff
       _didBilling = true;
       _haveData = true;
+      _meterBytes += bytes;///////////////
    }
 
    return( true );
@@ -461,12 +469,6 @@ bool CtiTransdataTracker::loadProfile( CtiXfer &xfer )
    case doProt2:
       {
          _neededAcks = calcAcks( _lp->numLpRecs );
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ need " << _neededAcks << " chunks" << endl;
-         }
-
-         
          _ymodem.generate( xfer, _neededAcks );
       }
       break;
@@ -645,6 +647,11 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
    }
 
    RWTime t( RWDate( timeBits[3], timeBits[4], timeBits[5] + 2000 ), timeBits[2], timeBits[1], timeBits[0] );
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ meterTime " << t << endl;
+   }
+
    _lp->meterTime = t.seconds();
 
    return( true );
@@ -761,7 +768,7 @@ int CtiTransdataTracker::retreiveData( BYTE *data )
    
    _meterBytes = 0;
    
-   _haveData = false;//////////////////
+   _haveData = false;
    _goodCRC = false;
    _finished = false;
    
@@ -803,7 +810,7 @@ void CtiTransdataTracker::injectData( RWCString str )
 
 void CtiTransdataTracker::setError( void )
 {
-   if( ++_failCount > 1 )
+   if( ++_failCount > 100 )
    {
       _error = Failed;
       _finished = true;
@@ -817,10 +824,9 @@ void CtiTransdataTracker::setError( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-bool CtiTransdataTracker::goodCRC( void )
+bool CtiTransdataTracker::haveData( void )
 {
    return( _haveData );
-   //   return( _goodCRC );
 }
 
 //=====================================================================================================================
@@ -901,6 +907,50 @@ bool CtiTransdataTracker::gotRetry( const BYTE *data, int length )
 
    return( success );
 }
+
+/*
+bool CtiTransdataTracker::processData( BYTE *data, int bytes )
+{
+   if( _didBilling )
+   {
+      if( _didRecordCheck )
+      {
+         //do loadprofile
+         if( bytes != 0 )
+         {
+            memcpy( _lp->lpData + _meterBytes, data, bytes );
+            memcpy( _meterData, _lp, sizeof( *_lp ) );   
+            _meterBytes = sizeof( *_lp );
+            _haveData = true;
+         }
+         else
+         {
+
+         }
+      }
+      else
+      {
+         //do record check
+         int returningRecs = atoi( ( const char *)data );
+
+         if( returningRecs < _lp->numLpRecs )
+         {
+            _lastState = doRecordDump;
+         }
+         _didRecordCheck = true;
+      }
+   }
+   else
+   {
+      //do billing stuff
+      _didBilling = true;
+      _haveData = true;
+   }
+
+   return( true );
+}
+*/
+
 
 /*
 bool CtiTransdataTracker::processData( BYTE *data, int bytes )

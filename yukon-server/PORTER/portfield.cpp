@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.89 $
-* DATE         :  $Date: 2003/12/28 18:54:14 $
+* REVISION     :  $Revision: 1.90 $
+* DATE         :  $Date: 2003/12/29 21:00:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1470,6 +1470,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                               dout << RWTime() << " We have errored out " << error << endl;
                           }
                        }
+
                        transdata.destroy();
                        break;
                     }

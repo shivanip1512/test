@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/12/28 18:54:14 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/12/29 21:00:40 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -872,7 +872,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
    CtiMultiMsg                      *msgMulti = new CtiMultiMsg;
    CtiPointDataMsg                  *pData = NULL;
    CtiPointBase                     *pPoint = NULL;
-   BYTE                             *storage = NULL;
+   BYTE                             *_storage = NULL; //change this back to storage
    int                              index;
    int                              numEnabledChannels = 0;
    bool                             firstLoop = true;
@@ -882,9 +882,9 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
       dout << RWTime() << " ----Process Dispatch Message In Progress----" << endl;
    }
 
-   storage = new BYTE[10000];
-   _transdataProtocol.retreiveData( storage );
-   lp = ( CtiTransdataTracker::mark_v_lp *)storage;
+   _storage = new BYTE[30000];
+   _transdataProtocol.retreiveData( _storage );
+   lp = ( CtiTransdataTracker::mark_v_lp *)_storage;
    _llp.lastLP = lp->meterTime;
    RWTime mTime( lp->meterTime );
    

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/12/28 18:54:15 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/12/29 21:00:40 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,12 +75,6 @@ void CtiTransdataDatalink::reinitalize( void )
 
 void CtiTransdataDatalink::buildMsg( CtiXfer &xfer )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " link build" << endl;
-   }
-
    memset( _storage, '\0', Storage_size );
    _finished = false;
    _bytesExpected = xfer.getInCountExpected();
@@ -91,12 +85,6 @@ void CtiTransdataDatalink::buildMsg( CtiXfer &xfer )
 
 bool CtiTransdataDatalink::readMsg( CtiXfer &xfer, int status )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " link read" << endl;
-   }
-
    if(( xfer.getInCountActual() + _bytesReceived ) >= _bytesExpected )
    {
       _finished = true;
@@ -152,12 +140,6 @@ void CtiTransdataDatalink::setError( void )
       _error = failed;
    else
       _error = working;
-
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " link error " << _failCount << endl;
-   }
-
 }
 
 //=====================================================================================================================
