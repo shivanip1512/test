@@ -881,9 +881,11 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                     }
                 }
                 currentTrigger->setPointValue(value);
-                if( (currentTrigger->getProjectionType() != CtiLMControlAreaTrigger::NoneProjectionType && currentTrigger->getProjectionType() != "(none)")/*"(none)" is a hack*/ &&
-                    currentTrigger->getTriggerType() != CtiLMControlAreaTrigger::StatusTriggerType )
-                {
+
+                //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                if( (currentTrigger->getProjectionType().compareTo(CtiLMControlAreaTrigger::NoneProjectionType,RWCString::ignoreCase) && currentTrigger->getProjectionType().compareTo("(none)",RWCString::ignoreCase))/*"(none)" is a hack*/ &&
+                    currentTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::StatusTriggerType,RWCString::ignoreCase) )
+                {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
                     if( quality != NonUpdatedQuality &&
                         currentControlArea->getNewPointDataReceivedFlag() )
                     {
@@ -914,7 +916,8 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                         }
                     }
                 }
-                else if( currentTrigger->getTriggerType() != CtiLMControlAreaTrigger::StatusTriggerType )
+                //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                else if( currentTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::StatusTriggerType,RWCString::ignoreCase) )
                 {//make the projected value equal to the real value
                     currentTrigger->setProjectedPointValue(value);
                 }

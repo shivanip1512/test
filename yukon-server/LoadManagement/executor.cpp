@@ -2326,7 +2326,7 @@ void figureHourlyCommittedForOfferId(LONG offerId, const RWOrdered& lmEnergyExch
         {
             CtiLMEnergyExchangeCustomerReply* currentLMEECustomerReply = (CtiLMEnergyExchangeCustomerReply*)customerReplies[j];
             if( currentLMEECustomerReply->getOfferId() == offerId &&
-                currentLMEECustomerReply->getAcceptStatus() == CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus )
+                !currentLMEECustomerReply->getAcceptStatus().compareTo(CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus,RWCString::ignoreCase) )
             {
                 RWOrdered& hourlyCustomers = currentLMEECustomerReply->getLMEnergyExchangeHourlyCustomers();
 
@@ -2437,7 +2437,7 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                                                 CtiLMEnergyExchangeOfferRevision* currentRevision = currentOffer->getCurrentOfferRevision();
                                                 RWOrdered& revisionHourlyOffers = currentRevision->getLMEnergyExchangeHourlyOffers();
 
-                                                if( currentLMEnergyExchangeCustomerReply->getAcceptStatus() == CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus )
+                                                if( !currentLMEnergyExchangeCustomerReply->getAcceptStatus().compareTo(CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus,RWCString::ignoreCase) )
                                                 {
                                                     if( lmHourlyCustomers.entries() == 0 )
                                                     {

@@ -463,9 +463,10 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectedPointValue(DOUBLE 
 --------------------------------------------------------------------------*/
 void CtiLMControlAreaTrigger::calculateProjectedValue()
 {
-    if( getProjectionType() != CtiLMControlAreaTrigger::NoneProjectionType )
+    //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+    if( getProjectionType().compareTo(CtiLMControlAreaTrigger::NoneProjectionType,RWCString::ignoreCase) )
     {
-        if( getProjectionType() == CtiLMControlAreaTrigger::LSFProjectionType )
+        if( !getProjectionType().compareTo(CtiLMControlAreaTrigger::LSFProjectionType,RWCString::ignoreCase) )
         {
             if( getProjectionPointEntriesQueue().entries() >= getProjectionPoints() )
             {

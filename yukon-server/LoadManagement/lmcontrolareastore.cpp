@@ -1904,11 +1904,12 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
     for(long i=0;i<controlAreas.entries();i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-        if( currentControlArea->getDefOperationalState() != CtiLMControlArea::DefOpStateNone )
+        // not equal, so no "!" on the compareTo()
+        if( currentControlArea->getDefOperationalState().compareTo(CtiLMControlArea::DefOpStateNone,RWCString::ignoreCase) )
         {//check default operational state
-            if( ( currentControlArea->getDefOperationalState() == CtiLMControlArea::DefOpStateEnabled &&
+            if( ( !currentControlArea->getDefOperationalState().compareTo(CtiLMControlArea::DefOpStateEnabled,RWCString::ignoreCase) &&
                   currentControlArea->getDisableFlag() ) ||
-                ( currentControlArea->getDefOperationalState() == CtiLMControlArea::DefOpStateDisabled &&
+                ( !currentControlArea->getDefOperationalState().compareTo(CtiLMControlArea::DefOpStateDisabled,RWCString::ignoreCase) &&
                   !currentControlArea->getDisableFlag() ) )
             {
                 {
@@ -2021,9 +2022,9 @@ void CtiLMControlAreaStore::saveAnyProjectionData()
             for(LONG j=0;j<lmControlAreaTriggers.entries();j++)
             {
                 CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)lmControlAreaTriggers[j];
-                if( currentLMControlAreaTrigger->getProjectionType() == CtiLMControlAreaTrigger::LSFProjectionType &&
-                    currentLMControlAreaTrigger->getTriggerType() != CtiLMControlAreaTrigger::StatusTriggerType )
-                {
+                if( !currentLMControlAreaTrigger->getProjectionType().compareTo(CtiLMControlAreaTrigger::LSFProjectionType,RWCString::ignoreCase) &&
+                    currentLMControlAreaTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::StatusTriggerType,RWCString::ignoreCase) )
+                {// don't need "!" on compareTo() because supposed to be !=
                     /*{
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << " - Saved Projection Point Entries Queue entries for Point Id: " << currentLMControlAreaTrigger->getPointId() << endl;

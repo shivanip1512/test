@@ -681,7 +681,7 @@ BOOL CtiLMControlArea::isControlStillNeeded()
         for(LONG i=0;i<_lmcontrolareatriggers.entries();i++)
         {
             CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-            if( currentTrigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdTriggerType )
+            if( !currentTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::ThresholdTriggerType,RWCString::ignoreCase) )
             {
                 if( ( (currentTrigger->getPointValue() + currentReduction) >
                       (currentTrigger->getThreshold() - currentTrigger->getMinRestoreOffset()) ) ||
@@ -691,7 +691,7 @@ BOOL CtiLMControlArea::isControlStillNeeded()
                     triggersStillTripped++;
                 }
             }
-            else if( currentTrigger->getTriggerType() == CtiLMControlAreaTrigger::StatusTriggerType )
+            else if( !currentTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::StatusTriggerType,RWCString::ignoreCase) )
             {
                 if( currentTrigger->getPointValue() != currentTrigger->getNormalState() )
                 {
@@ -788,7 +788,7 @@ BOOL CtiLMControlArea::isThresholdTriggerTripped()
         for(LONG i=0;i<_lmcontrolareatriggers.entries();i++)
         {
             CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-            if( currentTrigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdTriggerType )
+            if( !currentTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::ThresholdTriggerType,RWCString::ignoreCase) )
             {
                 if( currentTrigger->getPointValue() > currentTrigger->getThreshold() ||
                     currentTrigger->getProjectedPointValue() > currentTrigger->getThreshold() )
@@ -818,7 +818,7 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
         for(LONG i=0;i<_lmcontrolareatriggers.entries();i++)
         {
             CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-            if( currentTrigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdTriggerType )
+            if( !currentTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::ThresholdTriggerType,RWCString::ignoreCase) )
             {
                 if( currentTrigger->getPointValue() > currentTrigger->getThreshold() ||
                     currentTrigger->getProjectedPointValue() > currentTrigger->getThreshold() )
@@ -876,7 +876,7 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
                     }
                 }
             }
-            else if( currentTrigger->getTriggerType() == CtiLMControlAreaTrigger::StatusTriggerType )
+            else if( !currentTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::StatusTriggerType,RWCString::ignoreCase) )
             {
                 if( currentTrigger->getPointValue() != currentTrigger->getNormalState() )
                 {
@@ -928,7 +928,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
         CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
 
         if( !currentLMProgram->getDisableFlag() &&
-            (currentLMProgram->getControlType() == CtiLMProgramBase::AutomaticType || currentLMProgram->getControlType() == "Enabled") )
+            (!currentLMProgram->getControlType().compareTo(CtiLMProgramBase::AutomaticType,RWCString::ignoreCase) || !currentLMProgram->getControlType().compareTo("Enabled",RWCString::ignoreCase)) )
         {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
             if( currentLMProgram->isAvailableToday() &&
                 currentLMProgram->isWithinValidControlWindow(secondsFromBeginningOfDay) &&
@@ -1035,9 +1035,10 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                 //possibly attemping control state?
             }
         }
-        else if( currentLMProgram->getControlType() != CtiLMProgramBase::ManualOnlyType &&
-                 currentLMProgram->getControlType() != CtiLMProgramBase::AutomaticType )
-        {
+        //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+        else if( currentLMProgram->getControlType().compareTo(CtiLMProgramBase::ManualOnlyType,RWCString::ignoreCase) &&
+                 currentLMProgram->getControlType().compareTo(CtiLMProgramBase::AutomaticType,RWCString::ignoreCase) )
+        {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Unknown LM Program Control Type: " << currentLMProgram->getControlType() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
@@ -1094,8 +1095,8 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
     {
         CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
 
-        if( currentLMProgram->getControlType() == CtiLMProgramBase::AutomaticType ||
-            currentLMProgram->getControlType() == "Enabled" )
+        if( !currentLMProgram->getControlType().compareTo(CtiLMProgramBase::AutomaticType,RWCString::ignoreCase) ||
+            !currentLMProgram->getControlType().compareTo("Enabled",RWCString::ignoreCase) )
         {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
             if( currentLMProgram->isAvailableToday() &&
                 currentLMProgram->isWithinValidControlWindow(secondsFromBeginningOfDay) &&
@@ -1194,8 +1195,8 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                 //possibly attemping control state?
             }
         }
-        else if( currentLMProgram->getControlType() != CtiLMProgramBase::ManualOnlyType )
-        {
+        else if( currentLMProgram->getControlType().compareTo(CtiLMProgramBase::ManualOnlyType,RWCString::ignoreCase) )
+        {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Unknown LM Program Control Type in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
@@ -1250,7 +1251,7 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, UL
     {
         CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
         if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT &&
-            (currentLMProgram->getControlType() == CtiLMProgramBase::AutomaticType || currentLMProgram->getControlType() == "Enabled") &&
+            (!currentLMProgram->getControlType().compareTo(CtiLMProgramBase::AutomaticType,RWCString::ignoreCase) || !currentLMProgram->getControlType().compareTo("Enabled",RWCString::ignoreCase)) &&
             ( currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState ||
               currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ) )
         {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
@@ -1324,8 +1325,8 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
     {
         CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
         if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT &&
-            ( currentLMProgram->getControlType() == CtiLMProgramBase::AutomaticType ||
-              currentLMProgram->getControlType() == "Enabled") &&
+            ( !currentLMProgram->getControlType().compareTo(CtiLMProgramBase::AutomaticType,RWCString::ignoreCase) ||
+              !currentLMProgram->getControlType().compareTo("Enabled",RWCString::ignoreCase) ) &&
             ( currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState ||
               currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ) )
         {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
@@ -1874,7 +1875,7 @@ RWCString* CtiLMControlArea::getAutomaticallyStartedSignalString()
         for(int i=0;i<_lmcontrolareatriggers.entries();i++)
         {
             CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-            if( currentTrigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdTriggerType &&
+            if( !currentTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::ThresholdTriggerType,RWCString::ignoreCase) &&
                 ( currentTrigger->getPointValue() > currentTrigger->getThreshold() ||
                   currentTrigger->getProjectedPointValue() > currentTrigger->getThreshold() ) )
             {
@@ -1900,7 +1901,7 @@ RWCString* CtiLMControlArea::getAutomaticallyStartedSignalString()
                 _snprintf(tempchar,80,"%.*f",1,currentTrigger->getThreshold());
                 *returnString += tempchar;
             }
-            else if( currentTrigger->getTriggerType() == CtiLMControlAreaTrigger::StatusTriggerType &&
+            else if( !currentTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::StatusTriggerType,RWCString::ignoreCase) &&
                      currentTrigger->getPointValue() != currentTrigger->getNormalState() )
             {
                 if( returnString->length() > 0 )
