@@ -204,6 +204,7 @@ insert into YukonListEntry values (1120,1003,0,'MCT',1203);
 insert into YukonListEntry values (1121,1007,0,'(Default)',1400);
 insert into YukonListEntry values (1122,1005,-1,'MCT',1303);
 insert into YukonListEntry values (1123,1005,-1,'Commercial ExpressStat',1304);
+insert into YukonListEntry values (1124,1011,0,'Map #',1605);
 
 insert into YukonListEntry values (1201,1050,0,'Last Updated Time',3201);
 insert into YukonListEntry values (1202,1050,0,'Setpoint',3202);

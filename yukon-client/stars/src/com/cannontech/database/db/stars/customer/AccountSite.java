@@ -1,5 +1,7 @@
 package com.cannontech.database.db.stars.customer;
 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -107,6 +109,38 @@ public class AccountSite extends DBPersistent {
         }
 
         return new Integer( nextAccountSiteID );
+    }
+    
+    public static Integer getAccountIDBySiteNo(String siteNo, int energyCompanyID) {
+    	java.sql.Connection conn = null;
+    	String sql = "SELECT acct.AccountID FROM " +
+    			"AccountSite site, CustomerAccount acct, ECToAccountMapping map " +
+    			"WHERE UPPER(site.SiteNumber) LIKE UPPER(?) " +
+    			"AND site.AccountSiteID = acct.AccountSiteID " +
+    			"AND acct.AccountID = map.AccountID and map.EnergyCompanyID = ?";
+    	
+    	try {
+    		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+    		
+    		java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
+    		stmt.setString( 1, siteNo );
+    		stmt.setInt( 2, energyCompanyID );
+    		
+    		java.sql.ResultSet rset = stmt.executeQuery();
+    		if (rset.next())
+    			return new Integer( rset.getInt(1) );
+    	}
+    	catch (java.sql.SQLException e) {
+    		e.printStackTrace();
+    	}
+    	finally {
+    		try {
+    			if (conn != null) conn.close();
+    		}
+    		catch (java.sql.SQLException e) {}
+    	}
+    	
+    	return null;
     }
 
     public Integer getAccountSiteID() {

@@ -1759,11 +1759,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		// Search the LM hardware in the child energy companies
-		for (int i = 0; i < getChildren().size(); i++) {
-			LiteStarsEnergyCompany liteCompany = (LiteStarsEnergyCompany) getChildren().get(i);
-			if (!liteCompany.equals( referer )) {
-				LiteStarsLMHardware liteHw = liteCompany.searchForLMHardware( devTypeDefID, serialNo, this );
-				if (liteHw != null) return liteHw;
+		ArrayList children = getChildren();
+		synchronized (children) {
+			for (int i = 0; i < children.size(); i++) {
+				LiteStarsEnergyCompany liteCompany = (LiteStarsEnergyCompany) children.get(i);
+				if (!liteCompany.equals( referer )) {
+					LiteStarsLMHardware liteHw = liteCompany.searchForLMHardware( devTypeDefID, serialNo, this );
+					if (liteHw != null) return liteHw;
+				}
 			}
 		}
 		
@@ -1833,11 +1836,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 		}
 		
-		for (int i = 0; i < getChildren().size(); i++) {
-			LiteStarsEnergyCompany liteCompany = (LiteStarsEnergyCompany) getChildren().get(i);
-			if (!liteCompany.equals( referer )) {
-				LiteInventoryBase liteInv = liteCompany.searchForDeviceInInventory( categoryID, deviceName, this );
-				if (liteInv != null) return liteInv;
+		ArrayList children = getChildren();
+		synchronized (children) {
+			for (int i = 0; i < children.size(); i++) {
+				LiteStarsEnergyCompany liteCompany = (LiteStarsEnergyCompany) children.get(i);
+				if (!liteCompany.equals( referer )) {
+					LiteInventoryBase liteInv = liteCompany.searchForDeviceInInventory( categoryID, deviceName, this );
+					if (liteInv != null) return liteInv;
+				}
 			}
 		}
 		
@@ -1910,11 +1916,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 		}
 		
-		for (int i = 0; i < getChildren().size(); i++) {
-			LiteStarsEnergyCompany liteCompany = (LiteStarsEnergyCompany) getChildren().get(i);
-			if (!liteCompany.equals( referer )) {
-				LiteInventoryBase liteInv = liteCompany.getDevice( deviceID, this );
-				if (liteInv != null) return liteInv;
+		ArrayList children = getChildren();
+		synchronized (children) {
+			for (int i = 0; i < children.size(); i++) {
+				LiteStarsEnergyCompany liteCompany = (LiteStarsEnergyCompany) children.get(i);
+				if (!liteCompany.equals( referer )) {
+					LiteInventoryBase liteInv = liteCompany.getDevice( deviceID, this );
+					if (liteInv != null) return liteInv;
+				}
 			}
 		}
 		
@@ -1957,11 +1966,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		if (searchMembers) {
-			for (int i = 0; i < getChildren().size(); i++) {
-				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) getChildren().get(i);
-				LiteInventoryBase[] hardwares = company.searchInventoryBySerialNo( serialNo, searchMembers );
-				for (int j = 0; j < hardwares.length; j++)
-					hwList.add( hardwares[j] );
+			ArrayList children = getChildren();
+			synchronized (children) {
+				for (int i = 0; i < children.size(); i++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
+					LiteInventoryBase[] hardwares = company.searchInventoryBySerialNo( serialNo, searchMembers );
+					for (int j = 0; j < hardwares.length; j++)
+						hwList.add( hardwares[j] );
+				}
 			}
 		}
 		
@@ -1989,11 +2001,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		if (searchMembers) {
-			for (int i = 0; i < getChildren().size(); i++) {
-				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) getChildren().get(i);
-				LiteInventoryBase[] hardwares = company.searchInventoryByAccountNo( accountNo, searchMembers );
-				for (int j = 0; j < hardwares.length; j++)
-					invList.add( hardwares[j] );
+			ArrayList children = getChildren();
+			synchronized (children) {
+				for (int i = 0; i < children.size(); i++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
+					LiteInventoryBase[] hardwares = company.searchInventoryByAccountNo( accountNo, searchMembers );
+					for (int j = 0; j < hardwares.length; j++)
+						invList.add( hardwares[j] );
+				}
 			}
 		}
 		
@@ -2020,11 +2035,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		if (searchMembers) {
-			for (int i = 0; i < getChildren().size(); i++) {
-				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) getChildren().get(i);
-				LiteInventoryBase[] hardwares = company.searchInventoryByContactIDs( contactIDs, searchMembers );
-				for (int j = 0; j < hardwares.length; j++)
-					invList.add( hardwares[j] );
+			ArrayList children = getChildren();
+			synchronized (children) {
+				for (int i = 0; i < children.size(); i++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
+					LiteInventoryBase[] hardwares = company.searchInventoryByContactIDs( contactIDs, searchMembers );
+					for (int j = 0; j < hardwares.length; j++)
+						invList.add( hardwares[j] );
+				}
 			}
 		}
 		
@@ -2087,11 +2105,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		if (searchMembers) {
-			for (int i = 0; i < getChildren().size(); i++) {
-				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) getChildren().get(i);
-				LiteInventoryBase[] hardwares = company.searchInventoryByOrderNo( orderNo, searchMembers );
-				for (int j = 0; j < hardwares.length; j++)
-					invList.add( hardwares[j] );
+			ArrayList children = getChildren();
+			synchronized (children) {
+				for (int i = 0; i < children.size(); i++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
+					LiteInventoryBase[] hardwares = company.searchInventoryByOrderNo( orderNo, searchMembers );
+					for (int j = 0; j < hardwares.length; j++)
+						invList.add( hardwares[j] );
+				}
 			}
 		}
 		
@@ -2558,10 +2579,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	private LiteStarsCustAccountInformation searchByAccountNo(String accountNo) {
 		ArrayList custAcctInfoList = getAllCustAccountInformation();
-		for (int i = 0; i < custAcctInfoList.size(); i++) {
-			LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
-			if (accountInfo.getCustomerAccount().getAccountNumber().equalsIgnoreCase( accountNo ))
-				return accountInfo;
+		synchronized (custAcctInfoList) {
+			for (int i = 0; i < custAcctInfoList.size(); i++) {
+				LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
+				if (accountInfo.getCustomerAccount().getAccountNumber().equalsIgnoreCase( accountNo ))
+					return accountInfo;
+			}
 		}
 		
 		try {
@@ -2617,11 +2640,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		if (searchMembers) {
-			for (int i = 0; i < getChildren().size(); i++) {
-				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) getChildren().get(i);
-				LiteStarsCustAccountInformation[] accounts = company.searchAccountByAccountNo( accountNo, searchMembers );
-				for (int j = 0; j < accounts.length; j++)
-					accountList.add( accounts[j] );
+			ArrayList children = getChildren();
+			synchronized (children) {
+				for (int i = 0; i < children.size(); i++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
+					LiteStarsCustAccountInformation[] accounts = company.searchAccountByAccountNo( accountNo, searchMembers );
+					for (int j = 0; j < accounts.length; j++)
+						accountList.add( accounts[j] );
+				}
 			}
 		}
 		
@@ -2645,17 +2671,61 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		if (searchMembers) {
-			for (int i = 0; i < getChildren().size(); i++) {
-				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) getChildren().get(i);
-				LiteStarsCustAccountInformation[] accounts = company.searchAccountBySerialNo( serialNo, searchMembers );
-				for (int j = 0; j < accounts.length; j++)
-					accountList.add( accounts[j] );
+			ArrayList children = getChildren();
+			synchronized (children) {
+				for (int i = 0; i < children.size(); i++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
+					LiteStarsCustAccountInformation[] accounts = company.searchAccountBySerialNo( serialNo, searchMembers );
+					for (int j = 0; j < accounts.length; j++)
+						accountList.add( accounts[j] );
+				}
 			}
 		}
 		
 		LiteStarsCustAccountInformation[] accounts = new LiteStarsCustAccountInformation[ accountList.size() ];
 		accountList.toArray( accounts );
 		return accounts;
+	}
+	
+	public LiteStarsCustAccountInformation searchAccountByMapNo(String mapNo, boolean searchMembers) {
+		ArrayList acctInfoList = getAllCustAccountInformation();
+		synchronized (acctInfoList) {
+			for (int i = 0; i < acctInfoList.size(); i++) {
+				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) acctInfoList.get(i);
+				if (liteAcctInfo.getAccountSite().getSiteNumber().equalsIgnoreCase( mapNo ))
+					return liteAcctInfo;
+			}
+		}
+		
+		try {
+			Integer accountID = com.cannontech.database.db.stars.customer.AccountSite.getAccountIDBySiteNo( mapNo, getLiteID() );
+			if (accountID != null) {
+				com.cannontech.database.data.stars.customer.CustomerAccount account =
+						new com.cannontech.database.data.stars.customer.CustomerAccount();
+				account.setAccountID( accountID );
+				account = (com.cannontech.database.data.stars.customer.CustomerAccount)
+						Transaction.createTransaction(Transaction.RETRIEVE, account).execute();
+				
+				return addBriefCustAccountInfo( account );
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		if (searchMembers) {
+			ArrayList children = getChildren();
+			synchronized (children) {
+				for (int i = 0; i < children.size(); i++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
+					LiteStarsCustAccountInformation liteAcctInfo = company.searchAccountByMapNo( mapNo, searchMembers );
+					if (liteAcctInfo != null) return liteAcctInfo;
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	private LiteStarsCustAccountInformation[] searchAccountByContactIDs(int[] contactIDs, boolean searchMembers) {
@@ -2669,11 +2739,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		if (searchMembers) {
-			for (int i = 0; i < getChildren().size(); i++) {
-				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) getChildren().get(i);
-				LiteStarsCustAccountInformation[] accounts = company.searchAccountByContactIDs( contactIDs, searchMembers );
-				for (int j = 0; j < accounts.length; j++)
-					accountList.add( accounts[j] );
+			ArrayList children = getChildren();
+			synchronized (children) {
+				for (int i = 0; i < children.size(); i++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
+					LiteStarsCustAccountInformation[] accounts = company.searchAccountByContactIDs( contactIDs, searchMembers );
+					for (int j = 0; j < accounts.length; j++)
+						accountList.add( accounts[j] );
+				}
 			}
 		}
 		

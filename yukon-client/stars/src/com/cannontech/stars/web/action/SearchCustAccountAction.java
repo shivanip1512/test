@@ -120,10 +120,16 @@ public class SearchCustAccountAction implements ActionBase {
             	/* Search by hardware serial number */
             	accounts = energyCompany.searchAccountBySerialNo( searchAccount.getSearchValue(), searchMembers );
             }
+            else if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_MAP_NO).getEntryID()) {
+            	/* Search by map number */
+            	LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByMapNo( searchAccount.getSearchValue(), searchMembers );
+            	if (liteAcctInfo != null)
+            		accounts = new LiteStarsCustAccountInformation[] { liteAcctInfo };
+            }
             
 			StarsSearchCustomerAccountResponse resp = new StarsSearchCustomerAccountResponse();
 			
-            if (accounts.length == 0) {
+            if (accounts == null || accounts.length == 0) {
 				StarsFailure failure = StarsFactory.newStarsFailure(
 						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "No customer account matching the search criteria" );
 				resp.setStarsFailure( failure );
