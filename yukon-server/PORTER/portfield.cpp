@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   portfield
@@ -7,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.113 $
-* DATE         :  $Date: 2004/07/20 14:01:17 $
+* REVISION     :  $Revision: 1.114 $
+* DATE         :  $Date: 2004/07/27 15:52:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,6 +89,7 @@ using namespace std;
 
 #include "portglob.h"
 #include "prot_sa3rdparty.h"
+#include "portverify.h"
 
 #include "connection.h"
 #include "c_port_interface.h"
@@ -116,6 +116,8 @@ using namespace std;
 #include "tbl_paoexclusion.h"
 #include "utility.h"
 
+
+extern CtiPorterVerification PorterVerificationThread;
 
 #define INF_LOOP_COUNT 1000
 
@@ -1087,22 +1089,22 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 case TYPE_SERIESVRTU:
                 case TYPE_SERIESVLMIRTU:
                     {
-                        CtiProtocolBase *protocol;
+                        CtiDeviceSingle *ds = static_cast<CtiDeviceSingle *>(Device.get());
                         int protocolStatus;
 
-                        if( (protocol = Device->getProtocol()) != NULL )
+                        if( Device->isSingle() && ds->hasProtocol() )
                         {
-                            protocol->recvCommRequest(OutMessage);
+                            ds->recvCommRequest(OutMessage);
 
-                            while( !protocol->isTransactionComplete() )
+                            while( !ds->isTransactionComplete() )
                             {
                                 //  ACH - perhaps pass the VanGoghConnection object into the protocol,
                                 //          so it can send messages to Dispatch directly... ?
-                                protocol->generate(trx);
+                                ds->generate(trx);
 
                                 status = Port->outInMess(trx, Device, traceList);
 
-                                protocolStatus = protocol->decode(trx, status);
+                                protocolStatus = ds->decode(trx, status);
 
                                 //  if we had no comm errors, copy over the protocol's status -
                                 //    it may've had non-comm-related errors (NACK, bad inbound address, etc)
@@ -1122,7 +1124,13 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                             //  ACH:  figure out how to allow for a single-OUTMESS request to generate multiple INMESS replies
                             //          i.e. if we're returning a massive event log or something
-                            protocol->sendCommResult(InMessage);
+                            ds->sendCommResult(InMessage);
+
+                            queue< CtiVerificationBase * > work_queue;
+
+                            ds->getVerificationWorkObjects(work_queue);
+
+                            PorterVerificationThread.push(work_queue);
                         }
                         else
                         {
