@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2002/09/06 19:03:43 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2002/09/12 21:35:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -770,7 +770,7 @@ void CtiPILServer::nexusThread()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " ResThread : " << rwThreadId() << " terminating " << endl;
+        dout << RWTime() << " NexusThread : " << rwThreadId() << " terminating " << endl;
     }
 
 }
