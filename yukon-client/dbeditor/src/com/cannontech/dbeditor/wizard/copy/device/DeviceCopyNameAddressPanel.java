@@ -300,7 +300,7 @@ public Dimension getPreferredSize() {
  */
 public Object getValue(Object val)
 {
-	DeviceBase device = ((DeviceBase) val);
+	DeviceBase device = (DeviceBase)val;
 	int previousDeviceID = device.getDevice().getDeviceID().intValue();
 
 	device.setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
@@ -315,48 +315,29 @@ public Object getValue(Object val)
 	objectsToAdd.getDBPersistentVector().add(device);
 
 	//Search for the correct sub-type and set the address
-	if (getAddressTextField().isVisible())
+	if( getAddressTextField().isVisible() && device instanceof DBCopiable )
 	{
-		if (val instanceof IDLCBase)
-			 ((IDLCBase) val).getDeviceIDLCRemote().setAddress(new Integer(getAddressTextField().getText()));
-		else if (val instanceof CarrierBase)
-			 ((CarrierBase) val).getDeviceCarrierSettings().setAddress(new Integer(getAddressTextField().getText()));
-		else if (val instanceof CapBank)
-			 ((CapBank) val).setLocation(getAddressTextField().getText());
-      else if( val instanceof com.cannontech.database.data.capcontrol.CapBankController )
-      {
-         ((com.cannontech.database.data.capcontrol.CapBankController)val).getDeviceCBC().setSerialNumber( 
-               new Integer(getAddressTextField().getText()) );
-      }
-      else if( val instanceof com.cannontech.database.data.capcontrol.CapBankController6510 )         
-      {
-         ((com.cannontech.database.data.capcontrol.CapBankController6510)val).getDeviceDNP().setMasterAddress( 
-               new Integer(getAddressTextField().getText()) );
-      }
-      else if( val instanceof RTUDNP )
-      {
-         ((RTUDNP)val).getDeviceDNP().setMasterAddress(
-               new Integer(getAddressTextField().getText()) );
-      }
-		else //didn't find it
-			throw new Error("Unable to determine device type when attempting to set the address");
+      ((DBCopiable)device).assignAddress( new Integer(getAddressTextField().getText()) );
 	}
 
-	if (com.cannontech.database.data.pao.DeviceClasses.getClass(device.getPAOClass()) == com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER)
+	if( com.cannontech.database.data.pao.DeviceClasses.getClass(device.getPAOClass()) 
+         == com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER )
 	{
 		com.cannontech.database.cache.DefaultDatabaseCache cache =
 			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized (cache)
-	{
+      {
 			java.util.List routes = cache.getAllRoutes();
 			com.cannontech.database.data.route.RouteBase newRoute = null;
-			DBPersistent oldRoute = null;
+			com.cannontech.database.data.route.RouteBase oldRoute = null;
 			Integer routeID = null;
 			String type = null;
 
 			for (int i = 0; i < routes.size(); i++)
 			{
-				oldRoute = com.cannontech.database.data.lite.LiteFactory.createDBPersistent(((com.cannontech.database.data.lite.LiteYukonPAObject) routes.get(i)));
+				oldRoute = (com.cannontech.database.data.route.RouteBase)
+                        com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
+                           ((com.cannontech.database.data.lite.LiteYukonPAObject) routes.get(i)) );
 				try
 				{
 					com.cannontech.database.Transaction t =
@@ -368,36 +349,32 @@ public Object getValue(Object val)
 					com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 				}
 				
-				if (oldRoute instanceof com.cannontech.database.data.route.RouteBase)
+				if( oldRoute.getDeviceID().intValue() == previousDeviceID )
 				{
-					if (((com.cannontech.database.data.route.RouteBase) oldRoute).getDeviceID().intValue()
-						== previousDeviceID)
-					{
-						type = com.cannontech.database.data.pao.PAOGroups.getRouteTypeString( ((com.cannontech.database.data.lite.LiteYukonPAObject) routes.get(i)).getType() );
-						newRoute = com.cannontech.database.data.route.RouteFactory.createRoute(type);
+					type = com.cannontech.database.data.pao.PAOGroups.getRouteTypeString( ((com.cannontech.database.data.lite.LiteYukonPAObject) routes.get(i)).getType() );
+					newRoute = com.cannontech.database.data.route.RouteFactory.createRoute(type);
 
-						routeID = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID();
-						hasRoute = true;
-						break;
+					routeID = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID();
+					hasRoute = true;
+					break;
 
-					}
 				}
 			}
 			
 			if (hasRoute) 
 			{
-				((com.cannontech.database.data.route.RouteBase) newRoute).setRouteID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
-				((com.cannontech.database.data.route.RouteBase) newRoute).setRouteType( type );
-				((com.cannontech.database.data.route.RouteBase) newRoute).setRouteName(nameString);
-				((com.cannontech.database.data.route.RouteBase) newRoute).setDeviceID(
-					((com.cannontech.database.data.route.RouteBase) oldRoute).getDeviceID() );
-				((com.cannontech.database.data.route.RouteBase) newRoute).setDefaultRoute(
-					((com.cannontech.database.data.route.RouteBase) oldRoute).getDefaultRoute() );
+				newRoute.setRouteID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+				newRoute.setRouteType( type );
+				newRoute.setRouteName(nameString);
+				newRoute.setDeviceID( ((com.cannontech.database.data.route.RouteBase) oldRoute).getDeviceID() );
+				newRoute.setDefaultRoute( oldRoute.getDefaultRoute() );
 
 				if( type.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_CCU) )
 				{
-					((com.cannontech.database.data.route.CCURoute) newRoute).setCarrierRoute(((com.cannontech.database.data.route.CCURoute) oldRoute).getCarrierRoute());
-					((com.cannontech.database.data.route.CCURoute) newRoute).getCarrierRoute().setRouteID(routeID);
+					((com.cannontech.database.data.route.CCURoute)newRoute).setCarrierRoute(
+                     ((com.cannontech.database.data.route.CCURoute)oldRoute).getCarrierRoute());
+                     
+					((com.cannontech.database.data.route.CCURoute)newRoute).getCarrierRoute().setRouteID(routeID);
 				}
 
 				//put the route in the beginning of our Vector
@@ -413,7 +390,7 @@ public Object getValue(Object val)
 		com.cannontech.database.cache.DefaultDatabaseCache cache =
 			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized (cache)
-	{
+      {
 			java.util.List allPoints = cache.getAllPoints();
 			devicePoints = new java.util.Vector();
 
@@ -454,6 +431,9 @@ public Object getValue(Object val)
 		}
 
 	}
+   
+
+   //decide what to return
 	if (hasPoints || hasRoute)
 	{
 		return objectsToAdd;
@@ -468,8 +448,8 @@ public Object getValue(Object val)
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initializes connections
@@ -561,50 +541,34 @@ public void setValue(Object val )
 {
 	int deviceClass = -1;
 	
-	if( val instanceof DeviceBase )
-		deviceClass = com.cannontech.database.data.pao.DeviceClasses.getClass( ((DeviceBase)val).getPAOClass() );
+   DeviceBase devBase = (DeviceBase)val;
+   deviceClass = com.cannontech.database.data.pao.DeviceClasses.getClass( devBase.getPAOClass() );
 	
-	if( (val instanceof IEDBase)
-		 || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.GROUP)
-		 || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.VIRTUAL) )
+   if( val instanceof DBCopiable )
+   {
+      getAddressTextField().setText( ((DBCopiable)devBase).copiableAddress().toString() );
+   }
+	else //if( (val instanceof IEDBase) || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.GROUP) || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.VIRTUAL) )
 	{
 		getAddressTextField().setVisible(false);
 		getPhysicalAddressLabel().setVisible(false);
 	}
-   else if( val instanceof com.cannontech.database.data.capcontrol.CapBankController )
+   
+   //1 special case for now!
+   if( val instanceof com.cannontech.database.data.capcontrol.CapBankController )
    {
       getPhysicalAddressLabel().setText( "Serial #:" );      
-      getAddressTextField().setText( 
-            ((com.cannontech.database.data.capcontrol.CapBankController)val).getDeviceCBC().getSerialNumber().toString() );
-   }
-   else if( val instanceof com.cannontech.database.data.capcontrol.CapBankController6510 )
-   {
-      getAddressTextField().setText( 
-            ((com.cannontech.database.data.capcontrol.CapBankController6510)val).getDeviceDNP().getMasterAddress().toString() );
-   }
-   else if( val instanceof RTUDNP )
-   {
-      getAddressTextField().setText( 
-            ((RTUDNP)val).getDeviceDNP().getMasterAddress().toString() );
-   }
-	else if( val instanceof CarrierBase )
-   {
-		getAddressTextField().setText( ((CarrierBase)val).getDeviceCarrierSettings().getAddress().toString() );
-   }
-	else if( val instanceof IDLCBase )
-   {
-   	getAddressTextField().setText( ((IDLCBase)val).getDeviceIDLCRemote().getAddress().toString() );
    }
 		
-	getNameTextField().setText( ((com.cannontech.database.data.device.DeviceBase)val).getPAOName() );
-	int deviceDeviceID = ((com.cannontech.database.data.device.DeviceBase)val).getDevice().getDeviceID().intValue();
+	getNameTextField().setText( devBase.getPAOName() );
+	int deviceDeviceID = devBase.getDevice().getDeviceID().intValue();
 
 	
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List allPoints = cache.getAllPoints();
-		for(int i=0;i<allPoints.size();i++)
+		for( int i = 0; i < allPoints.size(); i++ )
 		{
 			if( ((com.cannontech.database.data.lite.LitePoint)allPoints.get(i)).getPaobjectID() == deviceDeviceID )
 			{

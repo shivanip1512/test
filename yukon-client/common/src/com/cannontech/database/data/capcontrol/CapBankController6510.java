@@ -6,7 +6,7 @@ package com.cannontech.database.data.capcontrol;
  * 
  * A undefined generated comment
  */
-public class CapBankController6510 extends com.cannontech.database.data.device.RemoteBase
+public class CapBankController6510 extends com.cannontech.database.data.device.RemoteBase implements com.cannontech.database.db.DBCopiable
 {
    private com.cannontech.database.db.device.DeviceDNP deviceDNP = null;
 
@@ -17,6 +17,17 @@ public class CapBankController6510 extends com.cannontech.database.data.device.R
 	{
 		super();
 	}
+
+
+   public Integer copiableAddress() 
+   {
+      return getDeviceDNP().getMasterAddress();
+   }
+
+   public void assignAddress( Integer newAddress )
+   {
+      getDeviceDNP().setMasterAddress( newAddress );
+   }
 
    /**
     * This method was created in VisualAge.

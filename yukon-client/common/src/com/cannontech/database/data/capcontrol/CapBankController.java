@@ -3,13 +3,26 @@ package com.cannontech.database.data.capcontrol;
 /**
  * This type was created in VisualAge.
  */
-public abstract class CapBankController extends CapControlDeviceBase {
+public abstract class CapBankController extends CapControlDeviceBase implements com.cannontech.database.db.DBCopiable 
+{
 	private com.cannontech.database.db.capcontrol.DeviceCBC deviceCBC = null;
+   
 /**
  */
 public CapBankController() {
 	super();
 }
+
+   public Integer copiableAddress() 
+   {
+      return getDeviceCBC().getSerialNumber();
+   }
+
+   public void assignAddress( Integer newAddress )
+   {
+      getDeviceCBC().setSerialNumber( newAddress );
+   }
+  
 /**
  * This method was created in VisualAge.
  */

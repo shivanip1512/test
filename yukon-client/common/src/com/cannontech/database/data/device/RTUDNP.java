@@ -6,7 +6,7 @@ package com.cannontech.database.data.device;
  * 
  * A undefined generated comment
  */
-public class RTUDNP extends RemoteBase
+public class RTUDNP extends RemoteBase implements com.cannontech.database.db.DBCopiable
 {
    com.cannontech.database.db.device.DeviceDNP deviceDNP = null;
 
@@ -17,6 +17,16 @@ public class RTUDNP extends RemoteBase
 	{
 		super();
 	}
+
+   public Integer copiableAddress() 
+   {
+      return getDeviceDNP().getMasterAddress();
+   }
+
+   public void assignAddress( Integer newAddress )
+   {
+      getDeviceDNP().setMasterAddress( newAddress );
+   }
 
    /**
     * This method was created in VisualAge.

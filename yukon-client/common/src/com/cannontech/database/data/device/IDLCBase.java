@@ -5,14 +5,27 @@ package com.cannontech.database.data.device;
  */
 import com.cannontech.database.db.device.DeviceIDLCRemote;
 
-public class IDLCBase extends RemoteBase {
+public class IDLCBase extends RemoteBase implements com.cannontech.database.db.DBCopiable
+{
 	private DeviceIDLCRemote deviceIDLCRemote = null;
-/**
- * SmartTransmitted constructor comment.
- */
-public IDLCBase() {
-	super();
-}
+   
+   /**
+    * SmartTransmitted constructor comment.
+    */
+   public IDLCBase() {
+   	super();
+   }
+   
+   public Integer copiableAddress() 
+   {
+      return getDeviceIDLCRemote().getAddress();
+   }
+   
+   public void assignAddress( Integer newAddress )
+   {
+      getDeviceIDLCRemote().setAddress( newAddress );
+   }
+   
 /**
  * This method was created in VisualAge.
  */

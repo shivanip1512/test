@@ -5,17 +5,30 @@ import com.cannontech.database.db.device.*;
 /**
  * This type was created in VisualAge.
  */
-public class CarrierBase extends TwoWayDevice {
+public class CarrierBase extends TwoWayDevice implements com.cannontech.database.db.DBCopiable
+{
 
 	private DeviceRoutes deviceRoutes = null;
 
 	private DeviceCarrierSettings deviceCarrierSettings = null;
-/**
- * CarrierBase constructor comment.
- */
-public CarrierBase() {
-	super();
-}
+   
+   /**
+    * CarrierBase constructor comment.
+    */
+   public CarrierBase() {
+   	super();
+   }
+
+   public Integer copiableAddress() 
+   {
+      return getDeviceCarrierSettings().getAddress();
+   }
+
+   public void assignAddress( Integer newAddress )
+   {
+      getDeviceCarrierSettings().setAddress( newAddress );
+   }
+
 /**
  * This method was created in VisualAge.
  */
