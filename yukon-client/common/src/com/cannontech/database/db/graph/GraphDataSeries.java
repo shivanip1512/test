@@ -6,9 +6,12 @@ package com.cannontech.database.db.graph;
  * @author: 
  */
 import java.sql.Connection;
+import java.sql.SQLException;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 
 public class GraphDataSeries extends com.cannontech.database.db.DBPersistent
 {
@@ -118,59 +121,47 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent
 	 */
 	public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID, String databaseAlias) 
 	{
-		
-	//	String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME, pu.UOMID FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p, POINTUNIT pu WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID AND pu.PointID = p.POINTID ORDER BY p.POINTOFFSET";
-		//Remove PointUnit table in order to get Status points visible.  Status points have no pointunit.
-	
-			String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME, gds.MULTIPLIER, gds.RENDERER, gds.MOREDATA FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID ORDER BY p.POINTOFFSET";
-//			String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME, gds.MULTIPLIER FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID ORDER BY p.POINTOFFSET";
-	
-		com.cannontech.database.SqlStatement sql = new com.cannontech.database.SqlStatement(sqlString, databaseAlias);
-	
+		GraphDataSeries[] returnVal = null;	
+		String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME, gds.MULTIPLIER, gds.RENDERER, gds.MOREDATA FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID ORDER BY p.POINTOFFSET";
+//		String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME, gds.MULTIPLIER FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID ORDER BY p.POINTOFFSET";
+
 		try
 		{
-			sql.execute();
+//			contains values of row/columns
+			Object[][] results = SqlUtils.getResultObjects(sqlString, databaseAlias);
+			if( results != null)
+			{
+				java.util.Vector temp = new java.util.Vector();
+				for( int i = 0; i < results.length; i++ )
+				{
+					GraphDataSeries dataSeries = new GraphDataSeries();
+
+					Object[] row = results[i];
+	
+					dataSeries.setGraphDataSeriesID( (Integer)row[0] );
+					dataSeries.setGraphDefinitionID( graphDefinitionID );
+					dataSeries.setType( (Integer)row[1] );
+					dataSeries.setPointID( (Integer)row[2] );
+					dataSeries.setLabel( (String) row[3] );
+					dataSeries.setAxis( new Character(((String) row[4]).charAt(0)) );
+					dataSeries.setColor( (Integer)row[5] );
+					dataSeries.setDeviceName( (String) row[6] );
+					dataSeries.setMultiplier( (Double)row[7] );
+					dataSeries.setRenderer( (Integer)row[8] );
+					dataSeries.setMoreData( (String)row[9] );
+			
+					temp.addElement( dataSeries );
+				}
+
+				returnVal = new GraphDataSeries[temp.size()];
+				temp.copyInto( returnVal );
+			}			
 		}
-		catch( com.cannontech.common.util.CommandExecutionException e )
+		catch( SQLException e )
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
-	
-		java.util.Vector temp = new java.util.Vector();
 		
-		for( int i = 0; i < sql.getRowCount(); i++ )
-		{
-			GraphDataSeries dataSeries = new GraphDataSeries();
-	
-			java.math.BigDecimal gdsID = (java.math.BigDecimal) sql.getRow(i)[0];
-			java.math.BigDecimal type = (java.math.BigDecimal) sql.getRow(i)[1];
-			java.math.BigDecimal pID = (java.math.BigDecimal) sql.getRow(i)[2];		
-			String label = (String) sql.getRow(i)[3];
-			String axis = (String) sql.getRow(i)[4];
-			java.math.BigDecimal color = (java.math.BigDecimal) sql.getRow(i)[5];
-			String deviceName = (String) sql.getRow(i)[6];
-			Number mult = (Number)sql.getRow(i)[7];
-			Integer rend = (Integer)sql.getRow(i)[8];
-			String moreData = (String)sql.getRow(i)[9];
-		
-			dataSeries.setGraphDataSeriesID ( new Integer( gdsID.intValue() ) );		
-			dataSeries.setGraphDefinitionID(graphDefinitionID);
-			dataSeries.setType(new Integer(type.intValue()));
-			dataSeries.setPointID( new Integer( pID.intValue() ) );
-			dataSeries.setLabel(label);		
-			dataSeries.setAxis( new Character( axis.charAt(0)) );
-			dataSeries.setColor( new Integer( color.intValue() ) );
-			dataSeries.setDeviceName(deviceName);
-			dataSeries.setMultiplier(new Double(mult.doubleValue()));
-			dataSeries.setRenderer(new Integer(rend.intValue()));
-			dataSeries.setMoreData(moreData);
-				
-			temp.addElement( dataSeries );
-		}
-	 
-		GraphDataSeries[] returnVal = new GraphDataSeries[temp.size()];
-		temp.copyInto( returnVal );
-	
 		return returnVal;
 	}
 	/**
