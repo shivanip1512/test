@@ -206,7 +206,7 @@ public class DBFuncs
 		{
 			java.sql.Statement stat = conn.createStatement();
 
-			stat.execute("UPDATE DYNAMICIMPORTSTATUS SET TOTALSUCCESSES = " + success + " WHERE ENTRY = 'SYSTEMVALUE'");
+			stat.execute("UPDATE DYNAMICIMPORTSTATUS SET TOTALSUCCESS = " + success + " WHERE ENTRY = 'SYSTEMVALUE'");
 		
 			if (stat != null)
 				stat.close();
