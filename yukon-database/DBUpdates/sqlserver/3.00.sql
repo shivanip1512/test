@@ -110,6 +110,9 @@ delete from yukonrole where roleid=-303;
 
 delete from YukonUserRole where userid=-1;
 
+insert into YukonRoleProperty values(-10111,-101,'lc_reduction_col','true','Tells TDC to show the LoadControl reduction column or not');
+go
+
 /* Database Editor */
 insert into YukonUserRole values(100,-1,-100,-10000,'(none)');
 insert into YukonUserRole values(101,-1,-100,-10001,'(none)');
@@ -131,7 +134,7 @@ insert into YukonUserRole values(126,-1,-101,-10106,'(none)');
 insert into YukonUserRole values(127,-1,-101,-10107,'(none)');
 insert into YukonUserRole values(128,-1,-101,-10108,'(none)');
 insert into YukonUserRole values(129,-1,-101,-10109,'(none)');
-insert into YukonUserRole values(130,-1,-101,-10110,'(none)');
+insert into YukonUserRole values(130,-1,-101,-10111,'(none)');
 
 /* Trending */
 insert into YukonUserRole values(150,-1,-102,-10200,'(none)');
@@ -489,6 +492,9 @@ insert into tags values(-2, 'Info', 1, 'N', 6, 0);
 
 update columntype set name='State' where name='Tags';
 update templatecolumns set title='State' where title='Tags';
+
+
+update YukonRoleProperty set keyname='cap_control_interface' where rolepropertyid=-10105;
 
 
 /******************************************************************************/

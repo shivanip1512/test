@@ -84,6 +84,10 @@ delete from yukonrole where roleid=-303;
 
 delete from YukonUserRole where userid=-1;
 
+update YukonRoleProperty set keyname='lc_reduction_col', defaultvalue='true', description='Tells TDC to show the LoadControl reduction column or not' where rolepropertyid=-10110;
+go
+
+
 /* Database Editor */
 insert into YukonUserRole values(100,-1,-100,-10000,'(none)');
 insert into YukonUserRole values(101,-1,-100,-10001,'(none)');
@@ -438,6 +442,7 @@ insert into tags values(-2, 'Info', 1, 'N', 6, 0);
 update columntype set name='State' where name='Tags';
 update templatecolumns set title='State' where title='Tags';
 
+update YukonRoleProperty set keyname='cap_control_interface' where rolepropertyid=-10105;
 
 
 /******************************************************************************/
