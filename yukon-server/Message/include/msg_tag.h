@@ -25,23 +25,28 @@
 class IM_EX_MSG CtiTagMsg : public CtiMessage
 {
 public:
-   typedef enum 
+   typedef enum
      {
        AddAction,
        RemoveAction,
        UpdateAction,
+       ReportAction
+
      } CtiTagAction;
 
 protected:
 
    int _instanceid;        // no two tags share the same one
-   int _pointid;        
+   int _pointid;
    int _tagid;             // refers to id in tag table
-   RWCString _descriptionStr; 
+   RWCString _descriptionStr;
    int _action;    // one of CtiTagAction
    RWTime _tagtime;         // when was tag created
    RWCString _referenceStr; // job id, etc, user field
    RWCString _taggedForStr; // user field
+
+
+   int _clientMsgId;        // id sourced and returned to clients.  Untouched and unused by dispatch.
 
 private:
 
@@ -49,8 +54,8 @@ public:
 
    RWDECLARE_COLLECTABLE(CtiTagMsg);
 
-   typedef CtiTagMsg Inherited;
-   
+   typedef CtiMessage Inherited;
+
    CtiTagMsg();
    CtiTagMsg(const CtiTagMsg& aRef);
    virtual ~CtiTagMsg();
@@ -80,6 +85,9 @@ public:
 
    const RWCString& getTaggedForStr() const;
    CtiTagMsg& setTaggedForStr(const RWCString& forStr);
+
+   int getClientMsgId() const;
+   CtiTagMsg& setClientMsgId(int id);
 
    virtual void saveGuts(RWvostream &aStream) const;
    virtual void restoreGuts(RWvistream& aStream);
