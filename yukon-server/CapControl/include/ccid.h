@@ -27,6 +27,7 @@
 #define CTICCERROR_ID               510
 #define CTICCDONE_ID                511
 #define CTICCUPDATE_ID              512
+#define CTICCCAPBANKMOVEMSG_ID      513
 
 
 /*#define CTICCSTRATEGYLIST_ID     501
