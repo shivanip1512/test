@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/12/07 17:57:14 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/02/21 21:44:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -177,6 +177,7 @@ public:
         GetConfig_Multiplier,
         GetConfig_Multiplier2,
         GetConfig_Multiplier3,
+        GetConfig_Multiplier4,
         GetConfig_IEDScan,
         GetConfig_IEDPwd,
         GetConfig_IEDTime,
