@@ -15,6 +15,7 @@ using namespace std;
 #include <rw\thr\mutex.h>
 #include <rw\tphasht.h>
 
+#include "dsm2.h"
 #include "server_b.h"
 #include "dlldefs.h"
 #include "msg_pcrequest.h"
@@ -35,10 +36,12 @@ private:
    RWThreadFunction              ResultThread_;     // Thread which translates INMESS to CtiReturnMsg
    RWThreadFunction              _vgConnThread;     // Thread which manages VanGogh requests!
    RWThreadFunction              _nexusThread;
+   RWThreadFunction              _nexusWriteThread;
 
    CtiMutex                      _inMux;            // Protects the _inList.
    RWTPtrSlist< INMESS    >      _inList;           // Nexus dumps out into this list!
 
+   CtiQueue< CtiOutMessage, less<CtiOutMessage> >     _porterOMQueue;    // Queue for items to be sent to Porter!
    bool                          _broken;           // When the PILServer knows he's sick.
 
 public:
@@ -67,6 +70,7 @@ public:
    void  connectionThread();
    void  resultThread();
    void  nexusThread();
+   void  nexusWriteThread();
    void  vgConnThread();
 
    INT analyzeWhiteRabbits(CtiRequestMsg& pReq, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > & retList);
