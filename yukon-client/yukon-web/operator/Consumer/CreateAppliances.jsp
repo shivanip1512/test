@@ -101,6 +101,12 @@
                       </select>
                     </td>
                   </tr>
+				   <tr> 
+                    <td width="100" class="TableCell"> 
+                      <div align="right">Model #:</div>
+                    </td>
+                    <td width="200"><input type="text" name="ModelNumber" maxlength="40" size="30" value=""></td>
+                  </tr>
                   <tr> 
                     <td width="100" class="TableCell"> 
                       <div align="right">Year Manufactured:</div>
@@ -127,24 +133,7 @@
                       </select>
                     </td>
                   </tr>
-                  <tr> 
-                    <td width="100" class="TableCell"> 
-                      <div align="right">Service Company:</div>
-                    </td>
-                    <td width="200">
-					  <select name="Company">
-<%
-	StarsCustSelectionList companyList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
-	for (int i = 0; i < companyList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = companyList.getStarsSelectionListEntry(i);
-%>
-						<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-<%
-	}
-%>
-					  </select>
-                    </td>
-                  </tr>
+                 
                   <tr> 
                     <td width="100" class="TableCell"> 
                       <div align="right">Notes:</div>

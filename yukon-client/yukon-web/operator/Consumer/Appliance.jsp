@@ -158,6 +158,14 @@ function deleteAppliance(form) {
                         </tr>
                         <tr> 
                           <td width="100" class="TableCell"> 
+                            <div align="right">Model #:</div>
+                          </td>
+                          <td width="200">
+                            <input type="text" name="ModelNumber" maxlength="40" size="30" value="">
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="100" class="TableCell"> 
                             <div align="right">Year Manufactured:</div>
                           </td>
                           <td width="200"> 
@@ -181,14 +189,6 @@ function deleteAppliance(form) {
 	}
 %>
                             </select>
-                          </td>
-                        </tr>
-                        <tr> 
-                          <td width="100" class="TableCell"> 
-                            <div align="right">Service Company:</div>
-                          </td>
-                          <td width="200">
-                            <input type="text" name="ServiceCompany" maxlength="40" size="30" value="<%= appliance.getServiceCompany().getContent() %>">
                           </td>
                         </tr>
                         <tr> 
@@ -263,7 +263,8 @@ function deleteAppliance(form) {
 	}
 	else {
 %>
-					<p align="center">There is no program for this appliance.</p>
+					<p align="center" class="Main">There is no program for 
+                      this appliance</p>
 <%
 	}
 %>
@@ -309,7 +310,7 @@ function deleteAppliance(form) {
 	}
 	else {
 %>
-			  <p>There is no hardware attached to this appliance.</p>
+			  <p class="Main">There is no hardware attached to this appliance</p>
 <%
 	}
 %>
