@@ -652,7 +652,7 @@ IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
                     if( (*myFindFunc)(ptr, DeleteEntry->Data) )
                     {
                         purgecnt++;
-                        (*myFindFunc)( ptr, DeleteEntry->Data);         // Call the cleanup function.  It better delete the data
+                        (*myCleanFunc)( ptr, DeleteEntry->Data);         // Call the cleanup function.  It better delete the data
                         RemoveQueueEntry(QueueHandle, DeleteEntry, Previous);     // No longer linked.
                     }
                     else
