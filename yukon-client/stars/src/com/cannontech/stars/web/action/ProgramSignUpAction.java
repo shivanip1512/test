@@ -220,11 +220,7 @@ public class ProgramSignUpAction implements ActionBase {
             
 			StarsProgramSignUpResponse resp = new StarsProgramSignUpResponse();
 			resp.setStarsInventories( starsInvs );
-			
-			String desc = "Program enrollment updated successfully";
-			if (ServerUtils.isOperator( user ))
-				desc += ", please check the hardware configuration";
-			resp.setDescription( desc );
+			resp.setDescription( "Program enrollment updated successfully" );
 			
 			ArrayList liteProgs = liteAcctInfo.getLmPrograms();
 			StarsLMPrograms starsProgs = new StarsLMPrograms();
