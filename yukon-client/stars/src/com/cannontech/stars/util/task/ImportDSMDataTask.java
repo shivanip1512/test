@@ -16,11 +16,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-import java.util.TreeMap;
+import java.util.TreeSet;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
@@ -91,7 +90,34 @@ import com.cannontech.stars.xml.serialize.Tonnage;
 import com.cannontech.stars.xml.serialize.WaterHeater;
 import com.cannontech.user.UserUtils;
 
-class ReceiverType {
+class CustomerPK {
+	public String mappage = null;
+	public String mapsection = null;
+	public String mapid = null;
+	int coopid = 0;
+	
+	public CustomerPK (String mappage, String mapsection, String mapid, int coopid) {
+		this.mappage = mappage;
+		this.mapsection = mapsection;
+		this.mapid = mapid;
+		this.coopid = coopid;
+	}
+	
+	public boolean equals(Object obj) {
+		CustomerPK pk = (CustomerPK) obj;
+		return mappage.equals(pk.mappage) && mapsection.equals(pk.mapsection) && mapid.equals(pk.mapid) && (coopid == pk.coopid);
+	}
+	
+	public int hashCode() {
+		return toString().hashCode();
+	}
+	
+	public String toString() {
+		return mappage + "," + mapsection + "," + mapid + "," + coopid;
+	}
+}
+
+class ReceiverType implements Comparable {
 	public String type = null;
 	public String model = null;
 	public String frequency = null;
@@ -113,6 +139,39 @@ class ReceiverType {
 	
 	public String toString() {
 		return type + "," + model + "," + frequency;
+	}
+	
+	public int compareTo(Object o) {
+		ReceiverType rt = (ReceiverType) o;
+		return toString().compareTo( rt.toString() );
+	}
+}
+
+class ControlType implements Comparable {
+	public String loadType = null;
+	public String controlType = null;
+	
+	public ControlType(String s1, String s2) {
+		loadType = s1;
+		controlType = s2;
+	}
+	
+	public boolean equals(Object obj) {
+		ControlType ct = (ControlType) obj;
+		return loadType.equalsIgnoreCase(ct.loadType) && controlType.equalsIgnoreCase(ct.controlType);
+	}
+	
+	public int hashCode() {
+		return toString().hashCode();
+	}
+	
+	public String toString() {
+		return loadType + "," + controlType;
+	}
+	
+	public int compareTo(Object o) {
+		ControlType ct = (ControlType) o;
+		return toString().compareTo( ct.toString() );
 	}
 }
 
@@ -160,33 +219,8 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 	private Hashtable receiverMap = null;
 	private Hashtable routeMap = null;
 	private Hashtable receiverTypeMap = null;
-	
-	class CustomerPK {
-		public String mappage = null;
-		public String mapsection = null;
-		public String mapid = null;
-		int coopid = 0;
-		
-		public CustomerPK (String mappage, String mapsection, String mapid, int coopid) {
-			this.mappage = mappage;
-			this.mapsection = mapsection;
-			this.mapid = mapid;
-			this.coopid = coopid;
-		}
-		
-		public boolean equals(Object obj) {
-			CustomerPK pk = (CustomerPK) obj;
-			return mappage.equals(pk.mappage) && mapsection.equals(pk.mapsection) && mapid.equals(pk.mapid) && (coopid == pk.coopid);
-		}
-		
-		public int hashCode() {
-			return toString().hashCode();
-		}
-		
-		public String toString() {
-			return mappage + "," + mapsection + "," + mapid + "," + coopid;
-		}
-	}
+	private Hashtable controlTypeMap = null;
+	private Hashtable loadTypeMap = null;
 	
 	public ImportDSMDataTask(LiteStarsEnergyCompany energyCompany, File importDir) {
 		this.energyCompany = energyCompany;
@@ -332,32 +366,24 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 	 * Generate config files used as input to the conversion program. The config files are populated with
 	 * data from the DSM database, as well as instructions on how to complete the rest of the file.
 	 * The following config files will be generated:
-	 *     "_route.map", "_receivertype.map"
+	 *     "_route.map", "_receivertype.map", "_controltype.map", "_loadtype.map"
 	 */
 	public static void generateConfigFiles(File importDir) throws Exception {
 		File file = new File(importDir, "coop.out");
 		if (!file.exists())
 			throw new WebClientException( "File \"coop.out\" not found!" );
 		
-		TreeMap coopMap = new TreeMap();
 		String[] lines = StarsUtils.readFile( file, false );
-		for (int i = 0; i < lines.length; i++) {
-			String[] fields = StarsUtils.splitString( lines[i], DELIM );
-			Integer coopID = Integer.valueOf( fields[1].trim() );
-			coopMap.put( coopID, fields[0].trim() );
-		}
-		
 		PrintWriter fw = null;
+		
 		try {
 			fw = new PrintWriter(new FileWriter(new File(importDir, "_route.map")));
 			fw.println("# This file defines the mapping from coops to their assigned route macros.");
 			fw.println("# Complete the file by adding the route name to the end of each line.");
 			
-			Iterator it = coopMap.keySet().iterator();
-			while (it.hasNext()) {
-				Integer coopID = (Integer) it.next();
-				String coopName = (String) coopMap.get( coopID );
-				fw.println( coopID + "," + coopName + "," );
+			for (int i = 0; i < lines.length; i++) {
+				String[] fields = StarsUtils.splitString( lines[i], DELIM );
+				fw.println( fields[1].trim() + "," + fields[0].trim() + "," );
 			}
 		}
 		finally {
@@ -369,7 +395,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			throw new WebClientException( "File \"receiver.out\" not found!" );
 		
 		BufferedReader fr = null;
-		HashSet recvTypeSet = new HashSet();
+		TreeSet recvTypeSet = new TreeSet();
 		
 		try {
 			fr = new BufferedReader(new FileReader(file));
@@ -399,6 +425,74 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			while (it.hasNext()) {
 				ReceiverType rt = (ReceiverType) it.next();
 				fw.println( rt.toString() + "," );
+			}
+		}
+		finally {
+			if (fw != null) fw.close();
+		}
+		
+		file = new File(importDir, "controlledload.out");
+		if (!file.exists())
+			throw new WebClientException( "File \"controlledload.out\" not found!" );
+		
+		fr = null;
+		TreeSet ctrlTypeSet = new TreeSet();
+		
+		try {
+			fr = new BufferedReader(new FileReader(file));
+			String line = null;
+			
+			while ((line = fr.readLine()) != null) {
+				if (line.trim().length() == 0 || line.charAt(0) == '#')
+					continue;
+				
+				String[] fields = StarsUtils.splitString( line, DELIM );
+				if (fields[17].trim().length() > 0 && fields[16].trim().length() > 0) {
+					ControlType ct = new ControlType( "COOLING:" + fields[17].trim(), fields[16].trim() );
+					ctrlTypeSet.add( ct );
+				}
+				if (fields[26].trim().length() > 0 && fields[19].trim().length() > 0) {
+					ControlType ct = new ControlType( "WATERHEATER:" + fields[26].trim(), fields[19].trim() );
+					ctrlTypeSet.add( ct );
+				}
+			}
+		}
+		finally {
+			if (fr != null) fr.close();
+		}
+		
+		fw = null;
+		try {
+			fw = new PrintWriter(new FileWriter(new File(importDir, "_controltype.map")));
+			fw.println("# This file defines the mapping from control types in DSM to LM programs in STARS.");
+			fw.println("# The existing data is in the form of: \"cooltype/waterheater_type,control_type,\"");
+			fw.println("# Complete the file by adding the name of the LM program to the end of each line.");
+			
+			Iterator it = ctrlTypeSet.iterator();
+			while (it.hasNext()) {
+				ControlType ct = (ControlType) it.next();
+				fw.println( ct.toString() + "," );
+			}
+		}
+		finally {
+			if (fw != null) fw.close();
+		}
+		
+		file = new File(importDir, "load_type.out");
+		if (!file.exists())
+			throw new WebClientException( "File \"load_type.out\" not found!" );
+		
+		lines = StarsUtils.readFile( file, false );
+		fw = null;
+		
+		try {
+			fw = new PrintWriter(new FileWriter(new File(importDir, "_loadtype.map")));
+			fw.println("# This file defines the mapping from load types in DSM to appliance categories in STARS.");
+			fw.println("# Complete the file by adding the corresponding appliance category to the end of each line.");
+			
+			for (int i = 0; i < lines.length; i++) {
+				String[] fields = StarsUtils.splitString( lines[i], DELIM );
+				fw.println( fields[1].trim() + "," + fields[0].trim() + "," );
 			}
 		}
 		finally {
@@ -537,20 +631,18 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			for (int i = 0; i < lines.length; i++) {
 				String[] fields = StarsUtils.splitString( lines[i], "," );
 				
-				Integer routeID = null;
 				if (fields[2].length() > 0) {
+					Integer routeID = null;
 					for (int j = 0; j < liteRoutes.length; j++) {
 						if (liteRoutes[j].getPaoName().equalsIgnoreCase( fields[2] )) {
 							routeID = new Integer(liteRoutes[j].getYukonID());
+							routeMap.put( Integer.valueOf(fields[0]), routeID );
 							break;
 						}
 					}
 					if (routeID == null)
 						throw new WebClientException( "Route \"" + fields[2] + "\" was not found in Yukon" );
 				}
-				
-				if (routeID != null)
-					routeMap.put( Integer.valueOf(fields[0]), routeID );
 			}
 		}
 		return routeMap;
@@ -566,22 +658,103 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			for (int i = 0; i < lines.length; i++) {
 				String[] fields = StarsUtils.splitString( lines[i], "," );
 				
-				Integer devTypeID = null;
 				if (fields[3].length() > 0) {
 					YukonSelectionList list = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
-					int entryID = getListEntryID( list, fields[3] );
-					if (entryID == 0)
+					int devTypeID = getListEntryID( list, fields[3] );
+					if (devTypeID == 0)
 						throw new WebClientException( "Device type \"" + fields[3] + "\" was undefined in STARS" );
-					devTypeID = new Integer(entryID);
-				}
-				
-				if (devTypeID != null) {
+					
 					ReceiverType rt = new ReceiverType( fields[0], fields[1], fields[2] );
-					receiverTypeMap.put( rt, devTypeID );
+					receiverTypeMap.put( rt, new Integer(devTypeID) );
 				}
 			}
 		}
 		return receiverTypeMap;
+	}
+	
+	private Hashtable getControlTypeMap() throws Exception {
+		if (controlTypeMap == null) {
+			controlTypeMap = new Hashtable();
+			
+			LiteApplianceCategory appCatAC = null;
+			LiteApplianceCategory appCatWH = null;
+			for (int i = 0; i < energyCompany.getApplianceCategories().size(); i++) {
+				LiteApplianceCategory appCat = (LiteApplianceCategory) energyCompany.getApplianceCategories().get(i);
+				int appCatDefID = YukonListFuncs.getYukonListEntry( appCat.getCategoryID() ).getYukonDefID();
+				if (appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER)
+					appCatAC = appCat;
+				else if (appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER)
+					appCatWH = appCat;
+			}
+			
+			File file = new File(importDir, "_controltype.map");
+			String[] lines = StarsUtils.readFile( file, false );
+			
+			for (int i = 0; i < lines.length; i++) {
+				String[] fields = StarsUtils.splitString( lines[i], "," );
+				ControlType ct = new ControlType( fields[0], fields[1] );
+				
+				if (fields[2].length() > 0) {
+					Integer progID = null;
+					if (fields[0].startsWith("COOLING:")) {
+						for (int j = 0; j < appCatAC.getPublishedPrograms().size(); j++) {
+							LiteLMProgramWebPublishing prog = (LiteLMProgramWebPublishing) appCatAC.getPublishedPrograms().get(j);
+							String progName = StarsUtils.getPublishedProgramName(prog);
+							if (progName.equalsIgnoreCase( fields[2] )) {
+								progID = new Integer( prog.getProgramID() );
+								controlTypeMap.put( ct, progID );
+								break;
+							}
+						}
+						if (progID == null)
+							throw new WebClientException("LM program \"" + fields[2] + "\" was undefined in the appliance category \"" + appCatAC.getDescription() + "\" in STARS");
+					}
+					else if (fields[0].startsWith("WATERHEATER:")) {
+						for (int j = 0; j < appCatWH.getPublishedPrograms().size(); j++) {
+							LiteLMProgramWebPublishing prog = (LiteLMProgramWebPublishing) appCatWH.getPublishedPrograms().get(j);
+							String progName = StarsUtils.getPublishedProgramName(prog);
+							if (progName.equalsIgnoreCase( fields[2] )) {
+								progID = new Integer( prog.getProgramID() );
+								controlTypeMap.put( ct, progID );
+								break;
+							}
+						}
+						if (progID == null)
+							throw new WebClientException("LM program \"" + fields[2] + "\" was undefined in the appliance category \"" + appCatWH.getDescription() + "\" in STARS");
+					}
+				}
+			}
+		}
+		return controlTypeMap;
+	}
+	
+	private Hashtable getLoadTypeMap() throws Exception {
+		if (loadTypeMap == null) {
+			loadTypeMap = new Hashtable();
+			
+			ArrayList appCats = energyCompany.getApplianceCategories();
+			File file = new File(importDir, "_loadtype.map");
+			String[] lines = StarsUtils.readFile( file, false );
+			
+			for (int i = 0; i < lines.length; i++) {
+				String[] fields = StarsUtils.splitString( lines[i], "," );
+				
+				if (fields[2].length() > 0) {
+					Integer appCatID = null;
+					for (int j = 0; j < appCats.size(); j++) {
+						LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
+						if (liteAppCat.getDescription().equalsIgnoreCase( fields[2] )) {
+							appCatID = new Integer(liteAppCat.getApplianceCategoryID());
+							loadTypeMap.put( Integer.valueOf(fields[0]), appCatID );
+							break;
+						}
+					}
+					if (appCatID == null)
+						throw new WebClientException( "Appliance category \"" + fields[2] + "\" was undefined in STARS" );
+				}
+			}
+		}
+		return loadTypeMap;
 	}
 	
 	private int getListEntryID(YukonSelectionList list, String entryText) {
@@ -1344,18 +1517,17 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		YukonSelectionList backupTypeList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DF_SECONDARY_SOURCE );
 		YukonSelectionList whCapacityList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_WH_NUM_OF_GALLONS );
 		
-		int appCatDftID = 0;
+		LiteApplianceCategory appCatDft = null;
 		LiteApplianceCategory appCatAC = null;
 		LiteApplianceCategory appCatWH = null;
 		LiteApplianceCategory appCatDF = null;
 		LiteApplianceCategory appCatSH = null;
-		LiteApplianceCategory appCatIrr = null;
 		
 		for (int i = 0; i < energyCompany.getApplianceCategories().size(); i++) {
 			LiteApplianceCategory appCat = (LiteApplianceCategory) energyCompany.getApplianceCategories().get(i);
 			int appCatDefID = YukonListFuncs.getYukonListEntry( appCat.getCategoryID() ).getYukonDefID();
 			if (appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT)
-				appCatDftID = appCat.getApplianceCategoryID();
+				appCatDft = appCat;
 			else if (appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER)
 				appCatAC = appCat;
 			else if (appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER)
@@ -1364,8 +1536,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				appCatDF = appCat;
 			else if (appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT)
 				appCatSH = appCat;
-			else if (appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION)
-				appCatIrr = appCat;
 		}
 		
 		BufferedReader fr = null;
@@ -1415,7 +1585,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				int progID = 0;
 				
 				StarsCreateAppliance app = new StarsCreateAppliance();
-				app.setApplianceCategoryID( appCatDftID );
+				app.setApplianceCategoryID( appCatDft.getApplianceCategoryID() );
 				app.setModelNumber( "" );
 				app.setEfficiencyRating( -1 );
 				
@@ -1446,15 +1616,13 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					app.setApplianceCategoryID( appCatAC.getApplianceCategoryID() );
 					
 					if (fields[16].trim().length() > 0) {
-						for (int i = 0; i < appCatAC.getPublishedPrograms().size(); i++) {
-							LiteLMProgramWebPublishing prog = (LiteLMProgramWebPublishing) appCatAC.getPublishedPrograms().get(i);
-							String progName = StarsUtils.getPublishedProgramName( prog );
-							if (progName.equalsIgnoreCase( fields[16].trim() )) {
-								progID = prog.getProgramID();
-								break;
-							}
-						}
+						ControlType ct = new ControlType( "COOLING:" + coolType, fields[16].trim() );
+						Integer programID = (Integer) getControlTypeMap().get( ct );
+						if (programID != null) progID = programID.intValue();
 					}
+					
+					if (progID == 0 && appCatAC.getPublishedPrograms().size() > 0)
+						progID = ((LiteLMProgramWebPublishing) appCatAC.getPublishedPrograms().get(0)).getProgramID();
 				}
 				else if (primaryType.length() > 0) {
 					if (primaryType.equalsIgnoreCase("Storage")) {
@@ -1503,18 +1671,34 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 						notes += "Insulation type: " + fields[20].trim();
 					
 					if (fields[19].trim().length() > 0) {
-						for (int i = 0; i < appCatWH.getPublishedPrograms().size(); i++) {
-							LiteLMProgramWebPublishing prog = (LiteLMProgramWebPublishing) appCatWH.getPublishedPrograms().get(i);
-							String progName = StarsUtils.getPublishedProgramName( prog );
-							if (progName.equalsIgnoreCase( fields[19].trim() )) {
-								progID = prog.getProgramID();
-								break;
-							}
-						}
+						ControlType ct = new ControlType( "WATERHEATER:" + whType, fields[19].trim() );
+						Integer programID = (Integer) getControlTypeMap().get( ct );
+						if (programID != null) progID = programID.intValue();
 					}
+					
+					if (progID == 0 && appCatWH.getPublishedPrograms().size() > 0)
+						progID = ((LiteLMProgramWebPublishing) appCatWH.getPublishedPrograms().get(0)).getProgramID();
 				}
 				else {
-					importLog.println(errorLocation + ": unknown load type, assign to the generic appliance category.");
+					Integer appCatID = null;
+					try {
+						Integer loadID = Integer.valueOf( fields[1].trim() );
+						appCatID = (Integer) getLoadTypeMap().get( loadID );
+					}
+					catch (NumberFormatException e) {}
+					
+					LiteApplianceCategory liteAppCat = null;
+					if (appCatID != null) {
+						app.setApplianceCategoryID( appCatID.intValue() );
+						liteAppCat = energyCompany.getApplianceCategory( appCatID.intValue() );
+					}
+					else {
+						liteAppCat = appCatDft;
+						importLog.println(errorLocation + ": unknown load type \"" + fields[1].trim() + "\", assign to the generic appliance category.");
+					}
+					
+					if (liteAppCat.getPublishedPrograms().size() > 0)
+						progID = ((LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(0)).getProgramID();
 				}
 				
 				app.setNotes( notes );
