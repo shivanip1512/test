@@ -8,7 +8,7 @@ import com.cannontech.common.util.CtiUtilities;
 public class LMProgramDirect extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer deviceID = null;
-	private Integer notifyInterval = new Integer(0);
+	private Integer notifyOffset = new Integer(0);
 	private String heading = CtiUtilities.STRING_NONE;
 	private String messageHeader = CtiUtilities.STRING_NONE;
 	private String messageFooter = CtiUtilities.STRING_NONE;
@@ -17,7 +17,7 @@ public class LMProgramDirect extends com.cannontech.database.db.DBPersistent
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"NOTIFYINTERVAL", "HEADING", "MESSAGEHEADER", "MESSAGEFOOTER", "CANCELEDMSG", "STOPPEDEARLYMSG"
+		"NOTIFYOFFSET", "HEADING", "MESSAGEHEADER", "MESSAGEFOOTER", "CANCELEDMSG", "STOPPEDEARLYMSG"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
@@ -35,7 +35,7 @@ public LMProgramDirect() {
  */
 public void add() throws java.sql.SQLException 
 {
-	Object addValues[] = { getDeviceID(), getNotifyInterval(), getHeading(),
+	Object addValues[] = { getDeviceID(), getNotifyOffset(), getHeading(),
 						   getMessageHeader(), getMessageFooter(), getCanceledMsg(),
 						   getStoppedEarlyMsg() };
 
@@ -57,8 +57,8 @@ public java.lang.Integer getDeviceID() {
 	return deviceID;
 }
 
-public Integer getNotifyInterval() {
-	return notifyInterval;
+public Integer getNotifyOffset() {
+	return notifyOffset;
 }
 
 public String getHeading() {
@@ -154,7 +154,7 @@ public void retrieve() throws java.sql.SQLException
 	Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 	if( results.length == SETTER_COLUMNS.length )
 	{
-		setNotifyInterval( (Integer) results[0] );
+		setNotifyOffset( (Integer) results[0] );
 		setHeading( (String) results[1] );
 		setMessageHeader( (String) results[2] );
 		setMessageFooter( (String) results[3] );
@@ -174,8 +174,8 @@ public void setDeviceID(java.lang.Integer newDeviceID) {
 	deviceID = newDeviceID;
 }
 
-public void setNotifyInterval(Integer newInterval) {
-	notifyInterval = newInterval;
+public void setNotifyOffset(Integer newInterval) {
+	notifyOffset = newInterval;
 }
 
 public void setHeading(String newHeading) {
@@ -202,7 +202,7 @@ public void setStoppedEarlyMsg(String newMsg) {
  */
 public void update() throws java.sql.SQLException 
 {
-	Object setValues[] = { getNotifyInterval(), getHeading(), getMessageHeader(),
+	Object setValues[] = { getNotifyOffset(), getHeading(), getMessageHeader(),
 							getMessageFooter(), getCanceledMsg(), getStoppedEarlyMsg() };
 
 	Object constraintValues[] = { getDeviceID() };
