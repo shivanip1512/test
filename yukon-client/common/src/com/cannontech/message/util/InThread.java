@@ -39,23 +39,19 @@ public void run() {
 		for( ; ; )
 		{
 			Object o = istrm.restoreObject( streamer );
-			
+
 			processMsg( o );
-			
-			//force the InputStream to clear its message buffer, allowing
-			// the GC to clear out the message
-			istrm.getRestoreContext().endContext();
 
 			if( this.isInterrupted() )
 			{
-				com.cannontech.clientutils.CTILogger.info("inThread was Interrupted");
+				CTILogger.info("inThread was Interrupted");
 				return;
 			}
 		}		
 	}
 	catch( java.io.IOException e )
 	{
-		com.cannontech.clientutils.CTILogger.debug("  IOException in inThread occured : " + e.getMessage());
+		CTILogger.debug("  IOException in inThread occured : " + e.getMessage());
 	}	
 	
 }
@@ -80,7 +76,10 @@ public void processMsg( Object o )
 			{
 				in.add( o );								
 				in.notifyAll();
-			}			
+			}
+
+			if( in.size() > 0 && (in.size() % 10000) == 0 ) //print every 10000 messages
+				CTILogger.warn( "Message inQueue is growing! Queue Count = " + in.size() );
 		}
 			
 		if(o instanceof Message)
@@ -96,6 +95,7 @@ public void processMsg( Object o )
 				CTILogger.error(getClass(), t);
 			}
 		}
+		
 	}
 
 }

@@ -52,11 +52,6 @@ public void run() {
 					}
 
 					ostrm.flush();
-
-					//force the OutputStream to clear its message buffer, allowing
-					// the GC to clear out the message
-					ostrm.getSaveContext().endContext();
-
 					out.clear();
 				}
 
