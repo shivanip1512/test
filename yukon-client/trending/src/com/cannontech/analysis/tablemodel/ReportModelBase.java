@@ -55,6 +55,9 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	/** Stop time for query in millis */
 	private long stopTime = Long.MIN_VALUE;	
 	
+	/** Class fields */
+	private int[] ecIDs = null;
+	
 	/**
 	 * Default Constructor
 	 */
@@ -269,4 +272,27 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	{
 		data = vector;
 	}
+	/**
+	 * @param i
+	 */
+	public void setECIDs(Integer ecID)
+	{
+		setECIDs(new int[]{ecID.intValue()});
+	}
+	/**
+	 * @return
+	 */
+	public int[] getECIDs()
+	{
+		return ecIDs;
+	}
+
+	/**
+	 * @param is
+	 */
+	public void setECIDs(int[] is)
+	{
+		ecIDs = is;
+	}
+	
 }

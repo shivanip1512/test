@@ -62,9 +62,8 @@ public class ActivityModel extends ReportModelBase
 //	public final static String DESCRIPTION_STRING = "Description";
 
 	public final static String TOTALS_HEADER_STRING = "TOTALS";
-	/** Class fields */
-	private int[] ecIDs = null;	
 
+	/** Class fields */
 	private HashMap totals = null;
 
 	public static java.util.Comparator actLogComparator = new java.util.Comparator()
@@ -438,28 +437,6 @@ public class ActivityModel extends ReportModelBase
 		}
 	}
 
-	/**
-	 * @param i
-	 */
-	public void setECIDs(Integer ecID)
-	{
-		setECIDs(new int[]{ecID.intValue()});
-	}
-	/**
-	 * @return
-	 */
-	public int[] getECIDs()
-	{
-		return ecIDs;
-	}
-
-	/**
-	 * @param is
-	 */
-	public void setECIDs(int[] is)
-	{
-		ecIDs = is;
-	}
 
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()

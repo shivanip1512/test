@@ -64,8 +64,6 @@ public class ActivityDetailModel extends ReportModelBase
 	public final static String TOTALS_HEADER_STRING = "TOTALS";
 
 	/** Class fields */
-	private int[] ecIDs = null;
-
 	private HashMap totals = null;
 
 	/** Flag for program related activities only */
@@ -435,29 +433,6 @@ public class ActivityDetailModel extends ReportModelBase
 		{
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setECIDs(Integer ecID)
-	{
-		setECIDs(new int[]{ecID.intValue()});
-	}
-	/**
-	 * @return
-	 */
-	public int[] getECIDs()
-	{
-		return ecIDs;
-	}
-
-	/**
-	 * @param is
-	 */
-	public void setECIDs(int[] is)
-	{
-		ecIDs = is;
 	}
 
 	/* (non-Javadoc)
