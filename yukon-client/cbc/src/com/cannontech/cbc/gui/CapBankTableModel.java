@@ -718,6 +718,16 @@ private void setRowAlarmed( int rowNumber )
 		
 	}		
 }
+
+public boolean isRowAlarmed( int rowNumber )
+{
+	synchronized( getAlarmingRowVector() )
+	{
+		return getAlarmingRowVector().contains( new Integer(rowNumber) );
+	}
+	
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/29/00 2:23:38 PM)

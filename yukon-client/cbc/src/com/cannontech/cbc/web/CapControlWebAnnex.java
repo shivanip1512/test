@@ -98,7 +98,7 @@ public class CapControlWebAnnex implements java.util.Observer
 			reg.setAppKnownPort(0);
 			reg.setAppExpirationDelay( 300 );  // 5 minutes
 
-			//TODO:The CBC server does not take this registration for now, dont use it
+			//The CBC server does not take this registration for now, dont use it
 			//conn = new CBCClientConnection( reg );
 			conn = new CBCClientConnection();
 
