@@ -151,11 +151,13 @@
 
         com.cannontech.web.history.EnergyExchangeHistory history = null;
 		com.cannontech.web.history.HEnergyExchangeProgram[] historyPrograms = null; 
+		com.cannontech.web.history.HEnergyExchangeProgramOffer[] historyProgramOffers = null; 
 
         try
         {        
             history = new com.cannontech.web.history.EnergyExchangeHistory(dbAlias);
 		    historyPrograms = history.getEnergyExchangePrograms();
+			historyProgramOffers = history.getEnergyExchangeProgramOffers();
 
 		    boolean foundReplies = false;
 		    com.cannontech.web.history.HEnergyExchangeCustomerReply[] replies = null;
@@ -197,16 +199,13 @@
 			com.cannontech.web.history.HEnergyExchangeCustomerReply historyReply = replies[i];
 
 			String offerDateStr = "-";
-			try { 
-				Class[] types2 = { java.util.Date.class };
-				Object[][] result = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "SELECT OFFERDATE FROM LMENERGYEXCHANGEPROGRAMOFFER WHERE LMENERGYEXCHANGEPROGRAMOFFER.OFFERID = " + historyReply.getOfferId(), types2 );
-
-				if (result != null && result[0] != null && result[0][0] != null)
-					offerDateStr = datePart.format(result[0][0]);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+			for (int x = 0; x < historyProgramOffers.length; x++)
+			{
+				if(  historyReply.getOfferId() == historyProgramOffers[x].getOfferId())
+				{
+					if(!historyProgramOffers[x].getRunStatus().equalsIgnoreCase("open"))
+					{
+						offerDateStr = datePart.format(historyProgramOffers[x].getOfferDate());
 %>
                       <tr> 
                         <td width="15%" height="10" class="TableCell"> <a href="user_ee.jsp?tab=offer&offer=<%= historyReply.getOfferId() %>&rev=<%= historyReply.getRevisionNumber() %>"><%= historyReply.getOfferId() + " - " + historyReply.getRevisionNumber()%></a> 
@@ -217,6 +216,9 @@
                         <td width="15%" height="10" class="TableCell"><%= historyReply.getNameOfAcceptPerson() %></td>
                       </tr>
                       <%	
+                    }
+                }
+			}
 		}
 %>
                     </table>
