@@ -754,7 +754,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 
 			String messageString =
-				"Error Changing Type of " + selectedObject + " in the database.  Error received was:  " + e.getMessage();
+				"Error changing type of " + selectedObject + " in the database.  Error received:  " + e.getMessage();
 			fireMessage(new MessageEvent(this, messageString, MessageEvent.ERROR_MESSAGE));
 		}
 		
@@ -787,6 +787,11 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 	  catch (Exception e)
 	  {
 		 com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		 
+		 fireMessage( new MessageEvent(
+				this,
+				"Error changing type for " + node + ".  Error received:  " + e.getMessage(),
+				MessageEvent.ERROR_MESSAGE));		 
 	  }
 
 	  if( userObject instanceof com.cannontech.database.data.device.DeviceBase         
@@ -995,7 +1000,7 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 				fireMessage(
 					new MessageEvent(
 						this,
-						"Error deleting " + deletables[i] + " from the database.  Error received was:  " + e.getMessage(),
+						"Error deleting " + deletables[i] + " from the database.  Error received:  " + e.getMessage(),
 						MessageEvent.ERROR_MESSAGE));
 			}
 			finally
@@ -1062,6 +1067,11 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 	         catch (Exception e)
 	         {
 	            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+
+					fireMessage( new MessageEvent(
+							this,
+							"Error retrieving " + nodes[i] + " from the database.  Error received:  " + e.getMessage(),
+							MessageEvent.ERROR_MESSAGE));
 	         }
 
 	         PropertyPanel panel = EditorPanelFactory.createEditorPanel( userObject );
@@ -2509,7 +2519,7 @@ public void selectionPerformed(WizardPanelEvent event)
 				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 
 				String messageString =
-					"Error Inserting " + newItem + " into the database.  Error received was:  " + e.getMessage().trim();
+					"Error Inserting " + newItem + " into the database.  Error received:  " + e.getMessage().trim();
 				fireMessage(new MessageEvent(this, messageString, MessageEvent.ERROR_MESSAGE));
 			}
 
@@ -2830,7 +2840,7 @@ private boolean updateObject(com.cannontech.database.db.DBPersistent object)
 	catch( com.cannontech.database.TransactionException e )
 	{
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		String messageString = " Error updating " + object + " in the database.  Error received was: " + e.getMessage() ;
+		String messageString = " Error updating " + object + " in the database.  Error received: " + e.getMessage() ;
 		fireMessage( new MessageEvent( this, messageString, MessageEvent.ERROR_MESSAGE) );
 		return false;
 	}
