@@ -302,7 +302,49 @@ public static final java.util.Vector getTheGearIDs(
     throw new java.sql.SQLException("Unable to retrieve the gearIDs where deviceID = " + deviceID);
 }
 
+public static final Integer getDefaultGearID(Integer programID, java.sql.Connection conn)
+		throws java.sql.SQLException
+{
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
 
+	String sql = "select MIN(GearID) from " + TABLE_NAME + " where deviceID = " + programID;
+      
+	try
+	  {
+		 if (conn == null)
+			throw new IllegalArgumentException("Received a (null) database connection");
+
+		 pstmt = conn.prepareStatement(sql.toString());
+
+		 rset = pstmt.executeQuery();
+
+		 while( rset.next() )
+		 {
+			return new Integer(rset.getInt(1));
+		 }
+		
+        
+	}
+	catch (java.sql.SQLException e)
+	{
+		e.printStackTrace();
+	}
+	finally
+	{
+		try
+		{
+			if (pstmt != null)
+			pstmt.close();
+		}
+		catch (java.sql.SQLException e2)
+		{
+			e2.printStackTrace(); //something is up
+		}
+	}
+ 
+	throw new java.sql.SQLException("Unable to retrieve a gearid for the program with id " + programID);
+}
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (3/16/2001 5:20:28 PM)
