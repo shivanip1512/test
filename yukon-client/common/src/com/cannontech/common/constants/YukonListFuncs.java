@@ -16,8 +16,8 @@ import com.cannontech.common.util.CtiUtilities;
 public final class YukonListFuncs implements YukonListEntryTypes 
 {
 
-	private static Properties yukonListEntries = new Properties();
-	private static Properties yukonSelectionLists = new Properties();
+	private static Properties yukonListEntries = null;
+	private static Properties yukonSelectionLists = null;
 	
 	
 	//let us init all of this instantly!
@@ -34,7 +34,6 @@ public final class YukonListFuncs implements YukonListEntryTypes
 		super();
 	}
 
-	 
 	public synchronized static YukonListEntry getYukonListEntry( int entryID_ )
 	{
 		YukonListEntry entry = 
@@ -52,12 +51,21 @@ public final class YukonListFuncs implements YukonListEntryTypes
 	
 	public static Properties getYukonListEntries()
 	{
+		if (yukonListEntries == null)
+			initAllConstants();
 		return yukonListEntries;
 	}
 
 	public static Properties getYukonSelectionLists()
 	{
+		if (yukonSelectionLists == null)
+			initAllConstants();
 		return yukonSelectionLists;
+	}
+	
+	public static void releaseAllConstants() {
+		yukonListEntries = null;
+		yukonSelectionLists = null;
 	}
 
 	private static void initAllConstants()
@@ -101,7 +109,8 @@ public final class YukonListFuncs implements YukonListEntryTypes
 		{
 			stmt = conn.createStatement();
 			rset = stmt.executeQuery(sqlString);
-	
+			
+			yukonListEntries = new Properties();
 			while( rset.next() )
 			{
 				YukonListEntry entry = new YukonListEntry();
@@ -111,7 +120,7 @@ public final class YukonListFuncs implements YukonListEntryTypes
 				entry.setEntryText( rset.getString(4).trim() );
 				entry.setYukonDefID( rset.getInt(5) );
 	
-				getYukonListEntries().put( 
+				yukonListEntries.put( 
 						new Integer(entry.getEntryID()), 
 						entry );
 			}
@@ -146,7 +155,8 @@ public final class YukonListFuncs implements YukonListEntryTypes
 		{
 			stmt = conn.createStatement();
 			rset = stmt.executeQuery(sqlString);
-	
+			
+			yukonSelectionLists = new Properties();
 			while( rset.next() )
 			{
 				YukonSelectionList list = new YukonSelectionList();
@@ -159,7 +169,7 @@ public final class YukonListFuncs implements YukonListEntryTypes
 				
 				list.setYukonListEntries( getAllListEntries(list, conn) );
 	
-				getYukonSelectionLists().put( 
+				yukonSelectionLists.put( 
 						new Integer(list.getListID()), 
 						list );
 			}
