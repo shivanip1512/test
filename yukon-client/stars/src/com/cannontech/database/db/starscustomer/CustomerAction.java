@@ -15,6 +15,12 @@ import com.cannontech.database.db.*;
 public class CustomerAction extends DBPersistent {
 
     public static final int NONE_INT = 0;
+    public static final int SIGNUP = 1;
+    public static final int ACTIVATION_PENDING = 2;
+    public static final int ACTIVATION_COMPLETED = 3;
+    public static final int TERMINATION = 4;
+    public static final int TEMPORARY_TERMINATION = 5;
+    public static final int FUTURE_ACTIVATION = 6;
 
     private Integer actionID = null;
     private String action = null;

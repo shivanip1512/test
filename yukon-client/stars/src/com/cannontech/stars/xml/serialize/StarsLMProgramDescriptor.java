@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMProgramDescriptor.java,v 1.2 2002/07/30 22:01:57 zyao Exp $
+ * $Id: StarsLMProgramDescriptor.java,v 1.3 2002/08/12 16:23:38 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:57 $
+ * @version $Revision: 1.3 $ $Date: 2002/08/12 16:23:38 $
 **/
 public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -100,43 +100,6 @@ public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClas
         }
         desc.setValidator(fieldValidator);
         
-        //-- _programName
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_programName", "programName", NodeType.Attribute);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsLMProgram target = (StarsLMProgram) object;
-                return target.getProgramName();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsLMProgram target = (StarsLMProgram) object;
-                    target.setProgramName( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _programName
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
-        
         //-- _groupID
         desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_groupID", "groupID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
@@ -180,6 +143,86 @@ public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClas
         desc.setValidator(fieldValidator);
         
         //-- initialize element descriptors
+        
+        //-- _programName
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_programName", "ProgramName", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsLMProgram target = (StarsLMProgram) object;
+                return target.getProgramName();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsLMProgram target = (StarsLMProgram) object;
+                    target.setProgramName( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _programName
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _status
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_status", "Status", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsLMProgram target = (StarsLMProgram) object;
+                return target.getStatus();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsLMProgram target = (StarsLMProgram) object;
+                    target.setStatus( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _status
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
         
         //-- _starsLMControlHistory
         desc = new XMLFieldDescriptorImpl(StarsLMControlHistory.class, "_starsLMControlHistory", "stars-LMControlHistory", NodeType.Element);

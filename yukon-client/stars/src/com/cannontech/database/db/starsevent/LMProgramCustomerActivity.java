@@ -24,7 +24,7 @@ public class LMProgramCustomerActivity extends DBPersistent {
     private String notes = null;
 
     public static final String[] SETTER_COLUMNS = {
-        "AccountID", "ActionID", "LMProgramID", "EventDateTime", "Notes"
+        "AccountID", "LMProgramID", "EventDateTime", "Notes", "ActionID"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "EventID" };
@@ -61,11 +61,11 @@ public class LMProgramCustomerActivity extends DBPersistent {
                     LMProgramCustomerActivity event = new LMProgramCustomerActivity();
 
                     event.setEventID( new Integer(rset.getInt("EventID")) );
-                    event.setAccountID( new Integer(rset.getInt("AccountID")) );
                     event.setActionID( new Integer(rset.getInt("ActionID")) );
                     event.setLMProgramID( new Integer(rset.getInt("LMProgramID")) );
                     event.setEventDateTime( new java.util.Date(rset.getTimestamp("EventDateTime").getTime()) );
                     event.setNotes( rset.getString("Notes") );
+                    event.setAccountID( new Integer(rset.getInt("AccountID")) );
 
                     eventList.add(event);
                 }
@@ -138,8 +138,8 @@ public class LMProgramCustomerActivity extends DBPersistent {
     		setEventID( getNextEventID() );
     		
         Object[] addValues = {
-            getEventID(), getAccountID(), getActionID(), getLMProgramID(),
-            getEventDateTime(), getNotes()
+            getEventID(), getAccountID(), getLMProgramID(),
+            getEventDateTime(), getNotes(), getActionID()
         };
 
         add( TABLE_NAME, addValues );
@@ -147,8 +147,8 @@ public class LMProgramCustomerActivity extends DBPersistent {
 
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
-            getAccountID(), getActionID(), getLMProgramID(),
-            getEventDateTime(), getNotes()
+            getAccountID(), getLMProgramID(), getEventDateTime(),
+            getNotes(), getActionID()
         };
 
         Object[] constraintValues = { getEventID() };
@@ -163,10 +163,10 @@ public class LMProgramCustomerActivity extends DBPersistent {
 
         if (results.length == SETTER_COLUMNS.length) {
             setAccountID( (Integer) results[0] );
-            setActionID( (Integer) results[1] );
-            setLMProgramID( (Integer) results[2] );
-            setEventDateTime( new java.util.Date(((java.sql.Timestamp) results[3]).getTime()) );
-            setNotes( (String) results[4] );
+            setLMProgramID( (Integer) results[1] );
+            setEventDateTime( new java.util.Date(((java.sql.Timestamp) results[2]).getTime()) );
+            setNotes( (String) results[3] );
+            setActionID( (Integer) results[4] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");

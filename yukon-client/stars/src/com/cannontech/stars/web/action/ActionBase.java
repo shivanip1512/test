@@ -12,11 +12,11 @@ import javax.xml.soap.*;
  * @version 1.0
  */
 
-public abstract class ActionBase {
+public interface ActionBase {
 
-    public abstract SOAPMessage build(HttpServletRequest req, HttpSession session);
+    public SOAPMessage build(HttpServletRequest req, HttpSession session);
 
-    public abstract SOAPMessage process(SOAPMessage reqMsg, HttpSession session);
+    public SOAPMessage process(SOAPMessage reqMsg, HttpSession session);
 
-    public abstract int parse(SOAPMessage respMsg, HttpSession session);
+    public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session);
 }

@@ -6,6 +6,7 @@ import java.io.*;
 import java.util.*;
 import javax.servlet.http.*;
 import javax.xml.soap.SOAPMessage;
+import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.xml.util.*;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.serialize.types.StarsSearchByType;
@@ -19,7 +20,7 @@ import com.cannontech.stars.xml.serialize.types.StarsSearchByType;
  * @version 1.0
  */
 
-public class SearchCustAccountAction extends ActionBase {
+public class SearchCustAccountAction implements ActionBase {
 
     public SearchCustAccountAction() {
         super();
@@ -50,10 +51,10 @@ public class SearchCustAccountAction extends ActionBase {
 
             /* This part is for consumer login, must be removed later */
             Integer energyCompanyID = (Integer) session.getAttribute("ENERGY_COMPANY_ID");
-            com.cannontech.database.data.web.Operator operator = null;
+            StarsOperator operator = null;
 
             if (energyCompanyID == null) {
-                operator = (com.cannontech.database.data.web.Operator) session.getAttribute("OPERATOR");
+                operator = (StarsOperator) session.getAttribute("OPERATOR");
                 if (operator == null) {
                     StarsFailure failure = new StarsFailure();
                     failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
@@ -81,7 +82,10 @@ public class SearchCustAccountAction extends ActionBase {
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
 
-            session.setAttribute("CUSTOMER_ACCOUNT", account);
+			if (operator != null)
+            	operator.setAttribute("CUSTOMER_ACCOUNT", account);
+            else
+            	session.setAttribute("CUSTOMER_ACCOUNT", account);
 
             com.cannontech.database.db.starscustomer.CustomerAccount accountDB = account.getCustomerAccount();
             com.cannontech.database.data.starscustomer.CustomerBase customer = account.getCustomerBase();
@@ -222,6 +226,8 @@ public class SearchCustAccountAction extends ActionBase {
                         starsHW.setNotes( "" );
                     starsHW.setManufactureSerialNumber( hardware.getLMHardwareBase().getManufacturerSerialNumber() );
                     starsHW.setLMDeviceType( hardware.getLMHardwareBase().getLMDeviceType() );
+                    starsHW.setStarsLMHardwareHistory( com.cannontech.database.data.starsevent.LMHardwareActivity.getStarsLMHardwareHistory(
+                    			hardware.getInventoryBase().getInventoryID()) );
 
                     inventories.addStarsLMHardware( starsHW );
                 }
@@ -240,6 +246,7 @@ public class SearchCustAccountAction extends ActionBase {
 
                 StarsLMProgram starsProg = new StarsLMProgram();
                 starsProg.setProgramID( program.getPAObjectID().intValue() );
+                starsProg.setStatus( "In Service" );
                 starsProg.setProgramName( program.getPAOName() );
                 starsProg.setGroupID( appliance.getLMHardwareConfig().getAddressingGroupID().intValue() );
 
@@ -268,7 +275,7 @@ public class SearchCustAccountAction extends ActionBase {
         return null;
     }
 
-    public int parse(SOAPMessage respMsg, HttpSession session) {
+    public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
@@ -278,7 +285,12 @@ public class SearchCustAccountAction extends ActionBase {
             StarsCustAccountInfo accountInfo = operation.getStarsSearchCustomerAccountResponse();
             if (accountInfo == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
-            session.setAttribute("CUSTOMER_ACCOUNT_INFORMATION", accountInfo);
+			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+			if (operator != null)
+	            operator.setAttribute("CUSTOMER_ACCOUNT_INFORMATION", accountInfo);
+	        else
+	        	session.setAttribute("CUSTOMER_ACCOUNT_INFORMATION", accountInfo);
+            
             return 0;
         }
         catch (Exception e) {

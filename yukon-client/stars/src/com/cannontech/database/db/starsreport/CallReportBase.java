@@ -42,7 +42,8 @@ public class CallReportBase extends DBPersistent {
     }
 
     public static CallReportBase[] getAllCallReports(Integer customerID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE CustomerID = ?";
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE CustomerID = ? "
+        		   + "ORDER BY DateTaken DESC";
 
         java.sql.PreparedStatement pstmt = null;
         java.sql.ResultSet rset = null;
@@ -58,6 +59,66 @@ public class CallReportBase extends DBPersistent {
             {
                 pstmt = conn.prepareStatement(sql);
                 pstmt.setInt( 1, customerID.intValue() );
+                rset = pstmt.executeQuery();
+
+                while (rset.next()) {
+                    CallReportBase report = new CallReportBase();
+
+                    report.setCallID( new Integer(rset.getInt("CallID")) );
+                    report.setCallNumber( rset.getString("CallNumber") );
+                    report.setCallType( rset.getString("CallType") );
+                    report.setDateTaken( new java.util.Date(rset.getTimestamp("DateTaken").getTime()) );
+                    report.setDescription( rset.getString("Description") );
+                    report.setActionItems( rset.getString("ActionItems") );
+                    report.setRelatedToAccountNumber( rset.getString("RelatedToAccountNumber") );
+                    report.setCustomerID( new Integer(rset.getInt("CustomerID")) );
+
+                    reportList.add( report );
+                }
+            }
+        }
+        catch( java.sql.SQLException e )
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            try
+            {
+                if( pstmt != null ) pstmt.close();
+                if (rset != null) rset.close();
+            }
+            catch( java.sql.SQLException e2 )
+            {
+                e2.printStackTrace();
+            }
+        }
+
+        CallReportBase[] reports = new CallReportBase[ reportList.size() ];
+        reportList.toArray( reports );
+        return reports;
+    }
+
+    public static CallReportBase[] getAllCallReports(Integer customerID, String acctNo, java.sql.Connection conn) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE CustomerID = ? "
+        		   + "AND RelatedToAccountNumber = ? "
+        		   + "ORDER BY DateTaken DESC";
+
+        java.sql.PreparedStatement pstmt = null;
+        java.sql.ResultSet rset = null;
+        java.util.ArrayList reportList = new java.util.ArrayList();
+
+        try
+        {
+            if( conn == null )
+            {
+                throw new IllegalStateException("Database connection should not be null.");
+            }
+            else
+            {
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setInt( 1, customerID.intValue() );
+                pstmt.setString( 2, acctNo );
                 rset = pstmt.executeQuery();
 
                 while (rset.next()) {

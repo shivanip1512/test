@@ -4,11 +4,12 @@ import java.io.*;
 import java.util.*;
 import javax.servlet.http.*;
 import javax.xml.soap.SOAPMessage;
+import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.xml.util.*;
 import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.database.Transaction;
 import com.cannontech.servlet.PILConnectionServlet;
 import com.cannontech.message.porter.ClientConnection;
-import org.apache.commons.logging.Log;
 
 /**
  * <p>Title: </p>
@@ -19,9 +20,9 @@ import org.apache.commons.logging.Log;
  * @version 1.0
  */
 
-public class YukonSwitchCommandAction extends ActionBase {
+public class YukonSwitchCommandAction implements ActionBase {
 
-    private Log logger = XMLUtil.getLogger( YukonSwitchCommandAction.class );
+    private org.apache.commons.logging.Log logger = XMLUtil.getLogger( YukonSwitchCommandAction.class );
 
     // increment this for every message
     private static long userMessageIDCounter = 1;
@@ -32,12 +33,16 @@ public class YukonSwitchCommandAction extends ActionBase {
 
     public SOAPMessage build(HttpServletRequest req, HttpSession session) {
         try {
-            StarsCustomerAccountInformation accountInfo =
-                    (StarsCustomerAccountInformation) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+			StarsCustAccountInfo accountInfo = null;
+			if (operator != null)
+				accountInfo = (StarsCustAccountInfo) operator.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+			else
+				accountInfo = (StarsCustAccountInfo) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
             if (accountInfo == null) return null;
 
             String action = req.getParameter("action");
-            StarsOperation operation = null;
+            StarsSwitchCommand command = new StarsSwitchCommand();
 
             if (action.equalsIgnoreCase("DisableService")) {
                 String periodStr = req.getParameter("OptOutPeriod");
@@ -61,8 +66,7 @@ public class YukonSwitchCommandAction extends ActionBase {
                         service.addSerialNumber( hardware.getManufactureSerialNumber() );
                     }
 
-                    operation = new StarsOperation();
-                    operation.setStarsDisableService( service );
+                    command.setStarsDisableService( service );
                 }
             }
             else if (action.equalsIgnoreCase("EnableService")) {
@@ -77,10 +81,12 @@ public class YukonSwitchCommandAction extends ActionBase {
                     service.addSerialNumber( hardware.getManufactureSerialNumber() );
                 }
 
-                operation = new StarsOperation();
-                operation.setStarsEnableService( service );
+                command.setStarsEnableService( service );
             }
 
+            StarsOperation operation = new StarsOperation();
+            operation.setStarsSwitchCommand( command );
+            
             return SOAPUtil.buildSOAPMessage( operation );
         }
         catch (Exception e) {
@@ -90,15 +96,32 @@ public class YukonSwitchCommandAction extends ActionBase {
         return null;
     }
 
-    public int parse(SOAPMessage respMsg, HttpSession session) {
+    public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) return failure.getStatusCode();
 			
-            if (operation.getStarsSuccess() == null)
+            if (operation.getStarsSwitchCommandResponse() == null)
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+            	
+            // Update hardware history
+            StarsLMHardwareHistory hwHist = operation.getStarsSwitchCommandResponse().getStarsLMHardwareHistory();
+            
+			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+			StarsCustAccountInfo accountInfo = null;
+			if (operator != null)
+				accountInfo = (StarsCustAccountInfo) operator.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+			else
+				accountInfo = (StarsCustAccountInfo) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+				
+			StarsInventories inventories = accountInfo.getStarsInventories();
+			for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
+				StarsLMHardware hw = inventories.getStarsLMHardware(i);
+				hw.setStarsLMHardwareHistory( hwHist );
+			}
+			
             return 0;
         }
         catch (Exception e) {
@@ -112,6 +135,30 @@ public class YukonSwitchCommandAction extends ActionBase {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             StarsOperation respOper = new StarsOperation();
+            
+            /* This part is for consumer login, must be removed later */
+            Integer energyCompanyID = (Integer) session.getAttribute("ENERGY_COMPANY_ID");
+            StarsOperator operator = null;
+            com.cannontech.database.data.starscustomer.CustomerAccount account = null;
+
+            if (energyCompanyID == null) {
+                operator = (StarsOperator) session.getAttribute("OPERATOR");
+                if (operator != null)
+                	account = (com.cannontech.database.data.starscustomer.CustomerAccount)
+                			operator.getAttribute("CUSTOMER_ACCOUNT");
+            }
+            else {
+            	account = (com.cannontech.database.data.starscustomer.CustomerAccount)
+                		session.getAttribute("CUSTOMER_ACCOUNT");
+            }
+            
+            if (account == null) {
+                StarsFailure failure = new StarsFailure();
+                failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
+                failure.setDescription("Session invalidated, please login again");
+                respOper.setStarsFailure( failure );
+                return SOAPUtil.buildSOAPMessage( respOper );
+            }
 
             PILConnectionServlet connContainer = (PILConnectionServlet)
                     session.getAttribute( PILConnectionServlet.SERVLET_CONTEXT_ID );
@@ -135,32 +182,95 @@ public class YukonSwitchCommandAction extends ActionBase {
                 respOper.setStarsFailure( failure );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
-
-            if (reqOper.getStarsDisableService() != null) {
-                StarsDisableService service = reqOper.getStarsDisableService();
+            
+            StarsSwitchCommand command = reqOper.getStarsSwitchCommand();
+            StarsSwitchCommandResponse cmdResp = new StarsSwitchCommandResponse();
+            
+            if (command.getStarsDisableService() != null) {
+                StarsDisableService service = command.getStarsDisableService();
 
                 for (int i = 0; i < service.getSerialNumberCount(); i++) {
-                    String command = "putconfig service out serial " + service.getSerialNumber(i);
-                    sendCommand(command, conn);
+                    String cmd = "putconfig service out serial " + service.getSerialNumber(i);
+                    sendCommand(cmd, conn);
                 }
-
-                session.setAttribute("PROGRAM_STATUS", "Out of Service");
+                
+                Vector invVct = account.getInventoryVector();
+                for (int j = 0; j < invVct.size(); j++) {
+                	com.cannontech.database.data.starshardware.LMHardwareBase hw =
+                			(com.cannontech.database.data.starshardware.LMHardwareBase) invVct.elementAt(j);
+                	com.cannontech.database.db.starshardware.LMHardwareBase hwDB = hw.getLMHardwareBase();
+                			
+                	if (hwDB.getManufacturerSerialNumber().equalsIgnoreCase( service.getSerialNumber(j) )) {
+                		com.cannontech.database.data.multi.MultiDBPersistent multiDB =
+                				new com.cannontech.database.data.multi.MultiDBPersistent();
+                				
+                		com.cannontech.database.db.starsevent.LMHardwareActivity event =
+                				new com.cannontech.database.db.starsevent.LMHardwareActivity();
+                		event.setInventoryID( hwDB.getInventoryID() );
+                		event.setActionID( new Integer(com.cannontech.database.db.starscustomer.CustomerAction.TEMPORARY_TERMINATION) );
+                		event.setEventDateTime( new Date() );
+                		event.setNotes("");
+                		multiDB.getDBPersistentVector().addElement( event );
+						
+                		event = new com.cannontech.database.db.starsevent.LMHardwareActivity();
+                		event.setInventoryID( hwDB.getInventoryID() );
+                		event.setActionID( new Integer(com.cannontech.database.db.starscustomer.CustomerAction.FUTURE_ACTIVATION) );
+                		event.setEventDateTime( service.getReEnableDateTime() );
+                		event.setNotes("");
+                		multiDB.getDBPersistentVector().addElement( event );
+                		
+		                Vector appVct = account.getApplianceVector();
+		                for (int k = 0; k < appVct.size(); k++) {
+		                	com.cannontech.database.data.starsappliance.ApplianceBase app =
+		                			(com.cannontech.database.data.starsappliance.ApplianceBase) appVct.elementAt(k);
+			                com.cannontech.database.db.starshardware.LMHardwareConfiguration config = app.getLMHardwareConfig();
+			                
+			                if (config.getInventoryID().intValue() == hwDB.getInventoryID().intValue()) {
+			                	com.cannontech.database.data.device.lm.LMProgramBase program = app.getLMProgram();
+					            if (program.getPAObjectID().intValue() == com.cannontech.database.db.starsappliance.ApplianceBase.NONE_INT)
+					                continue;
+					                
+					            com.cannontech.database.db.starsevent.LMProgramCustomerActivity activity =
+					            		new com.cannontech.database.db.starsevent.LMProgramCustomerActivity();
+					            activity.setLMProgramID( program.getPAObjectID() );
+					            activity.setAccountID( account.getCustomerAccount().getAccountID() );
+					            activity.setActionID( new Integer(com.cannontech.database.db.starscustomer.CustomerAction.TEMPORARY_TERMINATION) );
+					            activity.setEventDateTime( new Date() );
+					            activity.setNotes("");
+					            multiDB.getDBPersistentVector().addElement( activity );
+					            
+					            activity = new com.cannontech.database.db.starsevent.LMProgramCustomerActivity();
+					            activity.setLMProgramID( program.getPAObjectID() );
+					            activity.setAccountID( account.getCustomerAccount().getAccountID() );
+					            activity.setActionID( new Integer(com.cannontech.database.db.starscustomer.CustomerAction.FUTURE_ACTIVATION) );
+					            activity.setEventDateTime( service.getReEnableDateTime() );
+					            activity.setNotes("");
+					            multiDB.getDBPersistentVector().addElement( activity );
+			                }
+		                }
+                		
+                		Transaction transaction = Transaction.createTransaction( Transaction.INSERT, multiDB );
+                		transaction.execute();
+                		
+						StarsLMHardwareHistory hwHist = com.cannontech.database.data.starsevent.LMHardwareActivity.getStarsLMHardwareHistory( hwDB.getInventoryID() );
+						cmdResp.setStarsLMHardwareHistory( hwHist );
+						
+                		break;
+                	}
+                }
             }
-            else if (reqOper.getStarsEnableService() != null) {
-                StarsEnableService service = reqOper.getStarsEnableService();
+            else if (command.getStarsEnableService() != null) {
+                StarsEnableService service = command.getStarsEnableService();
 
                 for (int i = 0; i < service.getSerialNumberCount(); i++) {
-                    String command = "putconfig service in serial " + service.getSerialNumber(i);
-                    sendCommand(command, conn);
+                    String cmd = "putconfig service in serial " + service.getSerialNumber(i);
+                    sendCommand(cmd, conn);
                 }
 
                 session.setAttribute("PROGRAM_STATUS", "In Service");
             }
 
-            StarsSuccess success = new StarsSuccess();
-            success.setDescription( "Yukon switch command has been sent successfully" );
-            respOper.setStarsSuccess( success );
-
+            respOper.setStarsSwitchCommandResponse( cmdResp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {

@@ -62,8 +62,9 @@ public class WorkOrderBase extends DBPersistent {
     }
 
     public static WorkOrderBase[] getAllWorkOrders(Integer energyCompanyID, java.sql.Connection conn) {
-        String sql = "SELECT order.* FROM " + TABLE_NAME + " order, ECToWorkOrderMapping map " +
-                     "WHERE order.OrderID = map.WorkOrderID AND map.EnergyCompanyID = ?";
+        String sql = "SELECT service.* FROM " + TABLE_NAME + " service, ECToWorkOrderMapping map "
+				   + "WHERE service.OrderID = map.WorkOrderID AND map.EnergyCompanyID = ? "
+                   + "ORDER BY service.DateAssigned DESC";
 
         java.sql.PreparedStatement pstmt = null;
         java.sql.ResultSet rset = null;
@@ -90,7 +91,8 @@ public class WorkOrderBase extends DBPersistent {
                     order.setCurrentState( rset.getString("CurrentState") );
                     order.setDateAssigned( new java.util.Date(rset.getTimestamp("DateAssigned").getTime()) );
                     order.setDescription( rset.getString("Description") );
-                    order.setDateCompleted( new java.util.Date(rset.getTimestamp("DateCompleted").getTime()) );
+                    if (rset.getTimestamp("DateCompleted") != null)
+	                    order.setDateCompleted( new java.util.Date(rset.getTimestamp("DateCompleted").getTime()) );
                     order.setActionTaken( rset.getString("ActionTaken") );
                     order.setServiceProviderName( rset.getString("ServiceProviderName") );
                     order.setSPContactFirstName( rset.getString("SPContactFirstName") );

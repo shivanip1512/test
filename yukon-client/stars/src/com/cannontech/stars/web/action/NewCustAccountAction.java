@@ -18,7 +18,7 @@ import com.cannontech.database.Transaction;
  * @version 1.0
  */
 
-public class NewCustAccountAction extends ActionBase {
+public class NewCustAccountAction implements ActionBase {
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
@@ -226,7 +226,7 @@ public class NewCustAccountAction extends ActionBase {
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#parse(SOAPMessage, HttpSession)
 	 */
-	public int parse(SOAPMessage respMsg, HttpSession session) {
+	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 

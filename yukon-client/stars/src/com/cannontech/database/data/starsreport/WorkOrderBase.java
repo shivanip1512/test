@@ -39,6 +39,8 @@ public class WorkOrderBase extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+        getWorkOrderBase().add();
+        
         // setEnergyCompanyBase() should already be called
         if (getEnergyCompanyBase() != null) {
             // add to mapping table
@@ -48,8 +50,6 @@ public class WorkOrderBase extends DBPersistent {
             };
             add( "ECToWorkOrderMapping", addValues );
         }
-
-        getWorkOrderBase().add();
     }
 
     public void update() throws java.sql.SQLException {

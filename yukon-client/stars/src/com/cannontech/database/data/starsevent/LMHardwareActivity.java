@@ -1,7 +1,8 @@
 package com.cannontech.database.data.starsevent;
 
 import com.cannontech.database.db.*;
-
+import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.database.Transaction;
 
 /**
  * <p>Title: </p>
@@ -43,6 +44,48 @@ public class LMHardwareActivity extends DBPersistent {
 
     public void retrieve() throws java.sql.SQLException {
         getLMHardwareActivity().retrieve();
+    }
+    
+    public static StarsLMHardwareHistory getStarsLMHardwareHistory(Integer invID) {
+    	java.sql.Connection conn = null;
+
+    	try {
+            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+            if (conn == null) return null;
+            
+	        com.cannontech.database.db.starsevent.LMHardwareActivity[] events =
+	        		com.cannontech.database.db.starsevent.LMHardwareActivity.getAllHardwareActivities( invID, conn );
+	        StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
+	        
+	        for (int i = 0; i < events.length; i++) {
+	        	com.cannontech.database.db.starscustomer.CustomerAction action = new com.cannontech.database.db.starscustomer.CustomerAction();
+	        	action.setActionID( events[i].getActionID() );
+	        	Transaction transaction = Transaction.createTransaction( Transaction.RETRIEVE, action );
+	        	transaction.execute();
+	        	
+	        	LMHardwareEvent hwEvent = new LMHardwareEvent();
+	        	hwEvent.setEventAction( action.getAction() );
+	        	hwEvent.setEventDateTime( events[i].getEventDateTime() );
+	        	hwEvent.setNotes( events[i].getNotes() );
+	        	hwHist.addLMHardwareEvent( hwEvent );
+	        }
+	        
+	        return hwHist;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	finally {
+    		try {
+    			if (conn != null) conn.close();
+    		}
+    		catch (Exception e) {
+    			e.printStackTrace();
+    		}
+    	}
+    	
+    	return null;
     }
 
     public com.cannontech.database.db.starsevent.LMHardwareActivity getLMHardwareActivity() {

@@ -20,7 +20,7 @@ import com.cannontech.database.Transaction;
  * @author yao
  * @version 1.0
  */
-public class SearchCustAccountAction extends ActionBase {
+public class SearchCustAccountAction implements ActionBase {
 	
 	private static final String SOAP_SERVER_URL = "http://205.167.68.23/aus1/service1.asmx";
 	
@@ -72,7 +72,7 @@ public class SearchCustAccountAction extends ActionBase {
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#parse(SOAPMessage, HttpSession)
 	 */
-	public int parse(SOAPMessage respMsg, HttpSession session) {
+	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
 		int appCnt = 1;
 		int invCnt = 1;
 		Hashtable invTable = new Hashtable();

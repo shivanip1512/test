@@ -34,7 +34,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener {
             StringReader sr = new StringReader( reqStr );
             StarsOperation reqOper = StarsOperation.unmarshal( sr );
 
-            if (reqOper.getStarsLogin() != null) {
+            if (reqOper.getStarsOperatorLogin() != null) {
                 StarsSuccess success = new StarsSuccess();
                 success.setDescription( "User login successful" );
                 respOper.setStarsSuccess( success );

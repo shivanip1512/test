@@ -83,8 +83,8 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("DisableService") || action.equalsIgnoreCase("EnableService")) {
             clientAction = new YukonSwitchCommandAction();
-            destURL = "/OperatorDemos/Consumer/Programs.jsp";
-            errorURL = "/OperatorDemos/Consumer/Programs.jsp";
+            destURL = "/OperatorDemos/Consumer/OptOut.jsp";
+            nextURL = errorURL = "/OperatorDemos/Consumer/OptOut.jsp";
 
             PILConnectionServlet connContainer = (PILConnectionServlet)
                     getServletContext().getAttribute(PILConnectionServlet.SERVLET_CONTEXT_ID);
@@ -95,6 +95,22 @@ public class SOAPClient extends HttpServlet {
             destURL = "/OperatorDemos/Consumer/ContHist.jsp"
                     + "?AppNo=" + req.getParameter("AppNo")
                     + "&BackURL=" + req.getParameter("BackURL");
+        }
+        else if (action.equalsIgnoreCase("CreateCall")) {
+        	clientAction = new CreateCallAction();
+        	destURL = "/OperatorDemos/Consumer/Update.jsp";
+        }
+        else if (action.equalsIgnoreCase("CallTracking")) {
+        	clientAction = new CallTrackingAction();
+        	destURL = "/OperatorDemos/Consumer/Calls.jsp";
+        }
+        else if (action.equalsIgnoreCase("CreateOrder")) {
+        	clientAction = new CreateServiceRequestAction();
+        	destURL = "/OperatorDemos/Consumer/Update.jsp";
+        }
+        else if (action.equalsIgnoreCase("GetServiceHistory")) {
+        	clientAction = new GetServiceHistoryAction();
+        	destURL = "/OperatorDemos/Consumer/ServiceSummary.jsp";
         }
         else if (action.equalsIgnoreCase("ConsumerSwitchGetLMCtrlHist")) {
             clientAction = new GetLMCtrlHistAction();
@@ -108,17 +124,22 @@ public class SOAPClient extends HttpServlet {
                     + "?AppNo=" + req.getParameter("AppNo")
                     + "&BackURL=" + req.getParameter("BackURL");
         }
+        else if (action.equalsIgnoreCase("OperatorLogin")) {
+        	clientAction = new OperatorLoginAction();
+        	destURL = homeURL;
+        	nextURL = errorURL = loginURL;
+        }
         else if (action.equalsIgnoreCase("ConsumerSwitchLogin")) {
             clientAction = new SearchCustAccountAction();
             destURL = "/UserDemos/ConsumerSwitch/switch/ProgramHist.jsp";
-            errorURL = "/UserDemos/ConsumerSwitch/login.jsp";
+            nextURL = errorURL = "/UserDemos/ConsumerSwitch/login.jsp";
 
             session.setAttribute("ENERGY_COMPANY_ID", new Integer(1));
         }
         else if (action.equalsIgnoreCase("ConsumerStatLogin")) {
             clientAction = new SearchCustAccountAction();
             destURL = "/UserDemos/ConsumerStat/stat/ProgramHist.jsp";
-            errorURL = "/UserDemos/ConsumerStat/login.jsp";
+            nextURL = errorURL = "/UserDemos/ConsumerStat/login.jsp";
 
             session.setAttribute("ENERGY_COMPANY_ID", new Integer(1));
         }
@@ -132,13 +153,12 @@ public class SOAPClient extends HttpServlet {
 
         if (clientAction != null) {
             reqMsg = clientAction.build(req, session);
-            session.removeAttribute("RESPONSE_OPERATION");
 
             if (reqMsg != null) {
                 respMsg = clientAction.process(reqMsg, session);
 
                 if (respMsg != null) {
-                	int status = clientAction.parse(respMsg, session);
+                	int status = clientAction.parse(reqMsg, respMsg, session);
                 	
                     if (status == 0)	// Operation succeed
                         nextURL = destURL;

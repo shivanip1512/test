@@ -39,6 +39,8 @@ public class CallReportBase extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+        getCallReportBase().add();
+        
         // setCustomerBase() should already be called
         if (getCustomerBase() != null && getCustomerBase().getEnergyCompanyBase() != null) {
             // add to mapping table
@@ -48,8 +50,6 @@ public class CallReportBase extends DBPersistent {
             };
             add( "ECToServiceOrderMapping", addValues );
         }
-
-        getCallReportBase().add();
     }
 
     public void update() throws java.sql.SQLException {

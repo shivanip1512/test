@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.2 2002/07/30 22:02:11 zyao Exp $
+ * $Id: StarsOperation.java,v 1.3 2002/08/12 16:23:39 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.2 $ $Date: 2002/07/30 22:02:11 $
+ * @version $Revision: 1.3 $ $Date: 2002/08/12 16:23:39 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -32,10 +32,7 @@ public class StarsOperation implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    /**
-     * Login to the STARS server
-    **/
-    private StarsLogin _starsLogin;
+    private StarsOperatorLogin _starsOperatorLogin;
 
     private StarsLogoff _starsLogoff;
 
@@ -65,15 +62,9 @@ public class StarsOperation implements java.io.Serializable {
     **/
     private StarsUpdateLMPrograms _starsUpdateLMPrograms;
 
-    /**
-     * Enable programs of a customer account
-    **/
-    private StarsEnableService _starsEnableService;
+    private StarsSwitchCommand _starsSwitchCommand;
 
-    /**
-     * Disable programs of a customer account
-    **/
-    private StarsDisableService _starsDisableService;
+    private StarsSwitchCommandResponse _starsSwitchCommandResponse;
 
     /**
      * Get LM control history of a LM program
@@ -81,6 +72,18 @@ public class StarsOperation implements java.io.Serializable {
     private StarsGetLMControlHistory _starsGetLMControlHistory;
 
     private StarsGetLMControlHistoryResponse _starsGetLMControlHistoryResponse;
+
+    private StarsCreateCallReport _starsCreateCallReport;
+
+    private StarsGetCallReportHistory _starsGetCallReportHistory;
+
+    private StarsGetCallReportHistoryResponse _starsGetCallReportHistoryResponse;
+
+    private StarsCreateServiceRequest _starsCreateServiceRequest;
+
+    private StarsGetServiceRequestHistory _starsGetServiceRequestHistory;
+
+    private StarsGetServiceRequestHistoryResponse _starsGetServiceRequestHistoryResponse;
 
 
       //----------------/
@@ -97,28 +100,24 @@ public class StarsOperation implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'starsDisableService'. The field
-     * 'starsDisableService' has the following description: Disable
-     * programs of a customer account
+     * Returns the value of field 'starsCreateCallReport'.
      * 
-     * @return the value of field 'starsDisableService'.
+     * @return the value of field 'starsCreateCallReport'.
     **/
-    public StarsDisableService getStarsDisableService()
+    public StarsCreateCallReport getStarsCreateCallReport()
     {
-        return this._starsDisableService;
-    } //-- StarsDisableService getStarsDisableService() 
+        return this._starsCreateCallReport;
+    } //-- StarsCreateCallReport getStarsCreateCallReport() 
 
     /**
-     * Returns the value of field 'starsEnableService'. The field
-     * 'starsEnableService' has the following description: Enable
-     * programs of a customer account
+     * Returns the value of field 'starsCreateServiceRequest'.
      * 
-     * @return the value of field 'starsEnableService'.
+     * @return the value of field 'starsCreateServiceRequest'.
     **/
-    public StarsEnableService getStarsEnableService()
+    public StarsCreateServiceRequest getStarsCreateServiceRequest()
     {
-        return this._starsEnableService;
-    } //-- StarsEnableService getStarsEnableService() 
+        return this._starsCreateServiceRequest;
+    } //-- StarsCreateServiceRequest getStarsCreateServiceRequest() 
 
     /**
      * Returns the value of field 'starsFailure'.
@@ -129,6 +128,28 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsFailure;
     } //-- StarsFailure getStarsFailure() 
+
+    /**
+     * Returns the value of field 'starsGetCallReportHistory'.
+     * 
+     * @return the value of field 'starsGetCallReportHistory'.
+    **/
+    public StarsGetCallReportHistory getStarsGetCallReportHistory()
+    {
+        return this._starsGetCallReportHistory;
+    } //-- StarsGetCallReportHistory getStarsGetCallReportHistory() 
+
+    /**
+     * Returns the value of field
+     * 'starsGetCallReportHistoryResponse'.
+     * 
+     * @return the value of field
+     * 'starsGetCallReportHistoryResponse'.
+    **/
+    public StarsGetCallReportHistoryResponse getStarsGetCallReportHistoryResponse()
+    {
+        return this._starsGetCallReportHistoryResponse;
+    } //-- StarsGetCallReportHistoryResponse getStarsGetCallReportHistoryResponse() 
 
     /**
      * Returns the value of field 'starsGetLMControlHistory'. The
@@ -154,16 +175,26 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsGetLMControlHistoryResponse getStarsGetLMControlHistoryResponse() 
 
     /**
-     * Returns the value of field 'starsLogin'. The field
-     * 'starsLogin' has the following description: Login to the
-     * STARS server
+     * Returns the value of field 'starsGetServiceRequestHistory'.
      * 
-     * @return the value of field 'starsLogin'.
+     * @return the value of field 'starsGetServiceRequestHistory'.
     **/
-    public StarsLogin getStarsLogin()
+    public StarsGetServiceRequestHistory getStarsGetServiceRequestHistory()
     {
-        return this._starsLogin;
-    } //-- StarsLogin getStarsLogin() 
+        return this._starsGetServiceRequestHistory;
+    } //-- StarsGetServiceRequestHistory getStarsGetServiceRequestHistory() 
+
+    /**
+     * Returns the value of field
+     * 'starsGetServiceRequestHistoryResponse'.
+     * 
+     * @return the value of field
+     * 'starsGetServiceRequestHistoryResponse'.
+    **/
+    public StarsGetServiceRequestHistoryResponse getStarsGetServiceRequestHistoryResponse()
+    {
+        return this._starsGetServiceRequestHistoryResponse;
+    } //-- StarsGetServiceRequestHistoryResponse getStarsGetServiceRequestHistoryResponse() 
 
     /**
      * Returns the value of field 'starsLogoff'.
@@ -186,6 +217,16 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsNewCustomerAccount;
     } //-- StarsNewCustomerAccount getStarsNewCustomerAccount() 
+
+    /**
+     * Returns the value of field 'starsOperatorLogin'.
+     * 
+     * @return the value of field 'starsOperatorLogin'.
+    **/
+    public StarsOperatorLogin getStarsOperatorLogin()
+    {
+        return this._starsOperatorLogin;
+    } //-- StarsOperatorLogin getStarsOperatorLogin() 
 
     /**
      * Returns the value of field 'starsSearchCustomerAccount'. The
@@ -220,6 +261,26 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsSuccess;
     } //-- StarsSuccess getStarsSuccess() 
+
+    /**
+     * Returns the value of field 'starsSwitchCommand'.
+     * 
+     * @return the value of field 'starsSwitchCommand'.
+    **/
+    public StarsSwitchCommand getStarsSwitchCommand()
+    {
+        return this._starsSwitchCommand;
+    } //-- StarsSwitchCommand getStarsSwitchCommand() 
+
+    /**
+     * Returns the value of field 'starsSwitchCommandResponse'.
+     * 
+     * @return the value of field 'starsSwitchCommandResponse'.
+    **/
+    public StarsSwitchCommandResponse getStarsSwitchCommandResponse()
+    {
+        return this._starsSwitchCommandResponse;
+    } //-- StarsSwitchCommandResponse getStarsSwitchCommandResponse() 
 
     /**
      * Returns the value of field 'starsUpdateCustomerAccount'. The
@@ -283,30 +344,26 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'starsDisableService'. The field
-     * 'starsDisableService' has the following description: Disable
-     * programs of a customer account
+     * Sets the value of field 'starsCreateCallReport'.
      * 
-     * @param starsDisableService the value of field
-     * 'starsDisableService'.
+     * @param starsCreateCallReport the value of field
+     * 'starsCreateCallReport'.
     **/
-    public void setStarsDisableService(StarsDisableService starsDisableService)
+    public void setStarsCreateCallReport(StarsCreateCallReport starsCreateCallReport)
     {
-        this._starsDisableService = starsDisableService;
-    } //-- void setStarsDisableService(StarsDisableService) 
+        this._starsCreateCallReport = starsCreateCallReport;
+    } //-- void setStarsCreateCallReport(StarsCreateCallReport) 
 
     /**
-     * Sets the value of field 'starsEnableService'. The field
-     * 'starsEnableService' has the following description: Enable
-     * programs of a customer account
+     * Sets the value of field 'starsCreateServiceRequest'.
      * 
-     * @param starsEnableService the value of field
-     * 'starsEnableService'.
+     * @param starsCreateServiceRequest the value of field
+     * 'starsCreateServiceRequest'.
     **/
-    public void setStarsEnableService(StarsEnableService starsEnableService)
+    public void setStarsCreateServiceRequest(StarsCreateServiceRequest starsCreateServiceRequest)
     {
-        this._starsEnableService = starsEnableService;
-    } //-- void setStarsEnableService(StarsEnableService) 
+        this._starsCreateServiceRequest = starsCreateServiceRequest;
+    } //-- void setStarsCreateServiceRequest(StarsCreateServiceRequest) 
 
     /**
      * Sets the value of field 'starsFailure'.
@@ -317,6 +374,28 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsFailure = starsFailure;
     } //-- void setStarsFailure(StarsFailure) 
+
+    /**
+     * Sets the value of field 'starsGetCallReportHistory'.
+     * 
+     * @param starsGetCallReportHistory the value of field
+     * 'starsGetCallReportHistory'.
+    **/
+    public void setStarsGetCallReportHistory(StarsGetCallReportHistory starsGetCallReportHistory)
+    {
+        this._starsGetCallReportHistory = starsGetCallReportHistory;
+    } //-- void setStarsGetCallReportHistory(StarsGetCallReportHistory) 
+
+    /**
+     * Sets the value of field 'starsGetCallReportHistoryResponse'.
+     * 
+     * @param starsGetCallReportHistoryResponse the value of field
+     * 'starsGetCallReportHistoryResponse'.
+    **/
+    public void setStarsGetCallReportHistoryResponse(StarsGetCallReportHistoryResponse starsGetCallReportHistoryResponse)
+    {
+        this._starsGetCallReportHistoryResponse = starsGetCallReportHistoryResponse;
+    } //-- void setStarsGetCallReportHistoryResponse(StarsGetCallReportHistoryResponse) 
 
     /**
      * Sets the value of field 'starsGetLMControlHistory'. The
@@ -343,15 +422,27 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsGetLMControlHistoryResponse(StarsGetLMControlHistoryResponse) 
 
     /**
-     * Sets the value of field 'starsLogin'. The field 'starsLogin'
-     * has the following description: Login to the STARS server
+     * Sets the value of field 'starsGetServiceRequestHistory'.
      * 
-     * @param starsLogin the value of field 'starsLogin'.
+     * @param starsGetServiceRequestHistory the value of field
+     * 'starsGetServiceRequestHistory'.
     **/
-    public void setStarsLogin(StarsLogin starsLogin)
+    public void setStarsGetServiceRequestHistory(StarsGetServiceRequestHistory starsGetServiceRequestHistory)
     {
-        this._starsLogin = starsLogin;
-    } //-- void setStarsLogin(StarsLogin) 
+        this._starsGetServiceRequestHistory = starsGetServiceRequestHistory;
+    } //-- void setStarsGetServiceRequestHistory(StarsGetServiceRequestHistory) 
+
+    /**
+     * Sets the value of field
+     * 'starsGetServiceRequestHistoryResponse'.
+     * 
+     * @param starsGetServiceRequestHistoryResponse the value of
+     * field 'starsGetServiceRequestHistoryResponse'.
+    **/
+    public void setStarsGetServiceRequestHistoryResponse(StarsGetServiceRequestHistoryResponse starsGetServiceRequestHistoryResponse)
+    {
+        this._starsGetServiceRequestHistoryResponse = starsGetServiceRequestHistoryResponse;
+    } //-- void setStarsGetServiceRequestHistoryResponse(StarsGetServiceRequestHistoryResponse) 
 
     /**
      * Sets the value of field 'starsLogoff'.
@@ -375,6 +466,17 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsNewCustomerAccount = starsNewCustomerAccount;
     } //-- void setStarsNewCustomerAccount(StarsNewCustomerAccount) 
+
+    /**
+     * Sets the value of field 'starsOperatorLogin'.
+     * 
+     * @param starsOperatorLogin the value of field
+     * 'starsOperatorLogin'.
+    **/
+    public void setStarsOperatorLogin(StarsOperatorLogin starsOperatorLogin)
+    {
+        this._starsOperatorLogin = starsOperatorLogin;
+    } //-- void setStarsOperatorLogin(StarsOperatorLogin) 
 
     /**
      * Sets the value of field 'starsSearchCustomerAccount'. The
@@ -410,6 +512,28 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsSuccess = starsSuccess;
     } //-- void setStarsSuccess(StarsSuccess) 
+
+    /**
+     * Sets the value of field 'starsSwitchCommand'.
+     * 
+     * @param starsSwitchCommand the value of field
+     * 'starsSwitchCommand'.
+    **/
+    public void setStarsSwitchCommand(StarsSwitchCommand starsSwitchCommand)
+    {
+        this._starsSwitchCommand = starsSwitchCommand;
+    } //-- void setStarsSwitchCommand(StarsSwitchCommand) 
+
+    /**
+     * Sets the value of field 'starsSwitchCommandResponse'.
+     * 
+     * @param starsSwitchCommandResponse the value of field
+     * 'starsSwitchCommandResponse'.
+    **/
+    public void setStarsSwitchCommandResponse(StarsSwitchCommandResponse starsSwitchCommandResponse)
+    {
+        this._starsSwitchCommandResponse = starsSwitchCommandResponse;
+    } //-- void setStarsSwitchCommandResponse(StarsSwitchCommandResponse) 
 
     /**
      * Sets the value of field 'starsUpdateCustomerAccount'. The

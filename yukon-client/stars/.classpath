@@ -27,5 +27,6 @@
     <classpathentry kind="lib" path="/third-party/jaxm-client.jar"/>
     <classpathentry kind="lib" path="/third-party/jruntags.jar"/>
     <classpathentry kind="lib" path="/third-party/castor-xml.jar"/>
+    <classpathentry kind="lib" path="/third-party/dom4j.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

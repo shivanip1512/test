@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMProgram.java,v 1.2 2002/07/30 22:02:10 zyao Exp $
+ * $Id: StarsLMProgram.java,v 1.3 2002/08/12 16:23:39 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.2 $ $Date: 2002/07/30 22:02:10 $
+ * @version $Revision: 1.3 $ $Date: 2002/08/12 16:23:39 $
 **/
 public class StarsLMProgram implements java.io.Serializable {
 
@@ -39,14 +39,16 @@ public class StarsLMProgram implements java.io.Serializable {
     **/
     private boolean _has_programID;
 
-    private java.lang.String _programName;
-
     private int _groupID;
 
     /**
      * keeps track of state for field: _groupID
     **/
     private boolean _has_groupID;
+
+    private java.lang.String _programName;
+
+    private java.lang.String _status;
 
     private StarsLMControlHistory _starsLMControlHistory;
 
@@ -110,6 +112,16 @@ public class StarsLMProgram implements java.io.Serializable {
     {
         return this._starsLMControlHistory;
     } //-- StarsLMControlHistory getStarsLMControlHistory() 
+
+    /**
+     * Returns the value of field 'status'.
+     * 
+     * @return the value of field 'status'.
+    **/
+    public java.lang.String getStatus()
+    {
+        return this._status;
+    } //-- java.lang.String getStatus() 
 
     /**
     **/
@@ -204,6 +216,16 @@ public class StarsLMProgram implements java.io.Serializable {
     {
         this._starsLMControlHistory = starsLMControlHistory;
     } //-- void setStarsLMControlHistory(StarsLMControlHistory) 
+
+    /**
+     * Sets the value of field 'status'.
+     * 
+     * @param status the value of field 'status'.
+    **/
+    public void setStatus(java.lang.String status)
+    {
+        this._status = status;
+    } //-- void setStatus(java.lang.String) 
 
     /**
      * 

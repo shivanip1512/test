@@ -30,11 +30,11 @@ public class StarsLoginController extends LoginController {
 
     public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException {
         StarsOperation reqOper = new StarsOperation();
-        StarsLogin login = new StarsLogin();
+        StarsOperatorLogin login = new StarsOperatorLogin();
         login.setUsername( req.getParameter("USERNAME") );
         login.setPassword( req.getParameter("PASSWORD") );
         login.setDbAlias( req.getParameter("DATABASEALIAS") );
-        reqOper.setStarsLogin( login );
+        reqOper.setStarsOperatorLogin( login );
 
         try {
             StringWriter sw = new StringWriter();

@@ -23,7 +23,7 @@ public class LMHardwareActivity extends DBPersistent {
     private String notes = null;
 
     public static final String[] SETTER_COLUMNS = {
-        "InventoryID", "ActionID", "EventDateTime", "Notes"
+        "InventoryID", "EventDateTime", "Notes", "ActionID"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "EventID" };
@@ -38,7 +38,8 @@ public class LMHardwareActivity extends DBPersistent {
     }
 
     public static LMHardwareActivity[] getAllHardwareActivities(Integer inventoryID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE InventoryID = ?";
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE InventoryID = ? "
+        		   + "ORDER BY EventDateTime DESC";
 
         java.sql.PreparedStatement pstmt = null;
         java.sql.ResultSet rset = null;
@@ -61,9 +62,9 @@ public class LMHardwareActivity extends DBPersistent {
 
                     event.setEventID( new Integer(rset.getInt("EventID")) );
                     event.setInventoryID( new Integer(rset.getInt("InventoryID")) );
-                    event.setActionID( new Integer(rset.getInt("ActionID")) );
                     event.setEventDateTime( new java.util.Date(rset.getTimestamp("EventDateTime").getTime()) );
                     event.setNotes( rset.getString("Notes") );
+                    event.setActionID( new Integer(rset.getInt("ActionID")) );
 
                     eventList.add(event);
                 }
@@ -136,8 +137,8 @@ public class LMHardwareActivity extends DBPersistent {
     		setEventID( getNextEventID() );
     		
         Object[] addValues = {
-            getEventID(), getInventoryID(), getActionID(),
-            getEventDateTime(), getNotes()
+            getEventID(), getInventoryID(), getEventDateTime(),
+            getNotes(), getActionID()
         };
 
         add( TABLE_NAME, addValues );
@@ -145,7 +146,7 @@ public class LMHardwareActivity extends DBPersistent {
 
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
-            getInventoryID(), getActionID(), getEventDateTime(), getNotes()
+            getInventoryID(), getEventDateTime(), getNotes(), getActionID()
         };
 
         Object[] constraintValues = { getEventID() };
@@ -160,9 +161,9 @@ public class LMHardwareActivity extends DBPersistent {
 
         if (results.length == SETTER_COLUMNS.length) {
             setInventoryID( (Integer) results[0] );
-            setActionID( (Integer) results[1] );
-            setEventDateTime( new java.util.Date(((java.sql.Timestamp) results[2]).getTime()) );
-            setNotes( (String) results[3] );
+            setEventDateTime( new java.util.Date(((java.sql.Timestamp) results[1]).getTime()) );
+            setNotes( (String) results[2] );
+            setActionID( (Integer) results[3] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");

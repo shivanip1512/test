@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMHardwareDescriptor.java,v 1.2 2002/07/30 22:01:58 zyao Exp $
+ * $Id: StarsLMHardwareDescriptor.java,v 1.3 2002/08/12 16:23:39 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:58 $
+ * @version $Revision: 1.3 $ $Date: 2002/08/12 16:23:39 $
 **/
 public class StarsLMHardwareDescriptor extends com.cannontech.stars.xml.serialize.StarsInventoryDescriptor {
 
@@ -139,6 +139,38 @@ public class StarsLMHardwareDescriptor extends com.cannontech.stars.xml.serializ
             sv.setWhiteSpace("preserve");
             fieldValidator.setValidator(sv);
         }
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsLMHardwareHistory
+        desc = new XMLFieldDescriptorImpl(StarsLMHardwareHistory.class, "_starsLMHardwareHistory", "stars-LMHardwareHistory", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsLMHardware target = (StarsLMHardware) object;
+                return target.getStarsLMHardwareHistory();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsLMHardware target = (StarsLMHardware) object;
+                    target.setStarsLMHardwareHistory( (StarsLMHardwareHistory) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsLMHardwareHistory();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsLMHardwareHistory
+        fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsLMHardwareDescriptor()

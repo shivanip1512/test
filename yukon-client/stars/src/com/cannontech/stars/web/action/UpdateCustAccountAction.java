@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 import javax.servlet.http.*;
 import javax.xml.soap.SOAPMessage;
+import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.xml.util.*;
 import com.cannontech.database.Transaction;
 import com.cannontech.stars.xml.serialize.*;
@@ -17,7 +18,7 @@ import com.cannontech.stars.xml.serialize.*;
  * @version 1.0
  */
 
-public class UpdateCustAccountAction extends ActionBase {
+public class UpdateCustAccountAction implements ActionBase {
 
     public UpdateCustAccountAction() {
         super();
@@ -86,17 +87,18 @@ public class UpdateCustAccountAction extends ActionBase {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             StarsOperation respOper = new StarsOperation();
 
-            StarsUpdateCustomerAccount starsAccount = reqOper.getStarsUpdateCustomerAccount();
-
-            com.cannontech.database.data.starscustomer.CustomerAccount account =
-                    (com.cannontech.database.data.starscustomer.CustomerAccount) session.getAttribute("CUSTOMER_ACCOUNT");
-            if (account == null) {
-                StarsFailure failure = new StarsFailure();
-                failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
-                failure.setDescription("Session invalidated, please login again");
-                respOper.setStarsFailure( failure );
-                return SOAPUtil.buildSOAPMessage( respOper );
+			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+            if (operator == null) {
+            	StarsFailure failure = new StarsFailure();
+            	failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
+            	failure.setDescription( "Session invalidated, please login again" );
+            	respOper.setStarsFailure( failure );
+            	return SOAPUtil.buildSOAPMessage( respOper );
             }
+            
+            com.cannontech.database.data.starscustomer.CustomerAccount account =
+            		(com.cannontech.database.data.starscustomer.CustomerAccount) operator.getAttribute("CUSTOMER_ACCOUNT");
+            StarsUpdateCustomerAccount starsAccount = reqOper.getStarsUpdateCustomerAccount();
 
             com.cannontech.database.data.starscustomer.CustomerBase customer = account.getCustomerBase();
 
@@ -163,7 +165,7 @@ public class UpdateCustAccountAction extends ActionBase {
         return null;
     }
 
-    public int parse(SOAPMessage respMsg, HttpSession session) {
+    public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
