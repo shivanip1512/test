@@ -41,8 +41,8 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 	boolean isCanceled = false;
 	String errorMsg = null;
 	
-	String snFrom = null;
-	String snTo = null;
+	Integer snFrom = null;
+	Integer snTo = null;
 	Integer devTypeID = null;
 	boolean configNow = false;
 	HttpServletRequest request = null;
@@ -51,7 +51,7 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 	int numSuccess = 0, numFailure = 0;
 	int numToBeConfigured = 0;
 	
-	public ConfigSNRangeTask(String snFrom, String snTo, Integer devTypeID,
+	public ConfigSNRangeTask(Integer snFrom, Integer snTo, Integer devTypeID,
 		boolean configNow, HttpServletRequest request)
 	{
 		this.snFrom = snFrom;
@@ -83,15 +83,16 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 	 */
 	public String getProgressMsg() {
 		if (numToBeConfigured > 0) {
+			String snToStr = (snTo != null)? " to " + snTo : " and above";
 			if (configNow) {
 				if (status == STATUS_FINISHED)
-					return "The range " + snFrom + " to " + snTo + " has been configured successfully";
+					return "The SN range " + snFrom + snToStr + " has been configured successfully";
 				else
 					return numSuccess + " of " + numToBeConfigured + " hardwares configured";
 			}
 			else {
 				if (status == STATUS_FINISHED)
-					return "Configuration for the range " + snFrom + " to " + snTo + " has been saved to batch successfully";
+					return "Configuration for the SN range " + snFrom + snToStr + " saved to batch successfully";
 				else
 					return numSuccess + " of " + numToBeConfigured + " hardware configuration saved to batch";
 			}
@@ -115,6 +116,12 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
+		if (devTypeID == null) {
+			status = STATUS_ERROR;
+			errorMsg = "Device type cannot be null";
+			return;
+		}
+		
 		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
@@ -123,15 +130,8 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 		
 		status = STATUS_RUNNING;
 		
-		java.util.TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
-				devTypeID.intValue(), snFrom, snTo, user.getEnergyCompanyID() );
-		if (snTable == null) {
-			status = STATUS_ERROR;
-			errorMsg = "Failed to find hardwares in the given SN range";
-			return;
-		}
-		
-		numToBeConfigured = snTable.size();
+		ArrayList hwList = ECUtils.getLMHardwareInRange( energyCompany, devTypeID.intValue(), snFrom, snTo );
+		numToBeConfigured = hwList.size();
 		
 		SwitchCommandQueue cmdQueue = null;
 		if (!configNow) {
@@ -143,10 +143,8 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 			}
 		}
 		
-		java.util.Iterator it = snTable.values().iterator();
-		while (it.hasNext()) {
-			Integer invID = (Integer) it.next();
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory(invID.intValue(), true);
+		for (int i = 0; i < hwList.size(); i++) {
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwList.get(i);
 			
 			try {
 				if (configNow) {
@@ -164,7 +162,7 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 					SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
 					cmd.setEnergyCompanyID( user.getEnergyCompanyID() );
 					cmd.setAccountID( liteHw.getAccountID() );
-					cmd.setInventoryID( invID.intValue() );
+					cmd.setInventoryID( liteHw.getInventoryID() );
 					cmd.setCommandType( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE );
 					
 					cmdQueue.addCommand( cmd, false );
@@ -186,7 +184,7 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 		
 		if (!configNow) cmdQueue.addCommand( null, true );
 		
-		String logMsg = "Serial Range:" + snFrom + " - " + snTo
+		String logMsg = "Serial Range:" + snFrom + ((snTo != null)? " - " + snTo : " and above")
 				+ ",Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText();
 		ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_CONFIG_RANGE, logMsg );
 		

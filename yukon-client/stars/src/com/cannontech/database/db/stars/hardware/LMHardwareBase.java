@@ -119,53 +119,6 @@ public class LMHardwareBase extends DBPersistent {
     	return null;
     }
     
-    /**
-     * Return map from serial number (String) to inventory id (Integer)
-     */
-    public static java.util.TreeMap searchBySNRange(int deviceType, String serialNoLB, String serialNoUB, int energyCompanyID) {
-		String sql = "SELECT inv.InventoryID, ManufacturerSerialNumber FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
-				"WHERE LMHardwareTypeID = " + deviceType + " AND inv.InventoryID >= 0 AND inv.InventoryID = map.InventoryID " +
-				"AND map.EnergyCompanyID = " + energyCompanyID;
-		
-		if (serialNoLB != null)
-			sql += " AND ManufacturerSerialNumber >= " + serialNoLB;
-		
-		if (serialNoUB != null)
-			sql += " AND ManufacturerSerialNumber <= " + serialNoUB;
-		
-		java.sql.Connection conn = null;
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
-		
-		try {
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery( sql );
-			
-			java.util.TreeMap snTable = new java.util.TreeMap();
-			while (rset.next()) {
-				int invID = rset.getInt(1);
-				String serialNo = rset.getString(2);
-				snTable.put(serialNo, new Integer(invID));
-			}
-			
-			return snTable;
-		}
-		catch (java.sql.SQLException e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		finally {
-			try {
-				if (rset != null) rset.close();
-				if (stmt != null) stmt.close();
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
-		}
-		
-		return null;
-    }
-    
     public static LMHardwareBase[] searchBySerialNumber(String serialNo, int energyCompanyID) {
     	String sql = "SELECT hw.InventoryID, hw.ManufacturerSerialNumber, hw.LMHardwareTypeID, hw.RouteID, hw.ConfigurationID " +
     			"FROM " + TABLE_NAME + " hw, ECToInventoryMapping map " +

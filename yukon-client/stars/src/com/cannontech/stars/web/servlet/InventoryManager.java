@@ -501,7 +501,7 @@ public class InventoryManager extends HttpServlet {
 	}
 	
 	/**
-	 * The config button is clicked on InventoryDetail.jsp
+	 * The config button, config link, or "Save To Batch" link is clicked on InventoryDetail.jsp
 	 */
 	private void configLMHardware(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
@@ -516,17 +516,22 @@ public class InventoryManager extends HttpServlet {
 				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, liteHw );
 			}
 			
-			YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true );
-			
-			if (liteHw.getAccountID() > 0) {
-				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
-				if (starsAcctInfo != null) {
-					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-					UpdateLMHardwareAction.parseResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, null );
-				}
+			if (Boolean.valueOf( req.getParameter("SaveToBatch") ).booleanValue()) {
+				UpdateLMHardwareConfigAction.saveSwitchCommand( liteHw, SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE, energyCompany );
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration saved to batch" );
 			}
-			
-			session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration updated successfully" );
+			else {
+				YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true );
+				
+				if (liteHw.getAccountID() > 0) {
+					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
+					if (starsAcctInfo != null) {
+						StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+						UpdateLMHardwareAction.parseResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, null );
+					}
+				}
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration updated successfully" );
+			}
 		}
 		catch (WebClientException e) {
 			CTILogger.error( e.getMessage(), e );
@@ -644,32 +649,24 @@ public class InventoryManager extends HttpServlet {
 		
 		String fromStr = req.getParameter("From");
 		String toStr = req.getParameter("To");
+		Integer snFrom = null;
+		Integer snTo = null;
 		
-		if (fromStr.equals("*")) {
-			// Update all hardwares in inventory
-			fromStr = toStr = null;
-		}
-		else {
-			int snFrom = 0, snTo = 0;
+		if (!fromStr.equals("*")) {
 			try {
-				snFrom = Integer.parseInt( fromStr );
-				if (req.getParameter("To").length() > 0)
-					snTo = Integer.parseInt( toStr );
-				else
-					snTo = snFrom;
+				snFrom = Integer.valueOf( fromStr );
+				if (!toStr.equals("*")) {
+					snTo = Integer.valueOf( toStr );
+					if (snFrom.intValue() > snTo.intValue()) {
+						session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The 'From' value is greater than the 'To' value");
+						return;
+					}
+				}
 			}
 			catch (NumberFormatException nfe) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid serial number format");
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid number format in the SN range");
 				return;
 			}
-			
-			if (snFrom > snTo) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "'From' value must be less than or equal to 'to' value");
-				return;
-			}
-			
-			fromStr = String.valueOf( snFrom );
-			toStr = String.valueOf( snTo );
 		}
 		
 		Integer voltageID = (req.getParameter("Voltage") != null)?
@@ -692,7 +689,7 @@ public class InventoryManager extends HttpServlet {
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
-		UpdateSNRangeTask task = new UpdateSNRangeTask( fromStr, toStr, devTypeID, newDevTypeID, recvDate, voltageID, companyID, req );
+		UpdateSNRangeTask task = new UpdateSNRangeTask( snFrom, snTo, devTypeID, newDevTypeID, recvDate, voltageID, companyID, req );
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -731,45 +728,37 @@ public class InventoryManager extends HttpServlet {
 		
 		String fromStr = req.getParameter("From");
 		String toStr = req.getParameter("To");
+		Integer snFrom = null;
+		Integer snTo = null;
 		
-		if (fromStr.equals("*")) {
-			// Delete all hardwares in inventory
-			fromStr = toStr = null;
-		}
-		else {
-			int snFrom = 0, snTo = 0;
+		if (!fromStr.equals("*")) {
 			try {
-				snFrom = Integer.parseInt( fromStr );
-				if (req.getParameter("To").length() > 0)
-					snTo = Integer.parseInt( toStr );
-				else
-					snTo = snFrom;
+				snFrom = Integer.valueOf( fromStr );
+				if (!toStr.equals("*")) {
+					snTo = Integer.valueOf( toStr );
+					if (snFrom.intValue() > snTo.intValue()) {
+						session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The 'From' value is greater than the 'To' value");
+						return;
+					}
+				}
 			}
 			catch (NumberFormatException nfe) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid serial number format");
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid number format in the SN range");
 				return;
 			}
-			
-			if (snFrom > snTo) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "'From' value must be less than or equal to 'to' value");
-				return;
-			}
-			
-			fromStr = String.valueOf( snFrom );
-			toStr = String.valueOf( snTo );
 		}
 		
 		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
 		
 		int categoryID = ECUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
-		if (ECUtils.isMCT(categoryID) && fromStr != null) {
+		if (ECUtils.isMCT(categoryID) && snFrom != null) {
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "If device type is MCT, the 'From' value must be '*' (delete all MCTs)");
 			return;
 		} 
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
-		DeleteSNRangeTask task = new DeleteSNRangeTask( fromStr, toStr, devTypeID, req );
+		DeleteSNRangeTask task = new DeleteSNRangeTask( snFrom, snTo, devTypeID, req );
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -816,39 +805,31 @@ public class InventoryManager extends HttpServlet {
 		
 		String fromStr = req.getParameter("From");
 		String toStr = req.getParameter("To");
+		Integer snFrom = null;
+		Integer snTo = null;
 		
-		if (fromStr.equals("*")) {
-			// Update all hardwares in inventory
-			fromStr = toStr = null;
-		}
-		else {
-			int snFrom = 0, snTo = 0;
+		if (!fromStr.equals("*")) {
 			try {
-				snFrom = Integer.parseInt( fromStr );
-				if (req.getParameter("To").length() > 0)
-					snTo = Integer.parseInt( toStr );
-				else
-					snTo = snFrom;
+				snFrom = Integer.valueOf( fromStr );
+				if (!toStr.equals("*")) {
+					snTo = Integer.valueOf( toStr );
+					if (snFrom.intValue() > snTo.intValue()) {
+						session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The 'From' value is greater than the 'To' value");
+						return;
+					}
+				}
 			}
 			catch (NumberFormatException nfe) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid serial number format");
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid number format in the SN range");
 				return;
 			}
-			
-			if (snFrom > snTo) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "'From' value must be less than or equal to 'to' value");
-				return;
-			}
-			
-			fromStr = String.valueOf( snFrom );
-			toStr = String.valueOf( snTo );
 		}
 		
 		boolean configNow = req.getParameter("ConfigNow") != null;
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
-		ConfigSNRangeTask task = new ConfigSNRangeTask( fromStr, toStr, devTypeID, configNow, req );
+		ConfigSNRangeTask task = new ConfigSNRangeTask( snFrom, snTo, devTypeID, configNow, req );
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page

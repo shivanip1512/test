@@ -410,7 +410,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 		return false;
 	}
 	
-	private static void saveSwitchCommand(LiteStarsLMHardware liteHw, String commandType,
+	public static void saveSwitchCommand(LiteStarsLMHardware liteHw, String commandType,
 		LiteStarsEnergyCompany energyCompany) throws WebClientException
 	{
 		SwitchCommandQueue queue = energyCompany.getSwitchCommandQueue();

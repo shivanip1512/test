@@ -24,6 +24,7 @@ import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -508,6 +509,30 @@ public class ECUtils {
 		for (int i = 0; i < groupIDs.size(); i++)
 			ids[i] = ((Integer) groupIDs.get(i)).intValue();
 		return ids;
+	}
+	
+	public static ArrayList getLMHardwareInRange(LiteStarsEnergyCompany energyCompany, int devTypeID, Integer snFrom, Integer snTo) {
+		ArrayList hwList = new ArrayList();
+		
+		ArrayList inventory = energyCompany.loadAllInventory();
+		synchronized (inventory) {
+			for (int i = 0; i < inventory.size(); i++) {
+				if (!(inventory.get(i) instanceof LiteStarsLMHardware)) continue;
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) inventory.get(i);
+				
+				if (liteHw.getLmHardwareTypeID() != devTypeID) continue;
+				try {
+					int serialNo = Integer.parseInt( liteHw.getManufacturerSerialNumber() );
+					if (snFrom != null && serialNo < snFrom.intValue()) continue;
+					if (snTo != null && serialNo > snTo.intValue()) continue;
+				}
+				catch (NumberFormatException nfe) { continue; }
+				
+				hwList.add( liteHw );
+			}
+		}
+		
+		return hwList;
 	}
 
 }

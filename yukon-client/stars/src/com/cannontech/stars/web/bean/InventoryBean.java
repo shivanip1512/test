@@ -330,10 +330,19 @@ public class InventoryBean {
 	}
 	
 	public String getHTML(HttpServletRequest req) {
-		StringBuffer htmlBuf = new StringBuffer();
+		boolean showEnergyCompany = false;
+		if (getEnergyCompany().getChildren().size() > 0) {
+			if (getHtmlStyle() == HTML_STYLE_LIST_INVENTORY) {
+				showEnergyCompany = true;
+			}
+			else if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET) {
+				if (inventorySet != null && inventorySet.size() > 0 && inventorySet.get(0) instanceof Pair)
+					showEnergyCompany = true;
+			}
+		}
 		
-		boolean showEnergyCompany = (getHtmlStyle() == HTML_STYLE_LIST_INVENTORY) && getEnergyCompany().getChildren().size() > 0;
 		ArrayList hwList = getHardwareList( showEnergyCompany );
+		StringBuffer htmlBuf = new StringBuffer();
 		
 		if (hwList == null || hwList.size() == 0) {
 			htmlBuf.append("<p class='ErrorMsg'>No hardware found.</p>").append(LINE_SEPARATOR);

@@ -8,7 +8,6 @@ package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -22,6 +21,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.InventoryManager;
@@ -41,8 +41,8 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 	boolean isCanceled = false;
 	String errorMsg = null;
 	
-	String snFrom = null;
-	String snTo = null;
+	Integer snFrom = null;
+	Integer snTo = null;
 	Integer devTypeID = null;
 	Integer newDevTypeID = null;
 	Date recvDate = null;
@@ -54,7 +54,7 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 	int numSuccess = 0, numFailure = 0;
 	int numToBeUpdated = 0;
 	
-	public UpdateSNRangeTask(String snFrom, String snTo, Integer devTypeID, Integer newDevTypeID,
+	public UpdateSNRangeTask(Integer snFrom, Integer snTo, Integer devTypeID, Integer newDevTypeID,
 		Date recvDate, Integer companyID, Integer voltageID, HttpServletRequest request)
 	{
 		this.snFrom = snFrom;
@@ -89,8 +89,9 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 	 */
 	public String getProgressMsg() {
 		if (numToBeUpdated > 0) {
+			String snToStr = (snTo != null)? " to " + snTo : " and above";
 			if (status == STATUS_FINISHED)
-				return "The range " + snFrom + " to " + snTo + " has been updated successfully";
+				return "The SN range " + snFrom + snToStr + " has been updated successfully";
 			else
 				return numSuccess + " of " + numToBeUpdated + " hardwares updated";
 		}
@@ -113,6 +114,12 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
+		if (devTypeID == null) {
+			status = STATUS_ERROR;
+			errorMsg = "Device type cannot be null";
+			return;
+		}
+		
 		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
@@ -121,27 +128,38 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 		
 		status = STATUS_RUNNING;
 		
-		TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
-				devTypeID.intValue(), snFrom, snTo, user.getEnergyCompanyID() );
-		if (snTable == null) {
-			status = STATUS_ERROR;
-			errorMsg = "Failed to find hardwares in the given SN range";
-			return;
-		}
+		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+		boolean showEnergyCompany = energyCompany.getChildren().size() > 0;
+		boolean devTypeChanged = newDevTypeID != null && newDevTypeID.intValue() != devTypeID.intValue();
 		
-		numToBeUpdated = snTable.size();
+		ArrayList hwList = ECUtils.getLMHardwareInRange( energyCompany, devTypeID.intValue(), snFrom, snTo );
+		numToBeUpdated = hwList.size();
 		
-		java.util.Iterator it = snTable.values().iterator();
-		while (it.hasNext()) {
-			Integer invID = (Integer) it.next();
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventoryBrief( invID.intValue(), true );
+		for (int i = 0; i < hwList.size(); i++) {
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwList.get(i);
+			
+			if (devTypeChanged) {
+				boolean hwExist = false;
+				try {
+					hwExist = energyCompany.searchForLMHardware( newDevTypeID.intValue(), liteHw.getManufacturerSerialNumber() ) != null;
+				}
+				catch (ObjectInOtherEnergyCompanyException e) {
+					hwExist = true;
+				}
+				
+				if (hwExist) {
+					hardwareSet.add( liteHw );
+					numFailure++;
+					continue;
+				}
+			}
 			
 			try {
 				com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
 						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
 				com.cannontech.database.db.stars.hardware.InventoryBase invDB = hardware.getInventoryBase();
 				
-				if (newDevTypeID != null) {
+				if (devTypeChanged) {
 					StarsLiteFactory.setLMHardwareBase( hardware, liteHw );
 					hardware.getInventoryBase().setCategoryID(
 							new Integer(ECUtils.getInventoryCategoryID(newDevTypeID.intValue(), energyCompany)) );
@@ -158,7 +176,7 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 				if (voltageID != null)
 					invDB.setVoltageID( voltageID );
 				
-				if (newDevTypeID != null) {
+				if (devTypeChanged) {
 					hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
 							Transaction.createTransaction( Transaction.UPDATE, hardware ).execute();
 					
@@ -182,9 +200,9 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 					if (starsAcctInfo != null) {
 						if (!liteHw.isExtended()) StarsLiteFactory.extendLiteInventoryBase( liteHw, energyCompany );
 						
-						for (int i = 0; i < starsAcctInfo.getStarsInventories().getStarsInventoryCount(); i++) {
-							StarsInventory starsInv = starsAcctInfo.getStarsInventories().getStarsInventory(i);
-							if (starsInv.getInventoryID() == invID.intValue()) {
+						for (int j = 0; j < starsAcctInfo.getStarsInventories().getStarsInventoryCount(); j++) {
+							StarsInventory starsInv = starsAcctInfo.getStarsInventories().getStarsInventory(j);
+							if (starsInv.getInventoryID() == liteHw.getInventoryID()) {
 								StarsLiteFactory.setStarsInv( starsInv, liteHw, energyCompany );
 								break;
 							}
@@ -206,7 +224,7 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 			}
 		}
 		
-		String logMsg = "Serial Range:" + snFrom + " - " + snTo
+		String logMsg = "Serial Range:" + snFrom + ((snTo != null)? " - " + snTo : " and above")
 				+ ",Old Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText()
 				+ ",New Device Type:" + YukonListFuncs.getYukonListEntry(newDevTypeID.intValue()).getEntryText();
 		ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_UPDATE_RANGE, logMsg );
@@ -216,7 +234,7 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 		
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares updated successfully.</span><br>" +
-					"<span class='ErrorMsg'>" + numFailure + " hardwares failed. They are listed below:</span><br>";
+					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (serial numbers in new device type may already exist). They are listed below:</span><br>";
 			
 			session.setAttribute(InventoryManager.INVENTORY_SET_DESC, resultDesc);
 			session.setAttribute(InventoryManager.INVENTORY_SET, hardwareSet);

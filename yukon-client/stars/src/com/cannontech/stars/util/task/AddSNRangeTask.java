@@ -8,13 +8,13 @@ package com.cannontech.stars.util.task;
 
 import java.util.Date;
 import java.util.ArrayList;
-import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -22,6 +22,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.InventoryManager;
@@ -85,7 +86,7 @@ public class AddSNRangeTask implements TimeConsumingTask {
 	public String getProgressMsg() {
 		int numTotal = snTo - snFrom + 1;
 		if (status == STATUS_FINISHED)
-			return "The range " + snFrom + " to " + snTo + " has been added successfully";
+			return "The SN range " + snFrom + " to " + snTo + " has been added successfully";
 		else
 			return numSuccess + " of " + numTotal + " hardwares added";
 	}
@@ -101,6 +102,12 @@ public class AddSNRangeTask implements TimeConsumingTask {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
+		if (devTypeID == null) {
+			status = STATUS_ERROR;
+			errorMsg = "Device type cannot be null";
+			return;
+		}
+		
 		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
@@ -109,18 +116,28 @@ public class AddSNRangeTask implements TimeConsumingTask {
 		
 		status = STATUS_RUNNING;
 		
-		TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
-				devTypeID.intValue(), String.valueOf(snFrom), String.valueOf(snTo), user.getEnergyCompanyID() );
-		if (snTable == null) {
-			status = STATUS_ERROR;
-			errorMsg = "Failed to add serial range";
-		}
+		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+		boolean showEnergyCompany = energyCompany.getChildren().size() > 0;
 		
 		for (int sn = snFrom; sn <= snTo; sn++) {
 			String serialNo = String.valueOf(sn);
-			Integer invID = (Integer) snTable.get( serialNo );
-			if (invID != null) {
-				hardwareSet.add( energyCompany.getInventoryBrief(invID.intValue(), true) );
+			
+			try {
+				LiteStarsLMHardware existingHw = energyCompany.searchForLMHardware( devTypeID.intValue(), serialNo );
+				if (existingHw != null) {
+					if (showEnergyCompany)
+						hardwareSet.add( new Pair(existingHw, energyCompany) );
+					else
+						hardwareSet.add( existingHw );
+					numFailure++;
+					continue;
+				}
+			}
+			catch (ObjectInOtherEnergyCompanyException e) {
+				if (descendants.contains( e.getEnergyCompany() ))
+					hardwareSet.add( new Pair(e.getObject(), e.getEnergyCompany()) );
+				else
+					serialNoSet.add( serialNo );
 				numFailure++;
 				continue;
 			}
@@ -181,8 +198,11 @@ public class AddSNRangeTask implements TimeConsumingTask {
 				resultDesc += "</table><br>";
 			}
 			
-			session.setAttribute(InventoryManager.INVENTORY_SET_DESC, resultDesc);
-			session.setAttribute(InventoryManager.INVENTORY_SET, hardwareSet);
+			if (hardwareSet.size() > 0) {
+				session.setAttribute(InventoryManager.INVENTORY_SET_DESC, resultDesc);
+				session.setAttribute(InventoryManager.INVENTORY_SET, hardwareSet);
+			}
+			
 			session.setAttribute(ServletUtils.ATT_REFERRER, request.getHeader("referer"));
 			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");
 		}

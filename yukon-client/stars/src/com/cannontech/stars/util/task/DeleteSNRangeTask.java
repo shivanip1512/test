@@ -19,6 +19,7 @@ import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -37,8 +38,8 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 	boolean isCanceled = false;
 	String errorMsg = null;
 	
-	String snFrom = null;
-	String snTo = null;
+	Integer snFrom = null;
+	Integer snTo = null;
 	Integer devTypeID = null;
 	HttpServletRequest request = null;
 	
@@ -46,7 +47,7 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 	int numSuccess = 0, numFailure = 0;
 	int numToBeDeleted = 0;
 	
-	public DeleteSNRangeTask(String snFrom, String snTo, Integer devTypeID, HttpServletRequest request) {
+	public DeleteSNRangeTask(Integer snFrom, Integer snTo, Integer devTypeID, HttpServletRequest request) {
 		this.snFrom = snFrom;
 		this.snTo = snTo;
 		this.devTypeID = devTypeID;
@@ -75,8 +76,9 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 	 */
 	public String getProgressMsg() {
 		if (numToBeDeleted > 0) {
+			String snToStr = (snTo != null)? " to " + snTo : " and above";
 			if (status == STATUS_FINISHED)
-				return "The range " + snFrom + " to " + snTo + " has been deleted successfully";
+				return "The SN range " + snFrom + snToStr + " has been deleted successfully";
 			else
 				return numSuccess + " of " + numToBeDeleted + " hardwares deleted";
 		}
@@ -99,6 +101,12 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
+		if (devTypeID == null) {
+			status = STATUS_ERROR;
+			errorMsg = "Device type cannot be null";
+			return;
+		}
+		
 		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
@@ -108,9 +116,9 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 		status = STATUS_RUNNING;
 		
 		if (ECUtils.isMCT(categoryID)) {
-			ArrayList inventory = energyCompany.loadAllInventory();
 			ArrayList mctList = new ArrayList();
 			
+			ArrayList inventory = energyCompany.loadAllInventory();
 			synchronized (inventory) {
 				for (int i = 0; i < inventory.size(); i++) {
 					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
@@ -153,23 +161,14 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 			}
 		}
 		else {
-			java.util.TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
-					devTypeID.intValue(), snFrom, snTo, user.getEnergyCompanyID() );
-			if (snTable == null) {
-				status = STATUS_ERROR;
-				errorMsg = "Failed to find hardwares in the given SN Range";
-				return;
-			}
+			ArrayList hwList = ECUtils.getLMHardwareInRange( energyCompany, devTypeID.intValue(), snFrom, snTo );
+			numToBeDeleted = hwList.size();
 			
-			numToBeDeleted = snTable.size();
-			
-			java.util.Iterator it = snTable.values().iterator();
-			while (it.hasNext()) {
-				Integer invID = (Integer) it.next();
-				LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID.intValue(), true );
+			for (int i = 0; i < hwList.size(); i++) {
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwList.get(i);
 				
-				if (liteInv.getAccountID() > 0) {
-					hardwareSet.add( liteInv );
+				if (liteHw.getAccountID() > 0) {
+					hardwareSet.add( liteHw );
 					numFailure++;
 					continue;
 				}
@@ -177,16 +176,15 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 				try {
 					com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
 							new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-					hardware.setInventoryID( invID );
-					
+					hardware.setInventoryID( new Integer(liteHw.getInventoryID()) );
 					Transaction.createTransaction( Transaction.DELETE, hardware ).execute();
 					
-					energyCompany.deleteInventory( invID.intValue() );
+					energyCompany.deleteInventory( liteHw.getInventoryID() );
 					numSuccess++;
 				}
 				catch (TransactionException e) {
 					CTILogger.error( e.getMessage(), e );
-					hardwareSet.add( liteInv );
+					hardwareSet.add( liteHw );
 					numFailure++;
 				}
 				
@@ -197,7 +195,7 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 			}
 		}
 		
-		String logMsg = "Serial Range:" + snFrom + " - " + snTo
+		String logMsg = "Serial Range:" + snFrom + ((snTo != null)? " - " + snTo : " and above")
 				+ ",Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText();
 		ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_DELETE_RANGE, logMsg );
 		
