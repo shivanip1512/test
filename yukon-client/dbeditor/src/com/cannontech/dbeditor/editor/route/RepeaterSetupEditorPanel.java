@@ -22,6 +22,7 @@ public class RepeaterSetupEditorPanel extends com.cannontech.common.gui.util.Dat
    private com.cannontech.common.gui.util.AddRemovePanel ivjRepeatersAddRemovePanel = null;
    private boolean addOrRemoveHasBeenDone = false;
    private boolean changeUpdated = true;
+   private boolean dbRegenerate = true;
 
 /*
   * Constructor
@@ -62,8 +63,7 @@ public void addButtonAction_actionPerformed(java.util.EventObject newEvent) {
  */
 public void advancedSetupButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 
-   getValue(this.objectToEdit);
-   getAdvancedRepeaterSetupEditorPanel().setValue(this.objectToEdit);
+  
 
    java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
    
@@ -87,8 +87,18 @@ public void advancedSetupButton_ActionPerformed(java.awt.event.ActionEvent actio
 			
 			fireInputDataPanelEvent( new com.cannontech.common.gui.util.DataInputPanelEvent(this, com.cannontech.common.gui.util.DataInputPanelEvent.EVENT_FORCE_APPLY));
         }
+        else {
+        dbRegenerate = false;	
+        }
            	       	
    	}
+   	else {
+   	dbRegenerate = false;	
+   	}
+   	
+   getValue(this.objectToEdit);
+   getAdvancedRepeaterSetupEditorPanel().setValue(this.objectToEdit);
+   	
    
    com.cannontech.common.gui.util.BooleanDialog b = new com.cannontech.common.gui.util.BooleanDialog(getAdvancedRepeaterSetupEditorPanel(), owner);
    b.yesButtonSetText("Ok");
@@ -367,11 +377,22 @@ public Object getValue(Object val) {
       }
    }
 
-
+	
    
    route.setRepeaterVector(repeaterRoute);
-
-   return val;
+   if (dbRegenerate) {
+  String userLocked = route.getCarrierRoute().getUserLocked();
+   if (userLocked.equalsIgnoreCase("N")) {
+   	
+   	java.util.Vector routes = RegenerateRoute.resetRptSettings(RegenerateRoute.getAllCarrierRoutes(), false, route);
+	val = (CCURoute)routes.elementAt(0);
+	this.objectToEdit = val;
+   }
+   }
+   
+   
+	dbRegenerate = true;
+	return val;
 }
 /**
  * Called whenever the part throws an exception.
