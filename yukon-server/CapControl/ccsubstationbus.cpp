@@ -1112,10 +1112,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
                         setRecentlyControlledFlag(TRUE);
                         setCurrentDailyOperations(getCurrentDailyOperations() + 1);
                     }
-                    currentFeeder->setNewPointDataReceivedFlag(FALSE);
+                    //currentFeeder->setNewPointDataReceivedFlag(FALSE);
                 }
             }
-            setNewPointDataReceivedFlag(FALSE);
+            //setNewPointDataReceivedFlag(FALSE);
         }
         else if( _controlmethod == CtiCCSubstationBus::SubstationBusControlMethod )
         {
@@ -1238,7 +1238,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
             }
             setRecentlyControlledFlag(TRUE);
         }
-        setNewPointDataReceivedFlag(FALSE);
+        //setNewPointDataReceivedFlag(FALSE);
         //regardless what happened the substation bus should be should be sent to the client
         setBusUpdatedFlag(TRUE);
     }
@@ -1257,12 +1257,10 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
 void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
 {
     CtiRequestMsg* request = NULL;
+    CtiCCFeeder* lastFeederControlled = NULL;
+    int positionLastFeederControlled = -1;
     try
     {
-        CtiCCFeeder* currentFeeder = NULL;
-        LONG currentPosition = 0;
-        ULONG iterations = 0;
-
         RWTPtrSortedVector<CtiCCFeeder, FeederVARComparison<CtiCCFeeder> > varSortedFeeders;
         DOUBLE setpoint = figureCurrentSetPoint(currentDateTime);
 
@@ -1281,17 +1279,15 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
                 dout << RWTime() << " - Attempting to Decrease Var level in substation bus: " << getPAOName().data() << endl;
             }
 
-            while( request == NULL &&
-                   iterations < varSortedFeeders.entries() )
+            for(int j=0;j<varSortedFeeders.entries();j++)
             {
-                if( currentPosition >= varSortedFeeders.entries()-1 )
+                request = ((CtiCCFeeder*)varSortedFeeders[j])->createDecreaseVarRequest(pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
+                if( request != NULL )
                 {
-                    currentPosition = 0;
+                    lastFeederControlled = (CtiCCFeeder*)varSortedFeeders[j];
+                    positionLastFeederControlled = j;
+                    break;
                 }
-                currentFeeder = (CtiCCFeeder*)varSortedFeeders[currentPosition];
-                request = currentFeeder->createDecreaseVarRequest(pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
-                iterations++;
-                currentPosition++;
             }
 
             if( request == NULL )
@@ -1309,17 +1305,16 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
                 dout << RWTime() << " - Attempting to Increase Var level in substation bus: " << getPAOName().data() << endl;
             }
 
-            while( request == NULL &&
-                   iterations < _ccfeeders.entries() )
+            long devID = 0;
+            for(int j=varSortedFeeders.entries()-1;j>=0;j--)
             {
-                if( currentPosition <= 0 )
+                request = ((CtiCCFeeder*)varSortedFeeders[j])->createIncreaseVarRequest(pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
+                if( request != NULL )
                 {
-                    currentPosition = varSortedFeeders.entries()-1;
+                    lastFeederControlled = (CtiCCFeeder*)varSortedFeeders[j];
+                    positionLastFeederControlled = j;
+                    break;
                 }
-                currentFeeder = (CtiCCFeeder*)varSortedFeeders[currentPosition];
-                request = currentFeeder->createIncreaseVarRequest(pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
-                iterations++;
-                currentPosition--;
             }
 
             if( request == NULL )
@@ -1333,9 +1328,9 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
         {
             pilMessages.insert(request);
             setLastOperationTime(currentDateTime);
-            setLastFeederControlledPAOId(currentFeeder->getPAOId());
-            setLastFeederControlledPosition(currentPosition);
-            ((CtiCCFeeder*)varSortedFeeders[currentPosition])->setLastOperationTime(currentDateTime);
+            setLastFeederControlledPAOId(lastFeederControlled->getPAOId());
+            setLastFeederControlledPosition(positionLastFeederControlled);
+            lastFeederControlled->setLastOperationTime(currentDateTime);
             setVarValueBeforeControl(getCurrentVarLoadPointValue());
             setCurrentDailyOperations(getCurrentDailyOperations() + 1);
             figureEstimatedVarLoadPointValue();
@@ -1345,11 +1340,11 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
             }
             setRecentlyControlledFlag(TRUE);
         }
-        setNewPointDataReceivedFlag(FALSE);
-        for(int j=0;j<_ccfeeders.entries();j++)
-        {
-            ((CtiCCFeeder*)_ccfeeders[j])->setNewPointDataReceivedFlag(FALSE);
-        }
+        //setNewPointDataReceivedFlag(FALSE);
+        //for(int j=0;j<_ccfeeders.entries();j++)
+        //{
+            //((CtiCCFeeder*)_ccfeeders[j])->setNewPointDataReceivedFlag(FALSE);
+        //}
         //regardless what happened the substation bus should be should be sent to the client
         setBusUpdatedFlag(TRUE);
     }
@@ -1389,8 +1384,6 @@ DOUBLE CtiCCSubstationBus::figureCurrentSetPoint(const RWDBDateTime& currentDate
 BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
 {
     BOOL returnBoolean = TRUE;
-    DOUBLE oldCalcValue = getVarValueBeforeControl();
-    DOUBLE newCalcValue = getCurrentVarLoadPointValue();
     char tempchar[64] = "";
     RWCString text = "";
     RWCString additional = "";
@@ -1409,7 +1402,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
                     currentFeeder->isPastResponseTime(RWDBDateTime(),getMinResponseTime()) )
                 {
                     currentFeeder->capBankControlStatusUpdate(pointChanges,getMinConfirmPercent(),getFailurePercent(),currentFeeder->getVarValueBeforeControl(),currentFeeder->getCurrentVarLoadPointValue());
-                    currentFeeder->setNewPointDataReceivedFlag(FALSE);
+                    //currentFeeder->setNewPointDataReceivedFlag(FALSE);
                 }
                 if( currentFeeder->getRecentlyControlledFlag() )
                 {
@@ -1444,7 +1437,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
         dout << RWTime() << " - Invalid control method in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 
-    setNewPointDataReceivedFlag(FALSE);
+    //setNewPointDataReceivedFlag(FALSE);
 
     return returnBoolean;
 }
@@ -2108,6 +2101,23 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
         rdr["lastfeederposition"] >> _lastfeedercontrolledposition;
         rdr["ctitimestamp"] >> dynamicTimeStamp;
 
+        //if dynamic timestamp from yesterday, zero out operation count
+        if( dynamicTimeStamp.rwdate() < currentDateTime.rwdate() ||
+            currentDateTime.hour() == 0 )
+        {
+            if( currentDateTime.hour() == 0 &&
+                dynamicTimeStamp.rwdate() >= (currentDateTime.rwdate()-1) )
+            {
+                char tempchar[64] = "";
+                RWCString text = RWCString("Daily Operations were ");
+                _ltoa(getCurrentDailyOperations(),tempchar,10);
+                text += tempchar;
+                RWCString additional = RWCString("Sub Bus: ");
+                additional += getPAOName();
+                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
+            }
+            setCurrentDailyOperations(0);
+        }
         _insertDynamicDataFlag = FALSE;
     }
     else
