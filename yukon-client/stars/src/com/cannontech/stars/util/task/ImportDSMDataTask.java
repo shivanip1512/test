@@ -1142,7 +1142,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				StarsNewCustomerAccount newAccount = new StarsNewCustomerAccount();
 				newAccount.setStarsCustomerAccount( account );
 				
-				LiteStarsCustAccountInformation liteAcctInfo = NewCustAccountAction.newCustomerAccount(newAccount, member);
+				LiteStarsCustAccountInformation liteAcctInfo = NewCustAccountAction.newCustomerAccount(newAccount, member, false);
 				numCustomerImported++;
 				
 				CustomerPK pk = new CustomerPK( fields[0].trim(), fields[1].trim(), fields[2].trim(), coopID.intValue() );

@@ -9,8 +9,6 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -294,17 +292,8 @@ public class NewCustAccountAction implements ActionBase {
 			StarsCustomerAccount starsAccount = newAccount.getStarsCustomerAccount();
 			StarsUpdateLogin updateLogin = newAccount.getStarsUpdateLogin();
         	
-			if (checkConstraint) {
-				// Check to see if the account number has duplicates
-				String sql = "SELECT 1 FROM CustomerAccount acct, ECToAccountMapping map "
-						   + "WHERE acct.AccountID = map.AccountID AND map.EnergyCompanyID = " + energyCompany.getEnergyCompanyID()
-						   + " AND UPPER(acct.AccountNumber) = UPPER('" + starsAccount.getAccountNumber() + "')";
-				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-				stmt.execute();
-				
-				if (stmt.getRowCount() > 0)
-					throw new WebClientException( "The account number already exists" );
-			}
+			if (checkConstraint && energyCompany.searchAccountByAccountNo(starsAccount.getAccountNumber()) != null)
+				throw new WebClientException( "The account number already exists" );
     		
 			// Check to see if the login is valid
 			if (updateLogin != null) {
