@@ -1,6 +1,6 @@
 package com.cannontech.database.data.lite;
 
-import com.cannontech.database.db.user.YukonUser;
+import com.cannontech.user.UserUtils;
 
 /*
  */
@@ -8,7 +8,7 @@ public class LiteCustomerContact extends LiteBase
 {
 	private String contFirstName = null;
 	private String contLastName = null;
-	private int userID = YukonUser.INVALID_ID.intValue();	
+	private int userID = UserUtils.USER_YUKON_ID;	
 
 	//what customer this contact is related to
 	private int deviceID = 0;

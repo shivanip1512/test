@@ -36,7 +36,7 @@ public Object[] createNewPanel(int panelIndex)
 			break;
 
 		case 1:
-			objs[0] = new CustomerContactLoginPanel();
+			objs[0] = new YukonUserLoginPanel();
 			objs[1] = "LogIn";
 			break;
 

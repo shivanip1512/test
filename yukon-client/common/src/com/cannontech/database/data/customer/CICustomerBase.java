@@ -8,7 +8,7 @@ package com.cannontech.database.data.customer;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.customer.CustomerAddress;
 import com.cannontech.database.db.customer.CustomerBaseLine;
-import com.cannontech.database.db.user.YukonUser;
+import com.cannontech.user.UserUtils;
 
 public class CICustomerBase extends CustomerBase implements com.cannontech.common.editor.EditorPanel
 {
@@ -54,7 +54,9 @@ public void add() throws java.sql.SQLException
 		for( int i = 0; i < getCustomerContactVector().size(); i++ )
 		{
 			//when creating a CICustomer, we start with no login ability
-			((CustomerContact)getCustomerContactVector().elementAt(i)).setUserID(YukonUser.INVALID_ID);
+			((CustomerContact)getCustomerContactVector().elementAt(i)).setUserID(
+					new Integer(UserUtils.USER_YUKON_ID) );
+
 			((CustomerContact)getCustomerContactVector().elementAt(i)).add();
 			
 			Object addValues[] = 
@@ -445,19 +447,13 @@ public void update() throws java.sql.SQLException
 	// delete all the customer contacts for this customer
 	com.cannontech.database.db.customer.CustomerContact.deleteAllCustomerContacts( getCiCustomerBase().getDeviceID(), getCiCustomerBase().getDbConnection() );
 
+	
 	// add all the contacts for this customer
 	if (getCustomerContactVector() != null)
 	{
 		for (int i = 0; i < getCustomerContactVector().size(); i++)
 		{
-			//when creating a CICustomer, we start with no login ability
-			if (((CustomerContact) getCustomerContactVector().elementAt(i)).getYukonUser().getUserID() == null)
-			{
-				((CustomerContact) getCustomerContactVector().elementAt(i)).setUserID(YukonUser.INVALID_ID);
-				((CustomerContact) getCustomerContactVector().elementAt(i)).getCustomerContact().add();
-			}
-			else
-				 ((CustomerContact) getCustomerContactVector().elementAt(i)).add(); //error here
+			((CustomerContact) getCustomerContactVector().elementAt(i)).add();
 
 			Object addValues[] =
 			{

@@ -7,23 +7,19 @@ public class LiteYukonUser extends LiteBase {
 	private String username;
 	private String password;
 	
-	public LiteYukonUser() {
-		initialize(0,null,null);
+	private LiteYukonUser() {
+		this(0,null,null);
 	}
 	
 	public LiteYukonUser(int id) {
-		initialize(id,null,null);
+		this(id,null,null);
 	}
 	
 	public LiteYukonUser(int id, String username, String password) {
-		initialize(id,username,password);		
-	}
-	
-	private void initialize(int id, String username, String password) {
 		setLiteType(LiteTypes.YUKON_USER);
 		setUserID(id);
 		setUsername(username);
-		setPassword(password);
+		setPassword(password);		
 	}
 	
 	/**
@@ -73,4 +69,13 @@ public class LiteYukonUser extends LiteBase {
 	public void setUserID(int userID) {
 		setLiteID(userID);
 	}
+	
+	/**
+	 * This method was created by Cannon Technologies Inc.
+	 */
+	public String toString()
+	{
+		return getUsername();
+	}
+
 }

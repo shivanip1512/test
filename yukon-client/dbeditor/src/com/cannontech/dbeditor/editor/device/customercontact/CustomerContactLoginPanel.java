@@ -6,6 +6,7 @@ package com.cannontech.dbeditor.editor.device.customercontact;
 import java.awt.Dimension;
 
 import com.cannontech.database.data.customer.CustomerContact;
+import com.cannontech.database.db.user.YukonUser;
 /*FIXFIX
 import com.cannontech.database.db.customer.CustomerLogin;
 */
@@ -894,44 +895,43 @@ public Dimension getPreferredSize() {
  */
 public Object getValue(Object o) 
 {
-	/*FIXFIX
-	CustomerLogin login = ((CustomerContact)o).getCustomerLogin();
+	//FIXFIX
+/*	CustomerContact cContact = (CustomerContact)o;
+	YukonUser login = cContact.getYukonUser();
 
 	if( getJCheckBoxEnableLogin().isSelected() )
 	{
 		
-		if( ((CustomerContact)o).getCustomerLogin().getLoginID().intValue() == CustomerLogin.NONE_LOGIN_ID )
-			((CustomerContact)o).setLogInID( login.getNextLoginID() );
-		
-		login.setStatus( CustomerLogin.STATUS_ENABLED );
+		if( login.getUserID().intValue() == YukonUser.INVALID_ID.intValue() )
+			login.setUserID( YukonUser.getNextUserID() );
 		
 		if( getJTextFieldUserID().getText() != null && getJTextFieldUserID().getText().length() > 0 )
-			login.setUserName( getJTextFieldUserID().getText() );
+			login.setUsername( getJTextFieldUserID().getText() );
 
 		if( getJPasswordFieldPassword().getPassword() != null && getJPasswordFieldPassword().getPassword().length > 0 )
-			login.setUserPassword( new String(getJPasswordFieldPassword().getPassword()) );
+			login.setPassword( new String(getJPasswordFieldPassword().getPassword()) );
 
-		login.setLoginType( getLoginTypeString() );
+		//login.setLoginType( getLoginTypeString() );
 	}
 	else
 	{
 		//if we have a valid LoginID, just disable the login and save any changes made
-		if( ((CustomerContact)o).getCustomerLogin().getLoginID().intValue() != CustomerLogin.NONE_LOGIN_ID )
+		if( login.getUserID().intValue() != YukonUser.INVALID_ID.intValue() )
 		{
-			login.setStatus( CustomerLogin.STATUS_DISABLED );
+			login.setStatus( YukonUser.STATUS_DISABLED );
 			
 			if( getJTextFieldUserID().getText() != null && getJTextFieldUserID().getText().length() > 0 )
-				login.setUserName( getJTextFieldUserID().getText() );
+				login.setUsername( getJTextFieldUserID().getText() );
 
 			if( getJPasswordFieldPassword().getPassword() != null && getJPasswordFieldPassword().getPassword().length > 0 )
-				login.setUserPassword( new String(getJPasswordFieldPassword().getPassword()) );
+				login.setPassword( new String(getJPasswordFieldPassword().getPassword()) );
 
-			login.setLoginType( getLoginTypeString() );
+			//login.setLoginType( getLoginTypeString() );
 		}
 	}
-	
-	return o;*/
-	return null;
+*/
+
+	return o;
 }
 /**
  * Called whenever the part throws an exception.
@@ -1120,105 +1120,30 @@ public void jCheckBoxReadmeter_ActionPerformed(java.awt.event.ActionEvent action
 	fireInputUpdate();
 	return;
 }
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		CustomerContactBasePanel aCustomerContactBasePanel;
-		aCustomerContactBasePanel = new CustomerContactBasePanel();
-		frame.setContentPane(aCustomerContactBasePanel);
-		frame.setSize(aCustomerContactBasePanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.show();
-		java.awt.Insets insets = frame.getInsets();
-		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
+
+
 /**
  * setValue method comment.
  */
 public void setValue(Object o) 
 {
-	/*FIXFIX
+	//FIXFIX
 	if( o == null )
 		return;
 
-	CustomerLogin login = ((CustomerContact)o).getCustomerLogin();
+	CustomerContact cContact = (CustomerContact)o;
+/*	YukonUser login = cContact.getYukonUser();
 
-	if( login.getLoginID().intValue() > CustomerLogin.NONE_LOGIN_ID )
+	if( login.getUserID().intValue() > YukonUser.INVALID_ID.intValue() )
 	{
-		if( !login.getStatus().equalsIgnoreCase(CustomerLogin.STATUS_DISABLED) )
+		if( !login.getStatus().equalsIgnoreCase(YukonUser.STATUS_DISABLED) )
 			getJCheckBoxEnableLogin().doClick();
 
-		getJTextFieldUserID().setText( login.getUserName() );
-		getJPasswordFieldPassword().setText( login.getUserPassword() );
-		getJPasswordFieldRetypePassword().setText( login.getUserPassword() );
-
-		int pos = 0;
-		if( (pos = login.getLoginType().indexOf(CustomerLogin.READMETER)) != -1 )
-		{
-			if( getJCheckBoxReadmeter().isEnabled() )
-				getJCheckBoxReadmeter().doClick();
-			else
-				getJCheckBoxReadmeter().setSelected(true);
-			
-			if( pos > 0 )
-				if( login.getLoginType().charAt( pos - 1 ) == 'V' )
-					getJComboBoxReadmeterRights().setSelectedItem( CustomerLogin.RIGHTS_VIEW_ONLY );
-		}
-
-		if( (pos = login.getLoginType().indexOf(CustomerLogin.CURTAILMENT)) != -1 )
-		{
-			if( getJCheckBoxCurtailment().isEnabled() )
-				getJCheckBoxCurtailment().doClick();
-			else
-				getJCheckBoxCurtailment().setSelected(true);
-
-			if( pos > 0 )
-				if( login.getLoginType().charAt( pos - 1 ) == 'V' )
-					getJComboBoxCurtailmentRights().setSelectedItem( CustomerLogin.RIGHTS_VIEW_ONLY );
-		}
-
-		if( (pos = login.getLoginType().indexOf(CustomerLogin.LOADCONTROL)) != -1 )
-		{
-			
-			if( getJCheckBoxLoadControl().isEnabled() )
-				getJCheckBoxLoadControl().doClick();
-			else
-				getJCheckBoxLoadControl().setSelected(true);
-				
-			if( pos > 0 )
-				if( login.getLoginType().charAt( pos - 1 ) == 'V' )
-					getJComboBoxLoadControlRights().setSelectedItem( CustomerLogin.RIGHTS_VIEW_ONLY );
-		}
-
-		if( (pos = login.getLoginType().indexOf(CustomerLogin.ENERGYEXCHANGE)) != -1 )
-		{
-			
-			if( getJCheckBoxEnergyExchange().isEnabled() )
-				getJCheckBoxEnergyExchange().doClick();
-			else
-				getJCheckBoxEnergyExchange().setSelected(true);
-				
-			if( pos > 0 )
-				if( login.getLoginType().charAt( pos - 1 ) == 'V' )
-					getJComboBoxEnergyExchangeRights().setSelectedItem( CustomerLogin.RIGHTS_VIEW_ONLY );
-		}		
-	
-		//getJComboBoxLoginType().setSelectedItem( login.getLoginType() );
+		getJTextFieldUserID().setText( login.getUsername() );
+		getJPasswordFieldPassword().setText( login.getPassword() );
+		getJPasswordFieldRetypePassword().setText( login.getPassword() );
 	}
-	*/
+*/
 }
 /**
  * 

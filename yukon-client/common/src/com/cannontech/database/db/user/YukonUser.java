@@ -1,51 +1,173 @@
 package com.cannontech.database.db.user;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.user.UserUtils;
 
 /**
  * @author alauinger
  */
-public class YukonUser extends DBPersistent {
-
-	public static final Integer INVALID_ID = new Integer(Integer.MIN_VALUE);
-	private static final String tableName = "YukonUser";	
+public class YukonUser extends DBPersistent 
+{		
+	private static final String TABLE_NAME = "YukonUser";	
 		
-	private Integer userID = INVALID_ID;
-	private String username;
-	private String password;
-	private Integer loginCount;
-	private Date lastLogin;
-	private String status;
+	private Integer userID = new Integer(UserUtils.USER_YUKON_ID);
+	private String username = null;
+	private String password = null;
+	private Integer loginCount = new Integer(0);
+	private Date lastLogin = CtiUtilities.get1990GregCalendar().getTime();
+	private String status = UserUtils.STATUS_DISABLED;
+
+	private static final String[] SELECT_COLUMNS = 
+	{ 	
+		"Username", 
+		"Password",
+		"LoginCount",
+		"LastLogin",
+		"Status" 
+	};
+	
 	
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	public void add() throws SQLException {
 		Object[] addValues = { getUserID(), getUsername(), getPassword(), getLoginCount(), getLastLogin(), getStatus() };
-		add(tableName, addValues);
+		add(TABLE_NAME, addValues);
 	}
 
+
+	/**
+	 * This method was created in VisualAge.
+	 * @return LMControlAreaTrigger[]
+	 * @param stateGroup java.lang.Integer
+	 */
+	public static final YukonUser getCustomerUser(Integer userID, Connection conn) throws java.sql.SQLException
+	{
+		YukonUser user = null;
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+	
+		String sql = "SELECT l.UserID, l.UserName, l.Password, l.LoginCount, l.LastLogin, l.Status " +
+			"FROM " + TABLE_NAME + " l " +
+			"WHERE l.UserID = ?";// and l.UserID > " + UserUtils.USER_INVALID_ID;
+	
+		try
+		{		
+			if( conn == null )
+			{
+				throw new IllegalStateException("Error getting database connection.");
+			}
+			else
+			{
+				pstmt = conn.prepareStatement(sql.toString());
+				pstmt.setInt( 1, userID.intValue() );
+				
+				rset = pstmt.executeQuery();							
+		
+				while( rset.next() )
+				{
+					user = new YukonUser();
+					
+					user.setDbConnection(conn);
+					user.setUserID( new Integer(rset.getInt("UserID")) );
+					user.setUsername( rset.getString("UserName") );
+					user.setPassword( rset.getString("Password") );
+					user.setLoginCount( new Integer(rset.getInt("LoginCount")) );
+					user.setLastLogin( new Date(rset.getTimestamp("LastLogin").getTime()) );
+					user.setStatus( rset.getString("Status") );
+				}
+						
+			}
+		}
+		catch( java.sql.SQLException e )
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+		finally
+		{
+			try
+			{
+				if( pstmt != null ) pstmt.close();
+				if( conn != null ) conn.close();
+			} 
+			catch( java.sql.SQLException e2 )
+			{
+				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+			}	
+		}
+	
+	
+		return user;
+	}
+	/**
+	 * This method was created in VisualAge.
+	 * @return java.lang.Integer
+	 */
+	public static final Integer getNextUserID()
+	{
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+	
+		String sql = "SELECT max(UserID) as UserID " + "FROM " + TABLE_NAME;
+		int newID = 0;
+		
+		try
+		{		
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+			pstmt = conn.prepareStatement(sql.toString());
+			
+			rset = pstmt.executeQuery();							
+	
+			while( rset.next() )
+			{
+				newID = rset.getInt("UserID") + 1;
+				break;
+			}
+		}
+		catch( java.sql.SQLException e )
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+		finally
+		{
+			try
+			{
+				if( pstmt != null ) pstmt.close();
+				if( conn != null ) conn.close();
+			} 
+			catch( java.sql.SQLException e2 )
+			{
+				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
+			}	
+		}	
+		
+		return new Integer( newID );
+	}
+	
+	
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
 	public void delete() throws SQLException {
-		delete(tableName, "UserID", getUserID());
+		delete(TABLE_NAME, "UserID", getUserID());
 	}
 
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
 	public void retrieve() throws SQLException {
-		String[] selectColumns = { "Username", "Password", "LoginCount", "LastLogin", "Status" };
 		String[] constraintColumns = { "UserID" };
 		Object[] constraintValues = { getUserID() };
 		
-		Object[] results = retrieve(selectColumns, tableName, constraintColumns, constraintValues);
+		Object[] results = retrieve(SELECT_COLUMNS, TABLE_NAME, constraintColumns, constraintValues);
 		
-		if(results.length == selectColumns.length) {
+		if(results.length == SELECT_COLUMNS.length) {
 			setUsername((String) results[0]);
 			setPassword((String) results[1]);
 			setLoginCount((Integer) results[2]);
@@ -58,13 +180,12 @@ public class YukonUser extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
 	public void update() throws SQLException {
-		String[] setColumns = { "Username", "Password", "LoginCount", "LastLogin", "Status" };
 		Object[] setValues = { getUsername(), getPassword(), getLoginCount(), getLastLogin(), getStatus() };
 		
 		String[] constraintColumns = { "UserID" };
 		Object[] constraintValues = { getUserID() };
 		
-		update(tableName, setColumns, setValues, constraintColumns, constraintValues);
+		update(TABLE_NAME, SELECT_COLUMNS, setValues, constraintColumns, constraintValues);
 	}
 
 	/**

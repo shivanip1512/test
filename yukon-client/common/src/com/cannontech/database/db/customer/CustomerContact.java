@@ -1,6 +1,6 @@
 package com.cannontech.database.db.customer;
 
-import com.cannontech.database.db.user.YukonUser;
+import com.cannontech.user.UserUtils;
 
 /**
  * This type was created in VisualAge.
@@ -14,7 +14,7 @@ public class CustomerContact extends com.cannontech.database.db.DBPersistent imp
 	private String contPhone1 = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	private String contPhone2 = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	private Integer locationID = new Integer(com.cannontech.database.db.notification.NotificationGroup.NONE_NOTIFICATIONGROUP_ID);
-	private Integer logInID = YukonUser.INVALID_ID;
+	private Integer logInID = new Integer(UserUtils.USER_YUKON_ID);
 
 	
 	public static final String SETTER_COLUMNS[] = 
@@ -104,7 +104,7 @@ public static boolean deleteAllCustomerContacts(Integer deviceID, java.sql.Conne
 			{
 				contactString.append( contacts[i].getContactID() );
 
-				if( contacts[i].getLogInID().intValue() != YukonUser.INVALID_ID.intValue() )
+				if( contacts[i].getLogInID().intValue() > UserUtils.USER_YUKON_ID )
 				{
 					loginString.append( contacts[i].getLogInID() );
 					loginCnt++;
@@ -114,7 +114,7 @@ public static boolean deleteAllCustomerContacts(Integer deviceID, java.sql.Conne
 				{
 					contactString.append(" OR contactID=" );
 
-					if( contacts[i].getLogInID().intValue() != YukonUser.INVALID_ID.intValue() )
+					if( contacts[i].getLogInID().intValue() > UserUtils.USER_YUKON_ID )
 					{
 						if( loginCnt > 0 )
 							loginString.append(" OR loginID=" );

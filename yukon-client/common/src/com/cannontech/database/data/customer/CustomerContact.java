@@ -9,7 +9,7 @@ import com.cannontech.database.db.user.YukonUser;
 public class CustomerContact extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
 {
 	private com.cannontech.database.db.customer.CustomerContact customerContact = null;
-	private com.cannontech.database.db.user.YukonUser yukonUser = null;
+//	private com.cannontech.database.db.user.YukonUser yukonUser = null;
 	
 /**
  * StatusPoint constructor comment.
@@ -30,9 +30,9 @@ public CustomerContact(Integer contactID) {
  */
 public void add() throws java.sql.SQLException 
 {
-	getYukonUser().add();
 	getCustomerContact().add();
 }
+
 /** 
  * This method was created in VisualAge.
  * @exception java.sql.SQLException The exception description.
@@ -43,10 +43,6 @@ public void delete() throws java.sql.SQLException
 
 	getCustomerContact().delete();
 
-	if( getYukonUser().getUserID() == null &&
-		getYukonUser().getUserID().intValue() > YukonUser.INVALID_ID.intValue() ) {
-			getYukonUser().delete();
-		}
 }
 /**
  * Insert the method's description here.
@@ -90,9 +86,6 @@ public void retrieve() throws java.sql.SQLException
 	getCustomerContact().retrieve();
 
 	setUserID( getCustomerContact().getLogInID() );
-	if( getYukonUser().getUserID().intValue() > YukonUser.INVALID_ID.intValue() ) {
-		getYukonUser().retrieve();
-	}
 }
 /**
  * This method was created in VisualAge.
@@ -119,12 +112,10 @@ public void setDbConnection(java.sql.Connection conn)
 	super.setDbConnection(conn);
 
 	getCustomerContact().setDbConnection(conn);
-	getYukonUser().setDbConnection(conn);
 }
 
 public void setUserID(Integer id) {
 	getCustomerContact().setLogInID(id);
-	getYukonUser().setUserID(id);
 }
 /**
  * This method was created in VisualAge.
@@ -134,6 +125,7 @@ public String toString()
 {
 	return getCustomerContact().getContLastName();
 }
+
 /**
  * This method was created in VisualAge.
  * @exception java.sql.SQLException The exception description.
@@ -142,33 +134,8 @@ public void update() throws java.sql.SQLException
 {	
 	setUserID( getCustomerContact().getLogInID() );
 	
-	/*FIXMEFIXME*/
-	/*if( getCustomerContact().getLogInID().intValue() > com.cannontech.database.db.customer.CustomerLogin.NONE_LOGIN_ID )
-	{
-		if( com.cannontech.database.db.customer.CustomerLogin.getCustomerLogin( getCustomerContact().getLogInID() ) != null )
-			getCustomerLogin().update();
-		else
-			getCustomerLogin().add();
-		
-	}*/
-
 	getCustomerContact().update();	
 }
-	/**
-	 * Returns the yukonUser.
-	 * @return com.cannontech.database.db.user.YukonUser
-	 */
-	public com.cannontech.database.db.user.YukonUser getYukonUser() {
-		return yukonUser;
-	}
 
-	/**
-	 * Sets the yukonUser.
-	 * @param yukonUser The yukonUser to set
-	 */
-	public void setYukonUser(
-		com.cannontech.database.db.user.YukonUser yukonUser) {
-		this.yukonUser = yukonUser;
-	}
 
 }
