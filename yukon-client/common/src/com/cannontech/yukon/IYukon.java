@@ -7,6 +7,7 @@ package com.cannontech.yukon;
 public interface IYukon extends IDatabaseCache, IDBPersistent, IPorterConnection, IDispatchConnection, IMACSConnection, ILMConnection, ISQLStatement
 {
    
-   public com.cannontech.yukon.IDBPersistent createIDBPersistent();
-   
+   public IDBPersistent createIDBPersistent();
+
+	public ISQLStatement createISQLStatement();   
 }

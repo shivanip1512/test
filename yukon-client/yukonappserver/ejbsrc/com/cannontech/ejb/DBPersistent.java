@@ -16,7 +16,7 @@ import com.cannontech.database.TransactionException;
 
 /**
  * Remote interface for DBPersistent.
- * @xdoclet-generated at Nov 4, 2002 5:13:03 PM
+ * @xdoclet-generated at Nov 5, 2002 2:19:53 PM
  */
 public interface DBPersistent
    extends javax.ejb.EJBObject

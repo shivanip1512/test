@@ -16,7 +16,7 @@ import com.cannontech.database.TransactionException;
 
 /**
  * Home interface for DBPersistent. Lookup using {1}
- * @xdoclet-generated at Nov 4, 2002 5:13:03 PM
+ * @xdoclet-generated at Nov 5, 2002 2:19:53 PM
  */
 public interface DBPersistentHome
    extends javax.ejb.EJBHome
@@ -24,6 +24,5 @@ public interface DBPersistentHome
    public static final String COMP_NAME="java:comp/env/ejb/DBPersistent";
    public static final String JNDI_NAME="jndi/DBPersistentBean";
 
-   public com.cannontech.ejb.DBPersistent create() throws javax.ejb.CreateException, java.rmi.RemoteException;
-
+	public com.cannontech.ejb.DBPersistent create() throws javax.ejb.CreateException, java.rmi.RemoteException;	
 }

@@ -22,7 +22,7 @@ import java.util.Hashtable;
 
 /**
  * Utility class for DBPersistent.
- * @xdoclet-generated at Nov 4, 2002 5:13:04 PM
+ * @xdoclet-generated at Nov 5, 2002 2:19:54 PM
  */
 public class DBPersistentUtil
 {

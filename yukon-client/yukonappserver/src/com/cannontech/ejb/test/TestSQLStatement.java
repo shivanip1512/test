@@ -32,7 +32,7 @@ public class TestSQLStatement
       InitialContext initialContext = new InitialContext(props);
       
 		return (SqlStatementHome) initialContext.lookup(
-			com.cannontech.ejb.DBPersistentHome.JNDI_NAME);
+			com.cannontech.ejb.SqlStatementHome.JNDI_NAME);
 	}
 
 	public void testBean()
@@ -46,14 +46,18 @@ public class TestSQLStatement
             {
                try
                {
+
 SqlStatement myBean = getHome().create(); //server
 //myBean.setDBConnection()
-myBean.setSQLString("select * from ctidatabase");
+myBean.setSQLString("select version,dateapplied,notes from ctidatabase order by version");
 myBean.execute();
 for( int i = 0; i < myBean.getRowCount(); i++ )
 {
-	for( int j = 0; j < myBean.getRow(i).length; j++ )
-	System.out.println( myBean.getRow(i)[j].toString() );
+	Object[] rows = myBean.getRow(i);
+	
+	for( int j = 0; j < rows.length; j++ )
+		System.out.print( rows[j] + "\t\t\t" );
+	System.out.println();
 }
 
 //force the bean to clean up

@@ -1,18 +1,15 @@
 package com.cannontech.common.util;
 
 /**
- * Command encapsulates a request as an object letting you parameterize clients with different
- * requests, and queue or log requests.
+ * @author rneuharth
+ *
+ * To change this generated comment edit the template variable "typecomment":
+ * Window>Preferences>Java>Templates.
+ * To enable and disable the creation of type comments go to
+ * Window>Preferences>Java>Code Generation.
  */
-public abstract class Command {
-/**
- * Command constructor comment.
- */
-protected Command() {
-	super();
-}
-/**
- * This method was created in VisualAge.
- */
-public abstract void execute() throws CommandExecutionException;
+public interface Command {
+
+
+	void execute() throws com.cannontech.common.util.CommandExecutionException;
 }

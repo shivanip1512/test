@@ -8,13 +8,17 @@ import javax.ejb.SessionContext;
 
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.yukon.ISQLStatement;
+
+/* Add this to SQLStatementHome class */
+//public com.cannontech.ejb.SqlStatement create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 
 /**
  * @ejb:bean name="SqlStatement"
  *	jndi-name="jndi/SqlStatementBean"
- *	type="Stateless" 
+ *	type="Stateful" 
 **/
 public class SqlStatementBean implements SessionBean, ISQLStatement
 {
@@ -37,7 +41,7 @@ public class SqlStatementBean implements SessionBean, ISQLStatement
    public void setSQLString( String sql_ )
    {
    	sql = sql_;
-   	innerSql = new InnerSqlStatement(sql);   	
+   	innerSql = new InnerSqlStatement(sql);
    }
    
 
@@ -48,7 +52,7 @@ public class SqlStatementBean implements SessionBean, ISQLStatement
 
 	private boolean isStatementValid()
 	{
-		return( sql != null && dbConn != null );
+		return( sql != null );
 	}   
 
    /**
@@ -59,16 +63,18 @@ public class SqlStatementBean implements SessionBean, ISQLStatement
 	{
 		if( !isStatementValid() )
 			throw new IllegalStateException( this.getClass().getName() + 
-				" must have all fields defined before executing this object." );
+				" must have all fields defined before executing this object."
+				+ " : " + this.hashCode() );
 
 		java.util.StringTokenizer tok = new java.util.StringTokenizer(sql);
 	
 		//determine whether this is going to be an add, update, retrieve, or delete	
 		int operation = Transaction.RETRIEVE; //default to retrieve i guess
+		String opStr = null;
 		
 		if( tok.hasMoreTokens() )
 		{
-			String opStr = tok.nextToken().toLowerCase();
+			opStr = tok.nextToken().toLowerCase();
 	
 			if( opStr.equals("select") )
 			{
@@ -96,7 +102,10 @@ public class SqlStatementBean implements SessionBean, ISQLStatement
 	
 	   try {
 	   com.cannontech.clientutils.CTILogger.debug( 
-	      "   DB: SQLStatement execute: " + innerSql.sql );
+	      "   DB: SQLStatement execute (" + opStr + ") " +
+	      (innerSql.getDbConnection() != null ? String.valueOf(innerSql.getDbConnection().hashCode()) :
+	      (dbConn != null ? String.valueOf(dbConn.hashCode()) : " ")) + 
+			" : " + innerSql.sql );
 	   } catch( Throwable t ) {}
 	
 		Transaction t = Transaction.createTransaction( operation, innerSql, databaseAlias );
@@ -165,10 +174,10 @@ public class SqlStatementBean implements SessionBean, ISQLStatement
 		
 		Object[][] rowData;
 		
-		public InnerSqlStatement(String sql)
+		public InnerSqlStatement(String sql_)
 		{
 			super();
-			sql = sql;
+			sql = sql_;
 		}
 
 		//No imp
@@ -207,6 +216,7 @@ public class SqlStatementBean implements SessionBean, ISQLStatement
 			try
 			{
 				stmt = getDbConnection().createStatement();
+
 
 				if( !results )
 				{

@@ -10,5 +10,6 @@
     <classpathentry kind="var" path="JBOSS3/client/jboss-client.jar"/>
     <classpathentry kind="var" path="JBOSS3/bin/run.jar"/>
     <classpathentry kind="var" path="JBOSS3/client/jbosssx-client.jar"/>
+    <classpathentry kind="var" path="JBOSS3/client/jnp-client.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

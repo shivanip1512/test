@@ -11,6 +11,7 @@ import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.yukon.ISQLStatement;
 
@@ -22,7 +23,7 @@ import java.util.Hashtable;
 
 /**
  * Utility class for SqlStatement.
- * @xdoclet-generated at Nov 4, 2002 5:13:04 PM
+ * @xdoclet-generated at Nov 5, 2002 2:19:54 PM
  */
 public class SqlStatementUtil
 {

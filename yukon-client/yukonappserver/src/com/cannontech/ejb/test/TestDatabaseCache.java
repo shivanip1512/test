@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import javax.ejb.CreateException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.sound.midi.SysexMessage;
 
 /**
  * @author rneuharth
@@ -52,7 +53,7 @@ public class TestDatabaseCache
 
          			//--------------------------------------
          			//This is the place you make your calls.
-                  l = myBean.getAllStateGroups();
+                  l = myBean.getAllDevices();
                }
                catch (Exception e)
                {
@@ -61,6 +62,7 @@ public class TestDatabaseCache
                   return;
                }      
                
+               System.out.println( "Sz = " + l.size() );
                for( int a = 0; a < l.size(); a++ )
                   System.out.println("("+j+") "+l.get(a).toString() );
             }

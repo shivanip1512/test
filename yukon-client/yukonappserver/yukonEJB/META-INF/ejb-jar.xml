@@ -30,7 +30,7 @@
          <home>com.cannontech.ejb.DBPersistentHome</home>
          <remote>com.cannontech.ejb.DBPersistent</remote>
          <ejb-class>com.cannontech.ejb.DBPersistentSession</ejb-class>
-         <session-type>Stateless</session-type>
+         <session-type>Stateful</session-type>
          <transaction-type>Container</transaction-type>
 
       </session>
@@ -43,7 +43,7 @@
          <home>com.cannontech.ejb.SqlStatementHome</home>
          <remote>com.cannontech.ejb.SqlStatement</remote>
          <ejb-class>com.cannontech.ejb.SqlStatementSession</ejb-class>
-         <session-type>Stateless</session-type>
+         <session-type>Stateful</session-type>
          <transaction-type>Container</transaction-type>
 
       </session>

@@ -25,13 +25,13 @@ public class ResourceFactory
       try
       {
          //check for ther server yukon (only server for now)
-         if( true )
-         {
-            o = Class.forName(YUKON_SERVER).newInstance();
-         }
-         else if( false ) //check the client Yukon
+         if( false )
          {
             o = Class.forName(YUKON_CLIENT).newInstance();
+         }
+         else
+         {
+         	o = Class.forName(YUKON_SERVER).newInstance();            
          }
 
 

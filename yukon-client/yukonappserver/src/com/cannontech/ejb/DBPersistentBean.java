@@ -12,10 +12,13 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.TransactionException;
 
+/* Add this to DBPersistentHome class */
+//public com.cannontech.ejb.DBPersistent create() throws javax.ejb.CreateException, java.rmi.RemoteException;
+
 /**
  * @ejb:bean name="DBPersistent"
  * jndi-name="jndi/DBPersistentBean"
- * type="Stateless" 
+ * type="Stateful" 
 **/
 public class DBPersistentBean implements SessionBean, IDBPersistent
 {
@@ -59,7 +62,15 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
 
          try {
          com.cannontech.clientutils.CTILogger.debug( 
-         "   DB: DBPersistentBean TrX started: " + getDbConnection().hashCode() );
+         "   DB: DBPersistentBean TrX started " +
+         (operation == INSERT ? "(insert)" :
+         (operation == UPDATE ? "(update)":
+         (operation == RETRIEVE ? "(retrieve)":
+         (operation == DELETE ? "(delete)":
+         (operation == DELETE_PARTIAL? "(delete partial)":
+         (operation == ADD_PARTIAL ? "(add partial)": 
+			"(unknown)"))))))         
+         + " " + getDbConnection().hashCode() );
          } catch( Throwable t ) {}
          
 
