@@ -1,6 +1,4 @@
 package com.cannontech.loadcontrol.gui.manualentry;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -14,11 +12,10 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.panel.IMultiSelectModel;
 import com.cannontech.common.gui.util.ComboBoxTableRenderer;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.LMFuncs;
+import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.IlmDefines;
-import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -212,41 +209,25 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 
 		if( litePAO != null )
 		{
-			Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+			LiteLMProgScenario[] programs = 
+					LMFuncs.getLMScenarioProgs( litePAO.getYukonID() );
 
-			List programs = null;
-			try
-			{
-				programs = LMControlScenarioProgram.getAllProgramsForAScenario( 
-									new Integer(litePAO.getYukonID()), conn ); 
-			}
-			finally
-			{
-				try{
-					if( conn != null )				
-						conn.close(); 
-				} catch( SQLException ex ) {}
-			}
+			ArrayList selPrgs = new ArrayList( programs.length );
 
-
-			//MultiSelectProg[] selPrgs = new MultiSelectProg[ programs.size() ];
-			ArrayList selPrgs = new ArrayList( programs.size() );
-			for( int i = 0; i < programs.size(); i++ )
+			for( int i = 0; i < programs.length; i++ )
 			{
-				LMControlScenarioProgram p = 
-						(LMControlScenarioProgram)programs.get(i);
+				LiteLMProgScenario p = programs[i];
 				
 				LMProgramBase lmProg = 
-					(LMProgramBase)allPrograms.get( p.getProgramID() );
+					(LMProgramBase)allPrograms.get( new Integer(p.getProgramID()) );
 					
 				if( lmProg != null )
 				{
 					MultiSelectProg selProg = new MultiSelectProg( lmProg );
-					selProg.setGearNum( p.getStartGear() );
-					selProg.setStartDelay( p.getStartDelay() );
-					selProg.setStopOffset( p.getStopOffset() );
+					selProg.setGearNum( new Integer(p.getStartGear()) );
+					selProg.setStartDelay( new Integer(p.getStartDelay()) );
+					selProg.setStopOffset( new Integer(p.getStopOffset()) );
 
-					//MultiSelectRow row = new MultiSelectRow( selProg );
 					selPrgs.add( selProg );
 				}
 				else
@@ -1617,29 +1598,21 @@ private void initialize()
 	 */
 	public synchronized LMManualControlMsg createScenarioMessage( MultiSelectProg program ) 
 	{
-		GregorianCalendar startGC = new GregorianCalendar();
-		GregorianCalendar stopGC = new GregorianCalendar();
-		startGC.setTime( getStartTime() );
-		stopGC.setTime( getStopTime() );
-		
-		startGC.add( startGC.SECOND, program.getStartDelay().intValue() );
-		stopGC.add( stopGC.SECOND, program.getStopOffset().intValue() );
-		
-		//we can not start/stop now if there is a delay for the program
 		boolean doItNow = false;
 		if( getMode() == MODE_STOP )
 			doItNow = isStopStartNowSelected() && (program.getStopOffset().intValue() <= 0); 
 		else
 			doItNow = isStopStartNowSelected() && (program.getStartDelay().intValue() <= 0); 
 
-
-		return LCUtils.createProgMessage(
-						doItNow,
-						getMode() == MODE_STOP,
-						startGC.getTime(),
-						stopGC.getTime(),
-						program.getBaseProgram(),
-						program.getGearNum() );
+		return LCUtils.createScenarioMessage(
+			program.getBaseProgram(),
+			getMode() == MODE_STOP,
+			doItNow,
+			program.getStartDelay().intValue(),
+			program.getStopOffset().intValue(),
+			program.getGearNum().intValue(),
+			getStartTime(),
+			getStopTime() ); 
 	}
 
 	/**

@@ -65,11 +65,12 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allDeviceMeterGroups = null;
 	private ArrayList allPointsUnits = null;
 	private ArrayList allPointLimits = null;
-    private ArrayList allYukonImages = null;
+   private ArrayList allYukonImages = null;
 	private ArrayList allCICustomers = null;
 	private ArrayList allCustomers = null;
 	private ArrayList allLMProgramConstraints = null;
 	private ArrayList allLMScenarios = null;
+	private ArrayList allLMScenarioProgs = null;
 
 	private ArrayList allTags = null;
 	
@@ -510,6 +511,19 @@ public synchronized java.util.List getAllLMProgramConstraints()
 		lmConstraintsLoader.run();
 		return allLMProgramConstraints;
 	}
+}
+
+public synchronized java.util.List getAllLMScenarioProgs()
+{
+
+	if( allLMScenarioProgs == null )
+	{
+		allLMScenarioProgs = new ArrayList();
+		LMScenarioProgramLoader ldr = new LMScenarioProgramLoader(allLMScenarioProgs, databaseAlias);
+		ldr.run();
+	}
+	
+	return allLMScenarioProgs;
 }
 
 public synchronized java.util.List getAllLMScenarios()
@@ -1509,6 +1523,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 			allLoadManagement = null;
 			allLMPrograms = null;
 			allLMScenarios = null;
+			allLMScenarioProgs = null;
 		}
 		else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_CAPCONTROL) )
 		{

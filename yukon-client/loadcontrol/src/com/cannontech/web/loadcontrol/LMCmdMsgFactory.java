@@ -6,11 +6,15 @@ import java.util.Hashtable;
 import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.LMFuncs;
+import com.cannontech.database.data.lite.LiteLMProgScenario;
+import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.ILMData;
 import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMScenarioWrapper;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.message.dispatch.message.Multi;
 
@@ -23,7 +27,8 @@ public final class LMCmdMsgFactory
 {
 	//local references to any optional parameters 
 	private static Integer duration = null, gearnum = null, 
-		cyclepercent = null, periodcnt = null, starttime = null, stoptime = null;
+		cyclepercent = null, periodcnt = null, starttime = null,
+		stoptime = null;
 
 	private static Date startdate = null, stopdate = null;
 	private static Double dblarray1[] = null, dblarray2[] = null;
@@ -72,6 +77,15 @@ public final class LMCmdMsgFactory
 			return createCmdMsg( cmdMsg, lcCache.getProgram(itemid), optionalProps );
 		else if( cmdMsg.isGroupMsg() )
 			return createCmdMsg( cmdMsg, lcCache.getGroup(itemid), optionalProps );
+		else if( cmdMsg.isScenarioMsg() )
+		{
+			//we need to get a reference to cache for this type of message
+			if( optionalProps != null )
+				optionalProps.put( "local_LCCache", lcCache );
+
+			return createCmdMsg( cmdMsg, lcCache.getScenario(itemid), optionalProps );
+		}
+			
 
 		//oops, we missed something
 		throw new IllegalStateException("Unknown message type given for message creation");
@@ -135,6 +149,10 @@ public final class LMCmdMsgFactory
 		else if( cmdMsg.isGroupMsg() ) //for all group commands
 		{
 			handleGroup( cmdMsg, optionalProps );
+		}
+		else if( cmdMsg.isScenarioMsg() ) //for all scenario commands
+		{
+			handleScenario( cmdMsg, optionalProps );
 		}
 		else
 			throw new IllegalArgumentException("Unknown LM command msg, message : " + cmdMsg.getCmd() );
@@ -561,6 +579,117 @@ public final class LMCmdMsgFactory
 								0) ); //this auxid will be used for the alt routeID soon		
 
 			}
+		}
+
+	}
+
+
+
+	private static void handleScenario( final WebCmdMsg cmdMsg, final Hashtable optionalProps )
+	{
+		LMScenarioWrapper lmScenario = (LMScenarioWrapper)cmdMsg.getLMData();
+
+		if( lmScenario == null )
+		{
+			cmdMsg.setHTMLTextMsg(
+				"<font class=boldMsg>Unable to find the Control Scenario specified (cmd = " +
+				cmdMsg.getCmd() + ")</font><BR>" );
+
+			return;
+		}
+
+		//always show the item selected
+		cmdMsg.setHTMLTextMsg( 
+				"Selected Item: <font class=boldMsg>" + lmScenario.getYukonName() + "</font>  (Control Scenario)<BR>");
+			
+		if( ILCCmds.SC_START.equals(cmdMsg.getCmd()) )
+		{
+			cmdMsg.setHTMLTextMsg( cmdMsg.getHTMLTextMsg() +
+				"Are you sure you want to <font class=boldMsg>START PROGRAMS" +
+				"</font> in this Control Scenario?<BR>");
+			
+
+			if( optionalProps != null )
+			{
+				Multi multi = new Multi();
+				List progIDs = Arrays.asList( dblarray1 );
+				LoadcontrolCache tempCache =
+					(LoadcontrolCache)optionalProps.get("local_LCCache");
+
+
+				LiteLMProgScenario[] programs = 
+						LMFuncs.getLMScenarioProgs( lmScenario.getYukonID().intValue() );
+
+				for( int i = 0; i < programs.length; i++ )
+				{
+					LiteLMProgScenario scenProg = programs[i];
+
+					if( !progIDs.contains( new Double(scenProg.getProgramID()) ) )
+						continue;
+						
+					boolean 
+						doItNow = startdate.equals(CtiUtilities.get1990GregCalendar().getTime());
+
+					multi.getVector().add(
+						LCUtils.createScenarioMessage(
+							tempCache.getProgram( new Integer(scenProg.getProgramID()) ),
+							false,
+							doItNow,
+							scenProg.getStartDelay(),
+							scenProg.getStopOffset(),
+							dblarray2[i].intValue(),
+							startdate, 
+							stopdate) );
+				}
+
+				if( multi.getVector().size() > 0 )
+					cmdMsg.setGenLCMsg( multi );
+			}
+
+		}
+		else if( ILCCmds.SC_STOP.equals(cmdMsg.getCmd()) )
+		{
+			cmdMsg.setHTMLTextMsg( cmdMsg.getHTMLTextMsg() +
+				"Are you sure you want to <font class=boldMsg>STOP PROGRAMS" +
+				"</font> in this Control Scenario?<BR>");
+
+			if( optionalProps != null )
+			{
+				Multi multi = new Multi();
+				List progIDs = Arrays.asList( dblarray1 );
+				LoadcontrolCache tempCache =
+					(LoadcontrolCache)optionalProps.get("local_LCCache");
+
+
+				LiteLMProgScenario[] programs = 
+						LMFuncs.getLMScenarioProgs( lmScenario.getYukonID().intValue() );
+
+				for( int i = 0; i < programs.length; i++ )
+				{
+					LiteLMProgScenario scenProg = programs[i];
+
+					if( !progIDs.contains( new Double(scenProg.getProgramID()) ) )
+						continue;
+						
+					boolean 
+						doItNow = stopdate.equals(CtiUtilities.get1990GregCalendar().getTime());
+
+					multi.getVector().add(
+						LCUtils.createScenarioMessage(
+							tempCache.getProgram( new Integer(scenProg.getProgramID()) ),
+							true,
+							doItNow,
+							scenProg.getStartDelay(),
+							scenProg.getStopOffset(),
+							0,
+							startdate, 
+							stopdate) );
+				}
+
+				if( multi.getVector().size() > 0 )
+					cmdMsg.setGenLCMsg( multi );
+			}
+
 		}
 
 	}

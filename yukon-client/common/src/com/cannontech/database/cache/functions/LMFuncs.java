@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 /**
@@ -41,6 +42,30 @@ public final class LMFuncs
 		
 		LiteYukonPAObject retVal[] = new LiteYukonPAObject[scenarioList.size()];
 		scenarioList.toArray( retVal );
+		return retVal;
+	}
+
+
+	public static LiteLMProgScenario[] getLMScenarioProgs( int scenarioID )
+	{
+		//Get an instance of the cache.
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		ArrayList progList = new ArrayList(32);
+		synchronized(cache)
+		{
+			List lmProgs = cache.getAllLMScenarioProgs();
+			//Collections.sort( lmProgs, LiteComparators.liteStringComparator );
+		
+			for( int i = 0; i < lmProgs.size(); i++ )
+			{
+				LiteLMProgScenario liteProg = (LiteLMProgScenario)lmProgs.get(i);
+				if( scenarioID == liteProg.getScenarioID() )
+					progList.add(liteProg);	
+			}
+		}
+		
+		LiteLMProgScenario retVal[] = new LiteLMProgScenario[progList.size()];
+		progList.toArray( retVal );
 		return retVal;
 	}
 

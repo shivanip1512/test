@@ -190,6 +190,12 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    {
 	  return getCache().getAllLMScenarios();
    }
+
+	public synchronized java.util.List getAllLMScenarioProgs()
+	{
+		return getCache().getAllLMScenarioProgs();
+	}
+
    /**
     * @ejb:interface-method
     * tview-type="remote" 

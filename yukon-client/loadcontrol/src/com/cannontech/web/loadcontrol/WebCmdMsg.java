@@ -43,6 +43,11 @@ public class WebCmdMsg
 		return getCmd().startsWith("g_");
 	}
 
+	protected boolean isScenarioMsg()
+	{
+		return getCmd().startsWith("sc_");
+	}
+
 
 	public Message genLCCmdMsg()
 	{

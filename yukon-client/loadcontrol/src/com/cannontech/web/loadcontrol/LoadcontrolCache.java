@@ -22,6 +22,8 @@ import javax.swing.Timer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.LMFuncs;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 import com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer;
@@ -30,6 +32,7 @@ import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramCurtailment;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.data.LMProgramEnergyExchange;
+import com.cannontech.loadcontrol.data.LMScenarioWrapper;
 import com.cannontech.loadcontrol.events.LCChangeEvent;
 
 public class LoadcontrolCache implements java.util.Observer, java.awt.event.ActionListener {
@@ -394,6 +397,24 @@ public LMGroupBase getGroup( Integer grpID )
 	return (LMGroupBase)groupMap.get( grpID );
 }
 
+/**
+ * 
+ * @return LMScenarioWrapper
+ */
+public LMScenarioWrapper getScenario( Integer scenarioID )
+{
+	LiteYukonPAObject[] scenarios = LMFuncs.getAllLMScenarios();
+	for( int i = 0; i < scenarios.length; i++ )
+	{
+		if( scenarios[i].getYukonID() == scenarioID.intValue() )
+		{
+			LMScenarioWrapper scenario = new LMScenarioWrapper( scenarios[i] );
+			return scenario;
+		}
+	}
+	
+	return null;
+}
 
 public synchronized LMProgramCurtailment[] getEnergyCompanyCurtailmentPrograms(long energyCompanyID)
 {

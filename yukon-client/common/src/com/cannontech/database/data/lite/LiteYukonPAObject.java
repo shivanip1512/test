@@ -42,7 +42,7 @@ public LiteYukonPAObject( int paoID)
 /**
  * LiteDevice
  */
-public LiteYukonPAObject( int paoID, String name_ ) 
+public LiteYukonPAObject( int paoID, String name_ )
 {
 	this( paoID );
 	setPaoName( name_ );
@@ -53,11 +53,8 @@ public LiteYukonPAObject( int paoID, String name_ )
  */
 public LiteYukonPAObject( int paoID, String name, int paoCategory, int paoType, int pClass, String desc ) 
 {
-	super();
-	setLiteType( LiteTypes.YUKON_PAOBJECT );
+	this( paoID, name );
 
-	setLiteID( paoID );
-	setPaoName( name );
 	setCategory( paoCategory );
 	setType( paoType );
 	setPaoClass( pClass );

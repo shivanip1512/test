@@ -587,5 +587,53 @@ public class LCUtils
 		return msg;
 	}
 
+	/**
+	 *
+	 * Generates a scenario message based on the given params. If the given time is
+	 * 1990 and we are to start/stop in the future, then we must change 
+	 * the given start/stop time to the current time.
+	 * @return
+	 */
+	public static synchronized LMManualControlMsg createScenarioMessage( 
+			LMProgramBase program,
+			boolean isStop,
+			boolean isNow,
+			int startDelay,
+			int stopOffset,
+			int gearNum,
+			Date startTime,
+			Date stopTime ) 
+	{
+		//we can not start/stop now if there is a delay for the program
+		boolean doItNow = false;
+		if( isStop )
+		{
+			doItNow = isNow && (stopOffset <= 0);
+			if( !doItNow && stopTime.equals(CtiUtilities.get1990GregCalendar().getTime()) )
+				stopTime = new Date();
+		} 
+		else
+		{
+			doItNow = isNow && (startDelay <= 0);
+			if( !doItNow && startTime.equals(CtiUtilities.get1990GregCalendar().getTime()) )
+				startTime = new Date();
+		}
 
+		GregorianCalendar startGC = new GregorianCalendar();
+		GregorianCalendar stopGC = new GregorianCalendar();
+		startGC.setTime( startTime );
+		stopGC.setTime( stopTime );
+		
+		startGC.add( startGC.SECOND, startDelay );
+		stopGC.add( stopGC.SECOND, stopOffset );
+		
+				
+		return LCUtils.createProgMessage(
+						doItNow,
+						isStop,
+						startGC.getTime(),
+						stopGC.getTime(),
+						program,
+						(isStop ? null : new Integer(gearNum)) );
+	}
 }

@@ -41,7 +41,8 @@ public interface IDatabaseCache
    public java.util.List getAllLMScenarios();
    public java.util.List getAllLMPrograms();
    public java.util.List getAllLoadManagement();
-   //public java.util.List getAllNotificationGroups();
+   public java.util.List getAllLMScenarioProgs();
+
 
    public java.util.List getAllPoints();
 	//	Map<Integer(ptID), LitePoint>

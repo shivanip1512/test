@@ -28,4 +28,8 @@ public interface ILCCmds
 	public static final String GRP_DISABLE = "g_disable";
 	public static final String GRP_CONFIRM = "g_confirm";
 
+	//Scenario Commands
+	public static final String SC_START = "sc_start";
+	public static final String SC_STOP = "sc_stop";
+
 }

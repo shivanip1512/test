@@ -1,0 +1,104 @@
+package com.cannontech.database.data.lite;
+
+import com.cannontech.common.util.CtiUtilities;
+
+/*
+ */
+public class LiteLMProgScenario extends LiteBase
+{
+	private int programID = CtiUtilities.NONE_ID;
+	private int scenarioID = CtiUtilities.NONE_ID;
+	private int startDelay = 0;
+	private int stopOffset = 0;
+	private int startGear = 0;
+
+/**
+ * LiteState
+ */
+public LiteLMProgScenario( int progID ) 
+{
+	super();
+	setLiteID( progID );
+	setLiteType(LiteTypes.LMSCENARIO_PROG);	
+}
+
+/**
+ * 
+ */
+public int getProgramID() 
+{
+	return getLiteID();
+}
+
+/**
+ * 
+ */
+public void setProgramID(int newValue) 
+{
+	setLiteID(newValue);
+}
+	/**
+	 * @return
+	 */
+	public int getStartDelay()
+	{
+		return startDelay;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getStartGear()
+	{
+		return startGear;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getStopOffset()
+	{
+		return stopOffset;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setStartDelay(int i)
+	{
+		startDelay = i;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setStartGear(int i)
+	{
+		startGear = i;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setStopOffset(int i)
+	{
+		stopOffset = i;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getScenarioID()
+	{
+		return scenarioID;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setScenarioID(int i)
+	{
+		scenarioID = i;
+	}
+
+}

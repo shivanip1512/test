@@ -29,6 +29,10 @@
 <%@ page import="com.cannontech.loadcontrol.data.IGearProgram" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMControlAreaTrigger" %>
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
+<%@ page import="com.cannontech.database.data.lite.LiteLMProgScenario" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
+<%@ page import="com.cannontech.database.cache.functions.LMFuncs" %>
+
 
 
 <jsp:useBean 

@@ -58,6 +58,20 @@ function update()
 	return true;
 }
 
+function setStartAble( radioChk )
+{
+	var val = radioChk.value == "startat" && radioChk.checked;	
+	document.cmdForm.startdate.disabled = !val;
+	document.cmdForm.startTime1.disabled = !val;
+}
+
+function setStopAble( radioChk )
+{
+	var val = radioChk.value == "stopat" && radioChk.checked;	
+	document.cmdForm.stopdate.disabled = !val;
+	document.cmdForm.stopTime1.disabled = !val;
+}
+
 var browser = new Object();
 browser.isNetscape = false;
 browser.isMicrosoft = false;
@@ -182,9 +196,9 @@ function setStopPixTime()
 
 
 <%
-	if( ILCCmds.PROG_START.equals(cmd) || ILCCmds.AREA_START_PROGS.equals(cmd) )
+	if( ILCCmds.PROG_START.equals(cmd) || ILCCmds.AREA_START_PROGS.equals(cmd) || ILCCmds.SC_START.equals(cmd) )
 	{
-		LMProgramBase prg = (LMProgramBase)lcCache.getProgram( new Integer(itemid) );
+		LMProgramBase prg = null;
 %>
 	<div class="TableCell"> 
 	  <div align="center">Select either Start Now or Start at and select a Data and Time:</div>
@@ -193,7 +207,10 @@ function setStopPixTime()
       <tr> 
         <td> 
           <table width="349" border="0" cellspacing="0" cellpadding="3" align="center">
-		  
+<%
+			if( ILCCmds.PROG_START.equals(cmd) )
+			{
+%>	  
             <tr valign="top"> 
               <td width="85" class="TableCell"> 
                 <div align="right"><b>Start gear: </b></div>
@@ -202,34 +219,40 @@ function setStopPixTime()
               <td width="36">&nbsp;</td>
               <td width="179">
 				  <select name="gearnum">
-				<% 	java.util.List gearList = 
-							( prg instanceof IGearProgram
-								? ((IGearProgram)prg).getDirectGearVector()
-								: new java.util.Vector() );
+				<%
+					prg = (LMProgramBase)lcCache.getProgram( new Integer(itemid) );
 
-						if( gearList.size() <= 0 )
-							gearList = java.util.Arrays.asList(
-								new String[]{"Gear 1","Gear 2","Gear 3","Gear 4"} );
+					java.util.List gearList = 
+						( prg instanceof IGearProgram
+							? ((IGearProgram)prg).getDirectGearVector()
+							: new java.util.Vector() );
 
-						for( int i = 0; i < gearList.size(); i++ )
-						{
+					if( gearList.size() <= 0 )
+						gearList = java.util.Arrays.asList(
+							new String[]{"Gear 1","Gear 2","Gear 3","Gear 4"} );
+
+					for( int i = 0; i < gearList.size(); i++ )
+					{
 				%>
 						<option value=<%= i+1 %> <%= (i == 0 ? "selected" : "") %> >
 							<%= gearList.get(i).toString() %>
 						</option>
-				<%		}
+				<%	}
 				%>
 			  </select>
 			  
 			  </td>
             </tr>
-		  
+
+<%
+			}
+%>
             <tr valign="top"> 
               <td width="85" class="TableCell"> 
                 <div align="right"><b>Start now: </b></div>
               </td>
               <td width="25"> 
-                <input type="radio" name="startbutton" value="startnow" checked>
+                <input type="radio" name="startbutton" value="startnow" onClick="setStartAble(this)" checked>
                 <br>
               </td>
               <td width="36">&nbsp;</td>
@@ -241,13 +264,13 @@ function setStopPixTime()
                 <div align="right"><b>Start at: </b></div>
               </td>
               <td width="25"> 
-                <input type="radio" name="startbutton" value="startat">
+                <input type="radio" name="startbutton" value="startat" onClick="setStartAble(this)">
               </td>
               <td width="36" class="TableCell"> 
                 <div align="right">Date: </div>
               </td>
               <td width="179"> 
-                <input type="text" name="startdate" value="<%= LCUtils.DATE_FORMATTER.format(new java.util.Date()) %>" size="8">
+                <input type="text" name="startdate" value="<%= LCUtils.DATE_FORMATTER.format(new java.util.Date()) %>" size="8" disabled>
                 <a href="javascript:openCalendar(cmdForm.startdate)"
 						onMouseOver="window.status='Start Date Calendar';return true;"
 						onMouseOut="window.status='';return true;"> 
@@ -264,7 +287,7 @@ function setStopPixTime()
                   <tr> 
                     <td valign = "top" align = "center"> 
                       <div> 
-                        <input type="text" name="startTime1" value="<%= LCUtils.TIME_FORMATTER.format(new java.util.Date()) %>" size="5" onChange = "moveStartStopPtr('start')">
+                        <input type="text" name="startTime1" value="<%= LCUtils.TIME_FORMATTER.format(new java.util.Date()) %>" size="5" onChange = "moveStartStopPtr('start')" disabled>
                       </div>
                     </td>
                   </tr>
@@ -285,7 +308,8 @@ function setStopPixTime()
 	}
 	
 	if( ILCCmds.PROG_START.equals(cmd) || ILCCmds.PROG_STOP.equals(cmd) 
-		|| ILCCmds.AREA_START_PROGS.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) )
+		|| ILCCmds.AREA_START_PROGS.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) 
+		|| ILCCmds.SC_START.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) )
 	{
 %>
 	<div class="TableCell"> 
@@ -297,12 +321,13 @@ function setStopPixTime()
           <table width="350" border="0" cellspacing="0" cellpadding="3" align="center">
             <tr valign="top"> 
               <td width="81"> 
-                <div align="right" class="TableCell"><b><%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) ? "Stop now: " : "Manual stop: ") %></b></div>
+                <div align="right" class="TableCell"><b>
+				<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "Stop now: " : "Manual stop: ") %></b></div>
               </td>
               <td width="17"> 
-                <input type="radio" name="stopbutton"
-				value="<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) ? "stopnow" : "stopmanual") %>"
-				<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) ? "checked" : "") %>>
+                <input type="radio" name="stopbutton" onClick="setStopAble(this)" 
+				value="<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "stopnow" : "stopmanual") %>"
+				<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "checked" : "") %>>
                 <br>
               </td>
               <td width="34">&nbsp;</td>
@@ -313,9 +338,9 @@ function setStopPixTime()
                 <div align="right" class="TableCell"><b>Stop at: </b></div>
               </td>
               <td width="17"> 
-                <input type="radio" name="stopbutton" 
+                <input type="radio" name="stopbutton" onClick="setStopAble(this)" 
 				value="stopat"
-				<%= (ILCCmds.PROG_START.equals(cmd) || ILCCmds.AREA_START_PROGS.equals(cmd) ? "checked" : "") %>>
+				<%= (ILCCmds.PROG_START.equals(cmd) || ILCCmds.AREA_START_PROGS.equals(cmd) || ILCCmds.SC_START.equals(cmd) ? "checked" : "") %>>
               </td>
               <td width="34"> 
                 <div align="right" class="TableCell">Date: </div>
@@ -326,7 +351,8 @@ function setStopPixTime()
  java.util.Date stpDate = new java.util.Date();
  stpDate.setTime( stpDate.getTime() + 14400000 );
 %>
-                <input type="text" name="stopdate" value="<%= LCUtils.DATE_FORMATTER.format( stpDate ) %>" size="8">
+                <input type="text" name="stopdate" value="<%= LCUtils.DATE_FORMATTER.format( stpDate ) %>" size="8"
+				<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "disabled" : "") %>>
                 <a href="javascript:openCalendar(cmdForm.stopdate)"
 						onMouseOver="window.status='Pop Calendar';return true;"
 						onMouseOut="window.status='';return true;">
@@ -342,7 +368,8 @@ function setStopPixTime()
                 <table width="100" border="0" cellspacing="0" height="40" align = "center">
                   <tr> 
                     <td align = "center" valign = "top"> 
-                      <input type="text" name="stopTime1" value="<%= LCUtils.TIME_FORMATTER.format( stpDate ) %>" size="5" onChange = "moveStartStopPtr('stop')">
+                      <input type="text" name="stopTime1" value="<%= LCUtils.TIME_FORMATTER.format( stpDate ) %>" size="5" onChange = "moveStartStopPtr('stop')"
+					  <%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "disabled" : "") %>>
                     </td>
                   </tr>
                 </table>
@@ -602,7 +629,7 @@ function setStopPixTime()
 		LMControlArea cntrlArea = (LMControlArea)lcCache.getControlArea( new Integer(itemid) );
 %>
 	<div class="TableCell"> 
-	  <div align="center">Select the programs you want to start:</div>
+	  <div align="center">Select the programs you want to operate:</div>
 	</div>	
     <table width="350" border="1" cellspacing="0" cellpadding="6" align="center" class="TableCell" bgcolor="#FFFFFF">
       <tr> 
@@ -674,9 +701,115 @@ function setStopPixTime()
       </tr>
 	  
     </table>
+<%	
+	}
+
+	if( ILCCmds.SC_START.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) )
+	{
+		LiteLMProgScenario[] programs = 
+				LMFuncs.getLMScenarioProgs( new Integer(itemid).intValue() );
+				
+		LiteYukonPAObject[] scenarios = LMFuncs.getAllLMScenarios();
+%>
+	<div class="TableCell"> 
+	  <div align="center">Select the programs you want to operate:</div>
+	</div>	
+    <table width="350" border="1" cellspacing="0" cellpadding="6" align="center" class="TableCell" bgcolor="#FFFFFF">
+      <tr> 
+        <td height="145"> 
+          <table width="350" border="1" cellspacing="0" cellpadding="3" align="center">
+
+		  <tr valign="top" class="HeaderCell"> 
+			<td width="40"><div align="center">
+				<input type="checkbox" name="allChks" value="true" onClick="checkAll(cmdForm.allChks, cmdForm.dblarray1)" checked>
+				All</div>
+			</td>
+			<td width="127"><div align="center">Program</div></td>
+
+<% if( ILCCmds.SC_START.equals(cmd) ) { %>			
+			<td width="34"><div align="center">Gear</div></td>
+<% } %>
+
+			<td width="61"><div align="center">State</div></td>
+
+			<td width="20"><div align="center">Start</div></td>
+
+			<td width="20"><div align="center">Stop</div></td>
+
+		  </tr>
+
+<%
+		for( int i = 0; i < programs.length; i++)
+		{
+			LiteLMProgScenario prg = programs[i];
+			
+			LMProgramBase prgBase = 
+				(LMProgramBase)lcCache.getProgram( new Integer(programs[i].getProgramID()) );
+			
+			//program may not belong to a ControlArea, therefore would not be in the cache
+			if( prgBase == null )
+				continue;
+%>
+            <tr valign="top">
+              <td width="40">
+				<input type="checkbox" name="dblarray1" value=<%= prg.getProgramID() %> checked>
+              </td>
+              <td width="127">
+                <div class="TableCell">
+				<%= LCUtils.getProgramValueAt(prgBase, ProgramTableModel.PROGRAM_NAME) %>
+				</div>
+              </td>
+<% if( ILCCmds.SC_START.equals(cmd) ) { %>
+              <td width="34"> 
+                <div align="right" class="TableCell">
+                <select name="dblarray2">
+                <%
+					for( int j = 1; j <= 4; j++ )
+					{
+				%>				
+                  <option value="<%= j %>" <%= (j == prg.getStartGear() ? "selected" : "") %> > 
+	                  <%= j %>
+				  </option>
+                <%		
+					}
+				%>
+                </select></div>			
+              </td>
+<% } %>
+              <td width="61">
+                <div class="TableCell" align="center"><font color="<%= LCUtils.getFgColor(prgBase) %>">
+				  <%= LCUtils.getProgramValueAt(prgBase, ProgramTableModel.CURRENT_STATUS) %>
+				</font></div>
+			  </td>
+
+              <td width="20">
+                <div class="TableCell" align="center">
+				  <%= CtiUtilities.decodeSecondsToTime(prg.getStartDelay()) %>
+				</div>
+			  </td>
+
+              <td width="20">
+                <div class="TableCell" align="center">
+				  <%= CtiUtilities.decodeSecondsToTime(prg.getStopOffset()) %>
+				</div>
+			  </td>
+
+            </tr>
+<%
+		}
+%>
+			
+          </table>
+        </td>
+      </tr>
+	  
+    </table>
 <%
 	}
 %>
+
+
+
 
 
 	  <BR>

@@ -139,8 +139,8 @@ else
 							}
 							%>
                       </select>
-
                     </div>
+
                 </form>
 
 				</td>
@@ -215,11 +215,46 @@ else
                     <tr>
                       <td>
                         <table width="740" border="0" cellspacing="0" cellpadding="0">
+					<form>  
+						<input type="hidden" name="areaID" value="<%= lmCntrArea.getYukonID() %>" >					                            
                           <tr> 
-                              
-                      <td class="HeaderCell">
-					   &nbsp;&nbsp;Programs for : <font color="##666699"><%= lmCntrArea.getYukonName() %> </font>
-					  </td></tr>
+                    <td class="HeaderCell">
+					<div align="left">
+					   &nbsp;&nbsp;Programs for : <font color="##666699"><%= lmCntrArea.getYukonName() %></font>
+					   <BR>
+					</div>
+					</td>
+
+					<td class="HeaderCell">
+					<div align="right">
+					  Control Scenario:
+					  <select name="scen_box" >
+<%
+						LiteYukonPAObject[] scenarios = LMFuncs.getAllLMScenarios();
+						for( int j = 0; j < scenarios.length; j++ )
+						{
+%>
+						  <option value="<%=scenarios[j].getYukonID()%>"
+						  <%= (j == 0 ? " selected" : "" ) %>>
+						  <%= scenarios[j] %></option>
+<%
+						}
+%>
+					  </select>
+					<BR>
+					<span align="right" class="NavText">
+					  <a href="" name="sc_start" 
+					  onClick="itemid=document.getElementById('scen_box').options[document.getElementById('scen_box').selectedIndex].value; showConfirmWin(this); return false;">
+					  [Start]</a> 
+					  <a href="" name="sc_stop" 
+					  onClick="itemid=document.getElementById('scen_box').options[document.getElementById('scen_box').selectedIndex].value; showConfirmWin(this); return false;">
+					  [Stop]</a> 
+					</span>
+					</div>
+					</td>
+					</tr>
+					</form>
+					  
                         </table>
                       </td>
                     </tr>
