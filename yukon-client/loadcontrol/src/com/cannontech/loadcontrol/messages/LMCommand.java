@@ -60,7 +60,8 @@ public class LMCommand extends LMMessage
 		"Enable Group",  //14
 		"Disable Group",
 		"Confirm",
-		"Reset Peak Point"		
+		"Reset Peak Point",
+		"Emergency Disable Program"
 	};
 /**
  * ScheduleCommand constructor comment.
