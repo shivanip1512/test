@@ -1,6 +1,57 @@
 /******************************************/
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
+create table Tags  (
+   TagID                NUMBER                           not null,
+   TagName              VARCHAR2(60)                     not null,
+   TagLevel             NUMBER                           not null,
+   Inhibit              CHAR(1)                          not null,
+   ColorID              NUMBER                           not null,
+   ImageID              NUMBER                           not null,
+   RefStr               VARCHAR2(60)                     not null,
+   ForStr               VARCHAR2(60)                     not null
+);
+alter table Tags
+   add constraint PK_TAGS primary key (TagID);
+
+
+create table DynamicTags  (
+   InstanceID           NUMBER                           not null,
+   PointID              NUMBER                           not null,
+   TagID                NUMBER                           not null,
+   Description          VARCHAR2(120)                    not null,
+   TagTime              DATE                             not null,
+   RefStr               VARCHAR2(60),
+   ForStr               VARCHAR2(60)
+);
+alter table DynamicTags
+   add constraint PK_DYNAMICTAGS primary key (InstanceID);
+alter table DynamicTags
+   add constraint FK_DynTgs_Pt foreign key (PointID)
+      references POINT (POINTID);
+alter table DynamicTags
+   add constraint FK_DYN_REF__TAG foreign key (TagID)
+      references Tags (TagID);
+
+
+create table TagLog  (
+   LogID                NUMBER                           not null,
+   PointID              NUMBER                           not null,
+   TagID                NUMBER                           not null,
+   Description          VARCHAR2(120)                    not null,
+   TagTime              DATE                             not null,
+   RefStr               VARCHAR2(60)                     not null,
+   ForStr               VARCHAR2(60)                     not null
+);
+alter table TagLog
+   add constraint PK_TAGLOG primary key (LogID);
+alter table TagLog
+   add constraint FK_TagLg_Pt foreign key (PointID)
+      references POINT (POINTID);
+alter table TagLog
+   add constraint FK_TagLg_Tgs foreign key (TagID)
+      references Tags (TagID);
+
 
 
 create table DynamicPointAlarming  (
@@ -227,4 +278,4 @@ insert into YukonRoleProperty values(-40181,-400,'Image General','Family.jpg','I
 /******************************************************************************/
 /* VERSION INFO                                                               */
 /******************************************************************************/
-insert into CTIDatabase values('2.42', 'Ryan', '1-Aug-2003', ' ');
+insert into CTIDatabase values('2.42', 'Ryan', '11-SEP-2003', 'Added some more roles, tag tables, new alarms, soe tables');

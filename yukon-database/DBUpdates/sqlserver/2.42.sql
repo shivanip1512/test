@@ -3,6 +3,69 @@
 /******************************************/
 
 
+create table Tags (
+TagID                numeric              not null,
+TagName              varchar(60)          not null,
+TagLevel             numeric              not null,
+Inhibit              char(1)              not null,
+ColorID              numeric              not null,
+ImageID              numeric              not null,
+RefStr               varchar(60)          not null,
+ForStr               varchar(60)          not null
+);
+go
+alter table Tags
+   add constraint PK_TAGS primary key  (TagID);
+go
+
+
+create table DynamicTags (
+InstanceID           numeric              not null,
+PointID              numeric              not null,
+TagID                numeric              not null,
+Description          varchar(120)         not null,
+TagTime              datetime             not null,
+RefStr               varchar(60)          null,
+ForStr               varchar(60)          null
+);
+go
+alter table DynamicTags
+   add constraint PK_DYNAMICTAGS primary key  (InstanceID);
+go
+alter table DynamicTags
+   add constraint FK_DynTgs_Pt foreign key (PointID)
+      references POINT (POINTID);
+go
+alter table DynamicTags
+   add constraint FK_DYN_REF__TAG foreign key (TagID)
+      references Tags (TagID);
+go
+
+
+create table TagLog (
+LogID                numeric              not null,
+PointID              numeric              not null,
+TagID                numeric              not null,
+Description          varchar(120)         not null,
+TagTime              datetime             not null,
+RefStr               varchar(60)          not null,
+ForStr               varchar(60)          not null
+);
+go
+alter table TagLog
+   add constraint PK_TAGLOG primary key  (LogID);
+go
+alter table TagLog
+   add constraint FK_TagLg_Pt foreign key (PointID)
+      references POINT (POINTID);
+go
+alter table TagLog
+   add constraint FK_TagLg_Tgs foreign key (TagID)
+      references Tags (TagID);
+go
+
+
+
 
 create table SOELog (
 LogID                numeric              not null,
@@ -251,5 +314,5 @@ insert into YukonRoleProperty values(-40181,-400,'Image General','Family.jpg','I
 /******************************************************************************/
 /* VERSION INFO                                                               */
 /******************************************************************************/
-insert into CTIDatabase values('2.42', 'Ryan', '1-Aug-2003', ' ');
+insert into CTIDatabase values('2.42', 'Ryan', '11-SEP-2003', 'Added some more roles, tag tables, new alarms, soe tables');
 go

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     8/27/2003 3:09:22 PM                         */
+/* Created on:     9/11/2003 5:37:59 PM                         */
 /*==============================================================*/
 
 
@@ -586,6 +586,14 @@ if exists (select 1
            where  id = object_id('DynamicPointAlarming')
             and   type = 'U')
    drop table DynamicPointAlarming
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicTags')
+            and   type = 'U')
+   drop table DynamicTags
 go
 
 
@@ -1239,6 +1247,22 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('TagLog')
+            and   type = 'U')
+   drop table TagLog
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('Tags')
+            and   type = 'U')
+   drop table Tags
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('UNITMEASURE')
             and   type = 'U')
    drop table UNITMEASURE
@@ -1693,8 +1717,7 @@ Notes                varchar(300)         null
 go
 
 
-insert into CTIDatabase values('2.42', 'Ryan', '1-Aug-2003', ' ');
-
+insert into CTIDatabase values('2.42', 'Ryan', '11-SEP-2003', 'Added some more roles, tag tables, new alarms, soe tables');
 
 alter table CTIDatabase
    add constraint PK_CTIDATABASE primary key  (Version)
@@ -1710,8 +1733,6 @@ BaselineID           numeric              not null
 )
 go
 
-
-insert into baseline values (1, 'Default Baseline', 30, 75, 5, 'YNNNNNY', 0);
 
 alter table CalcPointBaseline
    add constraint PK_CalcBsPt primary key  (PointID)
@@ -2175,6 +2196,7 @@ insert into display values(10, 'Priority 6 Alarms', 'Alarms and Events', 'Priori
 insert into display values(11, 'Priority 7 Alarms', 'Alarms and Events', 'Priority 7 Alarm Viewer', 'This display will recieve all priority 7 alarm events as they happen in the system.');
 insert into display values(12, 'Priority 8 Alarms', 'Alarms and Events', 'Priority 8 Alarm Viewer', 'This display will recieve all priority 8 alarm events as they happen in the system.');
 insert into display values(13, 'Priority 9 Alarms', 'Alarms and Events', 'Priority 9 Alarm Viewer', 'This display will recieve all priority 9 alarm events as they happen in the system.');
+insert into display values(14, 'Priority 10 Alarms', 'Alarms and Events', 'Priority 10 Alarm Viewer', 'This display will recieve all priority 10 alarm events as they happen in the system.');
 insert into display values(99, 'Your Custom Display', 'Custom Displays', 'Edit This Display', 'This display is is used to show what a user created display looks like. You may edit this display to fit your own needs.');
 
 
@@ -2312,6 +2334,11 @@ insert into displaycolumns values(13, 'Device Name', 5, 2, 90 );
 insert into displaycolumns values(13, 'Point Name', 2, 3, 90 );
 insert into displaycolumns values(13, 'Text Message', 12, 4, 200 );
 insert into displaycolumns values(13, 'User Name', 8, 5, 50 );
+insert into displaycolumns values(14, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(14, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(14, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(14, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(14, 'User Name', 8, 5, 50 );
 
 alter table DISPLAYCOLUMNS
    add constraint PK_DISPLAYCOLUMNS primary key  (DISPLAYNUM, TITLE)
@@ -2747,6 +2774,26 @@ go
 
 alter table DynamicPointAlarming
    add constraint PK_DYNAMICPOINTALARMING primary key  (PointID, AlarmCondition)
+go
+
+
+/*==============================================================*/
+/* Table : DynamicTags                                          */
+/*==============================================================*/
+create table DynamicTags (
+InstanceID           numeric              not null,
+PointID              numeric              not null,
+TagID                numeric              not null,
+Description          varchar(120)         not null,
+TagTime              datetime             not null,
+RefStr               varchar(60)          null,
+ForStr               varchar(60)          null
+)
+go
+
+
+alter table DynamicTags
+   add constraint PK_DYNAMICTAGS primary key  (InstanceID)
 go
 
 
@@ -4665,6 +4712,47 @@ go
 
 
 /*==============================================================*/
+/* Table : TagLog                                               */
+/*==============================================================*/
+create table TagLog (
+LogID                numeric              not null,
+PointID              numeric              not null,
+TagID                numeric              not null,
+Description          varchar(120)         not null,
+TagTime              datetime             not null,
+RefStr               varchar(60)          not null,
+ForStr               varchar(60)          not null
+)
+go
+
+
+alter table TagLog
+   add constraint PK_TAGLOG primary key  (LogID)
+go
+
+
+/*==============================================================*/
+/* Table : Tags                                                 */
+/*==============================================================*/
+create table Tags (
+TagID                numeric              not null,
+TagName              varchar(60)          not null,
+TagLevel             numeric              not null,
+Inhibit              char(1)              not null,
+ColorID              numeric              not null,
+ImageID              numeric              not null,
+RefStr               varchar(60)          not null,
+ForStr               varchar(60)          not null
+)
+go
+
+
+alter table Tags
+   add constraint PK_TAGS primary key  (TagID)
+go
+
+
+/*==============================================================*/
 /* Table : UNITMEASURE                                          */
 /*==============================================================*/
 create table UNITMEASURE (
@@ -4677,14 +4765,14 @@ Formula              varchar(80)          not null
 go
 
 
-INSERT INTO UnitMeasure VALUES ( 0,'KW', 0,'KW','(none)' );
-INSERT INTO UnitMeasure VALUES ( 1,'KWH', 0,'KWH','usage' );
-INSERT INTO UnitMeasure VALUES ( 2,'KVA', 0,'KVA','(none)' );
-INSERT INTO UnitMeasure VALUES ( 3,'KVAR', 0,'KVAR','(none)' );
-INSERT INTO UnitMeasure VALUES ( 4,'KVAH', 0,'KVAH','usage' );
-INSERT INTO UnitMeasure VALUES ( 5,'KVARH', 0,'KVARH','usage' );
-INSERT INTO UnitMeasure VALUES ( 6,'KVolts', 0,'KVolts','(none)' );
-INSERT INTO UnitMeasure VALUES ( 7,'KQ', 0,'KQ','(none)' );
+INSERT INTO UnitMeasure VALUES ( 0,'kW', 0,'kW','(none)' );
+INSERT INTO UnitMeasure VALUES ( 1,'kWH', 0,'kWH','usage' );
+INSERT INTO UnitMeasure VALUES ( 2,'kVA', 0,'kVA','(none)' );
+INSERT INTO UnitMeasure VALUES ( 3,'kVAr', 0,'kVAr','(none)' );
+INSERT INTO UnitMeasure VALUES ( 4,'kVAh', 0,'kVAh','usage' );
+INSERT INTO UnitMeasure VALUES ( 5,'kVArh', 0,'kVArh','usage' );
+INSERT INTO UnitMeasure VALUES ( 6,'kVolts', 0,'kVolts','(none)' );
+INSERT INTO UnitMeasure VALUES ( 7,'kQ', 0,'kQ','(none)' );
 INSERT INTO UnitMeasure VALUES ( 8,'Amps', 0,'Amps','(none)' );
 INSERT INTO UnitMeasure VALUES ( 9,'Counts', 0,'Counts','(none)' );
 INSERT INTO UnitMeasure VALUES ( 10,'Degrees', 0,'Degrees','(none)' );
@@ -4698,11 +4786,11 @@ INSERT INTO UnitMeasure VALUES ( 17,'Hours', 0,'Hours','(none)' );
 INSERT INTO UnitMeasure VALUES ( 18,'Level', 0,'Level','(none)' );
 INSERT INTO UnitMeasure VALUES ( 19,'Minutes', 0,'Minutes','(none)' );
 INSERT INTO UnitMeasure VALUES ( 20,'MW', 0,'MW','(none)' );
-INSERT INTO UnitMeasure VALUES ( 21,'MWH', 0,'MWH','usage' );
+INSERT INTO UnitMeasure VALUES ( 21,'MWh', 0,'MWh','usage' );
 INSERT INTO UnitMeasure VALUES ( 22,'MVA', 0,'MVA','(none)' );
-INSERT INTO UnitMeasure VALUES ( 23,'MVAR', 0,'MVAR','(none)' );
-INSERT INTO UnitMeasure VALUES ( 24,'MVAH', 0,'MVAH','usage' );
-INSERT INTO UnitMeasure VALUES ( 25,'MVARH', 0,'MVARH','usage' );
+INSERT INTO UnitMeasure VALUES ( 23,'MVAr', 0,'MVAr','(none)' );
+INSERT INTO UnitMeasure VALUES ( 24,'MVAh', 0,'MVAh','usage' );
+INSERT INTO UnitMeasure VALUES ( 25,'MVArh', 0,'MVArh','usage' );
 INSERT INTO UnitMeasure VALUES ( 26,'Ops.', 0,'Ops','(none)' );
 INSERT INTO UnitMeasure VALUES ( 27,'PF', 0,'PF','(none)' );
 INSERT INTO UnitMeasure VALUES ( 28,'Percent', 0,'Percent','(none)' );
@@ -6216,6 +6304,18 @@ alter table DynamicPointAlarming
 go
 
 
+alter table DynamicTags
+   add constraint FK_DynTgs_Pt foreign key (PointID)
+      references POINT (POINTID)
+go
+
+
+alter table DynamicTags
+   add constraint FK_DYN_REF__TAG foreign key (TagID)
+      references Tags (TagID)
+go
+
+
 alter table EnergyCompany
    add constraint FK_EnCm_Cnt foreign key (PrimaryContactID)
       references Contact (ContactID)
@@ -6513,6 +6613,18 @@ go
 alter table SOELog
    add constraint FK_Soe_Pt foreign key (PointID)
       references POINT (POINTID)
+go
+
+
+alter table TagLog
+   add constraint FK_TagLg_Pt foreign key (PointID)
+      references POINT (POINTID)
+go
+
+
+alter table TagLog
+   add constraint FK_TagLg_Tgs foreign key (TagID)
+      references Tags (TagID)
 go
 
 
