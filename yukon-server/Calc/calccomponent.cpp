@@ -49,6 +49,7 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
             _valid = FALSE;
         }
 
+        if( _CALC_DEBUG )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Adding CtiCalcComponent - Normal Operation ComponentPointID = " << componentPointId << endl;
@@ -83,6 +84,7 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
             _valid = FALSE;
         }
 
+        if( _CALC_DEBUG )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Adding CtiCalcComponent - Constant ComponentPointID = " << componentPointId << " Const: " << _constantValue << endl;
@@ -162,6 +164,7 @@ BOOL CtiCalcComponent::isUpdated( void )
         }
         else if( componentPointPtr->getPointQuality() == NonUpdatedQuality )
         {
+            if( _CALC_DEBUG )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " - Point quality is non updated, Point ID: " << componentPointPtr->getPointNum() << endl;

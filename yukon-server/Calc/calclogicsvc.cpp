@@ -382,6 +382,7 @@ void CtiCalcLogicService::Run( )
                 if( timeNow > nextCheckTime )
                 {
                     
+                    if( _CALC_DEBUG )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Timer Checking for DB Change." << endl;
@@ -717,6 +718,7 @@ void CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
             pointIdList[CalcCount] = pointid;
             ++CalcCount;
 
+            if( _CALC_DEBUG )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Loaded Calc #" << CalcCount << " Id: " << pointid << " Type: " << updatetype << endl;
@@ -756,6 +758,7 @@ void CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
 
             //cout << componentselector.asString().data() << endl;
 
+            if( _CALC_DEBUG )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Loading Components for Calc Id: " << pointIdList[i] << endl;
