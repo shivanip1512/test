@@ -583,13 +583,12 @@ public boolean selectByString(String str)
 /**
  * This method was created in VisualAge.
  */
-public boolean selectLiteBase(TreePath path, int liteBaseType, int liteBaseID) 
+public boolean selectLiteBase(TreePath path, LiteBase lBase ) 
 {
 	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
 	
-	if( node.getUserObject() instanceof com.cannontech.database.data.lite.LiteBase &&
-			((com.cannontech.database.data.lite.LiteBase)node.getUserObject()).getLiteType() == liteBaseType &&
-			((com.cannontech.database.data.lite.LiteBase)node.getUserObject()).getLiteID() == liteBaseID )
+	if( node.getUserObject() instanceof com.cannontech.database.data.lite.LiteBase 
+		 && node.getUserObject().equals(lBase) )
 	{
 		getTree().setSelectionPath( path );
 		getTree().scrollPathToVisible( path );
@@ -612,7 +611,7 @@ public boolean selectLiteBase(TreePath path, int liteBaseType, int liteBaseID)
 			
 			TreePath nextPath = new TreePath(nextPathObjs);
 			
-			if( selectLiteBase(nextPath,liteBaseType,liteBaseID) )
+			if( selectLiteBase(nextPath, lBase) )
 				return true;
 
 		}
@@ -631,10 +630,9 @@ public void selectLiteObject(com.cannontech.database.data.lite.LiteBase liteObj)
 		getTree().getSelectionModel().setSelectionPath( null );
 	else
 	{
-		int selectLiteBaseType = liteObj.getLiteType();
-		int selectLiteBaseID = liteObj.getLiteID();
 		TreePath rootPath = new TreePath( getCurrentTreeModel().getRoot() );
-		if( selectLiteBase(rootPath,selectLiteBaseType,selectLiteBaseID) )
+		
+		if( selectLiteBase(rootPath, liteObj) )
 		{
 			invalidate();
 			repaint();
@@ -651,7 +649,7 @@ public void selectLiteObject(com.cannontech.database.data.lite.LiteBase liteObj)
 				
 				rootPath = new TreePath( getCurrentTreeModel().getRoot() );
 				
-				if( selectLiteBase(rootPath,selectLiteBaseType,selectLiteBaseID) )
+				if( selectLiteBase(rootPath, liteObj) )
 				{
 					getSortByComboBox().setSelectedItem( getSortByComboBox().getModel().getElementAt(i));
 					invalidate();
@@ -672,10 +670,9 @@ public void selectObject(com.cannontech.database.db.DBPersistent obj) {
 	else
 	{
 		com.cannontech.database.data.lite.LiteBase liteBase = com.cannontech.database.data.lite.LiteFactory.createLite(obj);
-		int selectLiteBaseType = liteBase.getLiteType();
-		int selectLiteBaseID = liteBase.getLiteID();
 		TreePath rootPath = new TreePath( getCurrentTreeModel().getRoot() );
-		if( selectLiteBase(rootPath,selectLiteBaseType,selectLiteBaseID) )
+		
+		if( selectLiteBase(rootPath, liteBase) )
 		{
 			invalidate();
 			repaint();
@@ -692,7 +689,7 @@ public void selectObject(com.cannontech.database.db.DBPersistent obj) {
 				
 				rootPath = new TreePath( getCurrentTreeModel().getRoot() );
 				
-				if( selectLiteBase(rootPath,selectLiteBaseType,selectLiteBaseID) )
+				if( selectLiteBase(rootPath, liteBase) )
 				{
 					getSortByComboBox().setSelectedIndex( i );
 					invalidate();

@@ -57,7 +57,10 @@ import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.common.wizard.WizardPanelEvent;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.model.DBTreeModel;
@@ -131,13 +134,14 @@ public class DatabaseEditor
 	private int currentDatabase = DatabaseTypes.CORE_DB;
 	//Map of database types and treemodels to use
 	private final Integer[] CORE_MODELS =
-		{			
+		{
 			new Integer(ModelFactory.PORT),
 			new Integer(ModelFactory.DEVICE),
 			new Integer(ModelFactory.IED),
 			new Integer(ModelFactory.MCT),
          new Integer(ModelFactory.MCTBROADCAST),         
-			new Integer(ModelFactory.METER),			
+			new Integer(ModelFactory.METER),
+			new Integer(ModelFactory.DEVICE_METERNUMBER),
 			new Integer(ModelFactory.ROUTE),
 			new Integer(ModelFactory.RTU),
 			new Integer(ModelFactory.STATEGROUP),
@@ -1062,9 +1066,10 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 				if (nodes[i].getUserObject() instanceof String)
 					continue;
 
-	         //a DBPersistent must be created from the Lite object so you can do a retrieve
-	         com.cannontech.database.db.DBPersistent userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
-	               			(com.cannontech.database.data.lite.LiteBase) nodes[i].getUserObject());
+				//do some mapping to get the compatible DBPersistent
+				com.cannontech.database.db.DBPersistent userObject = 
+					LiteFactory.convertLiteToDBPers( (LiteBase)nodes[i].getUserObject() );
+
 	         try
 	         {
 	            Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, userObject);

@@ -59,17 +59,17 @@ public LiteYukonPAObject( int paoID, String name, int paoCategory, int paoType, 
  * @return int
  * @param val java.lang.Object
  */
-public boolean equals(Object val) 
+/*public boolean equals(Object val) 
 {
 	return ( val != null
 		  		&& val instanceof LiteYukonPAObject
-		  		&& super.equals(val)
-		  		&&
-		  		( ((LiteYukonPAObject)val).getCategory() == getCategory()
-			  	  && ((LiteYukonPAObject)val).getPaoClass() == getPaoClass()
-			  	  && ((LiteYukonPAObject)val).getType() == getType()
-			  	  && ((LiteYukonPAObject)val).getPaoName().equals(getPaoName()) ) );
+		  		&& super.equals(val) );
+//		  		&&
+//		  		( ((LiteYukonPAObject)val).getCategory() == getCategory()
+//			  	  && ((LiteYukonPAObject)val).getPaoClass() == getPaoClass()
+//			  	  && ((LiteYukonPAObject)val).getType() == getType() ) );
 }
+*/
 /**
  * Insert the method's description here.
  * Creation date: (9/28/2001 4:57:42 PM)

@@ -6,6 +6,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import Acme.RefInt;
 import com.cannontech.common.gui.util.TreeViewPanel;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -61,9 +63,13 @@ public class TreeItemDeleter
 	
 		
 			//a DBPersistent object must be created from the Lite object so you can do a delete
-			deletables[i] =
-				com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
-						(com.cannontech.database.data.lite.LiteBase) nodes[i].getUserObject());
+//			deletables[i] =
+//				com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
+//						(com.cannontech.database.data.lite.LiteBase) nodes[i].getUserObject());
+
+			//do some mapping to get the compatible DBPersistent
+			deletables[i] = 
+				LiteFactory.convertLiteToDBPers( (LiteBase)nodes[i].getUserObject() );
 				
 			RefInt delID = new RefInt(0), delType = new RefInt(0);
 			 			
@@ -152,7 +158,7 @@ public class TreeItemDeleter
 	}
 
 
-	private int isDBPersistentDeletable( DBPersistent dbPers, StringBuffer tmp, DefaultMutableTreeNode node, boolean showConfirm  )
+/*	private int isDBPersistentDeletable( DBPersistent dbPers, StringBuffer tmp, DefaultMutableTreeNode node, boolean showConfirm  )
 	{
 		int retVal = 0;
 		tmp.setLength(0);
@@ -202,6 +208,7 @@ public class TreeItemDeleter
 	
 		return retVal;
 	}
+*/
 
 	private boolean getDeleteInfo( DBPersistent toDelete, RefInt delID, 
 			RefInt delType, StringBuffer message, StringBuffer unableDel, final String nodeName )
@@ -272,7 +279,12 @@ public class TreeItemDeleter
 			retValue = false;
 		}
 		else
+		{
+			message.append("You can not delete this object using the DatabaseEditor"); 
+			unableDel.append("You cannot delete object named '" + nodeName + "'");
+						
 			retValue = false;
+		}
 
 	
 	

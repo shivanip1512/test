@@ -5,7 +5,7 @@ package com.cannontech.database.data.lite;
  * Creation date: (8/24/2001 11:08:47 AM)
  * @author: 
  */
-public class LiteHolidaySchedule extends LiteBase implements Comparable
+public class LiteHolidaySchedule extends LiteBase
 {
 	private String holidayScheduleName;
 /**
@@ -27,19 +27,7 @@ public LiteHolidaySchedule(int scheduleID)
 	setLiteID( scheduleID );
 	setLiteType(LiteTypes.HOLIDAY_SCHEDULE);
 }
-/**
- * Insert the method's description here.
- * Creation date: (8/24/2001 11:09:46 AM)
- * @return int
- * @param val java.lang.Object
- */
-public int compareTo(Object val) 
-{
-	int thisVal = getLiteID();
-	int anotherVal = ((LiteHolidaySchedule)val).getLiteID();
 
-	return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
-}
 /**
  * Insert the method's description here.
  * Creation date: (8/24/2001 11:13:50 AM)

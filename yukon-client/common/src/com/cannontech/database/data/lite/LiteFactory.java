@@ -1,5 +1,8 @@
 package com.cannontech.database.data.lite;
 
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.db.DBPersistent;
+
 /**
  * This type was created in VisualAge.
  */
@@ -217,4 +220,34 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 		
 	return returnLite;
 }
+
+
+
+
+/***********************************************************************
+ * This method returns the correct DBPersistent for any LiteBase.  There
+ * may be cases where we need a different DBPersistent than the default
+ * one provided (ex: LiteDeviceMeterGroup), this method will allow that
+ * extra layer to be implemented.
+ * 
+ * @param lBase
+ * @return DBPersistent
+ * 
+ * *********************************************************************/
+public static DBPersistent convertLiteToDBPers( LiteBase lBase )
+{
+	com.cannontech.database.db.DBPersistent userObject = null;
+
+	if( lBase instanceof LiteDeviceMeterNumber )
+	{					
+		userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
+			PAOFuncs.getLiteYukonPAO( lBase.getLiteID() ) );
+	}
+	else
+ 		userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent( lBase );
+
+	return userObject;
+}
+
+
 }

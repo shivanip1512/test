@@ -92,4 +92,19 @@ public void setMeterNumber(String newValue) {
 public String toString() {
 	return meterNumber;
 }
+
+/**
+ * I can be equal to other Lite PAO stuff
+ * @return boolean
+ */
+public boolean equals(Object o)
+{
+	if( o instanceof LiteYukonPAObject )
+	{
+		return ( ((LiteBase)o).getLiteID() == this.getLiteID() );
+	}
+	else
+		return super.equals(o);
+}
+
 }
