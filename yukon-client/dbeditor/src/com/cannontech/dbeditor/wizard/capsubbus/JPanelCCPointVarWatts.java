@@ -731,10 +731,11 @@ private void initDeviceComboBoxes( javax.swing.JComboBox comboBox )
    synchronized(cache)
    {
       java.util.List devices = cache.getAllDevices();
+      java.util.Collections.sort(devices, 
+            com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
       com.cannontech.database.data.lite.LitePoint[] altPoints = null;
 
-      java.util.Collections.sort(devices);
-      
+
       if( getJCheckBoxDisplayVars().isSelected() 
           && comboBox == getJComboBoxVarDevice() )
       {
@@ -1172,10 +1173,10 @@ private void setPointComboBoxes( int currentVarPtID, int currentWattPtID )
 			}
 
 			if( (wattPoint == null 
-                  || getJComboBoxCalcWattsPoint().getSelectedItem() == wattPoint)
+                  || wattPoint.equals(getJComboBoxCalcWattsPoint().getSelectedItem()) )
 				 && 
              (varPoint == null 
-                  || getJComboBoxVarDevice().getSelectedItem() == varPoint) )
+                  || varPoint.equals(getJComboBoxVarDevice().getSelectedItem()) ) )
 			{
 				break;
 			}
