@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2002/09/09 21:50:18 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2002/09/16 14:37:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2267,15 +2267,7 @@ INT CtiVanGogh::loadPendingSignals()
                     CtiTableSignal::getSQL( db, keyTable, selector );
                     selector.where( selector.where() && keyTable["logid"] == maxID);
 
-                    // dout << selector.asString() << endl;
                     rdr = selector.reader( conn );
-                    if(rdr.status().errorCode() != RWDBStatus::ok)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << selector.asString() << endl;
-                    }
-
                     if(rdr.status().errorCode() != RWDBStatus::ok)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
