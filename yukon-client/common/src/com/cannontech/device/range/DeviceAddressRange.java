@@ -14,7 +14,7 @@ public class DeviceAddressRange
 	private static final RangeBase RANGE_DEFAULT = new RangeBase();
    
 	private static final RangeBase RANGE_MCT470 = 
-		new RangeBase( 1000000, 2796201, "Valid range for MCT470 addresses is 100000 to 2796201");
+		new RangeBase( 100000, 2796201, "Valid range for MCT470 addresses is 100000 to 2796201");
 		// and can not be 1398101" );
    	
    	private static final RangeBase RANGE_MCT410 = 
