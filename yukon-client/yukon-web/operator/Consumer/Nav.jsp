@@ -8,6 +8,7 @@
 						  {"ProgramHist.jsp", "Control History"},
 						  {"Programs.jsp", "Enrollment"},
 						  {"OptOut.jsp", "Opt Out"},
+						  {"Odds.jsp", "Control Odds"},
 						  {"CreateCalls.jsp", "Create Call"},
 						  {"Service.jsp", "Service Request"},
 						  {"ServiceSummary.jsp", "Service History"},
@@ -96,7 +97,8 @@
       <div align="left"><span class="Header2">Programs</span><br>
         <%= links.get("ProgramHist.jsp") %><br>
 		<%= links.get("Programs.jsp") %><br>
-        <%= links.get("OptOut.jsp") %></div>
+        <%= links.get("OptOut.jsp") %><br>
+		<%= links.get("Odds.jsp") %></div>
     </td>
   </tr>
   <tr> 
