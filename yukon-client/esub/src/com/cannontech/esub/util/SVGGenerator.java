@@ -292,10 +292,10 @@ public class SVGGenerator {
 		Element imgElem = doc.createElementNS(svgNS, "image");
 		imgElem.setAttributeNS(null, "id", img.getName());
 		imgElem.setAttributeNS(null, "xlink:href", relImage);
-		imgElem.setAttributeNS(null, "x", Integer.toString(x));
-		imgElem.setAttributeNS(null, "y", Integer.toString(y));
-		imgElem.setAttributeNS(null, "width", Integer.toString(width));
-		imgElem.setAttributeNS(null, "height", Integer.toString(height));
+		//imgElem.setAttributeNS(null, "x", Integer.toString(x));
+		//imgElem.setAttributeNS(null, "y", Integer.toString(y));
+		//imgElem.setAttributeNS(null, "width", Integer.toString(width));
+		//imgElem.setAttributeNS(null, "height", Integer.toString(height));
 		return imgElem; 	 		
 	}
 
@@ -312,10 +312,10 @@ public class SVGGenerator {
 		Element imgElem = doc.createElementNS(svgNS, "image");
 		imgElem.setAttributeNS(null, "id", Integer.toString(img.getPoint().getPointID()));
 		imgElem.setAttributeNS(null, "xlink:href", imgName);
-		imgElem.setAttributeNS(null, "x", Integer.toString(x));
+/*		imgElem.setAttributeNS(null, "x", Integer.toString(x));
 		imgElem.setAttributeNS(null, "y", Integer.toString(y));
 		imgElem.setAttributeNS(null, "width", Integer.toString(width));
-		imgElem.setAttributeNS(null, "height", Integer.toString(height));
+		imgElem.setAttributeNS(null, "height", Integer.toString(height));*/
 		return imgElem;		
 	}	
 	
