@@ -463,7 +463,7 @@ public class StarsAdmin extends HttpServlet {
 			}
 			
 			String compName = req.getParameter("CompanyName");
-			if (!energyCompany.getName().equals( compName )) {
+			if (newContact || !energyCompany.getName().equals( compName )) {
 				energyCompany.setName( compName );
 				energyCompany.setPrimaryContactID( contact.getContact().getContactID().intValue() );
 				Transaction.createTransaction( Transaction.UPDATE, StarsLiteFactory.createDBPersistent(energyCompany) ).execute();
