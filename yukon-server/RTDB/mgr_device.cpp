@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2004/01/26 21:32:29 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2004/03/18 19:55:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,6 +34,7 @@
 #include "dev_grp_energypro.h"
 #include "dev_grp_expresscom.h"
 #include "dev_grp_ripple.h"
+#include "dev_grp_sa305.h"
 #include "dev_grp_versacom.h"
 #include "dev_grp_mct.h"
 #include "dev_mct_broadcast.h"
@@ -59,7 +60,7 @@ bool findExecutingAndExcludedDevice(CtiDeviceManager::val_pair vpd, void* d)
 
         if(excluded)
         {
-            // Ok, now decide if that excluded port is executing....
+            // Ok, now decide if that excluded device is currently executing....
             bstatus = Device->isExecuting();
         }
     }
@@ -1206,6 +1207,41 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Macro Devices" << endl;
                         }
+
+                        start = start.now();
+                        {
+                            RWDBConnection conn = getConnection();
+                            RWDBDatabase db = getDatabase();
+
+                            RWDBTable   keyTable;
+                            RWDBSelector selector = db.selector();
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for 305 Group Devices" << endl;
+                            }
+                            CtiDeviceGroupSA305().getSQL( db, keyTable, selector );
+                            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                            RWDBReader rdr = selector.reader(conn);
+                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                            }
+                            refreshDevices(rowFound, rdr, Factory);
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for 305 Group Devices" << endl;
+                            }
+                        }
+                        stop = stop.now();
+                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  ExpressCom Group Devices" << endl;
+                        }
+
                     }
 
                     start = start.now();
@@ -1403,6 +1439,11 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevic
             {
                 if(anxiousDevice->hasExclusions())
                 {
+                    RWTime now;
+                    /*
+                     *  Walk the anxiousDevice's exclusion list checking if any of the devices on it indicate that they are
+                     *  currently executing.  If any of them are executing, the anxious device cannot start.
+                     */
                     CtiDeviceBase *device = 0;
                     vector< CtiDeviceBase* > exlist;
 
@@ -1428,7 +1469,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevic
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                                             dout << RWTime() << " Device " << anxiousDevice->getName() << " cannot execute because " << device->getName() << " is executing" << endl;
                                         }
-                                        deviceexclusion = paox;   // Pass this out to the callee!
+                                        deviceexclusion = paox;     // Pass this out to the callee as the device which blocked us first!
                                         exlist.clear();         // Cannot use it!
                                         break;                  // we cannot go
                                     }
@@ -1436,6 +1477,17 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevic
                                     {
                                         exlist.push_back(device);
                                     }
+                                }
+
+                                break;
+                            }
+                        case (CtiTablePaoExclusion::ExFunctionTimeMethod1):
+                            {
+                                /* This exclusion identifies a cycle time type exclusion window/start/duration */
+
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 }
 
                                 break;
@@ -1732,11 +1784,13 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
             }
         }
     }
+#if 0
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " There is a DB error or zero entries in GenericMacro Table. DB return code: " << macroResult.status().errorCode() << endl;
     }
+#endif
 
     if(DebugLevel & 0x00020000)
     {
