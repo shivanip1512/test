@@ -1555,7 +1555,9 @@ public boolean isInputValid()
       
 	//verify that there are no duplicate physical address for CCUs or RTUs on a dedicated channel
 	com.cannontech.database.data.lite.LiteYukonPAObject port = ((com.cannontech.database.data.lite.LiteYukonPAObject)getPortComboBox().getSelectedItem());
-	if((! PAOGroups.isDialupPort(port.getType())) && (com.cannontech.database.data.device.DeviceTypesFuncs.isCCU(getDeviceType()) || com.cannontech.database.data.device.DeviceTypesFuncs.isRTU(getDeviceType()) ))
+	if(com.cannontech.database.data.device.DeviceTypesFuncs.isCarrier(getDeviceType()))
+		return true;
+	else if((! PAOGroups.isDialupPort(port.getType())) && (com.cannontech.database.data.device.DeviceTypesFuncs.isCCU(getDeviceType()) || com.cannontech.database.data.device.DeviceTypesFuncs.isRTU(getDeviceType()) ))
 	{
 		address = Integer.parseInt( getPhysicalAddressTextField().getText() );
 		return checkForDuplicateAddresses(address, port.getLiteID() );   	
