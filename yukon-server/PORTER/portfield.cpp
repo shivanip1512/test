@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2002/12/12 17:06:36 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2002/12/13 15:25:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3168,11 +3168,13 @@ VOID PortDialbackThread(void *pid)
 
                             if(byteString.contains("END"))
                             {
+                                #if 0
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                     dout << byteString << endl;
                                 }
+                                #endif
 
                                 break; // the while!
                             }
@@ -3186,15 +3188,57 @@ VOID PortDialbackThread(void *pid)
 
                 if(!byteString.isNull())
                 {
+                    ULONG bytesWritten = 0;
+                    Port->writePort("ACK\r", 4, 1, &bytesWritten);
+
+                    if(bytesWritten < 3)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
                     // We need to look for the message.
                     RWCTokenizer tok(byteString);
-                }
+                    RWCString tstr;
+                    RWCString strdev;
+                    RWCString strtime;
+                    RWCString strpriority;
+                    RWCString strmsg;
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
 
+                    tstr = tok(); // Grab "BEGIN"
+                    tstr = tok(); // Grab "ALARM"
+                    if(!tstr.compareTo("ALARM"))
+                    {
+                        strdev = tok();         // Get the translation name from the ion.
+                        strtime = tok();        // Unix time value!
+                        strpriority = tok();    // Priority.
+
+                        while(!(tstr = tok()).isNull())
+                        {
+                            tstr = tstr.strip(RWCString::trailing, '\r');
+
+                            if(!tstr.compareTo("END"))
+                            {
+                                break;
+                            }
+                            else
+                                strmsg += tstr + " ";
+                        }
+                    }
+
+                    if(!strtime.isNull())
+                    {
+                        RWTime msgtime( atoi(strtime.data()) + rwEpoch );
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Device: " << strdev << endl;
+                            dout << "Message at " << msgtime << " " << strmsg << " priority " << strpriority << endl;
+                        }
+                    }
+                }
             }
             else
             {
@@ -3211,11 +3255,6 @@ VOID PortDialbackThread(void *pid)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-    }
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return;

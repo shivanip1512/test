@@ -12,7 +12,7 @@
 *
 * CVS KEYWORDS:
 * REVISION     :  $Revision $
-* DATE         :  $Date: 2002/12/12 17:06:39 $
+* DATE         :  $Date: 2002/12/13 15:25:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -261,7 +261,7 @@ INT CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
     }
 
     /* set the timeout on read to 1 second */
-    _superPort->setPortReadTimeOut(1);
+    _superPort->setPortReadTimeOut(1000);
     _superPort->lowerRTS();
     _superPort->lowerDTR();
     CTISleep( 500L );
@@ -488,7 +488,7 @@ INT CtiPortDialin::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdTest)
     ULONG ResponseSize;
 
     /* set the timeout on read to 1 second */
-    _superPort->setPortReadTimeOut(1);
+    _superPort->setPortReadTimeOut(1000);
 
     if(Message[0] == 'A' || Message[0] == 'a')
     {

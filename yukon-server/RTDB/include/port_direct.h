@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_direct.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/12/12 17:06:42 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/12/13 15:25:09 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,8 +87,8 @@ public:
    virtual BOOL shouldDisconnect() const;
    virtual CtiPort& setShouldDisconnect(BOOL b = TRUE);
 
-   virtual INT setPortReadTimeOut(USHORT timeout);
-   virtual INT setPortWriteTimeOut(USHORT timeout);
+   virtual INT setPortReadTimeOut(USHORT millitimeout);
+   virtual INT setPortWriteTimeOut(USHORT millitimeout);
    virtual INT waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse = NULL);
    virtual INT writePort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesWritten);
    virtual INT readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesRead);

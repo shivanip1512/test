@@ -11,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/12/12 17:06:40 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/12/13 15:25:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -204,7 +204,7 @@ INT CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
     static ULONG tCount = 0;
 
     /* set the timeout on read to 1 second */
-    _superPort->setPortReadTimeOut(1);
+    _superPort->setPortReadTimeOut(1000);
     _superPort->lowerRTS();
     _superPort->lowerDTR();
     CTISleep( 500L );
@@ -431,7 +431,7 @@ INT CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdTest)
     ULONG ResponseSize;
 
     /* set the timeout on read to 1 second */
-    _superPort->setPortReadTimeOut(1);
+    _superPort->setPortReadTimeOut(1000);
 
     if(Message[0] == 'A' || Message[0] == 'a')
     {
@@ -587,7 +587,7 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
     if(_superPort->isViable())
     {
         /* set the timeout on read to 1 second */
-        _superPort->setPortReadTimeOut(1);
+        _superPort->setPortReadTimeOut(1000);
 
         _superPort->lowerRTS();
         _superPort->lowerDTR();

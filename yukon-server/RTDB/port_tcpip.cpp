@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/12/12 17:34:12 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/12/13 15:25:09 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -838,12 +838,6 @@ void CtiPortTCPIPDirect::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelec
 {
     Inherited::getSQL(db, keyTable, selector);
     CtiTablePortTCPIP::getSQL(db, keyTable, selector);
-}
-
-
-INT CtiPortTCPIPDirect::setPortReadTimeOut(USHORT timeout)
-{
-    return NORMAL;
 }
 
 INT CtiPortTCPIPDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)

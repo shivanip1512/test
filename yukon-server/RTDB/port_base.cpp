@@ -769,7 +769,7 @@ INT CtiPort::isCTS() const
     return(eMask & MS_CTS_ON);
 }
 
-INT CtiPort::setPortReadTimeOut(USHORT timeout)
+INT CtiPort::setPortReadTimeOut(USHORT millitimeout)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

@@ -94,7 +94,7 @@ INT CtiPortDirect::openPort()
         }
 
         /* set the Read Timeout for the port */
-        if((i = setPortReadTimeOut(TIMEOUT)) != NORMAL)
+        if((i = setPortReadTimeOut(1000)) != NORMAL)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -104,7 +104,7 @@ INT CtiPortDirect::openPort()
         }
 
         /* set the write timeout for the port */
-        if((i = setPortWriteTimeOut(TIMEOUT)) != NORMAL)
+        if((i = setPortWriteTimeOut(1000)) != NORMAL)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -375,15 +375,27 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceBase *Dev, RWTPtrSlist< CtiMes
 
     if(status == NORMAL)
     {
+<<<<<<< port_direct.cpp
+        USHORT Told, T_new, Tmot;
+=======
         USHORT Told, Tnew, Tmot;
+>>>>>>> 1.12
 
         /* set the read timeout */
         Told = (USHORT)(Xfer.getInTimeout() + (USHORT)getDelay(EXTRA_DELAY));
+<<<<<<< port_direct.cpp
+        T_new = (USHORT)(byteTime(Xfer.getInCountExpected()) + getDelay(EXTRA_DELAY) );
+=======
         Tnew = (USHORT)(byteTime(Xfer.getInCountExpected()) + getDelay(EXTRA_DELAY) );
+>>>>>>> 1.12
 
+<<<<<<< port_direct.cpp
+        Tmot = (Told > T_new) ? Told : T_new;
+=======
         Tmot = (Told > Tnew) ? Told : Tnew;
+>>>>>>> 1.12
 
-        setPortReadTimeOut( Tmot );
+        setPortReadTimeOut( Tmot * 1000 );
 
         //  if the beginning of an IDLC message
         if(_tblPortBase.getProtocol() == ProtocolWrapIDLC && Xfer.isMessageStart())
@@ -847,19 +859,19 @@ void CtiPortDirect::DecodeDialinDatabaseReader(RWDBReader &rdr)
     }
 }
 
-INT CtiPortDirect::setPortReadTimeOut(USHORT timeout)
+INT CtiPortDirect::setPortReadTimeOut(USHORT millitimeout)
 {
     _cto.ReadIntervalTimeout = 0;
     _cto.ReadTotalTimeoutMultiplier = 0;
-    _cto.ReadTotalTimeoutConstant = (timeout * 1000);
+    _cto.ReadTotalTimeoutConstant = (millitimeout);
 
     return (SetCommTimeouts(_portHandle, &_cto) ? NORMAL : SYSTEM);
 }
 
-INT CtiPortDirect::setPortWriteTimeOut(USHORT timeout)
+INT CtiPortDirect::setPortWriteTimeOut(USHORT millitimeout)
 {
     _cto.WriteTotalTimeoutMultiplier = 0;
-    _cto.WriteTotalTimeoutConstant = (timeout * 1000);
+    _cto.WriteTotalTimeoutConstant = (millitimeout);
 
     return (SetCommTimeouts(_portHandle, &_cto) ? NORMAL : SYSTEM);
 }
