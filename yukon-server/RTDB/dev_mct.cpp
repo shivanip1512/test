@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2003/06/27 21:24:42 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2003/06/30 20:01:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -438,12 +438,12 @@ bool CtiDeviceMCT::initCommandStore()
    _commandStore.insert( cs );
 
    cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddrEnable;
-   cs._io      = IO_FCT_WRITE;
+   cs._io      = IO_WRITE;
    cs._funcLen = make_pair( (int)MCT_GroupAddrEnable, 0 );
    _commandStore.insert( cs );
 
    cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddrInhibit;
-   cs._io      = IO_FCT_WRITE;
+   cs._io      = IO_WRITE;
    cs._funcLen = make_pair( (int)MCT_GroupAddrInhibit, 0 );
    _commandStore.insert( cs );
 
