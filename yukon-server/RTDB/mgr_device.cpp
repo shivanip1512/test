@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/10/11 14:08:06 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/10/23 21:08:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -945,6 +945,41 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Versacom Group Devices" << endl;
+                        }
+
+
+                        start = start.now();
+                        {
+                            RWDBConnection conn = getConnection();
+                            RWDBDatabase db = getDatabase();
+
+                            RWDBTable   keyTable;
+                            RWDBSelector selector = db.selector();
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for ExpressCom Group Devices" << endl;
+                            }
+                            CtiDeviceGroupExpresscom().getSQL( db, keyTable, selector );
+                            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                            RWDBReader rdr = selector.reader(conn);
+                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                            }
+                            RefreshDevices(rowFound, rdr, Factory);
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for ExpressCom Group Devices" << endl;
+                            }
+                        }
+                        stop = stop.now();
+                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  ExpressCom Group Devices" << endl;
                         }
 
 
