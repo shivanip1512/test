@@ -13,8 +13,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/02/07 20:31:54 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/02/21 20:32:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,7 +106,7 @@ private:
     INT schedulePoint(vector< BYTE > &schedule);
 
     INT sync();
-    INT timeSync(RWTime &gmt);
+    INT timeSync(RWTime &gmt, bool fullsync = true);
 
     INT signalTest(BYTE test);
     INT timedLoadControl(UINT loadMask, UINT shedtime_seconds, BYTE randin = 0, BYTE randout = 0, USHORT delay = 0 );                 // This is a shed!

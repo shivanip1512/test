@@ -11,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/02/07 20:31:54 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/02/21 20:32:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -180,7 +180,7 @@ INT CtiProtocolExpresscom::sync()
     return status;
 }
 
-INT CtiProtocolExpresscom::timeSync(RWTime &local)
+INT CtiProtocolExpresscom::timeSync(RWTime &local, bool fullsync)
 {
     INT status = NoError;
 
@@ -190,14 +190,18 @@ INT CtiProtocolExpresscom::timeSync(RWTime &local)
     BYTE dayOfWeek = date.weekDay() % 7;    // RWDate Monday = 1, Sunday = 7.  Protocol Sun = 0 - Sat = 6.
 
     _message.push_back( mtTimeSync );
-    _message.push_back( 0x80 | (gmt.isDST() ? 0x40 : 0x00) | (dayOfWeek & 0x07) );
+    _message.push_back( (fullsync ? 0x80 : 0x00) | (gmt.isDST() ? 0x40 : 0x00) | (dayOfWeek & 0x07) );
     _message.push_back( gmt.hourGMT() );
     _message.push_back( gmt.minuteGMT() );
     _message.push_back( gmt.second() );
-    _message.push_back( date.month() );
-    _message.push_back( date.dayOfMonth() );
-    _message.push_back( HIBYTE(LOWORD(date.year())) );
-    _message.push_back( LOBYTE(LOWORD(date.year())) );
+
+    if(fullsync)
+    {
+        _message.push_back( date.month() );
+        _message.push_back( date.dayOfMonth() );
+        _message.push_back( HIBYTE(LOWORD(date.year())) );
+        _message.push_back( LOBYTE(LOWORD(date.year())) );
+    }
 
     _messageCount++;
     return status;
