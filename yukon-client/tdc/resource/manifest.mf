@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.tdc.TDCMainFrame
-Class-Path: ./ common.jar cbc.jar loadcontrol.jar log4j-1.2.4.jar yukonappclient.jar yukonappserver.jar j2ee.jar graph.jar macs.jar rwav.jar jcfield401K.jar jcpagelayout450K.jar classes12.zip SqlServer.jar batik.jar ../config/ ../log/ ../export/
+Class-Path: ./ common.jar cbc.jar loadcontrol.jar log4j-1.2.4.jar yukonappclient.jar yukonappserver.jar j2ee.jar graph.jar macs.jar rwav.jar jcfield401K.jar jcpagelayout450K.jar classes12.zip jtds.jar SqlServer.jar batik.jar ../config/ ../log/ ../export/

@@ -1,1 +1,1 @@
-java -classpath .;../config;tools.jar;common.jar;log4j-1.2.4.jar;classes12.zip;SqlServer.jar;yukonappserver.jar;j2ee.jar com.cannontech.importer.point.PointImportUtilityPanel %1
+java -classpath .;../config;tools.jar;common.jar;log4j-1.2.4.jar;classes12.zip;jtds.jar;SqlServer.jar;yukonappserver.jar;j2ee.jar com.cannontech.importer.point.PointImportUtilityPanel %1

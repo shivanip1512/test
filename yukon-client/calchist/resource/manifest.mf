@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.calchist.CalcHistorical
-Class-Path: ./ common.jar log4j-1.2.4.jar rwav.jar yukonappclient.jar yukonappserver.jar j2ee.jar SqlServer.jar classes12.zip ../config/ ../log/ ../export/
+Class-Path: ./ common.jar log4j-1.2.4.jar rwav.jar yukonappclient.jar yukonappserver.jar j2ee.jar SqlServer.jar jtds.jar classes12.zip ../config/ ../log/ ../export/
 

@@ -1,1 +1,1 @@
-java -Djava.class.path=.;jfreechart.jar jcommon.jar common.jar yukonappserver.jar j2ee.jar jcpagelayout450K.jar rwav.jar acme.jar log4j-1.2.4.jar batik.jar junit.jar SqlServer.jar classes12.zip ../config/ ../log/ ../export/ com.cannontech.graph.WebGraph
+java -Djava.class.path=.;jfreechart.jar jcommon.jar common.jar yukonappserver.jar j2ee.jar jcpagelayout450K.jar rwav.jar acme.jar log4j-1.2.4.jar batik.jar junit.jar jtds.jar SqlServer.jar classes12.zip ../config/ ../log/ ../export/ com.cannontech.graph.WebGraph

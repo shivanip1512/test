@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.esub.editor.Editor
-Class-Path: ./ jloox2.0.2.jar batik.jar common.jar graph.jar dbeditor.jar yukonappclient.jar yukonappserver.jar rwav.jar classes12.zip log4j-1.2.4.jar xerces.jar SqlServer.jar j2ee.jar ../images ../config/ ../log/ ../export/
+Class-Path: ./ jloox2.0.2.jar batik.jar common.jar graph.jar dbeditor.jar yukonappclient.jar yukonappserver.jar rwav.jar classes12.zip log4j-1.2.4.jar xerces.jar jtds.jar SqlServer.jar j2ee.jar ../images ../config/ ../log/ ../export/
 
 
