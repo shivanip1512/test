@@ -34,6 +34,7 @@
 
 #include "logger.h"
 #include "guard.h"
+#include "utility.h"
 
 
 /** local definitions **/
@@ -119,6 +120,8 @@ RWDBStatus CtiFDRManager::loadPointList()
     RWCString tmp;
     CtiPointType_t pointType = InvalidPointType;
     RWDBStatus  retStatus = RWDBStatus::ok;
+
+    ResetBreakAlloc();
 
     try
     {
