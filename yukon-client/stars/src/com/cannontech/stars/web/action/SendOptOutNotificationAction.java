@@ -330,7 +330,15 @@ public class SendOptOutNotificationAction implements ActionBase {
 		String[] to = new String[ toList.size() ];
 		toList.toArray( to );
         
-        String from = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
+		String from = null;
+		if (energyCompany.getPrimaryContactID() > 0) {
+			String[] emails = ContactFuncs.getAllEmailAddresses( energyCompany.getPrimaryContactID() );
+			if (emails.length > 0)
+				from = emails[0];
+		}
+		if (from == null)
+			from = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
+        
         String subject = ServletUtils.capitalize2(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " Notification";
 		
 		EmailMessage emailMsg = new EmailMessage( to, subject, text.toString() );
@@ -394,7 +402,15 @@ public class SendOptOutNotificationAction implements ActionBase {
 		String[] to = new String[ toList.size() ];
 		toList.toArray( to );
         
-        String from = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
+		String from = null;
+		if (energyCompany.getPrimaryContactID() > 0) {
+			String[] emails = ContactFuncs.getAllEmailAddresses( energyCompany.getPrimaryContactID() );
+			if (emails.length > 0)
+				from = emails[0];
+		}
+		if (from == null)
+			from = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
+        
         String subject = ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE)) + " Notification";
 		
 		EmailMessage emailMsg = new EmailMessage( to, subject, text.toString() );
