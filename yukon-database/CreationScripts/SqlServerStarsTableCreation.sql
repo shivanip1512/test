@@ -419,6 +419,13 @@ if exists (select 1
    drop table WorkOrderBase
 go
 
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMConfigurationSimple')
+            and   type = 'U')
+   drop table LMConfigurationSimple
+go
+
 
 /*==============================================================*/
 /* Table: AccountSite                                           */
@@ -1368,6 +1375,20 @@ create table WorkOrderBase (
 )
 go
 
+/*==============================================================*/
+/* Table: LMConfigurationSimple                                 */
+/*==============================================================*/
+create table LMConfigurationSimple (
+   ConfigurationID      numeric              not null,
+   OperationalAddress   numeric              not null
+)
+go
+
+
+alter table LMConfigurationSimple
+   add constraint PK_LMCONFIGURATIONSIMPLE primary key  (ConfigurationID)
+go
+
 
 alter table WorkOrderBase
    add constraint PK_WORKORDERBASE primary key  (OrderID)
@@ -2079,6 +2100,11 @@ go
 alter table WorkOrderBase
    add constraint FK_WrkOr_SrvC foreign key (ServiceCompanyID)
       references ServiceCompany (CompanyID)
+go
+
+alter table LMConfigurationSimple
+   add constraint FK_LMCfgS_LMCfgB foreign key (ConfigurationID)
+      references LMConfigurationBase (ConfigurationID)
 go
 
 

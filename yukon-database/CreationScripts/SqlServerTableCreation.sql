@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/10/2005 2:40:19 PM                         */
+/* Created on:     1/24/2005 4:11:03 PM                         */
 /*==============================================================*/
 
 
@@ -6195,7 +6195,6 @@ insert into YukonGroupRole values(-9,-1,-1,-1008,'(none)');
 insert into YukonGroupRole values(-10,-1,-1,-1009,'(none)');
 insert into YukonGroupRole values(-11,-1,-1,-1010,'(none)');
 insert into YukonGroupRole values(-12,-1,-1,-1011,'(none)');
-insert into YukonGroupRole values(-13,-1,-1,-1012,'(none)');
 insert into YukonGroupRole values(-14,-1,-1,-1013,'(none)');
 insert into YukonGroupRole values(-15,-1,-1,-1014,'CannonLogo.gif');
 insert into YukonGroupRole values(-16,-1,-1,-1015,'(none)');
@@ -6432,7 +6431,6 @@ insert into yukongrouprole values (-793,-301,-209,-20902,'(none)');
 insert into yukongrouprole values (-794,-301,-209,-20903,'(none)');
 insert into yukongrouprole values (-795,-301,-209,-20904,'(none)');
 insert into yukongrouprole values (-796,-301,-209,-20905,'(none)');
-insert into yukongrouprole values (-797,-301,-209,-20906,'(none)');
 
 insert into yukongrouprole values (-800,-301,-201,-20800,'(none)');
 insert into yukongrouprole values (-801,-301,-201,-20801,'(none)');
@@ -6722,7 +6720,6 @@ insert into yukongrouprole values (-2082,-303,-209,-20902,'(none)');
 insert into yukongrouprole values (-2083,-303,-209,-20903,'(none)');
 insert into yukongrouprole values (-2084,-303,-209,-20904,'(none)');
 insert into yukongrouprole values (-2085,-303,-209,-20905,'(none)');
-insert into yukongrouprole values (-2086,-303,-209,-20906,'(none)');
 
 insert into yukongrouprole values (-2100,-303,-201,-20800,'(none)');
 insert into yukongrouprole values (-2101,-303,-201,-20801,'(none)');
@@ -6926,6 +6923,8 @@ insert into YukonListEntry values (1059,1005,-1,'Commercial ExpressStat',1304);
 insert into YukonListEntry values (1060,1005,-1,'SA-205',1309);
 insert into YukonListEntry values (1061,1005,-1,'SA-305',1310);
 insert into YukonListEntry values (1062,1005,-1,'LCR-5000(VERSACOM)',1311);
+insert into YukonListEntry values (1063,1005,-1,'SA Simple',1312);
+
 insert into YukonListEntry values (1071,1006,0,'Available',1701);
 insert into YukonListEntry values (1072,1006,0,'Temp Unavail',1702);
 insert into YukonListEntry values (1073,1006,0,'Unavailable',1703);
@@ -6951,6 +6950,8 @@ insert into YukonListEntry values (1132,1011,0,'Phone #',1602);
 insert into YukonListEntry values (1133,1011,0,'Last name',1603);
 insert into YukonListEntry values (1134,1011,0,'Serial #',1604);
 insert into YukonListEntry values (1135,1011,0,'Map #',1605);
+insert into YukonListEntry values (1136,1011,0,'Address',1606);
+insert into YukonListEntry values (1137,1011,0,'Alt Track #',1607);
 insert into YukonListEntry values (1141,1012,0,'(Unknown)',1801);
 insert into YukonListEntry values (1142,1012,0,'Century',0);
 insert into YukonListEntry values (1143,1012,0,'Universal',0);
@@ -6984,9 +6985,14 @@ insert into YukonListEntry values (1223,1019,0,'On',2503);
 insert into YukonListEntry values (1231,1020,1,'PROGRAMS',0);
 insert into YukonListEntry values (1232,1020,2,'THERMOSTAT CONTROL',0);
 insert into YukonListEntry values (1233,1020,3,'SAVINGS',0);
-insert into YukonListEntry values (1241,1049,1,'Tomorrow',2601);
-insert into YukonListEntry values (1242,1049,2,'Today',2602);
-insert into YukonListEntry values (1243,1049,99,'Repeat Last',2699);
+
+insert into YukonListEntry values (1241,1049,1,'1 Day',24);
+insert into YukonListEntry values (1242,1049,2,'2 Days',48);
+insert into YukonListEntry values (1243,1049,3,'3 Days',72);
+insert into YukonListEntry values (1244,1049,4,'4 Days',96);
+insert into YukonListEntry values (1245,1049,5,'5 Days',120);
+insert into YukonListEntry values (1246,1049,6,'6 Days',144);
+insert into YukonListEntry values (1247,1049,7,'7 Days',168);
 
 insert into YukonListEntry values (1251,1050,0,'Last Updated Time',3201);
 insert into YukonListEntry values (1252,1050,0,'Setpoint',3202);
@@ -7005,6 +7011,8 @@ insert into YukonListEntry values (1302,1051,0,'Acct #',2702);
 insert into YukonListEntry values (1303,1051,0,'Phone #',2703);
 insert into YukonListEntry values (1304,1051,0,'Last name',2704);
 insert into YukonListEntry values (1305,1051,0,'Order #',2705);
+insert into YukonListEntry values (1306,1051,0,'Address',2706);
+insert into YukonListEntry values (1307,1051,0,'Alt Track #',2707);
 insert into YukonListEntry values (1311,1052,0,'Serial #',2801);
 insert into YukonListEntry values (1312,1052,0,'Install date',2802);
 insert into YukonListEntry values (1321,1053,0,'Device type',2901);
@@ -7017,6 +7025,7 @@ insert into YukonListEntry values (1332,1054,0,'Acct #',3302);
 insert into YukonListEntry values (1333,1054,0,'Phone #',3303);
 insert into YukonListEntry values (1334,1054,0,'Last Name',3304);
 insert into YukonListEntry values (1335,1054,0,'Serial #',3305);
+insert into YukonListEntry values (1336,1054,0,'Address',3306);
 insert into YukonListEntry values (1341,1055,0,'Order #',3401);
 insert into YukonListEntry values (1342,1055,0,'Date/Time',3402);
 insert into YukonListEntry values (1352,1056,0,'Service Type',3502);
@@ -7401,7 +7410,6 @@ insert into YukonRoleProperty values(-1008,-1,'loadcontrol_machine','127.0.0.1',
 insert into YukonRoleProperty values(-1009,-1,'loadcontrol_port','1920','TCP/IP port of the Yukon Load Management Service');
 insert into YukonRoleProperty values(-1010,-1,'smtp_host','127.0.0.1','Name or IP address of the mail server');
 insert into YukonRoleProperty values(-1011,-1,'mail_from_address','yukon@cannontech.com','Name of the FROM email address the mail server will use');
-insert into YukonRoleProperty values(-1012,-1,'print_insert_sql','(none)','File name of where to print all SQL insert statements');
 insert into YukonRoleProperty values(-1013,-1,'stars_preload_data','true','Controls whether the STARS application should preload data into the cache.');
 insert into YukonRoleProperty values(-1014,-1,'web_logo','CannonLogo.gif','The logo that is used for the yukon web applications');
 insert into YukonRoleProperty values(-1015,-1,'voice_host','127.0.0.1','Name or IP address of the voice server');
@@ -7416,6 +7424,7 @@ insert into YukonRoleProperty values(-1105,-2,'customer_group_ids','-300','Group
 insert into YukonRoleProperty values(-1106,-2,'operator_group_ids','-301','Group IDs of all the web client operator logins');
 insert into YukonRoleProperty values(-1107,-2,'track_hardware_addressing','false','Controls whether to track the hardware addressing information.');
 insert into YukonRoleProperty values(-1108,-2,'single_energy_company','true','Indicates whether this is a single energy company system.');
+insert into YukonRoleProperty values(-1109,-2,'z_optional_product_dev','00000000','This feature is for development purposes only');
 
 insert into YukonRoleProperty values(-1300,-4,'server_address','127.0.0.1','Authentication server machine address');
 insert into YukonRoleProperty values(-1301,-4,'auth_port','1812','Authentication port.');
@@ -7613,11 +7622,11 @@ insert into YukonRoleProperty values(-20902,-209,'Update SN Range','true','Contr
 insert into YukonRoleProperty values(-20903,-209,'Config SN Range','true','Controls whether to allow configuring hardwares by serial number range');
 insert into YukonRoleProperty values(-20904,-209,'Delete SN Range','true','Controls whether to allow deleting hardwares by serial number range');
 insert into YukonRoleProperty values(-20905,-209,'Create Hardware','true','Controls whether to allow creating new hardware');
-insert into YukonRoleProperty values(-20906,-209,'Create MCT','true','Controls whether to allow creating MCT devices');
 
 /* operator work order management role properties */
 insert into YukonRoleProperty values(-21000,-210,'Show All Work Orders','true','Controls whether to allow showing all work orders');
 insert into YukonRoleProperty values(-21001,-210,'Create Work Order','true','Controls whether to allow creating new work orders');
+insert into YukonRoleProperty values(-21002,-210,'Work Order Report','true','Controls whether to allow reporting on work orders');
 
 /* CICustomer Direct Loadcontrol Role Properties */
 insert into YukonRoleProperty values(-30000,-300,'Direct Loadcontrol Label','Direct Control','The customer specific name for direct loadcontrol');
@@ -8146,7 +8155,6 @@ insert into YukonUserRole values (-1005, -100, -108, -10805, '(none)');
 insert into YukonUserRole values (-1006, -100, -108, -10806, '(none)');
 insert into YukonUserRole values (-1010, -100, -200, -20000, '(none)');
 insert into YukonUserRole values (-1011, -100, -200, -20001, 'true');
-insert into YukonUserRole values (-1012, -100, -200, -20002, '(none)');
 insert into YukonUserRole values (-1013, -100, -200, -20003, '(none)');
 alter table YukonUserRole
    add constraint PK_YKONUSRROLE primary key  (UserRoleID)
