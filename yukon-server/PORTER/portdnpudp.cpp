@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/04/05 16:56:04 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/04/07 20:55:14 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -164,6 +164,7 @@ void DNPUDPInboundThread( void *Dummy )
             }
             else
             {
+                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint - DNPUDPInboundThread had error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -352,7 +353,7 @@ VOID DNPUDPOutboundThread(void *Dummy)
     {
         try
         {
-            if( !work_flag.acquire(2000) && DNPUDP_DEBUG_OUTPUT )
+            if( !work_flag.acquire(2000) && (getDebugLevel() & DEBUGLEVEL_LUDICROUS) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint - no work for the last 2 seconds **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
