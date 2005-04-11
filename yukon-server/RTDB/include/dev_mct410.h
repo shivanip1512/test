@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/03/01 16:01:13 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/04/11 20:59:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,7 +85,7 @@ protected:
         FuncRead_LPStatusPos     = 0x97,
         FuncRead_LPStatusLen     =   12,
 
-        FuncRead_LLPPeakDailyPos      = 0xa0,
+        FuncRead_LLPPeakDayPos        = 0xa0,
         FuncRead_LLPPeakHourPos       = 0xa1,
         FuncRead_LLPPeakIntervalPos   = 0xa2,
         FuncRead_LLPPeakLen           =   13,
@@ -151,7 +151,7 @@ protected:
         MCT410_Max_NewOutageRev =   30,
 
         MCT4XX_DawnOfTime       = 0x386d4380  //  jan 1, 2000
-                                              //  if 81c99f60 is 1970
+                                              //  if 81c99f60 is Rogue Wave's jan 1, 1970
     };
 
     typedef pair<double, PointQuality_t> data_pair;
