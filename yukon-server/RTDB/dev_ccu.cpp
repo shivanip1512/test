@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/02/10 23:23:59 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/04/11 16:17:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,7 +43,6 @@ using namespace std;
 #include "msg_pdata.h"
 #include "msg_multi.h"
 #include "prot_711.h"
-#include "prot_emetcon.h"
 #include "utility.h"
 
 
@@ -166,7 +165,7 @@ INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
 
     switch( InMessage->Sequence )
     {
-        case (CtiProtocolEmetcon::Command_Loop):
+        case Command_Loop:
         {
             char temp[10];
             RWCString cmd(InMessage->Return.CommandStr);
@@ -190,7 +189,7 @@ INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
             break;
         }
 
-        case (CtiProtocolEmetcon::PutStatus_Reset):
+        case Command_Reset:
         {
             CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
                                                             InMessage->Return.CommandStr,
@@ -334,7 +333,7 @@ INT CtiDeviceCCU::CCULoop(OUTMESS* OutMessage)
     OutMessage->Destination = DEST_BASE;
     OutMessage->Command     = CMND_ACTIN;
     OutMessage->Retry       = 0;
-    OutMessage->Sequence    = CtiProtocolEmetcon::Command_Loop;
+    OutMessage->Sequence    = Command_Loop;
     OutMessage->ReturnNexus = NULL;
     OutMessage->SaveNexus   = NULL;
 
@@ -359,7 +358,7 @@ INT CtiDeviceCCU::CCU711Reset(OUTMESS* OutMessage)
     OutMessage->Destination = DEST_BASE;
     OutMessage->Command     = CMND_ACTIN;
     OutMessage->Retry       = 0;
-    OutMessage->Sequence    = CtiProtocolEmetcon::PutStatus_Reset;
+    OutMessage->Sequence    = Command_Reset;
     OutMessage->ReturnNexus = NULL;
     OutMessage->SaveNexus   = NULL;
 

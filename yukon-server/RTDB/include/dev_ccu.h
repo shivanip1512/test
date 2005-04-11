@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_ccu.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/09/20 20:27:34 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/04/11 16:17:55 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,12 @@
 class IM_EX_DEVDB CtiDeviceCCU : public CtiDeviceIDLC
 {
 private:
+
+    enum Commands
+    {
+        Command_Loop = 456,  //  something non-zero
+        Command_Reset
+    };
 
     enum
     {

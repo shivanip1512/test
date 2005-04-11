@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/04/11 16:17:55 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,6 @@ using namespace std;
 #include "cmdparse.h"
 #include "dev_710.h"
 #include "dsm2.h"
-#include "prot_emetcon.h"
 #include "cti_asmc.h"
 #include "pt_base.h"
 
@@ -84,7 +83,7 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
     switch(InMessage->Sequence)
     {
-        case (CtiProtocolEmetcon::Command_Loop):
+        case Command_Loop:
         {
             unsigned char expectedAck;
             RWCString cmd(InMessage->Return.CommandStr);
@@ -233,7 +232,7 @@ INT CtiDeviceCCU710::Loopback(OUTMESS* OutMessage)
    OutMessage->TimeOut     = 2;
    OutMessage->EventCode   = ENCODED | RESULT | NOWAIT;
    OutMessage->Retry       = 0;
-   OutMessage->Sequence    = CtiProtocolEmetcon::Command_Loop;
+   OutMessage->Sequence    = Command_Loop;
    OutMessage->ReturnNexus = NULL;
    OutMessage->SaveNexus   = NULL;
 
