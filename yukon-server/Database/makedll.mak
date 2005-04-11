@@ -45,6 +45,7 @@ tbl_dialup.obj \
 tbl_direct.obj \
 tbl_dyn_ptalarming.obj \
 tbl_dyn_pttag.obj \
+tbl_dyn_paoinfo.obj \
 tbl_dv_address.obj \
 tbl_dv_cbc.obj \
 tbl_dv_emetcon.obj \
