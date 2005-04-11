@@ -1287,19 +1287,18 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
             if(!(token = CmdStr.match(interval)).isNull())
             {
                 RWCTokenizer cmdtok(token);
-                //  go past "interval"
+                //  get "interval(s?)"
                 temp2 = cmdtok();
 
-                if( temp2.compareTo("intervals") == 0 )
+                //  if it's just "interval," get the next token
+                if( temp2.compareTo("interval") == 0 )
                 {
-                    _cmd["interval"] = CtiParseValue("intervals");
-                }
-                else
-                {
-                    temp2 = cmdtok();
                     //  "li" or "lp"
-                    _cmd["interval"] = temp2;
+                    temp2 = cmdtok();
                 }
+
+                //  so this is either "intervals," "li," or "lp"
+                _cmd["interval"] = temp2;
             }
         }
 
