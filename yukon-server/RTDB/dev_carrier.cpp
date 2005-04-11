@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:59 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/04/11 16:52:01 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,7 +85,7 @@ void CtiDeviceCarrier::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelect
     Inherited::getSQL(db, keyTable, selector);
     CtiTableDeviceLoadProfile::getSQL(db, keyTable, selector);
     CtiTableDeviceMeterGroup::getSQL(db, keyTable, selector);
-    //  only used/decoded in the MCT 360/370 - so left outer joined
+    //  only used/decoded in the MCT 360/370/470 - so left outer joined
     CtiTableDeviceMCTIEDPort::getSQL(db, keyTable, selector);
 }
 
