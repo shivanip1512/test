@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/03/24 20:49:53 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/04/11 20:54:37 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,15 +75,36 @@ protected:
         MCT470_FuncRead_DemandLen          =   11,
 
         MCT470_FuncRead_CurrentPeak1Pos    = 0x93,
-        MCT470_FuncRead_CurrentPeak1Len    =   10
+        MCT470_FuncRead_CurrentPeak1Len    =   10,
+
+        MCT470_FuncRead_IED_TOU_CurrentKWBase  = 0xc1,
+        MCT470_FuncRead_IED_TOU_CurrentKMBase  = 0xc5,
+        MCT470_FuncRead_IED_TOU_CurrentTotals  = 0xc9,
+
+        MCT470_FuncRead_IED_TOU_PreviousOffset =    9,
+
+        MCT470_FuncRead_IED_TOU_MeterStatus    = 0xd3
     };
 
     void sendIntervals( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
 
 private:
 
+    static DLCCommandSet initCommandStore();
     static const DLCCommandSet _commandStore;
     bool _intervalsSent;
+
+    CtiTableDeviceMCTIEDPort _iedPort;
+
+    enum IED_PointOffsets
+    {
+        MCT470_PointOffset_TotalKWH   =  1,
+        MCT470_PointOffset_TOU_KWBase =  2,
+        MCT470_PointOffset_TotalKW    = 10,
+        MCT470_PointOffset_TotalKMH   = 11,
+        MCT470_PointOffset_TOU_KMBase = 12,
+        MCT470_PointOffset_TotalKM    = 20
+    };
 
 public:
 
@@ -95,20 +116,24 @@ public:
 
     CtiDeviceMCT470 &operator=( const CtiDeviceMCT470 &aRef );
 
-    static DLCCommandSet initCommandStore( );
+    void setDisconnectAddress( unsigned long address );
+
     virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
     virtual ULONG calcNextLPScanTime( void );
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
-    virtual INT executeGetValueLoadProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList);
+    virtual void DecodeDatabaseReader( RWDBReader &rdr );
 
     virtual INT ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
+
+    virtual INT executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList);
 
     INT decodeGetValueKWH         ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetValueDemand      ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetValuePeakDemand  ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    INT decodeGetValueIED         ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetValueLoadProfile ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeScanLoadProfile     ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetStatusInternal   ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
