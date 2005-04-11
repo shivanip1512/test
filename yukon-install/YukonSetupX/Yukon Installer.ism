@@ -225,6 +225,7 @@
 		<col def="I4">ISAttributes</col>
 		<col def="S255">ISFolderName</col>
 		<row><td>BIN</td><td>CLIENT</td><td>Bin</td><td/><td>0</td><td/></row>
+		<row><td>BIN1</td><td>SERVER</td><td>bin</td><td/><td>0</td><td/></row>
 		<row><td>CLIENT</td><td>TARGETDIR</td><td>Client</td><td/><td>0</td><td/></row>
 		<row><td>CLIENT_COMMANDS</td><td>ISRUNTIMETEXTSUBS</td><td>Client\Commands</td><td/><td>0</td><td/></row>
 		<row><td>COMMONFILES</td><td>PROGRAMFILES</td><td>Common Files</td><td/><td>0</td><td/></row>
