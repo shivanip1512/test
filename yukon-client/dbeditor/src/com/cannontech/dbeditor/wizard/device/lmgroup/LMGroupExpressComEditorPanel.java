@@ -4563,8 +4563,7 @@ public void setValue(Object o)
 		getJCheckBoxUSER().setSelected( addUsage.indexOf("U") >= 0 );
 		getJCheckBoxPROG().setSelected( addUsage.indexOf("P") >= 0 );
 		getJCheckBoxSPLINTER().setSelected( addUsage.indexOf("R") >= 0 );
-		if( addUsage.indexOf("L") >= 0 )
-			getJCheckBoxLOAD().doClick();
+		getJCheckBoxLOAD().setSelected(addUsage.indexOf("L") >= 0 );
 
 		if(getJCheckBoxGEO().isSelected())
 			getJTextFieldGeoAddress().setBackground(Color.CYAN);
@@ -4607,8 +4606,8 @@ public void showLoadWarning()
 			JOptionPane.WARNING_MESSAGE);
 			
 	getJCheckBoxLOAD().setSelected(! (confirm == JOptionPane.NO_OPTION && getJCheckBoxLOAD().isSelected()));
-	getJCheckBoxPROG().setSelected(! (confirm == JOptionPane.NO_OPTION && getJCheckBoxPROG().isSelected()));
-	getJCheckBoxSPLINTER().setSelected(! (confirm == JOptionPane.NO_OPTION && getJCheckBoxSPLINTER().isSelected()));
+	//getJCheckBoxPROG().setSelected(! (confirm == JOptionPane.NO_OPTION && getJCheckBoxPROG().isSelected()));
+	//getJCheckBoxSPLINTER().setSelected(! (confirm == JOptionPane.NO_OPTION && getJCheckBoxSPLINTER().isSelected()));
 			
 	return;
 						
