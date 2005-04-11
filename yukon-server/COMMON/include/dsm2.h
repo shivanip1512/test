@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2004/12/14 22:22:34 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/04/11 16:13:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -530,7 +530,7 @@ typedef struct _BSTRUCT
    USHORT Function;           // Indicates the desired operation on the DLC device
    USHORT Length;             // This is the byte count expected from the DLC device based upon the request.
    BYTE   Message[36];
-   USHORT IO;                 // Input or Outout? In its basic form this is a 2 bit indicator of IO_WRITE, IO_READ, IO_FCT_WRITE, IO_FCT_READ
+   USHORT IO;                 // Input or Outout? In its basic form this is a 2 bit indicator of Cti::Protocol::Emetcon::IO_Write, ::IO_Read, ::IO_Function_Write, ::IO_Function_Read
                               //    At other times additional bits are attached and stuffed in B_Word (primarily ARM bits?)
 } BSTRUCT;
 
