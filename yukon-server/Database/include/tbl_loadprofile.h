@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_loadprofile.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/10/22 16:37:51 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/04/11 20:04:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,7 +53,7 @@ protected:
    INT      _lastIntervalDemandRate;
    INT      _loadProfileDemandRate;
    INT      _voltageDemandInterval;
-   INT      _voltageLPDemandRate;
+   INT      _voltageProfileRate;
 
    BOOL     _channelValid[MaxCollectedChannel];
 
@@ -72,7 +72,7 @@ public:
    INT  getLastIntervalDemandRate() const;
    INT  getLoadProfileDemandRate()  const;
    INT  getVoltageDemandInterval()  const;
-   INT  getVoltageLoadProfileRate() const;
+   INT  getVoltageProfileRate() const;
 /*
    CtiTableDeviceLoadProfile& setLoadProfileDemandRate( const INT aRate );
    CtiTableDeviceLoadProfile& setLastIntervalDemandRate( const INT aDemandInterval );

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_loadprofile.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/04/11 20:04:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,7 +46,7 @@ CtiTableDeviceLoadProfile& CtiTableDeviceLoadProfile::operator=(const CtiTableDe
 
         for(int i = 0; i < MaxCollectedChannel; i++)
         {
-            _channelValid[i]     = aRef.isChannelValid(1);
+            _channelValid[i]     = aRef.isChannelValid(i);
         }
     }
     return *this;
@@ -55,7 +55,7 @@ CtiTableDeviceLoadProfile& CtiTableDeviceLoadProfile::operator=(const CtiTableDe
 INT  CtiTableDeviceLoadProfile::getLastIntervalDemandRate() const   {   return _lastIntervalDemandRate; }
 INT  CtiTableDeviceLoadProfile::getLoadProfileDemandRate()  const   {   return _loadProfileDemandRate;  }
 INT  CtiTableDeviceLoadProfile::getVoltageDemandInterval()  const   {   return _voltageDemandInterval;  }
-INT  CtiTableDeviceLoadProfile::getVoltageLoadProfileRate() const   {   return _voltageLPDemandRate;    }
+INT  CtiTableDeviceLoadProfile::getVoltageProfileRate()     const   {   return _voltageProfileRate;    }
 
 /*
 CtiTableDeviceLoadProfile& CtiTableDeviceLoadProfile::setLastIntervalDemandRate( const INT aDemandInterval )
@@ -116,7 +116,7 @@ void CtiTableDeviceLoadProfile::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["lastintervaldemandrate"] >> _lastIntervalDemandRate;
     rdr["loadprofiledemandrate"]  >> _loadProfileDemandRate;
     rdr["voltagedmdinterval"]     >> _voltageDemandInterval;
-    rdr["voltagedmdrate"]         >> _voltageLPDemandRate;
+    rdr["voltagedmdrate"]         >> _voltageProfileRate;
 
     rdr["loadprofilecollection"] >> rwsTemp;
     rwsTemp.toLower();
