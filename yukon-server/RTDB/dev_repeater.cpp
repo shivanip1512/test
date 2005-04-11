@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/02/17 23:19:59 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/04/11 20:08:58 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,9 @@
 #include "porter.h"
 #include "utility.h"
 #include "numstr.h"
+
+using Cti::Protocol::Emetcon;
+
 
 set< CtiDLCCommandStore > CtiDeviceRepeater900::_commandStore;
 
@@ -57,30 +60,30 @@ bool CtiDeviceRepeater900::initCommandStore()
 
     CtiDLCCommandStore cs;
 
-    cs._cmd = CtiProtocolEmetcon::Scan_General;
-    cs._io = IO_READ;
+    cs._cmd = Emetcon::Scan_General;
+    cs._io  = Emetcon::IO_Read;
     cs._funcLen = make_pair((int)Rpt_ModelPos, 1);
     _commandStore.insert( cs );
 
-    cs._cmd = CtiProtocolEmetcon::Command_Loop;
-    cs._io = IO_READ;
+    cs._cmd = Emetcon::Command_Loop;
+    cs._io  = Emetcon::IO_Read;
     cs._funcLen = make_pair((int)Rpt_ModelPos, 1);
     _commandStore.insert( cs );
 
-    cs._cmd = CtiProtocolEmetcon::PutConfig_Role;
-    cs._io = IO_WRITE;
+    cs._cmd = Emetcon::PutConfig_Role;
+    cs._io  = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)Rpt_RoleBasePos,
                             (int)Rpt_RoleLen);
     _commandStore.insert( cs );
 
-    cs._cmd = CtiProtocolEmetcon::GetConfig_Role;
-    cs._io = IO_READ;
+    cs._cmd = Emetcon::GetConfig_Role;
+    cs._io  = Emetcon::IO_Read;
     cs._funcLen = make_pair((int)Rpt_RoleBasePos,
                             (int)Rpt_RoleLen);
     _commandStore.insert( cs );
 
-    cs._cmd = CtiProtocolEmetcon::GetConfig_Model;
-    cs._io = IO_READ;
+    cs._cmd = Emetcon::GetConfig_Model;
+    cs._io  = Emetcon::IO_Read;
     cs._funcLen = make_pair((int)Rpt_ModelPos,
                             (int)Rpt_ModelLen);
     _commandStore.insert( cs );
@@ -216,7 +219,7 @@ INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &par
         }
 
 
-        if(getOperation(CtiProtocolEmetcon::Command_Loop, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
+        if(getOperation(Emetcon::Command_Loop, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
         {
             // Load all the other stuff that is needed
             OutMessage->DeviceID  = getID();
@@ -225,7 +228,7 @@ INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &par
             OutMessage->Remote    = getAddress();
             EstablishOutMessagePriority( OutMessage, ScanPriority );
             OutMessage->TimeOut   = 2;
-            OutMessage->Sequence  = CtiProtocolEmetcon::Scan_General;     // Helps us figure it out later!
+            OutMessage->Sequence  = Emetcon::Scan_General;     // Helps us figure it out later!
             OutMessage->Retry     = 3;
 
             // Tell the porter side to complete the assembly of the message.
@@ -263,7 +266,7 @@ INT CtiDeviceRepeater900::executeLoopback(CtiRequestMsg                  *pReq,
 
     INT function;
 
-    function = CtiProtocolEmetcon::Command_Loop;
+    function = Emetcon::Command_Loop;
     found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
     if(!found)
@@ -310,7 +313,7 @@ INT CtiDeviceRepeater900::executeGetConfig(CtiRequestMsg                  *pReq,
         //  correct for 1-based numbering (C++ and repeater's memory want 0-based)
         int rolenum = parse.getiValue("rolenum") - 1;
 
-        function = CtiProtocolEmetcon::GetConfig_Role;
+        function = Emetcon::GetConfig_Role;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
         //  add on offset if it's role 2-24, else default to role 1 (no offset)
@@ -325,7 +328,7 @@ INT CtiDeviceRepeater900::executeGetConfig(CtiRequestMsg                  *pReq,
     }
     else if(parse.isKeyValid("model"))
     {
-        function = CtiProtocolEmetcon::GetConfig_Model;
+        function = Emetcon::GetConfig_Model;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
 
@@ -375,7 +378,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
        //  correct for 1-based numbering
        int rolenum = parse.getiValue("rolenum") - 1;
 
-       function = CtiProtocolEmetcon::PutConfig_Role;
+       function = Emetcon::PutConfig_Role;
        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
        //  add on offset if it's role 2-24, else default to role 1 (no offset)
@@ -395,7 +398,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
     }
     else if(parse.isKeyValid("multi_rolenum"))
     {
-       function = CtiProtocolEmetcon::PutConfig_Role;
+       function = Emetcon::PutConfig_Role;
        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
        int fixbits;
@@ -538,7 +541,7 @@ INT CtiDeviceRepeater900::executeGetValue(CtiRequestMsg                  *pReq,
    //  for the rpt 800
    if(parse.getFlags() & CMD_FLAG_GV_PFCOUNT)
    {
-       function = CtiProtocolEmetcon::GetValue_PFCount;
+       function = Emetcon::GetValue_PFCount;
        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
    }
 
@@ -573,26 +576,26 @@ INT CtiDeviceRepeater900::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
    switch(InMessage->Sequence)
    {
-   case (CtiProtocolEmetcon::Scan_General):
-   case (CtiProtocolEmetcon::Command_Loop):
+   case (Emetcon::Scan_General):
+   case (Emetcon::Command_Loop):
       {
          status = decodeLoopback(InMessage, TimeNow, vgList, retList, outList);
          break;
       }
 
-   case (CtiProtocolEmetcon::GetConfig_Model):
+   case (Emetcon::GetConfig_Model):
       {
          status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);
          break;
       }
 
-   case (CtiProtocolEmetcon::PutConfig_Role):
+   case (Emetcon::PutConfig_Role):
       {
          status = decodePutConfigRole(InMessage, TimeNow, vgList, retList, outList);
          break;
       }
 
-   case (CtiProtocolEmetcon::GetConfig_Role):
+   case (Emetcon::GetConfig_Role):
       {
          status = decodeGetConfigRole(InMessage, TimeNow, vgList, retList, outList);
          break;

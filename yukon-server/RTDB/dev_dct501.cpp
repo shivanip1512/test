@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/02/25 21:44:41 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/04/11 20:13:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,9 @@
 #include "porter.h"
 #include "pt_numeric.h"
 #include "numstr.h"
+
+using Cti::Protocol::Emetcon;
+
 
 set< CtiDLCCommandStore > CtiDeviceDCT501::_commandStore;
 
@@ -56,20 +59,20 @@ bool CtiDeviceDCT501::initCommandStore()
 
     CtiDLCCommandStore cs;
 
-    cs._cmd     = CtiProtocolEmetcon::Scan_Integrity;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::Scan_Integrity;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair( (int)DCT_AnalogsPos,
                              (int)DCT_AnalogsLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetValue_Demand;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetValue_Demand;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair( (int)DCT_AnalogsPos,
                              (int)DCT_AnalogsLen );
     _commandStore.insert( cs );
 
-//    cs._cmd     = CtiProtocolEmetcon::PutConfig_LoadProfileInterval;
-//    cs._io      = IO_WRITE;
+//    cs._cmd     = Emetcon::PutConfig_LoadProfileInterval;
+//    cs._io      = Emetcon::IO_Write;
 //    cs._funcLen = make_pair( (int)MCT_LPInt_Func, 0 );
 //    _commandStore.insert( cs );
 
@@ -120,10 +123,7 @@ ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
         //  send load profile interval on the next 5 minute boundary
         _nextLPScanTime = (Now.seconds() - MCT_LPWindow) + 300;
 
-        if( _nextLPScanTime % 300 )
-        {
-            _nextLPScanTime -= _nextLPScanTime % 300;
-        }
+        _nextLPScanTime -= _nextLPScanTime % 300;
     }
     else
     {
@@ -378,7 +378,7 @@ bool CtiDeviceDCT501::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 
         OutMessage->Buffer.BSt.Function = lpBlockAddress;
         OutMessage->Buffer.BSt.Length   = 12;  //  2 bytes per interval
-        OutMessage->Buffer.BSt.IO       = IO_READ;
+        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Read;
 
         retVal = true;
     }
@@ -408,20 +408,20 @@ INT CtiDeviceDCT501::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
     switch(InMessage->Sequence)
     {
-    case (CtiProtocolEmetcon::Scan_Integrity):
-    case (CtiProtocolEmetcon::GetValue_Demand):
+    case (Emetcon::Scan_Integrity):
+    case (Emetcon::GetValue_Demand):
         {
             status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-    case (CtiProtocolEmetcon::Scan_LoadProfile):
+    case (Emetcon::Scan_LoadProfile):
         {
             status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-    case (CtiProtocolEmetcon::GetConfig_Model):
+    case (Emetcon::GetConfig_Model):
         {
             status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);
             break;

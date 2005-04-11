@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/02/25 21:48:32 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/04/11 20:09:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,8 @@
 #include "mgr_point.h"
 #include "pt_numeric.h"
 #include "numstr.h"
+
+using Cti::Protocol::Emetcon;
 
 
 set< CtiDLCCommandStore > CtiDeviceMCT_LMT2::_commandStore;
@@ -53,30 +55,30 @@ bool CtiDeviceMCT_LMT2::initCommandStore()
 
    CtiDLCCommandStore cs;
 
-   cs._cmd     = CtiProtocolEmetcon::Scan_LoadProfile;
-   cs._io      = IO_READ;
+   cs._cmd     = Emetcon::Scan_LoadProfile;
+   cs._io      = Emetcon::IO_Read;
    cs._funcLen = make_pair( 0,0 );
    _commandStore.insert( cs );
 
-   cs._cmd     = CtiProtocolEmetcon::PutStatus_ResetOverride;
-   cs._io      = IO_WRITE;
+   cs._cmd     = Emetcon::PutStatus_ResetOverride;
+   cs._io      = Emetcon::IO_Write;
    cs._funcLen = make_pair( (int)MCT_LMT2_ResetOverrideFunc, 0 );
    _commandStore.insert( cs );
 
-   cs._cmd     = CtiProtocolEmetcon::GetStatus_LoadProfile;
-   cs._io      = IO_READ;
+   cs._cmd     = Emetcon::GetStatus_LoadProfile;
+   cs._io      = Emetcon::IO_Read;
    cs._funcLen = make_pair( (int)MCT_LMT2_LPStatusPos,
                             (int)MCT_LMT2_LPStatusLen );
    _commandStore.insert( cs );
 
-   cs._cmd     = CtiProtocolEmetcon::GetConfig_LoadProfileInterval;
-   cs._io      = IO_READ;
+   cs._cmd     = Emetcon::GetConfig_LoadProfileInterval;
+   cs._io      = Emetcon::IO_Read;
    cs._funcLen = make_pair( (int)MCT_LMT2_LPIntervalPos,
                             (int)MCT_LMT2_LPIntervalLen );
    _commandStore.insert( cs );
 
-   cs._cmd     = CtiProtocolEmetcon::PutConfig_LoadProfileInterval;
-   cs._io      = IO_WRITE;
+   cs._cmd     = Emetcon::PutConfig_LoadProfileInterval;
+   cs._io      = Emetcon::IO_Write;
    cs._funcLen = make_pair( (int)MCT_Command_LPInt, 0 );
    _commandStore.insert( cs );
 
@@ -131,10 +133,7 @@ ULONG CtiDeviceMCT_LMT2::calcNextLPScanTime( void )
         //  send load profile interval on the next 5 minute boundary
         _nextLPScanTime = Now.seconds() + 300;
 
-        if( _nextLPScanTime % 300 )
-        {
-            _nextLPScanTime -= _nextLPScanTime % 300;
-        }
+        _nextLPScanTime -= _nextLPScanTime % 300;
     }
     else if( pPoint && getLoadProfile().isChannelValid(0) )
     {
@@ -309,7 +308,7 @@ bool CtiDeviceMCT_LMT2::calcLPRequestLocation( const CtiCommandParser &parse, OU
 
         OutMessage->Buffer.BSt.Function = lpBlockAddress;
         OutMessage->Buffer.BSt.Length   = 12;  //  2 bytes per interval
-        OutMessage->Buffer.BSt.IO       = IO_READ;
+        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Read;
 
         retVal = true;
     }
@@ -334,25 +333,25 @@ INT CtiDeviceMCT_LMT2::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSl
 
     switch(InMessage->Sequence)
     {
-        case (CtiProtocolEmetcon::Scan_LoadProfile):
+        case (Emetcon::Scan_LoadProfile):
         {
             status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetStatus_Internal):
+        case (Emetcon::GetStatus_Internal):
         {
             status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetStatus_LoadProfile):
+        case (Emetcon::GetStatus_LoadProfile):
         {
             status = decodeGetStatusLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetConfig_Model):
+        case (Emetcon::GetConfig_Model):
         {
             status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);
             break;

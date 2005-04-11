@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/04/11 20:08:33 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,9 @@
 #include "porter.h"
 #include "utility.h"
 #include "numstr.h"
+
+using Cti::Protocol::Emetcon;
+
 
 set< CtiDLCCommandStore > CtiDeviceRepeater800::_commandStore;
 
@@ -54,8 +57,8 @@ bool CtiDeviceRepeater800::initCommandStore()
 
    CtiDLCCommandStore cs;
 
-   cs._cmd = CtiProtocolEmetcon::GetValue_PFCount;
-   cs._io = IO_READ;
+   cs._cmd = Emetcon::GetValue_PFCount;
+   cs._io  = Emetcon::IO_Read;
    cs._funcLen = make_pair((int)Rpt800_PFCountPos,
                            (int)Rpt800_PFCountLen);
    _commandStore.insert( cs );
@@ -101,7 +104,7 @@ INT CtiDeviceRepeater800::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
    switch(InMessage->Sequence)
    {
-   case (CtiProtocolEmetcon::GetValue_PFCount):
+   case (Emetcon::GetValue_PFCount):
       {
          status = decodeGetValuePFCount(InMessage, TimeNow, vgList, retList, outList);
          break;

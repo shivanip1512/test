@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/04/11 20:13:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,9 @@
 #include "porter.h"
 #include "pt_numeric.h"
 #include "numstr.h"
+
+using Cti::Protocol::Emetcon;
+
 
 set< CtiDLCCommandStore > CtiDeviceMCT2XX::_commandStore;
 
@@ -56,74 +59,74 @@ bool CtiDeviceMCT2XX::initCommandStore()
 
     CtiDLCCommandStore cs;
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_Raw;
-    cs._io      = IO_WRITE | Q_ARMC;
+    cs._cmd     = Emetcon::PutConfig_Raw;
+    cs._io      = Emetcon::IO_Write | Q_ARMC;
     cs._funcLen = make_pair( 0, 0 );  //  this will be filled in by executePutConfig
     _commandStore.insert( cs );
 
     //  MCT 2xx common commands
-    cs._cmd     = CtiProtocolEmetcon::GetValue_PFCount;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetValue_PFCount;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair( (int)MCT2XX_PFCountPos,
                              (int)MCT2XX_PFCountLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutValue_ResetPFCount;
-    cs._io      = IO_WRITE | Q_ARMC;
+    cs._cmd     = Emetcon::PutValue_ResetPFCount;
+    cs._io      = Emetcon::IO_Write | Q_ARMC;
     cs._funcLen = make_pair( (int)MCT2XX_PFCountPos,
                              (int)MCT2XX_PFCountLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetStatus_Internal;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetStatus_Internal;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair( (int)MCT2XX_GenStatPos,
                              (int)MCT2XX_GenStatLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutStatus_Reset;
-    cs._io      = IO_WRITE | Q_ARMC;
+    cs._cmd     = Emetcon::PutStatus_Reset;
+    cs._io      = Emetcon::IO_Write | Q_ARMC;
     cs._funcLen = make_pair( (int)MCT2XX_ResetPos,
                              (int)MCT2XX_ResetLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetConfig_Multiplier;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetConfig_Multiplier;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair( (int)MCT2XX_MultPos,
                              (int)MCT2XX_MultLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_Multiplier;
-    cs._io      = IO_WRITE | Q_ARMC;
+    cs._cmd     = Emetcon::PutConfig_Multiplier;
+    cs._io      = Emetcon::IO_Write | Q_ARMC;
     cs._funcLen = make_pair( (int)MCT2XX_MultPos,
                              (int)MCT2XX_MultLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetConfig_Options;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetConfig_Options;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair( (int)MCT2XX_OptionPos,
                              (int)MCT2XX_OptionLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetConfig_Time;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetConfig_Time;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair( (int)MCT2XX_TimePos,
                              (int)MCT2XX_TimeLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_TSync;
-    cs._io      = IO_WRITE | Q_ARMC;
+    cs._cmd     = Emetcon::PutConfig_TSync;
+    cs._io      = Emetcon::IO_Write | Q_ARMC;
     cs._funcLen = make_pair( (int)MCT_TSyncPos,
                              (int)MCT_TSyncLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_UniqueAddr;
-    cs._io      = IO_WRITE | Q_ARMC;
+    cs._cmd     = Emetcon::PutConfig_UniqueAddr;
+    cs._io      = Emetcon::IO_Write | Q_ARMC;
     cs._funcLen = make_pair((int)MCT2XX_UniqAddrPos,
                             (int)MCT2XX_UniqAddrLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_Raw;
-    cs._io      = IO_WRITE | Q_ARMC;
+    cs._cmd     = Emetcon::PutConfig_Raw;
+    cs._io      = Emetcon::IO_Write | Q_ARMC;
     cs._funcLen = make_pair( 0, 0 );
     _commandStore.insert( cs );
 
@@ -172,33 +175,33 @@ INT CtiDeviceMCT2XX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
     switch(InMessage->Sequence)
     {
-        case (CtiProtocolEmetcon::Scan_Accum):
-        case (CtiProtocolEmetcon::GetValue_Default):
+        case (Emetcon::Scan_Accum):
+        case (Emetcon::GetValue_Default):
         {
             status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::Scan_Integrity):
-        case (CtiProtocolEmetcon::GetValue_Demand):
+        case (Emetcon::Scan_Integrity):
+        case (Emetcon::GetValue_Demand):
         {
             status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetStatus_Internal):
+        case (Emetcon::GetStatus_Internal):
         {
             status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetConfig_Model):
+        case (Emetcon::GetConfig_Model):
         {
             status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);  // Parent method.
             break;
         }
 
-        case (CtiProtocolEmetcon::GetConfig_Options):
+        case (Emetcon::GetConfig_Options):
         {
             status = decodeGetConfigOptions(InMessage, TimeNow, vgList, retList, outList);
             break;

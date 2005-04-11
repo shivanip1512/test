@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/02/25 21:46:50 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/04/11 20:10:23 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,9 @@
 
 #include "dev_mct.h"     //  for freeze commands
 #include "dev_mct31x.h"  //  for IED scanning capability
+
+using Cti::Protocol::Emetcon;
+
 
 set< CtiDLCCommandStore > CtiDeviceMCTBroadcast::_commandStore;
 
@@ -177,7 +180,7 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
 
     if( parse.getFlags() & CMD_FLAG_PS_RESET )
     {
-        function = CtiProtocolEmetcon::PutStatus_Reset;
+        function = Emetcon::PutStatus_Reset;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
     else if( parse.isKeyValid("freeze") )
@@ -187,12 +190,12 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
 
         if( parse.getiValue("freeze") == 1 )
         {
-            function = CtiProtocolEmetcon::PutStatus_FreezeOne;
+            function = Emetcon::PutStatus_FreezeOne;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
         }
         else if( parse.getiValue("freeze") == 2 )
         {
-            function = CtiProtocolEmetcon::PutStatus_FreezeTwo;
+            function = Emetcon::PutStatus_FreezeTwo;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
         }
     }
@@ -245,7 +248,7 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
         {
             int iedtype = ((CtiDeviceMCT31X *)this)->getIEDPort().getIEDType();
 
-            function = CtiProtocolEmetcon::PutValue_IEDReset;
+            function = Emetcon::PutValue_IEDReset;
 
             if( getType() == TYPEMCT360 || getType() == TYPEMCT370 )
             {
@@ -330,23 +333,23 @@ bool CtiDeviceMCTBroadcast::initCommandStore()
     CtiDLCCommandStore cs;
 
 
-    cs._cmd     = CtiProtocolEmetcon::PutStatus_Reset;
-    cs._io      = IO_FCT_WRITE;
+    cs._cmd     = Emetcon::PutStatus_Reset;
+    cs._io      = Emetcon::IO_Function_Write;
     cs._funcLen = make_pair((int)MCTBCAST_ResetPF, (int)MCTBCAST_ResetPFLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutStatus_FreezeOne;
-    cs._io      = IO_FCT_WRITE;
+    cs._cmd     = Emetcon::PutStatus_FreezeOne;
+    cs._io      = Emetcon::IO_Function_Write;
     cs._funcLen = make_pair((int)CtiDeviceMCT::MCT_Command_FreezeOne, 0);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutStatus_FreezeTwo;
-    cs._io      = IO_FCT_WRITE;
+    cs._cmd     = Emetcon::PutStatus_FreezeTwo;
+    cs._io      = Emetcon::IO_Function_Write;
     cs._funcLen = make_pair((int)CtiDeviceMCT::MCT_Command_FreezeTwo, 0);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutValue_IEDReset;
-    cs._io      = IO_FCT_WRITE;
+    cs._cmd     = Emetcon::PutValue_IEDReset;
+    cs._io      = Emetcon::IO_Function_Write;
     cs._funcLen = make_pair(0, 0);
     _commandStore.insert( cs );
 

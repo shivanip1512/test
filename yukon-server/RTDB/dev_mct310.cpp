@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2005/02/25 21:58:03 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2005/04/11 20:12:26 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,9 @@
 #include "porter.h"
 #include "utility.h"
 #include "dllyukon.h"
+
+using Cti::Protocol::Emetcon;
+
 
 set< CtiDLCCommandStore > CtiDeviceMCT310::_commandStore;
 
@@ -61,220 +64,220 @@ bool CtiDeviceMCT310::initCommandStore( )
 
     CtiDLCCommandStore cs;
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_Raw;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutConfig_Raw;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair( 0, 0 );  //  this will be filled in by executePutConfig
     _commandStore.insert( cs );
 
     //  300 series common commands
-    cs._cmd     = CtiProtocolEmetcon::GetConfig_Time;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetConfig_Time;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair((int)MCT3XX_TimePos,
                             (int)MCT3XX_TimeLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetConfig_DemandInterval;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetConfig_DemandInterval;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair((int)MCT3XX_DemandIntervalPos,
                             (int)MCT3XX_DemandIntervalLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetConfig_LoadProfileInterval;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetConfig_LoadProfileInterval;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair((int)MCT3XX_LPIntervalPos,
                             (int)MCT3XX_LPIntervalLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetConfig_Multiplier;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetConfig_Multiplier;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair((int)MCT3XX_Mult1Pos,
                             (int)MCT3XX_MultLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetConfig_Options;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetConfig_Options;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair((int)MCT3XX_OptionPos,
                             (int)MCT3XX_OptionLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetConfig_GroupAddress;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetConfig_GroupAddress;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair((int)MCT3XX_GroupAddrPos,
                             (int)MCT3XX_GroupAddrLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_UniqueAddr;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutConfig_UniqueAddr;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT3XX_UniqAddrPos,
                             (int)MCT3XX_UniqAddrLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddr_GoldSilver;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutConfig_GroupAddr_GoldSilver;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT3XX_GroupAddrGoldSilverPos,
                             (int)MCT3XX_GroupAddrGoldSilverLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddr_Bronze;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutConfig_GroupAddr_Bronze;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT3XX_GroupAddrBronzePos,
                             (int)MCT3XX_GroupAddrBronzeLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddr_Lead;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutConfig_GroupAddr_Lead;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT3XX_GroupAddrLeadPos,
                             (int)MCT3XX_GroupAddrLeadLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_DemandInterval;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutConfig_DemandInterval;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT3XX_DemandIntervalPos,
                             (int)MCT3XX_DemandIntervalLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_LoadProfileInterval;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutConfig_LoadProfileInterval;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT_Command_LPInt, 0);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_Multiplier;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutConfig_Multiplier;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT3XX_Mult1Pos,
                             (int)MCT3XX_MultLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_TSync;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutConfig_TSync;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT_TSyncPos,
                             (int)MCT_TSyncLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_OnOffPeak;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutConfig_OnOffPeak;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT3XX_MinMaxPeakConfigPos, 1);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_MinMax;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutConfig_MinMax;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT3XX_MinMaxPeakConfigPos, 1);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::Scan_Accum;
-    cs._io      = IO_FCT_READ;
+    cs._cmd     = Emetcon::Scan_Accum;
+    cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair((int)MCT3XX_FuncReadMReadPos,
                             (int)MCT3XX_FuncReadMReadLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetValue_Default;
-    cs._io      = IO_FCT_READ;
+    cs._cmd     = Emetcon::GetValue_Default;
+    cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair((int)MCT3XX_FuncReadMReadPos,
                             (int)MCT3XX_FuncReadMReadLen);
     _commandStore.insert( cs );
 
 //  ACH add frozen support for 310
 /*
-    cs._cmd     = CtiProtocolEmetcon::GetValue_FrozenKWH;
-    cs._io      = IO_FCT_READ;
+    cs._cmd     = Emetcon::GetValue_FrozenKWH;
+    cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair((int)MCT3XX_FuncReadFrozenPos,
                             (int)MCT3XX_FuncReadFrozenLen);
     _commandStore.insert( cs );
 */
-    cs._cmd     = CtiProtocolEmetcon::GetStatus_Internal;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetStatus_Internal;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair((int)MCT3XX_GenStatPos,
                             (int)MCT3XX_GenStatLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutStatus_Reset;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutStatus_Reset;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT3XX_ResetPos,
                             (int)MCT3XX_ResetLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetValue_PFCount;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetValue_PFCount;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair((int)MCT3XX_PFCountPos,
                             (int)MCT3XX_PFCountLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutValue_ResetPFCount;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutValue_ResetPFCount;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT3XX_PFCountPos,
                             (int)MCT3XX_PFCountLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutStatus_PeakOn;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutStatus_PeakOn;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT3XX_FunctionPeakOn, 0);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutStatus_PeakOff;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutStatus_PeakOff;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT3XX_FunctionPeakOff, 0);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutStatus_FreezeOne;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutStatus_FreezeOne;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT_Command_FreezeOne, 0);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutStatus_FreezeTwo;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutStatus_FreezeTwo;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT_Command_FreezeTwo, 0);
     _commandStore.insert( cs );
 
     //  only valid for sspec 1007 (and above?)
-    cs._cmd      = CtiProtocolEmetcon::Scan_Integrity;
-    cs._io       = IO_READ;
+    cs._cmd      = Emetcon::Scan_Integrity;
+    cs._io       = Emetcon::IO_Read;
     cs._funcLen  = make_pair((int)MCT310_DemandPos,
                              (int)MCT310_DemandLen);
     _commandStore.insert( cs );
 
     //  310 specific commands
     //  310 cannot do a FR0x92 (MCT31X_FuncReadDemand) and can only collect 1 demand reading!
-    cs._cmd      = CtiProtocolEmetcon::Scan_Integrity;
-    cs._io       = IO_READ;
+    cs._cmd      = Emetcon::Scan_Integrity;
+    cs._io       = Emetcon::IO_Read;
     cs._funcLen  = make_pair((int)MCT310_DemandPos,
                              (int)MCT310_DemandLen);
     _commandStore.insert( cs );
 
-    cs._cmd      = CtiProtocolEmetcon::GetValue_Demand;
-    cs._io       = IO_READ;
+    cs._cmd      = Emetcon::GetValue_Demand;
+    cs._io       = Emetcon::IO_Read;
     cs._funcLen  = make_pair((int)MCT310_DemandPos,
                              (int)MCT310_DemandLen);
     _commandStore.insert( cs );
 
-    cs._cmd      = CtiProtocolEmetcon::PutValue_KYZ;
-    cs._io       = IO_WRITE;
+    cs._cmd      = Emetcon::PutValue_KYZ;
+    cs._io       = Emetcon::IO_Write;
     cs._funcLen  = make_pair((int)MCT3XX_PutMRead1Pos,
                              (int)MCT3XX_PutMReadLen);
     _commandStore.insert( cs );
 
-    cs._cmd      = CtiProtocolEmetcon::GetValue_PeakDemand;
-    cs._io       = IO_FCT_READ;
+    cs._cmd      = Emetcon::GetValue_PeakDemand;
+    cs._io       = Emetcon::IO_Function_Read;
     cs._funcLen  = make_pair((int)MCT3XX_FuncReadMinMaxDemandPos, 4);
     _commandStore.insert( cs );
 
-    cs._cmd      = CtiProtocolEmetcon::GetValue_FrozenPeakDemand;
-    cs._io       = IO_FCT_READ;
+    cs._cmd      = Emetcon::GetValue_FrozenPeakDemand;
+    cs._io       = Emetcon::IO_Function_Read;
     cs._funcLen  = make_pair((int)MCT3XX_FuncReadFrozenDemandPos, 4);
     _commandStore.insert( cs );
 
     //  only valid for 310IL, this case handled in getOperation
-    cs._cmd      = CtiProtocolEmetcon::Scan_LoadProfile;
-    cs._io       = IO_FCT_READ;
+    cs._cmd      = Emetcon::Scan_LoadProfile;
+    cs._io       = Emetcon::IO_Function_Read;
     cs._funcLen  = make_pair(0, 0);
     _commandStore.insert( cs );
 
-    cs._cmd      = CtiProtocolEmetcon::GetStatus_Disconnect;
-    cs._io       = IO_READ;
+    cs._cmd      = Emetcon::GetStatus_Disconnect;
+    cs._io       = Emetcon::IO_Read;
     cs._funcLen  = make_pair((int)MCT310_StatusPos,
                              (int)MCT310_StatusLen);
     _commandStore.insert( cs );
 
-    cs._cmd      = CtiProtocolEmetcon::GetStatus_LoadProfile;
-    cs._io       = IO_READ;
+    cs._cmd      = Emetcon::GetStatus_LoadProfile;
+    cs._io       = Emetcon::IO_Read;
     cs._funcLen  = make_pair((int)MCT3XX_LPStatusPos,
                              (int)MCT3XX_LPStatusLen);
     _commandStore.insert( cs );
@@ -297,7 +300,7 @@ bool CtiDeviceMCT310::getOperation( const UINT &cmd, USHORT &function, USHORT &l
     //  the 310IL/IDL is the only 310 that supports load profile, and i didn't want to add a seperate class for the one action
     if( getType( ) != TYPEMCT310IL  &&
         getType( ) != TYPEMCT310IDL &&
-        cmd == CtiProtocolEmetcon::Scan_LoadProfile )
+        cmd == Emetcon::Scan_LoadProfile )
     {
         //  for emphasis...
         found = false;
@@ -336,10 +339,7 @@ ULONG CtiDeviceMCT310::calcNextLPScanTime( void )
         //  send load profile interval on the next 5 minute boundary
         _nextLPScanTime = Now.seconds() + 300;
 
-        if( _nextLPScanTime % 300 )
-        {
-            _nextLPScanTime -= _nextLPScanTime % 300;
-        }
+        _nextLPScanTime -= _nextLPScanTime % 300;
     }
     else if( pPoint && getLoadProfile().isChannelValid(0) )
     {
@@ -512,7 +512,7 @@ bool CtiDeviceMCT310::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 
         OutMessage->Buffer.BSt.Function = lpBlockAddress;
         OutMessage->Buffer.BSt.Length   = 13;  //  2 bytes per interval, and a status byte to boot
-        OutMessage->Buffer.BSt.IO       = IO_FCT_READ;
+        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
 
         retVal = true;
     }
@@ -542,79 +542,79 @@ INT CtiDeviceMCT310::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
     switch(InMessage->Sequence)
     {
-        case (CtiProtocolEmetcon::Scan_Accum):
-        case (CtiProtocolEmetcon::GetValue_Default):
+        case (Emetcon::Scan_Accum):
+        case (Emetcon::GetValue_Default):
         {
             status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::Scan_Integrity):
-        case (CtiProtocolEmetcon::GetValue_Demand):
+        case (Emetcon::Scan_Integrity):
+        case (Emetcon::GetValue_Demand):
         {
             status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::Scan_LoadProfile):
+        case (Emetcon::Scan_LoadProfile):
         {
             status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetValue_PeakDemand):
-        case (CtiProtocolEmetcon::GetValue_FrozenPeakDemand):
+        case (Emetcon::GetValue_PeakDemand):
+        case (Emetcon::GetValue_FrozenPeakDemand):
         {
             status = decodeGetValuePeak(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::PutConfig_OnOffPeak):
-        case (CtiProtocolEmetcon::PutConfig_MinMax):
+        case (Emetcon::PutConfig_OnOffPeak):
+        case (Emetcon::PutConfig_MinMax):
         {
             status = decodePutConfigPeakMode(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::PutStatus_FreezeOne):
-        case (CtiProtocolEmetcon::PutStatus_FreezeTwo):
+        case (Emetcon::PutStatus_FreezeOne):
+        case (Emetcon::PutStatus_FreezeTwo):
         {
             status = decodePutStatus(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetStatus_Disconnect):
+        case (Emetcon::GetStatus_Disconnect):
         {
             status = decodeGetStatusDisconnect(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetStatus_Internal):
+        case (Emetcon::GetStatus_Internal):
         {
             status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetStatus_LoadProfile):
+        case (Emetcon::GetStatus_LoadProfile):
         {
             status = decodeGetStatusLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetConfig_Model):
+        case (Emetcon::GetConfig_Model):
         {
             status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetConfig_Options):
+        case (Emetcon::GetConfig_Options):
         {
             status = decodeGetConfigOptions(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::Control_Conn):
-        case (CtiProtocolEmetcon::Control_Disc):
+        case (Emetcon::Control_Conn):
+        case (Emetcon::Control_Disc):
         {
             CtiRequestMsg newReq(getID(),
                                  "getstatus disconnect noqueue",
@@ -677,7 +677,7 @@ INT CtiDeviceMCT310::decodePutConfigPeakMode(INMESS *InMessage, RWTime &TimeNow,
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        if( InMessage->Sequence == CtiProtocolEmetcon::PutConfig_MinMax )
+        if( InMessage->Sequence == Emetcon::PutConfig_MinMax )
         {
             resultString = getName() + " / peak mode set to \"minmax\"";
         }
@@ -946,7 +946,7 @@ INT CtiDeviceMCT310::decodeGetValuePeak(INMESS *InMessage, RWTime &TimeNow, RWTP
                 resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                          ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                if( InMessage->Sequence == CtiProtocolEmetcon::GetValue_FrozenPeakDemand )
+                if( InMessage->Sequence == Emetcon::GetValue_FrozenPeakDemand )
                 {
                     pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
                     if(pData != NULL)

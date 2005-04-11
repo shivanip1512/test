@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2005/02/10 23:24:03 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2005/04/11 20:05:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1642,9 +1642,9 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
         {
             //  if queueing has been turned off
             if( CCUNoQueue ||
-                (CCUNoQueueScans && ((OutMessage->Sequence == CtiProtocolEmetcon::Scan_Accum)   ||
-                                     (OutMessage->Sequence == CtiProtocolEmetcon::Scan_General) ||
-                                     (OutMessage->Sequence == CtiProtocolEmetcon::Scan_Integrity))) )
+                (CCUNoQueueScans && ((OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_Accum)   ||
+                                     (OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_General) ||
+                                     (OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_Integrity))) )
             {
                 RWCString cmdStr(OutMessage->Request.CommandStr);
 

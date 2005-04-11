@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2005/02/25 21:58:36 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2005/04/11 20:12:26 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,9 @@
 #include "pt_numeric.h"
 #include "numstr.h"
 #include "dllyukon.h"
+
+using Cti::Protocol::Emetcon;
+
 
 const double CtiDeviceMCT31X::MCT360_GEKV_KWHMultiplier = 2000000.0;
 
@@ -73,78 +76,78 @@ bool CtiDeviceMCT31X::initCommandStore( )
 
     CtiDLCCommandStore cs;
 
-    cs._cmd     = CtiProtocolEmetcon::Scan_General;
-    cs._io      = IO_FCT_READ;
+    cs._cmd     = Emetcon::Scan_General;
+    cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair( (int)MCT31X_FuncReadDemandPos,
                              (int)MCT31X_FuncReadStatusLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::Scan_Integrity;
-    cs._io      = IO_FCT_READ;
+    cs._cmd     = Emetcon::Scan_Integrity;
+    cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair( (int)MCT31X_FuncReadDemandPos,
                              (int)MCT31X_FuncReadDemandLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetValue_Demand;
-    cs._io      = IO_FCT_READ;
+    cs._cmd     = Emetcon::GetValue_Demand;
+    cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair( (int)MCT31X_FuncReadDemandPos,
                              (int)MCT31X_FuncReadDemandLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::Scan_LoadProfile;
-    cs._io      = IO_FCT_READ;
+    cs._cmd     = Emetcon::Scan_LoadProfile;
+    cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair(0,0);
     _commandStore.insert( cs );
 
-    cs._cmd      = CtiProtocolEmetcon::GetValue_PeakDemand;
-    cs._io       = IO_FCT_READ;
+    cs._cmd      = Emetcon::GetValue_PeakDemand;
+    cs._io       = Emetcon::IO_Function_Read;
     cs._funcLen  = make_pair((int)MCT3XX_FuncReadMinMaxDemandPos, 12);
     _commandStore.insert( cs );
 
-    cs._cmd      = CtiProtocolEmetcon::GetValue_FrozenPeakDemand;
-    cs._io       = IO_FCT_READ;
+    cs._cmd      = Emetcon::GetValue_FrozenPeakDemand;
+    cs._io       = Emetcon::IO_Function_Read;
     cs._funcLen  = make_pair((int)MCT3XX_FuncReadFrozenDemandPos, 12);
     _commandStore.insert( cs );
 
     //  add the 2 other channels for 318s
-    cs._cmd     = CtiProtocolEmetcon::PutValue_KYZ2;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutValue_KYZ2;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair( (int)MCT3XX_PutMRead2Pos,
                              (int)MCT3XX_PutMReadLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutValue_KYZ3;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutValue_KYZ3;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair( (int)MCT3XX_PutMRead3Pos,
                              (int)MCT3XX_PutMReadLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetStatus_External;
-    cs._io      = IO_FCT_READ;
+    cs._cmd     = Emetcon::GetStatus_External;
+    cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair( (int)MCT31X_FuncReadDemandPos,
                              (int)MCT31X_FuncReadStatusLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetConfig_Multiplier2;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetConfig_Multiplier2;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair( (int)MCT3XX_Mult2Pos,
                              (int)MCT3XX_MultLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetConfig_Multiplier3;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetConfig_Multiplier3;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair( (int)MCT3XX_Mult3Pos,
                              (int)MCT3XX_MultLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_Multiplier2;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutConfig_Multiplier2;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair( (int)MCT3XX_Mult2Pos,
                              (int)MCT3XX_MultLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_Multiplier3;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutConfig_Multiplier3;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair( (int)MCT3XX_Mult3Pos,
                              (int)MCT3XX_MultLen );
     _commandStore.insert( cs );
@@ -152,60 +155,60 @@ bool CtiDeviceMCT31X::initCommandStore( )
     //  these are commands for the 360 and 370 only
 
     //  scan address and length are identical for the p+ and s4
-    cs._cmd     = CtiProtocolEmetcon::GetConfig_IEDScan;
-    cs._io      = IO_READ;
+    cs._cmd     = Emetcon::GetConfig_IEDScan;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair( (int)MCT360_IEDScanPos,
                              (int)MCT360_IEDScanLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_IEDScan;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutConfig_IEDScan;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair( (int)MCT360_IEDScanPos, 2 );  //  just 2 bytes - seconds and delay
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_IEDClass;
-    cs._io      = IO_WRITE;
+    cs._cmd     = Emetcon::PutConfig_IEDClass;
+    cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair( (int)MCT360_IEDClassPos,
                              (int)MCT360_IEDClassLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetConfig_IEDTime;
-    cs._io      = IO_FCT_READ;
+    cs._cmd     = Emetcon::GetConfig_IEDTime;
+    cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair( (int)MCT360_IEDTimePos,
                              (int)MCT360_IEDTimeLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetValue_IEDDemand;
-    cs._io      = IO_FCT_READ;
+    cs._cmd     = Emetcon::GetValue_IEDDemand;
+    cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair( (int)MCT360_IEDDemandPos,
                              (int)MCT360_IEDReqLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetValue_IEDKwh;
-    cs._io      = IO_FCT_READ;
+    cs._cmd     = Emetcon::GetValue_IEDKwh;
+    cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair( (int)MCT360_IEDKwhPos,
                              (int)MCT360_IEDReqLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetValue_IEDKvarh;
-    cs._io      = IO_FCT_READ;
+    cs._cmd     = Emetcon::GetValue_IEDKvarh;
+    cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair( (int)MCT360_IEDKvarhPos,
                              (int)MCT360_IEDReqLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetValue_IEDKvah;
-    cs._io      = IO_FCT_READ;
+    cs._cmd     = Emetcon::GetValue_IEDKvah;
+    cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair( (int)MCT360_IEDKvahPos,
                              (int)MCT360_IEDReqLen );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutValue_IEDReset;
-    cs._io      = IO_FCT_WRITE;
+    cs._cmd     = Emetcon::PutValue_IEDReset;
+    cs._io      = Emetcon::IO_Function_Write;
     cs._funcLen = make_pair( 0, 0 );
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetStatus_IEDLink;
-    cs._io      = IO_FCT_READ;
+    cs._cmd     = Emetcon::GetStatus_IEDLink;
+    cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair( (int)MCT360_IEDLinkPos,
                              (int)MCT360_IEDLinkLen );
     _commandStore.insert( cs );
@@ -228,7 +231,7 @@ bool CtiDeviceMCT31X::getOperation( const UINT &cmd, USHORT &function, USHORT &l
     //  the 318L is the only 31x that supports load profile that we're concerned about here, and it'd be silly to make another class for one function
     //    we want it to stop here, no matter what, no Inherited::anything...
     if( getType( ) != TYPEMCT318L &&
-        cmd == CtiProtocolEmetcon::Scan_LoadProfile )
+        cmd == Emetcon::Scan_LoadProfile )
     {
         //  just for emphasis
         found = false;
@@ -266,10 +269,7 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
         //  send load profile interval on the next 5 minute boundary
         _nextLPScanTime = (Now.seconds() - MCT_LPWindow) + 300;
 
-        if( _nextLPScanTime % 300 )
-        {
-            _nextLPScanTime -= _nextLPScanTime % 300;
-        }
+       _nextLPScanTime -= _nextLPScanTime % 300;
     }
     else
     {
@@ -527,7 +527,7 @@ bool CtiDeviceMCT31X::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 
         OutMessage->Buffer.BSt.Function = lpBlockAddress;
         OutMessage->Buffer.BSt.Length   = 13;  //  2 bytes per interval, and a status byte to boot
-        OutMessage->Buffer.BSt.IO       = IO_FCT_READ;
+        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
 
         retVal = true;
     }
@@ -552,33 +552,33 @@ INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
     switch(InMessage->Sequence)
     {
-        case CtiProtocolEmetcon::Scan_General:
-        case CtiProtocolEmetcon::GetStatus_External:
+        case Emetcon::Scan_General:
+        case Emetcon::GetStatus_External:
         {
             //  A general scan for any MCT does status decode only.
             status = decodeStatus(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case CtiProtocolEmetcon::GetStatus_IEDLink:
+        case Emetcon::GetStatus_IEDLink:
         {
             status = decodeGetStatusIED(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case CtiProtocolEmetcon::Scan_Accum:
-        case CtiProtocolEmetcon::GetValue_Default:
+        case Emetcon::Scan_Accum:
+        case Emetcon::GetValue_Default:
         {
             status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case CtiProtocolEmetcon::Scan_Integrity:
+        case Emetcon::Scan_Integrity:
         {
             //  to catch the IED case
             setMCTScanPending(ScanRateIntegrity, false);  //  resetScanPending();
         }
-        case CtiProtocolEmetcon::GetValue_Demand:
+        case Emetcon::GetValue_Demand:
         {
             //  we only have status info if we're not getting the demand from the IED
             if( (getType() == TYPEMCT360 || getType() == TYPEMCT370) && getIEDPort().getRealTimeScanFlag() )
@@ -600,31 +600,31 @@ INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             break;
         }
 
-        case (CtiProtocolEmetcon::Scan_LoadProfile):
+        case (Emetcon::Scan_LoadProfile):
         {
             status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetValue_PeakDemand):
-        case (CtiProtocolEmetcon::GetValue_FrozenPeakDemand):
+        case (Emetcon::GetValue_PeakDemand):
+        case (Emetcon::GetValue_FrozenPeakDemand):
         {
             status = decodeGetValuePeak(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetConfig_IEDTime):
-        case (CtiProtocolEmetcon::GetConfig_IEDScan):
+        case (Emetcon::GetConfig_IEDTime):
+        case (Emetcon::GetConfig_IEDScan):
         {
             status = decodeGetConfigIED(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetValue_IED):
-        case (CtiProtocolEmetcon::GetValue_IEDDemand):
-        case (CtiProtocolEmetcon::GetValue_IEDKvah):
-        case (CtiProtocolEmetcon::GetValue_IEDKvarh):
-        case (CtiProtocolEmetcon::GetValue_IEDKwh):
+        case (Emetcon::GetValue_IED):
+        case (Emetcon::GetValue_IEDDemand):
+        case (Emetcon::GetValue_IEDKvah):
+        case (Emetcon::GetValue_IEDKvarh):
+        case (Emetcon::GetValue_IEDKwh):
         {
             status = decodeGetValueIED(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -783,7 +783,7 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
         {
             switch( InMessage->Sequence )
             {
-                case CtiProtocolEmetcon::GetStatus_IEDLink:
+                case Emetcon::GetStatus_IEDLink:
                 {
                     //  i don't know if this is valid for the status bytes
 #if 0
@@ -1045,7 +1045,7 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
 
         switch( InMessage->Sequence )
         {
-            case CtiProtocolEmetcon::GetConfig_IEDTime:
+            case Emetcon::GetConfig_IEDTime:
             {
                 for( int i = 0; i < 12; i++ )
                 {
@@ -1183,7 +1183,7 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                 break;
             }
 
-            case CtiProtocolEmetcon::GetConfig_IEDScan:
+            case Emetcon::GetConfig_IEDScan:
             {
                 switch( getIEDPort().getIEDType() )
                 {
@@ -2416,7 +2416,7 @@ INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, RWTime &TimeNow, RWTP
                 resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                          ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                if( InMessage->Sequence == CtiProtocolEmetcon::GetValue_FrozenPeakDemand )
+                if( InMessage->Sequence == Emetcon::GetValue_FrozenPeakDemand )
                 {
                     pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
                     if(pData != NULL)

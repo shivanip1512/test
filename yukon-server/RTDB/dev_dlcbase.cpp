@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/02/17 23:23:36 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/04/11 20:13:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,9 @@
 #include "utility.h"
 #include "porter.h"
 #include "numstr.h"
+
+using Cti::Protocol::Emetcon;
+
 
 unsigned int CtiDeviceDLCBase::_lpRetryMultiplier = 0;
 unsigned int CtiDeviceDLCBase::_lpRetryMinimum    = 0;
@@ -284,7 +287,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
             {
                 switch( InMessage->Sequence )
                 {
-                    case CtiProtocolEmetcon::Scan_General:
+                    case Emetcon::Scan_General:
                     {
                         pMsg->insert( -1 );             //  This is the dispatch token and is unimplemented at this time
                         pMsg->insert(OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
@@ -295,7 +298,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
                         break;
                     }
 
-                    case CtiProtocolEmetcon::Scan_Accum:
+                    case Emetcon::Scan_Accum:
                     {
                         pMsg->insert( -1 );             //  This is the dispatch token and is unimplemented at this time
                         pMsg->insert(OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
@@ -306,7 +309,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
                         break;
                     }
 
-                    case CtiProtocolEmetcon::Scan_Integrity:
+                    case Emetcon::Scan_Integrity:
                     {
                         pMsg->insert( -1 );             //  This is the dispatch token and is unimplemented at this time
                         pMsg->insert(OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h

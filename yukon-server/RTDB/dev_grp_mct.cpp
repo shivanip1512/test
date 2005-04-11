@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/10 23:23:59 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/04/11 20:13:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,8 @@
 #include "porter.h"
 #include "numstr.h"
 #include "prot_emetcon.h"
+
+using Cti::Protocol::Emetcon;
 
 
 CtiDeviceGroupMCT::CtiDeviceGroupMCT()
@@ -356,11 +358,11 @@ INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &pa
                 {
                     shed_function = shed_function_base | (shed_function_relays & 0x0f);
 
-                    function = CtiProtocolEmetcon::Control_Shed;
+                    function = Emetcon::Control_Shed;
 
                     OutMessage->Buffer.BSt.Function = shed_function;
                     OutMessage->Buffer.BSt.Length   = 0;
-                    OutMessage->Buffer.BSt.IO       = IO_WRITE;
+                    OutMessage->Buffer.BSt.IO       = Emetcon::IO_Write;
 
                     found = true;
                 }
@@ -377,11 +379,11 @@ INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &pa
     }
     else if( parse.getFlags() & CMD_FLAG_CTL_RESTORE )
     {
-        function = CtiProtocolEmetcon::Control_Restore;
+        function = Emetcon::Control_Restore;
 
         OutMessage->Buffer.BSt.Function = MCTGroup_Restore;
         OutMessage->Buffer.BSt.Length   = 0;
-        OutMessage->Buffer.BSt.IO       = IO_WRITE;
+        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Write;
 
         found = true;
     }
