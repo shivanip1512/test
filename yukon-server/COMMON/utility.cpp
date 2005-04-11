@@ -2328,7 +2328,7 @@ LONG ResetBreakAlloc()
     return allocReqNum;
 }
 
-#define LOADPROFILESEQUENCE 4  //  CtiProtocolEmetcon::Scan_LoadProfile
+#define LOADPROFILESEQUENCE 4  //  Cti::Protocol::Emetcon::Scan_LoadProfile
 
 
 bool findLPRequestEntries(void *om, void* d)

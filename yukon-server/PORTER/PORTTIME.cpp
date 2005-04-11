@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/03/09 22:11:09 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/04/11 16:16:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -593,7 +593,7 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
                 message.Address  = CtiDeviceMCT410::UniversalAddress;
                 message.Function = CtiDeviceMCT410::FuncWrite_TSyncPos;
                 message.Length   = CtiDeviceMCT410::FuncWrite_TSyncLen;
-                message.IO       = IO_FCT_WRITE;
+                message.IO       = Cti::Protocol::Emetcon::IO_Function_Write;
 
                 message.Message[0] = 0xff;  //  global SPID
                 message.Message[1] = (time >> 24) & 0x000000ff;
