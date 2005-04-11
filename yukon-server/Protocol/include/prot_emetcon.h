@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/04/11 16:50:17 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/04/11 21:06:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -102,8 +102,8 @@ public:
     {
         IO_Write          = 0,
         IO_Read           = 1,
-        IO_Function_Read  = 2,
-        IO_Function_Write = 3
+        IO_Function_Write = 2,
+        IO_Function_Read  = 3
     };
 
     enum CtiDLCCommand_t
