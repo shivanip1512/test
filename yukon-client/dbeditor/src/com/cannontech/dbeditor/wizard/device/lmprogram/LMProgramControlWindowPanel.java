@@ -734,8 +734,11 @@ public void setTimedOperationalStateCondition(boolean timedOrNot)
 		ivjLocalBorder2.setTitle("Optional Available For Control Window #2");
 		getJPanelOptionalWindow2().setBorder(ivjLocalBorder2);
 		
-		/*if(getJCheckBoxUse2().isSelected())
-			getJCheckBoxUse2().doClick();*/
+		if(getJCheckBoxUse1().isSelected())
+			getJCheckBoxUse1().doClick();
+		
+		if(getJCheckBoxUse2().isSelected())
+			getJCheckBoxUse2().doClick();
 	}
 	
 	/*//fire it off to enable that window

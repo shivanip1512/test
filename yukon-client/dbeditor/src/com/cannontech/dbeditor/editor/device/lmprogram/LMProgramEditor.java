@@ -50,7 +50,15 @@ public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel 
 	class IvjEventHandler implements java.awt.event.ActionListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == basePanel.getActionPasser())
-				controlWindowPanel.getWindowChangePasser().doClick();
+			{
+				if(basePanel.isTimedOperationalState())
+					controlWindowPanel.getWindowChangePasser().doClick();
+				else
+				{
+					controlWindowPanel.getWindowChangePasser().setSelected(true);
+					controlWindowPanel.getWindowChangePasser().doClick();
+				}
+			}
 		};
 	}
 	
