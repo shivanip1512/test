@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/10 23:23:57 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/04/11 16:50:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,23 +26,84 @@
 #include "logger.h"
 
 
-CtiProtocolEmetcon& CtiProtocolEmetcon::setDouble(BOOL dbl)
+namespace Cti      {
+namespace Protocol {
+
+
+Emetcon::Emetcon(INT devType, INT transmitterType) :
+    _ied(0),
+    _last(0),
+    _deviceType(devType),
+    _transmitterType(transmitterType),
+    _double(FALSE)
+{
+}
+
+
+Emetcon::Emetcon(const Emetcon& aRef)  :
+    _ied(0),
+    _last(0),
+    _double(FALSE)
+{
+    _out.clearAndDestroy();
+    *this = aRef;
+}
+
+
+Emetcon::~Emetcon()
+{
+    _out.clearAndDestroy();
+}
+
+
+INT Emetcon::entries() const
+{
+    return _out.entries();
+}
+
+
+Emetcon& Emetcon::operator=(const Emetcon& aRef)
+{
+    if(this != &aRef)
+    {
+        _out.clearAndDestroy();
+
+        for( int i = 0; i < aRef.entries(); i++ )
+        {
+            _ied = getIED();
+
+            OUTMESS *Out = CTIDBG_new OUTMESS(aRef.getOutMessage(i));
+            if(Out != NULL)
+            {
+                _out.insert( Out );
+            }
+        }
+
+        _sspec = aRef.getSSpec();
+        _transmitterType  = aRef.getTransmitterType();
+    }
+    return *this;
+}
+
+
+Emetcon& Emetcon::setDouble(BOOL dbl)
 {
    _double = dbl;
    return *this;
 }
 
-BOOL CtiProtocolEmetcon::getDouble() const
+
+BOOL Emetcon::getDouble() const
 {
    return _double;
 }
 
 
-INT CtiProtocolEmetcon::primeOut(const OUTMESS &OutTemplate)
+INT Emetcon::primeOut(const OUTMESS &OutTemplate)
 {
-   INT      status = NORMAL;
+   INT status = NORMAL;
 
-   OUTMESS  *Out = CTIDBG_new OUTMESS(OutTemplate);
+   OUTMESS *Out = CTIDBG_new OUTMESS(OutTemplate);
 
    if(Out != NULL)
    {
@@ -57,14 +118,16 @@ INT CtiProtocolEmetcon::primeOut(const OUTMESS &OutTemplate)
    return status;
 }
 
-INT CtiProtocolEmetcon::advanceAndPrime(const OUTMESS &OutTemp)
+
+INT Emetcon::advanceAndPrime(const OUTMESS &OutTemp)
 {
    return primeOut(OutTemp);
 }
 
-INT CtiProtocolEmetcon::parseRequest(CtiCommandParser  &parse, OUTMESS &aOutTemplate)
+
+INT Emetcon::parseRequest(CtiCommandParser  &parse, OUTMESS &aOutTemplate)
 {
-    INT            status = NORMAL;
+    INT status = NORMAL;
 
     switch( parse.getCommand() )
     {
@@ -100,9 +163,9 @@ INT CtiProtocolEmetcon::parseRequest(CtiCommandParser  &parse, OUTMESS &aOutTemp
 }
 
 
-INT CtiProtocolEmetcon::assembleCommand(CtiCommandParser  &parse, OUTMESS &aOutTemplate)
+INT Emetcon::assembleCommand(CtiCommandParser  &parse, OUTMESS &aOutTemplate)
 {
-   INT   status = NORMAL;
+   INT status = NORMAL;
 
    status = primeOut(aOutTemplate);                   // Copy and add to the list.
 
@@ -116,7 +179,7 @@ INT CtiProtocolEmetcon::assembleCommand(CtiCommandParser  &parse, OUTMESS &aOutT
    return status;
 }
 
-INT CtiProtocolEmetcon::buildMessages(CtiCommandParser  &parse, const OUTMESS &aOutTemplate)
+INT Emetcon::buildMessages(CtiCommandParser  &parse, const OUTMESS &aOutTemplate)
 {
    INT status = NORMAL;
 
@@ -139,7 +202,7 @@ INT CtiProtocolEmetcon::buildMessages(CtiCommandParser  &parse, const OUTMESS &a
    return status;
 }
 
-INT CtiProtocolEmetcon::buildAWordMessages(CtiCommandParser  &parse, const OUTMESS &aOutTemplate)
+INT Emetcon::buildAWordMessages(CtiCommandParser  &parse, const OUTMESS &aOutTemplate)
 {
    INT status = NORMAL;
 
@@ -159,7 +222,7 @@ INT CtiProtocolEmetcon::buildAWordMessages(CtiCommandParser  &parse, const OUTME
    return status;
 }
 
-INT CtiProtocolEmetcon::buildBWordMessages(CtiCommandParser  &parse, const OUTMESS &aOutTemplate)
+INT Emetcon::buildBWordMessages(CtiCommandParser  &parse, const OUTMESS &aOutTemplate)
 {
    INT status = NORMAL;
 
@@ -167,7 +230,7 @@ INT CtiProtocolEmetcon::buildBWordMessages(CtiCommandParser  &parse, const OUTME
 
    OUTMESS *curOutMessage= _out[_last];                 // Grab a pointer to the current OUTMESS
 
-   if( aOutTemplate.Buffer.BSt.IO & IO_READ )
+   if( aOutTemplate.Buffer.BSt.IO & Emetcon::IO_Read )
    {
       /* build preamble message.  At this point wordCount represents the number of outbound cwords (it is zero for a read!) */
 
@@ -215,8 +278,8 @@ INT CtiProtocolEmetcon::buildBWordMessages(CtiCommandParser  &parse, const OUTME
       /*  build the b word
        *
        *  At this point wordCount represents:
-       *   IO_READ: the number of dwords expected.
-       *   IO_WRITE / IO_FCT_WRITE: the number of cwords being sent out to the field.
+       *   IO_Read  / IO_Function_Read:  the number of dwords expected.
+       *   IO_Write / IO_Function_Write: the number of cwords being sent out to the field.
        */
 
       B_Word (curOutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN, aOutTemplate.Buffer.BSt, wordCount, getDouble());
@@ -233,7 +296,7 @@ INT CtiProtocolEmetcon::buildBWordMessages(CtiCommandParser  &parse, const OUTME
 }
 
 
-INT CtiProtocolEmetcon::determineDWordCount(INT Length)
+INT Emetcon::determineDWordCount(INT Length)
 {
    INT cnt = 0;
 
@@ -248,16 +311,16 @@ INT CtiProtocolEmetcon::determineDWordCount(INT Length)
    return cnt;
 }
 
-OUTMESS CtiProtocolEmetcon::getOutMessage(INT pos) const
+OUTMESS Emetcon::getOutMessage(INT pos) const
 {
    return *_out[pos];
 }
-OUTMESS& CtiProtocolEmetcon::getOutMessage(INT pos)
+OUTMESS& Emetcon::getOutMessage(INT pos)
 {
    return *_out[pos];
 }
 
-OUTMESS* CtiProtocolEmetcon::popOutMessage()
+OUTMESS* Emetcon::popOutMessage()
 {
    OUTMESS *ptr = _out.removeFirst();
    _last = _out.entries() - 1;
@@ -266,47 +329,47 @@ OUTMESS* CtiProtocolEmetcon::popOutMessage()
 }
 
 
-CtiProtocolEmetcon& CtiProtocolEmetcon::setTransmitterType(INT type)
+Emetcon& Emetcon::setTransmitterType(INT type)
 {
    _transmitterType = type;
    return *this;
 }
-INT CtiProtocolEmetcon::getTransmitterType() const
+INT Emetcon::getTransmitterType() const
 {
    return _transmitterType;
 }
 
-CtiProtocolEmetcon& CtiProtocolEmetcon::setSSpec(INT spec)
+Emetcon& Emetcon::setSSpec(INT spec)
 {
    _sspec = spec;
    return *this;
 }
-INT CtiProtocolEmetcon::getSSpec() const
+INT Emetcon::getSSpec() const
 {
    return _sspec;
 }
 
-CtiProtocolEmetcon& CtiProtocolEmetcon::setIED(INT ied)
+Emetcon& Emetcon::setIED(INT ied)
 {
    _ied = ied;
    return *this;
 }
-INT CtiProtocolEmetcon::getIED() const
+INT Emetcon::getIED() const
 {
    return _ied;
 }
 
-CtiProtocolEmetcon& CtiProtocolEmetcon::setDeviceType(INT type)
+Emetcon& Emetcon::setDeviceType(INT type)
 {
    _deviceType = type;
    return *this;
 }
-INT CtiProtocolEmetcon::getDeviceType() const
+INT Emetcon::getDeviceType() const
 {
    return _deviceType;
 }
 
-int CtiProtocolEmetcon::getControlInterval(CtiCommandParser &parse) const
+int Emetcon::getControlInterval(CtiCommandParser &parse) const
 {
     int nRet = 0;
     int Seconds = parse.getiValue("shed", 0);
@@ -339,3 +402,9 @@ int CtiProtocolEmetcon::getControlInterval(CtiCommandParser &parse) const
 
     return nRet;
 }
+
+
+
+};
+};
+
