@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2005/04/11 20:57:33 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2005/04/11 21:11:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1685,6 +1685,72 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
                         OutMessage->Buffer.BSt.Message[3] = 0x09;  //  procedure 9
                         OutMessage->Buffer.BSt.Message[4] = 0x01;  //  parameter length 1
                         OutMessage->Buffer.BSt.Message[5] = 0x01;  //  demand reset bit set
+                        break;
+                    }
+
+                    default:
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Invalid IED type " << iedtype << " on device \'" << getName() << "\' **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                        break;
+                    }
+                }
+            }
+            else if( getType() == TYPEMCT470 )
+            {
+                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+                switch( iedtype )
+                {
+                    case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
+                    {
+                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT470::MCT470_FuncWrite_IEDCommand;
+                        OutMessage->Buffer.BSt.Length     = CtiDeviceMCT470::MCT470_FuncWrite_IEDCommandLen;
+                        OutMessage->Buffer.BSt.Message[0] = 0xff;  //  SPID
+                        OutMessage->Buffer.BSt.Message[1] = 3;     //  meter type: Alpha Power Plus
+                        OutMessage->Buffer.BSt.Message[2] = 1;     //  meter num:  1?
+                        OutMessage->Buffer.BSt.Message[3] = 0x01;  //  function:   reset
+
+                        break;
+                    }
+
+                    case CtiTableDeviceMCTIEDPort::LandisGyrS4:
+                    {
+                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT470::MCT470_FuncWrite_IEDCommand;
+                        OutMessage->Buffer.BSt.Length     = CtiDeviceMCT470::MCT470_FuncWrite_IEDCommandLen;
+                        OutMessage->Buffer.BSt.Message[0] = 0xff;  //  SPID
+                        OutMessage->Buffer.BSt.Message[1] = 1;     //  meter type: S4
+                        OutMessage->Buffer.BSt.Message[2] = 1;     //  meter num:  1?
+                        OutMessage->Buffer.BSt.Message[3] = 0x2b;  //  function:   reset
+
+                        break;
+                    }
+
+                    case CtiTableDeviceMCTIEDPort::GeneralElectricKV:
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - device \'" << getName() << "\' - demand reset to GE kV not implemented yet **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        found = false;
+
+                        /*
+                        //  this seems to be valid, since it's pretty much just copied from above - but it needs
+                        //    to be tested before it's dropped back in
+
+                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT470::MCT470_FuncWrite_IEDCommandData;
+                        OutMessage->Buffer.BSt.Length     = CtiDeviceMCT470::MCT470_FuncWrite_IEDCommandDataBaseLen;
+                        OutMessage->Buffer.BSt.Message[0] = 0xff;  //  SPID
+                        OutMessage->Buffer.BSt.Message[1] = 4;     //  meter type: GE kV
+                        OutMessage->Buffer.BSt.Message[2] = 1;     //  meter num:  1?
+                        OutMessage->Buffer.BSt.Message[3] = 0x09;  //  command 9?
+                        OutMessage->Buffer.BSt.Message[4] = 0x01;  //  data length: 1
+                        OutMessage->Buffer.BSt.Message[5] = 0x01;  //  demand reset bit set
+                        */
+
                         break;
                     }
 
