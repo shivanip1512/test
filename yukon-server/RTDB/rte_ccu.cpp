@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/02/17 23:17:15 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/04/11 16:49:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -298,11 +298,11 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
     OutMessage->Port     = _transmitterDevice->getPortID();
     OutMessage->Remote   = _transmitterDevice->getAddress();    // This is the DLC address if the CCU.
 
-    CtiProtocolEmetcon Emetcon(OutMessage->Buffer.BSt.DeviceType, _transmitterDevice->getType());
+    Cti::Protocol::Emetcon prot(OutMessage->Buffer.BSt.DeviceType, _transmitterDevice->getType());
 
     if(OutMessage->EventCode & BWORD)
     {
-        Emetcon.setSSpec(OutMessage->Buffer.BSt.SSpec);
+        prot.setSSpec(OutMessage->Buffer.BSt.SSpec);
 
         /* Load up the hunks of the B structure that we know/need */
         OutMessage->Buffer.BSt.Port                = _transmitterDevice->getPortID();
@@ -313,7 +313,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
         OutMessage->Buffer.BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
         OutMessage->Buffer.BSt.DlcRoute.Stages     = getStages();                // How many repeaters on this route?
 
-        status = Emetcon.parseRequest(parse, *OutMessage);                     // Determin the stuff be need based upon the command.
+        status = prot.parseRequest(parse, *OutMessage);                     // Determin the stuff be need based upon the command.
     }
     else if(OutMessage->EventCode & AWORD)
     {
@@ -326,13 +326,13 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
         OutMessage->Buffer.ASt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
         OutMessage->Buffer.ASt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
 
-        status = Emetcon.parseRequest(parse, *OutMessage);                     // Determine the stuff be need based upon the command.
+        status = prot.parseRequest(parse, *OutMessage);                     // Determine the stuff be need based upon the command.
     }
 
 
-    if( Emetcon.entries() > 0 )
+    if( prot.entries() > 0 )
     {
-        resultString = CtiNumStr(Emetcon.entries()) + " Emetcon DLC commands sent on route " + getName();
+        resultString = CtiNumStr(prot.entries()) + " Emetcon DLC commands sent on route " + getName();
     }
     else
     {
@@ -340,9 +340,9 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
         resultString = "Emetcon DLC commands failed with error " + CtiNumStr(status) + " on route " + getName();
     }
 
-    while( Emetcon.entries() > 0 )
+    while( prot.entries() > 0 )
     {
-        OUTMESS *NewOutMessage = Emetcon.popOutMessage();
+        OUTMESS *NewOutMessage = prot.popOutMessage();
 
         if(NewOutMessage != NULL)
         {

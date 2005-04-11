@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/03/17 19:15:52 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/04/11 16:51:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1134,7 +1134,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
             }
         }
 
-        if(OutMessage->Sequence == CtiProtocolEmetcon::Scan_LoadProfile)
+        if(OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_LoadProfile)
         {
             if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
             {
@@ -1276,7 +1276,7 @@ INT BuildMessage( OUTMESS *&OutMessage, OUTMESS *&SendOutMessage )
         if(OutMessage->Buffer.BSt.IO & 0x01)
         {
             /* calculate number of d words to ask for */
-            wordCount = CtiProtocolEmetcon::determineDWordCount(OutMessage->Buffer.BSt.Length);
+            wordCount = Cti::Protocol::Emetcon::determineDWordCount(OutMessage->Buffer.BSt.Length);
             /* calculate message lengths */
             SendOutMessage->InLength = 3 + wordCount * (DWORDLEN + 1);
         }

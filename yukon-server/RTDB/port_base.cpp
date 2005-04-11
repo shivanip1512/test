@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2005/03/14 01:20:42 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2005/04/11 16:51:23 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.53  2005/04/11 16:51:23  mfisher
+* CtiProtocolEmetcon is now Cti::Protocol::Emetcon
+*
 * Revision 1.52  2005/03/14 01:20:42  cplender
 * Went back to the list.  Don't want to require the Dinkum STL updates.
 *
@@ -327,7 +330,7 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
        OutMessage->HeadFrame[0] == 0x02 && OutMessage->HeadFrame[1] == 0xe0 &&
        OutMessage->TailFrame[0] == 0xea && OutMessage->TailFrame[1] == 0x03)
     {
-        if(OutMessage->Sequence == CtiProtocolEmetcon::Scan_LoadProfile)
+        if(OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_LoadProfile)
         {
             if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
             {
