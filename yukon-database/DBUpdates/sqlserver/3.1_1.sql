@@ -7,10 +7,6 @@ go
 update macschedule set template = 0 where commandfile is not null;
 go
 
-delete from YukonListEntry where ListID in
-(select ListID from YukonSelectionList where ListName like 'OptOutPeriod%');
-
-delete from YukonSelectionList where ListName like 'OptOutPeriod%' and ListID > 2000;
 
 insert into YukonListEntry values (1241,1049,1,'1 Day',24);
 insert into YukonListEntry values (1242,1049,2,'2 Days',48);
