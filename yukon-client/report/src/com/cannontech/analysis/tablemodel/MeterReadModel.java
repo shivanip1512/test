@@ -95,7 +95,7 @@ public class MeterReadModel extends ReportModelBase
 			String paoName = rset.getString(3);
 			String pointName = rset.getString(4);					
 			String routeName = rset.getString(5);
-			String address = String.valueOf(rset.getDouble(6));
+			String address = String.valueOf(rset.getInt(6));
 			MeterData missedMeter = new MeterData(collGrp, paoName, meterNum, address, pointName, routeName);
 
 			getData().add(missedMeter);
