@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2005/03/17 19:19:17 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2005/04/13 14:46:03 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,6 +16,7 @@
 
 
 #include <map>
+#include <string>
 using namespace std;
 
 #include <windows.h>
@@ -672,10 +673,9 @@ int DNP::sendCommResult(INMESS *InMessage)
     buf = reinterpret_cast<char *>(InMessage->Buffer.InMessage);
     offset = 0;
 
-    //  we're just going to send a single string across
-
     _dnp.getInboundStrings(strings);
 
+    //  this needs to be smarter and send the device name and point data elements seperately...
     for( itr = strings.begin(); itr != strings.end(); itr++ )
     {
         result_string += getName().data();
@@ -691,6 +691,7 @@ int DNP::sendCommResult(INMESS *InMessage)
         strings.pop_back();
     }
 
+    //  ... as does this
     for( itr = _string_results.begin(); itr != _string_results.end(); itr++ )
     {
         result_string += *(*itr);
@@ -704,10 +705,29 @@ int DNP::sendCommResult(INMESS *InMessage)
         _string_results.pop_back();
     }
 
-    strncpy(buf, result_string.c_str(), sizeof(InMessage->Buffer.InMessage) - 1);
-    InMessage->Buffer.InMessage[sizeof(InMessage->Buffer.InMessage) - 1] = 0;
+    if( result_string.size() >= sizeof(InMessage->Buffer.InMessage) )
+    {
+        //  make sure we complain about it so we know the magnitude of the problem when people bring it up...
+        //    one possible alternative is to send multple InMessages across with the string data - although,
+        //    considering that the largest message I saw was on the order of 60k, sending 15 InMessages is not very appealing
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Info - result_string.size = " << result_string.size() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        string cropped("\n---cropped---");
+
+        //  erase the end chunk so we can append the "cropped" string in
+        result_string.erase(sizeof(InMessage->Buffer.InMessage) - cropped.size() - 1, result_string.size());
+        result_string += cropped;
+    }
 
     InMessage->InLength = result_string.size() + 1;
+
+    //  make sure we don't overrun the buffer, even though we just checked above
+    strncpy(buf, result_string.c_str(), sizeof(InMessage->Buffer.InMessage) - 1);
+    //  and mark the end with a null, again, just to be sure
+    InMessage->Buffer.InMessage[sizeof(InMessage->Buffer.InMessage) - 1] = 0;
 
     return retval;
 }
@@ -936,6 +956,16 @@ INT DNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessag
     {
         string result_string;
 
+        //  safety first
+        if( InMessage->InLength > sizeof(InMessage->Buffer.InMessage) )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint InMessage->InLength > sizeof(InMessage->Buffer.InMessage) for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            InMessage->InLength = sizeof(InMessage->Buffer.InMessage);
+        }
         InMessage->Buffer.InMessage[InMessage->InLength - 1] = 0;
 
         result_string.assign(reinterpret_cast<char *>(InMessage->Buffer.InMessage), InMessage->InLength);
