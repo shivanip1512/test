@@ -231,17 +231,19 @@ private void connEtoC8(java.awt.event.ActionEvent arg1) {
 		if( getControlPointComboBox().getModel().getSize() > 0 )
 			getControlPointComboBox().removeAllItems();
 
-		int deviceID = ((LiteYukonPAObject)getControlDeviceComboBox().getSelectedItem()).getYukonID();
-		LitePoint[] litPts = PAOFuncs.getLitePointsForPAObject( deviceID );
-		for(int i = 0; i < litPts.length; i++)
+		if(getControlDeviceComboBox().getModel().getSize() > 0)
 		{
-			if( litPts[i].getPointType() == PointTypes.STATUS_POINT)
+			int deviceID = ((LiteYukonPAObject)getControlDeviceComboBox().getSelectedItem()).getYukonID();
+			LitePoint[] litPts = PAOFuncs.getLitePointsForPAObject( deviceID );
+			for(int i = 0; i < litPts.length; i++)
 			{
-				getControlPointComboBox().addItem( litPts[i] );
+				if( litPts[i].getPointType() == PointTypes.STATUS_POINT)
+				{
+					getControlPointComboBox().addItem( litPts[i] );
+				}
 			}
 		}
-
-		// user code end
+			// user code end
 	} catch (java.lang.Throwable ivjExc) {
 		// user code begin {3}
 		// user code end

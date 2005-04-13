@@ -425,15 +425,15 @@ public Object getValue(Object val)
 	com.cannontech.database.data.multi.SmartMultiDBPersistent newVal = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
 
 	//only create Status point if the capbank is Fixed
-	if( capBank.getCapBank().getOperationalState().equalsIgnoreCase(com.cannontech.database.data.capcontrol.CapBank.FIXED_OPSTATE) )
+	/*if( capBank.getCapBank().getOperationalState().equalsIgnoreCase(com.cannontech.database.data.capcontrol.CapBank.FIXED_OPSTATE) )
 	{
 		PointFactory.createBankStatusPt( newVal );
 	}
 	else
-	{
-		PointFactory.createBankStatusPt( newVal );
-		PointFactory.createBankOpCntPoint( newVal );		
-	}
+	{*/
+	PointFactory.createBankStatusPt( newVal );
+	PointFactory.createBankOpCntPoint( newVal );		
+	//}
 
 	((DeviceBase) val).setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
 	newVal.addDBPersistent( capBank );

@@ -24,6 +24,7 @@ abstract class PointCreate
 	private static boolean oneDeviceAnalogPointCreate = false;
 	private static boolean loadGroupPointCreate = false;
 	private static boolean mct410PointCreate = false;
+	private static boolean capBankOpCntPointCreate = false;
 	/**
 	 * PowerFailPointCreate constructor comment.
 	 */
@@ -67,6 +68,10 @@ abstract class PointCreate
 			else if( args[i].toLowerCase().startsWith("mct410"))
 			{
 				mct410PointCreate = true;	//MCT 410 Missing Points Will Be Created
+			}
+			else if( args[i].toLowerCase().startsWith("cbop"))
+			{
+				capBankOpCntPointCreate = true;    //Cap Bank missing Operations Count points will be created
 			}
 		}
 			
@@ -113,14 +118,22 @@ abstract class PointCreate
 			mct410Creator.create();
 			timerStop = new java.util.Date();
 			CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for MCT410AllPointCreate to complete" );
-		}		
+		}
+		if(capBankOpCntPointCreate)			
+		{
+			timerStart = new java.util.Date();
+			CapBank_OpCntPointCreate capBank_OpCntPointCreator = new CapBank_OpCntPointCreate();
+			capBank_OpCntPointCreator.create();
+			timerStop = new java.util.Date();
+			CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for CapBankOpCntPointCreate to complete" );
+		}	
 
 		System.exit(0);
 	}
 
 	/**
 	 * Returns true when the deviceDevID does not already have 
-	 * a POWER FAIL point attached to it.  
+	 * a point attached to it.  
 	 * The list points contains all points to search through.
 	 * Creation date: (2/27/2002 10:37:56 AM)
 	 * @param points java.util.List
@@ -172,7 +185,7 @@ abstract class PointCreate
 		return false;
 	}
 	/**
-	 * Returns a Vector of LiteYukonPaobjects that need a Power Fail point added to them.
+	 * Returns a Vector of LiteYukonPaobjects that need a point added to them.
 	 * Creation date: (4/22/2002 4:11:23 PM)
 	 * @return java.util.Vector
 	 */
@@ -210,8 +223,8 @@ abstract class PointCreate
 		//write all the collected data to the SQL database
 		try
 		{
-		  CTILogger.info("Creating Transaction to insert multi");
-	      multi = (SmartMultiDBPersistent)Transaction.createTransaction( Transaction.INSERT, multi).execute();
+		 	CTILogger.info("Creating Transaction to insert multi");
+	      	multi = (SmartMultiDBPersistent)Transaction.createTransaction( Transaction.INSERT, multi).execute();
 	
 			return true;
 		}

@@ -315,4 +315,27 @@ public void update() throws java.sql.SQLException
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
+
+public static boolean isSwitchedBank( Integer paoID )
+{
+	boolean isSwitched = false;
+	
+	CapBank cb = new CapBank(paoID);
+
+	try
+	{
+		com.cannontech.database.Transaction t =
+			com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, cb);
+		t.execute();
+		
+		isSwitched = cb.getOperationalState().compareTo("Switched") == 0;
+	}
+	catch (com.cannontech.database.TransactionException e)
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
+
+	return isSwitched;
+}
+
 }
