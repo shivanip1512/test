@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/03/17 05:25:42 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/04/13 14:47:11 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -78,7 +78,9 @@ void Application::setCommand( FunctionCode fc )
 
     _request_function = fc;
 
-    _ioState = Output;
+    _ioState    = Output;
+    _retryState = Output;
+    _comm_errors = 0;
 }
 
 
@@ -301,6 +303,7 @@ int Application::generate( CtiXfer &xfer )
             case Failed:
             {
                 //  eventually, we should respect the results from _transport.initForOutput and _transport.initForInput - they could fail, too
+                _ioState = Failed;
                 retVal = NOTNORMAL;
 
                 break;
