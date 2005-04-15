@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/17 19:02:57 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/04/15 18:28:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -204,7 +204,7 @@ void CtiTableDeviceMCTIEDPort::DecodeDatabaseReader(RWDBReader &rdr)
 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        if( getDebugLevel() & 0x0800 ) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        if( getDebugLevel() & DEBUGLEVEL_DATABASE ) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     rdr["deviceid"]     >> _deviceID;

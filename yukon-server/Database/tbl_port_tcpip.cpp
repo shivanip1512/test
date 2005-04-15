@@ -1,6 +1,3 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_port_tcpip
@@ -11,11 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/04/15 18:28:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "tbl_port_tcpip.h"
 #include "logger.h"
@@ -96,7 +94,7 @@ void CtiTablePortTCPIP::DecodeDatabaseReader(RWDBReader &rdr)
         rdr["ipaddress"]        >> _ipAddress;
         rdr["socketportnumber"] >> _ipPort;
 
-        if(getDebugLevel() & 0x00000800)
+        if(getDebugLevel() & DEBUGLEVEL_DATABASE)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

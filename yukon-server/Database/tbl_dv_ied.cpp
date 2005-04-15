@@ -1,6 +1,3 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_dv_ied
@@ -11,11 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_ied.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/04/15 18:28:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "tbl_dv_ied.h"
 #include "logger.h"
@@ -105,7 +103,7 @@ void CtiTableDeviceIED::DecodeDatabaseReader(const INT DeviceType, RWDBReader &r
 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     rdr["password"]         >> temp;

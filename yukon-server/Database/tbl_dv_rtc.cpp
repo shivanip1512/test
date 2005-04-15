@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/02/17 19:02:57 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/04/15 18:28:39 $
 *
 * HISTORY      :
 * $Log: tbl_dv_rtc.cpp,v $
+* Revision 1.4  2005/04/15 18:28:39  mfisher
+* got rid of magic number debuglevel checks
+*
 * Revision 1.3  2005/02/17 19:02:57  mfisher
 * Removed space before CVS comment header, moved #include "yukon.h" after CVS header
 *
@@ -91,7 +94,7 @@ void CtiTableDeviceRTC::DecodeDatabaseReader(RWDBReader &rdr)
 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        if(getDebugLevel() & 0x0800)
+        if(getDebugLevel() & DEBUGLEVEL_DATABASE)
             dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 

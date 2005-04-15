@@ -1,6 +1,3 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_port_dialup
@@ -11,11 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_dialup.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/04/15 18:28:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "tbl_port_dialup.h"
 #include "logger.h"
@@ -149,23 +147,23 @@ void CtiTablePortDialup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSele
 void CtiTablePortDialup::DecodeDatabaseReader(RWDBReader &rdr)
 {
    {
-      if(getDebugLevel() & 0x00000800)
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE)
       {
           CtiLockGuard<CtiLogger> logger_guard(dout);
           dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
       }
 
       rdr["modemtype"]              >> _modemType;
-      if(getDebugLevel() & 0x00000800) { CtiLockGuard<CtiLogger> logger_guard(dout); dout << " Modem Type           = " << _modemType << endl; }
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) { CtiLockGuard<CtiLogger> logger_guard(dout); dout << " Modem Type           = " << _modemType << endl; }
 
       rdr["initializationstring"]   >> _modemInitString;
-      if(getDebugLevel() & 0x00000800) { CtiLockGuard<CtiLogger> logger_guard(dout); dout << " Modem Init String    = " << _modemInitString << endl; }
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) { CtiLockGuard<CtiLogger> logger_guard(dout); dout << " Modem Init String    = " << _modemInitString << endl; }
 
       rdr["prefixnumber"]           >> _prefixString;
-      if(getDebugLevel() & 0x00000800) { CtiLockGuard<CtiLogger> logger_guard(dout); dout << " Prefix String        = " << _prefixString << endl; }
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) { CtiLockGuard<CtiLogger> logger_guard(dout); dout << " Prefix String        = " << _prefixString << endl; }
 
       rdr["suffixnumber"]           >> _suffixString;
-      if(getDebugLevel() & 0x00000800) { CtiLockGuard<CtiLogger> logger_guard(dout); dout << " Suffix String        = " << _suffixString << endl; }
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) { CtiLockGuard<CtiLogger> logger_guard(dout); dout << " Suffix String        = " << _suffixString << endl; }
    }
 }
 

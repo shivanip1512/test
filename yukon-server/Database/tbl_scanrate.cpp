@@ -1,8 +1,3 @@
-#include "yukon.h"
-
-
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_scanrate
@@ -13,11 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_scanrate.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:49 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/04/15 18:28:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "tbl_scanrate.h"
 
@@ -131,7 +127,7 @@ void CtiTableDeviceScanRate::DecodeDatabaseReader(RWDBReader &rdr)
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     RWCString rwstemp;

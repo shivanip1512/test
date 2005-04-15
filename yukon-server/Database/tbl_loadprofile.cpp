@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_loadprofile.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/04/11 20:04:54 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/04/15 18:28:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,7 +109,7 @@ void CtiTableDeviceLoadProfile::DecodeDatabaseReader(RWDBReader &rdr)
 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     rdr["deviceid"] >> _deviceID;

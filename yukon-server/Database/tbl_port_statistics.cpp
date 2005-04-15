@@ -1,6 +1,3 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_port_statistics
@@ -11,12 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_statistics.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/04/15 18:28:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
+#include "yukon.h"
 
 #include "tbl_port_statistics.h"
 #include "logger.h"
@@ -126,20 +123,20 @@ void CtiTablePortStatistics::DecodeDatabaseReader(RWDBReader &rdr)
 {
    {
       CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
       rdr["statistictype"]          >> _type;
-      if(getDebugLevel() & 0x00000800) dout << " Statistic Type       = " << _type << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Statistic Type       = " << _type << endl;
       rdr["attempts"]               >> _attemptCount;
-      if(getDebugLevel() & 0x00000800) dout << " Stats: Attampts      = " << _attemptCount << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Stats: Attampts      = " << _attemptCount << endl;
       rdr["dataerrors"]             >> _dataErrorCount;
-      if(getDebugLevel() & 0x00000800) dout << " Stats: Data Error    = " << _dataErrorCount << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Stats: Data Error    = " << _dataErrorCount << endl;
       rdr["systemerrors"]           >> _systemErrorCount;
-      if(getDebugLevel() & 0x00000800) dout << " Stats: Sys. Errors   = " << _systemErrorCount << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Stats: Sys. Errors   = " << _systemErrorCount << endl;
       rdr["startdatetime"]          >> _startTime;
-      if(getDebugLevel() & 0x00000800) dout << " Stats: Start time    = " << _startTime << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Stats: Start time    = " << _startTime << endl;
       rdr["stopdatetime"]           >> _stopTime;
-      if(getDebugLevel() & 0x00000800) dout << " Stats: Stop time     = " << _stopTime << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Stats: Stop time     = " << _stopTime << endl;
    }
 }
 

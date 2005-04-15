@@ -1,7 +1,3 @@
-#include "yukon.h"
-
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_lm_controlhist
@@ -12,11 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/04/15 18:28:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "tbl_lm_controlhist.h"
 #include "logger.h"
@@ -436,7 +433,7 @@ soe_tag not in (select soe_tag from lmcontrolhistory where activerestore='M' or 
 
 void CtiTableLMControlHistory::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    if(getDebugLevel() & 0x0800)
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -462,7 +459,7 @@ void CtiTableLMControlHistory::DecodeControlTimes(RWDBReader &rdr)
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     rdr["stopdatetime"]        >> _prevLogTime;

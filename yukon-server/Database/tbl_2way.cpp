@@ -1,6 +1,3 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_2way
@@ -11,11 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_2way.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/10 23:23:47 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/04/15 18:28:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include <rw/db/reader.h>
 #include <rw\cstring.h>
@@ -231,7 +229,7 @@ CtiTableDevice2Way& CtiTableDevice2Way::setDeviceID(LONG deviceID)
 void CtiTableDevice2Way::DecodeDatabaseReader(RWDBReader &rdr)
 {
     {
-        if(getDebugLevel() & 0x0800)
+        if(getDebugLevel() & DEBUGLEVEL_DATABASE)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }

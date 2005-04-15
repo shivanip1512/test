@@ -1,6 +1,3 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_port_settings
@@ -11,11 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_settings.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/04/15 18:28:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "tbl_port_settings.h"
 #include "logger.h"
@@ -146,16 +144,16 @@ void CtiTablePortSettings::DecodeDatabaseReader(RWDBReader &rdr)
 {
    {
       CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
       rdr["baudrate"]         >> _baudRate;
-      if(getDebugLevel() & 0x00000800) dout << " Baud Rate            = " << _baudRate << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Baud Rate            = " << _baudRate << endl;
 
       rdr["cdwait"]           >> _cdWait;
-      if(getDebugLevel() & 0x00000800) dout << " CD Wait Time         = " << _cdWait << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " CD Wait Time         = " << _cdWait << endl;
 
       rdr["linesettings"]     >> _lineSettings;
-      if(getDebugLevel() & 0x00000800) dout << " Line Parameters      = " << _lineSettings << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Line Parameters      = " << _lineSettings << endl;
    }
 }
 

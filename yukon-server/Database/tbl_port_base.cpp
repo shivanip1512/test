@@ -1,6 +1,3 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_port_base
@@ -11,11 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_base.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/04/15 18:28:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "tbl_port_base.h"
 #include "logger.h"
@@ -150,32 +148,32 @@ void CtiTablePortBase::DecodeDatabaseReader(RWDBReader &rdr)
 
    {
       CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & 0x00000800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
       rdr["alarminhibit"] >> rwsTemp;
-      if(getDebugLevel() & 0x00000800) dout << " Alarm Inhibit        ? " << rwsTemp << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Alarm Inhibit        ? " << rwsTemp << endl;
       rwsTemp.toLower();
       _alarmInhibit = (rwsTemp(0) == 'y' ? true : false);
 
       rdr["commonprotocol"] >> rwsTemp;
-      if(getDebugLevel() & 0x00000800) dout << " Protocol wrap        = " << rwsTemp  << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Protocol wrap        = " << rwsTemp  << endl;
       _protocol = resolveProtocol(rwsTemp);
 
       rdr["performancealarm"] >> rwsTemp;
-      if(getDebugLevel() & 0x00000800) dout << " Performance Alarming ? " << rwsTemp << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Performance Alarming ? " << rwsTemp << endl;
       rwsTemp.toLower();
       _performanceAlarm = (rwsTemp(0) == 'y' ? true : false);
 
       rdr["performthreshold"] >> _performanceThreshold;
-      if(getDebugLevel() & 0x00000800) dout << "  Performance Thresh. = " << _performanceThreshold  << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "  Performance Thresh. = " << _performanceThreshold  << endl;
 
       rdr["sharedporttype"] >> rwsTemp;
-      if(getDebugLevel() & 0x00000800) dout << " Shared Port Type     = " << rwsTemp << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Shared Port Type     = " << rwsTemp << endl;
       rwsTemp.toLower();
       _sharedPortType = rwsTemp;
 
       rdr["sharedsocketnumber"] >> iTemp;
-      if(getDebugLevel() & 0x00000800) dout << "  Shared Socket Number = " << rwsTemp << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "  Shared Socket Number = " << rwsTemp << endl;
       _sharedSocketNumber = iTemp;
    }
 }

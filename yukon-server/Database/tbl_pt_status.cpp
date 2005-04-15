@@ -1,7 +1,3 @@
-#include "yukon.h"
-
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_pt_status
@@ -10,11 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_status.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/04/15 18:28:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "pointdefs.h"
 #include "tbl_pt_status.h"
@@ -48,7 +45,7 @@ void CtiTablePointStatus::DecodeDatabaseReader(RWDBReader &rdr)
     RWCString rwsTemp;
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     rdr["initialstate"]  >> _initialState;

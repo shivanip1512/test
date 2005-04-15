@@ -1,6 +1,3 @@
-#include "yukon.h"
-#include <windows.h>
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_pt_base
@@ -9,11 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/04/15 18:28:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
+#include <windows.h>
 
 #include "logger.h"
 #include "resolvers.h"
@@ -67,7 +66,7 @@ void CtiTablePointBase::DecodeDatabaseReader(RWDBReader &rdr)
 
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
    }
 
    rdr["pointid"]       >> _pointID;

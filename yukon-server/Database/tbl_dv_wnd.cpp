@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_wnd.cpp-arc  $
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2005/02/10 23:23:48 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2005/04/15 18:28:40 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: tbl_dv_wnd.cpp,v $
+      Revision 1.11  2005/04/15 18:28:40  mfisher
+      got rid of magic number debuglevel checks
+
       Revision 1.10  2005/02/10 23:23:48  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -236,7 +239,7 @@ void CtiTableDeviceWindow::DecodeDatabaseReader(RWDBReader &aRdr)
 {
     LONG close,alternateClose;
 
-    if(getDebugLevel() & 0x0800)
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

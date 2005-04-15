@@ -1,7 +1,3 @@
-#include "yukon.h"
-
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_base
@@ -12,11 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_base.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/10 23:23:47 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/04/15 18:28:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "tbl_base.h"
 
@@ -117,7 +114,7 @@ void CtiTableDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
     INT iTemp;
     RWCString rwsTemp;
 
-    if(getDebugLevel() & 0x0800)
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }

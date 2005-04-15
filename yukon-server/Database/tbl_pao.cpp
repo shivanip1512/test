@@ -1,7 +1,3 @@
-#include "yukon.h"
-
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_pao
@@ -12,11 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pao.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/04/15 18:28:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "dbaccess.h"
 #include "logger.h"
@@ -363,7 +360,7 @@ void CtiTblPAO::DecodeDatabaseReader(RWDBReader &rdr)
     INT iTemp;
     RWCString rwsTemp;
 
-    if(getDebugLevel() & 0x0800)
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
