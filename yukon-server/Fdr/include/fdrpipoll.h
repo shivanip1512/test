@@ -3,23 +3,23 @@
 #ifndef __FDRPIPOLL_H__
 #define __FDRPIPOLL_H__
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   fdrpipoll
-*
-* Class:
-* Date:   1/11/2005
-*
-* Author: Tom Mack
-*
-* PVCS KEYWORDS:
-*    ARCHIVE      :  $Archive:     $
-*    REVISION     :  $Revision: 1.1 $
-*    DATE         :  $Date: 2005/02/14 16:38:42 $
-*
-* Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
-*    History:
-*-----------------------------------------------------------------------------*/
+/**
+ *
+ * File:   fdrpipoll
+ *
+ * Class:
+ * Date:   1/11/2005
+ *
+ * Author: Tom Mack
+ *
+ * PVCS KEYWORDS:
+ *    ARCHIVE      :  $Archive:     $
+ *    REVISION     :  $Revision: 1.2 $
+ *    DATE         :  $Date: 2005/04/15 15:34:41 $
+ *
+ * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
+ *    History:
+ */
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
 #include <rw/cstring.h>
@@ -59,18 +59,18 @@ public:
 
 protected:
 
-  void processNewPoint(PiPointInfoStruct &info);
+  void processNewPiPoint(PiPointInfoStruct &info);
   void beginNewPoints();
   void endNewPoints();
-  void updatePiValues();
+  void doUpdates();
 
-  virtual int readThisConfig();
+  virtual void readThisConfig();
 
-  PollDataList pollData;
+  PollDataList _pollData;
 
 private:
-  bool alwaysSendValues;
-  int  defaultPeriod;
+  bool _alwaysSendValues;
+  int  _defaultPeriod;
   static const CHAR * KEY_ALWAYS_SEND;
   static const CHAR * KEY_DEFAULT_PERIOD;
 };

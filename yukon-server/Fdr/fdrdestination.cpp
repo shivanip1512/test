@@ -77,6 +77,7 @@ CtiFDRDestination& CtiFDRDestination::setDestination (RWCString aDestination)
 }
 
 RWCString CtiFDRDestination::getTranslationValue(RWCString propertyName) const {
+  RWCString result("");
   RWCTokenizer pairTokenizer(getTranslation());
 
   RWCString nameValuePair;
@@ -88,11 +89,10 @@ RWCString CtiFDRDestination::getTranslationValue(RWCString propertyName) const {
       // right now the string looks like this: ":thisvalue;nextproperty:nextvalue"
       // we're going to return up to the ';', and then trim the first character
       RWCString valueWithColon = valueTokenizer(";");
-      RWCString value = valueWithColon(1, valueWithColon.length() - 1);
-      return value;
+      result = valueWithColon(1, valueWithColon.length() - 1);
+      break;
     }
   }
-  RWCString blank("");
-  return blank;
+  return result;
 }
 

@@ -3,23 +3,23 @@
 #ifndef __FDRPINOTIFY_H__
 #define __FDRPINOTIFY_H__
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   fdrpinotify
-*
-* Class:
-* Date:   1/11/2005
-*
-* Author: Tom Mack
-*
-* PVCS KEYWORDS:
-*    ARCHIVE      :  $Archive:     $
-*    REVISION     :  $Revision: 1.1 $
-*    DATE         :  $Date: 2005/02/14 16:38:42 $
-*
-* Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
-*    History:
-*-----------------------------------------------------------------------------*/
+/**
+ *
+ * File:   fdrpinotify
+ *
+ * Class:
+ * Date:   1/11/2005
+ *
+ * Author: Tom Mack
+ *
+ * PVCS KEYWORDS:
+ *    ARCHIVE      :  $Archive:     $
+ *    REVISION     :  $Revision: 1.2 $
+ *    DATE         :  $Date: 2005/04/15 15:34:41 $
+ *
+ * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
+ *    History:
+ */
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
 #include <rw/cstring.h>
@@ -49,22 +49,22 @@ public:
 
 protected:
 
-  void processNewPoint(PiPointInfoStruct &info);
+  void processNewPiPoint(PiPointInfoStruct &info);
   void beginNewPoints();
   void endNewPoints();
 
   void unregisterPoints();
 
-  void updatePiValues();
-
-  PiPointMap pointMap;
-  vector<PiPointId> registerList;
+  void doUpdates();
 
 private:
-  vector<PiPointId> pointList;
-  vector<float> rvalList;
-  vector<int32> istatList;
-  vector<int32> timeList;
+  PiPointMap _pointMap;
+  vector<PiPointId> _registerList;
+
+  vector<PiPointId> _pointList;
+  vector<float> _rvalList;
+  vector<int32> _istatList;
+  vector<int32> _timeList;
 
 };
 
