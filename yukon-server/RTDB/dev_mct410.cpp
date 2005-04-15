@@ -8,14 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/04/11 21:28:42 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/04/15 20:34:21 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
 
 #include <windows.h>
 #include "device.h"
@@ -1678,7 +1676,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
 INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
-    int             status = NORMAL;
+    int             status = NORMAL, pointoffset;
     double          Value;
     unsigned long   timeOfPeak;
     PointQuality_t  quality;
@@ -1730,18 +1728,16 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
         //  turn raw pulses into a demand reading
         Value *= DOUBLE(3600 / getDemandInterval());
 
+        //  first defined peak demand accumulator
+        pointoffset = 1 + MCT4XX_PointOffset_PeakOffset;
+
         if( InMessage->Sequence == Emetcon::GetValue_FrozenPeakDemand )
         {
-            // look for first defined frozen/peak DEMAND accumulator
-            pPoint = getDevicePointOffsetTypeEqual(1 + MCT4XX_PointOffset_FrozenOffset, DemandAccumulatorPointType);
-        }
-        else
-        {
-            // look for first defined DEMAND accumulator
-            pPoint = getDevicePointOffsetTypeEqual(1, DemandAccumulatorPointType);
+            //  add on the frozen offset
+            pointoffset += MCT4XX_PointOffset_FrozenOffset;
         }
 
-        if( pPoint != NULL)
+        if(pPoint = getDevicePointOffsetTypeEqual(pointoffset, DemandAccumulatorPointType))
         {
             Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
 
@@ -1766,7 +1762,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
 
         dp = getData(DSt->Message + 6, 3, ValueType_Accumulator);
 
-        if( InMessage->Sequence == Emetcon::GetValue_FrozenKWH )
+        if( InMessage->Sequence == Emetcon::GetValue_FrozenPeakDemand )
         {
             pPoint = getDevicePointOffsetTypeEqual( 1 + MCT4XX_PointOffset_FrozenOffset, PulseAccumulatorPointType );
 
