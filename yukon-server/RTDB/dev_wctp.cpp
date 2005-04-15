@@ -1101,7 +1101,7 @@ CtiDeviceIED& CtiDeviceWctpTerminal::setInitialState (const LONG oldid)
 {
     if( oldid > 0 )
     {
-        if(getDebugLevel() & 0x00000001)
+        if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1227,7 +1227,7 @@ void CtiDeviceWctpTerminal::DecodeDatabaseReader(RWDBReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
-    if( getDebugLevel() & 0x0800 )
+    if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

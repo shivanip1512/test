@@ -1,6 +1,3 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   connection
@@ -9,11 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2005/02/20 03:58:04 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2005/04/15 19:03:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include <windows.h>
 #include <limits.h>
@@ -218,7 +216,7 @@ void CtiConnection::InThread()
     RWCollectable *c;
     RWTime        NowTime;
 
-    if(getDebugLevel() & 0x00001000)
+    if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         if(_port >= 0)
@@ -277,7 +275,7 @@ void CtiConnection::InThread()
 
                     if(_serverConnection)
                     {
-                        if(getDebugLevel() & 0x00001000)
+                        if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " Received a null message from " << who() <<", shutting down the connection." << endl;
@@ -286,7 +284,7 @@ void CtiConnection::InThread()
                     }
                     else
                     {
-                        if(getDebugLevel() & 0x00001000)
+                        if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << "**** Resetting the connection **** " << who() << endl;
@@ -364,7 +362,7 @@ void CtiConnection::InThread()
         }
     }
 
-    if((getDebugLevel() & 0x00001000))
+    if((getDebugLevel() & DEBUGLEVEL_CONNECTION))
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         if(_port >= 0)
@@ -391,7 +389,7 @@ void CtiConnection::OutThread()
 
     Sleep(1000);         // Let InThread start up the connection.
 
-    if(getDebugLevel() & 0x00001000)
+    if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         if(_port >= 0)
@@ -536,7 +534,7 @@ void CtiConnection::OutThread()
         MyMsg = NULL;
     }
 
-    if(getDebugLevel() & 0x00001000)
+    if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         if( _port >= 0 )
@@ -769,7 +767,7 @@ void CtiConnection::ShutdownConnection()
                 }
             }
 
-            if(getDebugLevel() & 0x00001000)
+            if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 if( _port >= 0 )
@@ -795,7 +793,7 @@ void CtiConnection::ShutdownConnection()
 
 void CtiConnection::ResetConnection()
 {
-    if(getDebugLevel() & 0x00001000)
+    if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "**** Resetting the connection **** " << who() << endl;
@@ -813,7 +811,7 @@ INT CtiConnection::verifyConnection()
     {
         if( (status = inthread_.getCompletionState())  != RW_THR_PENDING )
         {
-            if(getDebugLevel() & 0x00001000)
+            if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " InThread " << who() << " has exited with a completion state of " << status;
@@ -839,7 +837,7 @@ INT CtiConnection::verifyConnection()
         }
         else if( (status = outthread_.getCompletionState()) != RW_THR_PENDING )
         {
-            if(getDebugLevel() & 0x00001000)
+            if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " OutThread " << who() << " has exited with a completion state of " << status;
@@ -932,7 +930,7 @@ INT CtiConnection::establishConnection(INT freq)
             }
         }
 
-        if( !(++sleepCount % 60) && (getDebugLevel() & 0x00001000) )      // once per minute....
+        if( !(++sleepCount % 60) && (getDebugLevel() & DEBUGLEVEL_CONNECTION) )      // once per minute....
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " InThread  : " << who() << " connection is not valid. " << endl;
@@ -962,7 +960,7 @@ INT CtiConnection::waitForConnect()
 
     while( !_valid )       /* We loop here until the connection goes valid... */
     {
-        if((getDebugLevel() & 0x00001000) && !(++waitCount % 60))
+        if((getDebugLevel() & DEBUGLEVEL_CONNECTION) && !(++waitCount % 60))
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " OutThread : " << who() << " connection is not valid. " << endl;
@@ -999,7 +997,7 @@ INT CtiConnection::checkCancellation(INT mssleep)
     }
     catch(const RWCancellation& cMsg)
     {
-        if(getDebugLevel() & 0x00001000)
+        if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Connection Thread : " << who() << " canceled " << endl;

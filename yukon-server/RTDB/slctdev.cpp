@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2005/03/10 19:26:40 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,7 +101,7 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
 
     rdr["type"]  >> rwsType;
 
-    if(getDebugLevel() & 0x00000400)
+    if(getDebugLevel() & DEBUGLEVEL_FACTORY)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Creating a Device of type " << rwsType << endl;
@@ -437,7 +437,7 @@ DLLEXPORT CtiRouteBase* RouteFactory(RWDBReader &rdr)
 
     if(category == RWCString("route"))
     {
-        if(getDebugLevel() & 0x00000400)
+        if(getDebugLevel() & DEBUGLEVEL_FACTORY)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Creating a Route of type " << rwsType << endl;

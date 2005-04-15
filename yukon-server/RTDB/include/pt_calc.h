@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_calc.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/10/12 20:14:18 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/04/15 19:02:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,7 +94,7 @@ public:
       Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
       #if 0 // 062800
-      if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
       rdr["updatefrequency"] >> UpdateFrequency;
       #endif

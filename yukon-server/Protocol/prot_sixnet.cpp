@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:57 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/04/15 19:03:16 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,7 +91,7 @@ CtiProtocolSixnet& CtiProtocolSixnet::operator=(const CtiProtocolSixnet& aRef)
 //
 void CtiProtocolSixnet::DisplayMsg(void)
 {
-    if(getDebugLevel() & 0x20000000)
+    if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " receive message OK, len:" << _rxLength
@@ -219,7 +219,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
         if(nRcv == 0 && _state == GETLEAD && ++nTimeOutCount > 5)
         {
             // discard partial message
-            if(getDebugLevel() & 0x20000000)
+            if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " receive message timed out" << endl << flush;
@@ -234,7 +234,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
         else if(nRcv == 0 && _state != GETLEAD && ++nTimeOutCount > 5)
         {
             // discard partial message
-            if(getDebugLevel() & 0x20000000)
+            if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " receive message timed out" << endl << flush;
@@ -250,7 +250,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
         {
             int n;
 
-            if(getDebugLevel() & 0x20000000)
+            if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " received " << nRcv << " byte(s)" << endl << flush;
@@ -269,7 +269,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
                     if(!isxdigit(*pNextRx) || !isxdigit(*(pNextRx+1)))
                     {
                         // may be CTIDBG_new lead char, but is NOT valid here in message
-                        if(getDebugLevel() & 0x20000000)
+                        if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " receive HEX message aborted" << endl << flush;
@@ -353,7 +353,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
                     _rxLength += n;  // got second byte of length
                     if(_rxLength < 9 || _rxLength > 257)
                     {
-                        if(getDebugLevel() & 0x20000000)
+                        if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << "receive message length bad " << _rxLength << endl << flush;
@@ -450,7 +450,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
                     // if the crc is good, process the Universal Protocol message
                     if(_rxCRC == CRC_MAGIC && isForMe())
                     {
-                        if(getDebugLevel() & 0x20000000)
+                        if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " Processing starting!" << endl << flush;
@@ -851,7 +851,7 @@ int CtiProtocolSixnet::FsGetAliasGenerate(RWCString szName, RWCString szOptions)
 
     send8(nOptions);
 
-    if(getDebugLevel() & 0x20000000)
+    if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Requesting file " << szName << endl;
@@ -871,7 +871,7 @@ int CtiProtocolSixnet::FsGetAliasProcess()
 {
     int status = -1;
 
-    if(getDebugLevel() & 0x20000000)
+    if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
         DisplayMsg();    // display so know we got a message
 
     InitGetData();
@@ -886,7 +886,7 @@ int CtiProtocolSixnet::FsGetAliasProcess()
         {
             _alias = get32(1);
 
-            if(getDebugLevel() & 0x20000000)
+            if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -947,7 +947,7 @@ int CtiProtocolSixnet::FsREADProcess()
 {
     int status = -1;
 
-    if(getDebugLevel() & 0x20000000)
+    if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
         DisplayMsg();    // display so know we got a message
 
 
@@ -1005,7 +1005,7 @@ int CtiProtocolSixnet::DlMOVETAILGenerate(uint32 tail)
     send8(_txSubCommand);    // DLOG_MOVE_TAIL subcommand
     send32(_alias);
     send32(tail);
-    if(getDebugLevel() & 0x20000000)
+    if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
         cerr << "moving tail to: " << tail << endl << flush;
 
 
@@ -1017,7 +1017,7 @@ int CtiProtocolSixnet::DlMoveTailProcess()
 {
     int status = -1;
 
-    if(getDebugLevel() & 0x20000000)
+    if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
         DisplayMsg();    // display so know we got a message
 
     InitGetData();
@@ -1029,7 +1029,7 @@ int CtiProtocolSixnet::DlMoveTailProcess()
         status = _error = get8(0);
         uint32 newtail = get32(1);
 
-        if(getDebugLevel() & 0x20000000)
+        if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             cerr << "tail moved to: " << newtail << endl << flush;
 
 
@@ -1071,7 +1071,7 @@ int CtiProtocolSixnet::DlGetRecsProcess()
 {
     int status = -1;
 
-    if(getDebugLevel() & 0x20000000)
+    if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
         DisplayMsg();    // display so know we got a message
 
     InitGetData();
@@ -1095,7 +1095,7 @@ int CtiProtocolSixnet::DlGetRecsProcess()
                 _byBuf.push_back(get8(9 + i));
             }
 
-            if(getDebugLevel() & 0x20000000)
+            if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

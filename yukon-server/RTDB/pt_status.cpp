@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_status.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,7 +82,8 @@ void CtiPointStatus::DecodeDatabaseReader(RWDBReader &rdr)
 {
    RWCString rwsTemp;
    Inherited::DecodeDatabaseReader(rdr);          // get the base class data out!
-   if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+   //  this needs to be turned into a dout, if possible
+   if(getDebugLevel() & DEBUGLEVEL_DATABASE) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
    _pointStatus.DecodeDatabaseReader(rdr);
 }
 

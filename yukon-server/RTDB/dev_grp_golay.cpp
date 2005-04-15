@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/02/17 23:22:31 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * HISTORY      :
 * $Log: dev_grp_golay.cpp,v $
+* Revision 1.12  2005/04/15 19:04:10  mfisher
+* got rid of magic number debuglevel checks
+*
 * Revision 1.11  2005/02/17 23:22:31  cplender
 * Removed deletes of OutMessage that are unnecessary
 *
@@ -165,7 +168,7 @@ void CtiDeviceGroupGolay::DecodeDatabaseReader(RWDBReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
-    if( getDebugLevel() & 0x0800 )
+    if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

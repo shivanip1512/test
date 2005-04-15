@@ -8,14 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
 
 #include <rw/db/reader.h>
 
@@ -106,7 +104,7 @@ void CtiDeviceMacro::DecodeDatabaseReader( RWDBReader &rdr )
 
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
-    if( getDebugLevel( ) & 0x0800 )
+    if( getDebugLevel( ) & DEBUGLEVEL_DATABASE )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

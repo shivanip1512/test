@@ -1,6 +1,3 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_grp_sa105
@@ -11,11 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/03/17 16:55:04 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
+
 #include "cmdparse.h"
 #include "cparms.h"
 #include "dev_grp_sa105.h"
@@ -132,7 +131,7 @@ void CtiDeviceGroupSA105::DecodeDatabaseReader( RWDBReader &rdr )
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
-    if( getDebugLevel() & 0x0800 )
+    if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

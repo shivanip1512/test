@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/03/14 01:27:54 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -378,13 +378,13 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
     rdr["pointtype"]  >> rwsType;
     rdr["pseudoflag"] >> rwsPseudo;
 
-    if(getDebugLevel() & 0x00000400)
+    if(getDebugLevel() & DEBUGLEVEL_FACTORY)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Creating a Point of type " << rwsType << endl;
     }
     PtType = resolvePointType(rwsType);
 
-    if(getDebugLevel() & 0x00000400)
+    if(getDebugLevel() & DEBUGLEVEL_FACTORY)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "  Is point a pseudo point? " << rwsPseudo << endl;
     }

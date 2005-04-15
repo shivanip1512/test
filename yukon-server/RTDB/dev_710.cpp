@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/04/11 16:17:55 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -105,7 +105,7 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             if( InMessage->Buffer.InMessage[0] == expectedAck &&
                 InMessage->Buffer.InMessage[1] == expectedAck )
             {
-                if( getDebugLevel() & 0x01 )
+                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

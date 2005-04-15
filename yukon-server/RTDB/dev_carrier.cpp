@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/04/11 16:52:01 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -95,7 +95,7 @@ void CtiDeviceCarrier::DecodeDatabaseReader(RWDBReader &rdr)
     INT iTemp;
 
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
-    if(getDebugLevel() & 0x0800)
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

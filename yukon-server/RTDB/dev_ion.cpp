@@ -11,8 +11,6 @@
  *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-
 #include <rw/rwtime.h>
 #include <rw/rwdate.h>
 
@@ -1057,7 +1055,7 @@ void CtiDeviceION::DecodeDatabaseReader(RWDBReader &rdr)
    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
    _address.DecodeDatabaseReader(rdr);
 
-   if( getDebugLevel() & 0x0800 )
+   if( getDebugLevel() & DEBUGLEVEL_DATABASE )
    {
        CtiLockGuard<CtiLogger> doubt_guard(dout);
        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctprt.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/10 23:24:03 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,7 @@ DLLEXPORT CtiPort* PortFactory(RWDBReader &rdr)
 
    rdr["type"]  >> rwsType;
 
-   if(getDebugLevel() & 0x00000400) cout << "Creating a Port of type " << rwsType << endl;
+   if(getDebugLevel() & DEBUGLEVEL_FACTORY) cout << "Creating a Port of type " << rwsType << endl;
 
    Type = resolvePortType(rwsType);
 

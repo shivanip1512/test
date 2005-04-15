@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_macro.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/02/17 23:14:56 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,7 +86,7 @@ void CtiRouteMacro::DecodeDatabaseReader(RWDBReader &rdr)
 
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
-    if( getDebugLevel() & 0x0800 )
+    if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -238,7 +238,7 @@ void CtiRouteMacro::DecodeMacroReader(RWDBReader &rdr)
 {
     CtiTableMacroRoute   MacroRoute;
 
-    if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
     MacroRoute.DecodeDatabaseReader(rdr);
     RouteList.insert(MacroRoute);

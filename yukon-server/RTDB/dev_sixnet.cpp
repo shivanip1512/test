@@ -8,13 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/03/10 20:26:52 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
 
 
 #include <limits.h>
@@ -43,7 +42,7 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
 
     newRec.setTime( RWTime(tstamp + rwEpoch) );
 
-    if (getDebugLevel() & 0x10000000)
+    if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Record Time is " << newRec.getTime().asString() << endl;
@@ -62,7 +61,7 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
                 } u;
                 u.l = CtiDeviceSixnet::get32(rec + m_nOffset + 4*i);
 
-                if (getDebugLevel() & 0x10000000)
+                if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
@@ -74,7 +73,7 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
         case LOUT:
             for (i = 0; i < m_nNumRegs; ++i)
             {
-                if (getDebugLevel() & 0x10000000)
+                if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
@@ -94,7 +93,7 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
                 newRec.setValue( hist._pulses );
                 newRec.setOffset( hist._offset );
 
-                if (getDebugLevel() & 0x10000000)
+                if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
@@ -159,7 +158,7 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
                     {
                         deltaPH = deltaP * 3600 / interval;    // Now a per hour reading!
 
-                        if (getDebugLevel() & 0x10000000)
+                        if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -174,7 +173,7 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
 
                         aHist = hist;  // Assign it over ok...
 
-                        if (getDebugLevel() & 0x10000000)
+                        if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
@@ -193,7 +192,7 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
                 newRec.setValue( CtiDeviceSixnet::get16(rec + m_nOffset + 2*i) );
                 newRec.setOffset( i + 1 );
 
-                if (getDebugLevel() & 0x10000000)
+                if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
@@ -211,7 +210,7 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
                 newRec.setValue( ((rec[ofs / 8] >> (ofs & 0x7)) & 1) );
                 newRec.setOffset( i + 1 );
 
-                if (getDebugLevel() & 0x10000000)
+                if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
@@ -229,7 +228,7 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
                 newRec.setValue( ((rec[ofs / 8] >> (ofs & 0x7)) & 1) );
                 newRec.setOffset( i + 1 );
 
-                if (getDebugLevel() & 0x10000000)
+                if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
@@ -446,7 +445,7 @@ int CtiDeviceSixnet::processGetFields()
             fld.m_nFirst = getSixnetProtocol().getfd16(i * 8 + 2);
             fld.m_nOffset = getSixnetProtocol().getfd32(i * 8 + 4);
 
-            if (getDebugLevel() & 0x10000000)
+            if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
             {
                 dout << "  Type      " << fld.m_eType << endl;
                 dout << "  Num       " << fld.m_nNumRegs << endl;
@@ -1191,7 +1190,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPt
 
                     RWTime recordtime( rwEpoch + _tailTime );
 
-                    if (getDebugLevel() & 0x10000000)
+                    if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1281,7 +1280,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPt
                             skiprecords = deltaR - 5;     // Just get a few already..
                         }
 
-                        if (getDebugLevel() & 0x10000000)
+                        if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << "   tail   " << _tail << endl;
@@ -1361,7 +1360,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPt
 
                     if (recordtime < _lpTime)
                     {
-                        if (getDebugLevel() & 0x10000000)
+                        if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << "  Record " << _tail << " is older (" << recordtime << ") than the last LP time collected (" << _lpTime << ")" << endl;
@@ -1459,7 +1458,7 @@ INT CtiDeviceSixnet::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aBytesRecei
             CtiSxlRecord &Record = *itr;
             UINT tag = 0;
 
-            if (getDebugLevel() & 0x10000000)
+            if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " returning record  " << Record.getTime() << "  Type " << Record.getType() << " Offset " << Record.getOffset() << "  Value " << Record.getValue() << endl;
@@ -1479,7 +1478,7 @@ INT CtiDeviceSixnet::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aBytesRecei
                 remainder = 0; // Clean them out.
             }
 
-            if (getDebugLevel() & 0x10000000)
+            if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1564,7 +1563,7 @@ void CtiDeviceSixnet::checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfe
     if (CtiProtocolSixnet::GETTIMEOUT == protocolreturn )
     {
         // We've timed out and should retry, or abort
-        if (getDebugLevel() & 0x10000000)
+        if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1877,7 +1876,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
 
         if (logTime > getLastLPTime())
         {
-            if (getDebugLevel() & 0x10000000)
+            if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1909,14 +1908,14 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
                 {
                     pData->setTime( pSxnt->time );
 
-                    if (getDebugLevel() & 0x10000000)
+                    if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                         pData->dump();
 
                     pPIL->PointData().insert(pData->replicateMessage());
 
                     if (pSxnt->tag & SXNT_TAG_LAST_REPORT)
                     {
-                        if (getDebugLevel() & 0x10000000)
+                        if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1930,7 +1929,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
             }
             else
             {
-                if (getDebugLevel() & 0x10000000)
+                if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1940,7 +1939,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
 
             if (pSxnt->tag & SXNT_TAG_FINAL_MESSAGE)
             {
-                if (getDebugLevel() & 0x10000000)
+                if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1952,7 +1951,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
             }
         }
         else
-            if (getDebugLevel() & 0x10000000)
+            if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " OLD DATA:  " << logTime << " Type " << pSxnt->type << " Offset " << pSxnt->offset << " = " << pSxnt->val << endl;

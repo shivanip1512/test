@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_remote.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/06/28 20:16:11 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/04/15 19:02:51 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -192,7 +192,7 @@ public:
 
         Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
-        if(getDebugLevel() & 0x0800)
+        if(getDebugLevel() & DEBUGLEVEL_DATABASE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

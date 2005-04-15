@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/03/13 19:36:11 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/04/15 19:02:51 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -121,7 +121,7 @@ private:
    {
       Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
-      if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
       _idlc.DecodeDatabaseReader(rdr);
    }
 

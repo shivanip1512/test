@@ -1,6 +1,3 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_grp_energypro
@@ -10,12 +7,12 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/02/10 23:23:59 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
+#include "yukon.h"
 
 #include <windows.h>
 
@@ -111,7 +108,7 @@ void CtiDeviceGroupEnergyPro::DecodeDatabaseReader(RWDBReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
-    if( getDebugLevel() & 0x0800 )
+    if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

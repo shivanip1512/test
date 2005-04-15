@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2005/04/13 14:46:03 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1103,7 +1103,7 @@ void DNP::DecodeDatabaseReader(RWDBReader &rdr)
    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
    _dnp_address.DecodeDatabaseReader(rdr);
 
-   if( getDebugLevel() & 0x0800 )
+   if( getDebugLevel() & DEBUGLEVEL_DATABASE )
    {
        CtiLockGuard<CtiLogger> doubt_guard(dout);
        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

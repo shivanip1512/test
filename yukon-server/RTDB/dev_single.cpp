@@ -5,14 +5,12 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2005/03/10 20:27:45 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
 
 #include <vector>
 using namespace std;
@@ -1936,7 +1934,7 @@ void CtiDeviceSingle::DecodeDatabaseReader(RWDBReader &rdr)
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
     LockGuard guard(monitor());
-    if(getDebugLevel() & 0x0800)
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
@@ -1951,7 +1949,7 @@ void CtiDeviceSingle::DecodeStatisticsDatabaseReader(RWDBReader &rdr)
 
     RWCString rwsTemp;
 
-    if(getDebugLevel() & 0x0800)
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
@@ -1979,7 +1977,7 @@ void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)
 
     RWCString rwsTemp;
 
-    if(getDebugLevel() & 0x0800)
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
@@ -2009,7 +2007,7 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
 {
     LockGuard guard(monitor());
 
-    if(getDebugLevel() & 0x0800)
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Decoding device windows " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2187,7 +2185,7 @@ RWTime CtiDeviceSingle::peekDispatchTime() const
             }
         }
 
-        if(getDebugLevel() & 0x00000001)
+        if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

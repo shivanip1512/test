@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/04/11 20:58:42 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/04/15 19:02:51 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,6 +70,13 @@ protected:
     bool _scanGeneralPending,
          _scanIntegrityPending,
          _scanAccumulatorPending;
+
+    static getMCTDebugLevel();
+
+    enum MCTDebug
+    {
+        Debug_Info = 1 << 0
+    };
 
     enum
     {

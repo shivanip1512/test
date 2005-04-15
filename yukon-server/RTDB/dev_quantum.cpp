@@ -13,8 +13,6 @@
  *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-
 #include <rw/rwtime.h>
 #include <rw/rwdate.h>
 #include <string.h>
@@ -1428,7 +1426,7 @@ INT CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                             }
                             else
                             {
-                                if( getDebugLevel( ) & 0x00000001 )
+                                if( getDebugLevel( ) & DEBUGLEVEL_LUDICROUS )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " Skipping load profile for " << getName( ) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1825,7 +1823,7 @@ void CtiDeviceQuantum::translateQuantumProgrammedRegisters( QuantumRawScanData_t
         {
             programmedRegisters[i] = registerToFloat( &(rawScan->programmedRegisters[j*6]), translated, i );
 
-            if( getDebugLevel( ) & 0x0001 )
+            if( getDebugLevel( ) & DEBUGLEVEL_LUDICROUS )
             {
                 CtiLockGuard<CtiLogger> dout_guard( dout );
                 dout << RWTime( ) << " " << getName() << " -  register " << i << "(" << translated->programTable[i].regNum << "," <<

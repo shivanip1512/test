@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/04/11 16:49:07 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -505,7 +505,7 @@ void CtiRouteCCU::DecodeDatabaseReader(RWDBReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
-    if(getDebugLevel() & 0x0800)
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -519,7 +519,7 @@ void CtiRouteCCU::DecodeRepeaterDatabaseReader(RWDBReader &rdr)
 
     if(getType() == CCURouteType)   // Just make darn sure.  (used to be RepeaterRouteType)
     {
-        if(getDebugLevel() & 0x0800)
+        if(getDebugLevel() & DEBUGLEVEL_DATABASE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

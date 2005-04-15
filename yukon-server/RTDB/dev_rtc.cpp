@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/03/14 01:30:22 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.27  2005/04/15 19:04:10  mfisher
+* got rid of magic number debuglevel checks
+*
 * Revision 1.26  2005/03/14 01:30:22  cplender
 * Make certain we don't walk out of the OutMessage.Buffer!
 *
@@ -388,7 +391,7 @@ void CtiDeviceRTC::DecodeDatabaseReader(RWDBReader &rdr)
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
     _rtcTable.DecodeDatabaseReader(rdr);
 
-    if( getDebugLevel() & 0x0800 )
+    if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

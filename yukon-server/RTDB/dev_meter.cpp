@@ -9,14 +9,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
 
 #include "dev_meter.h"
 
@@ -105,7 +103,7 @@ void CtiDeviceMeter::DecodeDatabaseReader(RWDBReader &rdr)
 
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
-    if( getDebugLevel() & 0x0800 )
+    if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

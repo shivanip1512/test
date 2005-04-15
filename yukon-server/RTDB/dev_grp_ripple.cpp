@@ -8,13 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/03/14 01:28:18 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/04/15 19:04:10 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
 
 
 #include "cparms.h"
@@ -90,7 +89,7 @@ void CtiDeviceGroupRipple::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSe
 }
 void CtiDeviceGroupRipple::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    if(getDebugLevel() & 0x0800)
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
