@@ -1,6 +1,7 @@
 package com.cannontech.mbean;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -94,7 +95,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private Map allYukonUserGroupsMap = null;
 	private Map allYukonGroupUsersMap = null;
 		
-    private ArrayList allEnergyCompanies = null;
+	private ArrayList allEnergyCompanies = null;
 	
 	//lists that are created by the joining/parsing of existing lists
 	private ArrayList allGraphTaggedPoints = null; //Points
@@ -109,22 +110,22 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allRoutes = null; //PAO
 	
 	
-    //Maps that are created by the joining/parsing of existing lists
+	//Maps that are created by the joining/parsing of existing lists
 	private HashMap allPointidMultiplierHashMap = null;
 	private HashMap allPointIDOffsetHashMap = null;
 	private HashMap allPointsMap = null;
 	private HashMap allPAOsMap = null;
 	private HashMap allCustomersMap = null;    
-    private HashMap allContactsMap = null;
+	private HashMap allContactsMap = null;
     
-    //derived from allYukonUsers,allYukonRoles,allYukonGroups
-    //see type info in IDatabaseCache
-    private Map allYukonUserLookupRoleIDsMap = null;
-    private Map allYukonUserLookupRolePropertyIDsMap = null;    
-    private Map allUserEnergyCompaniesMap = null;
-    private Map userPaoOwnersMap = null;
+	//derived from allYukonUsers,allYukonRoles,allYukonGroups
+	//see type info in IDatabaseCache
+	private Map allYukonUserLookupRoleIDsMap = null;
+	private Map allYukonUserLookupRolePropertyIDsMap = null;    
+	private Map allUserEnergyCompaniesMap = null;
+	private Map userPaoOwnersMap = null;
     
-    private ArrayList allDeviceTypeCommands = null;
+	private ArrayList allDeviceTypeCommands = null;
 	private ArrayList allCommands = null;
 	private Map allCommandsMap = null;
 	private Map allStateGroupMap = null;
@@ -208,13 +209,13 @@ public synchronized java.util.List getAllContactNotifications()
 public synchronized java.util.List getAllYukonImages()
 {
    if( allYukonImages != null )
-      return allYukonImages;
+	  return allYukonImages;
    else
    {
-      allYukonImages = new ArrayList();
-      YukonImageLoader imageLoader = new YukonImageLoader(allYukonImages, databaseAlias);
-      imageLoader.run();
-      return allYukonImages;
+	  allYukonImages = new ArrayList();
+	  YukonImageLoader imageLoader = new YukonImageLoader(allYukonImages, databaseAlias);
+	  imageLoader.run();
+	  return allYukonImages;
    }
 
 }
@@ -272,7 +273,7 @@ public synchronized java.util.List getAllContacts()
 	else
 	{
 		allContacts = new ArrayList();        
-        allContactsMap = new HashMap();
+		allContactsMap = new HashMap();
 		ContactLoader contactLoader = new ContactLoader(allContacts, allContactsMap, databaseAlias);
 		contactLoader.run();
 		return allContacts;
@@ -330,6 +331,8 @@ public synchronized List getAllDMG_CollectionGroups()
 			if( !allDMG_CollectionGroups.contains(ldmn.getCollGroup()))
 				allDMG_CollectionGroups.add(ldmn.getCollGroup());
 		}
+
+		Collections.sort(allDMG_CollectionGroups);
 		return allDMG_CollectionGroups;
 	}
 }
@@ -347,6 +350,7 @@ public synchronized List getAllDMG_AlternateGroups()
 			if( !allDMG_AlternateGroups.contains(ldmn.getTestCollGroup()))
 				allDMG_AlternateGroups.add(ldmn.getTestCollGroup());
 		}
+		Collections.sort(allDMG_AlternateGroups);
 		return allDMG_AlternateGroups;
 	}
 }
@@ -365,6 +369,7 @@ public synchronized List getAllDMG_BillingGroups()
 			if( !allDMG_BillingGroups.contains(ldmn.getBillGroup()))
 				allDMG_BillingGroups.add(ldmn.getBillGroup());
 		}
+		Collections.sort(allDMG_BillingGroups);
 		return allDMG_BillingGroups;
 	}
 }
@@ -465,7 +470,7 @@ public synchronized java.util.List getAllGraphTaggedPoints()
 					LitePoint point = PointFuncs.getLitePoint( pointID );
 
 					// tags may need to be changed here if there
- 					//  are more tags added to this bit field
+					//  are more tags added to this bit field
 					long tags = LitePoint.POINT_UOFM_GRAPH;      //default value of tags for now.
 
 					if( formula.equalsIgnoreCase("usage"))
@@ -506,13 +511,13 @@ public synchronized java.util.List getAllGraphTaggedPoints()
 			   }
 		  }
           
-          //temp code
-          timerStop = new java.util.Date();
-          CTILogger.info( 
-                              (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for getAllGraphTaggedPoints()" );
+		  //temp code
+		  timerStop = new java.util.Date();
+		  CTILogger.info( 
+							  (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for getAllGraphTaggedPoints()" );
             
-          //sort our points by pointoffset
-          java.util.Collections.sort( allGraphTaggedPoints, com.cannontech.database.data.lite.LiteComparators.litePointPointOffsetComparator );
+		  //sort our points by pointoffset
+		  java.util.Collections.sort( allGraphTaggedPoints, com.cannontech.database.data.lite.LiteComparators.litePointPointOffsetComparator );
           
 		  return allGraphTaggedPoints;
 	 }
@@ -856,15 +861,15 @@ public synchronized java.util.Map getAllPAOsMap()
  */
 public synchronized java.util.Map getAllContactsMap()
 {
-    if( allContactsMap != null )
-        return allContactsMap;
-    else
-    {
-        releaseAllContacts();
-        getAllContacts();
+	if( allContactsMap != null )
+		return allContactsMap;
+	else
+	{
+		releaseAllContacts();
+		getAllContacts();
 
-        return allContactsMap;
-    }
+		return allContactsMap;
+	}
 }
 
 
@@ -1148,7 +1153,7 @@ public synchronized java.util.List getAllUnusedCCDevices()
 	   //temp code
 	   java.util.Date timerStop = new java.util.Date();
 	   CTILogger.info( 
-               (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for getAllUnusedCCPaos()" );
+			   (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for getAllUnusedCCPaos()" );
 	   //temp code
 
 		}
@@ -1247,9 +1252,9 @@ public synchronized java.util.List getAllYukonPAObjects()
 	{
 		if(allYukonUserRolePropertiesMap == null) {
 			allYukonUserRolePropertiesMap = new java.util.HashMap();
-		    final YukonUserRoleLoader l = 
-		    	new YukonUserRoleLoader(allYukonUserRolePropertiesMap, getAllYukonUsers(), getAllYukonRoles(), getAllYukonRoleProperties(), databaseAlias);
-		    l.run();
+			final YukonUserRoleLoader l = 
+				new YukonUserRoleLoader(allYukonUserRolePropertiesMap, getAllYukonUsers(), getAllYukonRoles(), getAllYukonRoleProperties(), databaseAlias);
+			l.run();
 		}									
 		return allYukonUserRolePropertiesMap;		
 	}
@@ -1418,17 +1423,17 @@ public synchronized java.util.List getAllYukonPAObjects()
 		return allUserEnergyCompaniesMap;
 	}
 
-    /**
-     * @see com.cannontech.yukon.IDatabaseCache#getYukonUserPaoOwners()
-     */
-    public synchronized Map getYukonUserPaoOwners() {
-        if(userPaoOwnersMap == null) {
-            userPaoOwnersMap = new java.util.HashMap();
-            UserPoaOwnerLoader l = new UserPoaOwnerLoader( userPaoOwnersMap, getAllYukonUsers(), databaseAlias);
-            l.run();
-        }
-        return userPaoOwnersMap;
-    }
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserPaoOwners()
+	 */
+	public synchronized Map getYukonUserPaoOwners() {
+		if(userPaoOwnersMap == null) {
+			userPaoOwnersMap = new java.util.HashMap();
+			UserPoaOwnerLoader l = new UserPoaOwnerLoader( userPaoOwnersMap, getAllYukonUsers(), databaseAlias);
+			l.run();
+		}
+		return userPaoOwnersMap;
+	}
 
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllCustomers()
@@ -1559,53 +1564,53 @@ private synchronized LiteBase handleYukonImageChange( int changeType, int id )
 
    // if the storage is not already loaded, we must not care about it
    if( allYukonImages == null )
-      return lBase;
+	  return lBase;
 
    switch(changeType)
    {
-      case DBChangeMsg.CHANGE_TYPE_ADD:
-            for(int i=0;i<allYukonImages.size();i++)
-            {
-               if( ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).getImageID() == id )
-               {
-                  alreadyAdded = true;
-                  lBase = (LiteBase)allYukonImages.get(i);
-                  break;
-               }
-            }
-            if( !alreadyAdded )
-            {
-               com.cannontech.database.data.lite.LiteYukonImage ls = new com.cannontech.database.data.lite.LiteYukonImage(id);
-               ls.retrieve(databaseAlias);
-               allYukonImages.add(ls);
-               lBase = ls;
-            }           
-            break;
+	  case DBChangeMsg.CHANGE_TYPE_ADD:
+			for(int i=0;i<allYukonImages.size();i++)
+			{
+			   if( ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).getImageID() == id )
+			   {
+				  alreadyAdded = true;
+				  lBase = (LiteBase)allYukonImages.get(i);
+				  break;
+			   }
+			}
+			if( !alreadyAdded )
+			{
+			   com.cannontech.database.data.lite.LiteYukonImage ls = new com.cannontech.database.data.lite.LiteYukonImage(id);
+			   ls.retrieve(databaseAlias);
+			   allYukonImages.add(ls);
+			   lBase = ls;
+			}           
+			break;
 
-      case DBChangeMsg.CHANGE_TYPE_UPDATE:
-            for(int i=0;i<allYukonImages.size();i++)
-            {
-               if( ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).getImageID() == id )
-               {
-                  ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).retrieve(databaseAlias);
-                  lBase = (LiteBase)allYukonImages.get(i);
-                  break;
-               }
-            }
-            break;
-      case DBChangeMsg.CHANGE_TYPE_DELETE:
-            for(int i=0;i<allYukonImages.size();i++)
-            {
-               if( ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).getImageID() == id )
-               {
-                  lBase = (LiteBase)allYukonImages.remove(i);
-                  break;
-               }
-            }
-            break;
-      default:
-            releaseAllAlarmCategories();
-            break;
+	  case DBChangeMsg.CHANGE_TYPE_UPDATE:
+			for(int i=0;i<allYukonImages.size();i++)
+			{
+			   if( ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).getImageID() == id )
+			   {
+				  ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).retrieve(databaseAlias);
+				  lBase = (LiteBase)allYukonImages.get(i);
+				  break;
+			   }
+			}
+			break;
+	  case DBChangeMsg.CHANGE_TYPE_DELETE:
+			for(int i=0;i<allYukonImages.size();i++)
+			{
+			   if( ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).getImageID() == id )
+			   {
+				  lBase = (LiteBase)allYukonImages.remove(i);
+				  break;
+			   }
+			}
+			break;
+	  default:
+			releaseAllAlarmCategories();
+			break;
    }
 
    return lBase;
@@ -1631,32 +1636,32 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
 				if( id == DBChangeMsg.CHANGE_INVALID_ID )
 					break;
 		
-                lBase = (LiteBase)allContactsMap.get( new Integer(id) );                
-                if( lBase == null )
-                {
-                    LiteContact lc = new LiteContact(id);
-                    lc.retrieve(databaseAlias);
-                    allContacts.add(lc);
-                    allContactsMap.put( new Integer(lc.getContactID()), lc );
+				lBase = (LiteBase)allContactsMap.get( new Integer(id) );                
+				if( lBase == null )
+				{
+					LiteContact lc = new LiteContact(id);
+					lc.retrieve(databaseAlias);
+					allContacts.add(lc);
+					allContactsMap.put( new Integer(lc.getContactID()), lc );
         
-                    lBase = lc;
-                }
+					lBase = lc;
+				}
 				break;
 
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 
-                LiteContact lc = (LiteContact)allContactsMap.get( new Integer(id) );                
-                lc.retrieve( databaseAlias );                
-                lBase = lc;
+				LiteContact lc = (LiteContact)allContactsMap.get( new Integer(id) );                
+				lc.retrieve( databaseAlias );                
+				lBase = lc;
 
 				if( lBase == null ) //we did not find the contact, just create a new one
 				{
-                    lc = new LiteContact(id);
-                    lc.retrieve(databaseAlias);
-                    allContacts.add(lc);
-                    allContactsMap.put( new Integer(lc.getContactID()), lc );
+					lc = new LiteContact(id);
+					lc.retrieve(databaseAlias);
+					allContacts.add(lc);
+					allContactsMap.put( new Integer(lc.getContactID()), lc );
         
-                    lBase = lc;
+					lBase = lc;
 				}                
 				break;
 
@@ -1672,7 +1677,7 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
 				{
 					if( ((LiteContact)allContacts.get(i)).getLiteID() == id )
 					{
-                        allContactsMap.remove( new Integer(id) );
+						allContactsMap.remove( new Integer(id) );
 						lBase = (LiteBase)allContacts.remove(i);
 						break;
 					}
@@ -1774,7 +1779,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	}
    else if( database == DBChangeMsg.CHANGE_YUKON_IMAGE )
    { 
-      retLBase = handleYukonImageChange( dbType, id );
+	  retLBase = handleYukonImageChange( dbType, id );
    }
 	else if( database == DBChangeMsg.CHANGE_NOTIFICATION_GROUP_DB )
 	{
@@ -3011,6 +3016,7 @@ private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
 	if( allYukonPAObjects == null )
 		return lBase;
 		
+		
 	switch(changeType)
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
@@ -3070,82 +3076,82 @@ public synchronized void releaseAllAlarmCategories()
  */
 public synchronized void releaseAllCache()
 {
-    allYukonPAObjects = null;
-    allPoints = null;
-    allStateGroupMap = null;
-    allUnitMeasures = null;
-    allNotificationGroups = null;
+	allYukonPAObjects = null;
+	allPoints = null;
+	allStateGroupMap = null;
+	allUnitMeasures = null;
+	allNotificationGroups = null;
     
-    //allUsedContactNotifications = null;
-    allContactNotifications = null;
+	//allUsedContactNotifications = null;
+	allContactNotifications = null;
     
-    allAlarmCategories = null;
-    allContacts = null;
-    allGraphDefinitions = null;
-    allMCTs = null;
-    allHolidaySchedules = null;
-    allBaselines = null;
-    allConfigs = null;
-    allDeviceMeterGroups = null;
+	allAlarmCategories = null;
+	allContacts = null;
+	allGraphDefinitions = null;
+	allMCTs = null;
+	allHolidaySchedules = null;
+	allBaselines = null;
+	allConfigs = null;
+	allDeviceMeterGroups = null;
 	allDMG_CollectionGroups = null;
 	allDMG_AlternateGroups = null;
 	allDMG_BillingGroups = null;    
-    allPointsUnits = null;
-    allPointLimits = null;
-    allYukonImages = null;
-    allCICustomers = null;
-    allCustomers = null;
-    allLMProgramConstraints = null;
-    allLMScenarios = null;
-    allLMScenarioProgs = null;
+	allPointsUnits = null;
+	allPointLimits = null;
+	allYukonImages = null;
+	allCICustomers = null;
+	allCustomers = null;
+	allLMProgramConstraints = null;
+	allLMScenarios = null;
+	allLMScenarioProgs = null;
 
-    allTags = null;
-    allSeasonSchedules = null;
-    allGears = null;
-    allDeviceTypeCommands = null;
-    allTOUSchedules = null;
-    allTOUDays = null;
+	allTags = null;
+	allSeasonSchedules = null;
+	allGears = null;
+	allDeviceTypeCommands = null;
+	allTOUSchedules = null;
+	allTOUDays = null;
     
-    allYukonUsers = null;
-    allYukonRoles = null;
-    allYukonRoleProperties = null;
-    allYukonGroups = null;
+	allYukonUsers = null;
+	allYukonRoles = null;
+	allYukonRoleProperties = null;
+	allYukonGroups = null;
     
-    allYukonUserRolePropertiesMap = null;
-    allYukonGroupRolePropertiesMap = null;
-    allYukonUserGroupsMap = null;
-    allYukonGroupUsersMap = null;
+	allYukonUserRolePropertiesMap = null;
+	allYukonGroupRolePropertiesMap = null;
+	allYukonUserGroupsMap = null;
+	allYukonGroupUsersMap = null;
         
-    allEnergyCompanies = null;
+	allEnergyCompanies = null;
     
-    //lists that are created by the joining/parsing of existing lists
-    allGraphTaggedPoints = null; //Points
-    allUnusedCCDevices = null; //PAO
-    allCapControlFeeders = null; //PAO
-    allCapControlSubBuses = null; //PAO   
-    allDevices = null; //PAO
-    allLMPrograms = null; //PAO
-    allLMControlAreas = null; //PAO
-    allLoadManagement = null; //PAO
-    allPorts = null; //PAO
-    allRoutes = null; //PAO
+	//lists that are created by the joining/parsing of existing lists
+	allGraphTaggedPoints = null; //Points
+	allUnusedCCDevices = null; //PAO
+	allCapControlFeeders = null; //PAO
+	allCapControlSubBuses = null; //PAO   
+	allDevices = null; //PAO
+	allLMPrograms = null; //PAO
+	allLMControlAreas = null; //PAO
+	allLoadManagement = null; //PAO
+	allPorts = null; //PAO
+	allRoutes = null; //PAO
     
     
-    //Maps that are created by the joining/parsing of existing lists
-    allPointidMultiplierHashMap = null;
-    allPointIDOffsetHashMap = null;
-    allPointsMap = null;
-    allPAOsMap = null;
-    allCustomersMap = null;
-    allContactsMap = null;
+	//Maps that are created by the joining/parsing of existing lists
+	allPointidMultiplierHashMap = null;
+	allPointIDOffsetHashMap = null;
+	allPointsMap = null;
+	allPAOsMap = null;
+	allCustomersMap = null;
+	allContactsMap = null;
 
 
-    //derived from allYukonUsers,allYukonRoles,allYukonGroups
-    //see type info in IDatabaseCache
-    allYukonUserLookupRoleIDsMap = null;
-    allYukonUserLookupRolePropertyIDsMap = null;    
-    allUserEnergyCompaniesMap = null;
-    userPaoOwnersMap = null;
+	//derived from allYukonUsers,allYukonRoles,allYukonGroups
+	//see type info in IDatabaseCache
+	allYukonUserLookupRoleIDsMap = null;
+	allYukonUserLookupRolePropertyIDsMap = null;    
+	allUserEnergyCompaniesMap = null;
+	userPaoOwnersMap = null;
 }
 /**
  * Insert the method's description here.
@@ -3154,7 +3160,7 @@ public synchronized void releaseAllCache()
 public synchronized void releaseAllContacts()
 {
 	allContacts = null;
-    allContactsMap = null;
+	allContactsMap = null;
 }
 /**
  * Insert the method's description here.
