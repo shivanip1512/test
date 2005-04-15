@@ -8,16 +8,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2005/04/11 21:11:04 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2005/04/15 20:36:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-
 #include <windows.h>
+#include <time.h>
 #include <utility>
 using namespace std;
 
@@ -40,6 +39,7 @@ using namespace std;
 #include "porter.h"
 #include "utility.h"
 #include "dllyukon.h"
+#include "cparms.h"
 #include "yukon.h"
 
 using Cti::Protocol::Emetcon;
@@ -102,6 +102,20 @@ CtiDeviceMCT &CtiDeviceMCT::operator=(const CtiDeviceMCT &aRef)
         LockGuard guard(monitor());            // Protect this device!
     }
     return *this;
+}
+
+bool CtiDeviceMCT::getMCTDebugLevel(int mask)
+{
+    static time_t lastaccess;
+    static int mct_debuglevel;
+
+    if( lastaccess + 300 < time(0) )
+    {
+        gConfigParms.getValueAsInt("MCT_DEBUGLEVEL");
+        lastaccess = time(0);
+    }
+
+    return mask & mct_debuglevel;
 }
 
 INT CtiDeviceMCT::getSSpec() const
@@ -255,6 +269,10 @@ void CtiDeviceMCT::resetMCTScansPending( void )
     _scanAccumulatorPending = false;
 }
 
+
+
+
+
 void CtiDeviceMCT::setMCTScanPending(int scantype, bool pending)
 {
     switch(scantype)
@@ -267,7 +285,7 @@ void CtiDeviceMCT::setMCTScanPending(int scantype, bool pending)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime( ) << " **** Checkpoint - invalid scantype \"" << scantype << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -678,6 +696,7 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
 
     if(OutMessage != NULL)
     {
+        if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
