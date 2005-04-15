@@ -402,6 +402,13 @@
 #else
    #define IM_EX_FDRPIBASEAPI       __declspec(dllimport)
 #endif
+#ifdef _DLL_FDRLIVEDATAAPI
+   #define IM_EX_FDRLIVEDATAAPI       __declspec(dllexport)
+#elif defined( STI_UNDERSTAND )
+   #define IM_EX_FDRLIVEDATAAPI
+#else
+   #define IM_EX_FDRLIVEDATAAPI       __declspec(dllimport)
+#endif
 #ifdef _DLL_FDRXA21LM
    #define IM_EX_FDRXA21LM       __declspec(dllexport)
 #elif defined( STI_UNDERSTAND )
