@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/04/15 21:39:08 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/04/15 21:59:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -195,14 +195,12 @@ static void apply710TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
             CtiRouteManager::spiterator rte_itr;
 
             //  Walk down the routes for this ccu and pick out the time sync ("default") routes
-            for(rte_itr = RouteManager.begin(); rte_itr != RouteManager.end(); rte_itr++)
+            for(rte_itr = RouteManager.begin(); rte_itr != RouteManager.end(); CtiRouteManager::nextPos(rte_itr))
             {
                 RouteRecord = rte_itr->second;
 
                 if(RouteRecord->getTrxDeviceID() == RemoteRecord->getID() && RouteRecord->isDefaultRoute())
                 {
-                    unsigned long time   = RWTime::now().seconds() - rwEpoch;
-                    bool          is_dst = RWTime::now().isDST();
                     int amp      =  0,
                         fixed    = 31,
                         variable =  7;
