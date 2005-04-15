@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/04/11 16:16:50 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/04/15 21:39:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -173,9 +173,9 @@ static void apply711TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
 
 static void apply710TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, void *lprtid)
 {
-    LONG PortID = (LONG)lprtid;
+    LONG portid = (LONG)lprtid;
 
-    if((RemoteRecord->getPortID() != PortID) || (RemoteRecord->getAddress() == 0xffff) || (RemoteRecord->isInhibited()) )
+    if((RemoteRecord->getPortID() != portid) || (RemoteRecord->getAddress() == 0xffff) || (RemoteRecord->isInhibited()) )
     {
         return;
     }
@@ -183,146 +183,60 @@ static void apply710TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
     OUTMESS         *OutMessage;
     CtiRouteSPtr    RouteRecord;
     DEVICE          DeviceRecord;
-    USHORT          LeadAddress;
-    PSZ             LeadTimeSyncs;
-
 
     switch(RemoteRecord->getType())
     {
-    case TYPE_CCU700:
-    case TYPE_CCU710:
-        /* Walk down the routes for this ccu and pick out time routes */
+        case TYPE_CCU700:
+        case TYPE_CCU710:
+
         try
         {
             CtiRouteManager::LockGuard guard(RouteManager.getMux());
             CtiRouteManager::spiterator rte_itr;
-            for(rte_itr = RouteManager.begin(); rte_itr != RouteManager.end(); CtiRouteManager::nextPos(rte_itr))
+
+            //  Walk down the routes for this ccu and pick out the time sync ("default") routes
+            for(rte_itr = RouteManager.begin(); rte_itr != RouteManager.end(); rte_itr++)
             {
                 RouteRecord = rte_itr->second;
 
                 if(RouteRecord->getTrxDeviceID() == RemoteRecord->getID() && RouteRecord->isDefaultRoute())
                 {
-                    /* Check if this is broadcast or lead */
-                    if(CTIScanEnv ("DSM2_LEADTSYNCS", &LeadTimeSyncs))
+                    unsigned long time   = RWTime::now().seconds() - rwEpoch;
+                    bool          is_dst = RWTime::now().isDST();
+                    int amp      =  0,
+                        fixed    = 31,
+                        variable =  7;
+
+                    BSTRUCT message;
+                    OUTMESS *OutMessage = CTIDBG_new OUTMESS;
+
+                    if( OutMessage )
                     {
-                        /* Allocate some memory */
-                        if((OutMessage = CTIDBG_new OUTMESS) == NULL)
-                        {
-                            return;
-                        }
-
-                        /* send a time sync to this guy */
-                        OutMessage->DeviceID = RemoteRecord->getID();
-                        OutMessage->Port     = RemoteRecord->getPortID();
-                        OutMessage->Remote   = RemoteRecord->getAddress();
-                        OutMessage->TimeOut = TIMEOUT;
-                        OutMessage->Retry = 0;
-                        OutMessage->Sequence = 0;
-                        OutMessage->Priority = MAXPRIORITY;
-                        OutMessage->EventCode = NOWAIT | NORESULT | DTRAN | BWORD | TSYNC;
-                        OutMessage->Command = CMND_DTRAN;
-                        OutMessage->InLength = 0;
+                        //  load up all of the port/route specific items
+                        OutMessage->DeviceID  = RemoteRecord->getID();
+                        OutMessage->Port      = portid;
+                        OutMessage->Remote    = RemoteRecord->getAddress();
+                        OutMessage->TimeOut   = TIMEOUT;
+                        OutMessage->Retry     = 0;
+                        OutMessage->Sequence  = 0;
+                        OutMessage->Priority  = MAXPRIORITY;
+                        OutMessage->EventCode = NOWAIT | NORESULT | DTRAN | BWORD | TSYNC;  //  we're counting on this to be caught and run through LoadBTimeMessage
+                        OutMessage->Command   = CMND_DTRAN;
+                        OutMessage->InLength  = 0;
                         OutMessage->ReturnNexus = NULL;
-                        OutMessage->SaveNexus = NULL;
-
-                        /* Load up the BST part of the message */
-
-                        // FIX FIX FIX 090199 CGP
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-
-                        //OutMessage->Buffer.BSt.Port      = PortRecord->getPortID();
-                        //OutMessage->Buffer.BSt.Remote    = RemoteRecord->getAddress();
-                        //OutMessage->Buffer.BSt.Priority  = MAXPRIORITY - 2;
-                        //OutMessage->Buffer.BSt.Retry     = 0;
-                        //OutMessage->Buffer.BSt.Sequence  = 0;
-                        //OutMessage->Buffer.BSt.Amp       = RouteRecord->getAmp();
-                        //OutMessage->Buffer.BSt.Feeder    = RouteRecord->getBus();
-                        //OutMessage->Buffer.BSt.Stages    = RouteRecord->getStages();
-                        //OutMessage->Buffer.BSt.RepFixed  = RouteRecord->getFixBit();
-                        //OutMessage->Buffer.BSt.RepVar    = RouteRecord->getVarBit();
-                        //OutMessage->Buffer.BSt.Address   = UNIV_ADDRESS;
+                        OutMessage->SaveNexus   = NULL;
 
                         if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                         {
-                            printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
+                            printf ("Error Writing to Queue for Port %2hd\n", portid);
                             delete (OutMessage);
                         }
                     }
                     else
                     {
-                        /* Walk through the leads */
-                        while(LeadTimeSyncs != NULL)
                         {
-                            if((LeadAddress = atoi (LeadTimeSyncs)) == 0)
-                            {
-                                break;
-                            }
-
-                            /* Move to the next one */
-                            LeadTimeSyncs = strchr (LeadTimeSyncs, ',');
-                            if(LeadTimeSyncs != NULL)
-                                LeadTimeSyncs++;
-
-                            /* Check the range */
-                            if(LeadAddress > 4096)
-                            {
-                                break;
-                            }
-
-                            /* This one is ok so send it */
-                            if((OutMessage = CTIDBG_new OUTMESS) == NULL)
-                            {
-                                return;
-                            }
-
-                            /* send a time sync to this guy */
-                            OutMessage->DeviceID = RemoteRecord->getID();
-                            OutMessage->Port = RemoteRecord->getPortID();
-                            OutMessage->Remote = RemoteRecord->getAddress();
-                            OutMessage->TimeOut = TIMEOUT;
-                            OutMessage->Retry = 0;
-                            OutMessage->Sequence = 0;
-                            OutMessage->Priority = MAXPRIORITY;
-                            OutMessage->EventCode = NOWAIT | NORESULT | DTRAN | BWORD | TSYNC;
-                            OutMessage->Command = CMND_DTRAN;
-                            OutMessage->InLength = 0;
-                            OutMessage->ReturnNexus = NULL;
-                            OutMessage->SaveNexus = NULL;
-
-
-                            // FIX FIX FIX 090199 CGP
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-
-                            /* Load up the BST part of the message */
-                            //OutMessage->Buffer.BSt.Port = PortRecord->getPortID();
-                            //OutMessage->Buffer.BSt.Remote = RemoteRecord->getAddress();
-                            //OutMessage->Buffer.BSt.Priority = MAXPRIORITY - 2;
-                            //OutMessage->Buffer.BSt.Retry = 0;
-                            //OutMessage->Buffer.BSt.Sequence = 0;
-                            //OutMessage->Buffer.BSt.Amp = RouteRecord->getAmp();
-                            //OutMessage->Buffer.BSt.Feeder = RouteRecord->getBus();
-                            //OutMessage->Buffer.BSt.Stages = RouteRecord->getStages();
-                            //OutMessage->Buffer.BSt.RepFixed = RouteRecord->getFixBit();
-                            //OutMessage->Buffer.BSt.RepVar = RouteRecord->getVarBit();
-                            //OutMessage->Buffer.BSt.Address = LEAD_DATA_BASE + (ULONG) LeadAddress - 1L;
-
-                            if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
-                            {
-                                printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
-                                delete (OutMessage);
-                            }
-                            else if(RemoteRecord->getType() == TYPE_CCU711)
-                            {
-                                CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)RemoteRecord->getTrxInfo();
-                                /* Increment the number of entries for this guys queue */
-                                p711Info->PortQueueEnts++;
-                            }
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - unable to allocate OUTMESS for time sync on portid " << portid << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
                 }
@@ -711,7 +625,10 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
         /* Now check for Anything not covered by above */
         DeviceManager.apply(applyDeviceTimeSync, (void*)PortRecord->getPortID());
 
-        RouteManager.apply(applyMCT400TimeSync, (void*)PortRecord->getPortID());
+        {
+            CtiDeviceManager::LockGuard dvguard(DeviceManager.getMux());                // Deadlock avoidance!
+            RouteManager.apply(applyMCT400TimeSync, (void*)PortRecord->getPortID());
+        }
     }
 
     return;
