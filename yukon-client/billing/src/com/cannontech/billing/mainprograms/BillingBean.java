@@ -10,15 +10,17 @@ import java.util.Date;
 import com.cannontech.billing.FileFormatBase;
 import com.cannontech.billing.FileFormatFactory;
 import com.cannontech.billing.FileFormatTypes;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.util.ServletUtil;
 
 public class BillingBean implements java.util.Observer
 {
 	public static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM/dd/yyyy");
 		
-	public static final String BILLING_VERSION = com.cannontech.common.version.VersionTools.getYUKON_VERSION() + "2.3.13";
+	public static final String BILLING_VERSION = VersionTools.getYUKON_VERSION();
 	private BillingFile billingFile = null;
-	private java.text.SimpleDateFormat startDateFormat = new java.text.SimpleDateFormat("MM/dd/yyyy");
 
 	private int fileFormat = 0;
 	private int demandDaysPrev = 30;
@@ -28,7 +30,7 @@ public class BillingBean implements java.util.Observer
 	private String outputFile = "";
 	private boolean removeMult = false;
 	private boolean appendToFile = false;
-	private Date endDate  = com.cannontech.util.ServletUtil.getToday();
+	private Date endDate  = ServletUtil.getToday();
 	private String endDateStr = null;
 
 	private Date demandStartDate = null;
@@ -67,9 +69,6 @@ public void enableTimer(boolean enable)
 		timerString = "0 sec";
 		timer = 0;
 	}
-		
-//	getTimeElapsedLabel().setEnabled(enable);
-//	getTimerLabel().setEnabled(enable);
 }
 /**
  * Comment
@@ -99,8 +98,7 @@ public void generateFile(java.io.OutputStream out) throws java.io.IOException
 	if( getFileFormatBase() != null )
 	{
 		Date timerStart = new Date();
-		com.cannontech.clientutils.CTILogger.info("Started " + 
-					FileFormatTypes.getFormatType(getBillingDefaults().getFormatID()) +
+		CTILogger.info("Started " + FileFormatTypes.getFormatType(getBillingDefaults().getFormatID()) +
 					" format at: " + timerStart);
 
 		//start our DB thread
@@ -108,7 +106,7 @@ public void generateFile(java.io.OutputStream out) throws java.io.IOException
 	}
 	else
 	{
-		com.cannontech.clientutils.CTILogger.info(getBillingDefaults().getFormatID() + " unrecognized file format id");
+		CTILogger.info(getBillingDefaults().getFormatID() + " unrecognized file format id");
 	}
 
 //	getBillingDefaults().writeDefaultsFile();
@@ -147,14 +145,14 @@ public void setFileFormat(int newFileFormat)
 
 public Date getEndDate()
 {
-	com.cannontech.clientutils.CTILogger.info(" Getting End Date! " + endDate);	
+	CTILogger.info(" Getting End Date! " + endDate);	
 	return endDate;
 }
 public void setEndDate(Date newEndDate)
 {
 	if( endDate == null || endDate.compareTo((Object)newEndDate) != 0)
 	{
-		com.cannontech.clientutils.CTILogger.info("Changing End Date! " + endDate);
+		CTILogger.info("Changing End Date! " + endDate);
 		endDate = newEndDate;
 		getBillingDefaults().setEndDate(endDate);
 	}
@@ -192,10 +190,7 @@ public java.util.Date getDemandStartDate()
 public void setDemandDaysPrev(int newDemandDaysPrev)
 {
 	demandDaysPrev = newDemandDaysPrev;
-	
 	getBillingDefaults().setDemandDaysPrev(demandDaysPrev);
-//	getDemandStartDateLabel().setText(startDateFormat.format(getBillingDefaults().getDemandStartDate()));
-
 }
 
 public int getEnergyDaysPrev()
@@ -206,8 +201,6 @@ public void setEnergyDaysPrev(int newEnergyDaysPrev)
 {
 	energyDaysPrev = newEnergyDaysPrev;
 	getBillingDefaults().setEnergyDaysPrev(energyDaysPrev);
-
-//	getEnergyStartDateLabel().setText(startDateFormat.format(getBillingDefaults().getEnergyStartDate()));
 }
 
 public boolean getAppendToFile()
@@ -294,7 +287,7 @@ public synchronized void update(java.util.Observable obs, Object data)
 {
 	if( obs instanceof BillingFile )
 	{
-		com.cannontech.clientutils.CTILogger.info("...Ended format at: " + new java.util.Date() );
+		CTILogger.info("Done with Billing File Format.");
 
 		BillingFile src =  (BillingFile)obs;
 		src.deleteObserver( this );
