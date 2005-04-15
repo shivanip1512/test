@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/02/25 21:38:58 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/04/15 18:25:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,6 +34,7 @@ using namespace std;
 
 #define DEBUGLEVEL_LUDICROUS        0x00000001
 #define DEBUGLEVEL_PORTCOMM         0x00000010
+#define DEBUGLEVEL_CONNECTION       0x00000200
 #define DEBUGLEVEL_FACTORY          0x00000400
 #define DEBUGLEVEL_DATABASE         0x00000800
 #define DEBUGLEVEL_MSG_COMMAND      0x00001000
