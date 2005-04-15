@@ -11,8 +11,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.1 $
- * DATE         :  $Date: 2005/04/15 15:34:40 $
+ * REVISION     :  $Revision: 1.2 $
+ * DATE         :  $Date: 2005/04/15 16:55:33 $
  */
 
 #include <windows.h>
@@ -210,10 +210,10 @@ void CtiFDRLiveData::endNewPoints()
 void CtiFDRLiveData::doUpdates()
 {
   testConnection();
-  if ( !_liveDataConnection->isConnected() )
-  {
-    throw FdrException();
-  }
+  //if ( !_liveDataConnection->isConnected() )
+  //{
+  //  throw FdrException();
+  //}
 }
 
 CtiFDRLiveData::LiveDataWriteCallback::LiveDataWriteCallback(CtiFDRLiveData* that)
@@ -229,6 +229,8 @@ CtiFDRLiveData::LiveDataWriteCallback::~LiveDataWriteCallback()
 bool CtiFDRLiveData::LiveDataWriteCallback::write(unsigned long address, unsigned long length, void * buffer)
 {
   bool success = false;
+
+  fdrInterface->setConnected(true);
 
   CtiFDRPointList &aList = fdrInterface->getReceiveFromList();
   CtiLockGuard<CtiMutex> guard(aList.getMutex());  

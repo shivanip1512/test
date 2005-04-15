@@ -8,8 +8,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.1 $
- * DATE         :  $Date: 2005/04/15 15:34:41 $
+ * REVISION     :  $Revision: 1.2 $
+ * DATE         :  $Date: 2005/04/15 16:55:33 $
  */
 
 #include <windows.h>
@@ -140,6 +140,7 @@ void CtiFDRSimple::threadFunctionGetData()
 
       if (isConnected())
       {
+        reconnectLoopCount = 0;
         try
         {
           if (loadLists)
