@@ -30,9 +30,11 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 	{
 		CTILogger.debug("doPost invoked");
 		javax.servlet.http.HttpSession session = req.getSession(false);
-
 		if (session == null)
-			resp.sendRedirect("/login.jsp");
+		{
+			resp.sendRedirect(req.getContextPath() + "/login.jsp");
+			return;
+		}
 
 		// Try to defeat caching
 		 /* These are commented out because IE 5/6 has a bug where sometimes images won't appear when using SSL **

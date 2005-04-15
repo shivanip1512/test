@@ -56,6 +56,11 @@ public synchronized void service(HttpServletRequest req, HttpServletResponse res
 	try
 	{	 	
 		HttpSession session = req.getSession(false);
+		if (session == null)
+		{
+			resp.sendRedirect(req.getContextPath() + "/login.jsp");
+			return;
+		}
 		String destURL = req.getParameter( ServletUtil.ATT_REDIRECT );	//successsful action URL
 		String errorURL = req.getParameter( ServletUtil.ATT_REFERRER );	//failed action URL
 

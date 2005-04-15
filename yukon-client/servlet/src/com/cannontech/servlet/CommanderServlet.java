@@ -52,8 +52,12 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException
 	{	
-		final HttpSession session = req.getSession( false );
-
+		javax.servlet.http.HttpSession session = req.getSession(false);
+		if (session == null)
+		{
+			resp.sendRedirect(req.getContextPath() + "/login.jsp");
+			return;
+		}
 		//I'm sure I need this for something but not sure what yet.  SN 12/18/03
 		LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
 
@@ -68,7 +72,7 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		/**Debug print of all parameter names.*/
 /*		java.util.Enumeration enum1 = req.getParameterNames();
 		  while (enum1.hasMoreElements()) {
-		  	String ele = enum1.nextElement().toString();
+			String ele = enum1.nextElement().toString();
 			 CTILogger.info(" --" + ele + "  " + req.getParameter(ele));
 		}
 */
@@ -86,13 +90,13 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		if( deviceID != null )
 			localBean.setDeviceID(Integer.parseInt(deviceID));
 		else
-		    localBean.setDeviceID(PAOGroups.INVALID);
+			localBean.setDeviceID(PAOGroups.INVALID);
 		
 		String serialNumber = req.getParameter("serialNumber");
 		if( serialNumber != null)
 			localBean.setSerialNumber(serialNumber);
 		else
-		    localBean.setSerialNumber(PAOGroups.STRING_INVALID);
+			localBean.setSerialNumber(PAOGroups.STRING_INVALID);
 		
 		String startDate = req.getParameter("startDate");	//only applicable for retrieving historical data (such as lp data)
 		if( startDate != null)
@@ -111,7 +115,7 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		//Flag to write to the database
 		String updateDB = req.getParameter("updateDB");
 		if( updateDB != null )
-		    localBean.setUpdateToDB(true);
+			localBean.setUpdateToDB(true);
 		
 		if (clear != null)
 			localBean.clearResultText();
@@ -204,7 +208,7 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 	
 				/** Don't return to the jsp until we have the message or we've timed out.*/
 				while( (localBean.getRequestMessageIDs().size() > 0 && localBean.isWatchRunning()))// || 
-				        //localBean.getExecuteCmdsVector().size() > 0)
+						//localBean.getExecuteCmdsVector().size() > 0)
 				{
 					try
 					{
@@ -217,7 +221,7 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 					}
 				}
 				System.out.println("MessageSize " + localBean.getRequestMessageIDs().size() + " |Watching " + localBean.isWatchRunning() + 
-				        " |VectorSize " + localBean.getExecuteCmdsVector().size());
+						" |VectorSize " + localBean.getExecuteCmdsVector().size());
 			}
 			
 		}

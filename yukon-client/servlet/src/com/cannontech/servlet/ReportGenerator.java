@@ -25,7 +25,6 @@ package com.cannontech.servlet;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.Date;
 import java.util.TimeZone;
 
 import javax.servlet.ServletException;
@@ -42,7 +41,6 @@ import org.jfree.report.modules.output.pageable.graphics.G2OutputTarget;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.gui.ReportBean;
-import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.AuthFuncs;
@@ -70,7 +68,11 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 		try
 		{	 	
 			HttpSession session = req.getSession(false);
-
+			if (session == null)
+			{
+				resp.sendRedirect(req.getContextPath() + "/login.jsp");
+				return;
+			}
 			//a string value for unique reports held in session.
 			//ECID + type + startDate.toString() + stopDate.toString()
 			String reportKey = "";
