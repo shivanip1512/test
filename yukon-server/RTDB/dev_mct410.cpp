@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/04/15 20:34:21 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/04/18 22:00:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1168,6 +1168,18 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                 {
                     function = Emetcon::GetValue_LoadProfilePeakReport;
                     found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                }
+                else
+                {
+                    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
+                    if( ReturnMsg )
+                    {
+                        ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                        ReturnMsg->setResultString(getName() + " / Load profile reporting currently only supported for 60-minute load profile");
+
+                        retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
+                    }
                 }
 
                 if( found )
