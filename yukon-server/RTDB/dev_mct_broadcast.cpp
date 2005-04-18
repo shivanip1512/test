@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/04/18 17:11:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -133,6 +133,37 @@ INT CtiDeviceMCTBroadcast::executePutConfig(CtiRequestMsg                  *pReq
     RWDate NowDate(NowTime);  //  unlikely they'd be out of sync, but just to make sure...
 
     CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ), RWCString(OutMessage->Request.CommandStr), RWCString(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered( ));
+
+    if(parse.isKeyValid("rawloc"))
+    {
+        function = Emetcon::PutConfig_Raw;
+
+        OutMessage->Buffer.BSt.Function = parse.getiValue("rawloc");
+
+        temp = parse.getsValue("rawdata");
+        if( temp.length() > 15 )
+        {
+            //  trim string to be 15 bytes long
+            temp.remove( 15 );
+        }
+
+        OutMessage->Buffer.BSt.Length = temp.length();
+        for( int i = 0; i < temp.length(); i++ )
+        {
+            OutMessage->Buffer.BSt.Message[i] = temp(i);
+        }
+
+        if( parse.isKeyValid("rawfunc") )
+        {
+            OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Write;
+        }
+        else
+        {
+            OutMessage->Buffer.BSt.IO = Emetcon::IO_Write;
+        }
+
+        found = true;
+    }
 
     if(!found)
     {
