@@ -2,11 +2,13 @@
 --%>
 <%@ include file="../operator/Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
-
+<%@ page import="com.cannontech.message.dispatch.message.PointData"%> 
+<%@ page import="com.cannontech.database.data.lite.LiteRawPointHistory"%>
 <%@ page import="com.cannontech.database.cache.functions.*"%>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 <%@ page import="com.cannontech.database.data.point.PointTypes"%>
 <%@ page import="com.cannontech.database.db.point.RawPointHistory"%>
+<cti:checklogin/> 
 <jsp:useBean id="YC_BEAN" class="com.cannontech.yc.bean.YCBean" scope="session"/>
 <%-- Grab the search criteria --%>
 
@@ -16,6 +18,13 @@
 	{	//Force going to the Commander page instead of a page based on the DeviceType
 		manual = true;
 	}
+	boolean lp = false;
+	if( request.getParameter("lp") != null)
+	{	//Force going to the Load Profile
+		lp = true;
+	}
+	
+	int invNo = -1;	//used for directing to different application starting points
 	int deviceID = 0;
 	if( request.getParameter("deviceID") != null)
 	{
@@ -80,6 +89,7 @@
           	<%--"redirect" is required by Commander.jsp and for the sake of this wrapper being able to know the deviceID--%>
             <% String redirect = request.getRequestURI()+ "?deviceID=" + deviceID;%>
             <%if( manual) redirect = redirect + "&manual";%>
+            <%if( lp ) redirect = redirect + "&lp";%>
             <% String referrer = request.getRequestURI()+ "?deviceID=" + deviceID;%>            
             <% String pageName = "CommandDevice.jsp?deviceID=" + deviceID;%>
 			<table width="101" border="0" cellspacing="0" cellpadding="5">
@@ -115,9 +125,13 @@
           </td>
           <td width="1" bgcolor="#000000"><img src="../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
 <%
-			if (liteYukonPao.getType() == com.cannontech.database.data.pao.DeviceTypes.MCT410IL && !manual)
+			if( lp )
+			{%>
+				<%@ include file="AdvancedCommander410.jsp"%>
+			<%}
+			else if (liteYukonPao.getType() == com.cannontech.database.data.pao.DeviceTypes.MCT410IL && !manual)
 			{
-				%>
+			%>
 				<%@ include file="Commander410.jsp"%>
 			<%}
 			else
