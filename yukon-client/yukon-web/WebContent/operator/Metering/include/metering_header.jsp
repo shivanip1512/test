@@ -27,15 +27,22 @@
 	catch (IllegalStateException ise)
 	{
 	}
-	int energyCompanyID =EnergyCompanyFuncs.getEnergyCompany(liteYukonUser).getEnergyCompanyID();
+	Integer energyCompanyID = null;
+	if(liteYukonUser != null && EnergyCompanyFuncs.getEnergyCompany(liteYukonUser) != null)
+		energyCompanyID = new Integer( EnergyCompanyFuncs.getEnergyCompany(liteYukonUser).getEnergyCompanyID());
 		
     Class[] types = { Integer.class,String.class };    
     java.lang.String sqlString =  "SELECT DISTINCT GDEF.GRAPHDEFINITIONID, GDEF.NAME " +
-                                  " FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL, ENERGYCOMPANYCUSTOMERLIST ECCL "+
-                                  " WHERE ECCL.ENERGYCOMPANYID = " + energyCompanyID + 
-                                  " AND GDEF.GRAPHDEFINITIONID = GCL.GRAPHDEFINITIONID " +
-                                  " AND GCL.CUSTOMERID = ECCL.CUSTOMERID" + 
-                                  " ORDER BY GDEF.NAME";
+                                  " FROM GRAPHDEFINITION GDEF ";
+	if( energyCompanyID != null)
+	{
+		sqlString += ", GRAPHCUSTOMERLIST GCL, ENERGYCOMPANYCUSTOMERLIST ECCL "+
+                     " WHERE ECCL.ENERGYCOMPANYID = " + energyCompanyID.intValue() + 
+                     " AND GCL.CUSTOMERID = ECCL.CUSTOMERID " + 
+                     " AND GDEF.GRAPHDEFINITIONID = GCL.GRAPHDEFINITIONID ";
+	}
+	sqlString += " ORDER BY GDEF.NAME";
+	
 	Object[][] ecGraphs = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sqlString, types);
 	
 	com.cannontech.graph.GraphBean graphBean = (com.cannontech.graph.GraphBean) session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
@@ -44,5 +51,4 @@
 		session.setAttribute(ServletUtil.ATT_GRAPH_BEAN, new com.cannontech.graph.GraphBean());
 		graphBean = (com.cannontech.graph.GraphBean)session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
 	}
-
 %>
