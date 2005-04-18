@@ -1,5 +1,8 @@
 <html>
 <%@ include file="include/billing_header.jsp" %>
+<%@ page import="com.cannontech.database.cache.DefaultDatabaseCache"%>
+<%@ page import="com.cannontech.database.db.device.DeviceMeterGroup"%>
+<cti:checklogin/> 
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -11,23 +14,35 @@
 <SCRIPT LANGUAGE = "JavaScript">
 function jumpPage()
 {
-	update();
-	document.generate.action="<%=request.getContextPath()%>/servlet/BillingServlet?";	
-	document.generate.method="post";
 	location.href ="/Billing.jsp";	
 }
 
-function update()
+function changeBillGroupType(groupType)
 {
-	document.MForm.submit();
+	var typeGroup = document.MForm.billGroup;
+	for (var i = 0; i < typeGroup.length; i++) {
+		typeGroup[i].selectedIndex = -1;
+	}
+	document.getElementById('DivCollGroup').style.display = (groupType == <%=DeviceMeterGroup.COLLECTION_GROUP%>)? "" : "none";
+	document.getElementById('DivAltGroup').style.display = (groupType== <%=DeviceMeterGroup.TEST_COLLECTION_GROUP%> )? "" : "none";
+	document.getElementById('DivBillGroup').style.display = (groupType == <%=DeviceMeterGroup.BILLING_GROUP%>)? "" : "none";
 }
 
 function updateDemandDate()
 {
  document.getElementById('DEMANDSTART').innerHTML = "xx";
 }
-</SCRIPT>
 
+function deselectGroup(form)
+{
+	var group = form.grp;
+	for (var i = 0; i < group.length; i++)
+	{
+		group[i].selected = false;
+		alert(group[i].selected);		
+	}
+}
+</SCRIPT>
 <body class="Background" text="#000000" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
 <tr>
@@ -73,15 +88,15 @@ function updateDemandDate()
 				<td width="657" valign="top" bgcolor="#FFFFFF"> 
 					<div align="center"><br><span class="TitleHeader">BILLING</span></div>
 
-					<form name = "MForm">
-<jsp:setProperty name="BILLING_BEAN" property="fileFormat" param="format"/>
-<jsp:setProperty name="BILLING_BEAN" property="billGroupType" param="gType"/>
-<jsp:setProperty name="BILLING_BEAN" property="billGroup" param="grp"/>
-<jsp:setProperty name="BILLING_BEAN" property="appendToFile" param="append"/>
-<jsp:setProperty name="BILLING_BEAN" property="removeMult" param="mult"/>
-<jsp:setProperty name="BILLING_BEAN" property="demandDaysPrev" param="dDays"/>
-<jsp:setProperty name="BILLING_BEAN" property="energyDaysPrev" param="eDays"/>
-<jsp:setProperty name="BILLING_BEAN" property="endDateStr" param="end"/>
+					<form name = "MForm" action="<%=request.getContextPath()%>/servlet/BillingServlet?" method="post">
+<jsp:setProperty name="BILLING_BEAN" property="fileFormat" param="fileFormat"/>
+<jsp:setProperty name="BILLING_BEAN" property="billGroupType" param="billGroupType"/>
+<jsp:setProperty name="BILLING_BEAN" property="billGroup" param="billGroup"/>
+<jsp:setProperty name="BILLING_BEAN" property="appendToFile" param="appendToFile"/>
+<jsp:setProperty name="BILLING_BEAN" property="removeMult" param="removeMultiplier"/>
+<jsp:setProperty name="BILLING_BEAN" property="demandDaysPrev" param="demandDays"/>
+<jsp:setProperty name="BILLING_BEAN" property="energyDaysPrev" param="energyDays"/>
+<jsp:setProperty name="BILLING_BEAN" property="endDateStr" param="endDate"/>
 							
 						<table width="65%" border="0" cellspacing="0" cellpadding="4" height="209" align = "center">
 							<tr> 
@@ -93,7 +108,7 @@ function updateDemandDate()
 													<tr> 
 														<td width="50%" align = "right" >File Format: </td>
 														<td width="50%"> 
-															<select name = "format" onchange="update()">
+															<select name = "fileFormat">
 																<% /* Fill in the possible file format types*/
 																int [] formats = FileFormatTypes.getValidFormatIDs();	
 																int selectedFormat = billingBean.getFileFormat();
@@ -112,9 +127,9 @@ function updateDemandDate()
 													<tr> 
 														<td width="50%" align = "right">Billing End Date:</td>
 														<td width="50%">
-														    <input id="cal" type="text" name="end" value="<%= datePart.format(billingBean.getEndDate()) %>" size="8" onChange="update()">
+														    <input id="cal" type="text" name="endDate" value="<%= datePart.format(billingBean.getEndDate()) %>" size="8">
 											                  <A HREF="javascript:openCalendar(document.getElementById('MForm').cal, 74, 0)"
-											                    onMouseOver="window.status='End Date Calendar';return true;"
+											                    onMouseOver="window.status='Select Billing End Date';return true;"
 											                    onMouseOut="window.status='';return true;">
 											                    <IMG SRC="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" WIDTH="20" HEIGHT="15" ALIGN="ABSMIDDLE" BORDER="0">
 											                  </A>
@@ -125,41 +140,30 @@ function updateDemandDate()
 													<tr> 
 														<td width="50%" align = "right">Demand Days Previous:</td>
 														<td width="50%"> 
-															<input type="text" name="dDays" value="<%=billingBean.getDemandDaysPrev()%>" size = "8" onChange="update()">
+															<input type="text" name="demandDays" value="<%=billingBean.getDemandDaysPrev()%>" size = "8">
 														</td>
-<!--														<td id="DEMANDSTART" width="30%" align="left"><%=datePart.format(billingBean.getDemandStartDate())%></td>-->
 													</tr>
 												</table>
 												<table width="100%" border="0" cellspacing="0" cellpadding="2" class = "TableCell" height="9">
 													<tr> 
 								 						<td width = "50%" align = "right">Energy Days Previous:</td>
 														<td width = "50%"> 
-															<input type="text" name="eDays" value="<%=billingBean.getEnergyDaysPrev()%>" size = "8">
+															<input type="text" name="energyDays" value="<%=billingBean.getEnergyDaysPrev()%>" size = "8">
 														</td>
 													</tr>
 												</table>
 												<table width="100%" border="0" cellspacing="0" cellpadding="3" height="10" class = "TableCell">
 													<tr> 
 														<td width="50%" align = "right" >
-															<input type="checkbox" name="append" 
-																<%if(billingBean.getAppendToFile())
-																	out.println("checked>");
-																else
-																	out.println(">");%>
-															<input type="hidden" name="append" value="false">
+															<input type="checkbox" name="appendToFile" <%=(billingBean.getAppendToFile()?"checked":"")%>>
 														</td>
 														<td width="50%">Append to File </td>
 													</tr>
 													<tr> 
 														<td width="50%" align = "right"> 
-															<input type="checkbox" name="mult"
-																<%if(billingBean.getRemoveMult())
-																	out.println("checked>");
-																else
-																	out.println(">");%>
-															<input type="hidden" name="mult" value="false">
+															<input type="checkbox" name="removeMultiplier" <%=(billingBean.getRemoveMult()?"checked":"")%> >
 														</td>
-														<td width="50%">Remove Multiplier </td>
+														<td width="50%">Remove Multiplier</td>
 													</tr>
 												</table>
 											</td>
@@ -179,40 +183,58 @@ function updateDemandDate()
 																<tr> 
 																	<td width="50%" align="right">Billing Group Type:</td>
 																	<td width="50%"> 
-																		<select name = "gType" onchange="update()">
+																		<select name = "billGroupType" onchange='changeBillGroupType(this.value)'>
 																			<% /* Fill in the possible file format types*/
 																			int [] groupTypes = DeviceMeterGroup.getValidBillGroupTypeIDs();
-																			
 																			int selectedGrpType = billingBean.getBillGroupType();
 																																					
 																			for( int i = 0; i < groupTypes.length; i++ )
-																			{
-																				if( groupTypes[i] == selectedGrpType)
-																					out.println("<OPTION VALUE='" + groupTypes[i] + "' SELECTED>" + BillingFileDefaults.getBillGroupTypeDisplayString(groupTypes[i]));
-																				else
-																					out.println("<OPTION VALUE='" + groupTypes[i] + "'>" + BillingFileDefaults.getBillGroupTypeDisplayString(groupTypes[i]));
-																			}%>
+																			{%>
+																				<option value='<%=groupTypes[i]%>' <%=(groupTypes[i] == selectedGrpType ? "selected":"")%> ><%=BillingFileDefaults.getBillGroupTypeDisplayString(groupTypes[i])%>
+																			<%}%>
 																		</select>
 																	</td>
 																</tr>
 																<tr> 
 																	<td width="50%" align="right">Billing Group:</td>
 																	<td width="50%"> 
-																		<%
-																		String [] groups = billingBean.getValidBillGroups();	
-																		String selectedGrp = billingBean.getBillGroup();
-																		%>
-																		<select name = "grp" size="3" width="50%">
-																			<% /* Fill in the possible file format types*/
-																			for( int i = 0; i < groups.length; i++ )
-																			{
-																				if( groups[i].equalsIgnoreCase(selectedGrp))
-																					out.println("<OPTION VALUE='" + groups[i] + "' SELECTED>" + groups[i]);
-																				else
-																					out.println("<OPTION VALUE='" + groups[i] + "'>" + groups[i]);
-																			}%>
+																	<%
+																	  DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+																	  java.util.List collGroups = cache.getAllDMG_CollectionGroups();
+																	  java.util.List altGroups = cache.getAllDMG_AlternateGroups();
+																	  java.util.List billGroups = cache.getAllDMG_BillingGroups();
+																	%>																	
+																	  <div id='DivCollGroup' style='display:true'>
+																		<select name='billGroup' size='5' style='width:50%;'>
+																		  <%for (int i = 0; i < collGroups.size(); i++)
+																		  {
+																			String val = (String)collGroups.get(i);
+																			%>
+																			<option value='<%=val%>'><%=val%></option>
+																		  <%}%>
 																		</select>
-																	</td>
+																	 </div>
+																	 <div id='DivAltGroup' style='display:none'>
+																	   <select name='billGroup' size='5' style='width:50%;'>
+																	     <%for (int i = 0; i < altGroups.size(); i++)
+																	     {
+																	     	String val = (String)altGroups.get(i);
+																	     	%>
+																	     	<option value='<%=val%>'><%=val%></option>
+																	     <%}%>
+																	   </select>
+																	 </div>
+																	 <div id='DivBillGroup' style='display:none'>
+																	   <select name='billGroup' size='5' style='width:50%;'>
+																	     <%for (int i = 0; i < billGroups.size(); i++)
+																	     {
+																	     	String val = (String)billGroups.get(i);
+																	     	%>
+																	     	<option value='<%=val%>'><%=val%></option>
+																	     	<%}%>
+																	   </select>
+																	 </div>
+																  </td>
 																</tr>
 															</table>
 														</td>
@@ -222,20 +244,18 @@ function updateDemandDate()
 										</tr>
 									</table>
 								</td>
-								</form>
-								<form name = "generate">
 								<td width="28%" align = "center"  valign = "top"> 
-									<table width="100%" border="1" cellspacing="0" cellpadding="8" height = "100%">
+									<table width="100%" border="1" cellspacing="0" cellpadding="0" height = "100%">
 										<tr>
-											<td bgcolor ="#CCCCCC">
-												<input type="submit" name="generate" value="Generate" onclick = "jumpPage()">
+											<td bgcolor ="#CCCCCC" align="center" valign="middle">
+												<input type="submit" name="generate" value="Generate">
 											</td>
 										</tr>
 									</table>
 								</td>
-								</form>
 							</tr>
 						</table>
+					</form>
 				<p align="center">&nbsp;</p>
 				<p align="center">&nbsp;</p>
 				</td>
