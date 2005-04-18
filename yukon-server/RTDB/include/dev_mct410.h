@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/04/11 20:59:22 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/04/18 19:48:00 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -127,12 +127,6 @@ protected:
 
     enum
     {
-        MCT4XX_Command_FreezeVoltageOne   = 0x59,
-        MCT4XX_Command_FreezeVoltageTwo   = 0x5A,
-
-        MCT4XX_Command_PowerfailReset     = 0x89,
-        MCT4XX_Command_Reset              = 0x8A,
-
         MCT410_PointOffset_Voltage       =    4,
         MCT410_PointOffset_Analog_Outage =  100,
 
@@ -200,6 +194,12 @@ public:
     enum
     {
         UniversalAddress = 4194012,
+
+        MCT4XX_Command_FreezeVoltageOne = 0x59,
+        MCT4XX_Command_FreezeVoltageTwo = 0x5A,
+
+        MCT4XX_Command_PowerfailReset = 0x89,
+        MCT4XX_Command_Reset          = 0x8A,
 
         FuncWrite_TSyncPos       = 0xf0,
         FuncWrite_TSyncLen       =    6
