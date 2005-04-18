@@ -1,4 +1,3 @@
-<%@ page import="com.cannontech.message.dispatch.message.PointData"%> 
 <%
 
 		java.util.Enumeration enum1 = request.getParameterNames();
@@ -177,15 +176,15 @@ function setCommand(cmd)
             </table>
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
-                <td width="6" height="19"><img src="../WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
+                <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
                 <td height="95%"  bgcolor="888888" class="tableHeader">Energy</td>
                 <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue kwh');disableAllButtons()" id="readEnergyID" name="readEnergy"
 				onMouseOver="window.status='Read Energy';return true;"
                 onMouseOut="window.status='';return true;">Read</a></td>
-                <td width="6" height="19"><img src="../WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
+                <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
               </tr>
               <tr> 
-                <td width="6" background="../WebConfig/yukon/Side_left.gif">&nbsp;</td>
+                <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
                 <td colspan="2"> 
                   <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
                     <tr> 
@@ -247,12 +246,12 @@ function setCommand(cmd)
                     </tr>
                   </table>
                 </td>
-                <td width="6" background="../WebConfig/yukon/Side_right.gif">&nbsp;</td>
+                <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_right.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
-                <td colspan="2" background="../WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
-                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
+                <td width="6" height="9"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
+                <td colspan="2" background="<%= request.getContextPath() %>/WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
+                <td width="6" height="9"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
               </tr>
             </table>
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
@@ -263,15 +262,15 @@ function setCommand(cmd)
             </table>
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
-                <td width="6" height="19"><img src="../WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
+                <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
                 <td height="95%"  bgcolor="888888" class="tableHeader">Demand</td>
                 <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue peak & getvalue demand');disableAllButtons()" id="readDemandID" name="readDemand"
 			  onMouseOver="window.status='Read Demand and Peak Demand';return true;"
               onMouseOut="window.status='';return true;">Read</a></td>
-                <td width="6" height="19"><img src="../WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
+                <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
               </tr>
               <tr> 
-                <td width="6" background="../WebConfig/yukon/Side_left.gif">&nbsp;</td>
+                <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
                 <td colspan="2"> 
                   <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
                     <tr> 
@@ -311,12 +310,12 @@ function setCommand(cmd)
                     </tr>
                   </table>
                 </td>
-                <td width="6" background="../WebConfig/yukon/Side_right.gif">&nbsp;</td>
+                <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_right.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
-                <td colspan="2" background="../WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
-                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
+                <td width="6" height="9"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
+                <td colspan="2" background="<%= request.getContextPath() %>/WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
+                <td width="6" height="9"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
               </tr>
             </table>
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
@@ -327,15 +326,15 @@ function setCommand(cmd)
             </table>
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
-                <td width="6" height="19"><img src="../WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
+                <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
                 <td height="95%"  bgcolor="888888" class="tableHeader">Voltage</td>
                 <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue voltage & getvalue demand');disableAllButtons()" id="readVoltageID" name="readVoltage"
 			  onMouseOver="window.status='Read Current, Minimum, and Maximum Voltage';return true;"
               onMouseOut="window.status='';return true;">Read</a></td>
-                <td width="6" height="19"><img src="../WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
+                <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
               </tr>
               <tr> 
-                <td width="6" background="../WebConfig/yukon/Side_left.gif">&nbsp;</td>
+                <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
                 <td colspan="2"> 
                   <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
                     <tr> 
@@ -392,12 +391,12 @@ function setCommand(cmd)
                     </tr>
                   </table>
                 </td>
-                <td width="6" background="../WebConfig/yukon/Side_right.gif">&nbsp;</td>
+                <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_right.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
-                <td colspan="2" background="../WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
-                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
+                <td width="6" height="9"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
+                <td colspan="2" background="<%= request.getContextPath() %>/WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
+                <td width="6" height="9"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
               </tr>
             </table>
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
@@ -408,15 +407,15 @@ function setCommand(cmd)
             </table>
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
-                <td width="6" height="19"><img src="../WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
+                <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
                 <td height="95%"  bgcolor="888888" class="tableHeader">Outage</td>
                 <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue powerfail & getvalue outage 1 & getvalue outage 3 & getvalue outage 5');disableAllButtons()" id="readOutageID" name="readOutage"
 			  onMouseOver="window.status='Read Current Blink Count, Last 6 Outages';return true;"
               onMouseOut="window.status='';return true;">Read</a></td>
-                <td width="6" height="19"><img src="../WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
+                <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
               </tr>
               <tr> 
-                <td width="6" background="../WebConfig/yukon/Side_left.gif">&nbsp;</td>
+                <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
                 <td colspan="2"> 
                   <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
                     <tr> 
@@ -508,12 +507,12 @@ function setCommand(cmd)
                     </tr>
                   </table>
                 </td>
-                <td width="6" background="../WebConfig/yukon/Side_right.gif">&nbsp;</td>
+                <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_right.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
-                <td colspan="2" background="../WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
-                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
+                <td width="6" height="9"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
+                <td colspan="2" background="<%= request.getContextPath() %>/WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
+                <td width="6" height="9"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
               </tr>
             </table>
 			
@@ -529,7 +528,7 @@ function setCommand(cmd)
 			%>
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
-                <td width="6" height="19"><img src="../WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
+                <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
                 <td height="95%"  bgcolor="888888" class="tableHeader">Disconnect</td>
                 <td height="95%" bgcolor="888888" class="crumbs" align="right" style="font-weight:bold">
 				<a class="Link3" href="javascript:setCommand('control connect');disableAllButtons()" id="controlConnID" name="controlConn"
@@ -543,10 +542,10 @@ function setCommand(cmd)
                 <a class="Link3" href="javascript:setCommand('getstatus disconnect');disableAllButtons()" id="readDiscID" name="readDisc"
 				  onMouseOver="window.status='Read Disconnect Status';return true;"
         	      onMouseOut="window.status='';return true;">Read</a></td>
-                <td width="6" height="19"><img src="../WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
+                <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
               </tr>
               <tr> 
-                <td width="6" background="../WebConfig/yukon/Side_left.gif">&nbsp;</td>
+                <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
                 <td colspan="2"> 
                   <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
                     <tr> 
@@ -569,23 +568,34 @@ function setCommand(cmd)
                     </tr>
                   </table>
                 </td>
-                <td width="6" background="../WebConfig/yukon/Side_right.gif">&nbsp;</td>
+                <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_right.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
-                <td colspan="2" background="../WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
-                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
+                <td width="6" height="9"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
+                <td colspan="2" background="<%= request.getContextPath() %>/WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
+                <td width="6" height="9"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
               </tr>
             </table>
 			<%}%>			
             <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" class="TableCell">
               <tr> 
-                <td align="right"><a href='CommandDevice.jsp?deviceID=<%=deviceID%>&manual' name="manualCommander"  class="Link1"> Go To Commander</a></td>
+              	<% if (request.getParameter("InvNo") != null)	//we came from the Customer Account page
+              	{%>
+	                <td align="right"><a href='<%= request.getContextPath() %>/operator/Consumer/CommandInv.jsp?InvNo=<%=invNo%>&manual&command=null' name="manualCommander"  class="Link1">Go To Manual Commander</a></td>
+              	<%}
+              	else {%>
+	                <td align="right"><a href='<%= request.getContextPath() %>/apps/CommandDevice.jsp?deviceID=<%=deviceID%>&manual&command=null' name="manualCommander"  class="Link1">Go To Manual Commander</a></td>
+               <%}%>
               </tr>
               <tr> 
-                <td align="right"><a href='AdvancedCommander410.jsp?deviceID=<%=deviceID%>' name="advCommander410"  class="Link1"> Load Profile 
-                  Options</a></td>
-              </tr>
+              	<% if (request.getParameter("InvNo") != null)	//we came from the Customer Account page
+              	{%>
+	                <td align="right"><a href='<%= request.getContextPath() %>/operator/Consumer/CommandInv.jsp?InvNo=<%=invNo%>&lp' name="advCommander410"  class="Link1">Go To Load Profile Options</a></td>
+              	<%}
+              	else {%>
+	                <td align="right"><a href='<%= request.getContextPath() %>/apps/CommandDevice.jsp?deviceID=<%=deviceID%>&lp' name="advCommander410"  class="Link1">Go To Load Profile Options</a></td>
+               <%}%>
+             </tr>
             </table>
           </td>
         </tr>
