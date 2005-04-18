@@ -88,13 +88,13 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 
 			LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
 			//Default energycompany properties in case we can't find one?
-			int energyCompanyID = -1;	//default?
+			Integer energyCompanyID = null;	//default?
 			TimeZone tz = TimeZone.getDefault();	//init to the timezone of the running program
 			if( EnergyCompanyFuncs.getEnergyCompany(liteYukonUser) != null)
 			{
-				energyCompanyID = EnergyCompanyFuncs.getEnergyCompany(liteYukonUser).getEnergyCompanyID();
+				energyCompanyID = new Integer(EnergyCompanyFuncs.getEnergyCompany(liteYukonUser).getEnergyCompanyID());
 				//Get the EnergyCompany user to find the TimzeZone
-				LiteYukonUser ecUser = EnergyCompanyFuncs.getEnergyCompanyUser(energyCompanyID);
+				LiteYukonUser ecUser = EnergyCompanyFuncs.getEnergyCompanyUser(energyCompanyID.intValue());
 				tz = TimeZone.getTimeZone(AuthFuncs.getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
 			}
 			
@@ -107,7 +107,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			
 			reportBean.getModel().setParameters(req);
 			reportBean.getModel().setTimeZone(tz);
-			reportBean.getModel().setECIDs(new Integer(energyCompanyID));
+			reportBean.getModel().setECIDs(energyCompanyID);
 
 			//Add ECId to the reportkey.
 			reportKey += String.valueOf(energyCompanyID);
@@ -211,9 +211,6 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 				if( noCache || report == null )
 				{			
 					//Initialize the report data and populate the TableModel (collectData).
-					reportBean.getModel().setECIDs(new Integer(energyCompanyID));
-	
-					
 					/** Set Model specific parameters */
 					if( reportBean.getType() == ReportTypes.EC_WORK_ORDER_DATA) {
 						((WorkOrderModel)reportBean.getModel()).setOrderID( orderID );
