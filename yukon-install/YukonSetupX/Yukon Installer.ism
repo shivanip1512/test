@@ -1521,7 +1521,6 @@
 		<row><td>NewShortcut15</td><td>ESub Editor</td></row>
 		<row><td>NewShortcut16</td><td>Alarm Monitor</td></row>
 		<row><td>NewShortcut17</td><td>Tomcat</td></row>
-		<row><td>NewShortcut18</td><td>Yukon Reports</td></row>
 		<row><td>NewShortcut2</td><td>Scanner</td></row>
 		<row><td>NewShortcut3</td><td>MACS Server</td></row>
 		<row><td>NewShortcut4</td><td>Message Dispatcher</td></row>
@@ -1690,7 +1689,6 @@
 		<row><td>NewShortcut1564356C2DE7B64CD78F64DD65A3F1C66C</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\esubEditorIcon.ico</td><td/></row>
 		<row><td>NewShortcut1664356C2DE7B64CD78F64DD65A3F1C66C.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonNoAlarm.ico</td><td/></row>
 		<row><td>NewShortcut1764356C2DE7B64CD78F64DD65A3F1C66C.EXE</td><td/><td>%SystemRoot%\system32\filemgmt.dll</td><td>2</td></row>
-		<row><td>NewShortcut1864356C2DE7B64CD78F64DD65A3F1C66C.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\ReportingIcon.ico</td><td/></row>
 	</table>
 
 	<table name="InstallShield">
@@ -1877,7 +1875,6 @@ QwBEAAEATQBlAGQAaQBhAA==
 		<row><td>NewShortcut15</td><td>folder5</td><td>ESubstation Editor</td><td/><td>%JAVA_HOME%\bin\javaw.exe</td><td>-Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\esub-editor.jar"</td><td/><td/><td>NewShortcut1564356C2DE7B64CD78F64DD65A3F1C66C</td><td/><td>1</td><td>BIN</td><td/><td>ESubstation Editor</td><td>18</td></row>
 		<row><td>NewShortcut16</td><td>folder5</td><td>Alarm Monitor</td><td/><td>%JAVA_HOME%\bin\javaw.exe</td><td>-Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\monitor.jar"</td><td/><td/><td>NewShortcut1664356C2DE7B64CD78F64DD65A3F1C66C.exe</td><td/><td>1</td><td>BIN</td><td/><td>Alarm Monitor</td><td>18</td></row>
 		<row><td>NewShortcut17</td><td>DesktopFolder</td><td>Yukon Setup</td><td/><td>&lt;PROGRAMFILES&gt;\Internet Explorer\IEXPLORE.EXE</td><td>http:\\127.0.0.1:8080\setup.jsp</td><td/><td/><td>NewShortcut1764356C2DE7B64CD78F64DD65A3F1C66C.EXE</td><td>1</td><td>1</td><td/><td/><td>Yukon Setup</td><td>18</td></row>
-		<row><td>NewShortcut18</td><td>folder5</td><td>##ID_STRING7##</td><td/><td>%JAVA_HOME%\bin\javaw.exe</td><td>-Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\report.jar"</td><td/><td/><td>NewShortcut1864356C2DE7B64CD78F64DD65A3F1C66C.exe</td><td/><td>1</td><td>BIN</td><td/><td>Yukon Reports</td><td>18</td></row>
 		<row><td>NewShortcut2</td><td>folder4</td><td>Scanner</td><td/><td>"&lt;TARGETDIR&gt;\server\bin\scanner.exe"</td><td>-console</td><td/><td/><td/><td/><td>1</td><td>BIN1</td><td/><td>Scanner</td><td>18</td></row>
 		<row><td>NewShortcut3</td><td>folder4</td><td>MACS Server</td><td/><td>"&lt;TARGETDIR&gt;\server\bin\macs.exe"</td><td>-console</td><td/><td/><td/><td/><td>1</td><td>BIN1</td><td/><td>Metering and Control Server</td><td>18</td></row>
 		<row><td>NewShortcut4</td><td>folder4</td><td>Message Dispatcher</td><td/><td>"&lt;TARGETDIR&gt;\server\bin\dispatch.exe"</td><td/><td/><td/><td/><td/><td>1</td><td>BIN1</td><td/><td>Message Dispatcher</td><td>18</td></row>
