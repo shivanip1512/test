@@ -20,8 +20,11 @@ public interface IPointOffsets
    public static final int PT_OFFSET_PEAK_KW_DEMAND			= 11;
    public static final int PT_OFFSET_MAX_VOLT_DEMAND 		= 14;
    public static final int PT_OFFSET_MIN_VOLT_DEMAND 		= 15;
-   public static final int PT_OFFSET_TOTAL_KVARH			= 21;
    public static final int PT_OFFSET_LP_KW_DEMAND			= 15;
+   public static final int PT_OFFSET_FROZEN_PEAK_DEMAND		= 21;
+   public static final int PT_OFFSET_TOTAL_KVARH			= 21;
+   public static final int PT_OFFSET_FROZEN_MAX_VOLT		= 24;
+   public static final int PT_OFFSET_FROZEN_MIN_VOLT		= 25;
    public static final int PT_OFFSET_KVAR_DEMAND			= 35;
 	
    public static final int PT_OFFSET_LPROFILE_KW_DEMAND   = 101;
@@ -50,10 +53,10 @@ public interface IPointOffsets
 					new int[]{1,20},
 					new String[] {"kWh","Power Fail Count"} ),
 		new PointOffset( PAOGroups.MCT410IL, PointTypes.DEMAND_ACCUMULATOR_POINT, 
-					new int[]{1,4,11,14,15,101,104},
+					new int[]{1,4,11,14,15,21,24,25,101,104},
 					new String[] {"kW","Voltage","Peak kW","Max Volts","Min Volts",
-								"Load profile kW demand","Load profile voltage"} ),
-
+						"Frozen Peak kW","Frozen Max Volts","Frozen Min Volts",
+						"Load Profile kW Demand","Load Profile Voltage"} ),
 		new PointOffset( PAOGroups.MCT370, PointTypes.STATUS_POINT, 
 					new int[]{5,6,10,11,12,2000},
 					new String[] {"Status of A relay","Status of B relay","Power Fail Flag",

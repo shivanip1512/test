@@ -55,7 +55,7 @@ public class PointUtil {
 
 			double multiplier = 0.01;
 			//multiplier is 0.1 for 410LE, 0.01 for all older MCTs
-			if(val instanceof MCT410_KWH_Only || val instanceof MCT400SeriesBase)
+			if(val instanceof MCT410_KWH_Only || val instanceof MCT410IL)
 				multiplier = 0.1;
 			
 			//always create the PulseAccum point
@@ -119,6 +119,33 @@ public class PointUtil {
 						((DeviceBase) val).getDevice().getDeviceID(),
 						new Integer(++pointID),
 						PointTypes.PT_OFFSET_MIN_VOLT_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						multiplier) );
+						
+				newVal.getDBPersistentVector().add( 
+					PointFactory.createDmdAccumPoint(
+						"Frozen Peak Demand",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(++pointID),
+						PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_KW,
+						multiplier) );			
+						
+				newVal.getDBPersistentVector().add( 
+					PointFactory.createDmdAccumPoint(
+						"Frozen Max Volts",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(++pointID),
+						PointTypes.PT_OFFSET_FROZEN_MAX_VOLT,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						multiplier) );
+						
+				newVal.getDBPersistentVector().add( 
+					PointFactory.createDmdAccumPoint(
+						"Frozen Min Volts",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(++pointID),
+						PointTypes.PT_OFFSET_FROZEN_MIN_VOLT,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
 						multiplier) );
 						
