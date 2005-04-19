@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/04/19 21:24:50 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/04/19 21:35:53 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -712,6 +712,7 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         }
 
         case Emetcon::GetValue_Voltage:
+        case Emetcon::GetValue_FrozenVoltage:
         {
             status = decodeGetValueVoltage(InMessage, TimeNow, vgList, retList, outList);
             break;
