@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2005/04/15 20:36:02 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2005/04/19 21:23:54 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1494,7 +1494,7 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
             function = Emetcon::GetValue_FrozenPeakDemand;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
         }
-        else if( !parse.isKeyValid("update") ) //  the non-frozen peak values cannot be updated
+        else
         {
             function = Emetcon::GetValue_PeakDemand;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
@@ -1504,12 +1504,12 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
     }
     else if( parse.getFlags() & CMD_FLAG_GV_VOLTAGE )
     {
-/*        if( parse.getFlags() & CMD_FLAG_FROZEN )  //  Read the frozen values...
+        if( parse.getFlags() & CMD_FLAG_FROZEN )  //  Read the frozen values...
         {
             function = Emetcon::GetValue_FrozenVoltage;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
         }
-        else if( !parse.isKeyValid("update") ) //  the non-frozen peak values cannot be updated*/
+        else
         {
             function = Emetcon::GetValue_Voltage;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
