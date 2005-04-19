@@ -23,6 +23,14 @@ go
 alter table DeviceTapPagingSettings alter column POSTPath varchar(64) not null;
 go
 
+insert into FDRInterface values (22, 'LIVEDATA','Receive', 'f' );
+
+alter table FDRINTERFACEOPTION alter column OPTIONVALUES varchar(256);
+go
+
+insert into FDRInterfaceOption values(22, 'Address', 1, 'Text', '(none)' );
+insert into FDRInterfaceOption values(22, 'Data Type', 2, 'Combo', 'Data_RealExtended,Data_DiscreteExtended,Data_StateExtended,Data_RealQ,Data_DiscreteQ,Data_State,Data_Discrete,Data_Real,Data_RealQTimeTag,Data_StateQTimeTag,Data_DiscreteQTimeTag' );
+go
 
 
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     4/5/2005 10:15:16 AM                         */
+/* Created on:     4/19/2005 9:52:07 AM                         */
 /*==============================================================*/
 
 
@@ -4148,18 +4148,19 @@ insert into FDRInterface values ( 5, 'STEC', 'Receive', 'f' );
 insert into FDRInterface values ( 6, 'RCCS', 'Send,Send for control,Receive,Receive for control', 't' );
 insert into FDRInterface values ( 7, 'TRISTATE', 'Receive', 'f' );
 insert into FDRInterface values ( 8, 'RDEX', 'Send,Send for control,Receive,Receive for control', 't' );
-insert into FDRInterface values (9,'SYSTEM','Link Status','f');
-insert into FDRInterface values (10,'DSM2IMPORT','Receive,Receive for control','f');
-insert into FDRInterface values (11,'TELEGYR','Receive,Receive for control','f');
-insert into FDRInterface values (12,'TEXTIMPORT','Receive,Receive for control','f');
-insert into FDRInterface values (13,'TEXTEXPORT','Send','f');
+insert into FDRInterface values ( 9, 'SYSTEM','Link Status','f');
+insert into FDRInterface values (10, 'DSM2IMPORT','Receive,Receive for control','f');
+insert into FDRInterface values (11, 'TELEGYR','Receive,Receive for control','f');
+insert into FDRInterface values (12, 'TEXTIMPORT','Receive,Receive for control','f');
+insert into FDRInterface values (13, 'TEXTEXPORT','Send','f');
 
-insert into fdrinterface values (16,'LODESTAR_STD','Receive','f');
-insert into fdrinterface values (17,'LODESTAR_ENH','Receive','f');
+insert into fdrinterface values (16, 'LODESTAR_STD','Receive','f');
+insert into fdrinterface values (17, 'LODESTAR_ENH','Receive','f');
 insert into fdrinterface values (18, 'DSM2FILEIN', 'Receive,Receive for control', 'f');
 insert into FDRInterface values (19, 'XA21LM','Receive,Send', 't' );
-insert into fdrinterface values (20,'BEPC','Send','f');
+insert into fdrinterface values (20, 'BEPC','Send','f');
 insert into FDRInterface values (21, 'PI','Receive', 't' );
+insert into FDRInterface values (22, 'LIVEDATA','Receive', 'f' );
 alter table FDRInterface
    add constraint PK_FDRINTERFACE primary key  (InterfaceID)
 go
@@ -4173,7 +4174,7 @@ create table FDRInterfaceOption (
    OptionLabel          varchar(20)          not null,
    Ordering             numeric              not null,
    OptionType           varchar(8)           not null,
-   OptionValues         varchar(150)         not null
+   OptionValues         varchar(256)         not null
 )
 go
 
@@ -4214,6 +4215,8 @@ insert into FDRInterfaceOption values(19, 'Translation', 1, 'Text', '(none)' );
 insert into fdrinterfaceoption values(20, 'Point', 1, 'Combo', 'TOTAL LOAD KW' );
 insert into FDRInterfaceOption values(21, 'Tag Name', 1, 'Text', '(none)' );
 insert into FDRInterfaceOption values(21, 'Period (sec)', 2, 'Text', '(none)' );
+insert into FDRInterfaceOption values(22, 'Address', 1, 'Text', '(none)' );
+insert into FDRInterfaceOption values(22, 'Data Type', 2, 'Combo', 'Data_RealExtended,Data_DiscreteExtended,Data_StateExtended,Data_RealQ,Data_DiscreteQ,Data_State,Data_Discrete,Data_Real,Data_RealQTimeTag,Data_StateQTimeTag,Data_DiscreteQTimeTag' );
 
 alter table FDRInterfaceOption
    add constraint PK_FDRINTERFACEOPTION primary key  (InterfaceID, Ordering)
