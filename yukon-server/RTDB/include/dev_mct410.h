@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/04/18 19:48:00 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/04/19 21:24:50 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,32 +58,35 @@ protected:
 
     enum Functions
     {
-        FuncWrite_IntervalsPos   = 0x03,
-        FuncWrite_IntervalsLen   =    4,
+        FuncWrite_IntervalsPos    = 0x03,
+        FuncWrite_IntervalsLen    =    4,
 
-        FuncRead_OutagePos       = 0x10,
-        FuncRead_OutageLen       =   13,
+        FuncRead_OutagePos        = 0x10,
+        FuncRead_OutageLen        =   13,
 
-        FuncRead_MReadPos        = 0x90,
-        FuncRead_MReadLen        =    3,  //  this is for the 410 KWH Only;  will need to be increased later
+        FuncRead_MReadPos         = 0x90,
+        FuncRead_MReadLen         =    3,  //  this is for the 410 KWH Only;  will need to be increased later
 
-        FuncRead_FrozenMReadPos  = 0x91,
-        FuncRead_FrozenMReadLen  =    4,
+        FuncRead_FrozenMReadPos   = 0x91,
+        FuncRead_FrozenMReadLen   =    4,
 
-        FuncRead_DemandPos       = 0x92,
-        FuncRead_DemandLen       =    6,  //  brings back recent demand, avg. voltage, and blink counter
+        FuncRead_DemandPos        = 0x92,
+        FuncRead_DemandLen        =    6,  //  brings back recent demand, avg. voltage, and blink counter
 
-        FuncRead_PeakDemandPos   = 0x93,
-        FuncRead_PeakDemandLen   =    9,  //  peak demand, time of peak, current meter reading
+        FuncRead_PeakDemandPos    = 0x93,
+        FuncRead_PeakDemandLen    =    9,  //  peak demand, time of peak, current meter reading
 
-        FuncRead_FrozenPos       = 0x94,
-        FuncRead_FrozenLen       =   10,
+        FuncRead_FrozenPos        = 0x94,
+        FuncRead_FrozenLen        =   10,
 
-        FuncRead_VoltagePos      = 0x95,
-        FuncRead_VoltageLen      =   12,  //  max and min voltages
+        FuncRead_VoltagePos       = 0x95,
+        FuncRead_VoltageLen       =   12,  //  max and min voltages
 
-        FuncRead_LPStatusPos     = 0x97,
-        FuncRead_LPStatusLen     =   12,
+        FuncRead_FrozenVoltagePos = 0x96,
+        FuncRead_FrozenVoltageLen =   13,  //  max and min voltages plus freeze count
+
+        FuncRead_LPStatusPos      = 0x97,
+        FuncRead_LPStatusLen      =   12,
 
         FuncRead_LLPPeakDayPos        = 0xa0,
         FuncRead_LLPPeakHourPos       = 0xa1,
@@ -128,6 +131,9 @@ protected:
     enum
     {
         MCT410_PointOffset_Voltage       =    4,
+        MCT410_PointOffset_MaxVoltage    =   14,
+        MCT410_PointOffset_MinVoltage    =   15,
+
         MCT410_PointOffset_Analog_Outage =  100,
 
         MCT4XX_PointOffset_PeakOffset   = 10,

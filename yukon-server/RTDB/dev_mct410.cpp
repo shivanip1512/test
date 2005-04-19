@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/04/18 22:00:14 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/04/19 21:24:50 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -149,6 +149,12 @@ CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::initCommandStore( )
     cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair((int)FuncRead_VoltagePos,
                             (int)FuncRead_VoltageLen);
+    s.insert(cs);
+
+    cs._cmd     = Emetcon::GetValue_FrozenVoltage;
+    cs._io      = Emetcon::IO_Function_Read;
+    cs._funcLen = make_pair((int)FuncRead_FrozenVoltagePos,
+                            (int)FuncRead_FrozenVoltageLen);
     s.insert(cs);
 
     cs._cmd     = Emetcon::GetValue_Outage;
@@ -1835,7 +1841,6 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
-    PointQuality_t quality;
     data_pair      dp;
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -1844,11 +1849,13 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
 
         double minVolts, maxVolts;
         RWTime minTime, maxTime;
-        int tmpTime;
-        RWCString resultString;
+        PointQuality_t minQuality, maxQuality;
+        int minPointOffset, maxPointOffset;
+        unsigned long tmpTime;
+        RWCString resultString, pointString;
 
-        CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        CtiPointDataMsg      *pData = NULL;
+        CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+        CtiPointDataMsg *pData = NULL;
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -1861,42 +1868,90 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
         dp = getData(DSt->Message, 2, ValueType_Voltage);
-        maxVolts = dp.first;
-        quality  = dp.second;
+        maxVolts   = dp.first;
+        maxQuality = dp.second;
+        maxPointOffset = MCT410_PointOffset_MaxVoltage;
 
-        tmpTime = DSt->Message[2] << 24 |
-                  DSt->Message[3] << 16 |
-                  DSt->Message[4] <<  8 |
-                  DSt->Message[5];
-
+        dp = getData(DSt->Message + 2, 4, ValueType_Raw);
+        tmpTime = dp.first;
         maxTime = RWTime(tmpTime + rwEpoch);
 
+
         dp = getData(DSt->Message + 6, 2, ValueType_Voltage);
-        minVolts = dp.first;
-        quality  = dp.second;
+        minVolts   = dp.first;
+        minQuality = dp.second;
+        minPointOffset = MCT410_PointOffset_MinVoltage;
 
-        tmpTime = DSt->Message[8]  << 24 |
-                  DSt->Message[9]  << 16 |
-                  DSt->Message[10] <<  8 |
-                  DSt->Message[11];
-
+        dp = getData(DSt->Message + 8, 2, ValueType_Raw);
+        tmpTime = dp.first;
         minTime = RWTime(tmpTime + rwEpoch);
 
-        CtiPoint *pPoint = getDevicePointOffsetTypeEqual( MCT410_PointOffset_Voltage, DemandAccumulatorPointType );
-
-        if( pPoint != NULL)
+        if( InMessage->Sequence == Emetcon::GetValue_FrozenVoltage )
         {
-            maxVolts = ((CtiPointNumeric*)pPoint)->computeValueForUOM(maxVolts);
-            minVolts = ((CtiPointNumeric*)pPoint)->computeValueForUOM(minVolts);
+            minPointOffset += MCT4XX_PointOffset_FrozenOffset;
+            maxPointOffset += MCT4XX_PointOffset_FrozenOffset;
+        }
+
+        CtiPointDataMsg *pdm;
+        CtiPointNumeric *pt_max_volts = (CtiPointNumeric*)getDevicePointOffsetTypeEqual( maxPointOffset, DemandAccumulatorPointType ),
+                        *pt_min_volts = (CtiPointNumeric*)getDevicePointOffsetTypeEqual( minPointOffset, DemandAccumulatorPointType );
+
+        if( pt_max_volts )
+        {
+            maxVolts = pt_max_volts->computeValueForUOM(maxVolts);
+
+            pointString = getName() + " / " + pt_max_volts->getName() + " = " + CtiNumStr(maxVolts) + " @ " + maxTime.asString();
+
+            if( pdm = CTIDBG_new CtiPointDataMsg(pt_max_volts->getPointID(), maxVolts, NormalQuality, pt_max_volts->getType(), pointString) )
+            {
+                pdm->setTime(maxTime);
+
+                ReturnMsg->PointData().insert(pdm);
+                pdm = 0;
+            }
         }
         else
         {
             maxVolts *= 0.1;
-            minVolts *= 0.1;
+
+            if( InMessage->Sequence == Emetcon::GetValue_FrozenVoltage )
+            {
+                resultString += getName() + " / Frozen Max Voltage = " + CtiNumStr(maxVolts) + " @ " + maxTime.asString();
+            }
+            else
+            {
+                resultString += getName() + " / Max Voltage = " + CtiNumStr(maxVolts) + " @ " + maxTime.asString();
+            }
         }
 
-        resultString  = getName() + " / Min Voltage = " + CtiNumStr(minVolts) + " @ " + minTime.asString() + "\n";
-        resultString += getName() + " / Max Voltage = " + CtiNumStr(maxVolts) + " @ " + maxTime.asString();
+        if( pt_min_volts )
+        {
+            minVolts = pt_min_volts->computeValueForUOM(minVolts);
+
+            pointString = getName() + " / " + pt_min_volts->getName() + " = " + CtiNumStr(minVolts) + " @ " + minTime.asString();
+
+            if( pdm = CTIDBG_new CtiPointDataMsg(pt_min_volts->getPointID(), minVolts, NormalQuality, pt_min_volts->getType(), pointString) )
+            {
+                pdm->setTime(minTime);
+
+                ReturnMsg->PointData().insert(pdm);
+                pdm = 0;
+            }
+        }
+        else
+        {
+            minVolts *= 0.1;
+
+            if( InMessage->Sequence == Emetcon::GetValue_FrozenVoltage )
+            {
+                resultString += getName() + " / Frozen Min Voltage = " + CtiNumStr(minVolts) + " @ " + minTime.asString();
+            }
+            else
+            {
+                resultString += getName() + " / Min Voltage = " + CtiNumStr(minVolts) + " @ " + minTime.asString();
+            }
+        }
+
 
         ReturnMsg->setResultString(resultString);
 
