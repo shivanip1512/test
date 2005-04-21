@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2005/04/19 21:23:54 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2005/04/21 20:28:00 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -935,6 +935,8 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
     {
         case Emetcon::Control_Open:
         case Emetcon::Control_Close:
+        case Emetcon::Control_Shed:
+        case Emetcon::Control_Restore:
         case Emetcon::PutConfig_ARMC:
         case Emetcon::PutConfig_ARML:
         {
@@ -2944,8 +2946,6 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
 {
     bool found = false;
     INT   nRet = NoError;
-    CHAR Temp[80];
-    OUTMESS *pDCST = NULL;
 
     INT function;
 
@@ -3019,6 +3019,16 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
         //  do not allow the disconnect command to be sent to a meter that has no disconnect address
         if( getType() == TYPEMCT410 && !_disconnectAddress )
         {
+            CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
+            if( ReturnMsg )
+            {
+                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                ReturnMsg->setResultString(getName() + " / Disconnect command cannot be sent to an empty (zero) address");
+
+                retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
+            }
+
             found = false;
         }
     }
