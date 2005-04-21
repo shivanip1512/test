@@ -1578,7 +1578,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
     RWCRExpr    iedClass("ied +class +[0-9]+ +[0-9]+");
     RWCRExpr    iedScan("ied +scan +[0-9]+ +[0-9]+");
     RWCRExpr    groupAddr("group +(enable)|(disable)");
-    RWCRExpr    address("address +(uniq(ue)? +[0-9]+)|((gold +[0-9]+ +silver +[0-9]+)|(bronze [0-9]+)|(lead +meter +[0-9]+ +load +[0-9]+))");
+    RWCRExpr    address("address +((uniq(ue)? +[0-9]+)|(gold +[0-9]+ +silver +[0-9]+)|(bronze [0-9]+)|(lead +meter +[0-9]+ +load +[0-9]+))");
 
     char *p;
 
