@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/04/19 21:35:53 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/04/21 20:49:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,6 +76,19 @@ CtiDeviceMCT410 &CtiDeviceMCT410::operator=( const CtiDeviceMCT410 &aRef )
     return *this;
 }
 
+
+//  eventually allow this function to construct the pointdata string as well
+CtiPointDataMsg *CtiDeviceMCT410::makePointDataMsg(CtiPoint *p, const point_info_t &pi, const RWCString &pointString)
+{
+    CtiPointDataMsg *pdm = 0;
+
+    if( p )
+    {
+        pdm = CTIDBG_new CtiPointDataMsg(p->getID(), pi.value, pi.quality, p->getType(), pointString);
+    }
+
+    return pdm;
+}
 
 void CtiDeviceMCT410::setDisconnectAddress( unsigned long address )
 {
@@ -891,14 +904,13 @@ unsigned char CtiDeviceMCT410::crc8( const unsigned char *buf, unsigned int len 
 }
 
 
-//  data_pair needs to be turned into a struct instead of a pair;  we don't do anything pairwise with it
-CtiDeviceMCT410::data_pair CtiDeviceMCT410::getData( unsigned char *buf, int len, ValueType vt )
+CtiDeviceMCT410::point_info_t CtiDeviceMCT410::getData( unsigned char *buf, int len, ValueType vt )
 {
     PointQuality_t quality    = NormalQuality;
     __int64 value = 0;
     unsigned long error_code = 0xffffffff;  //  filled with 0xff because some data types are less than 32 bits
     unsigned char quality_flags, resolution;
-    data_pair retval;
+    point_info_t  retval;
 
     for( int i = 0; i < len; i++ )
     {
@@ -959,8 +971,8 @@ CtiDeviceMCT410::data_pair CtiDeviceMCT410::getData( unsigned char *buf, int len
         }
     }
 
-    retval.first  = value;
-    retval.second = quality;
+    retval.value   = value;
+    retval.quality = quality;
 
     if( vt == ValueType_KW || vt == ValueType_LoadProfile_KW )
     {
@@ -974,13 +986,13 @@ CtiDeviceMCT410::data_pair CtiDeviceMCT410::getData( unsigned char *buf, int len
         switch( resolution )
         {
             default:
-            case 0x00:  retval.first /=    10.0;    break;  //  100 WH units -> kWH
-            case 0x10:  retval.first /=   100.0;    break;  //   10 WH units -> kWH
-            case 0x20:  retval.first /=  1000.0;    break;  //    1 WH units -> kWH
-            case 0x30:  retval.first /= 10000.0;    break;  //  0.1 WH units -> kWH
+            case 0x00:  retval.value /=    10.0;    break;  //  100 WH units -> kWH
+            case 0x10:  retval.value /=   100.0;    break;  //   10 WH units -> kWH
+            case 0x20:  retval.value /=  1000.0;    break;  //    1 WH units -> kWH
+            case 0x30:  retval.value /= 10000.0;    break;  //  0.1 WH units -> kWH
         }
 
-        retval.first *= 10.0;  //  REMOVE THIS for HEAD or WHATEVER build HAS the proper, pretty, nice 1.0 kWH output code
+        retval.value *= 10.0;  //  REMOVE THIS for HEAD or WHATEVER build HAS the proper, pretty, nice 1.0 kWH output code
     }
 
     return retval;
@@ -1170,7 +1182,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             }
             else if( !cmd.compare("peak") )
             {
-                //  !!!  FIXME: this will not allow any load profile interval smaller than 1 hour to be reported on  !!!
+                //  !!!  FIXME: this will not allow reporting on any load profile interval size smaller than 1 hour  !!!
                 if( getLoadProfile().getLoadProfileDemandRate() >= 3600 )
                 {
                     function = Emetcon::GetValue_LoadProfilePeakReport;
@@ -1370,8 +1382,6 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     unsigned long pulses;
-    DOUBLE Value;
-    PointQuality_t  quality;
 
     CtiPointBase         *pPoint = NULL;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -1401,7 +1411,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        data_pair dp = getData(DSt->Message, 3, ValueType_Accumulator);
+        point_info_t pi = getData(DSt->Message, 3, ValueType_Accumulator);
 
         if( InMessage->Sequence == Emetcon::GetValue_FrozenKWH )
         {
@@ -1425,14 +1435,13 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
         if( pPoint != NULL)
         {
             // 24 bit pulse value
-            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM(dp.first);
-            quality = dp.second;
+            pi.value = ((CtiPointNumeric *)pPoint)->computeValueForUOM(pi.value);
 
-            if( quality != InvalidQuality )
+            if( pi.quality != InvalidQuality )
             {
-                resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces()) + freeze_info_string;
+                resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces()) + freeze_info_string;
 
-                pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, quality, PulseAccumulatorPointType, resultString);
+                pData = makePointDataMsg(pPoint, pi, resultString);
 
                 if(pData != NULL)
                 {
@@ -1450,7 +1459,15 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
         }
         else
         {
-            resultString = getName() + " / KYZ 1 = " + CtiNumStr(dp.first) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
+            if( pi.quality != InvalidQuality )
+            {
+                resultString = getName() + " / KYZ 1 = " + CtiNumStr(pi.value) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
+            }
+            else
+            {
+                resultString = getName() + " / KYZ 1 = (invalid data) --  POINT UNDEFINED IN DB";
+            }
+
             ReturnMsg->setResultString(resultString);
         }
 
@@ -1472,8 +1489,7 @@ INT CtiDeviceMCT410::decodeGetValueFrozen(INMESS *InMessage, RWTime &TimeNow, RW
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     unsigned long pulses;
-    DOUBLE Value;
-    PointQuality_t  quality;
+    point_info_t  pi;
 
     CtiPointBase         *pPoint = NULL;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -1506,21 +1522,21 @@ INT CtiDeviceMCT410::decodeGetValueFrozen(INMESS *InMessage, RWTime &TimeNow, RW
 
         pPoint = getDevicePointOffsetTypeEqual( 1 + MCT4XX_PointOffset_FrozenOffset, PulseAccumulatorPointType );
 
-        data_pair dp = getData(DSt->Message, 3, ValueType_Accumulator);
+        pi = getData(DSt->Message, 3, ValueType_Accumulator);
 
         // handle accumulator data here
         if( pPoint != NULL)
         {
             // 24 bit pulse value
-            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM(dp.first);
-            quality = dp.second;
+            pi.value = ((CtiPointNumeric *)pPoint)->computeValueForUOM(pi.value);
+
             RWTime pointTime;
 
-            if( quality != InvalidQuality )
+            if( pi.quality != InvalidQuality )
             {
-                resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, quality, PulseAccumulatorPointType, resultString);
+                pData = makePointDataMsg(pPoint, pi, resultString);
 
                 if(pData != NULL)
                 {
@@ -1539,7 +1555,15 @@ INT CtiDeviceMCT410::decodeGetValueFrozen(INMESS *InMessage, RWTime &TimeNow, RW
         }
         else
         {
-            resultString = getName() + " / KYZ 1 = " + CtiNumStr(dp.first) + "  --  POINT UNDEFINED IN DB";
+            if( pi.quality != InvalidQuality )
+            {
+                resultString = getName() + " / KYZ 1 = " + CtiNumStr(pi.value) +  "  --  POINT UNDEFINED IN DB";
+            }
+            else
+            {
+                resultString = getName() + " / KYZ 1 = (invalid data) --  POINT UNDEFINED IN DB";
+            }
+
             ReturnMsg->setResultString(resultString);
         }
 
@@ -1552,18 +1576,18 @@ INT CtiDeviceMCT410::decodeGetValueFrozen(INMESS *InMessage, RWTime &TimeNow, RW
 
 INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
-    int             status = NORMAL;
-    data_pair       dp;
-    double          Value;
-    PointQuality_t  quality;
-    RWCString resultString;
+    int status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    point_info_t pi;
+    RWCString resultString,
+              pointString;
 
-    CtiPointBase         *pPoint = NULL;
-    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg      *pData = NULL;
+    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+
+    CtiPointBase    *pPoint = NULL;
+    CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg *pData = NULL;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1587,27 +1611,22 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        dp = getData(DSt->Message, 2, ValueType_KW);
+        pi = getData(DSt->Message, 2, ValueType_KW);
 
         //  turn raw pulses into a demand reading
-        Value   = dp.first * double(3600 / getDemandInterval());
-        quality = dp.second;
+        pi.value *= double(3600 / getDemandInterval());
 
         // look for first defined DEMAND accumulator
-        pPoint = getDevicePointOffsetTypeEqual( 1, DemandAccumulatorPointType );
-
-        if( pPoint != NULL)
+        if( pPoint = getDevicePointOffsetTypeEqual( 1, DemandAccumulatorPointType ) )
         {
             RWTime pointTime;
 
-            Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
+            pi.value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pi.value);
 
-            resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                     ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+            pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value,
+                                                                                    ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, quality, DemandAccumulatorPointType, resultString);
-
-            if(pData != NULL)
+            if(pData = makePointDataMsg(pPoint, pi, pointString))
             {
                 pointTime -= pointTime.seconds() % getDemandInterval();
                 pData->setTime( pointTime );
@@ -1617,29 +1636,28 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         }
         else
         {
-            resultString = getName() + " / Demand = " + CtiNumStr(Value) + "  --  POINT UNDEFINED IN DB";
-            ReturnMsg->setResultString(resultString);
+            if( pi.quality != InvalidQuality )
+            {
+                resultString += getName() + " / Demand = " + CtiNumStr(pi.value) +  "  --  POINT UNDEFINED IN DB";
+            }
+            else
+            {
+                resultString += getName() + " / Demand = (invalid data) --  POINT UNDEFINED IN DB";
+            }
         }
 
-        dp = getData(DSt->Message + 2, 2, ValueType_Voltage);
+        pi = getData(DSt->Message + 2, 2, ValueType_Voltage);
 
-        Value   = dp.first;
-        quality = dp.second;
-
-        pPoint = getDevicePointOffsetTypeEqual( MCT410_PointOffset_Voltage, DemandAccumulatorPointType );
-
-        if( pPoint != NULL)
+        if( pPoint = getDevicePointOffsetTypeEqual( MCT410_PointOffset_Voltage, DemandAccumulatorPointType ) )
         {
             RWTime pointTime;
 
-            Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
+            pi.value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pi.value);
 
-            resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                     ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+            pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value,
+                                                                                    ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, quality, DemandAccumulatorPointType, resultString);
-
-            if(pData != NULL)
+            if( pData = makePointDataMsg(pPoint, pi, pointString) )
             {
                 pointTime -= pointTime.seconds() % getDemandInterval();
                 pData->setTime( pointTime );
@@ -1650,31 +1668,24 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         else
         {
             //  default multiplier for voltage
-            Value *= 0.1;
+            pi.value *= 0.1;
 
-            resultString = getName() + " / Voltage = " + CtiNumStr(Value) + "  --  POINT UNDEFINED IN DB";
+            resultString = getName() + " / Voltage = " + CtiNumStr(pi.value) + "  --  POINT UNDEFINED IN DB\n";
             ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + resultString);
         }
 
-        dp = getData(DSt->Message + 4, 2, ValueType_Raw);
+        pi = getData(DSt->Message + 4, 2, ValueType_Raw);
 
-        Value   = dp.first;
-        quality = dp.second;
-
-        pPoint = getDevicePointOffsetTypeEqual( MCT_PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType );
-
-        if( pPoint != NULL)
+        if( pPoint = getDevicePointOffsetTypeEqual( MCT_PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType ) )
         {
             RWTime pointTime;
 
-            Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
+            pi.value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pi.value);
 
-            resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
+            resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value,
                                                                                      ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, quality, PulseAccumulatorPointType, resultString);
-
-            if(pData != NULL)
+            if( pData = makePointDataMsg(pPoint, pi, resultString) )
             {
                 ReturnMsg->PointData().insert(pData);
                 pData = NULL;  // We just put it on the list...
@@ -1682,9 +1693,10 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         }
         else
         {
-            resultString = getName() + " / Blink Counter = " + CtiNumStr(Value);
-            ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + resultString);
+            resultString += getName() + " / Blink Counter = " + CtiNumStr(pi.value) + "\n";
         }
+
+        ReturnMsg->setResultString(resultString);
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
@@ -1696,10 +1708,8 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     int             status = NORMAL, pointoffset;
-    double          Value;
     unsigned long   timeOfPeak;
-    PointQuality_t  quality;
-    data_pair       dp;
+    point_info_t    pi;
     RWCString resultString, freeze_info_string;
     RWTime    pointTime;
 
@@ -1732,10 +1742,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        dp = getData(DSt->Message, 2, ValueType_KW);
-
-        Value   = dp.first;
-        quality = dp.second;
+        pi = getData(DSt->Message, 2, ValueType_KW);
 
         timeOfPeak = DSt->Message[2] << 24 |
                      DSt->Message[3] << 16 |
@@ -1745,7 +1752,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
         pointTime = RWTime(timeOfPeak + rwEpoch);
 
         //  turn raw pulses into a demand reading
-        Value *= DOUBLE(3600 / getDemandInterval());
+        pi.value *= DOUBLE(3600 / getDemandInterval());
 
         //  first defined peak demand accumulator
         pointoffset = 1 + MCT4XX_PointOffset_PeakOffset;
@@ -1756,17 +1763,15 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
             pointoffset += MCT4XX_PointOffset_FrozenOffset;
         }
 
-        if(pPoint = getDevicePointOffsetTypeEqual(pointoffset, DemandAccumulatorPointType))
+        if( pPoint = getDevicePointOffsetTypeEqual(pointoffset, DemandAccumulatorPointType) )
         {
-            Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
+            pi.value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pi.value);
 
             resultString = getName() + " / " + pPoint->getName() + " = "
-                                     + CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces())
+                                     + CtiNumStr(pi.value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces())
                                      + " @ " + pointTime.asString();
 
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, quality, DemandAccumulatorPointType, resultString);
-
-            if(pData != NULL)
+            if( pData = makePointDataMsg(pPoint, pi, resultString) )
             {
                 pData->setTime(pointTime);
                 ReturnMsg->PointData().insert(pData);
@@ -1775,11 +1780,11 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
         }
         else
         {
-            resultString = getName() + " / Peak Demand = " + CtiNumStr(Value) + " @ " + pointTime.asString() + "  --  POINT UNDEFINED IN DB";
+            resultString = getName() + " / Peak Demand = " + CtiNumStr(pi.value) + " @ " + pointTime.asString() + "  --  POINT UNDEFINED IN DB";
             ReturnMsg->setResultString(resultString);
         }
 
-        dp = getData(DSt->Message + 6, 3, ValueType_Accumulator);
+        pi = getData(DSt->Message + 6, 3, ValueType_Accumulator);
 
         if( InMessage->Sequence == Emetcon::GetValue_FrozenPeakDemand )
         {
@@ -1802,19 +1807,14 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
             pointTime -= pointTime.seconds() % 300;
         }
 
-        Value   = dp.first;
-        quality = dp.second;
-
-        if( pPoint != NULL)
+        if( pPoint )
         {
-            Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
+            pi.value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pi.value);
 
-            resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
+            resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value,
                                                                                      ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, quality, PulseAccumulatorPointType, resultString);
-
-            if(pData != NULL)
+            if( pData = makePointDataMsg(pPoint, pi, resultString) )
             {
                 pointTime -= pointTime.seconds() % getDemandInterval();
                 pData->setTime( pointTime );
@@ -1824,7 +1824,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
         }
         else
         {
-            resultString = getName() + " / Meter Reading = " + CtiNumStr(Value) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
+            resultString = getName() + " / Meter Reading = " + CtiNumStr(pi.value) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
             ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + resultString);
         }
 
@@ -1840,19 +1840,16 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
     INT status = NORMAL;
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
-    data_pair      dp;
+
+    point_info_t pi, max_volt_info, min_volt_info;
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
-        double minVolts, maxVolts;
         RWTime minTime, maxTime;
-        PointQuality_t minQuality, maxQuality;
         int minPointOffset, maxPointOffset;
-        unsigned long tmpTime;
         RWCString resultString, pointString;
 
         CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -1868,24 +1865,18 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        dp = getData(DSt->Message, 2, ValueType_Voltage);
-        maxVolts   = dp.first;
-        maxQuality = dp.second;
+        max_volt_info  = getData(DSt->Message, 2, ValueType_Voltage);
         maxPointOffset = MCT410_PointOffset_MaxVoltage;
 
-        dp = getData(DSt->Message + 2, 4, ValueType_Raw);
-        tmpTime = dp.first;
-        maxTime = RWTime(tmpTime + rwEpoch);
+        pi = getData(DSt->Message + 2, 4, ValueType_Raw);
+        maxTime = RWTime((unsigned long)pi.value + rwEpoch);
 
 
-        dp = getData(DSt->Message + 6, 2, ValueType_Voltage);
-        minVolts   = dp.first;
-        minQuality = dp.second;
+        min_volt_info  = getData(DSt->Message + 6, 2, ValueType_Voltage);
         minPointOffset = MCT410_PointOffset_MinVoltage;
 
-        dp = getData(DSt->Message + 8, 2, ValueType_Raw);
-        tmpTime = dp.first;
-        minTime = RWTime(tmpTime + rwEpoch);
+        pi = getData(DSt->Message + 8, 4, ValueType_Raw);
+        minTime = RWTime((unsigned long)pi.value + rwEpoch);
 
         if( InMessage->Sequence == Emetcon::GetValue_FrozenVoltage )
         {
@@ -1899,11 +1890,11 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
 
         if( pt_max_volts )
         {
-            maxVolts = pt_max_volts->computeValueForUOM(maxVolts);
+            max_volt_info.value = pt_max_volts->computeValueForUOM(max_volt_info.value);
 
-            pointString = getName() + " / " + pt_max_volts->getName() + " = " + CtiNumStr(maxVolts) + " @ " + maxTime.asString();
+            pointString = getName() + " / " + pt_max_volts->getName() + " = " + CtiNumStr(max_volt_info.value) + " @ " + maxTime.asString();
 
-            if( pdm = CTIDBG_new CtiPointDataMsg(pt_max_volts->getPointID(), maxVolts, NormalQuality, pt_max_volts->getType(), pointString) )
+            if( pdm = makePointDataMsg(pt_max_volts, max_volt_info, pointString) )
             {
                 pdm->setTime(maxTime);
 
@@ -1913,25 +1904,25 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
         }
         else
         {
-            maxVolts *= 0.1;
+            max_volt_info.value *= 0.1;
 
             if( InMessage->Sequence == Emetcon::GetValue_FrozenVoltage )
             {
-                resultString += getName() + " / Frozen Max Voltage = " + CtiNumStr(maxVolts) + " @ " + maxTime.asString();
+                resultString += getName() + " / Frozen Max Voltage = " + CtiNumStr(max_volt_info.value) + " @ " + maxTime.asString();
             }
             else
             {
-                resultString += getName() + " / Max Voltage = " + CtiNumStr(maxVolts) + " @ " + maxTime.asString();
+                resultString += getName() + " / Max Voltage = " + CtiNumStr(max_volt_info.value) + " @ " + maxTime.asString();
             }
         }
 
         if( pt_min_volts )
         {
-            minVolts = pt_min_volts->computeValueForUOM(minVolts);
+            min_volt_info.value = pt_min_volts->computeValueForUOM(min_volt_info.value);
 
-            pointString = getName() + " / " + pt_min_volts->getName() + " = " + CtiNumStr(minVolts) + " @ " + minTime.asString();
+            pointString = getName() + " / " + pt_min_volts->getName() + " = " + CtiNumStr(min_volt_info.value) + " @ " + minTime.asString();
 
-            if( pdm = CTIDBG_new CtiPointDataMsg(pt_min_volts->getPointID(), minVolts, NormalQuality, pt_min_volts->getType(), pointString) )
+            if( pdm = makePointDataMsg(pt_min_volts, min_volt_info, pointString) )
             {
                 pdm->setTime(minTime);
 
@@ -1941,15 +1932,15 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
         }
         else
         {
-            minVolts *= 0.1;
+            min_volt_info.value *= 0.1;
 
             if( InMessage->Sequence == Emetcon::GetValue_FrozenVoltage )
             {
-                resultString += getName() + " / Frozen Min Voltage = " + CtiNumStr(minVolts) + " @ " + minTime.asString();
+                resultString += getName() + " / Frozen Min Voltage = " + CtiNumStr(min_volt_info.value) + " @ " + minTime.asString();
             }
             else
             {
-                resultString += getName() + " / Min Voltage = " + CtiNumStr(minVolts) + " @ " + minTime.asString();
+                resultString += getName() + " / Min Voltage = " + CtiNumStr(min_volt_info.value) + " @ " + minTime.asString();
             }
         }
 
@@ -2164,10 +2155,9 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
     RWCString valReport, resultString;
     int       interval_len, block_len, function, channel,
               badData;
-    double    Value;
-    data_pair dp;
+
+    point_info_t  pi;
     unsigned long timeStamp, decode_time;
-    PointQuality_t quality;
 
 
     CtiPointNumeric *pPoint    = NULL;
@@ -2243,38 +2233,32 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
 
                 if( channel == MCT410_LPVoltageChannel )
                 {
-                    dp = getData(DSt->Message + (i * 2) + 1, 2, ValueType_LoadProfile_Voltage);
+                    pi = getData(DSt->Message + (i * 2) + 1, 2, ValueType_LoadProfile_Voltage);
                 }
                 else
                 {
-                    dp = getData(DSt->Message + (i * 2) + 1, 2, ValueType_LoadProfile_KW);
+                    pi = getData(DSt->Message + (i * 2) + 1, 2, ValueType_LoadProfile_KW);
                 }
-
-                Value   = dp.first;
-                quality = dp.second;
 
                 if( channel != MCT410_LPVoltageChannel )
                 {
-                    Value *= 3600 / interval_len;
+                    pi.value *= 3600 / interval_len;
                 }
 
-                if( pPoint != NULL )
+                if( pPoint )
                 {
-                    if( quality != InvalidQuality )
+                    if( pi.quality != InvalidQuality )
                     {
-                        Value = pPoint->computeValueForUOM( Value );
+                        pi.value = pPoint->computeValueForUOM(pi.value);
 
-                        valReport = getName() + " / " + pPoint->getName() + " @ " + RWTime(timeStamp).asString() + " = " + CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                        valReport = getName() + " / " + pPoint->getName() + " @ " + RWTime(timeStamp).asString() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                        pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
-                                                           Value,
-                                                           quality,
-                                                           DemandAccumulatorPointType,
-                                                           valReport);
+                        if( pData = makePointDataMsg(pPoint, pi, valReport) )
+                        {
+                            pData->setTime(timeStamp);
 
-                        pData->setTime(timeStamp);
-
-                        ReturnMsg->insert(pData);
+                            ReturnMsg->insert(pData);
+                        }
                     }
                     else
                     {
@@ -2283,9 +2267,9 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
                 }
                 else
                 {
-                    if( quality == NormalQuality )
+                    if( pi.quality != InvalidQuality )
                     {
-                        resultString += getName() + " / LP channel " + CtiNumStr(channel) + " @ " + RWTime(timeStamp).asString() + " = " + CtiNumStr(Value, 0) + "\n";
+                        resultString += getName() + " / LP channel " + CtiNumStr(channel) + " @ " + RWTime(timeStamp).asString() + " = " + CtiNumStr(pi.value, 0) + "\n";
                     }
                     else
                     {
@@ -2430,10 +2414,8 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
 
     string         val_report;
     int            channel, block, interval_len;
-    double         value;
     unsigned long  timestamp, pulses;
-    data_pair      dp;
-    PointQuality_t quality;
+    point_info_t   pi;
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
@@ -2481,9 +2463,7 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
 */
 // ---
 
-            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
-
-            if( point )
+            if( point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType ) )
             {
                 //  this is where the block started...
                 timestamp  = TimeNow.seconds();
@@ -2496,31 +2476,20 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                     {
                         if( channel == MCT410_LPVoltageChannel )
                         {
-                            dp = getData(DSt->Message + offset*2 + 1, 2, ValueType_LoadProfile_Voltage);
-
-                            value   = dp.first;
-                            quality = dp.second;
+                            pi = getData(DSt->Message + offset*2 + 1, 2, ValueType_LoadProfile_Voltage);
                         }
                         else
                         {
-                            dp = getData(DSt->Message + offset*2 + 1, 2, ValueType_LoadProfile_KW);
+                            pi = getData(DSt->Message + offset*2 + 1, 2, ValueType_LoadProfile_KW);
 
                             //  adjust for the demand interval
-                            value   = dp.first * 3600 / interval_len;
-                            quality = dp.second;
+                            pi.value *= 3600 / interval_len;
                         }
 
                         //  compute for the UOM
-                        value = point->computeValueForUOM( value );
+                        pi.value = point->computeValueForUOM(pi.value);
 
-                        pdata = CTIDBG_new CtiPointDataMsg(point->getPointID(),
-                                                           value,
-                                                           quality,
-                                                           DemandAccumulatorPointType,
-                                                           "",
-                                                           TAG_POINT_LOAD_PROFILE_DATA );
-
-                        if( pdata )
+                        if( pdata = makePointDataMsg(point, pi, "") )
                         {
                             //  the data goes from latest to earliest...  it's kind of backwards
                             pdata->setTime(timestamp + interval_len * (6 - offset));
@@ -2531,16 +2500,16 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
 
                     //  insert a point data message for TDC and the like
                     //    note that timeStamp, pointQuality, and Value are set in the final iteration of the above for loop
-                    val_report = getName() + " / " + point->getName() + " = " + CtiNumStr(value,
+                    val_report = getName() + " / " + point->getName() + " = " + CtiNumStr(pi.value,
                                                                                           ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
-                    pdata = CTIDBG_new CtiPointDataMsg(point->getPointID(),
-                                                       value,
-                                                       quality,
-                                                       DemandAccumulatorPointType,
-                                                       val_report.data() );
-                    pdata->setTime(timestamp + interval_len * 6);
+
+                    if( pdata = makePointDataMsg(point, pi, val_report.c_str()) )
+                    {
+                        pdata->setTime(timestamp + interval_len * 6);
+                        ret_msg->insert(pdata);
+                    }
+
                     setLastLPTime (timestamp + interval_len * 6);
-                    ret_msg->insert( pdata );
 
                     _lp_info[channel - 1].archived_reading = timestamp + interval_len * 6;
                 }

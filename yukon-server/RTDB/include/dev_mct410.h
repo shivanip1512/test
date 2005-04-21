@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/04/19 21:24:50 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/04/21 20:47:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -154,12 +154,21 @@ protected:
                                               //  if 81c99f60 is Rogue Wave's jan 1, 1970
     };
 
-    typedef pair<double, PointQuality_t> data_pair;
+    //  this is more extensible than a pair
+    struct point_info_t
+    {
+        double value;
+        PointQuality_t quality;
+        //  this could hold a timestamp someday if i get really adventurous
+    };
+
     typedef map<unsigned long, pair<PointQuality_t, int> > QualityMap;  //  the int will hold ErrorClasses OR'd together
 
     unsigned char crc8(const unsigned char *buf, unsigned int len);
-    data_pair getData(unsigned char *buf, int len, ValueType vt=ValueType_KW);
+    point_info_t  getData(unsigned char *buf, int len, ValueType vt=ValueType_KW);
     static  const QualityMap _errorQualities;
+
+    CtiPointDataMsg *makePointDataMsg(CtiPoint *p, const point_info_t &pi, const RWCString &pointString);
 
     bool _intervalsSent;
 
