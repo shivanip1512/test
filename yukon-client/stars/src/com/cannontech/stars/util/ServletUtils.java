@@ -56,6 +56,11 @@ public class ServletUtils {
 	public static final String ATT_REFERRER = ServletUtil.ATT_REFERRER;
 	public static final String ATT_REFERRER2 = ServletUtil.ATT_REFERRER2;
 	
+	/*
+	 * When used in session, the attribute with this name should be passed a CtiNavObject
+	 */
+	public static final String NAVIGATE = ServletUtil.NAVIGATE;
+	
 	public static final String ATT_YUKON_USER = ServletUtil.ATT_YUKON_USER;
 	public static final String ATT_STARS_YUKON_USER = "STARS_YUKON_USER";
 	public static final String ATT_ENERGY_COMPANY_SETTINGS = "ENERGY_COMPANY_SETTINGS";

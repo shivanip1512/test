@@ -16,6 +16,11 @@
 	</filter>
 	
 	<filter>
+		<filter-name>referrerPageFilter</filter-name>
+		<filter-class>com.cannontech.servlet.filter.ReferrerPageFilter</filter-class>
+	</filter>
+	
+	<filter>
 		<filter-name>jsFilter</filter-name>
 		<filter-class>com.cannontech.esub.web.filter.JSFilter</filter-class>
 	</filter>
@@ -30,6 +35,11 @@
 	</filter-mapping>
 	<filter-mapping>
 		<filter-name>noCacheFilter</filter-name>
+		<url-pattern>*.jsp</url-pattern>
+	</filter-mapping>
+	
+	<filter-mapping>
+		<filter-name>referrerPageFilter</filter-name>
 		<url-pattern>*.jsp</url-pattern>
 	</filter-mapping>
 
