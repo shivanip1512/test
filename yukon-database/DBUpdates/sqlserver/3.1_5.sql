@@ -2,12 +2,6 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
-alter table lmprogramdirect add triggernum smallint;
-go
-update lmprogramdirect set triggernum=-1;
-go
-alter table lmprogramdirect alter column triggernum not null;
-go
 alter table lmprogramdirect add triggeroffset smallint;
 go
 update lmprogramdirect set triggeroffset=0;

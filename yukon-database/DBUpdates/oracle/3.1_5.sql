@@ -2,10 +2,6 @@
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
 
-alter table lmprogramdirect add triggernum smallint;
-update lmprogramdirect set triggernum=-1;
-alter table lmprogramdirect modify triggernum not null;
-
 alter table lmprogramdirect add triggeroffset smallint;
 update lmprogramdirect set triggeroffset=0;
 alter table lmprogramdirect modify triggeroffset not null;
