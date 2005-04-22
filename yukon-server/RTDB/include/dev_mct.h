@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/04/15 20:36:02 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/04/22 19:00:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,7 +75,9 @@ protected:
 
     enum MCTDebug
     {
-        Debug_Info = 1 << 0
+        MCTDebug_Debug_Info  = 1 << 0,
+        MCTDebug_Scanrates   = 1 << 1,
+        MCTDebug_LoadProfile = 1 << 2,
     };
 
     enum

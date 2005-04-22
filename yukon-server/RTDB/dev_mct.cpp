@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2005/04/21 20:28:00 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2005/04/22 19:00:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -696,7 +696,7 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
 
     if(OutMessage != NULL)
     {
-        if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
+        if( getMCTDebugLevel(MCTDebug_Scanrates) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -758,6 +758,7 @@ INT CtiDeviceMCT::IntegrityScan(CtiRequestMsg *pReq,
 
     if(OutMessage != NULL)
     {
+        if( getMCTDebugLevel(MCTDebug_Scanrates) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Demand/IEDScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -817,6 +818,7 @@ INT CtiDeviceMCT::AccumulatorScan(CtiRequestMsg *pReq,
 
     if(OutMessage != NULL)
     {
+        if( getMCTDebugLevel(MCTDebug_Scanrates) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** AccumulatorScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -878,6 +880,7 @@ INT CtiDeviceMCT::LoadProfileScan(CtiRequestMsg *pReq,
 
     if(OutMessage != NULL)
     {
+        if( getMCTDebugLevel(MCTDebug_Scanrates) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** LoadProfileScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -961,7 +964,7 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint GetConfig_Model **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** Checkpoint - unhandled GetConfig_Model **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             break;
@@ -1211,7 +1214,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " **** Checkpoint - null retMsg() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return retCode;
@@ -2159,7 +2162,7 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
         {
             function = Emetcon::DLCCmd_Invalid;
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** Checkpoint - invalid interval type **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         if( function != Emetcon::DLCCmd_Invalid )
