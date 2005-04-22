@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/04/11 16:51:05 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/04/22 19:05:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1526,6 +1526,8 @@ INT GenerateCompleteRequest(RWTPtrSlist< OUTMESS > &outList, OUTMESS *&OutMessag
         }
 
         pReq->setMacroOffset( OutMessage->Request.MacroOffset );
+
+        pReq->setMessagePriority(OutMessage->Priority);
 
 
         if(Dev)
