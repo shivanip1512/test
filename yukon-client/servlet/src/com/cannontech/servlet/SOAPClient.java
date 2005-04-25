@@ -49,6 +49,7 @@ import com.cannontech.stars.web.action.UpdateThermostatScheduleAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.web.navigation.CtiNavObject;
 
 /**
  * <p>Title: </p>
@@ -85,6 +86,9 @@ public class SOAPClient extends HttpServlet {
 			resp.sendRedirect( req.getContextPath() + LOGIN_URL );
 			return;
 		}
+		
+		if(referer == null)
+			referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
 		
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		if (user == null) {
