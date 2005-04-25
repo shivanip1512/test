@@ -33,6 +33,7 @@
 		else if (src.equalsIgnoreCase("Inventory") || src.equalsIgnoreCase("ResultSet")) {
 			referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
 			if(referer == null) referer = "Inventory.jsp";
+			
 			if (referer.indexOf("page=") < 0) {
 				if (referer.indexOf("?") < 0)
 					referer += "?page=1";
