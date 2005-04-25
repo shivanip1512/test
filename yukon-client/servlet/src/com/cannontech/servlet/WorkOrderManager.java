@@ -46,6 +46,7 @@ import com.cannontech.stars.web.action.UpdateServiceRequestAction;
 import com.cannontech.stars.web.util.WorkOrderManagerUtil;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.web.navigation.CtiNavObject;
 
 /**
  * @author yao
@@ -79,7 +80,7 @@ public class WorkOrderManager extends HttpServlet {
 		}
     	
 		referer = req.getParameter( ServletUtils.ATT_REFERRER );
-		if (referer == null) referer = req.getHeader( "referer" );
+		if (referer == null) referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
 		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
 		if (redirect == null) redirect = referer;
 		

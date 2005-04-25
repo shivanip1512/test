@@ -85,6 +85,7 @@ import com.cannontech.stars.xml.serialize.StarsUpdateThermostatSchedule;
 import com.cannontech.stars.xml.serialize.StarsUpdateThermostatScheduleResponse;
 import com.cannontech.stars.xml.serialize.types.StarsThermostatTypes;
 import com.cannontech.user.UserUtils;
+import com.cannontech.web.navigation.CtiNavObject;
 
 /**
  * @author yao
@@ -116,7 +117,7 @@ public class StarsAdmin extends HttpServlet {
 		StarsYukonUser user = (StarsYukonUser)
 				session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         
-		referer = req.getHeader( "referer" );
+		referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
 		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
 		if (redirect == null) redirect = referer;
     	
