@@ -1,13 +1,14 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>
+<%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%
 	if (request.getParameter("action") != null) {
 		String redirect = request.getParameter(ServletUtils.ATT_REDIRECT);
-		if (redirect == null) redirect = request.getHeader("referer");
+		if (redirect == null) redirect = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
 		
 		String referer = request.getParameter(ServletUtils.ATT_REFERRER);
-		if (referer == null) referer = request.getHeader("referer");
+		if (referer == null) referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
 		session.setAttribute(ServletUtils.ATT_REFERRER2, referer);
 	}
 	

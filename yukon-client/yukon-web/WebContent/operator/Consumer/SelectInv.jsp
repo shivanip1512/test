@@ -1,5 +1,6 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>
+<%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%
 	boolean inWizard = ((String) session.getAttribute(ServletUtils.ATT_REFERRER)).indexOf("Wizard=true") >= 0;
 	if (!inWizard && accountInfo == null) {
@@ -8,7 +9,7 @@
 	}
 	
 	if (request.getParameter("SerialNo") != null) {
-		session.setAttribute(ServletUtils.ATT_REFERRER2, request.getHeader("referer"));
+		session.setAttribute(ServletUtils.ATT_REFERRER2, ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage());
 		session.setAttribute(ServletUtils.ATT_REDIRECT, request.getParameter(ServletUtils.ATT_REDIRECT));
 	}
 	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER2);

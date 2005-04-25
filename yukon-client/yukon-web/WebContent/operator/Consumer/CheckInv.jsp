@@ -22,7 +22,6 @@
 	}
 	
 	String referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
-	System.out.println("Referer from CheckInv: " + referer);
 %>
 
 <html>
