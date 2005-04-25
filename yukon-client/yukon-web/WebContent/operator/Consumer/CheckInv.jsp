@@ -7,6 +7,7 @@
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
 <%@ page import="com.cannontech.stars.util.ObjectInOtherEnergyCompanyException" %>
+<%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%
 	Object obj = session.getAttribute(InventoryManagerUtil.INVENTORY_TO_CHECK);
 	boolean inOther = (obj instanceof ObjectInOtherEnergyCompanyException);
@@ -20,7 +21,8 @@
 		return;
 	}
 	
-	String referer = request.getHeader("referer");
+	String referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
+	System.out.println("Referer from CheckInv: " + referer);
 %>
 
 <html>
