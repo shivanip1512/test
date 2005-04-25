@@ -65,6 +65,11 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 {	
 	String action = req.getParameter(ACTION).toString();
 	String redirectURI = req.getParameter(REDIRECT);
+	/*this is unfortunate...can't take out this header call for now because
+	 * we may not necessarily have a session available for getting the previous
+	 * page since this code is hit both on a logoff and on a logon while the session is still null.  
+	 * I'll at least make sure it isn't null where it is used in the code.
+	 */
 	String referer = req.getHeader("referer");
 	
 	if(LOGIN.equalsIgnoreCase(action)) {
@@ -89,6 +94,9 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 						
 						session.invalidate();
 						session = req.getSession(true);
+						
+						if(referer == null)
+							referer = AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL);
 						
 						// Save the old session context and where to direct the browser when the new user logs off
 						session.setAttribute( SAVED_YUKON_USERS, new Pair(oldContext, referer) );
@@ -239,9 +247,14 @@ public static LiteYukonUser internalLogin(HttpServletRequest req, HttpSession se
 	session.invalidate();
 	session = req.getSession( true );
 	
+	
+	String referer = req.getHeader("referer");
+	if(referer == null)
+		referer = AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL);
+	
 	// Save the old session context and where to direct the browser when the new user logs off
 	if (oldContext != null)
-		session.setAttribute( SAVED_YUKON_USERS, new Pair(oldContext, req.getHeader("referer")) );
+		session.setAttribute( SAVED_YUKON_USERS, new Pair(oldContext, referer) );
 	
 	try {
 		initSession(user, session);
