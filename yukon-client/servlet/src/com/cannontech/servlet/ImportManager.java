@@ -35,6 +35,8 @@ import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 
+import com.cannontech.web.navigation.CtiNavObject;
+
 /**
  * @author yao
  *
@@ -107,7 +109,7 @@ public class ImportManager extends HttpServlet {
 		}
 		
 		if (action == null) action = "";
-		if (referer == null) referer = req.getHeader( "referer" );
+		if (referer == null) referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
 		if (redirect == null) redirect = referer;
 		
 		if (action.equalsIgnoreCase("ImportCustAccounts"))

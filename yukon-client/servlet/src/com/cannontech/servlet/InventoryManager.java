@@ -60,6 +60,8 @@ import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardware;
+import com.cannontech.web.navigation.CtiNavObject;
+
 
 /**
  * @author yao
@@ -94,7 +96,7 @@ public class InventoryManager extends HttpServlet {
 		}
         
 		referer = req.getParameter( ServletUtils.ATT_REFERRER );
-		if (referer == null) referer = req.getHeader( "referer" );
+		if (referer == null) referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
 		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
 		if (redirect == null) redirect = referer;
 		
