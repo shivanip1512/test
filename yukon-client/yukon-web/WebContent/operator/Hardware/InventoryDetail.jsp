@@ -3,6 +3,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
+<%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%
 	int invID = Integer.parseInt(request.getParameter("InvId"));
 	LiteInventoryBase liteInv = liteEC.getInventory(invID, true);
@@ -30,7 +31,8 @@
 			referer = "Inventory.jsp";
 		}
 		else if (src.equalsIgnoreCase("Inventory") || src.equalsIgnoreCase("ResultSet")) {
-			referer = request.getHeader("referer");
+			referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
+			if(referer == null) referer = "Inventory.jsp";
 			if (referer.indexOf("page=") < 0) {
 				if (referer.indexOf("?") < 0)
 					referer += "?page=1";
