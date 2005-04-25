@@ -1,4 +1,5 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%
 	String action = request.getParameter("action");
 	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
@@ -41,7 +42,7 @@
 					deviceName = inventory.getMCT().getDeviceName();
 			}
 			
-			referer = request.getHeader("referer");
+			referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
 		}
 		
 		session.setAttribute(ServletUtils.ATT_REFERRER, referer);
